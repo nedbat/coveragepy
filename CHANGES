@@ -1,0 +1,175 @@
+------------------------------
+CHANGE HISTORY for coverage.py
+------------------------------
+
+Version 3.0b1
+-------------
+
+Major overhaul.
+
+- Coverage.py is now a package rather than a module, so the name is a bit of a
+  misnomer, since there is no longer a file named coverage.py.  Functionality
+  has been split into classes.
+
+- The trace function is implemented in C for speed.
+
+- Executable lines are identified by reading the line number tables in the
+  compiled code, removing a great deal of complicated analysis code.
+  
+- The singleton coverage object is only created if the module-level functions
+  are used.  This maintains the old interface while allowing better
+  programmatic use of coverage.py.
+  
+- Minimum supported Python version is 2.3.
+
+
+Version 2.85, 14 September 2008
+-------------------------------
+
+- Add support for finding source files in eggs. Don't check for
+  morf's being instances of ModuleType, instead use duck typing so that
+  pseudo-modules can participate. Thanks, Imri Goldberg.
+  
+- Use os.realpath as part of the fixing of filenames so that symlinks won't
+  confuse things. Thanks, Patrick Mezard.
+
+
+Version 2.80, 25 May 2008
+-------------------------
+
+- Open files in rU mode to avoid line ending craziness. Thanks, Edward Loper.
+
+
+Version 2.78, 30 September 2007
+-------------------------------
+
+- Don't try to predict whether a file is Python source based on the extension.
+  Extensionless files are often Pythons scripts. Instead, simply parse the file
+  and catch the syntax errors. Hat tip to Ben Finney.
+
+
+Version 2.77, 29 July 2007
+--------------------------
+
+- Better packaging.
+
+
+Version 2.76, 23 July 2007
+--------------------------
+
+- Now Python 2.5 is *really* fully supported: the body of the new with
+  statement is counted as executable.
+
+
+Version 2.75, 22 July 2007
+--------------------------
+
+- Python 2.5 now fully supported. The method of dealing with multi-line
+  statements is now less sensitive to the exact line that Python reports during
+  execution. Pass statements are handled specially so that their disappearance
+  during execution won't throw off the measurement.
+
+
+Version 2.7, 21 July 2007
+-------------------------
+
+- "#pragma: nocover" is excluded by default.
+
+- Properly ignore docstrings and other constant expressions that appear in the
+  middle of a function, a problem reported by Tim Leslie.
+
+- coverage.erase() shouldn't clobber the exclude regex. Change how parallel
+  mode is invoked, and fix erase() so that it erases the cache when called
+  programmatically.
+
+- In reports, ignore code executed from strings, since we can't do anything
+  useful with it anyway.
+  
+- Better file handling on Linux, thanks Guillaume Chazarain.
+
+- Better shell support on Windows, thanks Noel O'Boyle.
+
+- Python 2.2 support maintained, thanks Catherine Proulx.
+
+- Minor changes to avoid lint warnings.
+
+
+Version 2.6, 23 August 2006
+---------------------------
+
+- Applied Joseph Tate's patch for function decorators.
+
+- Applied Sigve Tjora and Mark van der Wal's fixes for argument handling.
+
+- Applied Geoff Bache's parallel mode patch.
+
+- Refactorings to improve testability. Fixes to command-line logic for parallel
+  mode and collect.
+
+
+Version 2.5, 4 December 2005
+----------------------------
+
+- Call threading.settrace so that all threads are measured. Thanks Martin
+  Fuzzey.
+  
+- Add a file argument to report so that reports can be captured to a different
+  destination.
+
+- coverage.py can now measure itself.
+
+- Adapted Greg Rogers' patch for using relative filenames, and sorting and
+  omitting files to report on.
+
+
+Version 2.2, 31 December 2004
+-----------------------------
+
+- Allow for keyword arguments in the module global functions. Thanks, Allen.
+
+
+Version 2.1, 14 December 2004
+-----------------------------
+
+- Return 'analysis' to its original behavior and add 'analysis2'. Add a global
+  for 'annotate', and factor it, adding 'annotate_file'.
+
+
+Version 2.0, 12 December 2004
+-----------------------------
+
+Significant code changes.
+
+- Finding executable statements has been rewritten so that docstrings and
+  other quirks of Python execution aren't mistakenly identified as missing
+  lines.
+
+- Lines can be excluded from consideration, even entire suites of lines.
+
+- The filesystem cache of covered lines can be disabled programmatically.
+
+- Modernized the code.
+
+
+Earlier History
+---------------
+
+2001-12-04 GDR Created.
+
+2001-12-06 GDR Added command-line interface and source code annotation.
+
+2001-12-09 GDR Moved design and interface to separate documents.
+
+2001-12-10 GDR Open cache file as binary on Windows. Allow simultaneous -e and
+-x, or -a and -r.
+
+2001-12-12 GDR Added command-line help. Cache analysis so that it only needs to
+be done once when you specify -a and -r.
+
+2001-12-13 GDR Improved speed while recording. Portable between Python 1.5.2
+and 2.1.1.
+
+2002-01-03 GDR Module-level functions work correctly.
+
+2002-01-07 GDR Update sys.path when running a file with the -x option, so that
+it matches the value the program would get if it were run on its own.

@@ -1,0 +1,117 @@
+Coverage TODO
+
+* v3.0 beta
+
+- Windows kit.
+    - Why doesn't setup.py install work? procmon to the rescue?
+- Try installation on Ubuntu.
+- Proper project layout.
+- Code moved to Google code.
+- Investigate package over module installation.
+
+
+* BUGS
+
++ Threading is broken: C and Python trace fns called differently?
+
+
+* Speed
+
++ C extension collector
+- Ignore certain modules
+- Tricky swapping of collector like figleaf, pycov, et al.
+- Seems like there should be a faster way to manage all the line number sets in
+    CodeAnalyzer.raw_analyze.
+- If tracing, canonical_filename_cache overlaps with should_trace_cache.  Skip
+    canonical_filename_cache. Maybe it isn't even worth it...
+
+* Accuracy
+
+- Record magic number of module to ensure code hasn't changed
+- Record version of coverage data file, so we can update what's stored there.
+- Record options in coverage data file, so multiple runs are certain to make
+    sense together.
+- Do I still need the lines in annotate_file that deal specially with "else"?
+
+* Power
+
+- API for getting coverage data.
+- Instruction tracing instead of line tracing.
+- Path tracing (how does this even work?)
+- Branch coverage
+- Count execution of lines
+- Track callers of functions (ala std module trace)
+- Method/Class/Module coverage reporting.
+
+* Convenience
+
+- Why can't you specify execute (-x) and report (-r) in the same invocation?
+    Maybe just because -x needs the rest of the command line?
+- How will coverage.py package install over coverage.py module?
+- Support 2.3 - 3.0?
+    http://pythonology.blogspot.com/2009/02/making-code-run-on-python-20-through-30.html
+
+* Beauty
+
+- HTML report
+- Syntax coloring in HTML report
+- Dynamic effects in HTML report
+- Footer in reports pointing to coverage home page.
+
+* Community
+
+- New docs, rather than pointing to Gareth's
+    - Min version is 2.3.
+    - Distinction between ignore (files not to trace), exclude (lines not to trace),
+        and omit (files not to report)
+    - Changes from coverage 2.x:
+        - Bare "except:" lines now count as executable code.
+        - Double function decorators: all decorator lines count as executable code.
++ Be sure --help text is complete (-i is missing).
+- Host the project somewhere with a real bug tracker, google code I guess.
+- Point discussion to TIP
+- PEP 8 compliance?
+
+* Modernization
+
++ Decide on minimum supported version
+    + 2.3
+    + Get rid of the basestring protection
+    + Use enumerate
+    + Use sets instead of dicts
+- Get rid of the recursive nonsense.
+- Docstrings.
+- Remove huge document-style comments.
++ Remove singleton
+    + Initialization of instance variables in the class.
+- Better names:
+    + self.cache -> self.cache_filename -> CoverageData.filename
+    + self.usecache -> CoverageData.use_file
+- More classes:
+    - Module munging
+    + Coverage data files
+- Why are some imports at the top of the file, and some in functions?
++ Get rid of sys.exitfunc use.
++ True and False (with no backward adaptation: the constants are new in 2.2.1)
++ Get rid of compiler module
+    + In analyzing code
+    + In test_coverage.py
+- Style:
+    + lineno
+    + filename
+
+* Correctness
+
+- What does -p (parallel mode) mean with -e (erase data)?
+
+* Tests
+
+- Tests about the .coverage file.
+- Tests about the --long-form of arguments.
+- Tests about overriding the .coverage filename.
+- Tests about parallel mode.
++ Tests about assigning a multi-line string.
+- Tests about tricky docstrings.
+- Coverage test coverage.py!
+- Tests that tracing stops after calling stop()
+- More intensive thread testing.
