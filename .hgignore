@@ -1,0 +1,17 @@
+syntax: glob
+
+# Files that can appear anywhere in the tree.
+*.pyc
+*.pyo
+*.bak
+.coverage
+.coverage.*
+
+# Stuff in the root.
+build
+dist
+coverage.egg-info
+MANIFEST
+
+# Stuff in the test directory.
+zipmods.zip
