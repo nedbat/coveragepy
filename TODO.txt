@@ -6,7 +6,7 @@ Coverage TODO
     - Why doesn't setup.py install work? procmon to the rescue?
 - Try installation on Ubuntu.
 - Proper project layout.
-- Code moved to Google code.
++ Code moved to bitbucket.
 - Investigate package over module installation.
 
 
