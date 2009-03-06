@@ -10,11 +10,6 @@ Coverage TODO
 - Investigate package over module installation.
 
 
-* BUGS
-
-+ Threading is broken: C and Python trace fns called differently?
-
-
 * Speed
 
 + C extension collector
