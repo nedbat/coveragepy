@@ -22,6 +22,9 @@ Major overhaul.
   
 - Minimum supported Python version is 2.3.
 
+- Precisely which lines are considered executable has changed in some cases.
+  Therefore, your coverage stats may also change.
+  
 
 Version 2.85, 14 September 2008
 -------------------------------
