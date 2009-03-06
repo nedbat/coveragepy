@@ -8,7 +8,6 @@ library to determine which lines are executable, and which have been executed.
 """
 
 classifiers = """
-Development Status :: 5 - Production/Stable
 Environment :: Console
 Intended Audience :: Developers
 License :: OSI Approved :: BSD License
@@ -18,15 +17,31 @@ Topic :: Software Development :: Quality Assurance
 Topic :: Software Development :: Testing
 """
 
+# Pull in the tools we need.
+
 from ez_setup import use_setuptools
 use_setuptools()
 
 from setuptools import setup, find_packages
 from distutils.core import Extension
 
+# Get or massage our metadata.
+
 from coverage import __version__
 
 doclines = __doc__.split("\n")
+
+classifier_list = filter(None, classifiers.split("\n"))
+
+if 'a' in __version__:
+    devstat = "3 - Alpha"
+elif 'b' in __version__:
+    devstat = "4 - Beta"
+else:
+    devstat = "5 - Production/Stable"
+classifier_list.append("Development Status :: " + devstat)
+
+# Set it up!
 
 setup(
     name = 'coverage',
@@ -41,19 +56,19 @@ setup(
             'coverage = coverage:main',
         ]
     },
-    zip_safe = True,    # __file__ appears in the source, but doesn't break zippy-ness.
-
     ext_modules = [
         Extension("coverage.tracer", sources=["coverage/tracer.c"])
         ],
     
+    zip_safe = True,    # __file__ appears in the source, but doesn't break zippy-ness.
+
     author = 'Ned Batchelder',
     author_email = 'ned@nedbatchelder.com',
     description = doclines[0],
     long_description = "\n".join(doclines[2:]),
     keywords = 'code coverage testing',
     license = 'BSD',
-    classifiers = filter(None, classifiers.split("\n")),
+    classifiers = classifier_list,
     url = 'http://nedbatchelder.com/code/modules/coverage.html',
     download_url = 'http://nedbatchelder.com/code/modules/coverage-%s.tar.gz' % __version__,
 )
