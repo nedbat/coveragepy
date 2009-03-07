@@ -12,6 +12,7 @@ build
 dist
 coverage.egg-info
 MANIFEST
+setuptools-*.egg
 
 # Stuff in the test directory.
 zipmods.zip
