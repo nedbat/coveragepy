@@ -33,10 +33,7 @@ coverage:
 
 WEBHOME = c:/ned/web/stellated/pages/code/modules
 
-publish: kit
-	#cp coverage.py $(WEBHOME)
-	#cp test_coverage.py $(WEBHOME)
-	#cp coverage_coverage.py $(WEBHOME)
+publish:
 	cp doc/coverage.px $(WEBHOME)
 	cp dist/coverage-* $(WEBHOME)
 
