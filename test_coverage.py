@@ -147,10 +147,22 @@ class CoverageTest(unittest.TestCase):
             self.assertEqual(report, rep)
 
         if annfile:
+            # Run annotate.
             coverage.annotate([modname+'.py'])
             expect = (path.path(self.olddir) / annfile).text()
             actual = path.path(modname + '.py,cover').text()
-            self.assertEqual(expect, actual)
+            out = path.path(self.olddir) / (annfile + "_actual")
+            # Check if the results are right
+            if expect == actual:
+                # They are right: delete the old test results if they are still
+                # around.
+                if out.exists():
+                    out.remove()
+            else:
+                # The results are wrong: write them out so we can diff them to
+                # see what happened.
+                out.write_text(actual)
+                self.fail("Annotation is incorrect: %s" % out)
 
     def assertRaisesMsg(self, excClass, msg, callableObj, *args, **kwargs):
         """ Just like unittest.TestCase.assertRaises,
