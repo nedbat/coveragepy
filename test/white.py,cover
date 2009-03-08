@@ -13,3 +13,19 @@
 !         pass
 !     else:
 !         pass
+  
+> def g(x):
+>     if x == 1:
+>         a = 1
+!     else:
+!         a = 2
+  
+> g(1)
+  
+> def h(x):
+>     if x == 1:
+!         a = 1
+>     else:
+>         a = 2
+  
+> h(2)
