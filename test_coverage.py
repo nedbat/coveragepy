@@ -2,7 +2,7 @@
 # Copyright 2004-2009, Ned Batchelder
 # http://nedbatchelder.com/code/modules/coverage.html
 
-# Change some of these 0's to 1's to get diagnostic output during testing.
+# Change this 0 to 1 to get diagnostic output during testing.
 showstdout = 0
 
 import unittest
@@ -1912,9 +1912,23 @@ class ProcessTests(CoverageTest):
         self.assert_("/test/modules/covmod1 " in report)
         self.assert_("/test/zipmods.zip/covmodzip1 " in report)
         self.assert_("mycode " in report)
-    
+
+        for l in report.split('\n'):
+            if '/test/modules/covmod1' in l:
+                # Save a module prefix for the omit test later.
+                prefix = l.split('/test/')[0] + '/test/'
+                break
+
+        # Try reporting just one module
         report = self.run_command("coverage -r mycode.py").replace('\\', '/')
         self.assert_("/coverage/" not in report)
+        self.assert_("/test/modules/covmod1 " not in report)
+        self.assert_("/test/zipmods.zip/covmodzip1 " not in report)
+        self.assert_("mycode " in report)
+
+        # Try reporting while omitting some modules
+        report = self.run_command("coverage -r -o %s" % prefix).replace('\\', '/')
+        self.assert_("/coverage/" in report)
         self.assert_("/test/modules/covmod1 " not in report)
         self.assert_("/test/zipmods.zip/covmodzip1 " not in report)
         self.assert_("mycode " in report)
