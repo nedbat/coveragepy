@@ -3,6 +3,7 @@ syntax: glob
 # Files that can appear anywhere in the tree.
 *.pyc
 *.pyo
+*.pyd
 *.bak
 .coverage
 .coverage.*
