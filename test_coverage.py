@@ -1962,5 +1962,3 @@ if __name__ == '__main__':
 #         in an expression!)
 # TODO: Generator comprehensions? 
 # TODO: Constant if tests ("if 1:").  Py 2.4 doesn't execute them.
-
-# $Id$
