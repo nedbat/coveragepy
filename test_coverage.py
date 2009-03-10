@@ -151,7 +151,8 @@ class CoverageTest(unittest.TestCase):
             coverage.annotate([modname+'.py'])
             expect = (path.path(self.olddir) / annfile).text()
             actual = path.path(modname + '.py,cover').text()
-            out = path.path(self.olddir) / (annfile + "_actual")
+            # Write the actual results into a file for comparison.
+            out = path.path(self.olddir) / (annfile + "_actual_%s%s" % (sys.version_info[:2]))
             # Check if the results are right
             if expect == actual:
                 # They are right: delete the old test results if they are still
