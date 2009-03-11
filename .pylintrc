@@ -243,7 +243,7 @@ max-parents=7
 max-attributes=40
 
 # Minimum number of public methods for a class (see R0903).
-min-public-methods=1
+min-public-methods=0
 
 # Maximum number of public methods for a class (see R0904).
 max-public-methods=500
