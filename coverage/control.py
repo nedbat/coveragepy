@@ -1,11 +1,11 @@
 """Core control stuff for coverage.py"""
 
-import glob, os, re, sys, types
+import os, re, sys
 
 from coverage.data import CoverageData
 from coverage.misc import nice_pair, CoverageException
-from coverage.morf import morf_factory, Morf
-
+from coverage.codeunit import code_unit_factory
+from coverage.files import FileWrangler
 
 class coverage:
     def __init__(self):
@@ -16,7 +16,7 @@ class coverage:
         self.nesting = 0
         self.cstack = []
         self.xstack = []
-        self.relative_dir = self.abs_file(os.curdir)+os.sep
+        self.file_wrangler = FileWrangler()
         
         self.collector = Collector(self.should_trace)
         
@@ -25,10 +25,6 @@ class coverage:
         # Cache of results of calling the analysis2() method, so that you can
         # specify both -r and -a without doing double work.
         self.analysis_cache = {}
-    
-        # Cache of results of calling the canonical_filename() method, to
-        # avoid duplicating work.
-        self.canonical_filename_cache = {}
     
         # The default exclude pattern.
         self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')
@@ -49,7 +45,7 @@ class coverage:
             return False
         # TODO: flag: ignore std lib?
         # TODO: ignore by module as well as file?
-        return self.canonical_filename(filename)
+        return self.file_wrangler.canonical_filename(filename)
 
     def use_cache(self, usecache, cache_file=None):
         self.data.usefile(usecache, cache_file)
@@ -97,58 +93,6 @@ class coverage:
         """Entry point for combining together parallel-mode coverage data."""
         self.data.combine_parallel_data()
 
-    def get_zip_data(self, filename):
-        """ Get data from `filename` if it is a zip file path, or return None
-            if it is not.
-        """
-        import zipimport
-        markers = ['.zip'+os.sep, '.egg'+os.sep]
-        for marker in markers:
-            if marker in filename:
-                parts = filename.split(marker)
-                try:
-                    zi = zipimport.zipimporter(parts[0]+marker[:-1])
-                except zipimport.ZipImportError:
-                    continue
-                try:
-                    data = zi.get_data(parts[1])
-                except IOError:
-                    continue
-                return data
-        return None
-
-    def abs_file(self, filename):
-        """ Helper function to turn a filename into an absolute normalized
-            filename.
-        """
-        return os.path.normcase(os.path.abspath(os.path.realpath(filename)))
-
-    def relative_filename(self, filename):
-        """ Convert filename to relative filename from self.relative_dir.
-        """
-        return filename.replace(self.relative_dir, "")
-
-    def canonical_filename(self, filename):
-        """Return a canonical filename for `filename`.
-        
-        An absolute path with no redundant components and normalized case.
-        
-        """
-        if not self.canonical_filename_cache.has_key(filename):
-            f = filename
-            if os.path.isabs(f) and not os.path.exists(f):
-                if not self.get_zip_data(f):
-                    f = os.path.basename(f)
-            if not os.path.isabs(f):
-                for path in [os.curdir] + sys.path:
-                    g = os.path.join(path, f)
-                    if os.path.exists(g):
-                        f = g
-                        break
-            cf = self.abs_file(f)
-            self.canonical_filename_cache[filename] = cf
-        return self.canonical_filename_cache[filename]
-
     def group_collected_data(self):
         """Group the collected data by filename and reset the collector."""
         self.data.add_raw_data(self.collector.data_points())
@@ -179,7 +123,7 @@ class coverage:
             ext = '.py'
         if ext == '.py':
             if not os.path.exists(filename):
-                source = self.get_zip_data(filename)
+                source = self.file_wrangler.get_zip_data(filename)
                 if not source:
                     raise CoverageException(
                         "No source for code '%s'." % morf.filename
@@ -228,8 +172,8 @@ class coverage:
         return f, s, m, mf
 
     def analysis2(self, morf):
-        morf = Morf(morf)
-        return self.analysis_engine(morf)
+        code_units = code_unit_factory(morf, self.file_wrangler)
+        return self.analysis_engine(code_units[0])
 
     def analysis_engine(self, morf):
         filename, statements, excluded, line_map = self.analyze_morf(morf)
@@ -258,10 +202,10 @@ class coverage:
         self.report_engine(morfs, show_missing=show_missing, ignore_errors=ignore_errors, file=file)
 
     def report_engine(self, morfs, show_missing=True, ignore_errors=False, file=None, omit_prefixes=None):
-        morfs = morf_factory(morfs, omit_prefixes)
-        morfs.sort()
+        code_units = code_unit_factory(morfs, self.file_wrangler, omit_prefixes)
+        code_units.sort()
 
-        max_name = max(5, max(map(lambda m: len(m.name), morfs)))
+        max_name = max(5, max(map(lambda cu: len(cu.name), code_units)))
         fmt_name = "%%- %ds  " % max_name
         fmt_err = fmt_name + "%s: %s"
         header = fmt_name % "Name" + " Stmts   Exec  Cover"
@@ -275,16 +219,16 @@ class coverage:
         print >>file, "-" * len(header)
         total_statements = 0
         total_executed = 0
-        for morf in morfs:
+        for cu in code_units:
             try:
-                _, statements, _, missing, readable = self.analysis_engine(morf)
+                _, statements, _, missing, readable = self.analysis_engine(cu)
                 n = len(statements)
                 m = n - len(missing)
                 if n > 0:
                     pc = 100.0 * m / n
                 else:
                     pc = 100.0
-                args = (morf.name, n, m, pc)
+                args = (cu.name, n, m, pc)
                 if show_missing:
                     args = args + (readable,)
                 print >>file, fmt_coverage % args
@@ -295,8 +239,8 @@ class coverage:
             except:
                 if not ignore_errors:
                     typ, msg = sys.exc_info()[:2]
-                    print >>file, fmt_err % (morf.name, typ, msg)
-        if len(morfs) > 1:
+                    print >>file, fmt_err % (cu.name, typ, msg)
+        if len(code_units) > 1:
             print >>file, "-" * len(header)
             if total_statements > 0:
                 pc = 100.0 * total_executed / total_statements
@@ -313,10 +257,10 @@ class coverage:
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
     def annotate(self, morfs, directory=None, ignore_errors=False, omit_prefixes=None):
-        morfs = morf_factory(morfs, omit_prefixes)
-        for morf in morfs:
+        code_units = code_unit_factory(morfs, self.file_wrangler, omit_prefixes)
+        for cu in code_units:
             try:
-                filename, statements, excluded, missing, _ = self.analysis_engine(morf)
+                filename, statements, excluded, missing, _ = self.analysis_engine(cu)
                 self.annotate_file(filename, statements, excluded, missing, directory)
             except KeyboardInterrupt:
                 raise

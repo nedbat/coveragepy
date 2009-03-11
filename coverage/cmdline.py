@@ -132,10 +132,8 @@ class CoverageScript:
         directory = settings.get('directory=')
 
         omit = settings.get('omit=')
-        if omit is not None:
-            omit = [self.coverage.abs_file(p) for p in omit.split(',')]
-        else:
-            omit = []
+        if omit:
+            omit = omit.split(',')
         
         if settings.get('report'):
             self.coverage.report_engine(args, show_missing, ignore_errors, omit_prefixes=omit)
