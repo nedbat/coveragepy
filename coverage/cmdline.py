@@ -138,7 +138,7 @@ class CoverageScript:
             omit = []
         
         if settings.get('report'):
-            self.coverage.report(args, show_missing, ignore_errors, omit_prefixes=omit)
+            self.coverage.report_engine(args, show_missing, ignore_errors, omit_prefixes=omit)
         if settings.get('annotate'):
             self.coverage.annotate(args, directory, ignore_errors, omit_prefixes=omit)
 

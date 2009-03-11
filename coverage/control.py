@@ -4,6 +4,7 @@ import glob, os, re, sys, types
 
 from coverage.data import CoverageData
 from coverage.misc import nice_pair, CoverageException
+from coverage.morf import morf_factory, Morf
 
 
 class coverage:
@@ -168,9 +169,9 @@ class coverage:
     def analyze_morf(self, morf):
         from coverage.analyzer import CodeAnalyzer
 
-        if self.analysis_cache.has_key(morf):
-            return self.analysis_cache[morf]
-        orig_filename = filename = self.morf_filename(morf)
+        if self.analysis_cache.has_key(morf.filename):
+            return self.analysis_cache[morf.filename]
+        filename = morf.filename
         ext = os.path.splitext(filename)[1]
         source = None
         if ext == '.pyc':
@@ -181,7 +182,7 @@ class coverage:
                 source = self.get_zip_data(filename)
                 if not source:
                     raise CoverageException(
-                        "No source for code '%s'." % orig_filename
+                        "No source for code '%s'." % morf.filename
                         )
 
         analyzer = CodeAnalyzer()
@@ -190,7 +191,7 @@ class coverage:
             )
 
         result = filename, lines, excluded_lines, line_map
-        self.analysis_cache[morf] = result
+        self.analysis_cache[morf.filename] = result
         return result
 
     # format_lines(statements, lines).  Format a list of line numbers
@@ -227,6 +228,10 @@ class coverage:
         return f, s, m, mf
 
     def analysis2(self, morf):
+        morf = Morf(morf)
+        return self.analysis_engine(morf)
+
+    def analysis_engine(self, morf):
         filename, statements, excluded, line_map = self.analyze_morf(morf)
         self.group_collected_data()
         
@@ -248,57 +253,15 @@ class coverage:
         return (filename, statements, excluded, missing,
                 self.format_lines(statements, missing))
 
-    # morf_filename(morf).  Return the filename for a module or file.
+    # Programmatic entry point
+    def report(self, morfs, show_missing=True, ignore_errors=False, file=None):
+        self.report_engine(morfs, show_missing=show_missing, ignore_errors=ignore_errors, file=file)
 
-    def morf_filename(self, morf):
-        if hasattr(morf, '__file__'):
-            f = morf.__file__
-        else:
-            f = morf
-        return self.canonical_filename(f)
+    def report_engine(self, morfs, show_missing=True, ignore_errors=False, file=None, omit_prefixes=None):
+        morfs = morf_factory(morfs, omit_prefixes)
+        morfs.sort()
 
-    def morf_name(self, morf):
-        """ Return the name of morf as used in report.
-        """
-        if hasattr(morf, '__name__'):
-            return morf.__name__
-        else:
-            return self.relative_filename(os.path.splitext(morf)[0])
-
-    def filter_by_prefix(self, morfs, omit_prefixes):
-        """ Return list of morfs where the morf name does not begin
-            with any one of the omit_prefixes.
-        """
-        filtered_morfs = []
-        for morf in morfs:
-            for prefix in omit_prefixes:
-                if self.morf_name(morf).startswith(prefix):
-                    break
-            else:
-                filtered_morfs.append(morf)
-
-        return filtered_morfs
-
-    def morf_name_compare(self, x, y):
-        return cmp(self.morf_name(x), self.morf_name(y))
-
-    def report(self, morfs, show_missing=True, ignore_errors=False, file=None, omit_prefixes=None):
-        if not isinstance(morfs, types.ListType):
-            morfs = [morfs]
-        # On windows, the shell doesn't expand wildcards.  Do it here.
-        globbed = []
-        for morf in morfs:
-            if isinstance(morf, basestring) and ('?' in morf or '*' in morf):
-                globbed.extend(glob.glob(morf))
-            else:
-                globbed.append(morf)
-        morfs = globbed
-
-        if omit_prefixes:
-            morfs = self.filter_by_prefix(morfs, omit_prefixes)
-        morfs.sort(self.morf_name_compare)
-
-        max_name = max(5, max(map(len, map(self.morf_name, morfs))))
+        max_name = max(5, max(map(lambda m: len(m.name), morfs)))
         fmt_name = "%%- %ds  " % max_name
         fmt_err = fmt_name + "%s: %s"
         header = fmt_name % "Name" + " Stmts   Exec  Cover"
@@ -313,16 +276,15 @@ class coverage:
         total_statements = 0
         total_executed = 0
         for morf in morfs:
-            name = self.morf_name(morf)
             try:
-                _, statements, _, missing, readable  = self.analysis2(morf)
+                _, statements, _, missing, readable = self.analysis_engine(morf)
                 n = len(statements)
                 m = n - len(missing)
                 if n > 0:
                     pc = 100.0 * m / n
                 else:
                     pc = 100.0
-                args = (name, n, m, pc)
+                args = (morf.name, n, m, pc)
                 if show_missing:
                     args = args + (readable,)
                 print >>file, fmt_coverage % args
@@ -333,7 +295,7 @@ class coverage:
             except:
                 if not ignore_errors:
                     typ, msg = sys.exc_info()[:2]
-                    print >>file, fmt_err % (name, typ, msg)
+                    print >>file, fmt_err % (morf.name, typ, msg)
         if len(morfs) > 1:
             print >>file, "-" * len(header)
             if total_statements > 0:
@@ -351,11 +313,10 @@ class coverage:
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
     def annotate(self, morfs, directory=None, ignore_errors=False, omit_prefixes=None):
-        if omit_prefixes:
-            morfs = self.filter_by_prefix(morfs, omit_prefixes)
+        morfs = morf_factory(morfs, omit_prefixes)
         for morf in morfs:
             try:
-                filename, statements, excluded, missing, _ = self.analysis2(morf)
+                filename, statements, excluded, missing, _ = self.analysis_engine(morf)
                 self.annotate_file(filename, statements, excluded, missing, directory)
             except KeyboardInterrupt:
                 raise
