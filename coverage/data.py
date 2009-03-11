@@ -102,11 +102,12 @@ class CoverageData:
         for filename, lineno in data_points:
             self.executed.setdefault(filename, {})[lineno] = True
 
+    def executed_files(self):
+        """A list of all files that had been measured as executed."""
+        return self.executed.keys()
+
     def executed_lines(self, filename):
-        """Return a mapping object such that "lineno in obj" is true if that
-        line number had been executed in `filename`.
-        """
-        # TODO: Write a better description.
+        """A map containing all the line numbers executed in `filename`."""
         return self.executed[filename]
 
     def summary(self):

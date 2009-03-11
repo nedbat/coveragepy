@@ -202,6 +202,7 @@ class coverage:
         self.report_engine(morfs, show_missing=show_missing, ignore_errors=ignore_errors, file=file)
 
     def report_engine(self, morfs, show_missing=True, ignore_errors=False, file=None, omit_prefixes=None):
+        morfs = morfs or self.data.executed_files()
         code_units = code_unit_factory(morfs, self.file_locator, omit_prefixes)
         code_units.sort()
 
@@ -257,6 +258,7 @@ class coverage:
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
     def annotate(self, morfs, directory=None, ignore_errors=False, omit_prefixes=None):
+        morfs = morfs or self.data.executed_files()
         code_units = code_unit_factory(morfs, self.file_locator, omit_prefixes)
         for cu in code_units:
             try:

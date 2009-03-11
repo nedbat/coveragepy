@@ -122,10 +122,6 @@ class CoverageScript:
             execfile(sys.argv[0], __main__.__dict__)
         if settings.get('combine'):
             self.coverage.combine()
-        if not args:
-            # For report and annotate, if no files are given on the command
-            # line, then report or annotate everything that was executed.
-            args = self.coverage.data.executed.keys()  # TODO: Yikes!
 
         ignore_errors = settings.get('ignore-errors')
         show_missing = settings.get('show-missing')
