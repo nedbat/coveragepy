@@ -14,7 +14,8 @@ Coverage TODO
 
 + C extension collector
 - Ignore certain modules
-- Tricky swapping of collector like figleaf, pycov, et al.
+x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
+    this with C collector).
 - Seems like there should be a faster way to manage all the line number sets in
     CodeAnalyzer.raw_analyze.
 - If tracing, canonical_filename_cache overlaps with should_trace_cache.  Skip
@@ -63,7 +64,7 @@ Coverage TODO
         - Bare "except:" lines now count as executable code.
         - Double function decorators: all decorator lines count as executable code.
 + Be sure --help text is complete (-i is missing).
-- Host the project somewhere with a real bug tracker, google code I guess.
++ Host the project somewhere with a real bug tracker: bitbucket.org
 - Point discussion to TIP
 - PEP 8 compliance?
 
