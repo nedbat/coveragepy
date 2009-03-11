@@ -5,7 +5,7 @@ import os, re, sys
 from coverage.data import CoverageData
 from coverage.misc import nice_pair, CoverageException
 from coverage.codeunit import code_unit_factory
-from coverage.files import FileWrangler
+from coverage.files import FileLocator
 
 class coverage:
     def __init__(self):
@@ -16,7 +16,7 @@ class coverage:
         self.nesting = 0
         self.cstack = []
         self.xstack = []
-        self.file_wrangler = FileWrangler()
+        self.file_locator = FileLocator()
         
         self.collector = Collector(self.should_trace)
         
@@ -45,7 +45,7 @@ class coverage:
             return False
         # TODO: flag: ignore std lib?
         # TODO: ignore by module as well as file?
-        return self.file_wrangler.canonical_filename(filename)
+        return self.file_locator.canonical_filename(filename)
 
     def use_cache(self, usecache, cache_file=None):
         self.data.usefile(usecache, cache_file)
@@ -123,7 +123,7 @@ class coverage:
             ext = '.py'
         if ext == '.py':
             if not os.path.exists(filename):
-                source = self.file_wrangler.get_zip_data(filename)
+                source = self.file_locator.get_zip_data(filename)
                 if not source:
                     raise CoverageException(
                         "No source for code '%s'." % morf.filename
@@ -172,7 +172,7 @@ class coverage:
         return f, s, m, mf
 
     def analysis2(self, morf):
-        code_units = code_unit_factory(morf, self.file_wrangler)
+        code_units = code_unit_factory(morf, self.file_locator)
         return self.analysis_engine(code_units[0])
 
     def analysis_engine(self, morf):
@@ -202,7 +202,7 @@ class coverage:
         self.report_engine(morfs, show_missing=show_missing, ignore_errors=ignore_errors, file=file)
 
     def report_engine(self, morfs, show_missing=True, ignore_errors=False, file=None, omit_prefixes=None):
-        code_units = code_unit_factory(morfs, self.file_wrangler, omit_prefixes)
+        code_units = code_unit_factory(morfs, self.file_locator, omit_prefixes)
         code_units.sort()
 
         max_name = max(5, max(map(lambda cu: len(cu.name), code_units)))
@@ -257,7 +257,7 @@ class coverage:
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
     def annotate(self, morfs, directory=None, ignore_errors=False, omit_prefixes=None):
-        code_units = code_unit_factory(morfs, self.file_wrangler, omit_prefixes)
+        code_units = code_unit_factory(morfs, self.file_locator, omit_prefixes)
         for cu in code_units:
             try:
                 filename, statements, excluded, missing, _ = self.analysis_engine(cu)

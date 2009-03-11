@@ -2,7 +2,7 @@
 
 import os, sys
 
-class FileWrangler:
+class FileLocator:
     """Understand how filenames work."""
 
     def __init__(self):

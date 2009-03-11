@@ -2,11 +2,11 @@
 
 import glob, os, types
 
-def code_unit_factory(morfs, file_wrangler, omit_prefixes=None):
+def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     """Construct a list of CodeUnits from polymorphic inputs.
     
     `morfs` is a module or a filename, or a list of same.
-    `file_wrangler` is a FileWrangler that can help resolve filenames.
+    `file_locator` is a FileLocator that can help resolve filenames.
     `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
     will be omitted from the list.
     
@@ -27,10 +27,10 @@ def code_unit_factory(morfs, file_wrangler, omit_prefixes=None):
             globbed.append(morf)
     morfs = globbed
 
-    code_units = [CodeUnit(morf, file_wrangler) for morf in morfs]
+    code_units = [CodeUnit(morf, file_locator) for morf in morfs]
     
     if omit_prefixes:
-        prefixes = [file_wrangler.abs_file(p) for p in omit_prefixes]
+        prefixes = [file_locator.abs_file(p) for p in omit_prefixes]
         filtered = []
         for cu in code_units:
             for prefix in prefixes:
@@ -52,18 +52,18 @@ class CodeUnit:
     
     """
 
-    def __init__(self, morf, file_wrangler):
+    def __init__(self, morf, file_locator):
         if hasattr(morf, '__file__'):
             f = morf.__file__
         else:
             f = morf
-        self.filename = file_wrangler.canonical_filename(f)
+        self.filename = file_locator.canonical_filename(f)
 
         if hasattr(morf, '__name__'):
             n = morf.__name__
         else:
             n = os.path.splitext(morf)[0]
-            n = file_wrangler.relative_filename(n)
+            n = file_locator.relative_filename(n)
         self.name = n
 
     def __cmp__(self, other):
