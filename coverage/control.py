@@ -98,24 +98,23 @@ class coverage:
         self.data.add_raw_data(self.collector.data_points())
         self.collector.reset()
 
-    # analyze_morf(morf).  Analyze the module or filename passed as
-    # the argument.  If the source code can't be found, raise an error.
-    # Otherwise, return a tuple of (1) the canonical filename of the
-    # source code for the module, (2) a list of lines of statements
-    # in the source code, (3) a list of lines of excluded statements,
-    # and (4), a map of line numbers to multi-line line number ranges, for
-    # statements that cross lines.
+    def analyze(self, code_unit):
+        """Analyze a single code unit.
+        
+        If the source code can't be found, raise an error.
+        Otherwise, return a tuple of (1) the canonical filename of the
+        source code for the module, (2) a list of lines of statements
+        in the source code, (3) a list of lines of excluded statements,
+        and (4), a map of line numbers to multi-line line number ranges, for
+        statements that cross lines.
 
-    # The word "morf" means a module object (from which the source file can
-    # be deduced by suitable manipulation of the __file__ attribute) or a
-    # filename.
-    
-    def analyze_morf(self, morf):
+        """
+
         from coverage.analyzer import CodeAnalyzer
 
-        if self.analysis_cache.has_key(morf.filename):
-            return self.analysis_cache[morf.filename]
-        filename = morf.filename
+        if self.analysis_cache.has_key(code_unit.filename):
+            return self.analysis_cache[code_unit.filename]
+        filename = code_unit.filename
         ext = os.path.splitext(filename)[1]
         source = None
         if ext == '.pyc':
@@ -126,7 +125,7 @@ class coverage:
                 source = self.file_locator.get_zip_data(filename)
                 if not source:
                     raise CoverageException(
-                        "No source for code '%s'." % morf.filename
+                        "No source for code '%s'." % code_unit.filename
                         )
 
         analyzer = CodeAnalyzer()
@@ -135,7 +134,7 @@ class coverage:
             )
 
         result = filename, lines, excluded_lines, line_map
-        self.analysis_cache[morf.filename] = result
+        self.analysis_cache[code_unit.filename] = result
         return result
 
     # format_lines(statements, lines).  Format a list of line numbers
@@ -175,8 +174,8 @@ class coverage:
         code_units = code_unit_factory(morf, self.file_locator)
         return self.analysis_engine(code_units[0])
 
-    def analysis_engine(self, morf):
-        filename, statements, excluded, line_map = self.analyze_morf(morf)
+    def analysis_engine(self, code_unit):
+        filename, statements, excluded, line_map = self.analyze(code_unit)
         self.group_collected_data()
         
         # Identify missing statements.
