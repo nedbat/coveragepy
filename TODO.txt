@@ -102,6 +102,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 * Tests
 
+- Switch to a real test runner, like nose.
 - Tests about the .coverage file.
 - Tests about the --long-form of arguments.
 - Tests about overriding the .coverage filename.
@@ -111,3 +112,4 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Coverage test coverage.py!
 - Tests that tracing stops after calling stop()
 - More intensive thread testing.
+- Tests about the "import __main__" in cmdline.py

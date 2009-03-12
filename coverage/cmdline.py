@@ -112,14 +112,18 @@ class CoverageScript:
 
         if settings.get('erase'):
             self.coverage.erase()
+        
         if settings.get('execute'):
             if not args:
                 help_fn("Nothing to do.")
+            # Create the runtime environment the script on the cmdline expects.
             sys.argv = args
-            self.coverage.start()
-            import __main__
             sys.path[0] = os.path.dirname(sys.argv[0])
+            import __main__ # TODO: I think this is useless...
+            self.coverage.start()
             execfile(sys.argv[0], __main__.__dict__)
+            self.coverage.stop()
+        
         if settings.get('combine'):
             self.coverage.combine()
 
