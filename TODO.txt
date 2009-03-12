@@ -77,7 +77,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     + Use sets instead of dicts
 - Get rid of the recursive nonsense.
 - Docstrings.
-- Remove huge document-style comments.
++ Remove huge document-style comments.
 + Remove singleton
     + Initialization of instance variables in the class.
 - Better names:

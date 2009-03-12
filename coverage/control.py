@@ -137,14 +137,18 @@ class coverage:
         self.analysis_cache[code_unit.filename] = result
         return result
 
-    # format_lines(statements, lines).  Format a list of line numbers
-    # for printing by coalescing groups of lines as long as the lines
-    # represent consecutive statements.  This will coalesce even if
-    # there are gaps between statements, so if statements =
-    # [1,2,3,4,5,10,11,12,13,14] and lines = [1,2,5,10,11,13,14] then
-    # format_lines will return "1-2, 5-11, 13-14".
-
     def format_lines(self, statements, lines):
+        """Nicely format a list of line numbers.
+
+        Format a list of line numbers for printing by coalescing groups of
+        lines as long as the lines represent consecutive statements.  This will
+        coalesce even if there are gaps between statements.
+        
+        For example, if `statements` is [1,2,3,4,5,10,11,12,13,14] and
+        `lines` is [1,2,5,10,11,13,14] then the result will be "1-2, 5-11, 13-14".
+        
+        """
+        
         pairs = []
         i = 0
         j = 0
