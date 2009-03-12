@@ -113,3 +113,4 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Tests that tracing stops after calling stop()
 - More intensive thread testing.
 - Tests about the "import __main__" in cmdline.py
+- What happens if the -x script raises an exception?
