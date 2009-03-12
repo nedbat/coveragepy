@@ -198,9 +198,9 @@ class coverage:
 
     # Programmatic entry point
     def report(self, morfs, show_missing=True, ignore_errors=False, file=None):
-        self.report_engine(morfs, show_missing=show_missing, ignore_errors=ignore_errors, file=file)
+        self.report_engine(morfs, show_missing=show_missing, ignore_errors=ignore_errors, outfile=file)
 
-    def report_engine(self, morfs, show_missing=True, ignore_errors=False, file=None, omit_prefixes=None):
+    def report_engine(self, morfs, show_missing=True, ignore_errors=False, outfile=None, omit_prefixes=None):
         morfs = morfs or self.data.executed_files()
         code_units = code_unit_factory(morfs, self.file_locator, omit_prefixes)
         code_units.sort()
@@ -213,10 +213,10 @@ class coverage:
         if show_missing:
             header = header + "   Missing"
             fmt_coverage = fmt_coverage + "   %s"
-        if not file:
-            file = sys.stdout
-        print >>file, header
-        print >>file, "-" * len(header)
+        if not outfile:
+            outfile = sys.stdout
+        print >>outfile, header
+        print >>outfile, "-" * len(header)
         total_statements = 0
         total_executed = 0
         for cu in code_units:
@@ -231,7 +231,7 @@ class coverage:
                 args = (cu.name, n, m, pc)
                 if show_missing:
                     args = args + (readable,)
-                print >>file, fmt_coverage % args
+                print >>outfile, fmt_coverage % args
                 total_statements = total_statements + n
                 total_executed = total_executed + m
             except KeyboardInterrupt:                       #pragma: no cover
@@ -239,9 +239,9 @@ class coverage:
             except:
                 if not ignore_errors:
                     typ, msg = sys.exc_info()[:2]
-                    print >>file, fmt_err % (cu.name, typ, msg)
+                    print >>outfile, fmt_err % (cu.name, typ, msg)
         if len(code_units) > 1:
-            print >>file, "-" * len(header)
+            print >>outfile, "-" * len(header)
             if total_statements > 0:
                 pc = 100.0 * total_executed / total_statements
             else:
@@ -249,7 +249,7 @@ class coverage:
             args = ("TOTAL", total_statements, total_executed, pc)
             if show_missing:
                 args = args + ("",)
-            print >>file, fmt_coverage % args
+            print >>outfile, fmt_coverage % args
 
     # annotate(morfs, ignore_errors).
 
