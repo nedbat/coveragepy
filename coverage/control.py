@@ -1,7 +1,8 @@
 """Core control stuff for coverage.py"""
 
-import os, re, sys
+import os
 
+from coverage.annotate import AnnotateReporter
 from coverage.codeunit import code_unit_factory
 from coverage.data import CoverageData
 from coverage.files import FileLocator
@@ -162,66 +163,14 @@ class coverage:
         reporter = SummaryReporter(self, show_missing, ignore_errors)
         reporter.report(morfs, outfile=file)
 
-    # annotate(morfs, ignore_errors).
-
-    blank_re = re.compile(r"\s*(#|$)")
-    else_re = re.compile(r"\s*else\s*:\s*(#|$)")
-
-    def annotate(self, morfs, directory=None, ignore_errors=False, omit_prefixes=None):
-        morfs = morfs or self.data.executed_files()
-        code_units = code_unit_factory(morfs, self.file_locator, omit_prefixes)
-        for cu in code_units:
-            try:
-                filename, statements, excluded, missing, _ = self.analyze(cu)
-                self.annotate_file(filename, statements, excluded, missing, directory)
-            except KeyboardInterrupt:
-                raise
-            except:
-                if not ignore_errors:
-                    raise
-                
-    def annotate_file(self, filename, statements, excluded, missing, directory=None):
-        source = open(filename, 'r')
-        if directory:
-            dest_file = os.path.join(directory,
-                                     os.path.basename(filename)
-                                     + ',cover')
-        else:
-            dest_file = filename + ',cover'
-        dest = open(dest_file, 'w')
-        lineno = 0
-        i = 0
-        j = 0
-        covered = True
-        while True:
-            line = source.readline()
-            if line == '':
-                break
-            lineno = lineno + 1
-            while i < len(statements) and statements[i] < lineno:
-                i = i + 1
-            while j < len(missing) and missing[j] < lineno:
-                j = j + 1
-            if i < len(statements) and statements[i] == lineno:
-                covered = j >= len(missing) or missing[j] > lineno
-            if self.blank_re.match(line):
-                dest.write('  ')
-            elif self.else_re.match(line):
-                # Special logic for lines containing only 'else:'.  
-                if i >= len(statements) and j >= len(missing):
-                    dest.write('! ')
-                elif i >= len(statements) or j >= len(missing):
-                    dest.write('> ')
-                elif statements[i] == missing[j]:
-                    dest.write('! ')
-                else:
-                    dest.write('> ')
-            elif lineno in excluded:
-                dest.write('- ')
-            elif covered:
-                dest.write('> ')
-            else:
-                dest.write('! ')
-            dest.write(line)
-        source.close()
-        dest.close()
+    def annotate(self, morfs, directory=None, ignore_errors=False):
+        """Annotate a list of modules.
+        
+        Each module in `morfs` is annotated.  The source is written to a new
+        file, named with a ",cover" suffix, with each line prefixed with a
+        marker to indicate the coverage of the line.  Covered lines have ">",
+        excluded lines have "-", and missing lines have "!".
+        
+        """
+        reporter = AnnotateReporter(self, ignore_errors)
+        reporter.report(morfs, directory)

@@ -8,15 +8,15 @@ class SummaryReporter:
     """A reporter for writing the summary report."""
     
     def __init__(self, coverage, show_missing=True, ignore_errors=False):
-        self.cov = coverage
+        self.coverage = coverage
         self.show_missing = show_missing
         self.ignore_errors = ignore_errors
 
     def report(self, morfs, omit_prefixes=None, outfile=None):
         """Writes a report summarizing coverage statistics per module."""
         
-        morfs = morfs or self.cov.data.executed_files()
-        code_units = code_unit_factory(morfs, self.cov.file_locator, omit_prefixes)
+        morfs = morfs or self.coverage.data.executed_files()
+        code_units = code_unit_factory(morfs, self.coverage.file_locator, omit_prefixes)
         code_units.sort()
 
         max_name = max(5, max(map(lambda cu: len(cu.name), code_units)))
@@ -35,7 +35,7 @@ class SummaryReporter:
         total_executed = 0
         for cu in code_units:
             try:
-                _, statements, _, missing, readable = self.cov.analyze(cu)
+                _, statements, _, missing, readable = self.coverage.analyze(cu)
                 n = len(statements)
                 m = n - len(missing)
                 if n > 0:

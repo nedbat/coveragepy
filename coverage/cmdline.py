@@ -2,6 +2,7 @@
 
 import getopt, os, sys
 
+from coverage.annotate import AnnotateReporter
 from coverage.summary import SummaryReporter
 
 USAGE = r"""
@@ -141,7 +142,8 @@ class CoverageScript:
             reporter = SummaryReporter(self.coverage, show_missing, ignore_errors)
             reporter.report(args, omit_prefixes=omit)
         if settings.get('annotate'):
-            self.coverage.annotate(args, directory, ignore_errors, omit_prefixes=omit)
+            reporter = AnnotateReporter(self.coverage, ignore_errors)
+            reporter.report(args, directory, omit_prefixes=omit)
 
     
 # Main entrypoint.  This is installed as the script entrypoint, so don't

@@ -7,7 +7,8 @@ Version 3.0b2
 
 Continued refactoring.
 
-- 
+- coverage.annotate_file is no longer available.
+
 
 Version 3.0b1
 -------------
