@@ -2,6 +2,8 @@
 
 import getopt, os, sys
 
+from coverage.summary import SummaryReporter
+
 USAGE = r"""
 Coverage version %(__version__)s
 
@@ -136,7 +138,8 @@ class CoverageScript:
             omit = omit.split(',')
         
         if settings.get('report'):
-            self.coverage.report_engine(args, show_missing, ignore_errors, omit_prefixes=omit)
+            reporter = SummaryReporter(self.coverage, show_missing, ignore_errors)
+            reporter.report(args, omit_prefixes=omit)
         if settings.get('annotate'):
             self.coverage.annotate(args, directory, ignore_errors, omit_prefixes=omit)
 
