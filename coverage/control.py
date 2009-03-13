@@ -152,8 +152,13 @@ class coverage:
         return (filename, statements, excluded, missing,
                     format_lines(statements, missing))
 
-    # Programmatic entry point
     def report(self, morfs, show_missing=True, ignore_errors=False, file=None):
+        """Write a summary report to `file`.
+        
+        Each module in `morfs` is listed, with counts of statements, executed
+        statements, missing statements, and a list of lines missed.
+        
+        """
         reporter = SummaryReporter(self, show_missing, ignore_errors)
         reporter.report(morfs, outfile=file)
 
