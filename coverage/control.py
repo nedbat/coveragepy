@@ -22,10 +22,6 @@ class coverage:
         
         self.data = CoverageData()
     
-        # Cache of results of calling the analysis2() method, so that you can
-        # specify both -r and -a without doing double work.
-        self.analysis_cache = {}
-    
         # The default exclude pattern.
         self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')
 
@@ -53,7 +49,6 @@ class coverage:
     def get_ready(self):
         self.collector.reset()
         self.data.read(parallel=self.parallel_mode)
-        self.analysis_cache = {}
         
     def start(self):
         self.get_ready()
@@ -69,7 +64,6 @@ class coverage:
     def erase(self):
         self.get_ready()
         self.collector.reset()
-        self.analysis_cache = {}
         self.data.erase()
 
     def exclude(self, regex):
@@ -98,22 +92,26 @@ class coverage:
         self.data.add_raw_data(self.collector.data_points())
         self.collector.reset()
 
+    # Backward compatibility with version 1.
+    def analysis(self, morf):
+        f, s, _, m, mf = self.analysis2(morf)
+        return f, s, m, mf
+
+    def analysis2(self, morf):
+        code_units = code_unit_factory(morf, self.file_locator)
+        return self.analyze(code_units[0])
+
     def analyze(self, code_unit):
         """Analyze a single code unit.
         
-        If the source code can't be found, raise an error.
-        Otherwise, return a tuple of (1) the canonical filename of the
-        source code for the module, (2) a list of lines of statements
-        in the source code, (3) a list of lines of excluded statements,
-        and (4), a map of line numbers to multi-line line number ranges, for
-        statements that cross lines.
+        Otherwise, return a tuple of (1) the canonical filename of the source
+        code for the module, (2) a list of lines of statements in the source
+        code, (3) a list of lines of excluded statements, (4) a list of lines
+        missing from execution, and (5), a readable string of missing lines.
 
         """
-
         from coverage.analyzer import CodeAnalyzer
 
-        if self.analysis_cache.has_key(code_unit.filename):
-            return self.analysis_cache[code_unit.filename]
         filename = code_unit.filename
         ext = os.path.splitext(filename)[1]
         source = None
@@ -129,25 +127,10 @@ class coverage:
                         )
 
         analyzer = CodeAnalyzer()
-        lines, excluded_lines, line_map = analyzer.analyze_source(
+        statements, excluded, line_map = analyzer.analyze_source(
             text=source, filename=filename, exclude=self.exclude_re
             )
 
-        result = filename, lines, excluded_lines, line_map
-        self.analysis_cache[code_unit.filename] = result
-        return result
-
-    # Backward compatibility with version 1.
-    def analysis(self, morf):
-        f, s, _, m, mf = self.analysis2(morf)
-        return f, s, m, mf
-
-    def analysis2(self, morf):
-        code_units = code_unit_factory(morf, self.file_locator)
-        return self.analysis_engine(code_units[0])
-
-    def analysis_engine(self, code_unit):
-        filename, statements, excluded, line_map = self.analyze(code_unit)
         self.group_collected_data()
         
         # Identify missing statements.
@@ -193,7 +176,7 @@ class coverage:
         total_executed = 0
         for cu in code_units:
             try:
-                _, statements, _, missing, readable = self.analysis_engine(cu)
+                _, statements, _, missing, readable = self.analyze(cu)
                 n = len(statements)
                 m = n - len(missing)
                 if n > 0:
@@ -233,7 +216,7 @@ class coverage:
         code_units = code_unit_factory(morfs, self.file_locator, omit_prefixes)
         for cu in code_units:
             try:
-                filename, statements, excluded, missing, _ = self.analysis_engine(cu)
+                filename, statements, excluded, missing, _ = self.analyze(cu)
                 self.annotate_file(filename, statements, excluded, missing, directory)
             except KeyboardInterrupt:
                 raise
