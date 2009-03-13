@@ -1,4 +1,4 @@
-"""Code analysis for coverage.py"""
+"""Code parsing for coverage.py"""
 
 import re, token, tokenize, types
 import cStringIO as StringIO
@@ -14,13 +14,13 @@ except NameError:
     set = sets.Set      # pylint: disable-msg=W0622
     
 
-class CodeAnalyzer:
-    """Analyze code to find executable lines, excluded lines, etc."""
+class CodeParser:
+    """Parse code to find executable lines, excluded lines, etc."""
     
     def __init__(self, show_tokens=False):
         self.show_tokens = show_tokens
 
-        # The text lines of the analyzed code.
+        # The text lines of the parsed code.
         self.lines = None
 
         # The line numbers of excluded lines of code.
@@ -75,8 +75,8 @@ class CodeAnalyzer:
                 # Found another code object, so recurse into it.
                 self.find_statements(c)
 
-    def raw_analyze(self, text=None, filename=None, exclude=None):
-        """Analyze `text` to find the interesting facts about its lines.
+    def raw_parse(self, text=None, filename=None, exclude=None):
+        """Parse `text` to find the interesting facts about its lines.
         
         A handful of member fields are updated.
         
@@ -190,8 +190,8 @@ class CodeAnalyzer:
         lines.sort()
         return lines
     
-    def analyze_source(self, text=None, filename=None, exclude=None):
-        """Analyze source text to find executable lines, excluded lines, etc.
+    def parse_source(self, text=None, filename=None, exclude=None):
+        """Parse source text to find executable lines, excluded lines, etc.
         
         Source can be provided as `text`, the text itself, or `filename`, from
         which text will be read.  Excluded lines are those that match `exclude`,
@@ -202,7 +202,7 @@ class CodeAnalyzer:
         numbers to pairs (lo,hi) for multi-line statements.
         
         """
-        self.raw_analyze(text, filename, exclude)
+        self.raw_parse(text, filename, exclude)
         
         excluded_lines = self.map_to_first_line(self.excluded)
         ignore = excluded_lines + list(self.docstrings)
@@ -210,8 +210,8 @@ class CodeAnalyzer:
     
         return lines, excluded_lines, self.multiline
 
-    def print_analysis(self):
-        """Print the results of the analysis."""
+    def print_parse_results(self):
+        """Print the results of the parsing."""
         for i, ltext in enumerate(self.lines):
             lineno = i+1
             m0 = m1 = m2 = ' '
@@ -227,6 +227,6 @@ class CodeAnalyzer:
 if __name__ == '__main__':
     import sys
     
-    analyzer = CodeAnalyzer(show_tokens=True)
-    analyzer.raw_analyze(filename=sys.argv[1], exclude=r"no\s*cover")
-    analyzer.print_analysis()
+    parser = CodeParser(show_tokens=True)
+    parser.raw_parse(filename=sys.argv[1], exclude=r"no\s*cover")
+    parser.print_parse_results()

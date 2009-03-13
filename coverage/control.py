@@ -112,7 +112,7 @@ class coverage:
         missing from execution, and (5), a readable string of missing lines.
 
         """
-        from coverage.analyzer import CodeAnalyzer
+        from coverage.parser import CodeParser
 
         filename = code_unit.filename
         ext = os.path.splitext(filename)[1]
@@ -128,8 +128,8 @@ class coverage:
                         "No source for code '%s'." % code_unit.filename
                         )
 
-        analyzer = CodeAnalyzer()
-        statements, excluded, line_map = analyzer.analyze_source(
+        parser = CodeParser()
+        statements, excluded, line_map = parser.parse_source(
             text=source, filename=filename, exclude=self.exclude_re
             )
 
