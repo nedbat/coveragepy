@@ -2,12 +2,11 @@
 
 import os, re
 
-from coverage.codeunit import code_unit_factory
+from coverage.report import Reporter
 
-class AnnotateReporter:
+class AnnotateReporter(Reporter):
     def __init__(self, coverage, ignore_errors=False):
-        self.coverage = coverage
-        self.ignore_errors = ignore_errors
+        super(AnnotateReporter, self).__init__(coverage, ignore_errors)
         
         self.directory = None
         
@@ -15,10 +14,10 @@ class AnnotateReporter:
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
     def report(self, morfs, directory=None, omit_prefixes=None):
-        morfs = morfs or self.coverage.data.executed_files()
-        code_units = code_unit_factory(morfs, self.coverage.file_locator, omit_prefixes)
+        self.find_code_units(morfs, omit_prefixes)
+
         self.directory = directory
-        for cu in code_units:
+        for cu in self.code_units:
             try:
                 filename, statements, excluded, missing, _ = self.coverage.analyze(cu)
                 self.annotate_file(filename, statements, excluded, missing)
