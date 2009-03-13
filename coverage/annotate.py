@@ -19,8 +19,8 @@ class AnnotateReporter(Reporter):
         self.directory = directory
         for cu in self.code_units:
             try:
-                filename, statements, excluded, missing, _ = self.coverage.analyze(cu)
-                self.annotate_file(filename, statements, excluded, missing)
+                statements, excluded, missing, _ = self.coverage.analyze(cu)
+                self.annotate_file(cu.filename, statements, excluded, missing)
             except KeyboardInterrupt:
                 raise
             except:

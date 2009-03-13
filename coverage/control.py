@@ -100,16 +100,18 @@ class coverage:
         return f, s, m, mf
 
     def analysis2(self, morf):
-        code_units = code_unit_factory(morf, self.file_locator)
-        return self.analyze(code_units[0])
+        code_unit = code_unit_factory(morf, self.file_locator)[0]
+        st, ex, m, mf = self.analyze(code_unit)
+        return code_unit.filename, st, ex, m, mf
 
     def analyze(self, code_unit):
         """Analyze a single code unit.
         
-        Otherwise, return a tuple of (1) the canonical filename of the source
-        code for the module, (2) a list of lines of statements in the source
-        code, (3) a list of lines of excluded statements, (4) a list of lines
-        missing from execution, and (5), a readable string of missing lines.
+        Returns a tuple of:
+        - a list of lines of statements in the source code,
+        - a list of lines of excluded statements,
+        - a list of lines missing from execution, and
+        - a readable string of missing lines.
 
         """
         from coverage.parser import CodeParser
@@ -149,9 +151,8 @@ class coverage:
             else:
                 if line not in execed:
                     missing.append(line)
-                    
-        return (filename, statements, excluded, missing,
-                    format_lines(statements, missing))
+
+        return (statements, excluded, missing, format_lines(statements, missing))
 
     def report(self, morfs, show_missing=True, ignore_errors=False, file=None):
         """Write a summary report to `file`.
