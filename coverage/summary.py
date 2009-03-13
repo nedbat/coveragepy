@@ -21,16 +21,17 @@ class SummaryReporter:
 
         max_name = max(5, max(map(lambda cu: len(cu.name), code_units)))
         fmt_name = "%%- %ds  " % max_name
-        fmt_err = fmt_name + "%s: %s"
-        header = fmt_name % "Name" + " Stmts   Exec  Cover"
-        fmt_coverage = fmt_name + "% 6d % 6d % 5d%%"
+        fmt_err = fmt_name + "%s: %s\n"
+        header = fmt_name % "Name" + " Stmts   Exec  Cover\n"
+        fmt_coverage = fmt_name + "% 6d % 6d % 5d%%\n"
         if self.show_missing:
-            header = header + "   Missing"
-            fmt_coverage = fmt_coverage + "   %s"
+            header = header.replace("\n", "   Missing\n")
+            fmt_coverage = fmt_coverage.replace("\n", "   %s\n")
         if not outfile:
             outfile = sys.stdout
-        print >>outfile, header
-        print >>outfile, "-" * len(header)
+        rule = "-" * (len(header)-1) + "\n"
+        outfile.write(header)
+        outfile.write(rule)
         total_statements = 0
         total_executed = 0
         for cu in code_units:
@@ -45,7 +46,7 @@ class SummaryReporter:
                 args = (cu.name, n, m, pc)
                 if self.show_missing:
                     args = args + (readable,)
-                print >>outfile, fmt_coverage % args
+                outfile.write(fmt_coverage % args)
                 total_statements = total_statements + n
                 total_executed = total_executed + m
             except KeyboardInterrupt:                       #pragma: no cover
@@ -53,9 +54,9 @@ class SummaryReporter:
             except:
                 if not self.ignore_errors:
                     typ, msg = sys.exc_info()[:2]
-                    print >>outfile, fmt_err % (cu.name, typ, msg)
+                    outfile.write(fmt_err % (cu.name, typ, msg))
         if len(code_units) > 1:
-            print >>outfile, "-" * len(header)
+            outfile.write(rule)
             if total_statements > 0:
                 pc = 100.0 * total_executed / total_statements
             else:
@@ -63,4 +64,4 @@ class SummaryReporter:
             args = ("TOTAL", total_statements, total_executed, pc)
             if self.show_missing:
                 args = args + ("",)
-            print >>outfile, fmt_coverage % args
+            outfile.write(fmt_coverage % args)
