@@ -1822,11 +1822,6 @@ class ApiTests(CoverageTest):
             """))
 
 
-class AnnotationTests(CoverageTest):
-    def testWhite(self):
-        self.checkEverything(file='test/white.py', annfile='test/white.py,cover')
-
-
 class CmdLineTests(CoverageTest):
     def help_fn(self, error=None):
         raise Exception(error or "__doc__")

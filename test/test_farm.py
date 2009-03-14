@@ -21,10 +21,10 @@ class FarmTestCase(object):
         return cwd
 
     def execute(self):
-        print "Running", self.runpy, "in", self.dir
         cwd = self.cd(self.dir)
 
-        glo = dict([(a, getattr(self, a)) for a in "run compare clean".split()])
+        fns = "copy run compare clean".split()
+        glo = dict([(fn, getattr(self, fn)) for fn in fns])
         execfile(self.runpy, glo)
 
         self.cd(cwd)
@@ -36,6 +36,12 @@ class FarmTestCase(object):
 
     # Functions usable inside farm run.py files
     
+    def copy(self, src, dst):
+        """Copy a directory."""
+
+        shutil.rmtree(dst, ignore_errors=True)
+        shutil.copytree(src, dst)
+
     def run(self, cmds, rundir="src"):
         """Run a list of commands.
         
@@ -52,8 +58,12 @@ class FarmTestCase(object):
 
     def compare(self, dir1, dir2, filepattern=None):
         dc = filecmp.dircmp(dir1, dir2)
-        
-        pass
+        diff_files = self.fnmatch_list(dc.diff_files, filepattern)
+        left_only = self.fnmatch_list(dc.left_only, filepattern)
+        right_only = self.fnmatch_list(dc.right_only, filepattern)
+        assert not diff_files, "Files differ: %s" % (diff_files)
+        assert not left_only, "Files in %s only: %s" % (dir1, left_only)
+        assert not right_only, "Files in %s only: %s" % (dir2, right_only)
 
     def clean(self, cleandir):
         shutil.rmtree(cleandir)

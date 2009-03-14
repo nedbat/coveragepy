@@ -1,7 +1,7 @@
-clean("src", "*,cover")
+copy("src", "out")
 run("""
     coverage -x white.py
     coverage -a white.py
-    """)
-compare("src", "gold", "*,cover")
-clean("src", "*,cover")
+    """, rundir="out")
+compare("out", "gold", "*,cover")
+clean("out")
