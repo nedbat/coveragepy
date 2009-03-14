@@ -102,6 +102,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 * Tests
 
 + Switch to a real test runner, like nose.
+- Test both the C trace function and the Python trace function.
 - Tests about the .coverage file.
 - Tests about the --long-form of arguments.
 - Tests about overriding the .coverage filename.
