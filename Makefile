@@ -24,7 +24,7 @@ lint: clean
 	python checkeol.py
 
 tests: $(TEST_ZIP)
-	python test_coverage.py
+	nosetests
 
 $(TEST_ZIP): test/covmodzip1.py
 	zip -j $@ $+
