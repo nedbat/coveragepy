@@ -45,6 +45,7 @@ Coverage data is saved in the file .coverage by default.  Set the
 COVERAGE_FILE environment variable to save it somewhere else.
 """.strip()
 
+
 class CoverageScript:
     def __init__(self):
         import coverage
@@ -56,11 +57,11 @@ class CoverageScript:
             print error
             print
         print USAGE % self.covpkg.__dict__
-        sys.exit(1)
 
     def command_line(self, argv, help_fn=None):
         # Collect the command-line options.
         help_fn = help_fn or self.help
+        OK, ERR = 0, 1
         settings = {}
         optmap = {
             '-a': 'annotate',
@@ -90,6 +91,7 @@ class CoverageScript:
 
         if settings.get('help'):
             help_fn()
+            return OK
 
         # Check for conflicts and problems in the options.
         for i in ['erase', 'execute']:
@@ -97,6 +99,7 @@ class CoverageScript:
                 if settings.get(i) and settings.get(j):
                     help_fn("You can't specify the '%s' and '%s' "
                               "options at the same time." % (i, j))
+                    return ERR
 
         args_needed = (settings.get('execute')
                        or settings.get('annotate')
@@ -106,8 +109,10 @@ class CoverageScript:
                   or args_needed)
         if not action:
             help_fn("You must specify at least one of -e, -x, -c, -r, or -a.")
+            return ERR
         if not args_needed and args:
             help_fn("Unexpected arguments: %s" % " ".join(args))
+            return ERR
         
         # Do something.
         self.coverage.parallel_mode = settings.get('parallel-mode')
@@ -119,6 +124,7 @@ class CoverageScript:
         if settings.get('execute'):
             if not args:
                 help_fn("Nothing to do.")
+                return ERR
             # Create the runtime environment the script on the cmdline expects.
             sys.argv = args
             sys.path[0] = os.path.dirname(sys.argv[0])
@@ -144,9 +150,10 @@ class CoverageScript:
         if settings.get('annotate'):
             reporter = AnnotateReporter(self.coverage, ignore_errors)
             reporter.report(args, directory, omit_prefixes=omit)
-
+        
+        return OK
     
 # Main entrypoint.  This is installed as the script entrypoint, so don't
 # refactor it away...
 def main():
-    CoverageScript().command_line(sys.argv[1:])
+    return CoverageScript().command_line(sys.argv[1:])
