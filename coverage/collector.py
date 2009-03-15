@@ -27,7 +27,7 @@ except ImportError:
                     return self._local_trace
                 else:
                     return None
-            return self.trace
+            return self._global_trace
 
         def _local_trace(self, frame, event, arg_unused):
             if event == 'line':
