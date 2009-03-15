@@ -24,7 +24,7 @@ lint: clean
 	python /Python25/Lib/tabnanny.py coverage
 	python checkeol.py
 
-tests: $(TEST_ZIP)
+tests: $(TEST_ZIP) devinst
 	nosetests
 
 $(TEST_ZIP): test/covmodzip1.py
@@ -49,7 +49,9 @@ pypi:
 install:
 	python setup.py install
 
-devinst:
+DEVINST_FILE = coverage.egg-info/PKG-INFO
+devinst: $(DEVINST_FILE)
+$(DEVINST_FILE): 
 	python setup.py develop
 
 uninstall:
