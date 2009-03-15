@@ -50,7 +50,8 @@ class FarmTestCase(object):
     def copy(self, src, dst):
         """Copy a directory."""
 
-        shutil.rmtree(dst, ignore_errors=True)
+        if os.path.exists(dst):
+            shutil.rmtree(dst)
         shutil.copytree(src, dst)
 
     def run(self, cmds, rundir="src"):
@@ -77,7 +78,8 @@ class FarmTestCase(object):
         assert not right_only, "Files in %s only: %s" % (dir2, right_only)
 
     def clean(self, cleandir):
-        shutil.rmtree(cleandir)
+        if os.path.exists(cleandir):
+            shutil.rmtree(cleandir)
 
 
 # So that we can run just one farm run.py at a time.
