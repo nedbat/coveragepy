@@ -3,6 +3,11 @@
 import filecmp, fnmatch, glob, os, shutil, sys
 from coverage.files import FileLocator
 
+try:
+    import subprocess
+except ImportError:
+    subprocess = None
+
 
 def test_farm(clean_only=False):
     """A test-generating function for nose to find and run."""
@@ -12,9 +17,10 @@ def test_farm(clean_only=False):
 
 
 class FarmTestCase(object):
-    def __init__(self, runpy, clean_only=False):
+    def __init__(self, runpy, clean_only=False, dont_clean=False):
         self.dir, self.runpy = os.path.split(runpy)
         self.clean_only = clean_only
+        self.dont_clean = dont_clean
 
     def cd(self, newdir):
         cwd = os.getcwd()
@@ -31,15 +37,21 @@ class FarmTestCase(object):
             glo['clean'] = self.clean
         else:
             glo = dict([(fn, getattr(self, fn)) for fn in fns])
-        
+            if self.dont_clean:
+                glo['clean'] = self.noop
+                
         execfile(self.runpy, glo)
 
         self.cd(cwd)
 
     def fnmatch_list(self, files, filepattern):
-        """Filter the list of `files` to only those that match `filepattern`."""
+        """Filter the list of `files` to only those that match `filepattern`.
         
-        return [f for f in files if fnmatch.fnmatch(f, filepattern)]
+        Returns a string naming the filtered files.
+        
+        """
+        files = [f for f in files if fnmatch.fnmatch(f, filepattern)]
+        return ", ".join(files)
 
     # Functions usable inside farm run.py files
     
@@ -63,9 +75,19 @@ class FarmTestCase(object):
         """
         cwd = self.cd(rundir)
         for cmd in cmds.split("\n"):
-            stdin, stdouterr = os.popen4(cmd)
-            output = stdouterr.read()
+            if subprocess:
+                proc = subprocess.Popen(cmd, shell=True, 
+                          stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                          stderr=subprocess.STDOUT)
+                retcode = proc.wait()
+                output = proc.stdout.read()
+            else:
+                stdin, stdouterr = os.popen4(cmd)
+                output = stdouterr.read()
+                retcode = 0 # Can't tell if the process failed.
             print output,
+            if retcode:
+                raise Exception("command exited abnormally")
         self.cd(cwd)
 
     def compare(self, dir1, dir2, filepattern=None):
@@ -86,10 +108,16 @@ class FarmTestCase(object):
 if __name__ == '__main__':
     op = sys.argv[1]
     if op == 'run':
+        # Run the test for real.
         case = FarmTestCase(sys.argv[2])
         case.execute()
+    if op == 'out':
+        # Run the test, but don't clean up, so we can examine the output.
+        case = FarmTestCase(sys.argv[2], dont_clean=True)
+        case.execute()
     elif op == 'clean':
+        # Run all the tests, but just clean.
         for test in test_farm(clean_only=True):
             test[0](*test[1:])
     else:
-        print "Need an operation: run, clean"
+        print "Need an operation: run, out, clean"
