@@ -69,22 +69,11 @@ class CoverageTest(unittest.TestCase):
         return modname
     
     def checkCoverage(self, text, lines, missing="", excludes=[], report=""):
-        self.checkEverything(text=text, lines=lines, missing=missing, excludes=excludes, report=report)
-        
-    def checkEverything(self, text=None, file=None, lines=None, missing=None, 
-            excludes=[], report="", annfile=None):
-        assert text or file
-        assert not (text and file)
-        
         # We write the code into a file so that we can import it.
         # coverage.py wants to deal with things as modules with file names.
         modname = self.getModuleName()
         
-        if text:
-            self.makeFile(modname, text)
-        elif file:
-            p = path.path(self.olddir) / file
-            p.copyfile(modname + '.py')
+        self.makeFile(modname, text)
 
         # Start up coverage.py
         coverage.erase()
@@ -127,25 +116,6 @@ class CoverageTest(unittest.TestCase):
             coverage.report(mod, file=frep)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
             self.assertEqual(report, rep)
-
-        if annfile:
-            # Run annotate.
-            coverage.annotate([modname+'.py'])
-            expect = (path.path(self.olddir) / annfile).text()
-            actual = path.path(modname + '.py,cover').text()
-            # Write the actual results into a file for comparison.
-            out = path.path(self.olddir) / (annfile + "_actual_%s%s" % (sys.version_info[:2]))
-            # Check if the results are right
-            if expect == actual:
-                # They are right: delete the old test results if they are still
-                # around.
-                if out.exists():
-                    out.remove()
-            else:
-                # The results are wrong: write them out so we can diff them to
-                # see what happened.
-                out.write_text(actual)
-                self.fail("Annotation is incorrect: %s" % out)
 
     def assertRaisesMsg(self, excClass, msg, callableObj, *args, **kwargs):
         """ Just like unittest.TestCase.assertRaises,
