@@ -4,17 +4,18 @@ import filecmp, fnmatch, glob, os, shutil, sys
 from coverage.files import FileLocator
 
 
-def test_farm():
+def test_farm(clean_only=False):
     """A test-generating function for nose to find and run."""
     for fname in glob.glob("test/farm/*/*.py"):
-        case = FarmTestCase(fname)
+        case = FarmTestCase(fname, clean_only)
         yield (case.execute,)
 
-   
+
 class FarmTestCase(object):
-    def __init__(self, runpy):
+    def __init__(self, runpy, clean_only=False):
         self.dir, self.runpy = os.path.split(runpy)
-        
+        self.clean_only = clean_only
+
     def cd(self, newdir):
         cwd = os.getcwd()
         os.chdir(newdir)
@@ -23,8 +24,14 @@ class FarmTestCase(object):
     def execute(self):
         cwd = self.cd(self.dir)
 
+        # Prepare a dictionary of globals for the run.py files to use.
         fns = "copy run compare clean".split()
-        glo = dict([(fn, getattr(self, fn)) for fn in fns])
+        if self.clean_only:
+            glo = dict([(fn, self.noop) for fn in fns])
+            glo['clean'] = self.clean
+        else:
+            glo = dict([(fn, getattr(self, fn)) for fn in fns])
+        
         execfile(self.runpy, glo)
 
         self.cd(cwd)
@@ -35,6 +42,10 @@ class FarmTestCase(object):
         return [f for f in files if fnmatch.fnmatch(f, filepattern)]
 
     # Functions usable inside farm run.py files
+    
+    def noop(self, *args, **kwargs):
+        """A no-op function to stub out run, copy, etc, when only cleaning."""
+        pass
     
     def copy(self, src, dst):
         """Copy a directory."""
@@ -71,5 +82,12 @@ class FarmTestCase(object):
 
 # So that we can run just one farm run.py at a time.
 if __name__ == '__main__':
-    case = FarmTestCase(sys.argv[1])
-    case.execute()
+    op = sys.argv[1]
+    if op == 'run':
+        case = FarmTestCase(sys.argv[2])
+        case.execute()
+    elif op == 'clean':
+        for test in test_farm(clean_only=True):
+            test[0](*test[1:])
+    else:
+        print "Need an operation: run, clean"

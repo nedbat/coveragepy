@@ -17,6 +17,7 @@ clean:
 	-rm -f .coverage .coverage.*
 	-rm -f $(TEST_ZIP)
 	-rm -f setuptools-*.egg
+	python test/test_farm.py clean
 
 lint: clean
 	python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc coverage
