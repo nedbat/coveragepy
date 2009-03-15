@@ -2,22 +2,14 @@
 # Copyright 2004-2009, Ned Batchelder
 # http://nedbatchelder.com/code/modules/coverage.html
 
-# Change this 0 to 1 to get diagnostic output during testing.
-showstdout = 0
-
-import unittest
-import imp, os, pprint, random, sys, tempfile
+import imp, os, pprint, random, sys, tempfile, unittest
 from cStringIO import StringIO
+from textwrap import dedent
 
 import path     # from http://www.jorendorff.com/articles/python/path/
 
 import coverage
-
 CovExc = coverage.CoverageException
-
-from textwrap import dedent
-    
-
 coverage.use_cache(0)
 
 
@@ -33,24 +25,14 @@ class CoverageTest(unittest.TestCase):
         # Keep a counter to make every call to checkCoverage unique.
         self.n = 0
 
-        # Capture stdout, so we can use print statements in the tests and not
-        # pollute the test output.
-        self.oldstdout = sys.stdout
-        self.capturedstdout = StringIO()
-        if not showstdout:
-            sys.stdout = self.capturedstdout
         coverage.begin_recursive()
         
     def tearDown(self):
         coverage.end_recursive()
-        sys.stdout = self.oldstdout
         # Get rid of the temporary directory.
         os.chdir(self.olddir)
         self.temproot.rmtree()
 
-    def getStdout(self):
-        return self.capturedstdout.getvalue()
-    
     def makeFile(self, modname, text):
         """ Create a temp file with modname as the module name, and text as the
             contents.
@@ -209,8 +191,7 @@ class CoverageTest(unittest.TestCase):
         
         stdin, stdouterr = os.popen4(cmd)
         output = stdouterr.read()
-        if showstdout:
-            print output
+        print output
         return output
 
 
@@ -1761,6 +1742,20 @@ class ModuleTests(CoverageTest):
 
 
 class ApiTests(CoverageTest):
+    def setUp(self):
+        super(ApiTests, self).setUp()
+        # Capture stdout, so we can tell what went there.
+        self.oldstdout = sys.stdout
+        self.capturedstdout = StringIO()
+        sys.stdout = self.capturedstdout
+        
+    def tearDown(self):
+        sys.stdout = self.oldstdout
+        super(ApiTests, self).tearDown()
+
+    def getStdout(self):
+        return self.capturedstdout.getvalue()
+    
     def testSimple(self):
         coverage.erase()
 
@@ -1809,7 +1804,7 @@ class ApiTests(CoverageTest):
             ---------------------------------------
             mycode2       7      4    57%   4-6
             """))
-
+        
     def testReportFile(self):
         self.doReportWork("mycode3")
         fout = StringIO()
