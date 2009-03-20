@@ -6,18 +6,18 @@ default:
 TEST_ZIP = test/zipmods.zip
 
 clean:
+	python test/test_farm.py clean
 	-rm -rf build
 	-rm -rf dist
 	-rm -rf coverage.egg-info
 	-rm -f *.pyd */*.pyd 
-	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc
-	-rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo
-	-rm -f *.bak */*.bak */*/*.bak */*/*/*.bak
+	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
+	-rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
+	-rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
 	-rm -f MANIFEST
 	-rm -f .coverage .coverage.*
 	-rm -f $(TEST_ZIP)
 	-rm -f setuptools-*.egg
-	python test/test_farm.py clean
 
 lint: clean
 	python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc coverage
