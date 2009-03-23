@@ -48,6 +48,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - How will coverage.py package install over coverage.py module?
 - Support 2.3 - 3.0?
     http://pythonology.blogspot.com/2009/02/making-code-run-on-python-20-through-30.html
+- Use a .coveragerc file to control coverage.py without the programmatic API.
 
 
 * Beauty
