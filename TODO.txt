@@ -36,9 +36,16 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Instruction tracing instead of line tracing.
 - Path tracing (how does this even work?)
 - Branch coverage
+    Titus' idea:
+        1: if a:
+        2:     b = 2
+        3: c = 3
+    if the coverage data shows 1,2,3, it was if-then.  if it's 1,3, then the
+    missing else was executed.
 - Count execution of lines
 - Track callers of functions (ala std module trace)
 - Method/Class/Module coverage reporting.
+- .coverage files that can be kept separate, rather than accumulated.
 
 
 * Convenience
@@ -49,7 +56,11 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Support 2.3 - 3.0?
     http://pythonology.blogspot.com/2009/02/making-code-run-on-python-20-through-30.html
 - Use a .coveragerc file to control coverage.py without the programmatic API.
-
+- An inference mode that marks lines as executed if they "must have been" executed:
+    class definitions, etc, when coverage is started after the class is defined.
+- Different categories of exclude pragma? So you can enable and disable them
+    from the command line, to reconsider exclusions,
+    
 
 * Beauty
 
