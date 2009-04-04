@@ -126,10 +126,10 @@ class CoverageScript:
             if not args:
                 help_fn("Nothing to do.")
                 return ERR
-            # Create the runtime environment the script on the cmdline expects.
-            sys.argv = args
+            
+            # Run the script.
             self.coverage.start()
-            run_python_file(sys.argv[0])
+            run_python_file(args[0], args)
             self.coverage.stop()
         
         if settings.get('combine'):
