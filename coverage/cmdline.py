@@ -1,6 +1,6 @@
 """Command-line support for coverage.py"""
 
-import getopt, os, sys
+import getopt, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.summary import SummaryReporter
