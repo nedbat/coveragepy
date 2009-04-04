@@ -14,6 +14,7 @@ clean:
 	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
 	-rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
 	-rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
+	-rm -f coverage/*,cover
 	-rm -f MANIFEST
 	-rm -f .coverage .coverage.*
 	-rm -f $(TEST_ZIP)
