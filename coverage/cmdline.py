@@ -4,6 +4,7 @@ import getopt, os, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.summary import SummaryReporter
+from coverage.execfile import run_python_file
 
 USAGE = r"""
 Coverage version %(__version__)s
@@ -127,10 +128,8 @@ class CoverageScript:
                 return ERR
             # Create the runtime environment the script on the cmdline expects.
             sys.argv = args
-            sys.path[0] = os.path.dirname(sys.argv[0])
-            import __main__ # TODO: I think this is useless...
             self.coverage.start()
-            execfile(sys.argv[0], __main__.__dict__)
+            run_python_file(sys.argv[0])
             self.coverage.stop()
         
         if settings.get('combine'):
