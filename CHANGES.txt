@@ -9,9 +9,12 @@ Continued refactoring.
 
 - coverage.annotate_file is no longer available.
 
+- Programs executed with -x now behave more as they should, for example,
+  __file__ has the correct value.
 
-Version 3.0b1
--------------
+
+Version 3.0b1, 7 March 2009
+---------------------------
 
 Major overhaul.
 
