@@ -26,8 +26,6 @@ typedef struct {
     int depth;
     // Filenames to record at each level, or NULL if not recording.
     PyObject * tracenames[300];
-    
-    IFDEBUG(int nshould;)
 } Tracer;
 
 static int
@@ -38,7 +36,6 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
     self->should_trace_cache = NULL;
     self->started = 0;
     self->depth = -1;
-    IFDEBUG(self->nshould = 0;)
     return 0;
 }
 
@@ -81,7 +78,6 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         tracename = PyDict_GetItem(self->should_trace_cache, filename);
         if (tracename == NULL) {
             // We've never considered this file before.  Ask should_trace about it.
-            IFDEBUG(self->nshould++;)
             PyObject * args = Py_BuildValue("(O)", filename);
             tracename = PyObject_Call(self->should_trace, args, NULL);
             Py_DECREF(args);
@@ -140,7 +136,6 @@ Tracer_stop(Tracer *self, PyObject *args)
         PyEval_SetTrace(NULL, NULL);
         self->started = 0;
     }
-    IFDEBUG(printf("nshould=%d\n", self->nshould);)
     return Py_BuildValue("");
 }
 
