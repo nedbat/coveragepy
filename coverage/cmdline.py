@@ -129,8 +129,10 @@ class CoverageScript:
             
             # Run the script.
             self.coverage.start()
-            run_python_file(args[0], args)
-            self.coverage.stop()
+            try:
+                run_python_file(args[0], args)
+            finally:
+                self.coverage.stop()
         
         if settings.get('combine'):
             self.coverage.combine()
