@@ -1,6 +1,7 @@
 """Coverage data for coverage.py"""
 
-import os, marshal, socket, types
+import os, socket, types
+import cPickle as pickle
 
 class CoverageData:
     """Manages collected coverage data."""
@@ -56,7 +57,7 @@ class CoverageData:
         """Write the coverage data to `filename`."""
         f = open(filename, 'wb')
         try:
-            marshal.dump(self.executed, f)
+            pickle.dump(self.executed, f)
         finally:
             f.close()
 
@@ -68,7 +69,7 @@ class CoverageData:
         """
         try:
             fdata = open(filename, 'rb')
-            executed = marshal.load(fdata)
+            executed = pickle.load(fdata)
             fdata.close()
             if isinstance(executed, types.DictType):
                 return executed
