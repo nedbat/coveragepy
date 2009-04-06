@@ -108,9 +108,8 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                 PyObject * t = PyTuple_New(2);
                 tracename = self->tracenames[self->depth];
                 Py_INCREF(tracename);
-                PyTuple_SetItem(t, 0, tracename);
-                PyTuple_SetItem(t, 1, PyInt_FromLong(frame->f_lineno));
-                Py_INCREF(Py_None);
+                PyTuple_SET_ITEM(t, 0, tracename);
+                PyTuple_SET_ITEM(t, 1, PyInt_FromLong(frame->f_lineno));
                 PyDict_SetItem(self->data, t, Py_None);
                 Py_DECREF(t);
             }
