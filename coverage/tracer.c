@@ -16,6 +16,8 @@
 
 // The Tracer type.
 
+#define MAX_STACK_DEPTH 500
+
 typedef struct {
     PyObject_HEAD
     PyObject * should_trace;
@@ -25,7 +27,7 @@ typedef struct {
     // The index of the last-used entry in tracenames.
     int depth;
     // Filenames to record at each level, or NULL if not recording.
-    PyObject * tracenames[300];
+    PyObject * tracenames[MAX_STACK_DEPTH];
 } Tracer;
 
 static int
@@ -69,7 +71,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     switch (what) {
     case PyTrace_CALL:      // 0
         self->depth++;
-        if (self->depth > sizeof(self->tracenames)/sizeof(self->tracenames[0])) {
+        if (self->depth > MAX_STACK_DEPTH) {
             PyErr_SetString(PyExc_RuntimeError, "Tracer stack overflow");
             return -1;
         }
@@ -92,7 +94,13 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         }
 
         // If tracename is a string, then we're supposed to trace.
-        self->tracenames[self->depth] = PyString_Check(tracename) ? tracename : NULL;
+        if (PyString_Check(tracename)) {
+            self->tracenames[self->depth] = tracename;
+        }
+        else {
+            self->tracenames[self->depth] = NULL;
+            Py_DECREF(tracename);
+        }
         break;
     
     case PyTrace_RETURN:    // 3
