@@ -20,8 +20,8 @@ def run_python_file(filename, args):
     sys.argv = args
     sys.path[0] = os.path.dirname(filename)
 
+    src = open(filename)
     try:
-        src = open(filename)
         imp.load_module('__main__', src, filename, (".py", "r", imp.PY_SOURCE))
     finally:
         src.close()
