@@ -26,5 +26,7 @@ class Reporter(object):
         
         """
         morfs = morfs or self.coverage.data.executed_files()
-        self.code_units = code_unit_factory(morfs, self.coverage.file_locator, omit_prefixes)
+        self.code_units = code_unit_factory(
+                            morfs, self.coverage.file_locator, omit_prefixes
+                            )
         self.code_units.sort()

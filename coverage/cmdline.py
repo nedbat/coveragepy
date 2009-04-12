@@ -146,7 +146,9 @@ class CoverageScript:
             omit = omit.split(',')
         
         if settings.get('report'):
-            reporter = SummaryReporter(self.coverage, show_missing, ignore_errors)
+            reporter = SummaryReporter(
+                                self.coverage, show_missing, ignore_errors
+                                )
             reporter.report(args, omit_prefixes=omit)
         if settings.get('annotate'):
             reporter = AnnotateReporter(self.coverage, ignore_errors)

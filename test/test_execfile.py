@@ -24,12 +24,14 @@ class RunTests(unittest.TestCase):
         tryfile = os.path.join(here, "try_execfile.py")
         run_python_file(tryfile, [tryfile, "arg1", "arg2"])
         mod_globs = eval(self.stdout.getvalue())
-
+        
         # The file should think it is __main__
         self.assertEqual(mod_globs['__name__'], "__main__")
 
         # It should seem to come from a file named try_execfile
-        dunder_file = os.path.splitext(os.path.basename(mod_globs['__file__']))[0]
+        dunder_file = os.path.splitext(
+                        os.path.basename(mod_globs['__file__'])
+                        )[0]
         self.assertEqual(dunder_file, "try_execfile")
 
         # It should have its correct module data.
