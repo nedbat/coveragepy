@@ -1,7 +1,6 @@
 """Run tests in the farm subdirectory.  Designed for nose."""
 
 import filecmp, fnmatch, glob, os, shutil, sys
-from coverage.files import FileLocator
 
 try:
     import subprocess
@@ -122,7 +121,7 @@ class FarmTestCase(object):
                     retcode = proc.wait()
                     output = proc.stdout.read()
                 else:
-                    stdin, stdouterr = os.popen4(cmd)
+                    _, stdouterr = os.popen4(cmd)
                     output = stdouterr.read()
                     retcode = 0 # Can't tell if the process failed.
                 print output,
@@ -168,9 +167,7 @@ class FarmTestCase(object):
         if os.path.exists(cleandir):
             shutil.rmtree(cleandir)
 
-
-# So that we can run just one farm run.py at a time.
-if __name__ == '__main__':
+def main():
     op = sys.argv[1]
     if op == 'run':
         # Run the test for real.
@@ -186,3 +183,7 @@ if __name__ == '__main__':
             test[0](*test[1:])
     else:
         print "Need an operation: run, out, clean"
+    
+# So that we can run just one farm run.py at a time.
+if __name__ == '__main__':
+    main()
