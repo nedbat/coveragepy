@@ -134,13 +134,31 @@ class FarmTestCase(object):
     def compare(self, dir1, dir2, filepattern=None):
         """Compare files matching `filepattern` in `dir1` and `dir2`.
         
+        `dir2` is interpreted as a prefix, with Python version numbers appended
+        to find the actual directory to compare with. "foo" will compare against
+        "foo_v241", "foo_v24", "foo_v2", or "foo", depending on which directory
+        is found first.
+        
         An assertion will be raised if the directories don't match in some way.
         
         """
+        # Search for a dir2 with a version suffix.
+        version_suff = ''.join(map(str, sys.version_info[:3]))
+        while version_suff:
+            trydir = dir2 + '_v' + version_suff
+            if os.path.exists(trydir):
+                dir2 = trydir
+                break
+            version_suff = version_suff[:-1]
+
+        assert os.path.exists(dir1), "Left directory missing: %s" % dir1
+        assert os.path.exists(dir2), "Right directory missing: %s" % dir2
+            
         dc = filecmp.dircmp(dir1, dir2)
         diff_files = self.fnmatch_list(dc.diff_files, filepattern)
         left_only = self.fnmatch_list(dc.left_only, filepattern)
         right_only = self.fnmatch_list(dc.right_only, filepattern)
+        
         assert not diff_files, "Files differ: %s" % (diff_files)
         assert not left_only, "Files in %s only: %s" % (dir1, left_only)
         assert not right_only, "Files in %s only: %s" % (dir2, right_only)
