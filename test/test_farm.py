@@ -41,6 +41,7 @@ class FarmTestCase(object):
         `dont_clean` means that the clean() action is not executed.
         
         """
+        self.description = runpy
         self.dir, self.runpy = os.path.split(runpy)
         self.clean_only = clean_only
         self.dont_clean = dont_clean
