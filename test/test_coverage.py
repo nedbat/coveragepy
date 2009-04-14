@@ -1786,6 +1786,30 @@ class ApiTests(CoverageTest):
             mycode3       7      4    57%   4-6
             """))
 
+    def testUnexecutedFile(self):
+        cov = coverage.coverage()
+
+        self.makeFile("mycode", """\
+            a = 1
+            b = 2
+            if b == 3:
+                c = 4
+            d = 5
+            """)
+            
+        self.makeFile("not_run", """\
+            fooey = 17
+            """)
+            
+        # Import the python file, executing it.
+        cov.start()
+        self.importModule("mycode")
+        cov.stop()
+    
+        filename, statements, missing, readablemissing = cov.analysis("not_run.py")
+        self.assertEqual(statements, [1])
+        self.assertEqual(missing, [1])
+
 
 class CmdLineTests(CoverageTest):
     def help_fn(self, error=None):
@@ -1937,3 +1961,4 @@ if __name__ == '__main__':
 #         in an expression!)
 # TODO: Generator comprehensions? 
 # TODO: Constant if tests ("if 1:").  Py 2.4 doesn't execute them.
+# TODO: There are no tests for analysis2 directly.

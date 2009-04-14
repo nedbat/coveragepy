@@ -108,8 +108,12 @@ class CoverageData:
         return self.executed.keys()
 
     def executed_lines(self, filename):
-        """A map containing all the line numbers executed in `filename`."""
-        return self.executed[filename]
+        """A map containing all the line numbers executed in `filename`.
+        
+        If `filename` hasn't been collected at all (because it wasn't executed)
+        then return an empty map.
+        """
+        return self.executed.get(filename) or {}
 
     def summary(self):
         """Return a dict summarizing the coverage data.
