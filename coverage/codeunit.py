@@ -57,6 +57,9 @@ class CodeUnit:
             f = morf.__file__
         else:
             f = morf
+        # .pyc files should always refer to a .py instead.
+        if f.endswith('.pyc'):
+            f = f[:-1]
         self.filename = file_locator.canonical_filename(f)
 
         if hasattr(morf, '__name__'):

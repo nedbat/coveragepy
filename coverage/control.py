@@ -119,9 +119,6 @@ class coverage:
         filename = code_unit.filename
         ext = os.path.splitext(filename)[1]
         source = None
-        if ext == '.pyc':
-            filename = filename[:-1]
-            ext = '.py'
         if ext == '.py':
             if not os.path.exists(filename):
                 source = self.file_locator.get_zip_data(filename)

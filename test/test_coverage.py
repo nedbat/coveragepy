@@ -22,6 +22,11 @@ class CoverageTest(unittest.TestCase):
         self.tempdir.makedirs()
         self.olddir = os.getcwd()
         os.chdir(self.tempdir)
+
+        # Modules should be importable from this temp directory.
+        self.oldsyspath = sys.path[:]
+        sys.path.insert(0, '')
+
         # Keep a counter to make every call to checkCoverage unique.
         self.n = 0
 
@@ -29,6 +34,7 @@ class CoverageTest(unittest.TestCase):
         
     def tearDown(self):
         coverage.end_recursive()
+        sys.path = self.oldsyspath
         # Get rid of the temporary directory.
         os.chdir(self.olddir)
         self.temproot.rmtree()
@@ -1809,6 +1815,51 @@ class ApiTests(CoverageTest):
         filename, statements, missing, readablemissing = cov.analysis("not_run.py")
         self.assertEqual(statements, [1])
         self.assertEqual(missing, [1])
+
+    def testFileNames(self):
+
+        self.makeFile("mymain", """\
+            import mymod
+            a = 1
+            """)
+            
+        self.makeFile("mymod", """\
+            fooey = 17
+            """)
+            
+        # Import the python file, executing it.
+        cov = coverage.coverage()
+        cov.start()
+        self.importModule("mymain")
+        cov.stop()
+    
+        filename, _, _, _ = cov.analysis("mymain.py")
+        self.assertEqual(os.path.basename(filename), "mymain.py")
+        filename, _, _, _ = cov.analysis("mymod.py")
+        self.assertEqual(os.path.basename(filename), "mymod.py")
+        
+        filename, _, _, _ = cov.analysis(sys.modules["mymain"])
+        self.assertEqual(os.path.basename(filename), "mymain.py")
+        filename, _, _, _ = cov.analysis(sys.modules["mymod"])
+        self.assertEqual(os.path.basename(filename), "mymod.py")
+
+        # Import the python file, executing it again, once it's been compiled
+        # already.
+        cov = coverage.coverage()
+        cov.start()
+        self.importModule("mymain")
+        cov.stop()
+    
+        filename, _, _, _ = cov.analysis("mymain.py")
+        self.assertEqual(os.path.basename(filename), "mymain.py")
+        filename, _, _, _ = cov.analysis("mymod.py")
+        self.assertEqual(os.path.basename(filename), "mymod.py")
+        
+        filename, _, _, _ = cov.analysis(sys.modules["mymain"])
+        self.assertEqual(os.path.basename(filename), "mymain.py")
+        filename, _, _, _ = cov.analysis(sys.modules["mymod"])
+        self.assertEqual(os.path.basename(filename), "mymod.py")
+
 
 
 class CmdLineTests(CoverageTest):
