@@ -21,9 +21,9 @@ clean:
 	-rm -f setuptools-*.egg
 
 lint: clean
-	python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc coverage
-	python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc test/test_execfile.py
-	python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc test/test_farm.py
+	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc coverage
+	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc test/test_execfile.py
+	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc test/test_farm.py
 	python /Python25/Lib/tabnanny.py coverage
 	python checkeol.py
 
