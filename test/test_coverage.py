@@ -1719,7 +1719,7 @@ class ModuleTest(CoverageTest):
 
 class ApiTest(CoverageTest):
     def setUp(self):
-        super(ApiTests, self).setUp()
+        super(ApiTest, self).setUp()
         # Capture stdout, so we can tell what went there.
         self.oldstdout = sys.stdout
         self.capturedstdout = StringIO()
@@ -1727,7 +1727,7 @@ class ApiTest(CoverageTest):
         
     def tearDown(self):
         sys.stdout = self.oldstdout
-        super(ApiTests, self).tearDown()
+        super(ApiTest, self).tearDown()
 
     def getStdout(self):
         return self.capturedstdout.getvalue()
