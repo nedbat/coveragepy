@@ -45,9 +45,14 @@ class coverage:
         # TODO: ignore by module as well as file?
         return self.file_locator.canonical_filename(filename)
 
-    def use_cache(self, usecache, cache_file=None):
-        self.data.usefile(usecache, cache_file)
+    def use_cache(self, usecache):
+        """Control the use of a data file (incorrectly called a cache).
         
+        `usecache` is true or false, whether to read and write data on disk.
+        
+        """
+        self.data.usefile(usecache)
+
     def get_ready(self):
         self.collector.reset()
         self.data.read(parallel=self.parallel_mode)
@@ -91,7 +96,7 @@ class coverage:
 
     def group_collected_data(self):
         """Group the collected data by filename and reset the collector."""
-        self.data.add_raw_data(self.collector.data_points())
+        self.data.add_line_data(self.collector.data_points())
         self.collector.reset()
 
     # Backward compatibility with version 1.

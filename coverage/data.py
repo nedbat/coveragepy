@@ -26,10 +26,8 @@ class CoverageData:
         #
         self.executed = {}
         
-    def usefile(self, use_file=True, filename_default=None):
+    def usefile(self, use_file=True):
         self.use_file = use_file
-        if filename_default and not self.filename:
-            self.filename_default = filename_default
 
     def read(self, parallel=False):
         """Read coverage data from the coverage data file (if it exists)."""
@@ -69,8 +67,10 @@ class CoverageData:
         """
         try:
             fdata = open(filename, 'rb')
-            executed = pickle.load(fdata)
-            fdata.close()
+            try:
+                executed = pickle.load(fdata)
+            finally:
+                fdata.close()
             if isinstance(executed, types.DictType):
                 return executed
             else:
@@ -94,8 +94,8 @@ class CoverageData:
         for filename, file_data in new_data.items():
             self.executed.setdefault(filename, {}).update(file_data)
 
-    def add_raw_data(self, data_points):
-        """Add raw data.
+    def add_line_data(self, data_points):
+        """Add executed line data.
         
         `data_points` is (filename, lineno) pairs.
         
