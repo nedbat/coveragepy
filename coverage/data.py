@@ -1,6 +1,6 @@
 """Coverage data for coverage.py"""
 
-import os, socket, types
+import os, types
 import cPickle as pickle
 
 class CoverageData:
@@ -12,8 +12,9 @@ class CoverageData:
     filename_env = "COVERAGE_FILE"
 
     def __init__(self):
-        self.filename = None
         self.use_file = True
+        self.filename = None
+        self.suffix = None
 
         # A map from canonical Python source file name to a dictionary in
         # which there's an entry for each line number that has been
@@ -27,26 +28,39 @@ class CoverageData:
         self.executed = {}
         
     def usefile(self, use_file=True):
+        """Set whether or not to use a disk file for data."""
         self.use_file = use_file
 
-    def read(self, parallel=False):
-        """Read coverage data from the coverage data file (if it exists)."""
-        data = {}
-        if self.use_file and not self.filename:
+    def set_suffix(self, suffix):
+        """Set a suffix to use for the data file name.
+        
+        This can be used for multiple or parallel execution, so that many
+        coverage data files can exist simultaneously.
+        
+        """
+        self.suffix = suffix
+
+    def _make_filename(self):
+        if not self.filename:
             self.filename = os.environ.get(
                                     self.filename_env, self.filename_default)
-            if parallel:
-                self.filename += "." + socket.gethostname()
-                self.filename += "." + str(os.getpid())
-            if os.path.exists(self.filename):
-                data = self._read_file(self.filename)
+            if self.suffix:
+                self.filename += "." + self.suffix
+
+    def read(self):
+        """Read coverage data from the coverage data file (if it exists)."""
+        data = {}
+        if self.use_file:
+            self._make_filename()
+            data = self._read_file(self.filename)
         self.executed = data
 
     def write(self):
         """Write the collected coverage data to a file."""
-        if self.use_file and self.filename:
+        if self.use_file:
+            self._make_filename()
             self.write_file(self.filename)
-            
+
     def erase(self):
         if self.filename and os.path.exists(self.filename):
             os.remove(self.filename)
@@ -61,7 +75,7 @@ class CoverageData:
 
     def read_file(self, filename):
         self.executed = self._read_file(filename)
-        
+
     def _read_file(self, filename):
         """ Return the stored coverage data from the given file.
         """

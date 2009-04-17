@@ -1,6 +1,6 @@
 """Core control stuff for coverage.py"""
 
-import os
+import os, socket
 
 from coverage.annotate import AnnotateReporter
 from coverage.codeunit import code_unit_factory
@@ -55,7 +55,9 @@ class coverage:
 
     def get_ready(self):
         self.collector.reset()
-        self.data.read(parallel=self.parallel_mode)
+        if self.parallel_mode:
+            self.data.set_suffix("%s.%s" % (socket.gethostname(), os.getpid()))
+        self.data.read()
         
     def start(self):
         self.get_ready()
