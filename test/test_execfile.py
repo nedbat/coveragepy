@@ -11,7 +11,7 @@ class Tee(object):
         for f in self.files:
             f.write(data)
 
-class RunTests(unittest.TestCase):
+class RunTest(unittest.TestCase):
     def setUp(self):
         self.oldstdout = sys.stdout
         self.stdout = cStringIO.StringIO()

@@ -171,7 +171,7 @@ class CoverageTest(unittest.TestCase):
         return output
 
 
-class BasicCoverageTests(CoverageTest):
+class BasicCoverageTest(CoverageTest):
     def testSimple(self):
         self.checkCoverage("""\
             a = 1
@@ -215,7 +215,7 @@ class BasicCoverageTests(CoverageTest):
             [1,5], "")
         
 
-class SimpleStatementTests(CoverageTest):
+class SimpleStatementTest(CoverageTest):
     def testExpression(self):
         self.checkCoverage("""\
             1 + 2
@@ -604,7 +604,7 @@ class SimpleStatementTests(CoverageTest):
             ([1,3,5,6,7], [1,3,4,5,6,7]), "")
 
 
-class CompoundStatementTests(CoverageTest):
+class CompoundStatementTest(CoverageTest):
     def testStatementList(self):
         self.checkCoverage("""\
             a = 1;
@@ -1151,7 +1151,7 @@ class CompoundStatementTests(CoverageTest):
             [2,6,8,10,11,13,14], "")    
 
 
-class ExcludeTests(CoverageTest):
+class ExcludeTest(CoverageTest):
     def testSimple(self):
         self.checkCoverage("""\
             a = 1; b = 2
@@ -1509,7 +1509,7 @@ class ExcludeTests(CoverageTest):
 
 if sys.hexversion >= 0x020300f0:
     # threading support was new in 2.3, only test there.
-    class ThreadingTests(CoverageTest):
+    class ThreadingTest(CoverageTest):
         def testThreading(self):
             self.checkCoverage("""\
                 import time, threading
@@ -1531,7 +1531,7 @@ if sys.hexversion >= 0x020300f0:
 
 
 if sys.hexversion >= 0x020400f0:
-    class Py24Tests(CoverageTest):
+    class Py24Test(CoverageTest):
         def testFunctionDecorators(self):
             self.checkCoverage("""\
                 def require_int(func):
@@ -1600,7 +1600,7 @@ if sys.hexversion >= 0x020400f0:
 
 
 if sys.hexversion >= 0x020500f0:
-    class Py25Tests(CoverageTest):
+    class Py25Test(CoverageTest):
         def testWithStatement(self):
             self.checkCoverage("""\
                 from __future__ import with_statement
@@ -1709,7 +1709,7 @@ if sys.hexversion >= 0x020500f0:
                 [1,2,3,4,5,6,8,10,11], "8")
         
 
-class ModuleTests(CoverageTest):
+class ModuleTest(CoverageTest):
     def testNotSingleton(self):
         """ You *can* create another coverage object.
         """
@@ -1717,7 +1717,7 @@ class ModuleTests(CoverageTest):
         coverage.coverage()
 
 
-class ApiTests(CoverageTest):
+class ApiTest(CoverageTest):
     def setUp(self):
         super(ApiTests, self).setUp()
         # Capture stdout, so we can tell what went there.
@@ -1862,7 +1862,7 @@ class ApiTests(CoverageTest):
 
 
 
-class CmdLineTests(CoverageTest):
+class CmdLineTest(CoverageTest):
     def help_fn(self, error=None):
         raise Exception(error or "__doc__")
 
@@ -1892,7 +1892,7 @@ class CmdLineTests(CoverageTest):
         self.assertRaisesMsg(Exception, "Unexpected arguments: baz quux", self.command_line, ['-c', 'baz', 'quux'])
 
 
-class ProcessTests(CoverageTest):
+class ProcessTest(CoverageTest):
     def testSaveOnExit(self):
         self.makeFile("mycode", """\
             a = 1
