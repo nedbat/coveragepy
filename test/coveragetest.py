@@ -74,22 +74,23 @@ class CoverageTest(unittest.TestCase):
         self.makeFile(modname, text)
 
         # Start up coverage.py
-        coverage.erase()
+        cov = coverage.coverage()
+        cov.erase()
         for exc in excludes:
-            coverage.exclude(exc)
-        coverage.start()
+            cov.exclude(exc)
+        cov.start()
 
         # Import the python file, executing it.
         mod = self.importModule(modname)
         
         # Stop coverage.py
-        coverage.stop()
+        cov.stop()
 
         # Clean up our side effects
         del sys.modules[modname]
 
         # Get the analysis results, and check that they are right.
-        _, clines, _, cmissing = coverage.analysis(mod)
+        _, clines, _, cmissing = cov.analysis(mod)
         if lines is not None:
             if type(lines[0]) == type(1):
                 self.assertEqual(clines, lines)
@@ -111,7 +112,7 @@ class CoverageTest(unittest.TestCase):
 
         if report:
             frep = StringIO()
-            coverage.report(mod, file=frep)
+            cov.report(mod, file=frep)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
             self.assertEqual(report, rep)
 
