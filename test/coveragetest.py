@@ -1,9 +1,7 @@
 """Base test case class for coverage testing."""
 
-import imp, os, random, sys, tempfile, textwrap, unittest
+import imp, os, random, shutil, sys, tempfile, textwrap, unittest
 from cStringIO import StringIO
-
-import path     # from http://www.jorendorff.com/articles/python/path/
 
 import coverage
 
@@ -12,9 +10,9 @@ class CoverageTest(unittest.TestCase):
     def setUp(self):
         # Create a temporary directory.
         self.noise = str(random.random())[2:]
-        self.temproot = path.path(tempfile.gettempdir()) / 'test_coverage' 
-        self.tempdir = self.temproot / self.noise
-        self.tempdir.makedirs()
+        self.temproot = os.path.join(tempfile.gettempdir(), 'test_coverage')
+        self.tempdir = os.path.join(self.temproot, self.noise)
+        os.makedirs(self.tempdir)
         self.olddir = os.getcwd()
         os.chdir(self.tempdir)
 
@@ -29,7 +27,7 @@ class CoverageTest(unittest.TestCase):
         sys.path = self.oldsyspath
         # Get rid of the temporary directory.
         os.chdir(self.olddir)
-        self.temproot.rmtree()
+        shutil.rmtree(self.temproot)
 
     def makeFile(self, modname, text):
         """ Create a temp file with modname as the module name, and text as the
