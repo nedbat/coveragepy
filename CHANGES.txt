@@ -12,6 +12,8 @@ Continued refactoring.
 - Programs executed with -x now behave more as they should, for example,
   __file__ has the correct value.
 
+- Removed the undocumented cache_file argument to coverage.usecache().
+
 
 Version 3.0b1, 7 March 2009
 ---------------------------
