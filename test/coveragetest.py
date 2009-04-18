@@ -6,28 +6,53 @@ from cStringIO import StringIO
 import coverage
 
 
+class Tee(object):
+    """A file-like that writes to all the file-likes it was constructed with."""
+
+    def __init__(self, *files):
+        self.files = files
+        
+    def write(self, data):
+        for f in self.files:
+            f.write(data)
+
+
 class CoverageTest(unittest.TestCase):
     def setUp(self):
         # Create a temporary directory.
         self.noise = str(random.random())[2:]
-        self.temproot = os.path.join(tempfile.gettempdir(), 'test_coverage')
-        self.tempdir = os.path.join(self.temproot, self.noise)
-        os.makedirs(self.tempdir)
-        self.olddir = os.getcwd()
-        os.chdir(self.tempdir)
+        self.temp_root = os.path.join(tempfile.gettempdir(), 'test_coverage')
+        self.temp_dir = os.path.join(self.temp_root, self.noise)
+        os.makedirs(self.temp_dir)
+        self.old_dir = os.getcwd()
+        os.chdir(self.temp_dir)
 
         # Modules should be importable from this temp directory.
-        self.oldsyspath = sys.path[:]
+        self.old_syspath = sys.path[:]
         sys.path.insert(0, '')
 
         # Keep a counter to make every call to checkCoverage unique.
         self.n = 0
+
+        # Use a Tee to capture stdout.
+        self.old_stdout = sys.stdout
+        self.captured_stdout = StringIO()
+        sys.stdout = Tee(sys.stdout, self.captured_stdout)
         
     def tearDown(self):
-        sys.path = self.oldsyspath
+        # Restore the original sys.path
+        sys.path = self.old_syspath
+        
         # Get rid of the temporary directory.
-        os.chdir(self.olddir)
-        shutil.rmtree(self.temproot)
+        os.chdir(self.old_dir)
+        shutil.rmtree(self.temp_root)
+        
+        # Restore stdout.
+        sys.stdout = self.old_stdout
+
+    def stdout(self):
+        """Return the data written to stdout during the test."""
+        return self.captured_stdout.getvalue()
 
     def makeFile(self, modname, text):
         """ Create a temp file with modname as the module name, and text as the

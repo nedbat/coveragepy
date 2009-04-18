@@ -1,29 +1,18 @@
+"""Tests for coverage.execfile"""
+
+import os
+
 from coverage.execfile import run_python_file
-import cStringIO, os, sys, unittest
+from coveragetest import CoverageTest
 
 here = os.path.dirname(__file__)
 
-class Tee(object):
-    def __init__(self, *files):
-        self.files = files
-        
-    def write(self, data):
-        for f in self.files:
-            f.write(data)
-
-class RunTest(unittest.TestCase):
-    def setUp(self):
-        self.oldstdout = sys.stdout
-        self.stdout = cStringIO.StringIO()
-        sys.stdout = Tee(sys.stdout, self.stdout)
-        
-    def tearDown(self):
-        self.stdout = self.oldstdout
+class RunTest(CoverageTest):
 
     def test_run_python_file(self):
         tryfile = os.path.join(here, "try_execfile.py")
         run_python_file(tryfile, [tryfile, "arg1", "arg2"])
-        mod_globs = eval(self.stdout.getvalue())
+        mod_globs = eval(self.stdout())
         
         # The file should think it is __main__
         self.assertEqual(mod_globs['__name__'], "__main__")

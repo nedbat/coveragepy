@@ -1559,20 +1559,7 @@ class ModuleTest(CoverageTest):
 
 
 class ApiTest(CoverageTest):
-    def setUp(self):
-        super(ApiTest, self).setUp()
-        # Capture stdout, so we can tell what went there.
-        self.oldstdout = sys.stdout
-        self.capturedstdout = StringIO()
-        sys.stdout = self.capturedstdout
-        
-    def tearDown(self):
-        sys.stdout = self.oldstdout
-        super(ApiTest, self).tearDown()
 
-    def getStdout(self):
-        return self.capturedstdout.getvalue()
-    
     def testSimple(self):
         coverage.erase()
 
@@ -1616,7 +1603,7 @@ class ApiTest(CoverageTest):
     def testReport(self):
         self.doReportWork("mycode2")
         coverage.report(["mycode2.py"])
-        self.assertEqual(self.getStdout(), dedent("""\
+        self.assertEqual(self.stdout(), dedent("""\
             Name      Stmts   Exec  Cover   Missing
             ---------------------------------------
             mycode2       7      4    57%   4-6
@@ -1626,7 +1613,7 @@ class ApiTest(CoverageTest):
         self.doReportWork("mycode3")
         fout = StringIO()
         coverage.report(["mycode3.py"], file=fout)
-        self.assertEqual(self.getStdout(), "")
+        self.assertEqual(self.stdout(), "")
         self.assertEqual(fout.getvalue(), dedent("""\
             Name      Stmts   Exec  Cover   Missing
             ---------------------------------------
