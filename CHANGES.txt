@@ -14,6 +14,8 @@ Continued refactoring.
 
 - Removed the undocumented cache_file argument to coverage.usecache().
 
+- .coverage data files have a new format.
+
 
 Version 3.0b1, 7 March 2009
 ---------------------------
