@@ -60,11 +60,12 @@ load-plugins=
 #   C0323:311:coverage.report: Operator not followed by a space
 # Messages that may be silly:
 #   R0201: 42:Tracer.stop: Method could be a function
+#   W0403:  4: Relative import 'coveragetest'
 #   E1103: 26:RunTests.test_run_python_file: Instance of 'file' has no 'getvalue' member (but some types could not be inferred)
 # Messages that are noisy for now, eventually maybe we'll turn them on:
 #   C0111:169:coverage.analyze_morf: Missing docstring
 #   C0103:256:coverage.morf_filename: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
-disable-msg=I0011,W0603,W0142,C0323, R0201,E1103, C0111,C0103
+disable-msg=I0011,W0603,W0142,C0323, R0201,W0403,E1103, C0111,C0103
 
 [REPORTS]
 
