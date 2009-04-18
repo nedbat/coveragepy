@@ -41,6 +41,7 @@ class CoverageData:
         self.suffix = suffix
 
     def _make_filename(self):
+        assert self.use_file
         if not self.filename:
             self.filename = os.environ.get(
                                     self.filename_env, self.filename_default)
@@ -62,9 +63,12 @@ class CoverageData:
             self.write_file(self.filename)
 
     def erase(self):
-        if self.filename and os.path.exists(self.filename):
-            os.remove(self.filename)
-
+        if self.use_file:
+            self._make_filename()
+            if self.filename and os.path.exists(self.filename):
+                os.remove(self.filename)
+        self.executed = {}
+        
     def write_file(self, filename):
         """Write the coverage data to `filename`."""
         f = open(filename, 'wb')
@@ -96,17 +100,14 @@ class CoverageData:
         """ Treat self.filename as a file prefix, and combine the data from all
             of the files starting with that prefix.
         """
+        self._make_filename()
         data_dir, local = os.path.split(self.filename)
         for f in os.listdir(data_dir or '.'):
             if f.startswith(local):
                 full_path = os.path.join(data_dir, f)
-                file_data = self._read_file(full_path)
-                self._combine_data(file_data)
-
-    def _combine_data(self, new_data):
-        """Combine the `new_data` into `executed`."""
-        for filename, file_data in new_data.items():
-            self.executed.setdefault(filename, {}).update(file_data)
+                new_data = self._read_file(full_path)
+                for filename, file_data in new_data.items():
+                    self.executed.setdefault(filename, {}).update(file_data)
 
     def add_line_data(self, data_points):
         """Add executed line data.
