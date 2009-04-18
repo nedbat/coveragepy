@@ -1,9 +1,9 @@
 """Tests for coverage.data"""
 
-import unittest
 from coverage.data import CoverageData
+from coveragetest import CoverageTest
 
-class DataTest(unittest.TestCase):
+class DataTest(CoverageTest):
     def test_reading(self):
         covdata = CoverageData()
         covdata.read()
