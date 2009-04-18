@@ -5,7 +5,9 @@ from coveragetest import CoverageTest
 
 try:
     set()
-except:
+except NameError:
+    # pylint: disable-msg=W0622
+    # (Redefining built-in 'set')
     from sets import Set as set
 
 DATA_1 = [ ('a.py',1), ('a.py',2), ('b.py',3) ]
