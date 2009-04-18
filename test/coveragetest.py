@@ -50,6 +50,8 @@ class CoverageTest(unittest.TestCase):
             if suff[0] == '.py':
                 break
         try:
+            # pylint: disable-msg=W0631
+            # (Using possibly undefined loop variable 'suff')
             mod = imp.load_module(modname, f, modfile, suff)
         finally:
             f.close()
@@ -64,7 +66,7 @@ class CoverageTest(unittest.TestCase):
         self.n += 1
         return modname
     
-    def checkCoverage(self, text, lines, missing="", excludes=[], report=""):
+    def checkCoverage(self, text, lines, missing="", excludes=None, report=""):
         # We write the code into a file so that we can import it.
         # coverage.py wants to deal with things as modules with file names.
         modname = self.getModuleName()
@@ -74,7 +76,7 @@ class CoverageTest(unittest.TestCase):
         # Start up coverage.py
         cov = coverage.coverage()
         cov.erase()
-        for exc in excludes:
+        for exc in excludes or []:
             cov.exclude(exc)
         cov.start()
 
@@ -106,7 +108,9 @@ class CoverageTest(unittest.TestCase):
                     if cmissing == missing_list:
                         break
                 else:
-                    self.fail("None of the missing choices matched %r" % cmissing)
+                    self.fail(
+                        "None of the missing choices matched %r" % cmissing
+                        )
 
         if report:
             frep = StringIO()
@@ -130,17 +134,25 @@ class CoverageTest(unittest.TestCase):
                 return
             else:   #pragma: no cover
                 # Message provided, and it didn't match: fail!
-                raise self.failureException("Right exception, wrong message: got '%s' expected '%s'" % (excMsg, msg))
-        # No need to catch other exceptions: They'll fail the test all by themselves!
+                raise self.failureException(
+                    "Right exception, wrong message: got '%s' expected '%s'" %
+                    (excMsg, msg)
+                    )
+        # No need to catch other exceptions: They'll fail the test all by
+        # themselves!
         else:   #pragma: no cover
             if hasattr(excClass,'__name__'):
                 excName = excClass.__name__
             else:
                 excName = str(excClass)
-            raise self.failureException("Expected to raise %s, didn't get an exception at all" % excName)
+            raise self.failureException(
+                "Expected to raise %s, didn't get an exception at all" % excName
+                )
 
     def nice_file(self, *fparts):
-        return os.path.normcase(os.path.abspath(os.path.realpath(os.path.join(*fparts))))
+        """Canonicalize the filename composed of the parts in `fparts`."""
+        fname = os.path.join(*fparts)
+        return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
     
     def run_command(self, cmd):
         """ Run the command-line `cmd`, print its output.
@@ -156,7 +168,7 @@ class CoverageTest(unittest.TestCase):
         pypath += testmods + os.pathsep + zipfile
         os.environ['PYTHONPATH'] = pypath
         
-        stdin, stdouterr = os.popen4(cmd)
+        stdin_unused, stdouterr = os.popen4(cmd)
         output = stdouterr.read()
         print output
         return output
