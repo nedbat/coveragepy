@@ -47,8 +47,11 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
 class CodeUnit:
     """Code unit: a filename or module.
     
+    Instance attributes:
+    
     `name` is a human-readable name for this code unit.
     `filename` is the os path from which we can read the source.
+    `relative` is a boolean.
     
     """
 
@@ -64,10 +67,26 @@ class CodeUnit:
 
         if hasattr(morf, '__name__'):
             n = morf.__name__
+            self.relative = True
         else:
             n = os.path.splitext(morf)[0]
-            n = file_locator.relative_filename(n)
+            rel = file_locator.relative_filename(n)
+            self.relative = (rel != n)
+            n = rel
         self.name = n
 
     def __cmp__(self, other):
         return cmp(self.name, other.name)
+
+    def flat_rootname(self):
+        """A base for a flat filename to correspond to this code unit.
+        
+        Useful for writing files about the code where you want all the files in
+        the same directory, but need to differentiate same-named files from
+        different directories.
+        
+        For example, the file a/b/c.py might return 'a_b_c'
+        
+        """
+        root = os.path.splitdrive(os.path.splitext(self.name)[0])[1]
+        return root.replace('\\', '_').replace('/', '_')
