@@ -20,7 +20,7 @@ clean:
 	-rm -f $(TEST_ZIP)
 	-rm -f setuptools-*.egg
 
-LINTABLE_TESTS = test/test_data.py test/test_execfile.py test/test_farm.py test/coveragetest.py
+LINTABLE_TESTS = test/test_data.py test/test_execfile.py test/test_farm.py test/coveragetest.py test/test_templite.py
 
 lint: clean
 	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc coverage
