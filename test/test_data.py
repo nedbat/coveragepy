@@ -1,22 +1,20 @@
 """Tests for coverage.data"""
 
+import cPickle as pickle
 from coverage.data import CoverageData
 from coveragetest import CoverageTest
 
-try:
-    set()
-except NameError:
-    # pylint: disable-msg=W0622
-    # (Redefining built-in 'set')
-    from sets import Set as set
 
 DATA_1 = [ ('a.py',1), ('a.py',2), ('b.py',3) ]
 SUMMARY_1 = { 'a.py':2, 'b.py':1 }
 EXECED_FILES_1 = [ 'a.py', 'b.py' ]
+A_PY_LINES_1 = [1,2]
+B_PY_LINES_1 = [3]
 
 DATA_2 = [ ('a.py',1), ('a.py',5), ('c.py',17) ]
 SUMMARY_1_2 = { 'a.py':3, 'b.py':1, 'c.py':1 }
 EXECED_FILES_1_2 = [ 'a.py', 'b.py', 'c.py' ]
+
 
 class DataTest(CoverageTest):
     
@@ -24,9 +22,7 @@ class DataTest(CoverageTest):
         self.assertEqual(covdata.summary(), summary)
         
     def assert_executed_files(self, covdata, execed):
-        e1 = set(covdata.executed_files())
-        e2 = set(execed)
-        self.assertEqual(e1, e2)
+        self.assert_equal_sets(covdata.executed_files(), execed)
     
     def test_reading_empty(self):
         covdata = CoverageData()
@@ -74,3 +70,20 @@ class DataTest(CoverageTest):
         covdata2 = CoverageData()
         covdata2.read()
         self.assert_summary(covdata2, {})
+
+    def test_file_format(self):
+        # Write with CoverageData, then read the pickle explicitly.
+        covdata = CoverageData()
+        covdata.add_line_data(DATA_1)
+        covdata.write()
+        
+        fdata = open(".coverage", 'rb')
+        try:
+            data = pickle.load(fdata)
+        finally:
+            fdata.close()
+        
+        lines = data['lines']
+        self.assert_equal_sets(lines.keys(), EXECED_FILES_1)
+        self.assert_equal_sets(lines['a.py'], A_PY_LINES_1)
+        self.assert_equal_sets(lines['b.py'], B_PY_LINES_1)

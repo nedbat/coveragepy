@@ -12,6 +12,7 @@ from coverage.summary import SummaryReporter
 class coverage:
     def __init__(self):
         from coverage.collector import Collector
+        from coverage import __version__
         
         self.parallel_mode = False
         self.exclude_re = ''
@@ -22,7 +23,7 @@ class coverage:
         
         self.collector = Collector(self.should_trace)
         
-        self.data = CoverageData()
+        self.data = CoverageData(collector="coverage.py v%s" % __version__)
     
         # The default exclude pattern.
         self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')

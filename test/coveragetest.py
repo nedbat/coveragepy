@@ -3,6 +3,13 @@
 import imp, os, random, shutil, sys, tempfile, textwrap, unittest
 from cStringIO import StringIO
 
+try:
+    set()
+except NameError:
+    # pylint: disable-msg=W0622
+    # (Redefining built-in 'set')
+    from sets import Set as set
+
 import coverage
 
 
@@ -197,3 +204,7 @@ class CoverageTest(unittest.TestCase):
         output = stdouterr.read()
         print output
         return output
+
+    def assert_equal_sets(self, s1, s2):
+        """Assert that the two arguments are equal as sets."""
+        self.assertEqual(set(s1), set(s2))

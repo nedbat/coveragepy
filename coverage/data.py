@@ -3,6 +3,14 @@
 import os, types
 import cPickle as pickle
 
+# Data file format is a pickled dict, with these keys:
+#
+#   collector: a string identifying the collecting software
+#
+#   lines: a dict mapping filenames to lists of line numbers executed:
+#     { 'file1': [17,23,45],  'file2': [1,2,3], ... }
+
+
 class CoverageData:
     """Manages collected coverage data."""
     # Name of the data file (unless environment variable is set).
@@ -11,7 +19,10 @@ class CoverageData:
     # Environment variable naming the data file.
     filename_env = "COVERAGE_FILE"
 
-    def __init__(self):
+    def __init__(self, collector=None):
+        
+        self.collector = collector
+        
         self.use_file = True
         self.filename = None
         self.suffix = None
@@ -25,7 +36,7 @@ class CoverageData:
         #       ...
         #       }
         #
-        self.executed = {}
+        self.lines = {}
         
     def usefile(self, use_file=True):
         """Set whether or not to use a disk file for data."""
@@ -41,6 +52,7 @@ class CoverageData:
         self.suffix = suffix
 
     def _make_filename(self):
+        """Construct the filename that will be used for data file storage."""
         assert self.use_file
         if not self.filename:
             self.filename = os.environ.get(
@@ -54,7 +66,7 @@ class CoverageData:
         if self.use_file:
             self._make_filename()
             data = self._read_file(self.filename)
-        self.executed = data
+        self.lines = data
 
     def write(self):
         """Write the collected coverage data to a file."""
@@ -63,22 +75,35 @@ class CoverageData:
             self.write_file(self.filename)
 
     def erase(self):
+        """Erase the data, both in this object, and from its file storage."""
         if self.use_file:
             self._make_filename()
             if self.filename and os.path.exists(self.filename):
                 os.remove(self.filename)
-        self.executed = {}
+        self.lines = {}
         
     def write_file(self, filename):
         """Write the coverage data to `filename`."""
-        f = open(filename, 'wb')
+
+        # Create the file data.        
+        data = {}
+
+        data['lines'] = dict(
+            [(f, list(linemap.keys())) for f, linemap in self.lines.items()]
+            )
+
+        if self.collector:
+            data['collector'] = self.collector
+
+        # Write the pickle to the file.
+        fdata = open(filename, 'wb')
         try:
-            pickle.dump(self.executed, f)
+            pickle.dump(data, fdata)
         finally:
-            f.close()
+            fdata.close()
 
     def read_file(self, filename):
-        self.executed = self._read_file(filename)
+        self.lines = self._read_file(filename)
 
     def _read_file(self, filename):
         """ Return the stored coverage data from the given file.
@@ -86,11 +111,16 @@ class CoverageData:
         try:
             fdata = open(filename, 'rb')
             try:
-                executed = pickle.load(fdata)
+                data = pickle.load(fdata)
             finally:
                 fdata.close()
-            if isinstance(executed, types.DictType):
-                return executed
+            if isinstance(data, types.DictType):
+                # Unpack the 'lines' item.
+                lines = dict([
+                    (f, dict([(l, True) for l in linenos]))
+                        for f,linenos in data['lines'].items()
+                    ])
+                return lines
             else:
                 return {}
         except:
@@ -107,7 +137,7 @@ class CoverageData:
                 full_path = os.path.join(data_dir, f)
                 new_data = self._read_file(full_path)
                 for filename, file_data in new_data.items():
-                    self.executed.setdefault(filename, {}).update(file_data)
+                    self.lines.setdefault(filename, {}).update(file_data)
 
     def add_line_data(self, data_points):
         """Add executed line data.
@@ -116,11 +146,11 @@ class CoverageData:
         
         """
         for filename, lineno in data_points:
-            self.executed.setdefault(filename, {})[lineno] = True
+            self.lines.setdefault(filename, {})[lineno] = True
 
     def executed_files(self):
         """A list of all files that had been measured as executed."""
-        return self.executed.keys()
+        return self.lines.keys()
 
     def executed_lines(self, filename):
         """A map containing all the line numbers executed in `filename`.
@@ -128,7 +158,7 @@ class CoverageData:
         If `filename` hasn't been collected at all (because it wasn't executed)
         then return an empty map.
         """
-        return self.executed.get(filename) or {}
+        return self.lines.get(filename) or {}
 
     def summary(self):
         """Return a dict summarizing the coverage data.
@@ -138,6 +168,6 @@ class CoverageData:
         
         """
         summ = {}
-        for filename, lines in self.executed.items():
+        for filename, lines in self.lines.items():
             summ[os.path.basename(filename)] = len(lines)
         return summ
