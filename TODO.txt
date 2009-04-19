@@ -59,7 +59,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - An inference mode that marks lines as executed if they "must have been" executed:
     class definitions, etc, when coverage is started after the class is defined.
 - Different categories of exclude pragma? So you can enable and disable them
-    from the command line, to reconsider exclusions,
+    from the command line, to reconsider exclusions.
     
 
 * Beauty
