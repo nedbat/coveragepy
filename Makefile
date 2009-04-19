@@ -28,7 +28,9 @@ lint: clean
 	python /Python25/Lib/tabnanny.py coverage
 	python checkeol.py
 
-tests: $(TEST_ZIP) devinst
+testready: $(TEST_ZIP) devinst
+
+tests: testready
 	nosetests
 
 $(TEST_ZIP): test/covmodzip1.py
