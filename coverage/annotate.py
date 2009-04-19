@@ -28,8 +28,11 @@ class AnnotateReporter(Reporter):
                     raise
                 
     def annotate_file(self, filename, statements, excluded, missing):
+        print "annotate_file(%r), self.dir=%r" % (filename, self.directory)
         source = open(filename, 'r')
         if self.directory:
+            if not os.path.exists(self.directory):
+                os.makedirs(self.directory)
             dest_file = os.path.join(self.directory,
                                      os.path.basename(filename)
                                      + ',cover')

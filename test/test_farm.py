@@ -130,13 +130,19 @@ class FarmTestCase(object):
         finally:
             self.cd(cwd)
 
-    def compare(self, dir1, dir2, filepattern=None):
+    def compare(self, dir1, dir2, filepattern=None, left_extra=False,
+        right_extra=False
+        ):
         """Compare files matching `filepattern` in `dir1` and `dir2`.
         
         `dir2` is interpreted as a prefix, with Python version numbers appended
         to find the actual directory to compare with. "foo" will compare against
         "foo_v241", "foo_v24", "foo_v2", or "foo", depending on which directory
         is found first.
+        
+        `left_extra` true means the left directory can have extra files in it
+        without triggering an assertion.  `right_extra` means the right
+        directory can.
         
         An assertion will be raised if the directories don't match in some way.
         
@@ -159,8 +165,10 @@ class FarmTestCase(object):
         right_only = self.fnmatch_list(dc.right_only, filepattern)
         
         assert not diff_files, "Files differ: %s" % (diff_files)
-        assert not left_only, "Files in %s only: %s" % (dir1, left_only)
-        assert not right_only, "Files in %s only: %s" % (dir2, right_only)
+        if not left_extra:
+            assert not left_only, "Files in %s only: %s" % (dir1, left_only)
+        if not right_extra:
+            assert not right_only, "Files in %s only: %s" % (dir2, right_only)
 
     def clean(self, cleandir):
         """Clean `cleandir` by removing it and all its children completely."""
@@ -173,7 +181,7 @@ def main():
         # Run the test for real.
         case = FarmTestCase(sys.argv[2])
         case()
-    if op == 'out':
+    elif op == 'out':
         # Run the test, but don't clean up, so we can examine the output.
         case = FarmTestCase(sys.argv[2], dont_clean=True)
         case()
