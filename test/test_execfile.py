@@ -24,7 +24,8 @@ class RunTest(CoverageTest):
         self.assertEqual(dunder_file, "try_execfile")
 
         # It should have its correct module data.
-        self.assertEqual(mod_globs['__doc__'], "Test file for run_python_file.")
+        self.assertEqual(mod_globs['__doc__'],
+                            "Test file for run_python_file.")
         self.assertEqual(mod_globs['DATA'], "xyzzy")
         self.assertEqual(mod_globs['FN_VAL'], "my_fn('fooey')")
         

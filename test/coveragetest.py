@@ -14,7 +14,9 @@ import coverage
 
 
 class Tee(object):
-    """A file-like that writes to all the file-likes it was constructed with."""
+    """A file-like that writes to all the file-likes it was constructed with.
+    
+    """
 
     def __init__(self, *files):
         self.files = files
@@ -178,7 +180,8 @@ class CoverageTest(unittest.TestCase):
             else:
                 excName = str(excClass)
             raise self.failureException(
-                "Expected to raise %s, didn't get an exception at all" % excName
+                "Expected to raise %s, didn't get an exception at all" %
+                excName
                 )
 
     def nice_file(self, *fparts):

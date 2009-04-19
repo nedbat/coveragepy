@@ -10,9 +10,9 @@ def run_python_file(filename, args):
     `args` is the argument array to present as sys.argv.
     
     """
-    # Most code that does this does it in a way that leaves __main__ or __file__
-    # with the wrong values.  Importing the code as __main__ gets all of this
-    # right automatically.
+    # Most code that does this does it in a way that leaves __main__ or
+    # __file__ with the wrong values.  Importing the code as __main__ gets all
+    # of this right automatically.
     #
     # One difference from python.exe: if I run foo.py from the command line, it
     # always uses foo.py.  With this code, it might find foo.pyc instead.

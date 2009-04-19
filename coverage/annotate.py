@@ -40,10 +40,10 @@ class AnnotateReporter(Reporter):
         filename = cu.filename
         source = open(filename, 'r')
         if self.directory:
-            dest_file = os.path.join(self.directory, cu.flat_rootname()) + ".py"
+            dest_file = os.path.join(self.directory, cu.flat_rootname())
+            dest_file += ".py,cover"
         else:
-            dest_file = filename
-        dest_file += ",cover"
+            dest_file = filename + ",cover"
         dest = open(dest_file, 'w')
 
         lineno = 0

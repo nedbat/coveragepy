@@ -157,7 +157,9 @@ class coverage:
                 if line not in execed:
                     missing.append(line)
 
-        return (statements, excluded, missing, format_lines(statements, missing))
+        return (
+            statements, excluded, missing, format_lines(statements, missing)
+            )
 
     def report(self, morfs, show_missing=True, ignore_errors=False, file=None):
         """Write a summary report to `file`.
