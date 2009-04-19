@@ -3,16 +3,18 @@
 import os, types
 import cPickle as pickle
 
-# Data file format is a pickled dict, with these keys:
-#
-#   collector: a string identifying the collecting software
-#
-#   lines: a dict mapping filenames to lists of line numbers executed:
-#     { 'file1': [17,23,45],  'file2': [1,2,3], ... }
-
-
 class CoverageData:
-    """Manages collected coverage data."""
+    """Manages collected coverage data, including file storage.
+    
+    The data file format is a pickled dict, with these keys:
+    
+        * collector: a string identifying the collecting software
+
+        * lines: a dict mapping filenames to lists of line numbers executed:
+            { 'file1': [17,23,45],  'file2': [1,2,3], ... }
+    
+    """
+    
     # Name of the data file (unless environment variable is set).
     filename_default = ".coverage"
 
@@ -20,7 +22,11 @@ class CoverageData:
     filename_env = "COVERAGE_FILE"
 
     def __init__(self, collector=None):
+        """Create a CoverageData.
         
+        `collector` is a string describing the coverage measurement software.
+        
+        """
         self.collector = collector
         
         self.use_file = True
@@ -103,6 +109,8 @@ class CoverageData:
             fdata.close()
 
     def read_file(self, filename):
+        """Read the coverage data from `filename`."""
+        
         self.lines = self._read_file(filename)
 
     def _read_file(self, filename):
