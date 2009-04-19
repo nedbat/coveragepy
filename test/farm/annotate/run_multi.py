@@ -1,8 +1,7 @@
-outdir = "out_multi"
-copy("src", outdir)
+copy("src", "out_multi")
 run("""
-    coverage -x multi.py
+    coverage -e -x multi.py
     coverage -a 
-    """, rundir=outdir)
-compare(outdir, "gold_multi", "*,cover")
-clean(outdir)
+    """, rundir="out_multi")
+compare("out_multi", "gold_multi", "*,cover")
+clean("out_multi")
