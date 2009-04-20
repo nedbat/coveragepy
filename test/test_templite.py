@@ -21,10 +21,7 @@ class TemplateTest(unittest.TestCase):
 
     def test_variables(self):
         # Variables use {{var}} syntax.
-        self.assertEqual(
-            Templite("Hello, {{name}}!").render({'name':'Ned'}),
-            "Hello, Ned!"
-            )
+        self.try_render("Hello, {{name}}!", {'name':'Ned'}, "Hello, Ned!")
 
     def test_pipes(self):
         # Variables can be filtered with pipes.
@@ -33,15 +30,10 @@ class TemplateTest(unittest.TestCase):
             'upper': lambda x: x.upper(),
             'second': lambda x: x[1],
             }
-        self.assertEqual(
-            Templite("Hello, {{name|upper}}!").render(data),
-            "Hello, NED!"
-            )
+        self.try_render("Hello, {{name|upper}}!", data, "Hello, NED!")
+        
         # Pipes can be concatenated.
-        self.assertEqual(
-            Templite("Hello, {{name|upper|second}}!").render(data),
-            "Hello, E!"
-            )
+        self.try_render("Hello, {{name|upper|second}}!", data, "Hello, E!")
 
     def test_reusability(self):
         # A single Templite can be used more than once with different data.
@@ -58,16 +50,12 @@ class TemplateTest(unittest.TestCase):
         # Variables' attributes can be accessed with dots.
         obj = AnyOldObject()
         obj.a = "Ay"
-        self.assertEqual(
-            Templite("{{obj.a}}").render(locals()), "Ay"
-            )
+        self.try_render("{{obj.a}}", locals(), "Ay")
 
         obj2 = AnyOldObject()
         obj2.obj = obj
         obj2.b = "Bee"
-        self.assertEqual(
-            Templite("{{obj2.obj.a}} {{obj2.b}}").render(locals()), "Ay Bee"
-            )
+        self.try_render("{{obj2.obj.a}} {{obj2.b}}", locals(), "Ay Bee")
         
     def test_member_function(self):
         # Variables' member functions can be used, as long as they are nullary.
@@ -76,16 +64,15 @@ class TemplateTest(unittest.TestCase):
                 return self.txt + self.txt
         obj = WithMemberFns()
         obj.txt = "Once"
-        self.assertEqual(
-            Templite("{{obj.ditto}}").render(locals()), "OnceOnce"
-            )
+        self.try_render("{{obj.ditto}}", locals(), "OnceOnce")
 
     def test_loops(self):
         # Loops work like in Django.
         nums = [1,2,3,4]
-        self.assertEqual(
-            Templite("Look: {% for n in nums %}{{n}}, {% endfor %}done.").
-                render(locals()), "Look: 1, 2, 3, 4, done."
+        self.try_render(
+            "Look: {% for n in nums %}{{n}}, {% endfor %}done.",
+            locals(),
+            "Look: 1, 2, 3, 4, done."
             )
         # Loop iterables can be filtered.
         def rev(l):
@@ -93,21 +80,24 @@ class TemplateTest(unittest.TestCase):
             l.reverse()
             return l
         
-        self.assertEqual(
-            Templite("Look: {% for n in nums|rev %}{{n}}, {% endfor %}done.").
-                render(locals()), "Look: 4, 3, 2, 1, done."
+        self.try_render(
+            "Look: {% for n in nums|rev %}{{n}}, {% endfor %}done.",
+            locals(),
+            "Look: 4, 3, 2, 1, done."
             )
 
     def test_empty_loops(self):
-        self.assertEqual(
-            Templite("Empty: {% for n in nums %}{{n}}, {% endfor %}done.").
-                render({'nums':[]}), "Empty: done."
+        self.try_render(
+            "Empty: {% for n in nums %}{{n}}, {% endfor %}done.",
+            {'nums':[]},
+            "Empty: done."
             )
 
     def test_multiline_loops(self):
-        self.assertEqual(
-            Templite("Look: \n{% for n in nums %}\n{{n}}, \n{% endfor %}done.").
-                render({'nums':[1,2,3]}), "Look: \n\n1, \n\n2, \n\n3, \ndone."
+        self.try_render(
+            "Look: \n{% for n in nums %}\n{{n}}, \n{% endfor %}done.",
+            {'nums':[1,2,3]},
+            "Look: \n\n1, \n\n2, \n\n3, \ndone."
             )
         
     def test_multiple_loops(self):
