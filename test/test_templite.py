@@ -8,6 +8,9 @@ class AnyOldObject:
 
 class TemplateTest(unittest.TestCase):
     
+    def try_render(self, text, ctx, result):
+        self.assertEqual(Templite(text).render(ctx), result)
+
     def test_passthrough(self):
         # Strings without variables are passed through unchanged.
         self.assertEqual(Templite("Hello").render(), "Hello")
@@ -93,6 +96,25 @@ class TemplateTest(unittest.TestCase):
         self.assertEqual(
             Templite("Look: {% for n in nums|rev %}{{n}}, {% endfor %}done.").
                 render(locals()), "Look: 4, 3, 2, 1, done."
+            )
+
+    def test_empty_loops(self):
+        self.assertEqual(
+            Templite("Empty: {% for n in nums %}{{n}}, {% endfor %}done.").
+                render({'nums':[]}), "Empty: done."
+            )
+
+    def test_multiline_loops(self):
+        self.assertEqual(
+            Templite("Look: \n{% for n in nums %}\n{{n}}, \n{% endfor %}done.").
+                render({'nums':[1,2,3]}), "Look: \n\n1, \n\n2, \n\n3, \ndone."
+            )
+        
+    def test_multiple_loops(self):
+        self.try_render(
+            "{% for n in nums %}{{n}}{% endfor %} and {% for n in nums %}{{n}}{% endfor %}",
+            {'nums': [1,2,3]},
+            "123 and 123"
             )
 
 

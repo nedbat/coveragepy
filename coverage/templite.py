@@ -40,7 +40,7 @@ class Templite(object):
         """Convert Django-style data references into Python-native ones."""
         # Pull out loops.
         text = re.sub(
-            r"{% for ([a-z0-9_]+) in ([a-z0-9_.|]+) %}(.*){% endfor %}",
+            r"(?s){% for ([a-z0-9_]+) in ([a-z0-9_.|]+) %}(.*?){% endfor %}",
             self._loop_repl, text
             )
         # Protect actual percent signs in the text.
