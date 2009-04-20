@@ -71,9 +71,15 @@ class CodeUnit:
         else:
             n = os.path.splitext(morf)[0]
             rel = file_locator.relative_filename(n)
-            self.relative = (rel != n)
+            if os.path.isabs(n):
+                self.relative = (rel != n)
+            else:
+                self.relative = True
             n = rel
         self.name = n
+
+    def __repr__(self):
+        return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
 
     def __cmp__(self, other):
         return cmp(self.name, other.name)
