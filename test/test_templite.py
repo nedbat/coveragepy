@@ -66,6 +66,11 @@ class TemplateTest(unittest.TestCase):
         obj.txt = "Once"
         self.try_render("{{obj.ditto}}", locals(), "OnceOnce")
 
+    def test_item_access(self):
+        # Variables' items can be used.
+        d = {'a':17, 'b':23}
+        self.try_render("{{d.a}} < {{d.b}}", locals(), "17 < 23")
+
     def test_loops(self):
         # Loops work like in Django.
         nums = [1,2,3,4]

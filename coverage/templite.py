@@ -73,7 +73,10 @@ class ContextAccess(object):
             dots = key.split('.') 
             value = self[dots[0]]
             for dot in dots[1:]:
-                value = getattr(value, dot)
+                try:
+                    value = getattr(value, dot)
+                except AttributeError:
+                    value = value[dot]
                 if callable(value):
                     value = value()
         else:
