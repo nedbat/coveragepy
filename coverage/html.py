@@ -28,18 +28,18 @@ class HtmlReporter(Reporter):
             
             css_class = ""
             if lineno in statements:
-                css_class += " s"
+                css_class += " stm"
                 if lineno not in missing and lineno not in excluded:
-                    css_class += " r"
+                    css_class += " run"
             if lineno in excluded:
-                css_class += " x"
+                css_class += " exc"
             if lineno in missing:
-                css_class += " m"
+                css_class += " mis"
                 
             lineinfo = {
                 'text': line,
                 'number': lineno,
-                'class': css_class.strip() or "p"
+                'class': css_class.strip() or "pln"
             }
             lines.append(lineinfo)
 
@@ -47,7 +47,6 @@ class HtmlReporter(Reporter):
         fhtml = open(html_filename, 'w')
         fhtml.write(self.source_tmpl.render(locals()))
         fhtml.close()
-
 
 
 # Helpers for templates
@@ -68,47 +67,46 @@ def not_empty(t):
 # Templates
 
 SOURCE = """\
+<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 <title>Coverage of {{cu.filename|escape}}</title>
 <style>
-* {
-    font-size: 11pt;
-    line-height: 1.1em;
-    }
 .linenos {
     background: #eee;    
     }
 .linenos p {
     text-align: right;
     margin: 0;
-    padding: 0 .5em 0 0;
-    font-family: verdana, sans-serif;
+    padding: 0 .5em 0 .5em;
+    font-family: "courier new", monospace;
+    color: #999;
     }
 .source p {
     margin: 0;
     padding: 0 0 0 .5em;
     font-family: "courier new", monospace;
+    white-space: nowrap;  
     }
 
-.linenos p.m {
-    background: #fcc;    
+.linenos p.mis {
+    background: #ffcccc;
     }
-.linenos p.r {
-    background: #cfc;    
+.linenos p.run {
+    background: #ccffcc;
     }
-.linenos  p.x {
-    background: #ddd;    
+.linenos p.exc {
+    background: #e2e2e2;
     }
 
-.source p.m {
-    background: #fee;    
+.source p.mis {
+    background: #ffdddd;
     }
-.source p.r {
-    background: #efe;    
+.source p.run {
+    background: #ddffdd;
     }
-.source p.x {
-    background: #eee;    
+.source p.exc {
+    background: #eeeeee;
     }
 </style>
 </head>
