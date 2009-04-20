@@ -84,7 +84,12 @@ class TemplateTest(unittest.TestCase):
             Templite("Look: {% for n in nums %}{{n}}, {% endfor %}done.").
                 render(locals()), "Look: 1, 2, 3, 4, done."
             )
-        rev = reversed
+        # Loop iterables can be filtered.
+        def rev(l):
+            l = l[:]
+            l.reverse()
+            return l
+        
         self.assertEqual(
             Templite("Look: {% for n in nums|rev %}{{n}}, {% endfor %}done.").
                 render(locals()), "Look: 4, 3, 2, 1, done."
