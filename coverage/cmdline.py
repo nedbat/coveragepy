@@ -3,6 +3,7 @@
 import getopt, sys
 
 from coverage.annotate import AnnotateReporter
+from coverage.html import HtmlReporter
 from coverage.summary import SummaryReporter
 from coverage.execfile import run_python_file
 
@@ -45,7 +46,7 @@ coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
 Coverage data is saved in the file .coverage by default.  Set the
 COVERAGE_FILE environment variable to save it somewhere else.
 """.strip()
-
+#TODO: add -b to the help.
 
 class CoverageScript:
     def __init__(self):
@@ -66,6 +67,7 @@ class CoverageScript:
         settings = {}
         optmap = {
             '-a': 'annotate',
+            '-b': 'html',
             '-c': 'combine',
             '-d:': 'directory=',
             '-e': 'erase',
@@ -95,6 +97,7 @@ class CoverageScript:
             return OK
 
         # Check for conflicts and problems in the options.
+        #TODO: add -b conflict checking.
         for i in ['erase', 'execute']:
             for j in ['annotate', 'report', 'combine']:
                 if settings.get(i) and settings.get(j):
@@ -104,12 +107,13 @@ class CoverageScript:
 
         args_needed = (settings.get('execute')
                        or settings.get('annotate')
+                       or settings.get('html')
                        or settings.get('report'))
         action = (settings.get('erase') 
                   or settings.get('combine')
                   or args_needed)
         if not action:
-            help_fn("You must specify at least one of -e, -x, -c, -r, or -a.")
+            help_fn("You must specify at least one of -e, -x, -c, -r, -a, or -b.")
             return ERR
         if not args_needed and args:
             help_fn("Unexpected arguments: %s" % " ".join(args))
@@ -153,7 +157,10 @@ class CoverageScript:
         if settings.get('annotate'):
             reporter = AnnotateReporter(self.coverage, ignore_errors)
             reporter.report(args, directory, omit_prefixes=omit)
-        
+        if settings.get('html'):
+            reporter = HtmlReporter(self.coverage, ignore_errors)
+            reporter.report(args, directory, omit_prefixes=omit)
+
         return OK
     
 # Main entrypoint.  This is installed as the script entrypoint, so don't

@@ -1713,7 +1713,7 @@ class CmdLineTest(CoverageTest):
         self.assertRaisesMsg(Exception, "You can't specify the 'execute' and 'combine' options at the same time.", self.command_line, ['-x', '-c'])
 
     def testNeedAction(self):
-        self.assertRaisesMsg(Exception, "You must specify at least one of -e, -x, -c, -r, or -a.", self.command_line, ['-p'])
+        self.assertRaisesMsg(Exception, "You must specify at least one of -e, -x, -c, -r, -a, or -b.", self.command_line, ['-p'])
 
     def testArglessActions(self):
         self.assertRaisesMsg(Exception, "Unexpected arguments: foo bar", self.command_line, ['-e', 'foo', 'bar'])

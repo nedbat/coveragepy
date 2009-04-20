@@ -96,3 +96,7 @@ class CodeUnit:
         """
         root = os.path.splitdrive(os.path.splitext(self.name)[0])[1]
         return root.replace('\\', '_').replace('/', '_')
+
+    def source_file(self):
+        """Return an open file for reading the source of the code unit."""
+        return open(self.filename)

@@ -1,5 +1,6 @@
 """Reporter foundation for coverage.py"""
 
+import os
 from coverage.codeunit import code_unit_factory
 
 class Reporter(object):
@@ -30,3 +31,29 @@ class Reporter(object):
                             morfs, self.coverage.file_locator, omit_prefixes
                             )
         self.code_units.sort()
+
+    def report_files(self, report_fn, morfs, directory=None,
+                        omit_prefixes=None):
+        """Run a reporting function on a number of morfs.
+        
+        `report_fn` is called for each relative morf in `morfs`.
+        
+        """
+        self.find_code_units(morfs, omit_prefixes)
+
+        self.directory = directory
+        if self.directory and not os.path.exists(self.directory):
+            os.makedirs(self.directory)
+
+        for cu in self.code_units:
+            try:
+                if not cu.relative:
+                    continue
+                statements, excluded, missing, _ = self.coverage.analyze(cu)
+                report_fn(cu, statements, excluded, missing)
+            except KeyboardInterrupt:
+                raise
+            except:
+                if not self.ignore_errors:
+                    raise
+
