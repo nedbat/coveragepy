@@ -22,10 +22,22 @@ class HtmlReporter(Reporter):
     def html_file(self, cu, statements, excluded, missing):
         """Generate an HTML file for one source file."""
         
-        lines = []
         source = cu.source_file()
-        for lineno, line in enumerate(source.readlines()):
-            lineno += 1
+        source_lines = source.readlines()
+        
+        n_lin = len(source_lines)
+        n_stm = len(statements)
+        n_exc = len(excluded)
+        n_mis = len(missing)
+        if n_stm > 0:
+            pc_cov = 100.0 * float(n_mis) / n_stm
+        else:
+            pc_cov = 100.0
+
+        lines = []
+        for lineno, line in enumerate(source_lines):
+            lineno += 1     # enum is 0-based, lines are 1-based.
+            
             
             css_class = ""
             if lineno in statements:
@@ -65,6 +77,8 @@ def not_empty(t):
     """Make sure HTML content is not completely empty."""
     return t or "&nbsp;"
     
+def format_pct(p):
+    return "%.0f" % p
 
 # Templates
 
@@ -77,15 +91,25 @@ SOURCE = """\
 <head>
 <title>Coverage for {{cu.name|escape}}</title>
 <style>
-html, body {
+/* Page-wide styles */
+html, body, p, td {
     margin: 0;
     padding: 0;
+    }
+body {
     font-size: 85%;
     }
-p {
-    margin: 0;
-    padding: 0;
+    
+a.nav {
+    text-decoration: none;
+    color: inherit;
     }
+a.nav:hover {
+    text-decoration: underline;
+    color: inherit;
+    }
+
+/* Page structure */
 #header {
     background: #ffd472;
     width: 100%;
@@ -104,20 +128,22 @@ p {
     color: #666666;
     font-style: italic;
     }
-    
+
+/* Header styles */
 .content {
     padding: 1em;
     }
     
-a.nav {
-    text-decoration: none;
-    color: inherit;
-    }
-a.nav:hover {
-    text-decoration: underline;
-    color: inherit;
+#file_stats {
+    float: right;
     }
 
+.stats .number {
+    text-align: right;
+    font-weight: bold;
+    }
+
+/* Source file styles */
 .linenos {
     background: #eeeeee;    
     }
@@ -157,7 +183,18 @@ a.nav:hover {
 <body>
 <div id='header'>
     <div class='content'>
-        <p>Coverage for <b>{{cu.filename|escape}}</b></p>
+        <div id='file_stats'>
+            <table class='stats'>
+            <tr><td class='label'>Lines</td><td class='number'>{{n_lin}}</td></tr>
+            <tr><td class='label'>Statements</td><td class='number'>{{n_stm}}</td></tr>
+            <tr><td class='label'>Excluded</td><td class='number'>{{n_exc}}</td></tr>
+            <tr><td class='label'>Missing</td><td class='number'>{{n_mis}}</td></tr>
+            </table>
+        </div>
+        <p>Coverage for <b>{{cu.filename|escape}}</b>:
+            <span class='pc_cov'>{{pc_cov|format_pct}}%</span>
+        </p>
+        <div style='clear:both'></div>
     </div>
 </div>
 
