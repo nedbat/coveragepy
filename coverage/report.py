@@ -19,6 +19,10 @@ class Reporter(object):
         # The code units to report on.  Set by find_code_units.
         self.code_units = []
         
+        # The directory into which to place the report, used by some derived
+        # classes.
+        self.directory = None
+        
     def find_code_units(self, morfs, omit_prefixes):
         """Find the code units we'll report on.
         

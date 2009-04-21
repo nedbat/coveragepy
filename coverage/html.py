@@ -1,7 +1,7 @@
 """HTML reporting for coverage.py"""
 
 import os
-from coverage import __version__
+from coverage import __version__    # pylint: disable-msg=W0611
 from coverage.report import Reporter
 from coverage.templite import Templite
 
@@ -44,7 +44,8 @@ class HtmlReporter(Reporter):
             }
             lines.append(lineinfo)
 
-        html_filename = os.path.join(self.directory, cu.flat_rootname()) + ".html"
+        html_filename = os.path.join(self.directory, cu.flat_rootname())
+        html_filename += ".html"
         fhtml = open(html_filename, 'w')
         fhtml.write(self.source_tmpl.render(locals()))
         fhtml.close()
@@ -66,6 +67,9 @@ def not_empty(t):
     
 
 # Templates
+
+# For making line numbers and text different fonts:
+# http://24ways.org/2006/compose-to-a-vertical-rhythm
 
 SOURCE = """\
 <!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -98,7 +102,7 @@ p {
     font-size: 85%;
     font-family: verdana, sans-serif;
     color: #666666;
-    font-variant: italic;
+    font-style: italic;
     }
     
 .content {
