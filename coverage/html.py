@@ -96,7 +96,7 @@ html, body, p, td {
     margin: 0;
     padding: 0;
     }
-body {
+html, body {
     font-size: 85%;
     }
     
