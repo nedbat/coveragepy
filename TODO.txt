@@ -64,10 +64,10 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 * Beauty
 
-- HTML report
++ HTML report
 - Syntax coloring in HTML report
 - Dynamic effects in HTML report
-- Footer in reports pointing to coverage home page.
++ Footer in reports pointing to coverage home page.
 
 
 * Community
