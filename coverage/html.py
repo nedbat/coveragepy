@@ -96,9 +96,14 @@ html, body, p, td {
     margin: 0;
     padding: 0;
     }
-html, body {
-    font-size: 85%;
+
+body {
+    font-size: 75%;
     }
+  
+html>body {
+    font-size: 12px;
+    }    
     
 a.nav {
     text-decoration: none;
