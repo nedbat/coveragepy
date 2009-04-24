@@ -97,14 +97,21 @@ html, body, p, td {
     padding: 0;
     }
 
+/* Set baseline grid to 14 pt. */
 body {
-    font-size: 75%;
+    font-size: .875em; /* 14/16 */
     }
   
 html>body {
-    font-size: 12px;
+    font-size: 14px;
     }    
-    
+
+/* Set base font size to 12/14 */
+p {
+    font-size: .85714em;        /* 12/14 */
+    line-height: 1.16667em;     /* 14/12 */
+    }
+
 a.nav {
     text-decoration: none;
     color: inherit;
@@ -155,8 +162,13 @@ a.nav:hover {
 .linenos p {
     text-align: right;
     margin: 0;
-    padding: 0 .5em 0 .5em;
+    padding: 0 .5em;
     color: #999999;
+    font-size: .75em;       /* 9/12 */
+    line-height: 1.3333em;  /* 12/9, why isn't it 14/9? */
+    }
+td.text {
+    width: 100%;
     }
 .text p {
     margin: 0;
