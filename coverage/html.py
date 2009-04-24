@@ -27,6 +27,11 @@ class HtmlReporter(Reporter):
         
     def report(self, morfs, directory=None, omit_prefixes=None):
         assert directory, "must provide a directory for html reporting"
+        
+        # Create the output directory if needed.
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         # Create the once-per-directory files.
         shutil.copyfile(
             data_filename("htmlfiles/style.css"),
@@ -47,7 +52,7 @@ class HtmlReporter(Reporter):
         n_exc = len(excluded)
         n_mis = len(missing)
         if n_stm > 0:
-            pc_cov = 100.0 * float(n_mis) / n_stm
+            pc_cov = 100.0 * float(n_stm - n_mis) / n_stm
         else:
             pc_cov = 100.0
 
