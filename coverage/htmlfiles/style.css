@@ -1,0 +1,105 @@
+/* CSS styles for coverage.py */
+/* Page-wide styles */
+html, body, p, td {
+    margin: 0;
+    padding: 0;
+    }
+
+/* Set baseline grid to 14 pt. */
+body {
+    font-size: .875em; /* 14/16 */
+    }
+  
+html>body {
+    font-size: 14px;
+    }    
+
+/* Set base font size to 12/14 */
+p {
+    font-size: .85714em;        /* 12/14 */
+    line-height: 1.16667em;     /* 14/12 */
+    }
+
+a.nav {
+    text-decoration: none;
+    color: inherit;
+    }
+a.nav:hover {
+    text-decoration: underline;
+    color: inherit;
+    }
+
+/* Page structure */
+#header {
+    background: #ffd472;
+    width: 100%;
+    font-family: verdana, sans-serif;
+    }
+
+#source {
+    padding: 1em;
+    font-family: "courier new", monospace;
+    }
+
+#footer {
+    background: #ffe9b8;
+    font-size: 85%;
+    font-family: verdana, sans-serif;
+    color: #666666;
+    font-style: italic;
+    }
+
+/* Header styles */
+.content {
+    padding: 1em;
+    }
+    
+#file_stats {
+    float: right;
+    }
+
+.stats .number {
+    text-align: right;
+    font-weight: bold;
+    }
+
+/* Source file styles */
+.linenos {
+    background: #eeeeee;    
+    }
+.linenos p {
+    text-align: right;
+    margin: 0;
+    padding: 0 .5em;
+    color: #999999;
+    font-size: .75em;       /* 9/12 */
+    line-height: 1.3333em;  /* 12/9, why isn't it 14/9? */
+    }
+td.text {
+    width: 100%;
+    }
+.text p {
+    margin: 0;
+    padding: 0 0 0 .5em;
+    white-space: nowrap;  
+    }
+
+.linenos p.mis {
+    background: #ffcccc;
+    }
+.linenos p.run {
+    background: #ccffcc;
+    }
+.linenos p.exc {
+    background: #e2e2e2;
+    }
+
+.text p.mis {
+    background: #ffdddd;
+    }
+.text p.run {
+    background: #ddffdd;
+    }
+.text p.exc {
+    background: #eeeeee;
+    }

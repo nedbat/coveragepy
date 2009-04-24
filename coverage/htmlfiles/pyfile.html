@@ -1,0 +1,51 @@
+<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Coverage for {{cu.name|escape}}</title>
+<link rel='stylesheet' href='style.css' type='text/css'>
+</head>
+<body>
+<div id='header'>
+    <div class='content'>
+        <div id='file_stats'>
+            <table class='stats'>
+            <tr><td class='label'>Lines</td><td class='number'>{{n_lin}}</td></tr>
+            <tr><td class='label'>Statements</td><td class='number'>{{n_stm}}</td></tr>
+            <tr><td class='label'>Excluded</td><td class='number'>{{n_exc}}</td></tr>
+            <tr><td class='label'>Missing</td><td class='number'>{{n_mis}}</td></tr>
+            </table>
+        </div>
+        <p>Coverage for <b>{{cu.filename|escape}}</b>:
+            <span class='pc_cov'>{{pc_cov|format_pct}}%</span>
+        </p>
+        <div style='clear:both'></div>
+    </div>
+</div>
+
+<div id='source'>
+<table cellspacing='0' cellpadding='0'>
+<tr>
+<td class='linenos' valign='top'>
+    {% for line in lines %}
+    <p class='{{line.class}}'>{{line.number}}</p>
+    {% endfor %}
+</td>
+<td class='text' valign='top'>
+    {% for line in lines %}
+    <p class='{{line.class}}'>{{line.text.rstrip|escape|not_empty}}</p>
+    {% endfor %}
+</td>
+</tr>
+</table>
+</div>
+
+<div id='footer'>
+    <div class='content'>
+        <p>
+            <a class='nav' href='http://bitbucket.org/ned/coveragepy/'>coverage.py v{{__version__}}</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
