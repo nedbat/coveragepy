@@ -58,24 +58,26 @@ a.nav:hover {
 
 /* Header styles */
 .content {
-    padding: 1em 3em;
+    padding: 1em 3em .5em 3em;
     }
 
 h1 {
-    font-size: 1.5em;
+    font-size: 1.25em;
 }
 
 h2.stats {
     margin-top: .5em;
+    font-size: 1em;
 }
 .stats span {
     border: 1px solid;
     padding: .1em .25em;
+    margin: 0 .1em;
     cursor: pointer;
-    border-color: #888 #ccc #ccc #888;
+    border-color: #999 #ccc #ccc #999;
 }
 .stats span.hide {
-    border-color: #ccc #888 #888 #ccc;
+    border-color: #ccc #999 #999 #ccc;
 }
 
 /* Source file styles */
@@ -94,17 +96,21 @@ td.text {
 .text p {
     margin: 0;
     padding: 0 0 0 .5em;
+    border-left: 2px solid #ffffff;
     white-space: nowrap;  
     }
 
 .text p.mis {
     background: #ffdddd;
+    border-left: 2px solid #ff0000;
     }
 .text p.run {
     background: #ddffdd;
+    border-left: 2px solid #00ff00;
     }
 .text p.exc {
     background: #eeeeee;
+    border-left: 2px solid #808080;
     }
 .text p.hide {
     background: inherit;
