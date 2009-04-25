@@ -37,6 +37,10 @@ class HtmlReporter(Reporter):
             data_filename("htmlfiles/style.css"),
             os.path.join(directory, "style.css")
             )
+        shutil.copyfile(
+            data_filename("htmlfiles/jquery-1.3.2.min.js"),
+            os.path.join(directory, "jquery-1.3.2.min.js")
+            )
 
         # Process all the files.
         self.report_files(self.html_file, morfs, directory, omit_prefixes)
@@ -51,8 +55,9 @@ class HtmlReporter(Reporter):
         n_stm = len(statements)
         n_exc = len(excluded)
         n_mis = len(missing)
+        n_run = n_stm - n_mis
         if n_stm > 0:
-            pc_cov = 100.0 * float(n_stm - n_mis) / n_stm
+            pc_cov = 100.0 * float(n_run) / n_stm
         else:
             pc_cov = 100.0
 
@@ -65,7 +70,7 @@ class HtmlReporter(Reporter):
             if lineno in statements:
                 css_class += " stm"
                 if lineno not in missing and lineno not in excluded:
-                    css_class += " run"
+                    css_class += " run hide"
             if lineno in excluded:
                 css_class += " exc"
             if lineno in missing:

@@ -70,10 +70,10 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     - Package navigation.
     - Rolled-up statistics.
     - Syntax coloring in HTML report.
-    - Dynamic effects in HTML report.
+    + Dynamic effects in HTML report.
     + Footer in reports pointing to coverage home page.
-    - Baseline grid for linenumber font.
-    - Separate out css and HTML.
+    + Baseline grid for linenumber font.
+    + Separate out css and HTML.
 
 
 * Community

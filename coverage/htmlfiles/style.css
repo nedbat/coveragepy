@@ -68,10 +68,14 @@ h1 {
 h2.stats {
     margin-top: .5em;
 }
-.stats  span {
-    border: 1px solid black;
+.stats span {
+    border: 1px solid;
     padding: .1em .25em;
     cursor: pointer;
+    border-color: #888 #ccc #ccc #888;
+}
+.stats span.hide {
+    border-color: #ccc #888 #888 #ccc;
 }
 
 /* Source file styles */
@@ -101,4 +105,7 @@ td.text {
     }
 .text p.exc {
     background: #eeeeee;
+    }
+.text p.hide {
+    background: inherit;
     }
