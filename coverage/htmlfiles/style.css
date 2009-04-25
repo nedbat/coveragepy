@@ -1,23 +1,30 @@
 /* CSS styles for coverage.py */
 /* Page-wide styles */
-html, body, p, td {
+html, body, h1, h2, h3, p, td {
     margin: 0;
-    padding: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
     }
 
-/* Set baseline grid to 14 pt. */
+/* Set baseline grid to 16 pt. */
 body {
-    font-size: .875em; /* 14/16 */
+    font-size: 1em;
     }
-  
+
 html>body {
-    font-size: 14px;
+    font-size: 16px;
     }    
 
-/* Set base font size to 12/14 */
+/* Set base font size to 12/16 */
 p {
-    font-size: .85714em;        /* 12/14 */
-    line-height: 1.16667em;     /* 14/12 */
+    font-size: .75em;        /* 12/16 */
+    line-height: 1.3333em;   /* 16/12 */
     }
 
 a.nav {
@@ -31,9 +38,10 @@ a.nav:hover {
 
 /* Page structure */
 #header {
-    background: #ffd472;
+    background: #f8f8f8;
     width: 100%;
-    font-family: verdana, sans-serif;
+    font-family: georgia, serif;
+    border-bottom: 1px solid #eee;
     }
 
 #source {
@@ -42,7 +50,6 @@ a.nav:hover {
     }
 
 #footer {
-    background: #ffe9b8;
     font-size: 85%;
     font-family: verdana, sans-serif;
     color: #666666;
@@ -51,29 +58,31 @@ a.nav:hover {
 
 /* Header styles */
 .content {
-    padding: 1em;
-    }
-    
-#file_stats {
-    float: right;
+    padding: 1em 3em;
     }
 
-.stats .number {
-    text-align: right;
-    font-weight: bold;
-    }
+h1 {
+    font-size: 1.5em;
+}
+
+h2.stats {
+    margin-top: .5em;
+}
+.stats  span {
+    border: 1px solid black;
+    padding: .1em .25em;
+    cursor: pointer;
+}
 
 /* Source file styles */
-.linenos {
-    background: #eeeeee;    
-    }
 .linenos p {
     text-align: right;
     margin: 0;
     padding: 0 .5em;
     color: #999999;
-    font-size: .75em;       /* 9/12 */
-    line-height: 1.3333em;  /* 12/9, why isn't it 14/9? */
+    font-family: verdana, sans-serif;
+    font-size: .625em;       /* 10/16 */
+    line-height: 1.6em;  /* 16/10 */
     }
 td.text {
     width: 100%;
@@ -82,16 +91,6 @@ td.text {
     margin: 0;
     padding: 0 0 0 .5em;
     white-space: nowrap;  
-    }
-
-.linenos p.mis {
-    background: #ffcccc;
-    }
-.linenos p.run {
-    background: #ccffcc;
-    }
-.linenos p.exc {
-    background: #e2e2e2;
     }
 
 .text p.mis {

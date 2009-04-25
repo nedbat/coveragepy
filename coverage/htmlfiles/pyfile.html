@@ -7,18 +7,15 @@
 <body>
 <div id='header'>
     <div class='content'>
-        <div id='file_stats'>
-            <table class='stats'>
-            <tr><td class='label'>Lines</td><td class='number'>{{n_lin}}</td></tr>
-            <tr><td class='label'>Statements</td><td class='number'>{{n_stm}}</td></tr>
-            <tr><td class='label'>Excluded</td><td class='number'>{{n_exc}}</td></tr>
-            <tr><td class='label'>Missing</td><td class='number'>{{n_mis}}</td></tr>
-            </table>
-        </div>
-        <p>Coverage for <b>{{cu.filename|escape}}</b>:
+        <h1>Coverage for <b>{{cu.filename|escape}}</b>:
             <span class='pc_cov'>{{pc_cov|format_pct}}%</span>
-        </p>
-        <div style='clear:both'></div>
+        </h1>
+        <h2 class='stats'>
+            Stats:
+            <span class='stm'>{{n_stm}} statements</span>
+            <span class='exc'>{{n_exc}} excluded</span>
+            <span class='mis'>{{n_mis}} missing</span>
+        </h2>
     </div>
 </div>
 
