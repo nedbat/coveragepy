@@ -61,6 +61,11 @@ class HtmlReporter(Reporter):
         else:
             pc_cov = 100.0
 
+        # These classes determine which lines are highlighted by default.
+        c_run = " run hide"
+        c_exc = " exc"
+        c_mis = " mis"
+        
         lines = []
         for lineno, line in enumerate(source_lines):
             lineno += 1     # enum is 0-based, lines are 1-based.
@@ -70,11 +75,11 @@ class HtmlReporter(Reporter):
             if lineno in statements:
                 css_class += " stm"
                 if lineno not in missing and lineno not in excluded:
-                    css_class += " run hide"
+                    css_class += c_run
             if lineno in excluded:
-                css_class += " exc"
+                css_class += c_exc
             if lineno in missing:
-                css_class += " mis"
+                css_class += c_mis
                 
             lineinfo = {
                 'text': line,
