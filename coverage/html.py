@@ -25,6 +25,8 @@ class HtmlReporter(Reporter):
         self.directory = None
         self.source_tmpl = Templite(data("htmlfiles/pyfile.html"), globals())
         
+        self.files = []
+
     def report(self, morfs, directory=None, omit_prefixes=None):
         assert directory, "must provide a directory for html reporting"
         
@@ -45,6 +47,9 @@ class HtmlReporter(Reporter):
         # Process all the files.
         self.report_files(self.html_file, morfs, directory, omit_prefixes)
 
+        # Write the index file.
+        self.index_file()
+
     def html_file(self, cu, statements, excluded, missing):
         """Generate an HTML file for one source file."""
         
@@ -57,7 +62,7 @@ class HtmlReporter(Reporter):
         n_mis = len(missing)
         n_run = n_stm - n_mis
         if n_stm > 0:
-            pc_cov = 100.0 * float(n_run) / n_stm
+            pc_cov = 100.0 * n_run / n_stm
         else:
             pc_cov = 100.0
 
@@ -88,10 +93,40 @@ class HtmlReporter(Reporter):
             }
             lines.append(lineinfo)
 
-        html_filename = os.path.join(self.directory, cu.flat_rootname())
-        html_filename += ".html"
-        fhtml = open(html_filename, 'w')
+        # Write the HTML page for this file.
+        html_filename = cu.flat_rootname() + ".html"
+        html_path = os.path.join(self.directory, html_filename)
+        fhtml = open(html_path, 'w')
         fhtml.write(self.source_tmpl.render(locals()))
+        fhtml.close()
+
+        # Save this file's information for the index file.
+        self.files.append({
+            'stm': n_stm,
+            'run': n_run,
+            'exc': n_exc,
+            'mis': n_mis,
+            'pc_cov': pc_cov,
+            'html_filename': html_filename,
+            'cu': cu,
+            })
+
+    def index_file(self):
+        """Write the index.html file for this report."""
+        index_tmpl = Templite(data("htmlfiles/index.html"), globals())
+
+        files = self.files
+        
+        total_stm = sum([f['stm'] for f in files])
+        total_run = sum([f['run'] for f in files])
+        total_exc = sum([f['exc'] for f in files])
+        if total_stm:
+            total_cov = 100.0 * total_run / total_stm
+        else:
+            total_cov = 100.0
+
+        fhtml = open(os.path.join(self.directory, "index.html"), "w")
+        fhtml.write(index_tmpl.render(locals()))
         fhtml.close()
 
 

@@ -7,7 +7,8 @@ Version 3.0b2
 
 HTML reporting, and continued refactoring.
 
-- HTML reports and annotation of source files: use the new -b switch.
+- HTML reports and annotation of source files: use the new -b switch.  THanks
+  to George Song for code, inspiration and guidance.
 
 - Annotation into a directory (-a -d) behaves differently.  The annotated files
   are named with their hierarchy flattened so that same-named files from
