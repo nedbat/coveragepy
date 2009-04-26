@@ -1,6 +1,6 @@
 """HTML reporting for coverage.py"""
 
-import os, shutil
+import os, re, shutil
 from coverage import __version__    # pylint: disable-msg=W0611
 from coverage.report import Reporter
 from coverage.templite import Templite
@@ -96,8 +96,9 @@ class HtmlReporter(Reporter):
         # Write the HTML page for this file.
         html_filename = cu.flat_rootname() + ".html"
         html_path = os.path.join(self.directory, html_filename)
+        html = spaceless(self.source_tmpl.render(locals()))
         fhtml = open(html_path, 'w')
-        fhtml.write(self.source_tmpl.render(locals()))
+        fhtml.write(html)
         fhtml.close()
 
         # Save this file's information for the index file.
@@ -146,3 +147,9 @@ def not_empty(t):
     
 def format_pct(p):
     return "%.0f" % p
+
+def spaceless(html):
+    """Squeeze out some of that annoying extra space that comes from
+    nicely-formatted templates."""
+    html = re.sub(">\s+<p ", ">\n<p ", html)
+    return html
