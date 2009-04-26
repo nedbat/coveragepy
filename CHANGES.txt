@@ -7,7 +7,7 @@ Version 3.0b2
 
 HTML reporting, and continued refactoring.
 
-- HTML reports and annotation of source files: use the new -b switch.  THanks
+- HTML reports and annotation of source files: use the new -b switch.  Thanks
   to George Song for code, inspiration and guidance.
 
 - Annotation into a directory (-a -d) behaves differently.  The annotated files
@@ -20,7 +20,7 @@ HTML reporting, and continued refactoring.
 - Programs executed with -x now behave more as they should, for example,
   __file__ has the correct value.
 
-- .coverage data files have a new format.
+- .coverage data files have a new pickle-based format.
 
 - Removed the undocumented cache_file argument to coverage.usecache().
 
@@ -34,20 +34,21 @@ Major overhaul.
   misnomer, since there is no longer a file named coverage.py.  Functionality
   has been split into classes.
 
-- The trace function is implemented in C for speed.
+- The trace function is implemented in C for speed.  Coverage runs are now
+  much faster.
 
 - Executable lines are identified by reading the line number tables in the
   compiled code, removing a great deal of complicated analysis code.
   
+- Precisely which lines are considered executable has changed in some cases.
+  Therefore, your coverage stats may also change slightly.
+
 - The singleton coverage object is only created if the module-level functions
   are used.  This maintains the old interface while allowing better
   programmatic use of coverage.py.
   
-- Minimum supported Python version is 2.3.
-
-- Precisely which lines are considered executable has changed in some cases.
-  Therefore, your coverage stats may also change.
-  
+- The minimum supported Python version is 2.3.
+ 
 
 Version 2.85, 14 September 2008
 -------------------------------
