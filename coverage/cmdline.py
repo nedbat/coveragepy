@@ -138,20 +138,25 @@ class CoverageScript:
         if settings.get('combine'):
             self.coverage.combine()
 
-        ignore_errors = settings.get('ignore-errors')
+        # Remaining actions are reporting, with some common options.
         show_missing = settings.get('show-missing')
         directory = settings.get('directory=')
+        report_args = {
+            'morfs': args,
+            'ignore_errors': settings.get('ignore-errors'),
+            }
 
         omit = settings.get('omit=')
         if omit:
             omit = omit.split(',')
+        report_args['omit_prefixes'] = omit
         
         if settings.get('report'):
-            self.coverage.report(morfs=args, show_missing=show_missing, ignore_errors=ignore_errors, omit_prefixes=omit)
+            self.coverage.report(show_missing=show_missing, **report_args)
         if settings.get('annotate'):
-            self.coverage.annotate(morfs=args, directory=directory, ignore_errors=ignore_errors, omit_prefixes=omit)
+            self.coverage.annotate(directory=directory, **report_args)
         if settings.get('html'):
-            self.coverage.html_report(morfs=args, directory=directory, ignore_errors=ignore_errors, omit_prefixes=omit)
+            self.coverage.html_report(directory=directory, **report_args)
 
         return OK
     

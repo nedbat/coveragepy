@@ -162,7 +162,9 @@ class coverage:
             statements, excluded, missing, format_lines(statements, missing)
             )
 
-    def report(self, morfs, show_missing=True, ignore_errors=False, file=None, omit_prefixes=None):
+    def report(self, morfs, show_missing=True, ignore_errors=False, file=None,
+                omit_prefixes=None
+                ):
         """Write a summary report to `file`.
         
         Each module in `morfs` is listed, with counts of statements, executed
@@ -172,7 +174,9 @@ class coverage:
         reporter = SummaryReporter(self, show_missing, ignore_errors)
         reporter.report(morfs, outfile=file, omit_prefixes=omit_prefixes)
 
-    def annotate(self, morfs, directory=None, ignore_errors=False, omit_prefixes=None):
+    def annotate(self, morfs, directory=None, ignore_errors=False,
+                omit_prefixes=None
+                ):
         """Annotate a list of modules.
         
         Each module in `morfs` is annotated.  The source is written to a new
@@ -182,11 +186,13 @@ class coverage:
         
         """
         reporter = AnnotateReporter(self, ignore_errors)
-        reporter.report(morfs, directory)
+        reporter.report(morfs, directory=directory, omit_prefixes=omit_prefixes)
 
-    def html_report(self, morfs, directory=None, ignore_errors=False, omit_prefixes=None):
+    def html_report(self, morfs, directory=None, ignore_errors=False,
+                omit_prefixes=None
+                ):
         """Generate an HTML report.
         
         """
         reporter = HtmlReporter(self, ignore_errors)
-        reporter.report(morfs, outfile=file, omit_prefixes=omit_prefixes)
+        reporter.report(morfs, directory=directory, omit_prefixes=omit_prefixes)
