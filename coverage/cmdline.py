@@ -2,9 +2,6 @@
 
 import getopt, sys
 
-from coverage.annotate import AnnotateReporter
-from coverage.html import HtmlReporter
-from coverage.summary import SummaryReporter
 from coverage.execfile import run_python_file
 
 USAGE = r"""
@@ -150,16 +147,11 @@ class CoverageScript:
             omit = omit.split(',')
         
         if settings.get('report'):
-            reporter = SummaryReporter(
-                                self.coverage, show_missing, ignore_errors
-                                )
-            reporter.report(args, omit_prefixes=omit)
+            self.coverage.report(morfs=args, show_missing=show_missing, ignore_errors=ignore_errors, omit_prefixes=omit)
         if settings.get('annotate'):
-            reporter = AnnotateReporter(self.coverage, ignore_errors)
-            reporter.report(args, directory, omit_prefixes=omit)
+            self.coverage.annotate(morfs=args, directory=directory, ignore_errors=ignore_errors, omit_prefixes=omit)
         if settings.get('html'):
-            reporter = HtmlReporter(self.coverage, ignore_errors)
-            reporter.report(args, directory, omit_prefixes=omit)
+            self.coverage.html_report(morfs=args, directory=directory, ignore_errors=ignore_errors, omit_prefixes=omit)
 
         return OK
     
