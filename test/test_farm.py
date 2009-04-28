@@ -58,7 +58,7 @@ class FarmTestCase(object):
         cwd = self.cd(self.dir)
 
         # Prepare a dictionary of globals for the run.py files to use.
-        fns = "copy run compare clean".split()
+        fns = "copy run runfunc compare contains clean".split()
         if self.clean_only:
             glo = dict([(fn, self.noop) for fn in fns])
             glo['clean'] = self.clean
@@ -72,24 +72,42 @@ class FarmTestCase(object):
         finally:
             self.cd(cwd)
 
+    def run_fully(self):
+        """Run as a full test case, with setUp and tearDown."""
+        self.setUp()
+        try:
+            self()
+        finally:
+            self.tearDown()
+
     def fnmatch_list(self, files, filepattern):
         """Filter the list of `files` to only those that match `filepattern`.
         
-        Returns a string naming the filtered files.
+        If `filepattern` is None, then return the entire list of files.
+        
+        Returns a list of the filtered files.
         
         """
-        files = [f for f in files if fnmatch.fnmatch(f, filepattern)]
-        return ", ".join(files)
+        if filepattern:
+            files = [f for f in files if fnmatch.fnmatch(f, filepattern)]
+        return files
 
     def setUp(self):
         """Test set up, run by nose before __call__."""
-        pass
+
+        # Modules should be importable from the current directory.
+        self.old_syspath = sys.path[:]
+        sys.path.insert(0, '')
     
     def tearDown(self):
         """Test tear down, run by nose after __call__."""
         # Make sure no matter what, the test is cleaned up.
-        self.clean_only = True
-        self()
+        if not self.dont_clean:
+            self.clean_only = True
+            self()
+
+        # Restore the original sys.path
+        sys.path = self.old_syspath
 
     # Functions usable inside farm run.py files
     
@@ -130,9 +148,23 @@ class FarmTestCase(object):
         finally:
             self.cd(cwd)
 
-    def compare(self, dir1, dir2, filepattern=None, left_extra=False,
-        right_extra=False
-        ):
+    def runfunc(self, fn, rundir="src"):
+        """Run a function.
+        
+        `fn` is a callable.
+        `rundir` is the directory in which to run the function.
+        
+        """
+        
+        cwd = self.cd(rundir)
+        try:
+            fn()
+        finally:
+            self.cd(cwd)
+
+    def compare(self, dir1, dir2, filepattern=None, size_within=0,
+            left_extra=False, right_extra=False
+            ):
         """Compare files matching `filepattern` in `dir1` and `dir2`.
         
         `dir2` is interpreted as a prefix, with Python version numbers appended
@@ -140,11 +172,18 @@ class FarmTestCase(object):
         "foo_v241", "foo_v24", "foo_v2", or "foo", depending on which directory
         is found first.
         
+        `size_within` is a percentage delta for the file sizes.  If non-zero,
+        then the file contents are not compared (since they are expected to
+        often be different), but the file sizes must be within this amount.
+        For example, size_within=10 means that the two files' sizes must be
+        within 10 percent of each other to compare equal.
+        
         `left_extra` true means the left directory can have extra files in it
         without triggering an assertion.  `right_extra` means the right
         directory can.
         
-        An assertion will be raised if the directories don't match in some way.
+        An assertion will be raised if the directories fail one of their
+        matches.
         
         """
         # Search for a dir2 with a version suffix.
@@ -164,11 +203,36 @@ class FarmTestCase(object):
         left_only = self.fnmatch_list(dc.left_only, filepattern)
         right_only = self.fnmatch_list(dc.right_only, filepattern)
         
-        assert not diff_files, "Files differ: %s" % (diff_files)
+        if size_within:
+            # The files were already compared, use the diff_files list as a
+            # guide for size comparison.
+            wrong_size = []
+            for f in diff_files:
+                size_l = len(open(os.path.join(dir1, f), "rb").read())
+                size_r = len(open(os.path.join(dir2, f), "rb").read())
+                big = max(size_l, size_r)
+                little = min(size_l, size_r)
+                if (big - little) / float(little) > size_within/100.0:
+                    wrong_size.append(f)
+            assert not wrong_size, "File sizes differ: %s" % wrong_size
+        else:
+            assert not diff_files, "Files differ: %s" % diff_files
+
         if not left_extra:
             assert not left_only, "Files in %s only: %s" % (dir1, left_only)
         if not right_extra:
             assert not right_only, "Files in %s only: %s" % (dir2, right_only)
+
+    def contains(self, filename, *strlist):
+        """Check that the file contains all of a list of strings.
+        
+        An assert will be raised if one of the arguments in `strlist` is
+        missing in `filename`.
+        
+        """
+        text = open(filename, "r").read()
+        for s in strlist:
+            assert s in text, "Missing content in %s: %r" % (filename, s)
 
     def clean(self, cleandir):
         """Clean `cleandir` by removing it and all its children completely."""
@@ -180,15 +244,15 @@ def main():
     if op == 'run':
         # Run the test for real.
         case = FarmTestCase(sys.argv[2])
-        case()
+        case.run_fully()
     elif op == 'out':
         # Run the test, but don't clean up, so we can examine the output.
         case = FarmTestCase(sys.argv[2], dont_clean=True)
-        case()
+        case.run_fully()
     elif op == 'clean':
         # Run all the tests, but just clean.
         for test in test_farm(clean_only=True):
-            test[0](*test[1:])
+            test[0].run_fully()
     else:
         print "Need an operation: run, out, clean"
     

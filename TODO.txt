@@ -62,6 +62,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Different categories of exclude pragma? So you can enable and disable them
     from the command line, to reconsider exclusions.
 - Reporting on files never touched by coverage (package completeness)
+- Why can't a morf also be a string, the name of a module?
 
 
 * Beauty

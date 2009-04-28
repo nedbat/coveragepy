@@ -30,9 +30,11 @@ class HtmlReporter(Reporter):
     def report(self, morfs, directory=None, omit_prefixes=None):
         assert directory, "must provide a directory for html reporting"
         
-        # Create the output directory if needed.
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        # Process all the files.
+        self.report_files(self.html_file, morfs, directory, omit_prefixes)
+
+        # Write the index file.
+        self.index_file()
 
         # Create the once-per-directory files.
         shutil.copyfile(
@@ -43,12 +45,6 @@ class HtmlReporter(Reporter):
             data_filename("htmlfiles/jquery-1.3.2.min.js"),
             os.path.join(directory, "jquery-1.3.2.min.js")
             )
-
-        # Process all the files.
-        self.report_files(self.html_file, morfs, directory, omit_prefixes)
-
-        # Write the index file.
-        self.index_file()
 
     def html_file(self, cu, statements, excluded, missing):
         """Generate an HTML file for one source file."""

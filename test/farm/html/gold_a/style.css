@@ -1,0 +1,159 @@
+/* CSS styles for coverage.py */
+/* Page-wide styles */
+html, body, h1, h2, h3, p, td, th {
+    margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+    }
+
+/* Set baseline grid to 16 pt. */
+body {
+    font-family: georgia, serif;
+    font-size: 1em;
+    }
+
+html>body {
+    font-size: 16px;
+    }    
+
+/* Set base font size to 12/16 */
+p {
+    font-size: .75em;        /* 12/16 */
+    line-height: 1.3333em;   /* 16/12 */
+    }
+
+table {
+    border-collapse: collapse;
+    }
+
+a.nav {
+    text-decoration: none;
+    color: inherit;
+    }
+a.nav:hover {
+    text-decoration: underline;
+    color: inherit;
+    }
+
+/* Page structure */
+#header {
+    background: #f8f8f8;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+    }
+
+#source {
+    padding: 1em;
+    font-family: "courier new", monospace;
+    }
+
+#footer {
+    font-size: 85%;
+    font-family: verdana, sans-serif;
+    color: #666666;
+    font-style: italic;
+    }
+
+#index {
+    margin: 1em 0 0 3em;
+    }
+
+/* Header styles */
+.content {
+    padding: 1em 3em;
+    }
+
+h1 {
+    font-size: 1.25em;
+}
+
+h2.stats {
+    margin-top: .5em;
+    font-size: 1em;
+}
+.stats span {
+    border: 1px solid;
+    padding: .1em .25em;
+    margin: 0 .1em;
+    cursor: pointer;
+    border-color: #999 #ccc #ccc #999;
+}
+.stats span.hide {
+    border-color: #ccc #999 #999 #ccc;
+}
+
+/* Source file styles */
+.linenos p {
+    text-align: right;
+    margin: 0;
+    padding: 0 .5em;
+    color: #999999;
+    font-family: verdana, sans-serif;
+    font-size: .625em;       /* 10/16 */
+    line-height: 1.6em;  /* 16/10 */
+    }
+td.text {
+    width: 100%;
+    }
+.text p {
+    margin: 0;
+    padding: 0 0 0 .5em;
+    border-left: 2px solid #ffffff;
+    white-space: nowrap;  
+    }
+
+.text p.mis {
+    background: #ffdddd;
+    border-left: 2px solid #ff0000;
+    }
+.text p.run {
+    background: #ddffdd;
+    border-left: 2px solid #00ff00;
+    }
+.text p.exc {
+    background: #eeeeee;
+    border-left: 2px solid #808080;
+    }
+.text p.hide {
+    background: inherit;
+    }
+
+/* index styles */
+#index td, #index th {
+    text-align: right;
+    width: 6em;
+    padding: .25em 0;
+    border-bottom: 1px solid #eee;
+    }
+#index th {
+    font-style: italic;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+    }
+#index td.name, #index th.name {
+    text-align: left;
+    width: auto;
+    height: 1.5em;
+    }
+#index td.name a {
+    text-decoration: none;
+    color: #000;
+    }
+#index td.name a:hover {
+    text-decoration: underline;
+    color: #000;
+    }
+#index tr.total {
+    font-weight: bold;
+    }
+#index tr.total td {
+    padding: .25em 0;
+    border-top: 1px solid #ccc;
+    border-bottom: none;
+    }
