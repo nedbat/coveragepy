@@ -10,9 +10,9 @@ Coverage version %(__version__)s
 Usage:
 
 coverage -x [-p] MODULE.py [ARG1 ARG2 ...]
-    Execute module, passing the given command-line arguments, collecting
-    coverage data. With the -p option, write to a temporary file containing
-    the machine name and process ID.
+    Execute the module, passing the given command-line arguments, collecting
+    coverage data.  With the -p option, include the machine name and process
+    ID in the .coverage file name.
 
 coverage -e
     Erase collected coverage data.
@@ -25,13 +25,17 @@ coverage -r [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
     Report on the statement coverage for the given files.  With the -m
     option, show line numbers of the statements that weren't executed.
 
+coverage -b -d DIR [-i] [-o DIR,...] [FILE1 FILE2 ...]
+    Create an HTML report of the coverage of the given files.  Each file gets
+    its own page, with the file listing decorated to show executed, excluded,
+    and missed lines.
+
 coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
     Make annotated copies of the given files, marking statements that
-    are executed with > and statements that are missed with !.  With
-    the -d option, make the copies in that directory.  Without the -d
-    option, make each copy in the same directory as the original.
+    are executed with > and statements that are missed with !.
 
--h  Print this help.
+-d DIR
+    Write output files for -b or -a to this directory.
 
 -i  Ignore errors while reporting or annotating.
 
@@ -40,10 +44,12 @@ coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
     a directory listed in the omit list.
     e.g. coverage -i -r -o c:\python25,lib\enthought\traits
 
+-h  Print this help.
+
 Coverage data is saved in the file .coverage by default.  Set the
 COVERAGE_FILE environment variable to save it somewhere else.
 """.strip()
-#TODO: add -b to the help.
+
 
 class CoverageScript:
     def __init__(self):
@@ -94,9 +100,8 @@ class CoverageScript:
             return OK
 
         # Check for conflicts and problems in the options.
-        #TODO: add -b conflict checking.
         for i in ['erase', 'execute']:
-            for j in ['annotate', 'report', 'combine']:
+            for j in ['annotate', 'html', 'report', 'combine']:
                 if settings.get(i) and settings.get(j):
                     help_fn("You can't specify the '%s' and '%s' "
                               "options at the same time." % (i, j))
@@ -110,7 +115,9 @@ class CoverageScript:
                   or settings.get('combine')
                   or args_needed)
         if not action:
-            help_fn("You must specify at least one of -e, -x, -c, -r, -a, or -b.")
+            help_fn(
+                "You must specify at least one of -e, -x, -c, -r, -a, or -b."
+                )
             return ERR
         if not args_needed and args:
             help_fn("Unexpected arguments: %s" % " ".join(args))

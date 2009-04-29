@@ -87,6 +87,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
         - Bare "except:" lines now count as executable code.
         - Double function decorators: all decorator lines count as executable code.
     - Document the .coverage file format.
+    - HTML reporting.
 + Be sure --help text is complete (-i is missing).
 + Host the project somewhere with a real bug tracker: bitbucket.org
 - Point discussion to TIP

@@ -24,9 +24,11 @@ class CmdLineTest(CoverageTest):
     def testBadActionCombinations(self):
         self.assertRaisesMsg(Exception, "You can't specify the 'erase' and 'annotate' options at the same time.", self.command_line, ['-e', '-a'])
         self.assertRaisesMsg(Exception, "You can't specify the 'erase' and 'report' options at the same time.", self.command_line, ['-e', '-r'])
+        self.assertRaisesMsg(Exception, "You can't specify the 'erase' and 'html' options at the same time.", self.command_line, ['-e', '-b'])
         self.assertRaisesMsg(Exception, "You can't specify the 'erase' and 'combine' options at the same time.", self.command_line, ['-e', '-c'])
         self.assertRaisesMsg(Exception, "You can't specify the 'execute' and 'annotate' options at the same time.", self.command_line, ['-x', '-a'])
         self.assertRaisesMsg(Exception, "You can't specify the 'execute' and 'report' options at the same time.", self.command_line, ['-x', '-r'])
+        self.assertRaisesMsg(Exception, "You can't specify the 'execute' and 'html' options at the same time.", self.command_line, ['-x', '-b'])
         self.assertRaisesMsg(Exception, "You can't specify the 'execute' and 'combine' options at the same time.", self.command_line, ['-x', '-c'])
 
     def testNeedAction(self):
