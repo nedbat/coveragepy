@@ -52,18 +52,28 @@ COVERAGE_FILE environment variable to save it somewhere else.
 
 
 class CoverageScript:
+    """The command-line interface to coverage.py"""
+    
     def __init__(self):
         import coverage
         self.covpkg = coverage
         self.coverage = coverage.coverage()
 
-    def help(self, error=None):     #pragma: no cover
+    def help(self, error=None):
+        """Display an error message, or the usage for coverage.py."""
         if error:
             print error
-            print
-        print USAGE % self.covpkg.__dict__
+            print "Use -h for help."
+        else:
+            print USAGE % self.covpkg.__dict__
 
     def command_line(self, argv, help_fn=None):
+        """The bulk of the command line interface to coverage.py.
+        
+        `argv` is the argument list to process.
+        `help_fn` is the help function to use when something goes wrong.
+        
+        """
         # Collect the command-line options.
         help_fn = help_fn or self.help
         OK, ERR = 0, 1
@@ -167,7 +177,11 @@ class CoverageScript:
 
         return OK
     
-# Main entrypoint.  This is installed as the script entrypoint, so don't
-# refactor it away...
+
 def main():
+    """The main entrypoint to coverage.py.
+    
+    This is installed as the script entrypoint.
+    
+    """
     return CoverageScript().command_line(sys.argv[1:])
