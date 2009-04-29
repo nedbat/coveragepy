@@ -78,7 +78,7 @@ class coverage:
     def exclude(self, regex):
         """Exclude source lines from execution consideration.
         
-        `regex` is a regular expression.  Lines matching this expressions are
+        `regex` is a regular expression.  Lines matching this expression are
         not considered executable when reporting code coverage.  A list of
         regexes is maintained; this function adds a new regex to the list.
         Matching any of the regexes excludes a source line.
