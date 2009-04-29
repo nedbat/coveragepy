@@ -109,7 +109,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     + Use enumerate
     + Use sets instead of dicts
 - Switch from getopt to optparse.
-- Get rid of the recursive nonsense.
++ Get rid of the recursive nonsense.
 - Docstrings.
 + Remove huge document-style comments.
 - Better names:

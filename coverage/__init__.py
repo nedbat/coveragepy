@@ -31,7 +31,7 @@ def call_singleton_method(name, args, kwargs):
     return getattr(the_coverage, name)(*args, **kwargs)
 
 mod_funcs = """
-    use_cache start stop erase begin_recursive end_recursive exclude
+    use_cache start stop erase exclude
     analysis analysis2 report annotate annotate_file
     """
 

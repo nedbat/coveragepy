@@ -18,8 +18,6 @@ class coverage:
         self.parallel_mode = False
         self.exclude_re = ''
         self.nesting = 0
-        self.cstack = []
-        self.xstack = []
         self.file_locator = FileLocator()
         
         self.collector = Collector(self.should_trace)
@@ -78,17 +76,17 @@ class coverage:
         self.data.erase()
 
     def exclude(self, regex):
+        """Exclude source lines from execution consideration.
+        
+        `regex` is a regular expression.  Lines matching this expressions are
+        not considered executable when reporting code coverage.  A list of
+        regexes is maintained; this function adds a new regex to the list.
+        Matching any of the regexes excludes a source line.
+        
+        """
         if self.exclude_re:
             self.exclude_re += "|"
         self.exclude_re += "(" + regex + ")"
-
-    def begin_recursive(self):
-        #self.cstack.append(self.c)
-        self.xstack.append(self.exclude_re)
-        
-    def end_recursive(self):
-        #self.c = self.cstack.pop()
-        self.exclude_re = self.xstack.pop()
 
     def save(self):
         self.group_collected_data()
