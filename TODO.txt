@@ -149,3 +149,19 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - More intensive thread testing.
 - Tests about the "import __main__" in cmdline.py
 - What happens if the -x script raises an exception?
+
+
+* Release checklist
+
+- Test on:
+    - Windows
+    - Ubuntu
+    - Mac
+    - Pythons 2.3, 2.4, 2.5, 2.6
+- Version number in coverage/__init__.py:__version__
+- Update CHANGES, including release date.
+- Kits:
+    - source .tgz
+    - windows .exe for each Python
+    - mac dmg?
+- Upload kits to bitbucket.

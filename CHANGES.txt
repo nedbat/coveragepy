@@ -7,23 +7,24 @@ Version 3.0b2, 30 April 2009
 
 HTML reporting, and continued refactoring.
 
-- HTML reports and annotation of source files: use the new -b switch.  Thanks
-  to George Song for code, inspiration and guidance.
+- HTML reports and annotation of source files: use the new -b (browser) switch.
+  Thanks to George Song for code, inspiration and guidance.
 
 - Code in the Python standard library is not measured by default.  If you need
   to measure standard library code, use the -L switch during execution.
 
-- Annotation into a directory (-a -d) behaves differently.  The annotated files
-  are named with their hierarchy flattened so that same-named files from
-  different directories no longer collide.  Also, only files in the current
-  tree are included.
+- Source annotation into a directory (-a -d) behaves differently.  The
+  annotated files are named with their hierarchy flattened so that same-named
+  files from different directories no longer collide.  Also, only files in the
+  current tree are included.
 
 - coverage.annotate_file is no longer available.
 
 - Programs executed with -x now behave more as they should, for example,
   __file__ has the correct value.
 
-- .coverage data files have a new pickle-based format.
+- .coverage data files have a new pickle-based format designed for better
+  extensibility.
 
 - Removed the undocumented cache_file argument to coverage.usecache().
 
@@ -37,7 +38,8 @@ Major overhaul.
   into classes.
 
 - The trace function is implemented in C for speed.  Coverage runs are now
-  much faster.
+  much faster.  Thanks to David Christian for productive micro-sprints and
+  other encouragement.
 
 - Executable lines are identified by reading the line number tables in the
   compiled code, removing a great deal of complicated analysis code.
