@@ -42,9 +42,6 @@ tests: testready
 $(TEST_ZIP): test/covmodzip1.py
 	zip -j $@ $+
 
-coverage:
-	python coverage_coverage.py
-
 WEBHOME = c:/ned/web/stellated/pages/code/modules
 
 publish:
