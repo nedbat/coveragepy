@@ -1,4 +1,4 @@
-"""HTML reporting for coverage.py"""
+"""HTML reporting for Coverage."""
 
 import os, re, shutil
 from coverage import __version__    # pylint: disable-msg=W0611

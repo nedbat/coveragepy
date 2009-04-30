@@ -1,4 +1,4 @@
-"""Coverage data for coverage.py"""
+"""Coverage data for Coverage."""
 
 import os, types
 import cPickle as pickle

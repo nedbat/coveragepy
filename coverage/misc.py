@@ -1,4 +1,4 @@
-"""Miscellaneous stuff for coverage.py"""
+"""Miscellaneous stuff for Coverage."""
 
 def nice_pair(pair):
     """Make a nice string representation of a pair of numbers.

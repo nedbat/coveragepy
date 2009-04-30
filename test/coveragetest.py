@@ -102,12 +102,12 @@ class CoverageTest(unittest.TestCase):
     
     def checkCoverage(self, text, lines, missing="", excludes=None, report=""):
         # We write the code into a file so that we can import it.
-        # coverage.py wants to deal with things as modules with file names.
+        # Coverage wants to deal with things as modules with file names.
         modname = self.getModuleName()
         
         self.makeFile(modname, text)
 
-        # Start up coverage.py
+        # Start up Coverage.
         cov = coverage.coverage()
         cov.erase()
         for exc in excludes or []:
@@ -117,7 +117,7 @@ class CoverageTest(unittest.TestCase):
         # Import the python file, executing it.
         mod = self.importModule(modname)
         
-        # Stop coverage.py
+        # Stop Coverage.
         cov.stop()
 
         # Clean up our side effects

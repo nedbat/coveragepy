@@ -1,4 +1,4 @@
-// C-based Tracer for coverage.py
+// C-based Tracer for Coverage.
 
 #include "Python.h"
 #include "compile.h"        // in 2.3, this wasn't part of Python.h

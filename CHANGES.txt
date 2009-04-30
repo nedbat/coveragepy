@@ -1,9 +1,9 @@
-------------------------------
-CHANGE HISTORY for coverage.py
-------------------------------
+---------------------------
+Change history for Coverage
+---------------------------
 
-Version 3.0b2
--------------
+Version 3.0b2, 30 April 2009
+----------------------------
 
 HTML reporting, and continued refactoring.
 
@@ -33,9 +33,8 @@ Version 3.0b1, 7 March 2009
 
 Major overhaul.
 
-- Coverage.py is now a package rather than a module, so the name is a bit of a
-  misnomer, since there is no longer a file named coverage.py.  Functionality
-  has been split into classes.
+- Coverage is now a package rather than a module.  Functionality has been split
+  into classes.
 
 - The trace function is implemented in C for speed.  Coverage runs are now
   much faster.
@@ -48,7 +47,7 @@ Major overhaul.
 
 - The singleton coverage object is only created if the module-level functions
   are used.  This maintains the old interface while allowing better
-  programmatic use of coverage.py.
+  programmatic use of Coverage.
   
 - The minimum supported Python version is 2.3.
  

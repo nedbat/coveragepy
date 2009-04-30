@@ -1,4 +1,4 @@
-"""Core control stuff for coverage.py"""
+"""Core control stuff for Coverage."""
 
 import os, socket, sys
 
@@ -24,7 +24,7 @@ class coverage:
         self.sysprefix = self.file_locator.abs_file(sys.prefix)
         
         self.collector = Collector(self.should_trace)
-        self.data = CoverageData(collector="coverage.py v%s" % __version__)
+        self.data = CoverageData(collector="coverage v%s" % __version__)
     
         # The default exclude pattern.
         self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')

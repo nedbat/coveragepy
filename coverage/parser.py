@@ -1,4 +1,4 @@
-"""Code parsing for coverage.py"""
+"""Code parsing for Coverage."""
 
 import re, token, tokenize, types
 import cStringIO as StringIO

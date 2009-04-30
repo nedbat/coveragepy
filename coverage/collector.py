@@ -1,4 +1,4 @@
-"""Raw data collector for coverage.py."""
+"""Raw data collector for Coverage."""
 
 import sys, threading
 

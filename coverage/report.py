@@ -1,4 +1,4 @@
-"""Reporter foundation for coverage.py"""
+"""Reporter foundation for Coverage."""
 
 import os
 from coverage.codeunit import code_unit_factory

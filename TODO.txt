@@ -53,10 +53,10 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 - Why can't you specify execute (-x) and report (-r) in the same invocation?
     Maybe just because -x needs the rest of the command line?
-- How will coverage.py package install over coverage.py module?
+- How will Coverage package install over coverage.py module?
 - Support 2.3 - 3.0?
     http://pythonology.blogspot.com/2009/02/making-code-run-on-python-20-through-30.html
-- Use a .coveragerc file to control coverage.py without the programmatic API.
+- Use a .coveragerc file to control Coverage without the programmatic API.
 - An inference mode that marks lines as executed if they "must have been" executed:
     class definitions, etc, when coverage is started after the class is defined.
 - Different categories of exclude pragma? So you can enable and disable them
@@ -144,7 +144,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Tests about parallel mode.
 + Tests about assigning a multi-line string.
 - Tests about tricky docstrings.
-- Coverage test coverage.py!
+- Coverage test Coverage!
 - Tests that tracing stops after calling stop()
 - More intensive thread testing.
 - Tests about the "import __main__" in cmdline.py

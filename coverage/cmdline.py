@@ -1,4 +1,4 @@
-"""Command-line support for coverage.py"""
+"""Command-line support for Coverage."""
 
 import getopt, sys
 
@@ -53,7 +53,7 @@ COVERAGE_FILE environment variable to save it somewhere else.
 
 
 class CoverageScript:
-    """The command-line interface to coverage.py"""
+    """The command-line interface to Coverage."""
     
     def __init__(self):
         import coverage
@@ -61,7 +61,7 @@ class CoverageScript:
         self.coverage = coverage.coverage()
 
     def help(self, error=None):
-        """Display an error message, or the usage for coverage.py."""
+        """Display an error message, or the usage for Coverage."""
         if error:
             print error
             print "Use -h for help."
@@ -69,7 +69,7 @@ class CoverageScript:
             print USAGE % self.covpkg.__dict__
 
     def command_line(self, argv, help_fn=None):
-        """The bulk of the command line interface to coverage.py.
+        """The bulk of the command line interface to Coverage.
         
         `argv` is the argument list to process.
         `help_fn` is the help function to use when something goes wrong.
@@ -182,7 +182,7 @@ class CoverageScript:
     
 
 def main():
-    """The main entrypoint to coverage.py.
+    """The main entrypoint to Coverage.
     
     This is installed as the script entrypoint.
     

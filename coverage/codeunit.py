@@ -1,4 +1,4 @@
-"""Code unit (module) handling for coverage.py"""
+"""Code unit (module) handling for Coverage."""
 
 import glob, os, types
 

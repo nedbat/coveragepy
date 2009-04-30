@@ -1,4 +1,4 @@
-"""Source file annotation for coverage.py"""
+"""Source file annotation for Coverage."""
 
 import os, re
 

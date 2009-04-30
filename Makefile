@@ -1,4 +1,4 @@
-# Makefile for utility work on coverage.py
+# Makefile for utility work on Coverage.
 
 default:
 	@echo "* No default action *"

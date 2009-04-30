@@ -8,7 +8,7 @@ from coveragetest import CoverageTest
 
 
 class CmdLineTest(CoverageTest):
-    """Tests of command-line processing for coverage.py."""
+    """Tests of command-line processing for Coverage."""
 
     def help_fn(self, error=None):
         raise Exception(error or "__doc__")
