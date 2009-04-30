@@ -1688,6 +1688,44 @@ class ApiTest(CoverageTest):
         filename, _, _, _ = cov.analysis(sys.modules["mymod"])
         self.assertEqual(os.path.basename(filename), "mymod.py")
 
+    def testIgnoreStdLib(self):
+        self.makeFile("mymain", """\
+            import mymod, colorsys
+            a = 1
+            hls = colorsys.rgb_to_hls(1.0, 0.5, 0.0)
+            """)
+            
+        self.makeFile("mymod", """\
+            fooey = 17
+            """)
+
+        # Measure without the stdlib.
+        cov1 = coverage.coverage()
+        self.assertEqual(cov1.cover_stdlib, False)
+        cov1.start()
+        self.importModule("mymain")
+        cov1.stop()
+
+        # some statements were marked executed in mymain.py
+        _, statements, missing, _ = cov1.analysis("mymain.py")
+        self.assertNotEqual(statements, missing)
+        # but none were in colorsys.py
+        _, statements, missing, _ = cov1.analysis("colorsys.py")
+        self.assertEqual(statements, missing)
+
+        # Measure with the stdlib.
+        cov2 = coverage.coverage()
+        cov2.cover_stdlib = True
+        cov2.start()
+        self.importModule("mymain")
+        cov2.stop()
+
+        # some statements were marked executed in mymain.py
+        _, statements, missing, _ = cov2.analysis("mymain.py")
+        self.assertNotEqual(statements, missing)
+        # and some were marked executed in colorsys.py
+        _, statements, missing, _ = cov2.analysis("colorsys.py")
+        self.assertNotEqual(statements, missing)
 
 
 class ProcessTest(CoverageTest):

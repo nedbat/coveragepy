@@ -10,6 +10,9 @@ HTML reporting, and continued refactoring.
 - HTML reports and annotation of source files: use the new -b switch.  Thanks
   to George Song for code, inspiration and guidance.
 
+- Code in the Python standard library is not measured by default.  If you need
+  to measure standard library code, use the -L switch during execution.
+
 - Annotation into a directory (-a -d) behaves differently.  The annotated files
   are named with their hierarchy flattened so that same-named files from
   different directories no longer collide.  Also, only files in the current

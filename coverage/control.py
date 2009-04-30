@@ -1,6 +1,6 @@
 """Core control stuff for coverage.py"""
 
-import os, socket
+import os, socket, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.codeunit import code_unit_factory
@@ -17,11 +17,13 @@ class coverage:
         
         self.parallel_mode = False
         self.exclude_re = ''
+        self.cover_stdlib = False
         self.nesting = 0
+        
         self.file_locator = FileLocator()
+        self.sysprefix = self.file_locator.abs_file(sys.prefix)
         
         self.collector = Collector(self.should_trace)
-        
         self.data = CoverageData(collector="coverage.py v%s" % __version__)
     
         # The default exclude pattern.
@@ -36,14 +38,20 @@ class coverage:
         
         Returns a canonicalized filename if it should be traced, False if it
         should not.
+        
         """
         if filename == '<string>':
             # There's no point in ever tracing string executions, we can't do
             # anything with the data later anyway.
             return False
-        # TODO: flag: ignore std lib?
+        
+        canonical = self.file_locator.canonical_filename(filename)
+        if not self.cover_stdlib:
+            if canonical.startswith(self.sysprefix):
+                return False
+        
         # TODO: ignore by module as well as file?
-        return self.file_locator.canonical_filename(filename)
+        return canonical
 
     def use_cache(self, usecache):
         """Control the use of a data file (incorrectly called a cache).

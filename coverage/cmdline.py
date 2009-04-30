@@ -9,10 +9,11 @@ Coverage version %(__version__)s
 
 Usage:
 
-coverage -x [-p] MODULE.py [ARG1 ARG2 ...]
+coverage -x [-p] [-L] MODULE.py [ARG1 ARG2 ...]
     Execute the module, passing the given command-line arguments, collecting
     coverage data.  With the -p option, include the machine name and process
-    ID in the .coverage file name.
+    ID in the .coverage file name.  With -L, measure coverage even inside the
+    Python standard library, which isn't done by default.
 
 coverage -e
     Erase collected coverage data.
@@ -86,6 +87,7 @@ class CoverageScript:
             '-e': 'erase',
             '-h': 'help',
             '-i': 'ignore-errors',
+            '-L': 'stdlib',
             '-m': 'show-missing',
             '-p': 'parallel-mode',
             '-r': 'report',
@@ -135,6 +137,7 @@ class CoverageScript:
         
         # Do something.
         self.coverage.parallel_mode = settings.get('parallel-mode')
+        self.coverage.cover_stdlib = settings.get('stdlib')
         self.coverage.get_ready()
 
         if settings.get('erase'):
