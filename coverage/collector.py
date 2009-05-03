@@ -63,6 +63,13 @@ class Collector:
     Creates a Tracer object for each thread, since they track stack information.
     Each Tracer points to the same shared data, contributing traced data points.
     
+    When the Collector is started, it creates a Tracer for the current thread,
+    and installs a function to create Tracers for each new thread started.
+    When the Collector is stopped, all active Tracers are stopped.
+    
+    Threads started while the Collector is stopped will never have Tracers
+    associated with them.
+    
     """
     
     def __init__(self, should_trace):
@@ -87,17 +94,17 @@ class Collector:
         # False).
         self.should_trace_cache = {}
 
-        # The Tracer object on the main thread.
-        self.tracer = None
+        # Our active Tracers.
+        self.tracers = []
 
     def _start_tracer(self):
-        """Start a new Tracer object, returning it."""
+        """Start a new Tracer object, and store it in self.tracers."""
         tracer = Tracer()
         tracer.data = self.data
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
         tracer.start()
-        return tracer
+        self.tracers.append(tracer)
 
     # The trace function has to be set individually on each thread before
     # execution begins.  Ironically, the only support the threading module has
@@ -110,7 +117,6 @@ class Collector:
         # Remove ourselves as the trace function
         sys.settrace(None)
         # Install the real tracer.
-        # TODO: Is it OK that these other-thread tracers are never stopped?
         self._start_tracer()
         # Return None to reiterate that we shouldn't be used for tracing.
         return None
@@ -118,14 +124,16 @@ class Collector:
     def start(self):
         """Start collecting trace information."""
         # Install the tracer on this thread.
-        self.tracer = self._start_tracer()
+        self._start_tracer()
         # Install our installation tracer in threading, to jump start other
         # threads.
         threading.settrace(self._installation_trace)
 
     def stop(self):
         """Stop collecting trace information."""
-        self.tracer.stop()
+        for tracer in self.tracers:
+            tracer.stop()
+        self.tracers = []
         threading.settrace(None)
 
     def data_points(self):

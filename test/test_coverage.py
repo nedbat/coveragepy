@@ -1364,11 +1364,12 @@ if sys.hexversion >= 0x020300f0:
                 def neverCalled():
                     return "no one calls me"
                 
-                threading.Thread(target=fromOtherThread).start()
+                other = threading.Thread(target=fromOtherThread)
+                other.start()
                 fromMainThread()
-                time.sleep(1)
+                other.join()
                 """,
-                [1,3,4,6,7,9,10,12,13,14], "10")
+                [1,3,4,6,7,9,10,12,13,14,15], "10")
 
 
 if sys.hexversion >= 0x020400f0:
