@@ -5,7 +5,7 @@ http://nedbatchelder.com/code/modules/coverage.html
 
 """
 
-__version__ = "3.0b2"    # see detailed history in CHANGES
+__version__ = "3.0b3"    # see detailed history in CHANGES
 
 import sys
 

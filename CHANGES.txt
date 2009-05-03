@@ -2,6 +2,12 @@
 Change history for Coverage
 ---------------------------
 
+Version 3.0b3
+-------------
+
+Nothing yet.
+
+
 Version 3.0b2, 30 April 2009
 ----------------------------
 

@@ -171,3 +171,5 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     - windows .exe for each Python
     - mac dmg?
 - Upload kits to bitbucket.
+- Update PyPi
+- Update nedbatchelder.com
