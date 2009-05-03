@@ -81,8 +81,14 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 - New docs, rather than pointing to Gareth's
     - Min python version is 2.3.
-    - Distinction between ignore (files not to trace), exclude (lines not to trace),
-        and omit (files not to report)
+    - Three phases of work:
+        - Collection
+        - Analysis
+        - Reporting
+    - Distinction between:
+        - ignore (files not to collect)
+        - exclude (lines not to report as missed)
+        - omit (files not to report)
     - Changes from coverage 2.x:
         - Bare "except:" lines now count as executable code.
         - Double function decorators: all decorator lines count as executable code.
