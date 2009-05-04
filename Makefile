@@ -23,6 +23,7 @@ clean:
 
 LINTABLE_TESTS = \
 	test/coveragetest.py \
+	test/test_api.py \
 	test/test_cmdline.py \
 	test/test_data.py \
 	test/test_execfile.py \
