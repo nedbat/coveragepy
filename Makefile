@@ -8,8 +8,9 @@ TEST_ZIP = test/zipmods.zip
 clean:
 	python test/test_farm.py clean
 	-rm -rf build
-	-rm -rf dist
 	-rm -rf coverage.egg-info
+	-rm -rf dist
+	-rm -rf htmlcov
 	-rm -f *.pyd */*.pyd 
 	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
 	-rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo

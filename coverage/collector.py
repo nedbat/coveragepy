@@ -56,7 +56,6 @@ except ImportError:
             """Stop this Tracer."""
             sys.settrace(None)
 
-
 class Collector:
     """Collects trace data.
 
@@ -72,6 +71,11 @@ class Collector:
     
     """
     
+    # The stack of active Collectors.  Collectors are added here when started,
+    # and popped when stopped.  Collectors on the stack are paused when not
+    # the top, and resumed when they become the top again.
+    _collectors = []
+
     def __init__(self, should_trace):
         """Create a collector.
         
@@ -123,6 +127,9 @@ class Collector:
 
     def start(self):
         """Start collecting trace information."""
+        if self._collectors:
+            self._collectors[-1]._pause()
+        self._collectors.append(self)
         # Install the tracer on this thread.
         self._start_tracer()
         # Install our installation tracer in threading, to jump start other
@@ -131,10 +138,31 @@ class Collector:
 
     def stop(self):
         """Stop collecting trace information."""
+        assert self._collectors
+        assert self._collectors[-1] is self
+        
         for tracer in self.tracers:
             tracer.stop()
         self.tracers = []
         threading.settrace(None)
+        
+        # Remove this Collector from the stack, and resume the one underneath
+        # (if any).
+        self._collectors.pop()
+        if self._collectors:
+            self._collectors[-1]._resume()
+
+    def _pause(self):
+        """Stop tracing, but be prepared to _resume."""
+        for tracer in self.tracers:
+            tracer.stop()
+        threading.settrace(None)
+        
+    def _resume(self):
+        """Resume tracing after a _pause."""
+        for tracer in self.tracers:
+            tracer.start()
+        threading.settrace(self._installation_trace)
 
     def data_points(self):
         """Return the (filename, lineno) pairs collected."""

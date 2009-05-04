@@ -10,8 +10,9 @@ syntax: glob
 
 # Stuff in the root.
 build
-dist
 coverage.egg-info
+dist
+htmlcov
 MANIFEST
 setuptools-*.egg
 
