@@ -7,8 +7,6 @@ http://nedbatchelder.com/code/modules/coverage.html
 
 __version__ = "3.0b3"    # see detailed history in CHANGES
 
-import sys
-
 from coverage.control import coverage
 from coverage.data import CoverageData
 from coverage.cmdline import main, CoverageScript
@@ -24,25 +22,22 @@ from coverage.misc import CoverageException
 # created as needed when one of the module-level functions is called.
 _the_coverage = None
 
-def call_singleton_method(name, args, kwargs):
+def _call_singleton_method(name, args, kwargs):
     global _the_coverage
     if not _the_coverage:
         _the_coverage = coverage()
     return getattr(_the_coverage, name)(*args, **kwargs)
 
-mod_funcs = """
-    use_cache start stop erase exclude
-    analysis analysis2 report annotate annotate_file
-    """
-
-coverage_module = sys.modules[__name__]
-
-for func_name in mod_funcs.split():
-    # Have to define a function here to make a closure so the function name
-    # is locked in.
-    def func(name):
-        return lambda *a, **kw: call_singleton_method(name, a, kw)
-    setattr(coverage_module, func_name, func(func_name))
+# Define the module-level functions.
+use_cache = lambda *a, **kw: _call_singleton_method('use_cache', a, kw)
+start =     lambda *a, **kw: _call_singleton_method('start', a, kw)
+stop =      lambda *a, **kw: _call_singleton_method('stop', a, kw)
+erase =     lambda *a, **kw: _call_singleton_method('erase', a, kw)
+exclude =   lambda *a, **kw: _call_singleton_method('exclude', a, kw)
+analysis =  lambda *a, **kw: _call_singleton_method('analysis', a, kw)
+analysis2 = lambda *a, **kw: _call_singleton_method('analysis2', a, kw)
+report =    lambda *a, **kw: _call_singleton_method('report', a, kw)
+annotate =  lambda *a, **kw: _call_singleton_method('annotate', a, kw)
 
 
 # COPYRIGHT AND LICENSE
