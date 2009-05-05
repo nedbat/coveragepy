@@ -128,7 +128,7 @@ class Collector:
     def start(self):
         """Start collecting trace information."""
         if self._collectors:
-            self._collectors[-1]._pause()
+            self._collectors[-1].pause()
         self._collectors.append(self)
         # Install the tracer on this thread.
         self._start_tracer()
@@ -150,16 +150,16 @@ class Collector:
         # (if any).
         self._collectors.pop()
         if self._collectors:
-            self._collectors[-1]._resume()
+            self._collectors[-1].resume()
 
-    def _pause(self):
-        """Stop tracing, but be prepared to _resume."""
+    def pause(self):
+        """Pause tracing, but be prepared to `resume`."""
         for tracer in self.tracers:
             tracer.stop()
         threading.settrace(None)
         
-    def _resume(self):
-        """Resume tracing after a _pause."""
+    def resume(self):
+        """Resume tracing after a `pause`."""
         for tracer in self.tracers:
             tracer.start()
         threading.settrace(self._installation_trace)

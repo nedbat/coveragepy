@@ -58,6 +58,7 @@ class CoverageScript:
     def __init__(self):
         import coverage
         self.covpkg = coverage
+        self.coverage = None
 
     def help(self, error=None):
         """Display an error message, or the usage for Coverage."""

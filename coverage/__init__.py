@@ -17,18 +17,18 @@ from coverage.misc import CoverageException
 
 # Module-level functions.  The original API to this module was based on
 # functions defined directly in the module, with a singleton of the coverage()
-# class.  This design hampered programmability.  Here we define the top-level
+# class.  That design hampered programmability.  Here we define the top-level
 # functions to create the singleton when they are first called.
 
 # Singleton object for use with module-level functions.  The singleton is
 # created as needed when one of the module-level functions is called.
-the_coverage = None
+_the_coverage = None
 
 def call_singleton_method(name, args, kwargs):
-    global the_coverage
-    if not the_coverage:
-        the_coverage = coverage()
-    return getattr(the_coverage, name)(*args, **kwargs)
+    global _the_coverage
+    if not _the_coverage:
+        _the_coverage = coverage()
+    return getattr(_the_coverage, name)(*args, **kwargs)
 
 mod_funcs = """
     use_cache start stop erase exclude

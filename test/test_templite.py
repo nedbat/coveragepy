@@ -3,8 +3,16 @@
 from coverage.templite import Templite
 import unittest
 
-class AnyOldObject:
-    pass
+class AnyOldObject(object):
+    """Simple testing object.
+    
+    Use keyword arguments in the constructor to set attributes on the object.
+    
+    """
+    def __init__(self, **attrs):
+        for n, v in attrs.items():
+            setattr(self, n, v)
+
 
 class TemplateTest(unittest.TestCase):
     
@@ -48,18 +56,15 @@ class TemplateTest(unittest.TestCase):
 
     def test_attribute(self):
         # Variables' attributes can be accessed with dots.
-        obj = AnyOldObject()
-        obj.a = "Ay"
+        obj = AnyOldObject(a="Ay")
         self.try_render("{{obj.a}}", locals(), "Ay")
 
-        obj2 = AnyOldObject()
-        obj2.obj = obj
-        obj2.b = "Bee"
+        obj2 = AnyOldObject(obj=obj, b="Bee")
         self.try_render("{{obj2.obj.a}} {{obj2.b}}", locals(), "Ay Bee")
         
     def test_member_function(self):
         # Variables' member functions can be used, as long as they are nullary.
-        class WithMemberFns:
+        class WithMemberFns(object):
             def ditto(self):
                 return self.txt + self.txt
         obj = WithMemberFns()
