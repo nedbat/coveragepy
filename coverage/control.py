@@ -11,13 +11,13 @@ from coverage.misc import format_lines, CoverageException
 from coverage.summary import SummaryReporter
 
 class coverage:
-    def __init__(self):
+    def __init__(self, parallel_mode=False, cover_stdlib=False):
         from coverage.collector import Collector
         from coverage import __version__
         
-        self.parallel_mode = False
+        self.parallel_mode = parallel_mode
+        self.cover_stdlib = cover_stdlib
         self.exclude_re = ''
-        self.cover_stdlib = False
         self.nesting = 0
         
         self.file_locator = FileLocator()

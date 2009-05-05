@@ -58,7 +58,6 @@ class CoverageScript:
     def __init__(self):
         import coverage
         self.covpkg = coverage
-        self.coverage = coverage.coverage()
 
     def help(self, error=None):
         """Display an error message, or the usage for Coverage."""
@@ -136,8 +135,10 @@ class CoverageScript:
             return ERR
         
         # Do something.
-        self.coverage.parallel_mode = settings.get('parallel-mode')
-        self.coverage.cover_stdlib = settings.get('stdlib')
+        self.coverage = self.covpkg.coverage(
+            parallel_mode = settings.get('parallel-mode'),
+            cover_stdlib = settings.get('stdlib')
+            )
         self.coverage.get_ready()
 
         if settings.get('erase'):
