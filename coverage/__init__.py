@@ -22,22 +22,24 @@ from coverage.misc import CoverageException
 # created as needed when one of the module-level functions is called.
 _the_coverage = None
 
-def _call_singleton_method(name, args, kwargs):
-    global _the_coverage
-    if not _the_coverage:
-        _the_coverage = coverage()
-    return getattr(_the_coverage, name)(*args, **kwargs)
+def _singleton_method(name):
+    def func(*args, **kwargs):
+        global _the_coverage
+        if not _the_coverage:
+            _the_coverage = coverage()
+        return getattr(_the_coverage, name)(*args, **kwargs)
+    return func
 
 # Define the module-level functions.
-use_cache = lambda *a, **kw: _call_singleton_method('use_cache', a, kw)
-start =     lambda *a, **kw: _call_singleton_method('start', a, kw)
-stop =      lambda *a, **kw: _call_singleton_method('stop', a, kw)
-erase =     lambda *a, **kw: _call_singleton_method('erase', a, kw)
-exclude =   lambda *a, **kw: _call_singleton_method('exclude', a, kw)
-analysis =  lambda *a, **kw: _call_singleton_method('analysis', a, kw)
-analysis2 = lambda *a, **kw: _call_singleton_method('analysis2', a, kw)
-report =    lambda *a, **kw: _call_singleton_method('report', a, kw)
-annotate =  lambda *a, **kw: _call_singleton_method('annotate', a, kw)
+use_cache = _singleton_method('use_cache')
+start =     _singleton_method('start')
+stop =      _singleton_method('stop')
+erase =     _singleton_method('erase')
+exclude =   _singleton_method('exclude')
+analysis =  _singleton_method('analysis')
+analysis2 = _singleton_method('analysis2')
+report =    _singleton_method('report')
+annotate =  _singleton_method('annotate')
 
 
 # COPYRIGHT AND LICENSE
