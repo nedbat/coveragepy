@@ -1,7 +1,12 @@
 # Coverage-test Coverage itself.
 
 import coverage
-import os, sys
+import os, shutil, sys
+
+HTML_DIR = "htmlcov"
+
+if os.path.exists(HTML_DIR):
+    shutil.rmtree(HTML_DIR)
 
 cov = coverage.coverage()
 cov.erase()
@@ -27,8 +32,9 @@ nose.run(sys.argv[1:])
 cov.stop()
 cov.save()  # TODO: This is needed to get group_collected_data called.
 
+cov.clear_exclude()
 cov.exclude("#pragma: no cover")
 cov.exclude("def __repr__")
 cov.exclude("if __name__ == .__main__.:")
 
-cov.html_report(directory='htmlcov', ignore_errors=True)
+cov.html_report(directory=HTML_DIR, ignore_errors=True)
