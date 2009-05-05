@@ -18,12 +18,11 @@ class coverage:
         self.parallel_mode = parallel_mode
         self.cover_stdlib = cover_stdlib
         self.exclude_re = ''
-        self.nesting = 0
         
         self.file_locator = FileLocator()
         self.sysprefix = self.file_locator.abs_file(sys.prefix)
         
-        self.collector = Collector(self.should_trace)
+        self.collector = Collector(self._should_trace)
         self.data = CoverageData(collector="coverage v%s" % __version__)
     
         # The default exclude pattern.
@@ -33,7 +32,7 @@ class coverage:
         import atexit
         atexit.register(self.save)
 
-    def should_trace(self, filename):
+    def _should_trace(self, filename):
         """Decide whether to trace execution in `filename`
         
         Returns a canonicalized filename if it should be traced, False if it
@@ -69,14 +68,10 @@ class coverage:
         
     def start(self):
         self.get_ready()
-        if self.nesting == 0:                               #pragma: no cover
-            self.collector.start()
-        self.nesting += 1
+        self.collector.start()
         
     def stop(self):
-        self.nesting -= 1
-        if self.nesting == 0:                               #pragma: no cover
-            self.collector.stop()
+        self.collector.stop()
 
     def erase(self):
         self.get_ready()
@@ -97,14 +92,14 @@ class coverage:
         self.exclude_re += "(" + regex + ")"
 
     def save(self):
-        self.group_collected_data()
+        self._group_collected_data()
         self.data.write()
 
     def combine(self):
         """Entry point for combining together parallel-mode coverage data."""
         self.data.combine_parallel_data()
 
-    def group_collected_data(self):
+    def _group_collected_data(self):
         """Group the collected data by filename and reset the collector."""
         self.data.add_line_data(self.collector.data_points())
         self.collector.reset()
@@ -147,7 +142,7 @@ class coverage:
             text=source, filename=filename, exclude=self.exclude_re
             )
 
-        self.group_collected_data()
+        self._group_collected_data()
         
         # Identify missing statements.
         missing = []
