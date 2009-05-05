@@ -22,7 +22,7 @@ for name, mod in sys.modules.items():
         if hasattr(mod, '__file__') and mod.__file__.startswith(covdir):
             covmods[name] = mod
             del sys.modules[name]
-import coverage
+import coverage     # don't warn about re-import: pylint: disable-msg=W0404
 sys.modules.update(covmods)
 
 # Run nosetests, with the arguments from our command line.

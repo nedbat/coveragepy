@@ -22,6 +22,7 @@ clean:
 	-rm -f setuptools-*.egg
 
 LINTABLE_TESTS = \
+	test/coverage_coverage.py \
 	test/coveragetest.py \
 	test/test_api.py \
 	test/test_cmdline.py \
