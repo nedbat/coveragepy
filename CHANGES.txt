@@ -5,7 +5,11 @@ Change history for Coverage
 Version 3.0b3
 -------------
 
-Nothing yet.
+- Added parameters to coverage.__init__ for options that had been set on the
+  coverage object itself.
+  
+- Added clear_exclude() and get_exclude_list() methods for programmatic
+  manipulation of the exclude regexes.
 
 
 Version 3.0b2, 30 April 2009

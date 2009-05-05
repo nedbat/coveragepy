@@ -17,7 +17,8 @@ class coverage:
         
         self.parallel_mode = parallel_mode
         self.cover_stdlib = cover_stdlib
-        self.exclude_re = ''
+        self.exclude_re = ""
+        self.exclude_list = []
         
         self.file_locator = FileLocator()
         self.sysprefix = self.file_locator.abs_file(sys.prefix)
@@ -78,6 +79,11 @@ class coverage:
         self.collector.reset()
         self.data.erase()
 
+    def clear_exclude(self):
+        """Clear the exclude list."""
+        self.exclude_list = []
+        self.exclude_re = ""
+
     def exclude(self, regex):
         """Exclude source lines from execution consideration.
         
@@ -87,9 +93,12 @@ class coverage:
         Matching any of the regexes excludes a source line.
         
         """
-        if self.exclude_re:
-            self.exclude_re += "|"
-        self.exclude_re += "(" + regex + ")"
+        self.exclude_list.append(regex)
+        self.exclude_re = "(" + ")|(".join(self.exclude_list) + ")"
+
+    def get_exclude_list(self):
+        """Return the list of excluded regex patterns."""
+        return self.exclude_list
 
     def save(self):
         self._group_collected_data()

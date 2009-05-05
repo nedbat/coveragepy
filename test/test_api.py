@@ -174,3 +174,15 @@ class ApiTest(CoverageTest):
         # and some were marked executed in colorsys.py
         _, statements, missing, _ = cov2.analysis("colorsys.py")
         self.assertNotEqual(statements, missing)
+
+    def testExcludeList(self):
+        cov = coverage.coverage()
+        cov.clear_exclude()
+        self.assertEqual(cov.get_exclude_list(), [])
+        cov.exclude("foo")
+        self.assertEqual(cov.get_exclude_list(), ["foo"])
+        cov.exclude("bar")
+        self.assertEqual(cov.get_exclude_list(), ["foo", "bar"])
+        self.assertEqual(cov.exclude_re, "(foo)|(bar)")
+        cov.clear_exclude()
+        self.assertEqual(cov.get_exclude_list(), [])
