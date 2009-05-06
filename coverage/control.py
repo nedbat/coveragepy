@@ -73,6 +73,7 @@ class coverage:
         
     def stop(self):
         self.collector.stop()
+        self._harvest_data()
 
     def erase(self):
         self.get_ready()
@@ -101,15 +102,15 @@ class coverage:
         return self.exclude_list
 
     def save(self):
-        self._group_collected_data()
+        self._harvest_data()
         self.data.write()
 
     def combine(self):
         """Entry point for combining together parallel-mode coverage data."""
         self.data.combine_parallel_data()
 
-    def _group_collected_data(self):
-        """Group the collected data by filename and reset the collector."""
+    def _harvest_data(self):
+        """Get the collected data by filename and reset the collector."""
         self.data.add_line_data(self.collector.data_points())
         self.collector.reset()
 
@@ -151,8 +152,6 @@ class coverage:
             text=source, filename=filename, exclude=self.exclude_re
             )
 
-        self._group_collected_data()
-        
         # Identify missing statements.
         missing = []
         execed = self.data.executed_lines(filename)
@@ -193,13 +192,15 @@ class coverage:
         excluded lines have "-", and missing lines have "!".
         
         """
-        rpt = AnnotateReporter(self, ignore_errors)
-        rpt.report(morfs, directory=directory, omit_prefixes=omit_prefixes)
+        reporter = AnnotateReporter(self, ignore_errors)
+        reporter.report(
+            morfs, directory=directory, omit_prefixes=omit_prefixes)
 
     def html_report(self, morfs=None, directory=None, ignore_errors=False,
                     omit_prefixes=None):
         """Generate an HTML report.
         
         """
-        rpt = HtmlReporter(self, ignore_errors)
-        rpt.report(morfs, directory=directory, omit_prefixes=omit_prefixes)
+        reporter = HtmlReporter(self, ignore_errors)
+        reporter.report(
+            morfs, directory=directory, omit_prefixes=omit_prefixes)

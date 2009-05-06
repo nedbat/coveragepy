@@ -22,7 +22,7 @@ class Reporter(object):
         # The directory into which to place the report, used by some derived
         # classes.
         self.directory = None
-        
+
     def find_code_units(self, morfs, omit_prefixes):
         """Find the code units we'll report on.
         
@@ -32,8 +32,7 @@ class Reporter(object):
         """
         morfs = morfs or self.coverage.data.executed_files()
         self.code_units = code_unit_factory(
-                            morfs, self.coverage.file_locator, omit_prefixes
-                            )
+                            morfs, self.coverage.file_locator, omit_prefixes)
         self.code_units.sort()
 
     def report_files(self, report_fn, morfs, directory=None,

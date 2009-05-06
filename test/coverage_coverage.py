@@ -30,7 +30,6 @@ import nose
 nose.run(sys.argv[1:])
 
 cov.stop()
-cov.save()  # TODO: This is needed to get group_collected_data called.
 
 cov.clear_exclude()
 cov.exclude("#pragma: no cover")

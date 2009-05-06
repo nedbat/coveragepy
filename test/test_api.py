@@ -1,6 +1,6 @@
 """Tests for Coverage's api."""
 
-import os, sys, textwrap
+import os, re, sys, textwrap
 from cStringIO import StringIO
 
 import coverage
@@ -47,7 +47,6 @@ class ApiTest(CoverageTest):
         coverage.start()
         self.importModule(modname)
         coverage.stop()
-        coverage.analysis(modname + ".py")
         
     def testReport(self):
         self.doReportWork("mycode2")
@@ -59,6 +58,7 @@ class ApiTest(CoverageTest):
             """))
         
     def testReportFile(self):
+        # The file= argument of coverage.report makes the report go there.
         self.doReportWork("mycode3")
         fout = StringIO()
         coverage.report(["mycode3.py"], file=fout)
@@ -68,6 +68,13 @@ class ApiTest(CoverageTest):
             ---------------------------------------
             mycode3       7      4    57%   4-6
             """))
+
+    def testReportDefault(self):
+        # Calling report() with no morfs will report on whatever was executed.
+        self.doReportWork("mycode4")
+        coverage.report()
+        rpt = re.sub(r"\s+", " ", self.stdout())
+        self.assert_("mycode4 7 4 57% 4-6" in rpt)
 
     def testUnexecutedFile(self):
         cov = coverage.coverage()
