@@ -80,7 +80,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         tracename = PyDict_GetItem(self->should_trace_cache, filename);
         if (tracename == NULL) {
             // We've never considered this file before.  Ask should_trace about it.
-            PyObject * args = Py_BuildValue("(O)", filename);
+            PyObject * args = Py_BuildValue("(OO)", filename, frame);
             tracename = PyObject_Call(self->should_trace, args, NULL);
             Py_DECREF(args);
             if (tracename == NULL) {

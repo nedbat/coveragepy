@@ -24,7 +24,7 @@ except ImportError:
                 filename = frame.f_code.co_filename
                 tracename = self.should_trace_cache.get(filename)
                 if tracename is None:
-                    tracename = self.should_trace(filename)
+                    tracename = self.should_trace(filename, frame)
                     self.should_trace_cache[filename] = tracename
                 if tracename:
                     # We need to trace.  Push the current filename on the stack

@@ -33,7 +33,7 @@ class coverage:
         import atexit
         atexit.register(self.save)
 
-    def _should_trace(self, filename):
+    def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`
         
         Returns a canonicalized filename if it should be traced, False if it
@@ -44,8 +44,23 @@ class coverage:
             # There's no point in ever tracing string executions, we can't do
             # anything with the data later anyway.
             return False
-        
+
+        # Compiled Python files have two filenames: frame.f_code.co_filename is
+        # the filename where the .pyc was originally compiled.  The second name
+        # is __file__, which is where the .pyc was actually loaded from.  Since
+        # .pyc files can be moved after compilation (for example, by being
+        # installed), we look for __file__ in the frame and prefer it to the
+        # co_filename value.
+        dunder_file = frame.f_globals.get('__file__')
+        if dunder_file:
+            filename = dunder_file
+            if not filename.endswith(".py"):
+                filename = filename[:-1]
+
         canonical = self.file_locator.canonical_filename(filename)
+        
+        # If we aren't supposed to trace the stdlib, then check if this is in
+        # the stdlib and skip it if so.
         if not self.cover_stdlib:
             if canonical.startswith(self.sysprefix):
                 return False
