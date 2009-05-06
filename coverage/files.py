@@ -13,13 +13,15 @@ class FileLocator:
         self.canonical_filename_cache = {}
 
     def abs_file(self, filename):
-        """ Helper function to turn a filename into an absolute normalized
-            filename.
-        """
+        """Return the absolute normalized form of `filename`."""
         return os.path.normcase(os.path.abspath(os.path.realpath(filename)))
 
     def relative_filename(self, filename):
-        """ Convert filename to relative filename from self.relative_dir.
+        """Return the relative form of `filename`.
+        
+        The filename will be relative to the current directory when the
+        FileLocator was constructed.
+        
         """
         return filename.replace(self.relative_dir, "")
 
@@ -45,8 +47,11 @@ class FileLocator:
         return self.canonical_filename_cache[filename]
 
     def get_zip_data(self, filename):
-        """ Get data from `filename` if it is a zip file path, or return None
-            if it is not.
+        """Get data from `filename` if it is a zip file path.
+        
+        Returns the data read from the zip file, or None if no zip file could
+        be found or `filename` isn't in it.
+        
         """
         import zipimport
         markers = ['.zip'+os.sep, '.egg'+os.sep]
