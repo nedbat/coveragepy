@@ -11,6 +11,10 @@ Version 3.0b3
 - Added clear_exclude() and get_exclude_list() methods for programmatic
   manipulation of the exclude regexes.
 
+- Improved the finding of code files.  For example, .pyc files that have been
+  installed after compiling are now located correctly.  Thanks, Detlev
+  Offenbach.
+
 
 Version 3.0b2, 30 April 2009
 ----------------------------

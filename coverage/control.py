@@ -40,25 +40,28 @@ class coverage:
         should not.
         
         """
+        ofilename = filename
         if filename == '<string>':
             # There's no point in ever tracing string executions, we can't do
             # anything with the data later anyway.
             return False
 
         # Compiled Python files have two filenames: frame.f_code.co_filename is
-        # the filename where the .pyc was originally compiled.  The second name
+        # the filename at the time the .pyc was compiled.  The second name
         # is __file__, which is where the .pyc was actually loaded from.  Since
         # .pyc files can be moved after compilation (for example, by being
         # installed), we look for __file__ in the frame and prefer it to the
         # co_filename value.
         dunder_file = frame.f_globals.get('__file__')
         if dunder_file:
+            if not dunder_file.endswith(".py"):
+                dunder_file = dunder_file[:-1]
             filename = dunder_file
-            if not filename.endswith(".py"):
-                filename = filename[:-1]
 
         canonical = self.file_locator.canonical_filename(filename)
-        
+
+        #print "of: %r\nfn: %r\n__: %r\nca: %r\n" % (ofilename, filename, dunder_file, canonical)
+
         # If we aren't supposed to trace the stdlib, then check if this is in
         # the stdlib and skip it if so.
         if not self.cover_stdlib:
