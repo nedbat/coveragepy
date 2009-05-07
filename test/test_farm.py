@@ -58,7 +58,7 @@ class FarmTestCase(object):
         cwd = self.cd(self.dir)
 
         # Prepare a dictionary of globals for the run.py files to use.
-        fns = "copy run runfunc compare contains clean".split()
+        fns = "copy run runfunc compare contains doesnt_contain clean".split()
         if self.clean_only:
             glo = dict([(fn, self.noop) for fn in fns])
             glo['clean'] = self.clean
@@ -122,16 +122,19 @@ class FarmTestCase(object):
             shutil.rmtree(dst)
         shutil.copytree(src, dst)
 
-    def run(self, cmds, rundir="src"):
+    def run(self, cmds, rundir="src", outfile=None):
         """Run a list of commands.
         
         `cmds` is a string, commands separated by newlines.
         `rundir` is the directory in which to run the commands.
+        `outfile` is a filename to redirect stdout to.
         
         """
         cwd = self.cd(rundir)
         try:
             for cmd in cmds.split("\n"):
+                if not cmd.strip():
+                    continue
                 if subprocess:
                     proc = subprocess.Popen(cmd, shell=True, 
                               stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -143,6 +146,8 @@ class FarmTestCase(object):
                     output = stdouterr.read()
                     retcode = 0 # Can't tell if the process failed.
                 print output,
+                if outfile:
+                    open(outfile, "a+").write(output)
                 if retcode:
                     raise Exception("command exited abnormally")
         finally:
@@ -233,6 +238,17 @@ class FarmTestCase(object):
         text = open(filename, "r").read()
         for s in strlist:
             assert s in text, "Missing content in %s: %r" % (filename, s)
+
+    def doesnt_contain(self, filename, *strlist):
+        """Check that the file contains none of a list of strings.
+        
+        An assert will be raised if any of the strings in strlist appears in
+        `filename`.
+        
+        """
+        text = open(filename, "r").read()
+        for s in strlist:
+            assert s not in text, "Forbidden content in %s: %r" % (filename, s)
 
     def clean(self, cleandir):
         """Clean `cleandir` by removing it and all its children completely."""
