@@ -40,7 +40,6 @@ class coverage:
         should not.
         
         """
-        ofilename = filename
         if filename == '<string>':
             # There's no point in ever tracing string executions, we can't do
             # anything with the data later anyway.
@@ -55,12 +54,11 @@ class coverage:
         dunder_file = frame.f_globals.get('__file__')
         if dunder_file:
             if not dunder_file.endswith(".py"):
-                dunder_file = dunder_file[:-1]
+                if dunder_file[-4:-1] == ".py":
+                    dunder_file = dunder_file[:-1]
             filename = dunder_file
 
         canonical = self.file_locator.canonical_filename(filename)
-
-        #print "of: %r\nfn: %r\n__: %r\nca: %r\n" % (ofilename, filename, dunder_file, canonical)
 
         # If we aren't supposed to trace the stdlib, then check if this is in
         # the stdlib and skip it if so.
