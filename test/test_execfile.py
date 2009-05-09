@@ -17,11 +17,9 @@ class RunTest(CoverageTest):
         # The file should think it is __main__
         self.assertEqual(mod_globs['__name__'], "__main__")
 
-        # It should seem to come from a file named try_execfile
-        dunder_file = os.path.splitext(
-                        os.path.basename(mod_globs['__file__'])
-                        )[0]
-        self.assertEqual(dunder_file, "try_execfile")
+        # It should seem to come from a file named try_execfile.py
+        dunder_file = os.path.basename(mod_globs['__file__'])
+        self.assertEqual(dunder_file, "try_execfile.py")
 
         # It should have its correct module data.
         self.assertEqual(mod_globs['__doc__'],
@@ -35,16 +33,12 @@ class RunTest(CoverageTest):
         # Argv should have the proper values.
         self.assertEqual(mod_globs['argv'], [tryfile, "arg1", "arg2"])
 
-    def test_no_c_file(self):
-        self.makeFile("mycode.py", """\
-            a = 1
-            b = 2
-            if b == 3:
-                c = 4
-            d = 5
+    def test_no_extra_file(self):
+        # Make sure that running a file doesn't create an extra compiled file.
+        self.makeFile("xxx", """\
+            print "a non-.py file!"
             """)
             
-        self.assert_(not os.path.exists(".coverage"))
-        self.run_command("coverage -x mycode.py")
-        self.assert_(os.path.exists(".coverage"))
-        
+        self.assertEqual(os.listdir("."), ["xxx"])
+        run_python_file("xxx", ["xxx"])
+        self.assertEqual(os.listdir("."), ["xxx"])

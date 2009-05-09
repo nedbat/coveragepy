@@ -3,25 +3,35 @@
 import imp, os, sys
 
 def run_python_file(filename, args):
-    """Run a python source file as if it were the main program on the python
-    command line.
+    """Run a python file as if it were the main program on the command line.
     
-    `filename` is the path to the file to execute, must be a .py file.
-    `args` is the argument array to present as sys.argv.
+    `filename` is the path to the file to execute, it need not be a .py file.
+    `args` is the argument array to present as sys.argv, including the first
+    element representing the file being executed.
     
     """
-    # Most code that does this does it in a way that leaves __main__ or
-    # __file__ with the wrong values.  Importing the code as __main__ gets all
-    # of this right automatically.
-    #
-    # One difference from python.exe: if I run foo.py from the command line, it
-    # always uses foo.py.  With this code, it might find foo.pyc instead.
-    
+    # Create a module to serve as __main__
+    old_main_mod = sys.modules['__main__']
+    main_mod = imp.new_module("__main__")
+    sys.modules['__main__'] = main_mod
+    main_mod.__dict__.update({
+        '__name__': '__main__',
+        '__file__': filename,
+        })
+
+    # Set sys.argv and the first path element properly.
+    old_argv = sys.argv
+    old_path0 = sys.path[0]
     sys.argv = args
     sys.path[0] = os.path.dirname(filename)
 
-    src = open(filename)
     try:
-        imp.load_module('__main__', src, filename, (".py", "r", imp.PY_SOURCE))
+        source = open(filename).read()
+        exec compile(source, filename, "exec") in main_mod.__dict__
     finally:
-        src.close()
+        # Restore the old __main__
+        sys.modules['__main__'] = old_main_mod
+        
+        # Restore the old argv and path
+        sys.argv = old_argv
+        sys.path[0] = old_path0
