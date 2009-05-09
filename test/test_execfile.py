@@ -34,3 +34,17 @@ class RunTest(CoverageTest):
         
         # Argv should have the proper values.
         self.assertEqual(mod_globs['argv'], [tryfile, "arg1", "arg2"])
+
+    def test_no_c_file(self):
+        self.makeFile("mycode.py", """\
+            a = 1
+            b = 2
+            if b == 3:
+                c = 4
+            d = 5
+            """)
+            
+        self.assert_(not os.path.exists(".coverage"))
+        self.run_command("coverage -x mycode.py")
+        self.assert_(os.path.exists(".coverage"))
+        

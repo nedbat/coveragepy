@@ -1560,7 +1560,7 @@ class ModuleTest(CoverageTest):
 
 class ProcessTest(CoverageTest):
     def testSaveOnExit(self):
-        self.makeFile("mycode", """\
+        self.makeFile("mycode.py", """\
             a = 1
             b = 2
             if b == 3:
@@ -1574,7 +1574,7 @@ class ProcessTest(CoverageTest):
 
     def testEnvironment(self):
         # Checks that we can import modules from the test directory at all!
-        self.makeFile("mycode", """\
+        self.makeFile("mycode.py", """\
             import covmod1
             import covmodzip1
             a = 1
@@ -1587,7 +1587,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(out, 'done\n')
     
     def testReport(self):
-        self.makeFile("mycode", """\
+        self.makeFile("mycode.py", """\
             import covmod1
             import covmodzip1
             a = 1
@@ -1636,7 +1636,7 @@ class ProcessTest(CoverageTest):
         self.assert_("mycode " in report3)
 
     def testCombineParallelData(self):
-        self.makeFile("b_or_c", """\
+        self.makeFile("b_or_c.py", """\
             import sys
             a = 1
             if sys.argv[1] == 'b':

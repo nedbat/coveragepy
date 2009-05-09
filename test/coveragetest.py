@@ -63,14 +63,16 @@ class CoverageTest(unittest.TestCase):
         """Return the data written to stdout during the test."""
         return self.captured_stdout.getvalue()
 
-    def makeFile(self, modname, text):
-        """ Create a temp file with modname as the module name, and text as the
-            contents.
+    def makeFile(self, filename, text):
+        """Create a temp file.
+        
+        `filename` is the file name, and `text` is the content.
+        
         """
         text = textwrap.dedent(text)
         
-        # Create the python file.
-        f = open(modname + '.py', 'w')
+        # Create the file.
+        f = open(filename, 'w')
         f.write(text)
         f.close()
 
@@ -105,7 +107,7 @@ class CoverageTest(unittest.TestCase):
         # Coverage wants to deal with things as modules with file names.
         modname = self.getModuleName()
         
-        self.makeFile(modname, text)
+        self.makeFile(modname+".py", text)
 
         # Start up Coverage.
         cov = coverage.coverage()

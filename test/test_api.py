@@ -12,7 +12,7 @@ class ApiTest(CoverageTest):
     def testSimple(self):
         coverage.erase()
 
-        self.makeFile("mycode", """\
+        self.makeFile("mycode.py", """\
             a = 1
             b = 2
             if b == 3:
@@ -33,7 +33,7 @@ class ApiTest(CoverageTest):
     def doReportWork(self, modname):
         coverage.erase()
 
-        self.makeFile(modname, """\
+        self.makeFile(modname+".py", """\
             a = 1
             b = 2
             if b == 3:
@@ -79,7 +79,7 @@ class ApiTest(CoverageTest):
     def testUnexecutedFile(self):
         cov = coverage.coverage()
 
-        self.makeFile("mycode", """\
+        self.makeFile("mycode.py", """\
             a = 1
             b = 2
             if b == 3:
@@ -87,7 +87,7 @@ class ApiTest(CoverageTest):
             d = 5
             """)
             
-        self.makeFile("not_run", """\
+        self.makeFile("not_run.py", """\
             fooey = 17
             """)
             
@@ -102,12 +102,12 @@ class ApiTest(CoverageTest):
 
     def testFileNames(self):
 
-        self.makeFile("mymain", """\
+        self.makeFile("mymain.py", """\
             import mymod
             a = 1
             """)
             
-        self.makeFile("mymod", """\
+        self.makeFile("mymod.py", """\
             fooey = 17
             """)
             
@@ -145,13 +145,13 @@ class ApiTest(CoverageTest):
         self.assertEqual(os.path.basename(filename), "mymod.py")
 
     def testIgnoreStdLib(self):
-        self.makeFile("mymain", """\
+        self.makeFile("mymain.py", """\
             import mymod, colorsys
             a = 1
             hls = colorsys.rgb_to_hls(1.0, 0.5, 0.0)
             """)
             
-        self.makeFile("mymod", """\
+        self.makeFile("mymod.py", """\
             fooey = 17
             """)
 
