@@ -12,13 +12,10 @@ def run_python_file(filename, args):
     """
     # Create a module to serve as __main__
     old_main_mod = sys.modules['__main__']
-    main_mod = imp.new_module("__main__")
+    main_mod = imp.new_module('__main__')
     sys.modules['__main__'] = main_mod
-    main_mod.__dict__.update({
-        '__name__': '__main__',
-        '__file__': filename,
-        })
-
+    main_mod.__file__ = filename
+   
     # Set sys.argv and the first path element properly.
     old_argv = sys.argv
     old_path0 = sys.path[0]
