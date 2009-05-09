@@ -15,7 +15,8 @@ def run_python_file(filename, args):
     main_mod = imp.new_module('__main__')
     sys.modules['__main__'] = main_mod
     main_mod.__file__ = filename
-   
+    main_mod.__builtins__ = sys.modules['__builtin__']
+
     # Set sys.argv and the first path element properly.
     old_argv = sys.argv
     old_path0 = sys.path[0]

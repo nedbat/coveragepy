@@ -15,6 +15,8 @@ globals_to_check = {
     '__name__': __name__,
     '__file__': __file__,
     '__doc__': __doc__,
+    '__builtins__.has_open': hasattr(__builtins__, 'open'),
+    '__builtins__.dir': dir(__builtins__),
     'DATA': DATA,
     'FN_VAL': FN_VAL,
     '__main__.DATA': getattr(__main__, "DATA", "nothing"),

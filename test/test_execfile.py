@@ -33,12 +33,15 @@ class RunTest(CoverageTest):
         # Argv should have the proper values.
         self.assertEqual(mod_globs['argv'], [tryfile, "arg1", "arg2"])
 
+        # __builtins__ should have the right values, like open().
+        self.assertEqual(mod_globs['__builtins__.has_open'], True)
+
     def test_no_extra_file(self):
         # Make sure that running a file doesn't create an extra compiled file.
         self.makeFile("xxx", """\
             print "a non-.py file!"
             """)
-            
+
         self.assertEqual(os.listdir("."), ["xxx"])
         run_python_file("xxx", ["xxx"])
         self.assertEqual(os.listdir("."), ["xxx"])
