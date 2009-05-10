@@ -8,9 +8,26 @@ import re
 
 class Templite(object):
     """A simple template renderer, for a nano-subset of Django syntax.
+
+    Supported constructs are extended variable access::
+    
+        {{var.modifer.modifier|filter|filter}}
+        
+    and loops::
+    
+        {% for var in list %}...{% endfor %}
+    
+    Construct a Templite with the template text, then use `render` against a
+    dictionary context to create a finished string.
     
     """
     def __init__(self, text, *contexts):
+        """Construct a Templite with the given `text`.
+        
+        `contexts` are dictionaries of values to use for future renderings.
+        These are good for filters and global values.
+        
+        """
         self.loops = []
         self.text = self._prepare(text)
         self.context = {}
@@ -18,12 +35,17 @@ class Templite(object):
             self.context.update(context)
 
     def render(self, context=None):
+        """Render this template by applying it to `context`.
+        
+        `context` is a dictionary of values to use in this rendering.
+        
+        """
         # Make the complete context we'll use.
         ctx = dict(self.context)
         if context:
             ctx.update(context)
             
-        ctxaccess = ContextAccess(ctx)
+        ctxaccess = _ContextAccess(ctx)
         
         # Render the loops.
         for iloop, (loopvar, listvar, loopbody) in enumerate(self.loops):
@@ -41,7 +63,7 @@ class Templite(object):
         # Pull out loops.
         text = re.sub(
             r"(?s){% for ([a-z0-9_]+) in ([a-z0-9_.|]+) %}(.*?){% endfor %}",
-            self._loop_repl, text
+            self._loop_prepare, text
             )
         # Protect actual percent signs in the text.
         text = text.replace("%", "%%")
@@ -49,7 +71,8 @@ class Templite(object):
         text = re.sub(r"{{([^}]+)}}", r"%(\1)s", text)
         return text
 
-    def _loop_repl(self, match):
+    def _loop_prepare(self, match):
+        """Prepare a loop body for `_prepare`."""
         nloop = len(self.loops)
         # Append (loopvar, listvar, loopbody) to self.loops
         loopvar, listvar, loopbody = match.groups()
@@ -58,8 +81,13 @@ class Templite(object):
         return "{{loop:%d}}" % nloop
 
 
-class ContextAccess(object):
+class _ContextAccess(object):
+    """A mediator for a context.
     
+    Implements __getitem__ on a context for Templite, so that string formatting
+    references can pull data from the context.
+    
+    """
     def __init__(self, context):
         self.context = context
 
@@ -70,7 +98,7 @@ class ContextAccess(object):
             for func in pipes[1:]:
                 value = self[func](value)
         elif "." in key:
-            dots = key.split('.') 
+            dots = key.split('.')
             value = self[dots[0]]
             for dot in dots[1:]:
                 try:

@@ -14,14 +14,14 @@ import coverage
 
 
 class Tee(object):
-    """A file-like that writes to all the file-likes it was constructed with.
-    
-    """
+    """A file-like that writes to all the file-likes it has."""
 
     def __init__(self, *files):
+        """Make a Tee that writes to all the files in `files.`"""
         self.files = files
         
     def write(self, data):
+        """Write `data` to all the files."""
         for f in self.files:
             f.write(data)
 
@@ -77,8 +77,7 @@ class CoverageTest(unittest.TestCase):
         f.close()
 
     def importModule(self, modname):
-        """ Import the module named modname, and return the module object.
-        """
+        """Import the module named modname, and return the module object."""
         modfile = modname + '.py'
         f = open(modfile, 'r')
         
@@ -94,6 +93,7 @@ class CoverageTest(unittest.TestCase):
         return mod
 
     def getModuleName(self):
+        """Return the module name to use for this test run."""
         # We append self.n because otherwise two calls in one test will use the
         # same filename and whether the test works or not depends on the
         # timestamps in the .pyc file, so it becomes random whether the second
@@ -103,6 +103,14 @@ class CoverageTest(unittest.TestCase):
         return modname
     
     def checkCoverage(self, text, lines, missing="", excludes=None, report=""):
+        """Check the coverage measurement of `text`.
+        
+        The source `text` is run and measured.  `lines` are the line numbers
+        that are executable, `missing` are the lines not executed, `excludes`
+        are regexes to match against for excluding lines, and `report` is
+        the text of the measurement report.
+        
+        """
         # We write the code into a file so that we can import it.
         # Coverage wants to deal with things as modules with file names.
         modname = self.getModuleName()

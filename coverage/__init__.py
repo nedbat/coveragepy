@@ -23,12 +23,20 @@ from coverage.misc import CoverageException
 _the_coverage = None
 
 def _singleton_method(name):
-    def func(*args, **kwargs):
+    """Return a function to the `name` method on a singleton `coverage` object.
+    
+    The singleton object is created the first time one of these functions is
+    called.
+    
+    """
+    def wrapper(*args, **kwargs):
+        """Singleton wrapper around a coverage method."""
         global _the_coverage
         if not _the_coverage:
             _the_coverage = coverage()
         return getattr(_the_coverage, name)(*args, **kwargs)
-    return func
+    return wrapper
+
 
 # Define the module-level functions.
 use_cache = _singleton_method('use_cache')

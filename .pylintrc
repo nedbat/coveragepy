@@ -69,7 +69,7 @@ load-plugins=
 # Messages that are noisy for now, eventually maybe we'll turn them on:
 #   C0111:169:coverage.analyze_morf: Missing docstring
 #   C0103:256:coverage.morf_filename: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
-disable-msg=I0011,W0122,W0142,W0232,C0323,C0324,W0603, R0201,R0401,W0403,E1103, C0111,C0103
+disable-msg=I0011,W0122,W0142,W0232,C0323,C0324,W0603, R0201,R0401,W0403,E1103, C0103
 
 [REPORTS]
 
@@ -123,7 +123,7 @@ required-attributes=
 
 # Regular expression which should only match functions or classes name which do
 # not require a docstring
-no-docstring-rgx=__.*__
+no-docstring-rgx=__.*__|test[A-Z_].*|setUp|tearDown
 
 # Regular expression which should only match correct module names
 module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$

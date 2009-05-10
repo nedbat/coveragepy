@@ -47,4 +47,5 @@ def format_lines(statements, lines):
 
 
 class CoverageException(Exception):
+    """An exception specific to Coverage."""
     pass

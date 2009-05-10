@@ -1,4 +1,4 @@
-# Coverage-test Coverage itself.
+"""Coverage-test Coverage itself."""
 
 import coverage
 import os, shutil, sys

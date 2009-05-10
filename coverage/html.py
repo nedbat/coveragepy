@@ -16,9 +16,7 @@ def data(fname):
     
 
 class HtmlReporter(Reporter):
-    """HTML reporting.
-    
-    """
+    """HTML reporting."""
     
     def __init__(self, coverage, ignore_errors=False):
         super(HtmlReporter, self).__init__(coverage, ignore_errors)
@@ -27,7 +25,14 @@ class HtmlReporter(Reporter):
         
         self.files = []
 
-    def report(self, morfs, directory=None, omit_prefixes=None):
+    def report(self, morfs, directory, omit_prefixes=None):
+        """Generate an HTML report for `morfs`.
+        
+        `morfs` is a list of modules or filenames.  `directory` is where to put
+        the HTML files. `omit_prefixes` is a list of strings, prefixes of
+        modules to omit from the report.
+        
+        """
         assert directory, "must provide a directory for html reporting"
         
         # Process all the files.
@@ -147,10 +152,15 @@ def not_empty(t):
     return t or "&nbsp;"
     
 def format_pct(p):
+    """Format a percentage value for the HTML reports."""
     return "%.0f" % p
 
 def spaceless(html):
-    """Squeeze out some of that annoying extra space that comes from
-    nicely-formatted templates."""
+    """Squeeze out some annoying extra space from an HTML string.
+    
+    Nicely-formatted templates mean lots of extra space in the result.  Get
+    rid of some.
+    
+    """
     html = re.sub(">\s+<p ", ">\n<p ", html)
     return html
