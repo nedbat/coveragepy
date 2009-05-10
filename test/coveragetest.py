@@ -27,6 +27,8 @@ class Tee(object):
 
 
 class CoverageTest(unittest.TestCase):
+    """A base class for Coverage test cases."""
+
     def setUp(self):
         # Create a temporary directory.
         self.noise = str(random.random())[2:]

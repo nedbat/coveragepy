@@ -8,6 +8,7 @@ from coveragetest import CoverageTest
 
 
 class ApiTest(CoverageTest):
+    """Api-oriented tests for Coverage."""
 
     def testSimple(self):
         coverage.erase()
@@ -31,6 +32,7 @@ class ApiTest(CoverageTest):
         self.assertEqual(missingtext, "4")
         
     def doReportWork(self, modname):
+        """Create a module named `modname`, then measure it."""
         coverage.erase()
 
         self.makeFile(modname+".py", """\

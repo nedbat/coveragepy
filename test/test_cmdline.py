@@ -11,9 +11,11 @@ class CmdLineTest(CoverageTest):
     """Tests of command-line processing for Coverage."""
 
     def help_fn(self, error=None):
+        """A mock help_fn to capture the error messages for tests."""
         raise Exception(error or "__doc__")
 
     def command_line(self, argv):
+        """Run a Coverage command line, with `argv` as arguments."""
         return coverage.CoverageScript().command_line(argv, self.help_fn)
 
     def testHelp(self):

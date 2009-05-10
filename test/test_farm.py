@@ -256,6 +256,15 @@ class FarmTestCase(object):
             shutil.rmtree(cleandir)
 
 def main():
+    """Command-line access to test_farm.
+    
+    Commands:
+    
+    run testcase    - Run a single test case.
+    out testcase    - Run a test case, but don't clean up, to see the output.
+    clean           - Clean all the output for all tests.
+        
+    """
     op = sys.argv[1]
     if op == 'run':
         # Run the test for real.

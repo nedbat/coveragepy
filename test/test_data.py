@@ -17,11 +17,14 @@ EXECED_FILES_1_2 = [ 'a.py', 'b.py', 'c.py' ]
 
 
 class DataTest(CoverageTest):
-    
+    """Test cases for coverage.data."""
+
     def assert_summary(self, covdata, summary):
+        """Check that the summary of `covdata` is `summary`."""
         self.assertEqual(covdata.summary(), summary)
         
     def assert_executed_files(self, covdata, execed):
+        """Check that `covdata`'s executed files are `execed`."""
         self.assert_equal_sets(covdata.executed_files(), execed)
     
     def test_reading_empty(self):

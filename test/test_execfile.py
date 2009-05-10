@@ -8,6 +8,7 @@ from coveragetest import CoverageTest
 here = os.path.dirname(__file__)
 
 class RunTest(CoverageTest):
+    """Test cases for `run_python_file`."""
 
     def test_run_python_file(self):
         tryfile = os.path.join(here, "try_execfile.py")
