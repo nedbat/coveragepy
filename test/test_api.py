@@ -195,3 +195,48 @@ class ApiTest(CoverageTest):
         self.assertEqual(cov.exclude_re, "(foo)|(bar)")
         cov.clear_exclude()
         self.assertEqual(cov.get_exclude_list(), [])
+
+    def testDatafileDefault(self):
+        # Default data file behavior: it's .coverage
+        self.makeFile("datatest1.py", """\
+            fooey = 17
+            """)
+
+        self.assert_equal_sets(os.listdir("."), ["datatest1.py"])
+        cov = coverage.coverage()
+        cov.start()
+        self.importModule("datatest1")
+        cov.stop()
+        cov.save()
+        self.assert_equal_sets(os.listdir("."),
+                            ["datatest1.py", "datatest1.pyc", ".coverage"])
+
+    def testDatafileSpecified(self):
+        # You can specify the data file name.
+        self.makeFile("datatest2.py", """\
+            fooey = 17
+            """)
+
+        self.assert_equal_sets(os.listdir("."), ["datatest2.py"])
+        cov = coverage.coverage(datafile="cov.data")
+        cov.start()
+        self.importModule("datatest2")
+        cov.stop()
+        cov.save()
+        self.assert_equal_sets(os.listdir("."),
+                            ["datatest2.py", "datatest2.pyc", "cov.data"])
+
+    def testDatafileSpecified(self):
+        # You can specify the data file name and suffix.
+        self.makeFile("datatest3.py", """\
+            fooey = 17
+            """)
+
+        self.assert_equal_sets(os.listdir("."), ["datatest3.py"])
+        cov = coverage.coverage(data_file="cov.data", data_suffix=".14")
+        cov.start()
+        self.importModule("datatest3")
+        cov.stop()
+        cov.save()
+        self.assert_equal_sets(os.listdir("."),
+                            ["datatest3.py", "datatest3.pyc", "cov.data.14"])

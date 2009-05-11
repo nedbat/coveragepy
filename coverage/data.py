@@ -21,17 +21,24 @@ class CoverageData:
     # Environment variable naming the data file.
     filename_env = "COVERAGE_FILE"
 
-    def __init__(self, collector=None):
+    def __init__(self, basename=None, suffix=None, collector=None):
         """Create a CoverageData.
         
-        `collector` is a string describing the coverage measurement software.
+        `basename` is the name of the file to use for storing data.
         
+        `suffix` is a suffix to append to the base file name. This can be used
+        for multiple or parallel execution, so that many coverage data files
+        can exist simultaneously.
+
+        `collector` is a string describing the coverage measurement software.
+
         """
+        self.basename = basename
         self.collector = collector
+        self.suffix = suffix
         
         self.use_file = True
         self.filename = None
-        self.suffix = None
 
         # A map from canonical Python source file name to a dictionary in
         # which there's an entry for each line number that has been
@@ -48,23 +55,15 @@ class CoverageData:
         """Set whether or not to use a disk file for data."""
         self.use_file = use_file
 
-    def set_suffix(self, suffix):
-        """Set a suffix to use for the data file name.
-        
-        This can be used for multiple or parallel execution, so that many
-        coverage data files can exist simultaneously.
-        
-        """
-        self.suffix = suffix
-
     def _make_filename(self):
         """Construct the filename that will be used for data file storage."""
         assert self.use_file
         if not self.filename:
-            self.filename = os.environ.get(
-                                    self.filename_env, self.filename_default)
+            self.filename = (self.basename or
+                    os.environ.get(self.filename_env, self.filename_default))
+
             if self.suffix:
-                self.filename += "." + self.suffix
+                self.filename += self.suffix
 
     def read(self):
         """Read coverage data from the coverage data file (if it exists)."""

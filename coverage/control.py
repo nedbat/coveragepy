@@ -11,11 +11,24 @@ from coverage.misc import format_lines, CoverageException
 from coverage.summary import SummaryReporter
 
 class coverage:
-    def __init__(self, parallel_mode=False, cover_stdlib=False):
+    """Programmatic access to Coverage.
+    
+    """
+    def __init__(self, data_file=None, data_suffix=False, cover_stdlib=False):
+        """Create a new coverage measurement context.
+        
+        `data_file` is the base name of the data file to use, defaulting to
+        ".coverage".  `data_suffix` is appended to `data_file` to create the
+        final file name.  If `data_suffix` is simply True, then a suffix is
+        created with the machine and process identity included.
+        
+        `cover_stdlib` is a boolean determining whether Python code installed
+        with the Python interpreter is measured.
+        
+        """
         from coverage.collector import Collector
         from coverage import __version__
         
-        self.parallel_mode = parallel_mode
         self.cover_stdlib = cover_stdlib
         self.exclude_re = ""
         self.exclude_list = []
@@ -24,8 +37,19 @@ class coverage:
         self.sysprefix = self.file_locator.abs_file(sys.prefix)
         
         self.collector = Collector(self._should_trace)
-        self.data = CoverageData(collector="coverage v%s" % __version__)
-    
+
+        # Create the data file.
+        if data_suffix:
+            if not isinstance(data_suffix, basestring):
+                # if data_suffix=True, use .machinename.pid
+                data_suffix = ".%s.%s" % (socket.gethostname(), os.getpid())
+        else:
+            data_suffix = None
+
+        self.data = CoverageData(
+            basename=data_file, suffix=data_suffix,
+            collector="coverage v%s" % __version__)
+
         # The default exclude pattern.
         self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')
 
@@ -79,19 +103,25 @@ class coverage:
 
     def get_ready(self):
         self.collector.reset()
-        if self.parallel_mode:
-            self.data.set_suffix("%s.%s" % (socket.gethostname(), os.getpid()))
         self.data.read()
         
     def start(self):
+        """Start measuring code coverage."""
         self.get_ready()
         self.collector.start()
         
     def stop(self):
+        """Stop measuring code coverage."""
         self.collector.stop()
         self._harvest_data()
 
     def erase(self):
+        """Erase previously-collected coverage data.
+        
+        This removes the in-memory data collected in this session as well as
+        discarding the data file.
+        
+        """
         self.get_ready()
         self.collector.reset()
         self.data.erase()
@@ -118,6 +148,7 @@ class coverage:
         return self.exclude_list
 
     def save(self):
+        """Save the collected coverage data to the data file."""
         self._harvest_data()
         self.data.write()
 

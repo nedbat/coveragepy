@@ -137,7 +137,7 @@ class CoverageScript:
         
         # Do something.
         self.coverage = self.covpkg.coverage(
-            parallel_mode = settings.get('parallel-mode'),
+            data_suffix = bool(settings.get('parallel-mode')),
             cover_stdlib = settings.get('stdlib')
             )
         self.coverage.get_ready()
