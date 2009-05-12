@@ -218,7 +218,7 @@ class ApiTest(CoverageTest):
             """)
 
         self.assert_equal_sets(os.listdir("."), ["datatest2.py"])
-        cov = coverage.coverage(datafile="cov.data")
+        cov = coverage.coverage(data_file="cov.data")
         cov.start()
         self.importModule("datatest2")
         cov.stop()
@@ -226,7 +226,7 @@ class ApiTest(CoverageTest):
         self.assert_equal_sets(os.listdir("."),
                             ["datatest2.py", "datatest2.pyc", "cov.data"])
 
-    def testDatafileSpecified(self):
+    def testDatafileAndSuffixSpecified(self):
         # You can specify the data file name and suffix.
         self.makeFile("datatest3.py", """\
             fooey = 17
