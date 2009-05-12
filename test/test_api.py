@@ -240,3 +240,9 @@ class ApiTest(CoverageTest):
         cov.save()
         self.assert_equal_sets(os.listdir("."),
                             ["datatest3.py", "datatest3.pyc", "cov.data.14"])
+
+    def testEmptyReporting(self):
+        # Used to be you'd get an exception reporting on nothing...
+        cov = coverage.coverage()
+        cov.erase()
+        cov.report()
