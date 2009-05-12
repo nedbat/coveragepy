@@ -94,7 +94,7 @@ class CoverageScript:
             '-x': 'execute',
             '-o:': 'omit=',
             }
-        short_opts = ''.join(map(lambda o: o[1:], optmap.keys()))
+        short_opts = ''.join([o[1:] for o in optmap.keys()])
         long_opts = optmap.values()
         options, args = getopt.getopt(argv, short_opts, long_opts)
         for o, a in options:
