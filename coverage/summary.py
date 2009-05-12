@@ -18,7 +18,7 @@ class SummaryReporter(Reporter):
         self.find_code_units(morfs, omit_prefixes)
 
         # Prepare the formatting strings
-        max_name = max(5, max([len(cu.name) for cu in self.code_units]))
+        max_name = max([len(cu.name) for cu in self.code_units] + [5])
         fmt_name = "%%- %ds  " % max_name
         fmt_err = fmt_name + "%s: %s\n"
         header = fmt_name % "Name" + " Stmts   Exec  Cover\n"
