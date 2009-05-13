@@ -1,8 +1,8 @@
-# For some reason, building the egg includes everything!
-exclude *.* *
+# MANIFEST.in file for coverage.py
 include coverage.egg-info/*.*
 include coverage/*.py
 include ez_setup.py
 include setup.py
 include README.txt
 include CHANGES.txt
+prune test
