@@ -94,7 +94,6 @@ class coverage:
             if canonical.startswith(self.sysprefix):
                 return False
         
-        # TODO: ignore by module as well as file?
         return canonical
 
     def use_cache(self, usecache):
@@ -161,7 +160,13 @@ class coverage:
         self.data.write()
 
     def combine(self):
-        """Entry point for combining together parallel-mode coverage data."""
+        """Combine together a number of similarly-named coverage data files.
+        
+        All coverage data files whose name starts with `data_file` (from the
+        coverage() constructor) will be read, and combined together into the
+        current measurements.
+        
+        """
         self.data.combine_parallel_data()
 
     def _harvest_data(self):
@@ -171,10 +176,26 @@ class coverage:
 
     # Backward compatibility with version 1.
     def analysis(self, morf):
+        """Like `analysis2` but doesn't return excluded line numbers."""
         f, s, _, m, mf = self.analysis2(morf)
         return f, s, m, mf
 
     def analysis2(self, morf):
+        """Analyze a module.
+        
+        `morf` is a module or a filename.  It will be analyzed to determine
+        its coverage statistics.  The return value is a 5-tuple:
+        
+          * The filename for the module.
+          * A list of line numbers of executable statements.
+          * A list of line numbers of excluded statements.
+          * A list of line numbers of statements not run (missing from execution).
+          * A readable formatted string of the missing line numbers.
+
+        The analysis uses the source file itself and the current measured
+        coverage data.
+
+        """
         code_unit = code_unit_factory(morf, self.file_locator)[0]
         st, ex, m, mf = self.analyze(code_unit)
         return code_unit.filename, st, ex, m, mf
@@ -182,11 +203,7 @@ class coverage:
     def analyze(self, code_unit):
         """Analyze a single code unit.
         
-        Returns a tuple of:
-        - a list of lines of statements in the source code,
-        - a list of lines of excluded statements,
-        - a list of lines missing from execution, and
-        - a readable string of missing lines.
+        Returns a 4-tuple: (statements, excluded, missing, missing formatted).
 
         """
         from coverage.parser import CodeParser
@@ -227,7 +244,7 @@ class coverage:
             )
 
     def report(self, morfs=None, show_missing=True, ignore_errors=False,
-                file=None, omit_prefixes=None):
+                file=None, omit_prefixes=None):     # pylint: disable-msg=W0622
         """Write a summary report to `file`.
         
         Each module in `morfs` is listed, with counts of statements, executed

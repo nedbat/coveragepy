@@ -63,6 +63,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     from the command line, to reconsider exclusions.
 - Reporting on files never touched by coverage (package completeness)
 - Why can't a morf also be a string, the name of a module?
+- ignore by module as well as file?
 
 
 * Beauty
@@ -116,7 +117,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     + Use sets instead of dicts
 - Switch from getopt to optparse.
 + Get rid of the recursive nonsense.
-- Docstrings.
++ Docstrings.
 + Remove huge document-style comments.
 - Better names:
     + self.cache -> self.cache_filename -> CoverageData.filename

@@ -32,8 +32,7 @@ LINTABLE_TESTS = \
 	test/test_templite.py
 
 lint: 
-	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc coverage
-	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc $(LINTABLE_TESTS)
+	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc coverage $(LINTABLE_TESTS)
 	python /Python25/Lib/tabnanny.py coverage
 	python checkeol.py
 

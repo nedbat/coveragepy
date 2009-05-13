@@ -130,7 +130,7 @@ class CoverageData:
                 return lines
             else:
                 return {}
-        except:
+        except Exception:
             return {}
 
     def combine_parallel_data(self):
