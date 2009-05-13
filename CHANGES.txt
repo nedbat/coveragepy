@@ -11,7 +11,7 @@ Version 3.0b3
 - Added clear_exclude() and get_exclude_list() methods for programmatic
   manipulation of the exclude regexes.
 
-- Added coverage.load() to
+- Added coverage.load() to read previously-saved data from the data file.
 
 - Improved the finding of code files.  For example, .pyc files that have been
   installed after compiling are now located correctly.  Thanks, Detlev
@@ -30,7 +30,8 @@ HTML reporting, and continued refactoring.
   Thanks to George Song for code, inspiration and guidance.
 
 - Code in the Python standard library is not measured by default.  If you need
-  to measure standard library code, use the -L switch during execution.
+  to measure standard library code, use the -L command-line switch during
+  execution, or the cover_pylib=True argument to the coverage() constructor.
 
 - Source annotation into a directory (-a -d) behaves differently.  The
   annotated files are named with their hierarchy flattened so that same-named

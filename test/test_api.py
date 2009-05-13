@@ -159,7 +159,7 @@ class ApiTest(CoverageTest):
 
         # Measure without the stdlib.
         cov1 = coverage.coverage()
-        self.assertEqual(cov1.cover_stdlib, False)
+        self.assertEqual(cov1.cover_pylib, False)
         cov1.start()
         self.importModule("mymain")
         cov1.stop()
@@ -172,7 +172,7 @@ class ApiTest(CoverageTest):
         self.assertEqual(statements, missing)
 
         # Measure with the stdlib.
-        cov2 = coverage.coverage(cover_stdlib=True)
+        cov2 = coverage.coverage(cover_pylib=True)
         cov2.start()
         self.importModule("mymain")
         cov2.stop()

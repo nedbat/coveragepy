@@ -14,7 +14,7 @@ class coverage:
     """Programmatic access to Coverage.
     
     """
-    def __init__(self, data_file=None, data_suffix=False, cover_stdlib=False):
+    def __init__(self, data_file=None, data_suffix=False, cover_pylib=False):
         """Create a new coverage measurement context.
         
         `data_file` is the base name of the data file to use, defaulting to
@@ -22,14 +22,15 @@ class coverage:
         final file name.  If `data_suffix` is simply True, then a suffix is
         created with the machine and process identity included.
         
-        `cover_stdlib` is a boolean determining whether Python code installed
-        with the Python interpreter is measured.
+        `cover_pylib` is a boolean determining whether Python code installed
+        with the Python interpreter is measured.  This includes the Python
+        standard library and any packages installed with the interpreter.
         
         """
         from coverage.collector import Collector
         from coverage import __version__
         
-        self.cover_stdlib = cover_stdlib
+        self.cover_pylib = cover_pylib
         self.exclude_re = ""
         self.exclude_list = []
         
@@ -80,9 +81,9 @@ class coverage:
 
         canonical = self.file_locator.canonical_filename(filename)
 
-        # If we aren't supposed to trace the stdlib, then check if this is in
-        # the stdlib and skip it if so.
-        if not self.cover_stdlib:
+        # If we aren't supposed to trace installed code, then check if this is
+        # near the Python interpreter and skip it if so.
+        if not self.cover_pylib:
             if canonical.startswith(self.sysprefix):
                 return False
         
