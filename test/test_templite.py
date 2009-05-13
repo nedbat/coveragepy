@@ -3,6 +3,10 @@
 from coverage.templite import Templite
 import unittest
 
+# pylint: disable-msg=W0612,E1101
+# Disable W0612 (Unused variable) and
+# E1101 (Instance of 'foo' has no 'bar' member)
+
 class AnyOldObject(object):
     """Simple testing object.
     
@@ -14,9 +18,11 @@ class AnyOldObject(object):
             setattr(self, n, v)
 
 
-class TemplateTest(unittest.TestCase):
-    
+class TempliteTest(unittest.TestCase):
+    """Tests for Templite."""
+
     def try_render(self, text, ctx, result):
+        """Render `text` through `ctx`, and it had better be `result`."""
         self.assertEqual(Templite(text).render(ctx), result)
 
     def test_passthrough(self):
@@ -64,11 +70,12 @@ class TemplateTest(unittest.TestCase):
         
     def test_member_function(self):
         # Variables' member functions can be used, as long as they are nullary.
-        class WithMemberFns(object):
+        class WithMemberFns(AnyOldObject):
+            """A class to try out member function access."""
             def ditto(self):
+                """Return twice the .txt attribute."""
                 return self.txt + self.txt
-        obj = WithMemberFns()
-        obj.txt = "Once"
+        obj = WithMemberFns(txt="Once")
         self.try_render("{{obj.ditto}}", locals(), "OnceOnce")
 
     def test_item_access(self):
@@ -86,6 +93,7 @@ class TemplateTest(unittest.TestCase):
             )
         # Loop iterables can be filtered.
         def rev(l):
+            """Return the reverse of `l`."""
             l = l[:]
             l.reverse()
             return l
@@ -112,7 +120,8 @@ class TemplateTest(unittest.TestCase):
         
     def test_multiple_loops(self):
         self.try_render(
-            "{% for n in nums %}{{n}}{% endfor %} and {% for n in nums %}{{n}}{% endfor %}",
+            "{% for n in nums %}{{n}}{% endfor %} and "
+                                    "{% for n in nums %}{{n}}{% endfor %}",
             {'nums': [1,2,3]},
             "123 and 123"
             )
