@@ -140,11 +140,12 @@ class CoverageScript:
             data_suffix = bool(settings.get('parallel-mode')),
             cover_stdlib = settings.get('stdlib')
             )
-        self.coverage.get_ready()
 
         if settings.get('erase'):
             self.coverage.erase()
-        
+        else:
+            self.coverage.load()
+
         if settings.get('execute'):
             if not args:
                 help_fn("Nothing to do.")
@@ -156,9 +157,11 @@ class CoverageScript:
                 run_python_file(args[0], args)
             finally:
                 self.coverage.stop()
-        
+                self.coverage.save()
+
         if settings.get('combine'):
             self.coverage.combine()
+            self.coverage.save()
 
         # Remaining actions are reporting, with some common options.
         show_missing = settings.get('show-missing')

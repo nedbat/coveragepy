@@ -11,9 +11,14 @@ Version 3.0b3
 - Added clear_exclude() and get_exclude_list() methods for programmatic
   manipulation of the exclude regexes.
 
+- Added coverage.load() to
+
 - Improved the finding of code files.  For example, .pyc files that have been
   installed after compiling are now located correctly.  Thanks, Detlev
   Offenbach.
+
+- Removed the automatic saving of data on process exit.  If you needed this,
+  please get in touch with me so I can understand why!
 
 
 Version 3.0b2, 30 April 2009

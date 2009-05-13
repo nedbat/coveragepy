@@ -53,10 +53,6 @@ class coverage:
         # The default exclude pattern.
         self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')
 
-        # Save coverage data when Python exits.
-        import atexit
-        atexit.register(self.save)
-
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`
         
@@ -101,13 +97,13 @@ class coverage:
         """
         self.data.usefile(usecache)
 
-    def get_ready(self):
+    def load(self):
+        """Load previously-collected coverage data from the data file."""
         self.collector.reset()
         self.data.read()
         
     def start(self):
         """Start measuring code coverage."""
-        self.get_ready()
         self.collector.start()
         
     def stop(self):
@@ -122,7 +118,6 @@ class coverage:
         discarding the data file.
         
         """
-        self.get_ready()
         self.collector.reset()
         self.data.erase()
 
