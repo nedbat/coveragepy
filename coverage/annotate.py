@@ -5,6 +5,27 @@ import os, re
 from coverage.report import Reporter
 
 class AnnotateReporter(Reporter):
+    """Generate annotated source files showing line coverage.
+    
+    This reporter creates annotated copies of the measured source files. Each
+    .py file is copied as a .py,cover file, with a left-hand margin annotating
+    each line::
+    
+        > def h(x):
+        -     if 0:   #pragma: no cover
+        -         pass
+        >     if x == 1:
+        !         a = 1
+        >     else:
+        >         a = 2
+          
+        > h(2)
+
+    Executed lines use '>', lines not executed use '!', lines excluded from
+    consideration use '-'.
+    
+    """
+
     def __init__(self, coverage, ignore_errors=False):
         super(AnnotateReporter, self).__init__(coverage, ignore_errors)
         self.directory = None
@@ -13,6 +34,7 @@ class AnnotateReporter(Reporter):
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
     def report(self, morfs, directory=None, omit_prefixes=None):
+        """Run the report."""
         self.report_files(self.annotate_file, morfs, directory, omit_prefixes)
         
     def annotate_file(self, cu, statements, excluded, missing):

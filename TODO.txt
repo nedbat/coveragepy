@@ -124,13 +124,13 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - More classes:
     - Module munging
     + Coverage data files
-- Why are some imports at the top of the file, and some in functions?
++ Why are some imports at the top of the file, and some in functions?
 + Get rid of sys.exitfunc use.
 + True and False (with no backward adaptation: the constants are new in 2.2.1)
 + Get rid of compiler module
     + In analyzing code
     + In test_coverage.py
-- Style:
++ Style:
     + lineno
     + filename
 
@@ -146,14 +146,14 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 + Test both the C trace function and the Python trace function.
 - Tests about the .coverage file.
 - Tests about the --long-form of arguments.
-- Tests about overriding the .coverage filename.
++ Tests about overriding the .coverage filename.
 - Tests about parallel mode.
 + Tests about assigning a multi-line string.
 - Tests about tricky docstrings.
 - Coverage test Coverage!
 - Tests that tracing stops after calling stop()
 - More intensive thread testing.
-- Tests about the "import __main__" in cmdline.py
+x Tests about the "import __main__" in cmdline.py
 - What happens if the -x script raises an exception?
 
 
@@ -166,6 +166,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     - Pythons 2.3, 2.4, 2.5, 2.6
 - Version number in coverage/__init__.py:__version__
 - Update CHANGES, including release date.
+- Update docs
 - Kits:
     - source .tgz
     - windows .exe for each Python

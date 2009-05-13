@@ -23,6 +23,8 @@ def g(x):
 g(1)
 
 def h(x):
+    if 0:   #pragma: no cover
+        pass
     if x == 1:
         a = 1
     else:
