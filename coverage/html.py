@@ -5,6 +5,9 @@ from coverage import __version__    # pylint: disable-msg=W0611
 from coverage.report import Reporter
 from coverage.templite import Templite
 
+# Disable pylint msg W0612, because a bunch of variables look unused, but
+# they're accessed in a templite context via locals().
+# pylint: disable-msg=W0612
 
 def data_filename(fname):
     """Return the path to a data file of ours."""
