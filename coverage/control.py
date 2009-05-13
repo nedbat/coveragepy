@@ -14,7 +14,8 @@ class coverage:
     """Programmatic access to Coverage.
     
     """
-    def __init__(self, data_file=None, data_suffix=False, cover_pylib=False):
+    def __init__(self, data_file=None, data_suffix=False, cover_pylib=False,
+                auto_data=False):
         """Create a new coverage measurement context.
         
         `data_file` is the base name of the data file to use, defaulting to
@@ -26,11 +27,17 @@ class coverage:
         with the Python interpreter is measured.  This includes the Python
         standard library and any packages installed with the interpreter.
         
+        If `auto_data` is true, then any existing data file will be read when
+        coverage measurement starts, and data will be saved automatically when
+        measurement stops.
+        
         """
         from coverage.collector import Collector
         from coverage import __version__
         
         self.cover_pylib = cover_pylib
+        self.auto_data = auto_data
+        
         self.exclude_re = ""
         self.exclude_list = []
         
@@ -105,6 +112,11 @@ class coverage:
         
     def start(self):
         """Start measuring code coverage."""
+        if self.auto_data:
+            self.load()
+            # Save coverage data when Python exits.
+            import atexit
+            atexit.register(self.save)
         self.collector.start()
         
     def stop(self):

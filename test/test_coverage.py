@@ -1552,8 +1552,7 @@ if sys.hexversion >= 0x020500f0:
 
 class ModuleTest(CoverageTest):
     def testNotSingleton(self):
-        """ You *can* create another coverage object.
-        """
+        # You *can* create another coverage object.
         coverage.coverage()
         coverage.coverage()
 

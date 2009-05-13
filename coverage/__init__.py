@@ -33,7 +33,7 @@ def _singleton_method(name):
         """Singleton wrapper around a coverage method."""
         global _the_coverage
         if not _the_coverage:
-            _the_coverage = coverage()
+            _the_coverage = coverage(auto_data=True)
         return getattr(_the_coverage, name)(*args, **kwargs)
     return wrapper
 

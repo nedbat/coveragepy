@@ -17,8 +17,10 @@ Version 3.0b3
   installed after compiling are now located correctly.  Thanks, Detlev
   Offenbach.
 
-- Removed the automatic saving of data on process exit.  If you needed this,
-  please get in touch with me so I can understand why!
+- When using the object api (that is, constructing a coverage() object), data
+  is no longer saved automatically on process exit.  If you needed this,
+  please get in touch with me so I can understand why!  The module-level
+  interface still uses automatic saving.
 
 
 Version 3.0b2, 30 April 2009
