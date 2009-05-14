@@ -108,6 +108,11 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     + Initialization of instance variables in the class.
 
 
+* Installation
+
+- pip can't install it: it reads the coverage html page, and finds the kit link,
+    but then can't handle the root-relative link.
+
 * Modernization
 
 + Decide on minimum supported version
@@ -156,6 +161,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - More intensive thread testing.
 x Tests about the "import __main__" in cmdline.py
 - What happens if the -x script raises an exception?
+- Test that the kit has all the proper contents.
 
 
 * Release checklist
