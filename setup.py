@@ -51,6 +51,12 @@ setup(
         'coverage',
         ],
 
+    package_data = {
+        'coverage': [
+            'htmlfiles/*.*',
+            ]
+        },
+
     entry_points={
         'console_scripts': [
             'coverage = coverage:main',
@@ -60,7 +66,7 @@ setup(
         Extension("coverage.tracer", sources=["coverage/tracer.c"])
         ],
     
-    zip_safe = True,    # __file__ appears in the source, but doesn't break zippy-ness.
+    zip_safe = False,    # we need to get HTML assets from our htmlfiles dir.
 
     author = 'Ned Batchelder',
     author_email = 'ned@nedbatchelder.com',

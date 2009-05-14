@@ -1,6 +1,7 @@
 # MANIFEST.in file for coverage.py
 include coverage.egg-info/*.*
 include coverage/*.py
+include coverage/htmlfiles/*.*
 include ez_setup.py
 include setup.py
 include README.txt
