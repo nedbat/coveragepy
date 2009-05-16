@@ -6,6 +6,7 @@ from coverage.execfile import run_python_file
 
 USAGE = r"""
 Coverage version %(__version__)s
+Measure, collect, and report on code coverage in Python programs.
 
 Usage:
 
