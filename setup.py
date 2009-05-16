@@ -1,6 +1,6 @@
 # setup.py for coverage.
 
-"""Code coverage testing for Python
+"""Code coverage measurement for Python
 
 Coverage measures code coverage, typically during test execution.  It uses the
 code analysis tools and tracing hooks provided in the Python standard library
