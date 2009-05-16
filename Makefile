@@ -33,7 +33,7 @@ LINTABLE_TESTS = \
 
 lint: 
 	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc coverage $(LINTABLE_TESTS)
-	python /Python25/Lib/tabnanny.py coverage
+	python /Python25/Lib/tabnanny.py coverage test
 	python checkeol.py
 
 testready: $(TEST_ZIP) devinst
