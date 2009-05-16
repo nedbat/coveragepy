@@ -53,6 +53,7 @@ load-plugins=
 #enable-msg=
 
 # Disable the message(s) with the given id(s).
+disable-msg= 
 # Messages that are just silly:
 #   I0011:106: Locally disabling E1101
 #   W0122: 30:run_python_file: Use of the exec statement
@@ -62,15 +63,18 @@ load-plugins=
 #   C0324: 15: Comma not followed by a space
 #   W0603: 28:call_singleton_method: Using the global statement
 #   W0703:133:CoverageData._read_file: Catch "Exception"
+    I0011,W0122,W0142,W0232,C0323,C0324,W0603,W0703,
+
 # Messages that may be silly:
 #   R0201: 42:Tracer.stop: Method could be a function
 #   R0401:  1: Cyclic import (coverage -> coverage.control -> coverage.html)
 #   W0403:  4: Relative import 'coveragetest'
 #   E1103: 26:RunTests.test_run_python_file: Instance of 'file' has no 'getvalue' member (but some types could not be inferred)
+    R0201,R0401,W0403,E1103,
+
 # Messages that are noisy for now, eventually maybe we'll turn them on:
-#   C0111:169:coverage.analyze_morf: Missing docstring
 #   C0103:256:coverage.morf_filename: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
-disable-msg=I0011,W0122,W0142,W0232,C0323,C0324,W0603,W0703, R0201,R0401,W0403,E1103, C0103
+    C0103
 
 [REPORTS]
 
