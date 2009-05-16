@@ -6,7 +6,7 @@ http://nedbatchelder.com/code/modules/coverage.html
 """
 # TODO: more in the docstring.
 
-__version__ = "3.0b3"    # see detailed history in CHANGES
+__version__ = "3.0c1"    # see detailed history in CHANGES
 
 from coverage.control import coverage
 from coverage.data import CoverageData
