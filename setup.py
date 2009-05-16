@@ -76,5 +76,5 @@ setup(
     license = 'BSD',
     classifiers = classifier_list,
     url = 'http://nedbatchelder.com/code/modules/coverage.html',
-    download_url = 'http://nedbatchelder.com/code/modules/coverage-%s.tar.gz' % __version__,
+    # download_url = 'http://nedbatchelder.com/code/modules/coverage-%s.tar.gz' % __version__,
 )
