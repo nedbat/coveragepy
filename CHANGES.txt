@@ -2,8 +2,8 @@
 Change history for Coverage
 ---------------------------
 
-Version 3.0b3
--------------
+Version 3.0b3, 16 May 2009
+--------------------------
 
 - Added parameters to coverage.__init__ for options that had been set on the
   coverage object itself.
