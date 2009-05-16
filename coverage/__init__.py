@@ -3,8 +3,8 @@
 Ned Batchelder
 http://nedbatchelder.com/code/modules/coverage.html
 
-TODO: more.
 """
+# TODO: more in the docstring.
 
 __version__ = "3.0b3"    # see detailed history in CHANGES
 
