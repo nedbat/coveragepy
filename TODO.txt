@@ -178,6 +178,8 @@ x Tests about the "import __main__" in cmdline.py
     - source .tgz
     - windows .exe for each Python
     - mac dmg?
-- Upload kits to bitbucket.
-- Update PyPi
+- Upload kits to PyPi.
+- Update PyPi:
+    - make pypi
+    - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage and show/hide the proper versions.
 - Update nedbatchelder.com
