@@ -60,7 +60,7 @@ class SummaryReporter(Reporter):
             except:
                 if not self.ignore_errors:
                     typ, msg = sys.exc_info()[:2]
-                    outfile.write(fmt_err % (cu.name, typ, msg))
+                    outfile.write(fmt_err % (cu.name, typ.__name__, msg))
 
         if total_units > 1:
             outfile.write(rule)
