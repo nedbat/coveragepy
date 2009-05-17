@@ -41,7 +41,7 @@ class SummaryReporter(Reporter):
         
         for cu in self.code_units:
             try:
-                statements, _, missing, readable = self.coverage.analyze(cu)
+                statements, _, missing, readable = self.coverage._analyze(cu)
                 n = len(statements)
                 m = n - len(missing)
                 if n > 0:

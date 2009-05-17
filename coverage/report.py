@@ -52,7 +52,7 @@ class Reporter(object):
             try:
                 if not cu.relative:
                     continue
-                statements, excluded, missing, _ = self.coverage.analyze(cu)
+                statements, excluded, missing, _ = self.coverage._analyze(cu)
                 report_fn(cu, statements, excluded, missing)
             except KeyboardInterrupt:
                 raise

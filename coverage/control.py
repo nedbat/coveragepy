@@ -197,10 +197,10 @@ class coverage:
 
         """
         code_unit = code_unit_factory(morf, self.file_locator)[0]
-        st, ex, m, mf = self.analyze(code_unit)
+        st, ex, m, mf = self._analyze(code_unit)
         return code_unit.filename, st, ex, m, mf
 
-    def analyze(self, code_unit):
+    def _analyze(self, code_unit):
         """Analyze a single code unit.
         
         Returns a 4-tuple: (statements, excluded, missing, missing formatted).
