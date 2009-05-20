@@ -11,8 +11,8 @@ Coverage TODO
 
 * 3.1
 
-- Python 3.1 support
-- bit
+- Python 3.1 support.
+- bitvector in trace extension.
 
 
 * Speed
