@@ -9,6 +9,12 @@ Coverage TODO
 + Code moved to bitbucket.
 
 
+* 3.1
+
+- Python 3.1 support
+- bit
+
+
 * Speed
 
 + C extension collector
