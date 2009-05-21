@@ -18,8 +18,8 @@ Version 3.0b3, 16 May 2009
   Offenbach.
 
 - When using the object api (that is, constructing a coverage() object), data
-  is no longer saved automatically on process exit.  If you needed this,
-  please get in touch with me so I can understand why!  The module-level
+  is no longer saved automatically on process exit.  You can re-enable it with
+  the auto_data=True parameter on the coverage() constructor. The module-level
   interface still uses automatic saving.
 
 
