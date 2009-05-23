@@ -1,0 +1,11 @@
+{%- block doctype -%}
+<?xml version="1.0" encoding="utf-8" ?>
+{%- endblock %}
+
+<page title='{{ title|striptags }}'>
+  
+{%- block document %}
+  {% block body %} {% endblock %}
+{%- endblock %}
+
+</page>
