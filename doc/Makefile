@@ -30,6 +30,11 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in _build/html."
 
+text:
+	$(SPHINXBUILD) -b text $(ALLSPHINXOPTS) _build/text
+	@echo
+	@echo "Build finished. The text files are in _build/text."
+
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) _build/dirhtml
 	@echo
