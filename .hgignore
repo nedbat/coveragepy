@@ -18,3 +18,6 @@ setuptools-*.egg
 
 # Stuff in the test directory.
 zipmods.zip
+
+# Stuff in the doc directory.
+_build
