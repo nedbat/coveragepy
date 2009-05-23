@@ -17,6 +17,8 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.append(os.path.abspath('.'))
+# Copied from django docs:
+sys.path.append(os.path.join(os.path.dirname(__file__), "_ext"))
 
 # -- General configuration -----------------------------------------------------
 
@@ -89,6 +91,8 @@ pygments_style = 'sphinx'
 
 # -- Options for HTML output ---------------------------------------------------
 
+html_translator_class = "px_xlator.PxTranslator"
+
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
 html_theme = 'px'
@@ -97,6 +101,8 @@ html_theme = 'px'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #html_theme_options = {}
+
+html_add_permalinks = False
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = ['_templates']
@@ -128,7 +134,7 @@ html_static_path = ['_static']
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-#html_use_smartypants = True
+html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
@@ -138,16 +144,16 @@ html_static_path = ['_static']
 #html_additional_pages = {}
 
 # If false, no module index is generated.
-#html_use_modindex = True
+html_use_modindex = False
 
 # If false, no index is generated.
-#html_use_index = True
+html_use_index = False
 
 # If true, the index is split into individual pages for each letter.
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+html_show_sourcelink = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -155,7 +161,7 @@ html_static_path = ['_static']
 #html_use_opensearch = ''
 
 # If nonempty, this is the file name suffix for HTML files (e.g. ".xhtml").
-#html_file_suffix = ''
+html_file_suffix = '.px'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'coveragepydoc'
