@@ -91,16 +91,18 @@ pygments_style = 'sphinx'
 
 # -- Options for HTML output ---------------------------------------------------
 
-html_translator_class = "px_xlator.PxTranslator"
+#html_translator_class = "px_xlator.PxTranslator"
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'px'
+html_theme = 'default'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #html_theme_options = {}
+
+html_style = "neds.css"
 
 html_add_permalinks = False
 
@@ -161,7 +163,7 @@ html_show_sourcelink = False
 #html_use_opensearch = ''
 
 # If nonempty, this is the file name suffix for HTML files (e.g. ".xhtml").
-html_file_suffix = '.px'
+#html_file_suffix = '.px'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'coveragepydoc'
