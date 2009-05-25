@@ -62,6 +62,9 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - How will Coverage package install over coverage.py module?
 - Support 2.3 - 3.0?
     http://pythonology.blogspot.com/2009/02/making-code-run-on-python-20-through-30.html
+    http://www.rfk.id.au/blog/entry/preparing-pyenchant-for-python-3
+    http://pydev.blogspot.com/2008/11/making-code-work-in-python-2-and-3.html
+    - Explicitly set pickle protocol to 2.
 - Use a .coveragerc file to control Coverage without the programmatic API.
 - An inference mode that marks lines as executed if they "must have been" executed:
     class definitions, etc, when coverage is started after the class is defined.
