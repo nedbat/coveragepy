@@ -1,0 +1,176 @@
+<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Coverage for cogapp\whiteutils</title>
+<link rel='stylesheet' href='style.css' type='text/css'>
+<script src='jquery-1.3.2.min.js'></script>
+<script>
+function toggle_lines(btn, cls) {
+    var btn = $(btn);
+    if (btn.hasClass("hide")) {
+        $("#source ."+cls).removeClass("hide");
+        btn.removeClass("hide");
+    }
+    else {
+        $("#source ."+cls).addClass("hide");
+        btn.addClass("hide");
+    }
+}
+</script>
+</head>
+<body>
+<div id='header'>
+    <div class='content'>
+        <h1>Coverage for <b>cogapp\whiteutils</b> :
+            <span class='pc_cov'>92%</span>
+        </h1>
+        <h2 class='stats'>
+            37 statements
+            <span class='run hide' onclick='toggle_lines(this, "run")'>34 run</span>
+            <span class='exc' onclick='toggle_lines(this, "exc")'>0 excluded</span>
+            <span class='mis' onclick='toggle_lines(this, "mis")'>3 missing</span>
+        </h2>
+    </div>
+</div>
+
+<div id='source'>
+<table cellspacing='0' cellpadding='0'>
+<tr>
+<td class='linenos' valign='top'>
+<p class='pln'>1</p>
+<p class='pln'>2</p>
+<p class='pln'>3</p>
+<p class='pln'>4</p>
+<p class='pln'>5</p>
+<p class='pln'>6</p>
+<p class='stm run hide'>7</p>
+<p class='pln'>8</p>
+<p class='stm run hide'>9</p>
+<p class='pln'>10</p>
+<p class='pln'>11</p>
+<p class='pln'>12</p>
+<p class='pln'>13</p>
+<p class='stm run hide'>14</p>
+<p class='pln'>15</p>
+<p class='stm run hide'>16</p>
+<p class='pln'>17</p>
+<p class='pln'>18</p>
+<p class='pln'>19</p>
+<p class='stm run hide'>20</p>
+<p class='pln'>21</p>
+<p class='pln'>22</p>
+<p class='pln'>23</p>
+<p class='stm run hide'>24</p>
+<p class='stm run hide'>25</p>
+<p class='stm run hide'>26</p>
+<p class='stm mis'>27</p>
+<p class='stm mis'>28</p>
+<p class='stm run hide'>29</p>
+<p class='pln'>30</p>
+<p class='stm run hide'>31</p>
+<p class='pln'>32</p>
+<p class='pln'>33</p>
+<p class='pln'>34</p>
+<p class='pln'>35</p>
+<p class='stm run hide'>36</p>
+<p class='stm run hide'>37</p>
+<p class='stm run hide'>38</p>
+<p class='stm run hide'>39</p>
+<p class='stm run hide'>40</p>
+<p class='stm run hide'>41</p>
+<p class='stm run hide'>42</p>
+<p class='stm run hide'>43</p>
+<p class='stm run hide'>44</p>
+<p class='stm run hide'>45</p>
+<p class='stm run hide'>46</p>
+<p class='pln'>47</p>
+<p class='stm run hide'>48</p>
+<p class='pln'>49</p>
+<p class='pln'>50</p>
+<p class='stm run hide'>51</p>
+<p class='stm mis'>52</p>
+<p class='stm run hide'>53</p>
+<p class='stm run hide'>54</p>
+<p class='stm run hide'>55</p>
+<p class='stm run hide'>56</p>
+<p class='stm run hide'>57</p>
+<p class='stm run hide'>58</p>
+<p class='stm run hide'>59</p>
+<p class='stm run hide'>60</p>
+<p class='stm run hide'>61</p>
+<p class='stm run hide'>62</p>
+<p class='stm run hide'>63</p>
+    
+</td>
+<td class='text' valign='top'>
+<p class='pln'>&quot;&quot;&quot; Indentation utilities for Cog.</p>
+<p class='pln'>&nbsp; &nbsp; http://nedbatchelder.com/code/cog</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; Copyright 2004-2009, Ned Batchelder.</p>
+<p class='pln'>&quot;&quot;&quot;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>import re</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>def whitePrefix(strings):</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; Determine the whitespace prefix common to all non-blank lines</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; in the argument list.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='pln'>&nbsp; &nbsp; # Remove all blank lines from the list</p>
+<p class='stm run hide'>&nbsp; &nbsp; strings = [s for s in strings if s.strip() != &#39;&#39;]</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; if not strings: return &#39;&#39;</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; # Find initial whitespace chunk in the first line.</p>
+<p class='pln'>&nbsp; &nbsp; # This is the best prefix we can hope for.</p>
+<p class='stm run hide'>&nbsp; &nbsp; prefix = re.match(r&#39;\s*&#39;, strings[0]).group(0)</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; # Loop over the other strings, keeping only as much of</p>
+<p class='pln'>&nbsp; &nbsp; # the prefix as matches each string.</p>
+<p class='stm run hide'>&nbsp; &nbsp; for s in strings:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; for i in range(len(prefix)):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if prefix[i] != s[i]:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prefix = prefix[:i]</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; break</p>
+<p class='stm run hide'>&nbsp; &nbsp; return prefix</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>def reindentBlock(lines, newIndent=&#39;&#39;):</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; Take a block of text as a string or list of lines.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; Remove any common whitespace indentation.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; Re-indent using newIndent, and return it as a single string.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; if isinstance(lines, basestring):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; lines = lines.split(&#39;\n&#39;)</p>
+<p class='stm run hide'>&nbsp; &nbsp; oldIndent = whitePrefix(lines)</p>
+<p class='stm run hide'>&nbsp; &nbsp; outLines = []</p>
+<p class='stm run hide'>&nbsp; &nbsp; for l in lines:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if oldIndent:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = l.replace(oldIndent, &#39;&#39;, 1)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if l and newIndent:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = newIndent + l</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; outLines.append(l)</p>
+<p class='stm run hide'>&nbsp; &nbsp; return &#39;\n&#39;.join(outLines)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>def commonPrefix(strings):</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; Find the longest string that is a prefix of all the strings.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; if not strings:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; return &#39;&#39;</p>
+<p class='stm run hide'>&nbsp; &nbsp; prefix = strings[0]</p>
+<p class='stm run hide'>&nbsp; &nbsp; for s in strings:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if len(s) &lt; len(prefix):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prefix = prefix[:len(s)]</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if not prefix:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return &#39;&#39;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; for i in range(len(prefix)):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if prefix[i] != s[i]:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prefix = prefix[:i]</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; break</p>
+<p class='stm run hide'>&nbsp; &nbsp; return prefix</p>
+    
+</td>
+</tr>
+</table>
+</div>
+
+</body>
+</html>

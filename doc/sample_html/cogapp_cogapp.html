@@ -1,0 +1,1468 @@
+<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Coverage for cogapp\cogapp</title>
+<link rel='stylesheet' href='style.css' type='text/css'>
+<script src='jquery-1.3.2.min.js'></script>
+<script>
+function toggle_lines(btn, cls) {
+    var btn = $(btn);
+    if (btn.hasClass("hide")) {
+        $("#source ."+cls).removeClass("hide");
+        btn.removeClass("hide");
+    }
+    else {
+        $("#source ."+cls).addClass("hide");
+        btn.addClass("hide");
+    }
+}
+</script>
+</head>
+<body>
+<div id='header'>
+    <div class='content'>
+        <h1>Coverage for <b>cogapp\cogapp</b> :
+            <span class='pc_cov'>57%</span>
+        </h1>
+        <h2 class='stats'>
+            387 statements
+            <span class='run hide' onclick='toggle_lines(this, "run")'>219 run</span>
+            <span class='exc' onclick='toggle_lines(this, "exc")'>3 excluded</span>
+            <span class='mis' onclick='toggle_lines(this, "mis")'>168 missing</span>
+        </h2>
+    </div>
+</div>
+
+<div id='source'>
+<table cellspacing='0' cellpadding='0'>
+<tr>
+<td class='linenos' valign='top'>
+<p class='pln'>1</p>
+<p class='pln'>2</p>
+<p class='pln'>3</p>
+<p class='pln'>4</p>
+<p class='pln'>5</p>
+<p class='pln'>6</p>
+<p class='stm run hide'>7</p>
+<p class='stm run hide'>8</p>
+<p class='pln'>9</p>
+<p class='pln'>10</p>
+<p class='stm run hide'>11</p>
+<p class='stm run hide'>12</p>
+<p class='stm run hide'>13</p>
+<p class='stm mis'>14</p>
+<p class='stm mis'>15</p>
+<p class='stm mis'>16</p>
+<p class='pln'>17</p>
+<p class='stm run hide'>18</p>
+<p class='pln'>19</p>
+<p class='stm run hide'>20</p>
+<p class='pln'>21</p>
+<p class='stm run hide'>22</p>
+<p class='pln'>23</p>
+<p class='pln'>24</p>
+<p class='pln'>25</p>
+<p class='pln'>26</p>
+<p class='pln'>27</p>
+<p class='pln'>28</p>
+<p class='pln'>29</p>
+<p class='pln'>30</p>
+<p class='pln'>31</p>
+<p class='pln'>32</p>
+<p class='pln'>33</p>
+<p class='pln'>34</p>
+<p class='pln'>35</p>
+<p class='pln'>36</p>
+<p class='pln'>37</p>
+<p class='pln'>38</p>
+<p class='pln'>39</p>
+<p class='pln'>40</p>
+<p class='pln'>41</p>
+<p class='pln'>42</p>
+<p class='pln'>43</p>
+<p class='pln'>44</p>
+<p class='pln'>45</p>
+<p class='pln'>46</p>
+<p class='pln'>47</p>
+<p class='pln'>48</p>
+<p class='pln'>49</p>
+<p class='stm run hide'>50</p>
+<p class='pln'>51</p>
+<p class='stm run hide'>52</p>
+<p class='pln'>53</p>
+<p class='pln'>54</p>
+<p class='stm run hide'>55</p>
+<p class='stm run hide'>56</p>
+<p class='stm run hide'>57</p>
+<p class='pln'>58</p>
+<p class='stm mis'>59</p>
+<p class='pln'>60</p>
+<p class='stm run hide'>61</p>
+<p class='pln'>62</p>
+<p class='pln'>63</p>
+<p class='exc'>64</p>
+<p class='pln'>65</p>
+<p class='stm run hide'>66</p>
+<p class='pln'>67</p>
+<p class='pln'>68</p>
+<p class='exc'>69</p>
+<p class='pln'>70</p>
+<p class='stm run hide'>71</p>
+<p class='pln'>72</p>
+<p class='pln'>73</p>
+<p class='exc'>74</p>
+<p class='pln'>75</p>
+<p class='stm run hide'>76</p>
+<p class='pln'>77</p>
+<p class='pln'>78</p>
+<p class='stm run hide'>79</p>
+<p class='stm run hide'>80</p>
+<p class='stm run hide'>81</p>
+<p class='pln'>82</p>
+<p class='stm run hide'>83</p>
+<p class='pln'>84</p>
+<p class='pln'>85</p>
+<p class='stm run hide'>86</p>
+<p class='stm run hide'>87</p>
+<p class='stm run hide'>88</p>
+<p class='stm mis'>89</p>
+<p class='pln'>90</p>
+<p class='stm run hide'>91</p>
+<p class='pln'>92</p>
+<p class='pln'>93</p>
+<p class='stm run hide'>94</p>
+<p class='stm run hide'>95</p>
+<p class='stm run hide'>96</p>
+<p class='stm run hide'>97</p>
+<p class='pln'>98</p>
+<p class='stm run hide'>99</p>
+<p class='stm run hide'>100</p>
+<p class='pln'>101</p>
+<p class='stm run hide'>102</p>
+<p class='stm run hide'>103</p>
+<p class='pln'>104</p>
+<p class='stm run hide'>105</p>
+<p class='pln'>106</p>
+<p class='pln'>107</p>
+<p class='pln'>108</p>
+<p class='pln'>109</p>
+<p class='pln'>110</p>
+<p class='stm run hide'>111</p>
+<p class='stm run hide'>112</p>
+<p class='stm run hide'>113</p>
+<p class='stm run hide'>114</p>
+<p class='pln'>115</p>
+<p class='stm run hide'>116</p>
+<p class='pln'>117</p>
+<p class='stm run hide'>118</p>
+<p class='pln'>119</p>
+<p class='stm run hide'>120</p>
+<p class='pln'>121</p>
+<p class='stm run hide'>122</p>
+<p class='stm run hide'>123</p>
+<p class='stm run hide'>124</p>
+<p class='pln'>125</p>
+<p class='pln'>126</p>
+<p class='stm run hide'>127</p>
+<p class='stm run hide'>128</p>
+<p class='pln'>129</p>
+<p class='pln'>130</p>
+<p class='stm run hide'>131</p>
+<p class='stm run hide'>132</p>
+<p class='stm run hide'>133</p>
+<p class='stm run hide'>134</p>
+<p class='pln'>135</p>
+<p class='stm run hide'>136</p>
+<p class='stm run hide'>137</p>
+<p class='pln'>138</p>
+<p class='pln'>139</p>
+<p class='pln'>140</p>
+<p class='pln'>141</p>
+<p class='stm run hide'>142</p>
+<p class='stm run hide'>143</p>
+<p class='pln'>144</p>
+<p class='stm run hide'>145</p>
+<p class='pln'>146</p>
+<p class='stm run hide'>147</p>
+<p class='stm mis'>148</p>
+<p class='pln'>149</p>
+<p class='stm run hide'>150</p>
+<p class='pln'>151</p>
+<p class='pln'>152</p>
+<p class='stm run hide'>153</p>
+<p class='stm run hide'>154</p>
+<p class='stm run hide'>155</p>
+<p class='stm run hide'>156</p>
+<p class='stm run hide'>157</p>
+<p class='stm run hide'>158</p>
+<p class='stm run hide'>159</p>
+<p class='stm run hide'>160</p>
+<p class='stm run hide'>161</p>
+<p class='stm run hide'>162</p>
+<p class='pln'>163</p>
+<p class='stm run hide'>164</p>
+<p class='pln'>165</p>
+<p class='pln'>166</p>
+<p class='stm run hide'>167</p>
+<p class='stm run hide'>168</p>
+<p class='pln'>169</p>
+<p class='stm run hide'>170</p>
+<p class='pln'>171</p>
+<p class='pln'>172</p>
+<p class='pln'>173</p>
+<p class='pln'>174</p>
+<p class='pln'>175</p>
+<p class='stm mis'>176</p>
+<p class='pln'>177</p>
+<p class='pln'>178</p>
+<p class='stm run hide'>179</p>
+<p class='pln'>180</p>
+<p class='pln'>181</p>
+<p class='stm run hide'>182</p>
+<p class='stm run hide'>183</p>
+<p class='stm run hide'>184</p>
+<p class='pln'>185</p>
+<p class='stm run hide'>186</p>
+<p class='stm run hide'>187</p>
+<p class='stm run hide'>188</p>
+<p class='stm run hide'>189</p>
+<p class='stm run hide'>190</p>
+<p class='pln'>191</p>
+<p class='stm run hide'>192</p>
+<p class='stm run hide'>193</p>
+<p class='pln'>194</p>
+<p class='pln'>195</p>
+<p class='stm run hide'>196</p>
+<p class='pln'>197</p>
+<p class='pln'>198</p>
+<p class='stm run hide'>199</p>
+<p class='pln'>200</p>
+<p class='stm run hide'>201</p>
+<p class='stm run hide'>202</p>
+<p class='stm run hide'>203</p>
+<p class='stm run hide'>204</p>
+<p class='stm run hide'>205</p>
+<p class='stm run hide'>206</p>
+<p class='stm run hide'>207</p>
+<p class='stm run hide'>208</p>
+<p class='stm run hide'>209</p>
+<p class='stm run hide'>210</p>
+<p class='stm run hide'>211</p>
+<p class='stm run hide'>212</p>
+<p class='stm run hide'>213</p>
+<p class='stm run hide'>214</p>
+<p class='pln'>215</p>
+<p class='stm run hide'>216</p>
+<p class='pln'>217</p>
+<p class='pln'>218</p>
+<p class='stm mis'>219</p>
+<p class='pln'>220</p>
+<p class='stm run hide'>221</p>
+<p class='pln'>222</p>
+<p class='pln'>223</p>
+<p class='stm mis'>224</p>
+<p class='pln'>225</p>
+<p class='stm run hide'>226</p>
+<p class='pln'>227</p>
+<p class='pln'>228</p>
+<p class='stm mis'>229</p>
+<p class='stm mis'>230</p>
+<p class='pln'>231</p>
+<p class='stm run hide'>232</p>
+<p class='pln'>233</p>
+<p class='stm mis'>234</p>
+<p class='stm mis'>235</p>
+<p class='stm mis'>236</p>
+<p class='stm mis'>237</p>
+<p class='pln'>238</p>
+<p class='pln'>239</p>
+<p class='stm mis'>240</p>
+<p class='stm mis'>241</p>
+<p class='stm mis'>242</p>
+<p class='stm mis'>243</p>
+<p class='stm mis'>244</p>
+<p class='stm mis'>245</p>
+<p class='stm mis'>246</p>
+<p class='stm mis'>247</p>
+<p class='stm mis'>248</p>
+<p class='stm mis'>249</p>
+<p class='stm mis'>250</p>
+<p class='stm mis'>251</p>
+<p class='stm mis'>252</p>
+<p class='stm mis'>253</p>
+<p class='stm mis'>254</p>
+<p class='stm mis'>255</p>
+<p class='stm mis'>256</p>
+<p class='stm mis'>257</p>
+<p class='stm mis'>258</p>
+<p class='stm mis'>259</p>
+<p class='stm mis'>260</p>
+<p class='stm mis'>261</p>
+<p class='stm mis'>262</p>
+<p class='stm mis'>263</p>
+<p class='stm mis'>264</p>
+<p class='stm mis'>265</p>
+<p class='stm mis'>266</p>
+<p class='stm mis'>267</p>
+<p class='stm mis'>268</p>
+<p class='stm mis'>269</p>
+<p class='pln'>270</p>
+<p class='pln'>271</p>
+<p class='pln'>272</p>
+<p class='stm mis'>273</p>
+<p class='pln'>274</p>
+<p class='stm run hide'>275</p>
+<p class='pln'>276</p>
+<p class='pln'>277</p>
+<p class='stm mis'>278</p>
+<p class='stm mis'>279</p>
+<p class='pln'>280</p>
+<p class='stm mis'>281</p>
+<p class='stm mis'>282</p>
+<p class='pln'>283</p>
+<p class='pln'>284</p>
+<p class='stm run hide'>285</p>
+<p class='pln'>286</p>
+<p class='pln'>287</p>
+<p class='stm run hide'>288</p>
+<p class='stm run hide'>289</p>
+<p class='stm run hide'>290</p>
+<p class='stm run hide'>291</p>
+<p class='stm run hide'>292</p>
+<p class='stm run hide'>293</p>
+<p class='stm run hide'>294</p>
+<p class='pln'>295</p>
+<p class='stm run hide'>296</p>
+<p class='stm run hide'>297</p>
+<p class='pln'>298</p>
+<p class='stm run hide'>299</p>
+<p class='pln'>300</p>
+<p class='stm run hide'>301</p>
+<p class='stm mis'>302</p>
+<p class='pln'>303</p>
+<p class='stm run hide'>304</p>
+<p class='stm run hide'>305</p>
+<p class='pln'>306</p>
+<p class='stm run hide'>307</p>
+<p class='stm run hide'>308</p>
+<p class='pln'>309</p>
+<p class='pln'>310</p>
+<p class='stm run hide'>311</p>
+<p class='stm run hide'>312</p>
+<p class='pln'>313</p>
+<p class='stm run hide'>314</p>
+<p class='pln'>315</p>
+<p class='pln'>316</p>
+<p class='pln'>317</p>
+<p class='stm run hide'>318</p>
+<p class='stm run hide'>319</p>
+<p class='stm run hide'>320</p>
+<p class='pln'>321</p>
+<p class='stm run hide'>322</p>
+<p class='pln'>323</p>
+<p class='pln'>324</p>
+<p class='pln'>325</p>
+<p class='pln'>326</p>
+<p class='stm run hide'>327</p>
+<p class='stm run hide'>328</p>
+<p class='stm run hide'>329</p>
+<p class='pln'>330</p>
+<p class='stm run hide'>331</p>
+<p class='pln'>332</p>
+<p class='stm mis'>333</p>
+<p class='stm mis'>334</p>
+<p class='stm run hide'>335</p>
+<p class='pln'>336</p>
+<p class='stm mis'>337</p>
+<p class='stm mis'>338</p>
+<p class='pln'>339</p>
+<p class='stm run hide'>340</p>
+<p class='stm run hide'>341</p>
+<p class='pln'>342</p>
+<p class='stm run hide'>343</p>
+<p class='pln'>344</p>
+<p class='stm run hide'>345</p>
+<p class='stm run hide'>346</p>
+<p class='pln'>347</p>
+<p class='pln'>348</p>
+<p class='stm run hide'>349</p>
+<p class='stm run hide'>350</p>
+<p class='pln'>351</p>
+<p class='pln'>352</p>
+<p class='stm run hide'>353</p>
+<p class='pln'>354</p>
+<p class='pln'>355</p>
+<p class='stm run hide'>356</p>
+<p class='stm run hide'>357</p>
+<p class='pln'>358</p>
+<p class='stm run hide'>359</p>
+<p class='stm run hide'>360</p>
+<p class='stm mis'>361</p>
+<p class='pln'>362</p>
+<p class='stm run hide'>363</p>
+<p class='stm mis'>364</p>
+<p class='pln'>365</p>
+<p class='stm run hide'>366</p>
+<p class='stm run hide'>367</p>
+<p class='stm run hide'>368</p>
+<p class='stm run hide'>369</p>
+<p class='stm run hide'>370</p>
+<p class='stm run hide'>371</p>
+<p class='pln'>372</p>
+<p class='pln'>373</p>
+<p class='stm run hide'>374</p>
+<p class='stm run hide'>375</p>
+<p class='stm run hide'>376</p>
+<p class='stm run hide'>377</p>
+<p class='stm run hide'>378</p>
+<p class='pln'>379</p>
+<p class='pln'>380</p>
+<p class='pln'>381</p>
+<p class='stm run hide'>382</p>
+<p class='stm run hide'>383</p>
+<p class='stm run hide'>384</p>
+<p class='stm run hide'>385</p>
+<p class='stm run hide'>386</p>
+<p class='pln'>387</p>
+<p class='pln'>388</p>
+<p class='stm run hide'>389</p>
+<p class='stm run hide'>390</p>
+<p class='pln'>391</p>
+<p class='pln'>392</p>
+<p class='stm run hide'>393</p>
+<p class='pln'>394</p>
+<p class='pln'>395</p>
+<p class='stm run hide'>396</p>
+<p class='stm run hide'>397</p>
+<p class='stm mis'>398</p>
+<p class='pln'>399</p>
+<p class='stm run hide'>400</p>
+<p class='stm mis'>401</p>
+<p class='pln'>402</p>
+<p class='stm run hide'>403</p>
+<p class='stm run hide'>404</p>
+<p class='stm run hide'>405</p>
+<p class='stm run hide'>406</p>
+<p class='stm run hide'>407</p>
+<p class='stm mis'>408</p>
+<p class='pln'>409</p>
+<p class='pln'>410</p>
+<p class='pln'>411</p>
+<p class='stm run hide'>412</p>
+<p class='stm run hide'>413</p>
+<p class='stm run hide'>414</p>
+<p class='pln'>415</p>
+<p class='stm run hide'>416</p>
+<p class='pln'>417</p>
+<p class='pln'>418</p>
+<p class='pln'>419</p>
+<p class='stm run hide'>420</p>
+<p class='stm run hide'>421</p>
+<p class='stm run hide'>422</p>
+<p class='stm mis'>423</p>
+<p class='pln'>424</p>
+<p class='stm run hide'>425</p>
+<p class='stm mis'>426</p>
+<p class='pln'>427</p>
+<p class='stm run hide'>428</p>
+<p class='stm run hide'>429</p>
+<p class='stm run hide'>430</p>
+<p class='pln'>431</p>
+<p class='stm run hide'>432</p>
+<p class='pln'>433</p>
+<p class='stm mis'>434</p>
+<p class='pln'>435</p>
+<p class='pln'>436</p>
+<p class='pln'>437</p>
+<p class='pln'>438</p>
+<p class='stm run hide'>439</p>
+<p class='stm run hide'>440</p>
+<p class='stm run hide'>441</p>
+<p class='stm run hide'>442</p>
+<p class='stm run hide'>443</p>
+<p class='stm run hide'>444</p>
+<p class='stm run hide'>445</p>
+<p class='stm run hide'>446</p>
+<p class='pln'>447</p>
+<p class='stm run hide'>448</p>
+<p class='pln'>449</p>
+<p class='pln'>450</p>
+<p class='stm run hide'>451</p>
+<p class='stm run hide'>452</p>
+<p class='stm mis'>453</p>
+<p class='stm mis'>454</p>
+<p class='stm mis'>455</p>
+<p class='stm mis'>456</p>
+<p class='pln'>457</p>
+<p class='pln'>458</p>
+<p class='stm mis'>459</p>
+<p class='pln'>460</p>
+<p class='pln'>461</p>
+<p class='stm mis'>462</p>
+<p class='stm mis'>463</p>
+<p class='pln'>464</p>
+<p class='pln'>465</p>
+<p class='pln'>466</p>
+<p class='stm run hide'>467</p>
+<p class='stm mis'>468</p>
+<p class='pln'>469</p>
+<p class='stm run hide'>470</p>
+<p class='stm run hide'>471</p>
+<p class='stm run hide'>472</p>
+<p class='pln'>473</p>
+<p class='stm run hide'>474</p>
+<p class='stm mis'>475</p>
+<p class='pln'>476</p>
+<p class='stm run hide'>477</p>
+<p class='stm mis'>478</p>
+<p class='stm run hide'>479</p>
+<p class='stm mis'>480</p>
+<p class='pln'>481</p>
+<p class='pln'>482</p>
+<p class='pln'>483</p>
+<p class='stm run hide'>484</p>
+<p class='pln'>485</p>
+<p class='stm run hide'>486</p>
+<p class='pln'>487</p>
+<p class='pln'>488</p>
+<p class='pln'>489</p>
+<p class='stm run hide'>490</p>
+<p class='pln'>491</p>
+<p class='stm mis'>492</p>
+<p class='stm mis'>493</p>
+<p class='stm run hide'>494</p>
+<p class='pln'>495</p>
+<p class='stm run hide'>496</p>
+<p class='pln'>497</p>
+<p class='pln'>498</p>
+<p class='pln'>499</p>
+<p class='stm run hide'>500</p>
+<p class='stm run hide'>501</p>
+<p class='stm run hide'>502</p>
+<p class='stm run hide'>503</p>
+<p class='pln'>504</p>
+<p class='stm run hide'>505</p>
+<p class='pln'>506</p>
+<p class='pln'>507</p>
+<p class='stm mis'>508</p>
+<p class='pln'>509</p>
+<p class='stm mis'>510</p>
+<p class='pln'>511</p>
+<p class='stm mis'>512</p>
+<p class='stm mis'>513</p>
+<p class='stm mis'>514</p>
+<p class='stm mis'>515</p>
+<p class='pln'>516</p>
+<p class='pln'>517</p>
+<p class='stm mis'>518</p>
+<p class='stm mis'>519</p>
+<p class='stm mis'>520</p>
+<p class='stm mis'>521</p>
+<p class='pln'>522</p>
+<p class='stm run hide'>523</p>
+<p class='stm mis'>524</p>
+<p class='stm mis'>525</p>
+<p class='pln'>526</p>
+<p class='stm run hide'>527</p>
+<p class='stm mis'>528</p>
+<p class='stm mis'>529</p>
+<p class='stm mis'>530</p>
+<p class='pln'>531</p>
+<p class='stm run hide'>532</p>
+<p class='stm mis'>533</p>
+<p class='stm mis'>534</p>
+<p class='pln'>535</p>
+<p class='stm run hide'>536</p>
+<p class='pln'>537</p>
+<p class='pln'>538</p>
+<p class='pln'>539</p>
+<p class='stm mis'>540</p>
+<p class='pln'>541</p>
+<p class='stm mis'>542</p>
+<p class='stm mis'>543</p>
+<p class='pln'>544</p>
+<p class='pln'>545</p>
+<p class='stm mis'>546</p>
+<p class='pln'>547</p>
+<p class='pln'>548</p>
+<p class='pln'>549</p>
+<p class='stm mis'>550</p>
+<p class='stm mis'>551</p>
+<p class='stm mis'>552</p>
+<p class='pln'>553</p>
+<p class='pln'>554</p>
+<p class='stm mis'>555</p>
+<p class='stm mis'>556</p>
+<p class='stm mis'>557</p>
+<p class='pln'>558</p>
+<p class='pln'>559</p>
+<p class='stm mis'>560</p>
+<p class='stm mis'>561</p>
+<p class='pln'>562</p>
+<p class='stm mis'>563</p>
+<p class='stm mis'>564</p>
+<p class='stm mis'>565</p>
+<p class='stm mis'>566</p>
+<p class='stm mis'>567</p>
+<p class='stm mis'>568</p>
+<p class='stm mis'>569</p>
+<p class='stm mis'>570</p>
+<p class='stm mis'>571</p>
+<p class='pln'>572</p>
+<p class='pln'>573</p>
+<p class='pln'>574</p>
+<p class='pln'>575</p>
+<p class='pln'>576</p>
+<p class='stm mis'>577</p>
+<p class='stm mis'>578</p>
+<p class='pln'>579</p>
+<p class='stm mis'>580</p>
+<p class='pln'>581</p>
+<p class='stm mis'>582</p>
+<p class='pln'>583</p>
+<p class='stm run hide'>584</p>
+<p class='pln'>585</p>
+<p class='pln'>586</p>
+<p class='stm mis'>587</p>
+<p class='stm mis'>588</p>
+<p class='stm mis'>589</p>
+<p class='stm mis'>590</p>
+<p class='pln'>591</p>
+<p class='stm mis'>592</p>
+<p class='stm mis'>593</p>
+<p class='stm mis'>594</p>
+<p class='pln'>595</p>
+<p class='stm mis'>596</p>
+<p class='stm mis'>597</p>
+<p class='stm mis'>598</p>
+<p class='stm mis'>599</p>
+<p class='pln'>600</p>
+<p class='stm run hide'>601</p>
+<p class='pln'>602</p>
+<p class='pln'>603</p>
+<p class='stm mis'>604</p>
+<p class='stm mis'>605</p>
+<p class='pln'>606</p>
+<p class='stm mis'>607</p>
+<p class='stm mis'>608</p>
+<p class='pln'>609</p>
+<p class='stm mis'>610</p>
+<p class='stm mis'>611</p>
+<p class='stm mis'>612</p>
+<p class='stm mis'>613</p>
+<p class='pln'>614</p>
+<p class='stm mis'>615</p>
+<p class='pln'>616</p>
+<p class='stm mis'>617</p>
+<p class='pln'>618</p>
+<p class='stm run hide'>619</p>
+<p class='pln'>620</p>
+<p class='pln'>621</p>
+<p class='pln'>622</p>
+<p class='pln'>623</p>
+<p class='stm mis'>624</p>
+<p class='pln'>625</p>
+<p class='pln'>626</p>
+<p class='stm mis'>627</p>
+<p class='stm mis'>628</p>
+<p class='stm mis'>629</p>
+<p class='pln'>630</p>
+<p class='stm mis'>631</p>
+<p class='stm mis'>632</p>
+<p class='pln'>633</p>
+<p class='stm mis'>634</p>
+<p class='stm mis'>635</p>
+<p class='stm mis'>636</p>
+<p class='pln'>637</p>
+<p class='stm mis'>638</p>
+<p class='stm mis'>639</p>
+<p class='stm mis'>640</p>
+<p class='pln'>641</p>
+<p class='stm mis'>642</p>
+<p class='pln'>643</p>
+<p class='stm run hide'>644</p>
+<p class='pln'>645</p>
+<p class='pln'>646</p>
+<p class='pln'>647</p>
+<p class='stm mis'>648</p>
+<p class='stm mis'>649</p>
+<p class='stm mis'>650</p>
+<p class='stm mis'>651</p>
+<p class='stm mis'>652</p>
+<p class='stm mis'>653</p>
+<p class='stm mis'>654</p>
+<p class='stm mis'>655</p>
+<p class='stm mis'>656</p>
+<p class='stm mis'>657</p>
+<p class='stm mis'>658</p>
+<p class='stm mis'>659</p>
+<p class='stm mis'>660</p>
+<p class='stm mis'>661</p>
+<p class='stm mis'>662</p>
+<p class='stm mis'>663</p>
+<p class='pln'>664</p>
+<p class='pln'>665</p>
+<p class='pln'>666</p>
+<p class='pln'>667</p>
+<p class='pln'>668</p>
+<p class='pln'>669</p>
+<p class='pln'>670</p>
+<p class='pln'>671</p>
+<p class='pln'>672</p>
+<p class='pln'>673</p>
+<p class='pln'>674</p>
+<p class='pln'>675</p>
+<p class='pln'>676</p>
+<p class='pln'>677</p>
+<p class='pln'>678</p>
+<p class='pln'>679</p>
+<p class='pln'>680</p>
+<p class='pln'>681</p>
+<p class='pln'>682</p>
+<p class='pln'>683</p>
+<p class='pln'>684</p>
+<p class='pln'>685</p>
+<p class='pln'>686</p>
+<p class='pln'>687</p>
+<p class='pln'>688</p>
+<p class='pln'>689</p>
+<p class='pln'>690</p>
+<p class='pln'>691</p>
+<p class='pln'>692</p>
+<p class='pln'>693</p>
+<p class='pln'>694</p>
+<p class='pln'>695</p>
+<p class='pln'>696</p>
+<p class='pln'>697</p>
+<p class='pln'>698</p>
+<p class='pln'>699</p>
+<p class='pln'>700</p>
+<p class='pln'>701</p>
+<p class='pln'>702</p>
+<p class='pln'>703</p>
+<p class='pln'>704</p>
+<p class='pln'>705</p>
+<p class='pln'>706</p>
+<p class='pln'>707</p>
+<p class='pln'>708</p>
+<p class='pln'>709</p>
+    
+</td>
+<td class='text' valign='top'>
+<p class='pln'>&quot;&quot;&quot; Cog code generation tool.</p>
+<p class='pln'>&nbsp; &nbsp; http://nedbatchelder.com/code/cog</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; Copyright 2004-2009, Ned Batchelder.</p>
+<p class='pln'>&quot;&quot;&quot;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>import copy, getopt, imp, os, re, shlex, string, sys, traceback</p>
+<p class='stm run hide'>from cStringIO import StringIO</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'># The recommended way to compute md5&#39;s changed in Python 2.5</p>
+<p class='stm run hide'>try:</p>
+<p class='stm run hide'>&nbsp; &nbsp; import hashlib</p>
+<p class='stm run hide'>&nbsp; &nbsp; hash_factory = hashlib.md5</p>
+<p class='stm mis'>except ImportError:</p>
+<p class='stm mis'>&nbsp; &nbsp; import md5</p>
+<p class='stm mis'>&nbsp; &nbsp; hash_factory = md5.new</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>__all__ = [&#39;Cog&#39;, &#39;CogUsageError&#39;]</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>__version__ = &#39;2.2&#39;&nbsp; &nbsp; &nbsp;&nbsp; # History at the end of the file.</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>usage = &quot;&quot;&quot;\</p>
+<p class='pln'>cog - generate code with inlined Python code.</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>cog [OPTIONS] [INFILE | @FILELIST] ...</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>INFILE is the name of an input file.</p>
+<p class='pln'>FILELIST is the name of a text file containing file names or</p>
+<p class='pln'>&nbsp; &nbsp; other @FILELISTs.</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>OPTIONS:</p>
+<p class='pln'>&nbsp; &nbsp; -c&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Checksum the output to protect it against accidental change.</p>
+<p class='pln'>&nbsp; &nbsp; -d&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Delete the generator code from the output file.</p>
+<p class='pln'>&nbsp; &nbsp; -D name=val Define a global string available to your generator code.</p>
+<p class='pln'>&nbsp; &nbsp; -e&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Warn if a file has no cog code in it.</p>
+<p class='pln'>&nbsp; &nbsp; -I PATH&nbsp; &nbsp;&nbsp; Add PATH to the list of directories for data files and modules.</p>
+<p class='pln'>&nbsp; &nbsp; -o OUTNAME&nbsp; Write the output to OUTNAME.</p>
+<p class='pln'>&nbsp; &nbsp; -r&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Replace the input file with the output.</p>
+<p class='pln'>&nbsp; &nbsp; -s STRING&nbsp;&nbsp; Suffix all generated output lines with STRING.</p>
+<p class='pln'>&nbsp; &nbsp; -U&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Write the output with Unix newlines (only LF line-endings).</p>
+<p class='pln'>&nbsp; &nbsp; -w CMD&nbsp; &nbsp; &nbsp; Use CMD if the output file needs to be made writable.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; A %s in the CMD will be filled with the filename.</p>
+<p class='pln'>&nbsp; &nbsp; -x&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Excise all the generated output without running the generators.</p>
+<p class='pln'>&nbsp; &nbsp; -z&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; The [[[end]]] marker can be omitted, and is assumed at eof.</p>
+<p class='pln'>&nbsp; &nbsp; -v&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Print the version of cog and exit.</p>
+<p class='pln'>&nbsp; &nbsp; -h&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Print this help.</p>
+<p class='pln'>&quot;&quot;&quot;</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'># Other package modules</p>
+<p class='stm run hide'>from whiteutils import *</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>class CogError(Exception):</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; Any exception raised by Cog.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def __init__(self, msg, file=&#39;&#39;, line=0):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if file:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Exception.__init__(self, &quot;%s(%d): %s&quot; % (file, line, msg))</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Exception.__init__(self, msg)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>class CogUsageError(CogError):</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; An error in usage of command-line arguments in cog.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='exc'>&nbsp; &nbsp; pass&nbsp; &nbsp; #pragma: no cover</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>class CogInternalError(CogError):</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; An error in the coding of Cog. Should never happen.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='exc'>&nbsp; &nbsp; pass&nbsp; &nbsp; #pragma: no cover</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>class CogGeneratedError(CogError):</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; An error raised by a user&#39;s cog generator.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='exc'>&nbsp; &nbsp; pass&nbsp; &nbsp; #pragma: no cover</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>class Redirectable:</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; An object with its own stdout and stderr files.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def __init__(self):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.stdout = sys.stdout</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.stderr = sys.stderr</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def setOutput(self, stdout=None, stderr=None):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Assign new files for standard out and/or standard error.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if stdout:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.stdout = stdout</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if stderr:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.stderr = stderr</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>class CogGenerator(Redirectable):</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; A generator pulled from a source file.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def __init__(self):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; Redirectable.__init__(self)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.markers = []</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.lines = []</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def parseMarker(self, l):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.markers.append(l)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def parseLine(self, l):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.lines.append(l.strip(&#39;\n&#39;))</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def getCode(self):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Extract the executable Python code from the generator.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # If the markers and lines all have the same prefix</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # (end-of-line comment chars, for example),</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # then remove it from all the lines.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; prefIn = commonPrefix(self.markers + self.lines)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if prefIn:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.markers = [ l.replace(prefIn, &#39;&#39;, 1) for l in self.markers ]</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.lines = [ l.replace(prefIn, &#39;&#39;, 1) for l in self.lines ]</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; return reindentBlock(self.lines, &#39;&#39;)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def evaluate(self, cog, globals, fname=&#39;cog generator&#39;):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # figure out the right whitespace prefix for the output</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; prefOut = whitePrefix(self.markers)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; intext = self.getCode()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if not intext:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return &#39;&#39;</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # In Python 2.2, the last line has to end in a newline.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; intext = &quot;import cog\n&quot; + intext + &quot;\n&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; code = compile(intext, str(fname), &#39;exec&#39;)</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # Make sure the &quot;cog&quot; module has our state.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; cog.cogmodule.msg = self.msg</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; cog.cogmodule.out = self.out</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; cog.cogmodule.outl = self.outl</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; cog.cogmodule.error = self.error</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.outstring = &#39;&#39;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; eval(code, globals)</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # We need to make sure that the last line in the output</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # ends with a newline, or it will be joined to the</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # end-output line, ruining cog&#39;s idempotency.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if self.outstring and self.outstring[-1] != &#39;\n&#39;:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.outstring += &#39;\n&#39;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; return reindentBlock(self.outstring, prefOut)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def msg(self, s):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stdout, &quot;Message: &quot;+s</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def out(self, sOut=&#39;&#39;, dedent=False, trimblanklines=False):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; The cog.out function.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if trimblanklines and (&#39;\n&#39; in sOut):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; lines = sOut.split(&#39;\n&#39;)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if lines[0].strip() == &#39;&#39;:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; del lines[0]</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if lines and lines[-1].strip() == &#39;&#39;:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; del lines[-1]</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sOut = &#39;\n&#39;.join(lines)+&#39;\n&#39;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if dedent:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sOut = reindentBlock(sOut)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.outstring += sOut</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def outl(self, sOut=&#39;&#39;, **kw):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; The cog.outl function.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.out(sOut, **kw)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.out(&#39;\n&#39;)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def error(self, msg=&#39;Error raised by cog generator.&#39;):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; The cog.error function.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Instead of raising standard python errors, cog generators can use</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; this function.&nbsp; It will display the error without a scary Python</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; traceback.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; raise CogGeneratedError(msg)</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>class NumberedFileReader:</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; A decorator for files that counts the readline()&#39;s called.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def __init__(self, f):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.f = f</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.n = 0</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def readline(self):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; l = self.f.readline()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if l:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.n += 1</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; return l</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def linenumber(self):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; return self.n</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>class CogOptions:</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; Options for a run of cog.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def __init__(self):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # Defaults for argument values.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.args = []</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.includePath = []</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.defines = {}</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.bShowVersion = False</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.sMakeWritableCmd = None</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.bReplace = False</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.bNoGenerate = False</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.sOutputName = None</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.bWarnEmpty = False</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.bHashOutput = False</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.bDeleteCode = False</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.bEofCanBeEnd = False</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.sSuffix = None</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.bNewlines = False</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def __cmp__(self, other):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Comparison operator for tests to use.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; return self.__dict__.__cmp__(other.__dict__)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def clone(self):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Make a clone of these options, for further refinement.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; return copy.deepcopy(self)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def addToIncludePath(self, dirs):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Add directories to the include path.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; dirs = dirs.split(os.pathsep)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.includePath.extend(dirs)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def parseArgs(self, argv):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # Parse the command line arguments.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; try:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; opts, self.args = getopt.getopt(argv, &#39;cdD:eI:o:rs:Uvw:xz&#39;)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; except getopt.error, msg:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogUsageError(msg)</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # Handle the command line arguments.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; for o, a in opts:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if o == &#39;-c&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.bHashOutput = True</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-d&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.bDeleteCode = True</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-D&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if a.count(&#39;=&#39;) &lt; 1:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogUsageError(&quot;-D takes a name=value argument&quot;)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; name, value = a.split(&#39;=&#39;, 1)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.defines[name] = value</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-e&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.bWarnEmpty = True</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-I&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.addToIncludePath(a)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-o&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.sOutputName = a</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-r&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.bReplace = True</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-s&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.sSuffix = a</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-U&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.bNewlines = True</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-v&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.bShowVersion = True</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-w&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.sMakeWritableCmd = a</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-x&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.bNoGenerate = True</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif o == &#39;-z&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.bEofCanBeEnd = True</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Since getopt.getopt is given a list of possible flags,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # this is an internal error.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogInternalError(&quot;Don&#39;t understand argument %s&quot; % o)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def validate(self):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Does nothing if everything is OK, raises CogError&#39;s if it&#39;s not.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; if self.bReplace and self.bDeleteCode:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogUsageError(&quot;Can&#39;t use -d with -r (or you would delete all your source!)&quot;)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; if self.bReplace and self.sOutputName:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogUsageError(&quot;Can&#39;t use -o with -r (they are opposites)&quot;)</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>class Cog(Redirectable):</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; The Cog engine.</p>
+<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def __init__(self):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; Redirectable.__init__(self)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.sBeginSpec = &#39;[[[cog&#39;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.sEndSpec = &#39;]]]&#39;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.sEndOutput = &#39;[[[end]]]&#39;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.reEndOutput = re.compile(r&#39;\[\[\[end]]](?P&lt;hashsect&gt; *\(checksum: (?P&lt;hash&gt;[a-f0-9]+)\))&#39;)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.sEndFormat = &#39;[[[end]]] (checksum: %s)&#39;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.options = CogOptions()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.sOutputMode = &#39;w&#39;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.installCogModule()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def showWarning(self, msg):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stdout, &quot;Warning:&quot;, msg</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def isBeginSpecLine(self, s):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; return string.find(s, self.sBeginSpec) &gt;= 0</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def isEndSpecLine(self, s):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; return string.find(s, self.sEndSpec) &gt;= 0 and \</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; not self.isEndOutputLine(s)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def isEndOutputLine(self, s):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; return string.find(s, self.sEndOutput) &gt;= 0</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def installCogModule(self):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Magic mumbo-jumbo so that imported Python modules</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; can say &quot;import cog&quot; and get our state.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.cogmodule = imp.new_module(&#39;cog&#39;)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.cogmodule.path = []</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; sys.modules[&#39;cog&#39;] = self.cogmodule</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def processFile(self, fIn, fOut, fname=None, globals=None):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Process an input file object to an output file object.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fIn and fOut can be file objects, or file names.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; sFileIn = fname or &#39;&#39;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; sFileOut = fname or &#39;&#39;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; fInToClose = fOutToClose = None</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # Convert filenames to files.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if isinstance(fIn, basestring):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Open the input file.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sFileIn = fIn</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fIn = fInToClose = open(fIn, &#39;r&#39;)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if isinstance(fOut, basestring):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Open the output file.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sFileOut = fOut</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOut = fOutToClose = open(fOut, self.sOutputMode)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; try:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fIn = NumberedFileReader(fIn)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bSawCog = False</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.cogmodule.inFile = sFileIn</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.cogmodule.outFile = sFileOut</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # The globals dict we&#39;ll use for this file.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if globals is None:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; globals = {}</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # If there are any global defines, put them in the globals.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; globals.update(self.options.defines)</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # loop over generator chunks</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = fIn.readline()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; while l:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Find the next spec begin</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; while l and not self.isBeginSpecLine(l):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.isEndSpecLine(l):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Unexpected &#39;%s&#39;&quot; % self.sEndSpec,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=fIn.linenumber())</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.isEndOutputLine(l):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Unexpected &#39;%s&#39;&quot; % self.sEndOutput,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=fIn.linenumber())</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOut.write(l)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = fIn.readline()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not l:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; break</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not self.options.bDeleteCode:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOut.write(l)</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # l is the begin spec</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; gen = CogGenerator()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; gen.setOutput(stdout=self.stdout)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; gen.parseMarker(l)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; firstLineNum = fIn.linenumber()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.cogmodule.firstLineNum = firstLineNum</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # If the spec begin is also a spec end, then process the single</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # line of code inside.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.isEndSpecLine(l):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; beg = string.find(l, self.sBeginSpec)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; end = string.find(l, self.sEndSpec)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if beg &gt; end:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Cog code markers inverted&quot;,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=firstLineNum)</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sCode = l[beg+len(self.sBeginSpec):end].strip()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; gen.parseLine(sCode)</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Deal with an ordinary code block.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = fIn.readline()</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Get all the lines in the spec</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; while l and not self.isEndSpecLine(l):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.isBeginSpecLine(l):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Unexpected &#39;%s&#39;&quot; % self.sBeginSpec,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=fIn.linenumber())</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.isEndOutputLine(l):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Unexpected &#39;%s&#39;&quot; % self.sEndOutput,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=fIn.linenumber())</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not self.options.bDeleteCode:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOut.write(l)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; gen.parseLine(l)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = fIn.readline()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not l:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;Cog block begun but never ended.&quot;,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=firstLineNum)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not self.options.bDeleteCode:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOut.write(l)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; gen.parseMarker(l)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = fIn.readline()</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Eat all the lines in the output section.&nbsp; While reading past</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # them, compute the md5 hash of the old output.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; hasher = hash_factory()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; while l and not self.isEndOutputLine(l):</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.isBeginSpecLine(l):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Unexpected &#39;%s&#39;&quot; % self.sBeginSpec,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=fIn.linenumber())</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.isEndSpecLine(l):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Unexpected &#39;%s&#39;&quot; % self.sEndSpec,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=fIn.linenumber())</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; hasher.update(l)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = fIn.readline()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; curHash = hasher.hexdigest()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not l and not self.options.bEofCanBeEnd:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # We reached end of file before we found the end output line.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Missing &#39;%s&#39; before end of file.&quot; % self.sEndOutput,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=fIn.linenumber())</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Write the output of the spec to be the new output if we&#39;re</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # supposed to generate code.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; hasher = hash_factory()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not self.options.bNoGenerate:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sFile = &quot;%s+%d&quot; % (sFileIn, firstLineNum)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sGen = gen.evaluate(cog=self, globals=globals, fname=sFile)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sGen = self.suffixLines(sGen)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; hasher.update(sGen)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOut.write(sGen)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; newHash = hasher.hexdigest()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bSawCog = True</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Write the ending output line</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; hashMatch = self.reEndOutput.search(l)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.options.bHashOutput:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if hashMatch:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; oldHash = hashMatch.groupdict()[&#39;hash&#39;]</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if oldHash != curHash:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Output has been edited! Delete old checksum to unprotect.&quot;,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; file=sFileIn, line=fIn.linenumber())</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Create a new end line with the correct hash.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; endpieces = l.split(hashMatch.group(0), 1)</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # There was no old hash, but we want a new hash.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; endpieces = l.split(self.sEndOutput, 1)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = (self.sEndFormat % newHash).join(endpieces)</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # We don&#39;t want hashes output, so if there was one, get rid of</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # it.</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if hashMatch:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = l.replace(hashMatch.groupdict()[&#39;hashsect&#39;], &#39;&#39;, 1)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not self.options.bDeleteCode:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOut.write(l)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = fIn.readline()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not bSawCog and self.options.bWarnEmpty:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.showWarning(&quot;no cog code found in %s&quot; % sFileIn)</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; finally:</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if fInToClose:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fInToClose.close()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if fOutToClose:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOutToClose.close()</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; # A regex for non-empty lines, used by suffixLines.</p>
+<p class='stm run hide'>&nbsp; &nbsp; reNonEmptyLines = re.compile(&quot;^\s*\S+.*$&quot;, re.MULTILINE)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def suffixLines(self, text):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Add suffixes to the lines in text, if our options desire it.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; text is many lines, as a single string.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if self.options.sSuffix:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Find all non-blank lines, and add the suffix to the end.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; repl = r&quot;\g&lt;0&gt;&quot; + self.options.sSuffix.replace(&#39;\\&#39;, &#39;\\\\&#39;)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; text = self.reNonEmptyLines.sub(repl, text)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; return text</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def processString(self, sInput, fname=None):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Process sInput as the text to cog.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return the cogged output as a string.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; fOld = StringIO(sInput)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; fNew = StringIO()</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; self.processFile(fOld, fNew, fname=fname)</p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; return fNew.getvalue()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def replaceFile(self, sOldPath, sNewText):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Replace file sOldPath with the contents sNewText</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; if not os.access(sOldPath, os.W_OK):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Need to ensure we can write.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.options.sMakeWritableCmd:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Use an external command to make the file writable.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; cmd = self.options.sMakeWritableCmd.replace(&#39;%s&#39;, sOldPath)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.stdout.write(os.popen(cmd).read())</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if not os.access(sOldPath, os.W_OK):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Couldn&#39;t make %s writable&quot; % sOldPath)</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Can&#39;t write!</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogError(&quot;Can&#39;t overwrite %s&quot; % sOldPath)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; f = open(sOldPath, self.sOutputMode)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; f.write(sNewText)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; f.close()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def saveIncludePath(self):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.savedInclude = self.options.includePath[:]</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.savedSysPath = sys.path[:]</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def restoreIncludePath(self):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.options.includePath = self.savedInclude</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.cogmodule.path = self.options.includePath</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; sys.path = self.savedSysPath</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def addToIncludePath(self, includePath):</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.cogmodule.path.extend(includePath)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; sys.path.extend(includePath)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def processOneFile(self, sFile):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Process one filename through cog.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.saveIncludePath()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; try:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.addToIncludePath(self.options.includePath)</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Since we know where the input file came from,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # push its directory onto the include path.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.addToIncludePath([os.path.dirname(sFile)])</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Set the file output mode based on whether we want \n or native</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # line endings.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.sOutputMode = &#39;w&#39;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.options.bNewlines:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.sOutputMode = &#39;wb&#39;</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # How we process the file depends on where the output is going.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.options.sOutputName:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.processFile(sFile, self.options.sOutputName, sFile)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif self.options.bReplace:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # We want to replace the cog file with the output,</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # but only if they differ.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stdout, &quot;Cogging %s&quot; % sFile,</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bNeedNewline = True</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; try:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOldFile = open(sFile)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sOldText = fOldFile.read()</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fOldFile.close()</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sNewText = self.processString(sOldText, fname=sFile)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if sOldText != sNewText:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stdout, &quot;&nbsp; (changed)&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bNeedNewline = False</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.replaceFile(sFile, sNewText)</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; finally:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # The try-finally block is so we can print a partial line</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # with the name of the file, and print (changed) on the</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # same line, but also make sure to break the line before</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # any traceback.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if bNeedNewline:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stdout</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.processFile(sFile, self.stdout, sFile)</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; finally:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.restoreIncludePath()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def processFileList(self, sFileList):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Process the files in a file list.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; flist = open(sFileList)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; lines = flist.readlines()</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; flist.close()</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; for l in lines:</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Use shlex to parse the line like a shell.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; lex = shlex.shlex(l, posix=True)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; lex.whitespace_split = True</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; lex.commenters = &#39;#&#39;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # No escapes, so that backslash can be part of the path</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; lex.escape = &#39;&#39;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; args = list(lex)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if args:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.processArguments(args)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def processArguments(self, args):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Process one command-line.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; saved_options = self.options</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.options = self.options.clone()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.options.parseArgs(args[1:])</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.options.validate()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; if args[0][0] == &#39;@&#39;:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if self.options.sOutputName:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogUsageError(&quot;Can&#39;t use -o with @file&quot;)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.processFileList(args[0][1:])</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.processOneFile(args[0])</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.options = saved_options</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def callableMain(self, argv):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; All of command-line cog, but in a callable form.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; This is used by main.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; argv is the equivalent of sys.argv.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; argv0 = argv.pop(0)</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; # Provide help if asked for anywhere in the command line.</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; if &#39;-?&#39; in argv or &#39;-h&#39; in argv:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stderr, usage,</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.options.parseArgs(argv)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; self.options.validate()</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; if self.options.bShowVersion:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stdout, &quot;Cog version %s&quot; % __version__</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; if self.options.args:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; for a in self.options.args:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.processArguments([a])</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; else:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; raise CogUsageError(&quot;No files to process&quot;)</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm run hide'>&nbsp; &nbsp; def main(self, argv):</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot; Handle the command-line execution for cog.</p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</p>
+<p class='pln'>&nbsp;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; try:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self.callableMain(argv)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return 0</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; except CogUsageError, err:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stderr, err</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stderr, &quot;(for help use -?)&quot;</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return 2</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; except CogGeneratedError, err:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stderr, &quot;Error: %s&quot; % err</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return 3</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; except CogError, err:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print &gt;&gt;self.stderr, err</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return 1</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; except:</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; traceback.print_exc(None, self.stderr)</p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return 1</p>
+<p class='pln'>&nbsp;</p>
+<p class='pln'># History:</p>
+<p class='pln'># 20040210: First public version.</p>
+<p class='pln'># 20040220: Text preceding the start and end marker are removed from Python lines.</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; -v option on the command line shows the version.</p>
+<p class='pln'># 20040311: Make sure the last line of output is properly ended with a newline.</p>
+<p class='pln'># 20040605: Fixed some blank line handling in cog.</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; Fixed problems with assigning to xml elements in handyxml.</p>
+<p class='pln'># 20040621: Changed all line-ends to LF from CRLF.</p>
+<p class='pln'># 20041002: Refactor some option handling to simplify unittesting the options.</p>
+<p class='pln'># 20041118: cog.out and cog.outl have optional string arguments.</p>
+<p class='pln'># 20041119: File names weren&#39;t being properly passed around for warnings, etc.</p>
+<p class='pln'># 20041122: Added cog.firstLineNum: a property with the line number of the [[[cog line.</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; Added cog.inFile and cog.outFile: the names of the input and output file.</p>
+<p class='pln'># 20041218: Single-line cog generators, with start marker and end marker on</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; the same line.</p>
+<p class='pln'># 20041230: Keep a single globals dict for all the code fragments in a single</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; file so they can share state.</p>
+<p class='pln'># 20050206: Added the -x switch to remove all generated output.</p>
+<p class='pln'># 20050218: Now code can be on the marker lines as well.</p>
+<p class='pln'># 20050219: Added -c switch to checksum the output so that edits can be</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; detected before they are obliterated.</p>
+<p class='pln'># 20050521: Added cog.error, contributed by Alexander Belchenko.</p>
+<p class='pln'># 20050720: Added code deletion and settable globals contributed by Blake Winton.</p>
+<p class='pln'># 20050724: Many tweaks to improve code coverage.</p>
+<p class='pln'># 20050726: Error messages are now printed with no traceback.</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; Code can no longer appear on the marker lines,</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; except for single-line style.</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; -z allows omission of the [[[end]]] marker, and it will be assumed</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; at the end of the file.</p>
+<p class='pln'># 20050729: Refactor option parsing into a separate class, in preparation for</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; future features.</p>
+<p class='pln'># 20050805: The cogmodule.path wasn&#39;t being properly maintained.</p>
+<p class='pln'># 20050808: Added the -D option to define a global value.</p>
+<p class='pln'># 20050810: The %s in the -w command is dealt with more robustly.</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; Added the -s option to suffix output lines with a marker.</p>
+<p class='pln'># 20050817: Now @files can have arguments on each line to change the cog&#39;s</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; behavior for that line.</p>
+<p class='pln'># 20051006: Version 2.0</p>
+<p class='pln'># 20080521: -U options lets you create Unix newlines on Windows.&nbsp; Thanks,</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; Alexander Belchenko.</p>
+<p class='pln'># 20080522: It&#39;s now ok to have -d with output to stdout, and now we validate</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; the args after each line of an @file.</p>
+<p class='pln'># 20090520: Use hashlib where it&#39;s available, to avoid a warning.</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; Use the builtin compile() instead of compiler, for Jython.</p>
+<p class='pln'>#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; Explicitly close files we opened, Jython likes this.</p>
+    
+</td>
+</tr>
+</table>
+</div>
+
+</body>
+</html>
