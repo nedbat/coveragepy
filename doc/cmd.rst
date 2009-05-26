@@ -1,4 +1,5 @@
 .. _cmd:
+.. highlight:: console
 
 ===========================
 Coverage Command Line usage
@@ -56,10 +57,9 @@ If you want to measure that code as well as your own, add the -L flag.
 Combining Data Files
 --------------------
 
-For some applications, your code will run on a number of different machines.
-To make it easier to collect together the .coverage data files from these runs,
-the -p flag will append a machine name and process id to the .coverage data file
-name.
+If you need to collect coverage data from different machines, coverage can
+combine multiple files into one for reporting.  Use the -p flag during execution
+to append a machine name and process id to the .coverage data file name.
 
 Once you have created a number of these files, you can copy them all to a single
 directory, and use the -c flag to combine them into one .coverage data file::
@@ -127,3 +127,4 @@ decorated to show the status of each line.
 Annotation
 ----------
 
+text annotation too!

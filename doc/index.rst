@@ -34,12 +34,16 @@ Getting started with coverage.py is easy:
 #.  Install coverage.py from the
     `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_.
 
-#.  Run coverage.py to execute your program and gather data::
+#.  Run coverage.py to execute your program and gather data:
+
+    .. code-block:: console
 
         $ coverage -e -x my_program.py arg1 arg2
         blah blah ..your program's output.. blah blah
 
-#.  Run coverage.py to report on the results::
+#.  Run coverage.py to report on the results:
+
+    .. code-block:: console
 
         $ coverage -r -m 
         Name                      Stmts   Exec  Cover   Missing
@@ -50,7 +54,9 @@ Getting started with coverage.py is easy:
         TOTAL                        76     66    87%
 
 #.  For a nicer presentation, run coverage.py to get annotated HTML listings
-    detailing missed lines::
+    detailing missed lines:
+    
+    .. code-block:: console
 
         $ coverage -b -i -d htmlcov
 
@@ -60,7 +66,9 @@ Getting started with coverage.py is easy:
 Getting Help
 ~~~~~~~~~~~~
 
-This is a third-level section, with some XML::
+This is a third-level section, with some XML:
+
+.. code-block:: xml
 
     <tag attr='value'>1 &lt; 2 &amp 2 &gt; 1</tag>
     Whoa!
