@@ -97,7 +97,7 @@ The -m flag also shows the line numbers of missing statements::
     -------------------------------------------------------
     TOTAL                        91     79    87%
 
-You can restrict the report to files you are interested in by naming them on the
+You can restrict the report to only certain files by naming them on the
 command line::
 
     $ coverage -r -m my_program.py my_other_module.py
@@ -108,8 +108,8 @@ command line::
     -------------------------------------------------------
     TOTAL                        76     66    87%
 
-You can use the -o flag to omit files that begin with specified prefixes.
-For example, this will skip reporting on any modules in the django directory::
+The -o flag omits files that begin with specified prefixes. For example, this
+will omit any modules in the django directory::
 
     $ coverage -r -m -o django
 
@@ -118,7 +118,7 @@ For example, this will skip reporting on any modules in the django directory::
 HTML Annotation
 ---------------
 
-Coverage can show you your source code, annotated for which lines were executed,
+Coverage can annotate your source code for which lines were executed
 and which were not.  The -b flag creates an HTML report similar to the -r
 summary, but as an HTML file.  Each module name links to the source file
 decorated to show the status of each line.

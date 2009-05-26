@@ -31,15 +31,14 @@ Quick Start
 
 Getting started with coverage.py is easy:
 
-#.  Install coverage.py from the `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_.
+#.  Install coverage.py from the
+    `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_.
 
 #.  Run coverage.py to execute your program and gather data::
 
         $ coverage -e -x my_program.py arg1 arg2
         blah blah ..your program's output.. blah blah
 
-    "-e -x" means erase coverage data from previous runs and execute a program.
-    
 #.  Run coverage.py to report on the results::
 
         $ coverage -r -m 
@@ -50,14 +49,21 @@ Getting started with coverage.py is easy:
         -------------------------------------------------------
         TOTAL                        76     66    87%
 
-    "-r -m" means show a summary report and include the missing line numbers.
-
 #.  For a nicer presentation, run coverage.py to get annotated HTML listings
     detailing missed lines::
 
-        coverage -b -d htmlcov
+        $ coverage -b -i -d htmlcov
 
-    Then visit htmlcov/index.html in your browser.
+    Then visit htmlcov/index.html in your browser, to see a
+    `report like this <sample_html/index.html>`_.
+
+Getting Help
+~~~~~~~~~~~~
+
+This is a third-level section, with some XML::
+
+    <tag attr='value'>1 &lt; 2 &amp 2 &gt; 1</tag>
+    Whoa!
 
 
 Using coverage.py

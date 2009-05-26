@@ -30,6 +30,11 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in _build/html."
 
+px:
+	$(SPHINXBUILD) -b px $(ALLSPHINXOPTS) _build/px
+	@echo
+	@echo "Build finished. The HTML pages are in _build/px."
+
 text:
 	$(SPHINXBUILD) -b text $(ALLSPHINXOPTS) _build/text
 	@echo
