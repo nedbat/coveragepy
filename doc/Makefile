@@ -35,6 +35,10 @@ px:
 	@echo
 	@echo "Build finished. The HTML pages are in _build/px."
 
+publish:
+	cp _build/px/*.px c:/ned/web/stellated/pages/code/coverage
+	cp sample_html/*.* c:/ned/web/stellated/pages/code/coverage/sample_html
+
 text:
 	$(SPHINXBUILD) -b text $(ALLSPHINXOPTS) _build/text
 	@echo

@@ -61,17 +61,7 @@ Getting started with coverage.py is easy:
         $ coverage -b -i -d htmlcov
 
     Then visit htmlcov/index.html in your browser, to see a
-    `report like this <sample_html/index.html>`_.
-
-Getting Help
-~~~~~~~~~~~~
-
-This is a third-level section, with some XML:
-
-.. code-block:: xml
-
-    <tag attr='value'>1 &lt; 2 &amp 2 &gt; 1</tag>
-    Whoa!
+    `report like this </code/coverage/sample_html/index.html>`_.
 
 
 Using coverage.py
