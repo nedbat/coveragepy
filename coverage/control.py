@@ -186,11 +186,11 @@ class coverage:
         `morf` is a module or a filename.  It will be analyzed to determine
         its coverage statistics.  The return value is a 5-tuple:
         
-          * The filename for the module.
-          * A list of line numbers of executable statements.
-          * A list of line numbers of excluded statements.
-          * A list of line numbers of statements not run (missing from execution).
-          * A readable formatted string of the missing line numbers.
+        * The filename for the module.
+        * A list of line numbers of executable statements.
+        * A list of line numbers of excluded statements.
+        * A list of line numbers of statements not run (missing from execution).
+        * A readable formatted string of the missing line numbers.
 
         The analysis uses the source file itself and the current measured
         coverage data.
