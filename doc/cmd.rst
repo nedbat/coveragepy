@@ -1,9 +1,12 @@
 .. _cmd:
-.. highlight:: console
 
 ===========================
-Coverage Command Line usage
+Coverage command line usage
 ===========================
+
+:history: 20090524T134300, brand new docs.
+
+.. highlight:: console
 
 When you install coverage, a command-line script called coverage is placed in
 the Python scripts directory.  Coverage performs a number of actions, determined
@@ -122,6 +125,8 @@ Coverage can annotate your source code for which lines were executed
 and which were not.  The -b flag creates an HTML report similar to the -r
 summary, but as an HTML file.  Each module name links to the source file
 decorated to show the status of each line.
+
+Here's a `sample report </code/coverage/sample_html/index.html>`_.
 
 
 Annotation

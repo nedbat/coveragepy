@@ -3,23 +3,6 @@ coverage.py
 ===========
 
 :history: 20090524T134300, brand new docs.
-:history: 20090524T134301, tweaked.
-
-.. toctree::
-    :hidden:
-
-    cmd
-    api
-
-
-.. FAQ
-..   Why do unexecutable lines show up as executed?
-..   Why do the bodies of fns show as executed, but the def lines do not?
-.. Change History
-.. Getting Help
-.. How it works
-.. .coverage file format
-.. Excluding lines
 
 Coverage.py is a tool for measuring code coverage of Python programs. It monitors
 your program, noting which parts of the code have been executed, then analyzes the
@@ -69,3 +52,24 @@ Using coverage.py
 
 There are two supported interfaces to coverage: a :ref:`command line <cmd>` and
 an :ref:`API <api>`.
+
+
+More information
+----------------
+
+.. toctree::
+    :maxdepth: 1
+    
+    cmd
+    api
+    changes
+
+
+.. FAQ
+..   Why do unexecutable lines show up as executed?
+..   Why do the bodies of fns show as executed, but the def lines do not?
+.. Change History
+.. Getting Help
+.. How it works
+.. .coverage file format
+.. Excluding lines
