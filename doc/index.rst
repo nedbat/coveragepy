@@ -65,6 +65,7 @@ More information
     changes
 
 
+.. ez_install installation instructions.
 .. FAQ
 ..   Why do unexecutable lines show up as executed?
 ..   Why do the bodies of fns show as executed, but the def lines do not?
