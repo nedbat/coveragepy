@@ -8,8 +8,8 @@ Coverage TODO
 + Proper project layout.
 + Code moved to bitbucket.
 
-- Fix formatting of code in list items on nedbat.com
-- Fix formatting of class and method names (no mono, bold)
++ Fix formatting of code in list items on nedbat.com
++ Fix formatting of class and method names (no mono, bold)
 - Add next/prev links to bottom of pages on docs.
 - Finish writing (comments in index.rst)
 - Fix references to code/modules/coverage

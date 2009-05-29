@@ -17,14 +17,14 @@ Getting started with coverage.py is easy:
 #.  Install coverage.py from the
     `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_.
 
-#.  Run coverage.py to execute your program and gather data:
+#.  Run coverage to execute your program and gather data:
 
     .. code-block:: console
 
         $ coverage -e -x my_program.py arg1 arg2
         blah blah ..your program's output.. blah blah
 
-#.  Run coverage.py to report on the results:
+#.  Run coverage to report on the results:
 
     .. code-block:: console
 
@@ -36,7 +36,7 @@ Getting started with coverage.py is easy:
         -------------------------------------------------------
         TOTAL                        76     66    87%
 
-#.  For a nicer presentation, run coverage.py to get annotated HTML listings
+#.  For a nicer presentation, run coverage to get annotated HTML listings
     detailing missed lines:
     
     .. code-block:: console
@@ -47,8 +47,8 @@ Getting started with coverage.py is easy:
     `report like this </code/coverage/sample_html/index.html>`_.
 
 
-Using coverage.py
------------------
+Using coverage
+--------------
 
 There are two supported interfaces to coverage: a :ref:`command line <cmd>` and
 an :ref:`API <api>`.
