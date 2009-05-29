@@ -30,17 +30,24 @@ class PxTranslator(BaseHtmlXlator):
         else:
             BaseHtmlXlator.visit_title(self, node)
 
-    # TODO: get history from here?
     def visit_field_list(self, node):
-        raise nodes.SkipNode
+        self.history = []
 
-    def depart_field_list(self, node):      pass
-    def visit_field(self, node):            pass
-    def depart_field(self, node):           pass
-    def visit_field_name(self, node):       pass
-    def depart_field_name(self, node):      pass
-    def visit_field_body(self, node):       pass
-    def depart_field_body(self, node):      pass
+    def depart_field_list(self, node):
+        if self.history:
+            self.body.append("<history>\n")
+            for hist in self.history:
+                when, what = hist.split(',')
+                self.body.append("<what when='%s'>%s</what>\n" % (when, self.encode(what.strip())))
+            self.body.append("</history>\n")
+            
+    def visit_field(self, node):
+        if node.children[0].astext() == 'history':
+            self.history.append(node.children[1].astext())
+        raise nodes.SkipChildren
+
+    def depart_field(self, node):
+        pass
 
     def visit_literal_block(self, node):
         if node.rawsource != node.astext():
