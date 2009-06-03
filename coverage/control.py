@@ -61,6 +61,11 @@ class coverage:
         # The default exclude pattern.
         self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')
 
+        # The prefix for files considered "installed with the interpreter".
+        if not self.cover_pylib:
+            os_file = self.file_locator.canonical_filename(os.__file__)
+            self.pylib_prefix = os.path.split(os_file)[0]
+
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`
         
@@ -89,9 +94,9 @@ class coverage:
         canonical = self.file_locator.canonical_filename(filename)
 
         # If we aren't supposed to trace installed code, then check if this is
-        # near the Python interpreter and skip it if so.
+        # near the Python standard library and skip it if so.
         if not self.cover_pylib:
-            if canonical.startswith(self.sysprefix):
+            if canonical.startswith(self.pylib_prefix):
                 return False
         
         return canonical
