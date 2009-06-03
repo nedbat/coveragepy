@@ -93,7 +93,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     + Footer in reports pointing to coverage home page.
     + Baseline grid for linenumber font.
     + Separate out css and HTML.
-    - Does it work right with utf-8 source files?
+    - Does it work right with utf-8 source files? http://www.python.org/dev/peps/pep-0263/
     - Colored bars indicating coverage per file.
 
 

@@ -16,6 +16,8 @@ Getting started with coverage.py is easy:
 
 #.  Install coverage.py from the
     `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_.
+    TODO: easy_install coverage?
+    TODO: need python-dev
 
 #.  Run coverage to execute your program and gather data:
 
