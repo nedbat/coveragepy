@@ -6,4 +6,12 @@
 {% block document -%}
   {%- block body %} {% endblock -%}
 {%- endblock %}
+
+{%- if prev or next %}
+<p class='pmn pmnbot'>
+    {% if prev %}<span class='p'>&#xab;&#xa0;<i>Previous:</i> <a href="{{ prev.link|e }}" title="previous topic">{{ prev.title }}</a></span>{% endif %}
+    {% if next %}<span class='n'><i>Next:</i> <a href="{{ next.link|e }}" title="next topic">{{ next.title }}</a>&#xa0;&#xbb;</span>{% endif %}
+</p>
+{%- endif %}
+
 </page>

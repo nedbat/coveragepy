@@ -15,9 +15,9 @@ Quick Start
 Getting started with coverage.py is easy:
 
 #.  Install coverage.py from the
-    `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_.
-    TODO: easy_install coverage?
-    TODO: need python-dev
+    `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_,
+    or by using "easy_install coverage".  You may need to install the python-dev
+    support files, for example with "apt-get install python-dev".
 
 #.  Run coverage to execute your program and gather data:
 
@@ -52,8 +52,14 @@ Getting started with coverage.py is easy:
 Using coverage
 --------------
 
-There are two supported interfaces to coverage: a :ref:`command line <cmd>` and
-an :ref:`API <api>`.
+There are a few different ways to use coverage.  The simplest is the
+:ref:`command line <cmd>`, which lets you run your program and see the results.
+If you need more control over how your project is measured, you can use the
+:ref:`API <api>`.
+
+Some test runners provide coverage integration to make it easy to use coverage
+while running tests.  For example, `nose <http://somethingaboutorange.com/mrl/projects/nose>`
+has a `cover plug-in <http://somethingaboutorange.com/mrl/projects/nose/0.11.1/plugins/cover.html>`_.
 
 
 More information
@@ -67,7 +73,6 @@ More information
     changes
 
 
-.. ez_install installation instructions.
 .. FAQ
 ..   Why do unexecutable lines show up as executed?
 ..   Why do the bodies of fns show as executed, but the def lines do not?
