@@ -140,6 +140,8 @@ class HtmlReporter(Reporter):
 def escape(t):
     """HTML-escape the text in t."""
     return (t
+            # Change all tabs to 4 spaces.
+            .expandtabs(4)
             # Convert HTML special chars into HTML entities.
             .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             .replace("'", "&#39;").replace('"', "&quot;")
