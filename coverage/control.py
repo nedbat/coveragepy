@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import os, socket, sys
+import os, socket
 
 from coverage.annotate import AnnotateReporter
 from coverage.codeunit import code_unit_factory
