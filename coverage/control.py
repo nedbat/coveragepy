@@ -12,7 +12,17 @@ from coverage.summary import SummaryReporter
 
 class coverage:
     """Programmatic access to Coverage.
+
+    To use::
     
+        from coverage import coverage
+        
+        cov = coverage()
+        cov.start()
+        #.. blah blah (run your code) blah blah
+        cov.stop()
+        cov.html_report(directory='covhtml')
+
     """
     def __init__(self, data_file=None, data_suffix=False, cover_pylib=False,
                 auto_data=False):
@@ -42,7 +52,6 @@ class coverage:
         self.exclude_list = []
         
         self.file_locator = FileLocator()
-        self.sysprefix = self.file_locator.abs_file(sys.prefix)
         
         self.collector = Collector(self._should_trace)
 
