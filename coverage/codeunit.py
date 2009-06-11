@@ -1,6 +1,6 @@
 """Code unit (module) handling for Coverage."""
 
-import glob, os, types
+import glob, os
 
 def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     """Construct a list of CodeUnits from polymorphic inputs.
@@ -15,7 +15,7 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     """
 
     # Be sure we have a list.
-    if not isinstance(morfs, types.ListType):
+    if not isinstance(morfs, (list, tuple)):
         morfs = [morfs]
     
     # On Windows, the shell doesn't expand wildcards.  Do it here.

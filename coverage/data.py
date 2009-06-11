@@ -1,6 +1,6 @@
 """Coverage data for Coverage."""
 
-import os, types
+import os
 import cPickle as pickle
 
 class CoverageData:
@@ -121,7 +121,7 @@ class CoverageData:
                 data = pickle.load(fdata)
             finally:
                 fdata.close()
-            if isinstance(data, types.DictType):
+            if isinstance(data, dict):
                 # Unpack the 'lines' item.
                 lines = dict([
                     (f, dict([(l, True) for l in linenos]))
