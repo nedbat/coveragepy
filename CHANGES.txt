@@ -2,6 +2,16 @@
 Change history for Coverage
 ---------------------------
 
+Version 3.0
+-----------
+
+- Fixed the way the Python library was ignored.  Too much code was being
+  excluded the old way.
+  
+- Tabs are now properly converted in HTML reports.  Previously indentation was
+  lost.
+
+
 Version 3.0b3, 16 May 2009
 --------------------------
 
