@@ -5,6 +5,7 @@ Coverage API
 ============
 
 :history: 20090524T134300, brand new docs.
+:history: 20090613T164000, final touches for 3.0
 
 The API to coverage.py is very simple, contained in a single module called
 coverage containing a single class, also called coverage. Methods on the

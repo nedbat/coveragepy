@@ -1,6 +1,7 @@
 .. _change:
 
 :history: 20090524T134300, brand new docs.
+:history: 20090613T164000, final touches for 3.0
 
 ------------------------------------
 Major change history for coverage.py
