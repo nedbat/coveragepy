@@ -14,6 +14,7 @@ Coverage TODO
 - Finish writing (comments in index.rst)
 - Fix references to code/modules/coverage
     - On site
+    - In code
     - redirect the url to new place.
 
 
