@@ -2,8 +2,8 @@
 Change history for Coverage
 ---------------------------
 
-Version 3.0
------------
+Version 3.0, 13 June 2009
+-------------------------
 
 - Fixed the way the Python library was ignored.  Too much code was being
   excluded the old way.
