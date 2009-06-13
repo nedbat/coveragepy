@@ -213,11 +213,13 @@ class FarmTestCase(object):
             # guide for size comparison.
             wrong_size = []
             for f in diff_files:
-                size_l = len(open(os.path.join(dir1, f), "rb").read())
-                size_r = len(open(os.path.join(dir2, f), "rb").read())
-                big = max(size_l, size_r)
-                little = min(size_l, size_r)
+                left = open(os.path.join(dir1, f), "rb").read()
+                right = open(os.path.join(dir2, f), "rb").read()
+                size_l, size_r = len(left), len(right)
+                big, little = max(size_l, size_r), min(size_l, size_r)
                 if (big - little) / float(little) > size_within/100.0:
+                    # print "%d %d" % (big, little)
+                    # print "Left: ---\n%s\n-----\n%s" % (left, right)
                     wrong_size.append(f)
             assert not wrong_size, "File sizes differ: %s" % wrong_size
         else:
