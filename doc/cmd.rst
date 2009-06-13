@@ -128,8 +128,39 @@ decorated to show the status of each line.
 
 Here's a `sample report </code/coverage/sample_html/index.html>`_.
 
+Lines are highlighted green for executed, red for missing, and gray for
+excluded.  The counts at the top of the file are buttons to turn on and off
+the highlighting.
 
-Annotation
-----------
+The -d argument to specify an output directory is required::
 
-text annotation too!
+    $ coverage -b -d covhtml
+
+
+Text Annotation
+---------------
+
+The -a flag produces a text annotation of your source code.  With a -d argument
+specifying an output directory, each Python file becomes a text file in that
+directory.  Without -d, the files are written into the same directories as the
+original Python files.
+
+Coverage status for each line of source is indicated with a character prefix::
+
+    > executed
+    ! missing (not executed)
+    - excluded
+
+For example::
+
+      # A simple function, never called with x==1
+      
+    > def h(x):
+          """Silly function."""
+    -     if 0:   #pragma: no cover
+    -         pass
+    >     if x == 1:
+    !         a = 1
+    >     else:
+    >         a = 2
+  

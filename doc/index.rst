@@ -4,9 +4,9 @@ coverage.py
 
 :history: 20090524T134300, brand new docs.
 
-Coverage.py is a tool for measuring code coverage of Python programs. It monitors
-your program, noting which parts of the code have been executed, then analyzes the
-source to identify code that could have been executed but was not.
+Coverage.py is a tool for measuring code coverage of Python programs. It
+monitors your program, noting which parts of the code have been executed, then
+analyzes the source to identify code that could have been executed but was not.
 
 
 Quick Start
@@ -16,8 +16,8 @@ Getting started with coverage.py is easy:
 
 #.  Install coverage.py from the
     `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_,
-    or by using "easy_install coverage".  You may need to install the python-dev
-    support files, for example with "apt-get install python-dev".
+    or by using "easy_install coverage".  You may need to install the
+    python-dev support files, for example with "apt-get install python-dev".
 
 #.  Run coverage to execute your program and gather data:
 
@@ -58,8 +58,19 @@ If you need more control over how your project is measured, you can use the
 :ref:`API <api>`.
 
 Some test runners provide coverage integration to make it easy to use coverage
-while running tests.  For example, `nose <http://somethingaboutorange.com/mrl/projects/nose>`
+while running tests.  For example, `nose <http://somethingaboutorange.com/mrl/projects/nose>`_
 has a `cover plug-in <http://somethingaboutorange.com/mrl/projects/nose/0.11.1/plugins/cover.html>`_.
+
+You can fine-tune coverage's view of your code by directing it to ignore parts
+that you know aren't interesting.  See :ref:`Excluding Code <excluding>` for
+details.
+
+
+History
+-------
+
+Coverage.py was originally written by `Gareth Rees <http://garethrees.org/>`_.
+Ned Batchelder has maintained and extended it since 2004.
 
 
 More information
@@ -70,14 +81,10 @@ More information
     
     cmd
     api
+    excluding
+    faq
     changes
 
 
-.. FAQ
-..   Why do unexecutable lines show up as executed?
-..   Why do the bodies of fns show as executed, but the def lines do not?
-.. Change History
-.. Getting Help
 .. How it works
 .. .coverage file format
-.. Excluding lines
