@@ -11,6 +11,8 @@ Version 3.0
 - Tabs are now properly converted in HTML reports.  Previously indentation was
   lost.
 
+- Nested modules now get a proper flat_rootname.  Thanks, Christian Heimes.
+
 
 Version 3.0b3, 16 May 2009
 --------------------------

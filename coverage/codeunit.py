@@ -66,7 +66,7 @@ class CodeUnit:
         self.filename = file_locator.canonical_filename(f)
 
         if hasattr(morf, '__name__'):
-            n = morf.__name__
+            n = modname = morf.__name__
             self.relative = True
         else:
             n = os.path.splitext(morf)[0]
@@ -76,7 +76,9 @@ class CodeUnit:
             else:
                 self.relative = True
             n = rel
+            modname = None
         self.name = n
+        self.modname = modname
 
     def __repr__(self):
         return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
@@ -94,8 +96,11 @@ class CodeUnit:
         For example, the file a/b/c.py might return 'a_b_c'
         
         """
-        root = os.path.splitdrive(os.path.splitext(self.name)[0])[1]
-        return root.replace('\\', '_').replace('/', '_')
+        if self.modname:
+            return self.modname.replace('.', '_')
+        else:
+            root = os.path.splitdrive(os.path.splitext(self.name)[0])[1]
+            return root.replace('\\', '_').replace('/', '_')
 
     def source_file(self):
         """Return an open file for reading the source of the code unit."""
