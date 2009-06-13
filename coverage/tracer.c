@@ -1,8 +1,8 @@
-// C-based Tracer for Coverage.
+/* C-based Tracer for Coverage. */
 
 #include "Python.h"
-#include "compile.h"        // in 2.3, this wasn't part of Python.h
-#include "eval.h"           // or this.
+#include "compile.h"        /* in 2.3, this wasn't part of Python.h */
+#include "eval.h"           /* or this. */
 #include "structmember.h"
 #include "frameobject.h"
 
@@ -14,7 +14,7 @@
 #define IFDEBUG(x)
 #endif
 
-// The Tracer type.
+/* The Tracer type. */
 
 #define MAX_STACK_DEPTH 500
 
@@ -24,9 +24,9 @@ typedef struct {
     PyObject * data;
     PyObject * should_trace_cache;
     int started;
-    // The index of the last-used entry in tracenames.
+    /* The index of the last-used entry in tracenames. */
     int depth;
-    // Filenames to record at each level, or NULL if not recording.
+    /* Filenames to record at each level, or NULL if not recording. */
     PyObject * tracenames[MAX_STACK_DEPTH];
 } Tracer;
 
@@ -66,25 +66,26 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     PyObject * filename = NULL;
     PyObject * tracename = NULL;
 
-    // printf("trace: %d @ %d\n", what, frame->f_lineno);
+    /* printf("trace: %d @ %d\n", what, frame->f_lineno); */
     
     switch (what) {
-    case PyTrace_CALL:      // 0
+    case PyTrace_CALL:      /* 0 */
         self->depth++;
         if (self->depth > MAX_STACK_DEPTH) {
             PyErr_SetString(PyExc_RuntimeError, "Tracer stack overflow");
             return -1;
         }
-        // Check if we should trace this line.
+        /* Check if we should trace this line. */
         filename = frame->f_code->co_filename;
         tracename = PyDict_GetItem(self->should_trace_cache, filename);
         if (tracename == NULL) {
-            // We've never considered this file before.  Ask should_trace about it.
+            /* We've never considered this file before. */
+            /* Ask should_trace about it. */
             PyObject * args = Py_BuildValue("(OO)", filename, frame);
             tracename = PyObject_Call(self->should_trace, args, NULL);
             Py_DECREF(args);
             if (tracename == NULL) {
-                // An error occurred inside should_trace.
+                /* An error occurred inside should_trace. */
                 return -1;
             }
             PyDict_SetItem(self->should_trace_cache, filename, tracename);
@@ -93,7 +94,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             Py_INCREF(tracename);
         }
 
-        // If tracename is a string, then we're supposed to trace.
+        /* If tracename is a string, then we're supposed to trace. */
         if (PyString_Check(tracename)) {
             self->tracenames[self->depth] = tracename;
         }
@@ -103,14 +104,14 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         }
         break;
     
-    case PyTrace_RETURN:    // 3
+    case PyTrace_RETURN:    /* 3 */
         if (self->depth >= 0) {
             Py_XDECREF(self->tracenames[self->depth]);
             self->depth--;
         }
         break;
     
-    case PyTrace_LINE:      // 2
+    case PyTrace_LINE:      /* 2 */
         if (self->depth >= 0) {
             if (self->tracenames[self->depth]) {
                 PyObject * t = PyTuple_New(2);
@@ -148,16 +149,26 @@ Tracer_stop(Tracer *self, PyObject *args)
 
 static PyMemberDef
 Tracer_members[] = {
-    { "should_trace",       T_OBJECT, offsetof(Tracer, should_trace), 0,        "Function indicating whether to trace a file." },
-    { "data",               T_OBJECT, offsetof(Tracer, data), 0,                "The raw dictionary of trace data." },
-    { "should_trace_cache", T_OBJECT, offsetof(Tracer, should_trace_cache), 0,  "Dictionary caching should_trace results." },
+    { "should_trace",       T_OBJECT, offsetof(Tracer, should_trace), 0,
+            PyDoc_STR("Function indicating whether to trace a file.") },
+
+    { "data",               T_OBJECT, offsetof(Tracer, data), 0,
+            PyDoc_STR("The raw dictionary of trace data.") },
+
+    { "should_trace_cache", T_OBJECT, offsetof(Tracer, should_trace_cache), 0,
+            PyDoc_STR("Dictionary caching should_trace results.") },
+
     { NULL }
 };
 
 static PyMethodDef
 Tracer_methods[] = {
-    { "start",  (PyCFunction) Tracer_start, METH_VARARGS, "Start the tracer" },
-    { "stop",   (PyCFunction) Tracer_stop,  METH_VARARGS, "Stop the tracer" },
+    { "start",  (PyCFunction) Tracer_start, METH_VARARGS,
+            PyDoc_STR("Start the tracer") },
+
+    { "stop",   (PyCFunction) Tracer_stop,  METH_VARARGS,
+            PyDoc_STR("Stop the tracer") },
+
     { NULL }
 };
 
@@ -204,14 +215,14 @@ TracerType = {
     0,                         /* tp_new */
 };
 
-// Module definition
+/* Module definition */
 
 void
 inittracer(void)
 {
     PyObject* mod;
 
-    mod = Py_InitModule3("coverage.tracer", NULL, "Fast coverage tracer.");
+    mod = Py_InitModule3("coverage.tracer", NULL, PyDoc_STR("Fast coverage tracer."));
     if (mod == NULL) {
         return;
     }
