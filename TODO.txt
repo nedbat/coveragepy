@@ -199,11 +199,11 @@ x Tests about the "import __main__" in cmdline.py
 - Update docs
     - Generate new sample_html to get the latest, incl footer version number.
 - Kits:
-    - source .tgz
-    - windows .exe for each Python
+    - source .tgz and windows .exe for each Python
+        - $ allkits.cmd
     - mac dmg?
 - Update PyPi:
-    - "make pypi"
+    - $ make pypi
     - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage and show/hide the proper versions.
     - Upload kits
 - Update nedbatchelder.com
