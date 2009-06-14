@@ -100,8 +100,8 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 * Community
 
-- New docs, rather than pointing to Gareth's
-    - Min python version is 2.3.
++ New docs, rather than pointing to Gareth's
+    + Min python version is 2.3.
     - Three phases of work:
         - Collection
         - Analysis
@@ -114,11 +114,14 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
         - Bare "except:" lines now count as executable code.
         - Double function decorators: all decorator lines count as executable code.
     - Document the .coverage file format.
-    - HTML reporting.
+    + HTML reporting.
 + Be sure --help text is complete (-i is missing).
 + Host the project somewhere with a real bug tracker: bitbucket.org
-- Point discussion to TIP
++ Point discussion to TIP
 - PEP 8 compliance?
+- References between pages are off:
+    - They have <em> tags around them.
+    - They use #anchors that don't survive the px->html conversion.
 
 
 * Programmability

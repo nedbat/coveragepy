@@ -32,7 +32,7 @@ to run your program with coverage, then your entire program will be monitored.
 If you are using the :ref:`API <api>`, you need to call coverage.start() before
 importing the modules that define your functions.
 
-**Q: Does coverage work on Python 3.0?**
+**Q: Does coverage work on Python 3.x?**
 
 Not yet, but that's next on my list.
 
