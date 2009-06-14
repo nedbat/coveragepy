@@ -29,7 +29,7 @@ Some of these can be combined: for example, "-e -x" is the simple way to run a
 program without carrying over previous data.
 
 
-Data File
+Data file
 ---------
 
 Coverage collects execution data in a file called ".coverage".  If need be, you can
@@ -58,7 +58,7 @@ By default, coverage does not measure code installed with the Python interpreter
 If you want to measure that code as well as your own, add the -L flag.
 
 
-Combining Data Files
+Combining data files
 --------------------
 
 If you need to collect coverage data from different machines, coverage can
@@ -119,7 +119,7 @@ will omit any modules in the django directory::
 
 
 
-HTML Annotation
+HTML annotation
 ---------------
 
 Coverage can annotate your source code for which lines were executed
@@ -138,7 +138,7 @@ The -d argument to specify an output directory is required::
     $ coverage -b -d covhtml
 
 
-Text Annotation
+Text annotation
 ---------------
 
 The -a flag produces a text annotation of your source code.  With a -d argument

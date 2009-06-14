@@ -1,7 +1,7 @@
 """Code coverage measurement for Python.
 
 Ned Batchelder
-http://nedbatchelder.com/code/modules/coverage.html
+http://nedbatchelder.com/code/coverage
 
 """
 

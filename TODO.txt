@@ -10,11 +10,11 @@ Coverage TODO
 
 + Fix formatting of code in list items on nedbat.com
 + Fix formatting of class and method names (no mono, bold)
-- Add next/prev links to bottom of pages on docs.
-- Finish writing (comments in index.rst)
++ Add next/prev links to bottom of pages on docs.
++ Finish writing (comments in index.rst)
 - Fix references to code/modules/coverage
     - On site
-    - In code
+    + In code
     - redirect the url to new place.
 
 
@@ -194,6 +194,7 @@ x Tests about the "import __main__" in cmdline.py
 - Version number in coverage/__init__.py:__version__
 - Update CHANGES, including release date.
 - Update docs
+    - Generate new sample_html to get the latest, incl footer version number.
 - Kits:
     - source .tgz
     - windows .exe for each Python

@@ -1,6 +1,6 @@
 """Tests for Coverage."""
 # Copyright 2004-2009, Ned Batchelder
-# http://nedbatchelder.com/code/modules/coverage.html
+# http://nedbatchelder.com/code/coverage
 
 import os, sys, unittest
 from cStringIO import StringIO

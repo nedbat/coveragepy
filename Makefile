@@ -45,11 +45,11 @@ tests: testready
 $(TEST_ZIP): test/covmodzip1.py
 	zip -j $@ $+
 
-WEBHOME = c:/ned/web/stellated/pages/code/modules
-
-publish:
-	cp doc/coverage.px $(WEBHOME)
-	cp dist/coverage-* $(WEBHOME)
+# WEBHOME = c:/ned/web/stellated/pages/code/modules
+#
+# publish:
+#	cp doc/coverage.px $(WEBHOME)
+#	cp dist/coverage-* $(WEBHOME)
 
 kit:
 	python setup.py sdist --formats=gztar

@@ -9,11 +9,15 @@ Coverage.py is a tool for measuring code coverage of Python programs. It
 monitors your program, noting which parts of the code have been executed, then
 analyzes the source to identify code that could have been executed but was not.
 
+Coverage measurement is typically used to gauge the effectiveness of tests. It
+can show which parts of your product code are being exercised by tests, and
+which are not.
 
-Quick Start
+
+Quick start
 -----------
 
-Getting started with coverage.py is easy:
+Coverage.py works on Python 2.3 through 2.6.  Getting started is easy:
 
 #.  Install coverage.py from the
     `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_,
@@ -50,10 +54,10 @@ Getting started with coverage.py is easy:
     `report like this </code/coverage/sample_html/index.html>`_.
 
 
-Using coverage
---------------
+Using coverage.py
+-----------------
 
-There are a few different ways to use coverage.  The simplest is the
+There are a few different ways to use coverage.py.  The simplest is the
 :ref:`command line <cmd>`, which lets you run your program and see the results.
 If you need more control over how your project is measured, you can use the
 :ref:`API <api>`.
@@ -72,6 +76,10 @@ History
 
 Coverage.py was originally written by `Gareth Rees <http://garethrees.org/>`_.
 Ned Batchelder has maintained and extended it since 2004.
+
+
+Resources
+---------
 
 
 More information

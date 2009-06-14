@@ -6,7 +6,9 @@ Coverage measures code coverage, typically during test execution.  It uses the
 code analysis tools and tracing hooks provided in the Python standard library
 to determine which lines are executable, and which have been executed.
 
-Code repository is at `bitbucket.org <http://bitbucket.org/ned/coveragepy>`_.
+Code repository and issue tracker are at
+`bitbucket.org <http://bitbucket.org/ned/coveragepy>`_.
+
 """
 
 classifiers = """
@@ -77,6 +79,5 @@ setup(
     keywords = 'code coverage testing',
     license = 'BSD',
     classifiers = classifier_list,
-    url = 'http://nedbatchelder.com/code/modules/coverage.html',
-    # download_url = 'http://nedbatchelder.com/code/modules/coverage-%s.tar.gz' % __version__,
+    url = 'http://nedbatchelder.com/code/coverage',
 )
