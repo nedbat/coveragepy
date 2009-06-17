@@ -12,10 +12,10 @@ Coverage TODO
 + Fix formatting of class and method names (no mono, bold)
 + Add next/prev links to bottom of pages on docs.
 + Finish writing (comments in index.rst)
-- Fix references to code/modules/coverage
-    - On site
++ Fix references to code/modules/coverage
+    + On site
     + In code
-    - redirect the url to new place.
+    + redirect the url to new place.
 
 
 * 3.1

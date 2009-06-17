@@ -1,7 +1,7 @@
 .. _faq:
 
 ==================
-FAQ and Other Help
+FAQ and other help
 ==================
 
 :history: 20090613T141800, brand new docs.
