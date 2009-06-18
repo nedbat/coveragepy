@@ -78,9 +78,6 @@ Coverage.py was originally written by `Gareth Rees <http://garethrees.org/>`_.
 Ned Batchelder has maintained and extended it since 2004.
 
 
-Resources
----------
-
 
 More information
 ----------------
