@@ -37,9 +37,9 @@ px:
 	@echo "Build finished. The HTML pages are in _build/px."
 
 publish:
-	rm c:/ned/web/stellated/pages/code/coverage/*.px
+	rm -f c:/ned/web/stellated/pages/code/coverage/*.px
 	cp _build/px/*.px c:/ned/web/stellated/pages/code/coverage
-	rm c:/ned/web/stellated/pages/code/coverage/sample_html/*.*
+	rm -f c:/ned/web/stellated/pages/code/coverage/sample_html/*.*
 	cp sample_html/*.* c:/ned/web/stellated/pages/code/coverage/sample_html
 
 text:
