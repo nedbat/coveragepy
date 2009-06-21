@@ -20,6 +20,7 @@ clean:
 	-rm -f .coverage .coverage.*
 	-rm -f $(TEST_ZIP)
 	-rm -f setuptools-*.egg
+	-rm -rf doc/_build/*
 
 LINTABLE_TESTS = \
 	test/coverage_coverage.py \
@@ -63,3 +64,24 @@ $(DEVINST_FILE): coverage/tracer.c
 uninstall:
 	-rm -rf $(PYHOME)/lib/site-packages/coverage*
 	-rm -rf $(PYHOME)/scripts/coverage*
+
+SPHINXBUILD = sphinx-build
+SPHINXOPTS = -a -E doc
+WEBHOME = c:/ned/web/stellated/pages/code/coverage
+
+px:
+	$(SPHINXBUILD) -b px $(SPHINXOPTS) doc/_build/px
+	rm doc/_build/px/search.px
+	@echo
+	@echo "Build finished. The PX files are in doc/_build/px."
+
+dochtml:
+	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
+	@echo
+	@echo "Build finished. The HTML pages are in doc/_build/html."
+
+publish:
+	rm -f $(WEBHOME)/*.px
+	cp doc/_build/px/*.px $(WEBHOME)
+	rm -f $(WEBHOME)/sample_html/*.*
+	cp doc/sample_html/*.* $(WEBHOME)/sample_html
