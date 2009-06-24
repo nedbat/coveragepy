@@ -223,7 +223,16 @@ class FarmTestCase(object):
                     wrong_size.append(f)
             assert not wrong_size, "File sizes differ: %s" % wrong_size
         else:
-            assert not diff_files, "Files differ: %s" % diff_files
+            # filecmp only compares in binary mode, but we want text mode.  So
+            # look through the list of different files, and compare them
+            # ourselves.
+            text_diff = []
+            for f in diff_files:
+                left = open(os.path.join(dir1, f), "r").read()
+                right = open(os.path.join(dir2, f), "r").read()
+                if left != right:
+                    text_diff.append(f)
+            assert not text_diff, "Files differ: %s" % text_diff
 
         if not left_extra:
             assert not left_only, "Files in %s only: %s" % (dir1, left_only)
