@@ -5,7 +5,8 @@ Change history for Coverage
 Version 3.next
 --------------
 
-- Removed the recursion limit in the tracer function.
+- Removed the recursion limit in the tracer function.  Previously, code that
+  ran more than 500 frames deep would crash.
 
 
 Version 3.0, 13 June 2009
