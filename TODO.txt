@@ -1,23 +1,5 @@
 Coverage TODO
 
-* v3.0
-
-+ Windows kit.
-    - Why doesn't setup.py install work? procmon to the rescue?
-+ Try installation on Ubuntu.
-+ Proper project layout.
-+ Code moved to bitbucket.
-
-+ Fix formatting of code in list items on nedbat.com
-+ Fix formatting of class and method names (no mono, bold)
-+ Add next/prev links to bottom of pages on docs.
-+ Finish writing (comments in index.rst)
-+ Fix references to code/modules/coverage
-    + On site
-    + In code
-    + redirect the url to new place.
-
-
 * 3.1
 
 - Python 3.1 support.
@@ -62,7 +44,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Track callers of functions (ala std module trace)
 - Method/Class/Module coverage reporting.
 - .coverage files that can be kept separate, rather than accumulated.
-
+    
 
 * Convenience
 
