@@ -5,7 +5,7 @@ http://nedbatchelder.com/code/coverage
 
 """
 
-__version__ = "3.0"    # see detailed history in CHANGES
+__version__ = "3.0.1"    # see detailed history in CHANGES
 
 from coverage.control import coverage
 from coverage.data import CoverageData

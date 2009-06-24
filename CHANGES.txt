@@ -2,6 +2,12 @@
 Change history for Coverage
 ---------------------------
 
+Version 3.next
+--------------
+
+- Removed the recursion limit in the tracer function.
+
+
 Version 3.0, 13 June 2009
 -------------------------
 
