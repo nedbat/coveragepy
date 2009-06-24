@@ -16,8 +16,6 @@
 
 /* The Tracer type. */
 
-#define MAX_STACK_DEPTH 500
-
 typedef struct {
     PyObject_HEAD
     PyObject * should_trace;
@@ -27,8 +25,11 @@ typedef struct {
     /* The index of the last-used entry in tracenames. */
     int depth;
     /* Filenames to record at each level, or NULL if not recording. */
-    PyObject * tracenames[MAX_STACK_DEPTH];
+    PyObject ** tracenames;     /* PyMem_Malloc'ed. */
+    int tracenames_alloc;       /* number of entries at tracenames. */
 } Tracer;
+
+#define TRACENAMES_DELTA    100
 
 static int
 Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
@@ -38,6 +39,11 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
     self->should_trace_cache = NULL;
     self->started = 0;
     self->depth = -1;
+    self->tracenames = PyMem_Malloc(TRACENAMES_DELTA*sizeof(PyObject *));
+    if (self->tracenames == NULL) {
+        return -1;
+    }
+    self->tracenames_alloc = TRACENAMES_DELTA;
     return 0;
 }
 
@@ -56,6 +62,8 @@ Tracer_dealloc(Tracer *self)
         Py_XDECREF(self->tracenames[self->depth]);
         self->depth--;
     }
+    
+    PyMem_Free(self->tracenames);
 
     self->ob_type->tp_free((PyObject*)self);
 }
@@ -71,9 +79,16 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     switch (what) {
     case PyTrace_CALL:      /* 0 */
         self->depth++;
-        if (self->depth > MAX_STACK_DEPTH) {
-            PyErr_SetString(PyExc_RuntimeError, "Tracer stack overflow");
-            return -1;
+        if (self->depth >= self->tracenames_alloc) {
+            /* We've outgrown our tracenames array: make it bigger. */
+            int bigger = self->tracenames_alloc + TRACENAMES_DELTA;
+            PyObject ** bigger_tracenames = PyMem_Realloc(self->tracenames, bigger * sizeof(PyObject *));
+            if (bigger_tracenames == NULL) {
+                self->depth--;
+                return -1;
+            }
+            self->tracenames = bigger_tracenames;
+            self->tracenames_alloc = bigger;
         }
         /* Check if we should trace this line. */
         filename = frame->f_code->co_filename;

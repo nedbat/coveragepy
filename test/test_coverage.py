@@ -1667,6 +1667,37 @@ class ProcessTest(CoverageTest):
         self.assertEqual(data.summary()['b_or_c.py'], 7)
 
 
+class RecursionTest(CoverageTest):
+    """Check what happens when recursive code gets near limits."""
+
+    def testShortRecursion(self):
+        # We can definitely get close to 500 stack frames.
+        self.checkCoverage("""\
+            def recur(n):
+                if n == 0:
+                    return 0
+                else:
+                    return recur(n-1)+1
+                
+            recur(495)  # We can get at least this many stack frames.
+            """,
+            [1,2,3,5,7], "")
+        
+    def xxtestLongRecursion(self):
+        # We can't finish a very deep recursion, but we don't crash.
+        self.assertRaises(RuntimeError, self.checkCoverage,
+            """\
+            def recur(n):
+                if n == 0:
+                    return 0
+                else:
+                    return recur(n-1)+1
+                
+            recur(100000)  # This is definitely too many frames.
+            """,
+            [1,2,3,5,7], "")
+
+
 if __name__ == '__main__':
     print "Testing under Python version: %s" % sys.version
     unittest.main()
