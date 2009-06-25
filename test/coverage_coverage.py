@@ -9,6 +9,10 @@ if os.path.exists(HTML_DIR):
     shutil.rmtree(HTML_DIR)
 
 cov = coverage.coverage()
+# Cheap trick: the coverage code itself is excluded from measurement, but if
+# we clobber the cover_prefix in the coverage object, we can defeat the
+# self-detection.
+cov.cover_prefix = "Please measure coverage.py!"
 cov.erase()
 cov.start()
 

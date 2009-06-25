@@ -65,7 +65,8 @@ class coverage:
 
         self.data = CoverageData(
             basename=data_file, suffix=data_suffix,
-            collector="coverage v%s" % __version__)
+            collector="coverage v%s" % __version__
+            )
 
         # The default exclude pattern.
         self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')
@@ -74,6 +75,9 @@ class coverage:
         if not self.cover_pylib:
             os_file = self.file_locator.canonical_filename(os.__file__)
             self.pylib_prefix = os.path.split(os_file)[0]
+
+        here = self.file_locator.canonical_filename(__file__)
+        self.cover_prefix = os.path.split(here)[0]
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`
@@ -107,7 +111,12 @@ class coverage:
         if not self.cover_pylib:
             if canonical.startswith(self.pylib_prefix):
                 return False
-        
+
+        # We exclude the coverage code itself, since a little of it will be
+        # measured otherwise.
+        if canonical.startswith(self.cover_prefix):
+            return False
+
         return canonical
 
     def use_cache(self, usecache):

@@ -1599,17 +1599,13 @@ class ProcessTest(CoverageTest):
 
         # Name                                                Stmts   Exec  Cover
         # -----------------------------------------------------------------------
-        # c:/ned/coverage/trunk/coverage/__init__               616      3     0%
         # c:/ned/coverage/trunk/test/modules/covmod1              2      2   100%
         # c:/ned/coverage/trunk/test/zipmods.zip/covmodzip1       2      2   100%
-        # c:/python25/lib/atexit                                 33      5    15%
-        # c:/python25/lib/ntpath                                250     12     4%
-        # c:/python25/lib/threading                             562      1     0%
         # mycode                                                  4      4   100%
         # -----------------------------------------------------------------------
-        # TOTAL                                                1467     27     1%
+        # TOTAL                                                   8      8   100%
 
-        self.assert_("/coverage/" in report1)
+        self.assert_("/coverage/__init__/" not in report1)
         self.assert_("/test/modules/covmod1 " in report1)
         self.assert_("/test/zipmods.zip/covmodzip1 " in report1)
         self.assert_("mycode " in report1)
@@ -1622,6 +1618,11 @@ class ProcessTest(CoverageTest):
 
         # Try reporting just one module
         report2 = self.run_command("coverage -r mycode.py").replace('\\', '/')
+
+        # Name     Stmts   Exec  Cover
+        # ----------------------------
+        # mycode       4      4   100%
+
         self.assert_("/coverage/" not in report2)
         self.assert_("/test/modules/covmod1 " not in report2)
         self.assert_("/test/zipmods.zip/covmodzip1 " not in report2)
@@ -1629,7 +1630,12 @@ class ProcessTest(CoverageTest):
 
         # Try reporting while omitting some modules
         report3 = self.run_command("coverage -r -o %s" % prefix).replace('\\', '/')
-        self.assert_("/coverage/" in report3)
+
+        # Name     Stmts   Exec  Cover
+        # ----------------------------
+        # mycode       4      4   100%
+
+        self.assert_("/coverage/" not in report3)
         self.assert_("/test/modules/covmod1 " not in report3)
         self.assert_("/test/zipmods.zip/covmodzip1 " not in report3)
         self.assert_("mycode " in report3)
