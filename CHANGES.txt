@@ -1,12 +1,15 @@
----------------------------
-Change history for Coverage
----------------------------
+------------------------------
+Change history for Coverage.py
+------------------------------
+
 
 Version 3.next
 --------------
 
 - Removed the recursion limit in the tracer function.  Previously, code that
   ran more than 500 frames deep would crash.
+
+- The coverage code itself will now not be measured by coverage.py
 
 
 Version 3.0, 13 June 2009
