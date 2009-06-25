@@ -4,6 +4,7 @@ import os, socket
 
 from coverage.annotate import AnnotateReporter
 from coverage.codeunit import code_unit_factory
+from coverage.collector import Collector
 from coverage.data import CoverageData
 from coverage.files import FileLocator
 from coverage.html import HtmlReporter
@@ -42,7 +43,6 @@ class coverage:
         measurement stops.
         
         """
-        from coverage.collector import Collector
         from coverage import __version__
         
         self.cover_pylib = cover_pylib
