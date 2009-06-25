@@ -9,7 +9,8 @@ Version 3.next
 - Removed the recursion limit in the tracer function.  Previously, code that
   ran more than 500 frames deep would crash.
 
-- The coverage code itself will now not be measured by coverage.py
+- The coverage.py code itself will now not be measured by coverage.py, and no
+  coverage modules will be mentioned in the nose --with-cover plugin.
 
 
 Version 3.0, 13 June 2009
