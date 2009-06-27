@@ -8,6 +8,10 @@ Version 3.next
 - Removed the recursion limit in the tracer function.  Previously, code that
   ran more than 500 frames deep would crash.
 
+- When running source files, coverage.py now opens them in universal newline
+  mode just like Python does.  This lets it run Windows files on Mac, for
+  example.
+
 
 Version 3.0, 13 June 2009
 -------------------------
