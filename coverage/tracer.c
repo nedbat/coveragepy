@@ -198,6 +198,25 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         break;
     }
 
+    /* UGLY HACK: for some reason, pyexpat invokes the systrace function directly.
+       It uses "pyexpat.c" as the filename, which is strange enough, but it calls
+       it incorrectly: when an exception passes through the C code, it calls trace
+       with an EXCEPTION, but never calls RETURN.  This throws off our bookkeeping.
+       To make things right, if this is an EXCEPTION from pyexpat.c, then inject
+       a RETURN event also.  If the bug in pyexpat.c gets fixed someday, we'll 
+       either have to put a version check here, or do something more sophisticated
+       to detect the EXCEPTION-without-RETURN case that has to be fixed up.
+    */
+    if (what == PyTrace_EXCEPTION) {
+        if (strstr(PyString_AS_STRING(frame->f_code->co_filename), "pyexpat.c")) {
+            /* Stupid pyexpat: pretend it gave us the RETURN it should have. */
+            SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "wrongexc");
+            if (Tracer_trace(self, frame, PyTrace_RETURN, arg) < 0) {
+                return -1;
+            }
+        }
+    }
+
     return 0;
 }
 

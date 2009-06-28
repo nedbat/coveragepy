@@ -12,6 +12,9 @@ Version 3.next
   mode just like Python does.  This lets it run Windows files on Mac, for
   example.
 
+- Fixed a bizarre problem involving pyexpat, whereby lines following XML parser
+  invocations could be overlooked.
+
 
 Version 3.0, 13 June 2009
 -------------------------
