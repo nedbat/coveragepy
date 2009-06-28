@@ -203,9 +203,12 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
        it incorrectly: when an exception passes through the C code, it calls trace
        with an EXCEPTION, but never calls RETURN.  This throws off our bookkeeping.
        To make things right, if this is an EXCEPTION from pyexpat.c, then inject
-       a RETURN event also.  If the bug in pyexpat.c gets fixed someday, we'll 
-       either have to put a version check here, or do something more sophisticated
-       to detect the EXCEPTION-without-RETURN case that has to be fixed up.
+       a RETURN event also.  
+       
+       I've reported the problem with pyexpat.c as http://bugs.python.org/issue6359 .
+       If the bug in pyexpat.c gets fixed someday, we'll either have to put a 
+       version check here, or do something more sophisticated to detect the 
+       EXCEPTION-without-RETURN case that has to be fixed up.
     */
     if (what == PyTrace_EXCEPTION) {
         if (strstr(PyString_AS_STRING(frame->f_code->co_filename), "pyexpat.c")) {
