@@ -1689,7 +1689,7 @@ class RecursionTest(CoverageTest):
             """,
             [1,2,3,5,7], "")
         
-    def xxtestLongRecursion(self):
+    def testLongRecursion(self):
         # We can't finish a very deep recursion, but we don't crash.
         self.assertRaises(RuntimeError, self.checkCoverage,
             """\
