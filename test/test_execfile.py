@@ -46,3 +46,14 @@ class RunTest(CoverageTest):
         self.assertEqual(os.listdir("."), ["xxx"])
         run_python_file("xxx", ["xxx"])
         self.assertEqual(os.listdir("."), ["xxx"])
+
+    def test_universal_newlines(self):
+        # Make sure we can read any sort of line ending.
+        pylines = """# try newlines|print 'Hello, world!'|""".split('|')
+        for nl in ('\n', '\r\n', '\r'):
+            fpy = open('nl.py', 'wb')
+            fpy.write(nl.join(pylines))
+            fpy.close()
+            run_python_file('nl.py', ['nl.py'])
+        self.assertEqual(self.stdout(), "Hello, world!\n"*3)
+

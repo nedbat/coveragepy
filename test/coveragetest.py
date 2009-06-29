@@ -209,7 +209,7 @@ class CoverageTest(unittest.TestCase):
         here = os.path.dirname(self.nice_file(coverage.__file__, ".."))
         testmods = self.nice_file(here, 'test/modules')
         zipfile = self.nice_file(here, 'test/zipmods.zip')
-        pypath = os.environ['PYTHONPATH']
+        pypath = os.environ.get('PYTHONPATH', '')
         if pypath:
             pypath += os.pathsep
         pypath += testmods + os.pathsep + zipfile

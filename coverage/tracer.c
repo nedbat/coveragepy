@@ -6,13 +6,8 @@
 #include "structmember.h"
 #include "frameobject.h"
 
-#define DEBUG 1
-
-#if DEBUG
-#define IFDEBUG(x)      x
-#else
-#define IFDEBUG(x)
-#endif
+#undef WHAT_LOG     /* Define to log the WHAT params in the trace function. */
+#undef TRACE_LOG    /* Define to log our bookkeeping. */
 
 /* The Tracer type. */
 
@@ -68,14 +63,72 @@ Tracer_dealloc(Tracer *self)
     self->ob_type->tp_free((PyObject*)self);
 }
 
+#if TRACE_LOG
+static const char *
+indent(int n)
+{
+    static const char * spaces = 
+        "                                                                    "
+        "                                                                    "
+        "                                                                    "
+        "                                                                    "
+        ;
+    return spaces + strlen(spaces) - n*2;
+}
+
+static int logging = 0;
+/* Set these constants to be a file substring and line number to start logging. */
+static const char * start_file = "tests/views";
+static int start_line = 27;
+
+static void
+showlog(int depth, int lineno, PyObject * filename, const char * msg)
+{
+    if (logging) {
+        printf("%s%3d ", indent(depth), depth);
+        if (lineno) {
+            printf("%4d", lineno);
+        }
+        else {
+            printf("    ");
+        }
+        if (filename) {
+            printf(" %s", PyString_AS_STRING(filename));
+        }
+        if (msg) {
+            printf(" %s", msg);
+        }
+        printf("\n");
+    }
+}
+
+#define SHOWLOG(a,b,c,d)    showlog(a,b,c,d)
+#else
+#define SHOWLOG(a,b,c,d)
+#endif /* TRACE_LOG */
+
+#if WHAT_LOG
+static const char * what_sym[] = {"CALL", "EXC ", "LINE", "RET "};
+#endif
+
 static int
 Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
 {
     PyObject * filename = NULL;
     PyObject * tracename = NULL;
 
-    /* printf("trace: %d @ %d\n", what, frame->f_lineno); */
-    
+    #if WHAT_LOG 
+    if (what <= sizeof(what_sym)/sizeof(const char *)) {
+        printf("trace: %s @ %s %d\n", what_sym[what], PyString_AS_STRING(frame->f_code->co_filename), frame->f_lineno);
+    }
+    #endif 
+
+    #if TRACE_LOG
+    if (strstr(PyString_AS_STRING(frame->f_code->co_filename), start_file) && frame->f_lineno == start_line) {
+        logging = 1;
+    }
+    #endif
+
     switch (what) {
     case PyTrace_CALL:      /* 0 */
         self->depth++;
@@ -112,15 +165,18 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         /* If tracename is a string, then we're supposed to trace. */
         if (PyString_Check(tracename)) {
             self->tracenames[self->depth] = tracename;
+            SHOWLOG(self->depth, frame->f_lineno, filename, "traced");
         }
         else {
             self->tracenames[self->depth] = NULL;
             Py_DECREF(tracename);
+            SHOWLOG(self->depth, frame->f_lineno, filename, "skipped");
         }
         break;
     
     case PyTrace_RETURN:    /* 3 */
         if (self->depth >= 0) {
+            SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "return");
             Py_XDECREF(self->tracenames[self->depth]);
             self->depth--;
         }
@@ -128,6 +184,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     
     case PyTrace_LINE:      /* 2 */
         if (self->depth >= 0) {
+            SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "line");
             if (self->tracenames[self->depth]) {
                 PyObject * t = PyTuple_New(2);
                 tracename = self->tracenames[self->depth];
@@ -139,6 +196,28 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             }
         }
         break;
+    }
+
+    /* UGLY HACK: for some reason, pyexpat invokes the systrace function directly.
+       It uses "pyexpat.c" as the filename, which is strange enough, but it calls
+       it incorrectly: when an exception passes through the C code, it calls trace
+       with an EXCEPTION, but never calls RETURN.  This throws off our bookkeeping.
+       To make things right, if this is an EXCEPTION from pyexpat.c, then inject
+       a RETURN event also.  
+       
+       I've reported the problem with pyexpat.c as http://bugs.python.org/issue6359 .
+       If the bug in pyexpat.c gets fixed someday, we'll either have to put a 
+       version check here, or do something more sophisticated to detect the 
+       EXCEPTION-without-RETURN case that has to be fixed up.
+    */
+    if (what == PyTrace_EXCEPTION) {
+        if (strstr(PyString_AS_STRING(frame->f_code->co_filename), "pyexpat.c")) {
+            /* Stupid pyexpat: pretend it gave us the RETURN it should have. */
+            SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "wrongexc");
+            if (Tracer_trace(self, frame, PyTrace_RETURN, arg) < 0) {
+                return -1;
+            }
+        }
     }
 
     return 0;

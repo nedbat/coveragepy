@@ -12,6 +12,13 @@ Version 3.next
 - The coverage.py code itself will now not be measured by coverage.py, and no
   coverage modules will be mentioned in the nose --with-cover plugin.
 
+- When running source files, coverage.py now opens them in universal newline
+  mode just like Python does.  This lets it run Windows files on Mac, for
+  example.
+
+- Fixed a bizarre problem involving pyexpat, whereby lines following XML parser
+  invocations could be overlooked.
+
 
 Version 3.0, 13 June 2009
 -------------------------

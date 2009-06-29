@@ -4,6 +4,7 @@ syntax: glob
 *.pyc
 *.pyo
 *.pyd
+*.so
 *.bak
 .coverage
 .coverage.*

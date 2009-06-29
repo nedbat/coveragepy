@@ -1689,7 +1689,7 @@ class RecursionTest(CoverageTest):
             """,
             [1,2,3,5,7], "")
         
-    def xxtestLongRecursion(self):
+    def testLongRecursion(self):
         # We can't finish a very deep recursion, but we don't crash.
         self.assertRaises(RuntimeError, self.checkCoverage,
             """\
@@ -1702,6 +1702,51 @@ class RecursionTest(CoverageTest):
             recur(100000)  # This is definitely too many frames.
             """,
             [1,2,3,5,7], "")
+
+
+class PyexpatTest(CoverageTest):
+    """Pyexpat screws up tracing. Make sure we've counter-defended properly."""
+    def testPyexpat(self):
+        # pyexpat calls the trace function explicitly (inexplicably), and does
+        # it wrong for exceptions.  Parsing a DOCTYPE for some reason throws
+        # an exception internally, and triggers its wrong behavior.  This test
+        # checks that our fake PyTrace_RETURN hack in tracer.c works.  It will
+        # also detect if the pyexpat bug is fixed unbeknownst to us, meaning
+        # we'd see two RETURNs where there should only be one.
+
+        self.makeFile("trydom.py", """\
+            import xml.dom.minidom
+
+            XML = '''\\
+            <!DOCTYPE fooey SYSTEM "http://www.example.com/example.dtd">
+            <root><child/><child/></root>
+            '''
+
+            def foo():
+                dom = xml.dom.minidom.parseString(XML)
+                assert len(dom.getElementsByTagName('child')) == 2
+                print "Parsed"
+
+            foo()
+            """)
+
+        self.makeFile("outer.py", "\n"*100 + "import trydom\nprint 'done'\n")
+
+        cov = coverage.coverage()
+        cov.erase()
+
+        # Import the python file, executing it.
+        cov.start()
+        self.importModule("outer")
+        cov.stop()
+
+        _, statements, missing, _ = cov.analysis("trydom.py")
+        self.assertEqual(statements, [1,3,8,9,10,11,13])
+        self.assertEqual(missing, [])
+    
+        _, statements, missing, _ = cov.analysis("outer.py")
+        self.assertEqual(statements, [101,102])
+        self.assertEqual(missing, [])
 
 
 if __name__ == '__main__':

@@ -24,7 +24,7 @@ def run_python_file(filename, args):
     sys.path[0] = os.path.dirname(filename)
 
     try:
-        source = open(filename).read()
+        source = open(filename, 'rU').read()
         exec compile(source, filename, "exec") in main_mod.__dict__
     finally:
         # Restore the old __main__
