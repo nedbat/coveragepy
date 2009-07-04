@@ -3,6 +3,17 @@
 import os
 import cPickle as pickle
 
+# Python 2.3 compatibility: it doesn't have `sorted`.
+try:
+    sorted
+except NameError:
+    def sorted(iterable):       # pylint: disable-msg=W0622
+        """A 2.3-compatible implementation of `sorted`."""
+        lst = list(iterable)
+        lst.sort()
+        return lst
+
+
 class CoverageData:
     """Manages collected coverage data, including file storage.
     
@@ -10,7 +21,8 @@ class CoverageData:
     
         * collector: a string identifying the collecting software
 
-        * lines: a dict mapping filenames to lists of line numbers executed:
+        * lines: a dict mapping filenames to sorted lists of line numbers
+          executed:
             { 'file1': [17,23,45],  'file2': [1,2,3], ... }
     
     """
@@ -90,7 +102,7 @@ class CoverageData:
     def line_data(self):
         """Return the map from filenames to lists of line numbers executed."""
         return dict(
-            [(f, list(linemap.keys())) for f, linemap in self.lines.items()]
+            [(f, sorted(linemap.keys())) for f, linemap in self.lines.items()]
             )
 
     def write_file(self, filename):
