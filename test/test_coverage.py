@@ -1749,6 +1749,107 @@ class PyexpatTest(CoverageTest):
         self.assertEqual(missing, [])
 
 
+class ExceptionTest(CoverageTest):
+    """I suspect different versions of Python deal with exceptions differently
+    in the trace function.
+    """
+    
+    def testException(self):
+        # Python 2.3's trace function doesn't get called with "return" if the
+        # scope is exiting due to an exception.  This confounds our trace
+        # function which relies on scope announcements to track which files to
+        # trace.
+        #
+        # This test is designed to sniff this out.  Each function in the call
+        # stack is in a different file, to try to trip up the tracer.  Each
+        # file has active lines in a different range so we'll see if the lines
+        # get attributed to the wrong file.
+        
+        self.makeFile("oops.py", """\
+            def oops(args):
+                a = 2
+                raise Exception("oops")
+                a = 4
+            """)
+        
+        self.makeFile("fly.py", "\n"*100 + """\
+            def fly(calls):
+                a = 2
+                calls[0](calls[1:])
+                a = 4
+            """)
+                
+        self.makeFile("catch.py", "\n"*200 + """\
+            def catch(calls):
+                try:
+                    a = 3
+                    calls[0](calls[1:])
+                    a = 5
+                except:
+                    a = 7
+            """)
+            
+        self.makeFile("doit.py", "\n"*300 + """\
+            def doit(calls):
+                try:
+                    calls[0](calls[1:])
+                except:
+                    a = 5
+            """)
+
+        # Import all the modules before starting coverage, so the def lines
+        # won't be in all the results.
+        for mod in "oops fly catch doit".split():
+            self.importModule(mod)
+
+        # Each run nests the functions differently to get different combinations
+        # of catching exceptions and letting them fly.
+        runs = [
+            ("fly oops", {
+                'doit.py': [302,303,304,305],
+                'fly.py': [102,103],
+                'oops.py': [2,3],
+                }),
+            ("catch oops", {
+                'doit.py': [302,303],
+                'catch.py': [202,203,204,206,207],
+                'oops.py': [2,3],
+                }),
+            ("fly catch oops", {
+                'doit.py': [302,303],
+                'fly.py': [102,103,104],
+                'catch.py': [202,203,204,206,207],
+                'oops.py': [2,3],
+                }),
+            ("catch fly oops", {
+                'doit.py': [302,303],
+                'catch.py': [202,203,204,206,207],
+                'fly.py': [102,103],
+                'oops.py': [2,3],
+                }),
+            ]
+        
+        for callnames, lines_expected in runs:
+            cov = coverage.coverage()
+    
+            # Import the python file, executing it.
+            cov.start()
+            calls = [getattr(sys.modules[cn], cn) for cn in callnames.split()]
+            getattr(sys.modules['doit'], 'doit')(calls)
+            cov.stop()
+    
+            # Clean the line data and compare to expected results.
+            # The filenames are absolute, so keep just the base.
+            lines = cov.data.line_data()
+            clean_lines = {}
+            for f, llist in lines.items():
+                if f == __file__:
+                    # ignore this file.
+                    continue
+                clean_lines[os.path.basename(f)] = llist
+            self.assertEqual(clean_lines, lines_expected)
+
+
 if __name__ == '__main__':
     print "Testing under Python version: %s" % sys.version
     unittest.main()
