@@ -87,15 +87,19 @@ class CoverageData:
                 os.remove(self.filename)
         self.lines = {}
         
+    def line_data(self):
+        """Return the map from filenames to lists of line numbers executed."""
+        return dict(
+            [(f, list(linemap.keys())) for f, linemap in self.lines.items()]
+            )
+
     def write_file(self, filename):
         """Write the coverage data to `filename`."""
 
         # Create the file data.        
         data = {}
 
-        data['lines'] = dict(
-            [(f, list(linemap.keys())) for f, linemap in self.lines.items()]
-            )
+        data['lines'] = self.line_data()
 
         if self.collector:
             data['collector'] = self.collector
@@ -109,12 +113,10 @@ class CoverageData:
 
     def read_file(self, filename):
         """Read the coverage data from `filename`."""
-        
         self.lines = self._read_file(filename)
 
     def _read_file(self, filename):
-        """ Return the stored coverage data from the given file.
-        """
+        """Return the stored coverage data from the given file."""
         try:
             fdata = open(filename, 'rb')
             try:
@@ -164,6 +166,7 @@ class CoverageData:
         
         If `filename` hasn't been collected at all (because it wasn't executed)
         then return an empty map.
+
         """
         return self.lines.get(filename) or {}
 
