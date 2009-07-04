@@ -3,8 +3,9 @@
 import imp, os, random, shutil, sys, tempfile, textwrap, unittest
 from cStringIO import StringIO
 
+# Python version compatibility
 try:
-    set()
+    set       # new in 2.4
 except NameError:
     # pylint: disable-msg=W0622
     # (Redefining built-in 'set')

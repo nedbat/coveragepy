@@ -8,10 +8,11 @@ from coverage.misc import nice_pair, CoverageException
 
 # Python version compatibility
 try:
-    set()       # new in 2.4
+    set       # new in 2.4
 except NameError:
-    import sets
-    set = sets.Set      # pylint: disable-msg=W0622
+    # pylint: disable-msg=W0622
+    # (Redefining built-in 'set')
+    from sets import Set as set
     
 
 class CodeParser:
