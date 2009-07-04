@@ -2,12 +2,28 @@
 
 import sys, threading
 
-try:
-    # Use the C extension code when we can, for speed.
-    from coverage.tracer import Tracer
-except ImportError:
-    # If we don't have the C tracer, use this Python one.
-    class Tracer:
+# Before Python 2.4, the trace function could be called with "call", and then
+# leave the scope without calling "return", for example when an exception
+# caused the scope to end.  We use the matching call and return traces to do
+# bookkeeping for speed, so we need to know up front if they match our
+# expectations.
+CALL_AND_RETURN_MATCH = (sys.hexversion >= 0x02040000)
+
+
+Tracer = None
+if CALL_AND_RETURN_MATCH:
+    # We have matching calls and returns, so we can use the C extension.
+    try:
+        # Use the C extension code when we can, for speed.
+        from coverage.tracer import Tracer
+    except ImportError:
+        # Couldn't import the C extension, maybe it isn't built.
+        pass
+
+
+if not Tracer:
+    # If for whatever reason we don't have a Tracer yet, use this Python one.
+    class Tracer:   # pylint: disable-msg=E0102
         """Python implementation of the raw data tracer."""
         def __init__(self):
             self.data = None
@@ -37,24 +53,42 @@ except ImportError:
                     # No tracing in this function.
                     return None
             return self._global_trace
-
-        def _local_trace(self, frame, event, arg_unused):
-            """The trace function used within a function."""
-            if event == 'line':
-                # Record an executed line.
-                self.data[(self.cur_filename, frame.f_lineno)] = True
-            elif event == 'return':
-                # Leaving this function, pop the filename stack.
-                self.cur_filename = self.filename_stack.pop()
-            return self._local_trace
-
+    
+        if CALL_AND_RETURN_MATCH:
+            def _local_trace(self, frame, event, arg_unused):
+                """The trace function used within a function."""
+                if event == 'line':
+                    # Record an executed line.
+                    self.data[(self.cur_filename, frame.f_lineno)] = True
+                elif event == 'return':
+                    # Leaving this function, pop the filename stack.
+                    self.cur_filename = self.filename_stack.pop()
+                return self._local_trace
+        else:
+            def _local_trace(self, frame, event, arg_unused):
+                """The trace function used within a function."""
+                if event == 'line':
+                    if not self.cur_filename:
+                        # Kinda hacky: call _global_trace to do the work of
+                        # setting the cur_filename.
+                        if not self._global_trace(frame, 'call', None):
+                            return None
+                    # Record an executed line.
+                    self.data[(self.cur_filename, frame.f_lineno)] = True
+                elif event == 'return' or event == 'exception':
+                    # Leaving this function, discard the current filename so
+                    # we'll re-compute it at the next line.
+                    self.cur_filename = None
+                return self._local_trace
+    
         def start(self):
             """Start this Tracer."""
             sys.settrace(self._global_trace)
-
+    
         def stop(self):
             """Stop this Tracer."""
             sys.settrace(None)
+
 
 class Collector:
     """Collects trace data.

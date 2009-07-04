@@ -19,6 +19,10 @@ Version 3.next
 - Fixed a bizarre problem involving pyexpat, whereby lines following XML parser
   invocations could be overlooked.
 
+- On Python 2.3, coverage.py could mis-measure code with exceptions being
+  raised.  This is now fixed, but as a result, on Python 2.3, the Python trace
+  function is used, reversing speed gains acheived in coverage.py 3.0.
+
 
 Version 3.0, 13 June 2009
 -------------------------
