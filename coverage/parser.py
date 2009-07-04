@@ -4,15 +4,7 @@ import re, token, tokenize, types
 import cStringIO as StringIO
 
 from coverage.misc import nice_pair, CoverageException
-
-
-# Python version compatibility
-try:
-    set       # new in 2.4
-except NameError:
-    # pylint: disable-msg=W0622
-    # (Redefining built-in 'set')
-    from sets import Set as set
+from coverage.backward import set   # pylint: disable-msg=W0622
     
 
 class CodeParser:

@@ -3,15 +3,7 @@
 import os
 import cPickle as pickle
 
-# Python 2.3 compatibility: it doesn't have `sorted`.
-try:
-    sorted
-except NameError:
-    def sorted(iterable):       # pylint: disable-msg=W0622
-        """A 2.3-compatible implementation of `sorted`."""
-        lst = list(iterable)
-        lst.sort()
-        return lst
+from coverage.backward import sorted    # pylint: disable-msg=W0622
 
 
 class CoverageData:

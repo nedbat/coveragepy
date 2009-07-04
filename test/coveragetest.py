@@ -3,15 +3,8 @@
 import imp, os, random, shutil, sys, tempfile, textwrap, unittest
 from cStringIO import StringIO
 
-# Python version compatibility
-try:
-    set       # new in 2.4
-except NameError:
-    # pylint: disable-msg=W0622
-    # (Redefining built-in 'set')
-    from sets import Set as set
-
 import coverage
+from coverage.backward import set   # pylint: disable-msg=W0622
 
 
 class Tee(object):
