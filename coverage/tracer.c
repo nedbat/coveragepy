@@ -22,6 +22,9 @@ typedef struct {
     /* Filenames to record at each level, or NULL if not recording. */
     PyObject ** tracenames;     /* PyMem_Malloc'ed. */
     int tracenames_alloc;       /* number of entries at tracenames. */
+    
+    /* The parent frame for the last exception event, to fix missing returns. */
+    PyFrameObject * last_exc_back;
 } Tracer;
 
 #define TRACENAMES_DELTA    100
@@ -39,6 +42,7 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
         return -1;
     }
     self->tracenames_alloc = TRACENAMES_DELTA;
+    self->last_exc_back = NULL;
     return 0;
 }
 
@@ -129,6 +133,29 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     }
     #endif
 
+    /* See below for details on missing-return detection. */
+    if (self->last_exc_back) {
+        if (frame == self->last_exc_back) {
+            /* Looks like someone forgot to send a return event. We'll clear
+               the exception state and do the RETURN code here.  Notice that the
+               frame we have in hand here is not the correct frame for the RETURN,
+               that frame is gone.  Our handling for RETURN doesn't need the
+               actual frame, but we do log it, so that will look a little off if
+               you're looking at the detailed log.
+               
+               If someday we need to examine the frame when doing RETURN, then
+               we'll need to keep more of the missed frame's state.
+            */
+            if (self->depth >= 0) {
+                SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "missedreturn");
+                Py_XDECREF(self->tracenames[self->depth]);
+                self->depth--;
+            }
+        }
+        self->last_exc_back = NULL;
+    }
+    
+
     switch (what) {
     case PyTrace_CALL:      /* 0 */
         self->depth++;
@@ -175,6 +202,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         break;
     
     case PyTrace_RETURN:    /* 3 */
+        /* A near-copy of this code is above in the missing-return handler. */
         if (self->depth >= 0) {
             SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "return");
             Py_XDECREF(self->tracenames[self->depth]);
@@ -196,28 +224,24 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             }
         }
         break;
-    }
-
-    /* UGLY HACK: for some reason, pyexpat invokes the systrace function directly.
-       It uses "pyexpat.c" as the filename, which is strange enough, but it calls
-       it incorrectly: when an exception passes through the C code, it calls trace
-       with an EXCEPTION, but never calls RETURN.  This throws off our bookkeeping.
-       To make things right, if this is an EXCEPTION from pyexpat.c, then inject
-       a RETURN event also.  
-       
-       I've reported the problem with pyexpat.c as http://bugs.python.org/issue6359 .
-       If the bug in pyexpat.c gets fixed someday, we'll either have to put a 
-       version check here, or do something more sophisticated to detect the 
-       EXCEPTION-without-RETURN case that has to be fixed up.
-    */
-    if (what == PyTrace_EXCEPTION) {
-        if (strstr(PyString_AS_STRING(frame->f_code->co_filename), "pyexpat.c")) {
-            /* Stupid pyexpat: pretend it gave us the RETURN it should have. */
-            SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "wrongexc");
-            if (Tracer_trace(self, frame, PyTrace_RETURN, arg) < 0) {
-                return -1;
-            }
-        }
+    
+    case PyTrace_EXCEPTION:
+        /* Some code (Python 2.3, and pyexpat anywhere) fires an exception event
+           without a return event.  To detect that, we'll keep a copy of the
+           parent frame for an exception event.  If the next event is in that
+           frame, then we must have returned without a return event.  We can
+           synthesize the missing event then.
+           
+           Python itself fixed this problem in 2.4.  Pyexpat still has the bug.
+           I've reported the problem with pyexpat as http://bugs.python.org/issue6359 .
+           If it gets fixed, this code should still work properly.  Maybe someday
+           the bug will be fixed everywhere coverage.py is supported, and we can
+           remove this missing-return detection.
+           
+           More about this fix: http://nedbatchelder.com/blog/200907/a_nasty_little_bug.html
+        */
+        self->last_exc_back = frame->f_back;
+        break;
     }
 
     return 0;
