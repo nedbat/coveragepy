@@ -195,6 +195,7 @@ x Tests about the "import __main__" in cmdline.py
     - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage and show/hide the proper versions.
     - Upload kits
 - Tag the tree
+    - hg tag -m "Coverage 3.0.1" coverage-3.0.1
 - Update nedbatchelder.com
     - Blog post?
 - Update bitbucket:
