@@ -2,6 +2,7 @@
 
 :history: 20090524T134300, brand new docs.
 :history: 20090613T164000, final touches for 3.0
+:history: 20090706T205000, changes for 3.0.1
 
 ------------------------------------
 Major change history for coverage.py
@@ -10,6 +11,27 @@ Major change history for coverage.py
 These are the major changes for coverage.py.  For a more complete change history,
 see the `CHANGES.txt <http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt>`_
 file.
+
+
+Version 3.0.1, 7 July 2009
+--------------------------
+
+- Removed the recursion limit in the tracer function.  Previously, code that
+  ran more than 500 frames deep would crash.
+
+- Fixed a bizarre problem involving pyexpat, whereby lines following XML parser
+  invocations could be overlooked.
+
+- On Python 2.3, coverage.py could mis-measure code with exceptions being
+  raised.  This is now fixed.
+
+- The coverage.py code itself will now not be measured by coverage.py, and no
+  coverage modules will be mentioned in the nose --with-cover plugin.
+
+- When running source files, coverage.py now opens them in universal newline
+  mode just like Python does.  This lets it run Windows files on Mac, for
+  example.
+
 
 Version 3.0b3, 16 May 2009
 --------------------------
