@@ -185,14 +185,17 @@ x Tests about the "import __main__" in cmdline.py
         coverage -e -x cogapp\test_cogapp.py CogTestsInMemory
         coverage -b -i -d htmlcov
         copy htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html
+    - Build and publish docs:
+        $ make px publish
 - Kits:
     - source .tgz and windows .exe for each Python
         - $ allkits.cmd
-    - mac dmg?
 - Update PyPi:
     - $ make pypi
     - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage and show/hide the proper versions.
     - Upload kits
+- Tag the tree
 - Update nedbatchelder.com
+    - Blog post?
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
