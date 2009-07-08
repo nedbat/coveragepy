@@ -397,35 +397,68 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,4,5], "")
 
-    def testExec(self):
-        self.checkCoverage("""\
-            a = b = c = 1
-            exec "a = 2"
-            exec ("b = " +
-                "c = " +
-                "2")
-            assert a == 2 and b == 2 and c == 2
-            """,
-            [1,2,3,6], "")
-        self.checkCoverage("""\
-            vars = {'a': 1, 'b': 1, 'c': 1}
-            exec "a = 2" in vars
-            exec ("b = " +
-                "c = " +
-                "2") in vars
-            assert vars['a'] == 2 and vars['b'] == 2 and vars['c'] == 2
-            """,
-            [1,2,3,6], "")
-        self.checkCoverage("""\
-            globs = {}
-            locs = {'a': 1, 'b': 1, 'c': 1}
-            exec "a = 2" in globs, locs
-            exec ("b = " +
-                "c = " +
-                "2") in globs, locs
-            assert locs['a'] == 2 and locs['b'] == 2 and locs['c'] == 2
-            """,
-            [1,2,3,4,7], "")
+    if sys.hexversion < 0x03000000:
+        # In Python 2.x, exec is a statement.
+        def testExec(self):
+            self.checkCoverage("""\
+                a = b = c = 1
+                exec "a = 2"
+                exec ("b = " +
+                    "c = " +
+                    "2")
+                assert a == 2 and b == 2 and c == 2
+                """,
+                [1,2,3,6], "")
+            self.checkCoverage("""\
+                vars = {'a': 1, 'b': 1, 'c': 1}
+                exec "a = 2" in vars
+                exec ("b = " +
+                    "c = " +
+                    "2") in vars
+                assert vars['a'] == 2 and vars['b'] == 2 and vars['c'] == 2
+                """,
+                [1,2,3,6], "")
+            self.checkCoverage("""\
+                globs = {}
+                locs = {'a': 1, 'b': 1, 'c': 1}
+                exec "a = 2" in globs, locs
+                exec ("b = " +
+                    "c = " +
+                    "2") in globs, locs
+                assert locs['a'] == 2 and locs['b'] == 2 and locs['c'] == 2
+                """,
+                [1,2,3,4,7], "")
+    else:
+        # In Python 3.x, exec is a function.
+        def testExec(self):
+            self.checkCoverage("""\
+                a = b = c = 1
+                exec("a = 2")
+                exec("b = " +
+                    "c = " +
+                    "2")
+                assert a == 2 and b == 2 and c == 2
+                """,
+                [1,2,3,6], "")
+            self.checkCoverage("""\
+                vars = {'a': 1, 'b': 1, 'c': 1}
+                exec("a = 2", vars)
+                exec("b = " +
+                    "c = " +
+                    "2", vars)
+                assert vars['a'] == 2 and vars['b'] == 2 and vars['c'] == 2
+                """,
+                [1,2,3,6], "")
+            self.checkCoverage("""\
+                globs = {}
+                locs = {'a': 1, 'b': 1, 'c': 1}
+                exec("a = 2", globs, locs)
+                exec("b = " +
+                    "c = " +
+                    "2", globs, locs)
+                assert locs['a'] == 2 and locs['b'] == 2 and locs['c'] == 2
+                """,
+                [1,2,3,4,7], "")
 
     def testExtraDocString(self):
         self.checkCoverage("""\
