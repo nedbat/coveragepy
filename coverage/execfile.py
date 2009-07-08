@@ -6,8 +6,8 @@ try:
     # In Py 2.x, the builtins were in __builtin__
     BUILTINS = sys.modules['__builtin__']
 except KeyError:
-    # In Py 3.x, they're in builtin
-    BUILTINS = sys.modules['builtin']
+    # In Py 3.x, they're in builtins
+    BUILTINS = sys.modules['builtins']
 
 
 def run_python_file(filename, args):

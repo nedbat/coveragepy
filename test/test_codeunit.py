@@ -58,3 +58,14 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(cu[0].source_file().read(), "# afile.py\n")
         self.assertEqual(cu[1].source_file().read(), "# bfile.py\n")
         self.assertEqual(cu[2].source_file().read(), "# cfile.py\n")
+
+    def test_comparison(self):
+        acu = code_unit_factory("aa/afile.py", FileLocator())
+        acu2 = code_unit_factory("aa/afile.py", FileLocator())
+        zcu = code_unit_factory("aa/zfile.py", FileLocator())
+        bcu = code_unit_factory("aa/bb/bfile.py", FileLocator())
+        assert acu == acu2 and acu <= acu2 and acu >= acu2
+        assert acu < zcu and acu <= zcu and acu != zcu
+        assert zcu > acu and zcu >= acu and zcu != acu
+        assert acu < bcu and acu <= bcu and acu != bcu
+        assert bcu > acu and bcu >= acu and bcu != acu

@@ -40,7 +40,7 @@ class RunTest(CoverageTest):
     def test_no_extra_file(self):
         # Make sure that running a file doesn't create an extra compiled file.
         self.makeFile("xxx", """\
-            print "a non-.py file!"
+            desc = "a non-.py file!"
             """)
 
         self.assertEqual(os.listdir("."), ["xxx"])

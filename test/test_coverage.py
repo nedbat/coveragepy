@@ -206,18 +206,19 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,6,9], "")
 
-    def testPrint(self):
-        self.checkCoverage("""\
-            print "hello, world!"
-            print ("hey: %d" %
-                17)
-            print "goodbye"
-            print "hello, world!",
-            print ("hey: %d" %
-                17),
-            print "goodbye",
-            """,
-            [1,2,4,5,6,8], "")
+    if sys.hexversion < 0x03000000:        # Print statement is gone in Py3k.
+        def testPrint(self):
+            self.checkCoverage("""\
+                print "hello, world!"
+                print ("hey: %d" %
+                    17)
+                print "goodbye"
+                print "hello, world!",
+                print ("hey: %d" %
+                    17),
+                print "goodbye",
+                """,
+                [1,2,4,5,6,8], "")
         
     def testRaise(self):
         self.checkCoverage("""\
@@ -281,20 +282,22 @@ class SimpleStatementTest(CoverageTest):
     def testBreak(self):
         self.checkCoverage("""\
             for x in range(10):
-                print "Hello"
+                a = 2 + x
                 break
-                print "Not here"
+                a = 4
+            assert a == 2
             """,
-            [1,2,3,4], "4")
+            [1,2,3,4,5], "4")
         
     def testContinue(self):
         self.checkCoverage("""\
             for x in range(10):
-                print "Hello"
+                a = 2 + x
                 continue
-                print "Not here"
+                a = 4
+            assert a == 11
             """,
-            [1,2,3,4], "4")
+            [1,2,3,4,5], "4")
     
     if 0:
         # Peephole optimization of jumps to jumps can mean that some statements
@@ -1107,8 +1110,8 @@ class ExcludeTest(CoverageTest):
     def testExcludingAColonNotASuite(self):
         self.checkCoverage("""\
             def foo():
-                l = range(10)
-                print l[:3]   # no cover
+                l = list(range(10))
+                a = l[:3]   # no cover
                 b = 4
                 
             foo()
@@ -1448,22 +1451,22 @@ if sys.hexversion >= 0x020500f0:
                 
                 class Managed:
                     def __enter__(self):
-                        print "enter"
+                        desc = "enter"
                         
                     def __exit__(self, type, value, tb):
-                        print "exit", type
+                        desc = "exit"
                         
                 m = Managed()
                 with m:
-                    print "block1a"
-                    print "block1b"
+                    desc = "block1a"
+                    desc = "block1b"
                     
                 try:
                     with m:
-                        print "block2"
+                        desc = "block2"
                         raise Exception("Boo!")
                 except:
-                    print "caught"
+                    desc = "caught"
                 """,
                 [1,3,4,5,7,8,10,11,12,13,15,16,17,18,19,20], "")
     
@@ -1577,7 +1580,7 @@ class ProcessTest(CoverageTest):
             import covmod1
             import covmodzip1
             a = 1
-            print 'done'
+            print ('done')
             """)
 
         self.assert_(not os.path.exists(".coverage"))
@@ -1590,7 +1593,7 @@ class ProcessTest(CoverageTest):
             import covmod1
             import covmodzip1
             a = 1
-            print 'done'
+            print ('done')
             """)
 
         out = self.run_command("coverage -x mycode.py")
@@ -1649,7 +1652,7 @@ class ProcessTest(CoverageTest):
             else:
                 c = 1
             d = 1
-            print 'done'
+            print ('done')
             """)
         
         out = self.run_command("coverage -x -p b_or_c.py b")
@@ -1725,12 +1728,12 @@ class PyexpatTest(CoverageTest):
             def foo():
                 dom = xml.dom.minidom.parseString(XML)
                 assert len(dom.getElementsByTagName('child')) == 2
-                print "Parsed"
+                a = 11
 
             foo()
             """)
 
-        self.makeFile("outer.py", "\n"*100 + "import trydom\nprint 'done'\n")
+        self.makeFile("outer.py", "\n"*100 + "import trydom\na = 102\n")
 
         cov = coverage.coverage()
         cov.erase()
