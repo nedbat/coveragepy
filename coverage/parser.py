@@ -229,8 +229,6 @@ class CodeParser:
 
 
 if __name__ == '__main__':
-    import sys
-    
     parser = CodeParser(show_tokens=True)
     parser.raw_parse(filename=sys.argv[1], exclude=r"no\s*cover")
     parser.print_parse_results()
