@@ -4,7 +4,7 @@ import imp, os, random, shutil, sys, tempfile, textwrap, unittest
 from cStringIO import StringIO
 
 import coverage
-from coverage.backward import set   # pylint: disable-msg=W0622
+from coverage.backward import set, run_command   # pylint: disable-msg=W0622
 
 
 class Tee(object):
@@ -209,8 +209,7 @@ class CoverageTest(unittest.TestCase):
         pypath += testmods + os.pathsep + zipfile
         os.environ['PYTHONPATH'] = pypath
         
-        stdin_unused, stdouterr = os.popen4(cmd)
-        output = stdouterr.read()
+        _, output = run_command(cmd)
         print output
         return output
 

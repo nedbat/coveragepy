@@ -1586,7 +1586,7 @@ class ProcessTest(CoverageTest):
         self.assert_(not os.path.exists(".coverage"))
         out = self.run_command("coverage -x mycode.py")
         self.assert_(os.path.exists(".coverage"))
-        self.assertEqual(out, 'done\n')
+        self.assertEqual(out.strip(), 'done')
     
     def testReport(self):
         self.makeFile("mycode.py", """\
@@ -1597,7 +1597,7 @@ class ProcessTest(CoverageTest):
             """)
 
         out = self.run_command("coverage -x mycode.py")
-        self.assertEqual(out, 'done\n')
+        self.assertEqual(out.strip(), 'done')
         report1 = self.run_command("coverage -r").replace('\\', '/')
 
         # Name                                                Stmts   Exec  Cover
@@ -1656,11 +1656,11 @@ class ProcessTest(CoverageTest):
             """)
         
         out = self.run_command("coverage -x -p b_or_c.py b")
-        self.assertEqual(out, 'done\n')
+        self.assertEqual(out.strip(), 'done')
         self.assert_(not os.path.exists(".coverage"))
 
         out = self.run_command("coverage -x -p b_or_c.py c")
-        self.assertEqual(out, 'done\n')
+        self.assertEqual(out.strip(), 'done')
         self.assert_(not os.path.exists(".coverage"))
         
         # After two -p runs, there should be two .coverage.machine.123 files.

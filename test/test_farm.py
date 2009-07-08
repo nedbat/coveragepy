@@ -1,11 +1,7 @@
 """Run tests in the farm subdirectory.  Designed for nose."""
 
 import filecmp, fnmatch, glob, os, shutil, sys
-
-try:
-    import subprocess
-except ImportError:
-    subprocess = None
+from coverage.backward import run_command
 
 
 def test_farm(clean_only=False):
@@ -135,16 +131,7 @@ class FarmTestCase(object):
             for cmd in cmds.split("\n"):
                 if not cmd.strip():
                     continue
-                if subprocess:
-                    proc = subprocess.Popen(cmd, shell=True, 
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.STDOUT)
-                    retcode = proc.wait()
-                    output = proc.stdout.read()
-                else:
-                    _, stdouterr = os.popen4(cmd)
-                    output = stdouterr.read()
-                    retcode = 0 # Can't tell if the process failed.
+                retcode, output = run_command(cmd)
                 print output,
                 if outfile:
                     open(outfile, "a+").write(output)

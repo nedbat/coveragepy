@@ -4,6 +4,7 @@
 # (Redefining built-in blah)
 # The whole point of this file is to redefine built-ins, so shut up about it.
 
+import os
 
 # Python 2.3 doesn't have `set`
 try:
@@ -22,3 +23,29 @@ except NameError:
         lst = list(iterable)
         lst.sort()
         return lst
+
+# Py2k and 3k don't agree on how to run commands in a subprocess.
+try:
+    import subprocess
+except ImportError:
+    def run_command(cmd):
+        """Run a command in a subprocess.
+        
+        Returns the exit code and the combined stdout and stderr.
+        
+        """
+        _, stdouterr = os.popen4(cmd)
+        return 0, stdouterr.read()
+else:
+    def run_command(cmd):
+        """Run a command in a subprocess.
+        
+        Returns the exit code and the combined stdout and stderr.
+        
+        """
+        proc = subprocess.Popen(cmd, shell=True,
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT
+                )
+        retcode = proc.wait()
+        return retcode, proc.stdout.read()
