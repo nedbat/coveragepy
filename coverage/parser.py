@@ -1,12 +1,13 @@
 """Code parsing for Coverage."""
 
-import re, token, tokenize, types
+import re, sys, token, tokenize, types
 import cStringIO as StringIO
 
 from coverage.misc import nice_pair, CoverageException
 from coverage.backward import set   # pylint: disable-msg=W0622
-    
 
+
+    
 class CodeParser:
     """Parse code to find executable lines, excluded lines, etc."""
     
@@ -28,6 +29,16 @@ class CodeParser:
         # The line numbers that start statements.
         self.statement_starts = set()
 
+    # Getting numbers from the lnotab value changed in Py3.0.    
+    if sys.hexversion >= 0x03000000:
+        def lnotab_increments(self, lnotab):
+            """Return a list of ints from the lnotab bytes in 3.x"""
+            return list(lnotab)
+    else:
+        def lnotab_increments(self, lnotab):
+            """Return a list of ints from the lnotab string in 2.x"""
+            return [ord(c) for c in lnotab]
+
     def find_statement_starts(self, code):
         """Find the starts of statements in compiled code.
     
@@ -36,8 +47,8 @@ class CodeParser:
     
         """
         # Adapted from dis.py in the standard library.
-        byte_increments = [ord(c) for c in code.co_lnotab[0::2]]
-        line_increments = [ord(c) for c in code.co_lnotab[1::2]]
+        byte_increments = self.lnotab_increments(code.co_lnotab[0::2])
+        line_increments = self.lnotab_increments(code.co_lnotab[1::2])
     
         last_line_num = None
         line_num = code.co_firstlineno
