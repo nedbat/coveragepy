@@ -32,7 +32,7 @@ if sys.hexversion < 0x03000000:
     from setuptools import setup
     from distutils.core import Extension
 
-    setuptools_args = dict(
+    more_setup_args = dict(
         entry_points = {
             'console_scripts': [
                 'coverage = coverage:main',
@@ -45,7 +45,12 @@ if sys.hexversion < 0x03000000:
 else:
     # No setuptools yet for Py 3.x, so do without.
     from distutils.core import setup, Extension
-    setuptools_args = {}
+
+    more_setup_args = dict(
+        scripts = [
+            'scripts/coverage',
+            ],
+        )
 
 
 # Get or massage our metadata.
@@ -93,5 +98,5 @@ setup(
     classifiers = classifier_list,
     url = 'http://nedbatchelder.com/code/coverage',
     
-    **setuptools_args
+    **more_setup_args
 )

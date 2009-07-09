@@ -20,5 +20,6 @@ def check_files(root, patterns):
             dirs.remove('.svn')
 
 check_files("coverage", ["*.py"])
+check_files("scripts", ["*"])
 check_files("test", ["*.py", "*,cover"])
 check_file("setup.py")

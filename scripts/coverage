@@ -1,0 +1,10 @@
+#!/usr/bin/python
+""" Coverage.py code coverage measurement.
+    http://nedbatchelder.com/code/coverage
+
+    Copyright 2004-2009, Ned Batchelder.
+"""
+
+import sys
+from coverage import main
+sys.exit(main())

@@ -22,7 +22,10 @@ clean:
 	-rm -f setuptools-*.egg
 	-rm -rf doc/_build/*
 
-LINTABLE_TESTS = \
+LINTABLE = \
+	coverage \
+	scripts/coverage \
+	setup.py \
 	test/coverage_coverage.py \
 	test/coveragetest.py \
 	test/test_api.py \
@@ -34,8 +37,8 @@ LINTABLE_TESTS = \
 	test/test_templite.py
 
 lint: 
-	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc coverage $(LINTABLE_TESTS) setup.py 
-	python /Python25/Lib/tabnanny.py coverage test setup.py
+	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc $(LINTABLE)
+	python /Python25/Lib/tabnanny.py coverage scripts test setup.py
 	python checkeol.py
 
 testready: $(TEST_ZIP) devinst
