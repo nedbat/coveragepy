@@ -25,10 +25,11 @@ Topic :: Software Development :: Testing
 import sys
 
 if sys.hexversion < 0x03000000:
+    # In Py 2.x, use setuptools.
     from ez_setup import use_setuptools
     use_setuptools()
     
-    from setuptools import setup, find_packages
+    from setuptools import setup
     from distutils.core import Extension
 
     setuptools_args = dict(
@@ -38,9 +39,11 @@ if sys.hexversion < 0x03000000:
                 ]
             },
         
-        zip_safe = False,    # we need to get HTML assets from our htmlfiles dir.
+        # We need to get HTML assets from our htmlfiles dir.
+        zip_safe = False,
         )
 else:
+    # No setuptools yet for Py 3.x, so do without.
     from distutils.core import setup, Extension
     setuptools_args = {}
 
