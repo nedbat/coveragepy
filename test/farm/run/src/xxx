@@ -5,4 +5,4 @@ b = 4
 if not b:
     c = 6
 d = 7
-print "xxx:", a, b, c, d
+print("xxx: %r %r %r %r" % (a, b, c, d))
