@@ -4,7 +4,7 @@
 # (Redefining built-in blah)
 # The whole point of this file is to redefine built-ins, so shut up about it.
 
-import os
+import os, sys
 
 # Python 2.3 doesn't have `set`
 try:
@@ -43,6 +43,12 @@ else:
         Returns the exit code and the combined stdout and stderr.
         
         """
+
+        if sys.hexversion > 0x03000000 and cmd.startswith("coverage "):
+            # We don't have a coverage command on 3.x, so fix it up to call the
+            # script.
+            cmd = "python " + sys.prefix + os.sep + "Scripts" + os.sep + cmd
+
         proc = subprocess.Popen(cmd, shell=True,
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT

@@ -129,7 +129,8 @@ class FarmTestCase(object):
         cwd = self.cd(rundir)
         try:
             for cmd in cmds.split("\n"):
-                if not cmd.strip():
+                cmd = cmd.strip()
+                if not cmd:
                     continue
                 retcode, output = run_command(cmd)
                 print output,
