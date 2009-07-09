@@ -46,7 +46,7 @@ else:
 
         if sys.hexversion > 0x03000000 and cmd.startswith("coverage "):
             # We don't have a coverage command on 3.x, so fix it up to call the
-            # script.
+            # script. Eventually we won't need this.
             cmd = "python " + sys.prefix + os.sep + "Scripts" + os.sep + cmd
 
         proc = subprocess.Popen(cmd, shell=True,
@@ -54,4 +54,11 @@ else:
                 stderr=subprocess.STDOUT
                 )
         retcode = proc.wait()
-        return retcode, proc.stdout.read()
+        
+        # Get the output, and canonicalize it to strings with newlines.
+        output = proc.stdout.read()
+        if not isinstance(output, str):
+            output = output.decode('utf-8')
+        output = output.replace('\r', '')
+        
+        return retcode, output

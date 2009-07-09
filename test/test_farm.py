@@ -135,7 +135,7 @@ class FarmTestCase(object):
                 retcode, output = run_command(cmd)
                 print output,
                 if outfile:
-                    open(outfile, "a+").write(output.decode('utf-8'))
+                    open(outfile, "a+").write(output)
                 if retcode:
                     raise Exception("command exited abnormally")
         finally:
