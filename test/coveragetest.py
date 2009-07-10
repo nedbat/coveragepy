@@ -32,6 +32,9 @@ class CoverageTest(unittest.TestCase):
         self.old_dir = os.getcwd()
         os.chdir(self.temp_dir)
 
+        # Preserve changes to PYTHONPATH.
+        self.old_pypath = os.environ.get('PYTHONPATH', '')
+
         # Modules should be importable from this temp directory.
         self.old_syspath = sys.path[:]
         sys.path.insert(0, '')
@@ -45,9 +48,10 @@ class CoverageTest(unittest.TestCase):
         sys.stdout = Tee(sys.stdout, self.captured_stdout)
         
     def tearDown(self):
-        # Restore the original sys.path
+        # Restore the original sys.path and PYTHONPATH
         sys.path = self.old_syspath
-        
+        os.environ['PYTHONPATH'] = self.old_pypath
+
         # Get rid of the temporary directory.
         os.chdir(self.old_dir)
         shutil.rmtree(self.temp_root)
@@ -203,7 +207,7 @@ class CoverageTest(unittest.TestCase):
         here = os.path.dirname(self.nice_file(coverage.__file__, ".."))
         testmods = self.nice_file(here, 'test/modules')
         zipfile = self.nice_file(here, 'test/zipmods.zip')
-        pypath = os.environ.get('PYTHONPATH', '')
+        pypath = self.old_pypath
         if pypath:
             pypath += os.pathsep
         pypath += testmods + os.pathsep + zipfile
