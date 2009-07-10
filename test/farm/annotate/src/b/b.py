@@ -1,2 +1,3 @@
 def b(x):
-    print "x is %s" % x
+    msg = "x is %s" % x
+    print(msg)
