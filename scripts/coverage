@@ -6,5 +6,5 @@
 """
 
 import sys
-from coverage import main
+from coverage import main   # pylint: disable-msg=W0406
 sys.exit(main())
