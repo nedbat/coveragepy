@@ -1841,23 +1841,23 @@ class ExceptionTest(CoverageTest):
         # Each run nests the functions differently to get different combinations
         # of catching exceptions and letting them fly.
         runs = [
-            ("fly oops", {
+            ("doit fly oops", {
                 'doit.py': [302,303,304,305],
                 'fly.py': [102,103],
                 'oops.py': [2,3],
                 }),
-            ("catch oops", {
+            ("doit catch oops", {
                 'doit.py': [302,303],
                 'catch.py': [202,203,204,206,207],
                 'oops.py': [2,3],
                 }),
-            ("fly catch oops", {
+            ("doit fly catch oops", {
                 'doit.py': [302,303],
                 'fly.py': [102,103,104],
                 'catch.py': [202,203,204,206,207],
                 'oops.py': [2,3],
                 }),
-            ("catch fly oops", {
+            ("doit catch fly oops", {
                 'doit.py': [302,303],
                 'catch.py': [202,203,204,206,207],
                 'fly.py': [102,103],
@@ -1866,12 +1866,15 @@ class ExceptionTest(CoverageTest):
             ]
         
         for callnames, lines_expected in runs:
-            cov = coverage.coverage()
     
-            # Import the python file, executing it.
-            cov.start()
+            # Make the list of functions we'll call for this test.
             calls = [getattr(sys.modules[cn], cn) for cn in callnames.split()]
-            getattr(sys.modules['doit'], 'doit')(calls)
+            
+            cov = coverage.coverage()
+            cov.start()
+            # Call our list of functions: invoke the first, with the rest as
+            # an argument.
+            calls[0](calls[1:])
             cov.stop()
     
             # Clean the line data and compare to expected results.

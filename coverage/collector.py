@@ -20,6 +20,7 @@ except ImportError:
 
         def _global_trace(self, frame, event, arg_unused):
             """The trace function passed to sys.settrace."""
+            #print "global event: %s %r" % (event, frame.f_code.co_filename)
             if event == 'call':
                 # Entering a new function context.  Decide if we should trace
                 # in this file.
@@ -42,6 +43,7 @@ except ImportError:
     
         def _local_trace(self, frame, event, arg_unused):
             """The trace function used within a function."""
+            #print "local event: %s %r" % (event, frame.f_code.co_filename)
             if self.last_exc_back:
                 if frame == self.last_exc_back:
                     # Someone forgot a return event.

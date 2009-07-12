@@ -119,6 +119,14 @@ class coverage:
 
         return canonical
 
+    # To log what should_trace returns, change this to "if 1:"
+    if 0:
+        _real_should_trace = _should_trace
+        def _should_trace(self, filename, frame):
+            ret = self._real_should_trace(filename, frame)
+            print "should_trace: %r -> %r" % (filename, ret)
+            return ret
+
     def use_cache(self, usecache):
         """Control the use of a data file (incorrectly called a cache).
         
