@@ -20,13 +20,14 @@ class coverage:
         
         cov = coverage()
         cov.start()
-        #.. blah blah (run your code) blah blah
+        #.. blah blah (run your code) blah blah ..
         cov.stop()
         cov.html_report(directory='covhtml')
 
     """
+
     def __init__(self, data_file=None, data_suffix=False, cover_pylib=False,
-                auto_data=False):
+                auto_data=False, timid=False):
         """Create a new coverage measurement context.
         
         `data_file` is the base name of the data file to use, defaulting to
@@ -42,6 +43,11 @@ class coverage:
         coverage measurement starts, and data will be saved automatically when
         measurement stops.
         
+        If `timid` is true, then a slower simpler trace function will be
+        used.  This is important for some environments where manipulation of
+        tracing functions make the faster more sophisticated trace function not
+        operate properly.
+        
         """
         from coverage import __version__
         
@@ -53,7 +59,11 @@ class coverage:
         
         self.file_locator = FileLocator()
         
-        self.collector = Collector(self._should_trace)
+        # Timidity: for nose users, read an environment variable.  This is a
+        # cheap hack, since the rest of the command line arguments aren't
+        # recognized, but it solves some users' problems.
+        timid = timid or ('--timid' in os.environ.get('COVERAGE_OPTIONS', ''))
+        self.collector = Collector(self._should_trace, timid=timid)
 
         # Create the data file.
         if data_suffix:

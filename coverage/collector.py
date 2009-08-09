@@ -7,66 +7,72 @@ try:
     from coverage.tracer import Tracer
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
-
-    class Tracer:
-        """Python implementation of the raw data tracer."""
-        def __init__(self):
-            self.data = None
-            self.should_trace = None
-            self.should_trace_cache = None
-            self.cur_filename = None
-            self.filename_stack = []
-            self.last_exc_back = None
-
-        def _global_trace(self, frame, event, arg_unused):
-            """The trace function passed to sys.settrace."""
-            #print "global event: %s %r" % (event, frame.f_code.co_filename)
-            if event == 'call':
-                # Entering a new function context.  Decide if we should trace
-                # in this file.
-                filename = frame.f_code.co_filename
-                tracename = self.should_trace_cache.get(filename)
-                if tracename is None:
-                    tracename = self.should_trace(filename, frame)
-                    self.should_trace_cache[filename] = tracename
-                if tracename:
-                    # We need to trace.  Push the current filename on the stack
-                    # and record the new current filename.
-                    self.filename_stack.append(self.cur_filename)
-                    self.cur_filename = tracename
-                    # Use _local_trace for tracing within this function.
-                    return self._local_trace
-                else:
-                    # No tracing in this function.
-                    return None
-            return self._global_trace
+    Tracer = None
     
-        def _local_trace(self, frame, event, arg_unused):
-            """The trace function used within a function."""
-            #print "local event: %s %r" % (event, frame.f_code.co_filename)
-            if self.last_exc_back:
-                if frame == self.last_exc_back:
-                    # Someone forgot a return event.
-                    self.cur_filename = self.filename_stack.pop()
-                self.last_exc_back = None
-                
-            if event == 'line':
-                # Record an executed line.
-                self.data[(self.cur_filename, frame.f_lineno)] = True
-            elif event == 'return':
-                # Leaving this function, pop the filename stack.
+class PyTracer:
+    """Python implementation of the raw data tracer."""
+    
+    # Because of poor implementations of trace-function-manipulating tools,
+    # the Python trace function must be kept very simple.  In particular, there
+    # must be only one function ever set as the trace function, both through
+    # sys.settrace, and as the return value from the trace function.  Put
+    # another way, the trace function must always return itself.  It cannot
+    # swap in other functions, or return None to avoid tracing a particular
+    # frame.
+    #
+    # The trace manipulator that introduced this restriction is DecoratorTools,
+    # which sets a trace function, and then later restores the pre-existing one
+    # by calling sys.settrace with a function it found in the current frame.
+    #
+    # Systems that use DecoratorTools (or similar trace manipulations) must use
+    # PyTracer to get accurate results.  The command-line --timid argument is
+    # used to force the use of this tracer.
+
+    def __init__(self):
+        self.data = None
+        self.should_trace = None
+        self.should_trace_cache = None
+        self.cur_filename = None
+        self.filename_stack = []
+        self.last_exc_back = None
+
+    def _trace(self, frame, event, arg_unused):
+        """The trace function passed to sys.settrace."""
+        
+        #print "trace event: %s %r @%d" % (
+        #           event, frame.f_code.co_filename, frame.f_lineno)
+        
+        if self.last_exc_back:
+            if frame == self.last_exc_back:
+                # Someone forgot a return event.
                 self.cur_filename = self.filename_stack.pop()
-            elif event == 'exception':
-                self.last_exc_back = frame.f_back
-            return self._local_trace
-    
-        def start(self):
-            """Start this Tracer."""
-            sys.settrace(self._global_trace)
-    
-        def stop(self):
-            """Stop this Tracer."""
-            sys.settrace(None)
+            self.last_exc_back = None
+            
+        if event == 'call':
+            # Entering a new function context.  Decide if we should trace
+            # in this file.
+            self.filename_stack.append(self.cur_filename)
+            filename = frame.f_code.co_filename
+            tracename = self.should_trace(filename, frame)
+            self.cur_filename = tracename
+        elif event == 'line':
+            # Record an executed line.
+            if self.cur_filename:
+                self.data[(self.cur_filename, frame.f_lineno)] = True
+        elif event == 'return':
+            # Leaving this function, pop the filename stack.
+            self.cur_filename = self.filename_stack.pop()
+        elif event == 'exception':
+            self.last_exc_back = frame.f_back
+        return self._trace
+        
+    def start(self):
+        """Start this Tracer."""
+        sys.settrace(self._trace)
+
+    def stop(self):
+        """Stop this Tracer."""
+        sys.settrace(None)
 
 
 class Collector:
@@ -89,16 +95,28 @@ class Collector:
     # the top, and resumed when they become the top again.
     _collectors = []
 
-    def __init__(self, should_trace):
+    def __init__(self, should_trace, timid=False):
         """Create a collector.
         
         `should_trace` is a function, taking a filename, and returning a
         canonicalized filename, or False depending on whether the file should
         be traced or not.
         
+        If `timid` is true, then a slower simpler trace function will be
+        used.  This is important for some environments where manipulation of
+        tracing functions make the faster more sophisticated trace function not
+        operate properly.
+        
         """
         self.should_trace = should_trace
         self.reset()
+        if timid:
+            # Being timid: use the simple Python trace function.
+            self._trace_class = PyTracer
+        else:
+            # Being fast: use the C Tracer if it is available, else the Python
+            # trace function.
+            self._trace_class = Tracer or PyTracer
 
     def reset(self):
         """Clear collected data, and prepare to collect more."""
@@ -116,7 +134,7 @@ class Collector:
 
     def _start_tracer(self):
         """Start a new Tracer object, and store it in self.tracers."""
-        tracer = Tracer()
+        tracer = self._trace_class()
         tracer.data = self.data
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
@@ -153,12 +171,10 @@ class Collector:
         """Stop collecting trace information."""
         assert self._collectors
         assert self._collectors[-1] is self
-        
-        for tracer in self.tracers:
-            tracer.stop()
+
+        self.pause()        
         self.tracers = []
-        threading.settrace(None)
-        
+                
         # Remove this Collector from the stack, and resume the one underneath
         # (if any).
         self._collectors.pop()

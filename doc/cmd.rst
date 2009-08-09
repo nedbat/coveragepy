@@ -57,6 +57,12 @@ Arguments after your file name are passed to your program in sys.argv.
 By default, coverage does not measure code installed with the Python interpreter.
 If you want to measure that code as well as your own, add the -L flag.
 
+If your coverage results seems to be overlooking code that you know has been
+executed, try running coverage again with the --timid flag.  This uses a simpler
+but slower trace method.  Projects that use DecoratorTools, including TurboGears,
+will need to use --timid to get correct results.  This option can also be set
+with the environment variable COVERAGE_OPTIONS set to '--timid'.
+
 
 Combining data files
 --------------------

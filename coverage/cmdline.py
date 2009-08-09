@@ -10,11 +10,12 @@ Measure, collect, and report on code coverage in Python programs.
 
 Usage:
 
-coverage -x [-p] [-L] MODULE.py [ARG1 ARG2 ...]
+coverage -x [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]
     Execute the module, passing the given command-line arguments, collecting
     coverage data.  With the -p option, include the machine name and process
     ID in the .coverage file name.  With -L, measure coverage even inside the
-    Python installed library, which isn't done by default.
+    Python installed library, which isn't done by default.  With --timid, use a
+    simpler but slower trace method.
 
 coverage -e
     Erase collected coverage data.
@@ -95,8 +96,11 @@ class CoverageScript:
             '-x': 'execute',
             '-o:': 'omit=',
             }
+        # Long options with no short equivalent.
+        long_only_opts = ['timid']
+        
         short_opts = ''.join([o[1:] for o in optmap.keys()])
-        long_opts = optmap.values()
+        long_opts = optmap.values() + long_only_opts
         options, args = getopt.getopt(argv, short_opts, long_opts)
         for o, a in options:
             if optmap.has_key(o):
@@ -139,7 +143,8 @@ class CoverageScript:
         # Do something.
         self.coverage = self.covpkg.coverage(
             data_suffix = bool(settings.get('parallel-mode')),
-            cover_pylib = settings.get('pylib')
+            cover_pylib = settings.get('pylib'),
+            timid = settings.get('timid'),
             )
 
         if settings.get('erase'):
