@@ -2,6 +2,12 @@
 Change history for Coverage.py
 ------------------------------
 
+Next version
+------------
+
+- Added the --timid option to enable a simpler slower trace function that works
+  for DecoratorTools (including TurboGears) projects.
+
 
 Version 3.0.1, 7 July 2009
 --------------------------
