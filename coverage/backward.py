@@ -10,7 +10,6 @@ import os, sys
 try:
     set = set       # new in 2.4
 except NameError:
-    # (Redefining built-in 'set')
     from sets import Set as set
 
 
