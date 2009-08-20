@@ -1,4 +1,4 @@
-"""Tests for coverage.template."""
+"""Tests for coverage.templite."""
 
 from coverage.templite import Templite
 import unittest
