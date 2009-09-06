@@ -111,7 +111,7 @@ class CoverageData:
         # Write the pickle to the file.
         fdata = open(filename, 'wb')
         try:
-            pickle.dump(data, fdata)
+            pickle.dump(data, fdata, 2)
         finally:
             fdata.close()
 
