@@ -3,6 +3,7 @@
 # Started from http://blog.ianbicking.org/templating-via-dict-wrappers.html
 # and http://jtauber.com/2006/05/templates.html
 # and http://code.activestate.com/recipes/496730/
+# Coincidentally named the same as http://code.activestate.com/recipes/496702/
 
 import re
 
@@ -68,7 +69,7 @@ class Templite(object):
         # Protect actual percent signs in the text.
         text = text.replace("%", "%%")
         # Convert {{foo}} into %(foo)s
-        text = re.sub(r"{{([^}]+)}}", r"%(\1)s", text)
+        text = re.sub(r"{{(.+?)}}", r"%(\1)s", text)
         return text
 
     def _loop_prepare(self, match):
