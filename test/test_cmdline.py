@@ -10,57 +10,77 @@ class CmdLineParserTest(CoverageTest):
 
     def help_fn(self, error=None):
         """A mock help_fn to capture the error messages for tests."""
-        raise Exception(error or "__doc__")
+        self.help_out = error or "*usage*"
 
-    def command_line(self, argv):
-        """Run a Coverage command line, with `argv` as arguments."""
-        return coverage.CoverageScript().command_line(argv, self.help_fn)
+    def command_line(self, args, ret=0, help_out=""):
+        """Run a Coverage command line, with `args` as arguments.
+        
+        The return code must be `ret`, and the help messages written must be
+        `help_out`.
+        
+        """
+        self.help_out = ""
+        argv = shlex.split(args)
+        ret_code = coverage.CoverageScript().command_line(argv, self.help_fn)
+        self.assertEqual(ret_code, ret)
+        self.assertEqual(self.help_out, help_out)
 
     def testHelp(self):
-        self.assertRaisesMsg(Exception, "__doc__", self.command_line, ['-h'])
-        self.assertRaisesMsg(Exception, "__doc__", self.command_line,
-            ['--help'])
+        self.command_line('-h', help_out="*usage*")
+        self.command_line('--help', help_out="*usage*")
 
     def testUnknownOption(self):
+        # TODO: command_line shouldn't throw this exception, it should be in
+        # the help_fn.
         self.assertRaisesMsg(Exception, "option -z not recognized",
-            self.command_line, ['-z'])
+            self.command_line, '-z')
 
     def testBadActionCombinations(self):
-        self.assertRaisesMsg(Exception,
-            "You can't specify the 'erase' and 'annotate' "
-            "options at the same time.", self.command_line, ['-e', '-a'])
-        self.assertRaisesMsg(Exception,
-            "You can't specify the 'erase' and 'report' "
-            "options at the same time.", self.command_line, ['-e', '-r'])
-        self.assertRaisesMsg(Exception,
-            "You can't specify the 'erase' and 'html' "
-            "options at the same time.", self.command_line, ['-e', '-b'])
-        self.assertRaisesMsg(Exception,
-            "You can't specify the 'erase' and 'combine' "
-            "options at the same time.", self.command_line, ['-e', '-c'])
-        self.assertRaisesMsg(Exception,
-            "You can't specify the 'execute' and 'annotate' "
-            "options at the same time.", self.command_line, ['-x', '-a'])
-        self.assertRaisesMsg(Exception,
-            "You can't specify the 'execute' and 'report' "
-            "options at the same time.", self.command_line, ['-x', '-r'])
-        self.assertRaisesMsg(Exception,
-            "You can't specify the 'execute' and 'html' "
-            "options at the same time.", self.command_line, ['-x', '-b'])
-        self.assertRaisesMsg(Exception,
-            "You can't specify the 'execute' and 'combine' "
-            "options at the same time.", self.command_line, ['-x', '-c'])
+        self.command_line('-e -a', ret=1,
+            help_out="You can't specify the 'erase' and 'annotate' "
+                "options at the same time."
+            )
+        self.command_line('-e -r', ret=1,
+            help_out="You can't specify the 'erase' and 'report' "
+                "options at the same time."
+            )
+        self.command_line('-e -b', ret=1,
+            help_out="You can't specify the 'erase' and 'html' "
+                "options at the same time."
+            )
+        self.command_line('-e -c', ret=1,
+            help_out="You can't specify the 'erase' and 'combine' "
+                "options at the same time."
+            )
+        self.command_line('-x -a', ret=1,
+            help_out="You can't specify the 'execute' and 'annotate' "
+                "options at the same time."
+            )
+        self.command_line('-x -r', ret=1,
+            help_out="You can't specify the 'execute' and 'report' "
+                "options at the same time."
+            )
+        self.command_line('-x -b', ret=1,
+            help_out="You can't specify the 'execute' and 'html' "
+                "options at the same time."
+            )
+        self.command_line('-x -c', ret=1,
+            help_out="You can't specify the 'execute' and 'combine' "
+                "options at the same time."
+            )
 
     def testNeedAction(self):
-        self.assertRaisesMsg(Exception,
-            "You must specify at least one of -e, -x, -c, -r, -a, or -b.",
-            self.command_line, ['-p'])
+        self.command_line('-p', ret=1,
+            help_out="You must specify at least one of -e, -x, -c, -r, -a, or -b."
+            )
 
     def testArglessActions(self):
-        self.assertRaisesMsg(Exception, "Unexpected arguments: foo bar",
-            self.command_line, ['-e', 'foo', 'bar'])
-        self.assertRaisesMsg(Exception, "Unexpected arguments: baz quux",
-            self.command_line, ['-c', 'baz', 'quux'])
+        self.command_line('-e foo bar', ret=1,
+            help_out="Unexpected arguments: foo bar"
+            )
+        self.command_line('-c baz quux', ret=1,
+            help_out="Unexpected arguments: baz quux"
+            )
 
 
 class CmdLineActionTest(CoverageTest):
