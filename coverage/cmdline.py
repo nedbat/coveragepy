@@ -57,9 +57,17 @@ COVERAGE_FILE environment variable to save it somewhere else.
 class CoverageScript:
     """The command-line interface to Coverage."""
     
-    def __init__(self):
-        import coverage
-        self.covpkg = coverage
+    def __init__(self, _covpkg=None, _run_python_file=None):
+        # _covpkg is for dependency injection, so we can test this code.
+        if _covpkg:
+            self.covpkg = _covpkg
+        else:
+            import coverage
+            self.covpkg = coverage
+        
+        # _run_python_file is for dependency injection also.
+        self.run_python_file = _run_python_file or run_python_file
+        
         self.coverage = None
 
     def help(self, error=None):
@@ -160,7 +168,7 @@ class CoverageScript:
             # Run the script.
             self.coverage.start()
             try:
-                run_python_file(args[0], args)
+                self.run_python_file(args[0], args)
             finally:
                 self.coverage.stop()
                 self.coverage.save()

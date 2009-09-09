@@ -1,13 +1,11 @@
 """Test cmdline.py for coverage."""
 
-import unittest
-
+import re, shlex, textwrap, unittest
 import coverage
-
 from coveragetest import CoverageTest
 
 
-class CmdLineTest(CoverageTest):
+class CmdLineParserTest(CoverageTest):
     """Tests of command-line processing for Coverage."""
 
     def help_fn(self, error=None):
@@ -63,6 +61,51 @@ class CmdLineTest(CoverageTest):
             self.command_line, ['-e', 'foo', 'bar'])
         self.assertRaisesMsg(Exception, "Unexpected arguments: baz quux",
             self.command_line, ['-c', 'baz', 'quux'])
+
+
+class CmdLineActionTest(CoverageTest):
+    """Tests of execution paths through the command line interpreter."""
+    
+    def model_object(self):
+        """Return a Mock suitable for use in CoverageScript."""
+        import mock
+        mk = mock.Mock()
+        mk.coverage.return_value = mk
+        return mk
+        
+    def cmd_executes(self, args, code):
+        """Assert that the `args` end up executing the sequence in `code`."""
+        argv = shlex.split(args)
+        m1 = self.model_object()
+        
+        coverage.CoverageScript(
+            _covpkg=m1, _run_python_file=m1.run_python_file
+            ).command_line(argv)
+
+        code = textwrap.dedent(code)
+        code = re.sub(r"(?m)^\.", "m2.", code)
+        m2 = self.model_object()
+        code_obj = compile(code, "<code>", "exec")
+        eval(code_obj, globals(), { 'm2': m2 })
+        self.assertEqual(m1.method_calls, m2.method_calls)
+        
+    def testExecution(self):
+        self.cmd_executes("-x foo.py", """\
+            .coverage(cover_pylib=None, data_suffix=False, timid=None)
+            .load()
+            .start()
+            .run_python_file('foo.py', ['foo.py'])
+            .stop()
+            .save()
+            """)
+        self.cmd_executes("-e -x foo.py", """\
+            .coverage(cover_pylib=None, data_suffix=False, timid=None)
+            .erase()
+            .start()
+            .run_python_file('foo.py', ['foo.py'])
+            .stop()
+            .save()
+            """)
 
 
 if __name__ == '__main__':
