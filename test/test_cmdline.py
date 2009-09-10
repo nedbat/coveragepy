@@ -9,6 +9,10 @@ from coveragetest import CoverageTest
 class CmdLineParserTest(CoverageTest):
     """Tests of command-line processing for Coverage."""
 
+    def setUp(self):
+        super(CmdLineParserTest, self).setUp()
+        self.help_out = None
+
     def help_fn(self, error=None):
         """A mock help_fn to capture the error messages for tests."""
         self.help_out = error or "*usage*"
@@ -72,7 +76,8 @@ class CmdLineParserTest(CoverageTest):
 
     def testNeedAction(self):
         self.command_line('-p', ret=1,
-            help_out="You must specify at least one of -e, -x, -c, -r, -a, or -b."
+            help_out="You must specify at least one of "
+                                                "-e, -x, -c, -r, -a, or -b."
             )
 
     def testArglessActions(self):
