@@ -156,12 +156,12 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 + Switch to a real test runner, like nose.
 + Test both the C trace function and the Python trace function.
 - Tests about the .coverage file.
-- Tests about the --long-form of arguments.
++ Tests about the --long-form of arguments.
 + Tests about overriding the .coverage filename.
 - Tests about parallel mode.
 + Tests about assigning a multi-line string.
 - Tests about tricky docstrings.
-- Coverage test Coverage!
++ Coverage test Coverage!
 - Tests that tracing stops after calling stop()
 - More intensive thread testing.
 x Tests about the "import __main__" in cmdline.py
