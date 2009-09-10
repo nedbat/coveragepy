@@ -13,7 +13,7 @@ Usage:
 coverage -x [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]
     Execute the module, passing the given command-line arguments, collecting
     coverage data.  With the -p option, include the machine name and process
-    ID in the .coverage file name.  With -L, measure coverage even inside the
+    id in the .coverage file name.  With -L, measure coverage even inside the
     Python installed library, which isn't done by default.  With --timid, use a
     simpler but slower trace method.
 
