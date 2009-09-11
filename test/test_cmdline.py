@@ -35,10 +35,9 @@ class CmdLineParserTest(CoverageTest):
         self.command_line('--help', help_out="*usage*")
 
     def testUnknownOption(self):
-        # TODO: command_line shouldn't throw this exception, it should be in
-        # the help_fn.
-        self.assertRaisesMsg(Exception, "option -z not recognized",
-            self.command_line, '-z')
+        self.command_line('-z', ret=1,
+            help_out="no such option: -z"
+            )
 
     def testBadActionCombinations(self):
         self.command_line('-e -a', ret=1,

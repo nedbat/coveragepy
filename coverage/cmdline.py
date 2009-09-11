@@ -1,6 +1,6 @@
 """Command-line support for Coverage."""
 
-import getopt, sys
+import optparse, sys
 
 from coverage.execfile import run_python_file
 
@@ -54,6 +54,101 @@ COVERAGE_FILE environment variable to save it somewhere else.
 """.strip()
 
 
+class OptionParser(optparse.OptionParser, object):
+    """Command-line parser for this coverage.py."""
+
+    def __init__(self, help_fn, *args, **kwargs):
+        super(OptionParser, self).__init__(
+            add_help_option=False,
+            *args, **kwargs)
+        self.help_fn = help_fn
+        
+        self.set_defaults(actions=[])
+        self.disable_interspersed_args()
+        
+        self.add_option(
+            '-a', '--annotate',
+            action='callback', callback=self.append_action, callback_args=('annotate',),
+            )
+        self.add_option(
+            '-b', '--html',
+            action='callback', callback=self.append_action, callback_args=('html',),
+            )
+        self.add_option(
+            '-c', '--combine',
+            action='callback', callback=self.append_action, callback_args=('combine',),
+            )
+        self.add_option(
+            '-d', '--directory',
+            action='store', dest='directory',
+            )
+        self.add_option(
+            '-e', '--erase',
+            action='callback', callback=self.append_action, callback_args=('erase',),
+            )
+        self.add_option(
+            '-h', '--help',
+            action='store_true', dest='help',
+            )
+        self.add_option(
+            '-i', '--ignore-errors',
+            action='store_true',
+            )
+        self.add_option(
+            '-L', '--pylib',
+            action='store_true',
+            )
+        self.add_option(
+            '-m', '--show-missing',
+            action='store_true',
+            )
+        self.add_option(
+            '-p', '--parallel-mode',
+            action='store_true',
+            )
+        self.add_option(
+            '-r', '--report',
+            action='callback', callback=self.append_action, callback_args=('report',),
+            )
+        self.add_option(
+            '-x', '--execute',
+            action='callback', callback=self.append_action, callback_args=('execute',),
+            )
+        self.add_option(
+            '-o', '--omit',
+            action='store',
+            )
+        self.add_option(
+            '', '--timid',
+            action='store_true',
+            )
+
+    def append_action(self, option_unused, opt_unused, value_unused, parser, arg1):
+        """Callback for an option that adds to the `actions` list."""
+        parser.values.actions.append(arg1)
+
+    class OptionParserError(Exception):
+        """Used to stop the optparse error handler ending the process."""
+        pass
+    
+    def parse_args(self, args=None, options=None):
+        """Call optparse.parse_args, but return a triple:
+        
+        (ok, options, args)
+        
+        """
+        try:
+            options, args = super(OptionParser, self).parse_args(args, options)
+        except self.OptionParserError:
+            return False, None, None
+        return True, options, args
+        
+    def error(self, msg):
+        """Override optparse.error so sys.exit doesn't get called."""
+        self.help_fn(msg)
+        raise self.OptionParserError
+
+
 class CoverageScript:
     """The command-line interface to Coverage."""
     
@@ -88,58 +183,31 @@ class CoverageScript:
         # Collect the command-line options.
         help_fn = help_fn or self.help
         OK, ERR = 0, 1
-        settings = {}
-        optmap = {
-            '-a': 'annotate',
-            '-b': 'html',
-            '-c': 'combine',
-            '-d:': 'directory=',
-            '-e': 'erase',
-            '-h': 'help',
-            '-i': 'ignore-errors',
-            '-L': 'pylib',
-            '-m': 'show-missing',
-            '-p': 'parallel-mode',
-            '-r': 'report',
-            '-x': 'execute',
-            '-o:': 'omit=',
-            }
-        # Long options with no short equivalent.
-        long_only_opts = ['timid']
         
-        short_opts = ''.join([o[1:] for o in optmap.keys()])
-        long_opts = optmap.values() + long_only_opts
-        options, args = getopt.getopt(argv, short_opts, long_opts)
-        for o, a in options:
-            if optmap.has_key(o):
-                settings[optmap[o]] = True
-            elif optmap.has_key(o + ':'):
-                settings[optmap[o + ':']] = a
-            elif o[2:] in long_opts:
-                settings[o[2:]] = True
-            elif o[2:] + '=' in long_opts:
-                settings[o[2:]+'='] = a
+        parser = OptionParser(help_fn)
+        ok, options, args = parser.parse_args(argv)
+        if not ok:
+            return ERR
 
-        if settings.get('help'):
+        if options.help:
             help_fn()
             return OK
 
         # Check for conflicts and problems in the options.
         for i in ['erase', 'execute']:
             for j in ['annotate', 'html', 'report', 'combine']:
-                if settings.get(i) and settings.get(j):
+                if (i in options.actions) and (j in options.actions):
                     help_fn("You can't specify the '%s' and '%s' "
                               "options at the same time." % (i, j))
                     return ERR
 
-        args_needed = (settings.get('execute')
-                       or settings.get('annotate')
-                       or settings.get('html')
-                       or settings.get('report'))
-        action = (settings.get('erase') 
-                  or settings.get('combine')
-                  or args_needed)
-        if not action:
+        args_needed = (
+            'execute' in options.actions or
+            'annotate' in options.actions or
+            'html' in options.actions or
+            'report' in options.actions
+            )
+        if not options.actions:
             help_fn(
                 "You must specify at least one of -e, -x, -c, -r, -a, or -b."
                 )
@@ -150,17 +218,17 @@ class CoverageScript:
         
         # Do something.
         self.coverage = self.covpkg.coverage(
-            data_suffix = bool(settings.get('parallel-mode')),
-            cover_pylib = settings.get('pylib'),
-            timid = settings.get('timid'),
+            data_suffix = bool(options.parallel_mode),
+            cover_pylib = options.pylib,
+            timid = options.timid,
             )
 
-        if settings.get('erase'):
+        if 'erase' in options.actions:
             self.coverage.erase()
         else:
             self.coverage.load()
 
-        if settings.get('execute'):
+        if 'execute' in options.actions:
             if not args:
                 help_fn("Nothing to do.")
                 return ERR
@@ -173,29 +241,30 @@ class CoverageScript:
                 self.coverage.stop()
                 self.coverage.save()
 
-        if settings.get('combine'):
+        if 'combine' in options.actions:
             self.coverage.combine()
             self.coverage.save()
 
         # Remaining actions are reporting, with some common options.
-        show_missing = settings.get('show-missing')
-        directory = settings.get('directory=')
         report_args = {
             'morfs': args,
-            'ignore_errors': settings.get('ignore-errors'),
+            'ignore_errors': options.ignore_errors,
             }
 
-        omit = settings.get('omit=')
-        if omit:
-            omit = omit.split(',')
+        omit = None
+        if options.omit:
+            omit = options.omit.split(',')
         report_args['omit_prefixes'] = omit
         
-        if settings.get('report'):
-            self.coverage.report(show_missing=show_missing, **report_args)
-        if settings.get('annotate'):
-            self.coverage.annotate(directory=directory, **report_args)
-        if settings.get('html'):
-            self.coverage.html_report(directory=directory, **report_args)
+        if 'report' in options.actions:
+            self.coverage.report(
+                show_missing=options.show_missing, **report_args)
+        if 'annotate' in options.actions:
+            self.coverage.annotate(
+                directory=options.directory, **report_args)
+        if 'html' in options.actions:
+            self.coverage.html_report(
+                directory=options.directory, **report_args)
 
         return OK
     
