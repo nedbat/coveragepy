@@ -6,104 +6,9 @@ import coverage
 from coveragetest import CoverageTest
 
 
-class CmdLineParserTest(CoverageTest):
-    """Tests of command-line processing for Coverage."""
+OK, ERR = 0, 1
 
-    def setUp(self):
-        super(CmdLineParserTest, self).setUp()
-        self.help_out = None
-
-    def help_fn(self, error=None, topic=None):
-        """A mock help_fn to capture the error messages for tests."""
-        assert error or topic
-        self.help_out = error or ("topic:"+topic)
-
-    def command_line(self, args, ret=0, help_out=""):
-        """Run a Coverage command line, with `args` as arguments.
-        
-        The return code must be `ret`, and the help messages written must be
-        `help_out`.
-        
-        """
-        self.help_out = ""
-        argv = shlex.split(args)
-        script = coverage.CoverageScript(_help_fn=self.help_fn)
-        ret_code = script.command_line(argv)
-        self.assertEqual(ret_code, ret)
-        self.assertEqual(self.help_out, help_out)
-
-
-class ClassicCmdLineParserTest(CmdLineParserTest):
-    
-    def testNoArgumentsAtAll(self):
-        self.command_line('',
-            help_out="Code coverage for Python.  Use -h for help."
-            )
-
-    def testHelp(self):
-        self.command_line('-h', help_out="topic:usage")
-        self.command_line('--help', help_out="topic:usage")
-
-    def testUnknownOption(self):
-        self.command_line('-z', ret=1,
-            help_out="no such option: -z"
-            )
-
-    def testBadActionCombinations(self):
-        self.command_line('-e -a', ret=1,
-            help_out="You can't specify the 'erase' and 'annotate' "
-                "options at the same time."
-            )
-        self.command_line('-e -r', ret=1,
-            help_out="You can't specify the 'erase' and 'report' "
-                "options at the same time."
-            )
-        self.command_line('-e -b', ret=1,
-            help_out="You can't specify the 'erase' and 'html' "
-                "options at the same time."
-            )
-        self.command_line('-e -c', ret=1,
-            help_out="You can't specify the 'erase' and 'combine' "
-                "options at the same time."
-            )
-        self.command_line('-x -a', ret=1,
-            help_out="You can't specify the 'execute' and 'annotate' "
-                "options at the same time."
-            )
-        self.command_line('-x -r', ret=1,
-            help_out="You can't specify the 'execute' and 'report' "
-                "options at the same time."
-            )
-        self.command_line('-x -b', ret=1,
-            help_out="You can't specify the 'execute' and 'html' "
-                "options at the same time."
-            )
-        self.command_line('-x -c', ret=1,
-            help_out="You can't specify the 'execute' and 'combine' "
-                "options at the same time."
-            )
-
-    def testNeedAction(self):
-        self.command_line('-p', ret=1,
-            help_out="You must specify at least one of "
-                                                "-e, -x, -c, -r, -a, or -b."
-            )
-
-    def testArglessActions(self):
-        self.command_line('-e foo bar', ret=1,
-            help_out="Unexpected arguments: foo bar"
-            )
-        self.command_line('-c baz quux', ret=1,
-            help_out="Unexpected arguments: baz quux"
-            )
-
-    def testNothingToDo(self):
-        self.command_line('-x', ret=1,
-            help_out="Nothing to do."
-            )
-
-
-class CmdLineActionTest(CoverageTest):
+class CmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
     
     def model_object(self):
@@ -112,20 +17,24 @@ class CmdLineActionTest(CoverageTest):
         mk.coverage.return_value = mk
         return mk
 
-    def run_command_line(self, args, ret):
-        """Run `args` through command_line, returning the Mock it used."""
+    def run_command_line(self, args):
+        """Run `args` through command_line.
+        
+        Returns the Mock it used and the status code returned.
+        
+        """
         m = self.model_object()
-        ret_actual = coverage.CoverageScript(
+        ret = coverage.CoverageScript(
             _covpkg=m, _run_python_file=m.run_python_file, _help_fn=m.help_fn
             ).command_line(shlex.split(args))
-        self.assertEqual(ret_actual, ret,
-                "Wrong status: got %s, wanted %s" % (ret_actual, ret)
-                )
-        return m
+        return m, ret
     
-    def cmd_executes(self, args, code, ret=0):
+    def cmd_executes(self, args, code, ret=OK):
         """Assert that the `args` end up executing the sequence in `code`."""
-        m1 = self.run_command_line(args, ret)
+        m1, r1 = self.run_command_line(args)
+        self.assertEqual(r1, ret,
+                "Wrong status: got %s, wanted %s" % (r1, ret)
+                )
 
         code = textwrap.dedent(code)
         code = re.sub(r"(?m)^\.", "m2.", code)
@@ -136,19 +45,28 @@ class CmdLineActionTest(CoverageTest):
         
     def cmd_executes_same(self, args1, args2):
         """Assert that the `args1` executes the same as `args2`."""
-        m1 = self.run_command_line(args1, ret=0)
-        m2 = self.run_command_line(args2, ret=0)
+        m1, r1 = self.run_command_line(args1)
+        m2, r2 = self.run_command_line(args2)
+        self.assertEqual(r1, r2)
         self.assertEqual(m1.method_calls, m2.method_calls)
 
-    def cmd_help(self, args, help):
+    def cmd_help(self, args, help_msg=None, topic=None, ret=ERR):
         """Run a command line, and check that it prints the right help."""
-        m = self.run_command_line(args, ret=1)
-        self.assertEqual(m.method_calls,
-            [('help_fn', (help,), {})]
-            )
+        m, r = self.run_command_line(args)
+        self.assertEqual(r, ret,
+                "Wrong status: got %s, wanted %s" % (r, ret)
+                )
+        if help_msg:
+            self.assertEqual(m.method_calls,
+                [('help_fn', (help_msg,), {})]
+                )
+        else:
+            self.assertEqual(m.method_calls,
+                [('help_fn', (), {'topic':topic})]
+                )
+            
 
-
-class ClassicCmdLineActionTest(CmdLineActionTest):
+class ClassicCmdLineTest(CmdLineTest):
     """Tests of the classic coverage.py command line."""
 
     def testErase(self):
@@ -348,9 +266,78 @@ class ClassicCmdLineActionTest(CmdLineActionTest):
         self.cmd_executes_same("-b -of", "-b --omit=f")
         self.cmd_executes_same("-b -of,b", "-b --omit=f,b")
 
+    def testHelp(self):
+        # coverage -h
+        self.cmd_help("-h", topic="usage", ret=OK)
+        self.cmd_help("--help", topic="usage", ret=OK)
 
-class NewCmdLineActionTest(CmdLineActionTest):
+    ## Error cases
+    
+    def testArglessActions(self):
+        self.cmd_help("-e foo bar", "Unexpected arguments: foo bar")
+        self.cmd_help("-c baz quux", "Unexpected arguments: baz quux")
+
+    def testNeedAction(self):
+        self.cmd_help("-p", "You must specify at least one of "
+                                                "-e, -x, -c, -r, -a, or -b.")
+
+    def testBadActionCombinations(self):
+        self.cmd_help('-e -a',
+            "You can't specify the 'erase' and 'annotate' "
+                "options at the same time."
+            )
+        self.cmd_help('-e -r',
+            "You can't specify the 'erase' and 'report' "
+                "options at the same time."
+            )
+        self.cmd_help('-e -b',
+            "You can't specify the 'erase' and 'html' "
+                "options at the same time."
+            )
+        self.cmd_help('-e -c',
+            "You can't specify the 'erase' and 'combine' "
+                "options at the same time."
+            )
+        self.cmd_help('-x -a',
+            "You can't specify the 'execute' and 'annotate' "
+                "options at the same time."
+            )
+        self.cmd_help('-x -r',
+            "You can't specify the 'execute' and 'report' "
+                "options at the same time."
+            )
+        self.cmd_help('-x -b',
+            "You can't specify the 'execute' and 'html' "
+                "options at the same time."
+            )
+        self.cmd_help('-x -c',
+            "You can't specify the 'execute' and 'combine' "
+                "options at the same time."
+            )
+
+    def testNothingToDo(self):
+        self.cmd_help("-x", "Nothing to do.")
+
+    def testUnknownOption(self):
+        self.cmd_help("-z", "no such option: -z")
+
+
+class NewCmdLineTest(CmdLineTest):
     """Tests of the coverage.py command line."""
+
+    def testRun(self):
+        self.cmd_executes_same("run f.py", "-e -x f.py")
+        self.cmd_executes_same("run f.py -a -z a1 a2", "-e -x f.py -a -z a1 a2")
+        self.cmd_executes_same("run -a f.py", "-x f.py")
+        self.cmd_executes_same("run -p f.py", "-e -x -p f.py")
+        self.cmd_executes_same("run -L f.py", "-e -x -L f.py")
+        self.cmd_executes_same("run --timid f.py", "-e -x --timid f.py")
+        self.cmd_executes_same("run", "-x")
+        
+    def testNoArgumentsAtAll(self):
+        self.cmd_help("",
+            "Code coverage for Python.  Use -h for help.", ret=OK
+            )
 
     def testBadCommand(self):
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")

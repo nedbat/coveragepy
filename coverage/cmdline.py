@@ -5,7 +5,9 @@ import optparse, sys
 from coverage.execfile import run_python_file
 
 
-class opts:
+class Opts:
+    """A namespace class for individual options we'll build parsers from."""
+    
     directory = optparse.Option(
         '-d', '--directory', action='store', dest='directory',
         )
@@ -17,7 +19,8 @@ class opts:
         )
     pylib = optparse.Option(
         '-L', '--pylib', action='store_true',
-        help="Measure coverage even inside the Python installed library, which isn't done by default."
+        help="Measure coverage even inside the Python installed library, "
+                "which isn't done by default."
         )
     show_missing = optparse.Option(
         '-m', '--show-missing', action='store_true',
@@ -27,13 +30,19 @@ class opts:
         )
     parallel_mode = optparse.Option(
         '-p', '--parallel-mode', action='store_true',
-        help="Include the machine name and process id in the .coverage data file name."
+        help="Include the machine name and process id in the .coverage "
+                "data file name."
         )
     timid = optparse.Option(
         '', '--timid', action='store_true',
-        help="Use a simpler but slower trace method.  Use this if you get seemingly impossible results!"
+        help="Use a simpler but slower trace method.  Use this if you get "
+                "seemingly impossible results!"
         )
-
+    append = optparse.Option(
+        '-a', '--append', action='store_false', dest="erase_first",
+        help="Append coverage data to .coverage, otherwise it is started "
+                "clean with each run."
+        )
     
 class CoverageOptionParser(optparse.OptionParser, object):
     """Base OptionParser for coverage.
@@ -57,10 +66,11 @@ class CoverageOptionParser(optparse.OptionParser, object):
             pylib=None,
             show_missing=None,
             timid=None,
+            erase_first=None,
             )
 
         self.disable_interspersed_args()
-        self.help_fn = None
+        self.help_fn = lambda: None
 
     class OptionParserError(Exception):
         """Used to stop the optparse error handler ending the process."""
@@ -73,7 +83,8 @@ class CoverageOptionParser(optparse.OptionParser, object):
         
         """
         try:
-            options, args = super(CoverageOptionParser, self).parse_args(args, options)
+            options, args = \
+                super(CoverageOptionParser, self).parse_args(args, options)
         except self.OptionParserError:
             return False, None, None
         return True, options, args
@@ -98,14 +109,14 @@ class ClassicOptionParser(CoverageOptionParser):
         self.add_action('-x', '--execute', 'execute')
 
         self.add_options([
-            opts.directory,
-            opts.help,
-            opts.ignore_errors,
-            opts.pylib,
-            opts.show_missing,
-            opts.omit,
-            opts.parallel_mode,
-            opts.timid,
+            Opts.directory,
+            Opts.help,
+            Opts.ignore_errors,
+            Opts.pylib,
+            Opts.show_missing,
+            Opts.omit,
+            Opts.parallel_mode,
+            Opts.timid,
         ])
 
     def add_action(self, dash, dashdash, action_code):
@@ -123,26 +134,24 @@ class ClassicOptionParser(CoverageOptionParser):
 class NewOptionParser(CoverageOptionParser):
     """Parse one of the new-style commands for coverage.py."""
     
-    def __init__(self, action):
+    def __init__(self, action, options, defaults={}):
         super(NewOptionParser, self).__init__(
             usage="coverage %s [blah]" % action
         )
-        self.set_defaults(actions=[action])
-
-
-class RunOptionParser(NewOptionParser):
-    def __init__(self):
-        super(RunOptionParser, self).__init__("execute")
-        self.add_options([
-            opts.pylib,
-            opts.parallel_mode,
-            opts.timid,
-        ])
-
+        self.set_defaults(actions=[action], **defaults)
+        self.add_options(options)
 
 CMDS = {
-    'run': RunOptionParser(),
-}
+    'run': NewOptionParser("execute",
+        [
+            Opts.append,
+            Opts.pylib,
+            Opts.parallel_mode,
+            Opts.timid
+            ],
+        defaults={'erase_first':True}
+        ),
+    }
 
 
 class CoverageScript:
@@ -233,6 +242,10 @@ class CoverageScript:
             self.help_fn("Unexpected arguments: %s" % " ".join(args))
             return ERR
         
+        if 'execute' in options.actions and not args:
+            self.help_fn("Nothing to do.")
+            return ERR
+            
         # Do something.
         self.coverage = self.covpkg.coverage(
             data_suffix = bool(options.parallel_mode),
@@ -240,16 +253,12 @@ class CoverageScript:
             timid = options.timid,
             )
 
-        if 'erase' in options.actions:
+        if 'erase' in options.actions or options.erase_first:
             self.coverage.erase()
         else:
             self.coverage.load()
 
         if 'execute' in options.actions:
-            if not args:
-                self.help_fn("Nothing to do.")
-                return ERR
-            
             # Run the script.
             self.coverage.start()
             try:
