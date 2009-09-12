@@ -55,43 +55,14 @@ COVERAGE_FILE environment variable to save it somewhere else.
 
 
 class OptionParser(optparse.OptionParser, object):
-    """Command-line parser for coverage.py."""
+    """A better OptionParser: Problems don't exit the program."""
 
     def __init__(self, help_fn, *args, **kwargs):
         super(OptionParser, self).__init__(
             add_help_option=False, *args, **kwargs
             )
-        
-        self.set_defaults(actions=[])
         self.disable_interspersed_args()
-
         self.help_fn = help_fn
-        
-        self.add_action('-a', '--annotate', 'annotate')
-        self.add_action('-b', '--html', 'html')
-        self.add_action('-c', '--combine', 'combine')
-        self.add_option('-d', '--directory', action='store', dest='directory')
-        self.add_action('-e', '--erase', 'erase')
-        self.add_option('-h', '--help', action='store_true', dest='help')
-        self.add_option('-i', '--ignore-errors', action='store_true')
-        self.add_option('-L', '--pylib', action='store_true')
-        self.add_option('-m', '--show-missing', action='store_true')
-        self.add_option('-p', '--parallel-mode', action='store_true')
-        self.add_action('-r', '--report', 'report')
-        self.add_action('-x', '--execute', 'execute')
-        self.add_option('-o', '--omit', action='store')
-        self.add_option('', '--timid', action='store_true')
-
-    def add_action(self, dash, dashdash, action):
-        """Add a specialized option that is the action to execute."""
-        option = self.add_option(dash, dashdash, action='callback',
-            callback=self.append_action
-            )
-        option.action_code = action
-        
-    def append_action(self, option, opt_unused, value_unused, parser):
-        """Callback for an option that adds to the `actions` list."""
-        parser.values.actions.append(option.action_code)
 
     class OptionParserError(Exception):
         """Used to stop the optparse error handler ending the process."""
@@ -115,10 +86,47 @@ class OptionParser(optparse.OptionParser, object):
         raise self.OptionParserError
 
 
+class ClassicOptionParser(OptionParser):
+    """Command-line parser for coverage.py classic arguments."""
+
+    def __init__(self, help_fn, *args, **kwargs):
+        super(ClassicOptionParser, self).__init__(help_fn, *args, **kwargs)
+        
+        self.set_defaults(actions=[])
+
+        self.help_fn = help_fn
+        
+        self.add_action('-a', '--annotate', 'annotate')
+        self.add_action('-b', '--html', 'html')
+        self.add_action('-c', '--combine', 'combine')
+        self.add_option('-d', '--directory', action='store', dest='directory')
+        self.add_action('-e', '--erase', 'erase')
+        self.add_option('-h', '--help', action='store_true', dest='help')
+        self.add_option('-i', '--ignore-errors', action='store_true')
+        self.add_option('-L', '--pylib', action='store_true')
+        self.add_option('-m', '--show-missing', action='store_true')
+        self.add_option('-p', '--parallel-mode', action='store_true')
+        self.add_action('-r', '--report', 'report')
+        self.add_action('-x', '--execute', 'execute')
+        self.add_option('-o', '--omit', action='store')
+        self.add_option('', '--timid', action='store_true')
+
+    def add_action(self, dash, dashdash, action):
+        """Add a specialized option that is the action to execute."""
+        option = self.add_option(dash, dashdash, action='callback',
+            callback=self._append_action
+            )
+        option.action_code = action
+        
+    def _append_action(self, option, opt_unused, value_unused, parser):
+        """Callback for an option that adds to the `actions` list."""
+        parser.values.actions.append(option.action_code)
+
+
 class CoverageScript:
     """The command-line interface to Coverage."""
     
-    def __init__(self, _covpkg=None, _run_python_file=None):
+    def __init__(self, _covpkg=None, _run_python_file=None, _help_fn=None):
         # _covpkg is for dependency injection, so we can test this code.
         if _covpkg:
             self.covpkg = _covpkg
@@ -128,6 +136,9 @@ class CoverageScript:
         
         # _run_python_file is for dependency injection also.
         self.run_python_file = _run_python_file or run_python_file
+        
+        # _help_fn is for dependency injection.
+        self.help_fn = _help_fn or self.help
         
         self.coverage = None
 
@@ -139,47 +150,45 @@ class CoverageScript:
         else:
             print USAGE % self.covpkg.__dict__
 
-    def command_line(self, argv, help_fn=None):
+    def command_line(self, argv):
         """The bulk of the command line interface to Coverage.
         
         `argv` is the argument list to process.
-        `help_fn` is the help function to use when something goes wrong.
         
         """
         # Collect the command-line options.
-        help_fn = help_fn or self.help
         OK, ERR = 0, 1
         
-        parser = OptionParser(help_fn)
+        parser = ClassicOptionParser(self.help_fn)
         ok, options, args = parser.parse_args(argv)
         if not ok:
             return ERR
 
         if options.help:
-            help_fn()
+            self.help_fn()
             return OK
 
         # Check for conflicts and problems in the options.
         for i in ['erase', 'execute']:
             for j in ['annotate', 'html', 'report', 'combine']:
                 if (i in options.actions) and (j in options.actions):
-                    help_fn("You can't specify the '%s' and '%s' "
+                    self.help_fn("You can't specify the '%s' and '%s' "
                               "options at the same time." % (i, j))
                     return ERR
 
+        if not options.actions:
+            self.help_fn(
+                "You must specify at least one of -e, -x, -c, -r, -a, or -b."
+                )
+            return ERR
         args_needed = (
             'execute' in options.actions or
             'annotate' in options.actions or
             'html' in options.actions or
             'report' in options.actions
             )
-        if not options.actions:
-            help_fn(
-                "You must specify at least one of -e, -x, -c, -r, -a, or -b."
-                )
-            return ERR
         if not args_needed and args:
-            help_fn("Unexpected arguments: %s" % " ".join(args))
+            self.help_fn("Unexpected arguments: %s" % " ".join(args))
             return ERR
         
         # Do something.
@@ -196,7 +205,7 @@ class CoverageScript:
 
         if 'execute' in options.actions:
             if not args:
-                help_fn("Nothing to do.")
+                self.help_fn("Nothing to do.")
                 return ERR
             
             # Run the script.

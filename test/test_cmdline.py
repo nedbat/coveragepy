@@ -26,7 +26,7 @@ class CmdLineParserTest(CoverageTest):
         """
         self.help_out = ""
         argv = shlex.split(args)
-        ret_code = coverage.CoverageScript().command_line(argv, self.help_fn)
+        ret_code = coverage.CoverageScript(_help_fn=self.help_fn).command_line(argv)
         self.assertEqual(ret_code, ret)
         self.assertEqual(self.help_out, help_out)
 
