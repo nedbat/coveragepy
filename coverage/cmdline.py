@@ -55,77 +55,43 @@ COVERAGE_FILE environment variable to save it somewhere else.
 
 
 class OptionParser(optparse.OptionParser, object):
-    """Command-line parser for this coverage.py."""
+    """Command-line parser for coverage.py."""
 
     def __init__(self, help_fn, *args, **kwargs):
         super(OptionParser, self).__init__(
-            add_help_option=False,
-            *args, **kwargs)
-        self.help_fn = help_fn
+            add_help_option=False, *args, **kwargs
+            )
         
         self.set_defaults(actions=[])
         self.disable_interspersed_args()
-        
-        self.add_option(
-            '-a', '--annotate',
-            action='callback', callback=self.append_action, callback_args=('annotate',),
-            )
-        self.add_option(
-            '-b', '--html',
-            action='callback', callback=self.append_action, callback_args=('html',),
-            )
-        self.add_option(
-            '-c', '--combine',
-            action='callback', callback=self.append_action, callback_args=('combine',),
-            )
-        self.add_option(
-            '-d', '--directory',
-            action='store', dest='directory',
-            )
-        self.add_option(
-            '-e', '--erase',
-            action='callback', callback=self.append_action, callback_args=('erase',),
-            )
-        self.add_option(
-            '-h', '--help',
-            action='store_true', dest='help',
-            )
-        self.add_option(
-            '-i', '--ignore-errors',
-            action='store_true',
-            )
-        self.add_option(
-            '-L', '--pylib',
-            action='store_true',
-            )
-        self.add_option(
-            '-m', '--show-missing',
-            action='store_true',
-            )
-        self.add_option(
-            '-p', '--parallel-mode',
-            action='store_true',
-            )
-        self.add_option(
-            '-r', '--report',
-            action='callback', callback=self.append_action, callback_args=('report',),
-            )
-        self.add_option(
-            '-x', '--execute',
-            action='callback', callback=self.append_action, callback_args=('execute',),
-            )
-        self.add_option(
-            '-o', '--omit',
-            action='store',
-            )
-        self.add_option(
-            '', '--timid',
-            action='store_true',
-            )
 
-    def append_action(self, option_unused, opt_unused, value_unused, parser, arg1):
+        self.help_fn = help_fn
+        
+        self.add_action('-a', '--annotate', 'annotate')
+        self.add_action('-b', '--html', 'html')
+        self.add_action('-c', '--combine', 'combine')
+        self.add_option('-d', '--directory', action='store', dest='directory')
+        self.add_action('-e', '--erase', 'erase')
+        self.add_option('-h', '--help', action='store_true', dest='help')
+        self.add_option('-i', '--ignore-errors', action='store_true')
+        self.add_option('-L', '--pylib', action='store_true')
+        self.add_option('-m', '--show-missing', action='store_true')
+        self.add_option('-p', '--parallel-mode', action='store_true')
+        self.add_action('-r', '--report', 'report')
+        self.add_action('-x', '--execute', 'execute')
+        self.add_option('-o', '--omit', action='store')
+        self.add_option('', '--timid', action='store_true')
+
+    def add_action(self, dash, dashdash, action):
+        """Add a specialized option that is the action to execute."""
+        option = self.add_option(dash, dashdash, action='callback',
+            callback=self.append_action
+            )
+        option.action_code = action
+        
+    def append_action(self, option, opt_unused, value_unused, parser):
         """Callback for an option that adds to the `actions` list."""
-        parser.values.actions.append(arg1)
+        parser.values.actions.append(option.action_code)
 
     class OptionParserError(Exception):
         """Used to stop the optparse error handler ending the process."""
