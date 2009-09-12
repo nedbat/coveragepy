@@ -13,9 +13,10 @@ class CmdLineParserTest(CoverageTest):
         super(CmdLineParserTest, self).setUp()
         self.help_out = None
 
-    def help_fn(self, error=None):
+    def help_fn(self, error=None, topic=None):
         """A mock help_fn to capture the error messages for tests."""
-        self.help_out = error or "*usage*"
+        assert error or topic
+        self.help_out = error or ("topic:"+topic)
 
     def command_line(self, args, ret=0, help_out=""):
         """Run a Coverage command line, with `args` as arguments.
@@ -26,13 +27,22 @@ class CmdLineParserTest(CoverageTest):
         """
         self.help_out = ""
         argv = shlex.split(args)
-        ret_code = coverage.CoverageScript(_help_fn=self.help_fn).command_line(argv)
+        script = coverage.CoverageScript(_help_fn=self.help_fn)
+        ret_code = script.command_line(argv)
         self.assertEqual(ret_code, ret)
         self.assertEqual(self.help_out, help_out)
 
+
+class ClassicCmdLineParserTest(CmdLineParserTest):
+    
+    def testNoArgumentsAtAll(self):
+        self.command_line('',
+            help_out="Code coverage for Python.  Use -h for help."
+            )
+
     def testHelp(self):
-        self.command_line('-h', help_out="*usage*")
-        self.command_line('--help', help_out="*usage*")
+        self.command_line('-h', help_out="topic:usage")
+        self.command_line('--help', help_out="topic:usage")
 
     def testUnknownOption(self):
         self.command_line('-z', ret=1,
@@ -102,17 +112,20 @@ class CmdLineActionTest(CoverageTest):
         mk.coverage.return_value = mk
         return mk
 
-    def run_command_line(self, args):
+    def run_command_line(self, args, ret):
         """Run `args` through command_line, returning the Mock it used."""
         m = self.model_object()
-        coverage.CoverageScript(
-            _covpkg=m, _run_python_file=m.run_python_file
+        ret_actual = coverage.CoverageScript(
+            _covpkg=m, _run_python_file=m.run_python_file, _help_fn=m.help_fn
             ).command_line(shlex.split(args))
+        self.assertEqual(ret_actual, ret,
+                "Wrong status: got %s, wanted %s" % (ret_actual, ret)
+                )
         return m
     
-    def cmd_executes(self, args, code):
+    def cmd_executes(self, args, code, ret=0):
         """Assert that the `args` end up executing the sequence in `code`."""
-        m1 = self.run_command_line(args)
+        m1 = self.run_command_line(args, ret)
 
         code = textwrap.dedent(code)
         code = re.sub(r"(?m)^\.", "m2.", code)
@@ -123,10 +136,21 @@ class CmdLineActionTest(CoverageTest):
         
     def cmd_executes_same(self, args1, args2):
         """Assert that the `args1` executes the same as `args2`."""
-        m1 = self.run_command_line(args1)
-        m2 = self.run_command_line(args2)
+        m1 = self.run_command_line(args1, ret=0)
+        m2 = self.run_command_line(args2, ret=0)
         self.assertEqual(m1.method_calls, m2.method_calls)
-        
+
+    def cmd_help(self, args, help):
+        """Run a command line, and check that it prints the right help."""
+        m = self.run_command_line(args, ret=1)
+        self.assertEqual(m.method_calls,
+            [('help_fn', (help,), {})]
+            )
+
+
+class ClassicCmdLineActionTest(CmdLineActionTest):
+    """Tests of the classic coverage.py command line."""
+
     def testErase(self):
         # coverage -e
         self.cmd_executes("-e", """\
@@ -193,7 +217,6 @@ class CmdLineActionTest(CoverageTest):
 
     def testReport(self):
         # coverage -r [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
-
         init_load = """\
             .coverage(cover_pylib=None, data_suffix=False, timid=None)
             .load()\n"""
@@ -324,6 +347,13 @@ class CmdLineActionTest(CoverageTest):
         self.cmd_executes_same("-b -o f,b", "-b --omit=f,b")
         self.cmd_executes_same("-b -of", "-b --omit=f")
         self.cmd_executes_same("-b -of,b", "-b --omit=f,b")
+
+
+class NewCmdLineActionTest(CmdLineActionTest):
+    """Tests of the coverage.py command line."""
+
+    def testBadCommand(self):
+        self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
 
 
 if __name__ == '__main__':
