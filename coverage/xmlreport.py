@@ -1,4 +1,4 @@
-"""Cobertura reporting for coverage.py"""
+"""XML reporting for coverage.py"""
 
 import os, sys
 import xml.dom.minidom
@@ -13,16 +13,14 @@ class XmlReporter(Reporter):
         super(XmlReporter, self).__init__(coverage, ignore_errors)
 
     def report(self, morfs, omit_prefixes=None, outfile=None):
-        """Generate a Cobertura report for `morfs`.
+        """Generate a Cobertura-compatible XML report for `morfs`.
         
-        `morfs` is a list of modules or filenames.  `directory` is where to put
-        the Cobertura XML file. `omit_prefixes` is a list of strings, prefixes of
-        modules to omit from the report.
+        `morfs` is a list of modules or filenames.  `omit_prefixes` is a list
+        of strings, prefixes of modules to omit from the report.
         
         """
         # Initial setup.
-        if not outfile:
-            outfile = sys.stdout
+        outfile = outfile or sys.stdout
         self.find_code_units(morfs, omit_prefixes)
 
         # Create the DOM that will store the data.
@@ -41,13 +39,10 @@ class XmlReporter(Reporter):
         for cu in self.code_units:
             # Create the 'lines' and 'package' XML elements, which
             # are populated later.  Note that a package == a directory.
-            (dir, fname) = os.path.split(cu.name)
-            print "HERE",dir,":",fname
-            if dir is '':
-                dir = '.'
+            dirname, fname = os.path.split(cu.name)
+            dirname = dirname or '.'
             package = packages.setdefault(
-                dir, [ doc.createElement("package"), {},
-                    0, 0, 0, 0 ] )
+                dirname, [ doc.createElement("package"), {}, 0, 0, 0, 0 ] )
             c = doc.createElement("class")
             lines = doc.createElement("lines")
             c.appendChild(lines)
@@ -56,9 +51,8 @@ class XmlReporter(Reporter):
             c.setAttribute("filename", cu.name)
             c.setAttribute("complexity", "0.0")
 
-
             try:
-                statements, _, missing, readable = self.coverage._analyze(cu)
+                statements, _, missing, _ = self.coverage._analyze(cu)
 
                 # For each statement, create an XML 'line' element.
                 for line in statements:
@@ -76,15 +70,16 @@ class XmlReporter(Reporter):
                     # used here.
                     l.setAttribute("branch", "false")
                     lines.appendChild(l)
-                class_lines = 1.0*len(statements)
+                class_lines = 1.0 * len(statements)
                 class_hits = class_lines - len(missing)
                 class_branches = 0.0
                 class_branch_hits = 0.0
 
-                # Finalize the statistics that are collected
-                # in the XML DOM.
-                c.setAttribute("line-rate", str(class_hits / (class_lines or 1.0)))
-                c.setAttribute( "branch-rate", str(class_branch_hits / (class_branches or 1.0)) )
+                # Finalize the statistics that are collected in the XML DOM.
+                line_rate = class_hits / (class_lines or 1.0)
+                branch_rate = class_branch_hits / (class_branches or 1.0)
+                c.setAttribute("line-rate", str(line_rate))
+                c.setAttribute("branch-rate", str(branch_rate))
                 package[1][className] = c
                 package[2] += class_hits
                 package[3] += class_lines
@@ -97,7 +92,7 @@ class XmlReporter(Reporter):
                     typ, msg = sys.exc_info()[:2]
                     fmt_err = "%s   %s: %s\n"
                     outfile.write(fmt_err % (cu.name, typ.__name__, msg))
-                    errors=True
+                    errors = True
    
         # Don't write the XML data if we've encountered errors.
         if errors:
@@ -105,7 +100,7 @@ class XmlReporter(Reporter):
 
         # Populate the XML DOM with the package info.
         for packageName, packageData in packages.items():
-            package = packageData[0];
+            package = packageData[0]
             packageXml.appendChild(package)
             classes = doc.createElement("classes")
             package.appendChild(classes)
@@ -115,7 +110,7 @@ class XmlReporter(Reporter):
                 classes.appendChild(packageData[1][className])
             package.setAttribute("name", packageName.replace(os.sep, '.'))
             package.setAttribute("line-rate", str(packageData[2]/(packageData[3] or 1.0)))
-            package.setAttribute( "branch-rate", str(packageData[4] / (packageData[5] or 1.0) ))
+            package.setAttribute("branch-rate", str(packageData[4] / (packageData[5] or 1.0) ))
             package.setAttribute("complexity", "0.0")
 
         # Use the DOM to write the output file.

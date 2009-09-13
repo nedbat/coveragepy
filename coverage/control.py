@@ -10,7 +10,7 @@ from coverage.files import FileLocator
 from coverage.html import HtmlReporter
 from coverage.misc import format_lines, CoverageException
 from coverage.summary import SummaryReporter
-from coverage.xml import XmlReporter
+from coverage.xmlreport import XmlReporter
 
 class coverage:
     """Programmatic access to Coverage.

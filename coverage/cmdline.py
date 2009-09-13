@@ -248,7 +248,7 @@ CMDS = {
             Opts.ignore_errors,
             Opts.omit,
             Opts.help,
-            ]
+            ],
         cmd = "xml",
         usage = "[options]",
         description = "Generate an XML report of coverage results."
@@ -354,13 +354,14 @@ class CoverageScript:
                 "You must specify at least one of -e, -x, -c, -r, -a, or -b."
                 )
             return ERR
-        args_needed = (
+        args_allowed = (
             'execute' in options.actions or
             'annotate' in options.actions or
             'html' in options.actions or
-            'report' in options.actions
+            'report' in options.actions or
+            'xml' in options.actions
             )
-        if not args_needed and args:
+        if not args_allowed and args:
             self.help_fn("Unexpected arguments: %s" % " ".join(args))
             return ERR
         
