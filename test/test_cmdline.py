@@ -11,13 +11,17 @@ OK, ERR = 0, 1
 class CmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
     
+    def command_line(self, args, ret=OK):
+        ret_actual = coverage.CoverageScript().command_line(shlex.split(args))
+        self.assertEqual(ret_actual, ret)
+        
     def model_object(self):
         """Return a Mock suitable for use in CoverageScript."""
         mk = mock.Mock()
         mk.coverage.return_value = mk
         return mk
 
-    def run_command_line(self, args):
+    def mock_command_line(self, args):
         """Run `args` through command_line.
         
         Returns the Mock it used and the status code returned.
@@ -31,7 +35,7 @@ class CmdLineTest(CoverageTest):
     
     def cmd_executes(self, args, code, ret=OK):
         """Assert that the `args` end up executing the sequence in `code`."""
-        m1, r1 = self.run_command_line(args)
+        m1, r1 = self.mock_command_line(args)
         self.assertEqual(r1, ret,
                 "Wrong status: got %s, wanted %s" % (r1, ret)
                 )
@@ -45,14 +49,14 @@ class CmdLineTest(CoverageTest):
         
     def cmd_executes_same(self, args1, args2):
         """Assert that the `args1` executes the same as `args2`."""
-        m1, r1 = self.run_command_line(args1)
-        m2, r2 = self.run_command_line(args2)
+        m1, r1 = self.mock_command_line(args1)
+        m2, r2 = self.mock_command_line(args2)
         self.assertEqual(r1, r2)
         self.assertEqual(m1.method_calls, m2.method_calls)
 
     def cmd_help(self, args, help_msg=None, topic=None, ret=ERR):
         """Run a command line, and check that it prints the right help."""
-        m, r = self.run_command_line(args)
+        m, r = self.mock_command_line(args)
         self.assertEqual(r, ret,
                 "Wrong status: got %s, wanted %s" % (r, ret)
                 )
@@ -380,6 +384,35 @@ class NewCmdLineTest(CmdLineTest):
 
     def testBadCommand(self):
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
+
+
+class CmdLineStdoutTest(CmdLineTest):
+    """Test the command line with real stdout output."""
+    
+    def testMinimumHelp(self):
+        self.command_line("")
+        out = self.stdout()
+        self.assertTrue("Code coverage for Python." in out)
+        self.assertTrue(out.count("\n") < 4)
+        
+    def testHelp(self):
+        self.command_line("help")
+        out = self.stdout()
+        self.assertTrue("nedbatchelder.com" in out)
+        self.assertTrue(out.count("\n") > 10)
+        
+    def testCmdHelp(self):
+        self.command_line("help run")
+        out = self.stdout()
+        self.assertTrue("<pyfile>" in out)
+        self.assertTrue("--timid" in out)
+        self.assertTrue(out.count("\n") > 10)
+
+    def testError(self):
+        self.command_line("fooey kablooey", ret=ERR)
+        out = self.stdout()
+        self.assertTrue("fooey" in out)
+        self.assertTrue("help" in out)
 
 
 if __name__ == '__main__':
