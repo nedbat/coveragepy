@@ -273,7 +273,10 @@ class CoverageScript:
         elif parser:
             print parser.format_help(),
         else:
-            print HELP_TOPICS[topic].strip() % self.covpkg.__dict__
+            import re
+            topic_list = re.split("(?m)^=+ (\w+) =+$", HELP_TOPICS)
+            topics = dict(zip(topic_list[1::2], topic_list[2::2]))
+            print topics[topic].strip() % self.covpkg.__dict__
 
     def command_line(self, argv):
         """The bulk of the command line interface to Coverage.
@@ -401,9 +404,9 @@ class CoverageScript:
         return OK
 
 
-HELP_TOPICS = {
+HELP_TOPICS = r"""
 
-'classic_usage': r"""
+== classic_usage ==============================================================
 Coverage version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
 
@@ -450,9 +453,8 @@ coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
 
 Coverage data is saved in the file .coverage by default.  Set the
 COVERAGE_FILE environment variable to save it somewhere else.
-""",
 
-'help': r"""
+== help =======================================================================
 Coverage version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
 
@@ -469,13 +471,11 @@ Commands:
 
 Use "coverage help <command>" for detailed help on each command.
 For more information, see http://nedbatchelder.com/code/coverage
-""",
 
-'minimum_help': r"""
+== minimum_help ===============================================================
 Code coverage for Python.  Use 'coverage help' for help.
-""",
 
-}
+"""
 
 
 def main():

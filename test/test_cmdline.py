@@ -12,6 +12,11 @@ class CmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
     
     def command_line(self, args, ret=OK):
+        """Run `args` through the command line.
+        
+        Checks that `ret` is returned.
+        
+        """
         ret_actual = coverage.CoverageScript().command_line(shlex.split(args))
         self.assertEqual(ret_actual, ret)
         
@@ -22,7 +27,7 @@ class CmdLineTest(CoverageTest):
         return mk
 
     def mock_command_line(self, args):
-        """Run `args` through command_line.
+        """Run `args` through the command line, with a Mock.
         
         Returns the Mock it used and the status code returned.
         
