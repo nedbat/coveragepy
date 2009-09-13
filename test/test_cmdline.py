@@ -325,6 +325,21 @@ class ClassicCmdLineTest(CmdLineTest):
 class NewCmdLineTest(CmdLineTest):
     """Tests of the coverage.py command line."""
 
+    def testAnnotate(self):
+        self.cmd_executes_same("annotate", "-a")
+        self.cmd_executes_same("annotate -i", "-a -i")
+        self.cmd_executes_same("annotate -d d1", "-a -d d1")
+        self.cmd_executes_same("annotate -o f", "-a -o f")
+        self.cmd_executes_same("annotate -o f,b", "-a -o f,b")
+        self.cmd_executes_same("annotate m1", "-a m1")
+        self.cmd_executes_same("annotate m1 m2 m3", "-a m1 m2 m3")
+
+    def testCombine(self):
+        self.cmd_executes_same("combine", "-c")
+
+    def testErase(self):
+        self.cmd_executes_same("erase", "-e")
+
     def testHelp(self):
         self.cmd_executes("help", ".help_fn(topic='help')")
 
@@ -332,6 +347,24 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes("run --help",
                                 ".help_fn(parser='<CmdOptionParser:run>')")
         self.cmd_executes_same("help run", "run --help")
+
+    def testHtml(self):
+        self.cmd_executes_same("html", "-b")
+        self.cmd_executes_same("html -i", "-b -i")
+        self.cmd_executes_same("html -d d1", "-b -d d1")
+        self.cmd_executes_same("html -o f", "-b -o f")
+        self.cmd_executes_same("html -o f,b", "-b -o f,b")
+        self.cmd_executes_same("html m1", "-b m1")
+        self.cmd_executes_same("html m1 m2 m3", "-b m1 m2 m3")
+
+    def testReport(self):
+        self.cmd_executes_same("report", "-r")
+        self.cmd_executes_same("report -i", "-r -i")
+        self.cmd_executes_same("report -m", "-r -m")
+        self.cmd_executes_same("report -o f", "-r -o f")
+        self.cmd_executes_same("report -o f,b", "-r -o f,b")
+        self.cmd_executes_same("report m1", "-r m1")
+        self.cmd_executes_same("report m1 m2 m3", "-r m1 m2 m3")
 
     def testRun(self):
         self.cmd_executes_same("run f.py", "-e -x f.py")

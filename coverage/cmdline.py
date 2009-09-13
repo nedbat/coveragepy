@@ -10,12 +10,16 @@ class Opts:
     
     directory = optparse.Option(
         '-d', '--directory', action='store',
+        metavar="DIR",
+        help="Write the output files to DIR."
         )
     help = optparse.Option(
         '-h', '--help', action='store_true',
+        help="Get help on this command."
         )
     ignore_errors = optparse.Option(
         '-i', '--ignore-errors', action='store_true',
+        help="Ignore errors while reading source files."
         )
     pylib = optparse.Option(
         '-L', '--pylib', action='store_true',
@@ -24,9 +28,14 @@ class Opts:
         )
     show_missing = optparse.Option(
         '-m', '--show-missing', action='store_true',
+        help="Show line numbers of statements in each module that weren't "
+                "executed."
         )
     omit = optparse.Option(
         '-o', '--omit', action='store',
+        metavar="PRE1,PRE2,...",
+        help="Omit files when their filename path starts with one of these "
+                "prefixes."
         )
     parallel_mode = optparse.Option(
         '-p', '--parallel-mode', action='store_true',
@@ -166,20 +175,72 @@ class CmdOptionParser(CoverageOptionParser):
 
 
 CMDS = {
-    'help': CmdOptionParser("help"),
+    'annotate': CmdOptionParser("annotate",
+        [
+            Opts.directory,
+            Opts.ignore_errors,
+            Opts.omit,
+            Opts.help,
+            ],
+        usage = "[options] [modules]",
+        description = "Make annotated copies of the given files, marking "
+            "statements that are executed with > and statements that are "
+            "missed with !."
+        ),
+
+    'help': CmdOptionParser("help",
+        usage = "[command]",
+        description = "Describe how to use coverage.py"
+        ),
+
+    'html': CmdOptionParser("html",
+        [
+            Opts.directory,
+            Opts.ignore_errors,
+            Opts.omit,
+            Opts.help,
+            ],
+        usage = "[options] [modules]",
+        description = "Create an HTML report of the coverage of the files.  "
+            "Each file gets its own page, with the source decorated to show "
+            "executed, excluded, and missed lines."
+        ),
     
+    'combine': CmdOptionParser("combine",
+        usage = " ",
+        description = "Combine data from multiple coverage files collected "
+            "with 'run -p'.  The combined results are stored into a single "
+            "file representing the union of the coverage."
+        ),
+
+    'erase': CmdOptionParser("erase",
+        usage = " ",
+        description = "Erase previously collected coverage data."
+        ),
+
+    'report': CmdOptionParser("report",
+        [
+            Opts.ignore_errors,
+            Opts.omit,
+            Opts.show_missing,
+            Opts.help,
+            ],
+        usage = "[options] [modules]",
+        description = "Report coverage stats on modules."
+        ),
+
     'run': CmdOptionParser("execute",
         [
             Opts.append,
-            Opts.help,
             Opts.pylib,
             Opts.parallel_mode,
-            Opts.timid
+            Opts.timid,
+            Opts.help,
             ],
-        defaults={'erase_first':True},
-        cmd="run",
-        usage="[options] pyfile [program options]",
-        description="Run a python program, measuring code execution."
+        defaults = {'erase_first':True},
+        cmd = "run",
+        usage = "[options] <pyfile> [program options]",
+        description = "Run a python program, measuring code execution."
         ),
     }
 
@@ -398,8 +459,12 @@ Measure, collect, and report on code coverage in Python programs.
 usage: coverage <command> [options] [args]
 
 Commands:
-    help    Get help on using coverage.py.
-    run     Run a Python program and measure code execution.
+    annotate    Annotate source files with execution information.
+    combine     Combine a number of data files. 
+    erase       Erase previously collected coverage data.
+    help        Get help on using coverage.py.
+    report      Report coverage stats on modules.
+    run         Run a Python program and measure code execution.
 
 Use "coverage help <command>" for detailed help on each command.
 For more information, see http://nedbatchelder.com/code/coverage
