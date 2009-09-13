@@ -242,6 +242,17 @@ CMDS = {
         usage = "[options] <pyfile> [program options]",
         description = "Run a python program, measuring code execution."
         ),
+    
+    'xml': CmdOptionParser("xml",
+        [
+            Opts.ignore_errors,
+            Opts.omit,
+            Opts.help,
+            ]
+        cmd = "xml",
+        usage = "[options]",
+        description = "Generate an XML report of coverage results."
+        ),
     }
 
 
@@ -402,6 +413,8 @@ class CoverageScript:
         if 'html' in options.actions:
             self.coverage.html_report(
                 directory=options.directory, **report_args)
+        if 'xml' in options.actions:
+            self.coverage.xml_report(**report_args)
 
         return OK
 
@@ -470,6 +483,7 @@ Commands:
     html        Create an HTML report.
     report      Report coverage stats on modules.
     run         Run a Python program and measure code execution.
+    xml         Create an XML report of coverage results.
 
 Use "coverage help <command>" for detailed help on each command.
 For more information, see http://nedbatchelder.com/code/coverage

@@ -10,6 +10,7 @@ from coverage.files import FileLocator
 from coverage.html import HtmlReporter
 from coverage.misc import format_lines, CoverageException
 from coverage.summary import SummaryReporter
+from coverage.xml import XmlReporter
 
 class coverage:
     """Programmatic access to Coverage.
@@ -318,3 +319,12 @@ class coverage:
         reporter = HtmlReporter(self, ignore_errors)
         reporter.report(
             morfs, directory=directory, omit_prefixes=omit_prefixes)
+
+    def xml_report(self, morfs=None, ignore_errors=False, omit_prefixes=None):
+        """Generate an XML report of coverage results.
+        
+        The report is compatible with Cobertura reports.
+        
+        """
+        reporter = XmlReporter(self, ignore_errors)
+        reporter.report(morfs, omit_prefixes=omit_prefixes)
