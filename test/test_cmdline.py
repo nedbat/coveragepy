@@ -392,27 +392,27 @@ class CmdLineStdoutTest(CmdLineTest):
     def testMinimumHelp(self):
         self.command_line("")
         out = self.stdout()
-        self.assertTrue("Code coverage for Python." in out)
-        self.assertTrue(out.count("\n") < 4)
+        assert "Code coverage for Python." in out
+        assert out.count("\n") < 4
         
     def testHelp(self):
         self.command_line("help")
         out = self.stdout()
-        self.assertTrue("nedbatchelder.com" in out)
-        self.assertTrue(out.count("\n") > 10)
+        assert "nedbatchelder.com" in out
+        assert out.count("\n") > 10
         
     def testCmdHelp(self):
         self.command_line("help run")
         out = self.stdout()
-        self.assertTrue("<pyfile>" in out)
-        self.assertTrue("--timid" in out)
-        self.assertTrue(out.count("\n") > 10)
+        assert "<pyfile>" in out
+        assert "--timid" in out
+        assert out.count("\n") > 10
 
     def testError(self):
         self.command_line("fooey kablooey", ret=ERR)
         out = self.stdout()
-        self.assertTrue("fooey" in out)
-        self.assertTrue("help" in out)
+        assert "fooey" in out
+        assert "help" in out
 
 
 if __name__ == '__main__':
