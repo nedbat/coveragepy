@@ -6,6 +6,7 @@ coverage.py
 :history: 20090613T164000, final touches for 3.0
 :history: 20090618T195900, minor tweaks
 :history: 20090707T205200, changes for 3.0.1
+:history: 20090913T084400, new command line syntax
 
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
@@ -30,18 +31,18 @@ Getting started is easy:
     or by using "easy_install coverage".  You may need to install the
     python-dev support files, for example with "apt-get install python-dev".
 
-#.  Run coverage to execute your program and gather data:
+#.  Use ``coverage run`` to execute your program and gather data:
 
     .. code-block:: console
 
-        $ coverage -e -x my_program.py arg1 arg2
+        $ coverage run my_program.py arg1 arg2
         blah blah ..your program's output.. blah blah
 
-#.  Run coverage to report on the results:
+#.  Use ``coverage report`` to report on the results:
 
     .. code-block:: console
 
-        $ coverage -r -m 
+        $ coverage report -m 
         Name                      Stmts   Exec  Cover   Missing
         -------------------------------------------------------
         my_program                   20     16    80%   33-35, 39
@@ -49,12 +50,12 @@ Getting started is easy:
         -------------------------------------------------------
         TOTAL                        76     66    87%
 
-#.  For a nicer presentation, run coverage to get annotated HTML listings
-    detailing missed lines:
+#.  For a nicer presentation, use ``coverage html`` to get annotated HTML
+    listings detailing missed lines:
     
     .. code-block:: console
 
-        $ coverage -b -i -d htmlcov
+        $ coverage html -i -d htmlcov
 
     Then visit htmlcov/index.html in your browser, to see a
     `report like this </code/coverage/sample_html/index.html>`_.

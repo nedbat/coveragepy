@@ -5,6 +5,10 @@ Change history for Coverage.py
 Next version
 ------------
 
+- Coverage.py has a new command line syntax with subcommands.  This expands the
+  possibilities for adding features and options in the future.  The old syntax
+  is still supported.
+
 - Added the --timid option to enable a simpler slower trace function that works
   for DecoratorTools (including TurboGears) projects.
 

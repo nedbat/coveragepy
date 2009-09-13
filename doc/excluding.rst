@@ -20,7 +20,7 @@ the "if debug" clause is excluded from reporting::
         msg = "blah blah"
         log_message(msg, a)
     b = my_function2()
-        
+
 Any line with a comment of "pragma: no cover" is excluded.  If that line
 introduces a clause, for example, an if clause, or a function or class
 definition, then the entire clause is also excluded.  Here the __repr__

@@ -9,6 +9,7 @@ FAQ and other help
 Frequently asked questions
 --------------------------
 
+
 **Q: Why do unexecutable lines show up as executed?**
 
 Usually this is because you've updated your code and run coverage on it
@@ -16,8 +17,10 @@ again without erasing the old data.  Coverage records line numbers executed, so
 the old data may have recorded a line number which has since moved, causing
 coverage to claim a line has been executed which cannot be.
 
-Use the -e switch on the command line to erase all data before starting the next
-run.
+If you are using the ``-x`` command line action, it doesn't erase first by
+default.  Switch to the ``coverage run`` command, or use the ``-e`` switch to
+erase all data before starting the next run.
+
 
 **Q: Why do the bodies of functions (or classes) show as executed, but the def
 lines do not?**
@@ -32,9 +35,11 @@ to run your program with coverage, then your entire program will be monitored.
 If you are using the :ref:`API <api>`, you need to call coverage.start() before
 importing the modules that define your functions.
 
+
 **Q: Does coverage work on Python 3.x?**
 
 Not yet, but that's next on my list.
+
 
 **Q: Isn't coverage testing the best thing ever?**
 
