@@ -268,8 +268,8 @@ class ClassicCmdLineTest(CmdLineTest):
 
     def testHelp(self):
         # coverage -h
-        self.cmd_help("-h", topic="usage", ret=OK)
-        self.cmd_help("--help", topic="usage", ret=OK)
+        self.cmd_help("-h", topic="classic_usage", ret=OK)
+        self.cmd_help("--help", topic="classic_usage", ret=OK)
 
     ## Error cases
     
@@ -325,9 +325,17 @@ class ClassicCmdLineTest(CmdLineTest):
 class NewCmdLineTest(CmdLineTest):
     """Tests of the coverage.py command line."""
 
+    def testHelp(self):
+        self.cmd_executes("help", ".help_fn(topic='help')")
+
+    def testCmdHelp(self):
+        self.cmd_executes("run --help",
+                                ".help_fn(parser='<CmdOptionParser:run>')")
+        self.cmd_executes_same("help run", "run --help")
+
     def testRun(self):
         self.cmd_executes_same("run f.py", "-e -x f.py")
-        self.cmd_executes_same("run f.py -a -z a1 a2", "-e -x f.py -a -z a1 a2")
+        self.cmd_executes_same("run f.py -a arg -z", "-e -x f.py -a arg -z")
         self.cmd_executes_same("run -a f.py", "-x f.py")
         self.cmd_executes_same("run -p f.py", "-e -x -p f.py")
         self.cmd_executes_same("run -L f.py", "-e -x -L f.py")
@@ -335,9 +343,7 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("run", "-x")
         
     def testNoArgumentsAtAll(self):
-        self.cmd_help("",
-            "Code coverage for Python.  Use -h for help.", ret=OK
-            )
+        self.cmd_help("", topic="minimum_help", ret=OK)
 
     def testBadCommand(self):
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")

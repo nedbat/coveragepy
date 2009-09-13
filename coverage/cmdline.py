@@ -9,10 +9,10 @@ class Opts:
     """A namespace class for individual options we'll build parsers from."""
     
     directory = optparse.Option(
-        '-d', '--directory', action='store', dest='directory',
+        '-d', '--directory', action='store',
         )
     help = optparse.Option(
-        '-h', '--help', action='store_true', dest='help',
+        '-h', '--help', action='store_true',
         )
     ignore_errors = optparse.Option(
         '-i', '--ignore-errors', action='store_true',
@@ -35,7 +35,7 @@ class Opts:
         )
     timid = optparse.Option(
         '', '--timid', action='store_true',
-        help="Use a simpler but slower trace method.  Use this if you get "
+        help="Use a simpler but slower trace method.  Try this if you get "
                 "seemingly impossible results!"
         )
     append = optparse.Option(
@@ -131,25 +131,55 @@ class ClassicOptionParser(CoverageOptionParser):
         parser.values.actions.append(option.action_code)
 
 
-class NewOptionParser(CoverageOptionParser):
+class CmdOptionParser(CoverageOptionParser):
     """Parse one of the new-style commands for coverage.py."""
     
-    def __init__(self, action, options, defaults={}):
-        super(NewOptionParser, self).__init__(
-            usage="coverage %s [blah]" % action
+    def __init__(self, action, options=None, defaults=None, usage=None,
+                cmd=None, description=None
+                ):
+        """Create an OptionParser for a coverage command.
+        
+        `action` is the slug to put into `options.actions`.
+        `options` is a list of Option's for the command.
+        `defaults` is a dict of default value for options.
+        `usage` is the usage string to display in help.
+        `cmd` is the command name, if different than `action`.
+        `description` is the description of the command, for the help text.
+        
+        """
+        if usage:
+            usage = "%prog " + usage
+        super(CmdOptionParser, self).__init__(
+            prog="coverage %s" % (cmd or action),
+            usage=usage,
+            description=description,
         )
-        self.set_defaults(actions=[action], **defaults)
-        self.add_options(options)
+        self.set_defaults(actions=[action], **(defaults or {}))
+        if options:
+            self.add_options(options)
+        self.cmd = cmd or action
+
+    def __eq__(self, other):
+        # A convenience equality, so that I can put strings in unit test
+        # results, and they will compare equal to objects.
+        return (other == "<CmdOptionParser:%s>" % self.cmd)
+
 
 CMDS = {
-    'run': NewOptionParser("execute",
+    'help': CmdOptionParser("help"),
+    
+    'run': CmdOptionParser("execute",
         [
             Opts.append,
+            Opts.help,
             Opts.pylib,
             Opts.parallel_mode,
             Opts.timid
             ],
-        defaults={'erase_first':True}
+        defaults={'erase_first':True},
+        cmd="run",
+        usage="[options] pyfile [program options]",
+        description="Run a python program, measuring code execution."
         ),
     }
 
@@ -173,12 +203,14 @@ class CoverageScript:
         
         self.coverage = None
 
-    def help(self, error=None, topic=None):
+    def help(self, error=None, topic=None, parser=None):
         """Display an error message, or the named topic."""
-        assert error or topic
+        assert error or topic or parser
         if error:
             print error
             print "Use -h for help."
+        elif parser:
+            print parser.format_help(),
         else:
             print HELP_TOPICS[topic].strip() % self.covpkg.__dict__
 
@@ -194,14 +226,13 @@ class CoverageScript:
         OK, ERR = 0, 1
         
         if not argv:
-            self.help_fn(
-                "Code coverage for Python.  Use -h for help."
-                )
+            self.help_fn(topic='minimum_help')
             return OK
 
         # The command syntax we parse depends on the first argument.  Classic
         # syntax always starts with an option.
-        if argv[0].startswith('-'):
+        classic = argv[0].startswith('-')
+        if classic:
             parser = ClassicOptionParser()
         else:
             parser = CMDS.get(argv[0])
@@ -215,8 +246,22 @@ class CoverageScript:
         if not ok:
             return ERR
 
+        # Handle help.
         if options.help:
-            self.help_fn(topic='usage')
+            if classic:
+                self.help_fn(topic='classic_usage')
+            else:
+                self.help_fn(parser=parser)
+            return OK
+
+        if "help" in options.actions:
+            if args:
+                for a in args:
+                    parser = CMDS.get(a)
+                    if parser:
+                        self.help_fn(parser=parser)
+            else:
+                self.help_fn(topic='help')
             return OK
 
         # Check for conflicts and problems in the options.
@@ -297,7 +342,7 @@ class CoverageScript:
 
 HELP_TOPICS = {
 
-'usage': r"""
+'classic_usage': r"""
 Coverage version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
 
@@ -344,6 +389,24 @@ coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
 
 Coverage data is saved in the file .coverage by default.  Set the
 COVERAGE_FILE environment variable to save it somewhere else.
+""",
+
+'help': r"""
+Coverage version %(__version__)s
+Measure, collect, and report on code coverage in Python programs.
+
+usage: coverage <command> [options] [args]
+
+Commands:
+    help    Get help on using coverage.py.
+    run     Run a Python program and measure code execution.
+
+Use "coverage help <command>" for detailed help on each command.
+For more information, see http://nedbatchelder.com/code/coverage
+""",
+
+'minimum_help': r"""
+Code coverage for Python.  Use 'coverage help' for help.
 """,
 
 }
