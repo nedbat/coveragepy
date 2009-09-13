@@ -34,6 +34,7 @@ import nose
 nose.run(sys.argv[1:])
 
 cov.stop()
+cov.save()
 
 cov.clear_exclude()
 cov.exclude("#pragma: no cover")
