@@ -463,6 +463,7 @@ Commands:
     combine     Combine a number of data files. 
     erase       Erase previously collected coverage data.
     help        Get help on using coverage.py.
+    html        Create an HTML report.
     report      Report coverage stats on modules.
     run         Run a Python program and measure code execution.
 
