@@ -250,7 +250,7 @@ CMDS = {
             Opts.help,
             ],
         cmd = "xml",
-        usage = "[options]",
+        usage = "[options] [modules]",
         description = "Generate an XML report of coverage results."
         ),
     }
