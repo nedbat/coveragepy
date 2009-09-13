@@ -269,14 +269,16 @@ class CoverageScript:
         assert error or topic or parser
         if error:
             print error
-            print "Use -h for help."
+            print "Use 'coverage help' for help."
         elif parser:
             print parser.format_help(),
         else:
+            # Parse out the topic we want from HELP_TOPICS
             import re
             topic_list = re.split("(?m)^=+ (\w+) =+$", HELP_TOPICS)
             topics = dict(zip(topic_list[1::2], topic_list[2::2]))
-            print topics[topic].strip() % self.covpkg.__dict__
+            help_msg = topics[topic].strip()
+            print help_msg % self.covpkg.__dict__
 
     def command_line(self, argv):
         """The bulk of the command line interface to Coverage.
