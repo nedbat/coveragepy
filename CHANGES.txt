@@ -2,12 +2,15 @@
 Change history for Coverage.py
 ------------------------------
 
-Next version
-------------
+Version 3.1, unreleased
+-----------------------
 
 - Coverage.py has a new command line syntax with subcommands.  This expands the
   possibilities for adding features and options in the future.  The old syntax
   is still supported.
+
+- Added the "coverage xml" command for producing coverage reports in a
+  Cobertura-compatible XML format.
 
 - Added the --timid option to enable a simpler slower trace function that works
   for DecoratorTools (including TurboGears) projects.
