@@ -15,6 +15,11 @@ Version 3.1, unreleased
 - Added the --timid option to enable a simpler slower trace function that works
   for DecoratorTools (including TurboGears) projects.
 
+- Scripts that change directory will still write .coverage files in the
+  directory where execution started (`issue 24`_).
+  
+.. _issue 24: http://bitbucket.org/ned/coveragepy/issue/24
+
 
 Version 3.0.1, 7 July 2009
 --------------------------

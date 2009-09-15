@@ -37,12 +37,17 @@ class CoverageData:
         `collector` is a string describing the coverage measurement software.
 
         """
-        self.basename = basename
         self.collector = collector
-        self.suffix = suffix
         
         self.use_file = True
-        self.filename = None
+
+        # Construct the filename that will be used for data file storage, if we
+        # ever do any file storage.
+        self.filename = (basename or
+                os.environ.get(self.filename_env, self.filename_default))
+        if suffix:
+            self.filename += suffix
+        self.filename = os.path.abspath(self.filename)
 
         # A map from canonical Python source file name to a dictionary in
         # which there's an entry for each line number that has been
@@ -59,34 +64,21 @@ class CoverageData:
         """Set whether or not to use a disk file for data."""
         self.use_file = use_file
 
-    def _make_filename(self):
-        """Construct the filename that will be used for data file storage."""
-        assert self.use_file
-        if not self.filename:
-            self.filename = (self.basename or
-                    os.environ.get(self.filename_env, self.filename_default))
-
-            if self.suffix:
-                self.filename += self.suffix
-
     def read(self):
         """Read coverage data from the coverage data file (if it exists)."""
         data = {}
         if self.use_file:
-            self._make_filename()
             data = self._read_file(self.filename)
         self.lines = data
 
     def write(self):
         """Write the collected coverage data to a file."""
         if self.use_file:
-            self._make_filename()
             self.write_file(self.filename)
 
     def erase(self):
         """Erase the data, both in this object, and from its file storage."""
         if self.use_file:
-            self._make_filename()
             if self.filename and os.path.exists(self.filename):
                 os.remove(self.filename)
         self.lines = {}
@@ -143,7 +135,6 @@ class CoverageData:
         """ Treat self.filename as a file prefix, and combine the data from all
             of the files starting with that prefix.
         """
-        self._make_filename()
         data_dir, local = os.path.split(self.filename)
         for f in os.listdir(data_dir or '.'):
             if f.startswith(local):
