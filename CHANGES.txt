@@ -13,11 +13,14 @@ Version 3.1, unreleased
   Cobertura-compatible XML format.
 
 - Added the --timid option to enable a simpler slower trace function that works
-  for DecoratorTools (including TurboGears) projects.
+  for DecoratorTools (including TurboGears) projects.  Fixed `issue 12` and
+  `issue 13`.
 
 - Programs that change directory will still write .coverage files in the
-  directory where execution started (`issue 24`_).
+  directory where execution started.  Fixed `issue 24`_.
   
+.. _issue 12: http://bitbucket.org/ned/coveragepy/issue/12
+.. _issue 13: http://bitbucket.org/ned/coveragepy/issue/13
 .. _issue 24: http://bitbucket.org/ned/coveragepy/issue/24
 
 
@@ -25,20 +28,25 @@ Version 3.0.1, 7 July 2009
 --------------------------
 
 - Removed the recursion limit in the tracer function.  Previously, code that
-  ran more than 500 frames deep would crash.
+  ran more than 500 frames deep would crash. Fixed `issue 9`.
 
 - Fixed a bizarre problem involving pyexpat, whereby lines following XML parser
-  invocations could be overlooked.
+  invocations could be overlooked.  Fixed `issue 10`.
 
 - On Python 2.3, coverage.py could mis-measure code with exceptions being
   raised.  This is now fixed.
 
 - The coverage.py code itself will now not be measured by coverage.py, and no
-  coverage modules will be mentioned in the nose --with-cover plugin.
+  coverage modules will be mentioned in the nose --with-cover plugin.  Fixed
+  `issue 8`.
 
 - When running source files, coverage.py now opens them in universal newline
   mode just like Python does.  This lets it run Windows files on Mac, for
   example.
+
+.. _issue 9: http://bitbucket.org/ned/coveragepy/issue/9
+.. _issue 10: http://bitbucket.org/ned/coveragepy/issue/10
+.. _issue 8: http://bitbucket.org/ned/coveragepy/issue/8
 
 
 Version 3.0, 13 June 2009
@@ -48,9 +56,11 @@ Version 3.0, 13 June 2009
   excluded the old way.
   
 - Tabs are now properly converted in HTML reports.  Previously indentation was
-  lost.
-
+  lost.  Fixed `issue 6`.
+  
 - Nested modules now get a proper flat_rootname.  Thanks, Christian Heimes.
+
+.. _issue 6: http://bitbucket.org/ned/coveragepy/issue/6
 
 
 Version 3.0b3, 16 May 2009
