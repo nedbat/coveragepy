@@ -363,37 +363,16 @@ TracerType = {
 
 #if PY_MAJOR_VERSION >= 3
 
-typedef struct {
-    PyObject * tracer_type;
-} CoverageTracerState;
-
-#define MOD_STATE(o) ((CoverageTracerState *) PyModule_GetState(o))
-
-static int
-coverage_tracer_traverse(PyObject *m, visitproc visit, void *arg)
-{
-    Py_VISIT(MOD_STATE(m)->tracer_type);
-    return 0;
-}
-
-static int
-coverage_tracer_clear(PyObject *m)
-{
-    Py_CLEAR(MOD_STATE(m)->tracer_type);
-    return 0;
-}
-
-
 static PyModuleDef
 moduledef = {
     PyModuleDef_HEAD_INIT,
     "coverage.tracer",
     MODULE_DOC,
-    sizeof(CoverageTracerState),
+    -1,
     NULL,       /* methods */
     NULL,
-    NULL,//coverage_tracer_traverse,
-    NULL,//coverage_tracer_clear,
+    NULL,       /* traverse */
+    NULL,       /* clear */
     NULL
 };
 
