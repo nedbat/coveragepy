@@ -41,11 +41,12 @@ lint:
 	python /Python25/Lib/tabnanny.py coverage scripts test setup.py
 	python checkeol.py
 
-testready: $(TEST_ZIP) devinst
+testready: testdata devinst
 
 tests: testready
 	nosetests
 
+testdata: $(TEST_ZIP)
 $(TEST_ZIP): test/covmodzip1.py
 	zip -j $@ $+
 
