@@ -9,6 +9,31 @@
 #undef WHAT_LOG     /* Define to log the WHAT params in the trace function. */
 #undef TRACE_LOG    /* Define to log our bookkeeping. */
 
+/* Py 2.x and 3.x compatibility */
+
+#ifndef Py_TYPE
+#define Py_TYPE(o)    (((PyObject*)(o))->ob_type)
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+
+#define MyText_Check(o)     PyUnicode_Check(o)
+#define MyText_AS_STRING(o) FOOEY_DONT_KNOW_YET(o)
+#define MyInt_FromLong(l)   PyLong_FromLong(l)
+
+#define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
+
+#else
+
+#define MyText_Check(o)     PyString_Check(o)
+#define MyText_AS_STRING(o) PyString_AS_STRING(o)
+#define MyInt_FromLong(l)   PyInt_FromLong(l)
+
+#define MyType_HEAD_INIT    PyObject_HEAD_INIT(NULL)  0,
+
+#endif /* Py3k */
+
+
 /* The Tracer type. */
 
 typedef struct {
@@ -64,7 +89,7 @@ Tracer_dealloc(Tracer *self)
     
     PyMem_Free(self->tracenames);
 
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 #if TRACE_LOG
@@ -97,7 +122,7 @@ showlog(int depth, int lineno, PyObject * filename, const char * msg)
             printf("    ");
         }
         if (filename) {
-            printf(" %s", PyString_AS_STRING(filename));
+            printf(" %s", MyText_AS_STRING(filename));
         }
         if (msg) {
             printf(" %s", msg);
@@ -123,12 +148,12 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
 
     #if WHAT_LOG 
     if (what <= sizeof(what_sym)/sizeof(const char *)) {
-        printf("trace: %s @ %s %d\n", what_sym[what], PyString_AS_STRING(frame->f_code->co_filename), frame->f_lineno);
+        printf("trace: %s @ %s %d\n", what_sym[what], MyText_AS_STRING(frame->f_code->co_filename), frame->f_lineno);
     }
     #endif 
 
     #if TRACE_LOG
-    if (strstr(PyString_AS_STRING(frame->f_code->co_filename), start_file) && frame->f_lineno == start_line) {
+    if (strstr(MyText_AS_STRING(frame->f_code->co_filename), start_file) && frame->f_lineno == start_line) {
         logging = 1;
     }
     #endif
@@ -190,7 +215,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         }
 
         /* If tracename is a string, then we're supposed to trace. */
-        if (PyString_Check(tracename)) {
+        if (MyText_Check(tracename)) {
             self->tracenames[self->depth] = tracename;
             SHOWLOG(self->depth, frame->f_lineno, filename, "traced");
         }
@@ -218,7 +243,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                 tracename = self->tracenames[self->depth];
                 Py_INCREF(tracename);
                 PyTuple_SET_ITEM(t, 0, tracename);
-                PyTuple_SET_ITEM(t, 1, PyInt_FromLong(frame->f_lineno));
+                PyTuple_SET_ITEM(t, 1, MyInt_FromLong(frame->f_lineno));
                 PyDict_SetItem(self->data, t, Py_None);
                 Py_DECREF(t);
             }
@@ -292,8 +317,7 @@ Tracer_methods[] = {
 
 static PyTypeObject
 TracerType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    MyType_HEAD_INIT
     "coverage.Tracer",         /*tp_name*/
     sizeof(Tracer),            /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -335,12 +359,73 @@ TracerType = {
 
 /* Module definition */
 
+#define MODULE_DOC PyDoc_STR("Fast coverage tracer.")
+
+#if PY_MAJOR_VERSION >= 3
+
+typedef struct {
+    PyObject * tracer_type;
+} CoverageTracerState;
+
+#define MOD_STATE(o) ((CoverageTracerState *) PyModule_GetState(o))
+
+static int
+coverage_tracer_traverse(PyObject *m, visitproc visit, void *arg)
+{
+    Py_VISIT(MOD_STATE(m)->tracer_type);
+    return 0;
+}
+
+static int
+coverage_tracer_clear(PyObject *m)
+{
+    Py_CLEAR(MOD_STATE(m)->tracer_type);
+    return 0;
+}
+
+
+static PyModuleDef
+moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "coverage.tracer",
+    MODULE_DOC,
+    sizeof(CoverageTracerState),
+    NULL,       /* methods */
+    NULL,
+    NULL,//coverage_tracer_traverse,
+    NULL,//coverage_tracer_clear,
+    NULL
+};
+
+
+PyObject *
+PyInit_tracer(void)
+{
+    PyObject * mod = PyModule_Create(&moduledef);
+    if (mod == NULL) {
+        return NULL;
+    }
+    
+    TracerType.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&TracerType) < 0) {
+        Py_DECREF(mod);
+        return NULL;
+    }
+
+    Py_INCREF(&TracerType);
+    PyModule_AddObject(mod, "Tracer", (PyObject *)&TracerType);
+    
+    return mod;    
+}
+
+#else
+
 void
 inittracer(void)
 {
-    PyObject* mod;
+    PyObject * mod;
 
-    mod = Py_InitModule3("coverage.tracer", NULL, PyDoc_STR("Fast coverage tracer."));
+    mod = Py_InitModule3("coverage.tracer", NULL, MODULE_DOC);
     if (mod == NULL) {
         return;
     }
@@ -353,3 +438,5 @@ inittracer(void)
     Py_INCREF(&TracerType);
     PyModule_AddObject(mod, "Tracer", (PyObject *)&TracerType);
 }
+
+#endif /* Py3k */
