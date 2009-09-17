@@ -16,7 +16,7 @@ run("""
     """, rundir="out", outfile="showtraceout.txt")
 
 # When running timidly, the trace function is always Python.
-contains("out/showtraceout.txt", "timid coverage.collector.PyTracer")
+contains("out/showtraceout.txt", "timid PyTracer")
 
 if os.environ.get('COVERAGE_TEST_TRACER', 'c') == 'c':
     # If the C trace function is being tested, then regular running should have
@@ -26,7 +26,7 @@ if os.environ.get('COVERAGE_TEST_TRACER', 'c') == 'c':
 else:
     # If the Python trace function is being tested, then regular running will
     # also show the Python function.
-    contains("out/showtraceout.txt", "regular coverage.collector.PyTracer")
+    contains("out/showtraceout.txt", "regular PyTracer")
 
 # Try the environment variable.
 old_opts = os.environ.get('COVERAGE_OPTIONS')
@@ -38,8 +38,8 @@ run("""
     """, rundir="out", outfile="showtraceout.txt")
 
 contains("out/showtraceout.txt",
-        "timid coverage.collector.PyTracer",
-        "regular coverage.collector.PyTracer"
+        "timid PyTracer",
+        "regular PyTracer"
         )
 
 if old_opts:

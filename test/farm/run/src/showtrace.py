@@ -12,4 +12,4 @@ trace_fn = sys._getframe(0).f_trace
 if trace_fn is None:
     print "None"
 else:
-    print trace_fn.im_class
+    print trace_fn.im_class.__name__
