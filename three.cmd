@@ -1,6 +1,6 @@
 @REM Copy the sources, convert to Py3k, and run the tests.
 
-rmdir/s/q ..\three
+rmdir /s/q three ..\three
 xcopy /s/h/i/e /exclude:notsource.txt . ..\three
 move ..\three .
 cd three

@@ -11,6 +11,8 @@ Code repository and issue tracker are at
 
 """
 
+# This file is used unchanged under all versions of Python, 2.x and 3.x.
+
 classifiers = """
 Environment :: Console
 Intended Audience :: Developers
@@ -49,7 +51,7 @@ else:
     # No setuptools yet for Py 3.x, so do without.
     from distutils.core import setup, Extension
 
-    # The 2.x sources are in py3k
+    # The 3.x sources are in py3k
     coverage_dir = "py3k"
 
     more_setup_args = dict(
@@ -61,7 +63,7 @@ else:
 
 # Get or massage our metadata.
 
-from coverage import __version__
+from coverage.version import __version__
 
 doclines = __doc__.split('\n')
 
