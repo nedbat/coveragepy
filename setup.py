@@ -32,6 +32,9 @@ if sys.hexversion < 0x03000000:
     from setuptools import setup
     from distutils.core import Extension
 
+    # The 2.x sources are in coverage
+    coverage_dir = "coverage"
+
     more_setup_args = dict(
         entry_points = {
             'console_scripts': [
@@ -45,6 +48,9 @@ if sys.hexversion < 0x03000000:
 else:
     # No setuptools yet for Py 3.x, so do without.
     from distutils.core import setup, Extension
+
+    # The 2.x sources are in py3k
+    coverage_dir = "py3k"
 
     more_setup_args = dict(
         scripts = [
@@ -78,6 +84,10 @@ setup(
     packages = [
         'coverage',
         ],
+
+    package_dir = {
+        'coverage': coverage_dir,
+        },
 
     package_data = {
         'coverage': [

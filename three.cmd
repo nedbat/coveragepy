@@ -2,9 +2,10 @@
 
 rmdir/s/q ..\three
 xcopy /s/h/i/e /exclude:notsource.txt . ..\three
-cd ..\three
+move ..\three .
+cd three
 call switchpy 31
-python \python31\Tools\Scripts\2to3.py -w coverage test setup.py mock.py
+python \python31\Tools\Scripts\2to3.py -w coverage test mock.py
 make clean
 make testdata
 
@@ -18,3 +19,5 @@ python \python31\Scripts\nosetests3 %1
 del coverage\tracer.pyd
 set COVERAGE_TEST_TRACER=py
 python \python31\Scripts\nosetests3 %1
+
+cd ..
