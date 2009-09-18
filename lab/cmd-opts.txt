@@ -1,0 +1,51 @@
+coverage -e -x foo.py
+coverage run foo.py
+coverage run --timid foo.py
+coverage foo.py
+
+
+commands:
+
+    run -x
+            --timid                 bool
+        -p  --parallel              bool
+        -L  --stdlib                bool
+            --branch                bool                    *
+        -a  --append                bool
+
+    erase -e
+    
+    combine -c
+    
+    report -r 
+        -m --missing                bool
+        -i --ignore-errors          bool
+        -o --omit                   list of string
+        
+    annotate -a
+        -d --output-directory       string
+        -i --ignore-errors          bool
+        -o --omit                   list of string
+    
+    html -b
+        -d --output-directory       string
+        -i --ignore-errors          bool
+        -o --omit                   list of string
+        --red *
+        --green *
+        --style *
+
+    help
+
+    byteprep   *
+    
+    cobertura   *
+    
+    
+    
+Option scopes:
+
+    - Cmd line
+    - coverage()
+    - ini file
+    - environment variable
