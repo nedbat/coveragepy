@@ -2,8 +2,6 @@
 include coverage.egg-info/*.*
 include coverage/*.py
 include coverage/htmlfiles/*.*
-include py3k/*.py
-include py3k/htmlfiles/*.*
 include ez_setup.py
 include setup.py
 include README.txt

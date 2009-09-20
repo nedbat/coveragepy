@@ -5,18 +5,17 @@ xcopy /s/h/i/e /exclude:notsource.txt . ..\three
 move ..\three .
 cd three
 call switchpy 31
-python \python31\Tools\Scripts\2to3.py -w coverage test mock.py
+python \python31\Tools\Scripts\2to3.py --write --nobackups --no-diffs coverage test mock.py
+
 make clean
 make testdata
 
-@REM We run coverage out of the source directory, so put built stuff there.
-python setup.py build
-copy build\lib.win32-3.1\coverage\tracer.pyd coverage
+python setup.py install
 
 @REM Run both modes of tracer
 set COVERAGE_TEST_TRACER=c
 python \python31\Scripts\nosetests3 %1
-del coverage\tracer.pyd
+del \python31\lib\site-packages\coverage\tracer.pyd
 set COVERAGE_TEST_TRACER=py
 python \python31\Scripts\nosetests3 %1
 

@@ -15,7 +15,6 @@ coverage.egg-info
 dist
 htmlcov
 MANIFEST
-py3k
 setuptools-*.egg
 three
 

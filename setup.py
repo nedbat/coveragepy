@@ -24,7 +24,7 @@ Topic :: Software Development :: Testing
 """
 
 # Pull in the tools we need.
-import sys
+import os, sys
 
 if sys.hexversion < 0x03000000:
     # In Py 2.x, use setuptools.
@@ -34,6 +34,7 @@ if sys.hexversion < 0x03000000:
     from setuptools import setup
     from distutils.core import Extension
 
+    package_name = 'coverage'
     # The 2.x sources are in coverage
     coverage_dir = "coverage"
 
@@ -51,8 +52,9 @@ else:
     # No setuptools yet for Py 3.x, so do without.
     from distutils.core import setup, Extension
 
-    # The 3.x sources are in py3k
-    coverage_dir = "py3k"
+    package_name = 'coverage3k'
+    # The 3.x sources are in coverage
+    coverage_dir = "coverage"
 
     more_setup_args = dict(
         scripts = [
@@ -80,7 +82,7 @@ classifier_list.append("Development Status :: " + devstat)
 # Set it up!
 
 setup(
-    name = 'coverage',
+    name = package_name,
     version = __version__,
 
     packages = [

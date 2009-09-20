@@ -3,6 +3,5 @@
 \.hg\
 \build\
 \dist\
-\py3k\
 \three\
 .egg-info
