@@ -1,9 +1,8 @@
 """Coverage data for Coverage."""
 
 import os
-import cPickle as pickle
 
-from coverage.backward import sorted    # pylint: disable-msg=W0622
+from coverage.backward import pickle, sorted    # pylint: disable-msg=W0622
 
 
 class CoverageData:
@@ -154,7 +153,7 @@ class CoverageData:
 
     def executed_files(self):
         """A list of all files that had been measured as executed."""
-        return self.lines.keys()
+        return list(self.lines.keys())
 
     def executed_lines(self, filename):
         """A map containing all the line numbers executed in `filename`.

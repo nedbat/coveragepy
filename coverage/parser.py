@@ -1,10 +1,9 @@
 """Code parsing for Coverage."""
 
 import re, sys, token, tokenize, types
-import cStringIO as StringIO
 
 from coverage.misc import nice_pair, CoverageException
-from coverage.backward import set   # pylint: disable-msg=W0622
+from coverage.backward import set, StringIO   # pylint: disable-msg=W0622
 
 
     
@@ -107,13 +106,13 @@ class CodeParser:
         prev_toktype = token.INDENT
         first_line = None
 
-        tokgen = tokenize.generate_tokens(StringIO.StringIO(text).readline)
+        tokgen = tokenize.generate_tokens(StringIO(text).readline)
         for toktype, ttext, (slineno, _), (elineno, _), ltext in tokgen:
             if self.show_tokens:
-                print "%10s %5s %-20r %r" % (
+                print("%10s %5s %-20r %r" % (
                     tokenize.tok_name.get(toktype, toktype),
                     nice_pair((slineno, elineno)), ttext, ltext
-                    )
+                    ))
             if toktype == token.INDENT:
                 indent += 1
             elif toktype == token.DEDENT:
@@ -128,7 +127,7 @@ class CodeParser:
             elif toktype == token.STRING and prev_toktype == token.INDENT:
                 # Strings that are first on an indented line are docstrings.
                 # (a trick from trace.py in the stdlib.)
-                for i in xrange(slineno, elineno+1):
+                for i in range(slineno, elineno+1):
                     self.docstrings.add(i)
             elif toktype == token.NEWLINE:
                 if first_line is not None and elineno != first_line:
@@ -136,7 +135,7 @@ class CodeParser:
                     # different line than the first line of the statement,
                     # so record a multi-line range.
                     rng = (first_line, elineno)
-                    for l in xrange(first_line, elineno+1):
+                    for l in range(first_line, elineno+1):
                         self.multiline[l] = rng
                 first_line = None
                 
@@ -161,7 +160,8 @@ class CodeParser:
             # text ends nicely for them.
             text += '\n'
             code = compile(text, filename, "exec")
-        except SyntaxError, synerr:
+        except SyntaxError:
+            _, synerr, _ = sys.exc_info()
             raise CoverageException(
                 "Couldn't parse '%s' as Python source: '%s' at line %d" %
                     (filename, synerr.msg, synerr.lineno)
@@ -225,7 +225,7 @@ class CodeParser:
                 m1 = '"'
             if lineno in self.excluded:
                 m2 = 'x'
-            print "%4d %s%s%s %s" % (lineno, m0, m1, m2, ltext)
+            print("%4d %s%s%s %s" % (lineno, m0, m1, m2, ltext))
 
 
 if __name__ == '__main__':

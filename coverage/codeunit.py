@@ -2,6 +2,9 @@
 
 import glob, os
 
+from coverage.backward import string_class
+
+
 def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     """Construct a list of CodeUnits from polymorphic inputs.
     
@@ -21,7 +24,7 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     # On Windows, the shell doesn't expand wildcards.  Do it here.
     globbed = []
     for morf in morfs:
-        if isinstance(morf, basestring) and ('?' in morf or '*' in morf):
+        if isinstance(morf, string_class) and ('?' in morf or '*' in morf):
             globbed.extend(glob.glob(morf))
         else:
             globbed.append(morf)

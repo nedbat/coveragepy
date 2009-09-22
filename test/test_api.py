@@ -1,9 +1,11 @@
 """Tests for Coverage's api."""
 
 import os, re, sys, textwrap
-from cStringIO import StringIO
 
 import coverage
+from coverage.backward import StringIO
+
+sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
 

@@ -3,6 +3,7 @@
 import os, socket
 
 from coverage.annotate import AnnotateReporter
+from coverage.backward import string_class
 from coverage.codeunit import code_unit_factory
 from coverage.collector import Collector
 from coverage.data import CoverageData
@@ -68,7 +69,7 @@ class coverage:
 
         # Create the data file.
         if data_suffix:
-            if not isinstance(data_suffix, basestring):
+            if not isinstance(data_suffix, string_class):
                 # if data_suffix=True, use .machinename.pid
                 data_suffix = ".%s.%s" % (socket.gethostname(), os.getpid())
         else:
@@ -136,7 +137,7 @@ class coverage:
         def _should_trace(self, filename, frame):   # pylint: disable-msg=E0102
             """A logging decorator around the real _should_trace function."""
             ret = self._real_should_trace(filename, frame)
-            print "should_trace: %r -> %r" % (filename, ret)
+            print("should_trace: %r -> %r" % (filename, ret))
             return ret
 
     def use_cache(self, usecache):

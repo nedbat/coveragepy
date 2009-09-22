@@ -2,6 +2,9 @@
 
 import imp, os, sys
 
+from coverage.backward import exec_function
+
+
 try:
     # In Py 2.x, the builtins were in __builtin__
     BUILTINS = sys.modules['__builtin__']
@@ -33,7 +36,7 @@ def run_python_file(filename, args):
 
     try:
         source = open(filename, 'rU').read()
-        exec compile(source, filename, "exec") in main_mod.__dict__
+        exec_function(source, filename, main_mod.__dict__)
     finally:
         # Restore the old __main__
         sys.modules['__main__'] = old_main_mod

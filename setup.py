@@ -34,8 +34,6 @@ if sys.hexversion < 0x03000000:
     from setuptools import setup
     from distutils.core import Extension
 
-    package_name = 'coverage'
-
     more_setup_args = dict(
         entry_points = {
             'console_scripts': [
@@ -49,8 +47,6 @@ if sys.hexversion < 0x03000000:
 else:
     # No setuptools yet for Py 3.x, so do without.
     from distutils.core import setup, Extension
-
-    package_name = 'coverage3k'
 
     more_setup_args = dict(
         scripts = [
@@ -78,7 +74,7 @@ classifier_list.append("Development Status :: " + devstat)
 # Set it up!
 
 setup(
-    name = package_name,
+    name = 'coverage',
     version = __version__,
 
     packages = [

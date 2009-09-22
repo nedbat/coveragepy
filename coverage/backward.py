@@ -1,8 +1,10 @@
 """Add things to old Pythons so I can pretend they are newer."""
 
-# pylint: disable-msg=W0622
-# (Redefining built-in blah)
-# The whole point of this file is to redefine built-ins, so shut up about it.
+# This file does lots of tricky stuff, so disable a bunch of lintisms.
+# pylint: disable-msg=F0401,W0611,W0622
+# F0401: Unable to import blah
+# W0611: Unused import blah
+# W0622: Redefining built-in blah
 
 import os, sys
 
@@ -23,41 +25,40 @@ except NameError:
         lst.sort()
         return lst
 
-# Py2k and 3k don't agree on how to run commands in a subprocess.
+# Pythons 2 and 3 differ on where to get StringIO
+
 try:
-    import subprocess
+    from cStringIO import StringIO
 except ImportError:
-    def run_command(cmd):
-        """Run a command in a subprocess.
-        
-        Returns the exit code and the combined stdout and stderr.
-        
-        """
-        _, stdouterr = os.popen4(cmd)
-        return 0, stdouterr.read()
+    from io import StringIO
+
+# What's a string called?
+
+try:
+    string_class = basestring
+except NameError:
+    string_class = str
+
+# Where do pickles come from?
+
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
+# Exec is a statement in Py2, a function in Py3
+
+if sys.hexversion > 0x03000000:
+    def exec_function(source, filename, global_map):
+        """A wrapper around exec()."""
+        exec(compile(source, filename, "exec"), global_map)
 else:
-    def run_command(cmd):
-        """Run a command in a subprocess.
-        
-        Returns the exit code and the combined stdout and stderr.
-        
-        """
-
-        if sys.hexversion > 0x03000000 and cmd.startswith("coverage "):
-            # We don't have a coverage command on 3.x, so fix it up to call the
-            # script. Eventually we won't need this.
-            cmd = "python " + sys.prefix + os.sep + "Scripts" + os.sep + cmd
-
-        proc = subprocess.Popen(cmd, shell=True,
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-                )
-        retcode = proc.wait()
-        
-        # Get the output, and canonicalize it to strings with newlines.
-        output = proc.stdout.read()
-        if not isinstance(output, str):
-            output = output.decode('utf-8')
-        output = output.replace('\r', '')
-        
-        return retcode, output
+    # OK, this is pretty gross.  In Py2, exec was a statement, but that will
+    # be a syntax error if we try to put it in a Py3 file, even if it is never
+    # executed.  So hide it inside an evaluated string literal instead.
+    eval(compile("""\
+def exec_function(source, filename, global_map):
+    exec compile(source, filename, "exec") in global_map
+""",
+    "<exec_function>", "exec"
+    ))

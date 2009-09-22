@@ -1,8 +1,10 @@
 """Tests for coverage.execfile"""
 
-import os
+import os, sys
 
 from coverage.execfile import run_python_file
+
+sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
 here = os.path.dirname(__file__)

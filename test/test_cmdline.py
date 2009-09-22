@@ -1,8 +1,10 @@
 """Test cmdline.py for coverage."""
 
-import re, shlex, textwrap, unittest
+import os, re, shlex, sys, textwrap, unittest
 import mock
 import coverage
+
+sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
 

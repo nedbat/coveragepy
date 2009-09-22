@@ -3,11 +3,12 @@
 # http://nedbatchelder.com/code/coverage
 
 import os, sys, unittest
-from cStringIO import StringIO
 
 import coverage
+from coverage.backward import StringIO
 coverage.use_cache(0)
 
+sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
 
@@ -1891,7 +1892,7 @@ class ExceptionTest(CoverageTest):
 
 
 if __name__ == '__main__':
-    print "Testing under Python version: %s" % sys.version
+    print("Testing under Python version: %s" % sys.version)
     unittest.main()
 
 

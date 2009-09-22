@@ -4,6 +4,8 @@ import os, sys
 
 from coverage.codeunit import code_unit_factory
 from coverage.files import FileLocator
+
+sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
 # pylint: disable-msg=F0401

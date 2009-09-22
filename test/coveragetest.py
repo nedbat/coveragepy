@@ -1,10 +1,10 @@
 """Base test case class for coverage testing."""
 
 import imp, os, random, shutil, sys, tempfile, textwrap, unittest
-from cStringIO import StringIO
 
 import coverage
-from coverage.backward import set, run_command   # pylint: disable-msg=W0622
+from coverage.backward import set, StringIO   # pylint: disable-msg=W0622
+from backtest import run_command
 
 
 class Tee(object):
@@ -168,7 +168,8 @@ class CoverageTest(unittest.TestCase):
         """
         try:
             callableObj(*args, **kwargs)
-        except excClass, exc:
+        except excClass:
+            _, exc, _ = sys.exc_info()
             excMsg = str(exc)
             if not msg:
                 # No message provided: it passes.
@@ -214,7 +215,7 @@ class CoverageTest(unittest.TestCase):
         os.environ['PYTHONPATH'] = pypath
         
         _, output = run_command(cmd)
-        print output
+        print(output)
         return output
 
     def assert_equal_sets(self, s1, s2):

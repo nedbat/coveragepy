@@ -1,7 +1,11 @@
 """Tests for coverage.data"""
 
-import cPickle as pickle
+import os, sys
+
+from coverage.backward import pickle
 from coverage.data import CoverageData
+
+sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
 

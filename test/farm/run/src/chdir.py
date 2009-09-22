@@ -1,5 +1,5 @@
 import os
-print "Line One"
+print("Line One")
 os.chdir("subdir")
-print "Line Two"
+print("Line Two")
 

@@ -31,7 +31,7 @@ class FileLocator:
         An absolute path with no redundant components and normalized case.
         
         """
-        if not self.canonical_filename_cache.has_key(filename):
+        if filename not in self.canonical_filename_cache:
             f = filename
             if os.path.isabs(f) and not os.path.exists(f):
                 if not self.get_zip_data(f):

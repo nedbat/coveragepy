@@ -13,13 +13,5 @@ python setup.py sdist --formats=gztar
 set TAR_OPTIONS=
 
 @REM Py3k
-cd three
 call \ned\bin\switchpy 31
 python setup.py bdist_wininst
-
-set TAR_OPTIONS=--group=100
-python setup.py sdist --formats=gztar
-set TAR_OPTIONS=
-
-cd ..
-copy three\dist\*.* dist

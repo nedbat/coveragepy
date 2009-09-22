@@ -106,7 +106,7 @@ class _ContextAccess(object):
                     value = getattr(value, dot)
                 except AttributeError:
                     value = value[dot]
-                if callable(value):
+                if hasattr(value, '__call__'):
                     value = value()
         else:
             value = self.context[key]

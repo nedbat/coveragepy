@@ -1,7 +1,9 @@
 """Run tests in the farm subdirectory.  Designed for nose."""
 
 import filecmp, fnmatch, glob, os, shutil, sys
-from coverage.backward import run_command
+
+sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
+from backtest import run_command, execfile # pylint: disable-msg=W0622
 
 
 def test_farm(clean_only=False):
@@ -133,7 +135,7 @@ class FarmTestCase(object):
                 if not cmd:
                     continue
                 retcode, output = run_command(cmd)
-                print output,
+                print(output.rstrip())
                 if outfile:
                     open(outfile, "a+").write(output)
                 if retcode:
@@ -278,7 +280,7 @@ def main():
         for test in test_farm(clean_only=True):
             test[0].run_fully()
     else:
-        print "Need an operation: run, out, clean"
+        print("Need an operation: run, out, clean")
     
 # So that we can run just one farm run.py at a time.
 if __name__ == '__main__':
