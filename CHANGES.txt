@@ -5,6 +5,8 @@ Change history for Coverage.py
 Version 3.1, unreleased
 -----------------------
 
+- Python 3.1 is now supported.
+
 - Coverage.py has a new command line syntax with subcommands.  This expands the
   possibilities for adding features and options in the future.  The old syntax
   is still supported.
