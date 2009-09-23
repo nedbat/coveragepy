@@ -1,7 +1,8 @@
 """HTML reporting for Coverage."""
 
-import os, re, shutil
+import keyword, os, re, token, tokenize, shutil
 from coverage import __version__    # pylint: disable-msg=W0611
+from coverage.backward import StringIO   # pylint: disable-msg=W0622
 from coverage.report import Reporter
 from coverage.templite import Templite
 
@@ -17,6 +18,33 @@ def data(fname):
     """Return the contents of a data file of ours."""
     return open(data_filename(fname)).read()
     
+
+def phys_tokens(toks):
+    """Return all physical tokens, even line continuations.
+    
+    tokenize.generate_tokens() doesn't return a token for the backslash that
+    continues lines.  This wrapper provides those tokens so that we can
+    re-create a faithful representation of the original source.
+    
+    Returns the same values as generate_tokens()
+    
+    """
+    last_line = None
+    last_lineno = -1
+    for toktype, ttext, (slineno, scol), (elineno, ecol), ltext in toks:
+        if last_lineno != elineno:
+            if last_line and last_line[-2:] == "\\\n":
+                if toktype != token.STRING:
+                    ccol = len(last_line.split("\n")[-2]) - 1
+                    yield (
+                        99999, "\\\n",
+                        (slineno, ccol), (slineno, ccol+2),
+                        last_line
+                        )
+            last_line = ltext
+        yield toktype, ttext, (slineno, scol), (elineno, ecol), ltext
+        last_lineno = elineno
+
 
 class HtmlReporter(Reporter):
     """HTML reporting."""
@@ -57,10 +85,9 @@ class HtmlReporter(Reporter):
     def html_file(self, cu, statements, excluded, missing):
         """Generate an HTML file for one source file."""
         
-        source = cu.source_file()
-        source_lines = source.readlines()
+        source = cu.source_file().read().expandtabs(4)
+        source_lines = source.split("\n")
         
-        n_lin = len(source_lines)
         n_stm = len(statements)
         n_exc = len(excluded)
         n_mis = len(missing)
@@ -75,26 +102,57 @@ class HtmlReporter(Reporter):
         c_exc = " exc"
         c_mis = " mis"
         
+        ws_tokens = [token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL]
         lines = []
-        for lineno, line in enumerate(source_lines):
-            lineno += 1     # enumerate is 0-based, lines are 1-based.
-            
-            css_class = ""
-            if lineno in statements:
-                css_class += " stm"
-                if lineno not in missing and lineno not in excluded:
-                    css_class += c_run
-            if lineno in excluded:
-                css_class += c_exc
-            if lineno in missing:
-                css_class += c_mis
-                
-            lineinfo = {
-                'text': line,
-                'number': lineno,
-                'class': css_class.strip() or "pln"
-            }
-            lines.append(lineinfo)
+        line = []
+        lineno = 1
+        col = 0
+        tokgen = tokenize.generate_tokens(StringIO(source).readline)
+        for toktype, ttext, (_, scol), (_, ecol), _ in phys_tokens(tokgen):
+            mark_start = True
+            for part in re.split('(\n)', ttext):
+                if part == '\n':
+
+                    line_class = ""
+                    if lineno in statements:
+                        line_class += " stm"
+                        if lineno not in missing and lineno not in excluded:
+                            line_class += c_run
+                    if lineno in excluded:
+                        line_class += c_exc
+                    if lineno in missing:
+                        line_class += c_mis
+                        
+                    lineinfo = {
+                        'html': "".join(line),
+                        'number': lineno,
+                        'class': line_class.strip() or "pln"
+                    }
+                    lines.append(lineinfo)
+                    
+                    line = []
+                    lineno += 1
+                    col = 0
+                    mark_end = False
+                elif part == '':
+                    mark_end = False
+                elif toktype in ws_tokens:
+                    mark_end = False
+                else:
+                    if mark_start and scol > col:
+                        line.append(escape(" " * (scol - col)))
+                        mark_start = False
+                    css_class = tokenize.tok_name.get(toktype, 'xx').lower()[:3]
+                    if toktype == token.NAME and keyword.iskeyword(ttext):
+                        css_class = "key"
+                    tok_html = escape(part) or '&nbsp;'
+                    line.append(
+                        "<span class='%s'>%s</span>" % (css_class, tok_html)
+                        )
+                    mark_end = True
+                scol = 0
+            if mark_end:
+                col = ecol
 
         # Write the HTML page for this file.
         html_filename = cu.flat_rootname() + ".html"
@@ -139,8 +197,6 @@ class HtmlReporter(Reporter):
 def escape(t):
     """HTML-escape the text in t."""
     return (t
-            # Change all tabs to 4 spaces.
-            .expandtabs(4)
             # Convert HTML special chars into HTML entities.
             .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             .replace("'", "&#39;").replace('"', "&quot;")

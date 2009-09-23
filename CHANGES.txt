@@ -18,6 +18,8 @@ Version 3.1, unreleased
   for DecoratorTools (including TurboGears) projects.  Fixed `issue 12` and
   `issue 13`.
 
+- HTML reports now include syntax-colored Python source.
+
 - Programs that change directory will still write .coverage files in the
   directory where execution started.  Fixed `issue 24`_.
   

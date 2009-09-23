@@ -71,7 +71,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 + HTML report
     - Package navigation.
     - Rolled-up statistics.
-    - Syntax coloring in HTML report.
+    + Syntax coloring in HTML report.
     + Dynamic effects in HTML report.
     + Footer in reports pointing to coverage home page.
     + Baseline grid for linenumber font.
@@ -183,8 +183,8 @@ x Tests about the "import __main__" in cmdline.py
     - Generate new sample_html to get the latest, incl footer version number:
         cd C:\ned\cog\trunk
         rmdir/s/q htmlcov
-        coverage -e -x cogapp\test_cogapp.py CogTestsInMemory
-        coverage -b -i -d htmlcov
+        coverage run cogapp\test_cogapp.py CogTestsInMemory
+        coverage html -i -d htmlcov
         copy htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html
     - Build and publish docs:
         $ make px publish

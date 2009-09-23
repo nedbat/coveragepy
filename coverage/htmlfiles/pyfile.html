@@ -43,7 +43,7 @@ function toggle_lines(btn, cls) {
 </td>
 <td class='text' valign='top'>
     {% for line in lines %}
-    <p class='{{line.class}}'>{{line.text.rstrip|escape|not_empty}}</p>
+    <p class='{{line.class}}'>{{line.html}}<span class="strut">&nbsp;</span></p>
     {% endfor %}
 </td>
 </tr>

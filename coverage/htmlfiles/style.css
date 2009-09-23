@@ -124,6 +124,20 @@ td.text {
     background: inherit;
     }
 
+/* Syntax coloring */
+.text .com {
+	color: green;
+	font-style: italic;
+	line-height: 1px;
+	}
+.text .key {
+	font-weight: bold;
+	line-height: 1px;
+	}
+.text .str {
+	color: #000080;
+	}
+
 /* index styles */
 #index td, #index th {
     text-align: right;

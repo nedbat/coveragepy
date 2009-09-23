@@ -13,8 +13,8 @@ runfunc(html_it, rundir="src")
 #   and check that certain key strings are in the output.
 compare("html", "gold_a", size_within=10)
 contains("html/a.html",
-    ">if 1 &lt; 2:<",
-    "&nbsp; &nbsp; a = 3",
+    "<span class='key'>if</span> <span class='num'>1</span> <span class='op'>&lt;</span> <span class='num'>2</span>",
+    "&nbsp; &nbsp; <span class='nam'>a</span> <span class='op'>=</span> <span class='num'>3</span>",
     "<span class='pc_cov'>67%</span>"
     )
 contains("html/index.html",
