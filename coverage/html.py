@@ -77,8 +77,7 @@ class HtmlReporter(Reporter):
         
         lines = []
         for lineno, line in enumerate(source_lines):
-            lineno += 1     # enum is 0-based, lines are 1-based.
-            
+            lineno += 1     # enumerate is 0-based, lines are 1-based.
             
             css_class = ""
             if lineno in statements:
