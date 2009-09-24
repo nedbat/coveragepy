@@ -1,6 +1,6 @@
 """Run tests in the farm subdirectory.  Designed for nose."""
 
-import filecmp, fnmatch, glob, os, shutil, sys
+import difflib, filecmp, fnmatch, glob, os, shutil, sys
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from backtest import run_command, execfile # pylint: disable-msg=W0622
@@ -218,10 +218,11 @@ class FarmTestCase(object):
             # ourselves.
             text_diff = []
             for f in diff_files:
-                left = open(os.path.join(dir1, f), "r").read()
-                right = open(os.path.join(dir2, f), "r").read()
+                left = open(os.path.join(dir1, f), "r").readlines()
+                right = open(os.path.join(dir2, f), "r").readlines()
                 if left != right:
                     text_diff.append(f)
+                    print("".join(list(difflib.Differ().compare(left, right))))
             assert not text_diff, "Files differ: %s" % text_diff
 
         if not left_extra:

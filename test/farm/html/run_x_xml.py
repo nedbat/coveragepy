@@ -1,11 +1,11 @@
 def html_it():
-    """Run coverage and make an XML report for a."""
+    """Run coverage and make an XML report for x."""
     import coverage
     cov = coverage.coverage()
     cov.start()
-    import a
+    import x
     cov.stop()
-    cov.xml_report(a, outfile=open("../xml/coverage.xml", 'w'))
+    cov.xml_report(x, outfile=open("../xml/coverage.xml", 'w'))
 
 import os
 if not os.path.exists("xml"):
@@ -13,5 +13,5 @@ if not os.path.exists("xml"):
 
 runfunc(html_it, rundir="src")
 
-compare("xml", "gold_a_xml")
+compare("gold_x_xml", "xml")
 clean("xml")

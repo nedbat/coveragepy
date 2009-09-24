@@ -3,6 +3,7 @@
 import os, sys
 import xml.dom.minidom
 
+from coverage.backward import sorted
 from coverage.report import Reporter
 
 
@@ -103,9 +104,7 @@ class XmlReporter(Reporter):
             packageXml.appendChild(package)
             classes = doc.createElement("classes")
             package.appendChild(classes)
-            classNames = packageData[1].keys()
-            classNames.sort()
-            for className in classNames:
+            for className in sorted(packageData[1].keys()):
                 classes.appendChild(packageData[1][className])
             package.setAttribute("name", packageName.replace(os.sep, '.'))
             package.setAttribute("line-rate", str(packageData[2]/(packageData[3] or 1.0)))
