@@ -31,10 +31,10 @@ def phys_tokens(toks):
     """
     last_line = None
     last_lineno = -1
-    for toktype, ttext, (slineno, scol), (elineno, ecol), ltext in toks:
+    for ttype, ttext, (slineno, scol), (elineno, ecol), ltext in toks:
         if last_lineno != elineno:
             if last_line and last_line[-2:] == "\\\n":
-                if toktype != token.STRING:
+                if ttype != token.STRING:
                     ccol = len(last_line.split("\n")[-2]) - 1
                     yield (
                         99999, "\\\n",
@@ -42,7 +42,7 @@ def phys_tokens(toks):
                         last_line
                         )
             last_line = ltext
-        yield toktype, ttext, (slineno, scol), (elineno, ecol), ltext
+        yield ttype, ttext, (slineno, scol), (elineno, ecol), ltext
         last_lineno = elineno
 
 
@@ -108,7 +108,7 @@ class HtmlReporter(Reporter):
         lineno = 1
         col = 0
         tokgen = tokenize.generate_tokens(StringIO(source).readline)
-        for toktype, ttext, (_, scol), (_, ecol), _ in phys_tokens(tokgen):
+        for ttype, ttext, (_, scol), (_, ecol), _ in phys_tokens(tokgen):
             mark_start = True
             for part in re.split('(\n)', ttext):
                 if part == '\n':
@@ -136,18 +136,18 @@ class HtmlReporter(Reporter):
                     mark_end = False
                 elif part == '':
                     mark_end = False
-                elif toktype in ws_tokens:
+                elif ttype in ws_tokens:
                     mark_end = False
                 else:
                     if mark_start and scol > col:
                         line.append(escape(" " * (scol - col)))
                         mark_start = False
-                    css_class = tokenize.tok_name.get(toktype, 'xx').lower()[:3]
-                    if toktype == token.NAME and keyword.iskeyword(ttext):
-                        css_class = "key"
+                    tok_class = tokenize.tok_name.get(ttype, 'xx').lower()[:3]
+                    if ttype == token.NAME and keyword.iskeyword(ttext):
+                        tok_class = "key"
                     tok_html = escape(part) or '&nbsp;'
                     line.append(
-                        "<span class='%s'>%s</span>" % (css_class, tok_html)
+                        "<span class='%s'>%s</span>" % (tok_class, tok_html)
                         )
                     mark_end = True
                 scol = 0
@@ -192,7 +192,7 @@ class HtmlReporter(Reporter):
         fhtml.close()
 
 
-# Helpers for templates
+# Helpers for templates and generating HTML
 
 def escape(t):
     """HTML-escape the text in t."""
@@ -207,10 +207,6 @@ def escape(t):
             .replace("  ", "&nbsp; ")
         )
 
-def not_empty(t):
-    """Make sure HTML content is not completely empty."""
-    return t or "&nbsp;"
-    
 def format_pct(p):
     """Format a percentage value for the HTML reports."""
     return "%.0f" % p
