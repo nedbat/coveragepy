@@ -48,7 +48,7 @@ class XmlReporter(Reporter):
             c.appendChild(lines)
             className = fname.replace('.', '_')
             c.setAttribute("name", className)
-            c.setAttribute("filename", cu.name)
+            c.setAttribute("filename", cu.filename)
             c.setAttribute("complexity", "0.0")
 
             try:
@@ -62,8 +62,7 @@ class XmlReporter(Reporter):
                     # Q: can we get info about the number of times
                     # a statement is executed?  If so, that should be
                     # recorded here.
-                    if not line in missing:
-                        l.setAttribute("hits", str(1))
+                    l.setAttribute("hits", str(int(not line in missing)))
 
                     # Q: can we get info about whether this statement
                     # is a branch?  If so, that data should be

@@ -59,4 +59,3 @@ class Reporter(object):
             except:
                 if not self.ignore_errors:
                     raise
-

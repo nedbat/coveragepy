@@ -321,11 +321,12 @@ class coverage:
         reporter.report(
             morfs, directory=directory, omit_prefixes=omit_prefixes)
 
-    def xml_report(self, morfs=None, ignore_errors=False, omit_prefixes=None):
+    def xml_report(self, morfs=None, outfile=None, ignore_errors=False,
+                    omit_prefixes=None):
         """Generate an XML report of coverage results.
         
         The report is compatible with Cobertura reports.
         
         """
         reporter = XmlReporter(self, ignore_errors)
-        reporter.report(morfs, omit_prefixes=omit_prefixes)
+        reporter.report(morfs, omit_prefixes=omit_prefixes, outfile=outfile)
