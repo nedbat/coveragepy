@@ -57,7 +57,7 @@ else:
 
 # Get or massage our metadata.
 
-from coverage.version import __version__
+from coverage import __url__, __version__
 
 doclines = __doc__.split('\n')
 
@@ -98,7 +98,7 @@ setup(
     keywords = 'code coverage testing',
     license = 'BSD',
     classifiers = classifier_list,
-    url = 'http://nedbatchelder.com/code/coverage',
+    url = __url__,
     
     **more_setup_args
 )

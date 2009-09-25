@@ -1,7 +1,7 @@
 """HTML reporting for Coverage."""
 
 import keyword, os, re, token, tokenize, shutil
-from coverage import __version__    # pylint: disable-msg=W0611
+from coverage import __url__, __version__    # pylint: disable-msg=W0611
 from coverage.backward import StringIO   # pylint: disable-msg=W0622
 from coverage.report import Reporter
 from coverage.templite import Templite
