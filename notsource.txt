@@ -1,7 +1,0 @@
-.pyc
-.pyd
-\.hg\
-\build\
-\dist\
-\three\
-.egg-info
