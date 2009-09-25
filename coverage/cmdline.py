@@ -31,8 +31,14 @@ class Opts:
         help="Show line numbers of statements in each module that weren't "
                 "executed."
         )
-    omit = optparse.Option(
+    old_omit = optparse.Option(
         '-o', '--omit', action='store',
+        metavar="PRE1,PRE2,...",
+        help="Omit files when their filename path starts with one of these "
+                "prefixes."
+        )
+    omit = optparse.Option(
+        '', '--omit', action='store',
         metavar="PRE1,PRE2,...",
         help="Omit files when their filename path starts with one of these "
                 "prefixes."
@@ -123,7 +129,7 @@ class ClassicOptionParser(CoverageOptionParser):
             Opts.ignore_errors,
             Opts.pylib,
             Opts.show_missing,
-            Opts.omit,
+            Opts.old_omit,
             Opts.parallel_mode,
             Opts.timid,
         ])

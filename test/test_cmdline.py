@@ -340,8 +340,8 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("annotate", "-a")
         self.cmd_executes_same("annotate -i", "-a -i")
         self.cmd_executes_same("annotate -d d1", "-a -d d1")
-        self.cmd_executes_same("annotate -o f", "-a -o f")
-        self.cmd_executes_same("annotate -o f,b", "-a -o f,b")
+        self.cmd_executes_same("annotate --omit f", "-a --omit f")
+        self.cmd_executes_same("annotate --omit f,b", "-a --omit f,b")
         self.cmd_executes_same("annotate m1", "-a m1")
         self.cmd_executes_same("annotate m1 m2 m3", "-a m1 m2 m3")
 
@@ -363,8 +363,8 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("html", "-b")
         self.cmd_executes_same("html -i", "-b -i")
         self.cmd_executes_same("html -d d1", "-b -d d1")
-        self.cmd_executes_same("html -o f", "-b -o f")
-        self.cmd_executes_same("html -o f,b", "-b -o f,b")
+        self.cmd_executes_same("html --omit f", "-b --omit f")
+        self.cmd_executes_same("html --omit f,b", "-b --omit f,b")
         self.cmd_executes_same("html m1", "-b m1")
         self.cmd_executes_same("html m1 m2 m3", "-b m1 m2 m3")
 
@@ -372,8 +372,8 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("report", "-r")
         self.cmd_executes_same("report -i", "-r -i")
         self.cmd_executes_same("report -m", "-r -m")
-        self.cmd_executes_same("report -o f", "-r -o f")
-        self.cmd_executes_same("report -o f,b", "-r -o f,b")
+        self.cmd_executes_same("report --omit f", "-r --omit f")
+        self.cmd_executes_same("report --omit f,b", "-r --omit f,b")
         self.cmd_executes_same("report m1", "-r m1")
         self.cmd_executes_same("report m1 m2 m3", "-r m1 m2 m3")
 
