@@ -237,6 +237,12 @@ class FarmTestCase(object):
             assert not right_only, "Files in %s only: %s" % (dir2, right_only)
 
     def _scrub(self, strlist, scrubs):
+        """Scrub uninteresting data from the strings in `strlist`.
+        
+        `scrubs is a list of (find, replace) pairs of regexes that are used on
+        each string in `strlist`.  A list of scrubbed strings is returned.
+        
+        """
         scrubbed = []
         for s in strlist:
             for rgx_find, rgx_replace in scrubs:

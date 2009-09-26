@@ -80,7 +80,7 @@ class XmlReporter(Reporter):
         # Use the DOM to write the output file.
         outfile.write(self.xml_out.toprettyxml())
 
-    def xml_file(self, cu, statements, excluded, missing):
+    def xml_file(self, cu, statements, excluded_unused, missing):
         """Add to the XML report for a single file."""
         
         # Create the 'lines' and 'package' XML elements, which
