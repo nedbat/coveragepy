@@ -13,5 +13,8 @@ if not os.path.exists("xml"):
 
 runfunc(html_it, rundir="src")
 
-compare("gold_x_xml", "xml")
+compare("gold_x_xml", "xml", scrubs=[
+    (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
+    (r' version="[-.\w]+"', ' version="VERSION"'),
+    ])
 clean("xml")
