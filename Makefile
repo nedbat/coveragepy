@@ -14,7 +14,7 @@ clean:
 	-rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
 	-rm -f coverage/*,cover
 	-rm -f MANIFEST
-	-rm -f .coverage .coverage.*
+	-rm -f .coverage .coverage.* coverage.xml
 	-rm -f $(TEST_ZIP)
 	-rm -f setuptools-*.egg
 	-rm -rf doc/_build/*

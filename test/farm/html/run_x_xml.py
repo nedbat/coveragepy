@@ -5,7 +5,7 @@ def html_it():
     cov.start()
     import x
     cov.stop()
-    cov.xml_report(x, outfile=open("../xml/coverage.xml", 'w'))
+    cov.xml_report(x, outfile="../xml/coverage.xml")
 
 import os
 if not os.path.exists("xml"):

@@ -43,6 +43,11 @@ class Opts:
         help="Omit files when their filename path starts with one of these "
                 "prefixes."
         )
+    output_xml = optparse.Option(
+        '-o', '', action='store', dest="outfile",
+        metavar="OUTFILE",
+        help="Write the XML report to this file. Defaults to 'coverage.xml'"
+        )
     parallel_mode = optparse.Option(
         '-p', '--parallel-mode', action='store_true',
         help="Include the machine name and process id in the .coverage "
@@ -253,9 +258,11 @@ CMDS = {
         [
             Opts.ignore_errors,
             Opts.omit,
+            Opts.output_xml,
             Opts.help,
             ],
         cmd = "xml",
+        defaults = {'outfile': 'coverage.xml'},
         usage = "[options] [modules]",
         description = "Generate an XML report of coverage results."
         ),
@@ -421,7 +428,10 @@ class CoverageScript:
             self.coverage.html_report(
                 directory=options.directory, **report_args)
         if 'xml' in options.actions:
-            self.coverage.xml_report(**report_args)
+            outfile = options.outfile
+            if outfile == '-':
+                outfile = None
+            self.coverage.xml_report(outfile=outfile, **report_args)
 
         return OK
 

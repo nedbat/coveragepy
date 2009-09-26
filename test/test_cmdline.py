@@ -13,6 +13,10 @@ OK, ERR = 0, 1
 class CmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
     
+    INIT_LOAD = """\
+            .coverage(cover_pylib=None, data_suffix=False, timid=None)
+            .load()\n"""
+
     def command_line(self, args, ret=OK):
         """Run `args` through the command line.
         
@@ -79,10 +83,6 @@ class CmdLineTest(CoverageTest):
 
 class ClassicCmdLineTest(CmdLineTest):
     """Tests of the classic coverage.py command line."""
-
-    INIT_LOAD = """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=None)
-            .load()\n"""
 
     def testErase(self):
         # coverage -e
@@ -378,6 +378,41 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("run --timid f.py", "-e -x --timid f.py")
         self.cmd_executes_same("run", "-x")
         
+    def testXml(self):
+        # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
+        self.cmd_executes("xml", self.INIT_LOAD + """\
+            .xml_report(ignore_errors=None, omit_prefixes=None, morfs=[],
+                    outfile="coverage.xml")
+            """)
+        self.cmd_executes("xml -i", self.INIT_LOAD + """\
+            .xml_report(ignore_errors=True, omit_prefixes=None, morfs=[],
+                    outfile="coverage.xml")
+            """)
+        self.cmd_executes("xml -o myxml.foo", self.INIT_LOAD + """\
+            .xml_report(ignore_errors=None, omit_prefixes=None, morfs=[],
+                    outfile="myxml.foo")
+            """)
+        self.cmd_executes("xml -o -", self.INIT_LOAD + """\
+            .xml_report(ignore_errors=None, omit_prefixes=None, morfs=[],
+                    outfile=None)
+            """)
+        self.cmd_executes("xml --omit fooey", self.INIT_LOAD + """\
+            .xml_report(ignore_errors=None, omit_prefixes=["fooey"], morfs=[],
+                    outfile="coverage.xml")
+            """)
+        self.cmd_executes("xml --omit fooey,booey", self.INIT_LOAD + """\
+            .xml_report(ignore_errors=None, omit_prefixes=["fooey", "booey"],
+                    morfs=[], outfile="coverage.xml")
+            """)
+        self.cmd_executes("xml mod1", self.INIT_LOAD + """\
+            .xml_report(ignore_errors=None, omit_prefixes=None, morfs=["mod1"],
+                    outfile="coverage.xml")
+            """)
+        self.cmd_executes("xml mod1 mod2 mod3", self.INIT_LOAD + """\
+            .xml_report(ignore_errors=None, omit_prefixes=None,
+                    morfs=["mod1", "mod2", "mod3"], outfile="coverage.xml")
+            """)
+
     def testNoArgumentsAtAll(self):
         self.cmd_help("", topic="minimum_help", ret=OK)
 

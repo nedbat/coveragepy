@@ -328,5 +328,7 @@ class coverage:
         The report is compatible with Cobertura reports.
         
         """
+        if outfile:
+            outfile = open(outfile, "w")
         reporter = XmlReporter(self, ignore_errors)
         reporter.report(morfs, omit_prefixes=omit_prefixes, outfile=outfile)
