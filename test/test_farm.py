@@ -221,8 +221,8 @@ class FarmTestCase(object):
             # ourselves.
             text_diff = []
             for f in diff_files:
-                left = open(os.path.join(dir1, f), "r").readlines()
-                right = open(os.path.join(dir2, f), "r").readlines()
+                left = open(os.path.join(dir1, f), "rU").readlines()
+                right = open(os.path.join(dir2, f), "rU").readlines()
                 if scrubs:
                     left = self._scrub(left, scrubs)
                     right = self._scrub(right, scrubs)
