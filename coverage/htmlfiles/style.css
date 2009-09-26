@@ -54,6 +54,11 @@ a.nav:hover {
     }
 
 #footer {
+    margin: 1em 3em;
+    }
+
+#footer .content {
+    padding: 0;
     font-size: 85%;
     font-family: verdana, sans-serif;
     color: #666666;
@@ -65,7 +70,7 @@ a.nav:hover {
     }
 
 /* Header styles */
-.content {
+#header .content {
     padding: 1em 3em;
     }
 
