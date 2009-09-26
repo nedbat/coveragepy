@@ -9,7 +9,7 @@ Version 3.1, unreleased
 
 - Coverage.py has a new command line syntax with subcommands.  This expands the
   possibilities for adding features and options in the future.  The old syntax
-  is still supported.
+  is still supported.  Try "coverage help" to see the new commands.
 
 - Added the "coverage xml" command for producing coverage reports in a
   Cobertura-compatible XML format.
