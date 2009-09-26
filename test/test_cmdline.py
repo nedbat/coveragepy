@@ -80,6 +80,10 @@ class CmdLineTest(CoverageTest):
 class ClassicCmdLineTest(CmdLineTest):
     """Tests of the classic coverage.py command line."""
 
+    INIT_LOAD = """\
+            .coverage(cover_pylib=None, data_suffix=False, timid=None)
+            .load()\n"""
+
     def testErase(self):
         # coverage -e
         self.cmd_executes("-e", """\
@@ -146,35 +150,31 @@ class ClassicCmdLineTest(CmdLineTest):
 
     def testReport(self):
         # coverage -r [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
-        init_load = """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=None)
-            .load()\n"""
-            
-        self.cmd_executes("-r", init_load + """\
+        self.cmd_executes("-r", self.INIT_LOAD + """\
             .report(ignore_errors=None, omit_prefixes=None, morfs=[],
                     show_missing=None)
             """)
-        self.cmd_executes("-r -i", init_load + """\
+        self.cmd_executes("-r -i", self.INIT_LOAD + """\
             .report(ignore_errors=True, omit_prefixes=None, morfs=[],
                     show_missing=None)
             """)
-        self.cmd_executes("-r -m", init_load + """\
+        self.cmd_executes("-r -m", self.INIT_LOAD + """\
             .report(ignore_errors=None, omit_prefixes=None, morfs=[],
                     show_missing=True)
             """)
-        self.cmd_executes("-r -o fooey", init_load + """\
+        self.cmd_executes("-r -o fooey", self.INIT_LOAD + """\
             .report(ignore_errors=None, omit_prefixes=["fooey"],
                     morfs=[], show_missing=None)
             """)
-        self.cmd_executes("-r -o fooey,booey", init_load + """\
+        self.cmd_executes("-r -o fooey,booey", self.INIT_LOAD + """\
             .report(ignore_errors=None, omit_prefixes=["fooey", "booey"],
                     morfs=[], show_missing=None)
             """)
-        self.cmd_executes("-r mod1", init_load + """\
+        self.cmd_executes("-r mod1", self.INIT_LOAD + """\
             .report(ignore_errors=None, omit_prefixes=None,
                     morfs=["mod1"], show_missing=None)
             """)
-        self.cmd_executes("-r mod1 mod2 mod3", init_load + """\
+        self.cmd_executes("-r mod1 mod2 mod3", self.INIT_LOAD + """\
             .report(ignore_errors=None, omit_prefixes=None,
                     morfs=["mod1", "mod2", "mod3"], show_missing=None)
             """)
@@ -191,35 +191,31 @@ class ClassicCmdLineTest(CmdLineTest):
 
     def testAnnotate(self):
         # coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
-        init_load = """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=None)
-            .load()\n"""
-            
-        self.cmd_executes("-a", init_load + """\
+        self.cmd_executes("-a", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
                     omit_prefixes=None, morfs=[])
             """)
-        self.cmd_executes("-a -d dir1", init_load + """\
+        self.cmd_executes("-a -d dir1", self.INIT_LOAD + """\
             .annotate(directory="dir1", ignore_errors=None,
                     omit_prefixes=None, morfs=[])
             """)
-        self.cmd_executes("-a -i", init_load + """\
+        self.cmd_executes("-a -i", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=True,
                     omit_prefixes=None, morfs=[])
             """)
-        self.cmd_executes("-a -o fooey", init_load + """\
+        self.cmd_executes("-a -o fooey", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
                     omit_prefixes=["fooey"], morfs=[])
             """)
-        self.cmd_executes("-a -o fooey,booey", init_load + """\
+        self.cmd_executes("-a -o fooey,booey", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
                     omit_prefixes=["fooey", "booey"], morfs=[])
             """)
-        self.cmd_executes("-a mod1", init_load + """\
+        self.cmd_executes("-a mod1", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
                     omit_prefixes=None, morfs=["mod1"])
             """)
-        self.cmd_executes("-a mod1 mod2 mod3", init_load + """\
+        self.cmd_executes("-a mod1 mod2 mod3", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
                     omit_prefixes=None, morfs=["mod1", "mod2", "mod3"])
             """)
@@ -236,35 +232,31 @@ class ClassicCmdLineTest(CmdLineTest):
 
     def testHtmlReport(self):
         # coverage -b -d DIR [-i] [-o DIR,...] [FILE1 FILE2 ...]
-        init_load = """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=None)
-            .load()\n"""
-            
-        self.cmd_executes("-b", init_load + """\
+        self.cmd_executes("-b", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
                     omit_prefixes=None, morfs=[])
             """)
-        self.cmd_executes("-b -d dir1", init_load + """\
+        self.cmd_executes("-b -d dir1", self.INIT_LOAD + """\
             .html_report(directory="dir1", ignore_errors=None,
                     omit_prefixes=None, morfs=[])
             """)
-        self.cmd_executes("-b -i", init_load + """\
+        self.cmd_executes("-b -i", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=True,
                     omit_prefixes=None, morfs=[])
             """)
-        self.cmd_executes("-b -o fooey", init_load + """\
+        self.cmd_executes("-b -o fooey", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
                     omit_prefixes=["fooey"], morfs=[])
             """)
-        self.cmd_executes("-b -o fooey,booey", init_load + """\
+        self.cmd_executes("-b -o fooey,booey", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
                     omit_prefixes=["fooey", "booey"], morfs=[])
             """)
-        self.cmd_executes("-b mod1", init_load + """\
+        self.cmd_executes("-b mod1", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
                     omit_prefixes=None, morfs=["mod1"])
             """)
-        self.cmd_executes("-b mod1 mod2 mod3", init_load + """\
+        self.cmd_executes("-b mod1 mod2 mod3", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
                     omit_prefixes=None, morfs=["mod1", "mod2", "mod3"])
             """)
