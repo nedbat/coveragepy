@@ -2,8 +2,8 @@
 Change history for Coverage.py
 ------------------------------
 
-Version 3.1, unreleased
------------------------
+Version 3.1b1, 27 September 2009
+--------------------------------
 
 - Python 3.1 is now supported.
 
@@ -26,7 +26,7 @@ Version 3.1, unreleased
 - Programs that change directory will still write .coverage files in the
   directory where execution started.  Fixed `issue 24`_.
 
-- Added a "coverage info" command for getting diagnostic information about the
+- Added a "coverage debug" command for getting diagnostic information about the
   coverage.py installation.
 
 .. _issue 11: http://bitbucket.org/ned/coveragepy/issue/11

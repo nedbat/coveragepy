@@ -176,7 +176,7 @@ x Tests about the "import __main__" in cmdline.py
     - Ubuntu
     - Mac
     - Pythons 2.3, 2.4, 2.5, 2.6, 3.1
-- Version number in coverage/version.py
+- Version number in coverage/__init__.py
     - 3.1a1, 3.1b1, 3.1c1, 3.1
 - Update CHANGES, including release date.
 - Update docs
