@@ -164,14 +164,19 @@ class CoverageData:
         """
         return self.lines.get(filename) or {}
 
-    def summary(self):
+    def summary(self, fullpath=False):
         """Return a dict summarizing the coverage data.
         
-        Keys are the basename of the filenames, and values are the number of
-        executed lines.  This is useful in the unit tests.
+        Keys are based on the filenames, and values are the number of executed
+        lines.  If `fullpath` is true, then the keys are the full pathnames of
+        the files, otherwise they are the basenames of the files.
         
         """
         summ = {}
+        if fullpath:
+            filename_fn = lambda f: f
+        else:
+            filename_fn = os.path.basename
         for filename, lines in self.lines.items():
-            summ[os.path.basename(filename)] = len(lines)
+            summ[filename_fn(filename)] = len(lines)
         return summ

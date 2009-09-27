@@ -25,7 +25,10 @@ Version 3.1, unreleased
 
 - Programs that change directory will still write .coverage files in the
   directory where execution started.  Fixed `issue 24`_.
-  
+
+- Added a "coverage info" command for getting diagnostic information about the
+  coverage.py installation.
+
 .. _issue 11: http://bitbucket.org/ned/coveragepy/issue/11
 .. _issue 12: http://bitbucket.org/ned/coveragepy/issue/12
 .. _issue 13: http://bitbucket.org/ned/coveragepy/issue/13

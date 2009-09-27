@@ -332,3 +332,27 @@ class coverage:
             outfile = open(outfile, "w")
         reporter = XmlReporter(self, ignore_errors)
         reporter.report(morfs, omit_prefixes=omit_prefixes, outfile=outfile)
+
+    def sysinfo(self):
+        """Return a list of key,value pairs showing internal information."""
+        
+        import coverage as covmod
+        import platform, re, sys
+
+        info = [
+            ('version', covmod.__version__),
+            ('coverage', covmod.__file__),
+            ('cover_prefix', self.cover_prefix),
+            ('pylib_prefix', self.pylib_prefix),
+            ('tracer', self.collector.tracer_name()),
+            ('data_file', self.data.filename),
+            ('python', sys.version),
+            ('platform', platform.platform()),
+            ('cwd', os.getcwd()),
+            ('path', sys.path),
+            ('environment', [
+                ("%s = %s" % (k, v)) for k, v in os.environ.items()
+                    if re.search("^COV|^PY", k)
+                ]),
+            ]
+        return info

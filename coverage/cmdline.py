@@ -199,7 +199,7 @@ CMDS = {
             "missed with !."
         ),
 
-    'help': CmdOptionParser("help",
+    'help': CmdOptionParser("help", [Opts.help],
         usage = "[command]",
         description = "Describe how to use coverage.py"
         ),
@@ -217,14 +217,22 @@ CMDS = {
             "executed, excluded, and missed lines."
         ),
     
-    'combine': CmdOptionParser("combine",
+    'combine': CmdOptionParser("combine", [Opts.help],
         usage = " ",
         description = "Combine data from multiple coverage files collected "
             "with 'run -p'.  The combined results are stored into a single "
             "file representing the union of the coverage."
         ),
 
-    'erase': CmdOptionParser("erase",
+    'debug': CmdOptionParser("debug", [Opts.help],
+        usage = "<topic>",
+        description = "Display information the internals of coverage.py, "
+            "for diagnosing problems. "
+            "Topics are 'data' to show a summary of the data collected in "
+            ".coverage, or 'sys' to show installation information."
+        ),
+
+    'erase': CmdOptionParser("erase", [Opts.help],
         usage = " ",
         description = "Erase previously collected coverage data."
         ),
@@ -371,6 +379,7 @@ class CoverageScript:
             'execute' in options.actions or
             'annotate' in options.actions or
             'html' in options.actions or
+            'debug' in options.actions or
             'report' in options.actions or
             'xml' in options.actions
             )
@@ -388,6 +397,35 @@ class CoverageScript:
             cover_pylib = options.pylib,
             timid = options.timid,
             )
+
+        if 'debug' in options.actions:
+            if not args:
+                self.help_fn("What information would you like: data, sys?")
+                return ERR
+            for info in args:
+                if info == 'sys':
+                    print("-- sys ----------------------------------------")
+                    for label, info in self.coverage.sysinfo():
+                        if isinstance(info, list):
+                            print("%15s:" % label)
+                            for e in info:
+                                print("%15s  %s" % ("", e))
+                        else:
+                            print("%15s: %s" % (label, info))
+                elif info == 'data':
+                    print("-- data ---------------------------------------")
+                    self.coverage.load()
+                    summary = self.coverage.data.summary(fullpath=True)
+                    if summary:
+                        filenames = sorted(summary.keys())
+                        for f in filenames:
+                            print("%s: %d lines" % (f, summary[f]))
+                    else:
+                        print("No data collected")
+                else:
+                    self.help_fn("Don't know what you mean by %r" % info)
+                    return ERR
+            return OK
 
         if 'erase' in options.actions or options.erase_first:
             self.coverage.erase()

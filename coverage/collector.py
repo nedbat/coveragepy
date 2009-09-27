@@ -118,6 +118,10 @@ class Collector:
             # trace function.
             self._trace_class = Tracer or PyTracer
 
+    def tracer_name(self):
+        """Return the class name of the tracer we're using."""
+        return self._trace_class.__name__
+
     def reset(self):
         """Clear collected data, and prepare to collect more."""
         # A dictionary with an entry for (Python source file name, line number

@@ -66,18 +66,23 @@ class CmdLineTest(CoverageTest):
         self.assertEqual(m1.method_calls, m2.method_calls)
 
     def cmd_help(self, args, help_msg=None, topic=None, ret=ERR):
-        """Run a command line, and check that it prints the right help."""
+        """Run a command line, and check that it prints the right help.
+        
+        Only the last function call in the mock is checked, which should be the
+        help message that we want to see.
+        
+        """
         m, r = self.mock_command_line(args)
         self.assertEqual(r, ret,
                 "Wrong status: got %s, wanted %s" % (r, ret)
                 )
         if help_msg:
-            self.assertEqual(m.method_calls,
-                [('help_fn', (help_msg,), {})]
+            self.assertEqual(m.method_calls[-1],
+                ('help_fn', (help_msg,), {})
                 )
         else:
-            self.assertEqual(m.method_calls,
-                [('help_fn', (), {'topic':topic})]
+            self.assertEqual(m.method_calls[-1],
+                ('help_fn', (), {'topic':topic})
                 )
             
 
@@ -340,6 +345,16 @@ class NewCmdLineTest(CmdLineTest):
     def testCombine(self):
         self.cmd_executes_same("combine", "-c")
 
+    def testDebug(self):
+        self.cmd_help("debug", "What information would you like: data, sys?")
+        self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
+
+    def testDebugSys(self):
+        self.command_line("debug sys")
+        out = self.stdout()
+        assert "version:" in out
+        assert "data_file:" in out
+    
     def testErase(self):
         self.cmd_executes_same("erase", "-e")
 
