@@ -346,7 +346,7 @@ class coverage:
             ('pylib_prefix', self.pylib_prefix),
             ('tracer', self.collector.tracer_name()),
             ('data_file', self.data.filename),
-            ('python', sys.version),
+            ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('cwd', os.getcwd()),
             ('path', sys.path),
