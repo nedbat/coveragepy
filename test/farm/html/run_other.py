@@ -9,6 +9,12 @@ def html_it():
 
 runfunc(html_it, rundir="src", addtopath="../othersrc")
 
+# Different platforms will name the "other" file differently. Rename it
+import os, glob
+
+for p in glob.glob("otherhtml/*_other.html"):
+    os.rename(p, "otherhtml/blah_blah_other.html")
+
 # HTML files will change often.  Check that the sizes are reasonable,
 #   and check that certain key strings are in the output.
 compare("gold_other", "otherhtml", size_within=10)
