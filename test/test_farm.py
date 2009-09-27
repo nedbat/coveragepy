@@ -49,6 +49,16 @@ class FarmTestCase(object):
         os.chdir(newdir)
         return cwd
 
+    def addtopath(self, directory):
+        """Add `directory` to the path, and return the old path."""
+        oldpath = sys.path[:]
+        sys.path.insert(0, directory)
+        return oldpath
+    
+    def restorepath(self, path):
+        """Restore the system path to `path`."""
+        sys.path = path
+
     def __call__(self):
         """Execute the test from the run.py file.
         
@@ -143,7 +153,7 @@ class FarmTestCase(object):
         finally:
             self.cd(cwd)
 
-    def runfunc(self, fn, rundir="src"):
+    def runfunc(self, fn, rundir="src", addtopath=None):
         """Run a function.
         
         `fn` is a callable.
@@ -152,10 +162,12 @@ class FarmTestCase(object):
         """
         
         cwd = self.cd(rundir)
+        oldpath = self.addtopath(addtopath)
         try:
             fn()
         finally:
             self.cd(cwd)
+            self.restorepath(oldpath)
 
     def compare(self, dir1, dir2, filepattern=None, size_within=0,
             left_extra=False, right_extra=False, scrubs=None
