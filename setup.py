@@ -2,12 +2,14 @@
 
 """Code coverage measurement for Python
 
-Coverage measures code coverage, typically during test execution.  It uses the
-code analysis tools and tracing hooks provided in the Python standard library
-to determine which lines are executable, and which have been executed.
+Coverage.py measures code coverage, typically during test execution. It uses the
+code analysis tools and tracing hooks provided in the Python standard library to
+determine which lines are executable, and which have been executed.
 
-Code repository and issue tracker are at
-`bitbucket.org <http://bitbucket.org/ned/coveragepy>`_.
+Coverage.py runs on Pythons 2.3 through 3.1.
+
+Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
+tracker are at `bitbucket.org <http://bitbucket.org/ned/coveragepy>`_.
 
 """
 
@@ -59,7 +61,7 @@ else:
 
 from coverage import __url__, __version__
 
-doclines = __doc__.split('\n')
+doclines = (__doc__ % __url__).split('\n')
 
 classifier_list = [c for c in classifiers.split("\n") if c]
 
@@ -101,4 +103,4 @@ setup(
     url = __url__,
     
     **more_setup_args
-)
+    )
