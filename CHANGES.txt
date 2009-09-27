@@ -7,22 +7,26 @@ Version 3.1, unreleased
 
 - Python 3.1 is now supported.
 
-- Coverage.py has a new command line syntax with subcommands.  This expands the
-  possibilities for adding features and options in the future.  The old syntax
-  is still supported.  Try "coverage help" to see the new commands.
+- Coverage.py has a new command line syntax with sub-commands.  This expands
+  the possibilities for adding features and options in the future.  The old
+  syntax is still supported.  Try "coverage help" to see the new commands.
+  Thanks to Ben Finney for early help.
 
 - Added the "coverage xml" command for producing coverage reports in a
   Cobertura-compatible XML format.
 
 - Added the --timid option to enable a simpler slower trace function that works
-  for DecoratorTools (including TurboGears) projects.  Fixed `issue 12` and
-  `issue 13`.
+  for DecoratorTools projects, including TurboGears.  Fixed `issue 12`_ and
+  `issue 13`_.
 
-- HTML reports now include syntax-colored Python source.
+- HTML reports show modules from other directories.  Fixed `issue 11`_.
+
+- HTML reports now display syntax-colored Python source.
 
 - Programs that change directory will still write .coverage files in the
   directory where execution started.  Fixed `issue 24`_.
   
+.. _issue 11: http://bitbucket.org/ned/coveragepy/issue/11
 .. _issue 12: http://bitbucket.org/ned/coveragepy/issue/12
 .. _issue 13: http://bitbucket.org/ned/coveragepy/issue/13
 .. _issue 24: http://bitbucket.org/ned/coveragepy/issue/24
@@ -41,7 +45,7 @@ Version 3.0.1, 7 July 2009
   raised.  This is now fixed.
 
 - The coverage.py code itself will now not be measured by coverage.py, and no
-  coverage modules will be mentioned in the nose --with-cover plugin.  Fixed
+  coverage modules will be mentioned in the nose --with-cover plug-in.  Fixed
   `issue 8`.
 
 - When running source files, coverage.py now opens them in universal newline
@@ -82,7 +86,7 @@ Version 3.0b3, 16 May 2009
   installed after compiling are now located correctly.  Thanks, Detlev
   Offenbach.
 
-- When using the object api (that is, constructing a coverage() object), data
+- When using the object API (that is, constructing a coverage() object), data
   is no longer saved automatically on process exit.  You can re-enable it with
   the auto_data=True parameter on the coverage() constructor. The module-level
   interface still uses automatic saving.
@@ -148,7 +152,7 @@ Version 2.85, 14 September 2008
   morf's being instances of ModuleType, instead use duck typing so that
   pseudo-modules can participate. Thanks, Imri Goldberg.
   
-- Use os.realpath as part of the fixing of filenames so that symlinks won't
+- Use os.realpath as part of the fixing of file names so that symlinks won't
   confuse things. Thanks, Patrick Mezard.
 
 
@@ -162,7 +166,7 @@ Version 2.78, 30 September 2007
 -------------------------------
 
 - Don't try to predict whether a file is Python source based on the extension.
-  Extensionless files are often Pythons scripts. Instead, simply parse the file
+  Extension-less files are often Pythons scripts. Instead, simply parse the file
   and catch the syntax errors. Hat tip to Ben Finney.
 
 
@@ -236,7 +240,7 @@ Version 2.5, 4 December 2005
 
 - coverage.py can now measure itself.
 
-- Adapted Greg Rogers' patch for using relative filenames, and sorting and
+- Adapted Greg Rogers' patch for using relative file names, and sorting and
   omitting files to report on.
 
 
@@ -264,7 +268,7 @@ Significant code changes.
 
 - Lines can be excluded from consideration, even entire suites of lines.
 
-- The filesystem cache of covered lines can be disabled programmatically.
+- The file system cache of covered lines can be disabled programmatically.
 
 - Modernized the code.
 
