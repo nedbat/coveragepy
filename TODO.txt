@@ -201,3 +201,4 @@ x Tests about the "import __main__" in cmdline.py
     - Blog post?
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
+- Announce on TIP.
