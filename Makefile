@@ -23,6 +23,7 @@ LINTABLE = \
 	coverage \
 	scripts/coverage \
 	setup.py \
+	test/backtest.py \
 	test/coverage_coverage.py \
 	test/coveragetest.py \
 	test/test_api.py \
