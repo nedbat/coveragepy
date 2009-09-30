@@ -86,7 +86,6 @@ class CodeUnit:
         self.name = n
         self.modname = modname
 
-
     def __repr__(self):
         return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
 
@@ -129,12 +128,16 @@ class CodeUnit:
 
     def source_file(self):
         """Return an open file for reading the source of the code unit."""
-        if not os.path.exists(self.filename):
-            source = self.file_locator.get_zip_data(self.filename)
-            if source is None:
-                raise CoverageException(
-                    "No source for code %r." % self.filename
-                    )
+        if os.path.exists(self.filename):
+            # A regular text file: open it.
+            return open(self.filename)
+
+        # Maybe it's in a zip file?
+        source = self.file_locator.get_zip_data(self.filename)
+        if source is not None:
             return StringIO(source)
-        
-        return open(self.filename)
+            
+        # Couldn't find source.
+        raise CoverageException(
+            "No source for code %r." % self.filename
+            )

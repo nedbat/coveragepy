@@ -2,7 +2,10 @@ Coverage TODO
 
 * 3.1
 
-- Python 3.1 support.
++ Python 3.1 support.
+
+* 3.2
+
 - bitvector in trace extension.
 
 
