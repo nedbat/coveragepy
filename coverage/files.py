@@ -34,7 +34,7 @@ class FileLocator:
         if filename not in self.canonical_filename_cache:
             f = filename
             if os.path.isabs(f) and not os.path.exists(f):
-                if not self.get_zip_data(f):
+                if self.get_zip_data(f) is None:
                     f = os.path.basename(f)
             if not os.path.isabs(f):
                 for path in [os.curdir] + sys.path:
@@ -50,7 +50,8 @@ class FileLocator:
         """Get data from `filename` if it is a zip file path.
         
         Returns the data read from the zip file, or None if no zip file could
-        be found or `filename` isn't in it.
+        be found or `filename` isn't in it.  The data returned might be "" if
+        the file is empty.
         
         """
         import zipimport

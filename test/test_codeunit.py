@@ -71,3 +71,12 @@ class CodeUnitTest(CoverageTest):
         assert zcu > acu and zcu >= acu and zcu != acu
         assert acu < bcu and acu <= bcu and acu != bcu
         assert bcu > acu and bcu >= acu and bcu != acu
+
+    def test_egg(self):
+        import egg1, egg1.egg1
+        cu = code_unit_factory([egg1, egg1.egg1], FileLocator())
+        self.assertEqual(cu[0].source_file().read(), "")
+        self.assertEqual(cu[1].source_file().read().split("\n")[0],
+                "# My egg file!"
+                )
+        

@@ -2,7 +2,8 @@
 
 import glob, os
 
-from coverage.backward import string_class
+from coverage.backward import string_class, BytesIO
+from coverage.misc import CoverageException
 
 
 def code_unit_factory(morfs, file_locator, omit_prefixes=None):
@@ -59,6 +60,8 @@ class CodeUnit:
     """
 
     def __init__(self, morf, file_locator):
+        self.file_locator = file_locator
+
         if hasattr(morf, '__file__'):
             f = morf.__file__
         else:
@@ -66,14 +69,14 @@ class CodeUnit:
         # .pyc files should always refer to a .py instead.
         if f.endswith('.pyc'):
             f = f[:-1]
-        self.filename = file_locator.canonical_filename(f)
+        self.filename = self.file_locator.canonical_filename(f)
 
         if hasattr(morf, '__name__'):
             n = modname = morf.__name__
             self.relative = True
         else:
             n = os.path.splitext(morf)[0]
-            rel = file_locator.relative_filename(n)
+            rel = self.file_locator.relative_filename(n)
             if os.path.isabs(n):
                 self.relative = (rel != n)
             else:
@@ -82,6 +85,7 @@ class CodeUnit:
             modname = None
         self.name = n
         self.modname = modname
+
 
     def __repr__(self):
         return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
@@ -125,4 +129,12 @@ class CodeUnit:
 
     def source_file(self):
         """Return an open file for reading the source of the code unit."""
+        if not os.path.exists(self.filename):
+            source = self.file_locator.get_zip_data(self.filename)
+            if source is None:
+                raise CoverageException(
+                    "No source for code %r." % self.filename
+                    )
+            return BytesIO(source)
+        
         return open(self.filename)

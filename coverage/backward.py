@@ -29,8 +29,9 @@ except NameError:
 
 try:
     from cStringIO import StringIO
+    BytesIO = StringIO
 except ImportError:
-    from io import StringIO
+    from io import StringIO, BytesIO
 
 # What's a string called?
 

@@ -4,6 +4,7 @@ default:
 	@echo "* No default action *"
 
 TEST_ZIP = test/zipmods.zip
+TEST_EGG = test/eggsrc/dist/covtestegg1-0.0.0-py2.5.egg
 
 clean:
 	python test/test_farm.py clean
@@ -16,6 +17,7 @@ clean:
 	-rm -f MANIFEST
 	-rm -f .coverage .coverage.* coverage.xml
 	-rm -f $(TEST_ZIP)
+	-rm -rf test/eggsrc/build test/eggsrc/dist test/eggsrc/*.egg-info
 	-rm -f setuptools-*.egg
 	-rm -rf doc/_build/*
 
@@ -44,9 +46,12 @@ testready: testdata devinst
 tests: testready
 	nosetests
 
-testdata: $(TEST_ZIP)
+testdata: $(TEST_ZIP) $(TEST_EGG)
 $(TEST_ZIP): test/covmodzip1.py
 	zip -j $@ $+
+
+$(TEST_EGG): test/eggsrc/setup.py test/eggsrc/egg1/egg1.py
+	cd test/eggsrc; python setup.py bdist_egg
 
 kit:
 	python setup.py sdist --formats=gztar
