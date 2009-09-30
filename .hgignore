@@ -16,7 +16,6 @@ dist
 htmlcov
 MANIFEST
 setuptools-*.egg
-three
 
 # Stuff in the test directory.
 zipmods.zip
