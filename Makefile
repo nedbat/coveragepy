@@ -4,7 +4,7 @@ default:
 	@echo "* No default action *"
 
 TEST_ZIP = test/zipmods.zip
-TEST_EGG = test/eggsrc/dist/covtestegg1-0.0.0-py2.5.egg
+TEST_EGG = test/eggsrc/dist/covtestegg1-0.0.0-py*.egg
 
 clean:
 	python test/test_farm.py clean
