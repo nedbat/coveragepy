@@ -49,9 +49,9 @@ class FileLocator:
     def get_zip_data(self, filename):
         """Get data from `filename` if it is a zip file path.
         
-        Returns the data read from the zip file, or None if no zip file could
-        be found or `filename` isn't in it.  The data returned might be "" if
-        the file is empty.
+        Returns the string data read from the zip file, or None if no zip file
+        could be found or `filename` isn't in it.  The data returned will be
+        an empty string if the file is empty.
         
         """
         import zipimport
@@ -67,5 +67,7 @@ class FileLocator:
                     data = zi.get_data(parts[1])
                 except IOError:
                     continue
+                if sys.hexversion > 0x03000000:
+                    data = data.decode('utf8') # TODO: How to do this properly?
                 return data
         return None

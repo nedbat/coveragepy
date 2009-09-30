@@ -2,7 +2,7 @@
 
 import glob, os
 
-from coverage.backward import string_class, BytesIO
+from coverage.backward import string_class, StringIO
 from coverage.misc import CoverageException
 
 
@@ -135,6 +135,6 @@ class CodeUnit:
                 raise CoverageException(
                     "No source for code %r." % self.filename
                     )
-            return BytesIO(source)
+            return StringIO(source)
         
         return open(self.filename)
