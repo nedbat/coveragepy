@@ -17,8 +17,8 @@ Coverage measurement is typically used to gauge the effectiveness of tests. It
 can show which parts of your product code are being exercised by tests, and
 which are not.
 
-The latest version is 3.0.1, released 7 July 2009.  It is supported on Python
-2.3 through 2.6.
+The latest version is 3.1, released ??WHEN??.  It is supported on Python
+2.3 through 3.1.
 
 
 Quick start

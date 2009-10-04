@@ -10,6 +10,16 @@ Frequently asked questions
 --------------------------
 
 
+**Q: I use `nose`_ to run my tests, and the ``--with-cover`` plugin doesn't let
+me create HTML or XML reports.  What should I do?
+
+.. _nose: http://somethingaboutorange.com/mrl/projects/nose
+
+First run your tests and collect coverage data with nose and its plugin.  This
+will write coverage data into a .coverage file.  Then run coverage.py from the
+command line to create the reports you need from that data.
+
+
 **Q: Why do unexecutable lines show up as executed?**
 
 Usually this is because you've updated your code and run coverage on it
@@ -36,9 +46,9 @@ If you are using the :ref:`API <api>`, you need to call coverage.start() before
 importing the modules that define your functions.
 
 
-**Q: Does coverage work on Python 3.x?**
+**Q: Does coverage.py work on Python 3.x?**
 
-Not yet, but that's next on my list.
+Yes, as of coverage.py 3.1, Python 3.1 is supported.
 
 
 **Q: Isn't coverage testing the best thing ever?**

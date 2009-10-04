@@ -7,6 +7,7 @@ Coverage command line usage
 :history: 20090524T134300, brand new docs.
 :history: 20090613T164000, final touches for 3.0
 :history: 20090913T084400, new command line syntax
+:history: 20091004T170700, changes for 3.1
 
 .. highlight:: console
 
@@ -26,6 +27,10 @@ determine the action performed:
 
 * **annotate** -- Annotate source files with coverage results.
 
+* **debug** -- Get diagnostic information.
+
+Help is available with ``coverage help``, or with the ``--help`` switch on any
+other command.
 
 
 Execution
@@ -44,19 +49,19 @@ By default, coverage does not measure code installed with the Python interpreter
 If you want to measure that code as well as your own, add the ``-L`` flag.
 
 If your coverage results seems to be overlooking code that you know has been
-executed, try running coverage again with the ``--timid`` flag.  This uses a simpler
-but slower trace method.  Projects that use DecoratorTools, including TurboGears,
-will need to use ``--timid`` to get correct results.  This option can also be set
-with the environment variable COVERAGE_OPTIONS set to ``--timid``.
-
+executed, try running coverage again with the ``--timid`` flag.  This uses a
+simpler but slower trace method. Projects that use DecoratorTools, including
+TurboGears, will need to use ``--timid`` to get correct results.  This option
+can also be enabled by setting the environment variable COVERAGE_OPTIONS to
+``--timid``.
 
 
 Data file
 ---------
 
-Coverage collects execution data in a file called ".coverage".  If need be, you can
-set a new file name with the COVERAGE_FILE environment variable.  By default,
-each run of your program starts with an empty data set.  If you need to run your
+Coverage collects execution data in a file called ".coverage".  If need be, you
+can set a new file name with the COVERAGE_FILE environment variable.  By default,
+each run of your program starts with an empty data set. If you need to run your
 program multiple times to get complete data (for example, because you need to
 supply disjoint options), you can accumulate data across runs with the ``-a``
 flag on the **run** command.  
@@ -121,10 +126,10 @@ command line::
     -------------------------------------------------------
     TOTAL                        76     66    87%
 
-The ``-o`` flag omits files that begin with specified prefixes. For example, this
-will omit any modules in the django directory::
+The ``--omit`` flag omits files that begin with specified prefixes. For example,
+this will omit any modules in the django directory::
 
-    $ coverage report -m -o django
+    $ coverage report -m --omit django
 
 
 
@@ -142,7 +147,7 @@ Lines are highlighted green for executed, red for missing, and gray for
 excluded.  The counts at the top of the file are buttons to turn on and off
 the highlighting.
 
-The ``-d`` argument to specify an output directory is required::
+The ``-d`` argument specifies an output directory, and is required::
 
     $ coverage html -d covhtml
 
@@ -174,3 +179,16 @@ For example::
     >     else:
     >         a = 2
   
+
+XML reporting
+-------------
+
+The **xml** command writes coverage data to a "coverage.xml" file in a format
+compatible with `Cobertura <http://cobertura.sourceforge.net>`_.  This command
+is still experimental.  I need feedback from users to finish it up.
+
+
+Diagnostics
+-----------
+
+The **debug** command shows internal information to help diagnose problems.

@@ -3,6 +3,7 @@
 :history: 20090524T134300, brand new docs.
 :history: 20090613T164000, final touches for 3.0
 :history: 20090706T205000, changes for 3.0.1
+:history: 20091004T170700, changes for 3.1
 
 ------------------------------------
 Major change history for coverage.py
@@ -11,6 +12,32 @@ Major change history for coverage.py
 These are the major changes for coverage.py.  For a more complete change history,
 see the `CHANGES.txt <http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt>`_
 file.
+
+
+Version 3.1, when??
+-------------------
+
+- Python 3.1 is now supported.
+
+- Coverage.py has a new command line syntax with sub-commands.  This expands
+  the possibilities for adding features and options in the future.  The old
+  syntax is still supported.  Try "coverage help" to see the new commands.
+  Thanks to Ben Finney for early help.
+
+- Added an experimental "coverage xml" command for producing coverage reports
+  in a Cobertura-compatible XML format.  Thanks, Bill Hart.
+
+- Added the ``--timid`` option to enable a simpler slower trace function that
+  works for DecoratorTools projects, including TurboGears.  Fixed `issue 12`_
+  and `issue 13`_.
+
+- HTML reports now display syntax-colored Python source.
+
+- Added a "coverage debug" command for getting diagnostic information about the
+  coverage.py installation.
+
+.. _issue 12: http://bitbucket.org/ned/coveragepy/issue/12
+.. _issue 13: http://bitbucket.org/ned/coveragepy/issue/13
 
 
 Version 3.0.1, 7 July 2009

@@ -183,6 +183,7 @@ x Tests about the "import __main__" in cmdline.py
     - 3.1a1, 3.1b1, 3.1c1, 3.1
 - Update CHANGES, including release date.
 - Update docs
+    - Version, date, and changes in doc/changes.rst
     - Generate new sample_html to get the latest, incl footer version number:
         cd C:\ned\cog\trunk
         rmdir/s/q htmlcov

@@ -20,8 +20,8 @@ Version 3.1b1, 27 September 2009
   syntax is still supported.  Try "coverage help" to see the new commands.
   Thanks to Ben Finney for early help.
 
-- Added the "coverage xml" command for producing coverage reports in a
-  Cobertura-compatible XML format.  Thanks, Bill Hart.
+- Added an experimental "coverage xml" command for producing coverage reports
+  in a Cobertura-compatible XML format.  Thanks, Bill Hart.
 
 - Added the --timid option to enable a simpler slower trace function that works
   for DecoratorTools projects, including TurboGears.  Fixed `issue 12`_ and
