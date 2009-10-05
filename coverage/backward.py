@@ -47,6 +47,13 @@ try:
 except ImportError:
     import pickle
 
+# range or xrange?
+
+try:
+    range = xrange
+except NameError:
+    range = range
+
 # Exec is a statement in Py2, a function in Py3
 
 if sys.hexversion > 0x03000000:
