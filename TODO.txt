@@ -1,17 +1,10 @@
 Coverage TODO
 
-* 3.1
-
-+ Python 3.1 support.
-
-* 3.2
-
-- bitvector in trace extension.
-
 
 * Speed
 
 + C extension collector
+- bitvector in trace extension.
 - Ignore certain modules
 - Record linenos rather than (file,lineno) pairs in tracer.
 x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
@@ -33,9 +26,6 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 * Power
 
-- API for getting coverage data.
-- Instruction tracing instead of line tracing.
-- Path tracing (how does this even work?)
 - Branch coverage
     Titus' idea:
         1: if a:
@@ -43,6 +33,9 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
         3: c = 3
     if the coverage data shows 1,2,3, it was if-then.  if it's 1,3, then the
     missing else was executed.
+- API for getting coverage data.
+- Instruction tracing instead of line tracing.
+- Path tracing (how does this even work?)
 - Count execution of lines
 - Track callers of functions (ala std module trace)
 - Method/Class/Module coverage reporting.
@@ -51,27 +44,30 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 * Convenience
 
-- Why can't you specify execute (-x) and report (-r) in the same invocation?
+- Command line modules should also be directories, meaning all the modules in that
+    directory.
+- Why can't a morf also be a string, the name of a module?
+- ignore by module as well as file?
+- Use a .coveragerc file to control Coverage without the programmatic API.
+- Own the nose --with-cover plugin.
+x Why can't you specify execute (-x) and report (-r) in the same invocation?
     Maybe just because -x needs the rest of the command line?
-- How will Coverage package install over coverage.py module?
 + Support 2.3 - 3.1!
     http://pythonology.blogspot.com/2009/02/making-code-run-on-python-20-through-30.html
     http://www.rfk.id.au/blog/entry/preparing-pyenchant-for-python-3
     http://pydev.blogspot.com/2008/11/making-code-work-in-python-2-and-3.html
     + Explicitly set pickle protocol to 2.
-- Use a .coveragerc file to control Coverage without the programmatic API.
 - An inference mode that marks lines as executed if they "must have been" executed:
     class definitions, etc, when coverage is started after the class is defined.
 - Different categories of exclude pragma? So you can enable and disable them
     from the command line, to reconsider exclusions.
 - Reporting on files never touched by coverage (package completeness)
-- Why can't a morf also be a string, the name of a module?
-- ignore by module as well as file?
 
 
 * Beauty
 
 + HTML report
+    - Colored bars indicating coverage per file.
     - Package navigation.
     - Rolled-up statistics.
     + Syntax coloring in HTML report.
@@ -80,7 +76,6 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     + Baseline grid for linenumber font.
     + Separate out css and HTML.
     - Does it work right with utf-8 source files? http://www.python.org/dev/peps/pep-0263/
-    - Colored bars indicating coverage per file.
 
 
 * Community
@@ -100,13 +95,13 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
         - Double function decorators: all decorator lines count as executable code.
     - Document the .coverage file format.
     + HTML reporting.
+    - References between pages are off:
+        - They have <em> tags around them.
+        - They use #anchors that don't survive the px->html conversion.
 + Be sure --help text is complete (-i is missing).
 + Host the project somewhere with a real bug tracker: bitbucket.org
 + Point discussion to TIP
 - PEP 8 compliance?
-- References between pages are off:
-    - They have <em> tags around them.
-    - They use #anchors that don't survive the px->html conversion.
 
 
 * Programmability
@@ -118,8 +113,10 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 * Installation
 
+- How will Coverage package install over coverage.py module?
 - pip can't install it: it reads the coverage html page, and finds the kit link,
     but then can't handle the root-relative link.
+
 
 * Modernization
 
@@ -128,7 +125,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     + Get rid of the basestring protection
     + Use enumerate
     + Use sets instead of dicts
-- Switch from getopt to optparse.
++ Switch from getopt to optparse.
 + Get rid of the recursive nonsense.
 + Docstrings.
 + Remove huge document-style comments.
