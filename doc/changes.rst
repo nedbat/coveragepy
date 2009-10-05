@@ -14,8 +14,8 @@ see the `CHANGES.txt <http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt>`_
 file.
 
 
-Version 3.1, when??
--------------------
+Version 3.1, 4 October 2009
+---------------------------
 
 - Python 3.1 is now supported.
 

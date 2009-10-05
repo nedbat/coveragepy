@@ -184,6 +184,7 @@ x Tests about the "import __main__" in cmdline.py
 - Update CHANGES, including release date.
 - Update docs
     - Version, date, and changes in doc/changes.rst
+    - Version and date in doc/index.rst
     - Generate new sample_html to get the latest, incl footer version number:
         cd C:\ned\cog\trunk
         rmdir/s/q htmlcov

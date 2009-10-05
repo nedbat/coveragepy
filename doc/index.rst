@@ -7,6 +7,7 @@ coverage.py
 :history: 20090618T195900, minor tweaks
 :history: 20090707T205200, changes for 3.0.1
 :history: 20090913T084400, new command line syntax
+:history: 20091004T211900, version 3.1
 
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
@@ -17,7 +18,7 @@ Coverage measurement is typically used to gauge the effectiveness of tests. It
 can show which parts of your product code are being exercised by tests, and
 which are not.
 
-The latest version is 3.1, released ??WHEN??.  It is supported on Python
+The latest version is 3.1, released 4 October 2009.  It is supported on Python
 2.3 through 3.1.
 
 

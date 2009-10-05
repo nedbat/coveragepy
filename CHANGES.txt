@@ -2,8 +2,9 @@
 Change history for Coverage.py
 ------------------------------
 
-Next version
-------------
+
+Version 3.1, 4 October 2009
+---------------------------
 
 - Source code can now be read from eggs.  Thanks, rozza.  Fixes `issue 25`_
 
