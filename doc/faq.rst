@@ -11,7 +11,7 @@ Frequently asked questions
 
 
 **Q: I use `nose`_ to run my tests, and the ``--with-cover`` plugin doesn't let
-me create HTML or XML reports.  What should I do?
+me create HTML or XML reports.  What should I do?**
 
 .. _nose: http://somethingaboutorange.com/mrl/projects/nose
 
