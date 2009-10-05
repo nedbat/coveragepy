@@ -10,14 +10,14 @@ Frequently asked questions
 --------------------------
 
 
-**Q: I use `nose`_ to run my tests, and the ``--with-cover`` plugin doesn't let
-me create HTML or XML reports.  What should I do?**
+**Q: I use nose to run my tests, and its cover plugin doesn't let me create
+HTML or XML reports.  What should I do?**
+
+First run your tests and collect coverage data with `nose`_ and its plugin.
+This will write coverage data into a .coverage file.  Then run coverage.py from
+the :ref:`command line <cmd>` to create the reports you need from that data.
 
 .. _nose: http://somethingaboutorange.com/mrl/projects/nose
-
-First run your tests and collect coverage data with nose and its plugin.  This
-will write coverage data into a .coverage file.  Then run coverage.py from the
-command line to create the reports you need from that data.
 
 
 **Q: Why do unexecutable lines show up as executed?**
