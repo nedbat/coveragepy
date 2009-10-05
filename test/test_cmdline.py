@@ -276,8 +276,8 @@ class ClassicCmdLineTest(CmdLineTest):
 
     def testHelp(self):
         # coverage -h
-        self.cmd_help("-h", topic="classic_usage", ret=OK)
-        self.cmd_help("--help", topic="classic_usage", ret=OK)
+        self.cmd_help("-h", topic="help", ret=OK)
+        self.cmd_help("--help", topic="help", ret=OK)
 
     ## Error cases
     

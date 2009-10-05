@@ -309,8 +309,11 @@ class CoverageScript:
             import re
             topic_list = re.split("(?m)^=+ (\w+) =+$", HELP_TOPICS)
             topics = dict(zip(topic_list[1::2], topic_list[2::2]))
-            help_msg = topics[topic].strip()
-            print(help_msg % self.covpkg.__dict__)
+            help_msg = topics.get(topic, '').strip()
+            if help_msg:
+                print(help_msg % self.covpkg.__dict__)
+            else:
+                print("Don't know topic %r" % topic)
 
     def command_line(self, argv):
         """The bulk of the command line interface to Coverage.
@@ -347,7 +350,7 @@ class CoverageScript:
         # Handle help.
         if options.help:
             if classic:
-                self.help_fn(topic='classic_usage')
+                self.help_fn(topic='help')
             else:
                 self.help_fn(parser=parser)
             return OK
@@ -358,6 +361,8 @@ class CoverageScript:
                     parser = CMDS.get(a)
                     if parser:
                         self.help_fn(parser=parser)
+                    else:
+                        self.help_fn(topic=a)
             else:
                 self.help_fn(topic='help')
             return OK
@@ -476,7 +481,7 @@ class CoverageScript:
 
 HELP_TOPICS = r"""
 
-== classic_usage ==============================================================
+== classic ====================================================================
 Coverage version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
 
@@ -519,8 +524,6 @@ coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
     a directory listed in the omit list.
     e.g. coverage -i -r -o c:\python25,lib\enthought\traits
 
--h  Print this help.
-
 Coverage data is saved in the file .coverage by default.  Set the
 COVERAGE_FILE environment variable to save it somewhere else.
 
@@ -540,7 +543,8 @@ Commands:
     run         Run a Python program and measure code execution.
     xml         Create an XML report of coverage results.
 
-Use "coverage help <command>" for detailed help on each command.
+Use "coverage help <command>" for detailed help on any command.
+Use "coverage help classic" for help on older command syntax.
 For more information, see %(__url__)s
 
 == minimum_help ===============================================================
