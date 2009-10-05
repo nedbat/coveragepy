@@ -103,69 +103,69 @@ function toggle_lines(btn, cls) {
     
 </td>
 <td class='text' valign='top'>
-<p class='pln'>&quot;&quot;&quot; Indentation utilities for Cog.</p>
-<p class='pln'>&nbsp; &nbsp; http://nedbatchelder.com/code/cog</p>
-<p class='pln'>&nbsp;</p>
-<p class='pln'>&nbsp; &nbsp; Copyright 2004-2009, Ned Batchelder.</p>
-<p class='pln'>&quot;&quot;&quot;</p>
-<p class='pln'>&nbsp;</p>
-<p class='stm run hide'>import re</p>
-<p class='pln'>&nbsp;</p>
-<p class='stm run hide'>def whitePrefix(strings):</p>
-<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; Determine the whitespace prefix common to all non-blank lines</p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; in the argument list.</p>
-<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
-<p class='pln'>&nbsp; &nbsp; # Remove all blank lines from the list</p>
-<p class='stm run hide'>&nbsp; &nbsp; strings = [s for s in strings if s.strip() != &#39;&#39;]</p>
-<p class='pln'>&nbsp;</p>
-<p class='stm run hide'>&nbsp; &nbsp; if not strings: return &#39;&#39;</p>
-<p class='pln'>&nbsp;</p>
-<p class='pln'>&nbsp; &nbsp; # Find initial whitespace chunk in the first line.</p>
-<p class='pln'>&nbsp; &nbsp; # This is the best prefix we can hope for.</p>
-<p class='stm run hide'>&nbsp; &nbsp; prefix = re.match(r&#39;\s*&#39;, strings[0]).group(0)</p>
-<p class='pln'>&nbsp;</p>
-<p class='pln'>&nbsp; &nbsp; # Loop over the other strings, keeping only as much of</p>
-<p class='pln'>&nbsp; &nbsp; # the prefix as matches each string.</p>
-<p class='stm run hide'>&nbsp; &nbsp; for s in strings:</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; for i in range(len(prefix)):</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if prefix[i] != s[i]:</p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prefix = prefix[:i]</p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; break</p>
-<p class='stm run hide'>&nbsp; &nbsp; return prefix</p>
-<p class='pln'>&nbsp;</p>
-<p class='stm run hide'>def reindentBlock(lines, newIndent=&#39;&#39;):</p>
-<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; Take a block of text as a string or list of lines.</p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; Remove any common whitespace indentation.</p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; Re-indent using newIndent, and return it as a single string.</p>
-<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
-<p class='stm run hide'>&nbsp; &nbsp; if isinstance(lines, basestring):</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; lines = lines.split(&#39;\n&#39;)</p>
-<p class='stm run hide'>&nbsp; &nbsp; oldIndent = whitePrefix(lines)</p>
-<p class='stm run hide'>&nbsp; &nbsp; outLines = []</p>
-<p class='stm run hide'>&nbsp; &nbsp; for l in lines:</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if oldIndent:</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = l.replace(oldIndent, &#39;&#39;, 1)</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if l and newIndent:</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l = newIndent + l</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; outLines.append(l)</p>
-<p class='stm run hide'>&nbsp; &nbsp; return &#39;\n&#39;.join(outLines)</p>
-<p class='pln'>&nbsp;</p>
-<p class='stm run hide'>def commonPrefix(strings):</p>
-<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot; Find the longest string that is a prefix of all the strings.</p>
-<p class='pln'>&nbsp; &nbsp; &quot;&quot;&quot;</p>
-<p class='stm run hide'>&nbsp; &nbsp; if not strings:</p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; return &#39;&#39;</p>
-<p class='stm run hide'>&nbsp; &nbsp; prefix = strings[0]</p>
-<p class='stm run hide'>&nbsp; &nbsp; for s in strings:</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if len(s) &lt; len(prefix):</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prefix = prefix[:len(s)]</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; if not prefix:</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return &#39;&#39;</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; for i in range(len(prefix)):</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if prefix[i] != s[i]:</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prefix = prefix[:i]</p>
-<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; break</p>
-<p class='stm run hide'>&nbsp; &nbsp; return prefix</p>
+<p class='pln'><span class='str'>&quot;&quot;&quot; Indentation utilities for Cog.</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; http://nedbatchelder.com/code/cog</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; </span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; Copyright 2004-2009, Ned Batchelder.</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&quot;&quot;&quot;</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'><span class='key'>import</span> <span class='nam'>re</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'><span class='key'>def</span> <span class='nam'>whitePrefix</span><span class='op'>(</span><span class='nam'>strings</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='str'>&quot;&quot;&quot; Determine the whitespace prefix common to all non-blank lines</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; in the argument list.</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &quot;&quot;&quot;</span><span class="strut">&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='com'># Remove all blank lines from the list</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='nam'>strings</span> <span class='op'>=</span> <span class='op'>[</span><span class='nam'>s</span> <span class='key'>for</span> <span class='nam'>s</span> <span class='key'>in</span> <span class='nam'>strings</span> <span class='key'>if</span> <span class='nam'>s</span><span class='op'>.</span><span class='nam'>strip</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>!=</span> <span class='str'>&#39;&#39;</span><span class='op'>]</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='key'>if</span> <span class='key'>not</span> <span class='nam'>strings</span><span class='op'>:</span> <span class='key'>return</span> <span class='str'>&#39;&#39;</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class="strut">&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='com'># Find initial whitespace chunk in the first line.</span><span class="strut">&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='com'># This is the best prefix we can hope for.</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='nam'>prefix</span> <span class='op'>=</span> <span class='nam'>re</span><span class='op'>.</span><span class='nam'>match</span><span class='op'>(</span><span class='str'>r&#39;\s*&#39;</span><span class='op'>,</span> <span class='nam'>strings</span><span class='op'>[</span><span class='num'>0</span><span class='op'>]</span><span class='op'>)</span><span class='op'>.</span><span class='nam'>group</span><span class='op'>(</span><span class='num'>0</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class="strut">&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='com'># Loop over the other strings, keeping only as much of</span><span class="strut">&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='com'># the prefix as matches each string.</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>s</span> <span class='key'>in</span> <span class='nam'>strings</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>i</span> <span class='key'>in</span> <span class='nam'>range</span><span class='op'>(</span><span class='nam'>len</span><span class='op'>(</span><span class='nam'>prefix</span><span class='op'>)</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>prefix</span><span class='op'>[</span><span class='nam'>i</span><span class='op'>]</span> <span class='op'>!=</span> <span class='nam'>s</span><span class='op'>[</span><span class='nam'>i</span><span class='op'>]</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>prefix</span> <span class='op'>=</span> <span class='nam'>prefix</span><span class='op'>[</span><span class='op'>:</span><span class='nam'>i</span><span class='op'>]</span><span class="strut">&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>break</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='key'>return</span> <span class='nam'>prefix</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'><span class='key'>def</span> <span class='nam'>reindentBlock</span><span class='op'>(</span><span class='nam'>lines</span><span class='op'>,</span> <span class='nam'>newIndent</span><span class='op'>=</span><span class='str'>&#39;&#39;</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='str'>&quot;&quot;&quot; Take a block of text as a string or list of lines.</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; Remove any common whitespace indentation.</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; Re-indent using newIndent, and return it as a single string.</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &quot;&quot;&quot;</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>isinstance</span><span class='op'>(</span><span class='nam'>lines</span><span class='op'>,</span> <span class='nam'>basestring</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>lines</span> <span class='op'>=</span> <span class='nam'>lines</span><span class='op'>.</span><span class='nam'>split</span><span class='op'>(</span><span class='str'>&#39;\n&#39;</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='nam'>oldIndent</span> <span class='op'>=</span> <span class='nam'>whitePrefix</span><span class='op'>(</span><span class='nam'>lines</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='nam'>outLines</span> <span class='op'>=</span> <span class='op'>[</span><span class='op'>]</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>l</span> <span class='key'>in</span> <span class='nam'>lines</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>oldIndent</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>l</span> <span class='op'>=</span> <span class='nam'>l</span><span class='op'>.</span><span class='nam'>replace</span><span class='op'>(</span><span class='nam'>oldIndent</span><span class='op'>,</span> <span class='str'>&#39;&#39;</span><span class='op'>,</span> <span class='num'>1</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>l</span> <span class='key'>and</span> <span class='nam'>newIndent</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>l</span> <span class='op'>=</span> <span class='nam'>newIndent</span> <span class='op'>+</span> <span class='nam'>l</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>outLines</span><span class='op'>.</span><span class='nam'>append</span><span class='op'>(</span><span class='nam'>l</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='key'>return</span> <span class='str'>&#39;\n&#39;</span><span class='op'>.</span><span class='nam'>join</span><span class='op'>(</span><span class='nam'>outLines</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'><span class='key'>def</span> <span class='nam'>commonPrefix</span><span class='op'>(</span><span class='nam'>strings</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='str'>&quot;&quot;&quot; Find the longest string that is a prefix of all the strings.</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &quot;&quot;&quot;</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='key'>if</span> <span class='key'>not</span> <span class='nam'>strings</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>return</span> <span class='str'>&#39;&#39;</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='nam'>prefix</span> <span class='op'>=</span> <span class='nam'>strings</span><span class='op'>[</span><span class='num'>0</span><span class='op'>]</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>s</span> <span class='key'>in</span> <span class='nam'>strings</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>len</span><span class='op'>(</span><span class='nam'>s</span><span class='op'>)</span> <span class='op'>&lt;</span> <span class='nam'>len</span><span class='op'>(</span><span class='nam'>prefix</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>prefix</span> <span class='op'>=</span> <span class='nam'>prefix</span><span class='op'>[</span><span class='op'>:</span><span class='nam'>len</span><span class='op'>(</span><span class='nam'>s</span><span class='op'>)</span><span class='op'>]</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='key'>not</span> <span class='nam'>prefix</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>return</span> <span class='str'>&#39;&#39;</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>i</span> <span class='key'>in</span> <span class='nam'>range</span><span class='op'>(</span><span class='nam'>len</span><span class='op'>(</span><span class='nam'>prefix</span><span class='op'>)</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>prefix</span><span class='op'>[</span><span class='nam'>i</span><span class='op'>]</span> <span class='op'>!=</span> <span class='nam'>s</span><span class='op'>[</span><span class='nam'>i</span><span class='op'>]</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>prefix</span> <span class='op'>=</span> <span class='nam'>prefix</span><span class='op'>[</span><span class='op'>:</span><span class='nam'>i</span><span class='op'>]</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>break</span><span class="strut">&nbsp;</span></p>
+<p class='stm run hide'>&nbsp; &nbsp; <span class='key'>return</span> <span class='nam'>prefix</span><span class="strut">&nbsp;</span></p>
     
 </td>
 </tr>
