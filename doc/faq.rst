@@ -5,6 +5,7 @@ FAQ and other help
 ==================
 
 :history: 20090613T141800, brand new docs.
+:history: 20091005T073900, updated for 3.1.
 
 Frequently asked questions
 --------------------------
