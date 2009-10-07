@@ -14,7 +14,7 @@ class CmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
     
     INIT_LOAD = """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=None)
+            .coverage(cover_pylib=None, data_suffix=False, timid=None, branch=None)
             .load()\n"""
 
     def command_line(self, args, ret=OK):
@@ -92,7 +92,7 @@ class ClassicCmdLineTest(CmdLineTest):
     def testErase(self):
         # coverage -e
         self.cmd_executes("-e", """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=None)
+            .coverage(cover_pylib=None, data_suffix=False, timid=None, branch=None)
             .erase()
             """)
         self.cmd_executes_same("-e", "--erase")
@@ -102,7 +102,7 @@ class ClassicCmdLineTest(CmdLineTest):
         
         # -x calls coverage.load first.
         self.cmd_executes("-x foo.py", """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=None)
+            .coverage(cover_pylib=None, data_suffix=False, timid=None, branch=None)
             .load()
             .start()
             .run_python_file('foo.py', ['foo.py'])
@@ -111,7 +111,7 @@ class ClassicCmdLineTest(CmdLineTest):
             """)
         # -e -x calls coverage.erase first.
         self.cmd_executes("-e -x foo.py", """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=None)
+            .coverage(cover_pylib=None, data_suffix=False, timid=None, branch=None)
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
@@ -120,7 +120,7 @@ class ClassicCmdLineTest(CmdLineTest):
             """)
         # --timid sets a flag, and program arguments get passed through.
         self.cmd_executes("-x --timid foo.py abc 123", """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=True)
+            .coverage(cover_pylib=None, data_suffix=False, timid=True, branch=None)
             .load()
             .start()
             .run_python_file('foo.py', ['foo.py', 'abc', '123'])
@@ -129,7 +129,7 @@ class ClassicCmdLineTest(CmdLineTest):
             """)
         # -L sets a flag, and flags for the program don't confuse us.
         self.cmd_executes("-x -p -L foo.py -a -b", """\
-            .coverage(cover_pylib=True, data_suffix=True, timid=None)
+            .coverage(cover_pylib=True, data_suffix=True, timid=None, branch=None)
             .load()
             .start()
             .run_python_file('foo.py', ['foo.py', '-a', '-b'])
@@ -146,7 +146,7 @@ class ClassicCmdLineTest(CmdLineTest):
     def testCombine(self):
         # coverage -c
         self.cmd_executes("-c", """\
-            .coverage(cover_pylib=None, data_suffix=False, timid=None)
+            .coverage(cover_pylib=None, data_suffix=False, timid=None, branch=None)
             .load()
             .combine()
             .save()

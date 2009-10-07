@@ -41,6 +41,7 @@ typedef struct {
     PyObject * should_trace;
     PyObject * data;
     PyObject * should_trace_cache;
+    PyObject * branch;
     int started;
     /* The index of the last-used entry in tracenames. */
     int depth;
@@ -300,6 +301,9 @@ Tracer_members[] = {
 
     { "should_trace_cache", T_OBJECT, offsetof(Tracer, should_trace_cache), 0,
             PyDoc_STR("Dictionary caching should_trace results.") },
+
+    { "branch",             T_OBJECT, offsetof(Tracer, branch), 0,
+            PyDoc_STR("Should we trace branches?") },
 
     { NULL }
 };

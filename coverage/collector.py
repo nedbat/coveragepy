@@ -35,6 +35,7 @@ class PyTracer:
         self.cur_filename = None
         self.filename_stack = []
         self.last_exc_back = None
+        self.branch = False
 
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
@@ -68,6 +69,7 @@ class PyTracer:
         
     def start(self):
         """Start this Tracer."""
+        assert not self.branch
         sys.settrace(self._trace)
 
     def stop(self):
@@ -95,7 +97,7 @@ class Collector:
     # the top, and resumed when they become the top again.
     _collectors = []
 
-    def __init__(self, should_trace, timid=False):
+    def __init__(self, should_trace, timid=False, branch=False):
         """Create a collector.
         
         `should_trace` is a function, taking a filename, and returning a
@@ -107,10 +109,13 @@ class Collector:
         tracing functions make the faster more sophisticated trace function not
         operate properly.
         
+        TODO: `branch`
+        
         """
         self.should_trace = should_trace
+        self.branch = branch
         self.reset()
-        if timid:
+        if timid or branch:
             # Being timid: use the simple Python trace function.
             self._trace_class = PyTracer
         else:
@@ -142,6 +147,7 @@ class Collector:
         tracer.data = self.data
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
+        tracer.branch = self.branch
         tracer.start()
         self.tracers.append(tracer)
 

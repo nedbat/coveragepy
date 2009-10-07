@@ -8,6 +8,10 @@ from coverage.execfile import run_python_file
 class Opts:
     """A namespace class for individual options we'll build parsers from."""
     
+    branch = optparse.Option(
+        '', '--branch', action='store_true',
+        help="Measure branch execution. HIGHLY EXPERIMENTAL!"
+        )
     directory = optparse.Option(
         '-d', '--directory', action='store',
         metavar="DIR",
@@ -78,6 +82,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             )
         self.set_defaults(
             actions=[],
+            branch=None,
             directory=None,
             help=None,
             ignore_errors=None,
@@ -251,6 +256,7 @@ CMDS = {
     'run': CmdOptionParser("execute",
         [
             Opts.append,
+            Opts.branch,
             Opts.pylib,
             Opts.parallel_mode,
             Opts.timid,
@@ -401,6 +407,7 @@ class CoverageScript:
             data_suffix = bool(options.parallel_mode),
             cover_pylib = options.pylib,
             timid = options.timid,
+            branch = options.branch,
             )
 
         if 'debug' in options.actions:

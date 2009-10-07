@@ -29,7 +29,7 @@ class coverage:
     """
 
     def __init__(self, data_file=None, data_suffix=False, cover_pylib=False,
-                auto_data=False, timid=False):
+                auto_data=False, timid=False, branch=False):
         """Create a new coverage measurement context.
         
         `data_file` is the base name of the data file to use, defaulting to
@@ -65,7 +65,7 @@ class coverage:
         # cheap hack, since the rest of the command line arguments aren't
         # recognized, but it solves some users' problems.
         timid = timid or ('--timid' in os.environ.get('COVERAGE_OPTIONS', ''))
-        self.collector = Collector(self._should_trace, timid=timid)
+        self.collector = Collector(self._should_trace, timid=timid, branch=branch)
 
         # Create the data file.
         if data_suffix:
