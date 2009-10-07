@@ -30,15 +30,15 @@ class CodeParser:
 
     # Getting numbers from the lnotab value changed in Py3.0.    
     if sys.hexversion >= 0x03000000:
-        def lnotab_increments(self, lnotab):
+        def _lnotab_increments(self, lnotab):
             """Return a list of ints from the lnotab bytes in 3.x"""
             return list(lnotab)
     else:
-        def lnotab_increments(self, lnotab):
+        def _lnotab_increments(self, lnotab):
             """Return a list of ints from the lnotab string in 2.x"""
             return [ord(c) for c in lnotab]
 
-    def find_statement_starts(self, code):
+    def _find_statement_starts(self, code):
         """Find the starts of statements in compiled code.
     
         Uses co_lnotab described in Python/compile.c to find line numbers that
@@ -46,8 +46,8 @@ class CodeParser:
     
         """
         # Adapted from dis.py in the standard library.
-        byte_increments = self.lnotab_increments(code.co_lnotab[0::2])
-        line_increments = self.lnotab_increments(code.co_lnotab[1::2])
+        byte_increments = self._lnotab_increments(code.co_lnotab[0::2])
+        line_increments = self._lnotab_increments(code.co_lnotab[1::2])
     
         last_line_num = None
         line_num = code.co_firstlineno
@@ -60,7 +60,7 @@ class CodeParser:
         if line_num != last_line_num:
             self.statement_starts.add(line_num)
 
-    def find_statements(self, code):
+    def _find_statements(self, code):
         """Find the statements in `code`.
         
         Update `self.statement_starts`, a set of line numbers that start
@@ -70,15 +70,15 @@ class CodeParser:
         # Adapted from trace.py in the standard library.
 
         # Get all of the lineno information from this code.
-        self.find_statement_starts(code)
+        self._find_statement_starts(code)
     
         # Check the constants for references to other code objects.
         for c in code.co_consts:
             if isinstance(c, types.CodeType):
                 # Found another code object, so recurse into it.
-                self.find_statements(c)
+                self._find_statements(c)
 
-    def raw_parse(self, text=None, filename=None, exclude=None):
+    def _raw_parse(self, text=None, filename=None, exclude=None):
         """Parse `text` to find the interesting facts about its lines.
         
         A handful of member fields are updated.
@@ -167,9 +167,9 @@ class CodeParser:
                     (filename, synerr.msg, synerr.lineno)
                 )
 
-        self.find_statements(code)
+        self._find_statements(code)
 
-    def map_to_first_line(self, lines, ignore=None):
+    def _map_to_first_line(self, lines, ignore=None):
         """Map the line numbers in `lines` to the correct first line of the
         statement.
         
@@ -206,11 +206,11 @@ class CodeParser:
         numbers to pairs (lo,hi) for multi-line statements.
         
         """
-        self.raw_parse(text, filename, exclude)
+        self._raw_parse(text, filename, exclude)
         
-        excluded_lines = self.map_to_first_line(self.excluded)
+        excluded_lines = self._map_to_first_line(self.excluded)
         ignore = excluded_lines + list(self.docstrings)
-        lines = self.map_to_first_line(self.statement_starts, ignore)
+        lines = self._map_to_first_line(self.statement_starts, ignore)
     
         return lines, excluded_lines, self.multiline
 
@@ -230,5 +230,5 @@ class CodeParser:
 
 if __name__ == '__main__':
     parser = CodeParser(show_tokens=True)
-    parser.raw_parse(filename=sys.argv[1], exclude=r"no\s*cover")
+    parser._raw_parse(filename=sys.argv[1], exclude=r"no\s*cover")
     parser.print_parse_results()
