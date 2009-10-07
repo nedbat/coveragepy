@@ -10,8 +10,8 @@ from coverage.backward import set, StringIO   # pylint: disable-msg=W0622
 class CodeParser:
     """Parse code to find executable lines, excluded lines, etc."""
     
-    def __init__(self, show_tokens=False):
-        self.show_tokens = show_tokens
+    def __init__(self):
+        self.show_tokens = False
 
         # The text lines of the parsed code.
         self.lines = None
@@ -28,6 +28,8 @@ class CodeParser:
         # The line numbers that start statements.
         self.statement_starts = set()
 
+        self.bytes_lines = []
+        
     # Getting numbers from the lnotab value changed in Py3.0.    
     if sys.hexversion >= 0x03000000:
         def _lnotab_increments(self, lnotab):
@@ -51,13 +53,17 @@ class CodeParser:
     
         last_line_num = None
         line_num = code.co_firstlineno
+        byte_num = 0
         for byte_incr, line_incr in zip(byte_increments, line_increments):
             if byte_incr:
                 if line_num != last_line_num:
+                    self.bytes_lines.append((byte_num, line_num))
                     self.statement_starts.add(line_num)
                     last_line_num = line_num
+                byte_num += byte_incr
             line_num += line_incr
         if line_num != last_line_num:
+            self.bytes_lines.append((byte_num, line_num))
             self.statement_starts.add(line_num)
 
     def _find_statements(self, code):
@@ -214,8 +220,77 @@ class CodeParser:
     
         return lines, excluded_lines, self.multiline
 
-    def print_parse_results(self):
-        """Print the results of the parsing."""
+    def _find_byte_chunks(self, code):
+        import opcode
+        
+        code = code.co_code
+        #labels = findlabels(code)
+        #linestarts = dict(findlinestarts(co))
+        n = len(code)
+        i = 0
+        extended_arg = 0
+        free = None
+        while i < n:
+            c = code[i]
+            op = ord(c)
+            print repr(i).rjust(4),
+            print opcode.opname[op].ljust(20)
+            i = i+1
+            if op >= opcode.HAVE_ARGUMENT:
+                oparg = ord(code[i]) + ord(code[i+1])*256 + extended_arg
+                extended_arg = 0
+                i = i+2
+                if op == opcode.EXTENDED_ARG:
+                    extended_arg = oparg*65536L
+        
+    def _disassemble(self, code):
+        """Disassemble code, for ad-hoc experimenting."""
+        
+        import dis
+        dis.dis(code)
+
+        for c in code.co_consts:
+            if isinstance(c, types.CodeType):
+                # Found another code object, so recurse into it.
+                print("\n%s:" % c)
+                self._disassemble(c)
+
+        print("")
+        
+    def adhoc_main(self, args):
+        """A main function for trying the code from the command line."""
+
+        from optparse import OptionParser
+
+        parser = OptionParser()
+        parser.add_option(
+            "-c", action="store_true", dest="chunks", help="Show byte chunks"
+            )
+        parser.add_option(
+            "-d", action="store_true", dest="dis", help="Disassemble"
+            )
+        parser.add_option(
+            "-t", action="store_true", dest="tokens", help="Show tokens"
+            )
+        
+        options, args = parser.parse_args()
+        filename = args[0]
+
+        if options.dis or options.chunks:        
+            source = open(filename).read()
+            code = compile(source, filename, "exec")
+
+        if options.dis:
+            print("Main code:")
+            self._disassemble(code)
+
+        if options.chunks:
+            self._find_byte_chunks(code)
+
+        self.show_tokens = options.tokens
+        self._raw_parse(filename=filename, exclude=r"no\s*cover")
+
+        print self.bytes_lines
         for i, ltext in enumerate(self.lines):
             lineno = i+1
             m0 = m1 = m2 = ' '
@@ -229,6 +304,4 @@ class CodeParser:
 
 
 if __name__ == '__main__':
-    parser = CodeParser(show_tokens=True)
-    parser._raw_parse(filename=sys.argv[1], exclude=r"no\s*cover")
-    parser.print_parse_results()
+    CodeParser().adhoc_main(sys.argv[1:])
