@@ -39,7 +39,8 @@
 typedef struct {
     PyObject_HEAD
     PyObject * should_trace;
-    PyObject * data;
+    PyObject * line_data;
+    PyObject * arc_data;
     PyObject * should_trace_cache;
     PyObject * branch;
     int started;
@@ -59,7 +60,8 @@ static int
 Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
 {
     self->should_trace = NULL;
-    self->data = NULL;
+    self->line_data = NULL;
+    self->arc_data = NULL;
     self->should_trace_cache = NULL;
     self->started = 0;
     self->depth = -1;
@@ -80,7 +82,8 @@ Tracer_dealloc(Tracer *self)
     }
 
     Py_XDECREF(self->should_trace);
-    Py_XDECREF(self->data);
+    Py_XDECREF(self->line_data);
+    Py_XDECREF(self->arc_data);
     Py_XDECREF(self->should_trace_cache);
 
     while (self->depth >= 0) {
@@ -245,7 +248,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                 Py_INCREF(tracename);
                 PyTuple_SET_ITEM(t, 0, tracename);
                 PyTuple_SET_ITEM(t, 1, MyInt_FromLong(frame->f_lineno));
-                PyDict_SetItem(self->data, t, Py_None);
+                PyDict_SetItem(self->line_data, t, Py_None);
                 Py_DECREF(t);
             }
         }
@@ -296,7 +299,10 @@ Tracer_members[] = {
     { "should_trace",       T_OBJECT, offsetof(Tracer, should_trace), 0,
             PyDoc_STR("Function indicating whether to trace a file.") },
 
-    { "data",               T_OBJECT, offsetof(Tracer, data), 0,
+    { "line_data",          T_OBJECT, offsetof(Tracer, line_data), 0,
+            PyDoc_STR("The raw dictionary of trace data.") },
+
+    { "arc_data",           T_OBJECT, offsetof(Tracer, arc_data), 0,
             PyDoc_STR("The raw dictionary of trace data.") },
 
     { "should_trace_cache", T_OBJECT, offsetof(Tracer, should_trace_cache), 0,

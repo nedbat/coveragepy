@@ -29,7 +29,7 @@ class PyTracer:
     # used to force the use of this tracer.
 
     def __init__(self):
-        self.data = None
+        self.line_data = None
         self.should_trace = None
         self.should_trace_cache = None
         self.cur_filename = None
@@ -59,7 +59,7 @@ class PyTracer:
         elif event == 'line':
             # Record an executed line.
             if self.cur_filename:
-                self.data[(self.cur_filename, frame.f_lineno)] = True
+                self.line_data[(self.cur_filename, frame.f_lineno)] = True
         elif event == 'return':
             # Leaving this function, pop the filename stack.
             self.cur_filename = self.filename_stack.pop()
@@ -97,7 +97,8 @@ class PyBranchTracer:
     # used to force the use of this tracer.
 
     def __init__(self):
-        self.data = None
+        self.line_data = None
+        self.arc_data = None
         self.should_trace = None
         self.should_trace_cache = None
         self.cur_filename = None
@@ -116,7 +117,7 @@ class PyBranchTracer:
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
                 if self.cur_filename:
-                    self.data['arcs'][(self.cur_filename, self.last_line, 0)] = True
+                    self.arc_data[(self.cur_filename, self.last_line, 0)] = True
                 self.cur_filename, self.last_line = self.filename_stack.pop()
             self.last_exc_back = None
             
@@ -131,12 +132,12 @@ class PyBranchTracer:
         elif event == 'line':
             # Record an executed line.
             if self.cur_filename:
-                self.data[(self.cur_filename, frame.f_lineno)] = True
-                self.data['arcs'][(self.cur_filename, self.last_line, frame.f_lineno)] = True
+                self.line_data[(self.cur_filename, frame.f_lineno)] = True
+                self.arc_data[(self.cur_filename, self.last_line, frame.f_lineno)] = True
             self.last_line = frame.f_lineno
         elif event == 'return':
             if self.cur_filename:
-                self.data['arcs'][(self.cur_filename, self.last_line, 0)] = True
+                self.arc_data[(self.cur_filename, self.last_line, 0)] = True
             # Leaving this function, pop the filename stack.
             self.cur_filename, self.last_line = self.filename_stack.pop()
         elif event == 'exception':
@@ -146,7 +147,6 @@ class PyBranchTracer:
     def start(self):
         """Start this Tracer."""
         assert self.branch
-        self.data['arcs'] = {}
         sys.settrace(self._trace)
 
     def stop(self):
@@ -210,7 +210,10 @@ class Collector:
         """Clear collected data, and prepare to collect more."""
         # A dictionary with an entry for (Python source file name, line number
         # in that file) if that line has been executed.
-        self.data = {}
+        self.line_data = {}
+        
+        # TODO
+        self.arc_data = {}
         
         # A cache of the results from should_trace, the decision about whether
         # to trace execution in a file. A dict of filename to (filename or
@@ -223,7 +226,8 @@ class Collector:
     def _start_tracer(self):
         """Start a new Tracer object, and store it in self.tracers."""
         tracer = self._trace_class()
-        tracer.data = self.data
+        tracer.line_data = self.line_data
+        tracer.arc_data = self.arc_data
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
         tracer.branch = self.branch
@@ -282,9 +286,10 @@ class Collector:
             tracer.start()
         threading.settrace(self._installation_trace)
 
-    def data_points(self):
+    def get_data(self, kind):
         """Return the (filename, lineno) pairs collected."""
-        if 'arcs' in self.data:
+        if self.arc_data:
             import pprint
-            pprint.pprint(self.data['arcs'])
-        return self.data.keys()
+            pprint.pprint(self.arc_data)
+        if kind == 'line':
+            return self.line_data.keys()

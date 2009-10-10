@@ -215,7 +215,7 @@ class coverage:
 
     def _harvest_data(self):
         """Get the collected data by filename and reset the collector."""
-        self.data.add_line_data(self.collector.data_points())
+        self.data.add_line_data(self.collector.get_data('line'))
         self.collector.reset()
 
     # Backward compatibility with version 1.
