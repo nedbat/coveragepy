@@ -1,6 +1,6 @@
 """Code parsing for Coverage."""
 
-import opcode, re, sys, token, tokenize, types
+import glob, opcode, os, re, sys, token, tokenize
 
 from coverage.backward import set, StringIO   # pylint: disable-msg=W0622
 from coverage.bytecode import ByteCodes, CodeObjects
@@ -72,18 +72,12 @@ class CodeParser:
         
         """
         # Adapted from trace.py in the standard library.
-
-        # Get all of the lineno information from this code.
-        bytes_lines = self._bytes_lines(code)
-        for b, l in bytes_lines:
-            self.statement_starts.add(l)
+        for co in CodeObjects(code):
+            # Get all of the lineno information from this code.
+            bytes_lines = self._bytes_lines(co)
+            for b, l in bytes_lines:
+                self.statement_starts.add(l)
     
-        # Check the constants for references to other code objects.
-        for c in code.co_consts:
-            if isinstance(c, types.CodeType):
-                # Found another code object, so recurse into it.
-                self._find_statements(c)
-
     def _raw_parse(self, text=None, filename=None, exclude=None):
         """Parse `text` to find the interesting facts about its lines.
         
@@ -230,7 +224,9 @@ class CodeParser:
             dis.dis(codeobj)
             print("Bytes lines: %r" % self._bytes_lines(codeobj))
             print("Jumps: %r %r" % self._find_byte_jumps(codeobj))
-            print(self._split_into_chunks(codeobj))
+            warnings, chunks = self._split_into_chunks(codeobj)
+            if warnings:
+                print("WARNING: %s" % "\n".join(warnings))
 
         print("")
 
@@ -297,6 +293,16 @@ class CodeParser:
                 
         return warnings, chunks
 
+    def _all_chunks(self, code):
+        warnings = []
+        chunks = []
+        for co in CodeObjects(code):
+            warns, chs = self._split_into_chunks(co)
+            warnings.extend(warns)
+            chunks.extend(chs)
+        
+        return warnings, chunks
+            
     def adhoc_main(self, args):
         """A main function for trying the code from the command line."""
 
@@ -304,42 +310,71 @@ class CodeParser:
 
         parser = OptionParser()
         parser.add_option(
-            "-c", action="store_true", dest="chunks", help="Show byte chunks"
+            "-c", action="store_true", dest="chunks", help="Check byte chunks"
             )
         parser.add_option(
             "-d", action="store_true", dest="dis", help="Disassemble"
+            )
+        parser.add_option(
+            "-R", action="store_true", dest="recursive", help="Recurse to find source files"
+            )
+        parser.add_option(
+            "-s", action="store_true", dest="source", help="Show analyzed source"
             )
         parser.add_option(
             "-t", action="store_true", dest="tokens", help="Show tokens"
             )
         
         options, args = parser.parse_args()
-        filename = args[0]
+        if options.recursive:
+            if args:
+                root = args[0]
+            else:
+                root = "."
+            for root, _, _ in os.walk(root):
+                for f in glob.glob(root + "/*.py"):
+                    self.adhoc_one_file(options, f)
+        else:
+            self.adhoc_one_file(options, args[0])
 
+    def adhoc_one_file(self, options, filename):
         if options.dis or options.chunks:        
-            source = open(filename).read()
-            code = compile(source, filename, "exec")
+            source = open(filename, "rU").read() + "\n\n"
+            try:
+                code = compile(source, filename, "exec")
+            except SyntaxError:
+                _, err, _ = sys.exc_info()                
+                print("** Couldn't compile %s: %s" % (filename, err))
+                return
 
         if options.dis:
             print("Main code:")
             self._disassemble(code)
 
         if options.chunks:
-            self._split_into_chunks(code)
+            warnings, chunks = self._all_chunks(code)
+            if options.recursive:
+                print("%6d: %s" % (len(chunks), filename))
+                if warnings:
+                    print("\t%r" % (warnings,))
+            else:
+                print(warnings)
+                print(chunks)
 
         self.show_tokens = options.tokens
         self._raw_parse(filename=filename, exclude=r"no\s*cover")
 
-        for i, ltext in enumerate(self.lines):
-            lineno = i+1
-            m0 = m1 = m2 = ' '
-            if lineno in self.statement_starts:
-                m0 = '-'
-            if lineno in self.docstrings:
-                m1 = '"'
-            if lineno in self.excluded:
-                m2 = 'x'
-            print("%4d %s%s%s %s" % (lineno, m0, m1, m2, ltext))
+        if options.source:
+            for i, ltext in enumerate(self.lines):
+                lineno = i+1
+                m0 = m1 = m2 = ' '
+                if lineno in self.statement_starts:
+                    m0 = '-'
+                if lineno in self.docstrings:
+                    m1 = '"'
+                if lineno in self.excluded:
+                    m2 = 'x'
+                print("%4d %s%s%s %s" % (lineno, m0, m1, m2, ltext))
 
 
 if __name__ == '__main__':
