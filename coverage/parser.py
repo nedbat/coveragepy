@@ -1,12 +1,12 @@
 """Code parsing for Coverage."""
 
-import re, sys, token, tokenize, types
+import opcode, re, sys, token, tokenize, types
 
-from coverage.misc import nice_pair, CoverageException
 from coverage.backward import set, StringIO   # pylint: disable-msg=W0622
+from coverage.bytecode import ByteCodes, CodeObjects
+from coverage.misc import nice_pair, CoverageException
 
 
-    
 class CodeParser:
     """Parse code to find executable lines, excluded lines, etc."""
     
@@ -28,8 +28,6 @@ class CodeParser:
         # The line numbers that start statements.
         self.statement_starts = set()
 
-        self.bytes_lines = []
-        
     # Getting numbers from the lnotab value changed in Py3.0.    
     if sys.hexversion >= 0x03000000:
         def _lnotab_increments(self, lnotab):
@@ -40,32 +38,32 @@ class CodeParser:
             """Return a list of ints from the lnotab string in 2.x"""
             return [ord(c) for c in lnotab]
 
-    def _find_statement_starts(self, code):
-        """Find the starts of statements in compiled code.
+    def _bytes_lines(self, code):
+        """Map byte offsets to line numbers in `code`.
     
-        Uses co_lnotab described in Python/compile.c to find line numbers that
-        start statements, adding them to `self.statement_starts`.
+        Uses co_lnotab described in Python/compile.c to map byte offsets to
+        line numbers.  Returns a list: [(b0, l0), (b1, l1), ...]
     
         """
         # Adapted from dis.py in the standard library.
         byte_increments = self._lnotab_increments(code.co_lnotab[0::2])
         line_increments = self._lnotab_increments(code.co_lnotab[1::2])
     
+        bytes_lines = []
         last_line_num = None
         line_num = code.co_firstlineno
         byte_num = 0
         for byte_incr, line_incr in zip(byte_increments, line_increments):
             if byte_incr:
                 if line_num != last_line_num:
-                    self.bytes_lines.append((byte_num, line_num))
-                    self.statement_starts.add(line_num)
+                    bytes_lines.append((byte_num, line_num))
                     last_line_num = line_num
                 byte_num += byte_incr
             line_num += line_incr
         if line_num != last_line_num:
-            self.bytes_lines.append((byte_num, line_num))
-            self.statement_starts.add(line_num)
-
+            bytes_lines.append((byte_num, line_num))
+        return bytes_lines
+    
     def _find_statements(self, code):
         """Find the statements in `code`.
         
@@ -76,7 +74,9 @@ class CodeParser:
         # Adapted from trace.py in the standard library.
 
         # Get all of the lineno information from this code.
-        self._find_statement_starts(code)
+        bytes_lines = self._bytes_lines(code)
+        for b, l in bytes_lines:
+            self.statement_starts.add(l)
     
         # Check the constants for references to other code objects.
         for c in code.co_consts:
@@ -220,43 +220,83 @@ class CodeParser:
     
         return lines, excluded_lines, self.multiline
 
-    def _find_byte_chunks(self, code):
-        import opcode
-        
-        code = code.co_code
-        #labels = findlabels(code)
-        #linestarts = dict(findlinestarts(co))
-        n = len(code)
-        i = 0
-        extended_arg = 0
-        free = None
-        while i < n:
-            c = code[i]
-            op = ord(c)
-            print repr(i).rjust(4),
-            print opcode.opname[op].ljust(20)
-            i = i+1
-            if op >= opcode.HAVE_ARGUMENT:
-                oparg = ord(code[i]) + ord(code[i+1])*256 + extended_arg
-                extended_arg = 0
-                i = i+2
-                if op == opcode.EXTENDED_ARG:
-                    extended_arg = oparg*65536L
-        
     def _disassemble(self, code):
         """Disassemble code, for ad-hoc experimenting."""
         
         import dis
-        dis.dis(code)
-
-        for c in code.co_consts:
-            if isinstance(c, types.CodeType):
-                # Found another code object, so recurse into it.
-                print("\n%s:" % c)
-                self._disassemble(c)
+        
+        for codeobj in CodeObjects(code):
+            print("\n%s: " % codeobj)
+            dis.dis(codeobj)
+            print("Bytes lines: %r" % self._bytes_lines(codeobj))
+            print("Jumps: %r %r" % self._find_byte_jumps(codeobj))
+            print(self._split_into_chunks(codeobj))
 
         print("")
+
+    def _line_for_byte(self, bytes_lines, byte):
+        last_line = 0
+        for b, l in bytes_lines:
+            if b == byte:
+                return l
+            elif b > byte:
+                return last_line
+            else:
+                last_line = l
+        return last_line
+
+    def _find_byte_jumps(self, code):
+        byte_jumps = [(bc.offset, bc.jump_to) for bc in ByteCodes(code.co_code) if bc.jump_to >= 0]
         
+        bytes_lines = self._bytes_lines(code)
+        line_jumps = [(self._line_for_byte(bytes_lines, b0), self._line_for_byte(bytes_lines, b1)) for b0, b1 in byte_jumps]
+        return byte_jumps, line_jumps
+
+    _chunk_enders = set([opcode.opmap[name] for name in ['JUMP_ABSOLUTE', 'RETURN_VALUE']])
+    
+    def _split_into_chunks(self, code):
+        class Chunk(object):
+            def __init__(self, byte, line=0):
+                self.byte = byte
+                self.line = line
+                self.exits = set()
+                
+            def __repr__(self):
+                return "<%d:%d %r>" % (self.byte, self.line, list(self.exits))
+
+        chunks = []
+        chunk = None
+        bytes_lines_map = dict(self._bytes_lines(code))
+        
+        for bc in ByteCodes(code.co_code):
+            # Maybe have to start a new block
+            if bc.offset in bytes_lines_map:
+                if chunk:
+                    chunk.exits.add(bc.offset)
+                chunk = Chunk(bc.offset, bytes_lines_map[bc.offset])
+                chunks.append(chunk)
+                
+            if not chunk:
+                chunk = Chunk(bc.offset)
+                chunks.append(chunk)
+                
+            if bc.jump_to >= 0:
+                chunk.exits.add(bc.jump_to)
+            
+            if bc.op in self._chunk_enders:
+                chunk = None
+        
+        warnings = []
+        # Find anonymous chunks (not associated with a line number), and find
+        # the numbered chunks that jump to them.
+        for ch in chunks:
+            if not ch.line:
+                jumpers = [c for c in chunks if ch.line in c.exits]
+                if len(jumpers) > 1:
+                    warnings.append("Chunk at %d has %d jumpers" % (ch.byte, len(jumpers)))
+                
+        return warnings, chunks
+
     def adhoc_main(self, args):
         """A main function for trying the code from the command line."""
 
@@ -285,12 +325,11 @@ class CodeParser:
             self._disassemble(code)
 
         if options.chunks:
-            self._find_byte_chunks(code)
+            self._split_into_chunks(code)
 
         self.show_tokens = options.tokens
         self._raw_parse(filename=filename, exclude=r"no\s*cover")
 
-        print self.bytes_lines
         for i, ltext in enumerate(self.lines):
             lineno = i+1
             m0 = m1 = m2 = ' '

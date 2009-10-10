@@ -77,6 +77,83 @@ class PyTracer:
         sys.settrace(None)
 
 
+class PyBranchTracer:
+    """Python implementation of the raw data tracer."""
+    
+    # Because of poor implementations of trace-function-manipulating tools,
+    # the Python trace function must be kept very simple.  In particular, there
+    # must be only one function ever set as the trace function, both through
+    # sys.settrace, and as the return value from the trace function.  Put
+    # another way, the trace function must always return itself.  It cannot
+    # swap in other functions, or return None to avoid tracing a particular
+    # frame.
+    #
+    # The trace manipulator that introduced this restriction is DecoratorTools,
+    # which sets a trace function, and then later restores the pre-existing one
+    # by calling sys.settrace with a function it found in the current frame.
+    #
+    # Systems that use DecoratorTools (or similar trace manipulations) must use
+    # PyTracer to get accurate results.  The command-line --timid argument is
+    # used to force the use of this tracer.
+
+    def __init__(self):
+        self.data = None
+        self.should_trace = None
+        self.should_trace_cache = None
+        self.cur_filename = None
+        self.last_line = 0
+        self.filename_stack = []
+        self.last_exc_back = None
+        self.branch = False
+
+    def _trace(self, frame, event, arg_unused):
+        """The trace function passed to sys.settrace."""
+        
+        #print "trace event: %s %r @%d" % (
+        #           event, frame.f_code.co_filename, frame.f_lineno)
+        
+        if self.last_exc_back:
+            if frame == self.last_exc_back:
+                # Someone forgot a return event.
+                if self.cur_filename:
+                    self.data['arcs'][(self.cur_filename, self.last_line, 0)] = True
+                self.cur_filename, self.last_line = self.filename_stack.pop()
+            self.last_exc_back = None
+            
+        if event == 'call':
+            # Entering a new function context.  Decide if we should trace
+            # in this file.
+            self.filename_stack.append((self.cur_filename, self.last_line))
+            filename = frame.f_code.co_filename
+            tracename = self.should_trace(filename, frame)
+            self.cur_filename = tracename
+            self.last_line = 0
+        elif event == 'line':
+            # Record an executed line.
+            if self.cur_filename:
+                self.data[(self.cur_filename, frame.f_lineno)] = True
+                self.data['arcs'][(self.cur_filename, self.last_line, frame.f_lineno)] = True
+            self.last_line = frame.f_lineno
+        elif event == 'return':
+            if self.cur_filename:
+                self.data['arcs'][(self.cur_filename, self.last_line, 0)] = True
+            # Leaving this function, pop the filename stack.
+            self.cur_filename, self.last_line = self.filename_stack.pop()
+        elif event == 'exception':
+            self.last_exc_back = frame.f_back
+        return self._trace
+        
+    def start(self):
+        """Start this Tracer."""
+        assert self.branch
+        self.data['arcs'] = {}
+        sys.settrace(self._trace)
+
+    def stop(self):
+        """Stop this Tracer."""
+        sys.settrace(None)
+
+
 class Collector:
     """Collects trace data.
 
@@ -115,7 +192,9 @@ class Collector:
         self.should_trace = should_trace
         self.branch = branch
         self.reset()
-        if timid or branch:
+        if branch:
+            self._trace_class = PyBranchTracer
+        elif timid:
             # Being timid: use the simple Python trace function.
             self._trace_class = PyTracer
         else:
@@ -205,4 +284,7 @@ class Collector:
 
     def data_points(self):
         """Return the (filename, lineno) pairs collected."""
+        if 'arcs' in self.data:
+            import pprint
+            pprint.pprint(self.data['arcs'])
         return self.data.keys()
