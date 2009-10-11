@@ -16,6 +16,8 @@ class CoverageData:
           executed:
             { 'file1': [17,23,45],  'file2': [1,2,3], ... }
     
+        * arcs: TODO
+
     """
     
     # Name of the data file (unless environment variable is set).
@@ -59,16 +61,18 @@ class CoverageData:
         #
         self.lines = {}
         
+        self.arcs = {}  # TODO
+        
     def usefile(self, use_file=True):
         """Set whether or not to use a disk file for data."""
         self.use_file = use_file
 
     def read(self):
         """Read coverage data from the coverage data file (if it exists)."""
-        data = {}
         if self.use_file:
-            data = self._read_file(self.filename)
-        self.lines = data
+            self.lines, self.arcs = self._read_file(self.filename)
+        else:
+            self.lines, self.arcs = {}, {}
 
     def write(self):
         """Write the collected coverage data to a file."""
@@ -81,11 +85,12 @@ class CoverageData:
             if self.filename and os.path.exists(self.filename):
                 os.remove(self.filename)
         self.lines = {}
+        self.arcs = {}
         
     def line_data(self):
         """Return the map from filenames to lists of line numbers executed."""
         return dict(
-            [(f, sorted(linemap.keys())) for f, linemap in self.lines.items()]
+            [(f, sorted(lmap.keys())) for f, lmap in self.lines.items()]
             )
 
     def write_file(self, filename):
@@ -108,10 +113,12 @@ class CoverageData:
 
     def read_file(self, filename):
         """Read the coverage data from `filename`."""
-        self.lines = self._read_file(filename)
+        self.lines, self.arcs = self._read_file(filename)
 
     def _read_file(self, filename):
         """Return the stored coverage data from the given file."""
+        lines = {}
+        arcs = {}
         try:
             fdata = open(filename, 'rb')
             try:
@@ -121,14 +128,12 @@ class CoverageData:
             if isinstance(data, dict):
                 # Unpack the 'lines' item.
                 lines = dict([
-                    (f, dict([(l, True) for l in linenos]))
-                        for f,linenos in data['lines'].items()
+                    (f, dict.fromkeys(linenos, True))
+                        for f, linenos in data['lines'].items()
                     ])
-                return lines
-            else:
-                return {}
         except Exception:
-            return {}
+            pass
+        return lines, arcs
 
     def combine_parallel_data(self):
         """ Treat self.filename as a file prefix, and combine the data from all
@@ -138,8 +143,8 @@ class CoverageData:
         for f in os.listdir(data_dir or '.'):
             if f.startswith(local):
                 full_path = os.path.join(data_dir, f)
-                new_data = self._read_file(full_path)
-                for filename, file_data in new_data.items():
+                new_lines, new_arcs = self._read_file(full_path)
+                for filename, file_data in new_lines.items():
                     self.lines.setdefault(filename, {}).update(file_data)
 
     def add_line_data(self, data_points):
@@ -150,6 +155,10 @@ class CoverageData:
         """
         for filename, lineno in data_points:
             self.lines.setdefault(filename, {})[lineno] = True
+
+    def add_arc_data(self, arc_data):
+        for filename, arc in arc_data:
+            self.arcs.setdefault(filename, {})[arc_data] = True
 
     def executed_files(self):
         """A list of all files that had been measured as executed."""
