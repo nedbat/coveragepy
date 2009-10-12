@@ -16,7 +16,8 @@ class CoverageData:
           executed:
             { 'file1': [17,23,45],  'file2': [1,2,3], ... }
     
-        * arcs: TODO
+        * arcs: a dict mapping filenames to sorted lists of line number pairs:
+            { 'file1': [(17,23), (17,25), (25,26)], ... }
 
     """
     
@@ -93,6 +94,12 @@ class CoverageData:
             [(f, sorted(lmap.keys())) for f, lmap in self.lines.items()]
             )
 
+    def arc_data(self):
+        """Return the map from filenames to lists of line number pairs."""
+        return dict(
+            [(f, sorted(amap.keys())) for f, amap in self.arcs.items()]
+            )
+        
     def write_file(self, filename):
         """Write the coverage data to `filename`."""
 
@@ -100,7 +107,8 @@ class CoverageData:
         data = {}
 
         data['lines'] = self.line_data()
-
+        data['arcs'] = self.arc_data()
+        
         if self.collector:
             data['collector'] = self.collector
 
@@ -129,7 +137,12 @@ class CoverageData:
                 # Unpack the 'lines' item.
                 lines = dict([
                     (f, dict.fromkeys(linenos, None))
-                        for f, linenos in data['lines'].items()
+                        for f, linenos in data.get('lines', {}).items()
+                    ])
+                # Unpack the 'arcs' item.
+                arcs = dict([
+                    (f, dict.fromkeys(arcpairs, None))
+                        for f, arcpairs in data.get('arcs', {}).items()
                     ])
         except Exception:
             pass

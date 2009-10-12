@@ -19,6 +19,9 @@ DATA_2 = { 'a.py': {1:None, 5:None}, 'c.py': {17:None} }
 SUMMARY_1_2 = { 'a.py':3, 'b.py':1, 'c.py':1 }
 EXECED_FILES_1_2 = [ 'a.py', 'b.py', 'c.py' ]
 
+ARC_DATA_3 = { 'x.py': {(1,2):None, (2,3):None}, 'y.py': {(17,23):None} }
+X_PY_ARCS_3 = [(1,2), (2,3)]
+Y_PY_ARCS_3 = [(17,23)]
 
 class DataTest(CoverageTest):
     """Test cases for coverage.data."""
@@ -92,3 +95,21 @@ class DataTest(CoverageTest):
         self.assert_equal_sets(lines.keys(), EXECED_FILES_1)
         self.assert_equal_sets(lines['a.py'], A_PY_LINES_1)
         self.assert_equal_sets(lines['b.py'], B_PY_LINES_1)
+        self.assert_equal_sets(data['arcs'].keys(), [])
+        
+    def test_file_format_with_arcs(self):
+        # Write with CoverageData, then read the pickle explicitly.
+        covdata = CoverageData()
+        covdata.add_arc_data(ARC_DATA_3)
+        covdata.write()
+        
+        fdata = open(".coverage", 'rb')
+        try:
+            data = pickle.load(fdata)
+        finally:
+            fdata.close()
+        
+        self.assert_equal_sets(data['lines'].keys(), [])
+        arcs = data['arcs']
+        self.assert_equal_sets(arcs['x.py'], X_PY_ARCS_3)
+        self.assert_equal_sets(arcs['y.py'], Y_PY_ARCS_3)

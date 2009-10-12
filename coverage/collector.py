@@ -248,4 +248,4 @@ class Collector:
         if self.branch:
             return self.data
         else:
-            return []
+            return {}
