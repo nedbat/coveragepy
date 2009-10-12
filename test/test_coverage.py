@@ -1726,7 +1726,7 @@ class RecursionTest(CoverageTest):
             """,
             [1,2,3,5,7], "")
         
-    if sys.hexversion < 0x03000000:        # This test currently crashes Py3k.
+    if sys.hexversion < 0x03000000: # TODO: This test currently crashes Py3k.
         def testLongRecursion(self):
             # We can't finish a very deep recursion, but we don't crash.
             self.assertRaises(RuntimeError, self.checkCoverage,
