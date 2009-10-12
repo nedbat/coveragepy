@@ -1,0 +1,36 @@
+PyTracer.data:
+    { filename: { lineno: None, .. }, ... }
+    OR: { filename: { (l1, l2): None, .. }, ... }
+    
+CoverageData.lines:
+    { filename: { lineno: None, ...}, ... }
+
+Collector.get_line_data():
+    PyTracer.data  -->  { filename: { lineno: None, .. }, ... }
+    returns { filename: { lineno: None, .. }, ... }
+
+    called by:
+        coverage._harvest_data, passed into CoverageData.add_line_data()
+
+CoverageData.add_line_data( { filename: { lineno: None, .. }, ... } )
+    --> data.lines
+
+CoverageData.executed_files():
+    returns [filename, ...]
+    called by:
+        Reporter.find_code_units()
+        tests
+    
+CoverageData.executed_lines():
+    returns { lineno: None, ... }
+    called by:
+        coverage._analyze()
+
+CoverageData.summary():
+    returns { filename: count(lineno), ... }
+    called by:
+        cmdline (for "debug data")
+        tests
+
+.coverage
+    {'lines': { filename: [lineno, ...], ... }}
