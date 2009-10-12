@@ -2,6 +2,11 @@
 Change history for Coverage.py
 ------------------------------
 
+Next version
+------------
+
+- The tracer code has changed, it's a few percent faster.
+
 
 Version 3.1, 4 October 2009
 ---------------------------
