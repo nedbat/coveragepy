@@ -20,17 +20,17 @@ commands:
     report -r 
         -m --missing                bool
         -i --ignore-errors          bool
-        -o --omit                   list of string
+        --omit                      list of string
         
     annotate -a
         -d --output-directory       string
         -i --ignore-errors          bool
-        -o --omit                   list of string
+        --omit                      list of string
     
     html -b
         -d --output-directory       string
         -i --ignore-errors          bool
-        -o --omit                   list of string
+        --omit                      list of string
         --red *
         --green *
         --style *
@@ -39,7 +39,7 @@ commands:
 
     byteprep   *
     
-    cobertura   *
+    xml   *
     
     
     
