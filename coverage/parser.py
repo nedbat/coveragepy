@@ -248,7 +248,7 @@ class CodeParser:
         line_jumps = [(self._line_for_byte(bytes_lines, b0), self._line_for_byte(bytes_lines, b1)) for b0, b1 in byte_jumps]
         return byte_jumps, line_jumps
 
-    _chunk_enders = set([opcode.opmap[name] for name in ['JUMP_ABSOLUTE', 'RETURN_VALUE']])
+    _chunk_enders = set([opcode.opmap[name] for name in ['JUMP_ABSOLUTE', 'JUMP_FORWARD', 'RETURN_VALUE']])
     
     def _split_into_chunks(self, code):
         class Chunk(object):
@@ -287,10 +287,13 @@ class CodeParser:
         # the numbered chunks that jump to them.
         for ch in chunks:
             if not ch.line:
-                jumpers = [c for c in chunks if ch.line in c.exits]
+                jumpers = [c for c in chunks if ch.byte in c.exits]
+                if len(jumpers) == 1:
+                    ch.line = jumpers[0].line
                 if len(jumpers) > 1:
-                    warnings.append("Chunk at %d has %d jumpers" % (ch.byte, len(jumpers)))
-                
+                    warnings.append("Anon chunk at %d has %d jumpers" % (ch.byte, len(jumpers)))
+                #if len(ch.exits) > 1:
+                #    warnings.append("Anon chunk at %d has %d exits" % (ch.byte, len(ch.exits)))
         return warnings, chunks
 
     def _all_chunks(self, code):
