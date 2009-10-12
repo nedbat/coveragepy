@@ -1,9 +1,0 @@
-Data file format, a pickled dict, with keys:
-
-collector: a string identifying the collecting software
-lines: a dict mapping filenames to lists of line numbers executed:
-  { 'file1': [17,23,45],  'file2': [1,2,3], }
-partial_lines: a dict mapping filenames to dicts mapping line numbers to
-  partial info. Partial info is a tuple, exec, poss, explanation?
-  Fully-executed lines can be omitted, as well as fully-non-executed lines.
-  { 'file1': { 1: (4,8,'a myfunc'),  2: (99,100,''), }, }
