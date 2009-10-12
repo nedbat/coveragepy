@@ -9,13 +9,13 @@ sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
 
-DATA_1 = [ ('a.py',1), ('a.py',2), ('b.py',3) ]
+DATA_1 = { 'a.py': {1:None, 2:None}, 'b.py': {3:None} }
 SUMMARY_1 = { 'a.py':2, 'b.py':1 }
 EXECED_FILES_1 = [ 'a.py', 'b.py' ]
 A_PY_LINES_1 = [1,2]
 B_PY_LINES_1 = [3]
 
-DATA_2 = [ ('a.py',1), ('a.py',5), ('c.py',17) ]
+DATA_2 = { 'a.py': {1:None, 5:None}, 'c.py': {17:None} }
 SUMMARY_1_2 = { 'a.py':3, 'b.py':1, 'c.py':1 }
 EXECED_FILES_1_2 = [ 'a.py', 'b.py', 'c.py' ]
 

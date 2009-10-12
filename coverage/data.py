@@ -147,14 +147,14 @@ class CoverageData:
                 for filename, file_data in new_lines.items():
                     self.lines.setdefault(filename, {}).update(file_data)
 
-    def add_line_data(self, data_points):
+    def add_line_data(self, line_data):
         """Add executed line data.
         
-        `data_points` is (filename, lineno) pairs.
+        `line_data` is { filename: { lineno: True, ... }, ...}
         
         """
-        for filename, lineno in data_points:
-            self.lines.setdefault(filename, {})[lineno] = True
+        for filename, linenos in line_data.items():
+            self.lines.setdefault(filename, {}).update(linenos)
 
     def add_arc_data(self, arc_data):
         for filename, arc in arc_data:

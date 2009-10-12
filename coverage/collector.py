@@ -33,9 +33,9 @@ class PyTracer:
         self.data = None
         self.should_trace = None
         self.should_trace_cache = None
-        self.cur_filename = None
+        self.cur_file_data = None
         self.last_line = 0
-        self.filename_stack = []
+        self.data_stack = []
         self.last_exc_back = None
         self.arcs = False
 
@@ -48,32 +48,37 @@ class PyTracer:
         if self.last_exc_back:
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
-                if self.arcs and self.cur_filename:
-                    self.data[(self.cur_filename, self.last_line, 0)] = True
-                self.cur_filename, self.last_line = self.filename_stack.pop()
+                if self.arcs and self.cur_file_data:
+                    self.cur_file_data[(self.last_line, 0)] = True
+                self.cur_file_data, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
             
         if event == 'call':
             # Entering a new function context.  Decide if we should trace
             # in this file.
-            self.filename_stack.append((self.cur_filename, self.last_line))
+            self.data_stack.append((self.cur_file_data, self.last_line))
             filename = frame.f_code.co_filename
             tracename = self.should_trace(filename, frame)
-            self.cur_filename = tracename
+            if tracename:
+                if tracename not in self.data:
+                    self.data[tracename] = {}
+                self.cur_file_data = self.data[tracename]
+            else:
+                self.cur_file_data = None
             self.last_line = 0
         elif event == 'line':
             # Record an executed line.
-            if self.cur_filename:
+            if self.cur_file_data is not None:
                 if self.arcs:
-                    self.data[(self.cur_filename, self.last_line, frame.f_lineno)] = True
+                    self.cur_file_data[(self.last_line, frame.f_lineno)] = True
                 else:
-                    self.data[(self.cur_filename, frame.f_lineno)] = True
+                    self.cur_file_data[frame.f_lineno] = True
             self.last_line = frame.f_lineno
         elif event == 'return':
-            if self.arcs and self.cur_filename:
-                self.data[(self.cur_filename, self.last_line, 0)] = True
+            if self.arcs and self.cur_file_data:
+                self.cur_file_data[(self.last_line, 0)] = True
             # Leaving this function, pop the filename stack.
-            self.cur_filename, self.last_line = self.filename_stack.pop()
+            self.cur_file_data, self.last_line = self.data_stack.pop()
         elif event == 'exception':
             self.last_exc_back = frame.f_back
         return self._trace
@@ -141,8 +146,8 @@ class Collector:
 
     def reset(self):
         """Clear collected data, and prepare to collect more."""
-        # A dictionary with an entry for (Python source file name, line number
-        # in that file) if that line has been executed. TODO
+        # A dictionary mapping filenames to dicts with linenumber keys,
+        # or mapping filenames to dicts with linenumber pairs as keys.
         self.data = {}
         
         # A cache of the results from should_trace, the decision about whether
@@ -157,9 +162,9 @@ class Collector:
         """Start a new Tracer object, and store it in self.tracers."""
         tracer = self._trace_class()
         tracer.data = self.data
+        tracer.arcs = self.branch
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
-        tracer.arcs = self.branch
         tracer.start()
         self.tracers.append(tracer)
 
@@ -216,11 +221,11 @@ class Collector:
         threading.settrace(self._installation_trace)
 
     def get_line_data(self):
-        """Return the (filename, lineno) pairs collected."""
+        """Return the { filename: { lineno: True, ...}, ...} data collected."""
         if self.branch:
             return [(f,l) for f,l,_ in self.data.keys() if l]
         else:
-            return self.data.keys()
+            return self.data
 
     def get_arc_data(self):
         """Return the (filename, (from_line, to_line)) arc data collected."""

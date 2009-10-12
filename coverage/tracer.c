@@ -43,17 +43,17 @@ typedef struct {
     PyObject * should_trace_cache;
     PyObject * arcs;
     int started;
-    /* The index of the last-used entry in tracenames. */
+    /* The index of the last-used entry in data_stack. */
     int depth;
     /* Filenames to record at each level, or NULL if not recording. */
-    PyObject ** tracenames;     /* PyMem_Malloc'ed. */
-    int tracenames_alloc;       /* number of entries at tracenames. */
+    PyObject ** data_stack;     /* PyMem_Malloc'ed, each PyObject* is a borrowed ref. */
+    int data_stack_alloc;       /* number of entries at data_stack. */
     
     /* The parent frame for the last exception event, to fix missing returns. */
     PyFrameObject * last_exc_back;
 } Tracer;
 
-#define TRACENAMES_DELTA    100
+#define STACK_DELTA    100
 
 static int
 Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
@@ -63,11 +63,11 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
     self->should_trace_cache = NULL;
     self->started = 0;
     self->depth = -1;
-    self->tracenames = PyMem_Malloc(TRACENAMES_DELTA*sizeof(PyObject *));
-    if (self->tracenames == NULL) {
+    self->data_stack = PyMem_Malloc(STACK_DELTA*sizeof(PyObject *));
+    if (self->data_stack == NULL) {
         return -1;
     }
-    self->tracenames_alloc = TRACENAMES_DELTA;
+    self->data_stack_alloc = STACK_DELTA;
     self->last_exc_back = NULL;
     return 0;
 }
@@ -83,12 +83,7 @@ Tracer_dealloc(Tracer *self)
     Py_XDECREF(self->data);
     Py_XDECREF(self->should_trace_cache);
 
-    while (self->depth >= 0) {
-        Py_XDECREF(self->tracenames[self->depth]);
-        self->depth--;
-    }
-    
-    PyMem_Free(self->tracenames);
+    PyMem_Free(self->data_stack);
 
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
@@ -174,7 +169,6 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             */
             if (self->depth >= 0) {
                 SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "missedreturn");
-                Py_XDECREF(self->tracenames[self->depth]);
                 self->depth--;
             }
         }
@@ -185,16 +179,16 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     switch (what) {
     case PyTrace_CALL:      /* 0 */
         self->depth++;
-        if (self->depth >= self->tracenames_alloc) {
-            /* We've outgrown our tracenames array: make it bigger. */
-            int bigger = self->tracenames_alloc + TRACENAMES_DELTA;
-            PyObject ** bigger_tracenames = PyMem_Realloc(self->tracenames, bigger * sizeof(PyObject *));
-            if (bigger_tracenames == NULL) {
+        if (self->depth >= self->data_stack_alloc) {
+            /* We've outgrown our data_stack array: make it bigger. */
+            int bigger = self->data_stack_alloc + STACK_DELTA;
+            PyObject ** bigger_data_stack = PyMem_Realloc(self->data_stack, bigger * sizeof(PyObject *));
+            if (bigger_data_stack == NULL) {
                 self->depth--;
                 return -1;
             }
-            self->tracenames = bigger_tracenames;
-            self->tracenames_alloc = bigger;
+            self->data_stack = bigger_data_stack;
+            self->data_stack_alloc = bigger;
         }
         /* Check if we should trace this line. */
         filename = frame->f_code->co_filename;
@@ -217,11 +211,17 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
 
         /* If tracename is a string, then we're supposed to trace. */
         if (MyText_Check(tracename)) {
-            self->tracenames[self->depth] = tracename;
+            PyObject * file_data = PyDict_GetItem(self->data, tracename);
+            if (file_data == NULL) {
+                file_data = PyDict_New();
+                PyDict_SetItem(self->data, tracename, file_data);
+                Py_DECREF(file_data);
+            }
+            self->data_stack[self->depth] = file_data;
             SHOWLOG(self->depth, frame->f_lineno, filename, "traced");
         }
         else {
-            self->tracenames[self->depth] = NULL;
+            self->data_stack[self->depth] = NULL;
             Py_DECREF(tracename);
             SHOWLOG(self->depth, frame->f_lineno, filename, "skipped");
         }
@@ -231,7 +231,6 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         /* A near-copy of this code is above in the missing-return handler. */
         if (self->depth >= 0) {
             SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "return");
-            Py_XDECREF(self->tracenames[self->depth]);
             self->depth--;
         }
         break;
@@ -239,14 +238,8 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     case PyTrace_LINE:      /* 2 */
         if (self->depth >= 0) {
             SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "line");
-            if (self->tracenames[self->depth]) {
-                PyObject * t = PyTuple_New(2);
-                tracename = self->tracenames[self->depth];
-                Py_INCREF(tracename);
-                PyTuple_SET_ITEM(t, 0, tracename);
-                PyTuple_SET_ITEM(t, 1, MyInt_FromLong(frame->f_lineno));
-                PyDict_SetItem(self->data, t, Py_None);
-                Py_DECREF(t);
+            if (self->data_stack[self->depth]) {
+                PyDict_SetItem(self->data_stack[self->depth], MyInt_FromLong(frame->f_lineno), Py_None);
             }
         }
         break;
