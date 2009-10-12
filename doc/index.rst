@@ -56,7 +56,7 @@ Getting started is easy:
     
     .. code-block:: console
 
-        $ coverage html -i -d htmlcov
+        $ coverage html -d htmlcov
 
     Then visit htmlcov/index.html in your browser, to see a
     `report like this </code/coverage/sample_html/index.html>`_.
