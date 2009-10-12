@@ -49,7 +49,7 @@ class PyTracer:
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
                 if self.arcs and self.cur_file_data:
-                    self.cur_file_data[(self.last_line, 0)] = True
+                    self.cur_file_data[(self.last_line, 0)] = None
                 self.cur_file_data, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
             
@@ -70,13 +70,13 @@ class PyTracer:
             # Record an executed line.
             if self.cur_file_data is not None:
                 if self.arcs:
-                    self.cur_file_data[(self.last_line, frame.f_lineno)] = True
+                    self.cur_file_data[(self.last_line, frame.f_lineno)] = None
                 else:
-                    self.cur_file_data[frame.f_lineno] = True
+                    self.cur_file_data[frame.f_lineno] = None
             self.last_line = frame.f_lineno
         elif event == 'return':
             if self.arcs and self.cur_file_data:
-                self.cur_file_data[(self.last_line, 0)] = True
+                self.cur_file_data[(self.last_line, 0)] = None
             # Leaving this function, pop the filename stack.
             self.cur_file_data, self.last_line = self.data_stack.pop()
         elif event == 'exception':
@@ -221,15 +221,31 @@ class Collector:
         threading.settrace(self._installation_trace)
 
     def get_line_data(self):
-        """Return the { filename: { lineno: True, ...}, ...} data collected."""
+        """Return the line data collected.
+        
+        Data is { filename: { lineno: None, ...}, ...}
+        
+        """
         if self.branch:
-            return [(f,l) for f,l,_ in self.data.keys() if l]
+            # If we were measuring branches, then we have to re-build the dict
+            # to show line data.
+            line_data = {}
+            for f, arcs in self.data.items():
+                line_data[f] = ldf = {}
+                for l1, _ in arcs:
+                    if l1:
+                        ldf[l1] = None
+            return line_data
         else:
             return self.data
 
     def get_arc_data(self):
-        """Return the (filename, (from_line, to_line)) arc data collected."""
+        """Return the arc data collected.
+        
+        Data is { filename: { (l1, l2): None, ...}, ...}
+        
+        """
         if self.branch:
-            return self.data.keys()
+            return self.data
         else:
             return []

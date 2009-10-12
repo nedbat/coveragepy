@@ -55,7 +55,7 @@ class CoverageData:
         # executed:
         #
         #   {
-        #       'filename1.py': { 12: True, 47: True, ... },
+        #       'filename1.py': { 12: None, 47: None, ... },
         #       ...
         #       }
         #
@@ -128,7 +128,7 @@ class CoverageData:
             if isinstance(data, dict):
                 # Unpack the 'lines' item.
                 lines = dict([
-                    (f, dict.fromkeys(linenos, True))
+                    (f, dict.fromkeys(linenos, None))
                         for f, linenos in data['lines'].items()
                     ])
         except Exception:
@@ -150,15 +150,20 @@ class CoverageData:
     def add_line_data(self, line_data):
         """Add executed line data.
         
-        `line_data` is { filename: { lineno: True, ... }, ...}
+        `line_data` is { filename: { lineno: None, ... }, ...}
         
         """
         for filename, linenos in line_data.items():
             self.lines.setdefault(filename, {}).update(linenos)
 
     def add_arc_data(self, arc_data):
-        for filename, arc in arc_data:
-            self.arcs.setdefault(filename, {})[arc_data] = True
+        """Add measured arc data.
+        
+        `arc_data` is { filename: { (l1,l2): None, ... }, ...}
+        
+        """
+        for filename, arcs in arc_data.items():
+            self.arcs.setdefault(filename, {}).update(arcs)
 
     def executed_files(self):
         """A list of all files that had been measured as executed."""
