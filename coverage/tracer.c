@@ -38,11 +38,17 @@
 
 typedef struct {
     PyObject_HEAD
+    /* Python objects manipulated directly by the Collector class. */
     PyObject * should_trace;
     PyObject * data;
     PyObject * should_trace_cache;
     PyObject * arcs;
+    
+    /* Has the tracer been started? */
     int started;
+    /* Are we tracing arcs, or just lines? */
+    int tracing_arcs;
+    
     /* The index of the last-used entry in data_stack. */
     int depth;
     /* Filenames to record at each level, or NULL if not recording. */
@@ -61,13 +67,18 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
     self->should_trace = NULL;
     self->data = NULL;
     self->should_trace_cache = NULL;
+    self->arcs = NULL;
+    
     self->started = 0;
+    self->tracing_arcs = 0;
+    
     self->depth = -1;
     self->data_stack = PyMem_Malloc(STACK_DELTA*sizeof(PyObject *));
     if (self->data_stack == NULL) {
         return -1;
     }
     self->data_stack_alloc = STACK_DELTA;
+    
     self->last_exc_back = NULL;
     return 0;
 }
@@ -253,7 +264,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
            
            Python itself fixed this problem in 2.4.  Pyexpat still has the bug.
            I've reported the problem with pyexpat as http://bugs.python.org/issue6359 .
-           If it gets fixed, this code should still work properly.  Maybe someday
+           If it gets fixed, this code should still work properly.  Maybe some day
            the bug will be fixed everywhere coverage.py is supported, and we can
            remove this missing-return detection.
            
@@ -271,6 +282,7 @@ Tracer_start(Tracer *self, PyObject *args)
 {
     PyEval_SetTrace((Py_tracefunc)Tracer_trace, (PyObject*)self);
     self->started = 1;
+    self->tracing_arcs = self->arcs && PyObject_IsTrue(self->arcs);
     return Py_BuildValue("");
 }
 
