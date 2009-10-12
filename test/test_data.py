@@ -95,8 +95,9 @@ class DataTest(CoverageTest):
         self.assert_equal_sets(lines.keys(), EXECED_FILES_1)
         self.assert_equal_sets(lines['a.py'], A_PY_LINES_1)
         self.assert_equal_sets(lines['b.py'], B_PY_LINES_1)
-        self.assert_equal_sets(data['arcs'].keys(), [])
-        
+        # If not measuring branches, there's no arcs entry.
+        self.assertEqual(data.get('arcs', 'not there'), 'not there')
+
     def test_file_format_with_arcs(self):
         # Write with CoverageData, then read the pickle explicitly.
         covdata = CoverageData()

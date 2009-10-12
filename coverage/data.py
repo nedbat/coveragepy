@@ -107,8 +107,10 @@ class CoverageData:
         data = {}
 
         data['lines'] = self.line_data()
-        data['arcs'] = self.arc_data()
-        
+        arcs = self.arc_data()
+        if arcs:
+            data['arcs'] = arcs
+
         if self.collector:
             data['collector'] = self.collector
 
@@ -123,16 +125,21 @@ class CoverageData:
         """Read the coverage data from `filename`."""
         self.lines, self.arcs = self._read_file(filename)
 
+    def raw_data(self, filename):
+        """Return the raw pickled data from `filename`."""
+        fdata = open(filename, 'rb')
+        try:
+            data = pickle.load(fdata)
+        finally:
+            fdata.close()
+        return data
+
     def _read_file(self, filename):
         """Return the stored coverage data from the given file."""
         lines = {}
         arcs = {}
         try:
-            fdata = open(filename, 'rb')
-            try:
-                data = pickle.load(fdata)
-            finally:
-                fdata.close()
+            data = self.raw_data(filename)
             if isinstance(data, dict):
                 # Unpack the 'lines' item.
                 lines = dict([
@@ -207,3 +214,13 @@ class CoverageData:
         for filename, lines in self.lines.items():
             summ[filename_fn(filename)] = len(lines)
         return summ
+
+if __name__ == '__main__':
+    # Ad-hoc: show the raw data in a data file.
+    import pprint, sys
+    covdata = CoverageData()
+    if sys.argv[1:]:
+        fname = sys.argv[1]
+    else:
+        fname = covdata.filename
+    pprint.pprint(covdata.raw_data(fname))
