@@ -6,7 +6,7 @@ Coverage TODO
 + C extension collector
 - bitvector in trace extension.
 - Ignore certain modules
-- Record linenos rather than (file,lineno) pairs in tracer.
++ Record linenos rather than (file,lineno) pairs in tracer.
 x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     this with C collector).
 - Seems like there should be a faster way to manage all the line number sets in
