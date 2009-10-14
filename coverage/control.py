@@ -264,10 +264,10 @@ class coverage:
                         "No source for code '%s'." % code_unit.filename
                         )
 
-        parser = CodeParser()
-        statements, excluded, line_map = parser.parse_source(
+        parser = CodeParser(
             text=source, filename=filename, exclude=self.exclude_re
             )
+        statements, excluded, line_map = parser.parse_source()
 
         # Identify missing statements.
         missing = []
