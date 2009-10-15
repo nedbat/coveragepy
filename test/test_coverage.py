@@ -12,6 +12,8 @@ from coveragetest import CoverageTest
 
 
 class BasicCoverageTest(CoverageTest):
+    """The simplest tests, for quick smoke testing of fundamental changes."""
+    
     def testSimple(self):
         self.checkCoverage("""\
             a = 1
@@ -56,6 +58,8 @@ class BasicCoverageTest(CoverageTest):
         
 
 class SimpleStatementTest(CoverageTest):
+    """Testing simple single-line statements."""
+    
     def testExpression(self):
         self.checkCoverage("""\
             1 + 2
@@ -481,6 +485,8 @@ class SimpleStatementTest(CoverageTest):
 
 
 class CompoundStatementTest(CoverageTest):
+    """Testing coverage of multi-line compound statements."""
+    
     def testStatementList(self):
         self.checkCoverage("""\
             a = 1;
@@ -1028,6 +1034,8 @@ class CompoundStatementTest(CoverageTest):
 
 
 class ExcludeTest(CoverageTest):
+    """Tests of the exclusion feature to mark lines as not covered."""
+    
     def testSimple(self):
         self.checkCoverage("""\
             a = 1; b = 2
@@ -1383,32 +1391,34 @@ class ExcludeTest(CoverageTest):
             [8,9], "", ['#pragma: NO COVER'])
 
 
-if sys.hexversion >= 0x020300f0:
-    # threading support was new in 2.3, only test there.
-    class ThreadingTest(CoverageTest):
-        def testThreading(self):
-            self.checkCoverage("""\
-                import time, threading
-    
-                def fromMainThread():
-                    return "called from main thread"
-                
-                def fromOtherThread():
-                    return "called from other thread"
-                
-                def neverCalled():
-                    return "no one calls me"
-                
-                other = threading.Thread(target=fromOtherThread)
-                other.start()
-                fromMainThread()
-                other.join()
-                """,
-                [1,3,4,6,7,9,10,12,13,14,15], "10")
+class ThreadingTest(CoverageTest):
+    """Tests of the threading support."""
+
+    def testThreading(self):
+        self.checkCoverage("""\
+            import time, threading
+
+            def fromMainThread():
+                return "called from main thread"
+            
+            def fromOtherThread():
+                return "called from other thread"
+            
+            def neverCalled():
+                return "no one calls me"
+            
+            other = threading.Thread(target=fromOtherThread)
+            other.start()
+            fromMainThread()
+            other.join()
+            """,
+            [1,3,4,6,7,9,10,12,13,14,15], "10")
 
 
 if sys.hexversion >= 0x020400f0:
     class Py24Test(CoverageTest):
+        """Tests of new syntax in Python 2.4."""
+        
         def testFunctionDecorators(self):
             self.checkCoverage("""\
                 def require_int(func):
@@ -1478,6 +1488,8 @@ if sys.hexversion >= 0x020400f0:
 
 if sys.hexversion >= 0x020500f0:
     class Py25Test(CoverageTest):
+        """Tests of new syntax in Python 2.5."""
+
         def testWithStatement(self):
             self.checkCoverage("""\
                 from __future__ import with_statement
@@ -1587,6 +1599,8 @@ if sys.hexversion >= 0x020500f0:
         
 
 class ModuleTest(CoverageTest):
+    """Tests for the module-level behavior of the `coverage` module."""
+
     def testNotSingleton(self):
         # You *can* create another coverage object.
         coverage.coverage()
@@ -1594,13 +1608,12 @@ class ModuleTest(CoverageTest):
 
 
 class ProcessTest(CoverageTest):
+    """Tests of the per-process behavior of coverage.py."""
+
     def testSaveOnExit(self):
         self.makeFile("mycode.py", """\
-            a = 1
-            b = 2
-            if b == 3:
-                c = 4
-            d = 5
+            h = "Hello"
+            w = "world"
             """)
             
         self.assert_(not os.path.exists(".coverage"))
@@ -1633,13 +1646,13 @@ class ProcessTest(CoverageTest):
         self.assertEqual(out, 'done\n')
         report1 = self.run_command("coverage -r").replace('\\', '/')
 
-        # Name                                                Stmts   Exec  Cover
-        # -----------------------------------------------------------------------
-        # c:/ned/coverage/trunk/test/modules/covmod1              2      2   100%
-        # c:/ned/coverage/trunk/test/zipmods.zip/covmodzip1       2      2   100%
-        # mycode                                                  4      4   100%
-        # -----------------------------------------------------------------------
-        # TOTAL                                                   8      8   100%
+        # Name                                              Stmts   Exec  Cover
+        # ---------------------------------------------------------------------
+        # c:/ned/coverage/trunk/test/modules/covmod1            2      2   100%
+        # c:/ned/coverage/trunk/test/zipmods.zip/covmodzip1     2      2   100%
+        # mycode                                                4      4   100%
+        # ---------------------------------------------------------------------
+        # TOTAL                                                 8      8   100%
 
         self.assert_("/coverage/__init__/" not in report1)
         self.assert_("/test/modules/covmod1 " in report1)
@@ -1665,7 +1678,8 @@ class ProcessTest(CoverageTest):
         self.assert_("mycode " in report2)
 
         # Try reporting while omitting some modules
-        report3 = self.run_command("coverage -r -o %s" % prefix).replace('\\', '/')
+        report3 = self.run_command("coverage -r -o %s" % prefix)
+        report3 = report3.replace('\\', '/')
 
         # Name     Stmts   Exec  Cover
         # ----------------------------
@@ -1697,13 +1711,16 @@ class ProcessTest(CoverageTest):
         self.assert_(not os.path.exists(".coverage"))
         
         # After two -p runs, there should be two .coverage.machine.123 files.
-        self.assertEqual(len([f for f in os.listdir('.') if f.startswith('.coverage.')]), 2)
+        self.assertEqual(
+            len([f for f in os.listdir('.') if f.startswith('.coverage.')]),
+            2)
 
         # Combine the parallel coverage data files into .coverage .
         self.run_command("coverage -c")
         self.assert_(os.path.exists(".coverage"))
 
-        # Read the coverage file and see that b_or_c.py has all 7 lines executed.
+        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
         self.assertEqual(data.summary()['b_or_c.py'], 7)
@@ -1743,6 +1760,7 @@ class RecursionTest(CoverageTest):
 
 class PyexpatTest(CoverageTest):
     """Pyexpat screws up tracing. Make sure we've counter-defended properly."""
+
     def testPyexpat(self):
         # pyexpat calls the trace function explicitly (inexplicably), and does
         # it wrong for exceptions.  Parsing a DOCTYPE for some reason throws
@@ -1839,8 +1857,8 @@ class ExceptionTest(CoverageTest):
         for mod in "oops fly catch doit".split():
             self.importModule(mod)
 
-        # Each run nests the functions differently to get different combinations
-        # of catching exceptions and letting them fly.
+        # Each run nests the functions differently to get different
+        # combinations of catching exceptions and letting them fly.
         runs = [
             ("doit fly oops", {
                 'doit.py': [302,303,304,305],
