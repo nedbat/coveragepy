@@ -41,16 +41,16 @@ class SummaryReporter(Reporter):
         
         for cu in self.code_units:
             try:
-                statements, _, missing, readable = self.coverage._analyze(cu)
-                n = len(statements)
-                m = n - len(missing)
+                analysis = self.coverage._analyze(cu)
+                n = len(analysis.statements)
+                m = n - len(analysis.missing)
                 if n > 0:
                     pc = 100.0 * m / n
                 else:
                     pc = 100.0
                 args = (cu.name, n, m, pc)
                 if self.show_missing:
-                    args = args + (readable,)
+                    args = args + (analysis.missing_formatted(),)
                 outfile.write(fmt_coverage % args)
                 total_units += 1
                 total_statements = total_statements + n

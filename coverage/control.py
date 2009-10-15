@@ -242,51 +242,16 @@ class coverage:
 
         """
         code_unit = code_unit_factory(morf, self.file_locator)[0]
-        st, ex, m, mf = self._analyze(code_unit)
-        return code_unit.filename, st, ex, m, mf
+        analysis = self._analyze(code_unit)
+        return code_unit.filename, analysis.statements, analysis.excluded, analysis.missing, analysis.missing_formatted()
 
     def _analyze(self, code_unit):
         """Analyze a single code unit.
         
-        Returns a 4-tuple: (statements, excluded, missing, missing formatted).
+        Returns an `Analysis` object.
 
         """
-        from coverage.parser import CodeParser
-
-        filename = code_unit.filename
-        ext = os.path.splitext(filename)[1]
-        source = None
-        if ext == '.py':
-            if not os.path.exists(filename):
-                source = self.file_locator.get_zip_data(filename)
-                if not source:
-                    raise CoverageException(
-                        "No source for code '%s'." % code_unit.filename
-                        )
-
-        parser = CodeParser(
-            text=source, filename=filename, exclude=self.exclude_re
-            )
-        statements, excluded, line_map = parser.parse_source()
-
-        # Identify missing statements.
-        missing = []
-        execed = self.data.executed_lines(filename)
-        for line in statements:
-            lines = line_map.get(line)
-            if lines:
-                for l in range(lines[0], lines[1]+1):
-                    if l in execed:
-                        break
-                else:
-                    missing.append(line)
-            else:
-                if line not in execed:
-                    missing.append(line)
-
-        return (
-            statements, excluded, missing, format_lines(statements, missing)
-            )
+        return Analysis(self, code_unit)
 
     def report(self, morfs=None, show_missing=True, ignore_errors=False,
                 file=None, omit_prefixes=None):     # pylint: disable-msg=W0622
@@ -357,3 +322,50 @@ class coverage:
                 ]),
             ]
         return info
+
+
+class Analysis:
+    """The results of analyzing a code unit."""
+    
+    def __init__(self, cov, code_unit):
+        self.code_unit = code_unit
+        
+        from coverage.parser import CodeParser
+
+        filename = code_unit.filename
+        ext = os.path.splitext(filename)[1]
+        source = None
+        if ext == '.py':
+            if not os.path.exists(filename):
+                source = cov.file_locator.get_zip_data(filename)
+                if not source:
+                    raise CoverageException(
+                        "No source for code '%s'." % code_unit.filename
+                        )
+
+        parser = CodeParser(
+            text=source, filename=filename, exclude=cov.exclude_re
+            )
+        self.statements, self.excluded, line_map = parser.parse_source()
+
+        # Identify missing statements.
+        self.missing = []
+        execed = cov.data.executed_lines(filename)
+        for line in self.statements:
+            lines = line_map.get(line)
+            if lines:
+                for l in range(lines[0], lines[1]+1):
+                    if l in execed:
+                        break
+                else:
+                    self.missing.append(line)
+            else:
+                if line not in execed:
+                    self.missing.append(line)
+
+    def missing_formatted(self):
+        return format_lines(self.statements, self.missing)
+
+        #return (
+        #    statements, excluded, missing, format_lines(statements, missing)
+        #    )

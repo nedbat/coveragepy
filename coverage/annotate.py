@@ -37,7 +37,7 @@ class AnnotateReporter(Reporter):
         """Run the report."""
         self.report_files(self.annotate_file, morfs, directory, omit_prefixes)
         
-    def annotate_file(self, cu, statements, excluded, missing):
+    def annotate_file(self, cu, analysis):
         """Annotate a single file.
         
         `cu` is the CodeUnit for the file to annotate.
@@ -54,6 +54,10 @@ class AnnotateReporter(Reporter):
         else:
             dest_file = filename + ",cover"
         dest = open(dest_file, 'w')
+
+        statements = analysis.statements
+        missing = analysis.missing
+        excluded = analysis.excluded
 
         lineno = 0
         i = 0

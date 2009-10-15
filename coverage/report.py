@@ -50,8 +50,7 @@ class Reporter(object):
 
         for cu in self.code_units:
             try:
-                statements, excluded, missing, _ = self.coverage._analyze(cu)
-                report_fn(cu, statements, excluded, missing)
+                report_fn(cu, self.coverage._analyze(cu))
             except KeyboardInterrupt:
                 raise
             except:

@@ -80,7 +80,7 @@ class XmlReporter(Reporter):
         # Use the DOM to write the output file.
         outfile.write(self.xml_out.toprettyxml())
 
-    def xml_file(self, cu, statements, excluded_unused, missing):
+    def xml_file(self, cu, analysis):
         """Add to the XML report for a single file."""
         
         # Create the 'lines' and 'package' XML elements, which
@@ -101,14 +101,14 @@ class XmlReporter(Reporter):
         xclass.setAttribute("complexity", "0.0")
 
         # For each statement, create an XML 'line' element.
-        for line in statements:
+        for line in analysis.statements:
             l = self.xml_out.createElement("line")
             l.setAttribute("number", str(line))
 
             # Q: can we get info about the number of times
             # a statement is executed?  If so, that should be
             # recorded here.
-            l.setAttribute("hits", str(int(not line in missing)))
+            l.setAttribute("hits", str(int(not line in analysis.missing)))
 
             # Q: can we get info about whether this statement
             # is a branch?  If so, that data should be
@@ -116,8 +116,8 @@ class XmlReporter(Reporter):
             #l.setAttribute("branch", "false")
             xlines.appendChild(l)
 
-        class_lines = 1.0 * len(statements)
-        class_hits = class_lines - len(missing)
+        class_lines = 1.0 * len(analysis.statements)
+        class_hits = class_lines - len(analysis.missing)
         class_branches = 0.0
         class_branch_hits = 0.0
 

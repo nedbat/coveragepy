@@ -82,15 +82,15 @@ class HtmlReporter(Reporter):
             os.path.join(directory, "jquery-1.3.2.min.js")
             )
 
-    def html_file(self, cu, statements, excluded, missing):
+    def html_file(self, cu, analysis):
         """Generate an HTML file for one source file."""
         
         source = cu.source_file().read().expandtabs(4)
         source_lines = source.split("\n")
         
-        n_stm = len(statements)
-        n_exc = len(excluded)
-        n_mis = len(missing)
+        n_stm = len(analysis.statements)
+        n_exc = len(analysis.excluded)
+        n_mis = len(analysis.missing)
         n_run = n_stm - n_mis
         if n_stm > 0:
             pc_cov = 100.0 * n_run / n_stm
@@ -114,13 +114,13 @@ class HtmlReporter(Reporter):
                 if part == '\n':
 
                     line_class = ""
-                    if lineno in statements:
+                    if lineno in analysis.statements:
                         line_class += " stm"
-                        if lineno not in missing and lineno not in excluded:
+                        if lineno not in analysis.missing and lineno not in analysis.excluded:
                             line_class += c_run
-                    if lineno in excluded:
+                    if lineno in analysis.excluded:
                         line_class += c_exc
-                    if lineno in missing:
+                    if lineno in analysis.missing:
                         line_class += c_mis
                         
                     lineinfo = {
