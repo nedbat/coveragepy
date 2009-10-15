@@ -5,7 +5,6 @@
 import os, sys, unittest
 
 import coverage
-from coverage.backward import StringIO
 coverage.use_cache(0)
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k

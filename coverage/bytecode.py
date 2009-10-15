@@ -23,10 +23,10 @@ class ByteCodes(object):
         self.offset = 0
         
     if sys.hexversion > 0x03000000:
-        def byte_at(self, i):
+        def __getitem__(self, i):
             return self.code[i]
     else:
-        def byte_at(self, i):
+        def __getitem__(self, i):
             return ord(self.code[i])
 
     def __iter__(self):
@@ -37,12 +37,12 @@ class ByteCodes(object):
             raise StopIteration
         
         bc = ByteCode()
-        bc.op = self.byte_at(self.offset)
+        bc.op = self[self.offset]
         bc.offset = self.offset
         
         next_offset = self.offset+1
         if bc.op >= opcode.HAVE_ARGUMENT:
-            bc.oparg = self.byte_at(self.offset+1) + 256*self.byte_at(self.offset+2)
+            bc.oparg = self[self.offset+1] + 256*self[self.offset+2]
             next_offset += 2
             
             label = -1
