@@ -134,26 +134,26 @@ class CoverageTest(unittest.TestCase):
         del sys.modules[modname]
 
         # Get the analysis results, and check that they are right.
-        _, clines, _, cmissing = cov.analysis(mod)
+        analysis = cov._analyze(mod)
         if lines is not None:
             if type(lines[0]) == type(1):
-                self.assertEqual(clines, lines)
+                self.assertEqual(analysis.statements, lines)
             else:
                 for line_list in lines:
-                    if clines == line_list:
+                    if analysis.statements == line_list:
                         break
                 else:
                     self.fail("None of the lines choices matched %r" % clines)
         if missing is not None:
             if type(missing) == type(""):
-                self.assertEqual(cmissing, missing)
+                self.assertEqual(analysis.missing_formatted(), missing)
             else:
                 for missing_list in missing:
-                    if cmissing == missing_list:
+                    if analysis.missing == missing_list:
                         break
                 else:
                     self.fail(
-                        "None of the missing choices matched %r" % cmissing
+                        "None of the missing choices matched %r" % analysis.missing_formatted()
                         )
 
         if report:

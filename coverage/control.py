@@ -4,7 +4,7 @@ import os, socket
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class
-from coverage.codeunit import code_unit_factory
+from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.data import CoverageData
 from coverage.files import FileLocator
@@ -241,17 +241,19 @@ class coverage:
         coverage data.
 
         """
-        code_unit = code_unit_factory(morf, self.file_locator)[0]
-        analysis = self._analyze(code_unit)
-        return code_unit.filename, analysis.statements, analysis.excluded, analysis.missing, analysis.missing_formatted()
+        analysis = self._analyze(morf)
+        return analysis.filename, analysis.statements, analysis.excluded, analysis.missing, analysis.missing_formatted()
 
-    def _analyze(self, code_unit):
-        """Analyze a single code unit.
+    def _analyze(self, it):
+        """Analyze a single morf or code unit.
         
         Returns an `Analysis` object.
 
         """
-        return Analysis(self, code_unit)
+        if not isinstance(it, CodeUnit):
+            it = code_unit_factory(it, self.file_locator)[0]
+        
+        return Analysis(self, it)
 
     def report(self, morfs=None, show_missing=True, ignore_errors=False,
                 file=None, omit_prefixes=None):     # pylint: disable-msg=W0622
@@ -343,10 +345,10 @@ class Analysis:
                         "No source for code '%s'." % code_unit.filename
                         )
 
-        parser = CodeParser(
+        self.parser = CodeParser(
             text=source, filename=filename, exclude=cov.exclude_re
             )
-        self.statements, self.excluded, line_map = parser.parse_source()
+        self.statements, self.excluded, line_map = self.parser.parse_source()
 
         # Identify missing statements.
         self.missing = []
@@ -363,5 +365,10 @@ class Analysis:
                 if line not in execed:
                     self.missing.append(line)
 
+        self.filename = self.code_unit.filename
+
     def missing_formatted(self):
         return format_lines(self.statements, self.missing)
+
+    def arc_info(self):
+        return self.parser.arc_info()

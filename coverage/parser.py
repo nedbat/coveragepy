@@ -45,6 +45,16 @@ class CodeParser:
         # The line numbers that start statements.
         self.statement_starts = set()
 
+        # Lazily-created ByteParser
+        self._byte_parser = None
+        
+    def _get_byte_parser(self):
+        """Create a ByteParser on demand."""
+        if not self._byte_parser:
+            self._byte_parser = ByteParser(text=self.text, filename=self.filename)
+        return self._byte_parser
+    byte_parser = property(_get_byte_parser)
+
     def _raw_parse(self):
         """Parse the source to find the interesting facts about its lines.
         
@@ -114,8 +124,7 @@ class CodeParser:
             prev_toktype = toktype
 
         # Find the starts of the executable statements.
-        byte_parser = ByteParser(text=self.text, filename=self.filename)
-        self.statement_starts.update(byte_parser._find_statements())
+        self.statement_starts.update(self.byte_parser._find_statements())
 
     def _map_to_first_line(self, lines, ignore=None):
         """Map the line numbers in `lines` to the correct first line of the
@@ -157,6 +166,10 @@ class CodeParser:
         lines = self._map_to_first_line(self.statement_starts, ignore)
     
         return lines, excluded_lines, self.multiline
+
+    def arc_info(self):
+        """Get information about the arcs available in the code."""
+        return self.byte_parser._all_arcs()
 
 
 class ByteParser:
