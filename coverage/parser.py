@@ -447,23 +447,55 @@ class AdHocMain(object):
             else:
                 print(warnings)
                 print(chunks)
-                print(bp._all_arcs())
+                arcs = bp._all_arcs()
+                print(arcs)
 
         if options.source or options.tokens:
             cp = CodeParser(filename=filename, exclude=r"no\s*cover")
             cp.show_tokens = options.tokens
             cp._raw_parse()
 
-            for i, ltext in enumerate(cp.lines):
-                lineno = i+1
-                m0 = m1 = m2 = ' '
-                if lineno in cp.statement_starts:
-                    m0 = '-'
-                if lineno in cp.docstrings:
-                    m1 = '"'
-                if lineno in cp.excluded:
-                    m2 = 'x'
-                print("%4d %s%s%s %s" % (lineno, m0, m1, m2, ltext))
+            if options.source:
+                arc_chars = {}
+                if options.chunks:
+                    for lfrom, lto in sorted(arcs):
+                        if lfrom is None:
+                            arc_chars[lto] = arc_chars.get(lto, '') + 'v'
+                        elif lto is None:
+                            arc_chars[lfrom] = arc_chars.get(lfrom, '') + '^'
+                        else:
+                            if lfrom == lto-1:
+                                # Don't show obvious arcs.
+                                continue
+                            if lfrom < lto:
+                                l1, l2 = lfrom, lto
+                            else:
+                                l1, l2 = lto, lfrom
+                            w = max([len(arc_chars.get(l, '')) for l in range(l1, l2+1)])
+                            for l in range(l1, l2+1):
+                                if l == lfrom:
+                                    ch = '<'
+                                elif l == lto:
+                                    ch = '>'
+                                else:
+                                    ch = '|'
+                                arc_chars[l] = arc_chars.get(l, '').ljust(w) + ch
+
+                arc_width = 0
+                if arc_chars:
+                    arc_width = max([len(a) for a in arc_chars.values()])
+                    
+                for i, ltext in enumerate(cp.lines):
+                    lineno = i+1
+                    m0 = m1 = m2 = a = ' '
+                    if lineno in cp.statement_starts:
+                        m0 = '-'
+                    if lineno in cp.docstrings:
+                        m1 = '"'
+                    if lineno in cp.excluded:
+                        m2 = 'x'
+                    a = arc_chars.get(lineno, '').ljust(arc_width)
+                    print("%4d %s%s%s%s %s" % (lineno, m0, m1, m2, a, ltext))
 
 
 if __name__ == '__main__':
