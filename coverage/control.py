@@ -365,7 +365,3 @@ class Analysis:
 
     def missing_formatted(self):
         return format_lines(self.statements, self.missing)
-
-        #return (
-        #    statements, excluded, missing, format_lines(statements, missing)
-        #    )
