@@ -2,7 +2,7 @@
 
 import glob, opcode, os, re, sys, token, tokenize
 
-from coverage.backward import set, StringIO   # pylint: disable-msg=W0622
+from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, CoverageException
 
@@ -148,8 +148,7 @@ class CodeParser:
             if new_l not in ignore:
                 lset.add(new_l)
         lines = list(lset)
-        lines.sort()
-        return lines
+        return sorted(lines)
     
     def parse_source(self):
         """Parse source text to find executable lines, excluded lines, etc.
@@ -169,7 +168,8 @@ class CodeParser:
 
     def arc_info(self):
         """Get information about the arcs available in the code."""
-        return self.byte_parser._all_arcs()
+        arcs = self.byte_parser._all_arcs()
+        return sorted(arcs)
 
 
 class ByteParser:
@@ -281,7 +281,7 @@ class ByteParser:
         class Chunk(object):
             """A sequence of bytecodes with exits to other bytecodes.
             
-            An exit of None means the chunk can leave the code block (return).
+            An exit of -1 means the chunk can leave the code block (return).
             
             """
             def __init__(self, byte, line=0):
@@ -313,7 +313,7 @@ class ByteParser:
                 chunk.exits.add(bc.jump_to)
             
             if bc.op in self._code_enders:
-                chunk.exits.add(None)
+                chunk.exits.add(-1)
 
             if bc.op in self._chunk_enders:
                 chunk = None
@@ -332,12 +332,12 @@ class ByteParser:
         byte_chunks = dict([(c.byte, c) for c in chunks])
 
         # Build a map from byte offsets to actual lines reached.
-        byte_lines = {None:[None]}
+        byte_lines = {-1:[-1]}
         bytes_to_add = set([c.byte for c in chunks])
         
         while bytes_to_add:
             byte_to_add = bytes_to_add.pop()
-            if byte_to_add in byte_lines or byte_to_add is None:
+            if byte_to_add in byte_lines or byte_to_add == -1:
                 continue
             
             # Which lines does this chunk lead to?
@@ -365,8 +365,8 @@ class ByteParser:
                     lines.add(ch.line)
                 else:
                     for ex in ch.exits:
-                        if ex is None:
-                            lines.add(None)
+                        if ex == -1:
+                            lines.add(-1)
                         elif ex not in bytes_considered:
                             bytes_to_consider.append(ex)
 
@@ -382,7 +382,7 @@ class ByteParser:
                     for exit_line in byte_lines[ex]:
                         arcs.add((chunk.line, exit_line))
         for line in byte_lines[0]:
-            arcs.add((None, line))
+            arcs.add((-1, line))
         
         return arcs
         
@@ -472,9 +472,9 @@ class AdHocMain(object):
                 arc_chars = {}
                 if options.chunks:
                     for lfrom, lto in sorted(arcs):
-                        if lfrom is None:
+                        if lfrom == -1:
                             arc_chars[lto] = arc_chars.get(lto, '') + 'v'
-                        elif lto is None:
+                        elif lto == -1:
                             arc_chars[lfrom] = arc_chars.get(lfrom, '') + '^'
                         else:
                             if lfrom == lto-1:

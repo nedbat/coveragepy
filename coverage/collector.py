@@ -49,7 +49,7 @@ class PyTracer:
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
                 if self.arcs and self.cur_file_data:
-                    self.cur_file_data[(self.last_line, 0)] = None
+                    self.cur_file_data[(self.last_line, -1)] = None
                 self.cur_file_data, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
             
@@ -65,7 +65,7 @@ class PyTracer:
                 self.cur_file_data = self.data[tracename]
             else:
                 self.cur_file_data = None
-            self.last_line = 0
+            self.last_line = -1
         elif event == 'line':
             # Record an executed line.
             if self.cur_file_data is not None:
@@ -76,7 +76,7 @@ class PyTracer:
             self.last_line = frame.f_lineno
         elif event == 'return':
             if self.arcs and self.cur_file_data:
-                self.cur_file_data[(self.last_line, 0)] = None
+                self.cur_file_data[(self.last_line, -1)] = None
             # Leaving this function, pop the filename stack.
             self.cur_file_data, self.last_line = self.data_stack.pop()
         elif event == 'exception':

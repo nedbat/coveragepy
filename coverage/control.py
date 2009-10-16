@@ -3,7 +3,7 @@
 import os, socket
 
 from coverage.annotate import AnnotateReporter
-from coverage.backward import string_class
+from coverage.backward import string_class, sorted # pylint: disable-msg=W0622
 from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.data import CoverageData
@@ -330,45 +330,54 @@ class Analysis:
     """The results of analyzing a code unit."""
     
     def __init__(self, cov, code_unit):
+        self.coverage = cov
         self.code_unit = code_unit
         
         from coverage.parser import CodeParser
 
-        filename = code_unit.filename
-        ext = os.path.splitext(filename)[1]
+        self.filename = self.code_unit.filename
+        ext = os.path.splitext(self.filename)[1]
         source = None
         if ext == '.py':
-            if not os.path.exists(filename):
-                source = cov.file_locator.get_zip_data(filename)
+            if not os.path.exists(self.filename):
+                source = self.coverage.file_locator.get_zip_data(self.filename)
                 if not source:
                     raise CoverageException(
-                        "No source for code '%s'." % code_unit.filename
+                        "No source for code '%s'." % self.filename
                         )
 
         self.parser = CodeParser(
-            text=source, filename=filename, exclude=cov.exclude_re
+            text=source, filename=self.filename, exclude=self.coverage.exclude_re
             )
         self.statements, self.excluded, line_map = self.parser.parse_source()
 
         # Identify missing statements.
         self.missing = []
-        execed = cov.data.executed_lines(filename)
+        self.executed = self.coverage.data.executed_lines(self.filename)
         for line in self.statements:
             lines = line_map.get(line)
             if lines:
                 for l in range(lines[0], lines[1]+1):
-                    if l in execed:
+                    if l in self.executed:
                         break
                 else:
                     self.missing.append(line)
             else:
-                if line not in execed:
+                if line not in self.executed:
                     self.missing.append(line)
-
-        self.filename = self.code_unit.filename
 
     def missing_formatted(self):
         return format_lines(self.statements, self.missing)
 
-    def arc_info(self):
+    def arc_possibilities(self):
         return self.parser.arc_info()
+
+    def arcs_executed(self):
+        return self.coverage.data.executed_arcs(self.filename)
+
+    def arcs_missing(self):
+        possible = self.arc_possibilities()
+        executed = self.arcs_executed()
+        missing = [p for p in possible if p not in executed]
+        return sorted(missing)
+

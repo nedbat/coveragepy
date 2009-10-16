@@ -3,7 +3,7 @@
 import imp, os, random, shutil, sys, tempfile, textwrap, unittest
 
 import coverage
-from coverage.backward import set, StringIO   # pylint: disable-msg=W0622
+from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
 from backtest import run_command
 
 
@@ -102,7 +102,29 @@ class CoverageTest(unittest.TestCase):
         self.n += 1
         return modname
     
-    def check_coverage(self, text, lines=None, missing="", excludes=None, report=""):
+    # Map chars to numbers for arcz_to_arcs
+    _arcz_map = {'.': -1}
+    _arcz_map.update(dict([(c, ord(c)-ord('0')) for c in '123456789']))
+    _arcz_map.update(dict([(c, 10+ord(c)-ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']))
+    
+    def arcz_to_arcs(self, arcz):
+        """Convert a compact textual representation of arcs to a list of pairs.
+        
+        The text has space-separated pairs of letters.  Period is -1, 1-9 are
+        1-9, A-Z are 10 through 36.  The resulting list is sorted regardless of
+        the order of the input pairs.
+        
+        ".1 12 2." --> [(-1,1), (1,2), (2,-1)]
+        
+        """
+        arcs = []
+        for a,b in arcz.split():
+            arcs.append((self._arcz_map[a], self._arcz_map[b]))
+        return sorted(arcs)
+
+    def check_coverage(self, text, lines=None, missing="", excludes=None,
+                        report="", arcs=None, arcs_missing=None,
+                        arcz=None, arcz_missing=None):
         """Check the coverage measurement of `text`.
         
         The source `text` is run and measured.  `lines` are the line numbers
@@ -117,8 +139,13 @@ class CoverageTest(unittest.TestCase):
         
         self.make_file(modname+".py", text)
 
+        if arcz is not None:
+            arcs = self.arcz_to_arcs(arcz)
+        if arcz_missing is not None:
+            arcs_missing = self.arcz_to_arcs(arcz_missing)
+            
         # Start up Coverage.
-        cov = coverage.coverage()
+        cov = coverage.coverage(branch=(arcs_missing is not None))
         cov.erase()
         for exc in excludes or []:
             cov.exclude(exc)
@@ -144,17 +171,24 @@ class CoverageTest(unittest.TestCase):
                         break
                 else:
                     self.fail("None of the lines choices matched %r" % clines)
-        if missing is not None:
-            if type(missing) == type(""):
-                self.assertEqual(analysis.missing_formatted(), missing)
-            else:
-                for missing_list in missing:
-                    if analysis.missing == missing_list:
-                        break
+
+            if missing is not None:
+                if type(missing) == type(""):
+                    self.assertEqual(analysis.missing_formatted(), missing)
                 else:
-                    self.fail(
-                        "None of the missing choices matched %r" % analysis.missing_formatted()
-                        )
+                    for missing_list in missing:
+                        if analysis.missing == missing_list:
+                            break
+                    else:
+                        self.fail(
+                            "None of the missing choices matched %r" % analysis.missing_formatted()
+                            )
+
+        if arcs is not None:
+            self.assertEqual(analysis.arc_possibilities(), arcs)
+
+            if arcs_missing is not None:
+                self.assertEqual(analysis.arcs_missing(), arcs_missing)
 
         if report:
             frep = StringIO()

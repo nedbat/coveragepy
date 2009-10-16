@@ -198,6 +198,10 @@ class CoverageData:
         """
         return self.lines.get(filename) or {}
 
+    def executed_arcs(self, filename):
+        """A map containing all the arcs executed in `filename`."""
+        return self.arcs.get(filename) or {}
+
     def summary(self, fullpath=False):
         """Return a dict summarizing the coverage data.
         
