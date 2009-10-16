@@ -15,7 +15,7 @@ class ApiTest(CoverageTest):
     def testSimple(self):
         coverage.erase()
 
-        self.makeFile("mycode.py", """\
+        self.make_file("mycode.py", """\
             a = 1
             b = 2
             if b == 3:
@@ -25,7 +25,7 @@ class ApiTest(CoverageTest):
             
         # Import the python file, executing it.
         coverage.start()
-        self.importModule("mycode")
+        self.import_module("mycode")
         coverage.stop()
     
         _, statements, missing, missingtext = coverage.analysis("mycode.py")
@@ -37,7 +37,7 @@ class ApiTest(CoverageTest):
         """Create a module named `modname`, then measure it."""
         coverage.erase()
 
-        self.makeFile(modname+".py", """\
+        self.make_file(modname+".py", """\
             a = 1
             b = 2
             if b == 3:
@@ -49,7 +49,7 @@ class ApiTest(CoverageTest):
             
         # Import the python file, executing it.
         coverage.start()
-        self.importModule(modname)
+        self.import_module(modname)
         coverage.stop()
         
     def testReport(self):
@@ -83,7 +83,7 @@ class ApiTest(CoverageTest):
     def testUnexecutedFile(self):
         cov = coverage.coverage()
 
-        self.makeFile("mycode.py", """\
+        self.make_file("mycode.py", """\
             a = 1
             b = 2
             if b == 3:
@@ -91,13 +91,13 @@ class ApiTest(CoverageTest):
             d = 5
             """)
             
-        self.makeFile("not_run.py", """\
+        self.make_file("not_run.py", """\
             fooey = 17
             """)
             
         # Import the python file, executing it.
         cov.start()
-        self.importModule("mycode")
+        self.import_module("mycode")
         cov.stop()
     
         _, statements, missing, _ = cov.analysis("not_run.py")
@@ -106,19 +106,19 @@ class ApiTest(CoverageTest):
 
     def testFileNames(self):
 
-        self.makeFile("mymain.py", """\
+        self.make_file("mymain.py", """\
             import mymod
             a = 1
             """)
             
-        self.makeFile("mymod.py", """\
+        self.make_file("mymod.py", """\
             fooey = 17
             """)
             
         # Import the python file, executing it.
         cov = coverage.coverage()
         cov.start()
-        self.importModule("mymain")
+        self.import_module("mymain")
         cov.stop()
     
         filename, _, _, _ = cov.analysis("mymain.py")
@@ -135,7 +135,7 @@ class ApiTest(CoverageTest):
         # already.
         cov = coverage.coverage()
         cov.start()
-        self.importModule("mymain")
+        self.import_module("mymain")
         cov.stop()
     
         filename, _, _, _ = cov.analysis("mymain.py")
@@ -149,13 +149,13 @@ class ApiTest(CoverageTest):
         self.assertEqual(os.path.basename(filename), "mymod.py")
 
     def testIgnoreStdLib(self):
-        self.makeFile("mymain.py", """\
+        self.make_file("mymain.py", """\
             import mymod, colorsys
             a = 1
             hls = colorsys.rgb_to_hls(1.0, 0.5, 0.0)
             """)
             
-        self.makeFile("mymod.py", """\
+        self.make_file("mymod.py", """\
             fooey = 17
             """)
 
@@ -163,7 +163,7 @@ class ApiTest(CoverageTest):
         cov1 = coverage.coverage()
         self.assertEqual(cov1.cover_pylib, False)
         cov1.start()
-        self.importModule("mymain")
+        self.import_module("mymain")
         cov1.stop()
 
         # some statements were marked executed in mymain.py
@@ -176,7 +176,7 @@ class ApiTest(CoverageTest):
         # Measure with the stdlib.
         cov2 = coverage.coverage(cover_pylib=True)
         cov2.start()
-        self.importModule("mymain")
+        self.import_module("mymain")
         cov2.stop()
 
         # some statements were marked executed in mymain.py
@@ -200,14 +200,14 @@ class ApiTest(CoverageTest):
 
     def testDatafileDefault(self):
         # Default data file behavior: it's .coverage
-        self.makeFile("datatest1.py", """\
+        self.make_file("datatest1.py", """\
             fooey = 17
             """)
 
         self.assert_equal_sets(os.listdir("."), ["datatest1.py"])
         cov = coverage.coverage()
         cov.start()
-        self.importModule("datatest1")
+        self.import_module("datatest1")
         cov.stop()
         cov.save()
         self.assert_equal_sets(os.listdir("."),
@@ -215,14 +215,14 @@ class ApiTest(CoverageTest):
 
     def testDatafileSpecified(self):
         # You can specify the data file name.
-        self.makeFile("datatest2.py", """\
+        self.make_file("datatest2.py", """\
             fooey = 17
             """)
 
         self.assert_equal_sets(os.listdir("."), ["datatest2.py"])
         cov = coverage.coverage(data_file="cov.data")
         cov.start()
-        self.importModule("datatest2")
+        self.import_module("datatest2")
         cov.stop()
         cov.save()
         self.assert_equal_sets(os.listdir("."),
@@ -230,14 +230,14 @@ class ApiTest(CoverageTest):
 
     def testDatafileAndSuffixSpecified(self):
         # You can specify the data file name and suffix.
-        self.makeFile("datatest3.py", """\
+        self.make_file("datatest3.py", """\
             fooey = 17
             """)
 
         self.assert_equal_sets(os.listdir("."), ["datatest3.py"])
         cov = coverage.coverage(data_file="cov.data", data_suffix=".14")
         cov.start()
-        self.importModule("datatest3")
+        self.import_module("datatest3")
         cov.stop()
         cov.save()
         self.assert_equal_sets(os.listdir("."),

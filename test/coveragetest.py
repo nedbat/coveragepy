@@ -39,7 +39,7 @@ class CoverageTest(unittest.TestCase):
         self.old_syspath = sys.path[:]
         sys.path.insert(0, '')
 
-        # Keep a counter to make every call to checkCoverage unique.
+        # Keep a counter to make every call to check_coverage unique.
         self.n = 0
 
         # Use a Tee to capture stdout.
@@ -63,7 +63,7 @@ class CoverageTest(unittest.TestCase):
         """Return the data written to stdout during the test."""
         return self.captured_stdout.getvalue()
 
-    def makeFile(self, filename, text):
+    def make_file(self, filename, text):
         """Create a temp file.
         
         `filename` is the file name, and `text` is the content.
@@ -76,7 +76,7 @@ class CoverageTest(unittest.TestCase):
         f.write(text)
         f.close()
 
-    def importModule(self, modname):
+    def import_module(self, modname):
         """Import the module named modname, and return the module object."""
         modfile = modname + '.py'
         f = open(modfile, 'r')
@@ -92,7 +92,7 @@ class CoverageTest(unittest.TestCase):
             f.close()
         return mod
 
-    def getModuleName(self):
+    def get_module_name(self):
         """Return the module name to use for this test run."""
         # We append self.n because otherwise two calls in one test will use the
         # same filename and whether the test works or not depends on the
@@ -102,7 +102,7 @@ class CoverageTest(unittest.TestCase):
         self.n += 1
         return modname
     
-    def checkCoverage(self, text, lines, missing="", excludes=None, report=""):
+    def check_coverage(self, text, lines=None, missing="", excludes=None, report=""):
         """Check the coverage measurement of `text`.
         
         The source `text` is run and measured.  `lines` are the line numbers
@@ -113,9 +113,9 @@ class CoverageTest(unittest.TestCase):
         """
         # We write the code into a file so that we can import it.
         # Coverage wants to deal with things as modules with file names.
-        modname = self.getModuleName()
+        modname = self.get_module_name()
         
-        self.makeFile(modname+".py", text)
+        self.make_file(modname+".py", text)
 
         # Start up Coverage.
         cov = coverage.coverage()
@@ -125,7 +125,7 @@ class CoverageTest(unittest.TestCase):
         cov.start()
 
         # Import the python file, executing it.
-        mod = self.importModule(modname)
+        mod = self.import_module(modname)
         
         # Stop Coverage.
         cov.stop()
@@ -162,7 +162,7 @@ class CoverageTest(unittest.TestCase):
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
             self.assertEqual(report, rep)
 
-    def assertRaisesMsg(self, excClass, msg, callableObj, *args, **kwargs):
+    def assert_raises_msg(self, excClass, msg, callableObj, *args, **kwargs):
         """ Just like unittest.TestCase.assertRaises,
             but checks that the message is right too.
         """
