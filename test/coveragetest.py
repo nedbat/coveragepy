@@ -170,7 +170,7 @@ class CoverageTest(unittest.TestCase):
                     if analysis.statements == line_list:
                         break
                 else:
-                    self.fail("None of the lines choices matched %r" % clines)
+                    self.fail("None of the lines choices matched %r" % analysis.statements)
 
             if missing is not None:
                 if type(missing) == type(""):

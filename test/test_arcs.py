@@ -1,9 +1,6 @@
 """Tests for Coverage.py's arc measurement."""
 
-import os, re, sys, textwrap
-
-import coverage
-from coverage.backward import StringIO
+import os, sys
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest

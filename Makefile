@@ -29,6 +29,7 @@ LINTABLE = \
 	test/coverage_coverage.py \
 	test/coveragetest.py \
 	test/test_api.py \
+	test/test_arcs.py \
 	test/test_cmdline.py \
 	test/test_codeunit.py \
 	test/test_coverage.py \
