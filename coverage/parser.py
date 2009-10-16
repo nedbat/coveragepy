@@ -274,7 +274,10 @@ class ByteParser:
         return last_line
 
     _code_enders = set([opcode.opmap[name] for name in ['RETURN_VALUE']])
-    _chunk_enders = set([opcode.opmap[name] for name in ['JUMP_ABSOLUTE', 'JUMP_FORWARD']])
+    _chunk_enders = set([opcode.opmap[name] for name in [
+        'JUMP_ABSOLUTE', 'JUMP_FORWARD', 'BREAK_LOOP', 'CONTINUE_LOOP',
+        'RAISE_VARARGS'
+        ]])
     _chunk_enders |= _code_enders
     
     def _split_into_chunks(self):
@@ -391,7 +394,7 @@ class ByteParser:
         for bp in self.child_parsers():
             chunks.extend(bp._split_into_chunks())
         
-        return [], chunks
+        return chunks
 
     def _all_arcs(self):
         arcs = []
@@ -452,16 +455,13 @@ class AdHocMain(object):
             bp._disassemble()
 
         if options.chunks:
-            warnings, chunks = bp._all_chunks()
+            chunks = bp._all_chunks()
             if options.recursive:
                 print("%6d: %s" % (len(chunks), filename))
-                if warnings:
-                    print("\t%r" % (warnings,))
             else:
-                print(warnings)
-                print(chunks)
+                print("Chunks: %r" % chunks)
                 arcs = bp._all_arcs()
-                print(arcs)
+                print("Arcs: %r" % arcs)
 
         if options.source or options.tokens:
             cp = CodeParser(filename=filename, exclude=r"no\s*cover")

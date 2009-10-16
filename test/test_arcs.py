@@ -63,32 +63,43 @@ class ArcTest(CoverageTest):
             if len([]) == 0:
                 a = 2
             else:
-                b = 4
-            c = 5
+                a = 4
+            assert a == 2
             """,
             arcz=".1 12 25 14 45 5.", arcz_missing="14 45")
         self.check_coverage("""\
             if len([]) == 1:
                 a = 2
             else:
-                b = 4
-            c = 5
+                a = 4
+            assert a == 4
             """,
             arcz=".1 12 25 14 45 5.", arcz_missing="12 25")
         
     def test_loop(self):
         self.check_coverage("""\
             for i in range(10):
-                a = 2
-            b = 3
+                a = i
+            assert a == 9
             """,
             arcz=".1 12 21 13 3.", arcz_missing="")
         self.check_coverage("""\
+            a = -1
             for i in range(0):
-                a = 2
-            b = 3
+                a = i
+            assert a == -1
             """,
-            arcz=".1 12 21 13 3.", arcz_missing="12 21")
+            arcz=".1 12 23 32 24 4.", arcz_missing="23 32")
+
+    def test_break(self):
+        self.check_coverage("""\
+            for i in range(10):
+                a = i
+                break       # 3
+                a = 99
+            assert a == 0   # 5
+            """,
+            arcz=".1 12 23 35 15 41 5.", arcz_missing="15 41")
 
     def xest_xx(self):
         self.check_coverage("""\
