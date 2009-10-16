@@ -7,7 +7,7 @@ class ByteCode(object):
     def __init__(self):
         self.offset = -1
         self.op = -1
-        self.oparg = -1
+        self.arg = -1
         self.next_offset = -1
         self.jump_to = -1
 
@@ -42,14 +42,14 @@ class ByteCodes(object):
         
         next_offset = self.offset+1
         if bc.op >= opcode.HAVE_ARGUMENT:
-            bc.oparg = self[self.offset+1] + 256*self[self.offset+2]
+            bc.arg = self[self.offset+1] + 256*self[self.offset+2]
             next_offset += 2
             
             label = -1
             if bc.op in opcode.hasjrel:
-                label = next_offset + bc.oparg
+                label = next_offset + bc.arg
             elif bc.op in opcode.hasjabs:
-                label = bc.oparg
+                label = bc.arg
             bc.jump_to = label
             
         bc.next_offset = self.offset = next_offset

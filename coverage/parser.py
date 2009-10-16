@@ -171,8 +171,23 @@ class CodeParser:
         arcs = self.byte_parser._all_arcs()
         return sorted(arcs)
 
+# Opcodes that guide the ByteParser.
+
+def _opcode_set(*names):
+    return set([opcode.opmap[name] for name in names])
+
+OPS_CODE_END = _opcode_set('RETURN_VALUE')
+OPS_CHUNK_END = _opcode_set(
+    'JUMP_ABSOLUTE', 'JUMP_FORWARD', 'RETURN_VALUE', 'RAISE_VARARGS',
+    'BREAK_LOOP', 'CONTINUE_LOOP',
+    )
+OPS_PUSH_BLOCK = _opcode_set('SETUP_LOOP', 'SETUP_EXCEPT', 'SETUP_FINALLY')
+OPS_POP_BLOCK = _opcode_set('POP_BLOCK')
+OPS_BREAK = _opcode_set('BREAK_LOOP')
+
 
 class ByteParser:
+    """Parse byte codes to understand the structure of code."""
 
     def __init__(self, code=None, text=None, filename=None):
 
@@ -273,18 +288,11 @@ class ByteParser:
                 last_line = l
         return last_line
 
-    _code_enders = set([opcode.opmap[name] for name in ['RETURN_VALUE']])
-    _chunk_enders = set([opcode.opmap[name] for name in [
-        'JUMP_ABSOLUTE', 'JUMP_FORWARD', 'BREAK_LOOP', 'CONTINUE_LOOP',
-        'RAISE_VARARGS'
-        ]])
-    _chunk_enders |= _code_enders
-    
     def _split_into_chunks(self):
         class Chunk(object):
             """A sequence of bytecodes with exits to other bytecodes.
             
-            An exit of -1 means the chunk can leave the code block (return).
+            An exit of -1 means the chunk can leave the code (return).
             
             """
             def __init__(self, byte, line=0):
@@ -296,10 +304,14 @@ class ByteParser:
             def __repr__(self):
                 return "<%d:%d(%d) %r>" % (self.byte, self.line, self.length, list(self.exits))
 
+        # The list of chunks so far, and the one we're working on.
         chunks = []
         chunk = None
         bytes_lines_map = dict(self._bytes_lines())
-
+        
+        # The block stack: just store the "handler" value. 
+        block_stack = []
+        
         for bc in ByteCodes(self.code.co_code):
             # Maybe have to start a new block
             if bc.offset in bytes_lines_map:
@@ -311,20 +323,26 @@ class ByteParser:
             if not chunk:
                 chunk = Chunk(bc.offset)
                 chunks.append(chunk)
-                
+
+            # Look at the opcode                
             if bc.jump_to >= 0:
                 chunk.exits.add(bc.jump_to)
             
-            if bc.op in self._code_enders:
+            if bc.op in OPS_CODE_END:
                 chunk.exits.add(-1)
-
-            if bc.op in self._chunk_enders:
+            elif bc.op in OPS_PUSH_BLOCK:
+                block_stack.append(bc.jump_to)
+            elif bc.op in OPS_POP_BLOCK:
+                block_stack.pop()
+            elif bc.op in OPS_CHUNK_END:
+                if bc.op in OPS_BREAK:
+                    chunk.exits.add(block_stack[-1])
                 chunk = None
-                
+
         if chunks:
             chunks[-1].length = bc.next_offset - chunks[-1].byte
-        for i in range(len(chunks)-1):
-            chunks[i].length = chunks[i+1].byte - chunks[i].byte
+            for i in range(len(chunks)-1):
+                chunks[i].length = chunks[i+1].byte - chunks[i].byte
 
         return chunks
 
@@ -383,7 +401,8 @@ class ByteParser:
             if chunk.line:
                 for ex in chunk.exits:
                     for exit_line in byte_lines[ex]:
-                        arcs.add((chunk.line, exit_line))
+                        if chunk.line != exit_line:
+                            arcs.add((chunk.line, exit_line))
         for line in byte_lines[0]:
             arcs.add((-1, line))
         

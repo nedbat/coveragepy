@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
 
-class ArcTest(CoverageTest):
+class SimpleArcTest(CoverageTest):
     """Tests for Coverage.py's arc measurement."""
 
     def test_simple_sequence(self):
@@ -76,6 +76,9 @@ class ArcTest(CoverageTest):
             """,
             arcz=".1 12 25 14 45 5.", arcz_missing="12 25")
         
+class LoopArcTest(CoverageTest):
+    """Arc-measuring tests involving loops."""
+    
     def test_loop(self):
         self.check_coverage("""\
             for i in range(10):
@@ -91,6 +94,15 @@ class ArcTest(CoverageTest):
             """,
             arcz=".1 12 23 32 24 4.", arcz_missing="23 32")
 
+    def test_nested_loop(self):
+        self.check_coverage("""\
+            for i in range(3):
+                for j in range(3):
+                    a = i + j
+            assert a == 4
+            """,
+            arcz=".1 12 23 32 21 14 4.", arcz_missing="")
+
     def test_break(self):
         self.check_coverage("""\
             for i in range(10):
@@ -101,6 +113,28 @@ class ArcTest(CoverageTest):
             """,
             arcz=".1 12 23 35 15 41 5.", arcz_missing="15 41")
 
+    def test_continue(self):
+        self.check_coverage("""\
+            for i in range(10):
+                a = i
+                continue    # 3
+                a = 99
+            assert a == 9   # 5
+            """,
+            arcz=".1 12 23 31 15 41 5.", arcz_missing="41")
+
+    def test_nested_breaks(self):
+        self.check_coverage("""\
+            for i in range(3):
+                for j in range(3):
+                    a = i + j
+                    break               # 4
+                if i == 2:
+                    break
+            assert a == 2 and i == 2    # 7
+            """,
+            arcz=".1 12 23 34 45 25 56 51 67 17 7.", arcz_missing="17 25")
+        
     def xest_xx(self):
         self.check_coverage("""\
             """,
