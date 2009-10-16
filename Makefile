@@ -52,7 +52,7 @@ $(TEST_ZIP): test/covmodzip1.py
 	zip -j $@ $+
 
 $(TEST_EGG): test/eggsrc/setup.py test/eggsrc/egg1/egg1.py
-	cd test/eggsrc; python setup.py bdist_egg
+	cd test/eggsrc; python setup.py -q bdist_egg
 
 kit:
 	python setup.py sdist --formats=gztar

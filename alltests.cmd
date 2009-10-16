@@ -1,3 +1,6 @@
+@echo off
+make --quiet testdata
+
 call \ned\bin\switchpy 23
 python setup.py -q develop
 set COVERAGE_TEST_TRACER=c
@@ -37,3 +40,5 @@ python \python31\Scripts\nosetests3 %1
 del \python31\lib\site-packages\coverage\tracer.pyd
 set COVERAGE_TEST_TRACER=py
 python \python31\Scripts\nosetests3 %1
+
+make --quiet clean
