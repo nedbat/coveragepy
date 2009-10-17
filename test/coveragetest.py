@@ -105,7 +105,9 @@ class CoverageTest(unittest.TestCase):
     # Map chars to numbers for arcz_to_arcs
     _arcz_map = {'.': -1}
     _arcz_map.update(dict([(c, ord(c)-ord('0')) for c in '123456789']))
-    _arcz_map.update(dict([(c, 10+ord(c)-ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']))
+    _arcz_map.update(dict(
+        [(c, 10+ord(c)-ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
+        ))
     
     def arcz_to_arcs(self, arcz):
         """Convert a compact textual representation of arcs to a list of pairs.
@@ -170,7 +172,9 @@ class CoverageTest(unittest.TestCase):
                     if analysis.statements == line_list:
                         break
                 else:
-                    self.fail("None of the lines choices matched %r" % analysis.statements)
+                    self.fail("None of the lines choices matched %r" %
+                                                        analysis.statements
+                        )
 
             if missing is not None:
                 if type(missing) == type(""):
@@ -180,8 +184,8 @@ class CoverageTest(unittest.TestCase):
                         if analysis.missing == missing_list:
                             break
                     else:
-                        self.fail(
-                            "None of the missing choices matched %r" % analysis.missing_formatted()
+                        self.fail("None of the missing choices matched %r" %
+                                                analysis.missing_formatted()
                             )
 
         if arcs is not None:
