@@ -14,13 +14,13 @@ class SimpleArcTest(CoverageTest):
             a = 1
             b = 2
             """,
-            arcs=[(-1,1), (1,2), (2,-1)], arcs_missing=[])
+            arcz=".1 12 2.")
         self.check_coverage("""\
             a = 1
 
             b = 3
             """,
-            arcs=[(-1,1), (1,3), (3,-1)], arcs_missing=[])
+            arcz=".1 13 3.")
         self.check_coverage("""\
 
             a = 2
@@ -28,7 +28,7 @@ class SimpleArcTest(CoverageTest):
             
             c = 5
             """,
-            arcs=[(-1,2), (2,3), (3,5),(5,-1)], arcs_missing=[])
+            arcz=".2 23 35 5.")
 
     def test_function_def(self):
         self.check_coverage("""\
@@ -37,7 +37,7 @@ class SimpleArcTest(CoverageTest):
                 
             foo()
             """,
-            arcs=[(-1,1), (-1,2),(1,4),(2,-1), (4,-1)], arcs_missing=[])
+            arcz=".1 .2 14 2. 4.")
 
     def test_if(self):
         self.check_coverage("""\
@@ -131,7 +131,34 @@ class LoopArcTest(CoverageTest):
             assert a == 2 and i == 2    # 7
             """,
             arcz=".1 12 23 34 45 25 56 51 67 17 7.", arcz_missing="17 25")
-        
+
+class ExceptionArcTest(CoverageTest):
+
+    def test_no_exception(self):
+        self.check_coverage("""\
+            a, b = 1, 1
+            try:
+                a = 3
+            except:
+                b = 5
+            assert a == 3 and b == 1
+            """,
+            arcz=".1 12 23 36 45 56 6.", arcz_missing="45 56")
+
+    def test_raise(self):
+        self.check_coverage("""\
+            a, b = 1, 1
+            try:
+                a = 3
+                raise Exception("Yikes!")
+                a = 5
+            except:
+                b = 7
+            assert a == 3 and b == 7
+            """,
+            arcz=".1 12 23 34 58 67 78 8.",
+            arcz_missing="58", arcz_unpredicted="46")
+
     def xest_xx(self):
         self.check_coverage("""\
             """,

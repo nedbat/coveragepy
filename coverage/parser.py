@@ -171,19 +171,31 @@ class CodeParser:
         arcs = self.byte_parser._all_arcs()
         return sorted(arcs)
 
-# Opcodes that guide the ByteParser.
+## Opcodes that guide the ByteParser.
 
 def _opcode_set(*names):
     return set([opcode.opmap[name] for name in names])
 
+# Opcodes that leave the code object.
 OPS_CODE_END = _opcode_set('RETURN_VALUE')
+
+# Opcodes that unconditionally end the code chunk.
 OPS_CHUNK_END = _opcode_set(
     'JUMP_ABSOLUTE', 'JUMP_FORWARD', 'RETURN_VALUE', 'RAISE_VARARGS',
     'BREAK_LOOP', 'CONTINUE_LOOP',
     )
+
+# Opcodes that push a block on the block stack.
 OPS_PUSH_BLOCK = _opcode_set('SETUP_LOOP', 'SETUP_EXCEPT', 'SETUP_FINALLY')
+
+# Opcodes that pop a block from the block stack.
 OPS_POP_BLOCK = _opcode_set('POP_BLOCK')
+
+# Opcodes that break a loop.
 OPS_BREAK = _opcode_set('BREAK_LOOP')
+
+# Opcodes that have a jump destination, but aren't really a jump.
+OPS_NO_JUMP = _opcode_set('SETUP_EXCEPT', 'SETUP_FINALLY')
 
 
 class ByteParser:
@@ -325,17 +337,24 @@ class ByteParser:
                 chunks.append(chunk)
 
             # Look at the opcode                
-            if bc.jump_to >= 0:
+            if bc.jump_to >= 0 and bc.op not in OPS_NO_JUMP:
+                # The opcode has a jump, it's an exit for this chunk.
                 chunk.exits.add(bc.jump_to)
             
             if bc.op in OPS_CODE_END:
+                # The opcode can exit the code object.
                 chunk.exits.add(-1)
             elif bc.op in OPS_PUSH_BLOCK:
+                # The opcode adds a block to the block_stack.
                 block_stack.append(bc.jump_to)
             elif bc.op in OPS_POP_BLOCK:
+                # The opcode pops a block from the block stack.
                 block_stack.pop()
             elif bc.op in OPS_CHUNK_END:
+                # This opcode forces the end of the chunk.
                 if bc.op in OPS_BREAK:
+                    # A break is implicit: jump where the top of the
+                    # block_stack points.
                     chunk.exits.add(block_stack[-1])
                 chunk = None
 

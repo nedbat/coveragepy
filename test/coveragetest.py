@@ -125,14 +125,19 @@ class CoverageTest(unittest.TestCase):
         return sorted(arcs)
 
     def check_coverage(self, text, lines=None, missing="", excludes=None,
-                        report="", arcs=None, arcs_missing=None,
-                        arcz=None, arcz_missing=None):
+            report="", arcz=None, arcz_missing="", arcz_unpredicted=""):
         """Check the coverage measurement of `text`.
         
         The source `text` is run and measured.  `lines` are the line numbers
         that are executable, `missing` are the lines not executed, `excludes`
         are regexes to match against for excluding lines, and `report` is
         the text of the measurement report.
+        
+        For arc measurement, `arcz` is a string that can be decoded into arcs
+        in the code (see `arcz_to_arcs` for the encoding scheme),
+        `arcz_missing` are the arcs that are not executed, and
+        `arcs_unpredicted` are the arcs executed in the code, but not deducible
+        from the code.
         
         """
         # We write the code into a file so that we can import it.
@@ -141,10 +146,11 @@ class CoverageTest(unittest.TestCase):
         
         self.make_file(modname+".py", text)
 
+        arcs = arcs_missing = arcs_unpredicted = None
         if arcz is not None:
             arcs = self.arcz_to_arcs(arcz)
-        if arcz_missing is not None:
-            arcs_missing = self.arcz_to_arcs(arcz_missing)
+            arcs_missing = self.arcz_to_arcs(arcz_missing or "")
+            arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted or "")
             
         # Start up Coverage.
         cov = coverage.coverage(branch=(arcs_missing is not None))
@@ -193,6 +199,9 @@ class CoverageTest(unittest.TestCase):
 
             if arcs_missing is not None:
                 self.assertEqual(analysis.arcs_missing(), arcs_missing)
+
+            if arcs_unpredicted is not None:
+                self.assertEqual(analysis.arcs_unpredicted(), arcs_unpredicted)
 
         if report:
             frep = StringIO()

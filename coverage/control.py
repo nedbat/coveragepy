@@ -381,3 +381,8 @@ class Analysis:
         missing = [p for p in possible if p not in executed]
         return sorted(missing)
 
+    def arcs_unpredicted(self):
+        possible = self.arc_possibilities()
+        executed = self.arcs_executed()
+        unpredicted = [e for e in executed if e not in possible]
+        return sorted(unpredicted)
