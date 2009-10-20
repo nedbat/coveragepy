@@ -70,6 +70,7 @@ class PyTracer:
             # Record an executed line.
             if self.cur_file_data is not None:
                 if self.arcs:
+                    #print "lin", self.last_line, frame.f_lineno
                     self.cur_file_data[(self.last_line, frame.f_lineno)] = None
                 else:
                     self.cur_file_data[frame.f_lineno] = None
@@ -80,6 +81,7 @@ class PyTracer:
             # Leaving this function, pop the filename stack.
             self.cur_file_data, self.last_line = self.data_stack.pop()
         elif event == 'exception':
+            #print "exc", self.last_line, frame.f_lineno
             self.last_exc_back = frame.f_back
         return self._trace
         

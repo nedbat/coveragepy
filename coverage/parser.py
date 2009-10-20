@@ -173,8 +173,13 @@ class CodeParser:
 
 ## Opcodes that guide the ByteParser.
 
+def _opcode(name):
+    """Return the opcode by name from the opcode module."""
+    return opcode.opmap[name]
+
 def _opcode_set(*names):
-    return set([opcode.opmap[name] for name in names])
+    """Return a set of opcodes by the names in `names`."""
+    return set([_opcode(name) for name in names])
 
 # Opcodes that leave the code object.
 OPS_CODE_END = _opcode_set('RETURN_VALUE')
@@ -191,11 +196,12 @@ OPS_PUSH_BLOCK = _opcode_set('SETUP_LOOP', 'SETUP_EXCEPT', 'SETUP_FINALLY')
 # Opcodes that pop a block from the block stack.
 OPS_POP_BLOCK = _opcode_set('POP_BLOCK')
 
-# Opcodes that break a loop.
-OPS_BREAK = _opcode_set('BREAK_LOOP')
-
 # Opcodes that have a jump destination, but aren't really a jump.
 OPS_NO_JUMP = _opcode_set('SETUP_EXCEPT', 'SETUP_FINALLY')
+
+# Individual opcodes we need below.
+OP_BREAK_LOOP = _opcode('BREAK_LOOP')
+OP_END_FINALLY = _opcode('END_FINALLY')
 
 
 class ByteParser:
@@ -352,12 +358,15 @@ class ByteParser:
                 block_stack.pop()
             elif bc.op in OPS_CHUNK_END:
                 # This opcode forces the end of the chunk.
-                if bc.op in OPS_BREAK:
+                if bc.op == OP_BREAK_LOOP:
                     # A break is implicit: jump where the top of the
                     # block_stack points.
                     chunk.exits.add(block_stack[-1])
                 chunk = None
-
+            elif bc.op == OP_END_FINALLY:
+                if block_stack:
+                    chunk.exits.add(block_stack[-1])
+            
         if chunks:
             chunks[-1].length = bc.next_offset - chunks[-1].byte
             for i in range(len(chunks)-1):

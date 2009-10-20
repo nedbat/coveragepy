@@ -384,5 +384,8 @@ class Analysis:
     def arcs_unpredicted(self):
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
-        unpredicted = [e for e in executed if e not in possible]
+        # Exclude arcs here which connect a line to itself.  They can occur
+        # in executed data in some cases.  This is where they can cause trouble,
+        # and here is where it's the least burden to remove them.
+        unpredicted = [e for e in executed if e not in possible and e[0] != e[1]]
         return sorted(unpredicted)

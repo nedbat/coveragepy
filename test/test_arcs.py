@@ -72,7 +72,24 @@ class SimpleArcTest(CoverageTest):
             assert a == 4
             """,
             arcz=".1 12 25 14 45 5.", arcz_missing="12 25")
-        
+
+    def test_compact_if(self):
+        self.check_coverage("""\
+            a = 1
+            if len([]) == 0: a = 2
+            assert a == 2
+            """,
+            arcz=".1 12 23 3.", arcz_missing="")
+        self.check_coverage("""\
+            def fn(x):
+                if x % 2: return True
+                return False
+            a = fn(1)
+            assert a == True
+            """,
+            arcz=".1 14 45 5.  .2 2. 23 3.", arcz_missing="23 3.")
+
+
 class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""
     
@@ -132,9 +149,11 @@ class LoopArcTest(CoverageTest):
             """,
             arcz=".1 12 23 34 45 25 56 51 67 17 7.", arcz_missing="17 25")
 
-class ExceptionArcTest(CoverageTest):
 
-    def test_no_exception(self):
+class ExceptionArcTest(CoverageTest):
+    """Arc-measuring tests involving exception handling."""
+
+    def test_try_except(self):
         self.check_coverage("""\
             a, b = 1, 1
             try:
@@ -144,8 +163,6 @@ class ExceptionArcTest(CoverageTest):
             assert a == 3 and b == 1
             """,
             arcz=".1 12 23 36 45 56 6.", arcz_missing="45 56")
-
-    def test_raise(self):
         self.check_coverage("""\
             a, b = 1, 1
             try:
@@ -159,7 +176,71 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 34 58 67 78 8.",
             arcz_missing="58", arcz_unpredicted="46")
 
-    def xest_xx(self):
+    def test_hidden_raise(self):
         self.check_coverage("""\
+            a, b = 1, 1
+            def oops(x):
+                if x % 2: raise Exception("odd")
+            try:
+                a = 5
+                oops(1)
+                a = 7
+            except:
+                b = 9
+            assert a == 5 and b == 9
             """,
-            arcz="", arcz_missing="")
+            arcz=".1 12 .3 3. 24 45 56 67 7A 89 9A A.",
+            arcz_missing="67 7A", arcz_unpredicted="68")
+
+    def test_try_finally(self):
+        self.check_coverage("""\
+            a, c = 1, 1
+            try:
+                a = 3
+            finally:
+                c = 5
+            assert a == 3 and c == 5
+            """,
+            arcz=".1 12 23 35 56 6.", arcz_missing="")
+        self.check_coverage("""\
+            a, c, d = 1, 1, 1
+            try:
+                try:
+                    a = 4
+                finally:
+                    c = 6
+            except:
+                d = 8
+            assert a == 4 and c == 6 and d == 1    # 9
+            """,
+            arcz=".1 12 23 34 46 67 78 89 69 9.",
+            arcz_missing="67 78 89", arcz_unpredicted="")
+        self.check_coverage("""\
+            a, c, d = 1, 1, 1
+            try:
+                try:
+                    a = 4
+                    raise Exception("Yikes!")
+                    a = 6
+                finally:
+                    c = 8
+            except:
+                d = 10                              # A
+            assert a == 4 and c == 8 and d == 10    # B
+            """,
+            arcz=".1 12 23 34 45 68 89 8B 9A AB B.",
+            arcz_missing="68 8B", arcz_unpredicted="58")
+
+    if sys.hexversion >= 0x02050000:
+        def test_except_finally_no_exception(self):
+            self.check_coverage("""\
+                a, b, c = 1, 1, 1
+                try:
+                    a = 3
+                except:
+                    b = 5
+                finally:
+                    c = 7
+                assert a == 3 and b == 1 and c == 7
+                """,
+                arcz=".1 12 23 45 37 57 78 8.", arcz_missing="45 57")
