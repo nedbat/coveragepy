@@ -232,7 +232,7 @@ class ExceptionArcTest(CoverageTest):
             arcz_missing="68 8B", arcz_unpredicted="58")
 
     if sys.hexversion >= 0x02050000:
-        def test_except_finally_no_exception(self):
+        def test_except_finally(self):
             self.check_coverage("""\
                 a, b, c = 1, 1, 1
                 try:
@@ -244,3 +244,19 @@ class ExceptionArcTest(CoverageTest):
                 assert a == 3 and b == 1 and c == 7
                 """,
                 arcz=".1 12 23 45 37 57 78 8.", arcz_missing="45 57")
+            self.check_coverage("""\
+                a, b, c = 1, 1, 1
+                def oops(x):
+                    if x % 2: raise Exception("odd")
+                try:
+                    a = 5
+                    oops(1)
+                    a = 7
+                except:
+                    b = 9
+                finally:
+                    c = 11
+                assert a == 5 and b == 9 and c == 11
+                """,
+                arcz=".1 12 .3 3. 24 45 56 67 7B 89 9B BC C.",
+                arcz_missing="67 7B", arcz_unpredicted="68")
