@@ -193,6 +193,9 @@ OPS_CHUNK_END = _opcode_set(
 # Opcodes that push a block on the block stack.
 OPS_PUSH_BLOCK = _opcode_set('SETUP_LOOP', 'SETUP_EXCEPT', 'SETUP_FINALLY')
 
+# Block types for exception handling.
+OPS_EXCEPT_BLOCKS = _opcode_set('SETUP_EXCEPT', 'SETUP_FINALLY')
+
 # Opcodes that pop a block from the block stack.
 OPS_POP_BLOCK = _opcode_set('POP_BLOCK')
 
@@ -327,7 +330,9 @@ class ByteParser:
         chunk = None
         bytes_lines_map = dict(self._bytes_lines())
         
-        # The block stack: just store the "handler" value. 
+        # The block stack: loops and try blocks get pushed here for the
+        # implicit jumps that can occur.
+        # Each entry is a tuple: (block type, destination)
         block_stack = []
         
         for bc in ByteCodes(self.code.co_code):
@@ -352,7 +357,7 @@ class ByteParser:
                 chunk.exits.add(-1)
             elif bc.op in OPS_PUSH_BLOCK:
                 # The opcode adds a block to the block_stack.
-                block_stack.append(bc.jump_to)
+                block_stack.append((bc.op, bc.jump_to))
             elif bc.op in OPS_POP_BLOCK:
                 # The opcode pops a block from the block stack.
                 block_stack.pop()
@@ -361,12 +366,20 @@ class ByteParser:
                 if bc.op == OP_BREAK_LOOP:
                     # A break is implicit: jump where the top of the
                     # block_stack points.
-                    chunk.exits.add(block_stack[-1])
+                    chunk.exits.add(block_stack[-1][1])
                 chunk = None
             elif bc.op == OP_END_FINALLY:
                 if block_stack:
-                    chunk.exits.add(block_stack[-1])
-            
+                    # A break that goes through a finally will jump to whatever
+                    # block is on top of the stack.
+                    chunk.exits.add(block_stack[-1][1])
+                # For the finally clause we need to find the closest exception
+                # block, and use its jump target as an exit.
+                for iblock in range(len(block_stack)-1, -1, -1):
+                    if block_stack[iblock][0] in OPS_EXCEPT_BLOCKS:
+                        chunk.exits.add(block_stack[iblock][1])
+                        break
+
         if chunks:
             chunks[-1].length = bc.next_offset - chunks[-1].byte
             for i in range(len(chunks)-1):

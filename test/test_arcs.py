@@ -231,6 +231,62 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 34 45 68 89 8B 9A AB B.",
             arcz_missing="68 8B", arcz_unpredicted="58")
 
+    def test_finally_in_loop(self):
+        self.check_coverage("""\
+            a, c, d, i = 1, 1, 1, 99
+            try:
+                for i in range(5):
+                    try:
+                        a = 5
+                        if i > 0:
+                            raise Exception("Yikes!")
+                        a = 8
+                    finally:
+                        c = 10
+            except:
+                d = 12                              # C
+            assert a == 5 and c == 10 and d == 12   # D
+            """,
+            arcz=".1 12 23 34 3D 45 56 67 68 8A A3 AB AD BC CD D.",
+            arcz_missing="3D AD", arcz_unpredicted="7A")
+        self.check_coverage("""\
+            a, c, d, i = 1, 1, 1, 99
+            try:
+                for i in range(5):
+                    try:
+                        a = 5
+                        if i > 10:
+                            raise Exception("Yikes!")
+                        a = 8
+                    finally:
+                        c = 10
+            except:
+                d = 12                              # C
+            assert a == 8 and c == 10 and d == 1    # D
+            """,
+            arcz=".1 12 23 34 3D 45 56 67 68 8A A3 AB AD BC CD D.",
+            arcz_missing="67 AB AD BC CD", arcz_unpredicted="")
+
+
+    def test_break_in_finally(self):
+        self.check_coverage("""\
+            a, c, d, i = 1, 1, 1, 99
+            try:
+                for i in range(5):
+                    try:
+                        a = 5
+                        if i > 0:
+                            break
+                        a = 8
+                    finally:
+                        c = 10
+            except:
+                d = 12                              # C
+            assert a == 5 and c == 10 and d == 1    # D
+            """,
+            arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB AD BC CD D.",
+            arcz_missing="3D AB BC CD", arcz_unpredicted="")
+
     if sys.hexversion >= 0x02050000:
         def test_except_finally(self):
             self.check_coverage("""\
