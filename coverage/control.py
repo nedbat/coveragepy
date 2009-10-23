@@ -3,7 +3,7 @@
 import os, socket
 
 from coverage.annotate import AnnotateReporter
-from coverage.backward import string_class, sorted # pylint: disable-msg=W0622
+from coverage.backward import set, string_class, sorted # pylint: disable-msg=W0622
 from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.data import CoverageData
