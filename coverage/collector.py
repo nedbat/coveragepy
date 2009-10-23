@@ -73,6 +73,7 @@ class PyTracer:
                     #print "lin", self.last_line, frame.f_lineno
                     self.cur_file_data[(self.last_line, frame.f_lineno)] = None
                 else:
+                    #print "lin", frame.f_lineno
                     self.cur_file_data[frame.f_lineno] = None
             self.last_line = frame.f_lineno
         elif event == 'return':
