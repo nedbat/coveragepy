@@ -354,17 +354,8 @@ class Analysis:
         # Identify missing statements.
         self.missing = []
         self.executed = self.coverage.data.executed_lines(self.filename)
-        for line in self.statements:
-            lines = line_map.get(line)
-            if lines:
-                for l in range(lines[0], lines[1]+1):
-                    if l in self.executed:
-                        break
-                else:
-                    self.missing.append(line)
-            else:
-                if line not in self.executed:
-                    self.missing.append(line)
+        exec1 = self.parser._map_to_first_lines(self.executed)
+        self.missing = sorted(set(self.statements) - set(exec1))
 
     def missing_formatted(self):
         return format_lines(self.statements, self.missing)
@@ -373,7 +364,10 @@ class Analysis:
         return self.parser.arc_info()
 
     def arcs_executed(self):
-        return self.coverage.data.executed_arcs(self.filename)
+        executed = self.coverage.data.executed_arcs(self.filename)
+        m2fl = self.parser._map_to_first_line
+        executed = [(m2fl(l1), m2fl(l2)) for (l1,l2) in executed]
+        return executed
 
     def arcs_missing(self):
         possible = self.arc_possibilities()

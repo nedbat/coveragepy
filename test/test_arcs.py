@@ -89,6 +89,17 @@ class SimpleArcTest(CoverageTest):
             """,
             arcz=".1 14 45 5.  .2 2. 23 3.", arcz_missing="23 3.")
 
+    def test_multiline(self):
+        self.check_coverage("""\
+            a = (
+                2 +
+                3
+                )
+            b = \\
+                6
+            """,
+            arcz=".1 15 5.", arcz_missing="")
+
 
 class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""

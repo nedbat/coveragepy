@@ -126,7 +126,15 @@ class CodeParser:
         # Find the starts of the executable statements.
         self.statement_starts.update(self.byte_parser._find_statements())
 
-    def _map_to_first_line(self, lines, ignore=None):
+    def _map_to_first_line(self, line):
+        rng = self.multiline.get(line)
+        if rng:
+            first_line = rng[0]
+        else:
+            first_line = line
+        return first_line
+
+    def _map_to_first_lines(self, lines, ignore=None):
         """Map the line numbers in `lines` to the correct first line of the
         statement.
         
@@ -140,15 +148,10 @@ class CodeParser:
         for l in lines:
             if l in ignore:
                 continue
-            rng = self.multiline.get(l)
-            if rng:
-                new_l = rng[0]
-            else:
-                new_l = l
+            new_l = self._map_to_first_line(l)
             if new_l not in ignore:
                 lset.add(new_l)
-        lines = list(lset)
-        return sorted(lines)
+        return sorted(lset)
     
     def parse_source(self):
         """Parse source text to find executable lines, excluded lines, etc.
@@ -157,18 +160,23 @@ class CodeParser:
         2) a sorted list of excluded line numbers, and 3) a dict mapping line
         numbers to pairs (lo,hi) for multi-line statements.
         
+        Reported line numbers are normalized to the first line of multi-line
+        statements.
+        
         """
         self._raw_parse()
         
-        excluded_lines = self._map_to_first_line(self.excluded)
+        excluded_lines = self._map_to_first_lines(self.excluded)
         ignore = excluded_lines + list(self.docstrings)
-        lines = self._map_to_first_line(self.statement_starts, ignore)
+        lines = self._map_to_first_lines(self.statement_starts, ignore)
     
         return lines, excluded_lines, self.multiline
 
     def arc_info(self):
         """Get information about the arcs available in the code."""
         arcs = self.byte_parser._all_arcs()
+        m2fl = self._map_to_first_line
+        arcs = [(m2fl(l1), m2fl(l2)) for (l1,l2) in arcs]
         return sorted(arcs)
 
 ## Opcodes that guide the ByteParser.
@@ -388,6 +396,13 @@ class ByteParser:
         return chunks
 
     def _arcs(self):
+        """Find the executable arcs in the code.
+        
+        Returns a set of pairs, (from,to).  From and to are integer line
+        numbers.  If from is -1, then the arc is an entrance into the code
+        object.  If to is -1, the arc is an exit from the code object.
+        
+        """
         chunks = self._split_into_chunks()
         
         # A map from byte offsets to chunks jumped into.
@@ -457,9 +472,14 @@ class ByteParser:
         return chunks
 
     def _all_arcs(self):
-        arcs = []
+        """Get the set of all arcs in this code object and its children.
+        
+        See `_arcs` for details.
+        
+        """
+        arcs = set()
         for bp in self.child_parsers():
-            arcs.extend(bp._arcs())
+            arcs.update(bp._arcs())
         
         return arcs
 
