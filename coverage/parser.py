@@ -17,7 +17,6 @@ class CodeParser(object):
         a regex.
         
         """
-
         assert text or filename, "CodeParser needs either text or filename"
         self.filename = filename or "<code>"
         if not text:
@@ -127,7 +126,8 @@ class CodeParser(object):
         # Find the starts of the executable statements.
         self.statement_starts.update(self.byte_parser._find_statements())
 
-    def _map_to_first_line(self, line):
+    def first_line(self, line):
+        """Return the first line number of the statement including `line`."""
         rng = self.multiline.get(line)
         if rng:
             first_line = rng[0]
@@ -135,7 +135,7 @@ class CodeParser(object):
             first_line = line
         return first_line
 
-    def _map_to_first_lines(self, lines, ignore=None):
+    def first_lines(self, lines, ignore=None):
         """Map the line numbers in `lines` to the correct first line of the
         statement.
         
@@ -149,7 +149,7 @@ class CodeParser(object):
         for l in lines:
             if l in ignore:
                 continue
-            new_l = self._map_to_first_line(l)
+            new_l = self.first_line(l)
             if new_l not in ignore:
                 lset.add(new_l)
         return sorted(lset)
@@ -166,18 +166,23 @@ class CodeParser(object):
         """
         self._raw_parse()
         
-        excluded_lines = self._map_to_first_lines(self.excluded)
+        excluded_lines = self.first_lines(self.excluded)
         ignore = excluded_lines + list(self.docstrings)
-        lines = self._map_to_first_lines(self.statement_starts, ignore)
+        lines = self.first_lines(self.statement_starts, ignore)
     
         return lines, excluded_lines
 
-    def arc_info(self):
-        """Get information about the arcs available in the code."""
-        arcs = self.byte_parser._all_arcs()
-        m2fl = self._map_to_first_line
-        arcs = [(m2fl(l1), m2fl(l2)) for (l1,l2) in arcs]
-        return sorted(arcs)
+    def arcs(self):
+        """Get information about the arcs available in the code.
+        
+        Returns a sorted list of line number pairs.  Line numbers have been
+        normalized to the first line of multiline statements.
+        
+        """
+        all_arcs = self.byte_parser._all_arcs()
+        m2fl = self.first_line
+        all_arcs = [(m2fl(l1), m2fl(l2)) for (l1,l2) in all_arcs]
+        return sorted(all_arcs)
 
 ## Opcodes that guide the ByteParser.
 
@@ -219,7 +224,6 @@ class ByteParser(object):
     """Parse byte codes to understand the structure of code."""
 
     def __init__(self, code=None, text=None, filename=None):
-
         if code:
             self.code = code
         else:
@@ -310,18 +314,15 @@ class ByteParser(object):
 
         print("")
 
-    def _line_for_byte(self, bytes_lines, byte):
-        last_line = 0
-        for b, l in bytes_lines:
-            if b == byte:
-                return l
-            elif b > byte:
-                return last_line
-            else:
-                last_line = l
-        return last_line
-
     def _split_into_chunks(self):
+        """Split the code object into a list of `Chunk` objects.
+        
+        Each chunk is only entered at its first instruction, though there can
+        be many exits from a chunk.
+        
+        Returns a list of `Chunk` objects.
+        
+        """
         class Chunk(object):
             """A sequence of bytecodes with exits to other bytecodes.
             
@@ -471,6 +472,11 @@ class ByteParser(object):
         return arcs
         
     def _all_chunks(self):
+        """Returns a list of `Chunk` objects for this code and its children.
+        
+        See `_split_into_chunks` for details.
+        
+        """
         chunks = []
         for bp in self.child_parsers():
             chunks.extend(bp._split_into_chunks())
@@ -530,6 +536,8 @@ class AdHocMain(object):
             self.adhoc_one_file(options, args[0])
 
     def adhoc_one_file(self, options, filename):
+        """Process just one file."""
+        
         if options.dis or options.chunks:
             try:
                 bp = ByteParser(filename=filename)
@@ -557,34 +565,10 @@ class AdHocMain(object):
             cp._raw_parse()
 
             if options.source:
-                arc_chars = {}
                 if options.chunks:
-                    for lfrom, lto in sorted(arcs):
-                        if lfrom == -1:
-                            arc_chars[lto] = arc_chars.get(lto, '') + 'v'
-                        elif lto == -1:
-                            arc_chars[lfrom] = arc_chars.get(lfrom, '') + '^'
-                        else:
-                            if lfrom == lto-1:
-                                # Don't show obvious arcs.
-                                continue
-                            if lfrom < lto:
-                                l1, l2 = lfrom, lto
-                            else:
-                                l1, l2 = lto, lfrom
-                            w = max([len(arc_chars.get(l, '')) for l in range(l1, l2+1)])
-                            for l in range(l1, l2+1):
-                                if l == lfrom:
-                                    ch = '<'
-                                elif l == lto:
-                                    ch = '>'
-                                else:
-                                    ch = '|'
-                                arc_chars[l] = arc_chars.get(l, '').ljust(w) + ch
-
-                arc_width = 0
-                if arc_chars:
-                    arc_width = max([len(a) for a in arc_chars.values()])
+                    arc_width, arc_chars = self.arc_ascii_art(arcs)
+                else:
+                    arc_width, arc_chars = 0, {}
                     
                 for i, ltext in enumerate(cp.lines):
                     lineno = i+1
@@ -598,6 +582,44 @@ class AdHocMain(object):
                     a = arc_chars.get(lineno, '').ljust(arc_width)
                     print("%4d %s%s%s%s %s" % (lineno, m0, m1, m2, a, ltext))
 
+    def arc_ascii_art(self, arcs):
+        """Draw arcs as ascii art.
+        
+        Returns a width of characters needed to draw all the arcs, and a
+        dictionary mapping line numbers to ascii strings to draw for that line.
+        
+        """
+        arc_chars = {}
+        for lfrom, lto in sorted(arcs):
+            if lfrom == -1:
+                arc_chars[lto] = arc_chars.get(lto, '') + 'v'
+            elif lto == -1:
+                arc_chars[lfrom] = arc_chars.get(lfrom, '') + '^'
+            else:
+                if lfrom == lto-1:
+                    # Don't show obvious arcs.
+                    continue
+                if lfrom < lto:
+                    l1, l2 = lfrom, lto
+                else:
+                    l1, l2 = lto, lfrom
+                w = max([len(arc_chars.get(l, '')) for l in range(l1, l2+1)])
+                for l in range(l1, l2+1):
+                    if l == lfrom:
+                        ch = '<'
+                    elif l == lto:
+                        ch = '>'
+                    else:
+                        ch = '|'
+                    arc_chars[l] = arc_chars.get(l, '').ljust(w) + ch
+                arc_width = 0
+
+        if arc_chars:
+            arc_width = max([len(a) for a in arc_chars.values()])
+        else:
+            arc_width = 0
+
+        return arc_width, arc_chars
 
 if __name__ == '__main__':
     AdHocMain().main(sys.argv[1:])

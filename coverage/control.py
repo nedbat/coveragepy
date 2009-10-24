@@ -363,28 +363,37 @@ class Analysis(object):
         # Identify missing statements.
         self.missing = []
         self.executed = self.coverage.data.executed_lines(self.filename)
-        exec1 = self.parser._map_to_first_lines(self.executed)
+        exec1 = self.parser.first_lines(self.executed)
         self.missing = sorted(set(self.statements) - set(exec1))
 
     def missing_formatted(self):
+        """The missing line numbers, formatted nicely.
+        
+        Returns a string like "1-2, 5-11, 13-14".
+        
+        """
         return format_lines(self.statements, self.missing)
 
     def arc_possibilities(self):
-        return self.parser.arc_info()
+        """Returns a sorted list of the arcs in the code."""
+        return self.parser.arcs()
 
     def arcs_executed(self):
+        """Returns a sorted list of the arcs actually executed in the code."""
         executed = self.coverage.data.executed_arcs(self.filename)
-        m2fl = self.parser._map_to_first_line
+        m2fl = self.parser.first_line
         executed = [(m2fl(l1), m2fl(l2)) for (l1,l2) in executed]
-        return executed
+        return sorted(executed)
 
     def arcs_missing(self):
+        """Returns a sorted list of the arcs in the code not executed."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
         missing = [p for p in possible if p not in executed]
         return sorted(missing)
 
     def arcs_unpredicted(self):
+        """Returns a sorted list of the executed arcs missing from the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
         # Exclude arcs here which connect a line to itself.  They can occur
