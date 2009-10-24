@@ -68,6 +68,7 @@ install:
 DEVINST_FILE = coverage.egg-info/PKG-INFO
 devinst: $(DEVINST_FILE)
 $(DEVINST_FILE): coverage/tracer.c 
+	-rm coverage/tracer.pyd
 	python setup.py develop
 
 uninstall:

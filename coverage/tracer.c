@@ -33,11 +33,20 @@
 
 #endif /* Py3k */
 
+/* An entry on the data stack.  For each call frame, we need to record the
+    dictionary to capture data, and the last line number executed in that
+    frame.
+*/
+typedef struct {
+    PyObject * file_data;  /* PyMem_Malloc'ed, a borrowed ref. */
+    int last_line;
+} DataStackEntry;
 
 /* The Tracer type. */
 
 typedef struct {
     PyObject_HEAD
+
     /* Python objects manipulated directly by the Collector class. */
     PyObject * should_trace;
     PyObject * data;
@@ -48,15 +57,35 @@ typedef struct {
     int started;
     /* Are we tracing arcs, or just lines? */
     int tracing_arcs;
-    
+
+    /*
+        The data stack is a stack of dictionaries.  Each dictionary collects
+        data for a single source file.  The data stack parallels the call stack:
+        each call pushes the new frame's file data onto the data stack, and each
+        return pops file data off.
+        
+        The file data is a dictionary whose form depends on the tracing options.
+        If tracing arcs, the keys are line number pairs.  If not tracing arcs,
+        the keys are line numbers.  In both cases, the value is irrelevant
+        (None).
+    */
     /* The index of the last-used entry in data_stack. */
     int depth;
-    /* Filenames to record at each level, or NULL if not recording. */
-    PyObject ** data_stack;     /* PyMem_Malloc'ed, each PyObject* is a borrowed ref. */
-    int data_stack_alloc;       /* number of entries at data_stack. */
-    
+    /* The file data at each level, or NULL if not recording. */
+    DataStackEntry * data_stack;
+    int data_stack_alloc;       /* number of entries allocated at data_stack. */
+
+    /* The current file_data dictionary.  Borrowed. */
+    PyObject * cur_file_data;
+
+    /* The line number of the last line recorded, for tracing arcs.
+        -1 means there was no previous line, as when entering a code object.
+    */
+    int last_line;
+
     /* The parent frame for the last exception event, to fix missing returns. */
     PyFrameObject * last_exc_back;
+    
 } Tracer;
 
 #define STACK_DELTA    100
@@ -71,15 +100,19 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
     
     self->started = 0;
     self->tracing_arcs = 0;
-    
+
     self->depth = -1;
-    self->data_stack = PyMem_Malloc(STACK_DELTA*sizeof(PyObject *));
+    self->data_stack = PyMem_Malloc(STACK_DELTA*sizeof(DataStackEntry));
     if (self->data_stack == NULL) {
         return -1;
     }
     self->data_stack_alloc = STACK_DELTA;
-    
+
+    self->cur_file_data = NULL;    
+    self->last_line = -1;
+
     self->last_exc_back = NULL;
+
     return 0;
 }
 
@@ -147,6 +180,30 @@ showlog(int depth, int lineno, PyObject * filename, const char * msg)
 static const char * what_sym[] = {"CALL", "EXC ", "LINE", "RET "};
 #endif
 
+/* Record a pair of integers in self->cur_file_data. */
+static int
+Tracer_record_pair(Tracer *self, int l1, int l2)
+{
+    int ret = 0;
+    
+    PyObject * t = PyTuple_New(2);
+    if (t != NULL) {
+        PyTuple_SET_ITEM(t, 0, MyInt_FromLong(l1));
+        PyTuple_SET_ITEM(t, 1, MyInt_FromLong(l2));
+        if (PyDict_SetItem(self->cur_file_data, t, Py_None) < 0) {
+            ret = -1;
+        }
+        Py_DECREF(t);
+    }
+    else {
+        ret = -1;
+    }
+    return ret;
+}
+
+/*
+ * The Trace Function
+ */
 static int
 Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
 {
@@ -179,7 +236,14 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                we'll need to keep more of the missed frame's state.
             */
             if (self->depth >= 0) {
+                if (self->tracing_arcs && self->cur_file_data) {
+                    if (Tracer_record_pair(self, self->last_line, -1) < 0) {
+                        return -1;
+                    }
+                }
                 SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "missedreturn");
+                self->cur_file_data = self->data_stack[self->depth].file_data;
+                self->last_line = self->data_stack[self->depth].last_line;
                 self->depth--;
             }
         }
@@ -189,11 +253,12 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
 
     switch (what) {
     case PyTrace_CALL:      /* 0 */
+        /* Grow the stack. */
         self->depth++;
         if (self->depth >= self->data_stack_alloc) {
             /* We've outgrown our data_stack array: make it bigger. */
             int bigger = self->data_stack_alloc + STACK_DELTA;
-            PyObject ** bigger_data_stack = PyMem_Realloc(self->data_stack, bigger * sizeof(PyObject *));
+            DataStackEntry * bigger_data_stack = PyMem_Realloc(self->data_stack, bigger * sizeof(DataStackEntry));
             if (bigger_data_stack == NULL) {
                 self->depth--;
                 return -1;
@@ -201,6 +266,11 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             self->data_stack = bigger_data_stack;
             self->data_stack_alloc = bigger;
         }
+
+        /* Push the current state on the stack. */
+        self->data_stack[self->depth].file_data = self->cur_file_data;
+        self->data_stack[self->depth].last_line = self->last_line;
+
         /* Check if we should trace this line. */
         filename = frame->f_code->co_filename;
         tracename = PyDict_GetItem(self->should_trace_cache, filename);
@@ -228,20 +298,31 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                 PyDict_SetItem(self->data, tracename, file_data);
                 Py_DECREF(file_data);
             }
-            self->data_stack[self->depth] = file_data;
+            self->cur_file_data = file_data;
             SHOWLOG(self->depth, frame->f_lineno, filename, "traced");
         }
         else {
-            self->data_stack[self->depth] = NULL;
-            Py_DECREF(tracename);
+            self->cur_file_data = NULL;
             SHOWLOG(self->depth, frame->f_lineno, filename, "skipped");
         }
+        
+        Py_DECREF(tracename);
+
+        self->last_line = -1;
         break;
     
     case PyTrace_RETURN:    /* 3 */
         /* A near-copy of this code is above in the missing-return handler. */
         if (self->depth >= 0) {
+            if (self->tracing_arcs && self->cur_file_data) {
+                if (Tracer_record_pair(self, self->last_line, -1) < 0) {
+                    return -1;
+                }
+            }
+
             SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "return");
+            self->cur_file_data = self->data_stack[self->depth].file_data;
+            self->last_line = self->data_stack[self->depth].last_line;
             self->depth--;
         }
         break;
@@ -249,9 +330,20 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     case PyTrace_LINE:      /* 2 */
         if (self->depth >= 0) {
             SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "line");
-            if (self->data_stack[self->depth]) {
-                PyDict_SetItem(self->data_stack[self->depth], MyInt_FromLong(frame->f_lineno), Py_None);
+            if (self->cur_file_data) {
+                /* We're tracing in this frame: record something. */
+                if (self->tracing_arcs) {
+                    /* Tracing arcs: key is (last_line,this_line). */
+                    if (Tracer_record_pair(self, self->last_line, frame->f_lineno) < 0) {
+                        return -1;
+                    }
+                }
+                else {
+                    /* Tracing lines: key is simply this_line. */
+                    PyDict_SetItem(self->cur_file_data, MyInt_FromLong(frame->f_lineno), Py_None);
+                }
             }
+            self->last_line = frame->f_lineno;
         }
         break;
     
@@ -283,6 +375,8 @@ Tracer_start(Tracer *self, PyObject *args)
     PyEval_SetTrace((Py_tracefunc)Tracer_trace, (PyObject*)self);
     self->started = 1;
     self->tracing_arcs = self->arcs && PyObject_IsTrue(self->arcs);
+    self->last_line = -1;
+
     return Py_BuildValue("");
 }
 
@@ -293,6 +387,7 @@ Tracer_stop(Tracer *self, PyObject *args)
         PyEval_SetTrace(NULL, NULL);
         self->started = 0;
     }
+
     return Py_BuildValue("");
 }
 
