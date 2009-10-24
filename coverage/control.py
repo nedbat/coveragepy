@@ -3,7 +3,8 @@
 import os, socket
 
 from coverage.annotate import AnnotateReporter
-from coverage.backward import set, string_class, sorted # pylint: disable-msg=W0622
+from coverage.backward import set, string_class     # pylint: disable-msg=W0622
+from coverage.backward import sorted                # pylint: disable-msg=W0622
 from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.data import CoverageData
@@ -50,6 +51,8 @@ class coverage:
         tracing functions make the faster more sophisticated trace function not
         operate properly.
         
+        TODO: `branch`.
+
         """
         from coverage import __version__
         
@@ -65,7 +68,9 @@ class coverage:
         # cheap hack, since the rest of the command line arguments aren't
         # recognized, but it solves some users' problems.
         timid = timid or ('--timid' in os.environ.get('COVERAGE_OPTIONS', ''))
-        self.collector = Collector(self._should_trace, timid=timid, branch=branch)
+        self.collector = Collector(
+            self._should_trace, timid=timid, branch=branch
+            )
 
         # Create the data file.
         if data_suffix:
@@ -242,7 +247,10 @@ class coverage:
 
         """
         analysis = self._analyze(morf)
-        return analysis.filename, analysis.statements, analysis.excluded, analysis.missing, analysis.missing_formatted()
+        return (
+            analysis.filename, analysis.statements, analysis.excluded,
+            analysis.missing, analysis.missing_formatted()
+            )
 
     def _analyze(self, it):
         """Analyze a single morf or code unit.
@@ -347,9 +355,10 @@ class Analysis:
                         )
 
         self.parser = CodeParser(
-            text=source, filename=self.filename, exclude=self.coverage.exclude_re
+            text=source, filename=self.filename,
+            exclude=self.coverage.exclude_re
             )
-        self.statements, self.excluded, line_map = self.parser.parse_source()
+        self.statements, self.excluded = self.parser.parse_source()
 
         # Identify missing statements.
         self.missing = []
@@ -379,7 +388,10 @@ class Analysis:
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
         # Exclude arcs here which connect a line to itself.  They can occur
-        # in executed data in some cases.  This is where they can cause trouble,
-        # and here is where it's the least burden to remove them.
-        unpredicted = [e for e in executed if e not in possible and e[0] != e[1]]
+        # in executed data in some cases.  This is where they can cause
+        # trouble, and here is where it's the least burden to remove them.
+        unpredicted = [
+            e for e in executed
+                if e not in possible and e[0] != e[1]
+            ]
         return sorted(unpredicted)

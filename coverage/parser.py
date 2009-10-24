@@ -51,7 +51,8 @@ class CodeParser:
     def _get_byte_parser(self):
         """Create a ByteParser on demand."""
         if not self._byte_parser:
-            self._byte_parser = ByteParser(text=self.text, filename=self.filename)
+            self._byte_parser = \
+                            ByteParser(text=self.text, filename=self.filename)
         return self._byte_parser
     byte_parser = property(_get_byte_parser)
 
@@ -156,9 +157,8 @@ class CodeParser:
     def parse_source(self):
         """Parse source text to find executable lines, excluded lines, etc.
 
-        Return values are 1) a sorted list of executable line numbers,
-        2) a sorted list of excluded line numbers, and 3) a dict mapping line
-        numbers to pairs (lo,hi) for multi-line statements.
+        Return values are 1) a sorted list of executable line numbers, and
+        2) a sorted list of excluded line numbers.
         
         Reported line numbers are normalized to the first line of multi-line
         statements.
@@ -170,7 +170,7 @@ class CodeParser:
         ignore = excluded_lines + list(self.docstrings)
         lines = self._map_to_first_lines(self.statement_starts, ignore)
     
-        return lines, excluded_lines, self.multiline
+        return lines, excluded_lines
 
     def arc_info(self):
         """Get information about the arcs available in the code."""
@@ -241,7 +241,11 @@ class ByteParser:
                     )
 
     def child_parsers(self):
-        """Iterate over all the code objects nested within this one, starting with self."""
+        """Iterate over all the code objects nested within this one.
+        
+        The iteration includes `self` as its first value.
+        
+        """
         return map(lambda c: ByteParser(code=c), CodeObjects(self.code))
 
     # Getting numbers from the lnotab value changed in Py3.0.    
@@ -331,7 +335,9 @@ class ByteParser:
                 self.exits = set()
                 
             def __repr__(self):
-                return "<%d:%d(%d) %r>" % (self.byte, self.line, self.length, list(self.exits))
+                return "<%d:%d(%d) %r>" % (
+                    self.byte, self.line, self.length, list(self.exits)
+                    )
 
         # The list of chunks so far, and the one we're working on.
         chunks = []
@@ -435,7 +441,7 @@ class ByteParser:
                             break
                     else:
                         # No chunk for this byte!
-                        raise Exception("Couldn't find a chunk for byte %d" % byte)
+                        raise Exception("Couldn't find chunk @ %d" % byte)
                     byte_chunks[byte] = ch
                     
                 if ch.line:
@@ -500,10 +506,12 @@ class AdHocMain(object):
             "-d", action="store_true", dest="dis", help="Disassemble"
             )
         parser.add_option(
-            "-R", action="store_true", dest="recursive", help="Recurse to find source files"
+            "-R", action="store_true", dest="recursive",
+            help="Recurse to find source files"
             )
         parser.add_option(
-            "-s", action="store_true", dest="source", help="Show analyzed source"
+            "-s", action="store_true", dest="source",
+            help="Show analyzed source"
             )
         parser.add_option(
             "-t", action="store_true", dest="tokens", help="Show tokens"

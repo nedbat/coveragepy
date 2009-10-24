@@ -116,7 +116,8 @@ class HtmlReporter(Reporter):
                     line_class = ""
                     if lineno in analysis.statements:
                         line_class += " stm"
-                        if lineno not in analysis.missing and lineno not in analysis.excluded:
+                        if lineno not in analysis.missing and \
+                            lineno not in analysis.excluded:
                             line_class += c_run
                     if lineno in analysis.excluded:
                         line_class += c_exc

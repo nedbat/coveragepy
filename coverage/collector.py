@@ -133,7 +133,7 @@ class Collector:
         self.should_trace = should_trace
         self.branch = branch
         self.reset()
-        if branch:  # For now use PyTracer for branch, so we can wait to update the C code.
+        if branch:  # TODO: For now use PyTracer for branch, so we can wait to update the C code.
             self._trace_class = PyTracer
         elif timid:
             # Being timid: use the simple Python trace function.
