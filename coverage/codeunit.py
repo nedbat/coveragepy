@@ -48,7 +48,7 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     return code_units
 
 
-class CodeUnit:
+class CodeUnit(object):
     """Code unit: a filename or module.
     
     Instance attributes:

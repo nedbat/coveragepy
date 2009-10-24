@@ -7,7 +7,7 @@ from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, CoverageException
 
 
-class CodeParser:
+class CodeParser(object):
     """Parse code to find executable lines, excluded lines, etc."""
     
     def __init__(self, text=None, filename=None, exclude=None):
@@ -215,7 +215,7 @@ OP_BREAK_LOOP = _opcode('BREAK_LOOP')
 OP_END_FINALLY = _opcode('END_FINALLY')
 
 
-class ByteParser:
+class ByteParser(object):
     """Parse byte codes to understand the structure of code."""
 
     def __init__(self, code=None, text=None, filename=None):

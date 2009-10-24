@@ -2,7 +2,7 @@
 
 import os, sys
 
-class FileLocator:
+class FileLocator(object):
     """Understand how filenames work."""
 
     def __init__(self):

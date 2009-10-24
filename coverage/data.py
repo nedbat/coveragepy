@@ -5,7 +5,7 @@ import os
 from coverage.backward import pickle, sorted    # pylint: disable-msg=W0622
 
 
-class CoverageData:
+class CoverageData(object):
     """Manages collected coverage data, including file storage.
     
     The data file format is a pickled dict, with these keys:

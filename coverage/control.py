@@ -14,7 +14,7 @@ from coverage.misc import format_lines, CoverageException
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
 
-class coverage:
+class coverage(object):
     """Programmatic access to Coverage.
 
     To use::
@@ -334,7 +334,7 @@ class coverage:
         return info
 
 
-class Analysis:
+class Analysis(object):
     """The results of analyzing a code unit."""
     
     def __init__(self, cov, code_unit):

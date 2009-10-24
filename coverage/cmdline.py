@@ -5,7 +5,7 @@ import optparse, sys
 from coverage.execfile import run_python_file
 
 
-class Opts:
+class Opts(object):
     """A namespace class for individual options we'll build parsers from."""
     
     branch = optparse.Option(
@@ -283,7 +283,7 @@ CMDS = {
     }
 
 
-class CoverageScript:
+class CoverageScript(object):
     """The command-line interface to Coverage."""
     
     def __init__(self, _covpkg=None, _run_python_file=None, _help_fn=None):

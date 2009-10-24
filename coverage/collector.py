@@ -10,7 +10,7 @@ except ImportError:
     Tracer = None
 
 
-class PyTracer:
+class PyTracer(object):
     """Python implementation of the raw data tracer."""
     
     # Because of poor implementations of trace-function-manipulating tools,
@@ -95,7 +95,7 @@ class PyTracer:
         sys.settrace(None)
 
 
-class Collector:
+class Collector(object):
     """Collects trace data.
 
     Creates a Tracer object for each thread, since they track stack information.
