@@ -1,6 +1,6 @@
 """Base test case class for coverage testing."""
 
-import imp, os, random, shutil, sys, tempfile, textwrap, unittest
+import imp, os, random, re, shutil, sys, tempfile, textwrap, unittest
 
 import coverage
 from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
@@ -268,3 +268,9 @@ class CoverageTest(unittest.TestCase):
     def assert_equal_sets(self, s1, s2):
         """Assert that the two arguments are equal as sets."""
         self.assertEqual(set(s1), set(s2))
+
+    def assert_matches(self, s, regex):
+        """Assert that `s` matches `regex`."""
+        m = re.search(regex, s)
+        if not m:
+            raise self.failureException("%r doesn't match %r" % (s, regex))
