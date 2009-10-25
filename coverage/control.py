@@ -10,7 +10,7 @@ from coverage.collector import Collector
 from coverage.data import CoverageData
 from coverage.files import FileLocator
 from coverage.html import HtmlReporter
-from coverage.misc import format_lines, CoverageException
+from coverage.misc import format_lines, CoverageException, NoSource
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
 
@@ -350,9 +350,7 @@ class Analysis(object):
             if not os.path.exists(self.filename):
                 source = self.coverage.file_locator.get_zip_data(self.filename)
                 if not source:
-                    raise CoverageException(
-                        "No source for code '%s'." % self.filename
-                        )
+                    raise NoSource("No source for code: %r" % self.filename)
 
         self.parser = CodeParser(
             text=source, filename=self.filename,
@@ -415,3 +413,29 @@ class Analysis(object):
                 if e not in possible and e[0] != e[1]
             ]
         return sorted(unpredicted)
+
+    def branch_lines(self):
+        """Returns lines that have more than one exit."""
+        exit_counts = {}
+        for l1,l2 in self.arc_possibilities():
+            if l1 not in exit_counts:
+                exit_counts[l1] = 0
+            exit_counts[l1] += 1
+        
+        return [l1 for l1,count in exit_counts.items() if count > 1]
+
+    def missing_branch_arcs(self):
+        """Return arcs that weren't executed from branch lines.
+        
+        Returns {l1:[l2a,l2b,...], ...}
+        
+        """
+        missing = self.arcs_missing()
+        branch_lines = set(self.branch_lines())
+        mba = {}
+        for l1, l2 in missing:
+            if l1 in branch_lines:
+                if l1 not in mba:
+                    mba[l1] = []
+                mba[l1].append(l2)
+        return mba

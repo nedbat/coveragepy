@@ -3,6 +3,7 @@
 import optparse, sys
 
 from coverage.execfile import run_python_file
+from coverage.misc import CoverageException
 
 
 class Opts(object):
@@ -283,6 +284,8 @@ CMDS = {
     }
 
 
+OK, ERR = 0, 1
+
 class CoverageScript(object):
     """The command-line interface to Coverage."""
     
@@ -330,7 +333,6 @@ class CoverageScript(object):
 
         """
         # Collect the command-line options.
-        OK, ERR = 0, 1
         
         if not argv:
             self.help_fn(topic='minimum_help')
@@ -566,4 +568,10 @@ def main():
     This is installed as the script entrypoint.
     
     """
-    return CoverageScript().command_line(sys.argv[1:])
+    try:
+        status = CoverageScript().command_line(sys.argv[1:])
+    except CoverageException:
+        _, err, _ = sys.exc_info()
+        print(err)
+        status = ERR
+    return status

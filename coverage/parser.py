@@ -4,7 +4,7 @@ import glob, opcode, os, re, sys, token, tokenize
 
 from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
 from coverage.bytecode import ByteCodes, CodeObjects
-from coverage.misc import nice_pair, CoverageException
+from coverage.misc import nice_pair, CoverageException, NoSource
 
 
 class CodeParser(object):
@@ -20,9 +20,13 @@ class CodeParser(object):
         assert text or filename, "CodeParser needs either text or filename"
         self.filename = filename or "<code>"
         if not text:
-            sourcef = open(self.filename, 'rU')
-            self.text = sourcef.read()
-            sourcef.close()
+            try:
+                sourcef = open(self.filename, 'rU')
+                self.text = sourcef.read()
+                sourcef.close()
+            except IOError:
+                _, err, _ = sys.exc_info()
+                raise NoSource("No source for code: %r: %s" % (self.filename, err))
         self.text = self.text.replace('\r\n', '\n')
 
         self.exclude = exclude

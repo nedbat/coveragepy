@@ -49,3 +49,7 @@ def format_lines(statements, lines):
 class CoverageException(Exception):
     """An exception specific to Coverage."""
     pass
+
+class NoSource(CoverageException):
+    """Used to indicate we couldn't find the source for a module."""
+    pass

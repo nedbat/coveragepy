@@ -1725,6 +1725,28 @@ class ProcessTest(CoverageTest):
         data.read_file(".coverage")
         self.assertEqual(data.summary()['b_or_c.py'], 7)
 
+    def test_missing_source_file(self):
+        # Check what happens if the source is missing when reporting happens.
+        self.make_file("fleeting.py", """\
+            s = 'goodbye, cruel world!'
+            """)
+
+        self.run_command("coverage run fleeting.py")
+        os.remove("fleeting.py")
+        out = self.run_command("coverage html -d htmlcov")
+        self.assert_matches(out, "No source for code: '.*fleeting.py'")
+        self.assert_("Traceback" not in out)
+
+        # It happens that the code paths are different for *.py and other files.
+        self.make_file("fleeting", """\
+            s = 'goodbye, cruel world!'
+            """)
+
+        self.run_command("coverage run fleeting")
+        os.remove("fleeting")
+        out = self.run_command("coverage html -d htmlcov")
+        self.assert_matches(out, "No source for code: '.*fleeting'")
+        self.assert_("Traceback" not in out)
 
 class RecursionTest(CoverageTest):
     """Check what happens when recursive code gets near limits."""

@@ -2,6 +2,7 @@
 
 import os
 from coverage.codeunit import code_unit_factory
+from coverage.misc import NoSource
 
 class Reporter(object):
     """A base class for all reporters."""
@@ -51,8 +52,6 @@ class Reporter(object):
         for cu in self.code_units:
             try:
                 report_fn(cu, self.coverage._analyze(cu))
-            except KeyboardInterrupt:
-                raise
-            except:
+            except NoSource:
                 if not self.ignore_errors:
                     raise
