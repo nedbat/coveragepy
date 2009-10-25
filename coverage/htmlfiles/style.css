@@ -125,23 +125,27 @@ td.text {
     background: #eeeeee;
     border-left: 2px solid #808080;
     }
+.text p.par {
+    background: #ffffdd;
+    border-left: 2px solid #ffff00;
+    }
 .text p.hide {
     background: inherit;
     }
 
 /* Syntax coloring */
 .text .com {
-	color: green;
-	font-style: italic;
-	line-height: 1px;
-	}
+    color: green;
+    font-style: italic;
+    line-height: 1px;
+    }
 .text .key {
-	font-weight: bold;
-	line-height: 1px;
-	}
+    font-weight: bold;
+    line-height: 1px;
+    }
 .text .str {
-	color: #000080;
-	}
+    color: #000080;
+    }
 
 /* index styles */
 #index td, #index th {

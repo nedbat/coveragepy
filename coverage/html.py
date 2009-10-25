@@ -93,12 +93,16 @@ class HtmlReporter(Reporter):
         n_mis = len(analysis.missing)
         n_run = n_stm - n_mis
         pc_cov = analysis.percent_covered()
-        
+
+        missing_branch_arcs = analysis.missing_branch_arcs()
+        n_par = len(missing_branch_arcs)
+
         # These classes determine which lines are highlighted by default.
         c_run = " run hide"
         c_exc = " exc"
         c_mis = " mis"
-        
+        c_par = " par"
+
         ws_tokens = [token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL]
         lines = []
         line = []
@@ -120,7 +124,9 @@ class HtmlReporter(Reporter):
                         line_class += c_exc
                     if lineno in analysis.missing:
                         line_class += c_mis
-                        
+                    if lineno in missing_branch_arcs:
+                        line_class += c_par
+
                     lineinfo = {
                         'html': "".join(line),
                         'number': lineno,

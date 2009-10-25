@@ -1,4 +1,4 @@
-/* CSS styles for coverage.py */
+/* CSS styles for Coverage. */
 /* Page-wide styles */
 html, body, h1, h2, h3, p, td, th {
     margin: 0;
@@ -54,6 +54,11 @@ a.nav:hover {
     }
 
 #footer {
+    margin: 1em 3em;
+    }
+
+#footer .content {
+    padding: 0;
     font-size: 85%;
     font-family: verdana, sans-serif;
     color: #666666;
@@ -65,7 +70,7 @@ a.nav:hover {
     }
 
 /* Header styles */
-.content {
+#header .content {
     padding: 1em 3em;
     }
 
@@ -120,8 +125,26 @@ td.text {
     background: #eeeeee;
     border-left: 2px solid #808080;
     }
+.text p.par {
+    background: #ffffdd;
+    border-left: 2px solid #ffff00;
+    }
 .text p.hide {
     background: inherit;
+    }
+
+/* Syntax coloring */
+.text .com {
+    color: green;
+    font-style: italic;
+    line-height: 1px;
+    }
+.text .key {
+    font-weight: bold;
+    line-height: 1px;
+    }
+.text .str {
+    color: #000080;
     }
 
 /* index styles */
