@@ -4,6 +4,8 @@ import os, sys
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
+from coverage.backward import set                   # pylint: disable-msg=W0622
+
 class TestingTest(CoverageTest):
     """Tests of helper methods on CoverageTest."""
 
