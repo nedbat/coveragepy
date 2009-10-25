@@ -1770,20 +1770,19 @@ class RecursionTest(CoverageTest):
             """,
             [1,2,3,5,7], "")
         
-    if sys.hexversion < 0x03000000: # TODO: This test currently crashes Py3k.
-        def testLongRecursion(self):
-            # We can't finish a very deep recursion, but we don't crash.
-            self.assertRaises(RuntimeError, self.check_coverage,
-                """\
-                def recur(n):
-                    if n == 0:
-                        return 0
-                    else:
-                        return recur(n-1)+1
-                    
-                recur(100000)  # This is definitely too many frames.
-                """,
-                [1,2,3,5,7], "")
+    def testLongRecursion(self):
+        # We can't finish a very deep recursion, but we don't crash.
+        self.assertRaises(RuntimeError, self.check_coverage,
+            """\
+            def recur(n):
+                if n == 0:
+                    return 0
+                else:
+                    return recur(n-1)+1
+                
+            recur(100000)  # This is definitely too many frames.
+            """,
+            [1,2,3,5,7], "")
 
 
 class PyexpatTest(CoverageTest):
