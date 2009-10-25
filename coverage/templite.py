@@ -18,6 +18,10 @@ class Templite(object):
     
         {% for var in list %}...{% endfor %}
     
+    Comments are within curly-hash markers::
+    
+        {# This will be ignored #}
+
     Construct a Templite with the template text, then use `render` against a
     dictionary context to create a finished string.
     
@@ -61,6 +65,8 @@ class Templite(object):
 
     def _prepare(self, text):
         """Convert Django-style data references into Python-native ones."""
+        # Remove comments.
+        text = re.sub(r"(?s){#.*?#}", "", text)
         # Pull out loops.
         text = re.sub(
             r"(?s){% for ([a-z0-9_]+) in ([a-z0-9_.|]+) %}(.*?){% endfor %}",

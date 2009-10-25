@@ -126,6 +126,16 @@ class TempliteTest(unittest.TestCase):
             "123 and 123"
             )
 
+    def test_comments(self):
+        # Single-line comments work:
+        self.try_render(
+            "Hello, {# Name goes here: #}{{name}}!",
+            {'name':'Ned'}, "Hello, Ned!")
+        # and so do multi-line comments:
+        self.try_render(
+            "Hello, {# Name\ngoes\nhere: #}{{name}}!",
+            {'name':'Ned'}, "Hello, Ned!")
+
 
 if __name__ == '__main__':
     unittest.main()
