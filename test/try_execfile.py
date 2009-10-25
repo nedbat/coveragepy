@@ -7,6 +7,7 @@ DATA = "xyzzy"
 import __main__
 
 def my_function(a):
+    """A function to force execution of module-level values."""
     return "my_fn(%r)" % a
 
 FN_VAL = my_function("fooey")

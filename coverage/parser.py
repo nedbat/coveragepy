@@ -26,7 +26,9 @@ class CodeParser(object):
                 sourcef.close()
             except IOError:
                 _, err, _ = sys.exc_info()
-                raise NoSource("No source for code: %r: %s" % (self.filename, err))
+                raise NoSource(
+                    "No source for code: %r: %s" % (self.filename, err)
+                    )
         self.text = self.text.replace('\r\n', '\n')
 
         self.exclude = exclude

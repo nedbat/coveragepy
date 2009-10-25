@@ -1737,7 +1737,8 @@ class ProcessTest(CoverageTest):
         self.assert_matches(out, "No source for code: '.*fleeting.py'")
         self.assert_("Traceback" not in out)
 
-        # It happens that the code paths are different for *.py and other files.
+        # It happens that the code paths are different for *.py and other
+        # files, so try again with no extension.
         self.make_file("fleeting", """\
             s = 'goodbye, cruel world!'
             """)
