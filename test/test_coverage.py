@@ -1748,6 +1748,12 @@ class ProcessTest(CoverageTest):
         self.assert_matches(out, "No source for code: '.*fleeting'")
         self.assert_("Traceback" not in out)
 
+    def test_running_missing_file(self):
+        out = self.run_command("coverage run xyzzy.py")
+        self.assert_matches(out, "No file to run: .*xyzzy.py")
+        self.assert_("Traceback" not in out)
+
+
 class RecursionTest(CoverageTest):
     """Check what happens when recursive code gets near limits."""
 

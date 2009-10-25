@@ -3,6 +3,7 @@
 import os, sys
 
 from coverage.execfile import run_python_file
+from coverage.misc import NoSource
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
@@ -59,3 +60,5 @@ class RunTest(CoverageTest):
             run_python_file('nl.py', ['nl.py'])
         self.assertEqual(self.stdout(), "Hello, world!\n"*3)
 
+    def test_no_such_file(self):
+        self.assertRaises(NoSource, run_python_file, "xyzzy.py", [])

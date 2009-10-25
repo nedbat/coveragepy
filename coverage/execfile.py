@@ -3,6 +3,7 @@
 import imp, os, sys
 
 from coverage.backward import exec_function
+from coverage.misc import NoSource
 
 
 try:
@@ -35,7 +36,10 @@ def run_python_file(filename, args):
     sys.path[0] = os.path.dirname(filename)
 
     try:
-        source = open(filename, 'rU').read()
+        try:
+            source = open(filename, 'rU').read()
+        except IOError:
+            raise NoSource("No file to run: %r" % filename)
         exec_function(source, filename, main_mod.__dict__)
     finally:
         # Restore the old __main__
