@@ -92,11 +92,8 @@ class HtmlReporter(Reporter):
         n_exc = len(analysis.excluded)
         n_mis = len(analysis.missing)
         n_run = n_stm - n_mis
-        if n_stm > 0:
-            pc_cov = 100.0 * n_run / n_stm
-        else:
-            pc_cov = 100.0
-
+        pc_cov = analysis.percent_covered()
+        
         # These classes determine which lines are highlighted by default.
         c_run = " run hide"
         c_exc = " exc"

@@ -374,6 +374,17 @@ class Analysis(object):
         """
         return format_lines(self.statements, self.missing)
 
+    def percent_covered(self):
+        """Returns a single percentage value for coverage."""
+        n_stm = len(self.statements)
+        n_mis = len(self.missing)
+        n_run = n_stm - n_mis
+        if n_stm > 0:
+            pc_cov = 100.0 * n_run / n_stm
+        else:
+            pc_cov = 100.0
+        return pc_cov
+
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
         return self.parser.arcs()

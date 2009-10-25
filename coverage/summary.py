@@ -44,10 +44,7 @@ class SummaryReporter(Reporter):
                 analysis = self.coverage._analyze(cu)
                 n = len(analysis.statements)
                 m = n - len(analysis.missing)
-                if n > 0:
-                    pc = 100.0 * m / n
-                else:
-                    pc = 100.0
+                pc = analysis.percent_covered()
                 args = (cu.name, n, m, pc)
                 if self.show_missing:
                     args = args + (analysis.missing_formatted(),)
