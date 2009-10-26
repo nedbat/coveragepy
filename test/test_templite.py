@@ -130,12 +130,67 @@ class TempliteTest(unittest.TestCase):
         # Single-line comments work:
         self.try_render(
             "Hello, {# Name goes here: #}{{name}}!",
-            {'name':'Ned'}, "Hello, Ned!")
+            {'name':'Ned'}, "Hello, Ned!"
+            )
         # and so do multi-line comments:
         self.try_render(
             "Hello, {# Name\ngoes\nhere: #}{{name}}!",
-            {'name':'Ned'}, "Hello, Ned!")
+            {'name':'Ned'}, "Hello, Ned!"
+            )
 
+    def test_if(self):
+        self.try_render(
+            "Hi, {% if ned %}NED{% endif %}{% if ben %}BEN{% endif %}!",
+            {'ned': 1, 'ben': 0},
+            "Hi, NED!"
+            )
+        self.try_render(
+            "Hi, {% if ned %}NED{% endif %}{% if ben %}BEN{% endif %}!",
+            {'ned': 0, 'ben': 1},
+            "Hi, BEN!"
+            )
+        self.try_render(
+            "Hi, {% if ned %}NED{% if ben %}BEN{% endif %}{% endif %}!",
+            {'ned': 0, 'ben': 0},
+            "Hi, !"
+            )
+        self.try_render(
+            "Hi, {% if ned %}NED{% if ben %}BEN{% endif %}{% endif %}!",
+            {'ned': 1, 'ben': 0},
+            "Hi, NED!"
+            )
+        self.try_render(
+            "Hi, {% if ned %}NED{% if ben %}BEN{% endif %}{% endif %}!",
+            {'ned': 1, 'ben': 1},
+            "Hi, NEDBEN!"
+            )
 
+    def test_loop_if(self):
+        self.try_render(
+            "@{% for n in nums %}{% if n %}Z{% endif %}{{n}}{% endfor %}!",
+            {'nums': [0,1,2]},
+            "@0Z1Z2!"
+            )
+        self.try_render(
+            "X{%if nums%}@{% for n in nums %}{{n}}{% endfor %}{%endif%}!",
+            {'nums': [0,1,2]},
+            "X@012!"
+            )
+        self.try_render(
+            "X{%if nums%}@{% for n in nums %}{{n}}{% endfor %}{%endif%}!",
+            {'nums': []},
+            "X!"
+            )
+
+    def test_nested_loops(self):
+        self.try_render(
+            "@{% for n in nums %}"
+                "{% for a in abc %}{{a}}{{n}}{% endfor %}"
+            "{% endfor %}!",
+            {'nums': [0,1,2], 'abc': ['a', 'b', 'c']},
+            "@a0b0c0a1b1c1a2b2c2!"
+            )
+
+        
 if __name__ == '__main__':
     unittest.main()

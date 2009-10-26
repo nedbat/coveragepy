@@ -1,10 +1,5 @@
 """A simple Python template renderer, for a nano-subset of Django syntax."""
 
-# Started from http://blog.ianbicking.org/templating-via-dict-wrappers.html
-# and http://jtauber.com/2006/05/templates.html
-# and http://code.activestate.com/recipes/496730/
-# Coincidentally named the same as http://code.activestate.com/recipes/496702/
-
 import re
 
 class Templite(object):
@@ -14,10 +9,14 @@ class Templite(object):
     
         {{var.modifer.modifier|filter|filter}}
         
-    and loops::
+    loops::
     
         {% for var in list %}...{% endfor %}
     
+    and ifs::
+    
+        {% if var %}...{% endif %}
+
     Comments are within curly-hash markers::
     
         {# This will be ignored #}
@@ -33,11 +32,47 @@ class Templite(object):
         These are good for filters and global values.
         
         """
-        self.loops = []
-        self.text = self._prepare(text)
+        self.text = text
         self.context = {}
         for context in contexts:
             self.context.update(context)
+        
+        # Split the text to form a list of tokens.
+        toks = re.split(
+            r"(?s)({{.*?}}|{%.*?%}|{#.*?#})", text
+            )
+        
+        # Parse the tokens into a nested list of operations.
+        stack = []
+        ops = []
+        for tok in toks:
+            if tok.startswith('{{'):
+                ops.append(('var', tok[2:-2].strip()))
+            elif tok.startswith('{#'):
+                continue
+            elif tok.startswith('{%'):
+                words = tok[2:-2].strip().split()
+                if words[0] == 'if':
+                    if_ops = []
+                    assert len(words) == 2
+                    ops.append(('if', (words[1], if_ops)))
+                    stack.append(ops)
+                    ops = if_ops
+                elif words[0] == 'for':
+                    assert len(words) == 4 and words[2] == 'in'
+                    for_ops = []
+                    ops.append(('for', (words[1], words[3], for_ops)))
+                    stack.append(ops)
+                    ops = for_ops
+                elif words[0].startswith('end'):
+                    ops = stack.pop()
+                    assert ops[-1][0] == words[0][3:]
+            else:
+                ops.append(('lit', tok))
+        
+        assert not stack
+        
+        self.ops = ops
 
     def render(self, context=None):
         """Render this template by applying it to `context`.
@@ -50,63 +85,55 @@ class Templite(object):
         if context:
             ctx.update(context)
             
-        ctxaccess = _ContextAccess(ctx)
-        
-        # Render the loops.
-        for iloop, (loopvar, listvar, loopbody) in enumerate(self.loops):
-            result = ""
-            for listval in ctxaccess[listvar]:
-                ctx[loopvar] = listval
-                result += loopbody % ctxaccess
-            ctx["loop:%d" % iloop] = result
-            
-        # Render the final template.
-        return self.text % ctxaccess
-
-    def _prepare(self, text):
-        """Convert Django-style data references into Python-native ones."""
-        # Remove comments.
-        text = re.sub(r"(?s){#.*?#}", "", text)
-        # Pull out loops.
-        text = re.sub(
-            r"(?s){% for ([a-z0-9_]+) in ([a-z0-9_.|]+) %}(.*?){% endfor %}",
-            self._loop_prepare, text
-            )
-        # Protect actual percent signs in the text.
-        text = text.replace("%", "%%")
-        # Convert {{foo}} into %(foo)s
-        text = re.sub(r"{{(.+?)}}", r"%(\1)s", text)
-        return text
-
-    def _loop_prepare(self, match):
-        """Prepare a loop body for `_prepare`."""
-        nloop = len(self.loops)
-        # Append (loopvar, listvar, loopbody) to self.loops
-        loopvar, listvar, loopbody = match.groups()
-        loopbody = self._prepare(loopbody)
-        self.loops.append((loopvar, listvar, loopbody))
-        return "{{loop:%d}}" % nloop
+        engine = _TempliteEngine(ctx)
+        engine.execute(self.ops)
+        return engine.result
 
 
-class _ContextAccess(object):
-    """A mediator for a context.
-    
-    Implements __getitem__ on a context for Templite, so that string formatting
-    references can pull data from the context.
-    
-    """
+class _TempliteEngine(object):
+    """Executes Templite objects to produce strings."""
     def __init__(self, context):
         self.context = context
+        self.result = ""
 
-    def __getitem__(self, key):
-        if "|" in key:
-            pipes = key.split("|")
-            value = self[pipes[0]]
+    def execute(self, ops):
+        """Execute `ops` in the engine.
+        
+        Called recursively for the bodies of if's and loops.
+        
+        """
+        for op, args in ops:
+            if op == 'lit':
+                self.result += args
+            elif op == 'var':
+                self.result += str(self.evaluate(args))
+            elif op == 'if':
+                expr, body = args
+                if self.evaluate(expr):
+                    self.execute(body)
+            elif op == 'for':
+                var, lis, body = args
+                vals = self.evaluate(lis)
+                for val in vals:
+                    self.context[var] = val
+                    self.execute(body)
+            else:
+                self.result += "???"
+
+    def evaluate(self, expr):
+        """Evaluate an expression.
+        
+        `expr` can have pipes and dots to indicate data access and filtering.
+        
+        """
+        if "|" in expr:
+            pipes = expr.split("|")
+            value = self.evaluate(pipes[0])
             for func in pipes[1:]:
-                value = self[func](value)
-        elif "." in key:
-            dots = key.split('.')
-            value = self[dots[0]]
+                value = self.evaluate(func)(value)
+        elif "." in expr:
+            dots = expr.split('.')
+            value = self.evaluate(dots[0])
             for dot in dots[1:]:
                 try:
                     value = getattr(value, dot)
@@ -115,5 +142,5 @@ class _ContextAccess(object):
                 if hasattr(value, '__call__'):
                     value = value()
         else:
-            value = self.context[key]
+            value = self.context[expr]
         return value
