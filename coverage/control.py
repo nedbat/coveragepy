@@ -46,10 +46,9 @@ class coverage(object):
         coverage measurement starts, and data will be saved automatically when
         measurement stops.
         
-        If `timid` is true, then a slower simpler trace function will be
+        If `timid` is true, then a slower and simpler trace function will be
         used.  This is important for some environments where manipulation of
-        tracing functions make the faster more sophisticated trace function not
-        operate properly.
+        tracing functions breaks the faster trace function.
         
         TODO: `branch`.
 
@@ -219,7 +218,7 @@ class coverage(object):
         self.data.combine_parallel_data()
 
     def _harvest_data(self):
-        """Get the collected data by filename and reset the collector."""
+        """Get the collected data and reset the collector."""
         self.data.add_line_data(self.collector.get_line_data())
         self.data.add_arc_data(self.collector.get_arc_data())
         self.collector.reset()
