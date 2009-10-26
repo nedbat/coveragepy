@@ -38,40 +38,51 @@ class Templite(object):
             self.context.update(context)
         
         # Split the text to form a list of tokens.
-        toks = re.split(
-            r"(?s)({{.*?}}|{%.*?%}|{#.*?#})", text
-            )
+        toks = re.split(r"(?s)({{.*?}}|{%.*?%}|{#.*?#})", text)
         
-        # Parse the tokens into a nested list of operations.
-        stack = []
+        # Parse the tokens into a nested list of operations.  Each item in the
+        # list is a tuple with an opcode, and arguments.  They'll be
+        # interpreted by TempliteEngine.
+        #
+        # When parsing an action tag with nested content (if, for), the current
+        # ops list is pushed onto ops_stack, and the parsing continues in a new
+        # ops list that is part of the arguments to the if or for op.
         ops = []
+        ops_stack = []
         for tok in toks:
             if tok.startswith('{{'):
-                ops.append(('var', tok[2:-2].strip()))
+                # Expression: ('exp', expr)
+                ops.append(('exp', tok[2:-2].strip()))
             elif tok.startswith('{#'):
+                # Comment: ignore it and move on.
                 continue
             elif tok.startswith('{%'):
+                # Action tag: split into words and parse further.
                 words = tok[2:-2].strip().split()
                 if words[0] == 'if':
+                    # If: ('if', (expr, body_ops))
                     if_ops = []
                     assert len(words) == 2
                     ops.append(('if', (words[1], if_ops)))
-                    stack.append(ops)
+                    ops_stack.append(ops)
                     ops = if_ops
                 elif words[0] == 'for':
+                    # For: ('for', (varname, listexpr, body_ops))
                     assert len(words) == 4 and words[2] == 'in'
                     for_ops = []
                     ops.append(('for', (words[1], words[3], for_ops)))
-                    stack.append(ops)
+                    ops_stack.append(ops)
                     ops = for_ops
                 elif words[0].startswith('end'):
-                    ops = stack.pop()
+                    # Endsomething.  Pop the ops stack
+                    ops = ops_stack.pop()
                     assert ops[-1][0] == words[0][3:]
+                else:
+                    raise Exception("Don't understand tag %r" % words)
             else:
                 ops.append(('lit', tok))
         
-        assert not stack
-        
+        assert not ops_stack, "Unmatched action tag: %r" % ops_stack[-1][0]
         self.ops = ops
 
     def render(self, context=None):
@@ -84,7 +95,8 @@ class Templite(object):
         ctx = dict(self.context)
         if context:
             ctx.update(context)
-            
+        
+        # Run it through an engine, and return the result.
         engine = _TempliteEngine(ctx)
         engine.execute(self.ops)
         return engine.result
@@ -105,7 +117,7 @@ class _TempliteEngine(object):
         for op, args in ops:
             if op == 'lit':
                 self.result += args
-            elif op == 'var':
+            elif op == 'exp':
                 self.result += str(self.evaluate(args))
             elif op == 'if':
                 expr, body = args
@@ -118,7 +130,7 @@ class _TempliteEngine(object):
                     self.context[var] = val
                     self.execute(body)
             else:
-                self.result += "???"
+                raise Exception("TempliteEngine doesn't grok op %r" % op)
 
     def evaluate(self, expr):
         """Evaluate an expression.
