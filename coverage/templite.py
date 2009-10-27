@@ -1,5 +1,7 @@
 """A simple Python template renderer, for a nano-subset of Django syntax."""
 
+# Coincidentally named the same as http://code.activestate.com/recipes/496702/
+
 import re
 
 class Templite(object):
