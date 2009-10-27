@@ -7,6 +7,11 @@ Next version
 
 - The tracer code has changed, it's a few percent faster.
 
+- Some exceptions reported by the command line interface have been cleaned up
+  so that tracebacks inside coverage.py aren't shown.  Fixes `issue 23`_
+  
+.. _issue 23: http://bitbucket.org/ned/coveragepy/issue/23
+  
 
 Version 3.1, 4 October 2009
 ---------------------------
