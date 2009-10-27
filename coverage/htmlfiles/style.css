@@ -126,8 +126,8 @@ td.text {
     border-left: 2px solid #808080;
     }
 .text p.par {
-    background: #ffffdd;
-    border-left: 2px solid #ffff00;
+    background: #ffffaa;
+    border-left: 2px solid #eeee99;
     }
 .text p.hide {
     background: inherit;

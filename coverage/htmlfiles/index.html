@@ -21,6 +21,9 @@
     <th>statements</th>
     <th>run</th>
     <th>excluded</th>
+    {% if arcs %}
+    <th>partial</th>
+    {% endif %}
     <th>coverage</th>
 </tr>
 {% for file in files %}
@@ -29,6 +32,9 @@
     <td>{{file.stm}}</td>
     <td>{{file.run}}</td>
     <td>{{file.exc}}</td>
+    {% if arcs %}
+    <td>{{file.par}}</td>
+    {% endif %}
     <td>{{file.pc_cov|format_pct}}%</td>
 </tr>
 {% endfor %}
@@ -37,6 +43,9 @@
 <td>{{total_stm}}</td>
 <td>{{total_run}}</td>
 <td>{{total_exc}}</td>
+{% if arcs %}
+<td>{{total_par}}</td>
+{% endif %}
 <td>{{total_cov|format_pct}}%</td>
 </tr>
 </table>

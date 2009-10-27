@@ -219,6 +219,11 @@ class CoverageData(object):
             summ[filename_fn(filename)] = len(lines)
         return summ
 
+    def has_arcs(self):
+        """Does this data have arcs?"""
+        return bool(self.arcs)
+
+
 if __name__ == '__main__':
     # Ad-hoc: show the raw data in a data file.
     import pprint, sys

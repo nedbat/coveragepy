@@ -55,6 +55,7 @@ class HtmlReporter(Reporter):
         self.source_tmpl = Templite(data("htmlfiles/pyfile.html"), globals())
         
         self.files = []
+        self.arcs = coverage.data.has_arcs()
 
     def report(self, morfs, directory, omit_prefixes=None):
         """Generate an HTML report for `morfs`.
@@ -95,11 +96,12 @@ class HtmlReporter(Reporter):
         pc_cov = analysis.percent_covered()
 
         missing_branch_arcs = analysis.missing_branch_arcs()
-        n_par = len(missing_branch_arcs)
+        n_par = 0   # accumulated below.
+        arcs = self.arcs
 
         # These classes determine which lines are highlighted by default.
         c_run = " run hide"
-        c_exc = " exc"
+        c_exc = " exc hide"
         c_mis = " mis"
         c_par = " par"
 
@@ -117,16 +119,16 @@ class HtmlReporter(Reporter):
                     line_class = ""
                     if lineno in analysis.statements:
                         line_class += " stm"
-                        if lineno not in analysis.missing and \
-                            lineno not in analysis.excluded:
-                            line_class += c_run
                     if lineno in analysis.excluded:
                         line_class += c_exc
-                    if lineno in analysis.missing:
+                    elif lineno in analysis.missing:
                         line_class += c_mis
-                    if lineno in missing_branch_arcs:
+                    elif self.arcs and lineno in missing_branch_arcs:
                         line_class += c_par
-
+                        n_par += 1
+                    elif lineno in analysis.statements:
+                        line_class += c_run
+                        
                     lineinfo = {
                         'html': "".join(line),
                         'number': lineno,
@@ -172,6 +174,7 @@ class HtmlReporter(Reporter):
             'run': n_run,
             'exc': n_exc,
             'mis': n_mis,
+            'par': n_par,
             'pc_cov': pc_cov,
             'html_filename': html_filename,
             'cu': cu,
@@ -182,10 +185,12 @@ class HtmlReporter(Reporter):
         index_tmpl = Templite(data("htmlfiles/index.html"), globals())
 
         files = self.files
-        
+        arcs = self.arcs
+
         total_stm = sum([f['stm'] for f in files])
         total_run = sum([f['run'] for f in files])
         total_exc = sum([f['exc'] for f in files])
+        total_par = sum([f['par'] for f in files])
         if total_stm:
             total_cov = 100.0 * total_run / total_stm
         else:

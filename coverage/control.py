@@ -382,6 +382,10 @@ class Analysis(object):
             pc_cov = 100.0
         return pc_cov
 
+    def has_arcs(self):
+        """Were arcs measured in this result?"""
+        return self.coverage.data.has_arcs()
+
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
         return self.parser.arcs()
