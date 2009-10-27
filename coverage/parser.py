@@ -376,20 +376,20 @@ class ByteParser(object):
             if bc.op in OPS_CODE_END:
                 # The opcode can exit the code object.
                 chunk.exits.add(-1)
-            elif bc.op in OPS_PUSH_BLOCK:
+            if bc.op in OPS_PUSH_BLOCK:
                 # The opcode adds a block to the block_stack.
                 block_stack.append((bc.op, bc.jump_to))
-            elif bc.op in OPS_POP_BLOCK:
+            if bc.op in OPS_POP_BLOCK:
                 # The opcode pops a block from the block stack.
                 block_stack.pop()
-            elif bc.op in OPS_CHUNK_END:
+            if bc.op in OPS_CHUNK_END:
                 # This opcode forces the end of the chunk.
                 if bc.op == OP_BREAK_LOOP:
                     # A break is implicit: jump where the top of the
                     # block_stack points.
                     chunk.exits.add(block_stack[-1][1])
                 chunk = None
-            elif bc.op == OP_END_FINALLY:
+            if bc.op == OP_END_FINALLY:
                 if block_stack:
                     # A break that goes through a finally will jump to whatever
                     # block is on top of the stack.

@@ -327,3 +327,17 @@ class ExceptionArcTest(CoverageTest):
                 """,
                 arcz=".1 12 .3 3. 24 45 56 67 7B 89 9B BC C.",
                 arcz_missing="67 7B", arcz_unpredicted="68")
+
+    def test_if_return(self):
+        self.check_coverage("""\
+            def if_ret(a):
+                if a:
+                    return 3
+                b = 4
+                return 5
+            x = if_ret(0) + if_ret(1)
+            assert x == 8
+            """,
+            arcz=".1 16 67 7.   .2 23 24 3. 45 5.",
+            arcz_missing=""
+            )
