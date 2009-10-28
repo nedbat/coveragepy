@@ -100,6 +100,19 @@ class SimpleArcTest(CoverageTest):
             """,
             arcz=".1 15 5.", arcz_missing="")
 
+    def test_if_return(self):
+        self.check_coverage("""\
+            def if_ret(a):
+                if a:
+                    return 3
+                b = 4
+                return 5
+            x = if_ret(0) + if_ret(1)
+            assert x == 8
+            """,
+            arcz=".1 16 67 7.   .2 23 24 3. 45 5.", arcz_missing=""
+            )
+
 
 class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""
@@ -299,6 +312,7 @@ class ExceptionArcTest(CoverageTest):
             arcz_missing="3D AB BC CD", arcz_unpredicted="")
 
     if sys.hexversion >= 0x02050000:
+        # Try-except-finally was new in 2.5
         def test_except_finally(self):
             self.check_coverage("""\
                 a, b, c = 1, 1, 1
@@ -327,17 +341,3 @@ class ExceptionArcTest(CoverageTest):
                 """,
                 arcz=".1 12 .3 3. 24 45 56 67 7B 89 9B BC C.",
                 arcz_missing="67 7B", arcz_unpredicted="68")
-
-    def test_if_return(self):
-        self.check_coverage("""\
-            def if_ret(a):
-                if a:
-                    return 3
-                b = 4
-                return 5
-            x = if_ret(0) + if_ret(1)
-            assert x == 8
-            """,
-            arcz=".1 16 67 7.   .2 23 24 3. 45 5.",
-            arcz_missing=""
-            )
