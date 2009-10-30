@@ -1,5 +1,13 @@
 Coverage TODO
 
+* 3.2
+
+- Some kind of indication in the HTML where yellow lines aren't going.
+- Profile the reporting code: it's REALLY slow.
+    - parser is doing some redundant work.
+- while TRUE claims to be partial?
+- Analysis class should do rolling up of stats also.
+
 
 * Speed
 
@@ -70,6 +78,10 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
     - Colored bars indicating coverage per file.
     - Package navigation.
     - Rolled-up statistics.
+    - Some way to focus in on red and yellow
+        - Show only lines near highlights?
+        - Jump to next highlight?
+    - Clickable column headers on the index page.
     + Syntax coloring in HTML report.
     + Dynamic effects in HTML report.
     + Footer in reports pointing to coverage home page.
