@@ -173,6 +173,39 @@ class LoopArcTest(CoverageTest):
             """,
             arcz=".1 12 23 34 45 25 56 51 67 17 7.", arcz_missing="17 25")
 
+    def test_while_true(self):
+        # With "while 1", the loop knows it's constant.
+        self.check_coverage("""\
+            a, i = 1, 0
+            while 1:
+                if i >= 3:
+                    a = 4
+                    break
+                i += 1
+            assert a == 4 and i == 3
+            """,
+            arcz=".1 12 23 34 45 36 63 57 27 7.",
+            arcz_missing="27"   # while loop never exits naturally.
+            )
+        # With "while True", 2.x thinks it's computation, 3.x thinks it's
+        # constant.
+        if sys.hexversion >= 0x03000000:
+            arcz = ".1 12 23 34 45 36 63 57 27 7."
+        else:
+            arcz = ".1 12 23 34 45 36 62 57 27 7."
+        self.check_coverage("""\
+            a, i = 1, 0
+            while True:
+                if i >= 3:
+                    a = 4
+                    break
+                i += 1
+            assert a == 4 and i == 3
+            """,
+            arcz=arcz,
+            arcz_missing="27"   # while loop never exits naturally.
+            )
+
 
 class ExceptionArcTest(CoverageTest):
     """Arc-measuring tests involving exception handling."""
@@ -215,6 +248,26 @@ class ExceptionArcTest(CoverageTest):
             """,
             arcz=".1 12 .3 3. 24 45 56 67 7A 89 9A A.",
             arcz_missing="67 7A", arcz_unpredicted="68")
+
+    def test_except_with_type(self):
+        self.check_coverage("""\
+            a, b = 1, 1
+            def oops(x):
+                if x % 2: raise ValueError("odd")
+            def try_it(x):
+                try:
+                    a = 6
+                    oops(x)
+                    a = 8
+                except ValueError:
+                    b = 10
+                return a
+            assert try_it(0) == 8   # C
+            assert try_it(1) == 6   # D
+            """,
+            arcz=".1 12 .3 3. 24 4C CD D. .5 56 67 78 8B 9A 9B AB B.",
+            arcz_missing="9B",  # never got an exception other than ValueError
+            arcz_unpredicted="79")
 
     def test_try_finally(self):
         self.check_coverage("""\
