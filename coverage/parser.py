@@ -329,22 +329,6 @@ class ByteParser(object):
         Returns a list of `Chunk` objects.
         
         """
-        class Chunk(object):
-            """A sequence of bytecodes with exits to other bytecodes.
-            
-            An exit of -1 means the chunk can leave the code (return).
-            
-            """
-            def __init__(self, byte, line=0):
-                self.byte = byte
-                self.line = line
-                self.length = 0
-                self.exits = set()
-                
-            def __repr__(self):
-                return "<%d:%d(%d) %r>" % (
-                    self.byte, self.line, self.length, list(self.exits)
-                    )
 
         # The list of chunks so far, and the one we're working on.
         chunks = []
@@ -502,6 +486,34 @@ class ByteParser(object):
         return arcs
 
 
+class Chunk(object):
+    """A sequence of bytecodes with a single entrance.
+    
+    To analyze byte code, we have to divide it into chunks, sequences of byte
+    codes such that each basic block has only one entrance, the first
+    instruction in the block. 
+    
+    This is almost the CS concept of `basic block`_, except that we're willing
+    to have many exits from a chunk, and "basic block" is a more cumbersome
+    term.
+    
+    .. _basic block: http://en.wikipedia.org/wiki/Basic_block
+    
+    An exit of -1 means the chunk can leave the code (return).
+    
+    """
+    def __init__(self, byte, line=0):
+        self.byte = byte
+        self.line = line
+        self.length = 0
+        self.exits = set()
+        
+    def __repr__(self):
+        return "<%d+%d @%d %r>" % (
+            self.byte, self.length, self.line, list(self.exits)
+            )
+
+
 class AdHocMain(object):
     """An ad-hoc main for code parsing experiments."""
     
@@ -512,10 +524,12 @@ class AdHocMain(object):
 
         parser = OptionParser()
         parser.add_option(
-            "-c", action="store_true", dest="chunks", help="Check byte chunks"
+            "-c", action="store_true", dest="chunks",
+            help="Show basic block chunks"
             )
         parser.add_option(
-            "-d", action="store_true", dest="dis", help="Disassemble"
+            "-d", action="store_true", dest="dis",
+            help="Disassemble"
             )
         parser.add_option(
             "-R", action="store_true", dest="recursive",
@@ -526,7 +540,8 @@ class AdHocMain(object):
             help="Show analyzed source"
             )
         parser.add_option(
-            "-t", action="store_true", dest="tokens", help="Show tokens"
+            "-t", action="store_true", dest="tokens",
+            help="Show tokens"
             )
         
         options, args = parser.parse_args()
