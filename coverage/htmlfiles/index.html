@@ -17,7 +17,7 @@
 
 <div id='index'>
 <table class='index'>
-<tr>
+<tr class='tablehead'>
     <th class='name'>Module</th>
     <th>statements</th>
     <th>run</th>
@@ -28,7 +28,7 @@
     <th>coverage</th>
 </tr>
 {% for file in files %}
-<tr>
+<tr class='file'>
     <td class='name'><a href='{{file.html_filename}}'>{{file.cu.name}}</a></td>
     <td>{{file.stm}}</td>
     <td>{{file.run}}</td>

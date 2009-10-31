@@ -162,7 +162,6 @@ td.text {
 #index td.name, #index th.name {
     text-align: left;
     width: auto;
-    height: 1.5em;
     }
 #index td.name a {
     text-decoration: none;
@@ -180,3 +179,6 @@ td.text {
     border-top: 1px solid #ccc;
     border-bottom: none;
     }
+#index tr.file:hover {
+	background: #eeeeee;
+	}
