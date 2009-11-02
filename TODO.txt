@@ -6,7 +6,7 @@ Coverage TODO
 - Profile the reporting code: it's REALLY slow.
     - parser is doing some redundant work.
 - while TRUE claims to be partial?
-- Analysis class should do rolling up of stats also.
++ Analysis class should do rolling up of stats also (actually Numbers)
 - Update docs for --branch.
 
 
