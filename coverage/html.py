@@ -93,7 +93,7 @@ class HtmlReporter(Reporter):
         n_exc = len(analysis.excluded)
         n_mis = len(analysis.missing)
         n_run = n_stm - n_mis
-        pc_cov = analysis.percent_covered()
+        pc_cov = analysis.numbers.percent_covered
 
         missing_branch_arcs = analysis.missing_branch_arcs()
         n_par = 0   # accumulated below.

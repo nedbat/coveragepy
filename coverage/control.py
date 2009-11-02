@@ -363,6 +363,12 @@ class Analysis(object):
         exec1 = self.parser.first_lines(self.executed)
         self.missing = sorted(set(self.statements) - set(exec1))
 
+        self.numbers = Numbers()
+        self.numbers.n_files = 1
+        self.numbers.n_statements = len(self.statements)
+        self.numbers.n_excluded = len(self.excluded)
+        self.numbers.n_missing = len(self.missing)
+
     def missing_formatted(self):
         """The missing line numbers, formatted nicely.
         
@@ -370,17 +376,6 @@ class Analysis(object):
         
         """
         return format_lines(self.statements, self.missing)
-
-    def percent_covered(self):
-        """Returns a single percentage value for coverage."""
-        n_stm = len(self.statements)
-        n_mis = len(self.missing)
-        n_run = n_stm - n_mis
-        if n_stm > 0:
-            pc_cov = 100.0 * n_run / n_stm
-        else:
-            pc_cov = 100.0
-        return pc_cov
 
     def has_arcs(self):
         """Were arcs measured in this result?"""
@@ -442,3 +437,37 @@ class Analysis(object):
                     mba[l1] = []
                 mba[l1].append(l2)
         return mba
+
+
+class Numbers(object):
+    """The numerical results of measuring coverage.
+    
+    This holds the basic statistics from `Analysis`, and is used to roll
+    up statistics across files.
+
+    """
+    def __init__(self):
+        self.n_files = 0
+        self.n_statements = 0
+        self.n_excluded = 0
+        self.n_missing = 0
+
+    def _get_n_run(self):
+        return self.n_statements - self.n_missing
+    n_run = property(_get_n_run)
+    
+    def _get_percent_covered(self):
+        """Returns a single percentage value for coverage."""
+        if self.n_statements > 0:
+            pc_cov = 100.0 * self.n_run / self.n_statements
+        else:
+            pc_cov = 100.0
+        return pc_cov
+    percent_covered = property(_get_percent_covered)
+
+    def __iadd__(self, other):
+        self.n_files += other.n_files
+        self.n_statements += other.n_statements
+        self.n_excluded += other.n_excluded
+        self.n_missing += other.n_missing
+        return self

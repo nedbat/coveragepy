@@ -15,6 +15,7 @@ class SummaryReporter(Reporter):
     def report(self, morfs, omit_prefixes=None, outfile=None):
         """Writes a report summarizing coverage statistics per module."""
         
+        from coverage.control import Numbers
         self.find_code_units(morfs, omit_prefixes)
 
         # Prepare the formatting strings
@@ -35,23 +36,17 @@ class SummaryReporter(Reporter):
         outfile.write(header)
         outfile.write(rule)
 
-        total_statements = 0
-        total_executed = 0
-        total_units = 0
+        total = Numbers()
         
         for cu in self.code_units:
             try:
                 analysis = self.coverage._analyze(cu)
-                n = len(analysis.statements)
-                m = n - len(analysis.missing)
-                pc = analysis.percent_covered()
-                args = (cu.name, n, m, pc)
+                nums = analysis.numbers
+                args = (cu.name, nums.n_statements, nums.n_run, nums.percent_covered)
                 if self.show_missing:
                     args = args + (analysis.missing_formatted(),)
                 outfile.write(fmt_coverage % args)
-                total_units += 1
-                total_statements = total_statements + n
-                total_executed = total_executed + m
+                total += nums
             except KeyboardInterrupt:                       #pragma: no cover
                 raise
             except:
@@ -59,13 +54,9 @@ class SummaryReporter(Reporter):
                     typ, msg = sys.exc_info()[:2]
                     outfile.write(fmt_err % (cu.name, typ.__name__, msg))
 
-        if total_units > 1:
+        if total.n_files > 1:
             outfile.write(rule)
-            if total_statements > 0:
-                pc = 100.0 * total_executed / total_statements
-            else:
-                pc = 100.0
-            args = ("TOTAL", total_statements, total_executed, pc)
+            args = ("TOTAL", total.n_statements, total.n_run, total.percent_covered)
             if self.show_missing:
                 args = args + ("",)
             outfile.write(fmt_coverage % args)
