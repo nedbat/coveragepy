@@ -3,6 +3,7 @@
 import sys
 
 from coverage.report import Reporter
+from coverage.results import Numbers
 
 
 class SummaryReporter(Reporter):
@@ -15,7 +16,6 @@ class SummaryReporter(Reporter):
     def report(self, morfs, omit_prefixes=None, outfile=None):
         """Writes a report summarizing coverage statistics per module."""
         
-        from coverage.control import Numbers
         self.find_code_units(morfs, omit_prefixes)
 
         # Prepare the formatting strings
