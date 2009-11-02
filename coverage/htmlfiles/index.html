@@ -10,7 +10,7 @@
 <div id='header'>
     <div class='content'>
         <h1>Coverage report: 
-            <span class='pc_cov'>{{total_cov|format_pct}}%</span>
+            <span class='pc_cov'>{{totals.percent_covered|format_pct}}%</span>
         </h1>
     </div>
 </div>
@@ -30,24 +30,24 @@
 {% for file in files %}
 <tr class='file'>
     <td class='name'><a href='{{file.html_filename}}'>{{file.cu.name}}</a></td>
-    <td>{{file.stm}}</td>
-    <td>{{file.run}}</td>
-    <td>{{file.exc}}</td>
+    <td>{{file.nums.n_statements}}</td>
+    <td>{{file.nums.n_run}}</td>
+    <td>{{file.nums.n_excluded}}</td>
     {% if arcs %}
     <td>{{file.par}}</td>
     {% endif %}
-    <td>{{file.pc_cov|format_pct}}%</td>
+    <td>{{file.nums.percent_covered|format_pct}}%</td>
 </tr>
 {% endfor %}
 <tr class='total'>
 <td class='name'>Total</td>
-<td>{{total_stm}}</td>
-<td>{{total_run}}</td>
-<td>{{total_exc}}</td>
+<td>{{totals.n_statements}}</td>
+<td>{{totals.n_run}}</td>
+<td>{{totals.n_excluded}}</td>
 {% if arcs %}
 <td>{{total_par}}</td>
 {% endif %}
-<td>{{total_cov|format_pct}}%</td>
+<td>{{totals.percent_covered|format_pct}}%</td>
 </tr>
 </table>
 </div>

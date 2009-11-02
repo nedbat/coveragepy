@@ -1,8 +1,9 @@
 """HTML reporting for Coverage."""
 
 import keyword, os, re, token, tokenize, shutil
-from coverage import __url__, __version__    # pylint: disable-msg=W0611
-from coverage.backward import StringIO   # pylint: disable-msg=W0622
+
+from coverage import __url__, __version__           # pylint: disable-msg=W0611
+from coverage.backward import StringIO              # pylint: disable-msg=W0622
 from coverage.report import Reporter
 from coverage.templite import Templite
 
@@ -88,12 +89,8 @@ class HtmlReporter(Reporter):
         
         source = cu.source_file().read().expandtabs(4)
         source_lines = source.split("\n")
-        
-        n_stm = len(analysis.statements)
-        n_exc = len(analysis.excluded)
-        n_mis = len(analysis.missing)
-        n_run = n_stm - n_mis
-        pc_cov = analysis.numbers.percent_covered
+
+        nums = analysis.numbers        
 
         missing_branch_arcs = analysis.missing_branch_arcs()
         n_par = 0   # accumulated below.
@@ -170,12 +167,8 @@ class HtmlReporter(Reporter):
 
         # Save this file's information for the index file.
         self.files.append({
-            'stm': n_stm,
-            'run': n_run,
-            'exc': n_exc,
-            'mis': n_mis,
+            'nums': nums,
             'par': n_par,
-            'pc_cov': pc_cov,
             'html_filename': html_filename,
             'cu': cu,
             })
@@ -187,14 +180,8 @@ class HtmlReporter(Reporter):
         files = self.files
         arcs = self.arcs
 
-        total_stm = sum([f['stm'] for f in files])
-        total_run = sum([f['run'] for f in files])
-        total_exc = sum([f['exc'] for f in files])
+        totals = sum([f['nums'] for f in files])
         total_par = sum([f['par'] for f in files])
-        if total_stm:
-            total_cov = 100.0 * total_run / total_stm
-        else:
-            total_cov = 100.0
 
         fhtml = open(os.path.join(self.directory, "index.html"), "w")
         fhtml.write(index_tmpl.render(locals()))

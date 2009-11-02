@@ -125,6 +125,7 @@ class Numbers(object):
         self.n_missing = 0
 
     def _get_n_run(self):
+        """Returns the number of executed statements."""
         return self.n_statements - self.n_missing
     n_run = property(_get_n_run)
     
@@ -137,9 +138,16 @@ class Numbers(object):
         return pc_cov
     percent_covered = property(_get_percent_covered)
 
-    def __iadd__(self, other):
-        self.n_files += other.n_files
-        self.n_statements += other.n_statements
-        self.n_excluded += other.n_excluded
-        self.n_missing += other.n_missing
-        return self
+    def __add__(self, other):
+        nums = Numbers()
+        nums.n_files = self.n_files + other.n_files
+        nums.n_statements = self.n_statements + other.n_statements
+        nums.n_excluded = self.n_excluded + other.n_excluded
+        nums.n_missing = self.n_missing + other.n_missing
+        return nums
+
+    def __radd__(self, other):
+        # Implementing 0+Numbers allows us to sum() a list of Numbers.
+        if other == 0:
+            return self
+        raise NotImplemented
