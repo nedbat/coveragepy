@@ -2,7 +2,7 @@
 # Copyright 2004-2009, Ned Batchelder
 # http://nedbatchelder.com/code/coverage
 
-import os, sys, unittest
+import os, re, sys, unittest
 
 import coverage
 coverage.use_cache(0)
@@ -1654,10 +1654,12 @@ class ProcessTest(CoverageTest):
         # ---------------------------------------------------------------------
         # TOTAL                                                 8      8   100%
 
+        self.assert_("error" not in report1.lower())
         self.assert_("/coverage/__init__/" not in report1)
         self.assert_("/test/modules/covmod1 " in report1)
         self.assert_("/test/zipmods.zip/covmodzip1 " in report1)
         self.assert_("mycode " in report1)
+        self.assertEqual(re.sub(r"\s+", " ", report1.split('\n')[-2]), "TOTAL 8 8 100%")
 
         for l in report1.split('\n'):
             if '/test/modules/covmod1' in l:
@@ -1672,6 +1674,7 @@ class ProcessTest(CoverageTest):
         # ----------------------------
         # mycode       4      4   100%
 
+        self.assert_("error" not in report2.lower())
         self.assert_("/coverage/" not in report2)
         self.assert_("/test/modules/covmod1 " not in report2)
         self.assert_("/test/zipmods.zip/covmodzip1 " not in report2)
@@ -1685,6 +1688,7 @@ class ProcessTest(CoverageTest):
         # ----------------------------
         # mycode       4      4   100%
 
+        self.assert_("error" not in report3.lower())
         self.assert_("/coverage/" not in report3)
         self.assert_("/test/modules/covmod1 " not in report3)
         self.assert_("/test/zipmods.zip/covmodzip1 " not in report3)

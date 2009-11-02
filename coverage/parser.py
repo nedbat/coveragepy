@@ -19,7 +19,8 @@ class CodeParser(object):
         """
         assert text or filename, "CodeParser needs either text or filename"
         self.filename = filename or "<code>"
-        if not text:
+        self.text = text
+        if not self.text:
             try:
                 sourcef = open(self.filename, 'rU')
                 self.text = sourcef.read()
