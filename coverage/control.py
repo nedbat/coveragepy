@@ -10,7 +10,7 @@ from coverage.collector import Collector
 from coverage.data import CoverageData
 from coverage.files import FileLocator
 from coverage.html import HtmlReporter
-from coverage.misc import format_lines, CoverageException, NoSource
+from coverage.misc import format_lines, NoSource
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
 

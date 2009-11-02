@@ -1659,7 +1659,8 @@ class ProcessTest(CoverageTest):
         self.assert_("/test/modules/covmod1 " in report1)
         self.assert_("/test/zipmods.zip/covmodzip1 " in report1)
         self.assert_("mycode " in report1)
-        self.assertEqual(re.sub(r"\s+", " ", report1.split('\n')[-2]), "TOTAL 8 8 100%")
+        last_line = report1.split('\n')[-2]
+        self.assertEqual(re.sub(r"\s+", " ", last_line), "TOTAL 8 8 100%")
 
         for l in report1.split('\n'):
             if '/test/modules/covmod1' in l:
