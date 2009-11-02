@@ -35,11 +35,12 @@ class Analysis(object):
         exec1 = self.parser.first_lines(self.executed)
         self.missing = sorted(set(self.statements) - set(exec1))
 
-        self.numbers = Numbers()
-        self.numbers.n_files = 1
-        self.numbers.n_statements = len(self.statements)
-        self.numbers.n_excluded = len(self.excluded)
-        self.numbers.n_missing = len(self.missing)
+        self.numbers = Numbers(
+            n_files=1,
+            n_statements=len(self.statements), 
+            n_excluded=len(self.excluded),
+            n_missing=len(self.missing),
+            )
 
     def missing_formatted(self):
         """The missing line numbers, formatted nicely.
@@ -118,11 +119,11 @@ class Numbers(object):
     up statistics across files.
 
     """
-    def __init__(self):
-        self.n_files = 0
-        self.n_statements = 0
-        self.n_excluded = 0
-        self.n_missing = 0
+    def __init__(self, n_files=0, n_statements=0, n_excluded=0, n_missing=0):
+        self.n_files = n_files
+        self.n_statements = n_statements
+        self.n_excluded = n_excluded
+        self.n_missing = n_missing
 
     def _get_n_run(self):
         """Returns the number of executed statements."""
