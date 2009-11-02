@@ -2,7 +2,7 @@
 # Copyright 2004-2009, Ned Batchelder
 # http://nedbatchelder.com/code/coverage
 
-import os, re, sys, unittest
+import os, sys, unittest
 
 import coverage
 coverage.use_cache(0)
@@ -1634,67 +1634,6 @@ class ProcessTest(CoverageTest):
         self.assert_(os.path.exists(".coverage"))
         self.assertEqual(out, 'done\n')
     
-    def testReport(self):
-        self.make_file("mycode.py", """\
-            import covmod1
-            import covmodzip1
-            a = 1
-            print ('done')
-            """)
-
-        out = self.run_command("coverage -x mycode.py")
-        self.assertEqual(out, 'done\n')
-        report1 = self.run_command("coverage -r").replace('\\', '/')
-
-        # Name                                              Stmts   Exec  Cover
-        # ---------------------------------------------------------------------
-        # c:/ned/coverage/trunk/test/modules/covmod1            2      2   100%
-        # c:/ned/coverage/trunk/test/zipmods.zip/covmodzip1     2      2   100%
-        # mycode                                                4      4   100%
-        # ---------------------------------------------------------------------
-        # TOTAL                                                 8      8   100%
-
-        self.assert_("error" not in report1.lower())
-        self.assert_("/coverage/__init__/" not in report1)
-        self.assert_("/test/modules/covmod1 " in report1)
-        self.assert_("/test/zipmods.zip/covmodzip1 " in report1)
-        self.assert_("mycode " in report1)
-        last_line = report1.split('\n')[-2]
-        self.assertEqual(re.sub(r"\s+", " ", last_line), "TOTAL 8 8 100%")
-
-        for l in report1.split('\n'):
-            if '/test/modules/covmod1' in l:
-                # Save a module prefix for the omit test later.
-                prefix = l.split('/test/')[0] + '/test/'
-                break
-
-        # Try reporting just one module
-        report2 = self.run_command("coverage -r mycode.py").replace('\\', '/')
-
-        # Name     Stmts   Exec  Cover
-        # ----------------------------
-        # mycode       4      4   100%
-
-        self.assert_("error" not in report2.lower())
-        self.assert_("/coverage/" not in report2)
-        self.assert_("/test/modules/covmod1 " not in report2)
-        self.assert_("/test/zipmods.zip/covmodzip1 " not in report2)
-        self.assert_("mycode " in report2)
-
-        # Try reporting while omitting some modules
-        report3 = self.run_command("coverage -r -o %s" % prefix)
-        report3 = report3.replace('\\', '/')
-
-        # Name     Stmts   Exec  Cover
-        # ----------------------------
-        # mycode       4      4   100%
-
-        self.assert_("error" not in report3.lower())
-        self.assert_("/coverage/" not in report3)
-        self.assert_("/test/modules/covmod1 " not in report3)
-        self.assert_("/test/zipmods.zip/covmodzip1 " not in report3)
-        self.assert_("mycode " in report3)
-
     def testCombineParallelData(self):
         self.make_file("b_or_c.py", """\
             import sys
