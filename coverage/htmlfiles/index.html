@@ -10,7 +10,7 @@
 <div id='header'>
     <div class='content'>
         <h1>Coverage report: 
-            <span class='pc_cov'>{{totals.percent_covered|format_pct}}%</span>
+            <span class='pc_cov'>{{totals.pc_covered|format_pct}}%</span>
         </h1>
     </div>
 </div>
@@ -31,23 +31,23 @@
 <tr class='file'>
     <td class='name'><a href='{{file.html_filename}}'>{{file.cu.name}}</a></td>
     <td>{{file.nums.n_statements}}</td>
-    <td>{{file.nums.n_run}}</td>
+    <td>{{file.nums.n_executed}}</td>
     <td>{{file.nums.n_excluded}}</td>
     {% if arcs %}
     <td>{{file.par}}</td>
     {% endif %}
-    <td>{{file.nums.percent_covered|format_pct}}%</td>
+    <td>{{file.nums.pc_covered|format_pct}}%</td>
 </tr>
 {% endfor %}
 <tr class='total'>
 <td class='name'>Total</td>
 <td>{{totals.n_statements}}</td>
-<td>{{totals.n_run}}</td>
+<td>{{totals.n_executed}}</td>
 <td>{{totals.n_excluded}}</td>
 {% if arcs %}
 <td>{{total_par}}</td>
 {% endif %}
-<td>{{totals.percent_covered|format_pct}}%</td>
+<td>{{totals.pc_covered|format_pct}}%</td>
 </tr>
 </table>
 </div>

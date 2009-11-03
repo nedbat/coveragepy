@@ -43,8 +43,8 @@ class SummaryReporter(Reporter):
                 analysis = self.coverage._analyze(cu)
                 nums = analysis.numbers
                 args = (
-                    cu.name, nums.n_statements, nums.n_run,
-                    nums.percent_covered
+                    cu.name, nums.n_statements, nums.n_executed,
+                    nums.pc_covered
                     )
                 if self.show_missing:
                     args = args + (analysis.missing_formatted(),)
@@ -60,7 +60,8 @@ class SummaryReporter(Reporter):
         if total.n_files > 1:
             outfile.write(rule)
             args = (
-                "TOTAL", total.n_statements, total.n_run, total.percent_covered
+                "TOTAL", total.n_statements, total.n_executed,
+                total.pc_covered
                 )
             if self.show_missing:
                 args = args + ("",)

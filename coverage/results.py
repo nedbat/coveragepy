@@ -30,9 +30,9 @@ class Analysis(object):
         self.statements, self.excluded = self.parser.parse_source()
 
         # Identify missing statements.
-        self.missing = []
-        self.executed = self.coverage.data.executed_lines(self.filename)
-        exec1 = self.parser.first_lines(self.executed)
+        executed = self.coverage.data.executed_lines(self.filename)
+        exec1 = [l for l in self.parser.first_lines(executed) if l in self.statements]
+        exec1 = self.parser.first_lines(executed)
         self.missing = sorted(set(self.statements) - set(exec1))
 
         self.numbers = Numbers(
@@ -125,19 +125,19 @@ class Numbers(object):
         self.n_excluded = n_excluded
         self.n_missing = n_missing
 
-    def _get_n_run(self):
+    def _get_n_executed(self):
         """Returns the number of executed statements."""
         return self.n_statements - self.n_missing
-    n_run = property(_get_n_run)
+    n_executed = property(_get_n_executed)
     
-    def _get_percent_covered(self):
+    def _get_pc_covered(self):
         """Returns a single percentage value for coverage."""
         if self.n_statements > 0:
-            pc_cov = 100.0 * self.n_run / self.n_statements
+            pc_cov = 100.0 * self.n_executed / self.n_statements
         else:
             pc_cov = 100.0
         return pc_cov
-    percent_covered = property(_get_percent_covered)
+    pc_covered = property(_get_pc_covered)
 
     def __add__(self, other):
         nums = Numbers()
