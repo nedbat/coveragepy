@@ -97,7 +97,8 @@ class XmlReporter(Reporter):
         xclass.appendChild(xlines)
         className = fname.replace('.', '_')
         xclass.setAttribute("name", className)
-        xclass.setAttribute("filename", os.path.split(cu.filename)[1])
+        ext = os.path.splitext(cu.filename)[1]
+        xclass.setAttribute("filename", cu.name + ext)
         xclass.setAttribute("complexity", "0.0")
 
         # For each statement, create an XML 'line' element.
