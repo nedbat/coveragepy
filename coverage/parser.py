@@ -195,10 +195,17 @@ class CodeParser(object):
         return sorted(all_arcs)
 
     def exit_counts(self):
-        """Return a dict mapping line numbers to number of exits from that line."""
+        """Get a mapping from line numbers to count of exits from that line.
+        
+        Excluded lines are excluded.
+        
+        """
+        excluded_lines = self.first_lines(self.excluded)
         exit_counts = {}
         for l1,l2 in self.arcs():
             if l1 == -1:
+                continue
+            if l1 in excluded_lines:
                 continue
             if l1 not in exit_counts:
                 exit_counts[l1] = 0
