@@ -99,8 +99,8 @@ class SummaryTest(CoverageTest):
 
         # Name       Stmts   Exec Branch BrExec  Cover
         # --------------------------------------------
-        # mybranch       5      5      4      3    88%
+        # mybranch       5      5      2      1    85%
 
         self.assertEqual(self.line_count(report), 3)
         self.assert_("mybranch " in report)
-        self.assertEqual(self.last_line_squeezed(report), "mybranch 5 5 4 3 88%")
+        self.assertEqual(self.last_line_squeezed(report), "mybranch 5 5 2 1 85%")

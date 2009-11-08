@@ -98,6 +98,8 @@ class Analysis(object):
         """Returns lines that have more than one exit."""
         exit_counts = {}
         for l1,l2 in self.arc_possibilities():
+            if l1 == -1:
+                continue
             if l1 not in exit_counts:
                 exit_counts[l1] = 0
             exit_counts[l1] += 1
@@ -107,6 +109,8 @@ class Analysis(object):
     def total_branches(self):
         exit_counts = {}
         for l1,l2 in self.arc_possibilities():
+            if l1 == -1:
+                continue
             if l1 not in exit_counts:
                 exit_counts[l1] = 0
             exit_counts[l1] += 1
