@@ -23,7 +23,8 @@
     <th>run</th>
     <th>excluded</th>
     {% if arcs %}
-    <th>partial</th>
+    <th>branches</th>
+    <th>br exec</th>
     {% endif %}
     <th>coverage</th>
 </tr>
@@ -34,7 +35,8 @@
     <td>{{file.nums.n_executed}}</td>
     <td>{{file.nums.n_excluded}}</td>
     {% if arcs %}
-    <td>{{file.par}}</td>
+    <td>{{file.nums.n_branches}}</td>
+    <td>{{file.nums.n_executed_branches}}</td>
     {% endif %}
     <td>{{file.nums.pc_covered|format_pct}}%</td>
 </tr>
@@ -45,7 +47,8 @@
 <td>{{totals.n_executed}}</td>
 <td>{{totals.n_excluded}}</td>
 {% if arcs %}
-<td>{{total_par}}</td>
+<td>{{totals.n_branches}}</td>
+<td>{{totals.n_executed_branches}}</td>
 {% endif %}
 <td>{{totals.pc_covered|format_pct}}%</td>
 </tr>
