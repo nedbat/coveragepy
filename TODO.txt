@@ -8,6 +8,7 @@ Coverage TODO
 - while TRUE claims to be partial?
 + Analysis class should do rolling up of stats also (actually Numbers)
 - Update docs for --branch.
+- self.coverage.data.has_arcs is ugly.
 
 
 * Speed

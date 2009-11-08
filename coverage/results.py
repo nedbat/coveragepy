@@ -35,11 +35,20 @@ class Analysis(object):
         exec1 = self.parser.first_lines(executed)
         self.missing = sorted(set(self.statements) - set(exec1))
 
+        if self.coverage.data.has_arcs():
+            n_branches = self.total_branches()
+            mba = self.missing_branch_arcs()
+            n_missing_branches = sum([len(v) for v in mba.values()])
+        else:
+            n_branches = n_missing_branches = 0
+            
         self.numbers = Numbers(
             n_files=1,
             n_statements=len(self.statements), 
             n_excluded=len(self.excluded),
             n_missing=len(self.missing),
+            n_branches=n_branches,
+            n_missing_branches=n_missing_branches,
             )
 
     def missing_formatted(self):
@@ -95,6 +104,15 @@ class Analysis(object):
         
         return [l1 for l1,count in exit_counts.items() if count > 1]
 
+    def total_branches(self):
+        exit_counts = {}
+        for l1,l2 in self.arc_possibilities():
+            if l1 not in exit_counts:
+                exit_counts[l1] = 0
+            exit_counts[l1] += 1
+        
+        return sum([count for count in exit_counts.values() if count > 1])
+        
     def missing_branch_arcs(self):
         """Return arcs that weren't executed from branch lines.
         
@@ -119,21 +137,30 @@ class Numbers(object):
     up statistics across files.
 
     """
-    def __init__(self, n_files=0, n_statements=0, n_excluded=0, n_missing=0):
+    def __init__(self, n_files=0, n_statements=0, n_excluded=0, n_missing=0,
+                    n_branches=0, n_missing_branches=0
+                    ):
         self.n_files = n_files
         self.n_statements = n_statements
         self.n_excluded = n_excluded
         self.n_missing = n_missing
+        self.n_branches = n_branches
+        self.n_missing_branches = n_missing_branches
 
     def _get_n_executed(self):
         """Returns the number of executed statements."""
         return self.n_statements - self.n_missing
     n_executed = property(_get_n_executed)
     
+    def _get_n_executed_branches(self):
+        """Returns the number of executed branches."""
+        return self.n_branches - self.n_missing_branches
+    n_executed_branches = property(_get_n_executed_branches)
+    
     def _get_pc_covered(self):
         """Returns a single percentage value for coverage."""
         if self.n_statements > 0:
-            pc_cov = 100.0 * self.n_executed / self.n_statements
+            pc_cov = 100.0 * (self.n_executed + self.n_executed_branches) / (self.n_statements + self.n_branches)
         else:
             pc_cov = 100.0
         return pc_cov
@@ -145,6 +172,8 @@ class Numbers(object):
         nums.n_statements = self.n_statements + other.n_statements
         nums.n_excluded = self.n_excluded + other.n_excluded
         nums.n_missing = self.n_missing + other.n_missing
+        nums.n_branches = self.n_branches + other.n_branches
+        nums.n_missing_branches = self.n_missing_branches + other.n_missing_branches
         return nums
 
     def __radd__(self, other):
