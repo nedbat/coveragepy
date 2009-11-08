@@ -394,3 +394,21 @@ class ExceptionArcTest(CoverageTest):
                 """,
                 arcz=".1 12 .3 3. 24 45 56 67 7B 89 9B BC C.",
                 arcz_missing="67 7B", arcz_unpredicted="68")
+
+
+class MiscArcTest(CoverageTest):
+    """Miscellaneous arc-measuring tests."""
+
+    def test_dict_literal(self):
+        self.check_coverage("""\
+            d = {
+                'a': 2,
+                'b': 3,
+                'c': {
+                    'd': 5,
+                    'e': 6,
+                    }
+                }
+            assert d
+            """,
+            arcz=".1 19 9.")

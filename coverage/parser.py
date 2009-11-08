@@ -186,10 +186,26 @@ class CodeParser(object):
         normalized to the first line of multiline statements.
         
         """
-        all_arcs = self.byte_parser._all_arcs()
-        m2fl = self.first_line
-        all_arcs = [(m2fl(l1), m2fl(l2)) for (l1,l2) in all_arcs]
+        all_arcs = []
+        for l1, l2 in self.byte_parser._all_arcs():
+            fl1 = self.first_line(l1)
+            fl2 = self.first_line(l2)
+            if fl1 != fl2:
+                all_arcs.append((fl1, fl2))
         return sorted(all_arcs)
+
+    def exit_counts(self):
+        """Return a dict mapping line numbers to number of exits from that line."""
+        exit_counts = {}
+        for l1,l2 in self.arcs():
+            if l1 == -1:
+                continue
+            if l1 not in exit_counts:
+                exit_counts[l1] = 0
+            exit_counts[l1] += 1
+        
+        return exit_counts
+
 
 ## Opcodes that guide the ByteParser.
 
@@ -592,17 +608,22 @@ class AdHocMain(object):
                 else:
                     arc_width, arc_chars = 0, {}
                     
+                exit_counts = cp.exit_counts()
+
                 for i, ltext in enumerate(cp.lines):
                     lineno = i+1
-                    m0 = m1 = m2 = a = ' '
+                    m0 = m1 = m2 = m3 = a = ' '
                     if lineno in cp.statement_starts:
                         m0 = '-'
                     if lineno in cp.docstrings:
                         m1 = '"'
                     if lineno in cp.excluded:
                         m2 = 'x'
+                    exits = exit_counts.get(lineno, 0)
+                    if exits > 1:
+                        m3 = str(exits)
                     a = arc_chars.get(lineno, '').ljust(arc_width)
-                    print("%4d %s%s%s%s %s" % (lineno, m0, m1, m2, a, ltext))
+                    print("%4d %s%s%s%s%s %s" % (lineno, m0, m1, m2, m3, a, ltext))
 
     def arc_ascii_art(self, arcs):
         """Draw arcs as ascii art.

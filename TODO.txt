@@ -36,7 +36,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 * Power
 
-- Branch coverage
++ Branch coverage
     Titus' idea:
         1: if a:
         2:     b = 2

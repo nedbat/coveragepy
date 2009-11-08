@@ -5,11 +5,15 @@ Change history for Coverage.py
 Next version
 ------------
 
+- Branch coverage.
+
 - The tracer code has changed, it's a few percent faster.
 
 - Some exceptions reported by the command line interface have been cleaned up
   so that tracebacks inside coverage.py aren't shown.  Fixes `issue 23`_
   
+- XML reporting has file paths that let Cobertura find the source code.
+
 .. _issue 23: http://bitbucket.org/ned/coveragepy/issue/23
   
 

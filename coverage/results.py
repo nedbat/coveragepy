@@ -96,25 +96,11 @@ class Analysis(object):
 
     def branch_lines(self):
         """Returns lines that have more than one exit."""
-        exit_counts = {}
-        for l1,l2 in self.arc_possibilities():
-            if l1 == -1:
-                continue
-            if l1 not in exit_counts:
-                exit_counts[l1] = 0
-            exit_counts[l1] += 1
-        
+        exit_counts = self.parser.exit_counts()
         return [l1 for l1,count in exit_counts.items() if count > 1]
 
     def total_branches(self):
-        exit_counts = {}
-        for l1,l2 in self.arc_possibilities():
-            if l1 == -1:
-                continue
-            if l1 not in exit_counts:
-                exit_counts[l1] = 0
-            exit_counts[l1] += 1
-        
+        exit_counts = self.parser.exit_counts()
         return sum([count for count in exit_counts.values() if count > 1])
         
     def missing_branch_arcs(self):
