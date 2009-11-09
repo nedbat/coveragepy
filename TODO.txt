@@ -11,6 +11,9 @@ Coverage TODO
 - self.coverage.data.has_arcs is ugly.
 - Branches that never jump to nocover lines shouldn't be marked as partial.
     (see top of test_cogapp for examples)
+- Maybe turning off yellow lines should make those lines green?
+- A missing branch to leave the function shows an annotation of -1.
+
 
 * Speed
 
