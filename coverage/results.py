@@ -31,7 +31,6 @@ class Analysis(object):
 
         # Identify missing statements.
         executed = self.coverage.data.executed_lines(self.filename)
-        exec1 = [l for l in self.parser.first_lines(executed) if l in self.statements]
         exec1 = self.parser.first_lines(executed)
         self.missing = sorted(set(self.statements) - set(exec1))
 
@@ -100,6 +99,7 @@ class Analysis(object):
         return [l1 for l1,count in exit_counts.items() if count > 1]
 
     def total_branches(self):
+        """How many total branches are there?"""
         exit_counts = self.parser.exit_counts()
         return sum([count for count in exit_counts.values() if count > 1])
         
@@ -150,7 +150,8 @@ class Numbers(object):
     def _get_pc_covered(self):
         """Returns a single percentage value for coverage."""
         if self.n_statements > 0:
-            pc_cov = 100.0 * (self.n_executed + self.n_executed_branches) / (self.n_statements + self.n_branches)
+            pc_cov = (100.0 * (self.n_executed + self.n_executed_branches) /
+                        (self.n_statements + self.n_branches))
         else:
             pc_cov = 100.0
         return pc_cov
@@ -163,7 +164,8 @@ class Numbers(object):
         nums.n_excluded = self.n_excluded + other.n_excluded
         nums.n_missing = self.n_missing + other.n_missing
         nums.n_branches = self.n_branches + other.n_branches
-        nums.n_missing_branches = self.n_missing_branches + other.n_missing_branches
+        nums.n_missing_branches = (self.n_missing_branches +
+                                                    other.n_missing_branches)
         return nums
 
     def __radd__(self, other):

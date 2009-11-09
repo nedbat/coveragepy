@@ -62,7 +62,12 @@ class CoverageData(object):
         #
         self.lines = {}
         
-        self.arcs = {}  # TODO
+        # A map from canonical Python source file name to a dictionary with an
+        # entry for each pair of line numbers forming an arc:
+        #
+        # { filename: { (l1,l2): None, ... }, ...}
+        #
+        self.arcs = {}
         
     def usefile(self, use_file=True):
         """Set whether or not to use a disk file for data."""
@@ -135,7 +140,12 @@ class CoverageData(object):
         return data
 
     def _read_file(self, filename):
-        """Return the stored coverage data from the given file."""
+        """Return the stored coverage data from the given file.
+        
+        Returns two values, suitable for assigning to `self.lines` and
+        `self.arcs`.
+        
+        """
         lines = {}
         arcs = {}
         try:
@@ -156,8 +166,11 @@ class CoverageData(object):
         return lines, arcs
 
     def combine_parallel_data(self):
-        """ Treat self.filename as a file prefix, and combine the data from all
-            of the files starting with that prefix.
+        """Combine a number of data files together.
+        
+        Treat `self.filename` as a file prefix, and combine the data from all
+        of the data files starting with that prefix.
+        
         """
         data_dir, local = os.path.split(self.filename)
         for f in os.listdir(data_dir or '.'):
@@ -166,6 +179,8 @@ class CoverageData(object):
                 new_lines, new_arcs = self._read_file(full_path)
                 for filename, file_data in new_lines.items():
                     self.lines.setdefault(filename, {}).update(file_data)
+                for filename, file_data in new_arcs.items():
+                    self.arcs.setdefault(filename, {}).update(file_data)
 
     def add_line_data(self, line_data):
         """Add executed line data.

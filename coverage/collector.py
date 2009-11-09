@@ -127,7 +127,9 @@ class Collector(object):
         tracing functions make the faster more sophisticated trace function not
         operate properly.
         
-        TODO: `branch`
+        If `branch` is true, then branches will be measured.  This involves
+        collecting data on which statements followed each other (arcs).  Use
+        `get_arc_data` to get the arc data.
         
         """
         self.should_trace = should_trace
@@ -245,7 +247,10 @@ class Collector(object):
         """Return the arc data collected.
         
         Data is { filename: { (l1, l2): None, ...}, ...}
-        
+
+        Note that no data is collected or returned if the Collector wasn't
+        created with `branch` true.
+
         """
         if self.branch:
             return self.data

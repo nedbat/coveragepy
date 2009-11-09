@@ -630,7 +630,9 @@ class AdHocMain(object):
                     if exits > 1:
                         m3 = str(exits)
                     a = arc_chars.get(lineno, '').ljust(arc_width)
-                    print("%4d %s%s%s%s%s %s" % (lineno, m0, m1, m2, m3, a, ltext))
+                    print("%4d %s%s%s%s%s %s" %
+                                (lineno, m0, m1, m2, m3, a, ltext)
+                        )
 
     def arc_ascii_art(self, arcs):
         """Draw arcs as ascii art.

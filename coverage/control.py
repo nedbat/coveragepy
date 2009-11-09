@@ -49,7 +49,7 @@ class coverage(object):
         used.  This is important for some environments where manipulation of
         tracing functions breaks the faster trace function.
         
-        TODO: `branch`.
+        If `branch` is true, then measure branch execution.
 
         """
         from coverage import __version__
