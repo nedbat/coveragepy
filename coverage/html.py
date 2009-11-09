@@ -98,7 +98,7 @@ class HtmlReporter(Reporter):
 
         # These classes determine which lines are highlighted by default.
         c_run = " run hide"
-        c_exc = " exc hide"
+        c_exc = " exc"
         c_mis = " mis"
         c_par = " par"
 
