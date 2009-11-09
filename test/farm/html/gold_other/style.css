@@ -125,23 +125,38 @@ td.text {
     background: #eeeeee;
     border-left: 2px solid #808080;
     }
+.text p.par {
+    background: #ffffaa;
+    border-left: 2px solid #eeee99;
+    }
 .text p.hide {
     background: inherit;
     }
 
+.text span.annotate {
+	font-family: georgia;
+	font-style: italic;
+	color: #666;
+	float: right;
+	padding-right: .5em;
+	}
+.text p.hide span.annotate {
+	display: none;
+	}
+	
 /* Syntax coloring */
 .text .com {
-	color: green;
-	font-style: italic;
-	line-height: 1px;
-	}
+    color: green;
+    font-style: italic;
+    line-height: 1px;
+    }
 .text .key {
-	font-weight: bold;
-	line-height: 1px;
-	}
+    font-weight: bold;
+    line-height: 1px;
+    }
 .text .str {
-	color: #000080;
-	}
+    color: #000080;
+    }
 
 /* index styles */
 #index td, #index th {
@@ -158,7 +173,6 @@ td.text {
 #index td.name, #index th.name {
     text-align: left;
     width: auto;
-    height: 1.5em;
     }
 #index td.name a {
     text-decoration: none;
@@ -176,3 +190,6 @@ td.text {
     border-top: 1px solid #ccc;
     border-bottom: none;
     }
+#index tr.file:hover {
+	background: #eeeeee;
+	}

@@ -133,6 +133,17 @@ td.text {
     background: inherit;
     }
 
+.text span.annotate {
+	font-family: georgia;
+	font-style: italic;
+	color: #666;
+	float: right;
+	padding-right: .5em;
+	}
+.text p.hide span.annotate {
+	display: none;
+	}
+	
 /* Syntax coloring */
 .text .com {
     color: green;

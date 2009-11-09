@@ -114,6 +114,7 @@ class HtmlReporter(Reporter):
                 if part == '\n':
 
                     line_class = ""
+                    annotate = ""
                     if lineno in analysis.statements:
                         line_class += " stm"
                     if lineno in analysis.excluded:
@@ -123,13 +124,15 @@ class HtmlReporter(Reporter):
                     elif self.arcs and lineno in missing_branch_arcs:
                         line_class += c_par
                         n_par += 1
+                        annotate = " ".join(map(str, missing_branch_arcs[lineno]))
                     elif lineno in analysis.statements:
                         line_class += c_run
                         
                     lineinfo = {
                         'html': "".join(line),
                         'number': lineno,
-                        'class': line_class.strip() or "pln"
+                        'class': line_class.strip() or "pln",
+                        'annotate': annotate,
                     }
                     lines.append(lineinfo)
                     

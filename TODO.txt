@@ -2,14 +2,15 @@ Coverage TODO
 
 * 3.2
 
-- Some kind of indication in the HTML where yellow lines aren't going.
++ Some kind of indication in the HTML where yellow lines aren't going.
 - Profile the reporting code: it's REALLY slow.
     - parser is doing some redundant work.
 - while TRUE claims to be partial?
 + Analysis class should do rolling up of stats also (actually Numbers)
 - Update docs for --branch.
 - self.coverage.data.has_arcs is ugly.
-
+- Branches that never jump to nocover lines shouldn't be marked as partial.
+    (see top of test_cogapp for examples)
 
 * Speed
 
