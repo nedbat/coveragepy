@@ -20,8 +20,9 @@ For example::
     
 In this code, the if on line 2 could branch to either line 3 or line 4.
 Statement coverage would show all lines of the function as executed.  But the
-if is always true, so line 2 never jumps to line 4.  In this code, that
-path would cause an error.
+if is always true, so line 2 never jumps to line 4.  Even though line 4 is
+executed, coverage.py knows that it was never because of a branch from line
+2.
 
 Branch coverage would flag this code as not fully covered because of the
 missing jump from line 2 to line 4.
