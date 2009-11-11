@@ -4,7 +4,7 @@ import glob, opcode, os, re, sys, token, tokenize
 
 from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
 from coverage.bytecode import ByteCodes, CodeObjects
-from coverage.misc import nice_pair, CoverageException, NoSource
+from coverage.misc import nice_pair, CoverageException, NoSource, expensive
 
 
 class CodeParser(object):
@@ -193,6 +193,7 @@ class CodeParser(object):
             if fl1 != fl2:
                 all_arcs.append((fl1, fl2))
         return sorted(all_arcs)
+    arcs = expensive(arcs)
 
     def exit_counts(self):
         """Get a mapping from line numbers to count of exits from that line.
@@ -212,6 +213,7 @@ class CodeParser(object):
             exit_counts[l1] += 1
         
         return exit_counts
+    exit_counts = expensive(exit_counts)
 
 
 ## Opcodes that guide the ByteParser.

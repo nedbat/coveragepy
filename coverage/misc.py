@@ -45,6 +45,20 @@ def format_lines(statements, lines):
     return ret
 
 
+def expensive(fn):
+    """A decorator to cache the result of an expensive operation.
+    
+    Only applies to methods with no arguments.
+    
+    """
+    attr = "_cache_" + fn.__name__
+    def _wrapped(self):
+        if not hasattr(self, attr):
+            setattr(self, attr, fn(self))
+        return getattr(self, attr)
+    return _wrapped
+
+
 class CoverageException(Exception):
     """An exception specific to Coverage."""
     pass
