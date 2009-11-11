@@ -95,7 +95,7 @@ class SummaryTest(CoverageTest):
             """)
         out = self.run_command("coverage run --branch mybranch.py")
         self.assertEqual(out, 'x\n')
-        report = self.report_from_command("coverage -r")
+        report = self.report_from_command("coverage report")
 
         # Name       Stmts   Exec Branch BrExec  Cover
         # --------------------------------------------
