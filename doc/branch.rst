@@ -42,8 +42,8 @@ file is an execution opportunity, as is each branch destination.
 
 Currently, only HTML reports give information about which lines had missing
 branches.  Lines that were missing some branches are shown in yellow, with an
-annotation at the far right of branch destination line numbers that were not
-exercised.
+annotation at the far right showing branch destination line numbers that were
+not exercised.
 
 
 How it works
