@@ -10,12 +10,14 @@ def html_it():
 runfunc(html_it, rundir="src")
 
 # Editors like to change things, make sure our source file still has tabs.
-contains("src/tabbed.py", "\tif x:\t\t\t\t\t\t# look nice")
+contains("src/tabbed.py", "\tif x:\t\t\t\t\t# look nice")
 
 contains("html/tabbed.html",
-    ">&nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>x</span>"
-    "<span class='op'>:</span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;"
-    " &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <span class='com'># look nice</span>"
+    ">&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> "
+    "<span class='nam'>x</span><span class='op'>:</span>"
+    "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "
+    "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; "
+    "<span class='com'># look nice</span>"   
     )
 
 doesnt_contain("html/tabbed.html", "\t")

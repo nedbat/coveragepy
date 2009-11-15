@@ -14,7 +14,14 @@ def foo():
   say('two = %d' % 2)
 """
 
+MIXED_WS = """\
+def hello():
+        a="Hello world!"
+\tb="indented"
+"""
+
 HERE = os.path.split(__file__)[0]
+
 
 class PhysTokensTest(CoverageTest):
     """Tests for Coverage.py's improver tokenizer."""
@@ -51,14 +58,29 @@ class PhysTokensTest(CoverageTest):
                 [('ws', '  '), ('nam', 'say'), ('op', '('),
                             ('str', "'two = %d'"), ('ws', ' '), ('op', '%'),
                             ('ws', ' '), ('num', '2'), ('op', ')')]
-            ]
-            )
+            ])
         self.check_tokenization(SIMPLE)
 
+    def test_tab_indentation(self):
+        # Mixed tabs and spaces...
+        self.assertEqual(list(source_token_lines(MIXED_WS)),
+            [
+                [('key', 'def'), ('ws', ' '), ('nam', 'hello'), ('op', '('),
+                            ('op', ')'), ('op', ':')],
+                [('ws', '        '), ('nam', 'a'), ('op', '='),
+                            ('str', '"Hello world!"')],
+                [('ws', '        '), ('nam', 'b'), ('op', '='),
+                            ('str', '"indented"')],
+            ])
+
     def test_tokenize_real_file(self):
+        # Check the tokenization of a real file (large, btw).
         real_file = os.path.join(HERE, "test_coverage.py")
         self.check_file_tokenization(real_file)
 
     def test_stress(self):
+        # Check the tokenization of a stress-test file.
         stress = os.path.join(HERE, "stress_phystoken.txt")
         self.check_file_tokenization(stress)
+
+        

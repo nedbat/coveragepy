@@ -60,7 +60,7 @@ class HtmlReporter(Reporter):
     def html_file(self, cu, analysis):
         """Generate an HTML file for one source file."""
         
-        source = cu.source_file().read().expandtabs(4)
+        source = cu.source_file().read()
 
         nums = analysis.numbers        
 
