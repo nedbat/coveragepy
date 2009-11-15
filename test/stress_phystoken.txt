@@ -1,0 +1,35 @@
+# Here's some random Python so that test_tokenize_myself will have some
+# stressful stuff to try.  This file is .txt instead of .py so pylint won't
+# complain about it.
+
+first_back = """\
+hey there!
+"""
+
+other_back = """
+hey \
+there
+"""
+
+lots_of_back = """\
+hey \
+there
+"""
+fake_back = """\ 
+ouch
+"""
+
+class C(object):
+        def there():
+                this = 5 + \
+                    7
+                that = \
+                    "a continued line"
+
+cont1 = "one line of text" + \
+    "another line of text"
+
+def hello():
+        print("Hello world!")
+
+hello()

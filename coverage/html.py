@@ -1,9 +1,9 @@
 """HTML reporting for Coverage."""
 
-import keyword, os, re, token, tokenize, shutil
+import os, re, shutil
 
 from coverage import __url__, __version__           # pylint: disable-msg=W0611
-from coverage.backward import StringIO              # pylint: disable-msg=W0622
+from coverage.phystokens import source_token_lines
 from coverage.report import Reporter
 from coverage.templite import Templite
 
@@ -19,33 +19,6 @@ def data(fname):
     """Return the contents of a data file of ours."""
     return open(data_filename(fname)).read()
     
-
-def phys_tokens(toks):
-    """Return all physical tokens, even line continuations.
-    
-    tokenize.generate_tokens() doesn't return a token for the backslash that
-    continues lines.  This wrapper provides those tokens so that we can
-    re-create a faithful representation of the original source.
-    
-    Returns the same values as generate_tokens()
-    
-    """
-    last_line = None
-    last_lineno = -1
-    for ttype, ttext, (slineno, scol), (elineno, ecol), ltext in toks:
-        if last_lineno != elineno:
-            if last_line and last_line[-2:] == "\\\n":
-                if ttype != token.STRING:
-                    ccol = len(last_line.split("\n")[-2]) - 1
-                    yield (
-                        99999, "\\\n",
-                        (slineno, ccol), (slineno, ccol+2),
-                        last_line
-                        )
-            last_line = ltext
-        yield ttype, ttext, (slineno, scol), (elineno, ecol), ltext
-        last_lineno = elineno
-
 
 class HtmlReporter(Reporter):
     """HTML reporting."""
@@ -88,7 +61,6 @@ class HtmlReporter(Reporter):
         """Generate an HTML file for one source file."""
         
         source = cu.source_file().read().expandtabs(4)
-        source_lines = source.split("\n")
 
         nums = analysis.numbers        
 
@@ -102,63 +74,41 @@ class HtmlReporter(Reporter):
         c_mis = " mis"
         c_par = " par"
 
-        ws_tokens = [token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL]
         lines = []
-        line = []
-        lineno = 1
-        col = 0
-        tokgen = tokenize.generate_tokens(StringIO(source).readline)
-        for ttype, ttext, (_, scol), (_, ecol), _ in phys_tokens(tokgen):
-            mark_start = True
-            for part in re.split('(\n)', ttext):
-                if part == '\n':
-
-                    line_class = ""
-                    annotate = ""
-                    if lineno in analysis.statements:
-                        line_class += " stm"
-                    if lineno in analysis.excluded:
-                        line_class += c_exc
-                    elif lineno in analysis.missing:
-                        line_class += c_mis
-                    elif self.arcs and lineno in missing_branch_arcs:
-                        line_class += c_par
-                        n_par += 1
-                        annotate = " ".join(map(str, missing_branch_arcs[lineno]))
-                    elif lineno in analysis.statements:
-                        line_class += c_run
-                        
-                    lineinfo = {
-                        'html': "".join(line),
-                        'number': lineno,
-                        'class': line_class.strip() or "pln",
-                        'annotate': annotate,
-                    }
-                    lines.append(lineinfo)
-                    
-                    line = []
-                    lineno += 1
-                    col = 0
-                    mark_end = False
-                elif part == '':
-                    mark_end = False
-                elif ttype in ws_tokens:
-                    mark_end = False
+        
+        for lineno, line in enumerate(source_token_lines(source)):
+            lineno += 1     # 1-based line numbers.
+            # Figure out how to mark this line.
+            line_class = ""
+            annotate = ""
+            if lineno in analysis.statements:
+                line_class += " stm"
+            if lineno in analysis.excluded:
+                line_class += c_exc
+            elif lineno in analysis.missing:
+                line_class += c_mis
+            elif self.arcs and lineno in missing_branch_arcs:
+                line_class += c_par
+                n_par += 1
+                annotate = " ".join(map(str, missing_branch_arcs[lineno]))
+            elif lineno in analysis.statements:
+                line_class += c_run
+            
+            # Build the HTML for the line
+            html = ""
+            for tok_type, tok_text in line:
+                if tok_type == "ws":
+                    html += escape(tok_text)
                 else:
-                    if mark_start and scol > col:
-                        line.append(escape(" " * (scol - col)))
-                        mark_start = False
-                    tok_class = tokenize.tok_name.get(ttype, 'xx').lower()[:3]
-                    if ttype == token.NAME and keyword.iskeyword(ttext):
-                        tok_class = "key"
-                    tok_html = escape(part) or '&nbsp;'
-                    line.append(
-                        "<span class='%s'>%s</span>" % (tok_class, tok_html)
-                        )
-                    mark_end = True
-                scol = 0
-            if mark_end:
-                col = ecol
+                    tok_html = escape(tok_text) or '&nbsp;'
+                    html += "<span class='%s'>%s</span>" % (tok_type, tok_html)
+
+            lines.append({
+                'html': html,
+                'number': lineno,
+                'class': line_class.strip() or "pln",
+                'annotate': annotate,
+            })
 
         # Write the HTML page for this file.
         html_filename = cu.flat_rootname() + ".html"
@@ -184,7 +134,6 @@ class HtmlReporter(Reporter):
         arcs = self.arcs
 
         totals = sum([f['nums'] for f in files])
-        total_par = sum([f['par'] for f in files])
 
         fhtml = open(os.path.join(self.directory, "index.html"), "w")
         fhtml.write(index_tmpl.render(locals()))
