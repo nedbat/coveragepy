@@ -23,24 +23,29 @@ class Tee(object):
 class CoverageTest(unittest.TestCase):
     """A base class for Coverage test cases."""
 
+    def __init__(self, *args, **kwargs):
+        super(CoverageTest, self).__init__(*args, **kwargs)
+        self.run_in_temp_dir = True
+
     def setUp(self):
-        # Create a temporary directory.
-        self.noise = str(random.random())[2:]
-        self.temp_root = os.path.join(tempfile.gettempdir(), 'test_coverage')
-        self.temp_dir = os.path.join(self.temp_root, self.noise)
-        os.makedirs(self.temp_dir)
-        self.old_dir = os.getcwd()
-        os.chdir(self.temp_dir)
-
-        # Preserve changes to PYTHONPATH.
-        self.old_pypath = os.environ.get('PYTHONPATH', '')
-
-        # Modules should be importable from this temp directory.
-        self.old_syspath = sys.path[:]
-        sys.path.insert(0, '')
-
-        # Keep a counter to make every call to check_coverage unique.
-        self.n = 0
+        if self.run_in_temp_dir:
+            # Create a temporary directory.
+            self.noise = str(random.random())[2:]
+            self.temp_root = os.path.join(tempfile.gettempdir(), 'test_coverage')
+            self.temp_dir = os.path.join(self.temp_root, self.noise)
+            os.makedirs(self.temp_dir)
+            self.old_dir = os.getcwd()
+            os.chdir(self.temp_dir)
+    
+            # Preserve changes to PYTHONPATH.
+            self.old_pypath = os.environ.get('PYTHONPATH', '')
+    
+            # Modules should be importable from this temp directory.
+            self.old_syspath = sys.path[:]
+            sys.path.insert(0, '')
+    
+            # Keep a counter to make every call to check_coverage unique.
+            self.n = 0
 
         # Use a Tee to capture stdout.
         self.old_stdout = sys.stdout
@@ -48,13 +53,14 @@ class CoverageTest(unittest.TestCase):
         sys.stdout = Tee(sys.stdout, self.captured_stdout)
         
     def tearDown(self):
-        # Restore the original sys.path and PYTHONPATH
-        sys.path = self.old_syspath
-        os.environ['PYTHONPATH'] = self.old_pypath
+        if self.run_in_temp_dir:
+            # Restore the original sys.path and PYTHONPATH
+            sys.path = self.old_syspath
+            os.environ['PYTHONPATH'] = self.old_pypath
 
-        # Get rid of the temporary directory.
-        os.chdir(self.old_dir)
-        shutil.rmtree(self.temp_root)
+            # Get rid of the temporary directory.
+            os.chdir(self.old_dir)
+            shutil.rmtree(self.temp_root)
         
         # Restore stdout.
         sys.stdout = self.old_stdout
@@ -69,6 +75,7 @@ class CoverageTest(unittest.TestCase):
         `filename` is the file name, and `text` is the content.
         
         """
+        assert self.run_in_temp_dir
         text = textwrap.dedent(text)
         
         # Create the file.

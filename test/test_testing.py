@@ -9,6 +9,10 @@ from coverage.backward import set                   # pylint: disable-msg=W0622
 class TestingTest(CoverageTest):
     """Tests of helper methods on CoverageTest."""
 
+    def setUp(self):
+        self.run_in_temp_dir = False
+        super(TestingTest, self).setUp()
+
     def test_assert_equal_sets(self):
         self.assert_equal_sets(set(), set())
         self.assert_equal_sets(set([1,2,3]), set([3,1,2]))

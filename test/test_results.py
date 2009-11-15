@@ -10,6 +10,11 @@ from coveragetest import CoverageTest
 
 class NumbersTest(CoverageTest):
     """Tests for Coverage.py's numeric measurement summaries."""
+    
+    def setUp(self):
+        self.run_in_temp_dir = False
+        super(NumbersTest, self).setUp()
+
     def test_basic(self):
         n1 = Numbers(n_files=1, n_statements=200, n_missing=20)
         self.assertEqual(n1.n_statements, 200)

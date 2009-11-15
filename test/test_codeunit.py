@@ -15,6 +15,7 @@ class CodeUnitTest(CoverageTest):
     """Tests for coverage.codeunit"""
 
     def setUp(self):
+        self.run_in_temp_dir = False
         super(CodeUnitTest, self).setUp()
         # Parent class saves and restores sys.path, we can just modify it.
         testmods = self.nice_file(os.path.dirname(__file__), 'modules')

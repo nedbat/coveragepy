@@ -19,17 +19,23 @@ HERE = os.path.split(__file__)[0]
 class PhysTokensTest(CoverageTest):
     """Tests for Coverage.py's improver tokenizer."""
 
+    def setUp(self):
+        self.run_in_temp_dir = False
+        super(PhysTokensTest, self).setUp()
+
     def check_tokenization(self, source):
         """Tokenize `source`, then put it back together, should be the same."""
         tokenized = ""
         for line in source_token_lines(source):
             text = "".join([t for _,t in line])
             tokenized += text + "\n"
+        # source_token_lines doesn't preserve trailing spaces, so trim all that
+        # before comparing.
         source = re.sub("(?m)[ \t]+$", "", source)
         tokenized = re.sub("(?m)[ \t]+$", "", tokenized)
         #if source != tokenized:
-        #    open(r"c:\foo\0.py", "w").write(source)
-        #    open(r"c:\foo\1.py", "w").write(tokenized)
+        #    open("0.py", "w").write(source)
+        #    open("1.py", "w").write(tokenized)
         self.assertEqual(source, tokenized)
 
     def check_file_tokenization(self, fname):
