@@ -5,7 +5,10 @@ Change history for Coverage.py
 Version 3.2b2
 -------------
 
-- Nothing yet!
+- Fixed some problems syntax coloring sources with line continuations:
+  `issue 30`_.
+  
+.. _issue 30: http://bitbucket.org/ned/coveragepy/issue/30
 
 
 Version 3.2b1, 10 November 2009
