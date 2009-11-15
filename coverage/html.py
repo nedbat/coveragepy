@@ -148,10 +148,10 @@ def escape(t):
             # Convert HTML special chars into HTML entities.
             .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             .replace("'", "&#39;").replace('"', "&quot;")
-            # Convert runs of spaces: "      " -> "&nbsp; &nbsp; &nbsp; "
+            # Convert runs of spaces: "......" -> "&nbsp;.&nbsp;.&nbsp;."
             .replace("  ", "&nbsp; ")
             # To deal with odd-length runs, convert the final pair of spaces
-            # so that "     " -> "&nbsp; &nbsp;&nbsp; "
+            # so that "....." -> "&nbsp;.&nbsp;&nbsp;."
             .replace("  ", "&nbsp; ")
         )
 
