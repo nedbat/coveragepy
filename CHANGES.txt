@@ -7,9 +7,12 @@ Version 3.2b2
 
 - Fixed some problems syntax coloring sources with line continuations and
   source with tabs: `issue 30`_ and `issue 31`_.
-  
+
+- Classes are no longer incorrectly marked as branches: `issue 32`_.
+
 .. _issue 30: http://bitbucket.org/ned/coveragepy/issue/30
 .. _issue 31: http://bitbucket.org/ned/coveragepy/issue/31
+.. _issue 32: http://bitbucket.org/ned/coveragepy/issue/32
 
 
 Version 3.2b1, 10 November 2009

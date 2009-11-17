@@ -45,6 +45,9 @@ class CodeParser(object):
         # The line numbers of docstring lines.
         self.docstrings = set()
         
+        # The line numbers of class definitions.
+        self.classdefs = set()
+
         # A dict mapping line numbers to (lo,hi) for multi-line statements.
         self.multiline = {}
         
@@ -94,6 +97,11 @@ class CodeParser(object):
                 indent += 1
             elif toktype == token.DEDENT:
                 indent -= 1
+            elif toktype == token.NAME and ttext == 'class':
+                # Class definitions look like branches in the byte code, so
+                # we need to exclude them.  The simplest way is to note the
+                # lines with the 'class' keyword.
+                self.classdefs.add(slineno)
             elif toktype == token.OP and ttext == ':':
                 if not excluding and elineno in self.excluded:
                     # Start excluding a suite.  We trigger off of the colon
@@ -203,7 +211,7 @@ class CodeParser(object):
         """
         excluded_lines = self.first_lines(self.excluded)
         exit_counts = {}
-        for l1,l2 in self.arcs():
+        for l1, l2 in self.arcs():
             if l1 == -1:
                 continue
             if l1 in excluded_lines:
@@ -212,6 +220,10 @@ class CodeParser(object):
                 exit_counts[l1] = 0
             exit_counts[l1] += 1
         
+        # Class definitions have one extra exit, so remove one for each:
+        for l in self.classdefs:
+            exit_counts[l] -= 1
+
         return exit_counts
     exit_counts = expensive(exit_counts)
 
@@ -604,7 +616,7 @@ class AdHocMain(object):
             else:
                 print("Chunks: %r" % chunks)
                 arcs = bp._all_arcs()
-                print("Arcs: %r" % arcs)
+                print("Arcs: %r" % sorted(arcs))
 
         if options.source or options.tokens:
             cp = CodeParser(filename=filename, exclude=r"no\s*cover")
@@ -624,13 +636,15 @@ class AdHocMain(object):
                     m0 = m1 = m2 = m3 = a = ' '
                     if lineno in cp.statement_starts:
                         m0 = '-'
-                    if lineno in cp.docstrings:
-                        m1 = '"'
-                    if lineno in cp.excluded:
-                        m2 = 'x'
                     exits = exit_counts.get(lineno, 0)
                     if exits > 1:
-                        m3 = str(exits)
+                        m1 = str(exits)
+                    if lineno in cp.docstrings:
+                        m2 = '"'
+                    if lineno in cp.classdefs:
+                        m2 = 'C'
+                    if lineno in cp.excluded:
+                        m3 = 'x'
                     a = arc_chars.get(lineno, '').ljust(arc_width)
                     print("%4d %s%s%s%s%s %s" %
                                 (lineno, m0, m1, m2, m3, a, ltext)

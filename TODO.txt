@@ -174,7 +174,7 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
 
 + Switch to a real test runner, like nose.
 + Test both the C trace function and the Python trace function.
-- parser.py has no direct tests.
++ parser.py has no direct tests.
 - Tests about the .coverage file.
 + Tests about the --long-form of arguments.
 + Tests about overriding the .coverage filename.
