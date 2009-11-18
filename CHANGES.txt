@@ -10,9 +10,13 @@ Version 3.2b2
 
 - Classes are no longer incorrectly marked as branches: `issue 32`_.
 
+- "except" clauses with types are no longer incorrectly marked as branches:
+  `issue 35`_.
+
 .. _issue 30: http://bitbucket.org/ned/coveragepy/issue/30
 .. _issue 31: http://bitbucket.org/ned/coveragepy/issue/31
 .. _issue 32: http://bitbucket.org/ned/coveragepy/issue/32
+.. _issue 35: http://bitbucket.org/ned/coveragepy/issue/35
 
 
 Version 3.2b1, 10 November 2009

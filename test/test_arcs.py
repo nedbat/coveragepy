@@ -265,8 +265,8 @@ class ExceptionArcTest(CoverageTest):
             assert try_it(0) == 8   # C
             assert try_it(1) == 6   # D
             """,
-            arcz=".1 12 .3 3. 24 4C CD D. .5 56 67 78 8B 9A 9B AB B.",
-            arcz_missing="9B",  # never got an exception other than ValueError
+            arcz=".1 12 .3 3. 24 4C CD D. .5 56 67 78 8B 9A AB B.",
+            arcz_missing="",
             arcz_unpredicted="79")
 
     def test_try_finally(self):

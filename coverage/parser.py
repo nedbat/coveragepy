@@ -262,6 +262,8 @@ OPS_NO_JUMP = _opcode_set('SETUP_EXCEPT', 'SETUP_FINALLY')
 # Individual opcodes we need below.
 OP_BREAK_LOOP = _opcode('BREAK_LOOP')
 OP_END_FINALLY = _opcode('END_FINALLY')
+OP_COMPARE_OP = _opcode('COMPARE_OP')
+COMPARE_EXCEPTION = 10  # just have to get this const from the code.
 
 
 class ByteParser(object):
@@ -378,6 +380,10 @@ class ByteParser(object):
         # Each entry is a tuple: (block type, destination)
         block_stack = []
         
+        # Some op codes are followed by branches that should be ignored.  This
+        # is a count of how many ignores are left.
+        ignore_branch = 0
+
         for bc in ByteCodes(self.code.co_code):
             # Maybe have to start a new block
             if bc.offset in bytes_lines_map:
@@ -392,8 +398,12 @@ class ByteParser(object):
 
             # Look at the opcode                
             if bc.jump_to >= 0 and bc.op not in OPS_NO_JUMP:
-                # The opcode has a jump, it's an exit for this chunk.
-                chunk.exits.add(bc.jump_to)
+                if ignore_branch:
+                    # Someone earlier wanted us to ignore this branch.
+                    ignore_branch -= 1
+                else:
+                    # The opcode has a jump, it's an exit for this chunk.
+                    chunk.exits.add(bc.jump_to)
             
             if bc.op in OPS_CODE_END:
                 # The opcode can exit the code object.
@@ -422,7 +432,11 @@ class ByteParser(object):
                     if block_stack[iblock][0] in OPS_EXCEPT_BLOCKS:
                         chunk.exits.add(block_stack[iblock][1])
                         break
-
+            if bc.op == OP_COMPARE_OP and bc.arg == COMPARE_EXCEPTION:
+                # This is an except clause.  We want to overlook the next
+                # branch, so that except's don't count as branches.
+                ignore_branch += 1
+            
         if chunks:
             chunks[-1].length = bc.next_offset - chunks[-1].byte
             for i in range(len(chunks)-1):
