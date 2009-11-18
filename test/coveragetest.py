@@ -29,7 +29,7 @@ class CoverageTest(unittest.TestCase):
         if self.run_in_temp_dir:
             # Create a temporary directory.
             self.noise = str(random.random())[2:]
-            self.temp_root = os.path.join(tempfile.gettempdir(), 'test_coverage')
+            self.temp_root = os.path.join(tempfile.gettempdir(), 'test_cover')
             self.temp_dir = os.path.join(self.temp_root, self.noise)
             os.makedirs(self.temp_dir)
             self.old_dir = os.getcwd()
@@ -55,7 +55,7 @@ class CoverageTest(unittest.TestCase):
             # Restore the original sys.path and PYTHONPATH
             sys.path = self.old_syspath
             os.environ['PYTHONPATH'] = self.old_pypath
-
+    
             # Get rid of the temporary directory.
             os.chdir(self.old_dir)
             shutil.rmtree(self.temp_root)
@@ -73,6 +73,7 @@ class CoverageTest(unittest.TestCase):
         `filename` is the file name, and `text` is the content.
         
         """
+        # Tests that call `make_file` should be run in a temp environment.
         assert self.run_in_temp_dir
         text = textwrap.dedent(text)
         
