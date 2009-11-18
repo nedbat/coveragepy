@@ -11,6 +11,8 @@ from coverage.parser import CodeParser
 class ParserTest(CoverageTest):
     """Tests for Coverage.py's code parsing."""
 
+    run_in_temp_dir = False
+
     def parse_source(self, text):
         """Parse `text` as source, and return the `CodeParser` used."""
         text = textwrap.dedent(text)

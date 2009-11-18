@@ -13,9 +13,7 @@ OK, ERR = 0, 1
 class CmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
     
-    def setUp(self):
-        self.run_in_temp_dir = False
-        super(CmdLineTest, self).setUp()
+    run_in_temp_dir = False
 
     INIT_LOAD = """\
             .coverage(cover_pylib=None, data_suffix=False, timid=None, branch=None)

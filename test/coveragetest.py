@@ -23,10 +23,8 @@ class Tee(object):
 class CoverageTest(unittest.TestCase):
     """A base class for Coverage test cases."""
 
-    def __init__(self, *args, **kwargs):
-        super(CoverageTest, self).__init__(*args, **kwargs)
-        self.run_in_temp_dir = True
-
+    run_in_temp_dir = True
+    
     def setUp(self):
         if self.run_in_temp_dir:
             # Create a temporary directory.

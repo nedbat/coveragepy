@@ -26,9 +26,7 @@ HERE = os.path.split(__file__)[0]
 class PhysTokensTest(CoverageTest):
     """Tests for Coverage.py's improver tokenizer."""
 
-    def setUp(self):
-        self.run_in_temp_dir = False
-        super(PhysTokensTest, self).setUp()
+    run_in_temp_dir = False
 
     def check_tokenization(self, source):
         """Tokenize `source`, then put it back together, should be the same."""
