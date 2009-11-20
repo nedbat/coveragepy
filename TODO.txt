@@ -88,7 +88,7 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
     - Some way to focus in on red and yellow
         - Show only lines near highlights?
         - Jump to next highlight?
-    - Clickable column headers on the index page.
+    + Clickable column headers on the index page.
     + Syntax coloring in HTML report.
     + Dynamic effects in HTML report.
     + Footer in reports pointing to coverage home page.
