@@ -111,7 +111,9 @@ class CodeParser(object):
                     excluding = True
             elif toktype == token.STRING and prev_toktype == token.INDENT:
                 # Strings that are first on an indented line are docstrings.
-                # (a trick from trace.py in the stdlib.)
+                # (a trick from trace.py in the stdlib.) This works for
+                # 99.9999% of cases.  For the rest (!) see:
+                # http://stackoverflow.com/questions/1769332/x/1769794#1769794
                 for i in range(slineno, elineno+1):
                     self.docstrings.add(i)
             elif toktype == token.NEWLINE:
