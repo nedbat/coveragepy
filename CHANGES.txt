@@ -5,7 +5,10 @@ Change history for Coverage.py
 Version 3.2b3
 -------------
 
-- None yet.
+- The table of contents in the HTML report is now sortable.  Thanks,
+  `Chris Adams`_.
+
+.. _Chris Adams: http://improbable.org/chris/
 
 
 Version 3.2b2, 19 November 2009
