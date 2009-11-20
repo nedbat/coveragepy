@@ -2,16 +2,18 @@
 Change history for Coverage.py
 ------------------------------
 
-Version 3.2b2
--------------
+Version 3.2b2, 19 November 2009
+-------------------------------
+
+- Branch coverage improvements:
+
+  - Classes are no longer incorrectly marked as branches: `issue 32`_.
+
+  - "except" clauses with types are no longer incorrectly marked as branches:
+    `issue 35`_.
 
 - Fixed some problems syntax coloring sources with line continuations and
   source with tabs: `issue 30`_ and `issue 31`_.
-
-- Classes are no longer incorrectly marked as branches: `issue 32`_.
-
-- "except" clauses with types are no longer incorrectly marked as branches:
-  `issue 35`_.
 
 - The --omit option now works much better than before, fixing `issue 14` and
   `issue 33`_.  Thanks, Danek Duvall.
