@@ -2,6 +2,12 @@
 Change history for Coverage.py
 ------------------------------
 
+Version 3.2b3
+-------------
+
+- None yet.
+
+
 Version 3.2b2, 19 November 2009
 -------------------------------
 
