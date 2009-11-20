@@ -38,7 +38,7 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
         filtered = []
         for cu in code_units:
             for prefix in prefixes:
-                if cu.name.startswith(prefix):
+                if cu.filename.startswith(prefix):
                     break
             else:
                 filtered.append(cu)

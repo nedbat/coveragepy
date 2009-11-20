@@ -13,9 +13,13 @@ Version 3.2b2
 - "except" clauses with types are no longer incorrectly marked as branches:
   `issue 35`_.
 
+- The --omit option now works much better than before, fixing `issue 33`_.
+  Thanks, Danek Duvall.
+
 .. _issue 30: http://bitbucket.org/ned/coveragepy/issue/30
 .. _issue 31: http://bitbucket.org/ned/coveragepy/issue/31
 .. _issue 32: http://bitbucket.org/ned/coveragepy/issue/32
+.. _issue 33: http://bitbucket.org/ned/coveragepy/issue/33
 .. _issue 35: http://bitbucket.org/ned/coveragepy/issue/35
 
 
