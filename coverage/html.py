@@ -50,15 +50,15 @@ class HtmlReporter(Reporter):
         # Create the once-per-directory files.
         shutil.copyfile(
             data_filename("htmlfiles/style.css"),
-                os.path.join(directory, "style.css")
+            os.path.join(directory, "style.css")
             )
         shutil.copyfile(
             data_filename("htmlfiles/jquery-1.3.2.min.js"),
-                os.path.join(directory, "jquery-1.3.2.min.js")
+            os.path.join(directory, "jquery-1.3.2.min.js")
             )
         shutil.copyfile(
             data_filename("htmlfiles/jquery.tablesorter.min.js"),
-                os.path.join(directory, "jquery.tablesorter.min.js")
+            os.path.join(directory, "jquery.tablesorter.min.js")
             )
 
     def html_file(self, cu, analysis):
