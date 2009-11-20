@@ -8,7 +8,7 @@ class CoverageTestWrapper(object):
     2) Call start()
     3) Run your tests
     4) Call finish()
-    5) Imporve your code coverage ;)
+    5) Improve your code coverage ;)
     """
     
     def __init__(self, options, _covpkg=None):
