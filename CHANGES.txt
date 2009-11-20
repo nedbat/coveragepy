@@ -2,6 +2,15 @@
 Change history for Coverage.py
 ------------------------------
 
+Version 3.2b3
+-------------
+
+- The table of contents in the HTML report is now sortable.  Thanks,
+  `Chris Adams`_.
+
+.. _Chris Adams: http://improbable.org/chris/
+
+
 Version 3.2b2, 19 November 2009
 -------------------------------
 
@@ -44,7 +53,8 @@ Version 3.2b1, 10 November 2009
 Version 3.1, 4 October 2009
 ---------------------------
 
-- Source code can now be read from eggs.  Thanks, rozza.  Fixes `issue 25`_
+- Source code can now be read from eggs.  Thanks, Ross Lawley.  Fixes
+  `issue 25`_.
 
 .. _issue 25: http://bitbucket.org/ned/coveragepy/issue/25
 
