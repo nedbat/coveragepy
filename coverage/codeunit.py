@@ -34,19 +34,26 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     code_units = [CodeUnit(morf, file_locator) for morf in morfs]
     
     if omit_prefixes:
-        prefixes = [file_locator.abs_file(p) for p in omit_prefixes]
-        filtered = []
-        for cu in code_units:
-            for prefix in prefixes:
-                if cu.filename.startswith(prefix):
-                    break
-            else:
-                filtered.append(cu)
-    
-        code_units = filtered
+        code_units = omit_filter(omit_prefixes, code_units)
 
     return code_units
 
+def omit_filter(omit_prefixes, code_units):
+    """
+    The filtering method removing any unwanted code_units
+    
+    Refactored out so you can easily monkeypatch if needs be
+    """
+    prefixes = [file_locator.abs_file(p) for p in omit_prefixes]
+    filtered = []
+    for cu in code_units:
+        for prefix in prefixes:
+            if cu.filename.startswith(prefix):
+                break
+        else:
+            filtered.append(cu)
+            
+    return filtered
 
 class CodeUnit(object):
     """Code unit: a filename or module.
