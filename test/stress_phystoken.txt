@@ -19,6 +19,17 @@ fake_back = """\
 ouch
 """
 
+# Lots of difficulty happens with code like:
+#
+# fake_back = """\
+# ouch
+# """
+#
+# Ugh, the edge cases...
+
+# What about a comment like this\
+"what's this string doing here?"
+
 class C(object):
         def there():
                 this = 5 + \

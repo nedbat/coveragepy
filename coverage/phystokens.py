@@ -15,6 +15,7 @@ def phys_tokens(toks):
     """
     last_line = None
     last_lineno = -1
+    last_ttype = None
     for ttype, ttext, (slineno, scol), (elineno, ecol), ltext in toks:
         if last_lineno != elineno:
             if last_line and last_line[-2:] == "\\\n":
@@ -34,7 +35,11 @@ def phys_tokens(toks):
                 # so we need to figure out if the backslash is already in the
                 # string token or not.
                 inject_backslash = True
-                if ttype == token.STRING:
+                if last_ttype == tokenize.COMMENT:
+                    # Comments like this \
+                    # should never result in a new token.
+                    inject_backslash = False
+                elif ttype == token.STRING:
                     if "\n" in ttext and ttext.split('\n', 1)[0][-1] == '\\':
                         # It's a multiline string and the first line ends with
                         # a backslash, so we don't need to inject another.
@@ -49,6 +54,7 @@ def phys_tokens(toks):
                         last_line
                         )
             last_line = ltext
+            last_ttype = ttype
         yield ttype, ttext, (slineno, scol), (elineno, ecol), ltext
         last_lineno = elineno
 
