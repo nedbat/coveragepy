@@ -229,8 +229,10 @@ class CodeParser(object):
 
         # Class definitions have one extra exit, so remove one for each:
         for l in self.classdefs:
-            exit_counts[l] -= 1
-
+            # Ensure key is there - #pragma: no cover will mean its not
+            if l in exit_counts:
+                exit_counts[l] -= 1
+                
         return exit_counts
     exit_counts = expensive(exit_counts)
 
