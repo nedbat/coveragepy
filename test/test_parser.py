@@ -64,7 +64,7 @@ class ParserTest(CoverageTest):
                     pass
             """)
         self.assertEqual(cp.exit_counts(), {
-            1:1, 2:1, 3:1
+            1:0, 2:1, 3:1
             })
         
     def XXX_missing_branch_to_excluded_code(self):
