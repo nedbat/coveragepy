@@ -2,7 +2,7 @@
 
 # Coincidentally named the same as http://code.activestate.com/recipes/496702/
 
-import re
+import re, sys
 
 class Templite(object):
     """A simple template renderer, for a nano-subset of Django syntax.
@@ -120,7 +120,13 @@ class _TempliteEngine(object):
             if op == 'lit':
                 self.result += args
             elif op == 'exp':
-                self.result += str(self.evaluate(args))
+                try:
+                    self.result += str(self.evaluate(args))
+                except:
+                    exc_class, exc, tb = sys.exc_info()
+                    new_exc = exc_class("Couldn't evaluate {{ %s }}: %s"
+                                        % (args, exc))
+                    raise exc_class, new_exc, tb
             elif op == 'if':
                 expr, body = args
                 if self.evaluate(expr):
