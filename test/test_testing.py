@@ -28,3 +28,8 @@ class TestingTest(CoverageTest):
             "hello there", "^hello$"
             )
 
+    def test_assert_multiline_equal(self):
+        self.assert_multiline_equal("hello", "hello")
+        self.assertRaises(AssertionError, self.assert_matches,
+            "hello there", "Hello there"
+            )

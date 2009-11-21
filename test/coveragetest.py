@@ -1,6 +1,6 @@
 """Base test case class for coverage testing."""
 
-import imp, os, random, re, shutil, sys, tempfile, textwrap, unittest
+import difflib, imp, os, random, re, shutil, sys, tempfile, textwrap, unittest
 
 import coverage
 from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
@@ -280,3 +280,20 @@ class CoverageTest(unittest.TestCase):
         m = re.search(regex, s)
         if not m:
             raise self.failureException("%r doesn't match %r" % (s, regex))
+
+    def assert_multiline_equal(self, first, second):
+        """Assert that two multi-line strings are equal.
+        
+        If they aren't, show a nice diff.
+        
+        """
+        # Adapted from Py3.1 unittest.
+        self.assert_(isinstance(first, str), (
+                'First argument is not a string'))
+        self.assert_(isinstance(second, str), (
+                'Second argument is not a string'))
+
+        if first != second:
+            msg = ''.join(difflib.ndiff(first.splitlines(True),
+                                                    second.splitlines(True)))
+            self.fail("Multi-line strings are unequal:\n" + msg)
