@@ -218,6 +218,7 @@ x Tests about the "import __main__" in cmdline.py
     - $ make pypi
     - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage and show/hide the proper versions.
     - Upload kits
+    - Label the source kit with "Use this for either Python 2.x or 3.x "
 - Tag the tree
     - hg tag -m "Coverage 3.0.1" coverage-3.0.1
 - Update nedbatchelder.com
