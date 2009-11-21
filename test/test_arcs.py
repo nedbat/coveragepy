@@ -113,6 +113,29 @@ class SimpleArcTest(CoverageTest):
             arcz=".1 16 67 7.   .2 23 24 3. 45 5.", arcz_missing=""
             )
 
+    def test_dont_confuse_exit_and_else(self):
+        self.check_coverage("""\
+            def foo():
+                if foo:
+                    a = 3
+                else:
+                    a = 5
+                return a
+            assert foo() == 3
+            """,
+            arcz=".1 17 7.  .2 23 36 25 56 6.", arcz_missing="25 56"
+            )
+        self.check_coverage("""\
+            def foo():
+                if foo:
+                    a = 3
+                else:
+                    a = 5
+            foo()
+            """,
+            arcz=".1 16 6.  .2 23 3. 25 5.", arcz_missing="25 5."
+            )
+
 
 class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""

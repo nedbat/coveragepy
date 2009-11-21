@@ -16,7 +16,7 @@ class ParserTest(CoverageTest):
     def parse_source(self, text):
         """Parse `text` as source, and return the `CodeParser` used."""
         text = textwrap.dedent(text)
-        cp = CodeParser(text)
+        cp = CodeParser(text, exclude="nocover")
         cp.parse_source()
         return cp
     
@@ -52,4 +52,31 @@ class ParserTest(CoverageTest):
         self.assertEqual(cp.exit_counts(), {
             1: 1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1
             })
-        
+    
+    def test_missing_branch_to_excluded_code(self):
+        cp = self.parse_source("""\
+            if fooey:
+                a = 2
+            else:   # nocover
+                a = 4
+            b = 5
+            """)
+        self.assertEqual(cp.exit_counts(), { 1:1, 2:1, 5:1 })
+        cp = self.parse_source("""\
+            def foo():
+                if fooey:
+                    a = 3
+                else:
+                    a = 5
+            b = 6
+            """)
+        self.assertEqual(cp.exit_counts(), { 1:1, 2:2, 3:1, 5:1, 6:1 })
+        cp = self.parse_source("""\
+            def foo():
+                if fooey:
+                    a = 3
+                else:   # nocover
+                    a = 5
+            b = 6
+            """)
+        self.assertEqual(cp.exit_counts(), { 1:13, 2:1, 6:1 })

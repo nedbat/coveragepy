@@ -215,13 +215,18 @@ class CodeParser(object):
         exit_counts = {}
         for l1, l2 in self.arcs():
             if l1 == -1:
+                # Don't ever report -1 as a line number
                 continue
             if l1 in excluded_lines:
+                # Don't report excluded lines as line numbers.
+                continue
+            if l2 in excluded_lines:
+                # Arcs to excluded lines shouldn't count.
                 continue
             if l1 not in exit_counts:
                 exit_counts[l1] = 0
             exit_counts[l1] += 1
-        
+
         # Class definitions have one extra exit, so remove one for each:
         for l in self.classdefs:
             exit_counts[l] -= 1
