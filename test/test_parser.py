@@ -53,6 +53,20 @@ class ParserTest(CoverageTest):
             1: 1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1
             })
     
+    def test_excluded_classes(self):
+        cp = self.parse_source("""\
+            class Foo:
+                def __init__(self):
+                    pass
+                    
+            if 0:   # nocover
+                class Bar:
+                    pass
+            """)
+        self.assertEqual(cp.exit_counts(), {
+            1:1, 2:1, 3:1
+            })
+        
     def XXX_missing_branch_to_excluded_code(self):
         cp = self.parse_source("""\
             if fooey:
