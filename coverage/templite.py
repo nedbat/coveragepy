@@ -123,10 +123,10 @@ class _TempliteEngine(object):
                 try:
                     self.result += str(self.evaluate(args))
                 except:
-                    exc_class, exc, tb = sys.exc_info()
+                    exc_class, exc, _ = sys.exc_info()
                     new_exc = exc_class("Couldn't evaluate {{ %s }}: %s"
                                         % (args, exc))
-                    raise exc_class, new_exc, tb
+                    raise new_exc
             elif op == 'if':
                 expr, body = args
                 if self.evaluate(expr):
