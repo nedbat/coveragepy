@@ -319,7 +319,7 @@ class coverage(object):
             ('cover_prefix', self.cover_prefix),
             ('pylib_prefix', self.pylib_prefix),
             ('tracer', self.collector.tracer_name()),
-            ('data_file', self.data.filename),
+            ('data_path', self.data.filename),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('cwd', os.getcwd()),

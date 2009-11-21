@@ -14,6 +14,7 @@ Coverage TODO
 - Maybe turning off yellow lines should make those lines green?
 - A missing branch to leave the function shows an annotation of -1.
 - XML report needs to get branch information.
+- Add branch info to "coverage debug data"
 
 
 * Speed
