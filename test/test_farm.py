@@ -226,7 +226,10 @@ class FarmTestCase(object):
                     # print "%d %d" % (big, little)
                     # print "Left: ---\n%s\n-----\n%s" % (left, right)
                     wrong_size.append(f)
-            assert not wrong_size, "File sizes differ: %s" % wrong_size
+            assert not wrong_size, (
+                "File sizes differ between %s and %s: %s" % (
+                    dir1, dir2, wrong_size
+                ))
         else:
             # filecmp only compares in binary mode, but we want text mode.  So
             # look through the list of different files, and compare them
