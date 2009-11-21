@@ -33,6 +33,20 @@
                         <th class='right'>coverage</th>
                     </tr>
                 </thead>
+                {# HTML syntax requires thead, tfoot, tbody #}
+                <tfoot>
+                    <tr class='total'>
+                        <td class='name left'>Total</td>
+                        <td>{{totals.n_statements}}</td>
+                        <td>{{totals.n_executed}}</td>
+                        <td>{{totals.n_excluded}}</td>
+                        {% if arcs %}
+                        <td>{{totals.n_branches}}</td>
+                        <td>{{totals.n_executed_branches}}</td>
+                        {% endif %}
+                        <td class='right'>{{totals.pc_covered|format_pct}}%</td>
+                    </tr>
+                </tfoot>
                 <tbody>
                     {% for file in files %}
                     <tr class='file'>
@@ -48,19 +62,6 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-                <tfoot>
-                    <tr class='total'>
-                        <td class='name left'>Total</td>
-                        <td>{{totals.n_statements}}</td>
-                        <td>{{totals.n_executed}}</td>
-                        <td>{{totals.n_excluded}}</td>
-                        {% if arcs %}
-                        <td>{{totals.n_branches}}</td>
-                        <td>{{totals.n_executed_branches}}</td>
-                        {% endif %}
-                        <td class='right'>{{totals.pc_covered|format_pct}}%</td>
-                    </tr>
-                </tfoot>
             </table>
         </div>
 
