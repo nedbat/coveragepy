@@ -355,7 +355,7 @@ class NewCmdLineTest(CmdLineTest):
         self.command_line("debug sys")
         out = self.stdout()
         assert "version:" in out
-        assert "data_file:" in out
+        assert "data_path:" in out
     
     def testErase(self):
         self.cmd_executes_same("erase", "-e")
