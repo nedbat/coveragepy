@@ -8,7 +8,7 @@ HTML_DIR = "htmlcov"
 if os.path.exists(HTML_DIR):
     shutil.rmtree(HTML_DIR)
 
-cov = coverage.coverage()
+cov = coverage.coverage(branch=True)
 # Cheap trick: the coverage code itself is excluded from measurement, but if
 # we clobber the cover_prefix in the coverage object, we can defeat the
 # self-detection.
@@ -40,5 +40,6 @@ cov.clear_exclude()
 cov.exclude("#pragma: no cover")
 cov.exclude("def __repr__")
 cov.exclude("if __name__ == .__main__.:")
+cov.exclude("raise AssertionError")
 
 cov.html_report(directory=HTML_DIR, ignore_errors=True)

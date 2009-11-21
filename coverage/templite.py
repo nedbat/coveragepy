@@ -80,7 +80,7 @@ class Templite(object):
                     ops = ops_stack.pop()
                     assert ops[-1][0] == words[0][3:]
                 else:
-                    raise Exception("Don't understand tag %r" % words)
+                    raise SyntaxError("Don't understand tag %r" % words)
             else:
                 ops.append(('lit', tok))
         
@@ -138,7 +138,7 @@ class _TempliteEngine(object):
                     self.context[var] = val
                     self.execute(body)
             else:
-                raise Exception("TempliteEngine doesn't grok op %r" % op)
+                raise AssertionError("TempliteEngine doesn't grok op %r" % op)
 
     def evaluate(self, expr):
         """Evaluate an expression.

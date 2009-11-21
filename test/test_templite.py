@@ -191,11 +191,16 @@ class TempliteTest(unittest.TestCase):
             "@a0b0c0a1b1c1a2b2c2!"
             )
 
-    def test_exception(self):
+    def test_exception_during_evaluation(self):
         # TypeError: Couldn't evaluate {{ foo.bar.baz }}:
         # 'NoneType' object is unsubscriptable
         self.assertRaises(TypeError, self.try_render,
             "Hey {{foo.bar.baz}} there", {'foo': None}, "Hey XXX there"
+            )
+
+    def test_bogus_tag_syntax(self):
+        self.assertRaises(SyntaxError, self.try_render,
+            "Huh: {% bogus %}!!{% endbogus %}??", {}, ""
             )
 
 
