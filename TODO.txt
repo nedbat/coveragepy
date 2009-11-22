@@ -29,6 +29,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     CodeParser.raw_parse.
 - If tracing, canonical_filename_cache overlaps with should_trace_cache.  Skip
     canonical_filename_cache. Maybe it isn't even worth it...
+- Would pre-allocating line number integers make the C tracer faster?
 
 
 * Accuracy

@@ -243,6 +243,7 @@ Tracer_record_pair(Tracer *self, int l1, int l2)
 static int
 Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
 {
+    int ret = 0;
     PyObject * filename = NULL;
     PyObject * tracename = NULL;
 
@@ -326,7 +327,10 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                 STATS( self->stats.errors++; )
                 return -1;
             }
-            PyDict_SetItem(self->should_trace_cache, filename, tracename);
+            if (PyDict_SetItem(self->should_trace_cache, filename, tracename) < 0) {
+                STATS( self->stats.errors++; )
+                return -1;
+            }
         }
         else {
             Py_INCREF(tracename);
@@ -341,8 +345,12 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                     STATS( self->stats.errors++; )
                     return -1;
                 }
-                PyDict_SetItem(self->data, tracename, file_data);
+                ret = PyDict_SetItem(self->data, tracename, file_data);
                 Py_DECREF(file_data);
+                if (ret < 0) {
+                    STATS( self->stats.errors++; )
+                    return -1;
+                }
             }
             self->cur_file_data = file_data;
             SHOWLOG(self->depth, frame->f_lineno, filename, "traced");
@@ -389,8 +397,16 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                 else {
                     /* Tracing lines: key is simply this_line. */
                     PyObject * this_line = MyInt_FromLong(frame->f_lineno);
-                    PyDict_SetItem(self->cur_file_data, this_line, Py_None);
+                    if (this_line == NULL) {
+                        STATS( self->stats.errors++; )
+                        return -1;
+                    }
+                    ret = PyDict_SetItem(self->cur_file_data, this_line, Py_None);
                     Py_DECREF(this_line);
+                    if (ret < 0) {
+                        STATS( self->stats.errors++; )
+                        return -1;
+                    }
                 }
             }
             self->last_line = frame->f_lineno;
