@@ -94,6 +94,10 @@ class PyTracer(object):
         """Stop this Tracer."""
         sys.settrace(None)
 
+    def get_stats(self):
+        """Return a dictionary of statistics, or None."""
+        return None
+
 
 class Collector(object):
     """Collects trace data.
@@ -203,9 +207,9 @@ class Collector(object):
         assert self._collectors
         assert self._collectors[-1] is self
 
-        self.pause()        
+        self.pause()
         self.tracers = []
-                
+        
         # Remove this Collector from the stack, and resume the one underneath
         # (if any).
         self._collectors.pop()
@@ -216,6 +220,11 @@ class Collector(object):
         """Pause tracing, but be prepared to `resume`."""
         for tracer in self.tracers:
             tracer.stop()
+            stats = tracer.get_stats()
+            if stats:
+                print("\nCoverage.py tracer stats:")
+                for k in sorted(stats.keys()):
+                    print("%16s: %s" % (k, stats[k]))
         threading.settrace(None)
         
     def resume(self):

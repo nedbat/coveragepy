@@ -6,8 +6,16 @@
 #include "structmember.h"
 #include "frameobject.h"
 
-#undef WHAT_LOG     /* Define to log the WHAT params in the trace function. */
-#undef TRACE_LOG    /* Define to log our bookkeeping. */
+/* Compile-time debugging helpers */
+#undef WHAT_LOG         /* Define to log the WHAT params in the trace function. */
+#undef TRACE_LOG        /* Define to log our bookkeeping. */
+#undef COLLECT_STATS    /* Collect counters: stats are printed when tracer is stopped. */
+
+#if COLLECT_STATS
+#define STATS(x)        x
+#else
+#define STATS(x)
+#endif
 
 /* Py 2.x and 3.x compatibility */
 
@@ -85,7 +93,20 @@ typedef struct {
 
     /* The parent frame for the last exception event, to fix missing returns. */
     PyFrameObject * last_exc_back;
-    
+
+#if COLLECT_STATS
+    struct {
+        unsigned int calls;
+        unsigned int lines;
+        unsigned int returns;
+        unsigned int exceptions;
+        unsigned int others;
+        unsigned int new_files;
+        unsigned int missed_returns;
+        unsigned int stack_reallocs;
+        unsigned int errors;
+    } stats;
+#endif /* COLLECT_STATS */
 } Tracer;
 
 #define STACK_DELTA    100
@@ -93,6 +114,18 @@ typedef struct {
 static int
 Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
 {
+#if COLLECT_STATS
+    self->stats.calls = 0;
+    self->stats.lines = 0;
+    self->stats.returns = 0;
+    self->stats.exceptions = 0;
+    self->stats.others = 0;
+    self->stats.new_files = 0;
+    self->stats.missed_returns = 0;
+    self->stats.stack_reallocs = 0;
+    self->stats.errors = 0;
+#endif /* COLLECT_STATS */
+
     self->should_trace = NULL;
     self->data = NULL;
     self->should_trace_cache = NULL;
@@ -104,6 +137,7 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
     self->depth = -1;
     self->data_stack = PyMem_Malloc(STACK_DELTA*sizeof(DataStackEntry));
     if (self->data_stack == NULL) {
+        STATS( self->stats.errors++; )
         return -1;
     }
     self->data_stack_alloc = STACK_DELTA;
@@ -191,11 +225,13 @@ Tracer_record_pair(Tracer *self, int l1, int l2)
         PyTuple_SET_ITEM(t, 0, MyInt_FromLong(l1));
         PyTuple_SET_ITEM(t, 1, MyInt_FromLong(l2));
         if (PyDict_SetItem(self->cur_file_data, t, Py_None) < 0) {
+            STATS( self->stats.errors++; )
             ret = -1;
         }
         Py_DECREF(t);
     }
     else {
+        STATS( self->stats.errors++; )
         ret = -1;
     }
     return ret;
@@ -235,6 +271,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                If someday we need to examine the frame when doing RETURN, then
                we'll need to keep more of the missed frame's state.
             */
+            STATS( self->stats.missed_returns++; )
             if (self->depth >= 0) {
                 if (self->tracing_arcs && self->cur_file_data) {
                     if (Tracer_record_pair(self, self->last_line, -1) < 0) {
@@ -253,13 +290,16 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
 
     switch (what) {
     case PyTrace_CALL:      /* 0 */
+        STATS( self->stats.calls++; )
         /* Grow the stack. */
         self->depth++;
         if (self->depth >= self->data_stack_alloc) {
+            STATS( self->stats.stack_reallocs++; )
             /* We've outgrown our data_stack array: make it bigger. */
             int bigger = self->data_stack_alloc + STACK_DELTA;
             DataStackEntry * bigger_data_stack = PyMem_Realloc(self->data_stack, bigger * sizeof(DataStackEntry));
             if (bigger_data_stack == NULL) {
+                STATS( self->stats.errors++; )
                 self->depth--;
                 return -1;
             }
@@ -275,6 +315,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         filename = frame->f_code->co_filename;
         tracename = PyDict_GetItem(self->should_trace_cache, filename);
         if (tracename == NULL) {
+            STATS( self->stats.new_files++; )
             /* We've never considered this file before. */
             /* Ask should_trace about it. */
             PyObject * args = Py_BuildValue("(OO)", filename, frame);
@@ -282,6 +323,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             Py_DECREF(args);
             if (tracename == NULL) {
                 /* An error occurred inside should_trace. */
+                STATS( self->stats.errors++; )
                 return -1;
             }
             PyDict_SetItem(self->should_trace_cache, filename, tracename);
@@ -295,6 +337,10 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             PyObject * file_data = PyDict_GetItem(self->data, tracename);
             if (file_data == NULL) {
                 file_data = PyDict_New();
+                if (file_data == NULL) {
+                    STATS( self->stats.errors++; )
+                    return -1;
+                }
                 PyDict_SetItem(self->data, tracename, file_data);
                 Py_DECREF(file_data);
             }
@@ -312,6 +358,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         break;
     
     case PyTrace_RETURN:    /* 3 */
+        STATS( self->stats.returns++; )
         /* A near-copy of this code is above in the missing-return handler. */
         if (self->depth >= 0) {
             if (self->tracing_arcs && self->cur_file_data) {
@@ -328,6 +375,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         break;
     
     case PyTrace_LINE:      /* 2 */
+        STATS( self->stats.lines++; )
         if (self->depth >= 0) {
             SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "line");
             if (self->cur_file_data) {
@@ -362,8 +410,13 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
            
            More about this fix: http://nedbatchelder.com/blog/200907/a_nasty_little_bug.html
         */
+        STATS( self->stats.exceptions++; )
         self->last_exc_back = frame->f_back;
         break;
+    
+    default:
+        STATS( self->stats.others++; )
+        break;    
     }
 
     return 0;
@@ -391,6 +444,28 @@ Tracer_stop(Tracer *self, PyObject *args)
     return Py_BuildValue("");
 }
 
+static PyObject *
+Tracer_get_stats(Tracer *self)
+{
+#if COLLECT_STATS
+    return Py_BuildValue(
+        "{sI,sI,sI,sI,sI,sI,sI,sI,si,sI}",
+        "calls", self->stats.calls,
+        "lines", self->stats.lines,
+        "returns", self->stats.returns,
+        "exceptions", self->stats.exceptions,
+        "others", self->stats.others,
+        "new_files", self->stats.new_files,
+        "missed_returns", self->stats.missed_returns,
+        "stack_reallocs", self->stats.stack_reallocs,
+        "stack_alloc", self->data_stack_alloc,
+        "errors", self->stats.errors
+        );
+#else
+    return Py_BuildValue("");
+#endif /* COLLECT_STATS */
+}
+
 static PyMemberDef
 Tracer_members[] = {
     { "should_trace",       T_OBJECT, offsetof(Tracer, should_trace), 0,
@@ -410,11 +485,14 @@ Tracer_members[] = {
 
 static PyMethodDef
 Tracer_methods[] = {
-    { "start",  (PyCFunction) Tracer_start, METH_VARARGS,
+    { "start",      (PyCFunction) Tracer_start,         METH_VARARGS,
             PyDoc_STR("Start the tracer") },
 
-    { "stop",   (PyCFunction) Tracer_stop,  METH_VARARGS,
+    { "stop",       (PyCFunction) Tracer_stop,          METH_VARARGS,
             PyDoc_STR("Stop the tracer") },
+
+    { "get_stats",  (PyCFunction) Tracer_get_stats,     METH_VARARGS,
+            PyDoc_STR("Get statistics about the tracing") },
 
     { NULL }
 };
