@@ -388,7 +388,9 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                 }
                 else {
                     /* Tracing lines: key is simply this_line. */
-                    PyDict_SetItem(self->cur_file_data, MyInt_FromLong(frame->f_lineno), Py_None);
+                    PyObject * this_line = MyInt_FromLong(frame->f_lineno);
+                    PyDict_SetItem(self->cur_file_data, this_line, Py_None);
+                    Py_DECREF(this_line);
                 }
             }
             self->last_line = frame->f_lineno;

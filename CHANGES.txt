@@ -5,6 +5,8 @@ Change history for Coverage.py
 Version 3.2b3
 -------------
 
+- Fixed a memory leak in the C tracer that was introduced in 3.2b1.
+
 - The table of contents in the HTML report is now sortable.  Thanks,
   `Chris Adams`_.
 
