@@ -67,7 +67,7 @@ class ParserTest(CoverageTest):
             1:0, 2:1, 3:1
             })
         
-    def XXX_missing_branch_to_excluded_code(self):
+    def test_missing_branch_to_excluded_code(self):
         cp = self.parse_source("""\
             if fooey:
                 a = 2
@@ -93,4 +93,4 @@ class ParserTest(CoverageTest):
                     a = 5
             b = 6
             """)
-        self.assertEqual(cp.exit_counts(), { 1:13, 2:1, 6:1 })
+        self.assertEqual(cp.exit_counts(), { 1:1, 2:1, 3:1, 6:1 })

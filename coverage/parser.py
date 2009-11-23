@@ -273,6 +273,8 @@ OP_BREAK_LOOP = _opcode('BREAK_LOOP')
 OP_END_FINALLY = _opcode('END_FINALLY')
 OP_COMPARE_OP = _opcode('COMPARE_OP')
 COMPARE_EXCEPTION = 10  # just have to get this const from the code.
+OP_LOAD_CONST = _opcode('LOAD_CONST')
+OP_RETURN_VALUE = _opcode('RETURN_VALUE')
 
 
 class ByteParser(object):
@@ -393,6 +395,9 @@ class ByteParser(object):
         # is a count of how many ignores are left.
         ignore_branch = 0
 
+        # We have to handle the last two bytecodes specially.
+        ult = penult = None
+
         for bc in ByteCodes(self.code.co_code):
             # Maybe have to start a new block
             if bc.offset in bytes_lines_map:
@@ -445,8 +450,30 @@ class ByteParser(object):
                 # This is an except clause.  We want to overlook the next
                 # branch, so that except's don't count as branches.
                 ignore_branch += 1
+
+            penult = ult
+            ult = bc
+
             
         if chunks:
+            # The last two bytecodes could be a dummy "return None" that
+            # shouldn't be counted as real code. Every Python code object seems
+            # to end with a return, and a "return None" is inserted if there
+            # isn't an explicit return in the source.
+            if ult and penult:
+                if penult.op == OP_LOAD_CONST and ult.op == OP_RETURN_VALUE:
+                    if self.code.co_consts[penult.arg] is None:
+                        # This is "return None", but is it dummy?  A real line
+                        # would be a last chunk all by itself.
+                        if chunks[-1].byte != penult.offset:
+                            last_chunk = chunks[-1]
+                            last_chunk.exits.remove(-1)
+                            last_chunk.exits.add(penult.offset)
+                            chunk = Chunk(penult.offset)
+                            chunk.exits.add(-1)
+                            chunks.append(chunk)
+
+            # Give all the chunks a length.
             chunks[-1].length = bc.next_offset - chunks[-1].byte
             for i in range(len(chunks)-1):
                 chunks[i].length = chunks[i+1].byte - chunks[i].byte

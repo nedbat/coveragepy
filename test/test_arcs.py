@@ -113,7 +113,7 @@ class SimpleArcTest(CoverageTest):
             arcz=".1 16 67 7.   .2 23 24 3. 45 5.", arcz_missing=""
             )
 
-    def XXX_dont_confuse_exit_and_else(self):
+    def test_dont_confuse_exit_and_else(self):
         self.check_coverage("""\
             def foo():
                 if foo:
@@ -121,7 +121,7 @@ class SimpleArcTest(CoverageTest):
                 else:
                     a = 5
                 return a
-            assert foo() == 3
+            assert foo() == 3 # 7
             """,
             arcz=".1 17 7.  .2 23 36 25 56 6.", arcz_missing="25 56"
             )
@@ -131,7 +131,7 @@ class SimpleArcTest(CoverageTest):
                     a = 3
                 else:
                     a = 5
-            foo()
+            foo() # 6
             """,
             arcz=".1 16 6.  .2 23 3. 25 5.", arcz_missing="25 5."
             )
