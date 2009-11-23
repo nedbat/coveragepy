@@ -138,6 +138,7 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
     self->data_stack = PyMem_Malloc(STACK_DELTA*sizeof(DataStackEntry));
     if (self->data_stack == NULL) {
         STATS( self->stats.errors++; )
+        PyErr_NoMemory();
         return -1;
     }
     self->data_stack_alloc = STACK_DELTA;
@@ -301,6 +302,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             DataStackEntry * bigger_data_stack = PyMem_Realloc(self->data_stack, bigger * sizeof(DataStackEntry));
             if (bigger_data_stack == NULL) {
                 STATS( self->stats.errors++; )
+                PyErr_NoMemory();
                 self->depth--;
                 return -1;
             }
