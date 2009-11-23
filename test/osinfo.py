@@ -34,6 +34,33 @@ if sys.hexversion >= 0x02050000 and sys.platform == 'win32':
             return 0
         return mem_struct.PrivateUsage
 
+elif sys.platform == 'linux2':
+    import os
+    
+    _scale = {'kb': 1024, 'mb': 1024*1024}
+    
+    def _VmB(key):
+        """Read the /proc/PID/status file to find memory use."""
+        try:
+            # get pseudo file /proc/<pid>/status
+            t = open('/proc/%d/status' % os.getpid())
+            v = t.read()
+            t.close()
+        except IOError:
+            return 0    # non-Linux?
+         # get VmKey line e.g. 'VmRSS:  9999  kB\n ...'
+        i = v.index(key)
+        v = v[i:].split(None, 3)
+        if len(v) < 3:
+            return 0    # invalid format?
+         # convert Vm value to bytes
+        return int(float(v[1]) * _scale[v[2].lower()])
+
+    def process_ram():
+        """How much RAM is this process using? (Linux implementation"""
+        return _VmB('VmRSS')
+
+
 else:
     def process_ram():
         """How much RAM is this process using? (no implementation)"""
