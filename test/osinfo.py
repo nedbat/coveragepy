@@ -35,6 +35,7 @@ if sys.hexversion >= 0x02050000 and sys.platform == 'win32':
         return mem_struct.PrivateUsage
 
 elif sys.platform == 'linux2':
+    # Linux implementation
     import os
     
     _scale = {'kb': 1024, 'mb': 1024*1024}
@@ -57,11 +58,12 @@ elif sys.platform == 'linux2':
         return int(float(v[1]) * _scale[v[2].lower()])
 
     def process_ram():
-        """How much RAM is this process using? (Linux implementation"""
+        """How much RAM is this process using? (Linux implementation)"""
         return _VmB('VmRSS')
 
 
 else:
+    # Don't have an implementation, at least satisfy the interface.
     def process_ram():
-        """How much RAM is this process using? (no implementation)"""
+        """How much RAM is this process using? (placebo implementation)"""
         return 0
