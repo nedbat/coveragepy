@@ -466,6 +466,7 @@ class ByteParser(object):
                         # This is "return None", but is it dummy?  A real line
                         # would be a last chunk all by itself.
                         if chunks[-1].byte != penult.offset:
+                            # Split the last chunk
                             last_chunk = chunks[-1]
                             last_chunk.exits.remove(-1)
                             last_chunk.exits.add(penult.offset)

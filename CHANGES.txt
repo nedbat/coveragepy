@@ -2,13 +2,17 @@
 Change history for Coverage.py
 ------------------------------
 
-Version 3.2b3
--------------
+Version 3.2b3, 23 November 2009
+-------------------------------
 
 - Fixed a memory leak in the C tracer that was introduced in 3.2b1.
 
-- The table of contents in the HTML report is now sortable.  Thanks,
-  `Chris Adams`_.
+- Branch coverage improvements:
+
+  - Branches to excluded code are ignored.
+
+- The table of contents in the HTML report is now sortable: click the headers
+  on any column.  Thanks, `Chris Adams`_.
 
 .. _Chris Adams: http://improbable.org/chris/
 
