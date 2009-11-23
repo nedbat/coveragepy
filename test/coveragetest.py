@@ -214,7 +214,7 @@ class CoverageTest(unittest.TestCase):
             cov.report(mod, file=frep)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
             self.assertEqual(report, rep)
-
+        
     def assert_raises_msg(self, excClass, msg, callableObj, *args, **kwargs):
         """ Just like unittest.TestCase.assertRaises,
             but checks that the message is right too.

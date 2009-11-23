@@ -9,6 +9,7 @@ coverage.use_cache(0)
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
+import osinfo
 
 
 class BasicCoverageTest(CoverageTest):
@@ -1728,6 +1729,36 @@ class RecursionTest(CoverageTest):
             recur(100000)  # This is definitely too many frames.
             """,
             [1,2,3,5,7], "")
+
+
+class MemoryLeakTest(CoverageTest):
+    """Attempt the impossible: test that memory doesn't leak."""
+
+    def test_for_leaks(self):
+        lines = list(range(301, 315))
+        lines.remove(306)
+        baseline_ram = osinfo.process_ram()
+        # Ugly string mumbo jumbo to get 300 blank lines at the beginning..
+        self.check_coverage("""\
+            # blank line\n""" * 300 + """\
+            def once(x):
+                if x % 100 == 0:
+                    raise Exception("100!")
+                elif x % 2:
+                    return 10
+                else:
+                    return 11
+            i = 0 # Portable loop without alloc'ing memory.
+            while i < 10000:
+                try:
+                    once(i)
+                except:
+                    pass
+                i += 1
+            """,
+            lines, "")
+        ram_growth = osinfo.process_ram() - baseline_ram
+        self.assert_(ram_growth < 100000, "RAM grew by %d" % (ram_growth))
 
 
 class PyexpatTest(CoverageTest):
