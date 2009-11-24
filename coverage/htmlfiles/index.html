@@ -74,17 +74,67 @@
         </div>
 
         <script type="text/javascript" charset="utf-8">
-            jQuery(function() {
-                jQuery("table.index").tablesorter({
-                    headers: {
-                        0: { sorter:'text' },
-                        1: { sorter:'digit' },
-                        2: { sorter:'digit' },
-                        3: { sorter:'digit' },
-                        4: { sorter:'percent' },
+            jQuery(function($) {
+                // Look for a cookie containing previous sort settings:
+                sort_list = [];
+                cookie_name = "COVERAGE_INDEX_SORT";
+
+                // This almost makes it worth installing the jQuery cookie plugin:
+                if (document.cookie.indexOf(cookie_name) > -1) {
+                    cookies = document.cookie.split(";");
+                    for (var i=0; i < cookies.length; i++) {
+                        parts = cookies[i].split("=")
+
+                        if ($.trim(parts[0]) == cookie_name && parts[1]) {
+                            sort_list = eval("[[" + parts[1] + "]]");
+                            break;
+                        }
+                    }
+                }
+
+                // Create a new widget which exists only to save and restore
+                // the sort order:
+                $.tablesorter.addWidget({
+                    id: "persistentSort",
+
+                    // Format is called by the widget before displaying:
+                    format: function(table) {
+                        if (table.config.sortList.length == 0 && sort_list.length > 0) {
+                            // This table hasn't been sorted before - we'll use
+                            // our stored settings:
+                            jQuery(table).trigger('sorton', [sort_list]);
+                        } else {
+                            // This is not the first load - something has
+                            // already defined sorting so we'll just update         
+                            // our stored value to match:
+                            sort_list = table.config.sortList;
+                        }
                     }
                 });
-            });
+
+                // Configure our tablesorter to handle the variable number of
+                // columns produced depending on report options:
+                var headers = {};
+                var col_count = jQuery("table.index > thead > tr > th").length;
+
+                for (var i = 0; i < col_count; i++) {
+                    headers[i] = {sorter: "digit"};
+                }
+
+                headers[0]           = { sorter:'text' };
+                headers[col_count-1] = { sorter:'percent' };
+
+                // Enable the table sorter:
+                $("table.index").tablesorter({
+                    widgets: ['persistentSort'],
+                    headers: headers
+                });
+            
+                // Watch for page unload events so we can save the final sort settings:
+                $(window).unload(function() { 
+                    document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/" 
+                });
+            });            
         </script>        
     </body>
 </html>
