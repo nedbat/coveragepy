@@ -240,3 +240,47 @@ class ExceptionTest(CoverageTest):
                     continue
                 clean_lines[os.path.basename(f)] = llist
             self.assertEqual(clean_lines, lines_expected)
+
+
+if sys.hexversion > 0x02050000:
+    class DoctestTest(CoverageTest):
+        """Tests invoked with doctest should measure properly."""
+    
+        def setUp(self):
+            super(DoctestTest, self).setUp()
+            
+            # Oh, the irony!  This test case exists because Python 2.4's
+            # doctest module doesn't play well with coverage.  But nose fixes
+            # the problem by monkeypatching doctest.  I want to undo the
+            # monkeypatch to be sure I'm getting the doctest module that users
+            # of coverage will get.  Deleting the imported module here is
+            # enough: when the test imports doctest again, it will get a fresh
+            # copy without the monkeypatch.
+            del sys.modules['doctest']
+    
+        def testDoctest(self):
+            self.check_coverage('''\
+                def return_arg_or_void(arg):
+                    """If <arg> is None, return "Void"; otherwise return <arg>
+                    
+                    >>> return_arg_or_void(None)
+                    'Void'
+                    >>> return_arg_or_void("arg")
+                    'arg'
+                    >>> return_arg_or_void("None")
+                    'None'
+                    """
+                    if arg is None:
+                        return "Void"
+                    else:
+                        return arg
+                
+                import doctest, sys
+                doctest.testmod(sys.modules[__name__])  # we're not __main__ :(
+                ''',
+                [1,11,12,14,16,17], "")
+
+
+if __name__ == '__main__':
+    import unittest
+    unittest.main()
