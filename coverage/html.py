@@ -89,7 +89,13 @@ class HtmlReporter(Reporter):
             elif self.arcs and lineno in missing_branch_arcs:
                 line_class += c_par
                 n_par += 1
-                annotate = " ".join(map(str, missing_branch_arcs[lineno]))
+                annlines = []
+                for b in missing_branch_arcs[lineno]:
+                    if b == -1:
+                        annlines.append("exit")
+                    else:
+                        annlines.append(str(b))
+                annotate = " ".join(annlines)
             elif lineno in analysis.statements:
                 line_class += c_run
             

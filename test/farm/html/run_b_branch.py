@@ -1,0 +1,27 @@
+def html_it():
+    """Run coverage with branches and make an HTML report for a."""
+    import coverage
+    cov = coverage.coverage(branch=True)
+    cov.start()
+    import b
+    cov.stop()
+    cov.html_report(b, directory="../html_branch")
+
+runfunc(html_it, rundir="src")
+
+# HTML files will change often.  Check that the sizes are reasonable,
+#   and check that certain key strings are in the output.
+compare("gold_b_branch", "html_branch", size_within=10)
+contains("html_branch/b.html",
+    "<span class='key'>if</span> <span class='nam'>x</span> <span class='op'>&lt;</span> <span class='num'>2</span>",
+    "&nbsp; &nbsp; <span class='nam'>a</span> <span class='op'>=</span> <span class='num'>3</span>",
+    "<span class='pc_cov'>77%</span>",
+    "<span class='annotate'>8</span>",
+    "<span class='annotate'>exit</span>"
+    )
+contains("html_branch/index.html",
+    "<a href='b.html'>b</a>",
+    "<span class='pc_cov'>77%</span>"
+    )
+
+clean("html_branch")
