@@ -17,6 +17,12 @@ Coverage TODO
 - Add branch info to "coverage debug data"
 
 
+* 3.3
+
+- Config file
+- Better omit handling that ignores files during measurement.
+
+
 * Speed
 
 + C extension collector
