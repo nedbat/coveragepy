@@ -5,7 +5,9 @@ Change history for Coverage.py
 Version 3.2b4
 -------------
 
-- None yet!
+- Click-to-sort HTML report columns are now persisted in a cookie.  Viewing
+  a report will sort it first the way you last had a coverage report sorted.
+  Thanks, `Chris Adams`_.
 
 
 Version 3.2b3, 23 November 2009

@@ -22,7 +22,7 @@
                 <thead>
                     {# The title='' attr doesn't work in Safari. #}
                     <tr class='tablehead' title='Click to sort'>
-                        <th class='name left'>Module</th>
+                        <th class='name left headerSortDown'>Module</th>
                         <th>statements</th>
                         <th>run</th>
                         <th>excluded</th>
@@ -103,7 +103,8 @@
                             // This table hasn't been sorted before - we'll use
                             // our stored settings:
                             jQuery(table).trigger('sorton', [sort_list]);
-                        } else {
+                        }
+                        else {
                             // This is not the first load - something has
                             // already defined sorting so we'll just update         
                             // our stored value to match:
@@ -117,11 +118,10 @@
                 var headers = {};
                 var col_count = jQuery("table.index > thead > tr > th").length;
 
-                for (var i = 0; i < col_count; i++) {
-                    headers[i] = {sorter: "digit"};
+                headers[0] = { sorter: 'text' };
+                for (var i = 1; i < col_count-1; i++) {
+                    headers[i] = { sorter: 'digit' };
                 }
-
-                headers[0]           = { sorter:'text' };
                 headers[col_count-1] = { sorter:'percent' };
 
                 // Enable the table sorter:
