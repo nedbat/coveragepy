@@ -53,6 +53,7 @@ def expensive(fn):
     """
     attr = "_cache_" + fn.__name__
     def _wrapped(self):
+        """Inner fn that checks the cache."""
         if not hasattr(self, attr):
             setattr(self, attr, fn(self))
         return getattr(self, attr)
