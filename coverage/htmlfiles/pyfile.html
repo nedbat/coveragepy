@@ -8,13 +8,14 @@
 <script type='text/javascript'>
 function toggle_lines(btn, cls) {
     var btn = $(btn);
-    if (btn.hasClass("hide")) {
-        $("#source ."+cls).removeClass("hide");
-        btn.removeClass("hide");
+    var hide = "hide_"+cls;
+    if (btn.hasClass(hide)) {
+        $("#source ."+cls).removeClass(hide);
+        btn.removeClass(hide);
     }
     else {
-        $("#source ."+cls).addClass("hide");
-        btn.addClass("hide");
+        $("#source ."+cls).addClass(hide);
+        btn.addClass(hide);
     }
 }
 </script>

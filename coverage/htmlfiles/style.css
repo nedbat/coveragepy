@@ -89,8 +89,13 @@ h2.stats {
     cursor: pointer;
     border-color: #999 #ccc #ccc #999;
 }
-.stats span.hide {
+.stats span.hide_run, .stats span.hide_exc,
+.stats span.hide_mis, .stats span.hide_par,
+.stats span.par.hide_run.hide_par {
     border-color: #ccc #999 #999 #ccc;
+}
+.stats span.par.hide_run {
+    border-color: #999 #ccc #ccc #999;
 }
 
 /* Source file styles */
@@ -100,7 +105,7 @@ h2.stats {
     padding: 0 .5em;
     color: #999999;
     font-family: verdana, sans-serif;
-    font-size: .625em;       /* 10/16 */
+    font-size: .625em;   /* 10/16 */
     line-height: 1.6em;  /* 16/10 */
     }
 td.text {
@@ -117,7 +122,7 @@ td.text {
     background: #ffdddd;
     border-left: 2px solid #ff0000;
     }
-.text p.run {
+.text p.run, .text p.run.hide_par {
     background: #ddffdd;
     border-left: 2px solid #00ff00;
     }
@@ -125,11 +130,12 @@ td.text {
     background: #eeeeee;
     border-left: 2px solid #808080;
     }
-.text p.par {
+.text p.par, .text p.par.hide_run {
     background: #ffffaa;
     border-left: 2px solid #eeee99;
     }
-.text p.hide {
+.text p.hide_run, .text p.hide_exc, .text p.hide_mis, .text p.hide_par,
+.text p.hide_run.hide_par {
     background: inherit;
     }
 
@@ -140,7 +146,7 @@ td.text {
     float: right;
     padding-right: .5em;
     }
-.text p.hide span.annotate {
+.text p.hide_par span.annotate {
     display: none;
     }
 

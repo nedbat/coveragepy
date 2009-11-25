@@ -68,10 +68,10 @@ class HtmlReporter(Reporter):
         arcs = self.arcs
 
         # These classes determine which lines are highlighted by default.
-        c_run = " run hide"
+        c_run = " run hide_run"
         c_exc = " exc"
         c_mis = " mis"
-        c_par = " par"
+        c_par = " par" + c_run
 
         lines = []
         

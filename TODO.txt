@@ -11,7 +11,7 @@ Coverage TODO
 - self.coverage.data.has_arcs is ugly.
 + Branches that never jump to nocover lines shouldn't be marked as partial.
     (see top of test_cogapp for examples)
-- Maybe turning off yellow lines should make those lines green?
++ Maybe turning off yellow lines should make those lines green?
 + A missing branch to leave the function shows an annotation of -1. Now "exit".
 - XML report needs to get branch information.
 - Add branch info to "coverage debug data"
@@ -29,7 +29,8 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     CodeParser.raw_parse.
 - If tracing, canonical_filename_cache overlaps with should_trace_cache.  Skip
     canonical_filename_cache. Maybe it isn't even worth it...
-- Would pre-allocating line number integers make the C tracer faster?
+- Would pre-allocating line number integers make the C tracer faster? It would
+    use less memory.
 
 
 * Accuracy
