@@ -1,10 +1,9 @@
 import logging
 import unittest, os
-from nose.plugins import Plugin, PluginTester
-
+from nose.plugins import Plugin
 import sys
-import os
-sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '../../')))
+
+from coverage.testplugin import CoverageTestWrapper
 
 log = logging.getLogger(__name__)
 
@@ -55,7 +54,6 @@ class Coverage(Plugin):
         """
         log.debug("Coverage begin")
         # Load the runner and start it up
-        from coverage.runner import CoverageTestWrapper
         self.coverage = CoverageTestWrapper(self.options)
         self.coverage.start()
         
@@ -68,39 +66,3 @@ class Coverage(Plugin):
         # finish up with coverage
         self.coverage.finish()
 
-
-# Monkey patch omit_filter to use regex patterns for file omits
-def omit_filter(omit_prefixes, code_units):
-    import re
-    exclude_patterns = [re.compile(line.strip()) for line in omit_prefixes if line and not line.startswith('#')]
-    filtered = []
-    for cu in code_units:
-        skip = False
-        for pattern in exclude_patterns:
-            if pattern.search(cu.filename):
-                skip = True
-                break
-            
-        if not skip:
-            filtered.append(cu)
-    return filtered
-
-try:
-    import coverage
-    coverage.codeunit.omit_filter = omit_filter
-except:
-    pass
-
-class TestCoverage(PluginTester, unittest.TestCase):
-    activate = '--with-coverage_new' # enables the plugin
-    plugins = [Coverage()]
-    args = ['--cover-action=report']
-    
-    def test_output(self):
-        assert "Processing Coverage..." in self.output, (
-                                        "got: %s" % self.output)
-    def makeSuite(self):
-        class TC(unittest.TestCase):
-            def runTest(self):
-                raise ValueError("Coverage down")
-        return unittest.TestSuite([TC()])

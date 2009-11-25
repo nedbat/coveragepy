@@ -43,7 +43,7 @@ if sys.hexversion < 0x03000000:
                 'coverage = coverage:main',
                 ],
             'pytest11': [
-                'coverage = coverage.pytest_coverage',
+                'coverage = coverage.testplugin',
             ],
             },
         
