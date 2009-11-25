@@ -88,16 +88,16 @@ class FarmTestCase(object):
         finally:
             self.tearDown()
 
-    def fnmatch_list(self, files, filepattern):
-        """Filter the list of `files` to only those that match `filepattern`.
+    def fnmatch_list(self, files, file_pattern):
+        """Filter the list of `files` to only those that match `file_pattern`.
         
-        If `filepattern` is None, then return the entire list of files.
+        If `file_pattern` is None, then return the entire list of files.
         
         Returns a list of the filtered files.
         
         """
-        if filepattern:
-            files = [f for f in files if fnmatch.fnmatch(f, filepattern)]
+        if file_pattern:
+            files = [f for f in files if fnmatch.fnmatch(f, file_pattern)]
         return files
 
     def setUp(self):
@@ -169,10 +169,10 @@ class FarmTestCase(object):
             self.cd(cwd)
             self.restorepath(oldpath)
 
-    def compare(self, dir1, dir2, filepattern=None, size_within=0,
+    def compare(self, dir1, dir2, file_pattern=None, size_within=0,
             left_extra=False, right_extra=False, scrubs=None
             ):
-        """Compare files matching `filepattern` in `dir1` and `dir2`.
+        """Compare files matching `file_pattern` in `dir1` and `dir2`.
         
         `dir2` is interpreted as a prefix, with Python version numbers appended
         to find the actual directory to compare with. "foo" will compare against
@@ -209,9 +209,9 @@ class FarmTestCase(object):
         assert os.path.exists(dir2), "Right directory missing: %s" % dir2
             
         dc = filecmp.dircmp(dir1, dir2)
-        diff_files = self.fnmatch_list(dc.diff_files, filepattern)
-        left_only = self.fnmatch_list(dc.left_only, filepattern)
-        right_only = self.fnmatch_list(dc.right_only, filepattern)
+        diff_files = self.fnmatch_list(dc.diff_files, file_pattern)
+        left_only = self.fnmatch_list(dc.left_only, file_pattern)
+        right_only = self.fnmatch_list(dc.right_only, file_pattern)
         
         if size_within:
             # The files were already compared, use the diff_files list as a

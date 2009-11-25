@@ -49,7 +49,8 @@ class HtmlReporter(Reporter):
 
         # Create the once-per-directory files.
         for static in [
-            "style.css", "jquery-1.3.2.min.js", "jquery.tablesorter.min.js"
+            "style.css", "coverage_html.js",
+            "jquery-1.3.2.min.js", "jquery.tablesorter.min.js"
             ]:
             shutil.copyfile(
                 data_filename("htmlfiles/" + static),

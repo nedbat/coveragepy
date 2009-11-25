@@ -6,6 +6,10 @@
         <link rel='stylesheet' href='style.css' type='text/css'>
         <script type='text/javascript' src='jquery-1.3.2.min.js'></script>
         <script type='text/javascript' src='jquery.tablesorter.min.js'></script>
+        <script type='text/javascript' src='coverage_html.js'></script>
+        <script type="text/javascript" charset="utf-8">
+            jQuery(document).ready(index_page_ready);
+        </script>        
     </head>
     <body>
 
@@ -22,7 +26,7 @@
                 <thead>
                     
                     <tr class='tablehead' title='Click to sort'>
-                        <th class='name left'>Module</th>
+                        <th class='name left headerSortDown'>Module</th>
                         <th>statements</th>
                         <th>run</th>
                         <th>excluded</th>
@@ -72,19 +76,5 @@
                 </p>
             </div>
         </div>
-
-        <script type="text/javascript" charset="utf-8">
-            jQuery(function() {
-                jQuery("table.index").tablesorter({
-                    headers: {
-                        0: { sorter:'text' },
-                        1: { sorter:'digit' },
-                        2: { sorter:'digit' },
-                        3: { sorter:'digit' },
-                        4: { sorter:'percent' },
-                    }
-                });
-            });
-        </script>        
     </body>
 </html>
