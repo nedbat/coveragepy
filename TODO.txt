@@ -59,6 +59,9 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 
 * Convenience
 
+- support distribute/3k installation, register py.test-entrypoint there
+  as well as py-1.1.1 is 2.4-3.1 compatible.
+- skip registering plugin entrypoints if not running on Jython 
 - Command line modules should also be directories, meaning all the modules in that
     directory.
 - Why can't a morf also be a string, the name of a module?
