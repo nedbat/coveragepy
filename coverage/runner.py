@@ -73,66 +73,66 @@ class CoverageTestWrapper(object):
         
         return
 
-class Options(object):
-    """A namespace class for individual options we'll build parsers from."""
-    
-    action = optparse.Option('',
+options = [
+    optparse.Option('',
                 '--cover-action', action='append', default=None,
                 dest='cover_actions', type="choice", choices=['annotate', 'html', 'report', 'xml'],
-                help="""
-                    annotate    Annotate source files with execution information.
-                    html        Create an HTML report.
-                    report      Report coverage stats on modules.
-                    xml         Create an XML report of coverage results.
-                """.strip())
-    
-    branch = optparse.Option(
+                help="""\
+annotate    Annotate source files with execution information.
+html        Create an HTML report.
+report      Report coverage stats on modules.
+xml         Create an XML report of coverage results.
+""".strip()),
+
+    optparse.Option(
         '--cover-branch', action='store_true',
         help="Measure branch execution. HIGHLY EXPERIMENTAL!"
-        )
-    directory = optparse.Option(
+        ),
+    optparse.Option(
         '--cover-directory', action='store',
         metavar="DIR",
         help="Write the output files to DIR."
-        )
-    ignore_errors = optparse.Option(
+        ),
+    optparse.Option(
         '--cover-ignore-errors', action='store_true',
         help="Ignore errors while reading source files."
-        )
-    pylib = optparse.Option(
+        ),
+    optparse.Option(
         '--cover-pylib', action='store_true',
         help="Measure coverage even inside the Python installed library, "
                 "which isn't done by default."
-        )
-    show_missing = optparse.Option(
+        ),
+    optparse.Option(
         '--cover-show-missing', action='store_true',
         help="Show line numbers of statements in each module that weren't "
                 "executed."
-        )
-    omit = optparse.Option(
+        ),
+    optparse.Option(
         '--cover-omit', action='store',
         metavar="PRE1,PRE2,...",
         default='',
         help="Omit files when their filename path starts with one of these "
                 "prefixes."
-        )
-    output_xml = optparse.Option(
+        ),
+    optparse.Option(
         '--cover-outfile', action='store',
         metavar="OUTFILE",
         help="Write the XML report to this file. Defaults to 'coverage.xml'"
-        )
-    parallel_mode = optparse.Option(
+        ),
+    optparse.Option(
         '--cover-parallel-mode', action='store_true',
         help="Include the machine name and process id in the .coverage "
                 "data file name."
-        )
-    timid = optparse.Option(
+        ),
+    optparse.Option(
         '--cover-timid', action='store_true',
         help="Use a simpler but slower trace method.  Try this if you get "
                 "seemingly impossible results!"
-        )
-    append = optparse.Option(
+        ),
+    optparse.Option(
         '--cover-append', action='store_false',
         help="Append coverage data to .coverage, otherwise it is started "
                 "clean with each run."
         )
+]
+

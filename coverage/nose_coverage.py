@@ -22,14 +22,9 @@ class Coverage(Plugin):
         """
         Add options to command line.
         """
-        
         Plugin.options(self, parser, env)
-        
-        from coverage.runner import Options
-        # Loop the coverage options and append them to the plugin options
-        options = [a for a in dir(Options) if not a.startswith('_')]
-        for option in options:
-            opt = getattr(Options, option)
+        from coverage.runner import options
+        for opt in options:
             parser.add_option(opt)
     
     def configure(self, options, config):
