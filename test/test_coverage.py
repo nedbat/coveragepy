@@ -1704,11 +1704,3 @@ class ProcessTest(CoverageTest):
 if __name__ == '__main__':
     print("Testing under Python version: %s" % sys.version)
     unittest.main()
-
-
-# TODO: split "and" conditions across lines, and detect not running lines.
-#         (Can't be done: trace function doesn't get called for each line
-#         in an expression!)
-# TODO: Generator comprehensions? 
-# TODO: Constant if tests ("if 1:").  Py 2.4 doesn't execute them.
-# TODO: There are no tests for analysis2 directly.
