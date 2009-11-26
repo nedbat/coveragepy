@@ -1,11 +1,11 @@
 """Base test case class for coverage testing."""
 
-import difflib, imp, os, random, re, shlex, shutil, sys, tempfile, textwrap, unittest
+import imp, os, random, shlex, shutil, sys, tempfile, textwrap
 
 import coverage
 from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
 from backtest import run_command
-
+from backunittest import TestCase
 
 class Tee(object):
     """A file-like that writes to all the file-likes it has."""
@@ -23,7 +23,7 @@ class Tee(object):
 # Status returns for the command line.
 OK, ERR = 0, 1
 
-class CoverageTest(unittest.TestCase):
+class CoverageTest(TestCase):
     """A base class for Coverage test cases."""
 
     run_in_temp_dir = True
@@ -218,39 +218,6 @@ class CoverageTest(unittest.TestCase):
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
             self.assertEqual(report, rep)
         
-    def assert_raises_msg(self, excClass, msg, callableObj, *args, **kwargs):
-        """ Just like unittest.TestCase.assertRaises,
-            but checks that the message is right too.
-        """
-        try:
-            callableObj(*args, **kwargs)
-        except excClass:
-            _, exc, _ = sys.exc_info()
-            excMsg = str(exc)
-            if not msg:
-                # No message provided: it passes.
-                return  #pragma: no cover
-            elif excMsg == msg:
-                # Message provided, and we got the right message: it passes.
-                return
-            else:   #pragma: no cover
-                # Message provided, and it didn't match: fail!
-                raise self.failureException(
-                    "Right exception, wrong message: got '%s' expected '%s'" %
-                    (excMsg, msg)
-                    )
-        # No need to catch other exceptions: They'll fail the test all by
-        # themselves!
-        else:   #pragma: no cover
-            if hasattr(excClass,'__name__'):
-                excName = excClass.__name__
-            else:
-                excName = str(excClass)
-            raise self.failureException(
-                "Expected to raise %s, didn't get an exception at all" %
-                excName
-                )
-
     def nice_file(self, *fparts):
         """Canonicalize the filename composed of the parts in `fparts`."""
         fname = os.path.join(*fparts)
@@ -295,30 +262,3 @@ class CoverageTest(unittest.TestCase):
         _, output = run_command(cmd)
         print(output)
         return output
-
-    def assert_equal_sets(self, s1, s2):
-        """Assert that the two arguments are equal as sets."""
-        self.assertEqual(set(s1), set(s2))
-
-    def assert_matches(self, s, regex):
-        """Assert that `s` matches `regex`."""
-        m = re.search(regex, s)
-        if not m:
-            raise self.failureException("%r doesn't match %r" % (s, regex))
-
-    def assert_multiline_equal(self, first, second):
-        """Assert that two multi-line strings are equal.
-        
-        If they aren't, show a nice diff.
-        
-        """
-        # Adapted from Py3.1 unittest.
-        self.assert_(isinstance(first, str), (
-                'First argument is not a string'))
-        self.assert_(isinstance(second, str), (
-                'Second argument is not a string'))
-
-        if first != second:
-            msg = ''.join(difflib.ndiff(first.splitlines(True),
-                                                    second.splitlines(True)))
-            self.fail("Multi-line strings are unequal:\n" + msg)
