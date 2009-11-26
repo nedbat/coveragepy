@@ -204,13 +204,13 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        self.assert_equal_sets(os.listdir("."), ["datatest1.py"])
+        self.assertSameElements(os.listdir("."), ["datatest1.py"])
         cov = coverage.coverage()
         cov.start()
         self.import_module("datatest1")
         cov.stop()
         cov.save()
-        self.assert_equal_sets(os.listdir("."),
+        self.assertSameElements(os.listdir("."),
                             ["datatest1.py", "datatest1.pyc", ".coverage"])
 
     def testDatafileSpecified(self):
@@ -219,13 +219,13 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        self.assert_equal_sets(os.listdir("."), ["datatest2.py"])
+        self.assertSameElements(os.listdir("."), ["datatest2.py"])
         cov = coverage.coverage(data_file="cov.data")
         cov.start()
         self.import_module("datatest2")
         cov.stop()
         cov.save()
-        self.assert_equal_sets(os.listdir("."),
+        self.assertSameElements(os.listdir("."),
                             ["datatest2.py", "datatest2.pyc", "cov.data"])
 
     def testDatafileAndSuffixSpecified(self):
@@ -234,13 +234,13 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        self.assert_equal_sets(os.listdir("."), ["datatest3.py"])
+        self.assertSameElements(os.listdir("."), ["datatest3.py"])
         cov = coverage.coverage(data_file="cov.data", data_suffix=".14")
         cov.start()
         self.import_module("datatest3")
         cov.stop()
         cov.save()
-        self.assert_equal_sets(os.listdir("."),
+        self.assertSameElements(os.listdir("."),
                             ["datatest3.py", "datatest3.pyc", "cov.data.14"])
 
     def testEmptyReporting(self):

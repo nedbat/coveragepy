@@ -1656,7 +1656,7 @@ class ProcessTest(CoverageTest):
         self.run_command("coverage run fleeting.py")
         os.remove("fleeting.py")
         out = self.run_command("coverage html -d htmlcov")
-        self.assert_matches(out, "No source for code: '.*fleeting.py'")
+        self.assertRegexpMatches(out, "No source for code: '.*fleeting.py'")
         self.assert_("Traceback" not in out)
 
         # It happens that the code paths are different for *.py and other
@@ -1668,17 +1668,17 @@ class ProcessTest(CoverageTest):
         self.run_command("coverage run fleeting")
         os.remove("fleeting")
         out = self.run_command("coverage html -d htmlcov")
-        self.assert_matches(out, "No source for code: '.*fleeting'")
+        self.assertRegexpMatches(out, "No source for code: '.*fleeting'")
         self.assert_("Traceback" not in out)
 
     def test_running_missing_file(self):
         out = self.run_command("coverage run xyzzy.py")
-        self.assert_matches(out, "No file to run: .*xyzzy.py")
+        self.assertRegexpMatches(out, "No file to run: .*xyzzy.py")
         self.assert_("Traceback" not in out)
 
     def test_no_data_to_report_on_annotate(self):
         # Reporting with no data produces a nice message and no output dir.
-        self.assert_raises_msg(
+        self.assertRaisesRegexp(
             CoverageException, "No data to report.",
             self.command_line, "annotate -d ann"
             )
@@ -1686,7 +1686,7 @@ class ProcessTest(CoverageTest):
 
     def test_no_data_to_report_on_html(self):
         # Reporting with no data produces a nice message and no output dir.
-        self.assert_raises_msg(
+        self.assertRaisesRegexp(
             CoverageException, "No data to report.",
             self.command_line, "html -d htmlcov"
             )
@@ -1694,7 +1694,7 @@ class ProcessTest(CoverageTest):
 
     def test_no_data_to_report_on_xml(self):
         # Reporting with no data produces a nice message.
-        self.assert_raises_msg(
+        self.assertRaisesRegexp(
             CoverageException, "No data to report.",
             self.command_line, "xml"
             )

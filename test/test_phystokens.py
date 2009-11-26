@@ -38,7 +38,7 @@ class PhysTokensTest(CoverageTest):
         # before comparing.
         source = re.sub("(?m)[ \t]+$", "", source)
         tokenized = re.sub("(?m)[ \t]+$", "", tokenized)
-        self.assert_multiline_equal(source, tokenized)
+        self.assertMultiLineEqual(source, tokenized)
 
     def check_file_tokenization(self, fname):
         """Use the contents of `fname` for `check_tokenization`."""

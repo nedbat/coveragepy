@@ -11,25 +11,68 @@ class TestingTest(TestCase):
 
     run_in_temp_dir = False
 
-    def test_assert_equal_sets(self):
-        self.assert_equal_sets(set(), set())
-        self.assert_equal_sets(set([1,2,3]), set([3,1,2]))
-        self.assertRaises(AssertionError, self.assert_equal_sets,
+    def please_raise(self, exc, msg):
+        """Raise an exception for testing assertRaisesRegexp."""
+        raise exc(msg)
+
+    def please_succeed(self):
+        """A simple successful method for testing assertRaisesRegexp."""
+        return "All is well"
+
+    def test_assert_same_elements(self):
+        self.assertSameElements(set(), set())
+        self.assertSameElements(set([1,2,3]), set([3,1,2]))
+        self.assertRaises(AssertionError, self.assertSameElements,
             set([1,2,3]), set()
             )
-        self.assertRaises(AssertionError, self.assert_equal_sets,
+        self.assertRaises(AssertionError, self.assertSameElements,
             set([1,2,3]), set([4,5,6])
             )
 
-    def test_assert_matches(self):
-        self.assert_matches("hello", "hel*o")
-        self.assert_matches("Oh, hello there!", "hel*o")
-        self.assertRaises(AssertionError, self.assert_matches,
+    def test_assert_regexp_matches(self):
+        self.assertRegexpMatches("hello", "hel*o")
+        self.assertRegexpMatches("Oh, hello there!", "hel*o")
+        self.assertRaises(AssertionError, self.assertRegexpMatches,
             "hello there", "^hello$"
             )
 
     def test_assert_multiline_equal(self):
-        self.assert_multiline_equal("hello", "hello")
-        self.assertRaises(AssertionError, self.assert_matches,
+        self.assertMultiLineEqual("hello", "hello")
+        self.assertRaises(AssertionError, self.assertMultiLineEqual,
             "hello there", "Hello there"
+            )
+        self.assertRaises(AssertionError, self.assertMultiLineEqual,
+            "hello\nthere", "hello\nThere"
+            )
+
+    def test_assert_raises_regexp(self):
+        # Raising the right error with the right message passes.
+        self.assertRaisesRegexp(
+            ZeroDivisionError, "Wow! Zero!",
+            self.please_raise, ZeroDivisionError, "Wow! Zero!"
+            )
+        # Raising the right error with a match passes.
+        self.assertRaisesRegexp(
+            ZeroDivisionError, "Zero",
+            self.please_raise, ZeroDivisionError, "Wow! Zero!"
+            )
+        # Raising the right error with a mismatch fails.
+        self.assertRaises(AssertionError,
+            self.assertRaisesRegexp, ZeroDivisionError, "XYZ",
+            self.please_raise, ZeroDivisionError, "Wow! Zero!"
+            )
+        # Raising the right error with a mismatch fails.
+        self.assertRaises(AssertionError,
+            self.assertRaisesRegexp, ZeroDivisionError, "XYZ",
+            self.please_raise, ZeroDivisionError, "Wow! Zero!"
+            )
+        # Raising the wrong error raises the error itself.
+        self.assertRaises(ZeroDivisionError,
+            self.assertRaisesRegexp, IOError, "Wow! Zero!",
+            self.please_raise, ZeroDivisionError, "Wow! Zero!"
+            )
+        # Raising no error fails.
+        self.assertRaises(AssertionError,
+            self.assertRaisesRegexp, ZeroDivisionError, "XYZ",
+            self.please_succeed
             )

@@ -32,7 +32,7 @@ class DataTest(CoverageTest):
         
     def assert_executed_files(self, covdata, execed):
         """Check that `covdata`'s executed files are `execed`."""
-        self.assert_equal_sets(covdata.executed_files(), execed)
+        self.assertSameElements(covdata.executed_files(), execed)
     
     def test_reading_empty(self):
         covdata = CoverageData()
@@ -92,9 +92,9 @@ class DataTest(CoverageTest):
             fdata.close()
         
         lines = data['lines']
-        self.assert_equal_sets(lines.keys(), EXECED_FILES_1)
-        self.assert_equal_sets(lines['a.py'], A_PY_LINES_1)
-        self.assert_equal_sets(lines['b.py'], B_PY_LINES_1)
+        self.assertSameElements(lines.keys(), EXECED_FILES_1)
+        self.assertSameElements(lines['a.py'], A_PY_LINES_1)
+        self.assertSameElements(lines['b.py'], B_PY_LINES_1)
         # If not measuring branches, there's no arcs entry.
         self.assertEqual(data.get('arcs', 'not there'), 'not there')
 
@@ -110,7 +110,7 @@ class DataTest(CoverageTest):
         finally:
             fdata.close()
         
-        self.assert_equal_sets(data['lines'].keys(), [])
+        self.assertSameElements(data['lines'].keys(), [])
         arcs = data['arcs']
-        self.assert_equal_sets(arcs['x.py'], X_PY_ARCS_3)
-        self.assert_equal_sets(arcs['y.py'], Y_PY_ARCS_3)
+        self.assertSameElements(arcs['x.py'], X_PY_ARCS_3)
+        self.assertSameElements(arcs['y.py'], Y_PY_ARCS_3)

@@ -3,7 +3,7 @@
 import imp, os, random, shlex, shutil, sys, tempfile, textwrap
 
 import coverage
-from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
+from coverage.backward import sorted, StringIO      # pylint: disable-msg=W0622
 from backtest import run_command
 from backunittest import TestCase
 
