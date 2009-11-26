@@ -1,6 +1,6 @@
 """Base test case class for coverage testing."""
 
-import difflib, imp, os, random, re, shutil, sys, tempfile, textwrap, unittest
+import difflib, imp, os, random, re, shlex, shutil, sys, tempfile, textwrap, unittest
 
 import coverage
 from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
@@ -19,6 +19,9 @@ class Tee(object):
         for f in self.files:
             f.write(data)
 
+
+# Status returns for the command line.
+OK, ERR = 0, 1
 
 class CoverageTest(unittest.TestCase):
     """A base class for Coverage test cases."""
@@ -253,8 +256,30 @@ class CoverageTest(unittest.TestCase):
         fname = os.path.join(*fparts)
         return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
     
+    def command_line(self, args, ret=OK):
+        """Run `args` through the command line.
+        
+        Use this when you want to run the full coverage machinery, but in the
+        current process.  Exceptions may be thrown from deep in the code.
+        Asserts that `ret` is returned by `CoverageScript.command_line`.
+        
+        Compare with `run_command`.
+        
+        Returns None.
+        
+        """
+        ret_actual = coverage.CoverageScript().command_line(shlex.split(args))
+        self.assertEqual(ret_actual, ret)
+        
     def run_command(self, cmd):
-        """ Run the command-line `cmd`, print its output.
+        """ Run the command-line `cmd` in a subprocess, and print its output.
+        
+        Use this when you need to test the process behavior of coverage.
+        
+        Compare with `command_line`.
+        
+        Returns the process' stdout text.
+        
         """
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...

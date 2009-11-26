@@ -30,7 +30,6 @@ class XmlReporter(Reporter):
         """
         # Initial setup.
         outfile = outfile or sys.stdout
-        self.find_code_units(morfs, omit_prefixes)
 
         # Create the DOM that will store the data.
         impl = xml.dom.minidom.getDOMImplementation()
@@ -39,8 +38,9 @@ class XmlReporter(Reporter):
             "http://cobertura.sourceforge.net/xml/coverage-03.dtd"
             )
         self.xml_out = impl.createDocument(None, "coverage", docType)
+        
+        # Write header stuff.
         xcoverage = self.xml_out.documentElement
-
         xcoverage.setAttribute("version", __version__)
         xcoverage.setAttribute("timestamp", str(int(time.time()*1000)))
         xcoverage.appendChild(self.xml_out.createComment(
@@ -48,8 +48,9 @@ class XmlReporter(Reporter):
             ))
         xpackages = self.xml_out.createElement("packages")
         xcoverage.appendChild(xpackages)
-        self.packages = {}
 
+        # Call xml_file for each file in the data.
+        self.packages = {}
         self.report_files(self.xml_file, morfs, omit_prefixes=omit_prefixes)
 
         lnum_tot, lhits_tot = 0, 0

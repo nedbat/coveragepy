@@ -5,10 +5,8 @@ import mock
 import coverage
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from coveragetest import CoverageTest, OK, ERR
 
-
-OK, ERR = 0, 1
 
 class CmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
@@ -19,15 +17,6 @@ class CmdLineTest(CoverageTest):
             .coverage(cover_pylib=None, data_suffix=False, timid=None, branch=None)
             .load()\n"""
 
-    def command_line(self, args, ret=OK):
-        """Run `args` through the command line.
-        
-        Checks that `ret` is returned.
-        
-        """
-        ret_actual = coverage.CoverageScript().command_line(shlex.split(args))
-        self.assertEqual(ret_actual, ret)
-        
     def model_object(self):
         """Return a Mock suitable for use in CoverageScript."""
         mk = mock.Mock()

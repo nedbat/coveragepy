@@ -7,6 +7,8 @@ import os, sys, unittest
 import coverage
 coverage.use_cache(0)
 
+from coverage.misc import CoverageException
+
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
@@ -1673,6 +1675,30 @@ class ProcessTest(CoverageTest):
         out = self.run_command("coverage run xyzzy.py")
         self.assert_matches(out, "No file to run: .*xyzzy.py")
         self.assert_("Traceback" not in out)
+
+    def test_no_data_to_report_on_annotate(self):
+        # Reporting with no data produces a nice message and no output dir.
+        self.assert_raises_msg(
+            CoverageException, "No data to report.",
+            self.command_line, "annotate -d ann"
+            )
+        self.assertFalse(os.path.exists("ann"))
+
+    def test_no_data_to_report_on_html(self):
+        # Reporting with no data produces a nice message and no output dir.
+        self.assert_raises_msg(
+            CoverageException, "No data to report.",
+            self.command_line, "html -d htmlcov"
+            )
+        self.assertFalse(os.path.exists("htmlcov"))
+
+    def test_no_data_to_report_on_xml(self):
+        # Reporting with no data produces a nice message.
+        self.assert_raises_msg(
+            CoverageException, "No data to report.",
+            self.command_line, "xml"
+            )
+        # Currently, this leaves an empty coverage.xml file... :(
 
 
 if __name__ == '__main__':

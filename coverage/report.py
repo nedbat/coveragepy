@@ -2,7 +2,7 @@
 
 import os
 from coverage.codeunit import code_unit_factory
-from coverage.misc import NoSource
+from coverage.misc import CoverageException, NoSource
 
 class Reporter(object):
     """A base class for all reporters."""
@@ -44,6 +44,9 @@ class Reporter(object):
         
         """
         self.find_code_units(morfs, omit_prefixes)
+
+        if not self.code_units:
+            raise CoverageException("No data to report.")
 
         self.directory = directory
         if self.directory and not os.path.exists(self.directory):

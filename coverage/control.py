@@ -304,8 +304,12 @@ class coverage(object):
         """
         if outfile:
             outfile = open(outfile, "w")
-        reporter = XmlReporter(self, ignore_errors)
-        reporter.report(morfs, omit_prefixes=omit_prefixes, outfile=outfile)
+        try:
+            reporter = XmlReporter(self, ignore_errors)
+            reporter.report(
+                morfs, omit_prefixes=omit_prefixes, outfile=outfile)
+        finally:
+            outfile.close()
 
     def sysinfo(self):
         """Return a list of key,value pairs showing internal information."""
