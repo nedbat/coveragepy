@@ -30,8 +30,7 @@ class coverage(object):
 
     def __init__(self, data_file=None, data_suffix=False, cover_pylib=False,
                 auto_data=False, timid=False, branch=False):
-        """Create a new coverage measurement context.
-        
+        """        
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended to `data_file` to create the
         final file name.  If `data_suffix` is simply True, then a suffix is
@@ -49,7 +48,8 @@ class coverage(object):
         used.  This is important for some environments where manipulation of
         tracing functions breaks the faster trace function.
         
-        If `branch` is true, then measure branch execution.
+        If `branch` is true, then branch coverage will be measured in addition
+        to the usual statement coverage.
 
         """
         from coverage import __version__

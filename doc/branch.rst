@@ -18,20 +18,18 @@ For example::
         
     my_partial_fn(1)
     
-In this code, the if on line 2 could branch to either line 3 or line 4.
-Statement coverage would show all lines of the function as executed.  But the
-if is always true, so line 2 never jumps to line 4.  Even though line 4 is
-executed, coverage.py knows that it was never because of a branch from line
-2.
+In this code, line 2 is an ``if`` statement which can go next to either line 3
+or line 4. Statement coverage would show all lines of the function as executed.
+But the if was never evaluated as false, so line 2 never jumps to line 4.
 
-Branch coverage would flag this code as not fully covered because of the
-missing jump from line 2 to line 4.
+Branch coverage will flag this code as not fully covered because of the missing
+jump from line 2 to line 4.
 
 
 How to measure branch coverage
 ------------------------------
 
-To measure branch coverage, run coverage.py with the --branch flag::
+To measure branch coverage, run coverage.py with the ``--branch`` flag::
 
     coverage run --branch myprog.py
     
@@ -41,10 +39,13 @@ covered total for each file.  The coverage percentage for a file is the
 actual executions divided by the execution opportunities.  Each line in the
 file is an execution opportunity, as is each branch destination.
 
-Currently, only HTML reports give information about which lines had missing
-branches.  Lines that were missing some branches are shown in yellow, with an
-annotation at the far right showing branch destination line numbers that were
-not exercised.
+The HTML report gives information about which lines had missing branches. Lines
+that were missing some branches are shown in yellow, with an annotation at the
+far right showing branch destination line numbers that were not exercised.
+
+The XML report produced by "coverage xml" also includes branch information,
+including separate statement and branch coverage percentages.  Each line is
+annotated with 
 
 
 How it works
@@ -59,11 +60,15 @@ The idea of tracking how lines follow each other was from C. Titus Brown.
 Thanks, Titus!
 
 
+Excluding code
+--------------
+
+If you have excluded 
 Problems
 --------
 
 Some Python constructs are difficult to measure properly.  For example, an
-infinite loop will be marked as partially executed::
+unconditional loop will be marked as partially executed::
 
     while True:                         # line 1
         if some_condition():            #      2
@@ -73,17 +78,4 @@ infinite loop will be marked as partially executed::
     keep_working()                      #      6
 
 Because the loop never terminates naturally (jumping from line 1 to 6),
-coverage.py thinks the branch is partially executed. 
-
-Currently, if you exclude code from coverage testing, a branch into that code
-will still be considered executable, and may result in the branch being
-flagged.
-
-
-Other work
-----------
-
-One interesting side effect of tracking line transitions: we know where some
-exceptions happened because a transition happens that wasn't predicted by the
-static analysis.  Currently, I'm not doing anything with this information.
-Any ideas?
+coverage.py considers the branch partially executed. 

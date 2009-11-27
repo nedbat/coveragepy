@@ -8,6 +8,7 @@ coverage.py
 :history: 20090707T205200, changes for 3.0.1
 :history: 20090913T084400, new command line syntax
 :history: 20091004T211900, version 3.1
+:history: 20091127T155100, version 3.2
 
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
@@ -18,8 +19,8 @@ Coverage measurement is typically used to gauge the effectiveness of tests. It
 can show which parts of your product code are being exercised by tests, and
 which are not.
 
-The latest version is 3.1, released 4 October 2009.  It is supported on Python
-2.3 through 3.1.
+The latest version is 3.2, released ?? November 2009.
+It is supported on Python 2.3 through 3.1.
 
 
 Quick start
@@ -27,10 +28,11 @@ Quick start
 
 Getting started is easy:
 
-#.  Install coverage.py from the
-    `coverage page on the cheeseshop <http://pypi.python.org/pypi/coverage>`_,
+#.  Install coverage.py from the `coverage page on the Python Package Index`__,
     or by using "easy_install coverage".  You may need to install the
     python-dev support files, for example with "apt-get install python-dev".
+
+__ http://pypi.python.org/pypi/coverage
 
 #.  Use ``coverage run`` to execute your program and gather data:
 
@@ -59,7 +61,9 @@ Getting started is easy:
         $ coverage html -d htmlcov
 
     Then visit htmlcov/index.html in your browser, to see a
-    `report like this </code/coverage/sample_html/index.html>`_.
+    `report like this`__.
+
+__ /code/coverage/sample_html/index.html
 
 
 Using coverage.py
@@ -71,20 +75,24 @@ If you need more control over how your project is measured, you can use the
 :ref:`API <api>`.
 
 Some test runners provide coverage integration to make it easy to use coverage
-while running tests.  For example, `nose <http://somethingaboutorange.com/mrl/projects/nose>`_
-has a `cover plug-in <http://somethingaboutorange.com/mrl/projects/nose/0.11.1/plugins/cover.html>`_.
+while running tests.  For example, `nose`_ has a `cover plug-in`_.
 
 You can fine-tune coverage's view of your code by directing it to ignore parts
 that you know aren't interesting.  See :ref:`Excluding Code <excluding>` for
 details.
 
+.. _nose:           http://somethingaboutorange.com/mrl/projects/nose
+.. _cover plug-in:  http://somethingaboutorange.com/mrl/projects/nose/0.11.1/plugins/cover.html
+
 
 History
 -------
 
-Coverage.py was originally written by `Gareth Rees <http://garethrees.org/>`_.
-Ned Batchelder has maintained and extended it since 2004.
+Coverage.py was originally written by `Gareth Rees`_.
+Since 2004, `Ned Batchelder`_ has maintained and extended it.
 
+.. _Gareth Rees:    http://garethrees.org/
+.. _Ned Batchelder: http://nedbatchelder.com
 
 
 More information
@@ -96,6 +104,7 @@ More information
     cmd
     api
     excluding
+    branch
     faq
     changes
 

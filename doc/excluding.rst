@@ -52,7 +52,7 @@ For example, you might decide that __repr__ functions are usually only used
 in debugging code, and are uninteresting to test themselves.  You could exclude
 all of them by adding a regex to the exclusion list::
 
-    coverage.exclude("def __repr__")
+    coverage.exclude('def __repr__')
     
 Here's a list of exclusions I've used::
 
