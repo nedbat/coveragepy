@@ -429,9 +429,12 @@ class CoverageScript(object):
                 elif info == 'data':
                     print("-- data ---------------------------------------")
                     self.coverage.load()
+                    print("path: %s" % self.coverage.data.filename)
+                    print("has_arcs: %r" % self.coverage.data.has_arcs())
                     summary = self.coverage.data.summary(fullpath=True)
                     if summary:
                         filenames = sorted(summary.keys())
+                        print("\n%d files:" % len(filenames))
                         for f in filenames:
                             print("%s: %d lines" % (f, summary[f]))
                     else:
