@@ -20,6 +20,7 @@ class XmlReporter(Reporter):
     
         self.packages = None
         self.xml_out = None
+        self.arcs = coverage.data.has_arcs()
 
     def report(self, morfs, omit_prefixes=None, outfile=None):
         """Generate a Cobertura-compatible XML report for `morfs`.
@@ -102,27 +103,35 @@ class XmlReporter(Reporter):
         xclass.setAttribute("filename", cu.name + ext)
         xclass.setAttribute("complexity", "0.0")
 
+        branch_lines = analysis.branch_lines()
+
         # For each statement, create an XML 'line' element.
         for line in analysis.statements:
-            l = self.xml_out.createElement("line")
-            l.setAttribute("number", str(line))
+            xline = self.xml_out.createElement("line")
+            xline.setAttribute("number", str(line))
 
-            # Q: can we get info about the number of times
-            # a statement is executed?  If so, that should be
-            # recorded here.
-            l.setAttribute("hits", str(int(not line in analysis.missing)))
+            # Q: can we get info about the number of times a statement is
+            # executed?  If so, that should be recorded here.
+            xline.setAttribute("hits", str(int(not line in analysis.missing)))
 
-            # Q: can we get info about whether this statement
-            # is a branch?  If so, that data should be
-            # used here.
-            #l.setAttribute("branch", "false")
-            xlines.appendChild(l)
+            if self.arcs:
+                if line in branch_lines:
+                    xline.setAttribute("branch", "true")
+            xlines.appendChild(xline)
 
         class_lines = 1.0 * len(analysis.statements)
         class_hits = class_lines - len(analysis.missing)
-        class_branches = 0.0
-        class_branch_hits = 0.0
 
+        if self.arcs:
+            # We assume here that every branch line has 2 exits, which is usually
+            # true.  In theory, we could have a branch line with more exits..
+            class_branches = 2.0 * len(branch_lines)
+            missing_branches = sum([len(b) for b in analysis.missing_branch_arcs().values()])
+            class_branch_hits = class_branches - missing_branches
+        else:
+            class_branches = 0.0
+            class_branch_hits = 0.0
+            
         # Finalize the statistics that are collected in the XML DOM.
         line_rate = rate(class_hits, class_lines)
         branch_rate = rate(class_branch_hits, class_branches)

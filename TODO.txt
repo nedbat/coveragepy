@@ -13,7 +13,7 @@ Coverage TODO
     (see top of test_cogapp for examples)
 + Maybe turning off yellow lines should make those lines green?
 + A missing branch to leave the function shows an annotation of -1. Now "exit".
-- XML report needs to get branch information.
++ XML report needs to get branch information.
 - Add branch info to "coverage debug data"
 
 

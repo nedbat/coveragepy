@@ -5,6 +5,10 @@ Change history for Coverage.py
 Version 3.2b4
 -------------
 
+- Branch coverage improvements:
+
+  - The XML report now includes branch information.
+
 - Click-to-sort HTML report columns are now persisted in a cookie.  Viewing
   a report will sort it first the way you last had a coverage report sorted.
   Thanks, `Chris Adams`_.
