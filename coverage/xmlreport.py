@@ -123,10 +123,12 @@ class XmlReporter(Reporter):
         class_hits = class_lines - len(analysis.missing)
 
         if self.arcs:
-            # We assume here that every branch line has 2 exits, which is usually
-            # true.  In theory, we could have a branch line with more exits..
+            # We assume here that every branch line has 2 exits, which is
+            # usually true.  In theory, though, we could have a branch line
+            # with more exits..
             class_branches = 2.0 * len(branch_lines)
-            missing_branches = sum([len(b) for b in analysis.missing_branch_arcs().values()])
+            missed_branch_targets = analysis.missing_branch_arcs().values()
+            missing_branches = sum([len(b) for b in missed_branch_targets])
             class_branch_hits = class_branches - missing_branches
         else:
             class_branches = 0.0
