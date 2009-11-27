@@ -1,0 +1,39 @@
+* Release checklist
+
+- Test on:
+    - Windows
+    - Ubuntu
+    - Mac
+    - Pythons 2.3, 2.4, 2.5, 2.6, 3.1
+- Version number in coverage/__init__.py
+    - 3.1a1, 3.1b1, 3.1c1, 3.1
+- Update CHANGES, including release date.
+- Update docstring in setup.py, including "New in x.y:"
+- Update docs
+    - Version, date, and changes in doc/changes.rst
+    - Version and date in doc/index.rst
+    - Version and copyright date in doc/conf.py
+    - Generate new sample_html to get the latest, incl footer version number:
+        cd C:\ned\cog\trunk
+        rmdir/s/q htmlcov
+        coverage run cogapp\test_cogapp.py CogTestsInMemory
+        coverage html -i -d htmlcov
+        copy htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html
+    - Build and publish docs:
+        $ make px publish
+- Kits:
+    - source .tgz and windows .exe for each Python
+        - $ allkits.cmd
+- Update PyPi:
+    - $ make pypi
+    - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage :
+        - Upload kits
+            - Label the source kit with "Use this for either Python 2.x or 3.x"
+        - show/hide the proper versions.
+- Tag the tree
+    - hg tag -m "Coverage 3.0.1" coverage-3.0.1
+- Update nedbatchelder.com
+    - Blog post?
+- Update bitbucket:
+    - Issue tracker should get new version number in picker.
+- Announce on TIP.
