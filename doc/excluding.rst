@@ -39,6 +39,24 @@ coverage data as usual. When producing reports though, coverage excludes it from
 the list of missing code.
 
 
+Branch coverage
+---------------
+
+When measuring :ref:`branch coverage <branch>`, a condtional will not be
+counted as a branch if one of its choices is excluded::
+
+    def only_one_choice(x):
+        if x:
+            blah1()
+            blah2()
+        else:       # pragma: no cover
+            # x is always true.
+            blah3()
+
+Because the ``else`` clause is excluded, the ``if`` only has one possible
+next line, so it isn't considered a branch at all.
+
+
 Advanced exclusion
 ------------------
 
@@ -63,4 +81,5 @@ Here's a list of exclusions I've used::
     coverage.exclude('raise NotImplementedError')
     coverage.exclude('if 0:')
     coverage.exclude('if __name__ == .__main__.:')
+
 

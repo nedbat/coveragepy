@@ -8,6 +8,7 @@ Coverage command line usage
 :history: 20090613T164000, final touches for 3.0
 :history: 20090913T084400, new command line syntax
 :history: 20091004T170700, changes for 3.1
+:history: 20091127T200700, changes for 3.2
 
 .. highlight:: console
 
@@ -23,11 +24,11 @@ which determine the action performed:
 
 * **xml** -- Produce an XML report with coverage results.
 
+* **annotate** -- Annotate source files with coverage results.
+
 * **erase** -- Erase previously collected coverage data.
 
 * **combine** -- Combine together a number of data files.
-
-* **annotate** -- Annotate source files with coverage results.
 
 * **debug** -- Get diagnostic information.
 
@@ -192,7 +193,7 @@ XML reporting
 -------------
 
 The **xml** command writes coverage data to a "coverage.xml" file in a format
-compatible with `Cobertura`_.  This command is still experimental.
+compatible with `Cobertura`_.
 
 .. _Cobertura: http://cobertura.sourceforge.net
 

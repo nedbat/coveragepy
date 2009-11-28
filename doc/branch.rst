@@ -66,7 +66,21 @@ Thanks, Titus!
 Excluding code
 --------------
 
-If you have excluded 
+If you have :ref:`excluded code <excluding>`, a condtional will not be
+counted as a branch if one of its choices is excluded::
+
+    def only_one_choice(x):
+        if x:
+            blah1()
+            blah2()
+        else:       # pragma: no cover
+            # x is always true.
+            blah3()
+
+Because the ``else`` clause is excluded, the ``if`` only has one possible
+next line, so it isn't considered a branch at all.
+
+
 Problems
 --------
 

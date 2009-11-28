@@ -1,17 +1,54 @@
 .. _change:
 
+====================================
+Major change history for coverage.py
+====================================
+
 :history: 20090524T134300, brand new docs.
 :history: 20090613T164000, final touches for 3.0
 :history: 20090706T205000, changes for 3.0.1
 :history: 20091004T170700, changes for 3.1
+:history: 20091128T072200, changes for 3.2
 
-------------------------------------
-Major change history for coverage.py
-------------------------------------
 
-These are the major changes for coverage.py.  For a more complete change history,
-see the `CHANGES.txt <http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt>`_
-file.
+These are the major changes for coverage.py.  For a more complete change
+history, see the `CHANGES.txt`_ file.
+
+.. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+
+
+Version 3.2
+-----------
+
+- Branch coverage: coverage.py can tell you which branches didn't have both
+  choices executed, even where the choice doesn't affect which lines were
+  executed.  See :ref:`Branch Coverage <branch>` for more details.
+
+- The table of contents in the HTML report is now sortable: click the headers
+  on any column.  The sorting is persisted so that subsequent reports are
+  sorted as you wish.  Thanks, `Chris Adams`_.
+
+- XML reporting has file paths that let Cobertura find the source code, fixing
+  `issue 21`_.
+
+- The --omit option now works much better than before, fixing `issue 14` and
+  `issue 33`_.  Thanks, Danek Duvall.
+
+- The tracer code has changed, it's a few percent faster.
+
+- Some exceptions reported by the command line interface have been cleaned up
+  so that tracebacks inside coverage.py aren't shown.  Fixes `issue 23`_.
+  
+- Fixed some problems syntax coloring sources with line continuations and
+  source with tabs: `issue 30`_ and `issue 31`_.
+
+.. _Chris Adams: http://improbable.org/chris/
+.. _issue 21: http://bitbucket.org/ned/coveragepy/issue/21
+.. _issue 23: http://bitbucket.org/ned/coveragepy/issue/23
+.. _issue 14: http://bitbucket.org/ned/coveragepy/issue/14
+.. _issue 30: http://bitbucket.org/ned/coveragepy/issue/30
+.. _issue 31: http://bitbucket.org/ned/coveragepy/issue/31
+.. _issue 33: http://bitbucket.org/ned/coveragepy/issue/33
 
 
 Version 3.1, 4 October 2009
@@ -36,6 +73,11 @@ Version 3.1, 4 October 2009
 - Added a "coverage debug" command for getting diagnostic information about the
   coverage.py installation.
 
+- Source code can now be read from eggs.  Thanks, `Ross Lawley`_.  Fixes
+  `issue 25`_.
+
+.. _Ross Lawley: http://agileweb.org/
+.. _issue 25: http://bitbucket.org/ned/coveragepy/issue/25
 .. _issue 12: http://bitbucket.org/ned/coveragepy/issue/12
 .. _issue 13: http://bitbucket.org/ned/coveragepy/issue/13
 
@@ -60,47 +102,14 @@ Version 3.0.1, 7 July 2009
   example.
 
 
-Version 3.0b3, 16 May 2009
---------------------------
-
-- Added parameters to coverage.__init__ for options that had been set on the
-  coverage object itself.
-  
-- Added clear_exclude() and get_exclude_list() methods for programmatic
-  manipulation of the exclude regexes.
-
-- Added coverage.load() to read previously-saved data from the data file.
-
-- When using the object api (that is, constructing a coverage() object), data
-  is no longer saved automatically on process exit.  You can re-enable it with
-  the auto_data=True parameter on the coverage() constructor. The module-level
-  interface still uses automatic saving.
-
-
-Version 3.0b2, 30 April 2009
-----------------------------
-
-HTML reporting, and continued refactoring.
-
-- HTML reports and annotation of source files: use the new -b (browser) switch.
-  Thanks to George Song for code, inspiration and guidance.
-
-- Code in the Python standard library is not measured by default.  If you need
-  to measure standard library code, use the -L command-line switch during
-  execution, or the cover_pylib=True argument to the coverage() constructor.
-
-- coverage.annotate_file is no longer available.
-
-- Removed the undocumented cache_file argument to coverage.usecache().
-
-
-Version 3.0b1, 7 March 2009
----------------------------
-
-Major overhaul.
+Version 3.0, 13 June 2009
+-------------------------
 
 - Coverage is now a package rather than a module.  Functionality has been split
   into classes.
+
+- HTML reports and annotation of source files: use the new -b (browser) switch.
+  Thanks to George Song for code, inspiration and guidance.
 
 - The trace function is implemented in C for speed.  Coverage runs are now
   much faster.  Thanks to David Christian for productive micro-sprints and
@@ -108,3 +117,25 @@ Major overhaul.
 
 - The minimum supported Python version is 2.3.
  
+- When using the object api (that is, constructing a coverage() object), data
+  is no longer saved automatically on process exit.  You can re-enable it with
+  the auto_data=True parameter on the coverage() constructor. The module-level
+  interface still uses automatic saving.
+
+- Code in the Python standard library is not measured by default.  If you need
+  to measure standard library code, use the -L command-line switch during
+  execution, or the cover_pylib=True argument to the coverage() constructor.
+
+- API changes:
+
+  - Added parameters to coverage.__init__ for options that had been set on
+    the coverage object itself.
+  
+  - Added clear_exclude() and get_exclude_list() methods for programmatic
+    manipulation of the exclude regexes.
+    
+  - Added coverage.load() to read previously-saved data from the data file.
+    
+  - coverage.annotate_file is no longer available.
+    
+  - Removed the undocumented cache_file argument to coverage.usecache().
