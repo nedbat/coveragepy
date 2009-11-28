@@ -6,6 +6,7 @@ from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class          # pylint: disable-msg=W0622
 from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
+from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.files import FileLocator
 from coverage.html import HtmlReporter
@@ -28,8 +29,8 @@ class coverage(object):
 
     """
 
-    def __init__(self, data_file=None, data_suffix=False, cover_pylib=False,
-                auto_data=False, timid=False, branch=False):
+    def __init__(self, data_file=None, data_suffix=False, cover_pylib=None,
+                auto_data=False, timid=None, branch=None):
         """        
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended to `data_file` to create the
@@ -54,20 +55,19 @@ class coverage(object):
         """
         from coverage import __version__
         
-        self.cover_pylib = cover_pylib
+        self.config = CoverageConfig()
+        self.config.from_environment('COVERAGE_OPTIONS')
+        self.config.from_args(cover_pylib=cover_pylib, timid=timid, branch=branch)
+        
         self.auto_data = auto_data
         
         self.exclude_re = ""
-        self.exclude_list = []
-        
+        self._compile_exclude()
+
         self.file_locator = FileLocator()
         
-        # Timidity: for nose users, read an environment variable.  This is a
-        # cheap hack, since the rest of the command line arguments aren't
-        # recognized, but it solves some users' problems.
-        timid = timid or ('--timid' in os.environ.get('COVERAGE_OPTIONS', ''))
         self.collector = Collector(
-            self._should_trace, timid=timid, branch=branch
+            self._should_trace, timid=self.config.timid, branch=self.config.branch
             )
 
         # Create the data file.
@@ -83,11 +83,8 @@ class coverage(object):
             collector="coverage v%s" % __version__
             )
 
-        # The default exclude pattern.
-        self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')
-
         # The prefix for files considered "installed with the interpreter".
-        if not self.cover_pylib:
+        if not self.config.cover_pylib:
             os_file = self.file_locator.canonical_filename(os.__file__)
             self.pylib_prefix = os.path.split(os_file)[0]
 
@@ -123,7 +120,7 @@ class coverage(object):
 
         # If we aren't supposed to trace installed code, then check if this is
         # near the Python standard library and skip it if so.
-        if not self.cover_pylib:
+        if not self.config.cover_pylib:
             if canonical.startswith(self.pylib_prefix):
                 return False
 
@@ -182,7 +179,7 @@ class coverage(object):
 
     def clear_exclude(self):
         """Clear the exclude list."""
-        self.exclude_list = []
+        self.config.exclude_list = []
         self.exclude_re = ""
 
     def exclude(self, regex):
@@ -194,12 +191,16 @@ class coverage(object):
         Matching any of the regexes excludes a source line.
         
         """
-        self.exclude_list.append(regex)
-        self.exclude_re = "(" + ")|(".join(self.exclude_list) + ")"
+        self.config.exclude_list.append(regex)
+        self._compile_exclude()
+        
+    def _compile_exclude(self):
+        """Build the internal usable form of the exclude list."""
+        self.exclude_re = "(" + ")|(".join(self.config.exclude_list) + ")"
 
     def get_exclude_list(self):
         """Return the list of excluded regex patterns."""
-        return self.exclude_list
+        return self.config.exclude_list
 
     def save(self):
         """Save the collected coverage data to the data file."""

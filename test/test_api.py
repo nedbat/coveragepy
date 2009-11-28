@@ -161,7 +161,7 @@ class ApiTest(CoverageTest):
 
         # Measure without the stdlib.
         cov1 = coverage.coverage()
-        self.assertEqual(cov1.cover_pylib, False)
+        self.assertEqual(cov1.config.cover_pylib, False)
         cov1.start()
         self.import_module("mymain")
         cov1.stop()

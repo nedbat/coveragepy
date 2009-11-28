@@ -5,7 +5,7 @@ http://nedbatchelder.com/code/coverage
 
 """
 
-__version__ = "3.2b4"    # see detailed history in CHANGES.txt
+__version__ = "3.3-config"    # see detailed history in CHANGES.txt
 
 __url__ = "http://nedbatchelder.com/code/coverage"
 
