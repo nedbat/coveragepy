@@ -81,5 +81,3 @@ Here's a list of exclusions I've used::
     coverage.exclude('raise NotImplementedError')
     coverage.exclude('if 0:')
     coverage.exclude('if __name__ == .__main__.:')
-
-

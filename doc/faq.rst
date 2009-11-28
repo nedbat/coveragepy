@@ -56,19 +56,25 @@ Yes, Python 3.1 is fully supported.
 
 **Q: Isn't coverage testing the best thing ever?**
 
-It's good, but `it isn't perfect
-<http://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html>`_.
+It's good, but `it isn't perfect`__.
+
+__ http://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
 
 
 Getting more help
 -----------------
 
-You can discuss coverage or get help using it on the `Testing In Python
-<http://lists.idyll.org/listinfo/testing-in-python>`_ mailing list.
+You can discuss coverage.py or get help using it on the `Testing In Python`_
+mailing list.
 
-Bug reports are gladly accepted at the `bitbucket issue tracker
-<http://bitbucket.org/ned/coveragepy/issues/>`_.  Bitbucket also hosts the
-`code repository <http://bitbucket.org/ned/coveragepy>`_.
+.. _Testing In Python: http://lists.idyll.org/listinfo/testing-in-python
 
-Lastly, `I can be reached <http://nedbatchelder.com/site/aboutned.html>`_ in a
-number of ways.
+Bug reports are gladly accepted at the `bitbucket issue tracker`_.
+Bitbucket also hosts the `code repository`_.
+
+.. _bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
+.. _code repository: http://bitbucket.org/ned/coveragepy
+
+Lastly, `I can be reached`__ in a number of ways.
+
+__  http://nedbatchelder.com/site/aboutned.html

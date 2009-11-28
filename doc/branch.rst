@@ -36,17 +36,17 @@ To measure branch coverage, run coverage.py with the ``--branch`` flag::
 
     coverage run --branch myprog.py
     
-When you report on the results with "coverage report" or "coverage html", the
-percentage of branch possibilities taken will be included in the percentage
-covered total for each file.  The coverage percentage for a file is the
-actual executions divided by the execution opportunities.  Each line in the
-file is an execution opportunity, as is each branch destination.
+When you report on the results with ``coverage report`` or ``coverage html``,
+the percentage of branch possibilities taken will be included in the percentage
+covered total for each file.  The coverage percentage for a file is the actual
+executions divided by the execution opportunities.  Each line in the file is an
+execution opportunity, as is each branch destination.
 
 The HTML report gives information about which lines had missing branches. Lines
 that were missing some branches are shown in yellow, with an annotation at the
 far right showing branch destination line numbers that were not exercised.
 
-The XML report produced by "coverage xml" also includes branch information,
+The XML report produced by ``coverage xml`` also includes branch information,
 including separate statement and branch coverage percentages.  Each line is
 annotated with 
 
@@ -59,8 +59,10 @@ and destination for each transition from one line to another.  Static analysis
 of the compiled bytecode provides a list of possible transitions.  Comparing
 the measured to the possible indicates missing branches.
 
-The idea of tracking how lines follow each other was from C. Titus Brown.
+The idea of tracking how lines follow each other was from `Titus Brown`__.
 Thanks, Titus!
+
+__ http://ivory.idyll.org/blog
 
 
 Excluding code

@@ -12,7 +12,7 @@ Major change history for coverage.py
 
 
 These are the major changes for coverage.py.  For a more complete change
-history, see the `CHANGES.txt`_ file.
+history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
@@ -31,7 +31,7 @@ Version 3.2
 - XML reporting has file paths that let Cobertura find the source code, fixing
   `issue 21`_.
 
-- The --omit option now works much better than before, fixing `issue 14` and
+- The ``--omit`` option now works much better than before, fixing `issue 14` and
   `issue 33`_.  Thanks, Danek Duvall.
 
 - The tracer code has changed, it's a few percent faster.
@@ -58,10 +58,10 @@ Version 3.1, 4 October 2009
 
 - Coverage.py has a new command line syntax with sub-commands.  This expands
   the possibilities for adding features and options in the future.  The old
-  syntax is still supported.  Try "coverage help" to see the new commands.
+  syntax is still supported.  Try ``coverage help`` to see the new commands.
   Thanks to Ben Finney for early help.
 
-- Added an experimental "coverage xml" command for producing coverage reports
+- Added an experimental ``coverage xml`` command for producing coverage reports
   in a Cobertura-compatible XML format.  Thanks, Bill Hart.
 
 - Added the ``--timid`` option to enable a simpler slower trace function that
@@ -70,7 +70,7 @@ Version 3.1, 4 October 2009
 
 - HTML reports now display syntax-colored Python source.
 
-- Added a "coverage debug" command for getting diagnostic information about the
+- Added a ``coverage debug`` command for getting diagnostic information about the
   coverage.py installation.
 
 - Source code can now be read from eggs.  Thanks, `Ross Lawley`_.  Fixes
@@ -95,7 +95,7 @@ Version 3.0.1, 7 July 2009
   raised.  This is now fixed.
 
 - The coverage.py code itself will now not be measured by coverage.py, and no
-  coverage modules will be mentioned in the nose --with-cover plugin.
+  coverage modules will be mentioned in the nose ``--with-cover`` plugin.
 
 - When running source files, coverage.py now opens them in universal newline
   mode just like Python does.  This lets it run Windows files on Mac, for
@@ -108,8 +108,8 @@ Version 3.0, 13 June 2009
 - Coverage is now a package rather than a module.  Functionality has been split
   into classes.
 
-- HTML reports and annotation of source files: use the new -b (browser) switch.
-  Thanks to George Song for code, inspiration and guidance.
+- HTML reports and annotation of source files: use the new ``-b`` (browser)
+  switch.  Thanks to George Song for code, inspiration and guidance.
 
 - The trace function is implemented in C for speed.  Coverage runs are now
   much faster.  Thanks to David Christian for productive micro-sprints and
@@ -119,12 +119,12 @@ Version 3.0, 13 June 2009
  
 - When using the object api (that is, constructing a coverage() object), data
   is no longer saved automatically on process exit.  You can re-enable it with
-  the auto_data=True parameter on the coverage() constructor. The module-level
-  interface still uses automatic saving.
+  the ``auto_data=True`` parameter on the coverage() constructor.
+  The module-level interface still uses automatic saving.
 
 - Code in the Python standard library is not measured by default.  If you need
-  to measure standard library code, use the -L command-line switch during
-  execution, or the cover_pylib=True argument to the coverage() constructor.
+  to measure standard library code, use the ``-L`` command-line switch during
+  execution, or the ``cover_pylib=True`` argument to the coverage() constructor.
 
 - API changes:
 

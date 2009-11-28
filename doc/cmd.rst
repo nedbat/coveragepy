@@ -202,4 +202,3 @@ Diagnostics
 -----------
 
 The **debug** command shows internal information to help diagnose problems.
-
