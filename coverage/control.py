@@ -30,7 +30,7 @@ class coverage(object):
     """
 
     def __init__(self, data_file=None, data_suffix=False, cover_pylib=None,
-                auto_data=False, timid=None, branch=None):
+                auto_data=False, timid=None, branch=None, config_file=True):
         """        
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended to `data_file` to create the
@@ -51,14 +51,26 @@ class coverage(object):
         
         If `branch` is true, then branch coverage will be measured in addition
         to the usual statement coverage.
+        
+        `config_file` determines what config file to read.  If it is a string,
+        it is the name of the config file to read.  If it is True, then a
+        standard file is read (".coveragerc").  If it is False, then no file is
+        read.
 
         """
         from coverage import __version__
-        
+
+        # Build our configuration from a number of sources.
         self.config = CoverageConfig()
+        if config_file:
+            if config_file is True:
+                config_file = ".coveragerc"
+            self.config.from_file(config_file)
         self.config.from_environment('COVERAGE_OPTIONS')
-        self.config.from_args(cover_pylib=cover_pylib, timid=timid, branch=branch)
-        
+        self.config.from_args(
+            cover_pylib=cover_pylib, timid=timid, branch=branch
+            )
+
         self.auto_data = auto_data
         
         self.exclude_re = ""
@@ -67,7 +79,8 @@ class coverage(object):
         self.file_locator = FileLocator()
         
         self.collector = Collector(
-            self._should_trace, timid=self.config.timid, branch=self.config.branch
+            self._should_trace, timid=self.config.timid,
+            branch=self.config.branch
             )
 
         # Create the data file.

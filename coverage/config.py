@@ -35,11 +35,6 @@ class CoverageConfig(object):
         if cp.has_option('run', 'branch'):
             self.branch = cp.getboolean('run', 'branch')
         if cp.has_option('report', 'exclude'):
-            self.exclude_list = filter(None, cp.get('report', 'exclude').split('\n'))
-
-
-if __name__ == '__main__':
-    cc = CoverageConfig()
-    cc.from_file(".coveragerc", ".coverage.ini")
-    import pdb;pdb.set_trace()
-    print cc
+            # Exclude is a list of lines, leave out the blank ones.
+            exclude_list = cp.get('report', 'exclude')
+            self.exclude_list = filter(None, exclude_list.split('\n'))
