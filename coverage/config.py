@@ -1,6 +1,7 @@
 """Config file for coverage.py"""
 
-import ConfigParser, os
+import os
+from coverage.backward import configparser          # pylint: disable-msg=W0622
 
 
 class CoverageConfig(object):
@@ -25,7 +26,7 @@ class CoverageConfig(object):
                 setattr(self, k, v)
 
     def from_file(self, *files):
-        cp = ConfigParser.RawConfigParser()
+        cp = configparser.RawConfigParser()
         cp.read(files)
         
         if cp.has_option('run', 'timid'):
