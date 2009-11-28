@@ -32,8 +32,6 @@ Getting started is easy:
     or by using "easy_install coverage".  You may need to install the
     python-dev support files, for example with "apt-get install python-dev".
 
-__ http://pypi.python.org/pypi/coverage
-
 #.  Use ``coverage run`` to execute your program and gather data:
 
     .. code-block:: console
@@ -63,6 +61,7 @@ __ http://pypi.python.org/pypi/coverage
     Then visit htmlcov/index.html in your browser, to see a
     `report like this`__.
 
+__ http://pypi.python.org/pypi/coverage
 __ /code/coverage/sample_html/index.html
 
 
