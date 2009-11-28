@@ -99,7 +99,7 @@ More information
 ----------------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     
     cmd
     api
