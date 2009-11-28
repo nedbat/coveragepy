@@ -88,14 +88,21 @@ class coverage(object):
 
         # The prefix for files considered "installed with the interpreter".
         if not self.cover_pylib:
+            # Look at where the "os" module is located.  That's the indication
+            # for "installed with the interpreter".
             os_file = self.file_locator.canonical_filename(os.__file__)
             self.pylib_prefix = os.path.split(os_file)[0]
 
+        # To avoid tracing the coverage code itself, we skip anything located
+        # where we are.
         here = self.file_locator.canonical_filename(__file__)
         self.cover_prefix = os.path.split(here)[0]
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`
+        
+        This function is called from the trace function.  As each new file name
+        is encountered, this function determines whether it is traced or not.
         
         Returns a canonicalized filename if it should be traced, False if it
         should not.
