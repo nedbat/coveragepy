@@ -6,6 +6,8 @@ FAQ and other help
 
 :history: 20090613T141800, brand new docs.
 :history: 20091005T073900, updated for 3.1.
+:history: 20091127T201500, updated for 3.2.
+
 
 Frequently asked questions
 --------------------------
@@ -49,7 +51,7 @@ importing the modules that define your functions.
 
 **Q: Does coverage.py work on Python 3.x?**
 
-Yes, as of coverage.py 3.1, Python 3.1 is supported.
+Yes, Python 3.1 is fully supported.
 
 
 **Q: Isn't coverage testing the best thing ever?**

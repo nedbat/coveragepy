@@ -11,15 +11,17 @@ Coverage command line usage
 
 .. highlight:: console
 
-When you install coverage, a command-line script called coverage is placed in
-your Python scripts directory.  Coverage has a number of commands which 
-determine the action performed:
+When you install coverage.py, a command-line script simply called coverage is
+placed in your Python scripts directory.  Coverage has a number of commands
+which determine the action performed:
 
 * **run** -- Run a Python program and collect execution data.
 
 * **report** -- Report coverage results.
 
 * **html** -- Produce annotated HTML listings with coverage results.
+
+* **xml** -- Produce an XML report with coverage results.
 
 * **erase** -- Erase previously collected coverage data.
 
@@ -43,14 +45,18 @@ coverage command::
     blah blah ..your program's output.. blah blah
 
 Your program runs just as if it had been invoked with the Python command line.
-Arguments after your file name are passed to your program in sys.argv.
+Arguments after your file name are passed to your program in ``sys.argv``.
 
-By default, coverage does not measure code installed with the Python interpreter.
-If you want to measure that code as well as your own, add the ``-L`` flag.
+If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
+flag.  Otherwise only statement coverage is measured.
+
+By default, coverage does not measure code installed with the Python
+interpreter.  If you want to measure that code as well as your own, add the
+``-L`` flag.
 
 If your coverage results seems to be overlooking code that you know has been
 executed, try running coverage again with the ``--timid`` flag.  This uses a
-simpler but slower trace method. Projects that use DecoratorTools, including
+simpler but slower trace method.  Projects that use DecoratorTools, including
 TurboGears, will need to use ``--timid`` to get correct results.  This option
 can also be enabled by setting the environment variable COVERAGE_OPTIONS to
 ``--timid``.
@@ -141,7 +147,9 @@ and which were not.  The **html** command creates an HTML report similar to the
 **report** summary, but as an HTML file.  Each module name links to the source
 file decorated to show the status of each line.
 
-Here's a `sample report </code/coverage/sample_html/index.html>`_.
+Here's a `sample report`__.
+
+__ /code/coverage/sample_html/index.html
 
 Lines are highlighted green for executed, red for missing, and gray for
 excluded.  The counts at the top of the file are buttons to turn on and off
@@ -184,11 +192,13 @@ XML reporting
 -------------
 
 The **xml** command writes coverage data to a "coverage.xml" file in a format
-compatible with `Cobertura <http://cobertura.sourceforge.net>`_.  This command
-is still experimental.  I need feedback from users to finish it up.
+compatible with `Cobertura`_.  This command is still experimental.
+
+.. _Cobertura: http://cobertura.sourceforge.net
 
 
 Diagnostics
 -----------
 
 The **debug** command shows internal information to help diagnose problems.
+

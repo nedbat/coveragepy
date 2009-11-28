@@ -24,13 +24,15 @@ body {
 }
 
 div.document {
-    background-color: #1c4e63;
+    background-color: #808080;
 }
 
 div.body {
     background-color: #ffffff;
     color: #000000;
     padding: 0 20px 30px 20px;
+	max-width: 650px;
+	margin-left: 150px;
 }
 
 div.footer {
@@ -129,7 +131,7 @@ div.body h6 {
     margin: 1em 0;
 }
 
-div.body h1 { margin-top: 0; font-size: 100%; }
+div.body h1 { margin-top: 0; padding-top: 1em; font-size: 150%; }
 div.body h2 { font-size: 100%; }
 /* H3's are run-in with the text. */
 div.body h3 {
@@ -142,6 +144,13 @@ div.body h3 {
 div.body h4 { font-size: 120%; }
 div.body h5 { font-size: 110%; }
 div.body h6 { font-size: 100%; }
+
+table.field-list {
+	margin-left: 300px;
+	color: #888;
+	font-style: italic;
+	font-size: 80%;
+}
 
 a.headerlink {
     color: #c60f0f;
