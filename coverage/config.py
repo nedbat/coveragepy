@@ -5,7 +5,15 @@ from coverage.backward import configparser          # pylint: disable-msg=W0622
 
 
 class CoverageConfig(object):
+    """Coverage.py configuration.
+    
+    The attributes of this class are the various settings that control the
+    operation of coverage.py.
+    
+    """
+    
     def __init__(self):
+        """Initialize the configuration attributes to their defaults."""
         # Defaults.
         self.cover_pylib = False
         self.timid = False
@@ -14,6 +22,7 @@ class CoverageConfig(object):
         self.data_file = ".coverage"
 
     def from_environment(self, env_var):
+        """Read configuration from the `env_var` environment variable."""
         # Timidity: for nose users, read an environment variable.  This is a
         # cheap hack, since the rest of the command line arguments aren't
         # recognized, but it solves some users' problems.
@@ -22,11 +31,17 @@ class CoverageConfig(object):
             self.timid = ('--timid' in env)
 
     def from_args(self, **kwargs):
+        """Read config values from `kwargs`."""
         for k, v in kwargs.items():
             if v is not None:
                 setattr(self, k, v)
 
     def from_file(self, *files):
+        """Read configurating from .rc files.
+        
+        Each argument in `files` is a file name to read.
+        
+        """
         cp = configparser.RawConfigParser()
         cp.read(files)
         
