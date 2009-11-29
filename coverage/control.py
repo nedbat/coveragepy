@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import os, socket
+import atexit, os, socket
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class          # pylint: disable-msg=W0622
@@ -56,7 +56,8 @@ class coverage(object):
         
         self.cover_pylib = cover_pylib
         self.auto_data = auto_data
-        
+        self.atexit_registered = False
+
         self.exclude_re = ""
         self.exclude_list = []
         
@@ -168,8 +169,9 @@ class coverage(object):
         if self.auto_data:
             self.load()
             # Save coverage data when Python exits.
-            import atexit
-            atexit.register(self.save)
+            if not self.atexit_registered:
+                atexit.register(self.save)
+                self.atexit_registered = True
         self.collector.start()
         
     def stop(self):

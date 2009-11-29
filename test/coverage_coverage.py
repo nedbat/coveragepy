@@ -30,12 +30,16 @@ import coverage     # don't warn about re-import: pylint: disable-msg=W0404
 sys.modules.update(covmods)
 
 # Run nosetests, with the arguments from our command line.
+nose_args = sys.argv[1:]
+print(":: Running nosetests %s" % " ".join(nose_args))
 import nose
-nose.run(sys.argv[1:])
+nose.run(nose_args)
 
 cov.stop()
+print(":: Saving .coverage")
 cov.save()
 
+print(":: Writing HTML report to %s/index.html" % HTML_DIR)
 cov.clear_exclude()
 cov.exclude("#pragma: no cover")
 cov.exclude("def __repr__")

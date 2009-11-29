@@ -168,12 +168,13 @@ class CoverageTest(TestCase):
             cov.exclude(exc)
         cov.start()
 
-        # Import the python file, executing it.
-        mod = self.import_module(modname)
-        
-        # Stop Coverage.
-        cov.stop()
-
+        try:
+            # Import the python file, executing it.
+            mod = self.import_module(modname)
+        finally:
+            # Stop Coverage.
+            cov.stop()
+    
         # Clean up our side effects
         del sys.modules[modname]
 

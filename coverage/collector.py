@@ -148,6 +148,9 @@ class Collector(object):
             # trace function.
             self._trace_class = Tracer or PyTracer
 
+    def __repr__(self):
+        return "<Collector at 0x%x>" % id(self)
+
     def tracer_name(self):
         """Return the class name of the tracer we're using."""
         return self._trace_class.__name__
@@ -196,6 +199,7 @@ class Collector(object):
         if self._collectors:
             self._collectors[-1].pause()
         self._collectors.append(self)
+        #print >>sys.stderr, "Started: %r" % self._collectors
         # Install the tracer on this thread.
         self._start_tracer()
         # Install our installation tracer in threading, to jump start other
@@ -204,6 +208,7 @@ class Collector(object):
 
     def stop(self):
         """Stop collecting trace information."""
+        #print >>sys.stderr, "Stopping: %r" % self._collectors
         assert self._collectors
         assert self._collectors[-1] is self
 
