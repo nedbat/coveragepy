@@ -11,6 +11,7 @@ class CoverageConfig(object):
         self.timid = False
         self.branch = False
         self.exclude_list = ['# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]']
+        self.data_file = ".coverage"
 
     def from_environment(self, env_var):
         # Timidity: for nose users, read an environment variable.  This is a
@@ -39,3 +40,5 @@ class CoverageConfig(object):
             # Exclude is a list of lines, leave out the blank ones.
             exclude_list = cp.get('report', 'exclude')
             self.exclude_list = filter(None, exclude_list.split('\n'))
+        if cp.has_option('run', 'data_file'):
+            self.data_file = cp.get('run', 'data_file')

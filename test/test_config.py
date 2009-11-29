@@ -15,49 +15,61 @@ class ConfigTest(CoverageTest):
         cov = coverage.coverage()
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.data_file, ".coverage")
 
     def test_arguments(self):
         # Arguments to the constructor are applied to the configuation.
-        cov = coverage.coverage(timid=True)
+        cov = coverage.coverage(timid=True, data_file="fooey.dat")
         self.assert_(cov.config.timid)
         self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.data_file, "fooey.dat")
 
     def test_config_file(self):
         # A .coveragerc file will be read into the configuration.
         self.make_file(".coveragerc", """\
+            # This is just a bogus .rc file for testing.
             [run]
-            timid = True
+            timid =         True
+            data_file =     .hello_kitty.data
             """)
         cov = coverage.coverage()
         self.assert_(cov.config.timid)
         self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.data_file, ".hello_kitty.data")
 
     def test_named_config_file(self):
         # You can name the config file what you like.
         self.make_file("my_cov.ini", """\
             [run]
             timid = True
+            ; I wouldn't really use this as a data file...
+            data_file = delete.me
             """)
         cov = coverage.coverage(config_file="my_cov.ini")
         self.assert_(cov.config.timid)
         self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.data_file, "delete.me")
 
     def test_ignored_config_file(self):
         # You can disable reading the .coveragerc file.
         self.make_file(".coveragerc", """\
             [run]
             timid = True
+            data_file = delete.me
             """)
         cov = coverage.coverage(config_file=False)
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.data_file, ".coverage")
 
     def test_config_file_then_args(self):
         # The arguments override the .coveragerc file.
         self.make_file(".coveragerc", """\
             [run]
             timid = True
+            data_file = weirdo.file
             """)
-        cov = coverage.coverage(timid=False)
+        cov = coverage.coverage(timid=False, data_file=".mycov")
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.data_file, ".mycov")

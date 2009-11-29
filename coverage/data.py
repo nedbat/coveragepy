@@ -2,7 +2,7 @@
 
 import os
 
-from coverage.backward import pickle, sorted    # pylint: disable-msg=W0622
+from coverage.backward import pickle, sorted        # pylint: disable-msg=W0622
 
 
 class CoverageData(object):
@@ -39,14 +39,13 @@ class CoverageData(object):
         `collector` is a string describing the coverage measurement software.
 
         """
-        self.collector = collector
+        self.collector = collector or 'unknown'
         
         self.use_file = True
 
         # Construct the filename that will be used for data file storage, if we
         # ever do any file storage.
-        self.filename = (basename or
-                os.environ.get(self.filename_env, self.filename_default))
+        self.filename = basename or ".coverage"
         if suffix:
             self.filename += suffix
         self.filename = os.path.abspath(self.filename)

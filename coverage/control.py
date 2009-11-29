@@ -68,7 +68,8 @@ class coverage(object):
             self.config.from_file(config_file)
         self.config.from_environment('COVERAGE_OPTIONS')
         self.config.from_args(
-            cover_pylib=cover_pylib, timid=timid, branch=branch
+            data_file=data_file, cover_pylib=cover_pylib, timid=timid,
+            branch=branch
             )
 
         self.auto_data = auto_data
@@ -92,7 +93,7 @@ class coverage(object):
             data_suffix = None
 
         self.data = CoverageData(
-            basename=data_file, suffix=data_suffix,
+            basename=self.config.data_file, suffix=data_suffix,
             collector="coverage v%s" % __version__
             )
 
