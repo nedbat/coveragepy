@@ -46,4 +46,4 @@ cov.exclude("def __repr__")
 cov.exclude("if __name__ == .__main__.:")
 cov.exclude("raise AssertionError")
 
-cov.html_report(directory=HTML_DIR, ignore_errors=True)
+cov.html_report(directory=HTML_DIR, ignore_errors=True, omit_prefixes=["mock"])

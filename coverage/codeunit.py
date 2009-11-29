@@ -34,6 +34,7 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     code_units = [CodeUnit(morf, file_locator) for morf in morfs]
     
     if omit_prefixes:
+        assert not isinstance(omit_prefixes, string_class) # common mistake
         prefixes = [file_locator.abs_file(p) for p in omit_prefixes]
         filtered = []
         for cu in code_units:
