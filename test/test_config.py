@@ -73,3 +73,17 @@ class ConfigTest(CoverageTest):
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, ".mycov")
+
+    def test_data_file_from_environment(self):
+        # There's an environment variable for the data_file.
+        self.make_file(".coveragerc", """\
+            [run]
+            timid = True
+            data_file = weirdo.file
+            """)
+        self.set_environ("COVERAGE_FILE", "fromenv.dat")
+        cov = coverage.coverage()
+        self.assertEqual(cov.config.data_file, "fromenv.dat")
+        # But the constructor args override the env var.
+        cov = coverage.coverage(data_file="fromarg.dat")
+        self.assertEqual(cov.config.data_file, "fromarg.dat")

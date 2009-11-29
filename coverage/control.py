@@ -60,13 +60,23 @@ class coverage(object):
         """
         from coverage import __version__
 
-        # Build our configuration from a number of sources.
+        # Build our configuration from a number of sources:
+        # 1: defaults:
         self.config = CoverageConfig()
+        
+        # 2: from the coveragerc file:
         if config_file:
             if config_file is True:
                 config_file = ".coveragerc"
             self.config.from_file(config_file)
+        
+        # 3: from environment variables:
         self.config.from_environment('COVERAGE_OPTIONS')
+        env_data_file = os.environ.get('COVERAGE_FILE')
+        if env_data_file:
+            self.config.data_file = env_data_file
+        
+        # 4: from constructor arguments:
         self.config.from_args(
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch
