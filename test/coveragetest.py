@@ -38,9 +38,6 @@ class CoverageTest(TestCase):
             self.old_dir = os.getcwd()
             os.chdir(self.temp_dir)
     
-            # Preserve changes to PYTHONPATH.
-            self.old_pypath = os.environ.get('PYTHONPATH', '')
-    
             # Modules should be importable from this temp directory.
             self.old_syspath = sys.path[:]
             sys.path.insert(0, '')
@@ -48,6 +45,9 @@ class CoverageTest(TestCase):
             # Keep a counter to make every call to check_coverage unique.
             self.n = 0
 
+        # Record environment variables that we changed with set_environ.
+        self.environ_undos = {}
+    
         # Use a Tee to capture stdout.
         self.old_stdout = sys.stdout
         self.captured_stdout = StringIO()
@@ -55,16 +55,44 @@ class CoverageTest(TestCase):
         
     def tearDown(self):
         if self.run_in_temp_dir:
-            # Restore the original sys.path and PYTHONPATH
+            # Restore the original sys.path.
             sys.path = self.old_syspath
-            os.environ['PYTHONPATH'] = self.old_pypath
     
             # Get rid of the temporary directory.
             os.chdir(self.old_dir)
             shutil.rmtree(self.temp_root)
-        
+
+        # Restore the environment.
+        self.undo_environ()
+
         # Restore stdout.
         sys.stdout = self.old_stdout
+
+    def set_environ(self, name, value):
+        """Set an environment variable `name` to be `value`.
+        
+        The environment variable is set, and record is kept that it was set,
+        so that `tearDown` can restore its original value.
+        
+        """
+        if name not in self.environ_undos:
+            self.environ_undos[name] = os.environ.get(name)
+        os.environ[name] = value
+        
+    def original_environ(self, name):
+        """The environment variable `name` from when the test started."""
+        if name in self.environ_undos:
+            return self.environ_undos[name]
+        else:
+            return os.environ[name]
+
+    def undo_environ(self):
+        """Undo all the changes made by `set_environ`."""
+        for name, value in self.environ_undos.items():
+            if value is None:
+                del os.environ[name]
+            else:
+                os.environ[name] = value
 
     def stdout(self):
         """Return the data written to stdout during the test."""
@@ -253,11 +281,11 @@ class CoverageTest(TestCase):
         here = os.path.dirname(self.nice_file(coverage.__file__, ".."))
         testmods = self.nice_file(here, 'test/modules')
         zipfile = self.nice_file(here, 'test/zipmods.zip')
-        pypath = self.old_pypath
+        pypath = self.original_environ('PYTHONPATH')
         if pypath:
             pypath += os.pathsep
         pypath += testmods + os.pathsep + zipfile
-        os.environ['PYTHONPATH'] = pypath
+        self.set_environ('PYTHONPATH', pypath)
         
         _, output = run_command(cmd)
         print(output)
