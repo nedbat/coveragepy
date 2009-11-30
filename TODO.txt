@@ -64,7 +64,9 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Track callers of functions (ala std module trace)
 - Method/Class/Module coverage reporting.
 - .coverage files that can be kept separate, rather than accumulated.
-    
+- test/coverage map: http://rbtcollins.wordpress.com/2009/09/16/back-from-hiatus/
+    - Similar to figleaf's sections.
+
 
 * Convenience
 
