@@ -34,10 +34,10 @@ set COVERAGE_TEST_TRACER=py
 python test\coverage_coverage.py run %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 call \ned\bin\switchpy 31
-python setup.py -q install
+python setup.py -q develop
 set COVERAGE_TEST_TRACER=c
 python test\coverage_coverage.py run %1 %2 %3 %4 %5 %6 %7 %8 %9
-del \python31\lib\site-packages\coverage\tracer.pyd
+del coverage\tracer.pyd
 set COVERAGE_TEST_TRACER=py
 python test\coverage_coverage.py run %1 %2 %3 %4 %5 %6 %7 %8 %9
 
