@@ -8,6 +8,9 @@ from coverage.backward import StringIO
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
+# This file uses the singleton module interface.  Prevent it from writing
+# .coverage files at exit.
+coverage.use_cache(0)
 
 class ApiTest(CoverageTest):
     """Api-oriented tests for Coverage."""
