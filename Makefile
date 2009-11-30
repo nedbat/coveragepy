@@ -21,15 +21,11 @@ clean:
 	-rm -f setuptools-*.egg
 	-rm -rf doc/_build/*
 
-LINTABLE = \
-	coverage \
-	scripts/coverage \
-	setup.py \
-	test
+LINTABLE = coverage setup.py test
 	
 lint: 
 	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc $(LINTABLE)
-	python /Python25/Lib/tabnanny.py coverage scripts test setup.py
+	python /Python25/Lib/tabnanny.py $(LINTABLE)
 	python checkeol.py
 
 testready: testdata devinst
