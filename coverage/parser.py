@@ -88,7 +88,7 @@ class CodeParser(object):
 
         tokgen = tokenize.generate_tokens(StringIO(self.text).readline)
         for toktype, ttext, (slineno, _), (elineno, _), ltext in tokgen:
-            if self.show_tokens:
+            if self.show_tokens:                # pragma: no cover
                 print("%10s %5s %-20r %r" % (
                     tokenize.tok_name.get(toktype, toktype),
                     nice_pair((slineno, elineno)), ttext, ltext
@@ -359,7 +359,7 @@ class ByteParser(object):
                 stmts.add(l)
         return stmts
     
-    def _disassemble(self):
+    def _disassemble(self):     # pragma: no cover
         """Disassemble code, for ad-hoc experimenting."""
         
         import dis
@@ -603,7 +603,7 @@ class Chunk(object):
             )
 
 
-class AdHocMain(object):
+class AdHocMain(object):        # pragma: no cover
     """An ad-hoc main for code parsing experiments."""
     
     def main(self, args):
