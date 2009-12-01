@@ -221,3 +221,7 @@ li {
 ul {
 	list-style-type: square;
 }
+
+.external.reference em {
+	font-style: normal;
+}
