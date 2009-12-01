@@ -80,7 +80,7 @@ class FarmTestCase(object):
         finally:
             self.cd(cwd)
 
-    def run_fully(self):
+    def run_fully(self):        # pragma: no cover
         """Run as a full test case, with setUp and tearDown."""
         self.setUp()
         try:
@@ -292,7 +292,7 @@ class FarmTestCase(object):
         if os.path.exists(cleandir):
             shutil.rmtree(cleandir)
 
-def main():
+def main():     # pragma: no cover
     """Command-line access to test_farm.
     
     Commands:
