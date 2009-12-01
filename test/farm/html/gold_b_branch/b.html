@@ -24,15 +24,15 @@ function toggle_lines(btn, cls) {
 <div id='header'>
     <div class='content'>
         <h1>Coverage for <b>b</b> :
-            <span class='pc_cov'>77%</span>
+            <span class='pc_cov'>76%</span>
         </h1>
         <h2 class='stats'>
-            9 statements
-            <span class='run hide_run' onclick='toggle_lines(this, "run")'>8 run</span>
+            16 statements
+            <span class='run hide_run' onclick='toggle_lines(this, "run")'>14 run</span>
             <span class='exc' onclick='toggle_lines(this, "exc")'>0 excluded</span>
-            <span class='mis' onclick='toggle_lines(this, "mis")'>1 missing</span>
+            <span class='mis' onclick='toggle_lines(this, "mis")'>2 missing</span>
             
-                <span class='par run hide_run' onclick='toggle_lines(this, "par")'>2 partial</span>
+                <span class='par run hide_run' onclick='toggle_lines(this, "par")'>3 partial</span>
             
         </h2>
     </div>
@@ -45,8 +45,8 @@ function toggle_lines(btn, cls) {
 <p class='pln'>1</p>
 <p class='pln'>2</p>
 <p class='stm run hide_run'>3</p>
-<p class='stm par run hide_run'>4</p>
-<p class='pln'>5</p>
+<p class='pln'>4</p>
+<p class='stm par run hide_run'>5</p>
 <p class='stm run hide_run'>6</p>
 <p class='pln'>7</p>
 <p class='stm mis'>8</p>
@@ -54,18 +54,30 @@ function toggle_lines(btn, cls) {
 <p class='stm run hide_run'>10</p>
 <p class='pln'>11</p>
 <p class='stm run hide_run'>12</p>
-<p class='stm par run hide_run'>13</p>
-<p class='stm run hide_run'>14</p>
-<p class='pln'>15</p>
-<p class='stm run hide_run'>16</p>
+<p class='pln'>13</p>
+<p class='stm par run hide_run'>14</p>
+<p class='stm run hide_run'>15</p>
+<p class='pln'>16</p>
+<p class='stm run hide_run'>17</p>
+<p class='pln'>18</p>
+<p class='stm run hide_run'>19</p>
+<p class='pln'>20</p>
+<p class='stm par run hide_run'>21</p>
+<p class='stm run hide_run'>22</p>
+<p class='stm run hide_run'>23</p>
+<p class='pln'>24</p>
+<p class='stm mis'>25</p>
+<p class='stm run hide_run'>26</p>
+<p class='pln'>27</p>
+<p class='stm run hide_run'>28</p>
     
 </td>
 <td class='text' valign='top'>
 <p class='pln'><span class='com'># A test file for HTML reporting by coverage.</span><span class='strut'>&nbsp;</span></p>
 <p class='pln'><span class='strut'>&nbsp;</span></p>
 <p class='stm run hide_run'><span class='key'>def</span> <span class='nam'>one</span><span class='op'>(</span><span class='nam'>x</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
-<p class='stm par run hide_run'><span class='annotate'>8</span>&nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>x</span> <span class='op'>&lt;</span> <span class='num'>2</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='com'># Needed a &lt; to look at HTML entities.</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='com'># This will be a branch that misses the else.</span><span class='strut'>&nbsp;</span></p>
+<p class='stm par run hide_run'><span class='annotate' title='no jump to this line number'>8</span>&nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>x</span> <span class='op'>&lt;</span> <span class='num'>2</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
 <p class='stm run hide_run'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>a</span> <span class='op'>=</span> <span class='num'>3</span><span class='strut'>&nbsp;</span></p>
 <p class='pln'>&nbsp; &nbsp; <span class='key'>else</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
 <p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>a</span> <span class='op'>=</span> <span class='num'>4</span><span class='strut'>&nbsp;</span></p>
@@ -73,10 +85,22 @@ function toggle_lines(btn, cls) {
 <p class='stm run hide_run'><span class='nam'>one</span><span class='op'>(</span><span class='num'>1</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
 <p class='pln'><span class='strut'>&nbsp;</span></p>
 <p class='stm run hide_run'><span class='key'>def</span> <span class='nam'>two</span><span class='op'>(</span><span class='nam'>x</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
-<p class='stm par run hide_run'><span class='annotate'>exit</span>&nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>x</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='com'># A missed else that branches to &quot;exit&quot;</span><span class='strut'>&nbsp;</span></p>
+<p class='stm par run hide_run'><span class='annotate' title='no jump to this line number'>exit</span>&nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>x</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
 <p class='stm run hide_run'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>a</span> <span class='op'>=</span> <span class='num'>5</span><span class='strut'>&nbsp;</span></p>
 <p class='pln'><span class='strut'>&nbsp;</span></p>
 <p class='stm run hide_run'><span class='nam'>two</span><span class='op'>(</span><span class='num'>1</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'><span class='key'>def</span> <span class='nam'>three_way</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='com'># for-else can be a three-way branch.</span><span class='strut'>&nbsp;</span></p>
+<p class='stm par run hide_run'><span class='annotate' title='no jumps to these line numbers'>25&nbsp;&nbsp; 26</span>&nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>i</span> <span class='key'>in</span> <span class='nam'>range</span><span class='op'>(</span><span class='num'>10</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>i</span> <span class='op'>==</span> <span class='num'>3</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>break</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='key'>else</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>return</span> <span class='num'>23</span><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'>&nbsp; &nbsp; <span class='key'>return</span> <span class='num'>17</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'><span class='nam'>three_way</span><span class='op'>(</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
     
 </td>
 </tr>

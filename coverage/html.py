@@ -80,7 +80,8 @@ class HtmlReporter(Reporter):
             lineno += 1     # 1-based line numbers.
             # Figure out how to mark this line.
             line_class = ""
-            annotate = ""
+            annotate_html = ""
+            annotate_title = ""
             if lineno in analysis.statements:
                 line_class += " stm"
             if lineno in analysis.excluded:
@@ -96,7 +97,11 @@ class HtmlReporter(Reporter):
                         annlines.append("exit")
                     else:
                         annlines.append(str(b))
-                annotate = " ".join(annlines)
+                annotate_html = "&nbsp;&nbsp; ".join(annlines)
+                if len(annlines) > 1:
+                    annotate_title = "no jumps to these line numbers"
+                elif len(annlines) == 1:
+                    annotate_title = "no jump to this line number"
             elif lineno in analysis.statements:
                 line_class += c_run
             
@@ -113,7 +118,8 @@ class HtmlReporter(Reporter):
                 'html': html,
                 'number': lineno,
                 'class': line_class.strip() or "pln",
-                'annotate': annotate,
+                'annotate': annotate_html,
+                'annotate_title': annotate_title,
             })
 
         # Write the HTML page for this file.
