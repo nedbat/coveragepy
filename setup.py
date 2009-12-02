@@ -78,13 +78,13 @@ setup(
     ext_modules = [
         Extension("coverage.tracer", sources=["coverage/tracer.c"])
         ],
-    
+
     entry_points = {
         'console_scripts': [
             'coverage = coverage:main',
             ]
         },
-    
+
     # We need to get HTML assets from our htmlfiles dir.
     zip_safe = False,
 

@@ -8,40 +8,40 @@ class Templite(object):
     """A simple template renderer, for a nano-subset of Django syntax.
 
     Supported constructs are extended variable access::
-    
+
         {{var.modifer.modifier|filter|filter}}
-        
+
     loops::
-    
+
         {% for var in list %}...{% endfor %}
-    
+
     and ifs::
-    
+
         {% if var %}...{% endif %}
 
     Comments are within curly-hash markers::
-    
+
         {# This will be ignored #}
 
     Construct a Templite with the template text, then use `render` against a
     dictionary context to create a finished string.
-    
+
     """
     def __init__(self, text, *contexts):
         """Construct a Templite with the given `text`.
-        
+
         `contexts` are dictionaries of values to use for future renderings.
         These are good for filters and global values.
-        
+
         """
         self.text = text
         self.context = {}
         for context in contexts:
             self.context.update(context)
-        
+
         # Split the text to form a list of tokens.
         toks = re.split(r"(?s)({{.*?}}|{%.*?%}|{#.*?#})", text)
-        
+
         # Parse the tokens into a nested list of operations.  Each item in the
         # list is a tuple with an opcode, and arguments.  They'll be
         # interpreted by TempliteEngine.
@@ -83,21 +83,21 @@ class Templite(object):
                     raise SyntaxError("Don't understand tag %r" % words)
             else:
                 ops.append(('lit', tok))
-        
+
         assert not ops_stack, "Unmatched action tag: %r" % ops_stack[-1][0]
         self.ops = ops
 
     def render(self, context=None):
         """Render this template by applying it to `context`.
-        
+
         `context` is a dictionary of values to use in this rendering.
-        
+
         """
         # Make the complete context we'll use.
         ctx = dict(self.context)
         if context:
             ctx.update(context)
-        
+
         # Run it through an engine, and return the result.
         engine = _TempliteEngine(ctx)
         engine.execute(self.ops)
@@ -112,9 +112,9 @@ class _TempliteEngine(object):
 
     def execute(self, ops):
         """Execute `ops` in the engine.
-        
+
         Called recursively for the bodies of if's and loops.
-        
+
         """
         for op, args in ops:
             if op == 'lit':
@@ -142,9 +142,9 @@ class _TempliteEngine(object):
 
     def evaluate(self, expr):
         """Evaluate an expression.
-        
+
         `expr` can have pipes and dots to indicate data access and filtering.
-        
+
         """
         if "|" in expr:
             pipes = expr.split("|")

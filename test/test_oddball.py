@@ -16,13 +16,13 @@ class ThreadingTest(CoverageTest):
 
             def fromMainThread():
                 return "called from main thread"
-            
+
             def fromOtherThread():
                 return "called from other thread"
-            
+
             def neverCalled():
                 return "no one calls me"
-            
+
             other = threading.Thread(target=fromOtherThread)
             other.start()
             fromMainThread()
@@ -42,11 +42,11 @@ class RecursionTest(CoverageTest):
                     return 0
                 else:
                     return recur(n-1)+1
-                
+
             recur(495)  # We can get at least this many stack frames.
             """,
             [1,2,3,5,7], "")
-        
+
     def testLongRecursion(self):
         # We can't finish a very deep recursion, but we don't crash.
         self.assertRaises(RuntimeError, self.check_coverage,
@@ -56,7 +56,7 @@ class RecursionTest(CoverageTest):
                     return 0
                 else:
                     return recur(n-1)+1
-                
+
             recur(100000)  # This is definitely too many frames.
             """,
             [1,2,3,5,7], "")
@@ -135,7 +135,7 @@ class PyexpatTest(CoverageTest):
         _, statements, missing, _ = cov.analysis("trydom.py")
         self.assertEqual(statements, [1,3,8,9,10,11,13])
         self.assertEqual(missing, [])
-    
+
         _, statements, missing, _ = cov.analysis("outer.py")
         self.assertEqual(statements, [101,102])
         self.assertEqual(missing, [])
@@ -145,7 +145,7 @@ class ExceptionTest(CoverageTest):
     """I suspect different versions of Python deal with exceptions differently
     in the trace function.
     """
-    
+
     def testException(self):
         # Python 2.3's trace function doesn't get called with "return" if the
         # scope is exiting due to an exception.  This confounds our trace
@@ -156,21 +156,21 @@ class ExceptionTest(CoverageTest):
         # stack is in a different file, to try to trip up the tracer.  Each
         # file has active lines in a different range so we'll see if the lines
         # get attributed to the wrong file.
-        
+
         self.make_file("oops.py", """\
             def oops(args):
                 a = 2
                 raise Exception("oops")
                 a = 4
             """)
-        
+
         self.make_file("fly.py", "\n"*100 + """\
             def fly(calls):
                 a = 2
                 calls[0](calls[1:])
                 a = 4
             """)
-                
+
         self.make_file("catch.py", "\n"*200 + """\
             def catch(calls):
                 try:
@@ -180,7 +180,7 @@ class ExceptionTest(CoverageTest):
                 except:
                     a = 7
             """)
-            
+
         self.make_file("doit.py", "\n"*300 + """\
             def doit(calls):
                 try:
@@ -220,19 +220,19 @@ class ExceptionTest(CoverageTest):
                 'oops.py': [2,3],
                 }),
             ]
-        
+
         for callnames, lines_expected in runs:
-    
+
             # Make the list of functions we'll call for this test.
             calls = [getattr(sys.modules[cn], cn) for cn in callnames.split()]
-            
+
             cov = coverage.coverage()
             cov.start()
             # Call our list of functions: invoke the first, with the rest as
             # an argument.
             calls[0](calls[1:])
             cov.stop()
-    
+
             # Clean the line data and compare to expected results.
             # The filenames are absolute, so keep just the base.
             lines = cov.data.line_data()
@@ -248,10 +248,10 @@ class ExceptionTest(CoverageTest):
 if sys.hexversion > 0x02050000:
     class DoctestTest(CoverageTest):
         """Tests invoked with doctest should measure properly."""
-    
+
         def setUp(self):
             super(DoctestTest, self).setUp()
-            
+
             # Oh, the irony!  This test case exists because Python 2.4's
             # doctest module doesn't play well with coverage.  But nose fixes
             # the problem by monkeypatching doctest.  I want to undo the
@@ -260,12 +260,12 @@ if sys.hexversion > 0x02050000:
             # enough: when the test imports doctest again, it will get a fresh
             # copy without the monkeypatch.
             del sys.modules['doctest']
-    
+
         def testDoctest(self):
             self.check_coverage('''\
                 def return_arg_or_void(arg):
                     """If <arg> is None, return "Void"; otherwise return <arg>
-                    
+
                     >>> return_arg_or_void(None)
                     'Void'
                     >>> return_arg_or_void("arg")
@@ -277,7 +277,7 @@ if sys.hexversion > 0x02050000:
                         return "Void"
                     else:
                         return arg
-                
+
                 import doctest, sys
                 doctest.testmod(sys.modules[__name__])  # we're not __main__ :(
                 ''',

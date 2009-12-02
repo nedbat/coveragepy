@@ -13,7 +13,7 @@ class Tee(object):
     def __init__(self, *files):
         """Make a Tee that writes to all the files in `files.`"""
         self.files = files
-        
+
     def write(self, data):
         """Write `data` to all the files."""
         for f in self.files:
@@ -27,7 +27,7 @@ class CoverageTest(TestCase):
     """A base class for Coverage test cases."""
 
     run_in_temp_dir = True
-    
+
     def setUp(self):
         if self.run_in_temp_dir:
             # Create a temporary directory.
@@ -37,14 +37,14 @@ class CoverageTest(TestCase):
             os.makedirs(self.temp_dir)
             self.old_dir = os.getcwd()
             os.chdir(self.temp_dir)
-    
+
             # Preserve changes to PYTHONPATH.
             self.old_pypath = os.environ.get('PYTHONPATH', '')
-    
+
             # Modules should be importable from this temp directory.
             self.old_syspath = sys.path[:]
             sys.path.insert(0, '')
-    
+
             # Keep a counter to make every call to check_coverage unique.
             self.n = 0
 
@@ -52,17 +52,17 @@ class CoverageTest(TestCase):
         self.old_stdout = sys.stdout
         self.captured_stdout = StringIO()
         sys.stdout = Tee(sys.stdout, self.captured_stdout)
-        
+
     def tearDown(self):
         if self.run_in_temp_dir:
             # Restore the original sys.path and PYTHONPATH
             sys.path = self.old_syspath
             os.environ['PYTHONPATH'] = self.old_pypath
-    
+
             # Get rid of the temporary directory.
             os.chdir(self.old_dir)
             shutil.rmtree(self.temp_root)
-        
+
         # Restore stdout.
         sys.stdout = self.old_stdout
 
@@ -72,14 +72,14 @@ class CoverageTest(TestCase):
 
     def make_file(self, filename, text):
         """Create a temp file.
-        
+
         `filename` is the file name, and `text` is the content.
-        
+
         """
         # Tests that call `make_file` should be run in a temp environment.
         assert self.run_in_temp_dir
         text = textwrap.dedent(text)
-        
+
         # Create the file.
         f = open(filename, 'w')
         f.write(text)
@@ -89,7 +89,7 @@ class CoverageTest(TestCase):
         """Import the module named modname, and return the module object."""
         modfile = modname + '.py'
         f = open(modfile, 'r')
-        
+
         for suff in imp.get_suffixes():
             if suff[0] == '.py':
                 break
@@ -110,23 +110,23 @@ class CoverageTest(TestCase):
         modname = 'coverage_test_' + self.noise + str(self.n)
         self.n += 1
         return modname
-    
+
     # Map chars to numbers for arcz_to_arcs
     _arcz_map = {'.': -1}
     _arcz_map.update(dict([(c, ord(c)-ord('0')) for c in '123456789']))
     _arcz_map.update(dict(
         [(c, 10+ord(c)-ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
         ))
-    
+
     def arcz_to_arcs(self, arcz):
         """Convert a compact textual representation of arcs to a list of pairs.
-        
+
         The text has space-separated pairs of letters.  Period is -1, 1-9 are
         1-9, A-Z are 10 through 36.  The resulting list is sorted regardless of
         the order of the input pairs.
-        
+
         ".1 12 2." --> [(-1,1), (1,2), (2,-1)]
-        
+
         """
         arcs = []
         for a,b in arcz.split():
@@ -136,23 +136,23 @@ class CoverageTest(TestCase):
     def check_coverage(self, text, lines=None, missing="", excludes=None,
             report="", arcz=None, arcz_missing="", arcz_unpredicted=""):
         """Check the coverage measurement of `text`.
-        
+
         The source `text` is run and measured.  `lines` are the line numbers
         that are executable, `missing` are the lines not executed, `excludes`
         are regexes to match against for excluding lines, and `report` is
         the text of the measurement report.
-        
+
         For arc measurement, `arcz` is a string that can be decoded into arcs
         in the code (see `arcz_to_arcs` for the encoding scheme),
         `arcz_missing` are the arcs that are not executed, and
         `arcs_unpredicted` are the arcs executed in the code, but not deducible
         from the code.
-        
+
         """
         # We write the code into a file so that we can import it.
         # Coverage wants to deal with things as modules with file names.
         modname = self.get_module_name()
-        
+
         self.make_file(modname+".py", text)
 
         arcs = arcs_missing = arcs_unpredicted = None
@@ -160,7 +160,7 @@ class CoverageTest(TestCase):
             arcs = self.arcz_to_arcs(arcz)
             arcs_missing = self.arcz_to_arcs(arcz_missing or "")
             arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted or "")
-            
+
         # Start up Coverage.
         cov = coverage.coverage(branch=(arcs_missing is not None))
         cov.erase()
@@ -174,7 +174,7 @@ class CoverageTest(TestCase):
         finally:
             # Stop Coverage.
             cov.stop()
-    
+
         # Clean up our side effects
         del sys.modules[modname]
 
@@ -218,36 +218,36 @@ class CoverageTest(TestCase):
             cov.report(mod, file=frep)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
             self.assertEqual(report, rep)
-        
+
     def nice_file(self, *fparts):
         """Canonicalize the filename composed of the parts in `fparts`."""
         fname = os.path.join(*fparts)
         return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
-    
+
     def command_line(self, args, ret=OK):
         """Run `args` through the command line.
-        
+
         Use this when you want to run the full coverage machinery, but in the
         current process.  Exceptions may be thrown from deep in the code.
         Asserts that `ret` is returned by `CoverageScript.command_line`.
-        
+
         Compare with `run_command`.
-        
+
         Returns None.
-        
+
         """
         ret_actual = coverage.CoverageScript().command_line(shlex.split(args))
         self.assertEqual(ret_actual, ret)
-        
+
     def run_command(self, cmd):
         """ Run the command-line `cmd` in a subprocess, and print its output.
-        
+
         Use this when you need to test the process behavior of coverage.
-        
+
         Compare with `command_line`.
-        
+
         Returns the process' stdout text.
-        
+
         """
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...
@@ -259,7 +259,7 @@ class CoverageTest(TestCase):
             pypath += os.pathsep
         pypath += testmods + os.pathsep + zipfile
         os.environ['PYTHONPATH'] = pypath
-        
+
         _, output = run_command(cmd)
         print(output)
         return output

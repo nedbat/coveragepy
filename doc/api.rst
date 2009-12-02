@@ -13,12 +13,12 @@ coverage object correspond to operations available in the command line
 interface. For example, a simple use would be::
 
     import coverage
-    
+
     cov = coverage.coverage()
     cov.start()
-    
+
     # .. run your code ..
-    
+
     cov.stop()
     cov.save()
 
@@ -29,4 +29,4 @@ The coverage module
 .. module:: coverage
 
 .. autoclass:: coverage
-    :members: 
+    :members:

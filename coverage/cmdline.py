@@ -8,7 +8,7 @@ from coverage.misc import CoverageException
 
 class Opts(object):
     """A namespace class for individual options we'll build parsers from."""
-    
+
     append = optparse.Option(
         '-a', '--append', action='store_false', dest="erase_first",
         help="Append coverage data to .coverage, otherwise it is started "
@@ -72,13 +72,14 @@ class Opts(object):
         '', '--version', action='store_true',
         help="Display version information and exit."
         )
-    
+
+
 class CoverageOptionParser(optparse.OptionParser, object):
     """Base OptionParser for coverage.
-    
+
     Problems don't exit the program.
     Defaults are initialized for all options.
-    
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -106,12 +107,12 @@ class CoverageOptionParser(optparse.OptionParser, object):
     class OptionParserError(Exception):
         """Used to stop the optparse error handler ending the process."""
         pass
-    
+
     def parse_args(self, args=None, options=None):
         """Call optparse.parse_args, but return a triple:
-        
+
         (ok, options, args)
-        
+
         """
         try:
             options, args = \
@@ -119,7 +120,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
         except self.OptionParserError:
             return False, None, None
         return True, options, args
-        
+
     def error(self, msg):
         """Override optparse.error so sys.exit doesn't get called."""
         self.help_fn(msg)
@@ -131,7 +132,7 @@ class ClassicOptionParser(CoverageOptionParser):
 
     def __init__(self):
         super(ClassicOptionParser, self).__init__()
-        
+
         self.add_action('-a', '--annotate', 'annotate')
         self.add_action('-b', '--html', 'html')
         self.add_action('-c', '--combine', 'combine')
@@ -157,7 +158,7 @@ class ClassicOptionParser(CoverageOptionParser):
             callback=self._append_action
             )
         option.action_code = action_code
-        
+
     def _append_action(self, option, opt_unused, value_unused, parser):
         """Callback for an option that adds to the `actions` list."""
         parser.values.actions.append(option.action_code)
@@ -165,19 +166,19 @@ class ClassicOptionParser(CoverageOptionParser):
 
 class CmdOptionParser(CoverageOptionParser):
     """Parse one of the new-style commands for coverage.py."""
-    
+
     def __init__(self, action, options=None, defaults=None, usage=None,
                 cmd=None, description=None
                 ):
         """Create an OptionParser for a coverage command.
-        
+
         `action` is the slug to put into `options.actions`.
         `options` is a list of Option's for the command.
         `defaults` is a dict of default value for options.
         `usage` is the usage string to display in help.
         `cmd` is the command name, if different than `action`.
         `description` is the description of the command, for the help text.
-        
+
         """
         if usage:
             usage = "%prog " + usage
@@ -228,7 +229,7 @@ CMDS = {
             "Each file gets its own page, with the source decorated to show "
             "executed, excluded, and missed lines."
         ),
-    
+
     'combine': CmdOptionParser("combine", [Opts.help],
         usage = " ",
         description = "Combine data from multiple coverage files collected "
@@ -269,12 +270,12 @@ CMDS = {
             Opts.timid,
             Opts.help,
             ],
-        defaults = {'erase_first':True},
+        defaults = {'erase_first': True},
         cmd = "run",
         usage = "[options] <pyfile> [program options]",
         description = "Run a Python program, measuring code execution."
         ),
-    
+
     'xml': CmdOptionParser("xml",
         [
             Opts.ignore_errors,
@@ -292,9 +293,10 @@ CMDS = {
 
 OK, ERR = 0, 1
 
+
 class CoverageScript(object):
     """The command-line interface to Coverage."""
-    
+
     def __init__(self, _covpkg=None, _run_python_file=None, _help_fn=None):
         # _covpkg is for dependency injection, so we can test this code.
         if _covpkg:
@@ -302,13 +304,13 @@ class CoverageScript(object):
         else:
             import coverage
             self.covpkg = coverage
-        
+
         # _run_python_file is for dependency injection also.
         self.run_python_file = _run_python_file or run_python_file
-        
+
         # _help_fn is for dependency injection.
         self.help_fn = _help_fn or self.help
-        
+
         self.coverage = None
 
     def help(self, error=None, topic=None, parser=None):
@@ -331,14 +333,14 @@ class CoverageScript(object):
 
     def command_line(self, argv):
         """The bulk of the command line interface to Coverage.
-        
+
         `argv` is the argument list to process.
 
         Returns 0 if all is well, 1 if something went wrong.
 
         """
         # Collect the command-line options.
-        
+
         if not argv:
             self.help_fn(topic='minimum_help')
             return OK
@@ -408,11 +410,11 @@ class CoverageScript(object):
         if not args_allowed and args:
             self.help_fn("Unexpected arguments: %s" % " ".join(args))
             return ERR
-        
+
         if 'execute' in options.actions and not args:
             self.help_fn("Nothing to do.")
             return ERR
-            
+
         # Do something.
         self.coverage = self.covpkg.coverage(
             data_suffix = bool(options.parallel_mode),
@@ -481,7 +483,7 @@ class CoverageScript(object):
         if options.omit:
             omit = options.omit.split(',')
         report_args['omit_prefixes'] = omit
-        
+
         if 'report' in options.actions:
             self.coverage.report(
                 show_missing=options.show_missing, **report_args)
@@ -556,7 +558,7 @@ usage: coverage <command> [options] [args]
 
 Commands:
     annotate    Annotate source files with execution information.
-    combine     Combine a number of data files. 
+    combine     Combine a number of data files.
     erase       Erase previously collected coverage data.
     help        Get help on using coverage.py.
     html        Create an HTML report.
@@ -579,9 +581,9 @@ Coverage.py, version %(__version__)s.  %(__url__)s
 
 def main():
     """The main entrypoint to Coverage.
-    
+
     This is installed as the script entrypoint.
-    
+
     """
     try:
         status = CoverageScript().command_line(sys.argv[1:])

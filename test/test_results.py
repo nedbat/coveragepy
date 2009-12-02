@@ -10,7 +10,7 @@ from coveragetest import CoverageTest
 
 class NumbersTest(CoverageTest):
     """Tests for Coverage.py's numeric measurement summaries."""
-    
+
     run_in_temp_dir = False
 
     def test_basic(self):
@@ -19,7 +19,7 @@ class NumbersTest(CoverageTest):
         self.assertEqual(n1.n_executed, 180)
         self.assertEqual(n1.n_missing, 20)
         self.assertEqual(n1.pc_covered, 90)
-        
+
     def test_addition(self):
         n1 = Numbers(n_files=1, n_statements=200, n_missing=20)
         n2 = Numbers(n_files=1, n_statements=10, n_missing=8)

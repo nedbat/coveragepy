@@ -48,7 +48,7 @@
 - On Py 3.x: need Distribute installed
 - In each Python installation to be used, create a "coverage_test_egg.pth"
   containing::
-  
+
     c:\ned\coverage\trunk\test\eggsrc\dist\covtestegg1-0.0.0-py2.5.egg
 
   (or equivalent).

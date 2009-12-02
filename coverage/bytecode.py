@@ -14,14 +14,14 @@ class ByteCode(object):
 
 class ByteCodes(object):
     """Iterator over byte codes in `code`.
-    
+
     Returns `ByteCode` objects.
-    
+
     """
     def __init__(self, code):
         self.code = code
         self.offset = 0
-        
+
     if sys.hexversion > 0x03000000:
         def __getitem__(self, i):
             return self.code[i]
@@ -31,30 +31,30 @@ class ByteCodes(object):
 
     def __iter__(self):
         return self
-    
+
     def __next__(self):
         if self.offset >= len(self.code):
             raise StopIteration
-        
+
         bc = ByteCode()
         bc.op = self[self.offset]
         bc.offset = self.offset
-        
+
         next_offset = self.offset+1
         if bc.op >= opcode.HAVE_ARGUMENT:
             bc.arg = self[self.offset+1] + 256*self[self.offset+2]
             next_offset += 2
-            
+
             label = -1
             if bc.op in opcode.hasjrel:
                 label = next_offset + bc.arg
             elif bc.op in opcode.hasjabs:
                 label = bc.arg
             bc.jump_to = label
-            
+
         bc.next_offset = self.offset = next_offset
         return bc
-    
+
     next = __next__     # Py2k uses an old-style non-dunder name.
 
 
@@ -62,10 +62,10 @@ class CodeObjects(object):
     """Iterate over all the code objects in `code`."""
     def __init__(self, code):
         self.stack = [code]
-        
+
     def __iter__(self):
         return self
-    
+
     def __next__(self):
         if self.stack:
             # We're going to return the code object on the stack, but first

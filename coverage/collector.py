@@ -12,7 +12,7 @@ except ImportError:
 
 class PyTracer(object):
     """Python implementation of the raw data tracer."""
-    
+
     # Because of poor implementations of trace-function-manipulating tools,
     # the Python trace function must be kept very simple.  In particular, there
     # must be only one function ever set as the trace function, both through
@@ -41,10 +41,10 @@ class PyTracer(object):
 
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
-        
+
         #print "trace event: %s %r @%d" % (
         #           event, frame.f_code.co_filename, frame.f_lineno)
-        
+
         if self.last_exc_back:
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
@@ -52,7 +52,7 @@ class PyTracer(object):
                     self.cur_file_data[(self.last_line, -1)] = None
                 self.cur_file_data, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
-            
+
         if event == 'call':
             # Entering a new function context.  Decide if we should trace
             # in this file.
@@ -85,7 +85,7 @@ class PyTracer(object):
             #print "exc", self.last_line, frame.f_lineno
             self.last_exc_back = frame.f_back
         return self._trace
-        
+
     def start(self):
         """Start this Tracer."""
         sys.settrace(self._trace)
@@ -102,18 +102,19 @@ class PyTracer(object):
 class Collector(object):
     """Collects trace data.
 
-    Creates a Tracer object for each thread, since they track stack information.
-    Each Tracer points to the same shared data, contributing traced data points.
-    
+    Creates a Tracer object for each thread, since they track stack
+    information.  Each Tracer points to the same shared data, contributing
+    traced data points.
+
     When the Collector is started, it creates a Tracer for the current thread,
     and installs a function to create Tracers for each new thread started.
     When the Collector is stopped, all active Tracers are stopped.
-    
+
     Threads started while the Collector is stopped will never have Tracers
     associated with them.
-    
+
     """
-    
+
     # The stack of active Collectors.  Collectors are added here when started,
     # and popped when stopped.  Collectors on the stack are paused when not
     # the top, and resumed when they become the top again.
@@ -121,20 +122,20 @@ class Collector(object):
 
     def __init__(self, should_trace, timid, branch):
         """Create a collector.
-        
+
         `should_trace` is a function, taking a filename, and returning a
         canonicalized filename, or False depending on whether the file should
         be traced or not.
-        
+
         If `timid` is true, then a slower simpler trace function will be
         used.  This is important for some environments where manipulation of
         tracing functions make the faster more sophisticated trace function not
         operate properly.
-        
+
         If `branch` is true, then branches will be measured.  This involves
         collecting data on which statements followed each other (arcs).  Use
         `get_arc_data` to get the arc data.
-        
+
         """
         self.should_trace = should_trace
         self.branch = branch
@@ -160,7 +161,7 @@ class Collector(object):
         # A dictionary mapping filenames to dicts with linenumber keys,
         # or mapping filenames to dicts with linenumber pairs as keys.
         self.data = {}
-        
+
         # A cache of the results from should_trace, the decision about whether
         # to trace execution in a file. A dict of filename to (filename or
         # False).
@@ -214,7 +215,7 @@ class Collector(object):
 
         self.pause()
         self.tracers = []
-        
+
         # Remove this Collector from the stack, and resume the one underneath
         # (if any).
         self._collectors.pop()
@@ -231,7 +232,7 @@ class Collector(object):
                 for k in sorted(stats.keys()):
                     print("%16s: %s" % (k, stats[k]))
         threading.settrace(None)
-        
+
     def resume(self):
         """Resume tracing after a `pause`."""
         for tracer in self.tracers:
@@ -240,9 +241,9 @@ class Collector(object):
 
     def get_line_data(self):
         """Return the line data collected.
-        
+
         Data is { filename: { lineno: None, ...}, ...}
-        
+
         """
         if self.branch:
             # If we were measuring branches, then we have to re-build the dict
@@ -259,7 +260,7 @@ class Collector(object):
 
     def get_arc_data(self):
         """Return the arc data collected.
-        
+
         Data is { filename: { (l1, l2): None, ...}, ...}
 
         Note that no data is collected or returned if the Collector wasn't

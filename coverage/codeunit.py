@@ -8,20 +8,20 @@ from coverage.misc import CoverageException
 
 def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     """Construct a list of CodeUnits from polymorphic inputs.
-    
+
     `morfs` is a module or a filename, or a list of same.
     `file_locator` is a FileLocator that can help resolve filenames.
     `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
     will be omitted from the list.
-    
+
     Returns a list of CodeUnit objects.
-    
+
     """
 
     # Be sure we have a list.
     if not isinstance(morfs, (list, tuple)):
         morfs = [morfs]
-    
+
     # On Windows, the shell doesn't expand wildcards.  Do it here.
     globbed = []
     for morf in morfs:
@@ -32,7 +32,7 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
     morfs = globbed
 
     code_units = [CodeUnit(morf, file_locator) for morf in morfs]
-    
+
     if omit_prefixes:
         assert not isinstance(omit_prefixes, string_class) # common mistake
         prefixes = [file_locator.abs_file(p) for p in omit_prefixes]
@@ -43,7 +43,7 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
                     break
             else:
                 filtered.append(cu)
-    
+
         code_units = filtered
 
     return code_units
@@ -51,13 +51,13 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None):
 
 class CodeUnit(object):
     """Code unit: a filename or module.
-    
+
     Instance attributes:
-    
+
     `name` is a human-readable name for this code unit.
     `filename` is the os path from which we can read the source.
     `relative` is a boolean.
-    
+
     """
 
     def __init__(self, morf, file_locator):
@@ -92,34 +92,34 @@ class CodeUnit(object):
 
     # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
     # of them defined.
-    
+
     def __lt__(self, other):
         return self.name < other.name
-    
+
     def __le__(self, other):
         return self.name <= other.name
 
     def __eq__(self, other):
         return self.name == other.name
-    
+
     def __ne__(self, other):
         return self.name != other.name
 
     def __gt__(self, other):
         return self.name > other.name
-    
+
     def __ge__(self, other):
         return self.name >= other.name
 
     def flat_rootname(self):
         """A base for a flat filename to correspond to this code unit.
-        
+
         Useful for writing files about the code where you want all the files in
         the same directory, but need to differentiate same-named files from
         different directories.
-        
+
         For example, the file a/b/c.py might return 'a_b_c'
-        
+
         """
         if self.modname:
             return self.modname.replace('.', '_')
@@ -137,7 +137,7 @@ class CodeUnit(object):
         source = self.file_locator.get_zip_data(self.filename)
         if source is not None:
             return StringIO(source)
-            
+
         # Couldn't find source.
         raise CoverageException(
             "No source for code %r." % self.filename

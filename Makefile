@@ -9,7 +9,7 @@ TEST_EGG = test/eggsrc/dist/covtestegg1-0.0.0-py*.egg
 clean:
 	python test/test_farm.py clean
 	-rm -rf build coverage.egg-info dist htmlcov
-	-rm -f *.pyd */*.pyd 
+	-rm -f *.pyd */*.pyd
 	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
 	-rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
 	-rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
@@ -22,8 +22,8 @@ clean:
 	-rm -rf doc/_build/*
 
 LINTABLE = coverage setup.py test
-	
-lint: 
+
+lint:
 	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc $(LINTABLE)
 	python /Python25/Lib/tabnanny.py $(LINTABLE)
 	python checkeol.py
@@ -52,7 +52,7 @@ install:
 
 DEVINST_FILE = coverage.egg-info/PKG-INFO
 devinst: $(DEVINST_FILE)
-$(DEVINST_FILE): coverage/tracer.c 
+$(DEVINST_FILE): coverage/tracer.c
 	-rm coverage/tracer.pyd
 	python setup.py develop
 

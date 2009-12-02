@@ -6,11 +6,11 @@ from coverage.report import Reporter
 
 class AnnotateReporter(Reporter):
     """Generate annotated source files showing line coverage.
-    
+
     This reporter creates annotated copies of the measured source files. Each
     .py file is copied as a .py,cover file, with a left-hand margin annotating
     each line::
-    
+
         > def h(x):
         -     if 0:   #pragma: no cover
         -         pass
@@ -18,30 +18,30 @@ class AnnotateReporter(Reporter):
         !         a = 1
         >     else:
         >         a = 2
-          
+
         > h(2)
 
     Executed lines use '>', lines not executed use '!', lines excluded from
     consideration use '-'.
-    
+
     """
 
     def __init__(self, coverage, ignore_errors=False):
         super(AnnotateReporter, self).__init__(coverage, ignore_errors)
         self.directory = None
-        
+
     blank_re = re.compile(r"\s*(#|$)")
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
     def report(self, morfs, directory=None, omit_prefixes=None):
         """Run the report."""
         self.report_files(self.annotate_file, morfs, directory, omit_prefixes)
-        
+
     def annotate_file(self, cu, analysis):
         """Annotate a single file.
-        
+
         `cu` is the CodeUnit for the file to annotate.
-        
+
         """
         if not cu.relative:
             return
@@ -77,7 +77,7 @@ class AnnotateReporter(Reporter):
             if self.blank_re.match(line):
                 dest.write('  ')
             elif self.else_re.match(line):
-                # Special logic for lines containing only 'else:'.  
+                # Special logic for lines containing only 'else:'.
                 if i >= len(statements) and j >= len(missing):
                     dest.write('! ')
                 elif i >= len(statements) or j >= len(missing):

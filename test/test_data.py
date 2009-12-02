@@ -29,11 +29,11 @@ class DataTest(CoverageTest):
     def assert_summary(self, covdata, summary):
         """Check that the summary of `covdata` is `summary`."""
         self.assertEqual(covdata.summary(), summary)
-        
+
     def assert_executed_files(self, covdata, execed):
         """Check that `covdata`'s executed files are `execed`."""
         self.assertSameElements(covdata.executed_files(), execed)
-    
+
     def test_reading_empty(self):
         covdata = CoverageData()
         covdata.read()
@@ -44,12 +44,12 @@ class DataTest(CoverageTest):
         covdata.add_line_data(DATA_1)
         self.assert_summary(covdata, SUMMARY_1)
         self.assert_executed_files(covdata, EXECED_FILES_1)
-        
+
     def test_writing_and_reading(self):
         covdata1 = CoverageData()
         covdata1.add_line_data(DATA_1)
         covdata1.write()
-        
+
         covdata2 = CoverageData()
         covdata2.read()
         self.assert_summary(covdata2, SUMMARY_1)
@@ -58,11 +58,11 @@ class DataTest(CoverageTest):
         covdata1 = CoverageData(suffix='1')
         covdata1.add_line_data(DATA_1)
         covdata1.write()
-        
+
         covdata2 = CoverageData(suffix='2')
         covdata2.add_line_data(DATA_2)
         covdata2.write()
-        
+
         covdata3 = CoverageData()
         covdata3.combine_parallel_data()
         self.assert_summary(covdata3, SUMMARY_1_2)
@@ -74,7 +74,7 @@ class DataTest(CoverageTest):
         covdata1.write()
         covdata1.erase()
         self.assert_summary(covdata1, {})
-        
+
         covdata2 = CoverageData()
         covdata2.read()
         self.assert_summary(covdata2, {})
@@ -84,13 +84,13 @@ class DataTest(CoverageTest):
         covdata = CoverageData()
         covdata.add_line_data(DATA_1)
         covdata.write()
-        
+
         fdata = open(".coverage", 'rb')
         try:
             data = pickle.load(fdata)
         finally:
             fdata.close()
-        
+
         lines = data['lines']
         self.assertSameElements(lines.keys(), EXECED_FILES_1)
         self.assertSameElements(lines['a.py'], A_PY_LINES_1)
@@ -103,13 +103,13 @@ class DataTest(CoverageTest):
         covdata = CoverageData()
         covdata.add_arc_data(ARC_DATA_3)
         covdata.write()
-        
+
         fdata = open(".coverage", 'rb')
         try:
             data = pickle.load(fdata)
         finally:
             fdata.close()
-        
+
         self.assertSameElements(data['lines'].keys(), [])
         arcs = data['arcs']
         self.assertSameElements(arcs['x.py'], X_PY_ARCS_3)

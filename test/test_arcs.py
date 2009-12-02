@@ -25,7 +25,7 @@ class SimpleArcTest(CoverageTest):
 
             a = 2
             b = 3
-            
+
             c = 5
             """,
             arcz=".2 23 35 5.")
@@ -34,7 +34,7 @@ class SimpleArcTest(CoverageTest):
         self.check_coverage("""\
             def foo():
                 a = 2
-                
+
             foo()
             """,
             arcz=".1 .2 14 2. 4.")
@@ -54,7 +54,7 @@ class SimpleArcTest(CoverageTest):
             assert a == 1
             """,
             arcz=".1 12 23 24 34 4.", arcz_missing="23 34")
-        
+
     def test_if_else(self):
         self.check_coverage("""\
             if len([]) == 0:
@@ -139,7 +139,7 @@ class SimpleArcTest(CoverageTest):
 
 class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""
-    
+
     def test_loop(self):
         self.check_coverage("""\
             for i in range(10):

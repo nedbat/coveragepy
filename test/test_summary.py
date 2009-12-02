@@ -22,7 +22,7 @@ class SummaryTest(CoverageTest):
         report = self.run_command(cmd).replace('\\', '/')
         self.assert_("error" not in report.lower())
         return report
-    
+
     def line_count(self, report):
         """How many lines are in `report`?"""
         self.assertEqual(report.split('\n')[-1], "")
@@ -73,7 +73,7 @@ class SummaryTest(CoverageTest):
         prefix = os.path.split(__file__)[0]
         self.run_command("coverage -x mycode.py")
         report = self.report_from_command("coverage -r -o %s" % prefix)
-        
+
         # Name     Stmts   Exec  Cover
         # ----------------------------
         # mycode       4      4   100%

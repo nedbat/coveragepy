@@ -38,7 +38,7 @@ Version 3.2
 
 - Some exceptions reported by the command line interface have been cleaned up
   so that tracebacks inside coverage.py aren't shown.  Fixes `issue 23`_.
-  
+
 - Fixed some problems syntax coloring sources with line continuations and
   source with tabs: `issue 30`_ and `issue 31`_.
 
@@ -116,7 +116,7 @@ Version 3.0, 13 June 2009
   other encouragement.
 
 - The minimum supported Python version is 2.3.
- 
+
 - When using the object api (that is, constructing a coverage() object), data
   is no longer saved automatically on process exit.  You can re-enable it with
   the ``auto_data=True`` parameter on the coverage() constructor.
@@ -130,12 +130,12 @@ Version 3.0, 13 June 2009
 
   - Added parameters to coverage.__init__ for options that had been set on
     the coverage object itself.
-  
+
   - Added clear_exclude() and get_exclude_list() methods for programmatic
     manipulation of the exclude regexes.
-    
+
   - Added coverage.load() to read previously-saved data from the data file.
-    
+
   - coverage.annotate_file is no longer available.
-    
+
   - Removed the undocumented cache_file argument to coverage.usecache().

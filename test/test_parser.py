@@ -19,7 +19,7 @@ class ParserTest(CoverageTest):
         cp = CodeParser(text, exclude="nocover")
         cp.parse_source()
         return cp
-    
+
     def test_exit_counts(self):
         cp = self.parse_source("""\
             # check some basic branch counting
@@ -29,7 +29,7 @@ class ParserTest(CoverageTest):
                         return 5
                     else:
                         return 7
-            
+
             class Bar:
                 pass
             """)
@@ -52,13 +52,13 @@ class ParserTest(CoverageTest):
         self.assertEqual(cp.exit_counts(), {
             1: 1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1
             })
-    
+
     def test_excluded_classes(self):
         cp = self.parse_source("""\
             class Foo:
                 def __init__(self):
                     pass
-                    
+
             if 0:   # nocover
                 class Bar:
                     pass
@@ -66,7 +66,7 @@ class ParserTest(CoverageTest):
         self.assertEqual(cp.exit_counts(), {
             1:0, 2:1, 3:1
             })
-        
+
     def test_missing_branch_to_excluded_code(self):
         cp = self.parse_source("""\
             if fooey:

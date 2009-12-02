@@ -68,9 +68,9 @@ Version 3.2b1, 10 November 2009
 
 - Some exceptions reported by the command line interface have been cleaned up
   so that tracebacks inside coverage.py aren't shown.  Fixes `issue 23`_.
-  
+
 .. _issue 23: http://bitbucket.org/ned/coveragepy/issue/23
-  
+
 
 Version 3.1, 4 October 2009
 ---------------------------
@@ -144,10 +144,10 @@ Version 3.0, 13 June 2009
 
 - Fixed the way the Python library was ignored.  Too much code was being
   excluded the old way.
-  
+
 - Tabs are now properly converted in HTML reports.  Previously indentation was
   lost.  Fixed `issue 6`.
-  
+
 - Nested modules now get a proper flat_rootname.  Thanks, Christian Heimes.
 
 .. _issue 6: http://bitbucket.org/ned/coveragepy/issue/6
@@ -158,7 +158,7 @@ Version 3.0b3, 16 May 2009
 
 - Added parameters to coverage.__init__ for options that had been set on the
   coverage object itself.
-  
+
 - Added clear_exclude() and get_exclude_list() methods for programmatic
   manipulation of the exclude regexes.
 
@@ -216,16 +216,16 @@ Major overhaul.
 
 - Executable lines are identified by reading the line number tables in the
   compiled code, removing a great deal of complicated analysis code.
-  
+
 - Precisely which lines are considered executable has changed in some cases.
   Therefore, your coverage stats may also change slightly.
 
 - The singleton coverage object is only created if the module-level functions
   are used.  This maintains the old interface while allowing better
   programmatic use of Coverage.
-  
+
 - The minimum supported Python version is 2.3.
- 
+
 
 Version 2.85, 14 September 2008
 -------------------------------
@@ -233,7 +233,7 @@ Version 2.85, 14 September 2008
 - Add support for finding source files in eggs. Don't check for
   morf's being instances of ModuleType, instead use duck typing so that
   pseudo-modules can participate. Thanks, Imri Goldberg.
-  
+
 - Use os.realpath as part of the fixing of file names so that symlinks won't
   confuse things. Thanks, Patrick Mezard.
 
@@ -288,7 +288,7 @@ Version 2.7, 21 July 2007
 
 - In reports, ignore code executed from strings, since we can't do anything
   useful with it anyway.
-  
+
 - Better file handling on Linux, thanks Guillaume Chazarain.
 
 - Better shell support on Windows, thanks Noel O'Boyle.
@@ -316,7 +316,7 @@ Version 2.5, 4 December 2005
 
 - Call threading.settrace so that all threads are measured. Thanks Martin
   Fuzzey.
-  
+
 - Add a file argument to report so that reports can be captured to a different
   destination.
 

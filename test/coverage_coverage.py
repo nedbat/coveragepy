@@ -8,7 +8,7 @@ HTML_DIR = "htmlcov"
 def run_tests_with_coverage():
     """Run the test suite with coverage measuring itself."""
     import coverage
-    
+
     tracer = os.environ.get('COVERAGE_TEST_TRACER', 'c')
     version = "%s%s" % sys.version_info[:2]
     suffix = ".%s_%s" % (version, tracer)
@@ -20,7 +20,7 @@ def run_tests_with_coverage():
     cov.cover_prefix = "Please measure coverage.py!"
     cov.erase()
     cov.start()
-    
+
     # Re-import coverage to get it coverage tested!  I don't understand all the
     # mechanics here, but if I don't carry over the imported modules (in
     # covmods), then things go haywire (os == None, eventually).
@@ -39,7 +39,7 @@ def run_tests_with_coverage():
     # Run nosetests, with the arguments from our command line.
     print(":: Running nosetests %s" % " ".join(sys.argv[1:]))
     nose.run()
-    
+
     cov.stop()
     print(":: Saving .coverage%s" % suffix)
     cov.save()
@@ -59,7 +59,7 @@ def report_on_combined_files():
     cov.exclude("def __repr__")
     cov.exclude("if __name__ == .__main__.:")
     cov.exclude("raise AssertionError")
-    
+
     cov.html_report(
         directory=HTML_DIR, ignore_errors=True, omit_prefixes=["mock"]
         )
@@ -69,7 +69,7 @@ try:
     cmd = sys.argv[1]
 except IndexError:
     cmd = ''
-    
+
 if cmd == 'run':
     # Ugly hack: nose.run reads sys.argv directly, so here I delete my command
     # argument so that sys.argv is left as just nose arguments.

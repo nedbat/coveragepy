@@ -14,20 +14,20 @@ def rate(hit, num):
 
 class XmlReporter(Reporter):
     """A reporter for writing Cobertura-style XML coverage results."""
-    
+
     def __init__(self, coverage, ignore_errors=False):
         super(XmlReporter, self).__init__(coverage, ignore_errors)
-    
+
         self.packages = None
         self.xml_out = None
         self.arcs = coverage.data.has_arcs()
 
     def report(self, morfs, omit_prefixes=None, outfile=None):
         """Generate a Cobertura-compatible XML report for `morfs`.
-        
+
         `morfs` is a list of modules or filenames.  `omit_prefixes` is a list
         of strings, prefixes of modules to omit from the report.
-        
+
         """
         # Initial setup.
         outfile = outfile or sys.stdout
@@ -39,7 +39,7 @@ class XmlReporter(Reporter):
             "http://cobertura.sourceforge.net/xml/coverage-03.dtd"
             )
         self.xml_out = impl.createDocument(None, "coverage", docType)
-        
+
         # Write header stuff.
         xcoverage = self.xml_out.documentElement
         xcoverage.setAttribute("version", __version__)
@@ -56,7 +56,7 @@ class XmlReporter(Reporter):
 
         lnum_tot, lhits_tot = 0, 0
         bnum_tot, bhits_tot = 0, 0
-        
+
         # Populate the XML DOM with the package info.
         for pkg_name, pkg_data in self.packages.items():
             class_elts, lhits, lnum, bhits, bnum = pkg_data
@@ -75,16 +75,16 @@ class XmlReporter(Reporter):
             lhits_tot += lhits
             bnum_tot += bnum
             bhits_tot += bhits
-            
+
         xcoverage.setAttribute("line-rate", str(rate(lhits_tot, lnum_tot)))
         xcoverage.setAttribute("branch-rate", str(rate(bhits_tot, bnum_tot)))
-        
+
         # Use the DOM to write the output file.
         outfile.write(self.xml_out.toprettyxml())
 
     def xml_file(self, cu, analysis):
         """Add to the XML report for a single file."""
-        
+
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
         dirname, fname = os.path.split(cu.name)
@@ -133,7 +133,7 @@ class XmlReporter(Reporter):
         else:
             class_branches = 0.0
             class_branch_hits = 0.0
-            
+
         # Finalize the statistics that are collected in the XML DOM.
         line_rate = rate(class_hits, class_lines)
         branch_rate = rate(class_branch_hits, class_branches)

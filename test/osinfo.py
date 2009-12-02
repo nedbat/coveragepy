@@ -23,7 +23,7 @@ if sys.hexversion >= 0x02050000 and sys.platform == 'win32':
                         ('PeakPagefileUsage', ctypes.c_size_t),
                         ('PrivateUsage', ctypes.c_size_t),
                        ]
-    
+
         mem_struct = PROCESS_MEMORY_COUNTERS_EX()
         ret = ctypes.windll.psapi.GetProcessMemoryInfo(
                     ctypes.windll.kernel32.GetCurrentProcess(),
@@ -37,9 +37,9 @@ if sys.hexversion >= 0x02050000 and sys.platform == 'win32':
 elif sys.platform == 'linux2':
     # Linux implementation
     import os
-    
+
     _scale = {'kb': 1024, 'mb': 1024*1024}
-    
+
     def _VmB(key):
         """Read the /proc/PID/status file to find memory use."""
         try:

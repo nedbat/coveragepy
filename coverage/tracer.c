@@ -60,7 +60,7 @@ typedef struct {
     PyObject * data;
     PyObject * should_trace_cache;
     PyObject * arcs;
-    
+
     /* Has the tracer been started? */
     int started;
     /* Are we tracing arcs, or just lines? */
@@ -71,7 +71,7 @@ typedef struct {
         data for a single source file.  The data stack parallels the call stack:
         each call pushes the new frame's file data onto the data stack, and each
         return pops file data off.
-        
+
         The file data is a dictionary whose form depends on the tracing options.
         If tracing arcs, the keys are line number pairs.  If not tracing arcs,
         the keys are line numbers.  In both cases, the value is irrelevant
@@ -130,7 +130,7 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
     self->data = NULL;
     self->should_trace_cache = NULL;
     self->arcs = NULL;
-    
+
     self->started = 0;
     self->tracing_arcs = 0;
 
@@ -143,7 +143,7 @@ Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
     }
     self->data_stack_alloc = STACK_DELTA;
 
-    self->cur_file_data = NULL;    
+    self->cur_file_data = NULL;
     self->last_line = -1;
 
     self->last_exc_back = NULL;
@@ -171,7 +171,7 @@ Tracer_dealloc(Tracer *self)
 static const char *
 indent(int n)
 {
-    static const char * spaces = 
+    static const char * spaces =
         "                                                                    "
         "                                                                    "
         "                                                                    "
@@ -220,7 +220,7 @@ static int
 Tracer_record_pair(Tracer *self, int l1, int l2)
 {
     int ret = 0;
-    
+
     PyObject * t = PyTuple_New(2);
     if (t != NULL) {
         PyTuple_SET_ITEM(t, 0, MyInt_FromLong(l1));
@@ -248,11 +248,11 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     PyObject * filename = NULL;
     PyObject * tracename = NULL;
 
-    #if WHAT_LOG 
+    #if WHAT_LOG
     if (what <= sizeof(what_sym)/sizeof(const char *)) {
         printf("trace: %s @ %s %d\n", what_sym[what], MyText_AS_STRING(frame->f_code->co_filename), frame->f_lineno);
     }
-    #endif 
+    #endif
 
     #if TRACE_LOG
     if (strstr(MyText_AS_STRING(frame->f_code->co_filename), start_file) && frame->f_lineno == start_line) {
@@ -269,7 +269,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
                that frame is gone.  Our handling for RETURN doesn't need the
                actual frame, but we do log it, so that will look a little off if
                you're looking at the detailed log.
-               
+
                If someday we need to examine the frame when doing RETURN, then
                we'll need to keep more of the missed frame's state.
             */
@@ -288,7 +288,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         }
         self->last_exc_back = NULL;
     }
-    
+
 
     switch (what) {
     case PyTrace_CALL:      /* 0 */
@@ -361,12 +361,12 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             self->cur_file_data = NULL;
             SHOWLOG(self->depth, frame->f_lineno, filename, "skipped");
         }
-        
+
         Py_DECREF(tracename);
 
         self->last_line = -1;
         break;
-    
+
     case PyTrace_RETURN:    /* 3 */
         STATS( self->stats.returns++; )
         /* A near-copy of this code is above in the missing-return handler. */
@@ -383,7 +383,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             self->depth--;
         }
         break;
-    
+
     case PyTrace_LINE:      /* 2 */
         STATS( self->stats.lines++; )
         if (self->depth >= 0) {
@@ -414,29 +414,29 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             self->last_line = frame->f_lineno;
         }
         break;
-    
+
     case PyTrace_EXCEPTION:
         /* Some code (Python 2.3, and pyexpat anywhere) fires an exception event
            without a return event.  To detect that, we'll keep a copy of the
            parent frame for an exception event.  If the next event is in that
            frame, then we must have returned without a return event.  We can
            synthesize the missing event then.
-           
+
            Python itself fixed this problem in 2.4.  Pyexpat still has the bug.
            I've reported the problem with pyexpat as http://bugs.python.org/issue6359 .
            If it gets fixed, this code should still work properly.  Maybe some day
            the bug will be fixed everywhere coverage.py is supported, and we can
            remove this missing-return detection.
-           
+
            More about this fix: http://nedbatchelder.com/blog/200907/a_nasty_little_bug.html
         */
         STATS( self->stats.exceptions++; )
         self->last_exc_back = frame->f_back;
         break;
-    
+
     default:
         STATS( self->stats.others++; )
-        break;    
+        break;
     }
 
     return 0;
@@ -586,7 +586,7 @@ PyInit_tracer(void)
     if (mod == NULL) {
         return NULL;
     }
-    
+
     TracerType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&TracerType) < 0) {
         Py_DECREF(mod);
@@ -595,8 +595,8 @@ PyInit_tracer(void)
 
     Py_INCREF(&TracerType);
     PyModule_AddObject(mod, "Tracer", (PyObject *)&TracerType);
-    
-    return mod;    
+
+    return mod;
 }
 
 #else

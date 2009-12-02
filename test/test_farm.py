@@ -15,9 +15,9 @@ def test_farm(clean_only=False):
 
 class FarmTestCase(object):
     """A test case from the farm tree.
-    
+
     Tests are short Python script files, often called run.py:
-    
+
         copy("src", "out")
         run('''
             coverage -x white.py
@@ -29,14 +29,14 @@ class FarmTestCase(object):
     Verbs (copy, run, compare, clean) are methods in this class.  FarmTestCase
     has options to allow various uses of the test cases (normal execution,
     cleaning-only, or run and leave the results for debugging).
-    
+
     """
     def __init__(self, runpy, clean_only=False, dont_clean=False):
         """Create a test case from a run.py file.
-        
+
         `clean_only` means that only the clean() action is executed.
         `dont_clean` means that the clean() action is not executed.
-        
+
         """
         self.description = runpy
         self.dir, self.runpy = os.path.split(runpy)
@@ -54,14 +54,14 @@ class FarmTestCase(object):
         oldpath = sys.path[:]
         sys.path.insert(0, directory)
         return oldpath
-    
+
     def restorepath(self, path):
         """Restore the system path to `path`."""
         sys.path = path
 
     def __call__(self):
         """Execute the test from the run.py file.
-        
+
         """
         cwd = self.cd(self.dir)
 
@@ -74,7 +74,7 @@ class FarmTestCase(object):
             glo = dict([(fn, getattr(self, fn)) for fn in fns])
             if self.dont_clean:
                 glo['clean'] = self.noop
-        
+
         try:
             execfile(self.runpy, glo)
         finally:
@@ -90,11 +90,11 @@ class FarmTestCase(object):
 
     def fnmatch_list(self, files, file_pattern):
         """Filter the list of `files` to only those that match `file_pattern`.
-        
+
         If `file_pattern` is None, then return the entire list of files.
-        
+
         Returns a list of the filtered files.
-        
+
         """
         if file_pattern:
             files = [f for f in files if fnmatch.fnmatch(f, file_pattern)]
@@ -106,7 +106,7 @@ class FarmTestCase(object):
         # Modules should be importable from the current directory.
         self.old_syspath = sys.path[:]
         sys.path.insert(0, '')
-    
+
     def tearDown(self):
         """Test tear down, run by nose after __call__."""
         # Make sure no matter what, the test is cleaned up.
@@ -118,11 +118,11 @@ class FarmTestCase(object):
         sys.path = self.old_syspath
 
     # Functions usable inside farm run.py files
-    
+
     def noop(self, *args, **kwargs):
         """A no-op function to stub out run, copy, etc, when only cleaning."""
         pass
-    
+
     def copy(self, src, dst):
         """Copy a directory."""
 
@@ -132,11 +132,11 @@ class FarmTestCase(object):
 
     def run(self, cmds, rundir="src", outfile=None):
         """Run a list of commands.
-        
+
         `cmds` is a string, commands separated by newlines.
         `rundir` is the directory in which to run the commands.
         `outfile` is a filename to redirect stdout to.
-        
+
         """
         cwd = self.cd(rundir)
         try:
@@ -155,12 +155,12 @@ class FarmTestCase(object):
 
     def runfunc(self, fn, rundir="src", addtopath=None):
         """Run a function.
-        
+
         `fn` is a callable.
         `rundir` is the directory in which to run the function.
-        
+
         """
-        
+
         cwd = self.cd(rundir)
         oldpath = self.addtopath(addtopath)
         try:
@@ -173,28 +173,28 @@ class FarmTestCase(object):
             left_extra=False, right_extra=False, scrubs=None
             ):
         """Compare files matching `file_pattern` in `dir1` and `dir2`.
-        
+
         `dir2` is interpreted as a prefix, with Python version numbers appended
         to find the actual directory to compare with. "foo" will compare against
         "foo_v241", "foo_v24", "foo_v2", or "foo", depending on which directory
         is found first.
-        
+
         `size_within` is a percentage delta for the file sizes.  If non-zero,
         then the file contents are not compared (since they are expected to
         often be different), but the file sizes must be within this amount.
         For example, size_within=10 means that the two files' sizes must be
         within 10 percent of each other to compare equal.
-        
+
         `left_extra` true means the left directory can have extra files in it
         without triggering an assertion.  `right_extra` means the right
         directory can.
-        
+
         `scrubs` is a list of pairs, regex find and replace patterns to use to
         scrub the files of unimportant differences.
-        
+
         An assertion will be raised if the directories fail one of their
         matches.
-        
+
         """
         # Search for a dir2 with a version suffix.
         version_suff = ''.join(map(str, sys.version_info[:3]))
@@ -207,12 +207,12 @@ class FarmTestCase(object):
 
         assert os.path.exists(dir1), "Left directory missing: %s" % dir1
         assert os.path.exists(dir2), "Right directory missing: %s" % dir2
-            
+
         dc = filecmp.dircmp(dir1, dir2)
         diff_files = self.fnmatch_list(dc.diff_files, file_pattern)
         left_only = self.fnmatch_list(dc.left_only, file_pattern)
         right_only = self.fnmatch_list(dc.right_only, file_pattern)
-        
+
         if size_within:
             # The files were already compared, use the diff_files list as a
             # guide for size comparison.
@@ -253,10 +253,10 @@ class FarmTestCase(object):
 
     def _scrub(self, strlist, scrubs):
         """Scrub uninteresting data from the strings in `strlist`.
-        
+
         `scrubs is a list of (find, replace) pairs of regexes that are used on
         each string in `strlist`.  A list of scrubbed strings is returned.
-        
+
         """
         scrubbed = []
         for s in strlist:
@@ -267,10 +267,10 @@ class FarmTestCase(object):
 
     def contains(self, filename, *strlist):
         """Check that the file contains all of a list of strings.
-        
+
         An assert will be raised if one of the arguments in `strlist` is
         missing in `filename`.
-        
+
         """
         text = open(filename, "r").read()
         for s in strlist:
@@ -278,10 +278,10 @@ class FarmTestCase(object):
 
     def doesnt_contain(self, filename, *strlist):
         """Check that the file contains none of a list of strings.
-        
+
         An assert will be raised if any of the strings in strlist appears in
         `filename`.
-        
+
         """
         text = open(filename, "r").read()
         for s in strlist:
@@ -294,13 +294,13 @@ class FarmTestCase(object):
 
 def main():     # pragma: no cover
     """Command-line access to test_farm.
-    
+
     Commands:
-    
+
     run testcase    - Run a single test case.
     out testcase    - Run a test case, but don't clean up, to see the output.
     clean           - Clean all the output for all tests.
-        
+
     """
     op = sys.argv[1]
     if op == 'run':
@@ -317,7 +317,7 @@ def main():     # pragma: no cover
             test[0].run_fully()
     else:
         print("Need an operation: run, out, clean")
-    
+
 # So that we can run just one farm run.py at a time.
 if __name__ == '__main__':
     main()
