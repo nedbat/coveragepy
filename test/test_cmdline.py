@@ -270,6 +270,10 @@ class ClassicCmdLineTest(CmdLineTest):
         self.cmd_help("-h", topic="help", ret=OK)
         self.cmd_help("--help", topic="help", ret=OK)
 
+    def testVersion(self):
+        # coverage --version
+        self.cmd_help("--version", topic="version", ret=OK)
+
     ## Error cases
     
     def testArglessActions(self):

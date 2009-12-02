@@ -1,6 +1,6 @@
 """Command-line support for Coverage."""
 
-import optparse, sys
+import optparse, re, sys
 
 from coverage.execfile import run_python_file
 from coverage.misc import CoverageException
@@ -9,6 +9,11 @@ from coverage.misc import CoverageException
 class Opts(object):
     """A namespace class for individual options we'll build parsers from."""
     
+    append = optparse.Option(
+        '-a', '--append', action='store_false', dest="erase_first",
+        help="Append coverage data to .coverage, otherwise it is started "
+                "clean with each run."
+        )
     branch = optparse.Option(
         '', '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage."
@@ -63,10 +68,9 @@ class Opts(object):
         help="Use a simpler but slower trace method.  Try this if you get "
                 "seemingly impossible results!"
         )
-    append = optparse.Option(
-        '-a', '--append', action='store_false', dest="erase_first",
-        help="Append coverage data to .coverage, otherwise it is started "
-                "clean with each run."
+    version = optparse.Option(
+        '', '--version', action='store_true',
+        help="Display version information and exit."
         )
     
 class CoverageOptionParser(optparse.OptionParser, object):
@@ -93,6 +97,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             show_missing=None,
             timid=None,
             erase_first=None,
+            version=None,
             )
 
         self.disable_interspersed_args()
@@ -143,6 +148,7 @@ class ClassicOptionParser(CoverageOptionParser):
             Opts.old_omit,
             Opts.parallel_mode,
             Opts.timid,
+            Opts.version,
         ])
 
     def add_action(self, dash, dashdash, action_code):
@@ -226,16 +232,16 @@ CMDS = {
     'combine': CmdOptionParser("combine", [Opts.help],
         usage = " ",
         description = "Combine data from multiple coverage files collected "
-            "with 'run -p'.  The combined results are stored into a single "
-            "file representing the union of the coverage."
+            "with 'run -p'.  The combined results are written to a single "
+            "file representing the union of the data."
         ),
 
     'debug': CmdOptionParser("debug", [Opts.help],
         usage = "<topic>",
-        description = "Display information the internals of coverage.py, "
+        description = "Display information on the internals of coverage.py, "
             "for diagnosing problems. "
-            "Topics are 'data' to show a summary of the data collected in "
-            ".coverage, or 'sys' to show installation information."
+            "Topics are 'data' to show a summary of the collected data, "
+            "or 'sys' to show installation information."
         ),
 
     'erase': CmdOptionParser("erase", [Opts.help],
@@ -251,7 +257,7 @@ CMDS = {
             Opts.help,
             ],
         usage = "[options] [modules]",
-        description = "Report coverage stats on modules."
+        description = "Report coverage statistics on modules."
         ),
 
     'run': CmdOptionParser("execute",
@@ -266,7 +272,7 @@ CMDS = {
         defaults = {'erase_first':True},
         cmd = "run",
         usage = "[options] <pyfile> [program options]",
-        description = "Run a python program, measuring code execution."
+        description = "Run a Python program, measuring code execution."
         ),
     
     'xml': CmdOptionParser("xml",
@@ -315,7 +321,6 @@ class CoverageScript(object):
             print(parser.format_help().strip())
         else:
             # Parse out the topic we want from HELP_TOPICS
-            import re
             topic_list = re.split("(?m)^=+ (\w+) =+$", HELP_TOPICS)
             topics = dict(zip(topic_list[1::2], topic_list[2::2]))
             help_msg = topics.get(topic, '').strip()
@@ -361,6 +366,10 @@ class CoverageScript(object):
                 self.help_fn(topic='help')
             else:
                 self.help_fn(parser=parser)
+            return OK
+
+        if options.version:
+            self.help_fn(topic='version')
             return OK
 
         if "help" in options.actions:
@@ -494,7 +503,7 @@ class CoverageScript(object):
 HELP_TOPICS = r"""
 
 == classic ====================================================================
-Coverage version %(__version__)s
+Coverage.py version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
 
 Usage:
@@ -540,7 +549,7 @@ Coverage data is saved in the file .coverage by default.  Set the
 COVERAGE_FILE environment variable to save it somewhere else.
 
 == help =======================================================================
-Coverage version %(__version__)s
+Coverage.py, version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
 
 usage: coverage <command> [options] [args]
@@ -561,6 +570,9 @@ For more information, see %(__url__)s
 
 == minimum_help ===============================================================
 Code coverage for Python.  Use 'coverage help' for help.
+
+== version ====================================================================
+Coverage.py, version %(__version__)s.  %(__url__)s
 
 """
 
