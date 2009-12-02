@@ -11,7 +11,7 @@ class Opts(object):
     
     branch = optparse.Option(
         '', '--branch', action='store_true',
-        help="Measure branch execution. HIGHLY EXPERIMENTAL!"
+        help="Measure branch coverage in addition to statement coverage."
         )
     directory = optparse.Option(
         '-d', '--directory', action='store',

@@ -15,6 +15,7 @@ Coverage TODO
 + A missing branch to leave the function shows an annotation of -1. Now "exit".
 + XML report needs to get branch information.
 + Add branch info to "coverage debug data"
++ Polish up the help, and double-check the docs.
 
 
 * 3.3
