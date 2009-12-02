@@ -22,6 +22,7 @@ Coverage TODO
 
 - Config file
 - Better omit handling that ignores files during measurement.
+    - Deal with ~ in specified paths correctly.
 
 
 * Speed
