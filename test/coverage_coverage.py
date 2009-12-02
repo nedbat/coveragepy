@@ -6,6 +6,7 @@ import nose
 HTML_DIR = "htmlcov"
 
 def run_tests_with_coverage():
+    """Run the test suite with coverage measuring itself."""
     import coverage
     
     tracer = os.environ.get('COVERAGE_TEST_TRACER', 'c')
@@ -30,8 +31,8 @@ def run_tests_with_coverage():
     for name, mod in modules:
         if name.startswith('coverage'):
             if hasattr(mod, '__file__') and mod.__file__.startswith(covdir):
-                    covmods[name] = mod
-                    del sys.modules[name]
+                covmods[name] = mod
+                del sys.modules[name]
     import coverage     # don't warn about re-import: pylint: disable-msg=W0404
     sys.modules.update(covmods)
 
@@ -44,7 +45,7 @@ def run_tests_with_coverage():
     cov.save()
 
 def report_on_combined_files():
-    
+    """Combine all the .coverage files and make an HTML report."""
     if os.path.exists(HTML_DIR):
         shutil.rmtree(HTML_DIR)
 
@@ -59,7 +60,9 @@ def report_on_combined_files():
     cov.exclude("if __name__ == .__main__.:")
     cov.exclude("raise AssertionError")
     
-    cov.html_report(directory=HTML_DIR, ignore_errors=True, omit_prefixes=["mock"])
+    cov.html_report(
+        directory=HTML_DIR, ignore_errors=True, omit_prefixes=["mock"]
+        )
 
 
 try:
