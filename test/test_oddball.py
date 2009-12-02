@@ -68,9 +68,8 @@ class MemoryLeakTest(CoverageTest):
     def test_for_leaks(self):
         lines = list(range(301, 315))
         lines.remove(306)
-        baseline_ram = osinfo.process_ram()
         # Ugly string mumbo jumbo to get 300 blank lines at the beginning..
-        self.check_coverage("""\
+        code = """\
             # blank line\n""" * 300 + """\
             def once(x):
                 if x % 100 == 0:
@@ -80,15 +79,19 @@ class MemoryLeakTest(CoverageTest):
                 else:
                     return 11
             i = 0 # Portable loop without alloc'ing memory.
-            while i < 10000:
+            while i < ITERS:
                 try:
                     once(i)
                 except:
                     pass
                 i += 1
-            """,
-            lines, "")
-        ram_growth = osinfo.process_ram() - baseline_ram
+            """
+        ram_0 = osinfo.process_ram()
+        self.check_coverage(code.replace("ITERS", "10"), lines, "")
+        ram_1 = osinfo.process_ram()
+        self.check_coverage(code.replace("ITERS", "10000"), lines, "")
+        ram_2 = osinfo.process_ram()
+        ram_growth = (ram_2 - ram_1) - (ram_1 - ram_0)
         self.assert_(ram_growth < 100000, "RAM grew by %d" % (ram_growth))
 
 
