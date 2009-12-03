@@ -3,7 +3,7 @@
 import atexit, os, socket
 
 from coverage.annotate import AnnotateReporter
-from coverage.backward import string_class          
+from coverage.backward import string_class
 from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
@@ -51,7 +51,7 @@ class coverage(object):
 
         If `branch` is true, then branch coverage will be measured in addition
         to the usual statement coverage.
-        
+
         `config_file` determines what config file to read.  If it is a string,
         it is the name of the config file to read.  If it is True, then a
         standard file is read (".coveragerc").  If it is False, then no file is
@@ -69,13 +69,13 @@ class coverage(object):
             if config_file is True:
                 config_file = ".coveragerc"
             self.config.from_file(config_file)
-        
+
         # 3: from environment variables:
         self.config.from_environment('COVERAGE_OPTIONS')
         env_data_file = os.environ.get('COVERAGE_FILE')
         if env_data_file:
             self.config.data_file = env_data_file
-        
+
         # 4: from constructor arguments:
         self.config.from_args(
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
@@ -226,7 +226,7 @@ class coverage(object):
         """
         self.config.exclude_list.append(regex)
         self._compile_exclude()
-        
+
     def _compile_exclude(self):
         """Build the internal usable form of the exclude list."""
         self.exclude_re = "(" + ")|(".join(self.config.exclude_list) + ")"
