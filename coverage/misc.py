@@ -2,10 +2,10 @@
 
 def nice_pair(pair):
     """Make a nice string representation of a pair of numbers.
-    
+
     If the numbers are equal, just return the number, otherwise return the pair
     with a dash between them, indicating the range.
-    
+
     """
     start, end = pair
     if start == end:
@@ -20,10 +20,10 @@ def format_lines(statements, lines):
     Format a list of line numbers for printing by coalescing groups of lines as
     long as the lines represent consecutive statements.  This will coalesce
     even if there are gaps between statements.
-    
+
     For example, if `statements` is [1,2,3,4,5,10,11,12,13,14] and
     `lines` is [1,2,5,10,11,13,14] then the result will be "1-2, 5-11, 13-14".
-    
+
     """
     pairs = []
     i = 0
@@ -47,9 +47,9 @@ def format_lines(statements, lines):
 
 def expensive(fn):
     """A decorator to cache the result of an expensive operation.
-    
+
     Only applies to methods with no arguments.
-    
+
     """
     attr = "_cache_" + fn.__name__
     def _wrapped(self):

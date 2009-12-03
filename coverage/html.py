@@ -18,29 +18,29 @@ def data_filename(fname):
 def data(fname):
     """Return the contents of a data file of ours."""
     return open(data_filename(fname)).read()
-    
+
 
 class HtmlReporter(Reporter):
     """HTML reporting."""
-    
+
     def __init__(self, coverage, ignore_errors=False):
         super(HtmlReporter, self).__init__(coverage, ignore_errors)
         self.directory = None
         self.source_tmpl = Templite(data("htmlfiles/pyfile.html"), globals())
-        
+
         self.files = []
         self.arcs = coverage.data.has_arcs()
 
     def report(self, morfs, directory, omit_prefixes=None):
         """Generate an HTML report for `morfs`.
-        
+
         `morfs` is a list of modules or filenames.  `directory` is where to put
         the HTML files. `omit_prefixes` is a list of strings, prefixes of
         modules to omit from the report.
-        
+
         """
         assert directory, "must provide a directory for html reporting"
-        
+
         # Process all the files.
         self.report_files(self.html_file, morfs, directory, omit_prefixes)
 
@@ -59,10 +59,10 @@ class HtmlReporter(Reporter):
 
     def html_file(self, cu, analysis):
         """Generate an HTML file for one source file."""
-        
+
         source = cu.source_file().read()
 
-        nums = analysis.numbers        
+        nums = analysis.numbers
 
         missing_branch_arcs = analysis.missing_branch_arcs()
         n_par = 0   # accumulated below.
@@ -75,12 +75,13 @@ class HtmlReporter(Reporter):
         c_par = " par" + c_run
 
         lines = []
-        
+
         for lineno, line in enumerate(source_token_lines(source)):
             lineno += 1     # 1-based line numbers.
             # Figure out how to mark this line.
             line_class = ""
-            annotate = ""
+            annotate_html = ""
+            annotate_title = ""
             if lineno in analysis.statements:
                 line_class += " stm"
             if lineno in analysis.excluded:
@@ -96,10 +97,14 @@ class HtmlReporter(Reporter):
                         annlines.append("exit")
                     else:
                         annlines.append(str(b))
-                annotate = " ".join(annlines)
+                annotate_html = "&nbsp;&nbsp; ".join(annlines)
+                if len(annlines) > 1:
+                    annotate_title = "no jumps to these line numbers"
+                elif len(annlines) == 1:
+                    annotate_title = "no jump to this line number"
             elif lineno in analysis.statements:
                 line_class += c_run
-            
+
             # Build the HTML for the line
             html = ""
             for tok_type, tok_text in line:
@@ -113,7 +118,8 @@ class HtmlReporter(Reporter):
                 'html': html,
                 'number': lineno,
                 'class': line_class.strip() or "pln",
-                'annotate': annotate,
+                'annotate': annotate_html,
+                'annotate_title': annotate_title,
             })
 
         # Write the HTML page for this file.
@@ -167,10 +173,10 @@ def format_pct(p):
 
 def spaceless(html):
     """Squeeze out some annoying extra space from an HTML string.
-    
+
     Nicely-formatted templates mean lots of extra space in the result.  Get
     rid of some.
-    
+
     """
     html = re.sub(">\s+<p ", ">\n<p ", html)
     return html

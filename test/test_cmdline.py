@@ -10,7 +10,7 @@ from coveragetest import CoverageTest, OK, ERR
 
 class CmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
-    
+
     run_in_temp_dir = False
 
     INIT_LOAD = """\
@@ -25,16 +25,16 @@ class CmdLineTest(CoverageTest):
 
     def mock_command_line(self, args):
         """Run `args` through the command line, with a Mock.
-        
+
         Returns the Mock it used and the status code returned.
-        
+
         """
         m = self.model_object()
         ret = coverage.CoverageScript(
             _covpkg=m, _run_python_file=m.run_python_file, _help_fn=m.help_fn
             ).command_line(shlex.split(args))
         return m, ret
-    
+
     def cmd_executes(self, args, code, ret=OK):
         """Assert that the `args` end up executing the sequence in `code`."""
         m1, r1 = self.mock_command_line(args)
@@ -48,7 +48,7 @@ class CmdLineTest(CoverageTest):
         code_obj = compile(code, "<code>", "exec")
         eval(code_obj, globals(), { 'm2': m2 })
         self.assertEqual(m1.method_calls, m2.method_calls)
-        
+
     def cmd_executes_same(self, args1, args2):
         """Assert that the `args1` executes the same as `args2`."""
         m1, r1 = self.mock_command_line(args1)
@@ -58,10 +58,10 @@ class CmdLineTest(CoverageTest):
 
     def cmd_help(self, args, help_msg=None, topic=None, ret=ERR):
         """Run a command line, and check that it prints the right help.
-        
+
         Only the last function call in the mock is checked, which should be the
         help message that we want to see.
-        
+
         """
         m, r = self.mock_command_line(args)
         self.assertEqual(r, ret,
@@ -75,7 +75,7 @@ class CmdLineTest(CoverageTest):
             self.assertEqual(m.method_calls[-1],
                 ('help_fn', (), {'topic':topic})
                 )
-            
+
 
 class ClassicCmdLineTest(CmdLineTest):
     """Tests of the classic coverage.py command line."""
@@ -90,7 +90,7 @@ class ClassicCmdLineTest(CmdLineTest):
 
     def testExecute(self):
         # coverage -x [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]
-        
+
         # -x calls coverage.load first.
         self.cmd_executes("-x foo.py", """\
             .coverage(cover_pylib=None, data_suffix=False, timid=None, branch=None)
@@ -270,8 +270,12 @@ class ClassicCmdLineTest(CmdLineTest):
         self.cmd_help("-h", topic="help", ret=OK)
         self.cmd_help("--help", topic="help", ret=OK)
 
+    def testVersion(self):
+        # coverage --version
+        self.cmd_help("--version", topic="version", ret=OK)
+
     ## Error cases
-    
+
     def testArglessActions(self):
         self.cmd_help("-e foo bar", "Unexpected arguments: foo bar")
         self.cmd_help("-c baz quux", "Unexpected arguments: baz quux")
@@ -345,7 +349,7 @@ class NewCmdLineTest(CmdLineTest):
         out = self.stdout()
         assert "version:" in out
         assert "data_path:" in out
-    
+
     def testErase(self):
         self.cmd_executes_same("erase", "-e")
 
@@ -383,7 +387,7 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("run -L f.py", "-e -x -L f.py")
         self.cmd_executes_same("run --timid f.py", "-e -x --timid f.py")
         self.cmd_executes_same("run", "-x")
-        
+
     def testXml(self):
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("xml", self.INIT_LOAD + """\
@@ -428,19 +432,19 @@ class NewCmdLineTest(CmdLineTest):
 
 class CmdLineStdoutTest(CmdLineTest):
     """Test the command line with real stdout output."""
-    
+
     def testMinimumHelp(self):
         self.command_line("")
         out = self.stdout()
         assert "Code coverage for Python." in out
         assert out.count("\n") < 4
-        
+
     def testHelp(self):
         self.command_line("help")
         out = self.stdout()
         assert "nedbatchelder.com" in out
         assert out.count("\n") > 10
-        
+
     def testCmdHelp(self):
         self.command_line("help run")
         out = self.stdout()

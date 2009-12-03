@@ -8,7 +8,7 @@ from coverage.results import Numbers
 
 class SummaryReporter(Reporter):
     """A reporter for writing the summary report."""
-    
+
     def __init__(self, coverage, show_missing=True, ignore_errors=False):
         super(SummaryReporter, self).__init__(coverage, ignore_errors)
         self.show_missing = show_missing
@@ -16,7 +16,7 @@ class SummaryReporter(Reporter):
 
     def report(self, morfs, omit_prefixes=None, outfile=None):
         """Writes a report summarizing coverage statistics per module."""
-        
+
         self.find_code_units(morfs, omit_prefixes)
 
         # Prepare the formatting strings
@@ -45,7 +45,7 @@ class SummaryReporter(Reporter):
         outfile.write(rule)
 
         total = Numbers()
-        
+
         for cu in self.code_units:
             try:
                 analysis = self.coverage._analyze(cu)

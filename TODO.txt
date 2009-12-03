@@ -15,12 +15,14 @@ Coverage TODO
 + A missing branch to leave the function shows an annotation of -1. Now "exit".
 + XML report needs to get branch information.
 + Add branch info to "coverage debug data"
++ Polish up the help, and double-check the docs.
 
 
 * 3.3
 
 - Config file
 - Better omit handling that ignores files during measurement.
+    - Deal with ~ in specified paths correctly.
 
 
 * Speed
@@ -64,7 +66,9 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Track callers of functions (ala std module trace)
 - Method/Class/Module coverage reporting.
 - .coverage files that can be kept separate, rather than accumulated.
-    
+- test/coverage map: http://rbtcollins.wordpress.com/2009/09/16/back-from-hiatus/
+    - Similar to figleaf's sections.
+
 
 * Convenience
 
@@ -97,6 +101,7 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
     - Some way to focus in on red and yellow
         - Show only lines near highlights?
         - Jump to next highlight?
+    - Cookie for changes to pyfile.html state.
     + Clickable column headers on the index page.
     + Syntax coloring in HTML report.
     + Dynamic effects in HTML report.
@@ -123,6 +128,7 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
         - Double function decorators: all decorator lines count as executable code.
     - Document the .coverage file format.
     + HTML reporting.
+        - Much more detail about what's in the report.
     - References between pages are off:
         - They have <em> tags around them.
         - They use #anchors that don't survive the px->html conversion.

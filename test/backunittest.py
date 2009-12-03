@@ -12,10 +12,10 @@ def _need(method):
 
 class TestCase(unittest.TestCase):
     """Just like unittest.TestCase, but with assert methods added.
-    
+
     Designed to be compatible with 3.1 unittest.  Methods are only defined if
     the builtin `unittest` doesn't have them.
-    
+
     """
     if _need('assertFalse'):
         def assertFalse(self, exp):
@@ -69,16 +69,16 @@ class TestCase(unittest.TestCase):
     if _need('assertMultiLineEqual'):
         def assertMultiLineEqual(self, first, second):
             """Assert that two multi-line strings are equal.
-            
+
             If they aren't, show a nice diff.
-            
+
             """
             # Adapted from Py3.1 unittest.
             self.assert_(isinstance(first, str), (
                     'First argument is not a string'))
             self.assert_(isinstance(second, str), (
                     'Second argument is not a string'))
-    
+
             if first != second:
                 msg = ''.join(difflib.ndiff(first.splitlines(True),
                                                     second.splitlines(True)))

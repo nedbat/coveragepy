@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import os, socket
+import atexit, os, socket
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class          
@@ -18,9 +18,9 @@ class coverage(object):
     """Programmatic access to Coverage.
 
     To use::
-    
+
         from coverage import coverage
-        
+
         cov = coverage()
         cov.start()
         #.. blah blah (run your code) blah blah ..
@@ -31,24 +31,24 @@ class coverage(object):
 
     def __init__(self, data_file=None, data_suffix=False, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True):
-        """        
+        """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended to `data_file` to create the
         final file name.  If `data_suffix` is simply True, then a suffix is
         created with the machine and process identity included.
-        
+
         `cover_pylib` is a boolean determining whether Python code installed
         with the Python interpreter is measured.  This includes the Python
         standard library and any packages installed with the interpreter.
-        
+
         If `auto_data` is true, then any existing data file will be read when
         coverage measurement starts, and data will be saved automatically when
         measurement stops.
-        
+
         If `timid` is true, then a slower and simpler trace function will be
         used.  This is important for some environments where manipulation of
         tracing functions breaks the faster trace function.
-        
+
         If `branch` is true, then branch coverage will be measured in addition
         to the usual statement coverage.
         
@@ -63,7 +63,7 @@ class coverage(object):
         # Build our configuration from a number of sources:
         # 1: defaults:
         self.config = CoverageConfig()
-        
+
         # 2: from the coveragerc file:
         if config_file:
             if config_file is True:
@@ -83,12 +83,13 @@ class coverage(object):
             )
 
         self.auto_data = auto_data
-        
+        self.atexit_registered = False
+
         self.exclude_re = ""
         self._compile_exclude()
 
         self.file_locator = FileLocator()
-        
+
         self.collector = Collector(
             self._should_trace, timid=self.config.timid,
             branch=self.config.branch
@@ -121,13 +122,13 @@ class coverage(object):
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`
-        
+
         This function is called from the trace function.  As each new file name
         is encountered, this function determines whether it is traced or not.
-        
+
         Returns a canonicalized filename if it should be traced, False if it
         should not.
-        
+
         """
         if filename == '<string>':
             # There's no point in ever tracing string executions, we can't do
@@ -173,9 +174,9 @@ class coverage(object):
 
     def use_cache(self, usecache):
         """Control the use of a data file (incorrectly called a cache).
-        
+
         `usecache` is true or false, whether to read and write data on disk.
-        
+
         """
         self.data.usefile(usecache)
 
@@ -183,16 +184,17 @@ class coverage(object):
         """Load previously-collected coverage data from the data file."""
         self.collector.reset()
         self.data.read()
-        
+
     def start(self):
         """Start measuring code coverage."""
         if self.auto_data:
             self.load()
             # Save coverage data when Python exits.
-            import atexit
-            atexit.register(self.save)
+            if not self.atexit_registered:
+                atexit.register(self.save)
+                self.atexit_registered = True
         self.collector.start()
-        
+
     def stop(self):
         """Stop measuring code coverage."""
         self.collector.stop()
@@ -200,10 +202,10 @@ class coverage(object):
 
     def erase(self):
         """Erase previously-collected coverage data.
-        
+
         This removes the in-memory data collected in this session as well as
         discarding the data file.
-        
+
         """
         self.collector.reset()
         self.data.erase()
@@ -215,12 +217,12 @@ class coverage(object):
 
     def exclude(self, regex):
         """Exclude source lines from execution consideration.
-        
+
         `regex` is a regular expression.  Lines matching this expression are
         not considered executable when reporting code coverage.  A list of
         regexes is maintained; this function adds a new regex to the list.
         Matching any of the regexes excludes a source line.
-        
+
         """
         self.config.exclude_list.append(regex)
         self._compile_exclude()
@@ -240,11 +242,11 @@ class coverage(object):
 
     def combine(self):
         """Combine together a number of similarly-named coverage data files.
-        
+
         All coverage data files whose name starts with `data_file` (from the
         coverage() constructor) will be read, and combined together into the
         current measurements.
-        
+
         """
         self.data.combine_parallel_data()
 
@@ -262,14 +264,15 @@ class coverage(object):
 
     def analysis2(self, morf):
         """Analyze a module.
-        
+
         `morf` is a module or a filename.  It will be analyzed to determine
         its coverage statistics.  The return value is a 5-tuple:
-        
+
         * The filename for the module.
         * A list of line numbers of executable statements.
         * A list of line numbers of excluded statements.
-        * A list of line numbers of statements not run (missing from execution).
+        * A list of line numbers of statements not run (missing from
+          execution).
         * A readable formatted string of the missing line numbers.
 
         The analysis uses the source file itself and the current measured
@@ -284,22 +287,22 @@ class coverage(object):
 
     def _analyze(self, it):
         """Analyze a single morf or code unit.
-        
+
         Returns an `Analysis` object.
 
         """
         if not isinstance(it, CodeUnit):
             it = code_unit_factory(it, self.file_locator)[0]
-        
+
         return Analysis(self, it)
 
     def report(self, morfs=None, show_missing=True, ignore_errors=False,
                 file=None, omit_prefixes=None):     # pylint: disable-msg=W0622
         """Write a summary report to `file`.
-        
+
         Each module in `morfs` is listed, with counts of statements, executed
         statements, missing statements, and a list of lines missed.
-        
+
         """
         reporter = SummaryReporter(self, show_missing, ignore_errors)
         reporter.report(morfs, outfile=file, omit_prefixes=omit_prefixes)
@@ -307,12 +310,12 @@ class coverage(object):
     def annotate(self, morfs=None, directory=None, ignore_errors=False,
                     omit_prefixes=None):
         """Annotate a list of modules.
-        
+
         Each module in `morfs` is annotated.  The source is written to a new
         file, named with a ",cover" suffix, with each line prefixed with a
         marker to indicate the coverage of the line.  Covered lines have ">",
         excluded lines have "-", and missing lines have "!".
-        
+
         """
         reporter = AnnotateReporter(self, ignore_errors)
         reporter.report(
@@ -321,7 +324,7 @@ class coverage(object):
     def html_report(self, morfs=None, directory=None, ignore_errors=False,
                     omit_prefixes=None):
         """Generate an HTML report.
-        
+
         """
         reporter = HtmlReporter(self, ignore_errors)
         reporter.report(
@@ -330,9 +333,9 @@ class coverage(object):
     def xml_report(self, morfs=None, outfile=None, ignore_errors=False,
                     omit_prefixes=None):
         """Generate an XML report of coverage results.
-        
+
         The report is compatible with Cobertura reports.
-        
+
         """
         if outfile:
             outfile = open(outfile, "w")
@@ -345,7 +348,7 @@ class coverage(object):
 
     def sysinfo(self):
         """Return a list of key,value pairs showing internal information."""
-        
+
         import coverage as covmod
         import platform, re, sys
 

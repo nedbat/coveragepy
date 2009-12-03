@@ -5,13 +5,13 @@ from coverage.backward import StringIO              # pylint: disable-msg=W0622
 
 def phys_tokens(toks):
     """Return all physical tokens, even line continuations.
-    
+
     tokenize.generate_tokens() doesn't return a token for the backslash that
     continues lines.  This wrapper provides those tokens so that we can
     re-create a faithful representation of the original source.
-    
+
     Returns the same values as generate_tokens()
-    
+
     """
     last_line = None
     last_lineno = -1
@@ -61,13 +61,13 @@ def phys_tokens(toks):
 
 def source_token_lines(source):
     """Generate a series of lines, one for each line in `source`.
-    
+
     Each line is a list of pairs, each pair is a token::
-    
+
         [('key', 'def'), ('ws', ' '), ('nam', 'hello'), ('op', '('), ... ]
 
     Each pair has a token class, and the token text.
-    
+
     If you concatenate all the token texts, and then join them with newlines,
     you should have your original `source` back, with two differences:
     trailing whitespace is not preserved, and a final line with no newline

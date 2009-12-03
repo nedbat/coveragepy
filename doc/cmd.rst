@@ -71,7 +71,7 @@ can set a new file name with the COVERAGE_FILE environment variable.  By default
 each run of your program starts with an empty data set. If you need to run your
 program multiple times to get complete data (for example, because you need to
 supply disjoint options), you can accumulate data across runs with the ``-a``
-flag on the **run** command.  
+flag on the **run** command.
 
 To erase the collected data, use the **erase** command::
 
@@ -113,7 +113,7 @@ as a percentage.
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
-    $ coverage report -m 
+    $ coverage report -m
     Name                      Stmts   Exec  Cover   Missing
     -------------------------------------------------------
     my_program                   20     16    80%   33-35, 39
@@ -178,7 +178,7 @@ Coverage status for each line of source is indicated with a character prefix::
 For example::
 
       # A simple function, never called with x==1
-      
+
     > def h(x):
           """Silly function."""
     -     if 0:   #pragma: no cover
@@ -187,7 +187,7 @@ For example::
     !         a = 1
     >     else:
     >         a = 2
-  
+
 
 XML reporting
 -------------

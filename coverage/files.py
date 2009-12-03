@@ -18,18 +18,18 @@ class FileLocator(object):
 
     def relative_filename(self, filename):
         """Return the relative form of `filename`.
-        
+
         The filename will be relative to the current directory when the
         FileLocator was constructed.
-        
+
         """
         return filename.replace(self.relative_dir, "")
 
     def canonical_filename(self, filename):
         """Return a canonical filename for `filename`.
-        
+
         An absolute path with no redundant components and normalized case.
-        
+
         """
         if filename not in self.canonical_filename_cache:
             f = filename
@@ -48,11 +48,11 @@ class FileLocator(object):
 
     def get_zip_data(self, filename):
         """Get data from `filename` if it is a zip file path.
-        
+
         Returns the string data read from the zip file, or None if no zip file
         could be found or `filename` isn't in it.  The data returned will be
         an empty string if the file is empty.
-        
+
         """
         import zipimport
         markers = ['.zip'+os.sep, '.egg'+os.sep]

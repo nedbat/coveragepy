@@ -9,9 +9,9 @@ import unittest
 
 class AnyOldObject(object):
     """Simple testing object.
-    
+
     Use keyword arguments in the constructor to set attributes on the object.
-    
+
     """
     def __init__(self, **attrs):
         for n, v in attrs.items():
@@ -45,7 +45,7 @@ class TempliteTest(unittest.TestCase):
             'second': lambda x: x[1],
             }
         self.try_render("Hello, {{name|upper}}!", data, "Hello, NED!")
-        
+
         # Pipes can be concatenated.
         self.try_render("Hello, {{name|upper|second}}!", data, "Hello, E!")
 
@@ -55,7 +55,7 @@ class TempliteTest(unittest.TestCase):
             'upper': lambda x: x.upper(),
             'punct': '!',
             }
-        
+
         template = Templite("This is {{name|upper}}{{punct}}", globs)
         self.assertEqual(template.render({'name':'Ned'}), "This is NED!")
         self.assertEqual(template.render({'name':'Ben'}), "This is BEN!")
@@ -67,7 +67,7 @@ class TempliteTest(unittest.TestCase):
 
         obj2 = AnyOldObject(obj=obj, b="Bee")
         self.try_render("{{obj2.obj.a}} {{obj2.b}}", locals(), "Ay Bee")
-        
+
     def test_member_function(self):
         # Variables' member functions can be used, as long as they are nullary.
         class WithMemberFns(AnyOldObject):
@@ -97,7 +97,7 @@ class TempliteTest(unittest.TestCase):
             l = l[:]
             l.reverse()
             return l
-        
+
         self.try_render(
             "Look: {% for n in nums|rev %}{{n}}, {% endfor %}done.",
             locals(),
@@ -117,7 +117,7 @@ class TempliteTest(unittest.TestCase):
             {'nums':[1,2,3]},
             "Look: \n\n1, \n\n2, \n\n3, \ndone."
             )
-        
+
     def test_multiple_loops(self):
         self.try_render(
             "{% for n in nums %}{{n}}{% endfor %} and "

@@ -16,11 +16,11 @@ except KeyError:
 
 def run_python_file(filename, args):
     """Run a python file as if it were the main program on the command line.
-    
+
     `filename` is the path to the file to execute, it need not be a .py file.
     `args` is the argument array to present as sys.argv, including the first
     element representing the file being executed.
-    
+
     """
     # Create a module to serve as __main__
     old_main_mod = sys.modules['__main__']
@@ -44,7 +44,7 @@ def run_python_file(filename, args):
     finally:
         # Restore the old __main__
         sys.modules['__main__'] = old_main_mod
-        
+
         # Restore the old argv and path
         sys.argv = old_argv
         sys.path[0] = old_path0

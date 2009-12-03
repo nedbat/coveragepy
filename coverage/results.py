@@ -9,11 +9,11 @@ from coverage.parser import CodeParser
 
 class Analysis(object):
     """The results of analyzing a code unit."""
-    
+
     def __init__(self, cov, code_unit):
         self.coverage = cov
         self.code_unit = code_unit
-        
+
         self.filename = self.code_unit.filename
         ext = os.path.splitext(self.filename)[1]
         source = None
@@ -40,10 +40,10 @@ class Analysis(object):
             n_missing_branches = sum([len(v) for v in mba.values()])
         else:
             n_branches = n_missing_branches = 0
-            
+
         self.numbers = Numbers(
             n_files=1,
-            n_statements=len(self.statements), 
+            n_statements=len(self.statements),
             n_excluded=len(self.excluded),
             n_missing=len(self.missing),
             n_branches=n_branches,
@@ -52,9 +52,9 @@ class Analysis(object):
 
     def missing_formatted(self):
         """The missing line numbers, formatted nicely.
-        
+
         Returns a string like "1-2, 5-11, 13-14".
-        
+
         """
         return format_lines(self.statements, self.missing)
 
@@ -102,12 +102,12 @@ class Analysis(object):
         """How many total branches are there?"""
         exit_counts = self.parser.exit_counts()
         return sum([count for count in exit_counts.values() if count > 1])
-        
+
     def missing_branch_arcs(self):
         """Return arcs that weren't executed from branch lines.
-        
+
         Returns {l1:[l2a,l2b,...], ...}
-        
+
         """
         missing = self.arcs_missing()
         branch_lines = set(self.branch_lines())
@@ -122,7 +122,7 @@ class Analysis(object):
 
 class Numbers(object):
     """The numerical results of measuring coverage.
-    
+
     This holds the basic statistics from `Analysis`, and is used to roll
     up statistics across files.
 
@@ -141,12 +141,12 @@ class Numbers(object):
         """Returns the number of executed statements."""
         return self.n_statements - self.n_missing
     n_executed = property(_get_n_executed)
-    
+
     def _get_n_executed_branches(self):
         """Returns the number of executed branches."""
         return self.n_branches - self.n_missing_branches
     n_executed_branches = property(_get_n_executed_branches)
-    
+
     def _get_pc_covered(self):
         """Returns a single percentage value for coverage."""
         if self.n_statements > 0:

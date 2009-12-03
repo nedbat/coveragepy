@@ -26,10 +26,10 @@ _the_coverage = None
 
 def _singleton_method(name):
     """Return a function to the `name` method on a singleton `coverage` object.
-    
+
     The singleton object is created the first time one of these functions is
     called.
-    
+
     """
     def wrapper(*args, **kwargs):
         """Singleton wrapper around a coverage method."""

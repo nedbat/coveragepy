@@ -18,9 +18,9 @@ For example::
         if x:                   #      2
             y = 10              #      3
         return y                #      4
-        
+
     my_partial_fn(1)
-    
+
 In this code, line 2 is an ``if`` statement which can go next to either line 3
 or line 4. Statement coverage would show all lines of the function as executed.
 But the if was never evaluated as false, so line 2 never jumps to line 4.
@@ -35,7 +35,7 @@ How to measure branch coverage
 To measure branch coverage, run coverage.py with the ``--branch`` flag::
 
     coverage run --branch myprog.py
-    
+
 When you report on the results with ``coverage report`` or ``coverage html``,
 the percentage of branch possibilities taken will be included in the percentage
 covered total for each file.  The coverage percentage for a file is the actual
@@ -48,7 +48,7 @@ far right showing branch destination line numbers that were not exercised.
 
 The XML report produced by ``coverage xml`` also includes branch information,
 including separate statement and branch coverage percentages.  Each line is
-annotated with 
+annotated with
 
 
 How it works
@@ -91,10 +91,10 @@ unconditional loop will be marked as partially executed::
 
     while True:                         # line 1
         if some_condition():            #      2
-            break                       
+            break
         body_of_loop()                  #      4
-    
+
     keep_working()                      #      6
 
 Because the loop never terminates naturally (jumping from line 1 to 6),
-coverage.py considers the branch partially executed. 
+coverage.py considers the branch partially executed.

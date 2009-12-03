@@ -43,7 +43,7 @@ Getting started is easy:
 
     .. code-block:: console
 
-        $ coverage report -m 
+        $ coverage report -m
         Name                      Stmts   Exec  Cover   Missing
         -------------------------------------------------------
         my_program                   20     16    80%   33-35, 39
@@ -53,7 +53,7 @@ Getting started is easy:
 
 #.  For a nicer presentation, use ``coverage html`` to get annotated HTML
     listings detailing missed lines:
-    
+
     .. code-block:: console
 
         $ coverage html -d htmlcov
@@ -99,7 +99,7 @@ More information
 
 .. toctree::
     :maxdepth: 1
-    
+
     cmd
     api
     excluding

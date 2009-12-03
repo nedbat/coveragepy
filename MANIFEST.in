@@ -2,6 +2,7 @@
 include coverage.egg-info/*.*
 include coverage/*.py
 include coverage/htmlfiles/*.*
+include distribute_setup.py
 include ez_setup.py
 include setup.py
 include README.txt

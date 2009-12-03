@@ -7,20 +7,20 @@ from coverage.backward import pickle, sorted        # pylint: disable-msg=W0622
 
 class CoverageData(object):
     """Manages collected coverage data, including file storage.
-    
+
     The data file format is a pickled dict, with these keys:
-    
+
         * collector: a string identifying the collecting software
 
         * lines: a dict mapping filenames to sorted lists of line numbers
           executed:
             { 'file1': [17,23,45],  'file2': [1,2,3], ... }
-    
+
         * arcs: a dict mapping filenames to sorted lists of line number pairs:
             { 'file1': [(17,23), (17,25), (25,26)], ... }
 
     """
-    
+
     # Name of the data file (unless environment variable is set).
     filename_default = ".coverage"
 
@@ -29,9 +29,9 @@ class CoverageData(object):
 
     def __init__(self, basename=None, suffix=None, collector=None):
         """Create a CoverageData.
-        
+
         `basename` is the name of the file to use for storing data.
-        
+
         `suffix` is a suffix to append to the base file name. This can be used
         for multiple or parallel execution, so that many coverage data files
         can exist simultaneously.
@@ -40,7 +40,7 @@ class CoverageData(object):
 
         """
         self.collector = collector or 'unknown'
-        
+
         self.use_file = True
 
         # Construct the filename that will be used for data file storage, if we
@@ -60,14 +60,14 @@ class CoverageData(object):
         #       }
         #
         self.lines = {}
-        
+
         # A map from canonical Python source file name to a dictionary with an
         # entry for each pair of line numbers forming an arc:
         #
         # { filename: { (l1,l2): None, ... }, ...}
         #
         self.arcs = {}
-        
+
     def usefile(self, use_file=True):
         """Set whether or not to use a disk file for data."""
         self.use_file = use_file
@@ -91,7 +91,7 @@ class CoverageData(object):
                 os.remove(self.filename)
         self.lines = {}
         self.arcs = {}
-        
+
     def line_data(self):
         """Return the map from filenames to lists of line numbers executed."""
         return dict(
@@ -103,11 +103,11 @@ class CoverageData(object):
         return dict(
             [(f, sorted(amap.keys())) for f, amap in self.arcs.items()]
             )
-        
+
     def write_file(self, filename):
         """Write the coverage data to `filename`."""
 
-        # Create the file data.        
+        # Create the file data.
         data = {}
 
         data['lines'] = self.line_data()
@@ -140,10 +140,10 @@ class CoverageData(object):
 
     def _read_file(self, filename):
         """Return the stored coverage data from the given file.
-        
+
         Returns two values, suitable for assigning to `self.lines` and
         `self.arcs`.
-        
+
         """
         lines = {}
         arcs = {}
@@ -166,10 +166,10 @@ class CoverageData(object):
 
     def combine_parallel_data(self):
         """Combine a number of data files together.
-        
+
         Treat `self.filename` as a file prefix, and combine the data from all
         of the data files starting with that prefix.
-        
+
         """
         data_dir, local = os.path.split(self.filename)
         for f in os.listdir(data_dir or '.'):
@@ -183,18 +183,18 @@ class CoverageData(object):
 
     def add_line_data(self, line_data):
         """Add executed line data.
-        
+
         `line_data` is { filename: { lineno: None, ... }, ...}
-        
+
         """
         for filename, linenos in line_data.items():
             self.lines.setdefault(filename, {}).update(linenos)
 
     def add_arc_data(self, arc_data):
         """Add measured arc data.
-        
+
         `arc_data` is { filename: { (l1,l2): None, ... }, ...}
-        
+
         """
         for filename, arcs in arc_data.items():
             self.arcs.setdefault(filename, {}).update(arcs)
@@ -205,7 +205,7 @@ class CoverageData(object):
 
     def executed_lines(self, filename):
         """A map containing all the line numbers executed in `filename`.
-        
+
         If `filename` hasn't been collected at all (because it wasn't executed)
         then return an empty map.
 
@@ -218,11 +218,11 @@ class CoverageData(object):
 
     def summary(self, fullpath=False):
         """Return a dict summarizing the coverage data.
-        
+
         Keys are based on the filenames, and values are the number of executed
         lines.  If `fullpath` is true, then the keys are the full pathnames of
         the files, otherwise they are the basenames of the files.
-        
+
         """
         summ = {}
         if fullpath:

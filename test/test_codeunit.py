@@ -21,7 +21,7 @@ class CodeUnitTest(CoverageTest):
         # Parent class saves and restores sys.path, we can just modify it.
         testmods = self.nice_file(os.path.dirname(__file__), 'modules')
         sys.path.append(testmods)
-        
+
     def test_filenames(self):
         acu = code_unit_factory("aa/afile.py", FileLocator())
         bcu = code_unit_factory("aa/bb/bfile.py", FileLocator())
@@ -81,4 +81,3 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(cu[1].source_file().read().split("\n")[0],
                 "# My egg file!"
                 )
-        

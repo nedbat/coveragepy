@@ -16,7 +16,7 @@
     - Generate new sample_html to get the latest, incl footer version number:
         cd C:\ned\cog\trunk
         rmdir/s/q htmlcov
-        coverage run cogapp\test_cogapp.py CogTestsInMemory
+        coverage run --branch cogapp\test_cogapp.py CogTestsInMemory
         coverage html -i -d htmlcov
         copy htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html
     - Build and publish docs:
@@ -26,9 +26,9 @@
         - $ allkits.cmd
 - Update PyPi:
     - $ make pypi
+    - upload the kits:
+        - $ allkits.cmd upload
     - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage :
-        - Upload kits
-            - Label the source kit with "Use this for either Python 2.x or 3.x"
         - show/hide the proper versions.
 - Tag the tree
     - hg tag -m "Coverage 3.0.1" coverage-3.0.1
@@ -37,3 +37,18 @@
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
 - Announce on TIP.
+
+
+
+* Testing
+
+(automate these someday)
+
+- On Py 2.x: need setuptools installed
+- On Py 3.x: need Distribute installed
+- In each Python installation to be used, create a "coverage_test_egg.pth"
+  containing::
+
+    c:\ned\coverage\trunk\test\eggsrc\dist\covtestegg1-0.0.0-py2.5.egg
+
+  (or equivalent).

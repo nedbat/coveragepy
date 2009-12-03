@@ -17,7 +17,7 @@ class RunTest(CoverageTest):
         tryfile = os.path.join(here, "try_execfile.py")
         run_python_file(tryfile, [tryfile, "arg1", "arg2"])
         mod_globs = eval(self.stdout())
-        
+
         # The file should think it is __main__
         self.assertEqual(mod_globs['__name__'], "__main__")
 
@@ -30,10 +30,10 @@ class RunTest(CoverageTest):
                             "Test file for run_python_file.")
         self.assertEqual(mod_globs['DATA'], "xyzzy")
         self.assertEqual(mod_globs['FN_VAL'], "my_fn('fooey')")
-        
+
         # It must be self-importable as __main__.
         self.assertEqual(mod_globs['__main__.DATA'], "xyzzy")
-        
+
         # Argv should have the proper values.
         self.assertEqual(mod_globs['argv'], [tryfile, "arg1", "arg2"])
 

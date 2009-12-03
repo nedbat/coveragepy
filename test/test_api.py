@@ -8,6 +8,9 @@ from coverage.backward import StringIO
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
+# This file uses the singleton module interface.  Prevent it from writing
+# .coverage files at exit.
+coverage.use_cache(0)
 
 class ApiTest(CoverageTest):
     """Api-oriented tests for Coverage."""
@@ -22,17 +25,17 @@ class ApiTest(CoverageTest):
                 c = 4
             d = 5
             """)
-            
+
         # Import the python file, executing it.
         coverage.start()
         self.import_module("mycode")
         coverage.stop()
-    
+
         _, statements, missing, missingtext = coverage.analysis("mycode.py")
         self.assertEqual(statements, [1,2,3,4,5])
         self.assertEqual(missing, [4])
         self.assertEqual(missingtext, "4")
-        
+
     def doReportWork(self, modname):
         """Create a module named `modname`, then measure it."""
         coverage.erase()
@@ -46,12 +49,12 @@ class ApiTest(CoverageTest):
                 e = 6
             f = 7
             """)
-            
+
         # Import the python file, executing it.
         coverage.start()
         self.import_module(modname)
         coverage.stop()
-        
+
     def testReport(self):
         self.doReportWork("mycode2")
         coverage.report(["mycode2.py"])
@@ -60,7 +63,7 @@ class ApiTest(CoverageTest):
             ---------------------------------------
             mycode2       7      4    57%   4-6
             """))
-        
+
     def testReportFile(self):
         # The file= argument of coverage.report makes the report go there.
         self.doReportWork("mycode3")
@@ -90,16 +93,16 @@ class ApiTest(CoverageTest):
                 c = 4
             d = 5
             """)
-            
+
         self.make_file("not_run.py", """\
             fooey = 17
             """)
-            
+
         # Import the python file, executing it.
         cov.start()
         self.import_module("mycode")
         cov.stop()
-    
+
         _, statements, missing, _ = cov.analysis("not_run.py")
         self.assertEqual(statements, [1])
         self.assertEqual(missing, [1])
@@ -110,22 +113,22 @@ class ApiTest(CoverageTest):
             import mymod
             a = 1
             """)
-            
+
         self.make_file("mymod.py", """\
             fooey = 17
             """)
-            
+
         # Import the python file, executing it.
         cov = coverage.coverage()
         cov.start()
         self.import_module("mymain")
         cov.stop()
-    
+
         filename, _, _, _ = cov.analysis("mymain.py")
         self.assertEqual(os.path.basename(filename), "mymain.py")
         filename, _, _, _ = cov.analysis("mymod.py")
         self.assertEqual(os.path.basename(filename), "mymod.py")
-        
+
         filename, _, _, _ = cov.analysis(sys.modules["mymain"])
         self.assertEqual(os.path.basename(filename), "mymain.py")
         filename, _, _, _ = cov.analysis(sys.modules["mymod"])
@@ -137,12 +140,12 @@ class ApiTest(CoverageTest):
         cov.start()
         self.import_module("mymain")
         cov.stop()
-    
+
         filename, _, _, _ = cov.analysis("mymain.py")
         self.assertEqual(os.path.basename(filename), "mymain.py")
         filename, _, _, _ = cov.analysis("mymod.py")
         self.assertEqual(os.path.basename(filename), "mymod.py")
-        
+
         filename, _, _, _ = cov.analysis(sys.modules["mymain"])
         self.assertEqual(os.path.basename(filename), "mymain.py")
         filename, _, _, _ = cov.analysis(sys.modules["mymod"])
@@ -154,7 +157,7 @@ class ApiTest(CoverageTest):
             a = 1
             hls = colorsys.rgb_to_hls(1.0, 0.5, 0.0)
             """)
-            
+
         self.make_file("mymod.py", """\
             fooey = 17
             """)
