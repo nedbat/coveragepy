@@ -6,12 +6,12 @@ from coverage.backward import configparser          # pylint: disable-msg=W0622
 
 class CoverageConfig(object):
     """Coverage.py configuration.
-    
+
     The attributes of this class are the various settings that control the
     operation of coverage.py.
-    
+
     """
-    
+
     def __init__(self):
         """Initialize the configuration attributes to their defaults."""
         # Defaults.
@@ -38,13 +38,13 @@ class CoverageConfig(object):
 
     def from_file(self, *files):
         """Read configurating from .rc files.
-        
+
         Each argument in `files` is a file name to read.
-        
+
         """
         cp = configparser.RawConfigParser()
         cp.read(files)
-        
+
         if cp.has_option('run', 'timid'):
             self.timid = cp.getboolean('run', 'timid')
         if cp.has_option('run', 'cover_pylib'):
