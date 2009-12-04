@@ -370,10 +370,6 @@ class CoverageScript(object):
                 self.help_fn(parser=parser)
             return OK
 
-        if options.version:
-            self.help_fn(topic='version')
-            return OK
-
         if "help" in options.actions:
             if args:
                 for a in args:
@@ -384,6 +380,11 @@ class CoverageScript(object):
                         self.help_fn(topic=a)
             else:
                 self.help_fn(topic='help')
+            return OK
+
+        # Handle version.
+        if options.version:
+            self.help_fn(topic='version')
             return OK
 
         # Check for conflicts and problems in the options.
