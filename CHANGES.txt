@@ -2,6 +2,12 @@
 Change history for Coverage.py
 ------------------------------
 
+Version 3.2
+-----------
+
+- Added a --version options on the command line.
+
+
 Version 3.2b4, 1 December 2009
 ------------------------------
 
