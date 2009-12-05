@@ -26,11 +26,6 @@ else:
 
         """
 
-        if sys.hexversion > 0x03000000 and cmd.startswith("coverage "):
-            # We don't have a coverage command on 3.x, so fix it up to call the
-            # script. Eventually we won't need this.
-            cmd = "python " + sys.prefix + os.sep + "Scripts" + os.sep + cmd
-
         proc = subprocess.Popen(cmd, shell=True,
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT
