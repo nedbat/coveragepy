@@ -47,8 +47,7 @@ that were missing some branches are shown in yellow, with an annotation at the
 far right showing branch destination line numbers that were not exercised.
 
 The XML report produced by ``coverage xml`` also includes branch information,
-including separate statement and branch coverage percentages.  Each line is
-annotated with
+including separate statement and branch coverage percentages.
 
 
 How it works

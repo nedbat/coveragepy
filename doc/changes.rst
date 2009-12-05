@@ -20,8 +20,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 Version 3.2
 -----------
 
-- Branch coverage: coverage.py can tell you which branches didn't have both
-  choices executed, even where the choice doesn't affect which lines were
+- Branch coverage: coverage.py can tell you which branches didn't have both (or
+  all) choices executed, even where the choice doesn't affect which lines were
   executed.  See :ref:`Branch Coverage <branch>` for more details.
 
 - The table of contents in the HTML report is now sortable: click the headers
@@ -31,10 +31,10 @@ Version 3.2
 - XML reporting has file paths that let Cobertura find the source code, fixing
   `issue 21`_.
 
-- The ``--omit`` option now works much better than before, fixing `issue 14` and
-  `issue 33`_.  Thanks, Danek Duvall.
+- The ``--omit`` option now works much better than before, fixing `issue 14`_
+  and `issue 33`_.  Thanks, Danek Duvall.
 
-- The tracer code has changed, it's a few percent faster.
+- Program execution under coverage is a few percent faster.
 
 - Some exceptions reported by the command line interface have been cleaned up
   so that tracebacks inside coverage.py aren't shown.  Fixes `issue 23`_.
@@ -70,8 +70,8 @@ Version 3.1, 4 October 2009
 
 - HTML reports now display syntax-colored Python source.
 
-- Added a ``coverage debug`` command for getting diagnostic information about the
-  coverage.py installation.
+- Added a ``coverage debug`` command for getting diagnostic information about
+  the coverage.py installation.
 
 - Source code can now be read from eggs.  Thanks, `Ross Lawley`_.  Fixes
   `issue 25`_.
@@ -124,7 +124,8 @@ Version 3.0, 13 June 2009
 
 - Code in the Python standard library is not measured by default.  If you need
   to measure standard library code, use the ``-L`` command-line switch during
-  execution, or the ``cover_pylib=True`` argument to the coverage() constructor.
+  execution, or the ``cover_pylib=True`` argument to the coverage()
+  constructor.
 
 - API changes:
 
