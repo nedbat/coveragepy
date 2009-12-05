@@ -4,7 +4,7 @@
 # (Redefining built-in blah)
 # The whole point of this file is to redefine built-ins, so shut up about it.
 
-import os, sys
+import os
 
 # Py2k and 3k don't agree on how to run commands in a subprocess.
 try:

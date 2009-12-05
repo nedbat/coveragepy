@@ -10,23 +10,23 @@ commands:
             --timid                 bool
         -p  --parallel              bool
         -L  --stdlib                bool
-            --branch                bool                    *
+            --branch                bool
         -a  --append                bool
 
     erase -e
-    
+
     combine -c
-    
-    report -r 
+
+    report -r
         -m --missing                bool
         -i --ignore-errors          bool
         --omit                      list of string
-        
+
     annotate -a
         -d --output-directory       string
         -i --ignore-errors          bool
         --omit                      list of string
-    
+
     html -b
         -d --output-directory       string
         -i --ignore-errors          bool
@@ -38,11 +38,11 @@ commands:
     help
 
     byteprep   *
-    
+
     xml   *
-    
-    
-    
+
+
+
 Option scopes:
 
     - Cmd line

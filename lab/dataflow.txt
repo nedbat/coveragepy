@@ -1,7 +1,7 @@
 PyTracer.data:
     { filename: { lineno: None, .. }, ... }
     OR: { filename: { (l1, l2): None, .. }, ... }
-    
+
 CoverageData.lines:
     { filename: { lineno: None, ...}, ... }
 
@@ -20,7 +20,7 @@ CoverageData.executed_files():
     called by:
         Reporter.find_code_units()
         tests
-    
+
 CoverageData.executed_lines():
     returns { lineno: None, ... }
     called by:

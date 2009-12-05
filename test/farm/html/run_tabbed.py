@@ -17,7 +17,7 @@ contains("html_tabbed/tabbed.html",
     "<span class='nam'>x</span><span class='op'>:</span>"
     "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "
     "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; "
-    "<span class='com'># look nice</span>"   
+    "<span class='com'># look nice</span>"
     )
 
 doesnt_contain("html_tabbed/tabbed.html", "\t")

@@ -38,7 +38,7 @@ class CoverageTest(TestCase):
             self.old_dir = os.getcwd()
             os.chdir(self.temp_dir)
 
-    
+
             # Modules should be importable from this temp directory.
             self.old_syspath = sys.path[:]
             sys.path.insert(0, '')
@@ -48,7 +48,7 @@ class CoverageTest(TestCase):
 
         # Record environment variables that we changed with set_environ.
         self.environ_undos = {}
-    
+
         # Use a Tee to capture stdout.
         self.old_stdout = sys.stdout
         self.captured_stdout = StringIO()
@@ -71,15 +71,15 @@ class CoverageTest(TestCase):
 
     def set_environ(self, name, value):
         """Set an environment variable `name` to be `value`.
-        
+
         The environment variable is set, and record is kept that it was set,
         so that `tearDown` can restore its original value.
-        
+
         """
         if name not in self.environ_undos:
             self.environ_undos[name] = os.environ.get(name)
         os.environ[name] = value
-        
+
     def original_environ(self, name):
         """The environment variable `name` from when the test started."""
         if name in self.environ_undos:

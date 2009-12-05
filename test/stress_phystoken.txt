@@ -15,6 +15,7 @@ lots_of_back = """\
 hey \
 there
 """
+# This next line is supposed to have trailing whitespace:
 fake_back = """\ 
 ouch
 """
