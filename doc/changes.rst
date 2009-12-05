@@ -9,6 +9,7 @@ Major change history for coverage.py
 :history: 20090706T205000, changes for 3.0.1
 :history: 20091004T170700, changes for 3.1
 :history: 20091128T072200, changes for 3.2
+:history: 20091205T161525, 3.2 final
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -17,8 +18,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
-Version 3.2
------------
+Version 3.2, 5 December 2009
+----------------------------
 
 - Branch coverage: coverage.py can tell you which branches didn't have both (or
   all) choices executed, even where the choice doesn't affect which lines were
@@ -33,6 +34,8 @@ Version 3.2
 
 - The ``--omit`` option now works much better than before, fixing `issue 14`_
   and `issue 33`_.  Thanks, Danek Duvall.
+
+- Added a --version options on the command line.
 
 - Program execution under coverage is a few percent faster.
 

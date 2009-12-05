@@ -1,19 +1,21 @@
-<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
 <title>Coverage for cogapp\makefiles</title>
 <link rel='stylesheet' href='style.css' type='text/css'>
-<script src='jquery-1.3.2.min.js'></script>
-<script>
+<script type='text/javascript' src='jquery-1.3.2.min.js'></script>
+<script type='text/javascript'>
 function toggle_lines(btn, cls) {
     var btn = $(btn);
-    if (btn.hasClass("hide")) {
-        $("#source ."+cls).removeClass("hide");
-        btn.removeClass("hide");
+    var hide = "hide_"+cls;
+    if (btn.hasClass(hide)) {
+        $("#source ."+cls).removeClass(hide);
+        btn.removeClass(hide);
     }
     else {
-        $("#source ."+cls).addClass("hide");
-        btn.addClass("hide");
+        $("#source ."+cls).addClass(hide);
+        btn.addClass(hide);
     }
 }
 </script>
@@ -22,13 +24,16 @@ function toggle_lines(btn, cls) {
 <div id='header'>
     <div class='content'>
         <h1>Coverage for <b>cogapp\makefiles</b> :
-            <span class='pc_cov'>21%</span>
+            <span class='pc_cov'>13%</span>
         </h1>
         <h2 class='stats'>
             29 statements
-            <span class='run hide' onclick='toggle_lines(this, "run")'>6 run</span>
+            <span class='run hide_run' onclick='toggle_lines(this, "run")'>6 run</span>
             <span class='exc' onclick='toggle_lines(this, "exc")'>3 excluded</span>
             <span class='mis' onclick='toggle_lines(this, "mis")'>23 missing</span>
+            
+                <span class='par run hide_run' onclick='toggle_lines(this, "par")'>0 partial</span>
+            
         </h2>
     </div>
 </div>
@@ -43,13 +48,13 @@ function toggle_lines(btn, cls) {
 <p class='pln'>4</p>
 <p class='pln'>5</p>
 <p class='pln'>6</p>
-<p class='stm run hide'>7</p>
-<p class='stm run hide'>8</p>
+<p class='stm run hide_run'>7</p>
+<p class='stm run hide_run'>8</p>
 <p class='pln'>9</p>
-<p class='stm run hide'>10</p>
-<p class='stm run hide'>11</p>
+<p class='stm run hide_run'>10</p>
+<p class='stm run hide_run'>11</p>
 <p class='pln'>12</p>
-<p class='stm run hide'>13</p>
+<p class='stm run hide_run'>13</p>
 <p class='pln'>14</p>
 <p class='pln'>15</p>
 <p class='stm mis'>16</p>
@@ -69,7 +74,7 @@ function toggle_lines(btn, cls) {
 <p class='stm mis'>30</p>
 <p class='stm mis'>31</p>
 <p class='pln'>32</p>
-<p class='stm run hide'>33</p>
+<p class='stm run hide_run'>33</p>
 <p class='pln'>34</p>
 <p class='pln'>35</p>
 <p class='pln'>36</p>
@@ -104,70 +109,70 @@ function toggle_lines(btn, cls) {
     
 </td>
 <td class='text' valign='top'>
-<p class='pln'><span class='str'>&quot;&quot;&quot; Dictionary-to-filetree functions, to create test files for testing.</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; http://nedbatchelder.com/code/cog</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; </span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; Copyright 2004-2009, Ned Batchelder.</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&quot;&quot;&quot;</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class="strut">&nbsp;</span></p>
-<p class='stm run hide'><span class='key'>import</span> <span class='nam'>path</span>&nbsp; &nbsp;&nbsp; <span class='com'># Non-standard, from http://www.jorendorff.com/articles/python/path</span><span class="strut">&nbsp;</span></p>
-<p class='stm run hide'><span class='key'>from</span> <span class='nam'>whiteutils</span> <span class='key'>import</span> <span class='nam'>reindentBlock</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class="strut">&nbsp;</span></p>
-<p class='stm run hide'><span class='nam'>__version__</span> <span class='op'>=</span> <span class='str'>&#39;1.0.20040126&#39;</span><span class="strut">&nbsp;</span></p>
-<p class='stm run hide'><span class='nam'>__all__</span> <span class='op'>=</span> <span class='op'>[</span><span class='str'>&#39;makeFiles&#39;</span><span class='op'>,</span> <span class='str'>&#39;removeFiles&#39;</span><span class='op'>]</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class="strut">&nbsp;</span></p>
-<p class='stm run hide'><span class='key'>def</span> <span class='nam'>makeFiles</span><span class='op'>(</span><span class='nam'>d</span><span class='op'>,</span> <span class='nam'>basedir</span><span class='op'>=</span><span class='str'>&#39;.&#39;</span><span class='op'>,</span> <span class='nam'>raw</span><span class='op'>=</span><span class='nam'>False</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; <span class='str'>&quot;&quot;&quot; Create files from the dictionary d, in the directory named by dirpath.</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &quot;&quot;&quot;</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; <span class='nam'>dirpath</span> <span class='op'>=</span> <span class='nam'>path</span><span class='op'>.</span><span class='nam'>path</span><span class='op'>(</span><span class='nam'>basedir</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>name</span><span class='op'>,</span> <span class='nam'>contents</span> <span class='key'>in</span> <span class='nam'>d</span><span class='op'>.</span><span class='nam'>items</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span> <span class='op'>=</span> <span class='nam'>dirpath</span> <span class='op'>/</span> <span class='nam'>name</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>isinstance</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>,</span> <span class='nam'>basestring</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>mode</span> <span class='op'>=</span> <span class='str'>&#39;w&#39;</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>raw</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>mode</span> <span class='op'>=</span> <span class='str'>&#39;wb&#39;</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>f</span> <span class='op'>=</span> <span class='nam'>open</span><span class='op'>(</span><span class='nam'>child</span><span class='op'>,</span> <span class='nam'>mode</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='key'>not</span> <span class='nam'>raw</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>contents</span> <span class='op'>=</span> <span class='nam'>reindentBlock</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>f</span><span class='op'>.</span><span class='nam'>write</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>f</span><span class='op'>.</span><span class='nam'>close</span><span class='op'>(</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>else</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='key'>not</span> <span class='nam'>child</span><span class='op'>.</span><span class='nam'>exists</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span><span class='op'>.</span><span class='nam'>mkdir</span><span class='op'>(</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>makeFiles</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>,</span> <span class='nam'>child</span><span class='op'>,</span> <span class='nam'>raw</span><span class='op'>=</span><span class='nam'>raw</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class="strut">&nbsp;</span></p>
-<p class='stm run hide'><span class='key'>def</span> <span class='nam'>removeFiles</span><span class='op'>(</span><span class='nam'>d</span><span class='op'>,</span> <span class='nam'>basedir</span><span class='op'>=</span><span class='str'>&#39;.&#39;</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; <span class='str'>&quot;&quot;&quot; Remove the files created by makeFiles.</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; Directories are removed if they are empty.</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &quot;&quot;&quot;</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; <span class='nam'>dirpath</span> <span class='op'>=</span> <span class='nam'>path</span><span class='op'>.</span><span class='nam'>path</span><span class='op'>(</span><span class='nam'>basedir</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>name</span><span class='op'>,</span> <span class='nam'>contents</span> <span class='key'>in</span> <span class='nam'>d</span><span class='op'>.</span><span class='nam'>items</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span> <span class='op'>=</span> <span class='nam'>dirpath</span> <span class='op'>/</span> <span class='nam'>name</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>isinstance</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>,</span> <span class='nam'>basestring</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span><span class='op'>.</span><span class='nam'>remove</span><span class='op'>(</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>else</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>removeFiles</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>,</span> <span class='nam'>child</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='key'>not</span> <span class='nam'>child</span><span class='op'>.</span><span class='nam'>files</span><span class='op'>(</span><span class='op'>)</span> <span class='key'>and</span> <span class='key'>not</span> <span class='nam'>child</span><span class='op'>.</span><span class='nam'>dirs</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class="strut">&nbsp;</span></p>
-<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span><span class='op'>.</span><span class='nam'>rmdir</span><span class='op'>(</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class="strut">&nbsp;</span></p>
-<p class='exc'><span class='key'>if</span> <span class='nam'>__name__</span> <span class='op'>==</span> <span class='str'>&#39;__main__&#39;</span><span class='op'>:</span>&nbsp; &nbsp; &nbsp; <span class='com'>#pragma: no cover</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; <span class='com'># Try it a little.</span><span class="strut">&nbsp;</span></p>
-<p class='exc'>&nbsp; &nbsp; <span class='nam'>d</span> <span class='op'>=</span> <span class='op'>{</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='str'>&#39;test_makefiles&#39;</span><span class='op'>:</span> <span class='op'>{</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='str'>&#39;hey.txt&#39;</span><span class='op'>:</span> <span class='str'>&quot;&quot;&quot;\</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; This is hey.txt.</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; It&#39;s very simple.</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</span><span class='op'>,</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='str'>&#39;subdir&#39;</span><span class='op'>:</span> <span class='op'>{</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='str'>&#39;fooey&#39;</span><span class='op'>:</span> <span class='str'>&quot;&quot;&quot;\</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Fooey</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Kablooey</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ew.</span><span class="strut">&nbsp;</span></p>
-<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='op'>}</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='op'>}</span><span class="strut">&nbsp;</span></p>
-<p class='pln'>&nbsp; &nbsp; <span class='op'>}</span><span class="strut">&nbsp;</span></p>
-<p class='exc'>&nbsp; &nbsp; <span class='nam'>makeFiles</span><span class='op'>(</span><span class='nam'>d</span><span class='op'>)</span><span class="strut">&nbsp;</span></p>
+<p class='pln'><span class='str'>&quot;&quot;&quot; Dictionary-to-filetree functions, to create test files for testing.</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; http://nedbatchelder.com/code/cog</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; </span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; Copyright 2004-2009, Ned Batchelder.</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&quot;&quot;&quot;</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'><span class='key'>import</span> <span class='nam'>path</span>&nbsp; &nbsp;&nbsp; <span class='com'># Non-standard, from http://www.jorendorff.com/articles/python/path</span><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'><span class='key'>from</span> <span class='nam'>whiteutils</span> <span class='key'>import</span> <span class='nam'>reindentBlock</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'><span class='nam'>__version__</span> <span class='op'>=</span> <span class='str'>&#39;1.0.20040126&#39;</span><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'><span class='nam'>__all__</span> <span class='op'>=</span> <span class='op'>[</span><span class='str'>&#39;makeFiles&#39;</span><span class='op'>,</span> <span class='str'>&#39;removeFiles&#39;</span><span class='op'>]</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'><span class='key'>def</span> <span class='nam'>makeFiles</span><span class='op'>(</span><span class='nam'>d</span><span class='op'>,</span> <span class='nam'>basedir</span><span class='op'>=</span><span class='str'>&#39;.&#39;</span><span class='op'>,</span> <span class='nam'>raw</span><span class='op'>=</span><span class='nam'>False</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='str'>&quot;&quot;&quot; Create files from the dictionary d, in the directory named by dirpath.</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &quot;&quot;&quot;</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; <span class='nam'>dirpath</span> <span class='op'>=</span> <span class='nam'>path</span><span class='op'>.</span><span class='nam'>path</span><span class='op'>(</span><span class='nam'>basedir</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>name</span><span class='op'>,</span> <span class='nam'>contents</span> <span class='key'>in</span> <span class='nam'>d</span><span class='op'>.</span><span class='nam'>items</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span> <span class='op'>=</span> <span class='nam'>dirpath</span> <span class='op'>/</span> <span class='nam'>name</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>isinstance</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>,</span> <span class='nam'>basestring</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>mode</span> <span class='op'>=</span> <span class='str'>&#39;w&#39;</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>raw</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>mode</span> <span class='op'>=</span> <span class='str'>&#39;wb&#39;</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>f</span> <span class='op'>=</span> <span class='nam'>open</span><span class='op'>(</span><span class='nam'>child</span><span class='op'>,</span> <span class='nam'>mode</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='key'>not</span> <span class='nam'>raw</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>contents</span> <span class='op'>=</span> <span class='nam'>reindentBlock</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>f</span><span class='op'>.</span><span class='nam'>write</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>f</span><span class='op'>.</span><span class='nam'>close</span><span class='op'>(</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>else</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='key'>not</span> <span class='nam'>child</span><span class='op'>.</span><span class='nam'>exists</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span><span class='op'>.</span><span class='nam'>mkdir</span><span class='op'>(</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>makeFiles</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>,</span> <span class='nam'>child</span><span class='op'>,</span> <span class='nam'>raw</span><span class='op'>=</span><span class='nam'>raw</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='strut'>&nbsp;</span></p>
+<p class='stm run hide_run'><span class='key'>def</span> <span class='nam'>removeFiles</span><span class='op'>(</span><span class='nam'>d</span><span class='op'>,</span> <span class='nam'>basedir</span><span class='op'>=</span><span class='str'>&#39;.&#39;</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='str'>&quot;&quot;&quot; Remove the files created by makeFiles.</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; Directories are removed if they are empty.</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &quot;&quot;&quot;</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; <span class='nam'>dirpath</span> <span class='op'>=</span> <span class='nam'>path</span><span class='op'>.</span><span class='nam'>path</span><span class='op'>(</span><span class='nam'>basedir</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; <span class='key'>for</span> <span class='nam'>name</span><span class='op'>,</span> <span class='nam'>contents</span> <span class='key'>in</span> <span class='nam'>d</span><span class='op'>.</span><span class='nam'>items</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span> <span class='op'>=</span> <span class='nam'>dirpath</span> <span class='op'>/</span> <span class='nam'>name</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>isinstance</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>,</span> <span class='nam'>basestring</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span><span class='op'>.</span><span class='nam'>remove</span><span class='op'>(</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>else</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>removeFiles</span><span class='op'>(</span><span class='nam'>contents</span><span class='op'>,</span> <span class='nam'>child</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='key'>not</span> <span class='nam'>child</span><span class='op'>.</span><span class='nam'>files</span><span class='op'>(</span><span class='op'>)</span> <span class='key'>and</span> <span class='key'>not</span> <span class='nam'>child</span><span class='op'>.</span><span class='nam'>dirs</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p class='stm mis'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>child</span><span class='op'>.</span><span class='nam'>rmdir</span><span class='op'>(</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='strut'>&nbsp;</span></p>
+<p class='exc'><span class='key'>if</span> <span class='nam'>__name__</span> <span class='op'>==</span> <span class='str'>&#39;__main__&#39;</span><span class='op'>:</span>&nbsp; &nbsp; &nbsp; <span class='com'>#pragma: no cover</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='com'># Try it a little.</span><span class='strut'>&nbsp;</span></p>
+<p class='exc'>&nbsp; &nbsp; <span class='nam'>d</span> <span class='op'>=</span> <span class='op'>{</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='str'>&#39;test_makefiles&#39;</span><span class='op'>:</span> <span class='op'>{</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='str'>&#39;hey.txt&#39;</span><span class='op'>:</span> <span class='str'>&quot;&quot;&quot;\</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; This is hey.txt.</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; It&#39;s very simple.</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</span><span class='op'>,</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='str'>&#39;subdir&#39;</span><span class='op'>:</span> <span class='op'>{</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='str'>&#39;fooey&#39;</span><span class='op'>:</span> <span class='str'>&quot;&quot;&quot;\</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # Fooey</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Kablooey</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ew.</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'><span class='str'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='op'>}</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='op'>}</span><span class='strut'>&nbsp;</span></p>
+<p class='pln'>&nbsp; &nbsp; <span class='op'>}</span><span class='strut'>&nbsp;</span></p>
+<p class='exc'>&nbsp; &nbsp; <span class='nam'>makeFiles</span><span class='op'>(</span><span class='nam'>d</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
     
 </td>
 </tr>
