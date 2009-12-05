@@ -3,6 +3,12 @@ Change history for Coverage.py
 ------------------------------
 
 
+Version 3.3
+-----------
+
+- Settings are now read from a .coveragerc file.
+
+
 Version 3.2, 5 December 2009
 ----------------------------
 
