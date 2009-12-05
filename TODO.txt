@@ -1,11 +1,23 @@
 Coverage TODO
 
+* 3.3
+
+- Config file
+    - A command switch to point to the rc file.
+    - Write docs
+- Better omit handling that ignores files during measurement.
+    - Deal with ~ in specified paths correctly.
+- while TRUE claims to be partial.
+    - A way to mark lines as partial branches, with a regex?
+        - Default to "while True:", "while 1:"
+- HTML keyboard short cuts
+
+
 * 3.2
 
 + Some kind of indication in the HTML where yellow lines aren't going.
 - Profile the reporting code: it's REALLY slow.
     - parser is doing some redundant work.
-- while TRUE claims to be partial?
 + Analysis class should do rolling up of stats also (actually Numbers)
 + Update docs for --branch.
 - self.coverage.data.has_arcs is ugly.
@@ -17,12 +29,6 @@ Coverage TODO
 + Add branch info to "coverage debug data"
 + Polish up the help, and double-check the docs.
 
-
-* 3.3
-
-- Config file
-- Better omit handling that ignores files during measurement.
-    - Deal with ~ in specified paths correctly.
 
 
 * Speed
