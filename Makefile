@@ -28,6 +28,9 @@ lint:
 	python /Python25/Lib/tabnanny.py $(LINTABLE)
 	python checkeol.py
 
+pep8:
+	pep8 --filename=*.py --ignore=E401,E301 --repeat coverage
+
 testready: testdata devinst
 
 tests: testready

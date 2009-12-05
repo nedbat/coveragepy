@@ -70,3 +70,10 @@ def exec_function(source, filename, global_map):
 """,
     "<exec_function>", "exec"
     ))
+
+# ConfigParser was renamed to the more-standard configparser
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser

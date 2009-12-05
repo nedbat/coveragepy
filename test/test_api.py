@@ -164,7 +164,7 @@ class ApiTest(CoverageTest):
 
         # Measure without the stdlib.
         cov1 = coverage.coverage()
-        self.assertEqual(cov1.cover_pylib, False)
+        self.assertEqual(cov1.config.cover_pylib, False)
         cov1.start()
         self.import_module("mymain")
         cov1.stop()
@@ -245,6 +245,26 @@ class ApiTest(CoverageTest):
         cov.save()
         self.assertSameElements(os.listdir("."),
                             ["datatest3.py", "datatest3.pyc", "cov.data.14"])
+
+    def testDatafileFromRcFile(self):
+        # You can specify the data file name in the .coveragerc file
+        self.make_file("datatest4.py", """\
+            fooey = 17
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            data_file = mydata.dat
+            """)
+
+        self.assertSameElements(os.listdir("."),
+                                            ["datatest4.py", ".coveragerc"])
+        cov = coverage.coverage()
+        cov.start()
+        self.import_module("datatest4")
+        cov.stop()
+        cov.save()
+        self.assertSameElements(os.listdir("."),
+                ["datatest4.py", "datatest4.pyc", ".coveragerc", "mydata.dat"])
 
     def testEmptyReporting(self):
         # Used to be you'd get an exception reporting on nothing...
