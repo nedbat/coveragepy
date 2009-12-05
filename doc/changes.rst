@@ -35,7 +35,7 @@ Version 3.2, 5 December 2009
 - The ``--omit`` option now works much better than before, fixing `issue 14`_
   and `issue 33`_.  Thanks, Danek Duvall.
 
-- Added a --version options on the command line.
+- Added a ``--version`` option on the command line.
 
 - Program execution under coverage is a few percent faster.
 
