@@ -1,0 +1,27 @@
+Coverage.py was originally written by Gareth Rees, and since 2004 has been
+extended and maintained by Ned Batchelder.
+
+Other contributions have been made by:
+
+Chris Adams
+Danek Duvall
+Ross Lawley
+Ben Finney
+Bill Hart
+Christian Heimes
+Detlev Offenbach
+George Song
+David Christian
+Imri Goldberg
+Patrick Mezard
+Edward Loper
+Guillaume Chazarain
+Titus Brown
+Noel O'Boyle
+Catherine Proulx
+Joseph Tate
+Sigve Tjora
+Mark van der Wal
+Geoff Bache
+Martin Fuzzey
+Greg Rogers

@@ -7,4 +7,5 @@ include ez_setup.py
 include setup.py
 include README.txt
 include CHANGES.txt
+include AUTHORS.txt
 prune test

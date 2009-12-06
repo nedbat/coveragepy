@@ -8,6 +8,8 @@ Version 3.3
 
 - Settings are now read from a .coveragerc file.
 
+- Added an AUTHORS.txt file.
+
 
 Version 3.2, 5 December 2009
 ----------------------------

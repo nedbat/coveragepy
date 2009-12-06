@@ -88,7 +88,7 @@ setup(
     # We need to get HTML assets from our htmlfiles dir.
     zip_safe = False,
 
-    author = 'Ned Batchelder',
+    author = 'Ned Batchelder and others',
     author_email = 'ned@nedbatchelder.com',
     description = doclines[0],
     long_description = '\n'.join(doclines[2:]),

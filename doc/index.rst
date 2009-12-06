@@ -89,10 +89,12 @@ History
 -------
 
 Coverage.py was originally written by `Gareth Rees`_.
-Since 2004, `Ned Batchelder`_ has maintained and extended it.
+Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
+`many others`_.
 
 .. _Gareth Rees:    http://garethrees.org/
 .. _Ned Batchelder: http://nedbatchelder.com
+.. _many others:    http://bitbucket.org/ned/coveragepy/src/tip/AUTHORS.txt
 
 
 More information
