@@ -3,7 +3,7 @@ Coverage TODO
 * 3.3
 
 - Config file
-    - A command switch to point to the rc file.
+    + A command switch to point to the rc file.
     - Write docs
 - Better omit handling that ignores files during measurement.
     - Deal with ~ in specified paths correctly.

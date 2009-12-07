@@ -63,6 +63,10 @@ class Opts(object):
         help="Include the machine name and process id in the .coverage "
                 "data file name."
         )
+    rcfile = optparse.Option(
+        '', '--rcfile', action='store',
+        help="Specify configuration file.  Defaults to '.coveragerc'"
+        )
     timid = optparse.Option(
         '', '--timid', action='store_true',
         help="Use a simpler but slower trace method.  Try this if you get "
@@ -95,6 +99,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             omit=None,
             parallel_mode=None,
             pylib=None,
+            rcfile=True,
             show_missing=None,
             timid=None,
             erase_first=None,
@@ -197,6 +202,10 @@ class CmdOptionParser(CoverageOptionParser):
         # results, and they will compare equal to objects.
         return (other == "<CmdOptionParser:%s>" % self.cmd)
 
+GLOBAL_ARGS = [
+    Opts.rcfile,
+    Opts.help,
+    ]
 
 CMDS = {
     'annotate': CmdOptionParser("annotate",
@@ -204,15 +213,14 @@ CMDS = {
             Opts.directory,
             Opts.ignore_errors,
             Opts.omit,
-            Opts.help,
-            ],
+            ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Make annotated copies of the given files, marking "
             "statements that are executed with > and statements that are "
             "missed with !."
         ),
 
-    'help': CmdOptionParser("help", [Opts.help],
+    'help': CmdOptionParser("help", GLOBAL_ARGS,
         usage = "[command]",
         description = "Describe how to use coverage.py"
         ),
@@ -222,22 +230,21 @@ CMDS = {
             Opts.directory,
             Opts.ignore_errors,
             Opts.omit,
-            Opts.help,
-            ],
+            ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Create an HTML report of the coverage of the files.  "
             "Each file gets its own page, with the source decorated to show "
             "executed, excluded, and missed lines."
         ),
 
-    'combine': CmdOptionParser("combine", [Opts.help],
+    'combine': CmdOptionParser("combine", GLOBAL_ARGS,
         usage = " ",
         description = "Combine data from multiple coverage files collected "
             "with 'run -p'.  The combined results are written to a single "
             "file representing the union of the data."
         ),
 
-    'debug': CmdOptionParser("debug", [Opts.help],
+    'debug': CmdOptionParser("debug", GLOBAL_ARGS,
         usage = "<topic>",
         description = "Display information on the internals of coverage.py, "
             "for diagnosing problems. "
@@ -245,7 +252,7 @@ CMDS = {
             "or 'sys' to show installation information."
         ),
 
-    'erase': CmdOptionParser("erase", [Opts.help],
+    'erase': CmdOptionParser("erase", GLOBAL_ARGS,
         usage = " ",
         description = "Erase previously collected coverage data."
         ),
@@ -255,8 +262,7 @@ CMDS = {
             Opts.ignore_errors,
             Opts.omit,
             Opts.show_missing,
-            Opts.help,
-            ],
+            ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Report coverage statistics on modules."
         ),
@@ -268,8 +274,7 @@ CMDS = {
             Opts.pylib,
             Opts.parallel_mode,
             Opts.timid,
-            Opts.help,
-            ],
+            ] + GLOBAL_ARGS,
         defaults = {'erase_first': True},
         cmd = "run",
         usage = "[options] <pyfile> [program options]",
@@ -281,8 +286,7 @@ CMDS = {
             Opts.ignore_errors,
             Opts.omit,
             Opts.output_xml,
-            Opts.help,
-            ],
+            ] + GLOBAL_ARGS,
         cmd = "xml",
         defaults = {'outfile': 'coverage.xml'},
         usage = "[options] [modules]",
@@ -422,6 +426,7 @@ class CoverageScript(object):
             cover_pylib = options.pylib,
             timid = options.timid,
             branch = options.branch,
+            config_file = options.rcfile,
             )
 
         if 'debug' in options.actions:
