@@ -1,4 +1,16 @@
-"""Coverage-test Coverage.py itself."""
+"""Coverage-test Coverage.py itself.
+
+Run as:
+
+    $ python test/coverage_coverage.py run [NOSE_ARGS]
+    
+to run and collect coverage, then:
+
+    $ python test/coverage_coverage.py report
+
+to put the HTML report into the htmlcov directory.
+
+"""
 
 import os, shutil, sys
 import nose
