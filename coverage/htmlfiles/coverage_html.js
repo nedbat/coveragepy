@@ -62,3 +62,18 @@ function index_page_ready($) {
         document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/" 
     });
 }
+
+// -- pyfile stuff --
+
+function toggle_lines(btn, cls) {
+    var btn = $(btn);
+    var hide = "hide_"+cls;
+    if (btn.hasClass(hide)) {
+        $("#source ."+cls).removeClass(hide);
+        btn.removeClass(hide);
+    }
+    else {
+        $("#source ."+cls).addClass(hide);
+        btn.addClass(hide);
+    }
+}
