@@ -387,6 +387,14 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("run -L f.py", "-e -x -L f.py")
         self.cmd_executes_same("run --timid f.py", "-e -x --timid f.py")
         self.cmd_executes_same("run", "-x")
+        self.cmd_executes("run --branch foo.py", """\
+            .coverage(cover_pylib=None, data_suffix=False, timid=None, branch=True)
+            .erase()
+            .start()
+            .run_python_file('foo.py', ['foo.py'])
+            .stop()
+            .save()
+            """)
 
     def testXml(self):
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
