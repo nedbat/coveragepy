@@ -29,6 +29,7 @@ def check_files(root, patterns, **kwargs):
 
 
 check_files("coverage", ["*.py"])
+check_files("coverage/htmlfiles", ["*.html", "*.css", "*.js"])
 check_files("test", ["*.py"])
 check_files("test", ["*,cover"], trail_white=False)
 check_file("setup.py")

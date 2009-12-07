@@ -33,7 +33,7 @@ function index_page_ready($) {
             }
             else {
                 // This is not the first load - something has
-                // already defined sorting so we'll just update         
+                // already defined sorting so we'll just update
                 // our stored value to match:
                 sort_list = table.config.sortList;
             }
@@ -58,8 +58,8 @@ function index_page_ready($) {
     });
 
     // Watch for page unload events so we can save the final sort settings:
-    $(window).unload(function() { 
-        document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/" 
+    $(window).unload(function() {
+        document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/"
     });
 }
 
