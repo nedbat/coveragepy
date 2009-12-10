@@ -220,23 +220,6 @@ CMDS = {
             "missed with !."
         ),
 
-    'help': CmdOptionParser("help", GLOBAL_ARGS,
-        usage = "[command]",
-        description = "Describe how to use coverage.py"
-        ),
-
-    'html': CmdOptionParser("html",
-        [
-            Opts.directory,
-            Opts.ignore_errors,
-            Opts.omit,
-            ] + GLOBAL_ARGS,
-        usage = "[options] [modules]",
-        description = "Create an HTML report of the coverage of the files.  "
-            "Each file gets its own page, with the source decorated to show "
-            "executed, excluded, and missed lines."
-        ),
-
     'combine': CmdOptionParser("combine", GLOBAL_ARGS,
         usage = " ",
         description = "Combine data from multiple coverage files collected "
@@ -255,6 +238,23 @@ CMDS = {
     'erase': CmdOptionParser("erase", GLOBAL_ARGS,
         usage = " ",
         description = "Erase previously collected coverage data."
+        ),
+
+    'help': CmdOptionParser("help", GLOBAL_ARGS,
+        usage = "[command]",
+        description = "Describe how to use coverage.py"
+        ),
+
+    'html': CmdOptionParser("html",
+        [
+            Opts.directory,
+            Opts.ignore_errors,
+            Opts.omit,
+            ] + GLOBAL_ARGS,
+        usage = "[options] [modules]",
+        description = "Create an HTML report of the coverage of the files.  "
+            "Each file gets its own page, with the source decorated to show "
+            "executed, excluded, and missed lines."
         ),
 
     'report': CmdOptionParser("report",
