@@ -8,7 +8,7 @@ from coveragetest import CoverageTest
 
 
 class ConfigTest(CoverageTest):
-    """Tests of the config file support."""
+    """Tests of the different sources of configuration settings."""
 
     def test_default_config(self):
         # Just constructing a coverage() object gets the right defaults.
@@ -87,3 +87,32 @@ class ConfigTest(CoverageTest):
         # But the constructor args override the env var.
         cov = coverage.coverage(data_file="fromarg.dat")
         self.assertEqual(cov.config.data_file, "fromarg.dat")
+
+
+class ConfigFileTest(CoverageTest):
+    """Tests of the config file settings in particular."""
+
+    def test_config_file_settings(self):
+        self.make_file(".coveragerc", """\
+            # This is a settings file for coverage.py
+            [run]
+            timid = yes
+            data_file = something_or_other.dat
+            branch = 0
+            cover_pylib = TRUE
+            
+            [report]
+            ; these settings affect reporting.
+            exclude_lines =
+                if 0:
+                pragma:?\s+no cover
+                    another_tab
+            """)
+        cov = coverage.coverage()
+        self.assertFalse(cov.config.branch)
+        self.assertTrue(cov.config.timid)
+        self.assertTrue(cov.config.cover_pylib)
+        self.assertEqual(cov.config.data_file, "something_or_other.dat")
+        self.assertEqual(cov.get_exclude_list(),
+            ["if 0:", "pragma:?\s+no cover", "another_tab"]
+            )

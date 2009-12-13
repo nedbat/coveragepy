@@ -45,6 +45,14 @@ commands:
         -p  --parallel              bool
             --timid                 bool                [run].timid
 
+
+        --include=directory         [run].include
+        --include=filename
+        --include=module
+        --exclude=directory         [run].exclude
+
+
+
     xml
         -i --ignore-errors          bool
         --omit                      list of string
@@ -57,7 +65,7 @@ commands:
 
 Other config:
 
-    [report].exclude                list of string
+    [report].exclude_lines          list of string
     [run].data_file                 string
 
 
