@@ -54,6 +54,6 @@ class CoverageConfig(object):
         if cp.has_option('report', 'exclude_lines'):
             # Exclude is a list of lines, leave out the blank ones.
             exclude_list = cp.get('report', 'exclude_lines')
-            self.exclude_list = filter(None, exclude_list.split('\n'))
+            self.exclude_list = list(filter(None, exclude_list.split('\n')))
         if cp.has_option('run', 'data_file'):
             self.data_file = cp.get('run', 'data_file')

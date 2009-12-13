@@ -105,6 +105,7 @@ class ConfigFileTest(CoverageTest):
             ; these settings affect reporting.
             exclude_lines =
                 if 0:
+
                 pragma:?\s+no cover
                     another_tab
             """)
