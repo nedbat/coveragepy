@@ -3,7 +3,7 @@
 Run as:
 
     $ python test/coverage_coverage.py run [NOSE_ARGS]
-    
+
 to run and collect coverage, then:
 
     $ python test/coverage_coverage.py report
