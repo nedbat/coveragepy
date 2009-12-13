@@ -245,7 +245,7 @@ class ExceptionTest(CoverageTest):
             self.assertEqual(clean_lines, lines_expected)
 
 
-if sys.hexversion > 0x02050000:
+if sys.version_info >= (2, 5):
     class DoctestTest(CoverageTest):
         """Tests invoked with doctest should measure properly."""
 

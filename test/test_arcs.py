@@ -212,7 +212,7 @@ class LoopArcTest(CoverageTest):
             )
         # With "while True", 2.x thinks it's computation, 3.x thinks it's
         # constant.
-        if sys.hexversion >= 0x03000000:
+        if sys.version_info >= (3, 0):
             arcz = ".1 12 23 34 45 36 63 57 27 7."
         else:
             arcz = ".1 12 23 34 45 36 62 57 27 7."
@@ -387,7 +387,7 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB AD BC CD D.",
             arcz_missing="3D AB BC CD", arcz_unpredicted="")
 
-    if sys.hexversion >= 0x02050000:
+    if sys.version_info >= (2, 5):
         # Try-except-finally was new in 2.5
         def test_except_finally(self):
             self.check_coverage("""\

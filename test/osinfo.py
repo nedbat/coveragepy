@@ -2,7 +2,7 @@
 
 import sys
 
-if sys.hexversion >= 0x02050000 and sys.platform == 'win32':
+if sys.version_info >= (2, 5) and sys.platform == 'win32':
     # Windows implementation
     def process_ram():
         """How much RAM is this process using? (Windows)"""

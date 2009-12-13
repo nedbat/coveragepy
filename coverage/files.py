@@ -67,7 +67,7 @@ class FileLocator(object):
                     data = zi.get_data(parts[1])
                 except IOError:
                     continue
-                if sys.hexversion > 0x03000000:
+                if sys.version_info >= (3, 0):
                     data = data.decode('utf8') # TODO: How to do this properly?
                 return data
         return None

@@ -22,7 +22,7 @@ class ByteCodes(object):
         self.code = code
         self.offset = 0
 
-    if sys.hexversion > 0x03000000:
+    if sys.version_info >= (3, 0):
         def __getitem__(self, i):
             return self.code[i]
     else:

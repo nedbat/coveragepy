@@ -310,7 +310,7 @@ class ByteParser(object):
         return map(lambda c: ByteParser(code=c), CodeObjects(self.code))
 
     # Getting numbers from the lnotab value changed in Py3.0.
-    if sys.hexversion >= 0x03000000:
+    if sys.version_info >= (3, 0):
         def _lnotab_increments(self, lnotab):
             """Return a list of ints from the lnotab bytes in 3.x"""
             return list(lnotab)

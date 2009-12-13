@@ -56,7 +56,7 @@ except NameError:
 
 # Exec is a statement in Py2, a function in Py3
 
-if sys.hexversion > 0x03000000:
+if sys.version_info >= (3, 0):
     def exec_function(source, filename, global_map):
         """A wrapper around exec()."""
         exec(compile(source, filename, "exec"), global_map)

@@ -33,7 +33,7 @@ import sys
 # Distribute is a new fork of setuptools.  It's supported on Py3.x, so we use
 # it there, but stick with classic setuptools on Py2.x until Distribute becomes
 # more accepted.
-if sys.hexversion > 0x03000000:
+if sys.version_info >= (3, 0):
     from distribute_setup import use_setuptools
 else:
     from ez_setup import use_setuptools

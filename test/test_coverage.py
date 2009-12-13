@@ -212,7 +212,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,6,9], "")
 
-    if sys.hexversion < 0x03000000:        # Print statement is gone in Py3k.
+    if sys.version_info < (3, 0):   # Print statement is gone in Py3k.
         def testPrint(self):
             self.check_coverage("""\
                 print "hello, world!"
@@ -403,7 +403,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,4,5], "")
 
-    if sys.hexversion < 0x03000000:
+    if sys.version_info < (3, 0):
         # In Python 2.x, exec is a statement.
         def testExec(self):
             self.check_coverage("""\
@@ -1393,7 +1393,7 @@ class ExcludeTest(CoverageTest):
             [8,9], "", ['#pragma: NO COVER'])
 
 
-if sys.hexversion >= 0x020400f0:
+if sys.version_info >= (2, 4):
     class Py24Test(CoverageTest):
         """Tests of new syntax in Python 2.4."""
 
@@ -1464,7 +1464,7 @@ if sys.hexversion >= 0x020400f0:
                  [1,2,3,4,5,7,8,9,10,11,12,14,   17,19,21,   24,26]), "")
 
 
-if sys.hexversion >= 0x020500f0:
+if sys.version_info >= (2, 5):
     class Py25Test(CoverageTest):
         """Tests of new syntax in Python 2.5."""
 
