@@ -20,7 +20,7 @@ class ConfigTest(CoverageTest):
     def test_arguments(self):
         # Arguments to the constructor are applied to the configuation.
         cov = coverage.coverage(timid=True, data_file="fooey.dat")
-        self.assert_(cov.config.timid)
+        self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, "fooey.dat")
 
@@ -33,7 +33,7 @@ class ConfigTest(CoverageTest):
             data_file =     .hello_kitty.data
             """)
         cov = coverage.coverage()
-        self.assert_(cov.config.timid)
+        self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, ".hello_kitty.data")
 
@@ -46,7 +46,7 @@ class ConfigTest(CoverageTest):
             data_file = delete.me
             """)
         cov = coverage.coverage(config_file="my_cov.ini")
-        self.assert_(cov.config.timid)
+        self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, "delete.me")
 

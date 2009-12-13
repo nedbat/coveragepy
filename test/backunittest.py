@@ -17,11 +17,17 @@ class TestCase(unittest.TestCase):
     the builtin `unittest` doesn't have them.
 
     """
+    if _need('assertTrue'):
+        def assertTrue(self, exp, msg=None):
+            """Assert that `exp` is true."""
+            if not exp:
+                self.fail(msg)
+
     if _need('assertFalse'):
-        def assertFalse(self, exp):
+        def assertFalse(self, exp, msg=None):
             """Assert that `exp` is false."""
             if exp:
-                self.fail()
+                self.fail(msg)
 
     if _need('assertRaisesRegexp'):
         def assertRaisesRegexp(self, excClass, regexp, callobj, *args, **kw):
@@ -74,10 +80,10 @@ class TestCase(unittest.TestCase):
 
             """
             # Adapted from Py3.1 unittest.
-            self.assert_(isinstance(first, str), (
-                    'First argument is not a string'))
-            self.assert_(isinstance(second, str), (
-                    'Second argument is not a string'))
+            self.assertTrue(isinstance(first, str),
+                    'First argument is not a string')
+            self.assertTrue(isinstance(second, str),
+                    'Second argument is not a string')
 
             if first != second:
                 msg = ''.join(difflib.ndiff(first.splitlines(True),

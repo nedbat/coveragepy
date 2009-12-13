@@ -81,7 +81,7 @@ class ApiTest(CoverageTest):
         self.doReportWork("mycode4")
         coverage.report()
         rpt = re.sub(r"\s+", " ", self.stdout())
-        self.assert_("mycode4 7 4 57% 4-6" in rpt)
+        self.assertTrue("mycode4 7 4 57% 4-6" in rpt)
 
     def testUnexecutedFile(self):
         cov = coverage.coverage()

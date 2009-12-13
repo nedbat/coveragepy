@@ -1594,9 +1594,9 @@ class ProcessTest(CoverageTest):
             w = "world"
             """)
 
-        self.assert_(not os.path.exists(".coverage"))
+        self.assertFalse(os.path.exists(".coverage"))
         self.run_command("coverage -x mycode.py")
-        self.assert_(os.path.exists(".coverage"))
+        self.assertTrue(os.path.exists(".coverage"))
 
     def testEnvironment(self):
         # Checks that we can import modules from the test directory at all!
@@ -1607,9 +1607,9 @@ class ProcessTest(CoverageTest):
             print ('done')
             """)
 
-        self.assert_(not os.path.exists(".coverage"))
+        self.assertFalse(os.path.exists(".coverage"))
         out = self.run_command("coverage -x mycode.py")
-        self.assert_(os.path.exists(".coverage"))
+        self.assertTrue(os.path.exists(".coverage"))
         self.assertEqual(out, 'done\n')
 
     def testCombineParallelData(self):
@@ -1626,11 +1626,11 @@ class ProcessTest(CoverageTest):
 
         out = self.run_command("coverage -x -p b_or_c.py b")
         self.assertEqual(out, 'done\n')
-        self.assert_(not os.path.exists(".coverage"))
+        self.assertFalse(os.path.exists(".coverage"))
 
         out = self.run_command("coverage -x -p b_or_c.py c")
         self.assertEqual(out, 'done\n')
-        self.assert_(not os.path.exists(".coverage"))
+        self.assertFalse(os.path.exists(".coverage"))
 
         # After two -p runs, there should be two .coverage.machine.123 files.
         self.assertEqual(
@@ -1639,7 +1639,7 @@ class ProcessTest(CoverageTest):
 
         # Combine the parallel coverage data files into .coverage .
         self.run_command("coverage -c")
-        self.assert_(os.path.exists(".coverage"))
+        self.assertTrue(os.path.exists(".coverage"))
 
         # Read the coverage file and see that b_or_c.py has all 7 lines
         # executed.
@@ -1657,7 +1657,7 @@ class ProcessTest(CoverageTest):
         os.remove("fleeting.py")
         out = self.run_command("coverage html -d htmlcov")
         self.assertRegexpMatches(out, "No source for code: '.*fleeting.py'")
-        self.assert_("Traceback" not in out)
+        self.assertFalse("Traceback" in out)
 
         # It happens that the code paths are different for *.py and other
         # files, so try again with no extension.
@@ -1669,12 +1669,12 @@ class ProcessTest(CoverageTest):
         os.remove("fleeting")
         out = self.run_command("coverage html -d htmlcov")
         self.assertRegexpMatches(out, "No source for code: '.*fleeting'")
-        self.assert_("Traceback" not in out)
+        self.assertFalse("Traceback" in out)
 
     def test_running_missing_file(self):
         out = self.run_command("coverage run xyzzy.py")
         self.assertRegexpMatches(out, "No file to run: .*xyzzy.py")
-        self.assert_("Traceback" not in out)
+        self.assertFalse("Traceback" in out)
 
     def test_no_data_to_report_on_annotate(self):
         # Reporting with no data produces a nice message and no output dir.

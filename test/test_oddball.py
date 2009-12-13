@@ -92,7 +92,7 @@ class MemoryLeakTest(CoverageTest):
         self.check_coverage(code.replace("ITERS", "10000"), lines, "")
         ram_2 = osinfo.process_ram()
         ram_growth = (ram_2 - ram_1) - (ram_1 - ram_0)
-        self.assert_(ram_growth < 100000, "RAM grew by %d" % (ram_growth))
+        self.assertTrue(ram_growth < 100000, "RAM grew by %d" % (ram_growth))
 
 
 class PyexpatTest(CoverageTest):
