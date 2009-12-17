@@ -100,7 +100,7 @@ class ConfigFileTest(CoverageTest):
             data_file = something_or_other.dat
             branch = 0
             cover_pylib = TRUE
-            
+
             [report]
             ; these settings affect reporting.
             exclude_lines =
