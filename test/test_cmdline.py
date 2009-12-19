@@ -325,6 +325,33 @@ class ClassicCmdLineTest(CmdLineTest):
         self.cmd_help("-z", "no such option: -z")
 
 
+class FakeCoverageForDebugData(object):
+    """Just enough of a fake coverage package for the 'debug data' tests."""
+    def __init__(self, summary):
+        self._summary = summary
+        self.filename = "FILENAME"
+        self.data = self
+
+    # package members
+    def coverage(self, *unused_args, **unused_kwargs):
+        """The coverage class in the package."""
+        return self
+
+    # coverage methods
+    def load(self):
+        """Fake coverage().load()"""
+        pass
+
+    # data methods
+    def has_arcs(self):
+        """Fake coverage().data.has_arcs()"""
+        return False
+
+    def summary(self, fullpath):                    # pylint: disable-msg=W0613
+        """Fake coverage().data.summary()"""
+        return self._summary
+
+
 class NewCmdLineTest(CmdLineTest):
     """Tests of the coverage.py command line."""
 
@@ -343,6 +370,31 @@ class NewCmdLineTest(CmdLineTest):
     def testDebug(self):
         self.cmd_help("debug", "What information would you like: data, sys?")
         self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
+
+    def testDebugData(self):
+        fake = FakeCoverageForDebugData({
+            'file1.py': 17, 'file2.py': 23,
+            })
+        self.command_line("debug data", _covpkg=fake)
+        self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
+            -- data ---------------------------------------
+            path: FILENAME
+            has_arcs: False
+
+            2 files:
+            file1.py: 17 lines
+            file2.py: 23 lines
+            """))
+
+    def testDebugDataWithNoData(self):
+        fake = FakeCoverageForDebugData({})
+        self.command_line("debug data", _covpkg=fake)
+        self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
+            -- data ---------------------------------------
+            path: FILENAME
+            has_arcs: False
+            No data collected
+            """))
 
     def testDebugSys(self):
         self.command_line("debug sys")

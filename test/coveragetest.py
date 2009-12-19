@@ -253,7 +253,7 @@ class CoverageTest(TestCase):
         fname = os.path.join(*fparts)
         return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
 
-    def command_line(self, args, ret=OK):
+    def command_line(self, args, ret=OK, _covpkg=None):
         """Run `args` through the command line.
 
         Use this when you want to run the full coverage machinery, but in the
@@ -265,11 +265,12 @@ class CoverageTest(TestCase):
         Returns None.
 
         """
-        ret_actual = coverage.CoverageScript().command_line(shlex.split(args))
+        script = coverage.CoverageScript(_covpkg=_covpkg)
+        ret_actual = script.command_line(shlex.split(args))
         self.assertEqual(ret_actual, ret)
 
     def run_command(self, cmd):
-        """ Run the command-line `cmd` in a subprocess, and print its output.
+        """Run the command-line `cmd` in a subprocess, and print its output.
 
         Use this when you need to test the process behavior of coverage.
 
