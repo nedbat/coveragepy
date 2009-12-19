@@ -64,10 +64,10 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(cu[2].source_file().read(), "# cfile.py\n")
 
     def test_comparison(self):
-        acu = code_unit_factory("aa/afile.py", FileLocator())
-        acu2 = code_unit_factory("aa/afile.py", FileLocator())
-        zcu = code_unit_factory("aa/zfile.py", FileLocator())
-        bcu = code_unit_factory("aa/bb/bfile.py", FileLocator())
+        acu = code_unit_factory("aa/afile.py", FileLocator())[0]
+        acu2 = code_unit_factory("aa/afile.py", FileLocator())[0]
+        zcu = code_unit_factory("aa/zfile.py", FileLocator())[0]
+        bcu = code_unit_factory("aa/bb/bfile.py", FileLocator())[0]
         assert acu == acu2 and acu <= acu2 and acu >= acu2
         assert acu < zcu and acu <= zcu and acu != zcu
         assert zcu > acu and zcu >= acu and zcu != acu
