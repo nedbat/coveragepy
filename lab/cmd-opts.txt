@@ -46,10 +46,10 @@ commands:
             --timid                 bool                [run].timid
 
 
-        --include=directory         [run].include
-        --include=filename
-        --include=module
-        --exclude=directory         [run].exclude
+        --include=directory *       [run].include
+        --include=filename *
+        --include=module *
+        --exclude=directory *       [run].exclude
 
 
 

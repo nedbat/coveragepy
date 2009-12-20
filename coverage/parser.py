@@ -256,6 +256,11 @@ OPS_CHUNK_END = _opcode_set(
     'BREAK_LOOP', 'CONTINUE_LOOP',
     )
 
+# Opcodes that unconditionally begin a new code chunk.  By starting new chunks
+# with unconditional jump instructions, we neatly deal with jumps to jumps
+# properly.
+OPS_CHUNK_BEGIN = _opcode_set('JUMP_ABSOLUTE', 'JUMP_FORWARD')
+
 # Opcodes that push a block on the block stack.
 OPS_PUSH_BLOCK = _opcode_set('SETUP_LOOP', 'SETUP_EXCEPT', 'SETUP_FINALLY')
 
@@ -399,11 +404,19 @@ class ByteParser(object):
         ult = penult = None
 
         for bc in ByteCodes(self.code.co_code):
-            # Maybe have to start a new block
+            # Maybe have to start a new chunk
             if bc.offset in bytes_lines_map:
+                # Start a new chunk for each source line number.
                 if chunk:
                     chunk.exits.add(bc.offset)
                 chunk = Chunk(bc.offset, bytes_lines_map[bc.offset])
+                chunks.append(chunk)
+            elif bc.op in OPS_CHUNK_BEGIN:
+                # Jumps deserve their own unnumbered chunk.  This fixes
+                # problems with jumps to jumps getting confused.
+                if chunk:
+                    chunk.exits.add(bc.offset)
+                chunk = Chunk(bc.offset)
                 chunks.append(chunk)
 
             if not chunk:

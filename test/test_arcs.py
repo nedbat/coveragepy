@@ -229,6 +229,33 @@ class LoopArcTest(CoverageTest):
             arcz_missing="27"   # while loop never exits naturally.
             )
 
+    def test_for_if_else_for(self):
+        self.check_coverage("""\
+            def branches_2(l):
+                if l:
+                    for e in l:
+                        a = 4
+                else:
+                    a = 6
+
+            def branches_3(l):
+                for x in l:
+                    if x:
+                        for e in l:
+                            a = 12
+                    else:
+                        a = 14
+            
+            branches_2([0,1])
+            branches_3([0,1])
+            """,
+            arcz=
+                ".1 18 8G GH H. "
+                ".2 23 34 43 26 3. 6. "
+                ".9 9A 9. AB BC CB B9 AE E9",
+            arcz_missing="26 6."
+            )
+
 
 class ExceptionArcTest(CoverageTest):
     """Arc-measuring tests involving exception handling."""

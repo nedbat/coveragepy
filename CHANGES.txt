@@ -8,7 +8,12 @@ Version 3.3
 
 - Settings are now read from a .coveragerc file.
 
+- Fixed a problem with nested loops having their branch possibilities
+  mischaracterized: `issue 39`_.
+
 - Added an AUTHORS.txt file.
+
+.. _issue 39: http://bitbucket.org/ned/coveragepy/issue/39
 
 
 Version 3.2, 5 December 2009
