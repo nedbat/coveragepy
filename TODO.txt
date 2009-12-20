@@ -116,6 +116,7 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
     + Baseline grid for linenumber font.
     + Separate out css and HTML.
     - Does it work right with utf-8 source files? http://www.python.org/dev/peps/pep-0263/
+    - Use vim modeline to determine tab width: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
 
 
 * Community
