@@ -67,7 +67,7 @@ def report_on_combined_files():
     cov.combine()
     cov.save()
     cov.clear_exclude()
-    cov.exclude("#pragma: no cover")
+    cov.exclude("# pragma: no cover")
     cov.exclude("def __repr__")
     cov.exclude("if __name__ == .__main__.:")
     cov.exclude("raise AssertionError")
