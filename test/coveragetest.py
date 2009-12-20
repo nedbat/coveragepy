@@ -162,6 +162,13 @@ class CoverageTest(TestCase):
             arcs.append((self._arcz_map[a], self._arcz_map[b]))
         return sorted(arcs)
 
+    def assertEqualArcs(self, a1, a2):
+        """Assert that the arc lists `a1` and `a2` are equal."""
+        # Make them into multi-line strings so we can see what's going wrong.
+        s1 = "\n".join([repr(a) for a in a1]) + "\n"
+        s2 = "\n".join([repr(a) for a in a2]) + "\n"
+        self.assertMultiLineEqual(s1, s2)
+
     def check_coverage(self, text, lines=None, missing="", excludes=None,
             report="", arcz=None, arcz_missing="", arcz_unpredicted=""):
         """Check the coverage measurement of `text`.
@@ -234,13 +241,13 @@ class CoverageTest(TestCase):
                             )
 
         if arcs is not None:
-            self.assertEqual(analysis.arc_possibilities(), arcs)
+            self.assertEqualArcs(analysis.arc_possibilities(), arcs)
 
             if arcs_missing is not None:
-                self.assertEqual(analysis.arcs_missing(), arcs_missing)
+                self.assertEqualArcs(analysis.arcs_missing(), arcs_missing)
 
             if arcs_unpredicted is not None:
-                self.assertEqual(analysis.arcs_unpredicted(), arcs_unpredicted)
+                self.assertEqualArcs(analysis.arcs_unpredicted(), arcs_unpredicted)
 
         if report:
             frep = StringIO()
