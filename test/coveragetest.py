@@ -247,7 +247,9 @@ class CoverageTest(TestCase):
                 self.assertEqualArcs(analysis.arcs_missing(), arcs_missing)
 
             if arcs_unpredicted is not None:
-                self.assertEqualArcs(analysis.arcs_unpredicted(), arcs_unpredicted)
+                self.assertEqualArcs(
+                    analysis.arcs_unpredicted(), arcs_unpredicted
+                    )
 
         if report:
             frep = StringIO()

@@ -245,7 +245,7 @@ class LoopArcTest(CoverageTest):
                             a = 12
                     else:
                         a = 14
-            
+
             branches_2([0,1])
             branches_3([0,1])
             """,
