@@ -174,9 +174,10 @@ class CoverageTest(TestCase):
         """Check the coverage measurement of `text`.
 
         The source `text` is run and measured.  `lines` are the line numbers
-        that are executable, `missing` are the lines not executed, `excludes`
-        are regexes to match against for excluding lines, and `report` is
-        the text of the measurement report.
+        that are executable, or a list of possible line numbers, any of which
+        could match. `missing` are the lines not executed, `excludes` are
+        regexes to match against for excluding lines, and `report` is the text
+        of the measurement report.
 
         For arc measurement, `arcz` is a string that can be decoded into arcs
         in the code (see `arcz_to_arcs` for the encoding scheme),
@@ -218,8 +219,12 @@ class CoverageTest(TestCase):
         analysis = cov._analyze(mod)
         if lines is not None:
             if type(lines[0]) == type(1):
+                # lines is just a list of numbers, it must match the statements
+                # found in the code.
                 self.assertEqual(analysis.statements, lines)
             else:
+                # lines is a list of possible line number lists, one of them
+                # must match.
                 for line_list in lines:
                     if analysis.statements == line_list:
                         break
