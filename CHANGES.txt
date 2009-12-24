@@ -11,6 +11,9 @@ Version 3.3
 - Fixed a problem with nested loops having their branch possibilities
   mischaracterized: `issue 39`_.
 
+- Added coverage.process_start to enable coverage measurement when Python
+  starts.
+
 - Added an AUTHORS.txt file.
 
 .. _issue 39: http://bitbucket.org/ned/coveragepy/issue/39

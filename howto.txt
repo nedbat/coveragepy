@@ -56,4 +56,4 @@
 - For complete coverage testing, in each Python installation, create a
   "zzz_coverage_process_start.pth" containing::
 
-    import coverage; coverage.measure_process()
+    import coverage; coverage.process_startup()

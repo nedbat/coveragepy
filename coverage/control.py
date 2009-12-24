@@ -373,11 +373,16 @@ class coverage(object):
         return info
 
 
-def measure_process():
-    """Called at Python startup time to perhaps measure coverage.
+def process_startup():
+    """Call this at Python startup to perhaps measure coverage.
+
+    To invoke this when Python starts, you can create a .pth file in your
+    Python installation containing this::
+
+        import coverage; coverage.process_startup()
 
     If the environment variable COVERAGE_PROCESS_START is defined, coverage
-    measurement is started, and the value of the variable is the data file
+    measurement is started.  The value of the variable is the data file
     prefix to use.
 
     """

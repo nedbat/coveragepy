@@ -9,7 +9,7 @@ __version__ = "3.3a1"    # see detailed history in CHANGES.txt
 
 __url__ = "http://nedbatchelder.com/code/coverage"
 
-from coverage.control import coverage, measure_process
+from coverage.control import coverage, process_startup
 from coverage.data import CoverageData
 from coverage.cmdline import main, CoverageScript
 from coverage.misc import CoverageException
