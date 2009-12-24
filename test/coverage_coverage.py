@@ -73,7 +73,8 @@ def report_on_combined_files():
     cov.exclude("raise AssertionError")
 
     cov.html_report(
-        directory=HTML_DIR, ignore_errors=True, omit_prefixes=["mock"]
+        directory=HTML_DIR, ignore_errors=True,
+        omit_prefixes=["mock", "ez_setup", "distribute"]
         )
 
 

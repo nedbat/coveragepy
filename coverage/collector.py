@@ -251,7 +251,7 @@ class Collector(object):
             line_data = {}
             for f, arcs in self.data.items():
                 line_data[f] = ldf = {}
-                for l1, _ in arcs:
+                for l1, _ in list(arcs.keys()):
                     if l1:
                         ldf[l1] = None
             return line_data

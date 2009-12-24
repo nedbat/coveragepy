@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import atexit, os, socket
+import atexit, os, random, socket
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class
@@ -98,8 +98,10 @@ class coverage(object):
         # Create the data file.
         if data_suffix:
             if not isinstance(data_suffix, string_class):
-                # if data_suffix=True, use .machinename.pid
-                data_suffix = ".%s.%s" % (socket.gethostname(), os.getpid())
+                # if data_suffix=True, use .machinename.pid.random
+                data_suffix = ".%s.%s.%06d" % (
+                    socket.gethostname(), os.getpid(), random.randint(0,999999)
+                    )
         else:
             data_suffix = None
 
@@ -369,3 +371,22 @@ class coverage(object):
                 ]),
             ]
         return info
+
+
+def measure_process():
+    """Called at Python startup time to perhaps measure coverage.
+
+    If the environment variable COVERAGE_PROCESS_START is defined, coverage
+    measurement is started, and the value of the variable is the data file
+    prefix to use.
+
+    """
+    cps = os.environ.get("COVERAGE_PROCESS_START")
+    if cps:
+        cov = coverage(
+            auto_data=True, data_file=cps, data_suffix=True, branch=True
+            )
+        if os.environ.get("COVERAGE_COVERAGE"):
+            # Measuring coverage within coverage.py takes yet more trickery.
+            cov.cover_prefix = "Please measure coverage.py!"
+        cov.start()

@@ -52,3 +52,8 @@
     c:\ned\coverage\trunk\test\eggsrc\dist\covtestegg1-0.0.0-py2.5.egg
 
   (or equivalent).
+
+- For complete coverage testing, in each Python installation, create a
+  "zzz_coverage_process_start.pth" containing::
+
+    import coverage; coverage.measure_process()
