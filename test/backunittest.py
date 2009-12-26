@@ -42,7 +42,7 @@ class TestCase(unittest.TestCase):
                 if re.search(regexp, excMsg):
                     # Message provided, and we got the right one: it passes.
                     return
-                else:   # pragma: no cover
+                else:
                     # Message provided, and it didn't match: fail!
                     raise self.failureException(
                         "Right exception, wrong message: "
@@ -50,7 +50,7 @@ class TestCase(unittest.TestCase):
                         )
             # No need to catch other exceptions: They'll fail the test all by
             # themselves!
-            else:   # pragma: no cover
+            else:
                 if hasattr(excClass, '__name__'):
                     excName = excClass.__name__
                 else:

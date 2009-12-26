@@ -28,8 +28,8 @@ class ApiTest(CoverageTest):
 
         # Import the python file, executing it.
         coverage.start()
-        self.import_module("mycode")
-        coverage.stop()
+        self.import_module("mycode")            # pragma: recursive coverage
+        coverage.stop()                         # pragma: recursive coverage
 
         _, statements, missing, missingtext = coverage.analysis("mycode.py")
         self.assertEqual(statements, [1,2,3,4,5])
@@ -52,8 +52,8 @@ class ApiTest(CoverageTest):
 
         # Import the python file, executing it.
         coverage.start()
-        self.import_module(modname)
-        coverage.stop()
+        self.import_module(modname)             # pragma: recursive coverage
+        coverage.stop()                         # pragma: recursive coverage
 
     def testReport(self):
         self.doReportWork("mycode2")
@@ -100,8 +100,8 @@ class ApiTest(CoverageTest):
 
         # Import the python file, executing it.
         cov.start()
-        self.import_module("mycode")
-        cov.stop()
+        self.import_module("mycode")            # pragma: recursive coverage
+        cov.stop()                              # pragma: recursive coverage
 
         _, statements, missing, _ = cov.analysis("not_run.py")
         self.assertEqual(statements, [1])
@@ -121,8 +121,8 @@ class ApiTest(CoverageTest):
         # Import the python file, executing it.
         cov = coverage.coverage()
         cov.start()
-        self.import_module("mymain")
-        cov.stop()
+        self.import_module("mymain")            # pragma: recursive coverage
+        cov.stop()                              # pragma: recursive coverage
 
         filename, _, _, _ = cov.analysis("mymain.py")
         self.assertEqual(os.path.basename(filename), "mymain.py")
@@ -138,8 +138,8 @@ class ApiTest(CoverageTest):
         # already.
         cov = coverage.coverage()
         cov.start()
-        self.import_module("mymain")
-        cov.stop()
+        self.import_module("mymain")            # pragma: recursive coverage
+        cov.stop()                              # pragma: recursive coverage
 
         filename, _, _, _ = cov.analysis("mymain.py")
         self.assertEqual(os.path.basename(filename), "mymain.py")
@@ -166,8 +166,8 @@ class ApiTest(CoverageTest):
         cov1 = coverage.coverage()
         self.assertEqual(cov1.config.cover_pylib, False)
         cov1.start()
-        self.import_module("mymain")
-        cov1.stop()
+        self.import_module("mymain")            # pragma: recursive coverage
+        cov1.stop()                             # pragma: recursive coverage
 
         # some statements were marked executed in mymain.py
         _, statements, missing, _ = cov1.analysis("mymain.py")
@@ -179,8 +179,8 @@ class ApiTest(CoverageTest):
         # Measure with the stdlib.
         cov2 = coverage.coverage(cover_pylib=True)
         cov2.start()
-        self.import_module("mymain")
-        cov2.stop()
+        self.import_module("mymain")            # pragma: recursive coverage
+        cov2.stop()                             # pragma: recursive coverage
 
         # some statements were marked executed in mymain.py
         _, statements, missing, _ = cov2.analysis("mymain.py")
@@ -210,8 +210,8 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."), ["datatest1.py"])
         cov = coverage.coverage()
         cov.start()
-        self.import_module("datatest1")
-        cov.stop()
+        self.import_module("datatest1")         # pragma: recursive coverage
+        cov.stop()                              # pragma: recursive coverage
         cov.save()
         self.assertSameElements(os.listdir("."),
                             ["datatest1.py", "datatest1.pyc", ".coverage"])
@@ -225,8 +225,8 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."), ["datatest2.py"])
         cov = coverage.coverage(data_file="cov.data")
         cov.start()
-        self.import_module("datatest2")
-        cov.stop()
+        self.import_module("datatest2")         # pragma: recursive coverage
+        cov.stop()                              # pragma: recursive coverage
         cov.save()
         self.assertSameElements(os.listdir("."),
                             ["datatest2.py", "datatest2.pyc", "cov.data"])
@@ -240,8 +240,8 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."), ["datatest3.py"])
         cov = coverage.coverage(data_file="cov.data", data_suffix=".14")
         cov.start()
-        self.import_module("datatest3")
-        cov.stop()
+        self.import_module("datatest3")         # pragma: recursive coverage
+        cov.stop()                              # pragma: recursive coverage
         cov.save()
         self.assertSameElements(os.listdir("."),
                             ["datatest3.py", "datatest3.pyc", "cov.data.14"])
@@ -260,8 +260,8 @@ class ApiTest(CoverageTest):
                                             ["datatest4.py", ".coveragerc"])
         cov = coverage.coverage()
         cov.start()
-        self.import_module("datatest4")
-        cov.stop()
+        self.import_module("datatest4")         # pragma: recursive coverage
+        cov.stop()                              # pragma: recursive coverage
         cov.save()
         self.assertSameElements(os.listdir("."),
                 ["datatest4.py", "datatest4.pyc", ".coveragerc", "mydata.dat"])

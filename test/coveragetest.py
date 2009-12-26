@@ -205,10 +205,10 @@ class CoverageTest(TestCase):
             cov.exclude(exc)
         cov.start()
 
-        try:
+        try:                                    # pragma: recursive coverage
             # Import the python file, executing it.
             mod = self.import_module(modname)
-        finally:
+        finally:                                # pragma: recursive coverage
             # Stop Coverage.
             cov.stop()
 
@@ -238,7 +238,7 @@ class CoverageTest(TestCase):
                     self.assertEqual(analysis.missing_formatted(), missing)
                 else:
                     for missing_list in missing:
-                        if analysis.missing == missing_list:
+                        if analysis.missing_formatted() == missing_list:
                             break
                     else:
                         self.fail("None of the missing choices matched %r" %

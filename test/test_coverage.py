@@ -13,6 +13,86 @@ sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
 
+class TestCoverageTest(CoverageTest):
+    """Make sure our complex self.check_coverage method works."""
+
+    def test_successful_coverage(self):
+        # The simplest run possible.
+        self.check_coverage("""\
+            a = 1
+            b = 2
+            """,
+            [1,2]
+            )
+        # You can provide a list of possible statement matches.
+        self.check_coverage("""\
+            a = 1
+            b = 2
+            """,
+            ([100], [1,2], [1723,47]),
+            )
+        # You can specify missing lines.
+        self.check_coverage("""\
+            a = 1
+            if a == 2:
+                a = 3
+            """,
+            [1,2,3],
+            missing="3",
+            )
+        # You can specify a list of possible missing lines.
+        self.check_coverage("""\
+            a = 1
+            if a == 2:
+                a = 3
+            """,
+            [1,2,3],
+            missing=("47-49", "3", "100,102")
+            )
+
+    def test_failed_coverage(self):
+        # If the lines are wrong, the message shows right and wrong.
+        self.assertRaisesRegexp(AssertionError,
+            r"\[1, 2] != \[1]",
+            self.check_coverage, """\
+                a = 1
+                b = 2
+                """,
+                [1]
+            )
+        # If the list of lines possibilities is wrong, the msg shows right.
+        self.assertRaisesRegexp(AssertionError,
+            r"None of the lines choices matched \[1, 2]",
+            self.check_coverage, """\
+                a = 1
+                b = 2
+                """,
+                ([1], [2])
+            )
+        # If the missing lines are wrong, the message shows right and wrong.
+        self.assertRaisesRegexp(AssertionError,
+            r"'3' != '37'",
+            self.check_coverage, """\
+                a = 1
+                if a == 2:
+                    a = 3
+                """,
+                [1,2,3],
+                missing="37",
+            )
+        # If the missing lines possibilities are wrong, the msg shows right.
+        self.assertRaisesRegexp(AssertionError,
+            r"None of the missing choices matched '3'",
+            self.check_coverage, """\
+                a = 1
+                if a == 2:
+                    a = 3
+                """,
+                [1,2,3],
+                missing=("37", "4-10"),
+            )
+
+
 class BasicCoverageTest(CoverageTest):
     """The simplest tests, for quick smoke testing of fundamental changes."""
 

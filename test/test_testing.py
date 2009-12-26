@@ -76,3 +76,11 @@ class TestingTest(TestCase):
             self.assertRaisesRegexp, ZeroDivisionError, "XYZ",
             self.please_succeed
             )
+
+    def test_assert_true(self):
+        self.assertTrue(True)
+        self.assertRaises(AssertionError, self.assertTrue, False)
+
+    def test_assert_false(self):
+        self.assertFalse(False)
+        self.assertRaises(AssertionError, self.assertFalse, True)
