@@ -2,7 +2,7 @@
 make --quiet testdata
 
 del .coverage.*
-set COVERAGE_PROCESS_START=c:\ned\coverage\trunk\.coverage
+set COVERAGE_PROCESS_START=c:\ned\coverage\trunk\covcov.ini
 set COVERAGE_COVERAGE=1
 
 call \ned\bin\switchpy 23

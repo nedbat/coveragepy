@@ -382,15 +382,13 @@ def process_startup():
         import coverage; coverage.process_startup()
 
     If the environment variable COVERAGE_PROCESS_START is defined, coverage
-    measurement is started.  The value of the variable is the data file
-    prefix to use.
+    measurement is started.  The value of the variable is the config file
+    to use.
 
     """
     cps = os.environ.get("COVERAGE_PROCESS_START")
     if cps:
-        cov = coverage(
-            auto_data=True, data_file=cps, data_suffix=True, branch=True
-            )
+        cov = coverage(config_file=cps, auto_data=True, data_suffix=True)
         if os.environ.get("COVERAGE_COVERAGE"):
             # Measuring coverage within coverage.py takes yet more trickery.
             cov.cover_prefix = "Please measure coverage.py!"

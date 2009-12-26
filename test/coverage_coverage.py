@@ -25,7 +25,7 @@ def run_tests_with_coverage():
     version = "%s%s" % sys.version_info[:2]
     suffix = ".%s_%s" % (version, tracer)
 
-    cov = coverage.coverage(branch=True, data_suffix=suffix)
+    cov = coverage.coverage(config_file="covcov.ini", data_suffix=suffix)
     # Cheap trick: the coverage code itself is excluded from measurement, but
     # if we clobber the cover_prefix in the coverage object, we can defeat the
     # self-detection.
@@ -63,14 +63,9 @@ def report_on_combined_files():
 
     print(":: Writing HTML report to %s/index.html" % HTML_DIR)
     import coverage
-    cov = coverage.coverage()
+    cov = coverage.coverage(config_file="covcov.ini")
     cov.combine()
     cov.save()
-    cov.clear_exclude()
-    cov.exclude("# pragma: no cover")
-    cov.exclude("def __repr__")
-    cov.exclude("if __name__ == .__main__.:")
-    cov.exclude("raise AssertionError")
 
     cov.html_report(
         directory=HTML_DIR, ignore_errors=True,
