@@ -233,17 +233,16 @@ class CoverageTest(TestCase):
                                                         analysis.statements
                         )
 
-            if missing is not None:
-                if type(missing) == type(""):
-                    self.assertEqual(analysis.missing_formatted(), missing)
+            if type(missing) == type(""):
+                self.assertEqual(analysis.missing_formatted(), missing)
+            else:
+                for missing_list in missing:
+                    if analysis.missing_formatted() == missing_list:
+                        break
                 else:
-                    for missing_list in missing:
-                        if analysis.missing_formatted() == missing_list:
-                            break
-                    else:
-                        self.fail("None of the missing choices matched %r" %
-                                                analysis.missing_formatted()
-                            )
+                    self.fail("None of the missing choices matched %r" %
+                                            analysis.missing_formatted()
+                        )
 
         if arcs is not None:
             self.assertEqualArcs(analysis.arc_possibilities(), arcs)
