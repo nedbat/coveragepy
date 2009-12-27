@@ -18,7 +18,7 @@ class CoverageConfig(object):
         self.cover_pylib = False
         self.timid = False
         self.branch = False
-        self.exclude_list = ['# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]']
+        self.exclude_list = ['(?i)# *pragma[: ]*no *cover']
         self.data_file = ".coverage"
 
     def from_environment(self, env_var):
@@ -37,7 +37,7 @@ class CoverageConfig(object):
                 setattr(self, k, v)
 
     def from_file(self, *files):
-        """Read configurating from .rc files.
+        """Read configuration from .rc files.
 
         Each argument in `files` is a file name to read.
 

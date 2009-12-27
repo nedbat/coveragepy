@@ -1118,6 +1118,18 @@ class CompoundStatementTest(CoverageTest):
 class ExcludeTest(CoverageTest):
     """Tests of the exclusion feature to mark lines as not covered."""
 
+    def testDefault(self):
+        # A number of forms of pragma comment are accepted.
+        self.check_coverage("""\
+            a = 1
+            b = 2   # pragma: no cover
+            c = 3
+            d = 4   #pragma NOCOVER
+            e = 5
+            """,
+            [1,3,5]
+            )
+
     def testSimple(self):
         self.check_coverage("""\
             a = 1; b = 2
