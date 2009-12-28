@@ -3,7 +3,7 @@
 import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from backtest import run_command, execfile          # pylint: disable-msg=W0622
+from backtest import run_command, execfile, reload  # pylint: disable-msg=W0622
 
 
 def test_farm(clean_only=False):
@@ -74,6 +74,8 @@ class FarmTestCase(object):
             glo = dict([(fn, getattr(self, fn)) for fn in fns])
             if self.dont_clean:
                 glo['clean'] = self.noop
+
+        glo['reload'] = reload
 
         try:
             execfile(self.runpy, glo)

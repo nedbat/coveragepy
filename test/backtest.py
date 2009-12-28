@@ -47,3 +47,9 @@ except NameError:
     def execfile(filename, globs):
         """A Python 3 implementation of execfile."""
         exec(compile(open(filename).read(), filename, 'exec'), globs)
+
+# reload moved in Py3k
+try:
+    from imp import reload
+except:
+    reload = reload
