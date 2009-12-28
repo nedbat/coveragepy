@@ -3,9 +3,10 @@ def html_it():
     import coverage
     cov = coverage.coverage()
     cov.start()
-    import x
+    import a
+    reload(a) # Because other test files import a, we have to reload to run it.
     cov.stop()
-    cov.xml_report(x, outfile="../xml/coverage.xml")
+    cov.xml_report(a, outfile="../xml/coverage.xml")
 
 import os
 if not os.path.exists("xml"):
