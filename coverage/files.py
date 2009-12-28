@@ -38,6 +38,8 @@ class FileLocator(object):
                     f = os.path.basename(f)
             if not os.path.isabs(f):
                 for path in [os.curdir] + sys.path:
+                    if path is None:
+                        continue
                     g = os.path.join(path, f)
                     if os.path.exists(g):
                         f = g

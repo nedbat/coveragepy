@@ -4,7 +4,6 @@ def html_it():
     cov = coverage.coverage()
     cov.start()
     import a
-    reload(a) # Because other test files import a, we have to reload to run it.
     cov.stop()
     cov.xml_report(a, outfile="../xml/coverage.xml")
 

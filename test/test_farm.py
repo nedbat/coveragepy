@@ -3,7 +3,7 @@
 import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from backtest import run_command, execfile, reload  # pylint: disable-msg=W0622
+from backtest import run_command, execfile          # pylint: disable-msg=W0622
 
 
 def test_farm(clean_only=False):
@@ -75,12 +75,15 @@ class FarmTestCase(object):
             if self.dont_clean:
                 glo['clean'] = self.noop
 
-        glo['reload'] = reload
-
+        old_mods = dict(sys.modules)
         try:
             execfile(self.runpy, glo)
         finally:
             self.cd(cwd)
+            # Remove any new modules imported during the test run. This lets us
+            # import the same source files for more than one test.
+            for m in [m for m in sys.modules if m not in old_mods]:
+                del sys.modules[m]
 
     def run_fully(self):        # pragma: no cover
         """Run as a full test case, with setUp and tearDown."""
