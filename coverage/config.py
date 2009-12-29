@@ -21,6 +21,7 @@ class CoverageConfig(object):
         self.exclude_list = ['(?i)# *pragma[: ]*no *cover']
         self.data_file = ".coverage"
         self.omit_prefixes = None
+        self.ignore_errors = False
 
     def from_environment(self, env_var):
         """Read configuration from the `env_var` environment variable."""
@@ -61,6 +62,8 @@ class CoverageConfig(object):
             # exclude_lines is a list of lines, leave out the blank ones.
             exclude_list = cp.get('report', 'exclude_lines')
             self.exclude_list = list(filter(None, exclude_list.split('\n')))
+        if cp.has_option('report', 'ignore_errors'):
+            self.ignore_errors = cp.getboolean('report', 'ignore_errors')
         if cp.has_option('report', 'omit'):
             # omit is a list of prefixes, on separate lines, or separated by
             # commas.

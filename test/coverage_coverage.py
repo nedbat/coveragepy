@@ -67,7 +67,7 @@ def report_on_combined_files():
     cov.combine()
     cov.save()
 
-    cov.html_report(directory=HTML_DIR, ignore_errors=True)
+    cov.html_report(directory=HTML_DIR)
 
 
 try:

@@ -15,7 +15,7 @@ commands:
     annotate -a
         -d --output-directory       string
         -i --ignore-errors          bool
-        --omit                      list of string
+        --omit                      list of string      [report].omit
 
     combine -c
 
@@ -27,16 +27,16 @@ commands:
 
     html -b
         -d --output-directory       string
-        -i --ignore-errors          bool
-        --omit                      list of string
+        -i --ignore-errors          bool                [report].ignore_errors
+        --omit                      list of string      [report].omit
         --red *
         --green *
         --style *
 
     report -r
         -m --missing                bool
-        -i --ignore-errors          bool
-        --omit                      list of string
+        -i --ignore-errors          bool                [report].ignore_errors
+        --omit                      list of string      [report].omit
 
     run -x
         -a  --append                bool
@@ -54,8 +54,8 @@ commands:
 
 
     xml
-        -i --ignore-errors          bool
-        --omit                      list of string
+        -i --ignore-errors          bool                [report].ignore_errors
+        --omit                      list of string      [report].omit
         -o                          string
 
 

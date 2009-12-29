@@ -298,7 +298,7 @@ class coverage(object):
 
         return Analysis(self, it)
 
-    def report(self, morfs=None, show_missing=True, ignore_errors=False,
+    def report(self, morfs=None, show_missing=True, ignore_errors=None,
                 file=None, omit_prefixes=None):     # pylint: disable-msg=W0622
         """Write a summary report to `file`.
 
@@ -306,13 +306,18 @@ class coverage(object):
         statements, missing statements, and a list of lines missed.
 
         """
-        self.config.from_args(omit_prefixes=omit_prefixes)
-        reporter = SummaryReporter(self, show_missing, ignore_errors)
+        self.config.from_args(
+            ignore_errors=ignore_errors,
+            omit_prefixes=omit_prefixes
+            )
+        reporter = SummaryReporter(
+            self, show_missing, self.config.ignore_errors
+            )
         reporter.report(
             morfs, outfile=file, omit_prefixes=self.config.omit_prefixes
             )
 
-    def annotate(self, morfs=None, directory=None, ignore_errors=False,
+    def annotate(self, morfs=None, directory=None, ignore_errors=None,
                     omit_prefixes=None):
         """Annotate a list of modules.
 
@@ -322,36 +327,45 @@ class coverage(object):
         excluded lines have "-", and missing lines have "!".
 
         """
-        self.config.from_args(omit_prefixes=omit_prefixes)
-        reporter = AnnotateReporter(self, ignore_errors)
+        self.config.from_args(
+            ignore_errors=ignore_errors,
+            omit_prefixes=omit_prefixes
+            )
+        reporter = AnnotateReporter(self, self.config.ignore_errors)
         reporter.report(
             morfs, directory=directory, omit_prefixes=self.config.omit_prefixes
             )
 
-    def html_report(self, morfs=None, directory=None, ignore_errors=False,
+    def html_report(self, morfs=None, directory=None, ignore_errors=None,
                     omit_prefixes=None):
         """Generate an HTML report.
 
         """
-        self.config.from_args(omit_prefixes=omit_prefixes)
-        reporter = HtmlReporter(self, ignore_errors)
+        self.config.from_args(
+            ignore_errors=ignore_errors,
+            omit_prefixes=omit_prefixes
+            )
+        reporter = HtmlReporter(self, self.config.ignore_errors)
         reporter.report(
             morfs, directory=directory,
             omit_prefixes=self.config.omit_prefixes
             )
 
-    def xml_report(self, morfs=None, outfile=None, ignore_errors=False,
+    def xml_report(self, morfs=None, outfile=None, ignore_errors=None,
                     omit_prefixes=None):
         """Generate an XML report of coverage results.
 
         The report is compatible with Cobertura reports.
 
         """
-        self.config.from_args(omit_prefixes=omit_prefixes)
+        self.config.from_args(
+            ignore_errors=ignore_errors,
+            omit_prefixes=omit_prefixes
+            )
         if outfile:
             outfile = open(outfile, "w")
         try:
-            reporter = XmlReporter(self, ignore_errors)
+            reporter = XmlReporter(self, self.config.ignore_errors)
             reporter.report(
                 morfs, omit_prefixes=self.config.omit_prefixes, outfile=outfile
                 )
