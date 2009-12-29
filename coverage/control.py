@@ -319,18 +319,23 @@ class coverage(object):
         excluded lines have "-", and missing lines have "!".
 
         """
+        self.config.from_args(omit_prefixes=omit_prefixes)
         reporter = AnnotateReporter(self, ignore_errors)
         reporter.report(
-            morfs, directory=directory, omit_prefixes=omit_prefixes)
+            morfs, directory=directory, omit_prefixes=self.config.omit_prefixes
+            )
 
     def html_report(self, morfs=None, directory=None, ignore_errors=False,
                     omit_prefixes=None):
         """Generate an HTML report.
 
         """
+        self.config.from_args(omit_prefixes=omit_prefixes)
         reporter = HtmlReporter(self, ignore_errors)
         reporter.report(
-            morfs, directory=directory, omit_prefixes=omit_prefixes)
+            morfs, directory=directory,
+            omit_prefixes=self.config.omit_prefixes
+            )
 
     def xml_report(self, morfs=None, outfile=None, ignore_errors=False,
                     omit_prefixes=None):
@@ -339,12 +344,14 @@ class coverage(object):
         The report is compatible with Cobertura reports.
 
         """
+        self.config.from_args(omit_prefixes=omit_prefixes)
         if outfile:
             outfile = open(outfile, "w")
         try:
             reporter = XmlReporter(self, ignore_errors)
             reporter.report(
-                morfs, omit_prefixes=omit_prefixes, outfile=outfile)
+                morfs, omit_prefixes=self.config.omit_prefixes, outfile=outfile
+                )
         finally:
             outfile.close()
 

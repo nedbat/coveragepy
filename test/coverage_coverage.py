@@ -68,8 +68,7 @@ def report_on_combined_files():
     cov.save()
 
     cov.html_report(
-        directory=HTML_DIR, ignore_errors=True,
-        omit_prefixes=["mock", "ez_setup", "distribute"]
+        directory=HTML_DIR, ignore_errors=True
         )
 
 

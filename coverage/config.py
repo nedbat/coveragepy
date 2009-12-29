@@ -20,6 +20,7 @@ class CoverageConfig(object):
         self.branch = False
         self.exclude_list = ['(?i)# *pragma[: ]*no *cover']
         self.data_file = ".coverage"
+        self.omit_prefixes = None
 
     def from_environment(self, env_var):
         """Read configuration from the `env_var` environment variable."""
@@ -45,15 +46,28 @@ class CoverageConfig(object):
         cp = configparser.RawConfigParser()
         cp.read(files)
 
+        # [run]
         if cp.has_option('run', 'timid'):
             self.timid = cp.getboolean('run', 'timid')
         if cp.has_option('run', 'cover_pylib'):
             self.cover_pylib = cp.getboolean('run', 'cover_pylib')
         if cp.has_option('run', 'branch'):
             self.branch = cp.getboolean('run', 'branch')
-        if cp.has_option('report', 'exclude_lines'):
-            # Exclude is a list of lines, leave out the blank ones.
-            exclude_list = cp.get('report', 'exclude_lines')
-            self.exclude_list = list(filter(None, exclude_list.split('\n')))
         if cp.has_option('run', 'data_file'):
             self.data_file = cp.get('run', 'data_file')
+
+        # [report]
+        if cp.has_option('report', 'exclude_lines'):
+            # exclude_lines is a list of lines, leave out the blank ones.
+            exclude_list = cp.get('report', 'exclude_lines')
+            self.exclude_list = list(filter(None, exclude_list.split('\n')))
+        if cp.has_option('report', 'omit'):
+            # omit is a list of prefixes, on separate lines, or separated by
+            # commas.
+            omit_list = cp.get('report', 'omit')
+            self.omit_prefixes = []
+            for omit_line in omit_list.split('\n'):
+                for omit in omit_line.split(','):
+                    omit = omit.strip()
+                    if omit:
+                        self.omit_prefixes.append(omit)
