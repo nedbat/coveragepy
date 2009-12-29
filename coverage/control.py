@@ -306,8 +306,11 @@ class coverage(object):
         statements, missing statements, and a list of lines missed.
 
         """
+        self.config.from_args(omit_prefixes=omit_prefixes)
         reporter = SummaryReporter(self, show_missing, ignore_errors)
-        reporter.report(morfs, outfile=file, omit_prefixes=omit_prefixes)
+        reporter.report(
+            morfs, outfile=file, omit_prefixes=self.config.omit_prefixes
+            )
 
     def annotate(self, morfs=None, directory=None, ignore_errors=False,
                     omit_prefixes=None):
