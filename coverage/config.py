@@ -14,14 +14,16 @@ class CoverageConfig(object):
 
     def __init__(self):
         """Initialize the configuration attributes to their defaults."""
-        # Defaults.
-        self.cover_pylib = False
-        self.timid = False
+        # Defaults for [run]
         self.branch = False
-        self.exclude_list = ['(?i)# *pragma[: ]*no *cover']
+        self.cover_pylib = False
         self.data_file = ".coverage"
-        self.omit_prefixes = None
+        self.timid = False
+
+        # Defaults for [report]
+        self.exclude_list = ['(?i)# *pragma[: ]*no *cover']
         self.ignore_errors = False
+        self.omit_prefixes = None
 
     def from_environment(self, env_var):
         """Read configuration from the `env_var` environment variable."""
@@ -48,14 +50,14 @@ class CoverageConfig(object):
         cp.read(files)
 
         # [run]
-        if cp.has_option('run', 'timid'):
-            self.timid = cp.getboolean('run', 'timid')
-        if cp.has_option('run', 'cover_pylib'):
-            self.cover_pylib = cp.getboolean('run', 'cover_pylib')
         if cp.has_option('run', 'branch'):
             self.branch = cp.getboolean('run', 'branch')
+        if cp.has_option('run', 'cover_pylib'):
+            self.cover_pylib = cp.getboolean('run', 'cover_pylib')
         if cp.has_option('run', 'data_file'):
             self.data_file = cp.get('run', 'data_file')
+        if cp.has_option('run', 'timid'):
+            self.timid = cp.getboolean('run', 'timid')
 
         # [report]
         if cp.has_option('report', 'exclude_lines'):

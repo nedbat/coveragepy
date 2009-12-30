@@ -1,20 +1,21 @@
 coverage -e -x foo.py
 coverage run foo.py
 coverage run --timid foo.py
-coverage foo.py
+coverage foo.py *
 
 
 global args:
 
         -h  --help
         --rcfile                    string
+        --version
 
 
 commands:
 
     annotate -a
         -d --output-directory       string
-        -i --ignore-errors          bool
+        -i --ignore-errors          bool                [report].ignore_errors
         --omit                      list of string      [report].omit
 
     combine -c
