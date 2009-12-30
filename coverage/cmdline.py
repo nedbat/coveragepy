@@ -108,7 +108,11 @@ class CoverageOptionParser(optparse.OptionParser, object):
             )
 
         self.disable_interspersed_args()
-        self.help_fn = lambda: None
+        self.help_fn = self.help_noop
+
+    def help_noop(self, error=None, topic=None, parser=None):
+        """No-op help function."""
+        pass
 
     class OptionParserError(Exception):
         """Used to stop the optparse error handler ending the process."""
