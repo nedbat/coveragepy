@@ -180,6 +180,8 @@ class CoverageData(object):
                     self.lines.setdefault(filename, {}).update(file_data)
                 for filename, file_data in new_arcs.items():
                     self.arcs.setdefault(filename, {}).update(file_data)
+                if f != local:
+                    os.remove(full_path)
 
     def add_line_data(self, line_data):
         """Add executed line data.

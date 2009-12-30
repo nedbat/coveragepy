@@ -1726,12 +1726,17 @@ class ProcessTest(CoverageTest):
 
         # After two -p runs, there should be two .coverage.machine.123 files.
         self.assertEqual(
-            len([f for f in os.listdir('.') if f.startswith('.coverage.')]),
+            len([f for f in os.listdir('.') if f.startswith('.coverage')]),
             2)
 
         # Combine the parallel coverage data files into .coverage .
         self.run_command("coverage -c")
         self.assertTrue(os.path.exists(".coverage"))
+
+        # After combining, there should be only the .coverage file.
+        self.assertEqual(
+            len([f for f in os.listdir('.') if f.startswith('.coverage')]),
+            1)
 
         # Read the coverage file and see that b_or_c.py has all 7 lines
         # executed.

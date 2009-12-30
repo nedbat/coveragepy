@@ -14,9 +14,13 @@ Version 3.3
 - Added coverage.process_start to enable coverage measurement when Python
   starts.
 
+- Parallel data files combined with "coverage combine" are deleted after
+  they're combined, to clean up unneeded files.  Fixes `issue 40`_.
+
 - Added an AUTHORS.txt file.
 
 .. _issue 39: http://bitbucket.org/ned/coveragepy/issue/39
+.. _issue 40: http://bitbucket.org/ned/coveragepy/issue/40
 
 
 Version 3.2, 5 December 2009
