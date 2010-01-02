@@ -14,7 +14,6 @@ try:
 except NameError:
     from sets import Set as set
 
-
 # Python 2.3 doesn't have `sorted`.
 try:
     sorted = sorted
@@ -26,7 +25,6 @@ except NameError:
         return lst
 
 # Pythons 2 and 3 differ on where to get StringIO
-
 try:
     from cStringIO import StringIO
     BytesIO = StringIO
@@ -34,28 +32,24 @@ except ImportError:
     from io import StringIO, BytesIO
 
 # What's a string called?
-
 try:
     string_class = basestring
 except NameError:
     string_class = str
 
 # Where do pickles come from?
-
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
 
 # range or xrange?
-
 try:
     range = xrange
 except NameError:
     range = range
 
 # Exec is a statement in Py2, a function in Py3
-
 if sys.version_info >= (3, 0):
     def exec_function(source, filename, global_map):
         """A wrapper around exec()."""
@@ -72,7 +66,6 @@ def exec_function(source, filename, global_map):
     ))
 
 # ConfigParser was renamed to the more-standard configparser
-
 try:
     import configparser
 except ImportError:
