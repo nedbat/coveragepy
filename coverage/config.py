@@ -18,6 +18,7 @@ class CoverageConfig(object):
         self.branch = False
         self.cover_pylib = False
         self.data_file = ".coverage"
+        self.parallel = False
         self.timid = False
 
         # Defaults for [report]
@@ -56,6 +57,8 @@ class CoverageConfig(object):
             self.cover_pylib = cp.getboolean('run', 'cover_pylib')
         if cp.has_option('run', 'data_file'):
             self.data_file = cp.get('run', 'data_file')
+        if cp.has_option('run', 'parallel'):
+            self.parallel = cp.getboolean('run', 'parallel')
         if cp.has_option('run', 'timid'):
             self.timid = cp.getboolean('run', 'timid')
 

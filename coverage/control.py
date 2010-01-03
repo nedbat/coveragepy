@@ -10,6 +10,7 @@ from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.files import FileLocator
 from coverage.html import HtmlReporter
+from coverage.misc import bool_or_none
 from coverage.results import Analysis
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
@@ -29,13 +30,13 @@ class coverage(object):
 
     """
 
-    def __init__(self, data_file=None, data_suffix=False, cover_pylib=None,
+    def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True):
         """
         `data_file` is the base name of the data file to use, defaulting to
-        ".coverage".  `data_suffix` is appended to `data_file` to create the
-        final file name.  If `data_suffix` is simply True, then a suffix is
-        created with the machine and process identity included.
+        ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
+        create the final file name.  If `data_suffix` is simply True, then a
+        suffix is created with the machine and process identity included.
 
         `cover_pylib` is a boolean determining whether Python code installed
         with the Python interpreter is measured.  This includes the Python
@@ -79,7 +80,7 @@ class coverage(object):
         # 4: from constructor arguments:
         self.config.from_args(
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
-            branch=branch
+            branch=branch, parallel=bool_or_none(data_suffix)
             )
 
         self.auto_data = auto_data
@@ -96,11 +97,11 @@ class coverage(object):
             )
 
         # Create the data file.
-        if data_suffix:
+        if data_suffix or self.config.parallel:
             if not isinstance(data_suffix, string_class):
                 # if data_suffix=True, use .machinename.pid.random
-                data_suffix = ".%s.%s.%06d" % (
-                    socket.gethostname(), os.getpid(), random.randint(0,999999)
+                data_suffix = "%s.%s.%06d" % (
+                    socket.gethostname(), os.getpid(), random.randint(0, 999999)
                     )
         else:
             data_suffix = None
@@ -250,6 +251,14 @@ class coverage(object):
         current measurements.
 
         """
+        # If the .coveragerc file specifies parallel=True, then self.data
+        # already points to a suffixed data file.  This won't be right for
+        # combining, so make a new self.data with no suffix.
+        from coverage import __version__
+        self.data = CoverageData(
+            basename=self.config.data_file,
+            collector="coverage v%s" % __version__
+            )
         self.data.combine_parallel_data()
 
     def _harvest_data(self):
@@ -412,7 +421,7 @@ def process_startup():
     """
     cps = os.environ.get("COVERAGE_PROCESS_START")
     if cps:
-        cov = coverage(config_file=cps, auto_data=True, data_suffix=True)
+        cov = coverage(config_file=cps, auto_data=True)
         if os.environ.get("COVERAGE_COVERAGE"):
             # Measuring coverage within coverage.py takes yet more trickery.
             cov.cover_prefix = "Please measure coverage.py!"

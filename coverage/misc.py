@@ -60,6 +60,14 @@ def expensive(fn):
     return _wrapped
 
 
+def bool_or_none(b):
+    """Return bool(b), but preserve None."""
+    if b is None:
+        return None
+    else:
+        return bool(b)
+
+
 class CoverageException(Exception):
     """An exception specific to Coverage."""
     pass

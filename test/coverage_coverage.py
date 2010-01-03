@@ -23,7 +23,7 @@ def run_tests_with_coverage():
 
     tracer = os.environ.get('COVERAGE_TEST_TRACER', 'c')
     version = "%s%s" % sys.version_info[:2]
-    suffix = ".%s_%s" % (version, tracer)
+    suffix = "%s_%s" % (version, tracer)
 
     cov = coverage.coverage(config_file="covcov.ini", data_suffix=suffix)
     # Cheap trick: the coverage code itself is excluded from measurement, but
@@ -66,7 +66,6 @@ def report_on_combined_files():
     cov = coverage.coverage(config_file="covcov.ini")
     cov.combine()
     cov.save()
-
     cov.html_report(directory=HTML_DIR)
 
 

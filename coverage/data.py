@@ -34,7 +34,8 @@ class CoverageData(object):
 
         `suffix` is a suffix to append to the base file name. This can be used
         for multiple or parallel execution, so that many coverage data files
-        can exist simultaneously.
+        can exist simultaneously.  A dot will be used to join the base name and
+        the suffix.
 
         `collector` is a string describing the coverage measurement software.
 
@@ -47,7 +48,7 @@ class CoverageData(object):
         # ever do any file storage.
         self.filename = basename or ".coverage"
         if suffix:
-            self.filename += suffix
+            self.filename += "." + suffix
         self.filename = os.path.abspath(self.filename)
 
         # A map from canonical Python source file name to a dictionary in
@@ -168,12 +169,13 @@ class CoverageData(object):
         """Combine a number of data files together.
 
         Treat `self.filename` as a file prefix, and combine the data from all
-        of the data files starting with that prefix.
+        of the data files starting with that prefix plus a dot.
 
         """
         data_dir, local = os.path.split(self.filename)
+        localdot = local + '.'
         for f in os.listdir(data_dir or '.'):
-            if f.startswith(local):
+            if f.startswith(localdot):
                 full_path = os.path.join(data_dir, f)
                 new_lines, new_arcs = self._read_file(full_path)
                 for filename, file_data in new_lines.items():

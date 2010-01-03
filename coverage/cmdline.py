@@ -427,7 +427,7 @@ class CoverageScript(object):
 
         # Do something.
         self.coverage = self.covpkg.coverage(
-            data_suffix = bool(options.parallel_mode),
+            data_suffix = options.parallel_mode,
             cover_pylib = options.pylib,
             timid = options.timid,
             branch = options.branch,

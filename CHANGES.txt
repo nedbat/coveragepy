@@ -6,7 +6,9 @@ Change history for Coverage.py
 Version 3.3
 -----------
 
-- Settings are now read from a .coveragerc file.
+- Settings are now read from a .coveragerc file.  The name of the file can be
+  set with the `config_file` argument to the coverage() constructor, or reading
+  a config file can be disabled with `config_file=False`.
 
 - Fixed a problem with nested loops having their branch possibilities
   mischaracterized: `issue 39`_.
@@ -14,8 +16,15 @@ Version 3.3
 - Added coverage.process_start to enable coverage measurement when Python
   starts.
 
+- Parallel data file names now have a random number appended to them in
+  addition to the machine name and process id.
+
 - Parallel data files combined with "coverage combine" are deleted after
   they're combined, to clean up unneeded files.  Fixes `issue 40`_.
+
+- The `data_suffix` argument to the coverage constructor is now appended with
+  an added dot rather than simply appended, so that .coveragerc files will not
+  be confused for data files.
 
 - Added an AUTHORS.txt file.
 

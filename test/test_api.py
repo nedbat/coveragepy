@@ -238,7 +238,7 @@ class ApiTest(CoverageTest):
             """)
 
         self.assertSameElements(os.listdir("."), ["datatest3.py"])
-        cov = coverage.coverage(data_file="cov.data", data_suffix=".14")
+        cov = coverage.coverage(data_file="cov.data", data_suffix="14")
         cov.start()
         self.import_module("datatest3")         # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
