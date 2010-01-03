@@ -101,7 +101,7 @@ class coverage(object):
             if not isinstance(data_suffix, string_class):
                 # if data_suffix=True, use .machinename.pid.random
                 data_suffix = "%s.%s.%06d" % (
-                    socket.gethostname(), os.getpid(), random.randint(0, 999999)
+                    socket.gethostname(), os.getpid(), random.randint(0, 99999)
                     )
         else:
             data_suffix = None
