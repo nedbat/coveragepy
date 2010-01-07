@@ -26,6 +26,9 @@ class CoverageConfig(object):
         self.ignore_errors = False
         self.omit_prefixes = None
 
+        # Defaults for [html]
+        self.html_dir = "htmlcov"
+
     def from_environment(self, env_var):
         """Read configuration from the `env_var` environment variable."""
         # Timidity: for nose users, read an environment variable.  This is a
@@ -79,3 +82,7 @@ class CoverageConfig(object):
                     omit = omit.strip()
                     if omit:
                         self.omit_prefixes.append(omit)
+
+        # [html]
+        if cp.has_option('html', 'directory'):
+            self.html_dir = cp.get('html', 'directory')

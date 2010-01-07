@@ -106,8 +106,13 @@ class ConfigFileTest(CoverageTest):
             exclude_lines =
                 if 0:
 
-                pragma:?\s+no cover
+                pragma:?\\s+no cover
                     another_tab
+                    
+            [html]
+
+            directory    =     c:\\tricky\\dir.somewhere
+
             """)
         cov = coverage.coverage()
         self.assertFalse(cov.config.branch)
@@ -117,3 +122,4 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.get_exclude_list(),
             ["if 0:", "pragma:?\s+no cover", "another_tab"]
             )
+        self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")

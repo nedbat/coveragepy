@@ -5,7 +5,7 @@ def html_it():
     cov.start()
     import main
     cov.stop()
-    cov.html_report(directory="../html_omit_5")
+    cov.html_report()
 
 runfunc(html_it, rundir="src")
 compare("gold_omit_5", "html_omit_5", size_within=10, file_pattern="*.html")

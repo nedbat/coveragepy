@@ -352,11 +352,12 @@ class coverage(object):
         """
         self.config.from_args(
             ignore_errors=ignore_errors,
-            omit_prefixes=omit_prefixes
+            omit_prefixes=omit_prefixes,
+            html_dir=directory,
             )
         reporter = HtmlReporter(self, self.config.ignore_errors)
         reporter.report(
-            morfs, directory=directory,
+            morfs, directory=self.config.html_dir,
             omit_prefixes=self.config.omit_prefixes
             )
 
@@ -379,7 +380,8 @@ class coverage(object):
                 morfs, omit_prefixes=self.config.omit_prefixes, outfile=outfile
                 )
         finally:
-            outfile.close()
+            if outfile:
+                outfile.close()
 
     def sysinfo(self):
         """Return a list of key,value pairs showing internal information."""
