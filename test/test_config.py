@@ -98,8 +98,9 @@ class ConfigFileTest(CoverageTest):
             [run]
             timid = yes
             data_file = something_or_other.dat
-            branch = 0
+            branch = 1
             cover_pylib = TRUE
+            parallel = on
 
             [report]
             ; these settings affect reporting.
@@ -108,18 +109,31 @@ class ConfigFileTest(CoverageTest):
 
                 pragma:?\\s+no cover
                     another_tab
-                    
+
+            ignore_errors = TRUE
+            omit =
+                one, another, some_more,
+                    yet_more
+
             [html]
 
             directory    =     c:\\tricky\\dir.somewhere
 
             """)
         cov = coverage.coverage()
-        self.assertFalse(cov.config.branch)
+
         self.assertTrue(cov.config.timid)
-        self.assertTrue(cov.config.cover_pylib)
         self.assertEqual(cov.config.data_file, "something_or_other.dat")
+        self.assertTrue(cov.config.branch)
+        self.assertTrue(cov.config.cover_pylib)
+        self.assertTrue(cov.config.parallel)
+
         self.assertEqual(cov.get_exclude_list(),
             ["if 0:", "pragma:?\s+no cover", "another_tab"]
             )
+        self.assertTrue(cov.config.ignore_errors)
+        self.assertEqual(cov.config.omit_prefixes,
+            ["one", "another", "some_more", "yet_more"]
+            )
+
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
