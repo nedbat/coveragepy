@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import atexit, os, random, socket
+import atexit, os, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class
@@ -366,7 +366,7 @@ class coverage(object):
         """Generate an XML report of coverage results.
 
         The report is compatible with Cobertura reports.
-        
+
         Each module in `morfs` is included in the report.  `outfile` is the
         path to write the file to, "-" will write to stdout.
 
@@ -376,25 +376,27 @@ class coverage(object):
             omit_prefixes=omit_prefixes,
             xml_output=outfile,
             )
+        file_to_close = None
         if self.config.xml_output:
             if self.config.xml_output == '-':
                 outfile = sys.stdout
             else:
                 outfile = open(self.config.xml_output, "w")
+                file_to_close = outfile
         try:
             reporter = XmlReporter(self, self.config.ignore_errors)
             reporter.report(
                 morfs, omit_prefixes=self.config.omit_prefixes, outfile=outfile
                 )
         finally:
-            if outfile:
-                outfile.close()
+            if file_to_close:
+                file_to_close.close()
 
     def sysinfo(self):
         """Return a list of key,value pairs showing internal information."""
 
         import coverage as covmod
-        import platform, re, sys
+        import platform, re
 
         info = [
             ('version', covmod.__version__),
