@@ -482,7 +482,7 @@ class NewCmdLineTest(CmdLineTest):
             """)
         self.cmd_executes("xml -o -", self.INIT_LOAD + """\
             .xml_report(ignore_errors=None, omit_prefixes=None, morfs=[],
-                    outfile=None)
+                    outfile="-")
             """)
         self.cmd_executes("xml --omit fooey", self.INIT_LOAD + """\
             .xml_report(ignore_errors=None, omit_prefixes=["fooey"], morfs=[],

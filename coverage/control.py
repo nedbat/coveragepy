@@ -366,14 +366,21 @@ class coverage(object):
         """Generate an XML report of coverage results.
 
         The report is compatible with Cobertura reports.
+        
+        Each module in `morfs` is included in the report.  `outfile` is the
+        path to write the file to, "-" will write to stdout.
 
         """
         self.config.from_args(
             ignore_errors=ignore_errors,
-            omit_prefixes=omit_prefixes
+            omit_prefixes=omit_prefixes,
+            xml_output=outfile,
             )
-        if outfile:
-            outfile = open(outfile, "w")
+        if self.config.xml_output:
+            if self.config.xml_output == '-':
+                outfile = sys.stdout
+            else:
+                outfile = open(self.config.xml_output, "w")
         try:
             reporter = XmlReporter(self, self.config.ignore_errors)
             reporter.report(

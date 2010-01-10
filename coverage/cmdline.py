@@ -506,8 +506,6 @@ class CoverageScript(object):
                 directory=options.directory, **report_args)
         if 'xml' in options.actions:
             outfile = options.outfile
-            if outfile == '-':
-                outfile = None
             self.coverage.xml_report(outfile=outfile, **report_args)
 
         return OK

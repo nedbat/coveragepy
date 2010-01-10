@@ -1,20 +1,20 @@
 def html_it():
-    """Run coverage and make an XML report for x."""
+    """Run coverage and make an XML report for a."""
     import coverage
     cov = coverage.coverage()
     cov.start()
     import a
     cov.stop()
-    cov.xml_report(a, outfile="../xml/coverage.xml")
+    cov.xml_report(a, outfile="../xml_1/coverage.xml")
 
 import os
-if not os.path.exists("xml"):
-    os.makedirs("xml")
+if not os.path.exists("xml_1"):
+    os.makedirs("xml_1")
 
 runfunc(html_it, rundir="src")
 
-compare("gold_x_xml", "xml", scrubs=[
+compare("gold_x_xml", "xml_1", scrubs=[
     (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
     (r' version="[-.\w]+"', ' version="VERSION"'),
     ])
-clean("xml")
+clean("xml_1")

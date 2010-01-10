@@ -93,6 +93,7 @@ class ConfigFileTest(CoverageTest):
     """Tests of the config file settings in particular."""
 
     def test_config_file_settings(self):
+        # This sample file tries to use lots of variation of syntax...
         self.make_file(".coveragerc", """\
             # This is a settings file for coverage.py
             [run]
@@ -119,6 +120,9 @@ class ConfigFileTest(CoverageTest):
 
             directory    =     c:\\tricky\\dir.somewhere
 
+            [xml]
+            output=mycov.xml
+
             """)
         cov = coverage.coverage()
 
@@ -137,3 +141,5 @@ class ConfigFileTest(CoverageTest):
             )
 
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
+
+        self.assertEqual(cov.config.xml_output, "mycov.xml")
