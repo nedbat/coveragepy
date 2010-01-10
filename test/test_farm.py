@@ -295,7 +295,11 @@ class FarmTestCase(object):
     def clean(self, cleandir):
         """Clean `cleandir` by removing it and all its children completely."""
         if os.path.exists(cleandir):
-            shutil.rmtree(cleandir)
+            # rmtree gives mysterious failures on Win7, so use an onerror
+            # function that simply retries the operation.  Why that helps, I
+            # have no idea.
+            shutil.rmtree(cleandir, onerror=lambda fn, path, exc: fn(path))
+
 
 def main():     # pragma: no cover
     """Command-line access to test_farm.
