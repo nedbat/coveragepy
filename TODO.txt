@@ -5,6 +5,7 @@ Coverage TODO
 - Config file
     + A command switch to point to the rc file.
     - Write docs
+- Ship the nose and py.test plugin.
 - Better omit handling that ignores files during measurement.
     - Deal with ~ in specified paths correctly.
 - while TRUE claims to be partial.
@@ -82,7 +83,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
     directory.
 - Why can't a morf also be a string, the name of a module?
 - ignore by module as well as file?
-- Use a .coveragerc file to control Coverage without the programmatic API.
++ Use a .coveragerc file to control Coverage without the programmatic API.
 - Own the nose --with-cover plugin.
 x Why can't you specify execute (-x) and report (-r) in the same invocation?
     Maybe just because -x needs the rest of the command line?
