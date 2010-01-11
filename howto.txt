@@ -39,6 +39,11 @@
 - Announce on TIP.
 
 
+* Building
+
+- Create PythonXX\Lib\distutils\distutils.cfg::
+    [build]
+    compiler = mingw32
 
 * Testing
 
