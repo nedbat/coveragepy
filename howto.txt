@@ -46,6 +46,8 @@
 
 - On Py 2.x: need setuptools installed
 - On Py 3.x: need Distribute installed
+- Need nose installed
+- Need to have coverage dev-installed
 - In each Python installation to be used, create a "coverage_test_egg.pth"
   containing::
 
