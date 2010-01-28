@@ -97,6 +97,7 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
 - Different categories of exclude pragma? So you can enable and disable them
     from the command line, to reconsider exclusions.
 - Reporting on files never touched by coverage (package completeness)
+- A setup.py command? http://jeetworks.org/node/50
 
 
 * Beauty
