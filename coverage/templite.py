@@ -101,14 +101,14 @@ class Templite(object):
         # Run it through an engine, and return the result.
         engine = _TempliteEngine(ctx)
         engine.execute(self.ops)
-        return engine.result
+        return "".join(engine.result)
 
 
 class _TempliteEngine(object):
     """Executes Templite objects to produce strings."""
     def __init__(self, context):
         self.context = context
-        self.result = ""
+        self.result = []
 
     def execute(self, ops):
         """Execute `ops` in the engine.
