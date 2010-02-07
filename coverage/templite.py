@@ -118,10 +118,10 @@ class _TempliteEngine(object):
         """
         for op, args in ops:
             if op == 'lit':
-                self.result += args
+                self.result.append(args)
             elif op == 'exp':
                 try:
-                    self.result += str(self.evaluate(args))
+                    self.result.append(str(self.evaluate(args)))
                 except:
                     exc_class, exc, _ = sys.exc_info()
                     new_exc = exc_class("Couldn't evaluate {{ %s }}: %s"

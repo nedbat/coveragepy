@@ -16,11 +16,11 @@
         </h1>
         <h2 class='stats'>
             {{nums.n_statements}} statements
-            <span class='{{c_run.strip}}' onclick='toggle_lines(this, "run")'>{{nums.n_executed}} run</span>
-            <span class='{{c_exc.strip}}' onclick='toggle_lines(this, "exc")'>{{nums.n_excluded}} excluded</span>
-            <span class='{{c_mis.strip}}' onclick='toggle_lines(this, "mis")'>{{nums.n_missing}} missing</span>
+            <span class='{{c_run}}' onclick='toggle_lines(this, "run")'>{{nums.n_executed}} run</span>
+            <span class='{{c_exc}}' onclick='toggle_lines(this, "exc")'>{{nums.n_excluded}} excluded</span>
+            <span class='{{c_mis}}' onclick='toggle_lines(this, "mis")'>{{nums.n_missing}} missing</span>
             {% if arcs %}
-                <span class='{{c_par.strip}}' onclick='toggle_lines(this, "par")'>{{n_par}} partial</span>
+                <span class='{{c_par}}' onclick='toggle_lines(this, "par")'>{{n_par}} partial</span>
             {% endif %}
         </h2>
     </div>

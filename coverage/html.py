@@ -69,27 +69,27 @@ class HtmlReporter(Reporter):
         arcs = self.arcs
 
         # These classes determine which lines are highlighted by default.
-        c_run = " run hide_run"
-        c_exc = " exc"
-        c_mis = " mis"
-        c_par = " par" + c_run
+        c_run = "run hide_run"
+        c_exc = "exc"
+        c_mis = "mis"
+        c_par = "par " + c_run
 
         lines = []
 
         for lineno, line in enumerate(source_token_lines(source)):
             lineno += 1     # 1-based line numbers.
             # Figure out how to mark this line.
-            line_class = ""
+            line_class = []
             annotate_html = ""
             annotate_title = ""
             if lineno in analysis.statements:
-                line_class += " stm"
+                line_class.append("stm")
             if lineno in analysis.excluded:
-                line_class += c_exc
+                line_class.append(c_exc)
             elif lineno in analysis.missing:
-                line_class += c_mis
+                line_class.append(c_mis)
             elif self.arcs and lineno in missing_branch_arcs:
-                line_class += c_par
+                line_class.append(c_par)
                 n_par += 1
                 annlines = []
                 for b in missing_branch_arcs[lineno]:
@@ -103,21 +103,21 @@ class HtmlReporter(Reporter):
                 elif len(annlines) == 1:
                     annotate_title = "no jump to this line number"
             elif lineno in analysis.statements:
-                line_class += c_run
+                line_class.append(c_run)
 
             # Build the HTML for the line
-            html = ""
+            html = []
             for tok_type, tok_text in line:
                 if tok_type == "ws":
-                    html += escape(tok_text)
+                    html.append(escape(tok_text))
                 else:
                     tok_html = escape(tok_text) or '&nbsp;'
-                    html += "<span class='%s'>%s</span>" % (tok_type, tok_html)
+                    html.append("<span class='%s'>%s</span>" % (tok_type, tok_html))
 
             lines.append({
-                'html': html,
+                'html': ''.join(html),
                 'number': lineno,
-                'class': line_class.strip() or "pln",
+                'class': ' '.join(line_class) or "pln",
                 'annotate': annotate_html,
                 'annotate_title': annotate_title,
             })
