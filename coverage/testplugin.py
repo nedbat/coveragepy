@@ -1,4 +1,10 @@
-import coverage, optparse
+import os
+import re
+import sys
+import optparse
+from types import ListType
+
+import coverage
 
 class CoverageTestWrapper(object):
     """
@@ -11,6 +17,9 @@ class CoverageTestWrapper(object):
     5) Improve your code coverage ;)
     """
     
+    coverTests = False
+    coverPackages = None
+
     def __init__(self, options, _covpkg=None):
         self.options = options
         
@@ -22,6 +31,9 @@ class CoverageTestWrapper(object):
             self.covpkg = coverage
         
         self.coverage = None
+
+        self.coverTests = options.cover_tests
+        self.coverPackage = options.cover_package
     
     def start(self):
         # Set up coverage
@@ -31,6 +43,8 @@ class CoverageTestWrapper(object):
             timid = self.options.cover_timid,
             branch = self.options.cover_branch,
         )
+
+        self.skipModules = sys.modules.keys()[:]
         
         # Run the script.
         self.coverage.start()
@@ -39,10 +53,14 @@ class CoverageTestWrapper(object):
         # end coverage and save the results
         self.coverage.stop()
         self.coverage.save()
+
+        modules = [module
+                for name, module in sys.modules.items()
+                if module is not None and name.startswith(self.coverPackage)]
         
         # Remaining actions are reporting, with some common self.options.
         report_args = {
-            'morfs': [],
+            'morfs': modules,
             'ignore_errors': self.options.cover_ignore_errors,
             }
             
@@ -55,7 +73,7 @@ class CoverageTestWrapper(object):
         except:
             omit = self.options.cover_omit.split(',')
             report_args['omit_prefixes'] = omit
-        
+
         if 'report' in self.options.cover_actions:
             self.coverage.report(
                 show_missing=self.options.cover_show_missing, **report_args)
@@ -83,7 +101,17 @@ html        Create an HTML report.
 report      Report coverage stats on modules.
 xml         Create an XML report of coverage results.
 """.strip()),
-
+    optparse.Option(
+        '--cover-package', action='store',
+        dest="cover_package",
+        metavar="COVER_PACKAGE",
+        help="Restrict coverage output to selected package"
+        ),
+    optparse.Option("--cover-tests", action="store_true",
+        dest="cover_tests",
+        metavar="[NOSE_COVER_TESTS]",
+        default=False,
+        help="Include test modules in coverage report "),
     optparse.Option(
         '--cover-branch', action='store_true',
         help="Measure branch execution. HIGHLY EXPERIMENTAL!"
