@@ -3,7 +3,7 @@
 import imp, os, sys
 
 from coverage.backward import exec_function
-from coverage.misc import NoSource
+from coverage.misc import NoSource, ExceptionDuringRun
 
 
 try:
@@ -36,11 +36,23 @@ def run_python_file(filename, args):
     sys.path[0] = os.path.dirname(filename)
 
     try:
+        # Open the source file.
         try:
             source = open(filename, 'rU').read()
         except IOError:
             raise NoSource("No file to run: %r" % filename)
-        exec_function(source, filename, main_mod.__dict__)
+
+        # Execute the source file.
+        try:
+            exec_function(source, filename, main_mod.__dict__)
+        except:
+            # Something went wrong while executing the user code.
+            # Get the exc_info, and pack them into an exception that we can
+            # throw up to the outer loop.  We peel two layers off the traceback
+            # so that the coverage.py code doesn't appear in the final printed
+            # traceback.
+            typ, err, tb = sys.exc_info()
+            raise ExceptionDuringRun(typ, err, tb.tb_next.tb_next)
     finally:
         # Restore the old __main__
         sys.modules['__main__'] = old_main_mod

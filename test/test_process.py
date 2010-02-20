@@ -1,6 +1,6 @@
 """Tests for process behavior of coverage.py."""
 
-import os, sys
+import os, sys, textwrap
 import coverage
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
@@ -148,3 +148,30 @@ class ProcessTest(CoverageTest):
         out = self.run_command("coverage run xyzzy.py")
         self.assertRegexpMatches(out, "No file to run: .*xyzzy.py")
         self.assertFalse("Traceback" in out)
+
+    def test_code_throws(self):
+        self.make_file("throw.py", """\
+            def f1():
+                raise Exception("hey!")
+
+            def f2():
+                f1()
+
+            f2()
+            """)
+
+        out = self.run_command("coverage run throw.py")
+        # Different versions of Python report the module-level code differently
+        # in tracebacks, so canononicalize it.
+        out = out.replace(", in ?", ", in <module>")
+        expected = textwrap.dedent("""\
+            Traceback (most recent call last):
+              File "throw.py", line 7, in <module>
+                f2()
+              File "throw.py", line 5, in f2
+                f1()
+              File "throw.py", line 2, in f1
+                raise Exception("hey!")
+            Exception: hey!
+            """)
+        self.assertMultiLineEqual(out, expected)

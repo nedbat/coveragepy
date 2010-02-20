@@ -1,10 +1,10 @@
 """Command-line support for Coverage."""
 
-import optparse, re, sys
+import optparse, re, sys, traceback
 
 from coverage.backward import sorted                # pylint: disable-msg=W0622
 from coverage.execfile import run_python_file
-from coverage.misc import CoverageException
+from coverage.misc import CoverageException, ExceptionDuringRun
 
 
 class Opts(object):
@@ -596,6 +596,10 @@ def main():
     """
     try:
         status = CoverageScript().command_line(sys.argv[1:])
+    except ExceptionDuringRun:
+        _, err, _ = sys.exc_info()
+        traceback.print_exception(*err.args)
+        status = ERR
     except CoverageException:
         _, err, _ = sys.exc_info()
         print(err)

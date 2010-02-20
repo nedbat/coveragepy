@@ -75,3 +75,11 @@ class CoverageException(Exception):
 class NoSource(CoverageException):
     """Used to indicate we couldn't find the source for a module."""
     pass
+
+class ExceptionDuringRun(CoverageException):
+    """An exception happened while running customer code.
+
+    Construct it with three arguments, the values from `sys.exc_info`.
+
+    """
+    pass
