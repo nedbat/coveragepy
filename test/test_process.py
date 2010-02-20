@@ -1,6 +1,6 @@
 """Tests for process behavior of coverage.py."""
 
-import os, sys, textwrap
+import os, sys
 import coverage
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
