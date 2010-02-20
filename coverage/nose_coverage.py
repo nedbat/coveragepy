@@ -3,7 +3,7 @@ import unittest, os
 from nose.plugins import Plugin
 import sys
 
-from coverage.testplugin import CoverageTestWrapper
+from coverage.testplugin import CoverageTestWrapper, options as coverage_opts
 
 log = logging.getLogger(__name__)
 
@@ -22,8 +22,7 @@ class Coverage(Plugin):
         Add options to command line.
         """
         Plugin.options(self, parser, env)
-        from coverage.runner import options
-        for opt in options:
+        for opt in coverage_opts:
             parser.add_option(opt)
     
     def configure(self, options, config):
@@ -64,5 +63,5 @@ class Coverage(Plugin):
         log.debug("Coverage report")
         stream.write("Processing Coverage...")
         # finish up with coverage
-        self.coverage.finish()
+        self.coverage.finish(stream)
 

@@ -49,7 +49,7 @@ class CoverageTestWrapper(object):
         # Run the script.
         self.coverage.start()
         
-    def finish(self):
+    def finish(self, stream=None):
         # end coverage and save the results
         self.coverage.stop()
         self.coverage.save()
@@ -76,7 +76,8 @@ class CoverageTestWrapper(object):
 
         if 'report' in self.options.cover_actions:
             self.coverage.report(
-                show_missing=self.options.cover_show_missing, **report_args)
+                show_missing=self.options.cover_show_missing,
+                file=stream, **report_args)
         if 'annotate' in self.options.cover_actions:
             self.coverage.annotate(
                 directory=self.options.cover_directory, **report_args)
