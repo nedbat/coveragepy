@@ -160,18 +160,13 @@ class ProcessTest(CoverageTest):
             f2()
             """)
 
+        # The important thing is for "coverage run" and "python" to report the
+        # same traceback.
         out = self.run_command("coverage run throw.py")
-        # Different versions of Python report the module-level code differently
-        # in tracebacks, so canononicalize it.
-        out = out.replace(", in ?", ", in <module>")
-        expected = textwrap.dedent("""\
-            Traceback (most recent call last):
-              File "throw.py", line 7, in <module>
-                f2()
-              File "throw.py", line 5, in f2
-                f1()
-              File "throw.py", line 2, in f1
-                raise Exception("hey!")
-            Exception: hey!
-            """)
-        self.assertMultiLineEqual(out, expected)
+        out2 = self.run_command("python throw.py")
+        self.assertMultiLineEqual(out, out2)
+
+        # But also make sure that the output is what we expect.
+        self.assertTrue('File "throw.py", line 5, in f2' in out)
+        self.assertTrue('raise Exception("hey!")' in out)
+        self.assertFalse('coverage' in out)

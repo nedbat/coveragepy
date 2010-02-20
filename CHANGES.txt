@@ -22,6 +22,10 @@ Version 3.3
 - Parallel data files combined with "coverage combine" are deleted after
   they're combined, to clean up unneeded files.  Fixes `issue 40`_.
 
+- Exceptions thrown from product code run with "coverage run" are now displayed
+  without internal coverage.py frames, so the output is the same as if the code
+  is run without coverage.py.
+
 - The `data_suffix` argument to the coverage constructor is now appended with
   an added dot rather than simply appended, so that .coveragerc files will not
   be confused for data files.
