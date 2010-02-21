@@ -46,7 +46,7 @@ if sys.hexversion < 0x03000000:
                 'coverage = coverage.testplugin',
             ],
             'nose.plugins.0.10': [
-                'coverage = coverage.nose_coverage:Coverage',
+                'coverage = coverage.noseplugin:Coverage',
             ],
             },
         
