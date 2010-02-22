@@ -6,9 +6,11 @@ Change history for Coverage.py
 Version 3.3
 -----------
 
-- Settings are now read from a .coveragerc file.  The name of the file can be
-  set with the `config_file` argument to the coverage() constructor, or reading
-  a config file can be disabled with `config_file=False`.
+- Settings are now read from a .coveragerc file.  A specific file can be
+  specified on the command line with --rcfile=FILE.  The name of the file can
+  be programmatically set with the `config_file` argument to the coverage()
+  constructor, or reading a config file can be disabled with
+  `config_file=False`.
 
 - Fixed a problem with nested loops having their branch possibilities
   mischaracterized: `issue 39`_.
@@ -23,8 +25,8 @@ Version 3.3
   they're combined, to clean up unneeded files.  Fixes `issue 40`_.
 
 - Exceptions thrown from product code run with "coverage run" are now displayed
-  without internal coverage.py frames, so the output is the same as if the code
-  is run without coverage.py.
+  without internal coverage.py frames, so the output is the same as when the
+  code is run without coverage.py.
 
 - The `data_suffix` argument to the coverage constructor is now appended with
   an added dot rather than simply appended, so that .coveragerc files will not

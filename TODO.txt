@@ -5,6 +5,9 @@ Coverage TODO
 - Config file
     + A command switch to point to the rc file.
     - Write docs
+    
+* Soon
+
 - Ship the nose and py.test plugin.
 - Better omit handling that ignores files during measurement.
     - Deal with ~ in specified paths correctly.
@@ -98,6 +101,9 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
     from the command line, to reconsider exclusions.
 - Reporting on files never touched by coverage (package completeness)
 - A setup.py command? http://jeetworks.org/node/50
+- Deltas: indicate the change in coverage percentage from the last run.
+- Show lines missing rather than lines run in the reporting, since that's what
+  you need to focus on.
 
 
 * Beauty

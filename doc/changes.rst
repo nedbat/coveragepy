@@ -10,12 +10,40 @@ Major change history for coverage.py
 :history: 20091004T170700, changes for 3.1
 :history: 20091128T072200, changes for 3.2
 :history: 20091205T161525, 3.2 final
-
+:history: 20100221T151900, changes for 3.3
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+
+
+Version 3.3
+-----------
+
+- Settings are now read from a .coveragerc file.  A specific file can be
+  specified on the command line with --rcfile=FILE.  The name of the file can
+  be programmatically set with the `config_file` argument to the coverage()
+  constructor, or reading a config file can be disabled with
+  `config_file=False`.
+
+- Added coverage.process_start to enable coverage measurement when Python
+  starts.
+
+- Parallel data file names now have a random number appended to them in
+  addition to the machine name and process id. Also, parallel data files
+  combined with "coverage combine" are deleted after they're combined, to clean
+  up unneeded files. Fixes `issue 40`_.
+
+- Fixed a problem with nested loops having their branch possibilities
+  mischaracterized: `issue 39`_.
+
+- Exceptions thrown from product code run with "coverage run" are now displayed
+  without internal coverage.py frames, so the output is the same as when the
+  code is run without coverage.py.
+
+.. _issue 39: http://bitbucket.org/ned/coveragepy/issue/39
+.. _issue 40: http://bitbucket.org/ned/coveragepy/issue/40
 
 
 Version 3.2, 5 December 2009

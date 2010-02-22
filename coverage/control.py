@@ -393,7 +393,7 @@ class coverage(object):
                 file_to_close.close()
 
     def sysinfo(self):
-        """Return a list of key,value pairs showing internal information."""
+        """Return a list of (key, value) pairs showing internal information."""
 
         import coverage as covmod
         import platform, re
@@ -420,14 +420,21 @@ class coverage(object):
 def process_startup():
     """Call this at Python startup to perhaps measure coverage.
 
-    To invoke this when Python starts, you can create a .pth file in your
-    Python installation containing this::
-
-        import coverage; coverage.process_startup()
-
     If the environment variable COVERAGE_PROCESS_START is defined, coverage
     measurement is started.  The value of the variable is the config file
     to use.
+
+    There are two ways to configure your Python installation to invoke this
+    function when Python starts:
+    
+    #. Create or append to sitecustomize.py to add these lines::
+    
+        import coverage
+        coverage.process_startup()
+       
+    #. Create a .pth file in your Python installation containing::
+
+        import coverage; coverage.process_startup()
 
     """
     cps = os.environ.get("COVERAGE_PROCESS_START")
