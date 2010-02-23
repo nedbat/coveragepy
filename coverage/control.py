@@ -426,12 +426,12 @@ def process_startup():
 
     There are two ways to configure your Python installation to invoke this
     function when Python starts:
-    
+
     #. Create or append to sitecustomize.py to add these lines::
-    
+
         import coverage
         coverage.process_startup()
-       
+
     #. Create a .pth file in your Python installation containing::
 
         import coverage; coverage.process_startup()

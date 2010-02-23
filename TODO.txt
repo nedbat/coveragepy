@@ -5,7 +5,7 @@ Coverage TODO
 - Config file
     + A command switch to point to the rc file.
     - Write docs
-    
+
 * Soon
 
 - Ship the nose and py.test plugin.
