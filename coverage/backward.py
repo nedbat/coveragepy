@@ -51,19 +51,20 @@ except NameError:
 
 # Exec is a statement in Py2, a function in Py3
 if sys.version_info >= (3, 0):
-    def exec_function(source, filename, global_map):
+    def exec_code_object(code, global_map):
         """A wrapper around exec()."""
-        exec(compile(source, filename, "exec"), global_map)
+        exec(code, global_map)
 else:
     # OK, this is pretty gross.  In Py2, exec was a statement, but that will
     # be a syntax error if we try to put it in a Py3 file, even if it is never
     # executed.  So hide it inside an evaluated string literal instead.
-    eval(compile("""\
-def exec_function(source, filename, global_map):
-    exec compile(source, filename, "exec") in global_map
-""",
-    "<exec_function>", "exec"
-    ))
+    eval(
+        compile(
+            "def exec_code_object(code, global_map):\n"
+            "    exec code in global_map\n",
+            "<exec_function>", "exec"
+            )
+        )
 
 # ConfigParser was renamed to the more-standard configparser
 try:

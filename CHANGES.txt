@@ -32,10 +32,14 @@ Version 3.3
   an added dot rather than simply appended, so that .coveragerc files will not
   be confused for data files.
 
+- Python source files that don't end with a newline can now be executed, fixing
+  `issue 47`.
+
 - Added an AUTHORS.txt file.
 
 .. _issue 39: http://bitbucket.org/ned/coveragepy/issue/39
 .. _issue 40: http://bitbucket.org/ned/coveragepy/issue/40
+.. _issue 47: http://bitbucket.org/ned/coveragepy/issue/47
 
 
 Version 3.2, 5 December 2009

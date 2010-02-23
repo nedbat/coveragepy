@@ -2,7 +2,7 @@
 
 import imp, os, sys
 
-from coverage.backward import exec_function
+from coverage.backward import exec_code_object
 from coverage.misc import NoSource, ExceptionDuringRun
 
 
@@ -42,9 +42,15 @@ def run_python_file(filename, args):
         except IOError:
             raise NoSource("No file to run: %r" % filename)
 
+        # We have the source.  `compile` still needs the last line to be clean,
+        # so make sure it is, then compile a code object from it.
+        if source[-1] != '\n':
+            source += '\n'
+        code = compile(source, filename, "exec")
+
         # Execute the source file.
         try:
-            exec_function(source, filename, main_mod.__dict__)
+            exec_code_object(code, main_mod.__dict__)
         except:
             # Something went wrong while executing the user code.
             # Get the exc_info, and pack them into an exception that we can

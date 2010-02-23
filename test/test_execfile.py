@@ -60,5 +60,17 @@ class RunTest(CoverageTest):
             run_python_file('nl.py', ['nl.py'])
         self.assertEqual(self.stdout(), "Hello, world!\n"*3)
 
+    def test_missing_final_newline(self):
+        # Make sure we can deal with a Python file with no final newline.
+        self.make_file("abrupt.py", """\
+            if 1:
+                a = 1
+                print("a is %r" % a)
+                #""")
+        abrupt = open("abrupt.py").read()
+        self.assertEqual(abrupt[-1], '#')
+        run_python_file("abrupt.py", ["abrupt.py"])
+        self.assertEqual(self.stdout(), "a is 1\n")
+
     def test_no_such_file(self):
         self.assertRaises(NoSource, run_python_file, "xyzzy.py", [])
