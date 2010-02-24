@@ -9,6 +9,7 @@ Coverage command line usage
 :history: 20090913T084400, new command line syntax
 :history: 20091004T170700, changes for 3.1
 :history: 20091127T200700, changes for 3.2
+:history: 20100223T200600, changes for 3.3
 
 .. highlight:: console
 
@@ -34,6 +35,12 @@ which determine the action performed:
 
 Help is available with ``coverage help``, or with the ``--help`` switch on any
 other command.
+
+Version information for coverage.py can be displayed with ``--version``.
+
+Any command can use a configuration file by specifying it with the
+``--rcfile=FILE`` command-line switch.  See :ref:`Configuration Files <config>`
+for more details.
 
 
 Execution

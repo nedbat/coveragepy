@@ -35,15 +35,15 @@ Version 3.3
   combined with "coverage combine" are deleted after they're combined, to clean
   up unneeded files. Fixes `issue 40`_.
 
-- Fixed a problem with nested loops having their branch possibilities
-  mischaracterized: `issue 39`_.
-
 - Exceptions thrown from product code run with "coverage run" are now displayed
   without internal coverage.py frames, so the output is the same as when the
   code is run without coverage.py.
 
+- Fixed `issue 39`_ and `issue 47`.
+
 .. _issue 39: http://bitbucket.org/ned/coveragepy/issue/39
 .. _issue 40: http://bitbucket.org/ned/coveragepy/issue/40
+.. _issue 47: http://bitbucket.org/ned/coveragepy/issue/47
 
 
 Version 3.2, 5 December 2009

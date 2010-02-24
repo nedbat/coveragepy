@@ -57,7 +57,7 @@ Getting started is easy:
 
     .. code-block:: console
 
-        $ coverage html -d htmlcov
+        $ coverage html
 
     Then visit htmlcov/index.html in your browser, to see a
     `report like this`__.
@@ -104,6 +104,7 @@ More information
     :maxdepth: 1
 
     cmd
+    config
     api
     excluding
     branch
