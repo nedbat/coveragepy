@@ -61,8 +61,9 @@ class Opts(object):
         )
     parallel_mode = optparse.Option(
         '-p', '--parallel-mode', action='store_true',
-        help="Include the machine name and process id in the .coverage "
-                "data file name."
+        help="Append the machine name, process id and random number to the "
+                ".coverage data file name to simplify collecting data from "
+                "many processes."
         )
     rcfile = optparse.Option(
         '', '--rcfile', action='store',

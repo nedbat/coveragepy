@@ -6,6 +6,9 @@ Branch coverage measurement
 
 :history: 20091127T201300, new for version 3.2
 
+.. highlight:: python
+   :linenothreshold: 5
+
 
 Coverage.py now supports branch coverage measurement.  Where a line in your
 program could jump to more than one next line, coverage.py tracks which of

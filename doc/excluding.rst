@@ -5,6 +5,8 @@ Excluding code from coverage
 ============================
 
 :history: 20090613T090500, brand new docs.
+:history: 20100224T200900, updated for 3.3.
+
 
 You may have code in your project that you know won't be executed, and you want
 to tell coverage to ignore it.  For example, you may have debugging-only code
@@ -61,23 +63,31 @@ Advanced exclusion
 ------------------
 
 Coverage identifies exclusions by matching lines against a list of regular
-expressions.  Using the coverage :ref:`API <api>`, you can add to that list.
-This is useful if you have often-used constructs to exclude that can be matched
-with a regex. You can exclude them all at once without littering your code with
-exclusion pragmas.
+expressions. Using :ref:`configuration files <config>` or the coverage
+:ref:`API <api>`, you can add to that list. This is useful if you have
+often-used constructs to exclude that can be matched with a regex. You can
+exclude them all at once without littering your code with exclusion pragmas.
 
 For example, you might decide that __repr__ functions are usually only used
 in debugging code, and are uninteresting to test themselves.  You could exclude
 all of them by adding a regex to the exclusion list::
 
-    coverage.exclude('def __repr__')
+    [report]
+    exclude_lines = def __repr__
 
 Here's a list of exclusions I've used::
 
-    coverage.exclude('def __repr__')
-    coverage.exclude('if self.debug:')
-    coverage.exclude('if settings.DEBUG')
-    coverage.exclude('raise AssertionError')
-    coverage.exclude('raise NotImplementedError')
-    coverage.exclude('if 0:')
-    coverage.exclude('if __name__ == .__main__.:')
+    [report]
+    exclude_lines =
+        pragma: no cover
+        def __repr__
+        if self.debug:
+        if settings.DEBUG
+        raise AssertionError
+        raise NotImplementedError
+        if 0:
+        if __name__ == .__main__.:
+
+Note that when using the ``exclude_lines`` option in a configuration file, you
+are taking control of the entire list of regexes, so you need to re-specify the
+default "pragma: no cover" match if you still want it to apply.

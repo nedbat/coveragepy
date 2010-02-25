@@ -23,13 +23,43 @@ A coverage.py configuration file is in classic .ini file format: sections are
 introduced by a ``[section]`` header, and contain ``name = value`` entries.
 Lines beginning with ``#`` or ``;`` are ignored as comments.
 
-Multi-line entries can be created by indenting values on multiple lines.
+Strings don't need quotes. Multi-strings can be created by indenting values on
+multiple lines.
 
 Boolean values can be specified as ``on``, ``off``, ``true``, ``false``, ``1``,
-or ``0``.
+or ``0`` and are case-insensitive.
 
 Many sections and values correspond roughly to commands and options in the
 command-line interface.
+
+Here's a sample configuration file::
+
+    # .coveragerc to control coverage.py
+    [run]
+    branch = True
+
+    [report]
+    # Regexes for lines to exclude from consideration
+    exclude_lines =
+        # Have to re-enable the standard pragma
+        pragma: no cover
+
+        # Don't complain about missing debug-only code:
+        def __repr__
+        if self\.debug
+
+        # Don't complain if tests don't hit defensive assertion code:
+        raise AssertionError
+        raise NotImplementedError
+
+        # Don't complain if non-runnable code isn't run:
+        if 0:
+        if __name__ == .__main__.:
+
+    ignore_errors = True
+
+    [html]
+    directory = coverage_html_report
 
 
 [run]
@@ -38,16 +68,21 @@ command-line interface.
 These values are generally used when running product code, though some apply
 to more than one command.
 
-``branch`` (boolean): whether to measure :ref:`branch coverage <branch>`.
+``branch`` (boolean, default False): whether to measure
+:ref:`branch coverage <branch>` in addition to statement coverage.
 
-``cover_pylib`` (boolean): whether to measure the Python standard library.
+``cover_pylib`` (boolean, default False): whether to measure the Python
+standard library.
 
-``data_file`` (string): the name of the data file to use for storing or
-reporting coverage.
+``data_file`` (string, default ".coverage"): the name of the data file to use
+for storing or reporting coverage.
 
-``parallel`` (boolean):
+``parallel`` (boolean, default False): append the machine name, process
+id and random number to the data file name to simplify collecting data from
+many processes.
 
-``timid`` (boolean):
+``timid`` (boolean, default False): use a simpler but slower trace method.
+Try this if you get seemingly impossible results.
 
 
 [report]
@@ -55,11 +90,17 @@ reporting coverage.
 
 Values common to many kinds of reporting.
 
-``exclude_lines`` (multi-string):
+``exclude_lines`` (multi-string): a list of regular expressions.  Any line of
+your source code that matches one of these regexes is excluded from being
+reported as missing.  More details are in :ref:`excluding`.  If you use this
+option, you are replacing all the exclude regexes, so you'll need to also
+supply the "pragma: no cover" regex if you still want to use it.
 
-``ignore_errors`` (boolean):
+``ignore_errors`` (boolean, default False): ignore source code that can't be
+found.
 
-``omit`` (multi-string):
+``omit`` (multi-string): a list of file prefixes.  If a source file begins with
+one of these prefixes, it will be omitted from the report.
 
 
 [html]
@@ -67,7 +108,7 @@ Values common to many kinds of reporting.
 
 Values particular to HTML reporting.
 
-``directory`` (string):
+``directory`` (string, default "htmlcov"): where to write the HTML report files.
 
 
 [xml]
@@ -75,5 +116,4 @@ Values particular to HTML reporting.
 
 Values particular to XML reporting.
 
-``output`` (string):
-
+``output`` (string, default "coverage.xml"): where to write the XML report.
