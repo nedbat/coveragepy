@@ -17,7 +17,7 @@
         cd C:\ned\cog\trunk
         rmdir/s/q htmlcov
         coverage run --branch cogapp\test_cogapp.py CogTestsInMemory
-        coverage html -i 
+        coverage html -i
         copy/y htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html
     - Build and publish docs:
         $ make px publish

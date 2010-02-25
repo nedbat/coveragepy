@@ -173,7 +173,7 @@ class ProcessTest(CoverageTest):
 
     def test_code_exits(self):
         self.make_file("exit.py", """\
-            import sys    
+            import sys
             def f1():
                 print("about to exit..")
                 sys.exit(17)
