@@ -37,6 +37,7 @@
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
 - Announce on TIP.
+- Ask Christophe Zwerschke (cito@online.de) to build win64 kits.
 
 
 * Building
