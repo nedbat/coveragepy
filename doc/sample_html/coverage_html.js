@@ -33,7 +33,7 @@ function index_page_ready($) {
             }
             else {
                 // This is not the first load - something has
-                // already defined sorting so we'll just update         
+                // already defined sorting so we'll just update
                 // our stored value to match:
                 sort_list = table.config.sortList;
             }
@@ -58,7 +58,22 @@ function index_page_ready($) {
     });
 
     // Watch for page unload events so we can save the final sort settings:
-    $(window).unload(function() { 
-        document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/" 
+    $(window).unload(function() {
+        document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/"
     });
+}
+
+// -- pyfile stuff --
+
+function toggle_lines(btn, cls) {
+    var btn = $(btn);
+    var hide = "hide_"+cls;
+    if (btn.hasClass(hide)) {
+        $("#source ."+cls).removeClass(hide);
+        btn.removeClass(hide);
+    }
+    else {
+        $("#source ."+cls).addClass(hide);
+        btn.addClass(hide);
+    }
 }
