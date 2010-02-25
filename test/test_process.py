@@ -170,3 +170,22 @@ class ProcessTest(CoverageTest):
         self.assertTrue('File "throw.py", line 5, in f2' in out)
         self.assertTrue('raise Exception("hey!")' in out)
         self.assertFalse('coverage' in out)
+
+    def test_code_exits(self):
+        self.make_file("exit.py", """\
+            import sys    
+            def f1():
+                print("about to exit..")
+                sys.exit(17)
+
+            def f2():
+                f1()
+
+            f2()
+            """)
+
+        # The important thing is for "coverage run" and "python" to report the
+        # same traceback.
+        out = self.run_command("coverage run exit.py")
+        out2 = self.run_command("python exit.py")
+        self.assertMultiLineEqual(out, out2)

@@ -598,8 +598,13 @@ def main():
     try:
         status = CoverageScript().command_line(sys.argv[1:])
     except ExceptionDuringRun:
+        # An exception was caught while running the product code.  The
+        # sys.exc_info() return tuple is packed into an ExceptionDuringRun
+        # exception.  Note that the Python interpreter doesn't print SystemExit
+        # tracebacks, so it's important that we don't also.
         _, err, _ = sys.exc_info()
-        traceback.print_exception(*err.args)
+        if not isinstance(err.args[1], SystemExit):
+            traceback.print_exception(*err.args)
         status = ERR
     except CoverageException:
         _, err, _ = sys.exc_info()
