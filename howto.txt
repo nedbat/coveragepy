@@ -7,7 +7,7 @@
     - Pythons 2.3, 2.4, 2.5, 2.6, 3.1
 - Version number in coverage/__init__.py
     - 3.1a1, 3.1b1, 3.1c1, 3.1
-- Update CHANGES, including release date.
+- Update CHANGES.txt, including release date.
 - Update docstring in setup.py, including "New in x.y:"
 - Update docs
     - Version, date, and changes in doc/changes.rst

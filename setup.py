@@ -12,6 +12,8 @@ Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
 tracker are at `bitbucket.org <http://bitbucket.org/ned/coveragepy>`_.
 
 New in 3.2: Branch coverage!
+
+New in 3.3: .coveragerc files
 """
 
 # This file is used unchanged under all versions of Python, 2.x and 3.x.

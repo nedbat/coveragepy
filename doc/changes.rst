@@ -18,8 +18,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
-Version 3.3
------------
+Version 3.3, 24 February 2010
+-----------------------------
 
 - Settings are now read from a .coveragerc file.  A specific file can be
   specified on the command line with --rcfile=FILE.  The name of the file can
