@@ -36,6 +36,7 @@ The coverage module
 Starting coverage automatically
 -------------------------------
 
-This is cool.
+This function is used to start coverage measurement automatically when Python
+starts.  See :ref:`subprocess` for details.
 
 .. autofunction:: process_startup
