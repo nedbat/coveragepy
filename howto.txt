@@ -38,6 +38,8 @@
     - Blog post?
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
+    # Note: don't delete old version numbers: it marks changes on the tickets
+    # with that number.
 - Announce on TIP.
 - Ask Christophe Zwerschke (cito@online.de) to build win64 kits.
 
