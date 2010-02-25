@@ -184,8 +184,8 @@ class ProcessTest(CoverageTest):
             f2()
             """)
 
-        # The important thing is for "coverage run" and "python" to report the
-        # same traceback.
+        # The important thing is for "coverage run" and "python" to have the
+        # same output.  No traceback.
         out = self.run_command("coverage run exit.py")
         out2 = self.run_command("python exit.py")
         self.assertMultiLineEqual(out, out2)
