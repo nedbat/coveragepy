@@ -17,7 +17,7 @@
         cd C:\ned\cog\trunk
         rmdir/s/q htmlcov
         coverage run --branch cogapp\test_cogapp.py CogTestsInMemory
-        coverage html -i -d htmlcov
+        coverage html -i 
         copy/y htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html
     - Build and publish docs:
         $ make px publish
@@ -28,6 +28,8 @@
     - $ make pypi
     - upload the kits:
         - $ allkits.cmd upload
+        # note: this seems to try to upload each file twice, so you'll have a
+        # successful upload, then a failure, but the file gets there.
     - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage :
         - show/hide the proper versions.
 - Tag the tree
