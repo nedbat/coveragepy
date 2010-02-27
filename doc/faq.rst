@@ -61,6 +61,25 @@ It's good, but `it isn't perfect`__.
 __ http://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
 
 
+..  Other resources
+    ---------------
+    
+    There are a number of projects that help integrate coverage.py into other
+    systems:
+    
+    - `trialcoverage`_ is a plug-in for Twisted trial.
+    
+    .. _trialcoverage: http://pypi.python.org/pypi/trialcoverage
+    
+    - `pytest-coverage`_
+    
+    .. _pytest-coverage: http://pypi.python.org/pypi/pytest-coverage
+    
+    - `django-coverage`_ for use with Django.
+    
+    .. _django-coverage: http://pypi.python.org/pypi/django-coverage
+
+
 Getting more help
 -----------------
 
