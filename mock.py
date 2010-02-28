@@ -199,9 +199,16 @@ class _patch(object):
                     patching.__exit__()
 
         patched.patchings = [self]
-        patched.__name__ = func.__name__ 
+        try:
+            patched.__name__ = func.__name__
+        except TypeError:
+            pass # older Pythons don't let you change __name__
+        try:
+            firstlineno = func.func_code.co_firstlineno
+        except AttributeError:
+            firstlineno = func.__code__.co_firstlineno
         patched.compat_co_firstlineno = getattr(func, "compat_co_firstlineno", 
-                                                func.func_code.co_firstlineno)
+                                                firstlineno)
         return patched
 
 
@@ -255,7 +262,10 @@ def patch_object(target, attribute, new=DEFAULT, spec=None, create=False):
 
 def patch(target, new=DEFAULT, spec=None, create=False):
     try:
-        target, attribute = target.rsplit('.', 1)    
+        #target, attribute = target.rsplit('.', 1)
+        parts = target.split('.')
+        target = '.'.join(parts[:-1])
+        attribute = parts[-1]
     except (TypeError, ValueError):
         raise TypeError("Need a valid target to patch. You supplied: %r" % (target,))
     target = _importer(target)
