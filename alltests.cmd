@@ -1,7 +1,7 @@
 @echo off
 make --quiet testdata
 
-for %%v in (23 24 25 26 27) do (
+for %%v in (23 24 25 26) do (
     call \ned\bin\switchpy %%v
     python setup.py -q develop
     set COVERAGE_TEST_TRACER=c
