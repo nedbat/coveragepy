@@ -10,19 +10,19 @@ import os
 try:
     import subprocess
 except ImportError:
-    def run_command(cmd):
+    def run_command(cmd, status=0):
         """Run a command in a subprocess.
 
-        Returns the exit code and the combined stdout and stderr.
+        Returns the exit status code and the combined stdout and stderr.
 
         """
         _, stdouterr = os.popen4(cmd)
-        return 0, stdouterr.read()
+        return status, stdouterr.read()
 else:
-    def run_command(cmd):
+    def run_command(cmd, status=0):
         """Run a command in a subprocess.
 
-        Returns the exit code and the combined stdout and stderr.
+        Returns the exit status code and the combined stdout and stderr.
 
         """
 
@@ -30,7 +30,7 @@ else:
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT
                 )
-        retcode = proc.wait()
+        status = proc.wait()
 
         # Get the output, and canonicalize it to strings with newlines.
         output = proc.stdout.read()
@@ -38,7 +38,7 @@ else:
             output = output.decode('utf-8')
         output = output.replace('\r', '')
 
-        return retcode, output
+        return status, output
 
 # No more execfile in Py3k
 try:

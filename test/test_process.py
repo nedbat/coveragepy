@@ -120,6 +120,13 @@ class ProcessTest(CoverageTest):
         data.read_file(".coverage")
         self.assertEqual(data.summary()['b_or_c.py'], 7)
 
+        # TODO
+        ## Reporting should still work even with the .rc file
+        #out = self.run_command("coverage report")
+        #self.assertMultiLineEqual(out, """\
+        #    hello
+        #    """)
+
     def test_missing_source_file(self):
         # Check what happens if the source is missing when reporting happens.
         self.make_file("fleeting.py", """\
@@ -140,14 +147,16 @@ class ProcessTest(CoverageTest):
 
         self.run_command("coverage run fleeting")
         os.remove("fleeting")
-        out = self.run_command("coverage html -d htmlcov")
+        status, out = self.run_command_status("coverage html -d htmlcov", 1)
         self.assertRegexpMatches(out, "No source for code: '.*fleeting'")
         self.assertFalse("Traceback" in out)
+        self.assertEqual(status, 1)
 
     def test_running_missing_file(self):
-        out = self.run_command("coverage run xyzzy.py")
+        status, out = self.run_command_status("coverage run xyzzy.py", 1)
         self.assertRegexpMatches(out, "No file to run: .*xyzzy.py")
         self.assertFalse("Traceback" in out)
+        self.assertEqual(status, 1)
 
     def test_code_throws(self):
         self.make_file("throw.py", """\
@@ -162,7 +171,7 @@ class ProcessTest(CoverageTest):
 
         # The important thing is for "coverage run" and "python" to report the
         # same traceback.
-        out = self.run_command("coverage run throw.py")
+        status, out = self.run_command_status("coverage run throw.py", 1)
         out2 = self.run_command("python throw.py")
         self.assertMultiLineEqual(out, out2)
 
@@ -170,6 +179,7 @@ class ProcessTest(CoverageTest):
         self.assertTrue('File "throw.py", line 5, in f2' in out)
         self.assertTrue('raise Exception("hey!")' in out)
         self.assertFalse('coverage' in out)
+        self.assertEqual(status, 1)
 
     def test_code_exits(self):
         self.make_file("exit.py", """\
@@ -186,6 +196,9 @@ class ProcessTest(CoverageTest):
 
         # The important thing is for "coverage run" and "python" to have the
         # same output.  No traceback.
-        out = self.run_command("coverage run exit.py")
-        out2 = self.run_command("python exit.py")
+        status, out = self.run_command_status("coverage run exit.py", 17)
+        status2, out2 = self.run_command_status("python exit.py", 17)
         self.assertMultiLineEqual(out, out2)
+        self.assertMultiLineEqual(out, "about to exit..\n")
+        self.assertEqual(status, status2)
+        self.assertEqual(status, 17)

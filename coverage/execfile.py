@@ -51,6 +51,10 @@ def run_python_file(filename, args):
         # Execute the source file.
         try:
             exec_code_object(code, main_mod.__dict__)
+        except SystemExit:
+            # The user called sys.exit().  Just pass it along to the upper
+            # layers, where it will be handled.
+            raise
         except:
             # Something went wrong while executing the user code.
             # Get the exc_info, and pack them into an exception that we can

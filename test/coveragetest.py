@@ -49,10 +49,16 @@ class CoverageTest(TestCase):
         # Record environment variables that we changed with set_environ.
         self.environ_undos = {}
 
-        # Use a Tee to capture stdout.
+        # Capture stdout and stderr so we can examine them in tests.
+        # nose keeps stdout from littering the screen, so we can safely Tee it,
+        # but it doesn't capture stderr, so we don't want to Tee stderr to the
+        # real stderr, since it will interfere with our nice field of dots.
         self.old_stdout = sys.stdout
         self.captured_stdout = StringIO()
         sys.stdout = Tee(sys.stdout, self.captured_stdout)
+        self.old_stderr = sys.stderr
+        self.captured_stderr = StringIO()
+        sys.stderr = self.captured_stderr
 
     def tearDown(self):
         if self.run_in_temp_dir:
@@ -66,8 +72,9 @@ class CoverageTest(TestCase):
         # Restore the environment.
         self.undo_environ()
 
-        # Restore stdout.
+        # Restore stdout and stderr
         sys.stdout = self.old_stdout
+        sys.stderr = self.old_stderr
 
     def set_environ(self, name, value):
         """Set an environment variable `name` to be `value`.
@@ -98,6 +105,10 @@ class CoverageTest(TestCase):
     def stdout(self):
         """Return the data written to stdout during the test."""
         return self.captured_stdout.getvalue()
+
+    def stderr(self):
+        """Return the data written to stderr during the test."""
+        return self.captured_stderr.getvalue()
 
     def make_file(self, filename, text):
         """Create a temp file.
@@ -292,6 +303,22 @@ class CoverageTest(TestCase):
         Returns the process' stdout text.
 
         """
+        _, output = self.run_command_status(cmd)
+        return output
+
+    def run_command_status(self, cmd, status=0):
+        """Run the command-line `cmd` in a subprocess, and print its output.
+
+        Use this when you need to test the process behavior of coverage.
+
+        Compare with `command_line`.
+
+        Returns a pair: the process' exit status and stdout text.
+
+        The `status` argument is returned as the status on older Pythons where
+        we can't get the actual exit status of the process.
+
+        """
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...
         here = os.path.dirname(self.nice_file(coverage.__file__, ".."))
@@ -303,6 +330,6 @@ class CoverageTest(TestCase):
         pypath += testmods + os.pathsep + zipfile
         self.set_environ('PYTHONPATH', pypath)
 
-        _, output = run_command(cmd)
+        status, output = run_command(cmd, status=status)
         print(output)
-        return output
+        return status, output

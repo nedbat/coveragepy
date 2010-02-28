@@ -3,6 +3,8 @@
 import os, pprint, re, shlex, sys, textwrap, unittest
 import mock
 import coverage
+import coverage.cmdline
+from coverage.misc import ExceptionDuringRun
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest, OK, ERR
@@ -535,6 +537,63 @@ class CmdLineStdoutTest(CmdLineTest):
         out = self.stdout()
         assert "fooey" in out
         assert "help" in out
+
+
+class CmdMainTest(CoverageTest):
+    """Tests of coverage.cmdline.main(), using mocking for isolation."""
+
+    class CoverageScriptStub(object):
+        """A stub for coverage.cmdline.CoverageScript, used by CmdMainTest."""
+
+        def command_line(self, argv):
+            """Stub for command_line, the arg determines what it will do."""
+            if argv[0] == 'hello':
+                print("Hello, world!")
+            elif argv[0] == 'raise':
+                try:
+                    raise Exception("oh noes!")
+                except:
+                    raise ExceptionDuringRun(*sys.exc_info())
+            elif argv[0] == 'internalraise':
+                raise ValueError("coverage is broken")
+            elif argv[0] == 'exit':
+                sys.exit(23)
+            else:
+                raise AssertionError("Bad CoverageScriptStub: %r"% (argv,))
+            return 0
+
+    def setUp(self):
+        super(CmdMainTest, self).setUp()
+        self.old_CoverageScript = coverage.cmdline.CoverageScript
+        coverage.cmdline.CoverageScript = self.CoverageScriptStub
+
+    def tearDown(self):
+        coverage.cmdline.CoverageScript = self.old_CoverageScript
+        super(CmdMainTest, self).tearDown()
+
+    def test_normal(self):
+        ret = coverage.cmdline.main(['hello'])
+        self.assertEqual(ret, 0)
+        self.assertEqual(self.stdout(), "Hello, world!\n")
+
+    def test_raise(self):
+        ret = coverage.cmdline.main(['raise'])
+        self.assertEqual(ret, 1)
+        self.assertEqual(self.stdout(), "")
+        err = self.stderr().split('\n')
+        self.assertEqual(err[0], 'Traceback (most recent call last):')
+        self.assertEqual(err[-3], '    raise Exception("oh noes!")')
+        self.assertEqual(err[-2], 'Exception: oh noes!')
+
+    def test_internalraise(self):
+        self.assertRaisesRegexp(ValueError,
+            "coverage is broken",
+            coverage.cmdline.main, ['internalraise']
+            )
+
+    def test_exit(self):
+        ret = coverage.cmdline.main(['exit'])
+        self.assertEqual(ret, 23)
 
 
 if __name__ == '__main__':

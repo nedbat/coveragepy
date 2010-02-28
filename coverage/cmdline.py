@@ -589,25 +589,30 @@ Coverage.py, version %(__version__)s.  %(__url__)s
 """
 
 
-def main():
+def main(argv=None):
     """The main entrypoint to Coverage.
 
     This is installed as the script entrypoint.
 
     """
+    if argv is None:
+        argv = sys.argv[1:]
     try:
-        status = CoverageScript().command_line(sys.argv[1:])
+        status = CoverageScript().command_line(argv)
     except ExceptionDuringRun:
         # An exception was caught while running the product code.  The
         # sys.exc_info() return tuple is packed into an ExceptionDuringRun
-        # exception.  Note that the Python interpreter doesn't print SystemExit
-        # tracebacks, so it's important that we don't also.
+        # exception.
         _, err, _ = sys.exc_info()
-        if not isinstance(err.args[1], SystemExit):
-            traceback.print_exception(*err.args)
+        traceback.print_exception(*err.args)
         status = ERR
     except CoverageException:
+        # A controlled error inside coverage.py: print the message to the user.
         _, err, _ = sys.exc_info()
         print(err)
         status = ERR
+    except SystemExit:
+        # The user called `sys.exit()`.  Exit with their status code.
+        _, err, _ = sys.exc_info()
+        status = err.args[0]
     return status
