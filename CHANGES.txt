@@ -2,6 +2,14 @@
 Change history for Coverage.py
 ------------------------------
 
+Version 3.3.1
+-------------
+
+- When running your code with "coverage run", if you call `sys.exit()`,
+  coverage.py will exit with that status code, fixing `issue 50`.
+  
+.. _issue 50: http://bitbucket.org/ned/coveragepy/issue/50
+
 
 Version 3.3, 24 February 2010
 -----------------------------
