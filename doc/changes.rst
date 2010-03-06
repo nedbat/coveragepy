@@ -22,10 +22,10 @@ history, see the `CHANGES.txt`_ file in the source tree.
 Version 3.3.1, 6 March 2010
 ---------------------------
 
-- Using `parallel=True` in .coveragerc file prevented reporting, but now does
-  not, fixing `issue 49`_.
+- Using ``parallel=True`` in a .coveragerc file prevented reporting, but now
+  does not, fixing `issue 49`_.
 
-- When running your code with "coverage run", if you call `sys.exit()`,
+- When running your code with ``coverage run``, if you call ``sys.exit()``,
   coverage.py will exit with that status code, fixing `issue 50`_.
 
 .. _issue 49: http://bitbucket.org/ned/coveragepy/issue/49
@@ -36,22 +36,22 @@ Version 3.3, 24 February 2010
 -----------------------------
 
 - Settings are now read from a .coveragerc file.  A specific file can be
-  specified on the command line with --rcfile=FILE.  The name of the file can
-  be programmatically set with the `config_file` argument to the coverage()
-  constructor, or reading a config file can be disabled with
-  `config_file=False`.
+  specified on the command line with ``--rcfile=FILE``.  The name of the file
+  can be programmatically set with the ``config_file`` argument to the
+  coverage() constructor, or reading a config file can be disabled with
+  ``config_file=False``.
 
 - Added coverage.process_start to enable coverage measurement when Python
   starts.
 
 - Parallel data file names now have a random number appended to them in
   addition to the machine name and process id. Also, parallel data files
-  combined with "coverage combine" are deleted after they're combined, to clean
-  up unneeded files. Fixes `issue 40`_.
+  combined with ``coverage combine`` are deleted after they're combined, to
+  clean up unneeded files. Fixes `issue 40`_.
 
-- Exceptions thrown from product code run with "coverage run" are now displayed
-  without internal coverage.py frames, so the output is the same as when the
-  code is run without coverage.py.
+- Exceptions thrown from product code run with ``coverage run`` are now
+  displayed without internal coverage.py frames, so the output is the same as
+  when the code is run without coverage.py.
 
 - Fixed `issue 39`_ and `issue 47`_.
 
