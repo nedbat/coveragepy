@@ -296,9 +296,19 @@ class FarmTestCase(object):
         """Clean `cleandir` by removing it and all its children completely."""
         if os.path.exists(cleandir):
             # rmtree gives mysterious failures on Win7, so use an onerror
-            # function that simply retries the operation.  Why that helps, I
-            # have no idea.
-            shutil.rmtree(cleandir, onerror=lambda fn, path, exc: fn(path))
+            # function that tries to help diagnose the problem.  Somehow, just
+            # having a function that prints and raises keeps the error from
+            # happening??
+            shutil.rmtree(cleandir, onerror=self.rmtree_err)
+
+    def rmtree_err(self, fn, path, exc):
+        """A stupid error handler that prints and raises.
+
+        Somehow, this fixes the problem it was meant to diagnose.
+
+        """
+        print("Couldn't %r on %r due to %s" % (fn, path, exc))
+        raise exc
 
 
 def main():     # pragma: no cover
