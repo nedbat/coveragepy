@@ -23,10 +23,10 @@ Version 3.3.1, 6 March 2010
 ---------------------------
 
 - Using `parallel=True` in .coveragerc file prevented reporting, but now does
-  not, fixing `issue 49`.
+  not, fixing `issue 49`_.
 
 - When running your code with "coverage run", if you call `sys.exit()`,
-  coverage.py will exit with that status code, fixing `issue 50`.
+  coverage.py will exit with that status code, fixing `issue 50`_.
 
 .. _issue 49: http://bitbucket.org/ned/coveragepy/issue/49
 .. _issue 50: http://bitbucket.org/ned/coveragepy/issue/50
@@ -53,7 +53,7 @@ Version 3.3, 24 February 2010
   without internal coverage.py frames, so the output is the same as when the
   code is run without coverage.py.
 
-- Fixed `issue 39`_ and `issue 47`.
+- Fixed `issue 39`_ and `issue 47`_.
 
 .. _issue 39: http://bitbucket.org/ned/coveragepy/issue/39
 .. _issue 40: http://bitbucket.org/ned/coveragepy/issue/40
