@@ -11,11 +11,25 @@ Major change history for coverage.py
 :history: 20091128T072200, changes for 3.2
 :history: 20091205T161525, 3.2 final
 :history: 20100221T151900, changes for 3.3
+:history: 20100306T181400, changes for 3.3.1
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+
+
+Version 3.3.1, 6 March 2010
+---------------------------
+
+- Using `parallel=True` in .coveragerc file prevented reporting, but now does
+  not, fixing `issue 49`.
+
+- When running your code with "coverage run", if you call `sys.exit()`,
+  coverage.py will exit with that status code, fixing `issue 50`.
+
+.. _issue 49: http://bitbucket.org/ned/coveragepy/issue/49
+.. _issue 50: http://bitbucket.org/ned/coveragepy/issue/50
 
 
 Version 3.3, 24 February 2010

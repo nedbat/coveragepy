@@ -2,8 +2,8 @@
 Change history for Coverage.py
 ------------------------------
 
-Version 3.3.1
--------------
+Version 3.3.1, 6 March 2010
+---------------------------
 
 - Using `parallel=True` in .coveragerc file prevented reporting, but now does
   not, fixing `issue 49`.
