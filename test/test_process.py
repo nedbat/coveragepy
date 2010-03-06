@@ -1,6 +1,6 @@
 """Tests for process behavior of coverage.py."""
 
-import os, sys
+import os, sys, textwrap
 import coverage
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
@@ -120,12 +120,13 @@ class ProcessTest(CoverageTest):
         data.read_file(".coverage")
         self.assertEqual(data.summary()['b_or_c.py'], 7)
 
-        # TODO
-        ## Reporting should still work even with the .rc file
-        #out = self.run_command("coverage report")
-        #self.assertMultiLineEqual(out, """\
-        #    hello
-        #    """)
+        # Reporting should still work even with the .rc file
+        out = self.run_command("coverage report")
+        self.assertMultiLineEqual(out, textwrap.dedent("""\
+            Name     Stmts   Exec  Cover
+            ----------------------------
+            b_or_c       7      7   100%
+            """))
 
     def test_missing_source_file(self):
         # Check what happens if the source is missing when reporting happens.

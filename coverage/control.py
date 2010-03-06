@@ -105,9 +105,10 @@ class coverage(object):
                     )
         else:
             data_suffix = None
+        self.run_suffix = data_suffix
 
         self.data = CoverageData(
-            basename=self.config.data_file, suffix=data_suffix,
+            basename=self.config.data_file,
             collector="coverage v%s" % __version__
             )
 
@@ -190,6 +191,14 @@ class coverage(object):
 
     def start(self):
         """Start measuring code coverage."""
+        if self.run_suffix:
+            # If the .coveragerc file specifies parallel=True, then we need to
+            # remake the data file for collection, with a suffix.
+            from coverage import __version__
+            self.data = CoverageData(
+                basename=self.config.data_file, suffix=self.run_suffix,
+                collector="coverage v%s" % __version__
+                )
         if self.auto_data:
             self.load()
             # Save coverage data when Python exits.
@@ -251,14 +260,6 @@ class coverage(object):
         current measurements.
 
         """
-        # If the .coveragerc file specifies parallel=True, then self.data
-        # already points to a suffixed data file.  This won't be right for
-        # combining, so make a new self.data with no suffix.
-        from coverage import __version__
-        self.data = CoverageData(
-            basename=self.config.data_file,
-            collector="coverage v%s" % __version__
-            )
         self.data.combine_parallel_data()
 
     def _harvest_data(self):
