@@ -41,7 +41,7 @@ class C(object):
 cont1 = "one line of text" + \
     "another line of text"
 
-a_long_string =
+a_long_string =              \
     "part 1"                 \
     "2"                      \
     "3 is longer"
