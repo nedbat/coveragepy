@@ -77,7 +77,8 @@ def source_token_lines(source):
     ws_tokens = [token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL]
     line = []
     col = 0
-    tokgen = tokenize.generate_tokens(StringIO(source.expandtabs(8)).readline)
+    source = source.expandtabs(8).replace('\r\n', '\n')
+    tokgen = tokenize.generate_tokens(StringIO(source).readline)
     for ttype, ttext, (_, scol), (_, ecol), _ in phys_tokens(tokgen):
         mark_start = True
         for part in re.split('(\n)', ttext):

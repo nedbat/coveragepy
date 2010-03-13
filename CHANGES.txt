@@ -2,6 +2,16 @@
 Change history for Coverage.py
 ------------------------------
 
+
+Next version
+------------
+
+- Source files with DOS line endings are now properly tokenized for syntax
+  coloring on non-DOS machines.  Fixes `issue  53`_.
+
+.. _issue 53: http://bitbucket.org/ned/coveragepy/issue/53
+
+
 Version 3.3.1, 6 March 2010
 ---------------------------
 
