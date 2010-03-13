@@ -75,5 +75,7 @@ class PhysTokensTest(CoverageTest):
 
     def test_stress(self):
         # Check the tokenization of a stress-test file.
-        stress = os.path.join(HERE, "stress_phystoken.txt")
+        stress = os.path.join(HERE, "stress_phystoken.tok")
+        self.check_file_tokenization(stress)
+        stress = os.path.join(HERE, "stress_phystoken_dos.tok")
         self.check_file_tokenization(stress)
