@@ -92,7 +92,7 @@ class CoverageTest(TestCase):
         if name in self.environ_undos:
             return self.environ_undos[name]
         else:
-            return os.environ[name]
+            return os.environ.get(name)
 
     def undo_environ(self):
         """Undo all the changes made by `set_environ`."""
@@ -327,6 +327,8 @@ class CoverageTest(TestCase):
         pypath = self.original_environ('PYTHONPATH')
         if pypath:
             pypath += os.pathsep
+        else:
+            pypath = ""
         pypath += testmods + os.pathsep + zipfile
         self.set_environ('PYTHONPATH', pypath)
 
