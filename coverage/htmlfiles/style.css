@@ -5,8 +5,8 @@ html, body, h1, h2, h3, p, td, th {
     padding: 0;
     border: 0;
     outline: 0;
-    font-weight: inherit;
-    font-style: inherit;
+    font-weight: normal;
+    font-style: normal;
     font-size: 100%;
     font-family: inherit;
     vertical-align: baseline;
@@ -108,6 +108,18 @@ h2.stats {
     font-size: .625em;   /* 10/16 */
     line-height: 1.6em;  /* 16/10 */
     }
+.linenos p.highlight {
+    background: #ffdd00;
+    }
+.linenos p a {
+    text-decoration: none;
+    color: #999999;
+    }
+.linenos p a:hover {
+    text-decoration: underline;
+    color: #999999;
+    }
+
 td.text {
     width: 100%;
     }
