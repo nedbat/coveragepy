@@ -59,9 +59,9 @@ class ApiTest(CoverageTest):
         self.doReportWork("mycode2")
         coverage.report(["mycode2.py"])
         self.assertEqual(self.stdout(), textwrap.dedent("""\
-            Name      Stmts   Exec  Cover   Missing
+            Name      Stmts   Miss  Cover   Missing
             ---------------------------------------
-            mycode2       7      4    57%   4-6
+            mycode2       7      3    57%   4-6
             """))
 
     def testReportFile(self):
@@ -71,9 +71,9 @@ class ApiTest(CoverageTest):
         coverage.report(["mycode3.py"], file=fout)
         self.assertEqual(self.stdout(), "")
         self.assertEqual(fout.getvalue(), textwrap.dedent("""\
-            Name      Stmts   Exec  Cover   Missing
+            Name      Stmts   Miss  Cover   Missing
             ---------------------------------------
-            mycode3       7      4    57%   4-6
+            mycode3       7      3    57%   4-6
             """))
 
     def testReportDefault(self):
@@ -81,7 +81,7 @@ class ApiTest(CoverageTest):
         self.doReportWork("mycode4")
         coverage.report()
         rpt = re.sub(r"\s+", " ", self.stdout())
-        self.assertTrue("mycode4 7 4 57% 4-6" in rpt)
+        self.assertTrue("mycode4 7 3 57% 4-6" in rpt)
 
     def testUnexecutedFile(self):
         cov = coverage.coverage()

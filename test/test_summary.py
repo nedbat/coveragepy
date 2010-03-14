@@ -38,35 +38,35 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'done\n')
         report = self.report_from_command("coverage -r")
 
-        # Name                                              Stmts   Exec  Cover
+        # Name                                              Stmts   Miss  Cover
         # ---------------------------------------------------------------------
-        # c:/ned/coverage/trunk/test/modules/covmod1            2      2   100%
-        # c:/ned/coverage/trunk/test/zipmods.zip/covmodzip1     2      2   100%
-        # mycode                                                4      4   100%
+        # c:/ned/coverage/trunk/test/modules/covmod1            2      0   100%
+        # c:/ned/coverage/trunk/test/zipmods.zip/covmodzip1     2      0   100%
+        # mycode                                                4      0   100%
         # ---------------------------------------------------------------------
-        # TOTAL                                                 8      8   100%
+        # TOTAL                                                 8      0   100%
 
         self.assertFalse("/coverage/__init__/" in report)
         self.assertTrue("/test/modules/covmod1 " in report)
         self.assertTrue("/test/zipmods.zip/covmodzip1 " in report)
         self.assertTrue("mycode " in report)
-        self.assertEqual(self.last_line_squeezed(report), "TOTAL 8 8 100%")
+        self.assertEqual(self.last_line_squeezed(report), "TOTAL 8 0 100%")
 
     def test_report_just_one(self):
         # Try reporting just one module
         self.run_command("coverage -x mycode.py")
         report = self.report_from_command("coverage -r mycode.py")
 
-        # Name     Stmts   Exec  Cover
+        # Name     Stmts   Miss  Cover
         # ----------------------------
-        # mycode       4      4   100%
+        # mycode       4      0   100%
 
         self.assertEqual(self.line_count(report), 3)
         self.assertFalse("/coverage/" in report)
         self.assertFalse("/test/modules/covmod1 " in report)
         self.assertFalse("/test/zipmods.zip/covmodzip1 " in report)
         self.assertTrue("mycode " in report)
-        self.assertEqual(self.last_line_squeezed(report), "mycode 4 4 100%")
+        self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
     def test_report_omitting(self):
         # Try reporting while omitting some modules
@@ -74,16 +74,16 @@ class SummaryTest(CoverageTest):
         self.run_command("coverage -x mycode.py")
         report = self.report_from_command("coverage -r -o %s" % prefix)
 
-        # Name     Stmts   Exec  Cover
+        # Name     Stmts   Miss  Cover
         # ----------------------------
-        # mycode       4      4   100%
+        # mycode       4      0   100%
 
         self.assertEqual(self.line_count(report), 3)
         self.assertFalse("/coverage/" in report)
         self.assertFalse("/test/modules/covmod1 " in report)
         self.assertFalse("/test/zipmods.zip/covmodzip1 " in report)
         self.assertTrue("mycode " in report)
-        self.assertEqual(self.last_line_squeezed(report), "mycode 4 4 100%")
+        self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
     def test_report_branches(self):
         self.make_file("mybranch.py", """\
@@ -97,11 +97,11 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'x\n')
         report = self.report_from_command("coverage report")
 
-        # Name       Stmts   Exec Branch BrExec  Cover
+        # Name       Stmts   Miss Branch BrPart  Cover
         # --------------------------------------------
-        # mybranch       5      5      2      1    85%
+        # mybranch       5      0      2      1    85%
 
         self.assertEqual(self.line_count(report), 3)
         self.assertTrue("mybranch " in report)
         self.assertEqual(self.last_line_squeezed(report),
-                                                        "mybranch 5 5 2 1 85%")
+                                                        "mybranch 5 0 2 1 85%")

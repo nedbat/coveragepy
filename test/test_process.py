@@ -123,9 +123,9 @@ class ProcessTest(CoverageTest):
         # Reporting should still work even with the .rc file
         out = self.run_command("coverage report")
         self.assertMultiLineEqual(out, textwrap.dedent("""\
-            Name     Stmts   Exec  Cover
+            Name     Stmts   Miss  Cover
             ----------------------------
-            b_or_c       7      7   100%
+            b_or_c       7      0   100%
             """))
 
     def test_missing_source_file(self):

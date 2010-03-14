@@ -28,11 +28,11 @@
             <tr class='tablehead' title='Click to sort'>
                 <th class='name left headerSortDown'>Module</th>
                 <th>statements</th>
-                <th>run</th>
+                <th>missing</th>
                 <th>excluded</th>
                 {% if arcs %}
                 <th>branches</th>
-                <th>br exec</th>
+                <th>partial</th>
                 {% endif %}
                 <th class='right'>coverage</th>
             </tr>
@@ -42,11 +42,11 @@
             <tr class='total'>
                 <td class='name left'>Total</td>
                 <td>{{totals.n_statements}}</td>
-                <td>{{totals.n_executed}}</td>
+                <td>{{totals.n_missing}}</td>
                 <td>{{totals.n_excluded}}</td>
                 {% if arcs %}
                 <td>{{totals.n_branches}}</td>
-                <td>{{totals.n_executed_branches}}</td>
+                <td>{{totals.n_missing_branches}}</td>
                 {% endif %}
                 <td class='right'>{{totals.pc_covered|format_pct}}%</td>
             </tr>
@@ -56,11 +56,11 @@
             <tr class='file'>
                 <td class='name left'><a href='{{file.html_filename}}'>{{file.cu.name}}</a></td>
                 <td>{{file.nums.n_statements}}</td>
-                <td>{{file.nums.n_executed}}</td>
+                <td>{{file.nums.n_missing}}</td>
                 <td>{{file.nums.n_excluded}}</td>
                 {% if arcs %}
                 <td>{{file.nums.n_branches}}</td>
-                <td>{{file.nums.n_executed_branches}}</td>
+                <td>{{file.nums.n_missing_branches}}</td>
                 {% endif %}
                 <td class='right'>{{file.nums.pc_covered|format_pct}}%</td>
             </tr>

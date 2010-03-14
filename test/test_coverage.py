@@ -104,7 +104,7 @@ class BasicCoverageTest(CoverageTest):
             # Nothing here
             d = 6
             """,
-            [1,2,4,6], report="4 4 100%")
+            [1,2,4,6], report="4 0 100%")
 
     def testIndentationWackiness(self):
         # Partial final lines are OK.
@@ -632,7 +632,7 @@ class CompoundStatementTest(CoverageTest):
                 z = 7
             assert x == 3
             """,
-            [1,2,3,4,5,7,8], "4-7", report="7 4 57% 4-7")
+            [1,2,3,4,5,7,8], "4-7", report="7 3 57% 4-7")
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
             if a != 1:
@@ -643,7 +643,7 @@ class CompoundStatementTest(CoverageTest):
                 z = 7
             assert y == 5
             """,
-            [1,2,3,4,5,7,8], "3, 7", report="7 5 71% 3, 7")
+            [1,2,3,4,5,7,8], "3, 7", report="7 2 71% 3, 7")
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
             if a != 1:
@@ -654,7 +654,7 @@ class CompoundStatementTest(CoverageTest):
                 z = 7
             assert z == 7
             """,
-            [1,2,3,4,5,7,8], "3, 5", report="7 5 71% 3, 5")
+            [1,2,3,4,5,7,8], "3, 5", report="7 2 71% 3, 5")
 
     def testElifNoElse(self):
         self.check_coverage("""\
@@ -665,7 +665,7 @@ class CompoundStatementTest(CoverageTest):
                 y = 5
             assert x == 3
             """,
-            [1,2,3,4,5,6], "4-5", report="6 4 66% 4-5")
+            [1,2,3,4,5,6], "4-5", report="6 2 66% 4-5")
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
             if a != 1:
@@ -674,7 +674,7 @@ class CompoundStatementTest(CoverageTest):
                 y = 5
             assert y == 5
             """,
-            [1,2,3,4,5,6], "3", report="6 5 83% 3")
+            [1,2,3,4,5,6], "3", report="6 1 83% 3")
 
     def testElifBizarre(self):
         self.check_coverage("""\
