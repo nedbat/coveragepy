@@ -53,8 +53,12 @@ a.nav:hover {
     font-family: "courier new", monospace;
     }
 
-#footer {
+#indexfile #footer {
     margin: 1em 3em;
+    }
+
+#pyfile #footer {
+    margin: 1em 1em;
     }
 
 #footer .content {

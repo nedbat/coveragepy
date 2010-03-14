@@ -12,7 +12,8 @@ Next version
   suggested, this seemed blindingly obvious.
 
 - Line numbers in HTML source pages are clickable, linking directly to that
-  line, which is highlighted on arrival.
+  line, which is highlighted on arrival.  Added a link back to the index page
+  at the bottom of each HTML page.
 
 - Source files with DOS line endings are now properly tokenized for syntax
   coloring on non-DOS machines.  Fixes `issue  53`_.
