@@ -24,7 +24,8 @@ class FileLocator(object):
 
         """
         common_prefix = os.path.commonprefix(
-            [filename, self.relative_dir + os.sep])
+            [filename, self.relative_dir + os.sep]
+            )
         return filename[len(common_prefix):]
 
     def canonical_filename(self, filename):
