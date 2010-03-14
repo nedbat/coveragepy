@@ -90,9 +90,12 @@ class CoverageTest(TestCase):
     def original_environ(self, name, if_missing=None):
         """The environment variable `name` from when the test started."""
         if name in self.environ_undos:
-            return self.environ_undos[name]
+            ret = self.environ_undos[name]
         else:
-            return os.environ.get(name, if_missing)
+            ret = os.environ.get(name)
+        if ret is None:
+            ret = if_missing
+        return ret
 
     def undo_environ(self):
         """Undo all the changes made by `set_environ`."""
