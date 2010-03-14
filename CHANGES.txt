@@ -11,6 +11,9 @@ Next version
   rather than increasing the executed lines to varying targets.  Once
   suggested, this seemed blindingly obvious.
 
+- Line numbers in HTML source pages are clickable, linking directly to that
+  line, which is highlighted on arrival.
+
 - Source files with DOS line endings are now properly tokenized for syntax
   coloring on non-DOS machines.  Fixes `issue  53`_.
 

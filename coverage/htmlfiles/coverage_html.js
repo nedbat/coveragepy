@@ -65,6 +65,14 @@ function index_page_ready($) {
 
 // -- pyfile stuff --
 
+function pyfile_ready($) {
+    // If we're directed to a particular line number, highlight the line.
+    var frag = location.hash;
+    if (frag.length > 2 && frag[1] == 'n') {
+        $(frag).addClass('highlight');
+    }
+}
+
 function toggle_lines(btn, cls) {
     btn = $(btn);
     var hide = "hide_"+cls;

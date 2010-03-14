@@ -1,11 +1,17 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+    {# IE8 rounds line-height incorrectly, and adding this emulateIE7 line makes it right! #}
+    {# http://social.msdn.microsoft.com/Forums/en-US/iewebdevelopment/thread/7684445e-f080-4d8f-8529-132763348e21 #}
+    <meta http-equiv='X-UA-Compatible' content='IE=emulateIE7' />
     <title>Coverage for {{cu.name|escape}}: {{nums.pc_covered|format_pct}}%</title>
     <link rel='stylesheet' href='style.css' type='text/css'>
     <script type='text/javascript' src='jquery-1.3.2.min.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
+    <script type='text/javascript' charset='utf-8'>
+        jQuery(document).ready(pyfile_ready);
+    </script>
 </head>
 <body>
 
@@ -31,7 +37,7 @@
         <tr>
             <td class='linenos' valign='top'>
                 {% for line in lines %}
-                    <p id='n{{line.number}}' class='{{line.class}}'>{{line.number}}</p>
+                    <p id='n{{line.number}}' class='{{line.class}}'><a href='#n{{line.number}}'>{{line.number}}</a></p>
                 {% endfor %}
             </td>
             <td class='text' valign='top'>
