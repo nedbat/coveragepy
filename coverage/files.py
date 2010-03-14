@@ -6,7 +6,7 @@ class FileLocator(object):
     """Understand how filenames work."""
 
     def __init__(self):
-        self.relative_dir = self.abs_file(os.curdir) + os.sep
+        self.relative_dir = self.abs_file(os.curdir)
 
         # Cache of results of calling the canonical_filename() method, to
         # avoid duplicating work.
@@ -23,7 +23,9 @@ class FileLocator(object):
         FileLocator was constructed.
 
         """
-        return filename.replace(self.relative_dir, "")
+        common_prefix = os.path.commonprefix(
+            [filename, self.relative_dir + os.sep])
+        return filename[len(common_prefix):]
 
     def canonical_filename(self, filename):
         """Return a canonical filename for `filename`.
