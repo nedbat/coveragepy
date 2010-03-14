@@ -87,12 +87,12 @@ class CoverageTest(TestCase):
             self.environ_undos[name] = os.environ.get(name)
         os.environ[name] = value
 
-    def original_environ(self, name):
+    def original_environ(self, name, if_missing=None):
         """The environment variable `name` from when the test started."""
         if name in self.environ_undos:
             return self.environ_undos[name]
         else:
-            return os.environ.get(name)
+            return os.environ.get(name, if_missing)
 
     def undo_environ(self):
         """Undo all the changes made by `set_environ`."""
@@ -324,11 +324,9 @@ class CoverageTest(TestCase):
         here = os.path.dirname(self.nice_file(coverage.__file__, ".."))
         testmods = self.nice_file(here, 'test/modules')
         zipfile = self.nice_file(here, 'test/zipmods.zip')
-        pypath = self.original_environ('PYTHONPATH')
+        pypath = self.original_environ('PYTHONPATH', "")
         if pypath:
             pypath += os.pathsep
-        else:
-            pypath = ""
         pypath += testmods + os.pathsep + zipfile
         self.set_environ('PYTHONPATH', pypath)
 
