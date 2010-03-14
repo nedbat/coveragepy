@@ -1,7 +1,7 @@
 // Coverage.py HTML report browser code.
 
 // Loaded on index.html
-function index_page_ready($) {
+function index_ready($) {
     // Look for a cookie containing previous sort settings:
     sort_list = [];
     cookie_name = "COVERAGE_INDEX_SORT";
