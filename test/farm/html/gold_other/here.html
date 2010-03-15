@@ -1,13 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+    
+    
+    <meta http-equiv='X-UA-Compatible' content='IE=emulateIE7' />
     <title>Coverage for here: 75%</title>
     <link rel='stylesheet' href='style.css' type='text/css'>
     <script type='text/javascript' src='jquery-1.3.2.min.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
+    <script type='text/javascript' charset='utf-8'>
+        jQuery(document).ready(pyfile_ready);
+    </script>
 </head>
-<body>
+<body id='pyfile'>
 
 <div id='header'>
     <div class='content'>
@@ -17,8 +23,8 @@
         <h2 class='stats'>
             4 statements
             <span class='run hide_run' onclick='toggle_lines(this, "run")'>3 run</span>
-            <span class='exc' onclick='toggle_lines(this, "exc")'>0 excluded</span>
             <span class='mis' onclick='toggle_lines(this, "mis")'>1 missing</span>
+            <span class='exc' onclick='toggle_lines(this, "exc")'>0 excluded</span>
             
         </h2>
     </div>
@@ -28,14 +34,14 @@
     <table cellspacing='0' cellpadding='0'>
         <tr>
             <td class='linenos' valign='top'>
-<p id='n1' class='pln'>1</p>
-<p id='n2' class='pln'>2</p>
-<p id='n3' class='stm run hide_run'>3</p>
-<p id='n4' class='pln'>4</p>
-<p id='n5' class='stm run hide_run'>5</p>
-<p id='n6' class='stm run hide_run'>6</p>
-<p id='n7' class='pln'>7</p>
-<p id='n8' class='stm mis'>8</p>
+<p id='n1' class='pln'><a href='#n1'>1</a></p>
+<p id='n2' class='pln'><a href='#n2'>2</a></p>
+<p id='n3' class='stm run hide_run'><a href='#n3'>3</a></p>
+<p id='n4' class='pln'><a href='#n4'>4</a></p>
+<p id='n5' class='stm run hide_run'><a href='#n5'>5</a></p>
+<p id='n6' class='stm run hide_run'><a href='#n6'>6</a></p>
+<p id='n7' class='pln'><a href='#n7'>7</a></p>
+<p id='n8' class='stm mis'><a href='#n8'>8</a></p>
                 
             </td>
             <td class='text' valign='top'>
@@ -51,6 +57,14 @@
             </td>
         </tr>
     </table>
+</div>
+
+<div id='footer'>
+    <div class='content'>
+        <p>
+            <a class='nav' href='index.html'>&#xab; index</a> &nbsp; &nbsp; <a class='nav' href='http://nedbatchelder.com/code/coverage'>coverage.py v3.3.2a1</a>
+        </p>
+    </div>
 </div>
 
 </body>

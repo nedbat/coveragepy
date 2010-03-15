@@ -8,10 +8,10 @@
     <script type='text/javascript' src='jquery.tablesorter.min.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
     <script type='text/javascript' charset='utf-8'>
-        jQuery(document).ready(index_page_ready);
+        jQuery(document).ready(index_ready);
     </script>
 </head>
-<body>
+<body id='indexfile'>
 
 <div id='header'>
     <div class='content'>
@@ -28,7 +28,7 @@
             <tr class='tablehead' title='Click to sort'>
                 <th class='name left headerSortDown'>Module</th>
                 <th>statements</th>
-                <th>run</th>
+                <th>missing</th>
                 <th>excluded</th>
                 
                 <th class='right'>coverage</th>
@@ -39,7 +39,7 @@
             <tr class='total'>
                 <td class='name left'>Total</td>
                 <td>12</td>
-                <td>12</td>
+                <td>0</td>
                 <td>0</td>
                 
                 <td class='right'>100%</td>
@@ -50,7 +50,7 @@
             <tr class='file'>
                 <td class='name left'><a href='m1.html'>m1</a></td>
                 <td>2</td>
-                <td>2</td>
+                <td>0</td>
                 <td>0</td>
                 
                 <td class='right'>100%</td>
@@ -59,7 +59,7 @@
             <tr class='file'>
                 <td class='name left'><a href='m3.html'>m3</a></td>
                 <td>2</td>
-                <td>2</td>
+                <td>0</td>
                 <td>0</td>
                 
                 <td class='right'>100%</td>
@@ -68,7 +68,7 @@
             <tr class='file'>
                 <td class='name left'><a href='main.html'>main</a></td>
                 <td>8</td>
-                <td>8</td>
+                <td>0</td>
                 <td>0</td>
                 
                 <td class='right'>100%</td>
@@ -81,7 +81,7 @@
 <div id='footer'>
     <div class='content'>
         <p>
-            <a class='nav' href='http://nedbatchelder.com/code/coverage'>coverage.py v3.3a1</a>
+            <a class='nav' href='http://nedbatchelder.com/code/coverage'>coverage.py v3.3.2a1</a>
         </p>
     </div>
 </div>
