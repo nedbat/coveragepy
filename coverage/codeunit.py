@@ -124,8 +124,8 @@ class CodeUnit(object):
         if self.modname:
             return self.modname.replace('.', '_')
         else:
-            root = os.path.splitdrive(os.path.splitext(self.name)[0])[1]
-            return root.replace('\\', '_').replace('/', '_')
+            root = os.path.splitdrive(self.name)[1]
+            return root.replace('\\', '_').replace('/', '_').replace('.', '_')
 
     def source_file(self):
         """Return an open file for reading the source of the code unit."""

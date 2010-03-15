@@ -36,6 +36,20 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(bcu[0].source_file().read(), "# bfile.py\n")
         self.assertEqual(ccu[0].source_file().read(), "# cfile.py\n")
 
+    def test_odd_filenames(self):
+        acu = code_unit_factory("aa/afile.odd.py", FileLocator())
+        bcu = code_unit_factory("aa/bb/bfile.odd.py", FileLocator())
+        b2cu = code_unit_factory("aa/bb.odd/bfile.py", FileLocator())
+        self.assertEqual(acu[0].name, "aa/afile.odd")
+        self.assertEqual(bcu[0].name, "aa/bb/bfile.odd")
+        self.assertEqual(b2cu[0].name, "aa/bb.odd/bfile")
+        self.assertEqual(acu[0].flat_rootname(), "aa_afile_odd")
+        self.assertEqual(bcu[0].flat_rootname(), "aa_bb_bfile_odd")
+        self.assertEqual(b2cu[0].flat_rootname(), "aa_bb_odd_bfile")
+        self.assertEqual(acu[0].source_file().read(), "# afile.odd.py\n")
+        self.assertEqual(bcu[0].source_file().read(), "# bfile.odd.py\n")
+        self.assertEqual(b2cu[0].source_file().read(), "# bfile.py\n")
+
     def test_modules(self):
         import aa, aa.bb, aa.bb.cc
         cu = code_unit_factory([aa, aa.bb, aa.bb.cc], FileLocator())
