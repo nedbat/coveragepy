@@ -17,7 +17,7 @@ Next version
 
 - Source files can have more than one dot in them (foo.test.py), and will be
   treated properly while reporting.  Fixes `issue 46`_.
-  
+
 - Source files with DOS line endings are now properly tokenized for syntax
   coloring on non-DOS machines.  Fixes `issue  53`_.
 
