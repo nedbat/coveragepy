@@ -282,8 +282,3 @@ if sys.version_info >= (2, 5):
                 doctest.testmod(sys.modules[__name__])  # we're not __main__ :(
                 ''',
                 [1,11,12,14,16,17], "")
-
-
-if __name__ == '__main__':
-    import unittest
-    unittest.main()

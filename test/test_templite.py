@@ -202,7 +202,3 @@ class TempliteTest(unittest.TestCase):
         self.assertRaises(SyntaxError, self.try_render,
             "Huh: {% bogus %}!!{% endbogus %}??", {}, ""
             )
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -1,6 +1,6 @@
 """Test cmdline.py for coverage."""
 
-import os, pprint, re, shlex, sys, textwrap, unittest
+import os, pprint, re, shlex, sys, textwrap
 import mock
 import coverage
 import coverage.cmdline
@@ -594,7 +594,3 @@ class CmdMainTest(CoverageTest):
     def test_exit(self):
         ret = coverage.cmdline.main(['exit'])
         self.assertEqual(ret, 23)
-
-
-if __name__ == '__main__':
-    unittest.main()

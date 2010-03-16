@@ -1,7 +1,7 @@
 """Tests for Coverage."""
 # http://nedbatchelder.com/code/coverage
 
-import os, sys, unittest
+import os, sys
 
 import coverage
 coverage.use_cache(0)
@@ -1702,8 +1702,3 @@ class ReportingTest(CoverageTest):
             self.command_line, "xml"
             )
         # Currently, this leaves an empty coverage.xml file... :(
-
-
-if __name__ == '__main__':
-    print("Testing under Python version: %s" % sys.version)
-    unittest.main()
