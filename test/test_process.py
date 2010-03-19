@@ -242,4 +242,4 @@ class ProcessTest(CoverageTest):
             # executed.
             data = coverage.CoverageData()
             data.read_file(".coverage")
-            self.assertEqual(data.summary()['fork.py'], 7)
+            self.assertEqual(data.summary()['fork.py'], 9)
