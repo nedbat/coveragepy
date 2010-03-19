@@ -203,3 +203,43 @@ class ProcessTest(CoverageTest):
         self.assertMultiLineEqual(out, "about to exit..\n")
         self.assertEqual(status, status2)
         self.assertEqual(status, 17)
+
+    if hasattr(os, 'fork'):
+        def test_fork(self):
+            self.make_file("fork.py", """\
+                import os
+
+                def child():
+                    print('Child!')
+
+                def main():
+                    ret = os.fork()
+
+                    if ret == 0:
+                        child()
+                    else:
+                        os.waitpid(ret, 0)
+
+                main()
+                """)
+
+            out = self.run_command("coverage run -p fork.py")
+            self.assertEqual(out, 'Child!\n')
+            self.assertFalse(os.path.exists(".coverage"))
+
+            # After running the forking program, there should be two 
+            # .coverage.machine.123 files.
+            self.assertEqual(self.number_of_data_files(), 2)
+
+            # Combine the parallel coverage data files into .coverage .
+            self.run_command("coverage -c")
+            self.assertTrue(os.path.exists(".coverage"))
+
+            # After combining, there should be only the .coverage file.
+            self.assertEqual(self.number_of_data_files(), 1)
+
+            # Read the coverage file and see that b_or_c.py has all 7 lines
+            # executed.
+            data = coverage.CoverageData()
+            data.read_file(".coverage")
+            self.assertEqual(data.summary()['fork.py'], 7)
