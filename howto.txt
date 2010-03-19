@@ -65,6 +65,9 @@
 
   (or equivalent).
 
+  These go in c:\python26\lib\site-packages or
+  /usr/local/lib/python2.6/dist-packages, for example.
+
 - For complete coverage testing, in each Python installation, create a
   "zzz_coverage_process_start.pth" containing::
 
