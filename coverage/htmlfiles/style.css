@@ -5,8 +5,8 @@ html, body, h1, h2, h3, p, td, th {
     padding: 0;
     border: 0;
     outline: 0;
-    font-weight: normal;
-    font-style: normal;
+    font-weight: inherit;
+    font-style: inherit;
     font-size: 100%;
     font-family: inherit;
     vertical-align: baseline;
