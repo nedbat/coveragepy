@@ -15,14 +15,19 @@ Next version
   line, which is highlighted on arrival.  Added a link back to the index page
   at the bottom of each HTML page.
 
+- Programs that call ``os.fork`` will properly collect data from both the child
+  and parent processes.  Use ``coverage run -p`` to get two data files that can
+  be combined with ``coverage combine``.  Fixes `issue 56`_.
+
 - Source files can have more than one dot in them (foo.test.py), and will be
   treated properly while reporting.  Fixes `issue 46`_.
 
 - Source files with DOS line endings are now properly tokenized for syntax
-  coloring on non-DOS machines.  Fixes `issue  53`_.
+  coloring on non-DOS machines.  Fixes `issue 53`_.
 
 .. _issue 46: http://bitbucket.org/ned/coveragepy/issue/46
 .. _issue 53: http://bitbucket.org/ned/coveragepy/issue/53
+.. _issue 56: http://bitbucket.org/ned/coveragepy/issue/56
 
 
 Version 3.3.1, 6 March 2010

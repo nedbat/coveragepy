@@ -96,17 +96,22 @@ class coverage(object):
             branch=self.config.branch
             )
 
-        # Create the data file.
+        # Suffixes are a bit tricky.  We want to use the data suffix only when
+        # collecting data, not when combining data.  So we save it as
+        # `self.run_suffix` now, and promote it to `self.data_suffix` if we
+        # find that we are collecting data later.
         if data_suffix or self.config.parallel:
             if not isinstance(data_suffix, string_class):
                 # if data_suffix=True, use .machinename.pid.random
-                data_suffix = "%s.%s.%06d" % (
-                    socket.gethostname(), os.getpid(), random.randint(0, 99999)
-                    )
+                data_suffix = True
         else:
             data_suffix = None
+        self.data_suffix = None
         self.run_suffix = data_suffix
 
+        # Create the data file.  We do this at construction time so that the
+        # data file will be written into the directory where the process
+        # started rather than wherever the process eventually chdir'd to.
         self.data = CoverageData(
             basename=self.config.data_file,
             collector="coverage v%s" % __version__
@@ -192,13 +197,9 @@ class coverage(object):
     def start(self):
         """Start measuring code coverage."""
         if self.run_suffix:
-            # If the .coveragerc file specifies parallel=True, then we need to
-            # remake the data file for collection, with a suffix.
-            from coverage import __version__
-            self.data = CoverageData(
-                basename=self.config.data_file, suffix=self.run_suffix,
-                collector="coverage v%s" % __version__
-                )
+            # Calling start() means we're running code, so use the run_suffix
+            # as the data_suffix when we eventually save the data.
+            self.data_suffix = self.run_suffix
         if self.auto_data:
             self.load()
             # Save coverage data when Python exits.
@@ -249,8 +250,18 @@ class coverage(object):
 
     def save(self):
         """Save the collected coverage data to the data file."""
+        data_suffix = self.data_suffix
+        if data_suffix and not isinstance(data_suffix, string_class):
+            # If data_suffix was a simple true value, then make a suffix with
+            # plenty of distinguishing information.  We do this here in
+            # `save()` at the last minute so that the pid will be correct even
+            # if the process forks.
+            data_suffix = "%s.%s.%06d" % (
+                    socket.gethostname(), os.getpid(), random.randint(0, 99999)
+                    )
+
         self._harvest_data()
-        self.data.write()
+        self.data.write(suffix=data_suffix)
 
     def combine(self):
         """Combine together a number of similarly-named coverage data files.

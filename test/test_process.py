@@ -227,7 +227,7 @@ class ProcessTest(CoverageTest):
             self.assertEqual(out, 'Child!\n')
             self.assertFalse(os.path.exists(".coverage"))
 
-            # After running the forking program, there should be two 
+            # After running the forking program, there should be two
             # .coverage.machine.123 files.
             self.assertEqual(self.number_of_data_files(), 2)
 

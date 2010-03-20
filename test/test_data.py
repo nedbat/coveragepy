@@ -55,13 +55,13 @@ class DataTest(CoverageTest):
         self.assert_summary(covdata2, SUMMARY_1)
 
     def test_combining(self):
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = CoverageData()
         covdata1.add_line_data(DATA_1)
-        covdata1.write()
+        covdata1.write(suffix='1')
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = CoverageData()
         covdata2.add_line_data(DATA_2)
-        covdata2.write()
+        covdata2.write(suffix='2')
 
         covdata3 = CoverageData()
         covdata3.combine_parallel_data()

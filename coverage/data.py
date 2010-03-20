@@ -21,21 +21,10 @@ class CoverageData(object):
 
     """
 
-    # Name of the data file (unless environment variable is set).
-    filename_default = ".coverage"
-
-    # Environment variable naming the data file.
-    filename_env = "COVERAGE_FILE"
-
-    def __init__(self, basename=None, suffix=None, collector=None):
+    def __init__(self, basename=None, collector=None):
         """Create a CoverageData.
 
         `basename` is the name of the file to use for storing data.
-
-        `suffix` is a suffix to append to the base file name. This can be used
-        for multiple or parallel execution, so that many coverage data files
-        can exist simultaneously.  A dot will be used to join the base name and
-        the suffix.
 
         `collector` is a string describing the coverage measurement software.
 
@@ -47,8 +36,6 @@ class CoverageData(object):
         # Construct the filename that will be used for data file storage, if we
         # ever do any file storage.
         self.filename = basename or ".coverage"
-        if suffix:
-            self.filename += "." + suffix
         self.filename = os.path.abspath(self.filename)
 
         # A map from canonical Python source file name to a dictionary in
@@ -80,10 +67,20 @@ class CoverageData(object):
         else:
             self.lines, self.arcs = {}, {}
 
-    def write(self):
-        """Write the collected coverage data to a file."""
+    def write(self, suffix=None):
+        """Write the collected coverage data to a file.
+
+        `suffix` is a suffix to append to the base file name. This can be used
+        for multiple or parallel execution, so that many coverage data files
+        can exist simultaneously.  A dot will be used to join the base name and
+        the suffix.
+
+        """
         if self.use_file:
-            self.write_file(self.filename)
+            filename = self.filename
+            if suffix:
+                filename += "." + suffix
+            self.write_file(filename)
 
     def erase(self):
         """Erase the data, both in this object, and from its file storage."""
