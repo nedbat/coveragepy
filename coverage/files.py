@@ -6,7 +6,8 @@ class FileLocator(object):
     """Understand how filenames work."""
 
     def __init__(self):
-        self.relative_dir = self.abs_file(os.curdir)
+        # The absolute path to our current directory.
+        self.relative_dir = self.abs_file(os.curdir) + os.sep
 
         # Cache of results of calling the canonical_filename() method, to
         # avoid duplicating work.
@@ -20,13 +21,12 @@ class FileLocator(object):
         """Return the relative form of `filename`.
 
         The filename will be relative to the current directory when the
-        FileLocator was constructed.
+        `FileLocator` was constructed.
 
         """
-        common_prefix = os.path.commonprefix(
-            [filename, self.relative_dir + os.sep]
-            )
-        return filename[len(common_prefix):]
+        if filename.startswith(self.relative_dir):
+            filename = filename.replace(self.relative_dir, "")
+        return filename
 
     def canonical_filename(self, filename):
         """Return a canonical filename for `filename`.
