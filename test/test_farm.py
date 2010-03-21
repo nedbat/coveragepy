@@ -294,10 +294,12 @@ class FarmTestCase(object):
 
     def clean(self, cleandir):
         """Clean `cleandir` by removing it and all its children completely."""
-        if os.path.exists(cleandir):
-            # rmtree gives mysterious failures on Win7, so retry a few times.
-            tries = 3
-            while tries:
+        # rmtree gives mysterious failures on Win7, so retry a "few" times.
+        # I've seen it take over 100 tries, so, 1000!  This is probably the
+        # most unpleasant hack I've written in a long time...
+        tries = 1000
+        while tries:
+            if os.path.exists(cleandir):
                 try:
                     shutil.rmtree(cleandir)
                 except OSError:
@@ -306,7 +308,7 @@ class FarmTestCase(object):
                     else:
                         tries -= 1
                         continue
-                break
+            break
 
 
 def main():     # pragma: no cover

@@ -1,4 +1,7 @@
 @echo off
+@rem all the Python installs have a .pth pointing to the egg file created by
+@rem 2.5, so install the testdata in 2.5
+call \ned\bin\switchpy 25 quiet
 make --quiet testdata
 
 for %%v in (23 24 25 26 27) do (
