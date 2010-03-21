@@ -116,12 +116,18 @@ class CoverageTest(TestCase):
     def make_file(self, filename, text):
         """Create a temp file.
 
-        `filename` is the file name, and `text` is the content.
+        `filename` is the path to the file, including directories if desired,
+        and `text` is the content.
 
         """
         # Tests that call `make_file` should be run in a temp environment.
         assert self.run_in_temp_dir
         text = textwrap.dedent(text)
+
+        # Make sure the directories are available.
+        dirs, _ = os.path.split(filename)
+        if dirs and not os.path.exists(dirs):
+            os.makedirs(dirs)
 
         # Create the file.
         f = open(filename, 'w')
