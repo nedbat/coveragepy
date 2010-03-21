@@ -102,7 +102,7 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
 - Reporting on files never touched by coverage (package completeness)
 - A setup.py command? http://jeetworks.org/node/50
 - Deltas: indicate the change in coverage percentage from the last run.
-- Show lines missing rather than lines run in the reporting, since that's what
++ Show lines missing rather than lines run in the reporting, since that's what
   you need to focus on.
 
 
