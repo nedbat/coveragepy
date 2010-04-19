@@ -33,9 +33,15 @@ class AnnotateReporter(Reporter):
     blank_re = re.compile(r"\s*(#|$)")
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
-    def report(self, morfs, directory=None, omit_prefixes=None):
-        """Run the report."""
-        self.report_files(self.annotate_file, morfs, directory, omit_prefixes)
+    def report(self, morfs, directory=None, omit_prefixes=None, require_prefixes=None):
+        """Run the report.
+        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
+        will be omitted from the list.
+        `require_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
+        will be included in the list.
+        You are required to pass at most one of `omit_prefixes` and `require_prefixes`.
+        """
+        self.report_files(self.annotate_file, morfs, directory, omit_prefixes, require_prefixes)
 
     def annotate_file(self, cu, analysis):
         """Annotate a single file.

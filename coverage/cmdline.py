@@ -54,6 +54,12 @@ class Opts(object):
         help="Omit files when their filename path starts with one of these "
                 "prefixes."
         )
+    require = optparse.Option(
+        '', '--require', action='store',
+        metavar="PRE1,PRE2,...",
+        help="Include files only when their filename path starts with one of these "
+                "prefixes."
+        )
     output_xml = optparse.Option(
         '-o', '', action='store', dest="outfile",
         metavar="OUTFILE",
@@ -99,6 +105,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             help=None,
             ignore_errors=None,
             omit=None,
+            require=None,
             parallel_mode=None,
             pylib=None,
             rcfile=True,
@@ -219,6 +226,7 @@ CMDS = {
             Opts.directory,
             Opts.ignore_errors,
             Opts.omit,
+            Opts.require,
             ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Make annotated copies of the given files, marking "
@@ -256,6 +264,7 @@ CMDS = {
             Opts.directory,
             Opts.ignore_errors,
             Opts.omit,
+            Opts.require,
             ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Create an HTML report of the coverage of the files.  "
@@ -267,6 +276,7 @@ CMDS = {
         [
             Opts.ignore_errors,
             Opts.omit,
+            Opts.require,
             Opts.show_missing,
             ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
@@ -280,6 +290,8 @@ CMDS = {
             Opts.pylib,
             Opts.parallel_mode,
             Opts.timid,
+            Opts.omit,
+            Opts.require,
             ] + GLOBAL_ARGS,
         defaults = {'erase_first': True},
         cmd = "run",
@@ -291,6 +303,7 @@ CMDS = {
         [
             Opts.ignore_errors,
             Opts.omit,
+            Opts.require,
             Opts.output_xml,
             ] + GLOBAL_ARGS,
         cmd = "xml",
@@ -495,6 +508,10 @@ class CoverageScript(object):
         if options.omit:
             omit = options.omit.split(',')
         report_args['omit_prefixes'] = omit
+        require = None
+        if options.require:
+            require = options.require.split(',')
+        report_args['require_prefixes'] = require
 
         if 'report' in options.actions:
             self.coverage.report(
