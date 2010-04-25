@@ -88,6 +88,7 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - ignore by module as well as file?
 + Use a .coveragerc file to control Coverage without the programmatic API.
 - Own the nose --with-cover plugin.
+- Add a --data switch to explicitly control the data file on the command line.
 x Why can't you specify execute (-x) and report (-r) in the same invocation?
     Maybe just because -x needs the rest of the command line?
 + Support 2.3 - 3.1!
