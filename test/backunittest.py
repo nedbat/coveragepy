@@ -73,7 +73,7 @@ class TestCase(unittest.TestCase):
                 raise self.failureException("%r doesn't match %r" % (s, regex))
 
     if _need('assertMultiLineEqual'):
-        def assertMultiLineEqual(self, first, second):
+        def assertMultiLineEqual(self, first, second, msg=None):
             """Assert that two multi-line strings are equal.
 
             If they aren't, show a nice diff.
@@ -86,6 +86,8 @@ class TestCase(unittest.TestCase):
                     'Second argument is not a string')
 
             if first != second:
-                msg = ''.join(difflib.ndiff(first.splitlines(True),
+                message = ''.join(difflib.ndiff(first.splitlines(True),
                                                     second.splitlines(True)))
-                self.fail("Multi-line strings are unequal:\n" + msg)
+                if msg:
+                    message += " : " + msg
+                self.fail("Multi-line strings are unequal:\n" + message)

@@ -45,6 +45,12 @@ class TestingTest(TestCase):
         self.assertRaises(AssertionError, self.assertMultiLineEqual,
             "hello\nthere", "hello\nThere"
             )
+        # With messages also.
+        self.assertMultiLineEqual("hi", "hi", "it's ok")
+        self.assertRaisesRegexp(
+            AssertionError, "my message",
+            self.assertMultiLineEqual, "xyz", "abc", "my message"
+        )
 
     def test_assert_raises_regexp(self):
         # Raising the right error with the right message passes.
