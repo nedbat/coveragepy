@@ -97,6 +97,7 @@ typedef struct {
 
     /* The parent frame for the last exception event, to fix missing returns. */
     PyFrameObject * last_exc_back;
+    int last_exc_firstlineno;
 
 #if COLLECT_STATS
     struct {
@@ -280,7 +281,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
             STATS( self->stats.missed_returns++; )
             if (self->depth >= 0) {
                 if (self->tracing_arcs && self->cur_file_data) {
-                    if (Tracer_record_pair(self, self->last_line, -1) < 0) {
+                    if (Tracer_record_pair(self, self->last_line, -self->last_exc_firstlineno) < 0) {
                         return RET_ERROR;
                     }
                 }
@@ -376,7 +377,8 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         /* A near-copy of this code is above in the missing-return handler. */
         if (self->depth >= 0) {
             if (self->tracing_arcs && self->cur_file_data) {
-                if (Tracer_record_pair(self, self->last_line, -1) < 0) {
+                int first = frame->f_code->co_firstlineno;
+                if (Tracer_record_pair(self, self->last_line, -first) < 0) {
                     return RET_ERROR;
                 }
             }
@@ -436,6 +438,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
         */
         STATS( self->stats.exceptions++; )
         self->last_exc_back = frame->f_back;
+        self->last_exc_firstlineno = frame->f_code->co_firstlineno;
         break;
 
     default:

@@ -176,18 +176,34 @@ class CoverageTest(TestCase):
 
         ".1 12 2." --> [(-1,1), (1,2), (2,-1)]
 
+        Minus signs can be included in the pairs:
+
+        "-11, 12, 2-5" --> [(-1,1), (1,2), (2,-5)]
+
         """
         arcs = []
-        for a,b in arcz.split():
-            arcs.append((self._arcz_map[a], self._arcz_map[b]))
+        for pair in arcz.split():
+            asgn = bsgn = 1
+            if len(pair) == 2:
+                a,b = pair
+            else:
+                assert len(pair) == 3
+                if pair[0] == '-':
+                    _,a,b = pair
+                    asgn = -1
+                else:
+                    assert pair[1] == '-'
+                    a,_,b = pair
+                    bsgn = -1
+            arcs.append((asgn*self._arcz_map[a], bsgn*self._arcz_map[b]))
         return sorted(arcs)
 
-    def assertEqualArcs(self, a1, a2):
+    def assertEqualArcs(self, a1, a2, msg=None):
         """Assert that the arc lists `a1` and `a2` are equal."""
         # Make them into multi-line strings so we can see what's going wrong.
         s1 = "\n".join([repr(a) for a in a1]) + "\n"
         s2 = "\n".join([repr(a) for a in a2]) + "\n"
-        self.assertMultiLineEqual(s1, s2)
+        self.assertMultiLineEqual(s1, s2, msg)
 
     def check_coverage(self, text, lines=None, missing="", excludes=None,
             report="", arcz=None, arcz_missing="", arcz_unpredicted=""):
@@ -265,14 +281,20 @@ class CoverageTest(TestCase):
                         )
 
         if arcs is not None:
-            self.assertEqualArcs(analysis.arc_possibilities(), arcs)
+            self.assertEqualArcs(
+                analysis.arc_possibilities(), arcs, "Possible arcs differ"
+                )
 
             if arcs_missing is not None:
-                self.assertEqualArcs(analysis.arcs_missing(), arcs_missing)
+                self.assertEqualArcs(
+                    analysis.arcs_missing(), arcs_missing,
+                    "Missing arcs differ"
+                    )
 
             if arcs_unpredicted is not None:
                 self.assertEqualArcs(
-                    analysis.arcs_unpredicted(), arcs_unpredicted
+                    analysis.arcs_unpredicted(), arcs_unpredicted,
+                    "Unpredicted arcs differ"
                     )
 
         if report:

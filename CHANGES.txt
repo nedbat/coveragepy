@@ -25,9 +25,13 @@ Next version
 - Source files with DOS line endings are now properly tokenized for syntax
   coloring on non-DOS machines.  Fixes `issue 53`_.
 
+- Unusual code structure that confused exits from methods with exits from
+  classes is now properly analyzed.  See `issue 62`_.
+
 .. _issue 46: http://bitbucket.org/ned/coveragepy/issue/46
 .. _issue 53: http://bitbucket.org/ned/coveragepy/issue/53
 .. _issue 56: http://bitbucket.org/ned/coveragepy/issue/56
+.. _issue 62: http://bitbucket.org/ned/coveragepy/issue/62
 
 
 Version 3.3.1, 6 March 2010

@@ -214,7 +214,7 @@ class CodeParser(object):
         excluded_lines = self.first_lines(self.excluded)
         exit_counts = {}
         for l1, l2 in self.arcs():
-            if l1 == -1:
+            if l1 < 0:
                 # Don't ever report -1 as a line number
                 continue
             if l1 in excluded_lines:
@@ -434,7 +434,7 @@ class ByteParser(object):
 
             if bc.op in OPS_CODE_END:
                 # The opcode can exit the code object.
-                chunk.exits.add(-1)
+                chunk.exits.add(-self.code.co_firstlineno)
             if bc.op in OPS_PUSH_BLOCK:
                 # The opcode adds a block to the block_stack.
                 block_stack.append((bc.op, bc.jump_to))
@@ -479,12 +479,13 @@ class ByteParser(object):
                         # This is "return None", but is it dummy?  A real line
                         # would be a last chunk all by itself.
                         if chunks[-1].byte != penult.offset:
+                            exit = -self.code.co_firstlineno
                             # Split the last chunk
                             last_chunk = chunks[-1]
-                            last_chunk.exits.remove(-1)
+                            last_chunk.exits.remove(exit)
                             last_chunk.exits.add(penult.offset)
                             chunk = Chunk(penult.offset)
-                            chunk.exits.add(-1)
+                            chunk.exits.add(exit)
                             chunks.append(chunk)
 
             # Give all the chunks a length.
@@ -498,8 +499,8 @@ class ByteParser(object):
         """Find the executable arcs in the code.
 
         Returns a set of pairs, (from,to).  From and to are integer line
-        numbers.  If from is -1, then the arc is an entrance into the code
-        object.  If to is -1, the arc is an exit from the code object.
+        numbers.  If from is < 0, then the arc is an entrance into the code
+        object.  If to is < 0, the arc is an exit from the code object.
 
         """
         chunks = self._split_into_chunks()
@@ -508,12 +509,12 @@ class ByteParser(object):
         byte_chunks = dict([(c.byte, c) for c in chunks])
 
         # Build a map from byte offsets to actual lines reached.
-        byte_lines = {-1:[-1]}
+        byte_lines = {}
         bytes_to_add = set([c.byte for c in chunks])
 
         while bytes_to_add:
             byte_to_add = bytes_to_add.pop()
-            if byte_to_add in byte_lines or byte_to_add == -1:
+            if byte_to_add in byte_lines or byte_to_add < 0:
                 continue
 
             # Which lines does this chunk lead to?
@@ -541,8 +542,8 @@ class ByteParser(object):
                     lines.add(ch.line)
                 else:
                     for ex in ch.exits:
-                        if ex == -1:
-                            lines.add(-1)
+                        if ex < 0:
+                            lines.add(ex)
                         elif ex not in bytes_considered:
                             bytes_to_consider.append(ex)
 
@@ -555,7 +556,11 @@ class ByteParser(object):
         for chunk in chunks:
             if chunk.line:
                 for ex in chunk.exits:
-                    for exit_line in byte_lines[ex]:
+                    if ex < 0:
+                        exit_lines = [ex]
+                    else:
+                        exit_lines = byte_lines[ex]
+                    for exit_line in exit_lines:
                         if chunk.line != exit_line:
                             arcs.add((chunk.line, exit_line))
         for line in byte_lines[0]:
@@ -601,7 +606,8 @@ class Chunk(object):
 
     .. _basic block: http://en.wikipedia.org/wiki/Basic_block
 
-    An exit of -1 means the chunk can leave the code (return).
+    An exit < 0 means the chunk can leave the code (return).  The exit is
+    the negative of the starting line number of the code block.
 
     """
     def __init__(self, byte, line=0):
@@ -723,12 +729,12 @@ class AdHocMain(object):        # pragma: no cover
         """
         arc_chars = {}
         for lfrom, lto in sorted(arcs):
-            if lfrom == -1:
+            if lfrom < 0:
                 arc_chars[lto] = arc_chars.get(lto, '') + 'v'
-            elif lto == -1:
+            elif lto < 0:
                 arc_chars[lfrom] = arc_chars.get(lfrom, '') + '^'
             else:
-                if lfrom == lto-1:
+                if lfrom == lto - 1:
                     # Don't show obvious arcs.
                     continue
                 if lfrom < lto:

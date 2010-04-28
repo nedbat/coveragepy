@@ -37,6 +37,7 @@ class PyTracer(object):
         self.last_line = 0
         self.data_stack = []
         self.last_exc_back = None
+        self.last_exc_firstlineno = 0
         self.arcs = False
 
     def _trace(self, frame, event, arg_unused):
@@ -49,7 +50,8 @@ class PyTracer(object):
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
                 if self.arcs and self.cur_file_data:
-                    self.cur_file_data[(self.last_line, -1)] = None
+                    pair = (self.last_line, -self.last_exc_firstlineno)
+                    self.cur_file_data[pair] = None
                 self.cur_file_data, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
 
@@ -65,6 +67,8 @@ class PyTracer(object):
                 self.cur_file_data = self.data[tracename]
             else:
                 self.cur_file_data = None
+            # Set the last_line to -1 because the next arc will be entering a
+            # code block, indicated by (-1, n).
             self.last_line = -1
         elif event == 'line':
             # Record an executed line.
@@ -78,12 +82,14 @@ class PyTracer(object):
             self.last_line = frame.f_lineno
         elif event == 'return':
             if self.arcs and self.cur_file_data:
-                self.cur_file_data[(self.last_line, -1)] = None
+                first = frame.f_code.co_firstlineno
+                self.cur_file_data[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
             self.cur_file_data, self.last_line = self.data_stack.pop()
         elif event == 'exception':
             #print "exc", self.last_line, frame.f_lineno
             self.last_exc_back = frame.f_back
+            self.last_exc_firstlineno = frame.f_code.co_firstlineno
         return self._trace
 
     def start(self):

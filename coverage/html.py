@@ -93,7 +93,7 @@ class HtmlReporter(Reporter):
                 n_par += 1
                 annlines = []
                 for b in missing_branch_arcs[lineno]:
-                    if b == -1:
+                    if b < 0:
                         annlines.append("exit")
                     else:
                         annlines.append(str(b))

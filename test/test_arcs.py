@@ -28,7 +28,7 @@ class SimpleArcTest(CoverageTest):
 
             c = 5
             """,
-            arcz=".2 23 35 5.")
+            arcz=".2 23 35 5-2")
 
     def test_function_def(self):
         self.check_coverage("""\
@@ -90,6 +90,12 @@ class SimpleArcTest(CoverageTest):
             arcz=".1 14 45 5.  .2 2. 23 3.", arcz_missing="23 3.")
 
     def test_multiline(self):
+        # The firstlineno of the a assignment below differs among Python
+        # versions.
+        if sys.version_info >= (2, 5):
+            arcz = ".1 15 5-2"
+        else:
+            arcz = ".1 15 5-1"
         self.check_coverage("""\
             a = (
                 2 +
@@ -98,7 +104,7 @@ class SimpleArcTest(CoverageTest):
             b = \\
                 6
             """,
-            arcz=".1 15 5.", arcz_missing="")
+            arcz=arcz, arcz_missing="")
 
     def test_if_return(self):
         self.check_coverage("""\
@@ -252,7 +258,7 @@ class LoopArcTest(CoverageTest):
             arcz=
                 ".1 18 8G GH H. "
                 ".2 23 34 43 26 3. 6. "
-                ".9 9A 9. AB BC CB B9 AE E9",
+                ".9 9A 9-8 AB BC CB B9 AE E9",
             arcz_missing="26 6."
             )
 
@@ -296,7 +302,7 @@ class ExceptionArcTest(CoverageTest):
                 b = 9
             assert a == 5 and b == 9
             """,
-            arcz=".1 12 .3 3. 24 45 56 67 7A 89 9A A.",
+            arcz=".1 12 .3 3-2 24 45 56 67 7A 89 9A A.",
             arcz_missing="67 7A", arcz_unpredicted="68")
 
     def test_except_with_type(self):
@@ -315,7 +321,7 @@ class ExceptionArcTest(CoverageTest):
             assert try_it(0) == 8   # C
             assert try_it(1) == 6   # D
             """,
-            arcz=".1 12 .3 3. 24 4C CD D. .5 56 67 78 8B 9A AB B.",
+            arcz=".1 12 .3 3-2 24 4C CD D. .5 56 67 78 8B 9A AB B-4",
             arcz_missing="",
             arcz_unpredicted="79")
 
@@ -442,7 +448,7 @@ class ExceptionArcTest(CoverageTest):
                     c = 11
                 assert a == 5 and b == 9 and c == 11
                 """,
-                arcz=".1 12 .3 3. 24 45 56 67 7B 89 9B BC C.",
+                arcz=".1 12 .3 3-2 24 45 56 67 7B 89 9B BC C.",
                 arcz_missing="67 7B", arcz_unpredicted="68")
 
 
