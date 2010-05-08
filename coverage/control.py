@@ -139,9 +139,11 @@ class coverage(object):
         should not.
 
         """
-        if filename == '<string>':
-            # There's no point in ever tracing string executions, we can't do
-            # anything with the data later anyway.
+        if filename[0] == '<':
+            # Lots of non-file execution is represented with artificial
+            # filenames like "<string>", "<doctest readme.txt[0]>", or
+            # "<exec_function>".  Don't ever trace these executions, since we
+            # can't do anything with the data later anyway.
             return False
 
         # Compiled Python files have two filenames: frame.f_code.co_filename is

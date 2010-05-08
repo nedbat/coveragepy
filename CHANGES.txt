@@ -19,6 +19,9 @@ Next version
   and parent processes.  Use ``coverage run -p`` to get two data files that can
   be combined with ``coverage combine``.  Fixes `issue 56`_.
 
+- Doctest text files are no longer recorded in the coverage data, since they
+  can't be reported anyway.  Fixes `issue 61`_.
+
 - Source files can have more than one dot in them (foo.test.py), and will be
   treated properly while reporting.  Fixes `issue 46`_.
 
@@ -31,6 +34,7 @@ Next version
 .. _issue 46: http://bitbucket.org/ned/coveragepy/issue/46
 .. _issue 53: http://bitbucket.org/ned/coveragepy/issue/53
 .. _issue 56: http://bitbucket.org/ned/coveragepy/issue/56
+.. _issue 61: http://bitbucket.org/ned/coveragepy/issue/61
 .. _issue 62: http://bitbucket.org/ned/coveragepy/issue/62
 
 
