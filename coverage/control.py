@@ -102,8 +102,12 @@ class coverage(object):
 
         if self.config.omit_prefixes:
             self.omit_prefixes = [self.file_locator.abs_file(p) for p in self.config.omit_prefixes]
+        else:
+            self.omit_prefixes = []
         if self.config.require_prefixes:
             self.require_prefixes = [self.file_locator.abs_file(p) for p in self.config.require_prefixes]
+        else:
+            self.require_prefixes = []
 
         self.collector = Collector(
             self._should_trace, timid=self.config.timid,
@@ -192,12 +196,9 @@ class coverage(object):
                     return canonical
             else:
                 return False
-        elif omit_prefixes:
-            for prefix in prefixes:
-                if canonical.startswith(prefix):
-                    return False
-
-            code_units = filtered
+        for prefix in self.omit_prefixes:
+            if canonical.startswith(prefix):
+                return False
 
         return canonical
 

@@ -22,12 +22,17 @@ class XmlReporter(Reporter):
         self.xml_out = None
         self.arcs = coverage.data.has_arcs()
 
-    def report(self, morfs, omit_prefixes=None, outfile=None):
+    def report(self, morfs, omit_prefixes=None, require_prefixes=None, outfile=None):
         """Generate a Cobertura-compatible XML report for `morfs`.
 
         `morfs` is a list of modules or filenames.  `omit_prefixes` is a list
         of strings, prefixes of modules to omit from the report.
 
+        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
+        will be omitted from the list.
+        `require_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
+        will be included in the list.
+        You are required to pass at most one of `omit_prefixes` and `require_prefixes`.
         """
         # Initial setup.
         outfile = outfile or sys.stdout
@@ -52,7 +57,7 @@ class XmlReporter(Reporter):
 
         # Call xml_file for each file in the data.
         self.packages = {}
-        self.report_files(self.xml_file, morfs, omit_prefixes=omit_prefixes)
+        self.report_files(self.xml_file, morfs, omit_prefixes=omit_prefixes, require_prefixes=require_prefixes)
 
         lnum_tot, lhits_tot = 0, 0
         bnum_tot, bhits_tot = 0, 0

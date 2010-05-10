@@ -159,31 +159,31 @@ class ClassicCmdLineTest(CmdLineTest):
     def testReport(self):
         # coverage -r [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-r", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=None, morfs=[],
+            .report(ignore_errors=None, omit_prefixes=None, require_prefixes=None, morfs=[],
                     show_missing=None)
             """)
         self.cmd_executes("-r -i", self.INIT_LOAD + """\
-            .report(ignore_errors=True, omit_prefixes=None, morfs=[],
+            .report(ignore_errors=True, omit_prefixes=None, require_prefixes=None, morfs=[],
                     show_missing=None)
             """)
         self.cmd_executes("-r -m", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=None, morfs=[],
+            .report(ignore_errors=None, omit_prefixes=None, require_prefixes=None, morfs=[],
                     show_missing=True)
             """)
         self.cmd_executes("-r -o fooey", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=["fooey"],
+            .report(ignore_errors=None, omit_prefixes=["fooey"], require_prefixes=None,
                     morfs=[], show_missing=None)
             """)
         self.cmd_executes("-r -o fooey,booey", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=["fooey", "booey"],
+            .report(ignore_errors=None, omit_prefixes=["fooey", "booey"], require_prefixes=None,
                     morfs=[], show_missing=None)
             """)
         self.cmd_executes("-r mod1", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=None,
+            .report(ignore_errors=None, omit_prefixes=None, require_prefixes=None,
                     morfs=["mod1"], show_missing=None)
             """)
         self.cmd_executes("-r mod1 mod2 mod3", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=None,
+            .report(ignore_errors=None, omit_prefixes=None, require_prefixes=None,
                     morfs=["mod1", "mod2", "mod3"], show_missing=None)
             """)
 
@@ -201,31 +201,31 @@ class ClassicCmdLineTest(CmdLineTest):
         # coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-a", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=None, morfs=[])
+                    omit_prefixes=None, require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-a -d dir1", self.INIT_LOAD + """\
             .annotate(directory="dir1", ignore_errors=None,
-                    omit_prefixes=None, morfs=[])
+                    omit_prefixes=None, require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-a -i", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=True,
-                    omit_prefixes=None, morfs=[])
+                    omit_prefixes=None, require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-a -o fooey", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=["fooey"], morfs=[])
+                    omit_prefixes=["fooey"], require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-a -o fooey,booey", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=["fooey", "booey"], morfs=[])
+                    omit_prefixes=["fooey", "booey"], require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-a mod1", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=None, morfs=["mod1"])
+                    omit_prefixes=None, require_prefixes=None, morfs=["mod1"])
             """)
         self.cmd_executes("-a mod1 mod2 mod3", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=None, morfs=["mod1", "mod2", "mod3"])
+                    omit_prefixes=None, require_prefixes=None, morfs=["mod1", "mod2", "mod3"])
             """)
 
         self.cmd_executes_same("-a", "--annotate")
@@ -242,31 +242,31 @@ class ClassicCmdLineTest(CmdLineTest):
         # coverage -b -d DIR [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-b", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=None, morfs=[])
+                    omit_prefixes=None, require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-b -d dir1", self.INIT_LOAD + """\
             .html_report(directory="dir1", ignore_errors=None,
-                    omit_prefixes=None, morfs=[])
+                    omit_prefixes=None, require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-b -i", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=True,
-                    omit_prefixes=None, morfs=[])
+                    omit_prefixes=None, require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-b -o fooey", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=["fooey"], morfs=[])
+                    omit_prefixes=["fooey"], require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-b -o fooey,booey", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=["fooey", "booey"], morfs=[])
+                    omit_prefixes=["fooey", "booey"], require_prefixes=None, morfs=[])
             """)
         self.cmd_executes("-b mod1", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=None, morfs=["mod1"])
+                    omit_prefixes=None, require_prefixes=None, morfs=["mod1"])
             """)
         self.cmd_executes("-b mod1 mod2 mod3", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=None, morfs=["mod1", "mod2", "mod3"])
+                    omit_prefixes=None, require_prefixes=None, morfs=["mod1", "mod2", "mod3"])
             """)
 
         self.cmd_executes_same("-b", "--html")
@@ -471,35 +471,35 @@ class NewCmdLineTest(CmdLineTest):
     def testXml(self):
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("xml", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None, morfs=[],
+            .xml_report(ignore_errors=None, omit_prefixes=None, require_prefixes=None, morfs=[],
                     outfile="coverage.xml")
             """)
         self.cmd_executes("xml -i", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=True, omit_prefixes=None, morfs=[],
+            .xml_report(ignore_errors=True, omit_prefixes=None, require_prefixes=None, morfs=[],
                     outfile="coverage.xml")
             """)
         self.cmd_executes("xml -o myxml.foo", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None, morfs=[],
+            .xml_report(ignore_errors=None, omit_prefixes=None, require_prefixes=None, morfs=[],
                     outfile="myxml.foo")
             """)
         self.cmd_executes("xml -o -", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None, morfs=[],
+            .xml_report(ignore_errors=None, omit_prefixes=None, require_prefixes=None, morfs=[],
                     outfile="-")
             """)
         self.cmd_executes("xml --omit fooey", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=["fooey"], morfs=[],
+            .xml_report(ignore_errors=None, omit_prefixes=["fooey"], require_prefixes=None, morfs=[],
                     outfile="coverage.xml")
             """)
         self.cmd_executes("xml --omit fooey,booey", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=["fooey", "booey"],
+            .xml_report(ignore_errors=None, omit_prefixes=["fooey", "booey"], require_prefixes=None,
                     morfs=[], outfile="coverage.xml")
             """)
         self.cmd_executes("xml mod1", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None, morfs=["mod1"],
+            .xml_report(ignore_errors=None, omit_prefixes=None, require_prefixes=None, morfs=["mod1"],
                     outfile="coverage.xml")
             """)
         self.cmd_executes("xml mod1 mod2 mod3", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None,
+            .xml_report(ignore_errors=None, omit_prefixes=None, require_prefixes=None,
                     morfs=["mod1", "mod2", "mod3"], outfile="coverage.xml")
             """)
 
