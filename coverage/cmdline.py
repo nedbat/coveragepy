@@ -32,6 +32,12 @@ class Opts(object):
         '-i', '--ignore-errors', action='store_true',
         help="Ignore errors while reading source files."
         )
+    include = optparse.Option(
+        '', '--include', action='store',
+        metavar="PRE1,PRE2,...",
+        help="Include files only when their filename path starts with one of these "
+                "prefixes."
+        )
     pylib = optparse.Option(
         '-L', '--pylib', action='store_true',
         help="Measure coverage even inside the Python installed library, "
@@ -52,12 +58,6 @@ class Opts(object):
         '', '--omit', action='store',
         metavar="PRE1,PRE2,...",
         help="Omit files when their filename path starts with one of these "
-                "prefixes."
-        )
-    require = optparse.Option(
-        '', '--require', action='store',
-        metavar="PRE1,PRE2,...",
-        help="Include files only when their filename path starts with one of these "
                 "prefixes."
         )
     output_xml = optparse.Option(
@@ -104,8 +104,8 @@ class CoverageOptionParser(optparse.OptionParser, object):
             directory=None,
             help=None,
             ignore_errors=None,
+            include=None,
             omit=None,
-            require=None,
             parallel_mode=None,
             pylib=None,
             rcfile=True,
@@ -226,7 +226,7 @@ CMDS = {
             Opts.directory,
             Opts.ignore_errors,
             Opts.omit,
-            Opts.require,
+            Opts.include,
             ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Make annotated copies of the given files, marking "
@@ -264,7 +264,7 @@ CMDS = {
             Opts.directory,
             Opts.ignore_errors,
             Opts.omit,
-            Opts.require,
+            Opts.include,
             ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Create an HTML report of the coverage of the files.  "
@@ -276,7 +276,7 @@ CMDS = {
         [
             Opts.ignore_errors,
             Opts.omit,
-            Opts.require,
+            Opts.include,
             Opts.show_missing,
             ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
@@ -291,7 +291,7 @@ CMDS = {
             Opts.parallel_mode,
             Opts.timid,
             Opts.omit,
-            Opts.require,
+            Opts.include,
             ] + GLOBAL_ARGS,
         defaults = {'erase_first': True},
         cmd = "run",
@@ -303,7 +303,7 @@ CMDS = {
         [
             Opts.ignore_errors,
             Opts.omit,
-            Opts.require,
+            Opts.include,
             Opts.output_xml,
             ] + GLOBAL_ARGS,
         cmd = "xml",
@@ -508,10 +508,10 @@ class CoverageScript(object):
         if options.omit:
             omit = options.omit.split(',')
         report_args['omit_prefixes'] = omit
-        require = None
-        if options.require:
-            require = options.require.split(',')
-        report_args['require_prefixes'] = require
+        include = None
+        if options.include:
+            include = options.include.split(',')
+        report_args['include_prefixes'] = include
 
         if 'report' in options.actions:
             self.coverage.report(

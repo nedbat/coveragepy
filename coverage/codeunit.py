@@ -6,16 +6,16 @@ from coverage.backward import string_class, StringIO
 from coverage.misc import CoverageException
 
 
-def code_unit_factory(morfs, file_locator, omit_prefixes=None, require_prefixes=None):
+def code_unit_factory(morfs, file_locator, omit_prefixes=None, include_prefixes=None):
     """Construct a list of CodeUnits from polymorphic inputs.
 
     `morfs` is a module or a filename, or a list of same.
     `file_locator` is a FileLocator that can help resolve filenames.
     `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
     will be omitted from the list.
-    `require_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
+    `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
     will be included in the list.
-    You are required to pass at most one of `omit_prefixes` and `require_prefixes`.
+    You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
 
     Returns a list of CodeUnit objects.
 
@@ -36,9 +36,9 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None, require_prefixes=
 
     code_units = [CodeUnit(morf, file_locator) for morf in morfs]
 
-    if require_prefixes:
-        assert not isinstance(require_prefixes, string_class) # common mistake
-        prefixes = [file_locator.abs_file(p) for p in require_prefixes]
+    if include_prefixes:
+        assert not isinstance(include_prefixes, string_class) # common mistake
+        prefixes = [file_locator.abs_file(p) for p in include_prefixes]
         filtered = []
         for cu in code_units:
             for prefix in prefixes:

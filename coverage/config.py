@@ -25,7 +25,7 @@ class CoverageConfig(object):
         self.exclude_list = ['(?i)# *pragma[: ]*no *cover']
         self.ignore_errors = False
         self.omit_prefixes = None
-        self.require_prefixes = None
+        self.include_prefixes = None
 
         # Defaults for [html]
         self.html_dir = "htmlcov"
@@ -78,16 +78,16 @@ class CoverageConfig(object):
                     omit = omit.strip()
                     if omit:
                         self.omit_prefixes.append(omit)
-        if cp.has_option('run', 'require'):
-            # require is a list of prefixes, on separate lines, or separated by
+        if cp.has_option('run', 'include'):
+            # include is a list of prefixes, on separate lines, or separated by
             # commas.
-            require_list = cp.get('run', 'require')
-            self.require_prefixes = []
-            for require_line in require_list.split('\n'):
-                for require in require_line.split(','):
-                    require = require.strip()
-                    if require:
-                        self.require_prefixes.append(require)
+            include_list = cp.get('run', 'include')
+            self.include_prefixes = []
+            for include_line in include_list.split('\n'):
+                for include in include_line.split(','):
+                    include = include.strip()
+                    if include:
+                        self.include_prefixes.append(include)
 
         # [report]
         if cp.has_option('report', 'exclude_lines'):
@@ -106,16 +106,16 @@ class CoverageConfig(object):
                     omit = omit.strip()
                     if omit:
                         self.omit_prefixes.append(omit)
-        if cp.has_option('report', 'require'):
-            # require is a list of prefixes, on separate lines, or separated by
+        if cp.has_option('report', 'include'):
+            # include is a list of prefixes, on separate lines, or separated by
             # commas.
-            require_list = cp.get('report', 'require')
-            self.require_prefixes = []
-            for require_line in require_list.split('\n'):
-                for require in require_line.split(','):
-                    require = require.strip()
-                    if require:
-                        self.require_prefixes.append(require)
+            include_list = cp.get('report', 'include')
+            self.include_prefixes = []
+            for include_line in include_list.split('\n'):
+                for include in include_line.split(','):
+                    include = include.strip()
+                    if include:
+                        self.include_prefixes.append(include)
 
         # [html]
         if cp.has_option('html', 'directory'):
