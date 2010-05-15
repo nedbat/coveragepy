@@ -102,6 +102,7 @@ class ConfigFileTest(CoverageTest):
             branch = 1
             cover_pylib = TRUE
             parallel = on
+            include = a/   ,    b/
 
             [report]
             ; these settings affect reporting.
@@ -136,6 +137,7 @@ class ConfigFileTest(CoverageTest):
             ["if 0:", "pragma:?\s+no cover", "another_tab"]
             )
         self.assertTrue(cov.config.ignore_errors)
+        self.assertEqual(cov.config.include_prefixes, ["a/", "b/"])
         self.assertEqual(cov.config.omit_prefixes,
             ["one", "another", "some_more", "yet_more"]
             )
