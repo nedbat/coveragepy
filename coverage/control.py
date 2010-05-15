@@ -31,7 +31,8 @@ class coverage(object):
     """
 
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
-                auto_data=False, timid=None, branch=None, config_file=True, omit_prefixes=None, include_prefixes=None):
+                auto_data=False, timid=None, branch=None, config_file=True,
+                omit_prefixes=None, include_prefixes=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -190,10 +191,11 @@ class coverage(object):
         if canonical.startswith(self.cover_prefix):
             return False
 
+        # Check the file against the include and omit prefixes.
         if self.include_prefixes:
             for prefix in self.include_prefixes:
                 if canonical.startswith(prefix):
-                    return canonical
+                    break
             else:
                 return False
         for prefix in self.omit_prefixes:

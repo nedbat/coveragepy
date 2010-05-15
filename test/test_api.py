@@ -271,3 +271,72 @@ class ApiTest(CoverageTest):
         cov = coverage.coverage()
         cov.erase()
         cov.report()
+
+class OmitIncludeTest(CoverageTest):
+    def test_nothing_specified(self):
+        self.make_file("a.py", """\
+            a = 1
+            """)
+        self.make_file("b.py", """\
+            import a
+            b = 1
+            """)
+        
+        cov = coverage.coverage()
+        cov.start()
+        self.import_module("b")
+        cov.stop()
+        lines = cov.data.summary()
+        self.assertEqual(lines['a.py'], 1)
+        self.assertEqual(lines['b.py'], 2)
+
+    def test_include(self):
+        self.make_file("a.py", """\
+            a = 1
+            """)
+        self.make_file("b.py", """\
+            import a
+            b = 1
+            """)
+
+        cov = coverage.coverage(include_prefixes=["a"])
+        cov.start()
+        self.import_module("b")
+        cov.stop()
+        lines = cov.data.summary()
+        self.assertEqual(lines['a.py'], 1)
+        self.assert_('b.py' not in lines)
+
+    def test_omit(self):
+        self.make_file("a.py", """\
+            a = 1
+            """)
+        self.make_file("b.py", """\
+            import a
+            b = 1
+            """)
+
+        cov = coverage.coverage(omit_prefixes=["a"])
+        cov.start()
+        self.import_module("b")
+        cov.stop()
+        lines = cov.data.summary()
+        self.assert_('a.py' not in lines)
+        self.assertEqual(lines['b.py'], 2)
+
+    def test_omit_and_include(self):
+        self.make_file("aa.py", """\
+            a = 1
+            """)
+        self.make_file("ab.py", """\
+            import aa
+            b = 1
+            """)
+
+        cov = coverage.coverage(include_prefixes=["a"], omit_prefixes=["aa"])
+        cov.start()
+        self.import_module("ab")
+        cov.stop()
+        lines = cov.data.summary()
+        self.assert_('aa.py' not in lines)
+        self.assertEqual(lines['ab.py'], 2)

@@ -26,3 +26,4 @@ Geoff Bache
 Martin Fuzzey
 Greg Rogers
 Christoph Zwerschke
+Zooko Wilcox-O'Hearn

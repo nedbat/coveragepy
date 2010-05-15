@@ -439,6 +439,14 @@ class CoverageScript(object):
             self.help_fn("Nothing to do.")
             return ERR
 
+        # Listify the list options.
+        omit = None
+        if options.omit:
+            omit = options.omit.split(',')
+        include = None
+        if options.include:
+            include = options.include.split(',')
+
         # Do something.
         self.coverage = self.covpkg.coverage(
             data_suffix = options.parallel_mode,
@@ -446,6 +454,8 @@ class CoverageScript(object):
             timid = options.timid,
             branch = options.branch,
             config_file = options.rcfile,
+            omit_prefixes = omit,
+            include_prefixes = include,
             )
 
         if 'debug' in options.actions:
@@ -504,13 +514,7 @@ class CoverageScript(object):
             'ignore_errors': options.ignore_errors,
             }
 
-        omit = None
-        if options.omit:
-            omit = options.omit.split(',')
         report_args['omit_prefixes'] = omit
-        include = None
-        if options.include:
-            include = options.include.split(',')
         report_args['include_prefixes'] = include
 
         if 'report' in options.actions:

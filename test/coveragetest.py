@@ -60,6 +60,9 @@ class CoverageTest(TestCase):
         self.captured_stderr = StringIO()
         sys.stderr = self.captured_stderr
 
+        # Record sys.modules here so we can remove imported modules in tearDown.
+        self.old_modules = dict(sys.modules)
+
     def tearDown(self):
         if self.run_in_temp_dir:
             # Restore the original sys.path.
@@ -75,6 +78,11 @@ class CoverageTest(TestCase):
         # Restore stdout and stderr
         sys.stdout = self.old_stdout
         sys.stderr = self.old_stderr
+
+        # Remove any new modules imported during the test run. This lets us
+        # import the same source files for more than one test.
+        for m in [m for m in sys.modules if m not in self.old_modules]:
+            del sys.modules[m]
 
     def set_environ(self, name, value):
         """Set an environment variable `name` to be `value`.

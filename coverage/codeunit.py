@@ -45,9 +45,9 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None, include_prefixes=
                 if cu.filename.startswith(prefix):
                     filtered.append(cu)
                     break
-
         code_units = filtered
-    elif omit_prefixes:
+
+    if omit_prefixes:
         assert not isinstance(omit_prefixes, string_class) # common mistake
         prefixes = [file_locator.abs_file(p) for p in omit_prefixes]
         filtered = []
@@ -57,7 +57,6 @@ def code_unit_factory(morfs, file_locator, omit_prefixes=None, include_prefixes=
                     break
             else:
                 filtered.append(cu)
-
         code_units = filtered
 
     return code_units
