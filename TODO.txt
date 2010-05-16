@@ -12,7 +12,6 @@ Coverage TODO
     yes.
 + Fix up docstrings.  How to deal well with the commonality among all the methods that take omit and include?
 
-
 * 3.3
 
 - Config file

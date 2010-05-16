@@ -6,6 +6,14 @@ Change history for Coverage.py
 Next version
 ------------
 
+- The reporting commands (report, annotate, html, and xml) now have a --include
+  switch to restrict reporting to modules beginning with those prefixes,
+  similar to the existing --omit switch.  Thanks, Zooko.
+  
+- The run command now supports --include and --omit to control what modules it
+  measures.  This can speed execution and reduce the amount of data during
+  reporting.  Thanks Zooko.
+
 - Reports now have a column of missed line counts rather than executed line
   counts, since developers should focus on reducing the missed lines to zero,
   rather than increasing the executed lines to varying targets.  Once
