@@ -26,18 +26,18 @@ class Reporter(object):
 
     def find_code_units(self, morfs, omit_prefixes, include_prefixes):
         """Find the code units we'll report on.
+
         `morfs` is a list of modules or filenames. `omit_prefixes` is a list
         of prefixes to leave out of the list.
 
-        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
-        will be omitted from the list.
-        `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
-        will be included in the list.
-        You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
+        See `coverage.report()` for other arguments.
+
         """
         morfs = morfs or self.coverage.data.executed_files()
         self.code_units = code_unit_factory(
-                            morfs, self.coverage.file_locator, omit_prefixes, include_prefixes)
+                            morfs, self.coverage.file_locator, omit_prefixes,
+                            include_prefixes
+                            )
         self.code_units.sort()
 
     def report_files(self, report_fn, morfs, directory=None,
@@ -46,11 +46,10 @@ class Reporter(object):
 
         `report_fn` is called for each relative morf in `morfs`.
 
-        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
-        will be omitted from the list.
-        `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
-        will be included in the list.
-        You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
+        `include_prefixes` is a list of filename prefixes. CodeUnits that match
+        those prefixes will be included in the list. CodeUnits that match
+        `omit_prefixes` will be omitted from the list.
+
         """
         self.find_code_units(morfs, omit_prefixes, include_prefixes)
 

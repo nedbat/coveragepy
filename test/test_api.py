@@ -273,6 +273,8 @@ class ApiTest(CoverageTest):
         cov.report()
 
 class OmitIncludeTest(CoverageTest):
+    """Test using omit_prefixes and include_prefixes when measuring code."""
+
     def test_nothing_specified(self):
         self.make_file("a.py", """\
             a = 1
@@ -281,7 +283,7 @@ class OmitIncludeTest(CoverageTest):
             import a
             b = 1
             """)
-        
+
         cov = coverage.coverage()
         cov.start()
         self.import_module("b")

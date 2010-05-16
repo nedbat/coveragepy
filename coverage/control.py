@@ -59,13 +59,10 @@ class coverage(object):
         standard file is read (".coveragerc").  If it is False, then no file is
         read.
 
-        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
-        will be omitted from the list.
+        `omit_prefixes` and `include_prefixes` are lists of filename prefixes.
+        Files that match `include_prefixes` will be measured, files that match
+        `omit_prefixes` will not.
 
-        `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
-        will be included in the list.
-
-        You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
         """
         from coverage import __version__
 
@@ -101,14 +98,8 @@ class coverage(object):
 
         self.file_locator = FileLocator()
 
-        if self.config.omit_prefixes:
-            self.omit_prefixes = [self.file_locator.abs_file(p) for p in self.config.omit_prefixes]
-        else:
-            self.omit_prefixes = []
-        if self.config.include_prefixes:
-            self.include_prefixes = [self.file_locator.abs_file(p) for p in self.config.include_prefixes]
-        else:
-            self.include_prefixes = []
+        self.omit_prefixes = self._abs_files(self.config.omit_prefixes)
+        self.include_prefixes = self._abs_files(self.config.include_prefixes)
 
         self.collector = Collector(
             self._should_trace, timid=self.config.timid,
@@ -212,6 +203,11 @@ class coverage(object):
             ret = self._real_should_trace(filename, frame)
             print("should_trace: %r -> %r" % (filename, ret))
             return ret
+
+    def _abs_files(self, files):
+        """Return a list of absolute file names for the names in `files`."""
+        files = files or []
+        return [self.file_locator.abs_file(f) for f in files]
 
     def use_cache(self, usecache):
         """Control the use of a data file (incorrectly called a cache).
@@ -352,17 +348,18 @@ class coverage(object):
         return Analysis(self, it)
 
     def report(self, morfs=None, show_missing=True, ignore_errors=None,
-                file=None, omit_prefixes=None, include_prefixes=None):     # pylint: disable-msg=W0622
+                file=None,                          # pylint: disable-msg=W0622
+                omit_prefixes=None, include_prefixes=None
+                ):
         """Write a summary report to `file`.
 
         Each module in `morfs` is listed, with counts of statements, executed
         statements, missing statements, and a list of lines missed.
 
-        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
-        will be omitted from the list.
-        `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
-        will be included in the list.
-        You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
+        `include_prefixes` is a list of filename prefixes.  Modules that match
+        those prefixes will be included in the report.  Modules that match
+        `omit_prefixes` will not be included in the report.
+
         """
         self.config.from_args(
             ignore_errors=ignore_errors,
@@ -373,7 +370,8 @@ class coverage(object):
             self, show_missing, self.config.ignore_errors
             )
         reporter.report(
-            morfs, outfile=file, omit_prefixes=self.config.omit_prefixes, include_prefixes=self.config.include_prefixes
+            morfs, outfile=file, omit_prefixes=self.config.omit_prefixes,
+            include_prefixes=self.config.include_prefixes
             )
 
     def annotate(self, morfs=None, directory=None, ignore_errors=None,
@@ -385,11 +383,8 @@ class coverage(object):
         marker to indicate the coverage of the line.  Covered lines have ">",
         excluded lines have "-", and missing lines have "!".
 
-        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
-        will be omitted from the list.
-        `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
-        will be included in the list.
-        You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
+        See `coverage.report()` for other arguments.
+
         """
         self.config.from_args(
             ignore_errors=ignore_errors,
@@ -398,18 +393,17 @@ class coverage(object):
             )
         reporter = AnnotateReporter(self, self.config.ignore_errors)
         reporter.report(
-            morfs, directory=directory, omit_prefixes=self.config.omit_prefixes, include_prefixes=self.config.include_prefixes
+            morfs, directory=directory,
+            omit_prefixes=self.config.omit_prefixes,
+            include_prefixes=self.config.include_prefixes
             )
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
                     omit_prefixes=None, include_prefixes=None):
         """Generate an HTML report.
 
-        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
-        will be omitted from the list.
-        `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
-        will be included in the list.
-        You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
+        See `coverage.report()` for other arguments.
+
         """
         self.config.from_args(
             ignore_errors=ignore_errors,
@@ -433,11 +427,8 @@ class coverage(object):
         Each module in `morfs` is included in the report.  `outfile` is the
         path to write the file to, "-" will write to stdout.
 
-        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
-        will be omitted from the list.
-        `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
-        will be included in the list.
-        You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
+        See `coverage.report()` for other arguments.
+
         """
         self.config.from_args(
             ignore_errors=ignore_errors,
@@ -455,7 +446,8 @@ class coverage(object):
         try:
             reporter = XmlReporter(self, self.config.ignore_errors)
             reporter.report(
-                morfs, omit_prefixes=self.config.omit_prefixes, include_prefixes=self.config.include_prefixes, outfile=outfile
+                morfs, omit_prefixes=self.config.omit_prefixes,
+                include_prefixes=self.config.include_prefixes, outfile=outfile
                 )
         finally:
             if file_to_close:

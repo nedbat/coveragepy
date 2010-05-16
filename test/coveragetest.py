@@ -60,7 +60,7 @@ class CoverageTest(TestCase):
         self.captured_stderr = StringIO()
         sys.stderr = self.captured_stderr
 
-        # Record sys.modules here so we can remove imported modules in tearDown.
+        # Record sys.modules here so we can restore it in tearDown.
         self.old_modules = dict(sys.modules)
 
     def tearDown(self):

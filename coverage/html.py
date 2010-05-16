@@ -31,23 +31,23 @@ class HtmlReporter(Reporter):
         self.files = []
         self.arcs = coverage.data.has_arcs()
 
-    def report(self, morfs, directory, omit_prefixes=None, include_prefixes=None):
+    def report(self, morfs, directory, omit_prefixes=None,
+                include_prefixes=None
+                ):
         """Generate an HTML report for `morfs`.
 
         `morfs` is a list of modules or filenames.  `directory` is where to put
-        the HTML files. `omit_prefixes` is a list of strings, prefixes of
-        modules to omit from the report.
+        the HTML files.
 
-        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
-        will be omitted from the list.
-        `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
-        will be included in the list.
-        You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
+        See `coverage.report()` for other arguments.
+
         """
         assert directory, "must provide a directory for html reporting"
 
         # Process all the files.
-        self.report_files(self.html_file, morfs, directory, omit_prefixes, include_prefixes)
+        self.report_files(
+            self.html_file, morfs, directory, omit_prefixes, include_prefixes
+            )
 
         # Write the index file.
         self.index_file()

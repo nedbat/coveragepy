@@ -10,7 +10,7 @@ Coverage TODO
         They've already been given to the constructor.
 + Can you use both omit and include together?
     yes.
-- Fix up docstrings.  How to deal well with the commonality among all the methods that take omit and include?
++ Fix up docstrings.  How to deal well with the commonality among all the methods that take omit and include?
 
 
 * 3.3

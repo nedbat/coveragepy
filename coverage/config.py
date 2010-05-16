@@ -95,12 +95,12 @@ class CoverageConfig(object):
 
     def get_list(self, cp, section, option):
         """Read a list of strings from the ConfigParser `cp`.
-        
+
         The value of `section` and `option` is treated as a comma- and newline-
         separated list of strings.  Each value is stripped of whitespace.
-        
+
         Returns the list of strings.
-        
+
         """
         value_list = cp.get(section, option)
         values = []

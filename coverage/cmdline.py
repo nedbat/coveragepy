@@ -35,8 +35,8 @@ class Opts(object):
     include = optparse.Option(
         '', '--include', action='store',
         metavar="PRE1,PRE2,...",
-        help="Include files only when their filename path starts with one of these "
-                "prefixes."
+        help="Include files only when their filename path starts with one of "
+                "these prefixes."
         )
     pylib = optparse.Option(
         '-L', '--pylib', action='store_true',

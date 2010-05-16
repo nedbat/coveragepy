@@ -14,14 +14,13 @@ class SummaryReporter(Reporter):
         self.show_missing = show_missing
         self.branches = coverage.data.has_arcs()
 
-    def report(self, morfs, omit_prefixes=None, outfile=None, include_prefixes=None):
+    def report(self, morfs, omit_prefixes=None, outfile=None,
+                include_prefixes=None
+                ):
         """Writes a report summarizing coverage statistics per module.
 
-        `omit_prefixes` is a list of prefixes.  CodeUnits that match those prefixes
-        will be omitted from the list.
-        `include_prefixes` is a list of prefixes.  Only CodeUnits that match those prefixes
-        will be included in the list.
-        You are required to pass at most one of `omit_prefixes` and `include_prefixes`.
+        See `coverage.report()` for other arguments.
+
         """
         self.find_code_units(morfs, omit_prefixes, include_prefixes)
 

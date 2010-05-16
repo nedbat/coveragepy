@@ -496,8 +496,12 @@ class NewCmdLineTest(CmdLineTest):
             .stop()
             .save()
             """)
-        self.cmd_executes("run --include=pre1,pre2 --omit=opre1,opre2 foo.py", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=["pre1", "pre2"], omit_prefixes=["opre1", "opre2"])
+        self.cmd_executes("run --include=pre1,pre2 --omit=opre1,opre2 foo.py",
+            """\
+            .coverage(cover_pylib=None, data_suffix=None, timid=None,
+                branch=None, config_file=True,
+                include_prefixes=["pre1", "pre2"],
+                omit_prefixes=["opre1", "opre2"])
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
