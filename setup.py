@@ -63,7 +63,7 @@ classifier_list.append("Development Status :: " + devstat)
 
 # Set it up!
 
-setup(
+setup_args = dict(
     name = 'coverage',
     version = __version__,
 
@@ -76,10 +76,6 @@ setup(
             'htmlfiles/*.*',
             ]
         },
-
-    ext_modules = [
-        Extension("coverage.tracer", sources=["coverage/tracer.c"])
-        ],
 
     entry_points = {
         'console_scripts': [
@@ -99,3 +95,13 @@ setup(
     classifiers = classifier_list,
     url = __url__,
     )
+
+# Is there a duck-typing way to know we can't compile extensions?
+if not sys.platform.startswith('java'):
+    setup_args.update(dict(
+        ext_modules = [
+            Extension("coverage.tracer", sources=["coverage/tracer.c"])
+            ],
+        ))
+
+setup(**setup_args)
