@@ -94,7 +94,7 @@ class CoverageTestWrapper(object):
 
 options = [
     optparse.Option('',
-                '--cover-action', action='append', default=None,
+                '--cover-action', action='append', default=['report'],
                 dest='cover_actions', type="choice", choices=['annotate', 'html', 'report', 'xml'],
                 help="""\
 annotate    Annotate source files with execution information.
