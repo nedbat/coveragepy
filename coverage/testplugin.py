@@ -33,7 +33,7 @@ class CoverageTestWrapper(object):
         self.coverage = None
 
         self.coverTests = options.cover_tests
-        self.coverPackage = options.cover_package
+        self.coverPackages = options.cover_package
     
     def start(self):
         # Set up coverage
@@ -55,10 +55,11 @@ class CoverageTestWrapper(object):
         self.coverage.save()
 
         modules = []
-        if self.coverPackage:
+        if self.coverPackages:
             for name, module in sys.modules.items():
-                if module is not None and name.startswith(self.coverPackage):
-                    modules.append(module)
+                for package in self.coverPackages:
+                    if module is not None and name.startswith(package):
+                        modules.append(module)
 
         # Remaining actions are reporting, with some common self.options.
         report_args = {
@@ -105,10 +106,11 @@ report      Report coverage stats on modules.
 xml         Create an XML report of coverage results.
 """.strip()),
     optparse.Option(
-        '--cover-package', action='store',
+        '--cover-package', action='append', default=[],
         dest="cover_package",
         metavar="COVER_PACKAGE",
-        help="Restrict coverage output to selected package"
+        help=("Restrict coverage output to selected package "
+             "- can be specified multiple times")
         ),
     optparse.Option("--cover-tests", action="store_true",
         dest="cover_tests",
@@ -205,16 +207,14 @@ class DoCover:
 # Monkey patch omit_filter to use regex patterns for file omits
 def omit_filter(omit_prefixes, code_units):
     import re
-    exclude_patterns = [re.compile(line.strip()) for line in omit_prefixes if line and not line.startswith('#')]
+    exclude_patterns = [re.compile(line.strip()) for line in omit_prefixes
+                        if line and not line.startswith('#')]
     filtered = []
     for cu in code_units:
-        skip = False
         for pattern in exclude_patterns:
             if pattern.search(cu.filename):
-                skip = True
                 break
-            
-        if not skip:
+        else:
             filtered.append(cu)
     return filtered
 
