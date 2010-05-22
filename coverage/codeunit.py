@@ -50,19 +50,26 @@ def code_unit_factory(
         code_units = filtered
 
     if omit_prefixes:
-        assert not isinstance(omit_prefixes, string_class) # common mistake
-        prefixes = [file_locator.abs_file(p) for p in omit_prefixes]
-        filtered = []
-        for cu in code_units:
-            for prefix in prefixes:
-                if cu.filename.startswith(prefix):
-                    break
-            else:
-                filtered.append(cu)
-        code_units = filtered
+        code_units = omit_filter(omit_prefixes, code_units)
 
     return code_units
 
+def omit_filter(omit_prefixes, code_units):
+    """
+    The filtering method removing any unwanted code_units
+    
+    Refactored out so you can easily monkeypatch if needs be
+    """
+    prefixes = [file_locator.abs_file(p) for p in omit_prefixes]
+    filtered = []
+    for cu in code_units:
+        for prefix in prefixes:
+            if cu.filename.startswith(prefix):
+                break
+        else:
+            filtered.append(cu)
+            
+    return filtered
 
 class CodeUnit(object):
     """Code unit: a filename or module.

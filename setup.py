@@ -80,8 +80,15 @@ setup_args = dict(
     entry_points = {
         'console_scripts': [
             'coverage = coverage:main',
-            ]
+            ],
+        'pytest11': [
+            'coverage = coverage.testplugin',
+            ],
+        'nose.plugins.0.10': [
+            'coverage = coverage.noseplugin:Coverage',
+            ],
         },
+        
 
     # We need to get HTML assets from our htmlfiles dir.
     zip_safe = False,

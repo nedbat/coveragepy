@@ -47,6 +47,14 @@ Coverage TODO
 
 
 
+* Test-runner plugin
+
+- Support distribute/3k installation, register py.test-entrypoint there
+  as well as py-1.1.1 is 2.4-3.1 compatible.
+- Skip registering plugin entrypoints if not running on Jython.
+- Update docs to include a section about the plugin.
+
+
 * Speed
 
 + C extension collector
