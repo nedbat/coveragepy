@@ -54,10 +54,12 @@ class CoverageTestWrapper(object):
         self.coverage.stop()
         self.coverage.save()
 
-        modules = [module
-                for name, module in sys.modules.items()
-                if module is not None and name.startswith(self.coverPackage)]
-        
+        modules = []
+        if self.coverPackage:
+            for name, module in sys.modules.items():
+                if module is not None and name.startswith(self.coverPackage):
+                    modules.append(module)
+
         # Remaining actions are reporting, with some common self.options.
         report_args = {
             'morfs': modules,
