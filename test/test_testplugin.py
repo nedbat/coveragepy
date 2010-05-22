@@ -4,10 +4,10 @@ from nose.plugins import PluginTester
 from coverage.noseplugin import Coverage
 
 class TestCoverage(PluginTester, unittest.TestCase):
-    activate = '--with-coverage_new' # enables the plugin
+    activate = '--with-coverage' # enables the plugin
     plugins = [Coverage()]
     args = ['--cover-action=report']
-   
+
     @py.test.mark.skipif(True) # "requires nose test runner"
     def test_output(self):
         assert "Processing Coverage..." in self.output, (
