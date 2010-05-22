@@ -54,12 +54,8 @@ class CoverageTestWrapper(object):
         self.coverage.stop()
         self.coverage.save()
 
-        modules = []
-        if self.coverPackages:
-            for name, module in sys.modules.items():
-                for package in self.coverPackages:
-                    if module is not None and name.startswith(package):
-                        modules.append(module)
+        modules = [module for name, module in sys.modules.items()
+                   if self._want_module(name, module)]
 
         # Remaining actions are reporting, with some common self.options.
         report_args = {
@@ -94,6 +90,14 @@ class CoverageTestWrapper(object):
             self.coverage.xml_report(outfile=outfile, **report_args)
         
         return
+
+    def _want_module(self, name, module):
+        for package in self.coverPackages:
+            if module is not None and name.startswith(package):
+                return True
+
+        return False
+
 
 options = [
     optparse.Option('',
