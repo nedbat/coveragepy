@@ -182,7 +182,7 @@ class DoCover:
 
 # XXX please make the following unnessary
 # Monkey patch omit_filter to use regex patterns for file omits
-def omit_filter(omit_prefixes, code_units):
+def omit_filter(omit_prefixes, code_units, file_locator):
     exclude_patterns = [re.compile(line.strip()) for line in omit_prefixes
                         if line and not line.startswith('#')]
     filtered = []

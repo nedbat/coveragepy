@@ -50,11 +50,11 @@ def code_unit_factory(
         code_units = filtered
 
     if omit_prefixes:
-        code_units = omit_filter(omit_prefixes, code_units)
+        code_units = omit_filter(omit_prefixes, code_units, file_locator)
 
     return code_units
 
-def omit_filter(omit_prefixes, code_units):
+def omit_filter(omit_prefixes, code_units, file_locator):
     """
     The filtering method removing any unwanted code_units
     
