@@ -14,15 +14,13 @@ class SummaryReporter(Reporter):
         self.show_missing = show_missing
         self.branches = coverage.data.has_arcs()
 
-    def report(self, morfs, omit_prefixes=None, outfile=None,
-                include_prefixes=None
-                ):
+    def report(self, morfs, omit=None, outfile=None, include=None):
         """Writes a report summarizing coverage statistics per module.
 
         See `coverage.report()` for other arguments.
 
         """
-        self.find_code_units(morfs, omit_prefixes, include_prefixes)
+        self.find_code_units(morfs, omit, include)
 
         # Prepare the formatting strings
         max_name = max([len(cu.name) for cu in self.code_units] + [5])

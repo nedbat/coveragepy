@@ -16,7 +16,7 @@ class CmdLineTest(CoverageTest):
     run_in_temp_dir = False
 
     INIT_LOAD = """\
-        .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=None)
+        .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=None)
         .load()\n"""
 
     def model_object(self):
@@ -96,7 +96,7 @@ class ClassicCmdLineTest(CmdLineTest):
     def testErase(self):
         # coverage -e
         self.cmd_executes("-e", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=None)
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=None)
             .erase()
             """)
         self.cmd_executes_same("-e", "--erase")
@@ -106,7 +106,7 @@ class ClassicCmdLineTest(CmdLineTest):
 
         # -x calls coverage.load first.
         self.cmd_executes("-x foo.py", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=None)
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=None)
             .load()
             .start()
             .run_python_file('foo.py', ['foo.py'])
@@ -115,7 +115,7 @@ class ClassicCmdLineTest(CmdLineTest):
             """)
         # -e -x calls coverage.erase first.
         self.cmd_executes("-e -x foo.py", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=None)
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=None)
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
@@ -124,7 +124,7 @@ class ClassicCmdLineTest(CmdLineTest):
             """)
         # --timid sets a flag, and program arguments get passed through.
         self.cmd_executes("-x --timid foo.py abc 123", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=True, branch=None, config_file=True, include_prefixes=None, omit_prefixes=None)
+            .coverage(cover_pylib=None, data_suffix=None, timid=True, branch=None, config_file=True, include=None, omit=None)
             .load()
             .start()
             .run_python_file('foo.py', ['foo.py', 'abc', '123'])
@@ -133,7 +133,7 @@ class ClassicCmdLineTest(CmdLineTest):
             """)
         # -L sets a flag, and flags for the program don't confuse us.
         self.cmd_executes("-x -p -L foo.py -a -b", """\
-            .coverage(cover_pylib=True, data_suffix=True, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=None)
+            .coverage(cover_pylib=True, data_suffix=True, timid=None, branch=None, config_file=True, include=None, omit=None)
             .load()
             .start()
             .run_python_file('foo.py', ['foo.py', '-a', '-b'])
@@ -150,7 +150,7 @@ class ClassicCmdLineTest(CmdLineTest):
     def testCombine(self):
         # coverage -c
         self.cmd_executes("-c", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=None)
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=None)
             .load()
             .combine()
             .save()
@@ -160,35 +160,35 @@ class ClassicCmdLineTest(CmdLineTest):
     def testReport(self):
         # coverage -r [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-r", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=None, include_prefixes=None, morfs=[],
+            .report(ignore_errors=None, omit=None, include=None, morfs=[],
                     show_missing=None)
             """)
         self.cmd_executes("-r -i", self.INIT_LOAD + """\
-            .report(ignore_errors=True, omit_prefixes=None, include_prefixes=None, morfs=[],
+            .report(ignore_errors=True, omit=None, include=None, morfs=[],
                     show_missing=None)
             """)
         self.cmd_executes("-r -m", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=None, include_prefixes=None, morfs=[],
+            .report(ignore_errors=None, omit=None, include=None, morfs=[],
                     show_missing=True)
             """)
         self.cmd_executes("-r -o fooey", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=["fooey"])
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=["fooey"])
             .load()
-            .report(ignore_errors=None, omit_prefixes=["fooey"], include_prefixes=None,
+            .report(ignore_errors=None, omit=["fooey"], include=None,
                     morfs=[], show_missing=None)
             """)
         self.cmd_executes("-r -o fooey,booey", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=["fooey", "booey"])
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=["fooey", "booey"])
             .load()
-            .report(ignore_errors=None, omit_prefixes=["fooey", "booey"], include_prefixes=None,
+            .report(ignore_errors=None, omit=["fooey", "booey"], include=None,
                     morfs=[], show_missing=None)
             """)
         self.cmd_executes("-r mod1", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=None, include_prefixes=None,
+            .report(ignore_errors=None, omit=None, include=None,
                     morfs=["mod1"], show_missing=None)
             """)
         self.cmd_executes("-r mod1 mod2 mod3", self.INIT_LOAD + """\
-            .report(ignore_errors=None, omit_prefixes=None, include_prefixes=None,
+            .report(ignore_errors=None, omit=None, include=None,
                     morfs=["mod1", "mod2", "mod3"], show_missing=None)
             """)
 
@@ -206,35 +206,35 @@ class ClassicCmdLineTest(CmdLineTest):
         # coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-a", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None, morfs=[])
+                    omit=None, include=None, morfs=[])
             """)
         self.cmd_executes("-a -d dir1", self.INIT_LOAD + """\
             .annotate(directory="dir1", ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None, morfs=[])
+                    omit=None, include=None, morfs=[])
             """)
         self.cmd_executes("-a -i", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=True,
-                    omit_prefixes=None, include_prefixes=None, morfs=[])
+                    omit=None, include=None, morfs=[])
             """)
         self.cmd_executes("-a -o fooey", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=["fooey"])
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=["fooey"])
             .load()
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=["fooey"], include_prefixes=None, morfs=[])
+                    omit=["fooey"], include=None, morfs=[])
             """)
         self.cmd_executes("-a -o fooey,booey", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=["fooey", "booey"])
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=["fooey", "booey"])
             .load()
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=["fooey", "booey"], include_prefixes=None, morfs=[])
+                    omit=["fooey", "booey"], include=None, morfs=[])
             """)
         self.cmd_executes("-a mod1", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None, morfs=["mod1"])
+                    omit=None, include=None, morfs=["mod1"])
             """)
         self.cmd_executes("-a mod1 mod2 mod3", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None, morfs=["mod1", "mod2", "mod3"])
+                    omit=None, include=None, morfs=["mod1", "mod2", "mod3"])
             """)
 
         self.cmd_executes_same("-a", "--annotate")
@@ -251,35 +251,35 @@ class ClassicCmdLineTest(CmdLineTest):
         # coverage -b -d DIR [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-b", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None, morfs=[])
+                    omit=None, include=None, morfs=[])
             """)
         self.cmd_executes("-b -d dir1", self.INIT_LOAD + """\
             .html_report(directory="dir1", ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None, morfs=[])
+                    omit=None, include=None, morfs=[])
             """)
         self.cmd_executes("-b -i", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=True,
-                    omit_prefixes=None, include_prefixes=None, morfs=[])
+                    omit=None, include=None, morfs=[])
             """)
         self.cmd_executes("-b -o fooey", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=["fooey"])
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=["fooey"])
             .load()
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=["fooey"], include_prefixes=None, morfs=[])
+                    omit=["fooey"], include=None, morfs=[])
             """)
         self.cmd_executes("-b -o fooey,booey", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=["fooey", "booey"])
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=["fooey", "booey"])
             .load()
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=["fooey", "booey"], include_prefixes=None, morfs=[])
+                    omit=["fooey", "booey"], include=None, morfs=[])
             """)
         self.cmd_executes("-b mod1", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None, morfs=["mod1"])
+                    omit=None, include=None, morfs=["mod1"])
             """)
         self.cmd_executes("-b mod1 mod2 mod3", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None, morfs=["mod1", "mod2", "mod3"])
+                    omit=None, include=None, morfs=["mod1", "mod2", "mod3"])
             """)
 
         self.cmd_executes_same("-b", "--html")
@@ -465,7 +465,7 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("run --timid f.py", "-e -x --timid f.py")
         self.cmd_executes_same("run", "-x")
         self.cmd_executes("run --branch foo.py", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=True, config_file=True, include_prefixes=None, omit_prefixes=None)
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=True, config_file=True, include=None, omit=None)
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
@@ -473,7 +473,7 @@ class NewCmdLineTest(CmdLineTest):
             .save()
             """)
         self.cmd_executes("run --rcfile=myrc.rc foo.py", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file="myrc.rc", include_prefixes=None, omit_prefixes=None)
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file="myrc.rc", include=None, omit=None)
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
@@ -481,7 +481,7 @@ class NewCmdLineTest(CmdLineTest):
             .save()
             """)
         self.cmd_executes("run --include=pre1,pre2 foo.py", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=["pre1", "pre2"], omit_prefixes=None)
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=["pre1", "pre2"], omit=None)
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
@@ -489,7 +489,7 @@ class NewCmdLineTest(CmdLineTest):
             .save()
             """)
         self.cmd_executes("run --omit=opre1,opre2 foo.py", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=["opre1", "opre2"])
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=["opre1", "opre2"])
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
@@ -500,8 +500,8 @@ class NewCmdLineTest(CmdLineTest):
             """\
             .coverage(cover_pylib=None, data_suffix=None, timid=None,
                 branch=None, config_file=True,
-                include_prefixes=["pre1", "pre2"],
-                omit_prefixes=["opre1", "opre2"])
+                include=["pre1", "pre2"],
+                omit=["opre1", "opre2"])
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
@@ -512,39 +512,39 @@ class NewCmdLineTest(CmdLineTest):
     def testXml(self):
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("xml", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None, include_prefixes=None, morfs=[],
+            .xml_report(ignore_errors=None, omit=None, include=None, morfs=[],
                     outfile="coverage.xml")
             """)
         self.cmd_executes("xml -i", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=True, omit_prefixes=None, include_prefixes=None, morfs=[],
+            .xml_report(ignore_errors=True, omit=None, include=None, morfs=[],
                     outfile="coverage.xml")
             """)
         self.cmd_executes("xml -o myxml.foo", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None, include_prefixes=None, morfs=[],
+            .xml_report(ignore_errors=None, omit=None, include=None, morfs=[],
                     outfile="myxml.foo")
             """)
         self.cmd_executes("xml -o -", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None, include_prefixes=None, morfs=[],
+            .xml_report(ignore_errors=None, omit=None, include=None, morfs=[],
                     outfile="-")
             """)
         self.cmd_executes("xml --omit fooey", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=["fooey"])
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=["fooey"])
             .load()
-            .xml_report(ignore_errors=None, omit_prefixes=["fooey"], include_prefixes=None, morfs=[],
+            .xml_report(ignore_errors=None, omit=["fooey"], include=None, morfs=[],
                     outfile="coverage.xml")
             """)
         self.cmd_executes("xml --omit fooey,booey", """\
-            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include_prefixes=None, omit_prefixes=["fooey", "booey"])
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, include=None, omit=["fooey", "booey"])
             .load()
-            .xml_report(ignore_errors=None, omit_prefixes=["fooey", "booey"], include_prefixes=None,
+            .xml_report(ignore_errors=None, omit=["fooey", "booey"], include=None,
                     morfs=[], outfile="coverage.xml")
             """)
         self.cmd_executes("xml mod1", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None, include_prefixes=None, morfs=["mod1"],
+            .xml_report(ignore_errors=None, omit=None, include=None, morfs=["mod1"],
                     outfile="coverage.xml")
             """)
         self.cmd_executes("xml mod1 mod2 mod3", self.INIT_LOAD + """\
-            .xml_report(ignore_errors=None, omit_prefixes=None, include_prefixes=None,
+            .xml_report(ignore_errors=None, omit=None, include=None,
                     morfs=["mod1", "mod2", "mod3"], outfile="coverage.xml")
             """)
 

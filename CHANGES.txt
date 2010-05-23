@@ -6,6 +6,13 @@ Change history for Coverage.py
 Next version
 ------------
 
+- BACKWARD INCOMPATIBILITY: the --omit switch now takes file patterns rather
+  than file prefixes.
+  
+- BACKWARD INCOMPATIBILITY: the `omit_prefixes` argument is gone throughout
+  coverage.py, replaced with `omit`, a list of filename patterns suitable for
+  `fnmatch`.
+
 - The reporting commands (report, annotate, html, and xml) now have a --include
   switch to restrict reporting to modules beginning with those prefixes,
   similar to the existing --omit switch.  Thanks, Zooko.

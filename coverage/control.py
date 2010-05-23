@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import atexit, os, random, socket, sys
+import atexit, fnmatch, os, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class
@@ -32,7 +32,7 @@ class coverage(object):
 
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
-                omit_prefixes=None, include_prefixes=None):
+                omit=None, include=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -59,9 +59,8 @@ class coverage(object):
         standard file is read (".coveragerc").  If it is False, then no file is
         read.
 
-        `omit_prefixes` and `include_prefixes` are lists of filename prefixes.
-        Files that match `include_prefixes` will be measured, files that match
-        `omit_prefixes` will not.
+        `include` and `omit` are lists of filename patterns. Files that match
+        `include` will be measured, files that match `omit` will not.
 
         """
         from coverage import __version__
@@ -86,8 +85,7 @@ class coverage(object):
         self.config.from_args(
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
-            omit_prefixes=omit_prefixes,
-            include_prefixes=include_prefixes
+            omit=omit, include=include
             )
 
         self.auto_data = auto_data
@@ -98,8 +96,8 @@ class coverage(object):
 
         self.file_locator = FileLocator()
 
-        self.omit_prefixes = self._abs_files(self.config.omit_prefixes)
-        self.include_prefixes = self._abs_files(self.config.include_prefixes)
+        self.omit = self._abs_files(self.config.omit)
+        self.include = self._abs_files(self.config.include)
 
         self.collector = Collector(
             self._should_trace, timid=self.config.timid,
@@ -183,14 +181,14 @@ class coverage(object):
             return False
 
         # Check the file against the include and omit prefixes.
-        if self.include_prefixes:
-            for prefix in self.include_prefixes:
-                if canonical.startswith(prefix):
+        if self.include:
+            for pattern in self.include:
+                if fnmatch.fnmatch(canonical, pattern):
                     break
             else:
                 return False
-        for prefix in self.omit_prefixes:
-            if canonical.startswith(prefix):
+        for pattern in self.omit:
+            if fnmatch.fnmatch(canonical, pattern):
                 return False
 
         return canonical
@@ -349,33 +347,31 @@ class coverage(object):
 
     def report(self, morfs=None, show_missing=True, ignore_errors=None,
                 file=None,                          # pylint: disable-msg=W0622
-                omit_prefixes=None, include_prefixes=None
+                omit=None, include=None
                 ):
         """Write a summary report to `file`.
 
         Each module in `morfs` is listed, with counts of statements, executed
         statements, missing statements, and a list of lines missed.
 
-        `include_prefixes` is a list of filename prefixes.  Modules that match
-        those prefixes will be included in the report.  Modules that match
-        `omit_prefixes` will not be included in the report.
+        `include` is a list of filename patterns.  Modules whose filenames
+        match those patterns will be included in the report. Modules matching
+        `omit` will not be included in the report.
 
         """
         self.config.from_args(
-            ignore_errors=ignore_errors,
-            omit_prefixes=omit_prefixes,
-            include_prefixes=include_prefixes
+            ignore_errors=ignore_errors, omit=omit, include=include
             )
         reporter = SummaryReporter(
             self, show_missing, self.config.ignore_errors
             )
         reporter.report(
-            morfs, outfile=file, omit_prefixes=self.config.omit_prefixes,
-            include_prefixes=self.config.include_prefixes
+            morfs, outfile=file, omit=self.config.omit,
+            include=self.config.include
             )
 
     def annotate(self, morfs=None, directory=None, ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None):
+                    omit=None, include=None):
         """Annotate a list of modules.
 
         Each module in `morfs` is annotated.  The source is written to a new
@@ -387,39 +383,35 @@ class coverage(object):
 
         """
         self.config.from_args(
-            ignore_errors=ignore_errors,
-            omit_prefixes=omit_prefixes,
-            include_prefixes=include_prefixes
+            ignore_errors=ignore_errors, omit=omit, include=include
             )
         reporter = AnnotateReporter(self, self.config.ignore_errors)
         reporter.report(
             morfs, directory=directory,
-            omit_prefixes=self.config.omit_prefixes,
-            include_prefixes=self.config.include_prefixes
+            omit=self.config.omit,
+            include=self.config.include
             )
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None):
+                    omit=None, include=None):
         """Generate an HTML report.
 
         See `coverage.report()` for other arguments.
 
         """
         self.config.from_args(
-            ignore_errors=ignore_errors,
-            omit_prefixes=omit_prefixes,
-            include_prefixes=include_prefixes,
+            ignore_errors=ignore_errors, omit=omit, include=include,
             html_dir=directory,
             )
         reporter = HtmlReporter(self, self.config.ignore_errors)
         reporter.report(
             morfs, directory=self.config.html_dir,
-            omit_prefixes=self.config.omit_prefixes,
-            include_prefixes=self.config.include_prefixes
+            omit=self.config.omit,
+            include=self.config.include
             )
 
     def xml_report(self, morfs=None, outfile=None, ignore_errors=None,
-                    omit_prefixes=None, include_prefixes=None):
+                    omit=None, include=None):
         """Generate an XML report of coverage results.
 
         The report is compatible with Cobertura reports.
@@ -431,9 +423,7 @@ class coverage(object):
 
         """
         self.config.from_args(
-            ignore_errors=ignore_errors,
-            omit_prefixes=omit_prefixes,
-            include_prefixes=include_prefixes,
+            ignore_errors=ignore_errors, omit=omit, include=include,
             xml_output=outfile,
             )
         file_to_close = None
@@ -446,8 +436,8 @@ class coverage(object):
         try:
             reporter = XmlReporter(self, self.config.ignore_errors)
             reporter.report(
-                morfs, omit_prefixes=self.config.omit_prefixes,
-                include_prefixes=self.config.include_prefixes, outfile=outfile
+                morfs, omit=self.config.omit, include=self.config.include,
+                outfile=outfile
                 )
         finally:
             if file_to_close:

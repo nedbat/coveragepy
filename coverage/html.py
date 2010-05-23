@@ -31,9 +31,7 @@ class HtmlReporter(Reporter):
         self.files = []
         self.arcs = coverage.data.has_arcs()
 
-    def report(self, morfs, directory, omit_prefixes=None,
-                include_prefixes=None
-                ):
+    def report(self, morfs, directory, omit=None, include=None):
         """Generate an HTML report for `morfs`.
 
         `morfs` is a list of modules or filenames.  `directory` is where to put
@@ -45,9 +43,7 @@ class HtmlReporter(Reporter):
         assert directory, "must provide a directory for html reporting"
 
         # Process all the files.
-        self.report_files(
-            self.html_file, morfs, directory, omit_prefixes, include_prefixes
-            )
+        self.report_files(self.html_file, morfs, directory, omit, include)
 
         # Write the index file.
         self.index_file()

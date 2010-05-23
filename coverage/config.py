@@ -24,8 +24,8 @@ class CoverageConfig(object):
         # Defaults for [report]
         self.exclude_list = ['(?i)# *pragma[: ]*no *cover']
         self.ignore_errors = False
-        self.omit_prefixes = None
-        self.include_prefixes = None
+        self.omit = None
+        self.include = None
 
         # Defaults for [html]
         self.html_dir = "htmlcov"
@@ -69,9 +69,9 @@ class CoverageConfig(object):
         if cp.has_option('run', 'timid'):
             self.timid = cp.getboolean('run', 'timid')
         if cp.has_option('run', 'omit'):
-            self.omit_prefixes = self.get_list(cp, 'run', 'omit')
+            self.omit = self.get_list(cp, 'run', 'omit')
         if cp.has_option('run', 'include'):
-            self.include_prefixes = self.get_list(cp, 'run', 'include')
+            self.include = self.get_list(cp, 'run', 'include')
 
         # [report]
         if cp.has_option('report', 'exclude_lines'):
@@ -81,9 +81,9 @@ class CoverageConfig(object):
         if cp.has_option('report', 'ignore_errors'):
             self.ignore_errors = cp.getboolean('report', 'ignore_errors')
         if cp.has_option('report', 'omit'):
-            self.omit_prefixes = self.get_list(cp, 'report', 'omit')
+            self.omit = self.get_list(cp, 'report', 'omit')
         if cp.has_option('report', 'include'):
-            self.include_prefixes = self.get_list(cp, 'report', 'include')
+            self.include = self.get_list(cp, 'report', 'include')
 
         # [html]
         if cp.has_option('html', 'directory'):

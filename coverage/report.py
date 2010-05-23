@@ -24,34 +24,32 @@ class Reporter(object):
         # classes.
         self.directory = None
 
-    def find_code_units(self, morfs, omit_prefixes, include_prefixes):
+    def find_code_units(self, morfs, omit, include):
         """Find the code units we'll report on.
 
-        `morfs` is a list of modules or filenames. `omit_prefixes` is a list
-        of prefixes to leave out of the list.
+        `morfs` is a list of modules or filenames.
 
         See `coverage.report()` for other arguments.
 
         """
         morfs = morfs or self.coverage.data.executed_files()
         self.code_units = code_unit_factory(
-                            morfs, self.coverage.file_locator, omit_prefixes,
-                            include_prefixes
+                            morfs, self.coverage.file_locator, omit, include
                             )
         self.code_units.sort()
 
     def report_files(self, report_fn, morfs, directory=None,
-                        omit_prefixes=None, include_prefixes=None):
+                        omit=None, include=None):
         """Run a reporting function on a number of morfs.
 
         `report_fn` is called for each relative morf in `morfs`.
 
-        `include_prefixes` is a list of filename prefixes. CodeUnits that match
-        those prefixes will be included in the list. CodeUnits that match
-        `omit_prefixes` will be omitted from the list.
+        `include` is a list of filename patterns. CodeUnits that match
+        those patterns will be included in the list. CodeUnits that match
+        `omit` will be omitted from the list.
 
         """
-        self.find_code_units(morfs, omit_prefixes, include_prefixes)
+        self.find_code_units(morfs, omit, include)
 
         if not self.code_units:
             raise CoverageException("No data to report.")
