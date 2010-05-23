@@ -6,12 +6,12 @@ Change history for Coverage.py
 Next version
 ------------
 
-- BACKWARD INCOMPATIBILITY: the --omit switch now takes file patterns rather
-  than file prefixes.
-  
+- BACKWARD INCOMPATIBILITY: the --omit and --include switches now take file
+  patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
+
 - BACKWARD INCOMPATIBILITY: the `omit_prefixes` argument is gone throughout
   coverage.py, replaced with `omit`, a list of filename patterns suitable for
-  `fnmatch`.
+  `fnmatch`.  A parallel argument `include` controls what files are included.
 
 - The reporting commands (report, annotate, html, and xml) now have a --include
   switch to restrict reporting to modules beginning with those prefixes,
@@ -35,7 +35,7 @@ Next version
   be combined with ``coverage combine``.  Fixes `issue 56`_.
 
 - Doctest text files are no longer recorded in the coverage data, since they
-  can't be reported anyway.  Fixes `issue 61`_.
+  can't be reported anyway.  Fixes `issue 52`_ and `issue 61`_.
 
 - Source files can have more than one dot in them (foo.test.py), and will be
   treated properly while reporting.  Fixes `issue 46`_.
@@ -46,10 +46,13 @@ Next version
 - Unusual code structure that confused exits from methods with exits from
   classes is now properly analyzed.  See `issue 62`_.
 
+.. _issue 34: http://bitbucket.org/ned/coveragepy/issue/34/enhanced-omit-globbing-handling
+.. _issue 36: http://bitbucket.org/ned/coveragepy/issue/36/provide-regex-style-omit
 .. _issue 46: http://bitbucket.org/ned/coveragepy/issue/46
 .. _issue 53: http://bitbucket.org/ned/coveragepy/issue/53
+.. _issue 52: http://bitbucket.org/ned/coveragepy/issue/52/doctesttestfile-confuses-source-detection
 .. _issue 56: http://bitbucket.org/ned/coveragepy/issue/56
-.. _issue 61: http://bitbucket.org/ned/coveragepy/issue/61
+.. _issue 61: http://bitbucket.org/ned/coveragepy/issue/61/annotate-i-doesnt-work
 .. _issue 62: http://bitbucket.org/ned/coveragepy/issue/62
 
 
