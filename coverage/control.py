@@ -180,7 +180,7 @@ class coverage(object):
         if canonical.startswith(self.cover_prefix):
             return False
 
-        # Check the file against the include and omit prefixes.
+        # Check the file against the include and omit patterns.
         if self.include:
             for pattern in self.include:
                 if fnmatch.fnmatch(canonical, pattern):

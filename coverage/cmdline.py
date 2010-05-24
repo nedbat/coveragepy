@@ -34,9 +34,9 @@ class Opts(object):
         )
     include = optparse.Option(
         '', '--include', action='store',
-        metavar="PRE1,PRE2,...",
-        help="Include files only when their filename path starts with one of "
-                "these prefixes."
+        metavar="PAT1,PAT2,...",
+        help="Include files only when their filename path matches one of "
+                "these patterns.  Usually needs quoting on the command line."
         )
     pylib = optparse.Option(
         '-L', '--pylib', action='store_true',
@@ -50,15 +50,15 @@ class Opts(object):
         )
     old_omit = optparse.Option(
         '-o', '--omit', action='store',
-        metavar="PRE1,PRE2,...",
-        help="Omit files when their filename path starts with one of these "
-                "prefixes."
+        metavar="PAT1,PAT2,...",
+        help="Omit files when their filename matches one of these patterns. "
+                "Usually needs quoting on the command line."
         )
     omit = optparse.Option(
         '', '--omit', action='store',
-        metavar="PRE1,PRE2,...",
-        help="Omit files when their filename path starts with one of these "
-                "prefixes."
+        metavar="PAT1,PAT2,...",
+        help="Omit files when their filename matches one of these patterns. "
+                "Usually needs quoting on the command line."
         )
     output_xml = optparse.Option(
         '-o', '', action='store', dest="outfile",
