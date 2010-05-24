@@ -335,7 +335,7 @@ class OmitIncludeTest(CoverageTest):
             b = 1
             """)
 
-        cov = coverage.coverage(include=["a*"], omit=["aa.py"])  #TODO: use some patterns
+        cov = coverage.coverage(include=["a*"], omit=["aa.py"])
         cov.start()
         self.import_module("ab")
         cov.stop()
