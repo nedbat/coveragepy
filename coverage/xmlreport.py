@@ -22,9 +22,7 @@ class XmlReporter(Reporter):
         self.xml_out = None
         self.arcs = coverage.data.has_arcs()
 
-    def report(self, morfs, omit_prefixes=None, include_prefixes=None,
-                outfile=None
-                ):
+    def report(self, morfs, omit=None, include=None, outfile=None):
         """Generate a Cobertura-compatible XML report for `morfs`.
 
         `morfs` is a list of modules or filenames.
@@ -55,10 +53,7 @@ class XmlReporter(Reporter):
 
         # Call xml_file for each file in the data.
         self.packages = {}
-        self.report_files(
-            self.xml_file, morfs, omit_prefixes=omit_prefixes,
-            include_prefixes=include_prefixes
-            )
+        self.report_files(self.xml_file, morfs, omit=omit, include=include)
 
         lnum_tot, lhits_tot = 0, 0
         bnum_tot, bhits_tot = 0, 0

@@ -72,7 +72,7 @@ class SummaryTest(CoverageTest):
         # Try reporting while omitting some modules
         prefix = os.path.split(__file__)[0]
         self.run_command("coverage -x mycode.py")
-        report = self.report_from_command("coverage -r -o %s" % prefix)
+        report = self.report_from_command("coverage -r -o '%s/*'" % prefix)
 
         # Name     Stmts   Miss  Cover
         # ----------------------------

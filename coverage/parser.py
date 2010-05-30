@@ -306,6 +306,16 @@ class ByteParser(object):
                         (filename, synerr.msg, synerr.lineno)
                     )
 
+        # Alternative Python implementations don't always provide all the
+        # attributes on code objects that we need to do the analysis.
+        for attr in ['co_lnotab', 'co_firstlineno', 'co_consts', 'co_code']:
+            if not hasattr(self.code, attr):
+                raise CoverageException(
+                    "This implementation of Python doesn't support code "
+                    "analysis.\n"
+                    "Run coverage.py under CPython for this command."
+                    )
+
     def child_parsers(self):
         """Iterate over all the code objects nested within this one.
 

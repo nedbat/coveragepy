@@ -34,9 +34,9 @@ class Opts(object):
         )
     include = optparse.Option(
         '', '--include', action='store',
-        metavar="PRE1,PRE2,...",
-        help="Include files only when their filename path starts with one of "
-                "these prefixes."
+        metavar="PAT1,PAT2,...",
+        help="Include files only when their filename path matches one of "
+                "these patterns.  Usually needs quoting on the command line."
         )
     pylib = optparse.Option(
         '-L', '--pylib', action='store_true',
@@ -50,15 +50,15 @@ class Opts(object):
         )
     old_omit = optparse.Option(
         '-o', '--omit', action='store',
-        metavar="PRE1,PRE2,...",
-        help="Omit files when their filename path starts with one of these "
-                "prefixes."
+        metavar="PAT1,PAT2,...",
+        help="Omit files when their filename matches one of these patterns. "
+                "Usually needs quoting on the command line."
         )
     omit = optparse.Option(
         '', '--omit', action='store',
-        metavar="PRE1,PRE2,...",
-        help="Omit files when their filename path starts with one of these "
-                "prefixes."
+        metavar="PAT1,PAT2,...",
+        help="Omit files when their filename matches one of these patterns. "
+                "Usually needs quoting on the command line."
         )
     output_xml = optparse.Option(
         '-o', '', action='store', dest="outfile",
@@ -442,10 +442,10 @@ class CoverageScript(object):
         # Listify the list options.
         omit = None
         if options.omit:
-            omit = options.omit.split(',')
+            omit = self.pattern_list(options.omit)
         include = None
         if options.include:
-            include = options.include.split(',')
+            include = self.pattern_list(options.include)
 
         # Do something.
         self.coverage = self.covpkg.coverage(
@@ -454,8 +454,8 @@ class CoverageScript(object):
             timid = options.timid,
             branch = options.branch,
             config_file = options.rcfile,
-            omit_prefixes = omit,
-            include_prefixes = include,
+            omit = omit,
+            include = include,
             )
 
         if 'debug' in options.actions:
@@ -514,8 +514,8 @@ class CoverageScript(object):
             'ignore_errors': options.ignore_errors,
             }
 
-        report_args['omit_prefixes'] = omit
-        report_args['include_prefixes'] = include
+        report_args['omit'] = omit
+        report_args['include'] = include
 
         if 'report' in options.actions:
             self.coverage.report(
@@ -531,6 +531,17 @@ class CoverageScript(object):
             self.coverage.xml_report(outfile=outfile, **report_args)
 
         return OK
+
+    def pattern_list(self, s):
+        """Turn an argument into a list of patterns."""
+        if sys.platform == 'win32':
+            # When running coverage as coverage.exe, some of the behavior
+            # of the shell is emulated: wildcards are expanded into a list of
+            # filenames.  So you have to single-quote patterns on the command
+            # line, but (not) helpfully, the single quotes are included in the
+            # argument, so we have to strip them off here.
+            s = s.strip("'")
+        return s.split(',')
 
 
 HELP_TOPICS = r"""

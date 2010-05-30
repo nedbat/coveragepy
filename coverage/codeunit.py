@@ -1,23 +1,21 @@
 """Code unit (module) handling for Coverage."""
 
-import glob, os
+import fnmatch, glob, os
 
 from coverage.backward import string_class, StringIO
 from coverage.misc import CoverageException
 
 
-def code_unit_factory(
-    morfs, file_locator, omit_prefixes=None, include_prefixes=None
-    ):
+def code_unit_factory(morfs, file_locator, omit=None, include=None):
     """Construct a list of CodeUnits from polymorphic inputs.
 
     `morfs` is a module or a filename, or a list of same.
 
     `file_locator` is a FileLocator that can help resolve filenames.
 
-    `include_prefixes` is a list of prefixes. Only CodeUnits that match those
-    prefixes will be included in the list. `omit_prefixes` is a list of
-    prefixes to omit from the list.
+    `include` is a list of filename patterns. Only CodeUnits that match those
+    patterns will be included in the list. `omit` is a list of patterns to omit
+    from the list.
 
     Returns a list of CodeUnit objects.
 
@@ -38,38 +36,30 @@ def code_unit_factory(
 
     code_units = [CodeUnit(morf, file_locator) for morf in morfs]
 
-    if include_prefixes:
-        assert not isinstance(include_prefixes, string_class) # common mistake
-        prefixes = [file_locator.abs_file(p) for p in include_prefixes]
+    if include:
+        assert not isinstance(include, string_class) # common mistake
+        patterns = [file_locator.abs_file(p) for p in include]
         filtered = []
         for cu in code_units:
-            for prefix in prefixes:
-                if cu.filename.startswith(prefix):
+            for pattern in patterns:
+                if fnmatch.fnmatch(cu.filename, pattern):
                     filtered.append(cu)
                     break
         code_units = filtered
 
-    if omit_prefixes:
-        code_units = omit_filter(omit_prefixes, code_units, file_locator)
+    if omit:
+        assert not isinstance(omit, string_class) # common mistake
+        patterns = [file_locator.abs_file(p) for p in omit]
+        filtered = []
+        for cu in code_units:
+            for pattern in patterns:
+                if fnmatch.fnmatch(cu.filename, pattern):
+                    break
+            else:
+                filtered.append(cu)
+        code_units = filtered
 
     return code_units
-
-def omit_filter(omit_prefixes, code_units, file_locator):
-    """
-    The filtering method removing any unwanted code_units
-    
-    Refactored out so you can easily monkeypatch if needs be
-    """
-    prefixes = [file_locator.abs_file(p) for p in omit_prefixes]
-    filtered = []
-    for cu in code_units:
-        for prefix in prefixes:
-            if cu.filename.startswith(prefix):
-                break
-        else:
-            filtered.append(cu)
-            
-    return filtered
 
 class CodeUnit(object):
     """Code unit: a filename or module.
