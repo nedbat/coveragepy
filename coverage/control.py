@@ -125,17 +125,26 @@ class coverage(object):
             collector="coverage v%s" % __version__
             )
 
-        # The prefix for files considered "installed with the interpreter".
+        # The dirs for files considered "installed with the interpreter".
         if not self.config.cover_pylib:
             # Look at where the "os" module is located.  That's the indication
             # for "installed with the interpreter".
-            os_file = self.file_locator.canonical_filename(os.__file__)
-            self.pylib_prefix = os.path.split(os_file)[0]
+            os_dir = self.canonical_dir(os.__file__)
+            self.pylib_dirs = [os_dir]
+
+            # In a virtualenv, there're actually two lib directories. Find the
+            # other one.  This is kind of ad-hoc, but it works.
+            random_dir = self.canonical_dir(random.__file__)
+            if random_dir != os_dir:
+                self.pylib_dirs.append(random_dir)
 
         # To avoid tracing the coverage code itself, we skip anything located
         # where we are.
-        here = self.file_locator.canonical_filename(__file__)
-        self.cover_prefix = os.path.split(here)[0]
+        self.cover_dir = self.canonical_dir(__file__)
+
+    def canonical_dir(self, f):
+        """Return the canonical directory of the file `f`."""
+        return os.path.split(self.file_locator.canonical_filename(f))[0]
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`
@@ -168,16 +177,17 @@ class coverage(object):
             filename = dunder_file
 
         canonical = self.file_locator.canonical_filename(filename)
+        canon_dir = os.path.split(canonical)[0]
 
         # If we aren't supposed to trace installed code, then check if this is
         # near the Python standard library and skip it if so.
         if not self.config.cover_pylib:
-            if canonical.startswith(self.pylib_prefix):
+            if canon_dir in self.pylib_dirs:
                 return False
 
         # We exclude the coverage code itself, since a little of it will be
         # measured otherwise.
-        if canonical.startswith(self.cover_prefix):
+        if canon_dir == self.cover_dir:
             return False
 
         # Check the file against the include and omit patterns.
@@ -452,8 +462,8 @@ class coverage(object):
         info = [
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
-            ('cover_prefix', self.cover_prefix),
-            ('pylib_prefix', self.pylib_prefix),
+            ('cover_dir', self.cover_dir),
+            ('pylib_dirs', self.pylib_dirs),
             ('tracer', self.collector.tracer_name()),
             ('data_path', self.data.filename),
             ('python', sys.version.replace('\n', '')),

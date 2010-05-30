@@ -34,6 +34,9 @@ Next version
   and parent processes.  Use ``coverage run -p`` to get two data files that can
   be combined with ``coverage combine``.  Fixes `issue 56`_.
 
+- When measuring code running in a virtualenv, most of the system library was
+  still being measured.  This is now fixed.
+
 - Doctest text files are no longer recorded in the coverage data, since they
   can't be reported anyway.  Fixes `issue 52`_ and `issue 61`_.
 
