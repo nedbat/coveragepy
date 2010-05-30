@@ -1,7 +1,7 @@
 import py
 import unittest
 from nose.plugins import PluginTester
-from coverage.noseplugin import Coverage
+from coverage.runners.noseplugin import Coverage
 
 class TestCoverage(PluginTester, unittest.TestCase):
     activate = '--with-coverage' # enables the plugin

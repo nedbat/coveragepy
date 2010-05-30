@@ -1,7 +1,7 @@
 import logging
 from nose.plugins import Plugin
 
-from coverage.testplugin import CoverageTestWrapper, options as coverage_opts
+from coverage.runners.pytestplugin import CoverageTestWrapper, options as coverage_opts
 
 
 log = logging.getLogger(__name__)

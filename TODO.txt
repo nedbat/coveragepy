@@ -1,5 +1,8 @@
 Coverage TODO
 
+* plugin work
+    - add --include.
+
 * 3.3
 
 - Config file
