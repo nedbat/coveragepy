@@ -55,11 +55,11 @@ class CoverageTestWrapper(object):
 
         try: # try looking for an omit file
             omit_file = open(self.options.cover_omit)
-            omit_prefixes = [line.strip() for line in omit_file.readlines()]
-            report_args['omit_prefixes'] = omit_prefixes
+            omit = [line.strip() for line in omit_file.readlines()]
+            report_args['omit'] = omit
         except: # assume cover_omit is a ',' separated list if provided
             omit = self.options.cover_omit.split(',')
-            report_args['omit_prefixes'] = omit
+            report_args['omit'] = omit
 
         if 'report' in self.options.cover_actions:
             self.coverage.report(
@@ -126,8 +126,8 @@ xml         Create an XML report of coverage results.
 
     optparse.Option('--cover-omit', action='store',
                     metavar="PRE1,PRE2,...", default='',
-                    help=("Omit files when their filename path starts with "
-                         "one of these prefixes.")),
+                    help=("Omit files when their filename path matches one "
+                         "of these patterns.")),
 
     optparse.Option('--cover-outfile', action='store', metavar="OUTFILE",
                     help=("Write the XML report to this file. Defaults to "
