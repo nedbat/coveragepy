@@ -1,7 +1,9 @@
+"""A nose plugin to run coverage.py"""
+
 import logging
 from nose.plugins import Plugin
 
-from coverage.runners.pytestplugin import CoverageTestWrapper, options as coverage_opts
+from coverage.runners.plugin import CoverageTestWrapper, options as coverage_opts
 
 
 log = logging.getLogger(__name__)

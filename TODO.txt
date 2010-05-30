@@ -1,7 +1,8 @@
 Coverage TODO
 
 * plugin work
-    - add --include.
+    - add --cover-include.
+    - add --cover-rcfile, and maybe remove a bunch of options.
 
 * 3.3
 

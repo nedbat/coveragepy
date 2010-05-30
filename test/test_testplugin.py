@@ -18,10 +18,11 @@ class TestCoverage(PluginTester, unittest.TestCase):
                 raise ValueError("Coverage down")
         return unittest.TestSuite([TC()])
 
+
 pytest_plugins = ['pytester']
 def test_functional(testdir):
     testdir.makepyfile("""
-        def f():    
+        def f():
             x = 42
         def test_whatever():
             pass
@@ -33,4 +34,4 @@ def test_functional(testdir):
         ])
     coveragefile = testdir.tmpdir.join(".coverage")
     assert coveragefile.check()
-    # XXX try loading it? 
+    # XXX try loading it?

@@ -88,7 +88,6 @@ setup_args = dict(
             'coverage = coverage.runners.noseplugin:Coverage',
             ],
         },
-        
 
     # We need to get HTML assets from our htmlfiles dir.
     zip_safe = False,
