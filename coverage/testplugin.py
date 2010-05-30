@@ -178,20 +178,3 @@ class DoCover:
         tw.sep('-', 'coverage')
         tw.line('Processing Coverage...')
         self.coverage.finish()
-
-
-# XXX please make the following unnessary
-# Monkey patch omit_filter to use regex patterns for file omits
-def omit_filter(omit_prefixes, code_units, file_locator):
-    exclude_patterns = [re.compile(line.strip()) for line in omit_prefixes
-                        if line and not line.startswith('#')]
-    filtered = []
-    for cu in code_units:
-        for pattern in exclude_patterns:
-            if pattern.search(cu.filename):
-                break
-        else:
-            filtered.append(cu)
-    return filtered
-
-coverage.codeunit.omit_filter = omit_filter
