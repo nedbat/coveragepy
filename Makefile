@@ -35,7 +35,7 @@ pep8:
 testready: testdata devinst
 
 tests: testready
-	PYTHONPATH=test/eggsrc nosetests
+	nosetests
 
 testdata: $(TEST_ZIP) $(TEST_EGG)
 $(TEST_ZIP): test/covmodzip1.py
