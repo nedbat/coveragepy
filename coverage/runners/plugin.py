@@ -106,7 +106,7 @@ xml         Create an XML report of coverage results.
                     help="Include test modules in coverage report "),
 
     optparse.Option('--cover-branch', action='store_true',
-                    help="Measure branch execution. HIGHLY EXPERIMENTAL!"),
+                    help="Measure branch execution."),
 
     optparse.Option('--cover-directory', action='store', metavar="DIR",
                     help="Write the output files to DIR."),
@@ -142,4 +142,4 @@ xml         Create an XML report of coverage results.
     optparse.Option('--cover-append', action='store_false',
                     help=("Append coverage data to .coverage, otherwise it "
                           "is started clean with each run."))
-]
+    ]
