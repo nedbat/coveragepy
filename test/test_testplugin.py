@@ -6,7 +6,7 @@ from coverage.runners.noseplugin import Coverage
 class TestCoverage(PluginTester, unittest.TestCase):
     activate = '--with-coverage' # enables the plugin
     plugins = [Coverage()]
-    args = ['--cover-action=report']
+    args = ['--cover-report=report']
 
     @py.test.mark.skipif(True) # "requires nose test runner"
     def test_output(self):
@@ -27,7 +27,7 @@ def test_functional(testdir):
         def test_whatever():
             pass
         """)
-    result = testdir.runpytest("--cover-action=annotate")
+    result = testdir.runpytest("--cover-report=annotate")
     assert result.ret == 0
     assert result.stdout.fnmatch_lines([
         '*Processing Coverage*'

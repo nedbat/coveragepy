@@ -442,10 +442,10 @@ class CoverageScript(object):
         # Listify the list options.
         omit = None
         if options.omit:
-            omit = self.pattern_list(options.omit)
+            omit = pattern_list(options.omit)
         include = None
         if options.include:
-            include = self.pattern_list(options.include)
+            include = pattern_list(options.include)
 
         # Do something.
         self.coverage = self.covpkg.coverage(
@@ -509,13 +509,12 @@ class CoverageScript(object):
             self.coverage.save()
 
         # Remaining actions are reporting, with some common options.
-        report_args = {
-            'morfs': args,
-            'ignore_errors': options.ignore_errors,
-            }
-
-        report_args['omit'] = omit
-        report_args['include'] = include
+        report_args = dict(
+            morfs = args,
+            ignore_errors = options.ignore_errors,
+            omit = omit,
+            include = include,
+            )
 
         if 'report' in options.actions:
             self.coverage.report(
@@ -532,16 +531,17 @@ class CoverageScript(object):
 
         return OK
 
-    def pattern_list(self, s):
-        """Turn an argument into a list of patterns."""
-        if sys.platform == 'win32':
-            # When running coverage as coverage.exe, some of the behavior
-            # of the shell is emulated: wildcards are expanded into a list of
-            # filenames.  So you have to single-quote patterns on the command
-            # line, but (not) helpfully, the single quotes are included in the
-            # argument, so we have to strip them off here.
-            s = s.strip("'")
-        return s.split(',')
+
+def pattern_list(s):
+    """Turn an argument into a list of patterns."""
+    if sys.platform == 'win32':
+        # When running coverage as coverage.exe, some of the behavior
+        # of the shell is emulated: wildcards are expanded into a list of
+        # filenames.  So you have to single-quote patterns on the command
+        # line, but (not) helpfully, the single quotes are included in the
+        # argument, so we have to strip them off here.
+        s = s.strip("'")
+    return s.split(',')
 
 
 HELP_TOPICS = r"""

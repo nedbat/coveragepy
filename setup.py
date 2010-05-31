@@ -84,7 +84,7 @@ setup_args = dict(
         'pytest11': [
             'coverage = coverage.runners.pytestplugin',
             ],
-        'nose.plugins.0.10': [
+        'nose.plugins': [
             'coverage = coverage.runners.noseplugin:Coverage',
             ],
         },

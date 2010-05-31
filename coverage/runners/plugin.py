@@ -2,6 +2,8 @@
 
 import optparse, sys
 import coverage
+from coverage.cmdline import pattern_list
+
 
 class CoverageTestWrapper(object):
     """A coverage test wrapper.
@@ -27,14 +29,19 @@ class CoverageTestWrapper(object):
         self.coverPackages = options.cover_package
 
     def start(self):
+        # cover_omit is a ',' separated list if provided
+        self.omit = pattern_list(self.options.cover_omit)
+        self.include = pattern_list(self.options.cover_omit)
+
         self.coverage = self.covpkg.coverage(
+            config_file = self.options.cover_rcfile,
             data_suffix = bool(self.options.cover_parallel_mode),
             cover_pylib = self.options.cover_pylib,
             timid = self.options.cover_timid,
             branch = self.options.cover_branch,
+            include = self.include,
+            omit = self.omit,
         )
-
-        self.skipModules = sys.modules.keys()[:] #TODO: is this necessary??
 
         self.coverage.start()
 
@@ -45,31 +52,25 @@ class CoverageTestWrapper(object):
         modules = [module for name, module in sys.modules.items()
                    if self._want_module(name, module)]
 
-        # Remaining actions are reporting, with some common self.options.
-        report_args = {
-            'morfs': modules,
-            'ignore_errors': self.options.cover_ignore_errors,
-            }
+        # Remaining actions are reporting, with some common options.
+        report_args = dict(
+            morfs = modules,
+            ignore_errors = True,
+            omit = self.omit,
+            include = self.include,
+            )
 
-        try: # try looking for an omit file
-            omit_file = open(self.options.cover_omit)
-            omit = [line.strip() for line in omit_file.readlines()]
-            report_args['omit'] = omit
-        except: # assume cover_omit is a ',' separated list if provided
-            omit = self.options.cover_omit.split(',')
-            report_args['omit'] = omit
-
-        if 'report' in self.options.cover_actions:
+        if 'report' in self.options.cover_reports:
             self.coverage.report(
                     show_missing=self.options.cover_show_missing,
                     file=stream, **report_args)
-        if 'annotate' in self.options.cover_actions:
+        if 'annotate' in self.options.cover_reports:
             self.coverage.annotate(
                     directory=self.options.cover_directory, **report_args)
-        if 'html' in self.options.cover_actions:
+        if 'html' in self.options.cover_reports:
             self.coverage.html_report(
                     directory=self.options.cover_directory, **report_args)
-        if 'xml' in self.options.cover_actions:
+        if 'xml' in self.options.cover_reports:
             outfile = self.options.cover_outfile
             if outfile == '-':
                 outfile = None
@@ -86,15 +87,19 @@ class CoverageTestWrapper(object):
 
 
 options = [
-    optparse.Option('--cover-action', action='append', default=['report'],
-                    dest='cover_actions', type="choice",
+    optparse.Option('--cover-rcfile', action='store', metavar="RC",
+                    help="Specify configuration file.  ['.coveragerc']",
+                    default=True),
+
+    optparse.Option('--cover-report', action='append', default=['report'],
+                    dest='cover_reports', type="choice",
                     choices=['annotate', 'html', 'report', 'xml'],
-                    help="""\
-annotate    Annotate source files with execution information.
-html        Create an HTML report.
-report      Report coverage stats on modules.
-xml         Create an XML report of coverage results.
-                    """.strip()),
+                    help=("Choose what coverage report(s) to create: "
+                        "annotate: Annotated source files; "
+                        "html: Browsable HTML report; "
+                        "report: Simple text report; "
+                        "xml: Cobertura-compatible XML report.")
+                    ),
 
     optparse.Option('--cover-package', action='append', default=[],
                     dest="cover_package", metavar="COVER_PACKAGE",
@@ -111,9 +116,6 @@ xml         Create an XML report of coverage results.
     optparse.Option('--cover-directory', action='store', metavar="DIR",
                     help="Write the output files to DIR."),
 
-    optparse.Option('--cover-ignore-errors', action='store_true',
-                    help="Ignore errors while reading source files."),
-
     optparse.Option('--cover-pylib', action='store_true',
                     help=("Measure coverage even inside the Python installed "
                          "library, which isn't done by default.")),
@@ -122,10 +124,15 @@ xml         Create an XML report of coverage results.
                     help=("Show line numbers of statements in each module "
                          "that weren't executed.")),
 
+    optparse.Option('--cover-include', action='store',
+                    metavar="PAT1,PAT2,...", default='',
+                    help=("Include files when their filename path matches one "
+                         "of these file patterns.")),
+
     optparse.Option('--cover-omit', action='store',
-                    metavar="PRE1,PRE2,...", default='',
+                    metavar="PAT1,PAT2,...", default='',
                     help=("Omit files when their filename path matches one "
-                         "of these patterns.")),
+                         "of these file patterns.")),
 
     optparse.Option('--cover-outfile', action='store', metavar="OUTFILE",
                     help=("Write the XML report to this file. Defaults to "

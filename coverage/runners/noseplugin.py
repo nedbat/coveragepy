@@ -3,17 +3,22 @@
 import logging
 from nose.plugins import Plugin
 
-from coverage.runners.plugin import CoverageTestWrapper, options as coverage_opts
+from coverage.runners.plugin import CoverageTestWrapper
+from coverage.runners.plugin import options as coverage_opts
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("nose.plugins.coverage")
 
 
 class Coverage(Plugin):
-    """Nose plugin for coverage reporting."""
+    """The nose plugin to measure test coverage."""
 
-    score = 1
+    score = 200
     status = {}
+
+    def help(self):
+        """The help for the --with-coverage option."""
+        return "Measure test coverage using coverage.py."
 
     def options(self, parser, env):
         """Add command-line options."""
@@ -34,13 +39,13 @@ class Coverage(Plugin):
 
         self.config = config
         self.status['active'] = True
-        self.options = options
+        self.opts = options
 
     def begin(self):
         """Begin recording coverage information."""
 
         log.debug("Coverage begin")
-        self.coverage = CoverageTestWrapper(self.options)
+        self.coverage = CoverageTestWrapper(self.opts)
         self.coverage.start()
 
     def report(self, stream):
