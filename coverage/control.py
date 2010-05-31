@@ -503,5 +503,5 @@ def process_startup():
         cov = coverage(config_file=cps, auto_data=True)
         if os.environ.get("COVERAGE_COVERAGE"):
             # Measuring coverage within coverage.py takes yet more trickery.
-            cov.cover_prefix = "Please measure coverage.py!"
+            cov.cover_dir = "Please measure coverage.py!"
         cov.start()
