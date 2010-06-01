@@ -69,6 +69,7 @@ setup_args = dict(
 
     packages = [
         'coverage',
+        'coverage.runners',
         ],
 
     package_data = {
