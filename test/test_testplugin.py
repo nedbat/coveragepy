@@ -1,9 +1,13 @@
+"""Tests of the test-runner plugins."""
+
 import py
 import unittest
 from nose.plugins import PluginTester
 from coverage.runners.noseplugin import Coverage
 
 class TestCoverage(PluginTester, unittest.TestCase):
+    """Test the nose plugin."""
+
     activate = '--with-coverage' # enables the plugin
     plugins = [Coverage()]
     args = ['--cover-report=report']
@@ -21,6 +25,8 @@ class TestCoverage(PluginTester, unittest.TestCase):
 
 pytest_plugins = ['pytester']
 def test_functional(testdir):
+    """Test the py.test plugin."""
+
     testdir.makepyfile("""
         def f():
             x = 42

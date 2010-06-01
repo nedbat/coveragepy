@@ -3,8 +3,7 @@
 import logging
 from nose.plugins import Plugin
 
-from coverage.runners.plugin import CoverageTestWrapper
-from coverage.runners.plugin import options as coverage_opts
+from coverage.runners.plugin import CoverageTestWrapper, OPTIONS
 
 
 log = logging.getLogger("nose.plugins.coverage")
@@ -24,7 +23,7 @@ class Coverage(Plugin):
         """Add command-line options."""
 
         super(Coverage, self).options(parser, env)
-        for opt in coverage_opts:
+        for opt in OPTIONS:
             parser.add_option(opt)
 
     def configure(self, options, config):

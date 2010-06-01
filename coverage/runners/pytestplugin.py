@@ -1,11 +1,11 @@
 """py.test plugin hooks"""
 
-from coverage.runners.plugin import CoverageTestWrapper, options
+from coverage.runners.plugin import CoverageTestWrapper, OPTIONS
 
 def pytest_addoption(parser):
     """Get all the options from the coverage.runner and import them."""
     group = parser.getgroup('Coverage options')
-    for opt in options:
+    for opt in OPTIONS:
         group._addoption_instance(opt)
 
 def pytest_configure(config):

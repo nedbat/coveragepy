@@ -13,6 +13,7 @@ class CoverageTestWrapper(object):
     3) Run your tests
     4) Call finish()
     5) Improve your code coverage ;)
+
     """
 
     coverPackages = None
@@ -29,6 +30,7 @@ class CoverageTestWrapper(object):
         self.coverPackages = options.cover_package
 
     def start(self):
+        """Start coverage before the test suite."""
         # cover_omit is a ',' separated list if provided
         self.omit = pattern_list(self.options.cover_omit)
         self.include = pattern_list(self.options.cover_omit)
@@ -46,6 +48,7 @@ class CoverageTestWrapper(object):
         self.coverage.start()
 
     def finish(self, stream=None):
+        """Finish coverage after the test suite."""
         self.coverage.stop()
         self.coverage.save()
 
@@ -79,6 +82,7 @@ class CoverageTestWrapper(object):
         return
 
     def _want_module(self, name, module):
+        """Determine if this module should be reported on."""
         for package in self.coverPackages:
             if module is not None and name.startswith(package):
                 return True
@@ -86,7 +90,8 @@ class CoverageTestWrapper(object):
         return False
 
 
-options = [
+# The command-line options for the plugin.
+OPTIONS = [
     optparse.Option('--cover-rcfile', action='store', metavar="RCFILE",
                     help="Specify configuration file.  ['.coveragerc']",
                     default=True),
