@@ -87,11 +87,11 @@ class CoverageTestWrapper(object):
 
 
 options = [
-    optparse.Option('--cover-rcfile', action='store', metavar="RC",
+    optparse.Option('--cover-rcfile', action='store', metavar="RCFILE",
                     help="Specify configuration file.  ['.coveragerc']",
                     default=True),
 
-    optparse.Option('--cover-report', action='append', default=['report'],
+    optparse.Option('--cover-report', action='append', default=[],
                     dest='cover_reports', type="choice",
                     choices=['annotate', 'html', 'report', 'xml'],
                     help=("Choose what coverage report(s) to create: "

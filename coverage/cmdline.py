@@ -440,12 +440,8 @@ class CoverageScript(object):
             return ERR
 
         # Listify the list options.
-        omit = None
-        if options.omit:
-            omit = pattern_list(options.omit)
-        include = None
-        if options.include:
-            include = pattern_list(options.include)
+        omit = pattern_list(options.omit)
+        include = pattern_list(options.include)
 
         # Do something.
         self.coverage = self.covpkg.coverage(
@@ -534,6 +530,8 @@ class CoverageScript(object):
 
 def pattern_list(s):
     """Turn an argument into a list of patterns."""
+    if not s:
+        return None
     if sys.platform == 'win32':
         # When running coverage as coverage.exe, some of the behavior
         # of the shell is emulated: wildcards are expanded into a list of

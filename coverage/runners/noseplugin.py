@@ -52,5 +52,5 @@ class Coverage(Plugin):
         """Output code coverage report."""
 
         log.debug("Coverage report")
-        stream.write("Processing Coverage...")
+        stream.write("Processing Coverage...\n")
         self.coverage.finish(stream)
