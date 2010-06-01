@@ -63,7 +63,10 @@ class CoverageTestWrapper(object):
             include = self.include,
             )
 
-        if 'report' in self.options.cover_reports:
+        do_report = ('report' in self.options.cover_reports or
+                        not self.options.cover_reports)
+
+        if do_report:
             self.coverage.report(
                     show_missing=self.options.cover_show_missing,
                     file=stream, **report_args)
