@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Next version
-------------
+Version 3.4a1
+-------------
 
 - BACKWARD INCOMPATIBILITY: the --omit and --include switches now take file
   patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
@@ -13,13 +13,19 @@ Next version
   coverage.py, replaced with `omit`, a list of filename patterns suitable for
   `fnmatch`.  A parallel argument `include` controls what files are included.
 
-- The reporting commands (report, annotate, html, and xml) now have a --include
+- The reporting commands (report, annotate, html, and xml) now have an --include
   switch to restrict reporting to modules beginning with those prefixes,
   similar to the existing --omit switch.  Thanks, Zooko.
 
 - The run command now supports --include and --omit to control what modules it
   measures.  This can speed execution and reduce the amount of data during
   reporting.  Thanks Zooko.
+
+- Coverage.py now installs a test-runner plugin for `nose`_ and `py.test`_.
+  Thanks, David Stanek, holger krekel, Ross Lawley.
+
+.. _nose: http://somethingaboutorange.com/mrl/projects/nose/
+.. _py.test: http://pytest.org
 
 - Reports now have a column of missed line counts rather than executed line
   counts, since developers should focus on reducing the missed lines to zero,
