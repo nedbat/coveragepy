@@ -41,3 +41,6 @@ def test_functional(testdir):
     coveragefile = testdir.tmpdir.join(".coverage")
     assert coveragefile.check()
     # XXX try loading it?
+
+# Keep test_functional from running in nose:
+test_functional.__test__ = False
