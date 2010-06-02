@@ -26,8 +26,10 @@ class CoverageTestWrapper(object):
 
         self.coverage = None
 
-        self.coverTests = options.cover_tests
+        self.coverTests = options.cover_tests       # TODO: This isn't used anywhere
         self.coverPackages = options.cover_package
+
+        self.omit = self.include = None
 
     def start(self):
         """Start coverage before the test suite."""

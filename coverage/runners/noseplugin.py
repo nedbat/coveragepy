@@ -15,6 +15,8 @@ class Coverage(Plugin):
     score = 200
     status = {}
 
+    config = opts = coverage = None
+
     def help(self):
         """The help for the --with-coverage option."""
         return "Measure test coverage using coverage.py."
