@@ -19,8 +19,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
-Version 3.3.1, 6 March 2010
----------------------------
+Version 3.3.1 --- 6 March 2010
+------------------------------
 
 - Using ``parallel=True`` in a .coveragerc file prevented reporting, but now
   does not, fixing `issue 49`_.
@@ -32,8 +32,8 @@ Version 3.3.1, 6 March 2010
 .. _issue 50: http://bitbucket.org/ned/coveragepy/issue/50
 
 
-Version 3.3, 24 February 2010
------------------------------
+Version 3.3 --- 24 February 2010
+--------------------------------
 
 - Settings are now read from a .coveragerc file.  A specific file can be
   specified on the command line with ``--rcfile=FILE``.  The name of the file
@@ -60,8 +60,8 @@ Version 3.3, 24 February 2010
 .. _issue 47: http://bitbucket.org/ned/coveragepy/issue/47
 
 
-Version 3.2, 5 December 2009
-----------------------------
+Version 3.2 --- 5 December 2009
+-------------------------------
 
 - Branch coverage: coverage.py can tell you which branches didn't have both (or
   all) choices executed, even where the choice doesn't affect which lines were
@@ -96,8 +96,8 @@ Version 3.2, 5 December 2009
 .. _issue 33: http://bitbucket.org/ned/coveragepy/issue/33
 
 
-Version 3.1, 4 October 2009
----------------------------
+Version 3.1 --- 4 October 2009
+------------------------------
 
 - Python 3.1 is now supported.
 
@@ -127,8 +127,8 @@ Version 3.1, 4 October 2009
 .. _issue 13: http://bitbucket.org/ned/coveragepy/issue/13
 
 
-Version 3.0.1, 7 July 2009
---------------------------
+Version 3.0.1 --- 7 July 2009
+-----------------------------
 
 - Removed the recursion limit in the tracer function.  Previously, code that
   ran more than 500 frames deep would crash.
@@ -147,8 +147,8 @@ Version 3.0.1, 7 July 2009
   example.
 
 
-Version 3.0, 13 June 2009
--------------------------
+Version 3.0 --- 13 June 2009
+----------------------------
 
 - Coverage is now a package rather than a module.  Functionality has been split
   into classes.
