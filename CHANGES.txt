@@ -55,6 +55,9 @@ Version 3.4a1
 - Unusual code structure that confused exits from methods with exits from
   classes is now properly analyzed.  See `issue 62`_.
 
+- Asking for an HTML report with no files now shows a nice error message rather
+  than a cryptic failure ('int' object is unsubscriptable). Fixes `issue 59`_.
+
 .. _issue 34: http://bitbucket.org/ned/coveragepy/issue/34/enhanced-omit-globbing-handling
 .. _issue 36: http://bitbucket.org/ned/coveragepy/issue/36/provide-regex-style-omit
 .. _issue 46: http://bitbucket.org/ned/coveragepy/issue/46
@@ -63,6 +66,7 @@ Version 3.4a1
 .. _issue 56: http://bitbucket.org/ned/coveragepy/issue/56
 .. _issue 61: http://bitbucket.org/ned/coveragepy/issue/61/annotate-i-doesnt-work
 .. _issue 62: http://bitbucket.org/ned/coveragepy/issue/62
+.. _issue 59: http://bitbucket.org/ned/coveragepy/issue/59/html-report-fails-with-int-object-is
 
 
 Version 3.3.1 --- 6 March 2010

@@ -3,6 +3,7 @@
 import os, re, shutil
 
 from coverage import __url__, __version__           # pylint: disable-msg=W0611
+from coverage.misc import CoverageException
 from coverage.phystokens import source_token_lines
 from coverage.report import Reporter
 from coverage.templite import Templite
@@ -44,6 +45,9 @@ class HtmlReporter(Reporter):
 
         # Process all the files.
         self.report_files(self.html_file, morfs, directory, omit, include)
+
+        if not self.files:
+            raise CoverageException("No data to report.")
 
         # Write the index file.
         self.index_file()
@@ -158,7 +162,7 @@ class HtmlReporter(Reporter):
 # Helpers for templates and generating HTML
 
 def escape(t):
-    """HTML-escape the text in t."""
+    """HTML-escape the text in `t`."""
     return (t
             # Convert HTML special chars into HTML entities.
             .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -171,14 +175,14 @@ def escape(t):
         )
 
 def format_pct(p):
-    """Format a percentage value for the HTML reports."""
+    """Format `p` as a percentage value for the HTML reports."""
     return "%.0f" % p
 
 def spaceless(html):
     """Squeeze out some annoying extra space from an HTML string.
 
-    Nicely-formatted templates mean lots of extra space in the result.  Get
-    rid of some.
+    Nicely-formatted templates mean lots of extra space in the result.
+    Get rid of some.
 
     """
     html = re.sub(">\s+<p ", ">\n<p ", html)
