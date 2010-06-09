@@ -65,20 +65,19 @@ class CoverageTestWrapper(object):
             include = self.include,
             )
 
-        do_report = ('report' in self.options.cover_reports or
-                        not self.options.cover_reports)
+        reports = self.options.cover_reports or 'report'
 
-        if do_report:
+        if 'report' in reports:
             self.coverage.report(
                     show_missing=self.options.cover_show_missing,
                     file=stream, **report_args)
-        if 'annotate' in self.options.cover_reports:
+        if 'annotate' in reports:
             self.coverage.annotate(
                     directory=self.options.cover_directory, **report_args)
-        if 'html' in self.options.cover_reports:
+        if 'html' in reports:
             self.coverage.html_report(
                     directory=self.options.cover_directory, **report_args)
-        if 'xml' in self.options.cover_reports:
+        if 'xml' in reports:
             outfile = self.options.cover_outfile
             if outfile == '-':
                 outfile = None
