@@ -23,14 +23,12 @@ class Coverage(Plugin):
 
     def options(self, parser, env):
         """Add command-line options."""
-
         super(Coverage, self).options(parser, env)
         for opt in OPTIONS:
             parser.add_option(opt)
 
     def configure(self, options, config):
         """Configure plugin."""
-
         try:
             self.status.pop('active')
         except KeyError:
@@ -44,14 +42,12 @@ class Coverage(Plugin):
 
     def begin(self):
         """Begin recording coverage information."""
-
         log.debug("Coverage begin")
         self.coverage = CoverageTestWrapper(self.opts)
         self.coverage.start()
 
     def report(self, stream):
         """Output code coverage report."""
-
         log.debug("Coverage report")
-        stream.write("Processing Coverage...\n")
+        stream.write("Processing coverage...\n")
         self.coverage.finish(stream)
