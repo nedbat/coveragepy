@@ -13,6 +13,10 @@ Version 3.4a1
   coverage.py, replaced with `omit`, a list of filename patterns suitable for
   `fnmatch`.  A parallel argument `include` controls what files are included.
 
+- The run command now has a ``--source`` switch, a list of directories or
+  module names.  If provided, coverage.py will only measure execution in those
+  source files.
+
 - The reporting commands (report, annotate, html, and xml) now have an
   ``--include`` switch to restrict reporting to modules beginning with those
   prefixes, similar to the existing ``--omit`` switch. Thanks, Zooko.
@@ -22,10 +26,14 @@ Version 3.4a1
   during reporting. Thanks Zooko.
 
 - Coverage.py now installs a test-runner plugin for `nose`_ and `py.test`_.
-  Thanks, David Stanek, holger krekel, Ross Lawley.
+  Thanks, David Stanek, holger krekel, and Ross Lawley.
 
 .. _nose: http://somethingaboutorange.com/mrl/projects/nose/
 .. _py.test: http://pytest.org
+
+- Since coverage.py 3.1, using the Python trace function has been slower than
+  it needs to be.  A cache of tracing decisions was broken, but has now been
+  fixed.
 
 - Reports now have a column of missed line counts rather than executed line
   counts, since developers should focus on reducing the missed lines to zero,
