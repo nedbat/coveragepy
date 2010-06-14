@@ -20,6 +20,7 @@ class CoverageConfig(object):
         self.data_file = ".coverage"
         self.parallel = False
         self.timid = False
+        self.source = None
 
         # Defaults for [report]
         self.exclude_list = ['(?i)# *pragma[: ]*no *cover']
@@ -68,6 +69,8 @@ class CoverageConfig(object):
             self.parallel = cp.getboolean('run', 'parallel')
         if cp.has_option('run', 'timid'):
             self.timid = cp.getboolean('run', 'timid')
+        if cp.has_option('run', 'source'):
+            self.source = self.get_list(cp, 'run', 'source')
         if cp.has_option('run', 'omit'):
             self.omit = self.get_list(cp, 'run', 'omit')
         if cp.has_option('run', 'include'):

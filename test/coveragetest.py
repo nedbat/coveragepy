@@ -121,11 +121,13 @@ class CoverageTest(TestCase):
         """Return the data written to stderr during the test."""
         return self.captured_stderr.getvalue()
 
-    def make_file(self, filename, text):
+    def make_file(self, filename, text=""):
         """Create a temp file.
 
         `filename` is the path to the file, including directories if desired,
         and `text` is the content.
+
+        Returns the path to the file.
 
         """
         # Tests that call `make_file` should be run in a temp environment.
@@ -141,6 +143,8 @@ class CoverageTest(TestCase):
         f = open(filename, 'w')
         f.write(text)
         f.close()
+
+        return filename
 
     def import_module(self, modname):
         """Import the module named modname, and return the module object."""

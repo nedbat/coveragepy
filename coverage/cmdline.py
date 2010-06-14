@@ -75,6 +75,10 @@ class Opts(object):
         '', '--rcfile', action='store',
         help="Specify configuration file.  Defaults to '.coveragerc'"
         )
+    source = optparse.Option(
+        '', '--source', action='store', metavar="SRC1,SRC2,...",
+        help="A list of packages or directories of code to be measured."
+        )
     timid = optparse.Option(
         '', '--timid', action='store_true',
         help="Use a simpler but slower trace method.  Try this if you get "
@@ -110,6 +114,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             pylib=None,
             rcfile=True,
             show_missing=None,
+            source=None,
             timid=None,
             erase_first=None,
             version=None,
@@ -290,6 +295,7 @@ CMDS = {
             Opts.pylib,
             Opts.parallel_mode,
             Opts.timid,
+            Opts.source,
             Opts.omit,
             Opts.include,
             ] + GLOBAL_ARGS,
@@ -440,8 +446,9 @@ class CoverageScript(object):
             return ERR
 
         # Listify the list options.
-        omit = pattern_list(options.omit)
-        include = pattern_list(options.include)
+        source = unshell_list(options.source)
+        omit = unshell_list(options.omit)
+        include = unshell_list(options.include)
 
         # Do something.
         self.coverage = self.covpkg.coverage(
@@ -450,6 +457,7 @@ class CoverageScript(object):
             timid = options.timid,
             branch = options.branch,
             config_file = options.rcfile,
+            source = source,
             omit = omit,
             include = include,
             )
@@ -528,8 +536,8 @@ class CoverageScript(object):
         return OK
 
 
-def pattern_list(s):
-    """Turn an argument into a list of patterns."""
+def unshell_list(s):
+    """Turn a command-line argument into a list."""
     if not s:
         return None
     if sys.platform == 'win32':

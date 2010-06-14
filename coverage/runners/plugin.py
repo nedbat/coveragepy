@@ -2,7 +2,7 @@
 
 import optparse, sys
 import coverage
-from coverage.cmdline import pattern_list
+from coverage.cmdline import unshell_list
 
 
 class CoverageTestWrapper(object):
@@ -34,8 +34,8 @@ class CoverageTestWrapper(object):
     def start(self):
         """Start coverage before the test suite."""
         # cover_omit is a ',' separated list if provided
-        self.omit = pattern_list(self.options.cover_omit)
-        self.include = pattern_list(self.options.cover_omit)
+        self.omit = unshell_list(self.options.cover_omit)
+        self.include = unshell_list(self.options.cover_omit)
 
         self.coverage = self.covpkg.coverage(
             config_file = self.options.cover_rcfile,

@@ -14,7 +14,7 @@ class TestCoverage(PluginTester, unittest.TestCase):
 
     @py.test.mark.skipif(True) # "requires nose test runner"
     def test_output(self):
-        assert "Processing Coverage..." in self.output, (
+        assert "Processing coverage..." in self.output, (
                                         "got: %s" % self.output)
     def makeSuite(self):
         class TC(unittest.TestCase):

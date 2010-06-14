@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import atexit, fnmatch, os, random, socket, sys
+import atexit, os, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class
@@ -8,7 +8,7 @@ from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
-from coverage.files import FileLocator
+from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.html import HtmlReporter
 from coverage.misc import bool_or_none
 from coverage.results import Analysis
@@ -32,7 +32,7 @@ class coverage(object):
 
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
-                omit=None, include=None):
+                source=None, omit=None, include=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -58,6 +58,10 @@ class coverage(object):
         it is the name of the config file to read.  If it is True, then a
         standard file is read (".coveragerc").  If it is False, then no file is
         read.
+
+        `source` is a list of file paths or package names.  Only code located
+        in the trees indicated by the file paths or package names will be
+        measured.
 
         `include` and `omit` are lists of filename patterns. Files that match
         `include` will be measured, files that match `omit` will not.
@@ -85,7 +89,7 @@ class coverage(object):
         self.config.from_args(
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
-            omit=omit, include=include
+            source=source, omit=omit, include=include
             )
 
         self.auto_data = auto_data
@@ -95,6 +99,15 @@ class coverage(object):
         self._compile_exclude()
 
         self.file_locator = FileLocator()
+
+        # The source argument can be directories or package names.
+        self.source = []
+        self.source_pkgs = []
+        for src in self.config.source or []:
+            if os.path.exists(src):
+                self.source.append(self.file_locator.canonical_filename(src))
+            else:
+                self.source_pkgs.append(src)
 
         self.omit = self._abs_files(self.config.omit)
         self.include = self._abs_files(self.config.include)
@@ -126,11 +139,12 @@ class coverage(object):
             )
 
         # The dirs for files considered "installed with the interpreter".
+        self.pylib_dirs = []
         if not self.config.cover_pylib:
             # Look at where the "os" module is located.  That's the indication
             # for "installed with the interpreter".
             os_dir = self.canonical_dir(os.__file__)
-            self.pylib_dirs = [os_dir]
+            self.pylib_dirs.append(os_dir)
 
             # In a virtualenv, there're actually two lib directories. Find the
             # other one.  This is kind of ad-hoc, but it works.
@@ -142,9 +156,21 @@ class coverage(object):
         # where we are.
         self.cover_dir = self.canonical_dir(__file__)
 
+        # The matchers for _should_trace, created when tracing starts.
+        self.source_match = None
+        self.pylib_match = self.cover_match = None
+        self.include_match = self.omit_match = None
+
     def canonical_dir(self, f):
         """Return the canonical directory of the file `f`."""
         return os.path.split(self.file_locator.canonical_filename(f))[0]
+
+    def _source_for_file(self, filename):
+        """Return the source file for `filename`."""
+        if not filename.endswith(".py"):
+            if filename[-4:-1] == ".py":
+                filename = filename[:-1]
+        return filename
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`
@@ -156,12 +182,14 @@ class coverage(object):
         should not.
 
         """
-        if filename[0] == '<':
+        if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
             # filenames like "<string>", "<doctest readme.txt[0]>", or
             # "<exec_function>".  Don't ever trace these executions, since we
             # can't do anything with the data later anyway.
             return False
+
+        self._check_for_packages()
 
         # Compiled Python files have two filenames: frame.f_code.co_filename is
         # the filename at the time the .pyc was compiled.  The second name
@@ -171,35 +199,31 @@ class coverage(object):
         # co_filename value.
         dunder_file = frame.f_globals.get('__file__')
         if dunder_file:
-            if not dunder_file.endswith(".py"):
-                if dunder_file[-4:-1] == ".py":
-                    dunder_file = dunder_file[:-1]
-            filename = dunder_file
-
+            filename = self._source_for_file(dunder_file)
         canonical = self.file_locator.canonical_filename(filename)
-        canon_dir = os.path.split(canonical)[0]
 
-        # If we aren't supposed to trace installed code, then check if this is
-        # near the Python standard library and skip it if so.
-        if not self.config.cover_pylib:
-            if canon_dir in self.pylib_dirs:
+        # If the user specified source, then that's authoritative about what to
+        # measure.  If they didn't, then we have to exclude the stdlib and
+        # coverage.py directories.
+        if self.source_match:
+            if not self.source_match.match(canonical):
+                return False
+        else:
+            # If we aren't supposed to trace installed code, then check if this
+            # is near the Python standard library and skip it if so.
+            if self.pylib_match and self.pylib_match.match(canonical):
                 return False
 
-        # We exclude the coverage code itself, since a little of it will be
-        # measured otherwise.
-        if canon_dir == self.cover_dir:
-            return False
+            # We exclude the coverage code itself, since a little of it will be
+            # measured otherwise.
+            if self.cover_match and self.cover_match.match(canonical):
+                return False
 
         # Check the file against the include and omit patterns.
-        if self.include:
-            for pattern in self.include:
-                if fnmatch.fnmatch(canonical, pattern):
-                    break
-            else:
-                return False
-        for pattern in self.omit:
-            if fnmatch.fnmatch(canonical, pattern):
-                return False
+        if self.include_match and not self.include_match.match(canonical):
+            return False
+        if self.omit_match and self.omit_match.match(canonical):
+            return False
 
         return canonical
 
@@ -216,6 +240,39 @@ class coverage(object):
         """Return a list of absolute file names for the names in `files`."""
         files = files or []
         return [self.file_locator.abs_file(f) for f in files]
+
+    def _check_for_packages(self):
+        """Update the source_match matcher with latest imported packages."""
+        # Our self.source_pkgs attribute is a list of package names we want to
+        # measure.  Each time through here, we see if we've imported any of
+        # them yet.  If so, we add its file to source_match, and we don't have
+        # to look for that package any more.
+        if self.source_pkgs:
+            found = []
+            for pkg in self.source_pkgs:
+                try:
+                    mod = sys.modules[pkg]
+                except KeyError:
+                    continue
+
+                found.append(pkg)
+
+                try:
+                    pkg_file = mod.__file__
+                except AttributeError:
+                    print "WHOA! No file for module %s" % pkg
+                else:
+                    d, f = os.path.split(pkg_file)
+                    if f.startswith('__init__.'):
+                        # This is actually a package, return the directory.
+                        pkg_file = d
+                    else:
+                        pkg_file = self._source_for_file(pkg_file)
+                    pkg_file = self.file_locator.canonical_filename(pkg_file)
+                    self.source_match.add(pkg_file)
+
+            for pkg in found:
+                self.source_pkgs.remove(pkg)
 
     def use_cache(self, usecache):
         """Control the use of a data file (incorrectly called a cache).
@@ -242,6 +299,20 @@ class coverage(object):
             if not self.atexit_registered:
                 atexit.register(self.save)
                 self.atexit_registered = True
+
+        # Create the matchers we need for _should_trace
+        if self.source or self.source_pkgs:
+            self.source_match = TreeMatcher(self.source)
+        else:
+            if self.cover_dir:
+                self.cover_match = TreeMatcher([self.cover_dir])
+            if self.pylib_dirs:
+                self.pylib_match = TreeMatcher(self.pylib_dirs)
+        if self.include:
+            self.include_match = FnmatchMatcher(self.include)
+        if self.omit:
+            self.omit_match = FnmatchMatcher(self.omit)
+
         self.collector.start()
 
     def stop(self):

@@ -1,5 +1,10 @@
 Coverage TODO
 
+* Cleanups discovered while doing --source:
+    - PyTracer doesn't use should_trace_cache!!
+    - optparse recommends using make_option, not Option constructor
+
+
 * plugin work
     + add --cover-include.
     + add --cover-rcfile.

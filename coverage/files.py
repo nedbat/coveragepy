@@ -1,6 +1,6 @@
 """File wrangling."""
 
-import os, sys
+import fnmatch, os, sys
 
 class FileLocator(object):
     """Understand how filenames work."""
@@ -76,3 +76,37 @@ class FileLocator(object):
                     data = data.decode('utf8') # TODO: How to do this properly?
                 return data
         return None
+
+
+class TreeMatcher(object):
+    """A matcher for files in a tree."""
+    def __init__(self, directories):
+        self.dirs = directories[:]
+
+    def add(self, directory):
+        """Add another directory to the list we match for."""
+        self.dirs.append(directory)
+
+    def match(self, fpath):
+        """Does `fpath` indicate a file in one of our trees?"""
+        for d in self.dirs:
+            if fpath.startswith(d):
+                if fpath == d:
+                    # This is the same file!
+                    return True
+                if fpath[len(d)] == os.sep:
+                    # This is a file in the directory
+                    return True
+        return False
+
+class FnmatchMatcher(object):
+    """A matcher for files by filename pattern."""
+    def __init__(self, pats):
+        self.pats = pats[:]
+
+    def match(self, fpath):
+        """Does `fpath` match one of our filename patterns?"""
+        for pat in self.pats:
+            if fnmatch.fnmatch(fpath, pat):
+                return True
+        return False

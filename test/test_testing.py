@@ -107,5 +107,5 @@ class CoverageTestTest(CoverageTest):
         self.make_file("sub/second.txt", "Second")
         self.assertEqual(open("sub/second.txt").read(), "Second")
         # A deeper directory
-        self.make_file("sub/deeper/evenmore/third.txt", "Third")
-        self.assertEqual(open("sub/deeper/evenmore/third.txt").read(), "Third")
+        self.make_file("sub/deeper/evenmore/third.txt")
+        self.assertEqual(open("sub/deeper/evenmore/third.txt").read(), "")
