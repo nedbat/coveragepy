@@ -1,8 +1,5 @@
 Coverage TODO
 
-* Cleanups discovered while doing --source:
-    + PyTracer doesn't use should_trace_cache!!
-    - optparse recommends using make_option, not Option constructor
 * --source stuff:
     - warn if a package is never found.
     - warn if no data was collected
