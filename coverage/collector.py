@@ -60,7 +60,10 @@ class PyTracer(object):
             # in this file.
             self.data_stack.append((self.cur_file_data, self.last_line))
             filename = frame.f_code.co_filename
-            tracename = self.should_trace(filename, frame)
+            tracename = self.should_trace_cache.get(filename)
+            if tracename is None:
+                tracename = self.should_trace(filename, frame)
+                self.should_trace_cache[filename] = tracename
             if tracename:
                 if tracename not in self.data:
                     self.data[tracename] = {}
