@@ -260,7 +260,7 @@ class coverage(object):
                 try:
                     pkg_file = mod.__file__
                 except AttributeError:
-                    print "WHOA! No file for module %s" % pkg
+                    print("WHOA! No file for module %s" % pkg)
                 else:
                     d, f = os.path.split(pkg_file)
                     if f.startswith('__init__.'):
