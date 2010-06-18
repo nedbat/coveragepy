@@ -17,6 +17,10 @@ Version 3.4a1
   module names.  If provided, coverage.py will only measure execution in those
   source files.
 
+- Various warnings are printed to stderr for problems encountered during data
+  measurement: if a ``--source`` module has no Python source to measure, or is
+  never encountered at all, or if no data is collected.
+
 - The reporting commands (report, annotate, html, and xml) now have an
   ``--include`` switch to restrict reporting to modules beginning with those
   prefixes, similar to the existing ``--omit`` switch. Thanks, Zooko.

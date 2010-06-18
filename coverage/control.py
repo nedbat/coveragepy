@@ -236,6 +236,10 @@ class coverage(object):
             print("should_trace: %r -> %r" % (filename, ret))
             return ret
 
+    def _warn(self, msg):
+        """Use `msg` as a warning."""
+        sys.stderr.write("Warning: " + msg + "\n")
+
     def _abs_files(self, files):
         """Return a list of absolute file names for the names in `files`."""
         files = files or []
@@ -260,7 +264,7 @@ class coverage(object):
                 try:
                     pkg_file = mod.__file__
                 except AttributeError:
-                    print("WHOA! No file for module %s" % pkg)
+                    self._warn("Module %s has no python source." % pkg)
                 else:
                     d, f = os.path.split(pkg_file)
                     if f.startswith('__init__.'):
@@ -318,7 +322,18 @@ class coverage(object):
     def stop(self):
         """Stop measuring code coverage."""
         self.collector.stop()
+
+        # If there are still entries in the source_pkgs list, then we never
+        # encountered those packages.
+        for pkg in self.source_pkgs:
+            self._warn("Source module %s was never encountered." % pkg)
+
         self._harvest_data()
+
+        # Find out if we got any data.
+        summary = self.data.summary()
+        if not summary:
+            self._warn("No data was collected.")
 
     def erase(self):
         """Erase previously-collected coverage data.
