@@ -18,7 +18,7 @@ class ProcessTest(CoverageTest):
                 num += 1
         return num
 
-    def testSaveOnExit(self):
+    def test_save_on_exit(self):
         self.make_file("mycode.py", """\
             h = "Hello"
             w = "world"
@@ -28,7 +28,7 @@ class ProcessTest(CoverageTest):
         self.run_command("coverage -x mycode.py")
         self.assertTrue(os.path.exists(".coverage"))
 
-    def testEnvironment(self):
+    def test_environment(self):
         # Checks that we can import modules from the test directory at all!
         self.make_file("mycode.py", """\
             import covmod1
@@ -42,7 +42,7 @@ class ProcessTest(CoverageTest):
         self.assertTrue(os.path.exists(".coverage"))
         self.assertEqual(out, 'done\n')
 
-    def testCombineParallelData(self):
+    def test_combine_parallel_data(self):
         self.make_file("b_or_c.py", """\
             import sys
             a = 1

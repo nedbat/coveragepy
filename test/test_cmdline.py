@@ -93,7 +93,7 @@ class CmdLineTest(CoverageTest):
 class ClassicCmdLineTest(CmdLineTest):
     """Tests of the classic coverage.py command line."""
 
-    def testErase(self):
+    def test_erase(self):
         # coverage -e
         self.cmd_executes("-e", """\
             .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, source=None, include=None, omit=None)
@@ -101,7 +101,7 @@ class ClassicCmdLineTest(CmdLineTest):
             """)
         self.cmd_executes_same("-e", "--erase")
 
-    def testExecute(self):
+    def test_execute(self):
         # coverage -x [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]
 
         # -x calls coverage.load first.
@@ -147,7 +147,7 @@ class ClassicCmdLineTest(CmdLineTest):
         self.cmd_executes_same("-x -p f.py", "-x --parallel-mode f.py")
         self.cmd_executes_same("-x -L f.py", "-x --pylib f.py")
 
-    def testCombine(self):
+    def test_combine(self):
         # coverage -c
         self.cmd_executes("-c", """\
             .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, source=None, include=None, omit=None)
@@ -157,7 +157,7 @@ class ClassicCmdLineTest(CmdLineTest):
             """)
         self.cmd_executes_same("-c", "--combine")
 
-    def testReport(self):
+    def test_report(self):
         # coverage -r [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-r", self.INIT_LOAD + """\
             .report(ignore_errors=None, omit=None, include=None, morfs=[],
@@ -202,7 +202,7 @@ class ClassicCmdLineTest(CmdLineTest):
         self.cmd_executes_same("-r -of", "-r --omit=f")
         self.cmd_executes_same("-r -of,b", "-r --omit=f,b")
 
-    def testAnnotate(self):
+    def test_annotate(self):
         # coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-a", self.INIT_LOAD + """\
             .annotate(directory=None, ignore_errors=None,
@@ -247,7 +247,7 @@ class ClassicCmdLineTest(CmdLineTest):
         self.cmd_executes_same("-a -of", "-a --omit=f")
         self.cmd_executes_same("-a -of,b", "-a --omit=f,b")
 
-    def testHtmlReport(self):
+    def test_html_report(self):
         # coverage -b -d DIR [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-b", self.INIT_LOAD + """\
             .html_report(directory=None, ignore_errors=None,
@@ -290,26 +290,26 @@ class ClassicCmdLineTest(CmdLineTest):
         self.cmd_executes_same("-b -of", "-b --omit=f")
         self.cmd_executes_same("-b -of,b", "-b --omit=f,b")
 
-    def testHelp(self):
+    def test_help(self):
         # coverage -h
         self.cmd_help("-h", topic="help", ret=OK)
         self.cmd_help("--help", topic="help", ret=OK)
 
-    def testVersion(self):
+    def test_version(self):
         # coverage --version
         self.cmd_help("--version", topic="version", ret=OK)
 
     ## Error cases
 
-    def testArglessActions(self):
+    def test_argless_actions(self):
         self.cmd_help("-e foo bar", "Unexpected arguments: foo bar")
         self.cmd_help("-c baz quux", "Unexpected arguments: baz quux")
 
-    def testNeedAction(self):
+    def test_need_action(self):
         self.cmd_help("-p", "You must specify at least one of "
                                                 "-e, -x, -c, -r, -a, or -b.")
 
-    def testBadActionCombinations(self):
+    def test_bad_action_combinations(self):
         self.cmd_help('-e -a',
             "You can't specify the 'erase' and 'annotate' "
                 "options at the same time."
@@ -343,10 +343,10 @@ class ClassicCmdLineTest(CmdLineTest):
                 "options at the same time."
             )
 
-    def testNothingToDo(self):
+    def test_nothing_to_do(self):
         self.cmd_help("-x", "Nothing to do.")
 
-    def testUnknownOption(self):
+    def test_unknown_option(self):
         self.cmd_help("-z", "no such option: -z")
 
 
@@ -380,7 +380,7 @@ class FakeCoverageForDebugData(object):
 class NewCmdLineTest(CmdLineTest):
     """Tests of the coverage.py command line."""
 
-    def testAnnotate(self):
+    def test_annotate(self):
         self.cmd_executes_same("annotate", "-a")
         self.cmd_executes_same("annotate -i", "-a -i")
         self.cmd_executes_same("annotate -d d1", "-a -d d1")
@@ -389,14 +389,14 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("annotate m1", "-a m1")
         self.cmd_executes_same("annotate m1 m2 m3", "-a m1 m2 m3")
 
-    def testCombine(self):
+    def test_combine(self):
         self.cmd_executes_same("combine", "-c")
 
-    def testDebug(self):
+    def test_debug(self):
         self.cmd_help("debug", "What information would you like: data, sys?")
         self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
 
-    def testDebugData(self):
+    def test_debug_data(self):
         fake = FakeCoverageForDebugData({
             'file1.py': 17, 'file2.py': 23,
             })
@@ -411,7 +411,7 @@ class NewCmdLineTest(CmdLineTest):
             file2.py: 23 lines
             """))
 
-    def testDebugDataWithNoData(self):
+    def test_debug_data_with_no_data(self):
         fake = FakeCoverageForDebugData({})
         self.command_line("debug data", _covpkg=fake)
         self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
@@ -421,24 +421,24 @@ class NewCmdLineTest(CmdLineTest):
             No data collected
             """))
 
-    def testDebugSys(self):
+    def test_debug_sys(self):
         self.command_line("debug sys")
         out = self.stdout()
         assert "version:" in out
         assert "data_path:" in out
 
-    def testErase(self):
+    def test_erase(self):
         self.cmd_executes_same("erase", "-e")
 
-    def testHelp(self):
+    def test_help(self):
         self.cmd_executes("help", ".help_fn(topic='help')")
 
-    def testCmdHelp(self):
+    def test_cmd_help(self):
         self.cmd_executes("run --help",
                                 ".help_fn(parser='<CmdOptionParser:run>')")
         self.cmd_executes_same("help run", "run --help")
 
-    def testHtml(self):
+    def test_html(self):
         self.cmd_executes_same("html", "-b")
         self.cmd_executes_same("html -i", "-b -i")
         self.cmd_executes_same("html -d d1", "-b -d d1")
@@ -447,7 +447,7 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("html m1", "-b m1")
         self.cmd_executes_same("html m1 m2 m3", "-b m1 m2 m3")
 
-    def testReport(self):
+    def test_report(self):
         self.cmd_executes_same("report", "-r")
         self.cmd_executes_same("report -i", "-r -i")
         self.cmd_executes_same("report -m", "-r -m")
@@ -456,7 +456,7 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("report m1", "-r m1")
         self.cmd_executes_same("report m1 m2 m3", "-r m1 m2 m3")
 
-    def testRun(self):
+    def test_run(self):
         self.cmd_executes_same("run f.py", "-e -x f.py")
         self.cmd_executes_same("run f.py -a arg -z", "-e -x f.py -a arg -z")
         self.cmd_executes_same("run -a f.py", "-x f.py")
@@ -520,7 +520,7 @@ class NewCmdLineTest(CmdLineTest):
             .save()
             """)
 
-    def testXml(self):
+    def test_xml(self):
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("xml", self.INIT_LOAD + """\
             .xml_report(ignore_errors=None, omit=None, include=None, morfs=[],
@@ -559,36 +559,36 @@ class NewCmdLineTest(CmdLineTest):
                     morfs=["mod1", "mod2", "mod3"], outfile="coverage.xml")
             """)
 
-    def testNoArgumentsAtAll(self):
+    def test_no_arguments_at_all(self):
         self.cmd_help("", topic="minimum_help", ret=OK)
 
-    def testBadCommand(self):
+    def test_bad_command(self):
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
 
 
 class CmdLineStdoutTest(CmdLineTest):
     """Test the command line with real stdout output."""
 
-    def testMinimumHelp(self):
+    def test_minimum_help(self):
         self.command_line("")
         out = self.stdout()
         assert "Code coverage for Python." in out
         assert out.count("\n") < 4
 
-    def testHelp(self):
+    def test_help(self):
         self.command_line("help")
         out = self.stdout()
         assert "nedbatchelder.com" in out
         assert out.count("\n") > 10
 
-    def testCmdHelp(self):
+    def test_cmd_help(self):
         self.command_line("help run")
         out = self.stdout()
         assert "<pyfile>" in out
         assert "--timid" in out
         assert out.count("\n") > 10
 
-    def testError(self):
+    def test_error(self):
         self.command_line("fooey kablooey", ret=ERR)
         out = self.stdout()
         assert "fooey" in out

@@ -10,7 +10,7 @@ import osinfo
 class ThreadingTest(CoverageTest):
     """Tests of the threading support."""
 
-    def testThreading(self):
+    def test_threading(self):
         self.check_coverage("""\
             import time, threading
 
@@ -34,7 +34,7 @@ class ThreadingTest(CoverageTest):
 class RecursionTest(CoverageTest):
     """Check what happens when recursive code gets near limits."""
 
-    def testShortRecursion(self):
+    def test_short_recursion(self):
         # We can definitely get close to 500 stack frames.
         self.check_coverage("""\
             def recur(n):
@@ -47,7 +47,7 @@ class RecursionTest(CoverageTest):
             """,
             [1,2,3,5,7], "")
 
-    def testLongRecursion(self):
+    def test_long_recursion(self):
         # We can't finish a very deep recursion, but we don't crash.
         self.assertRaises(RuntimeError, self.check_coverage,
             """\
@@ -98,7 +98,7 @@ class MemoryLeakTest(CoverageTest):
 class PyexpatTest(CoverageTest):
     """Pyexpat screws up tracing. Make sure we've counter-defended properly."""
 
-    def testPyexpat(self):
+    def test_pyexpat(self):
         # pyexpat calls the trace function explicitly (inexplicably), and does
         # it wrong for exceptions.  Parsing a DOCTYPE for some reason throws
         # an exception internally, and triggers its wrong behavior.  This test
@@ -146,7 +146,7 @@ class ExceptionTest(CoverageTest):
     in the trace function.
     """
 
-    def testException(self):
+    def test_exception(self):
         # Python 2.3's trace function doesn't get called with "return" if the
         # scope is exiting due to an exception.  This confounds our trace
         # function which relies on scope announcements to track which files to
@@ -261,7 +261,7 @@ if sys.version_info >= (2, 5):
             # copy without the monkeypatch.
             del sys.modules['doctest']
 
-        def testDoctest(self):
+        def test_doctest(self):
             self.check_coverage('''\
                 def return_arg_or_void(arg):
                     """If <arg> is None, return "Void"; otherwise return <arg>

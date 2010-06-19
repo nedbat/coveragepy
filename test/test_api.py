@@ -18,7 +18,7 @@ class SingletonApiTest(CoverageTest):
         # writing .coverage files at exit.
         coverage.use_cache(0)
 
-    def doReportWork(self, modname):
+    def do_report_work(self, modname):
         """Create a module named `modname`, then measure it."""
         coverage.erase()
 
@@ -37,7 +37,7 @@ class SingletonApiTest(CoverageTest):
         self.import_module(modname)             # pragma: recursive coverage
         coverage.stop()                         # pragma: recursive coverage
 
-    def testSimple(self):
+    def test_simple(self):
         coverage.erase()
 
         self.make_file("mycode.py", """\
@@ -58,8 +58,8 @@ class SingletonApiTest(CoverageTest):
         self.assertEqual(missing, [4])
         self.assertEqual(missingtext, "4")
 
-    def testReport(self):
-        self.doReportWork("mycode2")
+    def test_report(self):
+        self.do_report_work("mycode2")
         coverage.report(["mycode2.py"])
         self.assertEqual(self.stdout(), textwrap.dedent("""\
             Name      Stmts   Miss  Cover   Missing
@@ -67,9 +67,9 @@ class SingletonApiTest(CoverageTest):
             mycode2       7      3    57%   4-6
             """))
 
-    def testReportFile(self):
+    def test_report_file(self):
         # The file= argument of coverage.report makes the report go there.
-        self.doReportWork("mycode3")
+        self.do_report_work("mycode3")
         fout = StringIO()
         coverage.report(["mycode3.py"], file=fout)
         self.assertEqual(self.stdout(), "")
@@ -79,9 +79,9 @@ class SingletonApiTest(CoverageTest):
             mycode3       7      3    57%   4-6
             """))
 
-    def testReportDefault(self):
+    def test_report_default(self):
         # Calling report() with no morfs will report on whatever was executed.
-        self.doReportWork("mycode4")
+        self.do_report_work("mycode4")
         coverage.report()
         rpt = re.sub(r"\s+", " ", self.stdout())
         self.assertTrue("mycode4 7 3 57% 4-6" in rpt)
@@ -90,7 +90,7 @@ class SingletonApiTest(CoverageTest):
 class ApiTest(CoverageTest):
     """Api-oriented tests for Coverage."""
 
-    def testUnexecutedFile(self):
+    def test_unexecuted_file(self):
         cov = coverage.coverage()
 
         self.make_file("mycode.py", """\
@@ -114,7 +114,7 @@ class ApiTest(CoverageTest):
         self.assertEqual(statements, [1])
         self.assertEqual(missing, [1])
 
-    def testFileNames(self):
+    def test_filenames(self):
 
         self.make_file("mymain.py", """\
             import mymod
@@ -158,7 +158,7 @@ class ApiTest(CoverageTest):
         filename, _, _, _ = cov.analysis(sys.modules["mymod"])
         self.assertEqual(os.path.basename(filename), "mymod.py")
 
-    def testIgnoreStdLib(self):
+    def test_ignore_stdlib(self):
         self.make_file("mymain.py", """\
             import mymod, colorsys
             a = 1
@@ -196,7 +196,7 @@ class ApiTest(CoverageTest):
         _, statements, missing, _ = cov2.analysis("colorsys.py")
         self.assertNotEqual(statements, missing)
 
-    def testExcludeList(self):
+    def test_exclude_list(self):
         cov = coverage.coverage()
         cov.clear_exclude()
         self.assertEqual(cov.get_exclude_list(), [])
@@ -208,7 +208,7 @@ class ApiTest(CoverageTest):
         cov.clear_exclude()
         self.assertEqual(cov.get_exclude_list(), [])
 
-    def testDatafileDefault(self):
+    def test_datafile_default(self):
         # Default data file behavior: it's .coverage
         self.make_file("datatest1.py", """\
             fooey = 17
@@ -223,7 +223,7 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."),
                             ["datatest1.py", "datatest1.pyc", ".coverage"])
 
-    def testDatafileSpecified(self):
+    def test_datafile_specified(self):
         # You can specify the data file name.
         self.make_file("datatest2.py", """\
             fooey = 17
@@ -238,7 +238,7 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."),
                             ["datatest2.py", "datatest2.pyc", "cov.data"])
 
-    def testDatafileAndSuffixSpecified(self):
+    def test_datafile_and_suffix_specified(self):
         # You can specify the data file name and suffix.
         self.make_file("datatest3.py", """\
             fooey = 17
@@ -253,7 +253,7 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."),
                             ["datatest3.py", "datatest3.pyc", "cov.data.14"])
 
-    def testDatafileFromRcFile(self):
+    def test_datafile_from_rcfile(self):
         # You can specify the data file name in the .coveragerc file
         self.make_file("datatest4.py", """\
             fooey = 17
@@ -273,11 +273,12 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."),
                 ["datatest4.py", "datatest4.pyc", ".coveragerc", "mydata.dat"])
 
-    def testEmptyReporting(self):
+    def test_empty_reporting(self):
         # Used to be you'd get an exception reporting on nothing...
         cov = coverage.coverage()
         cov.erase()
         cov.report()
+
 
 class OmitIncludeTest(CoverageTest):
     """Test using `omit` and `include` when measuring code."""
