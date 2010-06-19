@@ -17,8 +17,10 @@ from coverage.misc import CoverageException
 
 # Module-level functions.  The original API to this module was based on
 # functions defined directly in the module, with a singleton of the coverage()
-# class.  That design hampered programmability.  Here we define the top-level
-# functions to create the singleton when they are first called.
+# class.  That design hampered programmability, so the current api uses
+# explicitly-created coverage objects.  But for backward compatibility, here we
+# define the top-level functions to create the singleton when they are first
+# called.
 
 # Singleton object for use with module-level functions.  The singleton is
 # created as needed when one of the module-level functions is called.

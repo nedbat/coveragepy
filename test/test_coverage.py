@@ -4,8 +4,6 @@
 import os, sys
 
 import coverage
-coverage.use_cache(0)
-
 from coverage.misc import CoverageException
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k

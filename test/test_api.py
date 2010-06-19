@@ -8,12 +8,34 @@ from coverage.backward import StringIO
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
-# This file uses the singleton module interface.  Prevent it from writing
-# .coverage files at exit.
-coverage.use_cache(0)
 
-class ApiTest(CoverageTest):
-    """Api-oriented tests for Coverage."""
+class SingletonApiTest(CoverageTest):
+    """Tests of the old-fashioned singleton API."""
+
+    def setUp(self):
+        super(SingletonApiTest, self).setUp()
+        # These tests use the singleton module interface.  Prevent it from
+        # writing .coverage files at exit.
+        coverage.use_cache(0)
+
+    def doReportWork(self, modname):
+        """Create a module named `modname`, then measure it."""
+        coverage.erase()
+
+        self.make_file(modname+".py", """\
+            a = 1
+            b = 2
+            if b == 3:
+                c = 4
+                d = 5
+                e = 6
+            f = 7
+            """)
+
+        # Import the python file, executing it.
+        coverage.start()
+        self.import_module(modname)             # pragma: recursive coverage
+        coverage.stop()                         # pragma: recursive coverage
 
     def testSimple(self):
         coverage.erase()
@@ -35,25 +57,6 @@ class ApiTest(CoverageTest):
         self.assertEqual(statements, [1,2,3,4,5])
         self.assertEqual(missing, [4])
         self.assertEqual(missingtext, "4")
-
-    def doReportWork(self, modname):
-        """Create a module named `modname`, then measure it."""
-        coverage.erase()
-
-        self.make_file(modname+".py", """\
-            a = 1
-            b = 2
-            if b == 3:
-                c = 4
-                d = 5
-                e = 6
-            f = 7
-            """)
-
-        # Import the python file, executing it.
-        coverage.start()
-        self.import_module(modname)             # pragma: recursive coverage
-        coverage.stop()                         # pragma: recursive coverage
 
     def testReport(self):
         self.doReportWork("mycode2")
@@ -82,6 +85,10 @@ class ApiTest(CoverageTest):
         coverage.report()
         rpt = re.sub(r"\s+", " ", self.stdout())
         self.assertTrue("mycode4 7 3 57% 4-6" in rpt)
+
+
+class ApiTest(CoverageTest):
+    """Api-oriented tests for Coverage."""
 
     def testUnexecutedFile(self):
         cov = coverage.coverage()
