@@ -34,7 +34,7 @@ class SingletonApiTest(CoverageTest):
 
         # Import the python file, executing it.
         coverage.start()
-        self.import_module(modname)             # pragma: recursive coverage
+        self.import_local_file(modname)         # pragma: recursive coverage
         coverage.stop()                         # pragma: recursive coverage
 
     def test_simple(self):
@@ -50,7 +50,7 @@ class SingletonApiTest(CoverageTest):
 
         # Import the python file, executing it.
         coverage.start()
-        self.import_module("mycode")            # pragma: recursive coverage
+        self.import_local_file("mycode")        # pragma: recursive coverage
         coverage.stop()                         # pragma: recursive coverage
 
         _, statements, missing, missingtext = coverage.analysis("mycode.py")
@@ -107,7 +107,7 @@ class ApiTest(CoverageTest):
 
         # Import the python file, executing it.
         cov.start()
-        self.import_module("mycode")            # pragma: recursive coverage
+        self.import_local_file("mycode")        # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
 
         _, statements, missing, _ = cov.analysis("not_run.py")
@@ -128,7 +128,7 @@ class ApiTest(CoverageTest):
         # Import the python file, executing it.
         cov = coverage.coverage()
         cov.start()
-        self.import_module("mymain")            # pragma: recursive coverage
+        self.import_local_file("mymain")        # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
 
         filename, _, _, _ = cov.analysis("mymain.py")
@@ -145,7 +145,7 @@ class ApiTest(CoverageTest):
         # already.
         cov = coverage.coverage()
         cov.start()
-        self.import_module("mymain")            # pragma: recursive coverage
+        self.import_local_file("mymain")        # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
 
         filename, _, _, _ = cov.analysis("mymain.py")
@@ -173,7 +173,7 @@ class ApiTest(CoverageTest):
         cov1 = coverage.coverage()
         self.assertEqual(cov1.config.cover_pylib, False)
         cov1.start()
-        self.import_module("mymain")            # pragma: recursive coverage
+        self.import_local_file("mymain")        # pragma: recursive coverage
         cov1.stop()                             # pragma: recursive coverage
 
         # some statements were marked executed in mymain.py
@@ -186,7 +186,7 @@ class ApiTest(CoverageTest):
         # Measure with the stdlib.
         cov2 = coverage.coverage(cover_pylib=True)
         cov2.start()
-        self.import_module("mymain")            # pragma: recursive coverage
+        self.import_local_file("mymain")        # pragma: recursive coverage
         cov2.stop()                             # pragma: recursive coverage
 
         # some statements were marked executed in mymain.py
@@ -217,7 +217,7 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."), ["datatest1.py"])
         cov = coverage.coverage()
         cov.start()
-        self.import_module("datatest1")         # pragma: recursive coverage
+        self.import_local_file("datatest1")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
         self.assertSameElements(os.listdir("."),
@@ -232,7 +232,7 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."), ["datatest2.py"])
         cov = coverage.coverage(data_file="cov.data")
         cov.start()
-        self.import_module("datatest2")         # pragma: recursive coverage
+        self.import_local_file("datatest2")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
         self.assertSameElements(os.listdir("."),
@@ -247,7 +247,7 @@ class ApiTest(CoverageTest):
         self.assertSameElements(os.listdir("."), ["datatest3.py"])
         cov = coverage.coverage(data_file="cov.data", data_suffix="14")
         cov.start()
-        self.import_module("datatest3")         # pragma: recursive coverage
+        self.import_local_file("datatest3")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
         self.assertSameElements(os.listdir("."),
@@ -267,7 +267,7 @@ class ApiTest(CoverageTest):
                                             ["datatest4.py", ".coveragerc"])
         cov = coverage.coverage()
         cov.start()
-        self.import_module("datatest4")         # pragma: recursive coverage
+        self.import_local_file("datatest4")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
         self.assertSameElements(os.listdir("."),
@@ -294,7 +294,7 @@ class OmitIncludeTest(CoverageTest):
 
         cov = coverage.coverage()
         cov.start()
-        self.import_module("b")
+        self.import_local_file("b")
         cov.stop()
         lines = cov.data.summary()
         self.assertEqual(lines['a.py'], 1)
@@ -311,7 +311,7 @@ class OmitIncludeTest(CoverageTest):
 
         cov = coverage.coverage(include=["a.py"])
         cov.start()
-        self.import_module("b")
+        self.import_local_file("b")
         cov.stop()
         lines = cov.data.summary()
         self.assertEqual(lines['a.py'], 1)
@@ -328,7 +328,7 @@ class OmitIncludeTest(CoverageTest):
 
         cov = coverage.coverage(omit=["a*"])
         cov.start()
-        self.import_module("b")
+        self.import_local_file("b")
         cov.stop()
         lines = cov.data.summary()
         self.assert_('a.py' not in lines)
@@ -345,7 +345,7 @@ class OmitIncludeTest(CoverageTest):
 
         cov = coverage.coverage(include=["a*"], omit=["aa.py"])
         cov.start()
-        self.import_module("ab")
+        self.import_local_file("ab")
         cov.stop()
         lines = cov.data.summary()
         self.assert_('aa.py' not in lines)

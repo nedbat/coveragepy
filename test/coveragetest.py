@@ -146,8 +146,13 @@ class CoverageTest(TestCase):
 
         return filename
 
-    def import_module(self, modname):
-        """Import the module named modname, and return the module object."""
+    def import_local_file(self, modname):
+        """Import a local file as a module.
+        
+        Opens a file in the current directory named `modname`.py, imports it
+        as `modname`, and returns the module object.
+        
+        """
         modfile = modname + '.py'
         f = open(modfile, 'r')
 
@@ -255,7 +260,7 @@ class CoverageTest(TestCase):
 
         try:                                    # pragma: recursive coverage
             # Import the python file, executing it.
-            mod = self.import_module(modname)
+            mod = self.import_local_file(modname)
         finally:                                # pragma: recursive coverage
             # Stop Coverage.
             cov.stop()
