@@ -83,6 +83,9 @@ class TreeMatcher(object):
     def __init__(self, directories):
         self.dirs = directories[:]
 
+    def __repr__(self):
+        return "<TreeMatcher %r>" % self.dirs
+
     def add(self, directory):
         """Add another directory to the list we match for."""
         self.dirs.append(directory)
@@ -103,6 +106,9 @@ class FnmatchMatcher(object):
     """A matcher for files by filename pattern."""
     def __init__(self, pats):
         self.pats = pats[:]
+
+    def __repr__(self):
+        return "<FnmatchMatcher %r>" % self.pats
 
     def match(self, fpath):
         """Does `fpath` match one of our filename patterns?"""
