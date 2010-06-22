@@ -280,73 +280,68 @@ class ApiTest(CoverageTest):
         cov.report()
 
 
-class OmitIncludeTest(CoverageTest):
-    """Test using `omit` and `include` when measuring code."""
+class SourceOmitIncludeTest(CoverageTest):
+    """Test using `source`, `omit` and `include` when measuring code."""
+
+    run_in_temp_dir = False
+
+    def setUp(self):
+        super(SourceOmitIncludeTest, self).setUp()
+        # Parent class saves and restores sys.path, we can just modify it.
+        sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
+
+    def coverage_usepkgs_summary(self, **kwargs):
+        """Run coverage on usepkgs and return the line summary.
+
+        Arguments are passed to the `coverage.coverage` constructor.
+
+        """
+        cov = coverage.coverage(**kwargs)
+        cov.start()
+        import usepkgs                      # pylint: disable-msg=F0401,W0612
+        cov.stop()
+        return cov.data.summary()
 
     def test_nothing_specified(self):
-        self.make_file("a.py", """\
-            a = 1
-            """)
-        self.make_file("b.py", """\
-            import a
-            b = 1
-            """)
+        lines = self.coverage_usepkgs_summary()
+        self.assertEqual(lines['p1a.py'], 3)
+        self.assertEqual(lines['p1b.py'], 3)
+        self.assertEqual(lines['p2a.py'], 3)
+        self.assertEqual(lines['p2b.py'], 3)
 
-        cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("b")
-        cov.stop()
-        lines = cov.data.summary()
-        self.assertEqual(lines['a.py'], 1)
-        self.assertEqual(lines['b.py'], 2)
+    def test_source_package(self):
+        lines = self.coverage_usepkgs_summary(source=["pkg1"])
+        self.assertEqual(lines['p1a.py'], 3)
+        self.assertEqual(lines['p1b.py'], 3)
+        self.assert_('p2a.py' not in lines)
+        self.assert_('p2b.py' not in lines)
+
+    def test_source_package_dotted(self):
+        lines = self.coverage_usepkgs_summary(source=["pkg1.p1b"])
+        self.assert_('p1a.py' not in lines)
+        self.assertEqual(lines['p1b.py'], 3)
+        self.assert_('p2a.py' not in lines)
+        self.assert_('p2b.py' not in lines)
 
     def test_include(self):
-        self.make_file("a.py", """\
-            a = 1
-            """)
-        self.make_file("b.py", """\
-            import a
-            b = 1
-            """)
-
-        cov = coverage.coverage(include=["a.py"])
-        cov.start()
-        self.import_local_file("b")
-        cov.stop()
-        lines = cov.data.summary()
-        self.assertEqual(lines['a.py'], 1)
-        self.assert_('b.py' not in lines)
+        lines = self.coverage_usepkgs_summary(include=["*/p1a.py"])
+        self.assertEqual(lines['p1a.py'], 3)
+        self.assert_('p1b.py' not in lines)
+        self.assert_('p2a.py' not in lines)
+        self.assert_('p2b.py' not in lines)
 
     def test_omit(self):
-        self.make_file("a.py", """\
-            a = 1
-            """)
-        self.make_file("b.py", """\
-            import a
-            b = 1
-            """)
-
-        cov = coverage.coverage(omit=["a*"])
-        cov.start()
-        self.import_local_file("b")
-        cov.stop()
-        lines = cov.data.summary()
-        self.assert_('a.py' not in lines)
-        self.assertEqual(lines['b.py'], 2)
+        lines = self.coverage_usepkgs_summary(omit=["*/p1a.py"])
+        self.assert_('p1a.py' not in lines)
+        self.assertEqual(lines['p1b.py'], 3)
+        self.assertEqual(lines['p2a.py'], 3)
+        self.assertEqual(lines['p2b.py'], 3)
 
     def test_omit_and_include(self):
-        self.make_file("aa.py", """\
-            a = 1
-            """)
-        self.make_file("ab.py", """\
-            import aa
-            b = 1
-            """)
-
-        cov = coverage.coverage(include=["a*"], omit=["aa.py"])
-        cov.start()
-        self.import_local_file("ab")
-        cov.stop()
-        lines = cov.data.summary()
-        self.assert_('aa.py' not in lines)
-        self.assertEqual(lines['ab.py'], 2)
+        lines = self.coverage_usepkgs_summary(
+                            include=["*/p1*"], omit=["*/p1a.py"]
+                            )
+        self.assert_('p1a.py' not in lines)
+        self.assertEqual(lines['p1b.py'], 3)
+        self.assert_('p2a.py' not in lines)
+        self.assert_('p2b.py' not in lines)

@@ -148,10 +148,10 @@ class CoverageTest(TestCase):
 
     def import_local_file(self, modname):
         """Import a local file as a module.
-        
+
         Opens a file in the current directory named `modname`.py, imports it
         as `modname`, and returns the module object.
-        
+
         """
         modfile = modname + '.py'
         f = open(modfile, 'r')
