@@ -161,6 +161,9 @@ class coverage(object):
         self.pylib_match = self.cover_match = None
         self.include_match = self.omit_match = None
 
+        # Only _harvest_data once per measurement cycle.
+        self._harvested = False
+
     def canonical_dir(self, f):
         """Return the canonical directory of the file `f`."""
         return os.path.split(self.file_locator.canonical_filename(f))[0]
@@ -238,7 +241,7 @@ class coverage(object):
 
     def _warn(self, msg):
         """Use `msg` as a warning."""
-        sys.stderr.write("Warning: " + msg + "\n")
+        sys.stderr.write("Coverage.py warning: " + msg + "\n")
 
     def _abs_files(self, files):
         """Return a list of absolute file names for the names in `files`."""
@@ -317,23 +320,13 @@ class coverage(object):
         if self.omit:
             self.omit_match = FnmatchMatcher(self.omit)
 
+        self._harvested = False
         self.collector.start()
 
     def stop(self):
         """Stop measuring code coverage."""
         self.collector.stop()
-
-        # If there are still entries in the source_pkgs list, then we never
-        # encountered those packages.
-        for pkg in self.source_pkgs:
-            self._warn("Source module %s was never encountered." % pkg)
-
         self._harvest_data()
-
-        # Find out if we got any data.
-        summary = self.data.summary()
-        if not summary:
-            self._warn("No data was collected.")
 
     def erase(self):
         """Erase previously-collected coverage data.
@@ -396,10 +389,27 @@ class coverage(object):
         self.data.combine_parallel_data()
 
     def _harvest_data(self):
-        """Get the collected data and reset the collector."""
-        self.data.add_line_data(self.collector.get_line_data())
-        self.data.add_arc_data(self.collector.get_arc_data())
-        self.collector.reset()
+        """Get the collected data and reset the collector.
+
+        Also warn about various problems collecting data.
+
+        """
+        if not self._harvested:
+            self.data.add_line_data(self.collector.get_line_data())
+            self.data.add_arc_data(self.collector.get_arc_data())
+            self.collector.reset()
+
+            # If there are still entries in the source_pkgs list, then we never
+            # encountered those packages.
+            for pkg in self.source_pkgs:
+                self._warn("Source module %s was never encountered." % pkg)
+
+            # Find out if we got any data.
+            summary = self.data.summary()
+            if not summary:
+                self._warn("No data was collected.")
+
+            self._harvested = True
 
     # Backward compatibility with version 1.
     def analysis(self, morf):

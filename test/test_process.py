@@ -243,3 +243,20 @@ class ProcessTest(CoverageTest):
             data = coverage.CoverageData()
             data.read_file(".coverage")
             self.assertEqual(data.summary()['fork.py'], 9)
+
+    def test_warnings(self):
+        self.make_file("hello.py", """\
+            import sys, os
+            print("Hello")
+            """)
+        out = self.run_command("coverage run --source=sys,xyzzy hello.py")
+
+        # This output is not in the same order it appears in real command line
+        # output, but this is how it appears in the combined stdout/stderr that
+        # run_command gives us.
+        self.assertMultiLineEqual(out, textwrap.dedent("""\
+            Hello
+            Coverage.py warning: Module sys has no python source.
+            Coverage.py warning: Source module xyzzy was never encountered.
+            Coverage.py warning: No data was collected.
+            """))

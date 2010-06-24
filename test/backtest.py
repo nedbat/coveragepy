@@ -18,6 +18,7 @@ except ImportError:
         """
         _, stdouterr = os.popen4(cmd)
         return status, stdouterr.read()
+
 else:
     def run_command(cmd, status=0):
         """Run a command in a subprocess.
@@ -25,7 +26,6 @@ else:
         Returns the exit status code and the combined stdout and stderr.
 
         """
-
         proc = subprocess.Popen(cmd, shell=True,
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT
