@@ -39,6 +39,9 @@ Version 3.4a1
   it needs to be.  A cache of tracing decisions was broken, but has now been
   fixed.
 
+- Python files with no statements, for example, empty ``__init__.py`` files,
+  are now reported as having zero statements instead of one.  Fixes `issue 1`_.
+
 - Reports now have a column of missed line counts rather than executed line
   counts, since developers should focus on reducing the missed lines to zero,
   rather than increasing the executed lines to varying targets.  Once
@@ -70,6 +73,7 @@ Version 3.4a1
 - Asking for an HTML report with no files now shows a nice error message rather
   than a cryptic failure ('int' object is unsubscriptable). Fixes `issue 59`_.
 
+.. _issue 1:  http://bitbucket.org/ned/coveragepy/issue/1/empty-__init__py-files-are-reported-as-1-executable
 .. _issue 34: http://bitbucket.org/ned/coveragepy/issue/34/enhanced-omit-globbing-handling
 .. _issue 36: http://bitbucket.org/ned/coveragepy/issue/36/provide-regex-style-omit
 .. _issue 46: http://bitbucket.org/ned/coveragepy/issue/46

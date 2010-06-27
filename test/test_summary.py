@@ -1,6 +1,9 @@
 """Test text-based summary reporting for coverage.py"""
 
-import os, re, sys
+import os, re, sys, textwrap
+
+import coverage
+from coverage.backward import StringIO
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
@@ -16,6 +19,8 @@ class SummaryTest(CoverageTest):
             a = 1
             print ('done')
             """)
+        # Parent class saves and restores sys.path, we can just modify it.
+        sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
 
     def report_from_command(self, cmd):
         """Return the report from the `cmd`, with some convenience added."""
@@ -105,3 +110,39 @@ class SummaryTest(CoverageTest):
         self.assertTrue("mybranch " in report)
         self.assertEqual(self.last_line_squeezed(report),
                                                         "mybranch 5 0 2 1 85%")
+
+class SummaryTest2(CoverageTest):
+    """Another bunch of summary tests."""
+    # This class exists because tests naturally clump into classes based on the
+    # needs of their setUp and tearDown, rather than the product features they
+    # are testing.  There's probably a better way to organize these.
+
+    run_in_temp_dir = False
+
+    def setUp(self):
+        super(SummaryTest2, self).setUp()
+        # Parent class saves and restores sys.path, we can just modify it.
+        sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
+
+    def test_empty_files(self):
+        cov = coverage.coverage()
+        cov.start()
+        import usepkgs                      # pylint: disable-msg=F0401,W0612
+        cov.stop()
+
+        repout = StringIO()
+        cov.report(file=repout, show_missing=False)
+
+        self.assertMultiLineEqual(repout.getvalue(), textwrap.dedent("""\
+            Name                         Stmts   Miss  Cover
+            ------------------------------------------------
+            test\modules\pkg1\__init__       1      0   100%
+            test\modules\pkg1\p1a            3      0   100%
+            test\modules\pkg1\p1b            3      0   100%
+            test\modules\pkg2\__init__       0      0   100%
+            test\modules\pkg2\p2a            3      0   100%
+            test\modules\pkg2\p2b            3      0   100%
+            test\modules\usepkgs             2      0   100%
+            ------------------------------------------------
+            TOTAL                           15      0   100%
+            """))

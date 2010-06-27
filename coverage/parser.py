@@ -85,6 +85,7 @@ class CodeParser(object):
         excluding = False
         prev_toktype = token.INDENT
         first_line = None
+        empty = True
 
         tokgen = tokenize.generate_tokens(StringIO(self.text).readline)
         for toktype, ttext, (slineno, _), (elineno, _), ltext in tokgen:
@@ -128,6 +129,7 @@ class CodeParser(object):
 
             if ttext.strip() and toktype != tokenize.COMMENT:
                 # A non-whitespace token.
+                empty = False
                 if first_line is None:
                     # The token is not whitespace, and is the first in a
                     # statement.
@@ -141,7 +143,8 @@ class CodeParser(object):
             prev_toktype = toktype
 
         # Find the starts of the executable statements.
-        self.statement_starts.update(self.byte_parser._find_statements())
+        if not empty:
+            self.statement_starts.update(self.byte_parser._find_statements())
 
     def first_line(self, line):
         """Return the first line number of the statement including `line`."""
