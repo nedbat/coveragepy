@@ -248,7 +248,13 @@ def _opcode(name):
 
 def _opcode_set(*names):
     """Return a set of opcodes by the names in `names`."""
-    return set([_opcode(name) for name in names])
+    s = set()
+    for name in names:
+        try:
+            s.add(_opcode(name))
+        except KeyError:
+            pass
+    return s
 
 # Opcodes that leave the code object.
 OPS_CODE_END = _opcode_set('RETURN_VALUE')
