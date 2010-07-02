@@ -265,7 +265,9 @@ OPS_CHUNK_END = _opcode_set(
 OPS_CHUNK_BEGIN = _opcode_set('JUMP_ABSOLUTE', 'JUMP_FORWARD')
 
 # Opcodes that push a block on the block stack.
-OPS_PUSH_BLOCK = _opcode_set('SETUP_LOOP', 'SETUP_EXCEPT', 'SETUP_FINALLY')
+OPS_PUSH_BLOCK = _opcode_set(
+    'SETUP_LOOP', 'SETUP_EXCEPT', 'SETUP_FINALLY', 'SETUP_WITH'
+    )
 
 # Block types for exception handling.
 OPS_EXCEPT_BLOCKS = _opcode_set('SETUP_EXCEPT', 'SETUP_FINALLY')
