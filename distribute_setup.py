@@ -46,19 +46,21 @@ except ImportError:
             args = [quote(arg) for arg in args]
         return os.spawnl(os.P_WAIT, sys.executable, *args) == 0
 
-DEFAULT_VERSION = "0.6.8"
+DEFAULT_VERSION = "0.6.13"
 DEFAULT_URL = "http://pypi.python.org/packages/source/d/distribute/"
+SETUPTOOLS_FAKED_VERSION = "0.6c11"
+
 SETUPTOOLS_PKG_INFO = """\
 Metadata-Version: 1.0
 Name: setuptools
-Version: 0.6c9
+Version: %s
 Summary: xxxx
 Home-page: xxx
 Author: xxx
 Author-email: xxx
 License: xxx
 Description: xxx
-"""
+""" % SETUPTOOLS_FAKED_VERSION
 
 
 def _install(tarball):
@@ -79,7 +81,9 @@ def _install(tarball):
 
         # installing
         log.warn('Installing Distribute')
-        assert _python_cmd('setup.py', 'install')
+        if not _python_cmd('setup.py', 'install'):
+            log.warn('Something went wrong during the installation.')
+            log.warn('See the error message above.')
     finally:
         os.chdir(old_wd)
 
@@ -199,6 +203,29 @@ def download_setuptools(version=DEFAULT_VERSION, download_base=DEFAULT_URL,
                 dst.close()
     return os.path.realpath(saveto)
 
+def _no_sandbox(function):
+    def __no_sandbox(*args, **kw):
+        try:
+            from setuptools.sandbox import DirectorySandbox
+            if not hasattr(DirectorySandbox, '_old'):
+                def violation(*args):
+                    pass
+                DirectorySandbox._old = DirectorySandbox._violation
+                DirectorySandbox._violation = violation
+                patched = True
+            else:
+                patched = False
+        except ImportError:
+            patched = False
+
+        try:
+            return function(*args, **kw)
+        finally:
+            if patched:
+                DirectorySandbox._violation = DirectorySandbox._old
+                del DirectorySandbox._old
+
+    return __no_sandbox
 
 def _patch_file(path, content):
     """Will backup the file then patch it"""
@@ -216,25 +243,16 @@ def _patch_file(path, content):
         f.close()
     return True
 
+_patch_file = _no_sandbox(_patch_file)
 
 def _same_content(path, content):
     return open(path).read() == content
 
-
 def _rename_path(path):
     new_name = path + '.OLD.%s' % time.time()
     log.warn('Renaming %s into %s', path, new_name)
-    try:
-        from setuptools.sandbox import DirectorySandbox
-        def _violation(*args):
-            pass
-        DirectorySandbox._violation = _violation
-    except ImportError:
-        pass
-
     os.rename(path, new_name)
     return new_name
-
 
 def _remove_flat_installation(placeholder):
     if not os.path.isdir(placeholder):
@@ -269,6 +287,7 @@ def _remove_flat_installation(placeholder):
                      'Setuptools distribution', element)
     return True
 
+_remove_flat_installation = _no_sandbox(_remove_flat_installation)
 
 def _after_install(dist):
     log.warn('After install bootstrap.')
@@ -280,17 +299,20 @@ def _create_fake_setuptools_pkg_info(placeholder):
         log.warn('Could not find the install location')
         return
     pyver = '%s.%s' % (sys.version_info[0], sys.version_info[1])
-    setuptools_file = 'setuptools-0.6c9-py%s.egg-info' % pyver
+    setuptools_file = 'setuptools-%s-py%s.egg-info' % \
+            (SETUPTOOLS_FAKED_VERSION, pyver)
     pkg_info = os.path.join(placeholder, setuptools_file)
     if os.path.exists(pkg_info):
         log.warn('%s already exists', pkg_info)
         return
+
     log.warn('Creating %s', pkg_info)
     f = open(pkg_info, 'w')
     try:
         f.write(SETUPTOOLS_PKG_INFO)
     finally:
         f.close()
+
     pth_file = os.path.join(placeholder, 'setuptools.pth')
     log.warn('Creating %s', pth_file)
     f = open(pth_file, 'w')
@@ -299,6 +321,7 @@ def _create_fake_setuptools_pkg_info(placeholder):
     finally:
         f.close()
 
+_create_fake_setuptools_pkg_info = _no_sandbox(_create_fake_setuptools_pkg_info)
 
 def _patch_egg_dir(path):
     # let's check if it's already patched
@@ -318,6 +341,7 @@ def _patch_egg_dir(path):
         f.close()
     return True
 
+_patch_egg_dir = _no_sandbox(_patch_egg_dir)
 
 def _before_install():
     log.warn('Before install bootstrap.')
@@ -337,8 +361,8 @@ def _under_prefix(location):
                 if len(args) > index:
                     top_dir = args[index+1]
                     return location.startswith(top_dir)
-            elif option == '--user' and USER_SITE is not None:
-                return location.startswith(USER_SITE)
+        if arg == '--user' and USER_SITE is not None:
+            return location.startswith(USER_SITE)
     return True
 
 
@@ -397,6 +421,9 @@ def _fake_setuptools():
 def _relaunch():
     log.warn('Relaunching...')
     # we have to relaunch the process
+    # pip marker to avoid a relaunch bug
+    if sys.argv[:3] == ['-c', 'install', '--single-version-externally-managed']:
+        sys.argv[0] = 'setup.py'
     args = [sys.executable] + sys.argv
     sys.exit(subprocess.call(args))
 
