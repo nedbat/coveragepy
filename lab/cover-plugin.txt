@@ -1,0 +1,54 @@
+== nose cover plugin flow ==
+
+- configure:
+    set self.coverPackages: list of names of packages
+
+- begin:
+    self.skipModules = sys.modules.keys()[:]
+    set coverage.exclude (why?)
+    coverage.start
+
+
+- report:
+    coverage.stop()
+    modules = [ module
+            for name, module in sys.modules.items()
+            if self.wantModuleCoverage(name, module) ]
+    coverage.report(modules)
+
+- wantModuleCoverage(name, module):
+    if self.coverPackages:
+        for package in self.coverPackages:
+            want_it = False
+            if name.startswith(package):
+                if self.coverTests:
+                    want_it = True
+                else:
+                    want_it = not self.conf.testMatch.search(name)
+                if want_it:
+                    return True
+    if name in self.skipModules:
+        return False
+
+    if self.conf.testMatch.search(name) and not self.coverTests:
+        return False
+
+    return not self.coverPackages
+
+- wantFile:
+
+
+
+
+source, include, omit:
+
+    # self.source is a list of canonical directories for the packages.
+    # canon_dir is the canonical directory containing the source file.
+
+    if self.source:
+        for s in self.source:
+            if is_contained(s, canon_dir):
+                break
+        else:
+            # This file wasn't in any source.
+            return False
