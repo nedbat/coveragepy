@@ -104,4 +104,9 @@ if not sys.platform.startswith('java'):
             ],
         ))
 
+if sys.version_info >= (3, 0):
+    setup_args.update(dict(
+        use_2to3=False,
+        ))
+
 setup(**setup_args)
