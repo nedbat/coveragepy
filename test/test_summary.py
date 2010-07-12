@@ -133,16 +133,17 @@ class SummaryTest2(CoverageTest):
         repout = StringIO()
         cov.report(file=repout, show_missing=False)
 
-        self.assertMultiLineEqual(repout.getvalue(), textwrap.dedent("""\
+        report = repout.getvalue().replace('\\', '/')
+        self.assertMultiLineEqual(report, textwrap.dedent("""\
             Name                         Stmts   Miss  Cover
             ------------------------------------------------
-            test\modules\pkg1\__init__       1      0   100%
-            test\modules\pkg1\p1a            3      0   100%
-            test\modules\pkg1\p1b            3      0   100%
-            test\modules\pkg2\__init__       0      0   100%
-            test\modules\pkg2\p2a            3      0   100%
-            test\modules\pkg2\p2b            3      0   100%
-            test\modules\usepkgs             2      0   100%
+            test/modules/pkg1/__init__       1      0   100%
+            test/modules/pkg1/p1a            3      0   100%
+            test/modules/pkg1/p1b            3      0   100%
+            test/modules/pkg2/__init__       0      0   100%
+            test/modules/pkg2/p2a            3      0   100%
+            test/modules/pkg2/p2b            3      0   100%
+            test/modules/usepkgs             2      0   100%
             ------------------------------------------------
             TOTAL                           15      0   100%
             """))
