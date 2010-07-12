@@ -69,7 +69,6 @@ setup_args = dict(
 
     packages = [
         'coverage',
-        'coverage.runners',
         ],
 
     package_data = {
@@ -81,12 +80,6 @@ setup_args = dict(
     entry_points = {
         'console_scripts': [
             'coverage = coverage:main',
-            ],
-        'pytest11': [
-            'coverage = coverage.runners.pytestplugin',
-            ],
-        'nose.plugins': [
-            'coverage = coverage.runners.noseplugin:Coverage',
             ],
         },
 
