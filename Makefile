@@ -19,7 +19,7 @@ clean:
 	-rm -f .coverage .coverage.* coverage.xml
 	-rm -f $(TEST_ZIP)
 	-rm -rf test/eggsrc/build test/eggsrc/dist test/eggsrc/*.egg-info
-	-rm -f setuptools-*.egg
+	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	-rm -rf doc/_build/*
 
 LINTABLE = coverage setup.py test
