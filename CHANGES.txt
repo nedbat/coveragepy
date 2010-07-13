@@ -29,15 +29,11 @@ Version 3.4a1
   modules it measures. This can speed execution and reduce the amount of data
   during reporting. Thanks Zooko.
 
-- Coverage.py now installs a test-runner plugin for `nose`_ and `py.test`_.
-  Thanks, David Stanek, holger krekel, and Ross Lawley.
-
-.. _nose: http://somethingaboutorange.com/mrl/projects/nose/
-.. _py.test: http://pytest.org
-
 - Since coverage.py 3.1, using the Python trace function has been slower than
   it needs to be.  A cache of tracing decisions was broken, but has now been
   fixed.
+
+- Python 2.7 and 3.2 have introduced new opcodes that are now supported.
 
 - Python files with no statements, for example, empty ``__init__.py`` files,
   are now reported as having zero statements instead of one.  Fixes `issue 1`_.
