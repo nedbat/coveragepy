@@ -511,8 +511,9 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes("run --source=quux,hi.there,/home/bar foo.py",
             """\
             .coverage(cover_pylib=None, data_suffix=None, timid=None,
-                branch=None, config_file=True, source=["quux", "hi.there", "/home/bar"],
-                include=None, omit=None)
+                branch=None, config_file=True,
+                source=["quux", "hi.there", "/home/bar"], include=None,
+                omit=None)
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
