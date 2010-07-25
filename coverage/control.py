@@ -143,18 +143,18 @@ class coverage(object):
         if not self.config.cover_pylib:
             # Look at where the "os" module is located.  That's the indication
             # for "installed with the interpreter".
-            os_dir = self.canonical_dir(os.__file__)
+            os_dir = self._canonical_dir(os.__file__)
             self.pylib_dirs.append(os_dir)
 
             # In a virtualenv, there're actually two lib directories. Find the
             # other one.  This is kind of ad-hoc, but it works.
-            random_dir = self.canonical_dir(random.__file__)
+            random_dir = self._canonical_dir(random.__file__)
             if random_dir != os_dir:
                 self.pylib_dirs.append(random_dir)
 
         # To avoid tracing the coverage code itself, we skip anything located
         # where we are.
-        self.cover_dir = self.canonical_dir(__file__)
+        self.cover_dir = self._canonical_dir(__file__)
 
         # The matchers for _should_trace, created when tracing starts.
         self.source_match = None
@@ -164,7 +164,7 @@ class coverage(object):
         # Only _harvest_data once per measurement cycle.
         self._harvested = False
 
-    def canonical_dir(self, f):
+    def _canonical_dir(self, f):
         """Return the canonical directory of the file `f`."""
         return os.path.split(self.file_locator.canonical_filename(f))[0]
 
