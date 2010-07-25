@@ -29,8 +29,8 @@ multiple lines.
 Boolean values can be specified as ``on``, ``off``, ``true``, ``false``, ``1``,
 or ``0`` and are case-insensitive.
 
-Many sections and values correspond roughly to commands and options in the
-command-line interface.
+Many sections and values correspond roughly to commands and options in
+the :ref:`command-line interface <cmd>`.
 
 Here's a sample configuration file::
 
@@ -84,6 +84,7 @@ many processes.
 ``timid`` (boolean, default False): use a simpler but slower trace method.
 Try this if you get seemingly impossible results.
 
+.. TODO missing: source, include, omit.
 
 [report]
 --------
@@ -102,11 +103,14 @@ found.
 ``omit`` (multi-string): a list of file prefixes.  If a source file begins with
 one of these prefixes, it will be omitted from the report.
 
+.. TODO: omit is file patterns now
+.. TODO missing: include
 
 [html]
 ------
 
-Values particular to HTML reporting.
+Values particular to HTML reporting.  The values in the ``[report]`` section
+also apply to HTML output.
 
 ``directory`` (string, default "htmlcov"): where to write the HTML report files.
 
@@ -114,6 +118,7 @@ Values particular to HTML reporting.
 [xml]
 -----
 
-Values particular to XML reporting.
+Values particular to XML reporting.  The values in the ``[report]`` section
+also apply to XML output.
 
 ``output`` (string, default "coverage.xml"): where to write the XML report.

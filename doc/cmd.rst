@@ -13,8 +13,8 @@ Coverage command line usage
 
 .. highlight:: console
 
-When you install coverage.py, a command-line script simply called coverage is
-placed in your Python scripts directory.  Coverage has a number of commands
+When you install coverage.py, a command-line script simply called ``coverage``
+is placed in your Python scripts directory.  Coverage has a number of commands
 which determine the action performed:
 
 * **run** -- Run a Python program and collect execution data.
@@ -36,12 +36,19 @@ which determine the action performed:
 Help is available with ``coverage help``, or with the ``--help`` switch on any
 other command.
 
-Version information for coverage.py can be displayed with ``--version``.
+Version information for coverage.py can be displayed with
+``coverage --version``.
 
 Any command can use a configuration file by specifying it with the
-``--rcfile=FILE`` command-line switch.  See :ref:`Configuration Files <config>`
-for more details.
+``--rcfile=FILE`` command-line switch.  Any option you can set on the command
+line can also be set in the configuration file.  This can be a better way to
+control coverage.py since the configuration file can be checked into source
+control, and can provide options that other invocation techniques (like test
+runner plugins) may not offer. See :ref:`Configuration Files <config>` for more
+details.
 
+
+.. _cmd_execution:
 
 Execution
 ---------
@@ -53,51 +60,68 @@ coverage command::
     blah blah ..your program's output.. blah blah
 
 Your program runs just as if it had been invoked with the Python command line.
-Arguments after your file name are passed to your program in ``sys.argv``.
+Arguments after your file name are passed to your program as usual in
+``sys.argv``.
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
 
-By default, coverage does not measure code installed with the Python
-interpreter.  If you want to measure that code as well as your own, add the
-``-L`` flag.
+You can specify the code to measure with the ``--source``, ``--include``, and
+``--omit`` switches.  See :ref:`Specifying source files <source_execution>` for
+more details.
 
-If your coverage results seems to be overlooking code that you know has been
+By default, coverage does not measure code installed with the Python
+interpreter, for example, the standard library. If you want to measure that
+code as well as your own, add the ``-L`` flag.
+
+If your coverage results seem to be overlooking code that you know has been
 executed, try running coverage again with the ``--timid`` flag.  This uses a
 simpler but slower trace method.  Projects that use DecoratorTools, including
 TurboGears, will need to use ``--timid`` to get correct results.  This option
 can also be enabled by setting the environment variable COVERAGE_OPTIONS to
 ``--timid``.
 
+If you are measuring coverage in a multi-process program, or across a number of
+machines, you'll want the ``--parallel-mode`` switch to keep the data separate
+during measurement.  See :ref:`Combining data files <cmd_combining>` below.
+
+
+.. _cmd_datafile:
 
 Data file
 ---------
 
 Coverage collects execution data in a file called ".coverage".  If need be, you
-can set a new file name with the COVERAGE_FILE environment variable.  By default,
-each run of your program starts with an empty data set. If you need to run your
-program multiple times to get complete data (for example, because you need to
-supply disjoint options), you can accumulate data across runs with the ``-a``
-flag on the **run** command.
+can set a new file name with the COVERAGE_FILE environment variable.
+
+By default,each run of your program starts with an empty data set. If you need
+to run your program multiple times to get complete data (for example, because
+you need to supply disjoint options), you can accumulate data across runs with
+the ``-a`` flag on the **run** command.
 
 To erase the collected data, use the **erase** command::
 
     $ coverage erase
 
 
+.. _cmd_combining:
 
 Combining data files
 --------------------
 
-If you need to collect coverage data from different machines, coverage can
-combine multiple files into one for reporting.  Use the ``-p`` flag during
-execution to append a machine name and process id to the .coverage data file
-name.
+If you need to collect coverage data from different machines or processes,
+coverage can combine multiple files into one for reporting. Use the ``-p`` flag
+during execution to append a machine name and process id to the .coverage data
+file name.
 
 Once you have created a number of these files, you can copy them all to a single
 directory, and use the **combine** command to combine them into one .coverage
-data file.
+data file::
 
+    $ coverage combine
+
+
+.. _cmd_reporting:
 
 Reporting
 ---------
@@ -145,7 +169,13 @@ this will omit any modules in the django directory::
 
     $ coverage report -m --omit django
 
+.. TODO: modules are morfs.
+.. TODO: omit is file patterns now
+.. TODO Missing: --include
+.. TODO Missing: -i
 
+
+.. _cmd_html:
 
 HTML annotation
 ---------------
@@ -163,10 +193,16 @@ Lines are highlighted green for executed, red for missing, and gray for
 excluded.  The counts at the top of the file are buttons to turn on and off
 the highlighting.
 
-The ``-d`` argument specifies an output directory, and is required::
+The ``-d`` argument specifies an output directory, defaulting to "htmlcov"::
 
-    $ coverage html -d covhtml
+    $ coverage html -d coverage_html
 
+.. TODO: modules are morfs.
+.. TODO Missing: -i
+.. TODO Missing: --omit --include
+
+
+.. _cmd_annotation:
 
 Text annotation
 ---------------
@@ -195,6 +231,12 @@ For example::
     >     else:
     >         a = 2
 
+.. TODO: modules are morfs.
+.. TODO Missing: -i
+.. TODO Missing: --omit --include
+
+
+.. _cmd_xml:
 
 XML reporting
 -------------
@@ -204,6 +246,13 @@ compatible with `Cobertura`_.
 
 .. _Cobertura: http://cobertura.sourceforge.net
 
+.. TODO: modules are morfs.
+.. TODO Missing: -i
+.. TODO Missing: --omit --include
+.. TODO Missing: --output-xml
+
+
+.. _cmd_debug:
 
 Diagnostics
 -----------

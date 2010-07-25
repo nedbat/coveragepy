@@ -10,10 +10,10 @@ Branch coverage measurement
    :linenothreshold: 5
 
 
-Coverage.py now supports branch coverage measurement.  Where a line in your
-program could jump to more than one next line, coverage.py tracks which of
-those destinations are actually visited, and flags lines that haven't visited
-all of their possible destinations.
+In addition to the usual statement coverage, Coverage.py also supports branch
+coverage measurement. Where a line in your program could jump to more than one
+next line, coverage.py tracks which of those destinations are actually visited,
+and flags lines that haven't visited all of their possible destinations.
 
 For example::
 

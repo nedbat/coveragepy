@@ -8,15 +8,15 @@ Measuring subprocesses
 
 
 Complex test suites may spawn subprocesses to run tests, either to run them in
-parallel, or because subprocess behavior is an important part of the code under
-test.  Measuring coverage in those subprocesses can be tricky because you have
-to modify the code spawning the process to invoke coverage.py.
+parallel, or because subprocess behavior is an important part of the system
+under test. Measuring coverage in those subprocesses can be tricky because you
+have to modify the code spawning the process to invoke coverage.py.
 
 There's an easier way to do it: coverage.py includes a function,
 :func:`coverage.process_startup` designed to be invoked when Python starts.  It
 examines the ``COVERAGE_PROCESS_START`` environment variable, and if it is set,
-begins coverage measurement. Its value will be used as the name of the
-:ref:`configuration file <config>` to use.
+begins coverage measurement. The environment variable's value will be used as
+the name of the :ref:`configuration file <config>` to use.
 
 When using this technique, be sure to set the parallel option to true so that
 multiple coverage.py runs will each write their data to a distinct file.

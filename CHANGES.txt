@@ -22,8 +22,8 @@ Version 3.4a1
   never encountered at all, or if no data is collected.
 
 - The reporting commands (report, annotate, html, and xml) now have an
-  ``--include`` switch to restrict reporting to modules beginning with those
-  prefixes, similar to the existing ``--omit`` switch. Thanks, Zooko.
+  ``--include`` switch to restrict reporting to modules matching those file
+  patterns, similar to the existing ``--omit`` switch. Thanks, Zooko.
 
 - The run command now supports ``--include`` and ``--omit`` to control what
   modules it measures. This can speed execution and reduce the amount of data

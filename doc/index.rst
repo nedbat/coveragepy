@@ -91,7 +91,7 @@ History
 
 Coverage.py was originally written by `Gareth Rees`_.
 Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
-`many others`_.
+`many others`_.  The :ref:`change history <changes>` has all the details.
 
 .. _Gareth Rees:    http://garethrees.org/
 .. _Ned Batchelder: http://nedbatchelder.com
@@ -107,6 +107,7 @@ More information
     cmd
     config
     api
+    source
     excluding
     branch
     subprocess

@@ -1,4 +1,4 @@
-.. _change:
+.. _changes:
 
 ====================================
 Major change history for coverage.py
