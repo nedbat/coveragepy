@@ -45,10 +45,6 @@ Version 3.4
   ``--include`` switch to restrict reporting to modules matching those file
   patterns, similar to the existing ``--omit`` switch. Thanks, Zooko.
 
-- Since coverage.py 3.1, using the Python trace function has been slower than
-  it needs to be.  A cache of tracing decisions was broken, but has now been
-  fixed.
-
 - Python files with no statements, for example, empty ``__init__.py`` files,
   are now reported as having zero statements instead of one.  Fixes `issue 1`_.
 
@@ -71,28 +67,12 @@ Version 3.4
 - Doctest text files are no longer recorded in the coverage data, since they
   can't be reported anyway.  Fixes `issue 52`_ and `issue 61`_.
 
-- Source files can have more than one dot in them (foo.test.py), and will be
-  treated properly while reporting.  Fixes `issue 46`_.
-
-- Source files with DOS line endings are now properly tokenized for syntax
-  coloring on non-DOS machines.  Fixes `issue 53`_.
-
-- Unusual code structure that confused exits from methods with exits from
-  classes is now properly analyzed.  See `issue 62`_.
-
-- Asking for an HTML report with no files now shows a nice error message rather
-  than a cryptic failure ('int' object is unsubscriptable). Fixes `issue 59`_.
-
 .. _issue 1:  http://bitbucket.org/ned/coveragepy/issue/1/empty-__init__py-files-are-reported-as-1-executable
 .. _issue 34: http://bitbucket.org/ned/coveragepy/issue/34/enhanced-omit-globbing-handling
 .. _issue 36: http://bitbucket.org/ned/coveragepy/issue/36/provide-regex-style-omit
-.. _issue 46: http://bitbucket.org/ned/coveragepy/issue/46
-.. _issue 53: http://bitbucket.org/ned/coveragepy/issue/53
 .. _issue 52: http://bitbucket.org/ned/coveragepy/issue/52/doctesttestfile-confuses-source-detection
 .. _issue 56: http://bitbucket.org/ned/coveragepy/issue/56
 .. _issue 61: http://bitbucket.org/ned/coveragepy/issue/61/annotate-i-doesnt-work
-.. _issue 62: http://bitbucket.org/ned/coveragepy/issue/62
-.. _issue 59: http://bitbucket.org/ned/coveragepy/issue/59/html-report-fails-with-int-object-is
 
 
 Version 3.3.1 --- 6 March 2010
