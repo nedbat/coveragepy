@@ -79,8 +79,7 @@ Some test runners provide coverage integration to make it easy to use coverage
 while running tests.  For example, `nose`_ has a `cover plug-in`_.
 
 You can fine-tune coverage's view of your code by directing it to ignore parts
-that you know aren't interesting.  See :ref:`Excluding Code <excluding>` for
-details.
+that you know aren't interesting.  See :ref:`excluding` for details.
 
 .. _nose:           http://somethingaboutorange.com/mrl/projects/nose
 .. _cover plug-in:  http://somethingaboutorange.com/mrl/projects/nose/0.11.1/plugins/cover.html

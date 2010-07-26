@@ -65,7 +65,7 @@ Version 3.2 --- 5 December 2009
 
 - Branch coverage: coverage.py can tell you which branches didn't have both (or
   all) choices executed, even where the choice doesn't affect which lines were
-  executed.  See :ref:`Branch Coverage <branch>` for more details.
+  executed.  See :ref:`branch` for more details.
 
 - The table of contents in the HTML report is now sortable: click the headers
   on any column.  The sorting is persisted so that subsequent reports are

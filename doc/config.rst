@@ -12,7 +12,7 @@ specification of options that are otherwise only available in the
 :ref:`API <api>`.
 
 Configuration files also make it easier to get coverage testing of spawned
-sub-processes.  See :ref:`Subprocess measurement <subprocess>` for more details.
+sub-processes.  See :ref:`subprocess` for more details.
 
 
 
@@ -77,14 +77,22 @@ standard library.
 ``data_file`` (string, default ".coverage"): the name of the data file to use
 for storing or reporting coverage.
 
+``include`` (multi-string): a list of filename patterns, the files to include
+in measurement or reporting.  See :ref:`source` for details.
+
+``omit`` (multi-string): a list of filename patterns, the files to leave out
+of measurement or reporting.  See :ref:`source` for details.
+
 ``parallel`` (boolean, default False): append the machine name, process
 id and random number to the data file name to simplify collecting data from
-many processes.
+many processes.  See :ref:`cmd_combining` for more information.
+
+``source`` (multi-string): a list of packages or directories, the source to
+measure during execution.  See :ref:`source` for details.
 
 ``timid`` (boolean, default False): use a simpler but slower trace method.
 Try this if you get seemingly impossible results.
 
-.. TODO missing: source, include, omit.
 
 [report]
 --------
@@ -100,11 +108,12 @@ supply the "pragma: no cover" regex if you still want to use it.
 ``ignore_errors`` (boolean, default False): ignore source code that can't be
 found.
 
-``omit`` (multi-string): a list of file prefixes.  If a source file begins with
-one of these prefixes, it will be omitted from the report.
+``include`` (multi-string): a list of filename patterns, the files to include
+in reporting.  See :ref:`source` for details.
 
-.. TODO: omit is file patterns now
-.. TODO missing: include
+``omit`` (multi-string): a list of filename patterns, the files to leave out
+of reporting.  See :ref:`source` for details.
+
 
 [html]
 ------

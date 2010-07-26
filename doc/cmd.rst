@@ -44,8 +44,7 @@ Any command can use a configuration file by specifying it with the
 line can also be set in the configuration file.  This can be a better way to
 control coverage.py since the configuration file can be checked into source
 control, and can provide options that other invocation techniques (like test
-runner plugins) may not offer. See :ref:`Configuration Files <config>` for more
-details.
+runner plugins) may not offer. See :ref:`config` for more details.
 
 
 .. _cmd_execution:
@@ -83,7 +82,7 @@ can also be enabled by setting the environment variable COVERAGE_OPTIONS to
 
 If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate
-during measurement.  See :ref:`Combining data files <cmd_combining>` below.
+during measurement.  See :ref:`cmd_combining` below.
 
 
 .. _cmd_datafile:
@@ -111,7 +110,7 @@ Combining data files
 
 If you need to collect coverage data from different machines or processes,
 coverage can combine multiple files into one for reporting. Use the ``-p`` flag
-during execution to append a machine name and process id to the .coverage data
+during execution to append distinguishing information to the .coverage data
 file name.
 
 Once you have created a number of these files, you can copy them all to a single
@@ -126,8 +125,29 @@ data file::
 Reporting
 ---------
 
-Coverage provides a few styles of reporting.  The simplest is a textual summary
-produced with **report**::
+Coverage provides a few styles of reporting, with the ``report``, ``html``,
+``annotate``, and ``xml`` commands.  They share a number of common options.
+
+The command-line arguments are module or file names to report on, if you'd like
+to report on a subset of the data collected.
+
+The ``--include`` and ``--omit`` flags specify lists of filename patterns. They
+control which files to report on, and are described in more detail
+in :ref:`source`.
+
+The ``-i`` or ``--ignore-errors`` switch tells coverage.py to ignore problems
+encountered trying to find source files to report on.  This can be useful if
+some files are missing, or if your Python execution is tricky enough that file
+names are synthesized without real source files.
+
+
+
+.. _cmd_summary:
+
+Coverage summary
+----------------
+
+The simplest reporting is a textual summary produced with **report**::
 
     $ coverage report
     Name                      Stmts   Exec  Cover
@@ -164,15 +184,7 @@ command line::
     -------------------------------------------------------
     TOTAL                        76     66    87%
 
-The ``--omit`` flag omits files that begin with specified prefixes. For example,
-this will omit any modules in the django directory::
-
-    $ coverage report -m --omit django
-
-.. TODO: modules are morfs.
-.. TODO: omit is file patterns now
-.. TODO Missing: --include
-.. TODO Missing: -i
+Other common reporting options are described above in :ref:`cmd_reporting`.
 
 
 .. _cmd_html:
@@ -197,9 +209,7 @@ The ``-d`` argument specifies an output directory, defaulting to "htmlcov"::
 
     $ coverage html -d coverage_html
 
-.. TODO: modules are morfs.
-.. TODO Missing: -i
-.. TODO Missing: --omit --include
+Other common reporting options are described above in :ref:`cmd_reporting`.
 
 
 .. _cmd_annotation:
@@ -231,9 +241,7 @@ For example::
     >     else:
     >         a = 2
 
-.. TODO: modules are morfs.
-.. TODO Missing: -i
-.. TODO Missing: --omit --include
+Other common reporting options are described above in :ref:`cmd_reporting`.
 
 
 .. _cmd_xml:
@@ -246,10 +254,9 @@ compatible with `Cobertura`_.
 
 .. _Cobertura: http://cobertura.sourceforge.net
 
-.. TODO: modules are morfs.
-.. TODO Missing: -i
-.. TODO Missing: --omit --include
-.. TODO Missing: --output-xml
+You can specify the name of the output file with the ``--output-xml`` switch.
+
+Other common reporting options are described above in :ref:`cmd_reporting`.
 
 
 .. _cmd_debug:

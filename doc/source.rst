@@ -70,7 +70,6 @@ collected, so the data you're looking for may not be in the data available for
 reporting.
 
 Note that these are ways of specifying files to measure.  You can also exclude
-individual source lines.  See :ref:`Excluding code from coverage <excluding>`
-for details.
+individual source lines.  See :ref:`excluding` for details.
 
 
