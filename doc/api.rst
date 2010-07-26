@@ -7,6 +7,8 @@ Coverage API
 :history: 20090524T134300, brand new docs.
 :history: 20090613T164000, final touches for 3.0
 :history: 20100221T151500, docs for 3.3 (on the plane back from PyCon)
+:history: 20100725T211700, updated for 3.4.
+
 
 The API to coverage.py is very simple, contained in a single module called
 `coverage`.  Most of the interface is in a single class, also called

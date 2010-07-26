@@ -5,6 +5,8 @@ Configuration files
 ===================
 
 :history: 20100223T201600, new for 3.3
+:history: 20100725T211700, updated for 3.4.
+
 
 Coverage.py options can be specified in a configuration file.  This makes it
 easier to re-run coverage with consistent settings, and also allows for

@@ -12,6 +12,8 @@ Major change history for coverage.py
 :history: 20091205T161525, 3.2 final
 :history: 20100221T151900, changes for 3.3
 :history: 20100306T181400, changes for 3.3.1
+:history: 20100725T211700, updated for 3.4.
+
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.

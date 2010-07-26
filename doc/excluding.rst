@@ -6,6 +6,7 @@ Excluding code from coverage
 
 :history: 20090613T090500, brand new docs.
 :history: 20100224T200900, updated for 3.3.
+:history: 20100725T211700, updated for 3.4.
 
 
 You may have code in your project that you know won't be executed, and you want
@@ -91,3 +92,10 @@ Here's a list of exclusions I've used::
 Note that when using the ``exclude_lines`` option in a configuration file, you
 are taking control of the entire list of regexes, so you need to re-specify the
 default "pragma: no cover" match if you still want it to apply.
+
+
+Excluding source files
+----------------------
+
+See :ref:`source` for ways to limit what files coverage.py measures or reports
+on.

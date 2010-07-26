@@ -10,8 +10,10 @@ Coverage command line usage
 :history: 20091004T170700, changes for 3.1
 :history: 20091127T200700, changes for 3.2
 :history: 20100223T200600, changes for 3.3
+:history: 20100725T211700, updated for 3.4.
 
 .. highlight:: console
+
 
 When you install coverage.py, a command-line script simply called ``coverage``
 is placed in your Python scripts directory.  Coverage has a number of commands

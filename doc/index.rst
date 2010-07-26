@@ -12,6 +12,8 @@ coverage.py
 :history: 20091205T161429, version 3.2 for real.
 :history: 20100224T204700, version 3.3
 :history: 20100306T181500, version 3.3.1
+:history: 20100725T211700, updated for 3.4.
+
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
 monitors your program, noting which parts of the code have been executed, then

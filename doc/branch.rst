@@ -5,6 +5,7 @@ Branch coverage measurement
 ===========================
 
 :history: 20091127T201300, new for version 3.2
+:history: 20100725T211700, updated for 3.4.
 
 .. highlight:: python
    :linenothreshold: 5
