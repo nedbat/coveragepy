@@ -23,7 +23,7 @@ Coverage measurement is typically used to gauge the effectiveness of tests. It
 can show which parts of your product code are being exercised by tests, and
 which are not.
 
-The latest version is 3.3.1, released 6 March 2010.
+The latest version is 3.4, in beta.
 It is supported on Python 2.3 through 3.1.
 
 
@@ -32,9 +32,9 @@ Quick start
 
 Getting started is easy:
 
-#.  Install coverage.py from the `coverage page on the Python Package Index`__,
-    or by using "easy_install coverage".  You may need to install the
-    python-dev support files, for example with "apt-get install python-dev".
+#.  Install coverage.py from the `coverage page on the Python Package Index`_,
+    or by using "easy_install coverage".  For a few more details, see
+    :ref:`install`.
 
 #.  Use ``coverage run`` to execute your program and gather data:
 
@@ -48,12 +48,12 @@ Getting started is easy:
     .. code-block:: console
 
         $ coverage report -m
-        Name                      Stmts   Exec  Cover   Missing
+        Name                      Stmts   Miss  Cover   Missing
         -------------------------------------------------------
-        my_program                   20     16    80%   33-35, 39
-        my_other_module              56     50    89%   17-23
+        my_program                   20      4    80%   33-35, 39
+        my_other_module              56      6    89%   17-23
         -------------------------------------------------------
-        TOTAL                        76     66    87%
+        TOTAL                        76     10    87%
 
 #.  For a nicer presentation, use ``coverage html`` to get annotated HTML
     listings detailing missed lines:
@@ -63,10 +63,10 @@ Getting started is easy:
         $ coverage html
 
     Then visit htmlcov/index.html in your browser, to see a
-    `report like this`__.
+    `report like this`_.
 
-__ http://pypi.python.org/pypi/coverage
-__ /code/coverage/sample_html/index.html
+.. _coverage page on the Python Package Index: http://pypi.python.org/pypi/coverage
+.. _report like this: /code/coverage/sample_html/index.html
 
 
 Using coverage.py
@@ -81,7 +81,8 @@ Some test runners provide coverage integration to make it easy to use coverage
 while running tests.  For example, `nose`_ has a `cover plug-in`_.
 
 You can fine-tune coverage's view of your code by directing it to ignore parts
-that you know aren't interesting.  See :ref:`excluding` for details.
+that you know aren't interesting.  See :ref:`source` and :ref:`excluding` for
+details.
 
 .. _nose:           http://somethingaboutorange.com/mrl/projects/nose
 .. _cover plug-in:  http://somethingaboutorange.com/mrl/projects/nose/0.11.1/plugins/cover.html
@@ -105,6 +106,7 @@ More information
 .. toctree::
     :maxdepth: 1
 
+    install
     cmd
     config
     api

@@ -10,7 +10,7 @@ Coverage command line usage
 :history: 20091004T170700, changes for 3.1
 :history: 20091127T200700, changes for 3.2
 :history: 20100223T200600, changes for 3.3
-:history: 20100725T211700, updated for 3.4.
+:history: 20100725T211700, updated for 3.4
 
 .. highlight:: console
 
@@ -35,8 +35,12 @@ which determine the action performed:
 
 * **debug** -- Get diagnostic information.
 
-Help is available with ``coverage help``, or with the ``--help`` switch on any
-other command.
+Help is available with the **help** command, or with the ``--help`` switch on
+any other command::
+
+    $ coverage help
+    $ coverage help run
+    $ coverage run --help
 
 Version information for coverage.py can be displayed with
 ``coverage --version``.
@@ -55,7 +59,7 @@ Execution
 ---------
 
 You collect execution data by running your Python program with the **run**
-coverage command::
+command::
 
     $ coverage run my_program.py arg1 arg2
     blah blah ..your program's output.. blah blah
@@ -127,8 +131,8 @@ data file::
 Reporting
 ---------
 
-Coverage provides a few styles of reporting, with the ``report``, ``html``,
-``annotate``, and ``xml`` commands.  They share a number of common options.
+Coverage provides a few styles of reporting, with the **report**, **html**,
+**annotate**, and **xml** commands.  They share a number of common options.
 
 The command-line arguments are module or file names to report on, if you'd like
 to report on a subset of the data collected.
@@ -152,39 +156,39 @@ Coverage summary
 The simplest reporting is a textual summary produced with **report**::
 
     $ coverage report
-    Name                      Stmts   Exec  Cover
+    Name                      Stmts   Miss  Cover
     ---------------------------------------------
-    my_program                   20     16    80%
-    my_module                    15     13    86%
-    my_other_module              56     50    89%
+    my_program                   20      4    80%
+    my_module                    15      2    86%
+    my_other_module              56      6    89%
     ---------------------------------------------
-    TOTAL                        91     79    87%
+    TOTAL                        91     12    87%
 
 For each module executed, the report shows the count of executable statements,
-the number of those statements executed, and the resulting coverage, expressed
+the number of those statements missed, and the resulting coverage, expressed
 as a percentage.
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
     $ coverage report -m
-    Name                      Stmts   Exec  Cover   Missing
+    Name                      Stmts   Miss  Cover   Missing
     -------------------------------------------------------
-    my_program                   20     16    80%   33-35, 39
-    my_module                    15     13    86%   8, 12
-    my_other_module              56     50    89%   17-23
+    my_program                   20      4    80%   33-35, 39
+    my_module                    15      2    86%   8, 12
+    my_other_module              56      6    89%   17-23
     -------------------------------------------------------
-    TOTAL                        91     79    87%
+    TOTAL                        91     12    87%
 
 You can restrict the report to only certain files by naming them on the
 command line::
 
     $ coverage report -m my_program.py my_other_module.py
-    Name                      Stmts   Exec  Cover   Missing
+    Name                      Stmts   Miss  Cover   Missing
     -------------------------------------------------------
-    my_program                   20     16    80%   33-35, 39
-    my_other_module              56     50    89%   17-23
+    my_program                   20      4    80%   33-35, 39
+    my_other_module              56      6    89%   17-23
     -------------------------------------------------------
-    TOTAL                        76     66    87%
+    TOTAL                        76     10    87%
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
@@ -267,3 +271,10 @@ Diagnostics
 -----------
 
 The **debug** command shows internal information to help diagnose problems.
+If you are reporting a bug about coverage.py, including the output of this
+command can often help::
+
+    $ coverage debug sys > please_attach_to_bug_report.txt
+
+Two types of information are available: ``sys`` to show system configuration,
+and ``data`` to show a summary of the collected coverage data.
