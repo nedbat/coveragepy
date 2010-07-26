@@ -19,6 +19,80 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
+Version 3.4
+-----------
+
+- BACKWARD INCOMPATIBILITY: the ``--omit`` and ``--include`` switches now take
+  file patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
+
+- BACKWARD INCOMPATIBILITY: the `omit_prefixes` argument is gone throughout
+  coverage.py, replaced with `omit`, a list of filename patterns suitable for
+  `fnmatch`.  A parallel argument `include` controls what files are included.
+
+- The run command now has a ``--source`` switch, a list of directories or
+  module names.  If provided, coverage.py will only measure execution in those
+  source files.  The run command also now supports ``--include`` and ``--omit``
+  to control what modules it measures.  This can speed execution and reduce the
+  amount of data during reporting. Thanks Zooko.
+
+- Various warnings are printed to stderr for problems encountered during data
+  measurement: if a ``--source`` module has no Python source to measure, or is
+  never encountered at all, or if no data is collected.
+
+- The reporting commands (report, annotate, html, and xml) now have an
+  ``--include`` switch to restrict reporting to modules matching those file
+  patterns, similar to the existing ``--omit`` switch. Thanks, Zooko.
+
+- Since coverage.py 3.1, using the Python trace function has been slower than
+  it needs to be.  A cache of tracing decisions was broken, but has now been
+  fixed.
+
+- Python files with no statements, for example, empty ``__init__.py`` files,
+  are now reported as having zero statements instead of one.  Fixes `issue 1`_.
+
+- Reports now have a column of missed line counts rather than executed line
+  counts, since developers should focus on reducing the missed lines to zero,
+  rather than increasing the executed lines to varying targets.  Once
+  suggested, this seemed blindingly obvious.
+
+- Line numbers in HTML source pages are clickable, linking directly to that
+  line, which is highlighted on arrival.  Added a link back to the index page
+  at the bottom of each HTML page.
+
+- Programs that call ``os.fork`` will properly collect data from both the child
+  and parent processes.  Use ``coverage run -p`` to get two data files that can
+  be combined with ``coverage combine``.  Fixes `issue 56`_.
+
+- When measuring code running in a virtualenv, most of the system library was
+  being measured when it shouldn't have been.  This is now fixed.
+
+- Doctest text files are no longer recorded in the coverage data, since they
+  can't be reported anyway.  Fixes `issue 52`_ and `issue 61`_.
+
+- Source files can have more than one dot in them (foo.test.py), and will be
+  treated properly while reporting.  Fixes `issue 46`_.
+
+- Source files with DOS line endings are now properly tokenized for syntax
+  coloring on non-DOS machines.  Fixes `issue 53`_.
+
+- Unusual code structure that confused exits from methods with exits from
+  classes is now properly analyzed.  See `issue 62`_.
+
+- Asking for an HTML report with no files now shows a nice error message rather
+  than a cryptic failure ('int' object is unsubscriptable). Fixes `issue 59`_.
+
+.. _issue 1:  http://bitbucket.org/ned/coveragepy/issue/1/empty-__init__py-files-are-reported-as-1-executable
+.. _issue 34: http://bitbucket.org/ned/coveragepy/issue/34/enhanced-omit-globbing-handling
+.. _issue 36: http://bitbucket.org/ned/coveragepy/issue/36/provide-regex-style-omit
+.. _issue 46: http://bitbucket.org/ned/coveragepy/issue/46
+.. _issue 53: http://bitbucket.org/ned/coveragepy/issue/53
+.. _issue 52: http://bitbucket.org/ned/coveragepy/issue/52/doctesttestfile-confuses-source-detection
+.. _issue 56: http://bitbucket.org/ned/coveragepy/issue/56
+.. _issue 61: http://bitbucket.org/ned/coveragepy/issue/61/annotate-i-doesnt-work
+.. _issue 62: http://bitbucket.org/ned/coveragepy/issue/62
+.. _issue 59: http://bitbucket.org/ned/coveragepy/issue/59/html-report-fails-with-int-object-is
+
+
 Version 3.3.1 --- 6 March 2010
 ------------------------------
 
