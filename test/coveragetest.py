@@ -12,11 +12,13 @@ class Tee(object):
 
     def __init__(self, *files):
         """Make a Tee that writes to all the files in `files.`"""
-        self.files = files
+        self._files = files
+        if hasattr(files[0], "encoding"):
+            self.encoding = files[0].encoding
 
     def write(self, data):
         """Write `data` to all the files."""
-        for f in self.files:
+        for f in self._files:
             f.write(data)
 
 
