@@ -1,6 +1,6 @@
 """Tests for Coverage's api."""
 
-import os, re, sys, textwrap
+import fnmatch, os, re, sys, textwrap
 
 import coverage
 from coverage.backward import StringIO
@@ -89,6 +89,22 @@ class SingletonApiTest(CoverageTest):
 
 class ApiTest(CoverageTest):
     """Api-oriented tests for Coverage."""
+
+    def clean_files(self, files, *pats):
+        """Remove names matching `pats` from `files`, a list of filenames."""
+        good = []
+        for f in files:
+            for pat in pats:
+                if fnmatch.fnmatch(f, pat):
+                    break
+            else:
+                good.append(f)
+        return good
+
+    def listdir(self, where):
+        """Like os.listdir, but exclude files we don't care about."""
+        files = os.listdir(where)
+        return self.clean_files(files, "*.pyc", "__pycache__")
 
     def test_unexecuted_file(self):
         cov = coverage.coverage()
@@ -214,14 +230,14 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        self.assertSameElements(os.listdir("."), ["datatest1.py"])
+        self.assertSameElements(self.listdir("."), ["datatest1.py"])
         cov = coverage.coverage()
         cov.start()
         self.import_local_file("datatest1")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
-        self.assertSameElements(os.listdir("."),
-                            ["datatest1.py", "datatest1.pyc", ".coverage"])
+        self.assertSameElements(self.listdir("."),
+                            ["datatest1.py", ".coverage"])
 
     def test_datafile_specified(self):
         # You can specify the data file name.
@@ -229,14 +245,14 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        self.assertSameElements(os.listdir("."), ["datatest2.py"])
+        self.assertSameElements(self.listdir("."), ["datatest2.py"])
         cov = coverage.coverage(data_file="cov.data")
         cov.start()
         self.import_local_file("datatest2")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
-        self.assertSameElements(os.listdir("."),
-                            ["datatest2.py", "datatest2.pyc", "cov.data"])
+        self.assertSameElements(self.listdir("."),
+                            ["datatest2.py", "cov.data"])
 
     def test_datafile_and_suffix_specified(self):
         # You can specify the data file name and suffix.
@@ -244,14 +260,14 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        self.assertSameElements(os.listdir("."), ["datatest3.py"])
+        self.assertSameElements(self.listdir("."), ["datatest3.py"])
         cov = coverage.coverage(data_file="cov.data", data_suffix="14")
         cov.start()
         self.import_local_file("datatest3")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
-        self.assertSameElements(os.listdir("."),
-                            ["datatest3.py", "datatest3.pyc", "cov.data.14"])
+        self.assertSameElements(self.listdir("."),
+                            ["datatest3.py", "cov.data.14"])
 
     def test_datafile_from_rcfile(self):
         # You can specify the data file name in the .coveragerc file
@@ -263,15 +279,15 @@ class ApiTest(CoverageTest):
             data_file = mydata.dat
             """)
 
-        self.assertSameElements(os.listdir("."),
+        self.assertSameElements(self.listdir("."),
                                             ["datatest4.py", ".coveragerc"])
         cov = coverage.coverage()
         cov.start()
         self.import_local_file("datatest4")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
-        self.assertSameElements(os.listdir("."),
-                ["datatest4.py", "datatest4.pyc", ".coveragerc", "mydata.dat"])
+        self.assertSameElements(self.listdir("."),
+                ["datatest4.py", ".coveragerc", "mydata.dat"])
 
     def test_empty_reporting(self):
         # Used to be you'd get an exception reporting on nothing...
