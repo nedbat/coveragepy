@@ -14,7 +14,7 @@ Installing coverage.py is fairly standard:
 
 #.  Download the appropriate kit from the
     `coverage page on the Python Package Index`__.
-    
+
 #.  Run ``python setup.py install``.
 
 or, use::
