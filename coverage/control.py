@@ -141,16 +141,16 @@ class coverage(object):
         # The dirs for files considered "installed with the interpreter".
         self.pylib_dirs = []
         if not self.config.cover_pylib:
-            # Look at where the "os" module is located.  That's the indication
-            # for "installed with the interpreter".
-            os_dir = self._canonical_dir(os.__file__)
-            self.pylib_dirs.append(os_dir)
-
-            # In a virtualenv, there're actually two lib directories. Find the
-            # other one.  This is kind of ad-hoc, but it works.
-            random_dir = self._canonical_dir(random.__file__)
-            if random_dir != os_dir:
-                self.pylib_dirs.append(random_dir)
+            # Look at where some standard modules are located. That's the
+            # indication for "installed with the interpreter". In some
+            # environments (virtualenv, for example), these modules may be
+            # spread across a few locations. Look at all the candidate modules
+            # we've imported, and take all the different ones.
+            for m in (atexit, os, random, socket):
+                if hasattr(m, "__file__"):
+                    m_dir = self._canonical_dir(m.__file__)
+                    if m_dir not in self.pylib_dirs:
+                        self.pylib_dirs.append(m_dir)
 
         # To avoid tracing the coverage code itself, we skip anything located
         # where we are.
