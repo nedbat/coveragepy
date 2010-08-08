@@ -46,11 +46,15 @@ def run_tests_with_coverage():
                 covmods[name] = mod
                 del sys.modules[name]
     import coverage     # don't warn about re-import: pylint: disable-msg=W0404
-    sys.modules.update(covmods)
+    #sys.modules.update(covmods)
 
     # Run nosetests, with the arguments from our command line.
     print(":: Running nosetests %s" % " ".join(sys.argv[1:]))
-    nose.run()
+    try:
+        nose.run()
+    except SystemExit:
+        # nose3 seems to raise SystemExit, not sure why?
+        pass
 
     cov.stop()
     print(":: Saving .coverage%s" % suffix)
