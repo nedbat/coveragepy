@@ -29,7 +29,6 @@ class coverage(object):
         cov.html_report(directory='covhtml')
 
     """
-
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
                 source=None, omit=None, include=None):
@@ -164,6 +163,10 @@ class coverage(object):
         # Only _harvest_data once per measurement cycle.
         self._harvested = False
 
+        self.socket = socket
+        self.os = os
+        self.random = random
+
     def _canonical_dir(self, f):
         """Return the canonical directory of the file `f`."""
         return os.path.split(self.file_locator.canonical_filename(f))[0]
@@ -185,6 +188,9 @@ class coverage(object):
         should not.
 
         """
+        if os is None:
+            return False
+
         if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
             # filenames like "<string>", "<doctest readme.txt[0]>", or
@@ -366,13 +372,13 @@ class coverage(object):
     def save(self):
         """Save the collected coverage data to the data file."""
         data_suffix = self.data_suffix
-        if data_suffix and not isinstance(data_suffix, string_class):
+        if data_suffix is True:
             # If data_suffix was a simple true value, then make a suffix with
             # plenty of distinguishing information.  We do this here in
             # `save()` at the last minute so that the pid will be correct even
             # if the process forks.
             data_suffix = "%s.%s.%06d" % (
-                    socket.gethostname(), os.getpid(), random.randint(0, 99999)
+                    self.socket.gethostname(), self.os.getpid(), self.random.randint(0, 99999)
                     )
 
         self._harvest_data()
