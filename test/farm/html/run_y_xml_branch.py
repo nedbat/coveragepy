@@ -16,5 +16,6 @@ runfunc(xml_it, rundir="src")
 compare("gold_y_xml_branch", "xml_branch", scrubs=[
     (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
     (r' version="[-.\w]+"', ' version="VERSION"'),
+    (r'/code/coverage/[-.\w]+', '/code/coverage/VER'),
     ])
 clean("xml_branch")
