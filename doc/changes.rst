@@ -13,6 +13,7 @@ Major change history for coverage.py
 :history: 20100221T151900, changes for 3.3
 :history: 20100306T181400, changes for 3.3.1
 :history: 20100725T211700, updated for 3.4.
+:history: 20100820T151500, updated for 3.4beta1.
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -21,8 +22,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
-Version 3.4
------------
+Version 3.4 beta --- 21 August 2010
+-----------------------------------
 
 - BACKWARD INCOMPATIBILITY: the ``--omit`` and ``--include`` switches now take
   file patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.

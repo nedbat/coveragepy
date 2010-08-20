@@ -5,6 +5,7 @@ Installation
 ============
 
 :history: 20100725T225600, new for 3.4.
+:history: 20100820T151500, updated for 3.4beta1.
 
 .. highlight:: console
 .. _coverage_pypi: http://pypi.python.org/pypi/coverage
@@ -56,4 +57,4 @@ If all went well, you should be able to open a command prompt, and see
 coverage installed properly::
 
     $ coverage --version
-    Coverage.py, version 3.4a1.  http://nedbatchelder.com/code/coverage
+    Coverage.py, version 3.4b1.  http://nedbatchelder.com/code/coverage/3.4b1
