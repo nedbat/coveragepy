@@ -6,14 +6,16 @@ Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been executed.
 
-Coverage.py runs on Pythons 2.3 through 3.1.
+Coverage.py runs on Pythons 2.3 through 3.2.
 
 Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
 tracker are at `bitbucket.org <http://bitbucket.org/ned/coveragepy>`_.
 
 New in 3.2: Branch coverage!
 
-New in 3.3: .coveragerc files
+New in 3.3: .coveragerc files.
+
+New in 3.4: Better control over source to measure.
 """
 
 # This file is used unchanged under all versions of Python, 2.x and 3.x.

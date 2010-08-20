@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Version 3.4a1
--------------
+Version 3.4b1 --- 21 August 2010
+--------------------------------
 
 - BACKWARD INCOMPATIBILITY: the ``--omit`` and ``--include`` switches now take
   file patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
