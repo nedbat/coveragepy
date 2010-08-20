@@ -1,6 +1,7 @@
 from docutils import nodes
 from sphinx.writers.html import SmartyPantsHTMLTranslator
 from sphinx.builders.html import StandaloneHTMLBuilder
+import os
 
 def setup(app):
     app.add_builder(PxBuilder)
@@ -81,7 +82,7 @@ class PxBuilder(StandaloneHTMLBuilder):
         self.out_suffix = '.px'
         self.link_suffix = '.html'
         
-        self.px_uri = "/code/coverage/"
+        self.px_uri = os.environ.get("COVERAGE_DOC_ROOT") or "/code/coverage/"
 
     def get_target_uri(self, docname, typ=None):
         return self.px_uri + docname + self.link_suffix

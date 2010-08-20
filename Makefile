@@ -67,27 +67,28 @@ uninstall:
 
 SPHINXBUILD = sphinx-build
 SPHINXOPTS = -a -E doc
+SPHINXPXCMD = $(SPHINXBUILD) -b px $(SPHINXOPTS) doc/_build/px
 WEBHOME = c:/ned/web/stellated/pages/code/coverage
 
 px:
-	$(SPHINXBUILD) -b px $(SPHINXOPTS) doc/_build/px
+	$(SPHINXPXCMD)
 	rm doc/_build/px/search.px
-	@echo
-	@echo "Build finished. The PX files are in doc/_build/px."
+
+pxbeta:
+	COVERAGE_DOC_ROOT=/code/coverage/beta/ $(SPHINXPXCMD)
+	rm doc/_build/px/search.px
 
 dochtml:
 	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
 	@echo
 	@echo "Build finished. The HTML pages are in doc/_build/html."
 
-publish:
+publish: px
 	rm -f $(WEBHOME)/*.px
 	cp doc/_build/px/*.px $(WEBHOME)
 	rm -f $(WEBHOME)/sample_html/*.*
 	cp doc/sample_html/*.* $(WEBHOME)/sample_html
 
-publishbeta:
+publishbeta: pxbeta
 	rm -f $(WEBHOME)/beta/*.px
 	cp doc/_build/px/*.px $(WEBHOME)/beta
-	rm -f $(WEBHOME)/beta/sample_html/*.*
-	cp doc/sample_html/*.* $(WEBHOME)/beta/sample_html
