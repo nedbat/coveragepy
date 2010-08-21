@@ -67,15 +67,10 @@ uninstall:
 
 SPHINXBUILD = sphinx-build
 SPHINXOPTS = -a -E doc
-SPHINXPXCMD = $(SPHINXBUILD) -b px $(SPHINXOPTS) doc/_build/px
 WEBHOME = c:/ned/web/stellated/pages/code/coverage
 
 px:
-	$(SPHINXPXCMD)
-	rm doc/_build/px/search.px
-
-pxbeta:
-	COVERAGE_DOC_ROOT=/code/coverage/beta/ $(SPHINXPXCMD)
+	$(SPHINXBUILD) -b px $(SPHINXOPTS) doc/_build/px
 	rm doc/_build/px/search.px
 
 dochtml:
@@ -89,6 +84,6 @@ publish: px
 	rm -f $(WEBHOME)/sample_html/*.*
 	cp doc/sample_html/*.* $(WEBHOME)/sample_html
 
-publishbeta: pxbeta
+publishbeta: px
 	rm -f $(WEBHOME)/beta/*.px
 	cp doc/_build/px/*.px $(WEBHOME)/beta

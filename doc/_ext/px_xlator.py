@@ -42,6 +42,14 @@ class PxTranslator(BaseHtmlXlator):
                 self.body.append("<what when='%s'>%s</what>\n" % (when, self.encode(what.strip())))
             self.body.append("</history>\n")
             
+        if "beta" in self.builder.config.release:
+            self.body.append("""
+                <box>
+                These docs are for a beta release. 
+                For the latest released version, see <a href='/code/coverage'>coverage.py</a>.
+                </box>
+                """)
+
     def visit_field(self, node):
         if node.children[0].astext() == 'history':
             self.history.append(node.children[1].astext())
@@ -82,7 +90,10 @@ class PxBuilder(StandaloneHTMLBuilder):
         self.out_suffix = '.px'
         self.link_suffix = '.html'
         
-        self.px_uri = os.environ.get("COVERAGE_DOC_ROOT") or "/code/coverage/"
+        if "beta" in self.config.release:
+            self.px_uri = "/code/coverage/beta/"
+        else:
+            self.px_uri = "/code/coverage/"
 
     def get_target_uri(self, docname, typ=None):
         return self.px_uri + docname + self.link_suffix
