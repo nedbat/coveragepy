@@ -57,6 +57,10 @@ Version 3.4b1 --- 21 August 2010
 - Doctest text files are no longer recorded in the coverage data, since they
   can't be reported anyway.  Fixes `issue 52`_ and `issue 61`_.
 
+- Jinja HTML templates compile into Python code using the HTML filename,
+  which confused coverage.py.  Now these files are no longer traced, fixing
+  `issue 82`.
+
 - Source files can have more than one dot in them (foo.test.py), and will be
   treated properly while reporting.  Fixes `issue 46`_.
 
@@ -79,6 +83,7 @@ Version 3.4b1 --- 21 August 2010
 .. _issue 61: http://bitbucket.org/ned/coveragepy/issue/61/annotate-i-doesnt-work
 .. _issue 62: http://bitbucket.org/ned/coveragepy/issue/62
 .. _issue 59: http://bitbucket.org/ned/coveragepy/issue/59/html-report-fails-with-int-object-is
+.. _issue 82: http://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 
 
 Version 3.3.1 --- 6 March 2010
