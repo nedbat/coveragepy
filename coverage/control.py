@@ -386,8 +386,9 @@ class coverage(object):
             # `save()` at the last minute so that the pid will be correct even
             # if the process forks.
             data_suffix = "%s.%s.%06d" % (
-                    self.socket.gethostname(), self.os.getpid(), self.random.randint(0, 99999)
-                    )
+                self.socket.gethostname(), self.os.getpid(),
+                self.random.randint(0, 99999)
+                )
 
         self._harvest_data()
         self.data.write(suffix=data_suffix)

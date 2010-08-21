@@ -21,7 +21,7 @@ Installing coverage.py is fairly standard:
 or, use::
 
     $ easy_install coverage
-    
+
 or even::
 
     $ pip install coverage
