@@ -40,6 +40,7 @@
 - Tag the tree
     - hg tag -m "Coverage 3.0.1" coverage-3.0.1
 - Update nedbatchelder.com
+    - Edit webfaction.htaccess to make sure the proper versions are mapped to /beta
     - Blog post?
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
