@@ -45,10 +45,10 @@ class PxTranslator(BaseHtmlXlator):
         if "beta" in self.builder.config.release:
             self.body.append("""
                 <box>
-                These docs are for a beta release. 
+                These docs are for a beta release, %s. 
                 For the latest released version, see <a href='/code/coverage'>coverage.py</a>.
                 </box>
-                """)
+                """ % self.builder.config.release)
 
     def visit_field(self, node):
         if node.children[0].astext() == 'history':
