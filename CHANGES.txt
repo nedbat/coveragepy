@@ -3,6 +3,17 @@ Change history for Coverage.py
 ------------------------------
 
 
+Version 3.4b2
+-------------
+
+- Coverage percentages are now displayed uniformly across reporting methods.  A
+  percentage is only reported as 0% or 100% if they are truly 0 or 100, and
+  are rounded otherwise.  Fixes `issue 41` and issue 70`.
+
+.. _issue 70: http://bitbucket.org/ned/coveragepy/issue/70/text-report-and-html-report-disagree-on-coverage
+.. _issue 41: http://bitbucket.org/ned/coveragepy/issue/41/report-says-100-when-it-isnt-quite-there
+
+
 Version 3.4b1 --- 21 August 2010
 --------------------------------
 

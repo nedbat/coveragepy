@@ -109,7 +109,7 @@ class SummaryTest(CoverageTest):
         self.assertEqual(self.line_count(report), 3)
         self.assertTrue("mybranch " in report)
         self.assertEqual(self.last_line_squeezed(report),
-                                                        "mybranch 5 0 2 1 85%")
+                                                        "mybranch 5 0 2 1 86%")
 
 class SummaryTest2(CoverageTest):
     """Another bunch of summary tests."""

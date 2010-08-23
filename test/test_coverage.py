@@ -663,7 +663,7 @@ class CompoundStatementTest(CoverageTest):
                 y = 5
             assert x == 3
             """,
-            [1,2,3,4,5,6], "4-5", report="6 2 66% 4-5")
+            [1,2,3,4,5,6], "4-5", report="6 2 67% 4-5")
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
             if a != 1:

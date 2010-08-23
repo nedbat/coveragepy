@@ -157,6 +157,23 @@ class Numbers(object):
         return pc_cov
     pc_covered = property(_get_pc_covered)
 
+    def _get_pc_covered_str(self):
+        """Returns the percent covered, as a string, without a percent sign.
+
+        The important thing here is that "0" only be returned when it's truly
+        zero, and "100" only be returned when it's truly 100.
+
+        """
+        pc = self.pc_covered
+        if 0 < pc < 1:
+            pc = 1.0
+        elif 99 < pc < 100:
+            pc = 99.0
+        else:
+            pc = round(pc)
+        return "%.0f" % pc
+    pc_covered_str = property(_get_pc_covered_str)
+
     def __add__(self, other):
         nums = Numbers()
         nums.n_files = self.n_files + other.n_files

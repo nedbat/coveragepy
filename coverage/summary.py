@@ -32,7 +32,7 @@ class SummaryReporter(Reporter):
             header += " Branch BrPart"
             fmt_coverage += " %6d %6d"
         header += "  Cover"
-        fmt_coverage += " %5d%%"
+        fmt_coverage += " %5s%%"
         if self.show_missing:
             header += "   Missing"
             fmt_coverage += "   %s"
@@ -56,7 +56,7 @@ class SummaryReporter(Reporter):
                 args = (cu.name, nums.n_statements, nums.n_missing)
                 if self.branches:
                     args += (nums.n_branches, nums.n_missing_branches)
-                args += (nums.pc_covered,)
+                args += (nums.pc_covered_str,)
                 if self.show_missing:
                     args += (analysis.missing_formatted(),)
                 outfile.write(fmt_coverage % args)
@@ -73,7 +73,7 @@ class SummaryReporter(Reporter):
             args = ("TOTAL", total.n_statements, total.n_missing)
             if self.branches:
                 args += (total.n_branches, total.n_missing_branches)
-            args += (total.pc_covered,)
+            args += (total.pc_covered_str,)
             if self.show_missing:
                 args += ("",)
             outfile.write(fmt_coverage % args)

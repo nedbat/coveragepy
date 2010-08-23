@@ -39,3 +39,13 @@ class NumbersTest(CoverageTest):
         self.assertEqual(n3.n_executed, 182)
         self.assertEqual(n3.n_missing, 28)
         self.assertAlmostEqual(n3.pc_covered, 86.666666666)
+
+    def test_pc_covered_str(self):
+        n0 = Numbers(n_files=1, n_statements=1000, n_missing=0)
+        n1 = Numbers(n_files=1, n_statements=1000, n_missing=1)
+        n999 = Numbers(n_files=1, n_statements=1000, n_missing=999)
+        n1000 = Numbers(n_files=1, n_statements=1000, n_missing=1000)
+        self.assertEqual(n0.pc_covered_str, "100")
+        self.assertEqual(n1.pc_covered_str, "99")
+        self.assertEqual(n999.pc_covered_str, "1")
+        self.assertEqual(n1000.pc_covered_str, "0")

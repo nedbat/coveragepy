@@ -174,10 +174,6 @@ def escape(t):
             .replace("  ", "&nbsp; ")
         )
 
-def format_pct(p):
-    """Format `p` as a percentage value for the HTML reports."""
-    return "%.0f" % p
-
 def spaceless(html):
     """Squeeze out some annoying extra space from an HTML string.
 
