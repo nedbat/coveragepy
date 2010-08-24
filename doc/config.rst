@@ -6,6 +6,7 @@ Configuration files
 
 :history: 20100223T201600, new for 3.3
 :history: 20100725T211700, updated for 3.4.
+:history: 20100824T092900, added ``precision``.
 
 
 Coverage.py options can be specified in a configuration file.  This makes it
@@ -115,6 +116,10 @@ in reporting.  See :ref:`source` for details.
 
 ``omit`` (multi-string): a list of filename patterns, the files to leave out
 of reporting.  See :ref:`source` for details.
+
+``precision`` (integer): the number of digits after the decimal point to
+display for reported coverage percentages.  The default is 0, displaying
+for example "87%".  A value of 2 will display percentages like "87.32%".
 
 
 [html]

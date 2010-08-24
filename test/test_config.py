@@ -2,6 +2,7 @@
 
 import os, sys
 import coverage
+from coverage.misc import CoverageException
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
@@ -88,6 +89,14 @@ class ConfigTest(CoverageTest):
         cov = coverage.coverage(data_file="fromarg.dat")
         self.assertEqual(cov.config.data_file, "fromarg.dat")
 
+    def test_parse_errors(self):
+        # Im-parseable values raise CoverageException
+        self.make_file(".coveragerc", """\
+            [run]
+            timid = maybe?
+            """)
+        self.assertRaises(CoverageException, coverage.coverage)
+
 
 class ConfigFileTest(CoverageTest):
     """Tests of the config file settings in particular."""
@@ -116,6 +125,7 @@ class ConfigFileTest(CoverageTest):
             omit =
                 one, another, some_more,
                     yet_more
+            precision = 3
 
             [html]
 
@@ -141,6 +151,7 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.omit,
             ["one", "another", "some_more", "yet_more"]
             )
+        self.assertEqual(cov.config.precision, 3)
 
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
 

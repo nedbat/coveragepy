@@ -27,6 +27,7 @@ class CoverageConfig(object):
         self.ignore_errors = False
         self.omit = None
         self.include = None
+        self.precision = 0
 
         # Defaults for [html]
         self.html_dir = "htmlcov"
@@ -87,6 +88,8 @@ class CoverageConfig(object):
             self.omit = self.get_list(cp, 'report', 'omit')
         if cp.has_option('report', 'include'):
             self.include = self.get_list(cp, 'report', 'include')
+        if cp.has_option('report', 'precision'):
+            self.precision = cp.getint('report', 'precision')
 
         # [html]
         if cp.has_option('html', 'directory'):

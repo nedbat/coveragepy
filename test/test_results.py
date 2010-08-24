@@ -49,3 +49,17 @@ class NumbersTest(CoverageTest):
         self.assertEqual(n1.pc_covered_str, "99")
         self.assertEqual(n999.pc_covered_str, "1")
         self.assertEqual(n1000.pc_covered_str, "0")
+
+    def test_pc_covered_str_precision(self):
+        assert Numbers._precision == 0
+        Numbers.set_precision(1)
+        n0 = Numbers(n_files=1, n_statements=10000, n_missing=0)
+        n1 = Numbers(n_files=1, n_statements=10000, n_missing=1)
+        n9999 = Numbers(n_files=1, n_statements=10000, n_missing=9999)
+        n10000 = Numbers(n_files=1, n_statements=10000, n_missing=10000)
+        self.assertEqual(n0.pc_covered_str, "100.0")
+        self.assertEqual(n1.pc_covered_str, "99.9")
+        self.assertEqual(n9999.pc_covered_str, "0.1")
+        self.assertEqual(n10000.pc_covered_str, "0.0")
+        Numbers.set_precision(0)
+

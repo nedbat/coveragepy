@@ -31,8 +31,9 @@ class SummaryReporter(Reporter):
         if self.branches:
             header += " Branch BrPart"
             fmt_coverage += " %6d %6d"
-        header += "  Cover"
-        fmt_coverage += " %5s%%"
+        width100 = Numbers.pc_str_width()
+        header += "%*s" % (width100+4, "Cover")
+        fmt_coverage += "%%%ds%%%%" % (width100+3,)
         if self.show_missing:
             header += "   Missing"
             fmt_coverage += "   %s"

@@ -10,8 +10,8 @@ from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.html import HtmlReporter
-from coverage.misc import bool_or_none
-from coverage.results import Analysis
+from coverage.misc import CoverageException, bool_or_none
+from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
 
@@ -76,7 +76,13 @@ class coverage(object):
         if config_file:
             if config_file is True:
                 config_file = ".coveragerc"
-            self.config.from_file(config_file)
+            try:
+                self.config.from_file(config_file)
+            except ValueError:
+                _, err, _ = sys.exc_info()
+                raise CoverageException(
+                    "Couldn't read config file %s: %s" % (config_file, err)
+                    )
 
         # 3: from environment variables:
         self.config.from_environment('COVERAGE_OPTIONS')
@@ -163,8 +169,11 @@ class coverage(object):
         # Only _harvest_data once per measurement cycle.
         self._harvested = False
 
-        # When tearing down the coverage object, modules can become None. 
-        # Saving the modules as object attributes avoids problems, but it is 
+        # Set the reporting precision.
+        Numbers.set_precision(self.config.precision)
+
+        # When tearing down the coverage object, modules can become None.
+        # Saving the modules as object attributes avoids problems, but it is
         # quite ad-hoc which modules need to be saved and which references
         # need to use the object attributes.
         self.socket = socket

@@ -127,6 +127,12 @@ class Numbers(object):
     up statistics across files.
 
     """
+    # A global to determine the precision on coverage percentages, the number
+    # of decimal places.
+    _precision = 0
+    _near0 = 1.0              # These will change when _precision is changed.
+    _near100 = 99.0
+
     def __init__(self, n_files=0, n_statements=0, n_excluded=0, n_missing=0,
                     n_branches=0, n_missing_branches=0
                     ):
@@ -136,6 +142,14 @@ class Numbers(object):
         self.n_missing = n_missing
         self.n_branches = n_branches
         self.n_missing_branches = n_missing_branches
+
+    def set_precision(cls, precision):
+        """Set the number of decimal places used to report percentages."""
+        assert 0 <= precision < 10
+        cls._precision = precision
+        cls._near0 = 1.0 / 10**precision
+        cls._near100 = 100.0 - cls._near0
+    set_precision = classmethod(set_precision)
 
     def _get_n_executed(self):
         """Returns the number of executed statements."""
@@ -165,14 +179,22 @@ class Numbers(object):
 
         """
         pc = self.pc_covered
-        if 0 < pc < 1:
-            pc = 1.0
-        elif 99 < pc < 100:
-            pc = 99.0
+        if 0 < pc < self._near0:
+            pc = self._near0
+        elif self._near100 < pc < 100:
+            pc = self._near100
         else:
-            pc = round(pc)
-        return "%.0f" % pc
+            pc = round(pc, self._precision)
+        return "%.*f" % (self._precision, pc)
     pc_covered_str = property(_get_pc_covered_str)
+
+    def pc_str_width(cls):
+        """How many characters wide can pc_covered_str be?"""
+        width = 3   # "100"
+        if cls._precision > 0:
+            width += 1 + cls._precision
+        return width
+    pc_str_width = classmethod(pc_str_width)
 
     def __add__(self, other):
         nums = Numbers()
