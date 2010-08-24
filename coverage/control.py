@@ -163,6 +163,10 @@ class coverage(object):
         # Only _harvest_data once per measurement cycle.
         self._harvested = False
 
+        # When tearing down the coverage object, modules can become None. 
+        # Saving the modules as object attributes avoids problems, but it is 
+        # quite ad-hoc which modules need to be saved and which references
+        # need to use the object attributes.
         self.socket = socket
         self.os = os
         self.random = random
