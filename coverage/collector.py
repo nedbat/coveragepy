@@ -97,7 +97,7 @@ class PyTracer(object):
 
     def start(self):
         """Start this Tracer.
-        
+
         Return a Python function suitable for use with sys.settrace().
 
         """

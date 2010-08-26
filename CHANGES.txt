@@ -15,7 +15,7 @@ Version 3.4b2
   ``issue 16``.
 
 - Threads derived from ``threading.Thread`` with an overridden `run` method
-  would report no coverage for the `run` method.  This is now fixed, closing 
+  would report no coverage for the `run` method.  This is now fixed, closing
   ``issue 85``.
 
 .. _issue 70: http://bitbucket.org/ned/coveragepy/issue/70/text-report-and-html-report-disagree-on-coverage

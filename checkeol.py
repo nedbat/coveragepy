@@ -28,7 +28,7 @@ def check_files(root, patterns, **kwargs):
                 dirs.remove(pattern)
 
 
-check_files("coverage", ["*.py"])
+check_files("coverage", ["*.py", "*.c"])
 check_files("coverage/htmlfiles", ["*.html", "*.css", "*.js"])
 check_files("test", ["*.py"])
 check_files("test", ["*,cover"], trail_white=False)

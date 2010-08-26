@@ -463,7 +463,7 @@ Tracer_pytrace(Tracer *self, PyObject *args)
     int what;
     static char *what_names[] = {
         "call", "exception", "line", "return",
-        "c_call", "c_exception", "c_return", 
+        "c_call", "c_exception", "c_return",
         NULL
         };
 
@@ -472,7 +472,7 @@ Tracer_pytrace(Tracer *self, PyObject *args)
         goto done;
     }
 
-    /* In Python, the what argument is a string, we need to find an int 
+    /* In Python, the what argument is a string, we need to find an int
        for the C function. */
     for (what = 0; what_names[what]; what++) {
         if (!strcmp(MyText_AS_STRING(what_str), what_names[what])) {
