@@ -25,14 +25,16 @@
 
 #if PY_MAJOR_VERSION >= 3
 
+#define MyText_Type         PyUnicode_Type
 #define MyText_Check(o)     PyUnicode_Check(o)
-#define MyText_AS_STRING(o) FOOEY_DONT_KNOW_YET(o)
+#define MyText_AS_STRING(o) PyBytes_AS_STRING(PyUnicode_AsASCIIString(o))
 #define MyInt_FromLong(l)   PyLong_FromLong(l)
 
 #define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
 
 #else
 
+#define MyText_Type         PyString_Type
 #define MyText_Check(o)     PyString_Check(o)
 #define MyText_AS_STRING(o) PyString_AS_STRING(o)
 #define MyInt_FromLong(l)   PyInt_FromLong(l)
@@ -117,7 +119,7 @@ typedef struct {
 #define STACK_DELTA    100
 
 static int
-Tracer_init(Tracer *self, PyObject *args, PyObject *kwds)
+Tracer_init(Tracer *self, PyObject *args_unused, PyObject *kwds_unused)
 {
 #if COLLECT_STATS
     self->stats.calls = 0;
@@ -247,7 +249,7 @@ Tracer_record_pair(Tracer *self, int l1, int l2)
  * The Trace Function
  */
 static int
-Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
+Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
 {
     int ret = RET_OK;
     PyObject * filename = NULL;
@@ -449,19 +451,58 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg)
     return RET_OK;
 }
 
+/*
+ * A sys.settrace-compatible function that invokes our C trace function.
+ */
 static PyObject *
-Tracer_start(Tracer *self, PyObject *args)
+Tracer_pytrace(Tracer *self, PyObject *args)
+{
+    PyFrameObject *frame;
+    PyObject *what_str;
+    PyObject *arg_unused;
+    int what;
+    static char *what_names[] = {
+        "call", "exception", "line", "return",
+        "c_call", "c_exception", "c_return", 
+        NULL
+        };
+
+    if (!PyArg_ParseTuple(args, "O!O!O:Tracer_pytrace",
+            &PyFrame_Type, &frame, &MyText_Type, &what_str, &arg_unused)) {
+        goto done;
+    }
+
+    /* In Python, the what argument is a string, we need to find an int 
+       for the C function. */
+    for (what = 0; what_names[what]; what++) {
+        if (!strcmp(MyText_AS_STRING(what_str), what_names[what])) {
+            break;
+        }
+    }
+
+    /* Invoke the C function, and return ourselves. */
+    if (Tracer_trace(self, frame, what, arg_unused) == RET_OK) {
+        return PyObject_GetAttrString((PyObject*)self, "pytrace");
+    }
+
+done:
+    return NULL;
+}
+
+static PyObject *
+Tracer_start(Tracer *self, PyObject *args_unused)
 {
     PyEval_SetTrace((Py_tracefunc)Tracer_trace, (PyObject*)self);
     self->started = 1;
     self->tracing_arcs = self->arcs && PyObject_IsTrue(self->arcs);
     self->last_line = -1;
 
-    return Py_BuildValue("");
+    /* start() returns a trace function usable with sys.settrace() */
+    return PyObject_GetAttrString((PyObject*)self, "pytrace");
 }
 
 static PyObject *
-Tracer_stop(Tracer *self, PyObject *args)
+Tracer_stop(Tracer *self, PyObject *args_unused)
 {
     if (self->started) {
         PyEval_SetTrace(NULL, NULL);
@@ -512,6 +553,9 @@ Tracer_members[] = {
 
 static PyMethodDef
 Tracer_methods[] = {
+    { "pytrace",    (PyCFunction) Tracer_pytrace,       METH_VARARGS,
+            PyDoc_STR("A trace function compatible with sys.settrace()") },
+
     { "start",      (PyCFunction) Tracer_start,         METH_VARARGS,
             PyDoc_STR("Start the tracer") },
 

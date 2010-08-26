@@ -96,8 +96,13 @@ class PyTracer(object):
         return self._trace
 
     def start(self):
-        """Start this Tracer."""
+        """Start this Tracer.
+        
+        Return a Python function suitable for use with sys.settrace().
+
+        """
         sys.settrace(self._trace)
+        return self._trace
 
     def stop(self):
         """Stop this Tracer."""
@@ -186,8 +191,9 @@ class Collector(object):
         tracer.arcs = self.branch
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
-        tracer.start()
+        fn = tracer.start()
         self.tracers.append(tracer)
+        return fn
 
     # The trace function has to be set individually on each thread before
     # execution begins.  Ironically, the only support the threading module has
@@ -200,9 +206,13 @@ class Collector(object):
         # Remove ourselves as the trace function
         sys.settrace(None)
         # Install the real tracer.
-        self._start_tracer()
-        # Return None to reiterate that we shouldn't be used for tracing.
-        return None
+        fn = self._start_tracer()
+        # Invoke the real trace function with the current event, to be sure
+        # not to lose an event.
+        if fn:
+            fn = fn(frame_unused, event_unused, arg_unused)
+        # Return the new trace function to continue tracing in this scope.
+        return fn
 
     def start(self):
         """Start collecting trace information."""

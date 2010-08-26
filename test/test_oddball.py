@@ -12,7 +12,7 @@ class ThreadingTest(CoverageTest):
 
     def test_threading(self):
         self.check_coverage("""\
-            import time, threading
+            import threading
 
             def fromMainThread():
                 return "called from main thread"
@@ -29,6 +29,25 @@ class ThreadingTest(CoverageTest):
             other.join()
             """,
             [1,3,4,6,7,9,10,12,13,14,15], "10")
+
+    def test_thread_run(self):
+        self.check_coverage("""\
+            import threading
+
+            class TestThread(threading.Thread):
+                def run(self):
+                    self.a = 5
+                    self.do_work()
+                    self.a = 7
+
+                def do_work(self):
+                    self.a = 10
+
+            thd = TestThread()
+            thd.start()
+            thd.join()
+            """,
+            [1,3,4,5,6,7,9,10,12,13,14], "")
 
 
 class RecursionTest(CoverageTest):

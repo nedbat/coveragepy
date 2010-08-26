@@ -14,9 +14,14 @@ Version 3.4b2
   ``[report] precision`` config file setting.  Default is still 0.  Completes
   ``issue 16``.
 
+- Threads derived from ``threading.Thread`` with an overridden `run` method
+  would report no coverage for the `run` method.  This is now fixed, closing 
+  ``issue 85``.
+
 .. _issue 70: http://bitbucket.org/ned/coveragepy/issue/70/text-report-and-html-report-disagree-on-coverage
 .. _issue 41: http://bitbucket.org/ned/coveragepy/issue/41/report-says-100-when-it-isnt-quite-there
 .. _issue 16: http://bitbucket.org/ned/coveragepy/issue/16/allow-configuration-of-accuracy-of-percentage-totals
+.. _issue 85: http://bitbucket.org/ned/coveragepy/issue/85/threadrun-isnt-measured
 
 
 Version 3.4b1 --- 21 August 2010
