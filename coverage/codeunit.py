@@ -1,26 +1,21 @@
 """Code unit (module) handling for Coverage."""
 
-import fnmatch, glob, os
+import glob, os
 
 from coverage.backward import string_class, StringIO
 from coverage.misc import CoverageException
 
 
-def code_unit_factory(morfs, file_locator, omit=None, include=None):
+def code_unit_factory(morfs, file_locator):
     """Construct a list of CodeUnits from polymorphic inputs.
 
     `morfs` is a module or a filename, or a list of same.
 
     `file_locator` is a FileLocator that can help resolve filenames.
 
-    `include` is a list of filename patterns. Only CodeUnits that match those
-    patterns will be included in the list. `omit` is a list of patterns to omit
-    from the list.
-
     Returns a list of CodeUnit objects.
 
     """
-
     # Be sure we have a list.
     if not isinstance(morfs, (list, tuple)):
         morfs = [morfs]
@@ -36,30 +31,8 @@ def code_unit_factory(morfs, file_locator, omit=None, include=None):
 
     code_units = [CodeUnit(morf, file_locator) for morf in morfs]
 
-    if include:
-        assert not isinstance(include, string_class) # common mistake
-        patterns = [file_locator.abs_file(p) for p in include]
-        filtered = []
-        for cu in code_units:
-            for pattern in patterns:
-                if fnmatch.fnmatch(cu.filename, pattern):
-                    filtered.append(cu)
-                    break
-        code_units = filtered
-
-    if omit:
-        assert not isinstance(omit, string_class) # common mistake
-        patterns = [file_locator.abs_file(p) for p in omit]
-        filtered = []
-        for cu in code_units:
-            for pattern in patterns:
-                if fnmatch.fnmatch(cu.filename, pattern):
-                    break
-            else:
-                filtered.append(cu)
-        code_units = filtered
-
     return code_units
+
 
 class CodeUnit(object):
     """Code unit: a filename or module.
@@ -71,7 +44,6 @@ class CodeUnit(object):
     `relative` is a boolean.
 
     """
-
     def __init__(self, morf, file_locator):
         self.file_locator = file_locator
 

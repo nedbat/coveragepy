@@ -1,6 +1,7 @@
 """Reporter foundation for Coverage."""
 
-import os
+import fnmatch, os
+from coverage.backward import string_class
 from coverage.codeunit import code_unit_factory
 from coverage.misc import CoverageException, NoSource
 
@@ -33,9 +34,32 @@ class Reporter(object):
 
         """
         morfs = morfs or self.coverage.data.executed_files()
-        self.code_units = code_unit_factory(
-                            morfs, self.coverage.file_locator, omit, include
-                            )
+        file_locator = self.coverage.file_locator
+        self.code_units = code_unit_factory(morfs, file_locator)
+
+        if include:
+            assert not isinstance(include, string_class) # common mistake
+            patterns = [file_locator.abs_file(p) for p in include]
+            filtered = []
+            for cu in self.code_units:
+                for pattern in patterns:
+                    if fnmatch.fnmatch(cu.filename, pattern):
+                        filtered.append(cu)
+                        break
+            self.code_units = filtered
+
+        if omit:
+            assert not isinstance(omit, string_class) # common mistake
+            patterns = [file_locator.abs_file(p) for p in omit]
+            filtered = []
+            for cu in self.code_units:
+                for pattern in patterns:
+                    if fnmatch.fnmatch(cu.filename, pattern):
+                        break
+                else:
+                    filtered.append(cu)
+            self.code_units = filtered
+
         self.code_units.sort()
 
     def report_files(self, report_fn, morfs, directory=None,

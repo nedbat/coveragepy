@@ -90,6 +90,22 @@ class SummaryTest(CoverageTest):
         self.assertTrue("mycode " in report)
         self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
+    def test_report_including(self):
+        # Try reporting while including some modules
+        self.run_command("coverage run mycode.py")
+        report = self.report_from_command("coverage report --include=mycode*")
+
+        # Name     Stmts   Miss  Cover
+        # ----------------------------
+        # mycode       4      0   100%
+
+        self.assertEqual(self.line_count(report), 3)
+        self.assertFalse("/coverage/" in report)
+        self.assertFalse("/test/modules/covmod1 " in report)
+        self.assertFalse("/test/zipmods.zip/covmodzip1 " in report)
+        self.assertTrue("mycode " in report)
+        self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
+
     def test_report_branches(self):
         self.make_file("mybranch.py", """\
             def branch(x):
