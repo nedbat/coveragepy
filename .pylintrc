@@ -67,10 +67,11 @@ disable-msg=
 
 # Messages that may be silly:
 #   R0201: 42:Tracer.stop: Method could be a function
+#   C0321: 80:CodeUnit.__lt__: More than one statement on a single line    
 #   R0401:  1: Cyclic import (coverage -> coverage.control -> coverage.html)
 #   W0403:  4: Relative import 'coveragetest'
 #   E1103: 26:RunTests.test_run_python_file: Instance of 'file' has no 'getvalue' member (but some types could not be inferred)
-    R0201,R0401,W0403,E1103,
+    R0201,C0321,R0401,W0403,E1103,
 
 # Messages that are noisy for now, eventually maybe we'll turn them on:
 #   C0103:256:coverage.morf_filename: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
