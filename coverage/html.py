@@ -9,7 +9,7 @@ from coverage.report import Reporter
 from coverage.templite import Templite
 
 # Disable pylint msg W0612, because a bunch of variables look unused, but
-# they're accessed in a templite context via locals().
+# they're accessed in a Templite context via locals().
 # pylint: disable-msg=W0612
 
 def data_filename(fname):
