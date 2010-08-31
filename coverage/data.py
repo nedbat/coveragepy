@@ -52,7 +52,10 @@ class CoverageData(object):
         # A map from canonical Python source file name to a dictionary with an
         # entry for each pair of line numbers forming an arc:
         #
-        # { filename: { (l1,l2): None, ... }, ...}
+        #   {
+        #       'filename1.py': { (12,14): None, (47,48): None, ... },
+        #       ...
+        #       }
         #
         self.arcs = {}
 

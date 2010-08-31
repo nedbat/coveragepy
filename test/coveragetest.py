@@ -327,6 +327,12 @@ class CoverageTest(TestCase):
         fname = os.path.join(*fparts)
         return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
 
+    def assert_same_files(self, flist1, flist2):
+        """Assert that `flist1` and `flist2` are the same set of file names."""
+        flist1_nice = [self.nice_file(f) for f in flist1]
+        flist2_nice = [self.nice_file(f) for f in flist2]
+        self.assertSameElements(flist1_nice, flist2_nice)
+
     def command_line(self, args, ret=OK, _covpkg=None):
         """Run `args` through the command line.
 

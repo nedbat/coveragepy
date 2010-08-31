@@ -324,6 +324,7 @@ class SourceOmitIncludeTest(CoverageTest):
         self.assertEqual(lines['p1b.py'], 3)
         self.assertEqual(lines['p2a.py'], 3)
         self.assertEqual(lines['p2b.py'], 3)
+        self.assert_('p1c.py' not in lines)
 
     def test_source_package(self):
         lines = self.coverage_usepkgs_summary(source=["pkg1"])

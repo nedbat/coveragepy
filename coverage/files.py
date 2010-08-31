@@ -102,6 +102,7 @@ class TreeMatcher(object):
                     return True
         return False
 
+
 class FnmatchMatcher(object):
     """A matcher for files by filename pattern."""
     def __init__(self, pats):
@@ -116,3 +117,16 @@ class FnmatchMatcher(object):
             if fnmatch.fnmatch(fpath, pat):
                 return True
         return False
+
+
+def find_python_files(dirname):
+    """Yield all of the importable Python files in `dirname`, recursively."""
+    for dirpath, dirnames, filenames in os.walk(dirname, topdown=True):
+        if '__init__.py' not in filenames:
+            # If a directory doesn't have __init__.py, then it isn't
+            # importable and neither are its files
+            del dirnames[:]
+            continue
+        for filename in filenames:
+            if fnmatch.fnmatch(filename, "*.py"):
+                yield os.path.join(dirpath, filename)

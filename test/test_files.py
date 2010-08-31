@@ -3,6 +3,7 @@
 import os, sys
 
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
+from coverage.files import find_python_files
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
@@ -34,6 +35,10 @@ class FileLocatorTest(CoverageTest):
         self.assertEqual(fl.relative_filename(a1), "file1.py")
         self.assertEqual(fl.relative_filename(a2), a2)
 
+
+class MatcherTest(CoverageTest):
+    """Tests of file matchers."""
+
     def test_tree_matcher(self):
         file1 = self.make_file("sub/file1.py")
         file2 = self.make_file("sub/file2.c")
@@ -64,3 +69,22 @@ class FileLocatorTest(CoverageTest):
         self.assertTrue(fnm.match(fl.canonical_filename(file3)))
         self.assertTrue(fnm.match(fl.canonical_filename(file4)))
         self.assertFalse(fnm.match(fl.canonical_filename(file5)))
+
+
+class FindPythonFilesTest(CoverageTest):
+    """Tests of `find_python_files`."""
+
+    def test_find_python_files(self):
+        self.make_file("sub/a.py")
+        self.make_file("sub/b.py")
+        self.make_file("sub/__init__.py")
+        self.make_file("sub/x.c")                   # nope: not .py
+        self.make_file("sub/ssub/__init__.py")
+        self.make_file("sub/ssub/s.py")
+        self.make_file("sub/lab/exp.py")            # nope: no __init__.py
+        py_files = set(find_python_files("sub"))
+        self.assert_same_files(py_files, [
+            "sub/__init__.py", "sub/a.py", "sub/b.py",
+            "sub/ssub/__init__.py", "sub/ssub/s.py",
+            ])
+
