@@ -2,11 +2,11 @@
 
 Run as:
 
-    $ python test/coverage_coverage.py run [NOSE_ARGS]
+    $ python test/meta_coverage.py run [NOSE_ARGS]
 
 to run and collect coverage, then:
 
-    $ python test/coverage_coverage.py report
+    $ python test/meta_coverage.py report
 
 to put the HTML report into the htmlcov directory.
 
@@ -25,7 +25,7 @@ def run_tests_with_coverage():
     version = "%s%s" % sys.version_info[:2]
     suffix = "%s_%s" % (version, tracer)
 
-    cov = coverage.coverage(config_file="covcov.ini", data_suffix=suffix)
+    cov = coverage.coverage(config_file="metacov.ini", data_suffix=suffix)
     # Cheap trick: the coverage code itself is excluded from measurement, but
     # if we clobber the cover_prefix in the coverage object, we can defeat the
     # self-detection.
@@ -67,7 +67,7 @@ def report_on_combined_files():
 
     print(":: Writing HTML report to %s/index.html" % HTML_DIR)
     import coverage
-    cov = coverage.coverage(config_file="covcov.ini")
+    cov = coverage.coverage(config_file="metacov.ini")
     cov.combine()
     cov.save()
     cov.html_report(directory=HTML_DIR)
