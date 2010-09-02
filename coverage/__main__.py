@@ -1,2 +1,3 @@
-from . import cmdline
-cmdline.main()
+"""Coverage.py's main entrypoint."""
+from coverage.cmdline import main
+main()
