@@ -1,7 +1,6 @@
 """Reporter foundation for Coverage."""
 
 import fnmatch, os
-from coverage.backward import string_class
 from coverage.codeunit import code_unit_factory
 from coverage.misc import CoverageException, NoSource
 
