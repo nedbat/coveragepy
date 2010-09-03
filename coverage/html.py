@@ -32,19 +32,17 @@ class HtmlReporter(Reporter):
         self.files = []
         self.arcs = coverage.data.has_arcs()
 
-    def report(self, morfs, directory, omit=None, include=None):
+    def report(self, morfs, config=None):
         """Generate an HTML report for `morfs`.
 
-        `morfs` is a list of modules or filenames.  `directory` is where to put
-        the HTML files.
-
-        See `coverage.report()` for other arguments.
+        `morfs` is a list of modules or filenames.  `config` is a
+        CoverageConfig instance.
 
         """
-        assert directory, "must provide a directory for html reporting"
+        assert config.html_dir, "must provide a directory for html reporting"
 
         # Process all the files.
-        self.report_files(self.html_file, morfs, directory, omit, include)
+        self.report_files(self.html_file, morfs, config, config.html_dir)
 
         if not self.files:
             raise CoverageException("No data to report.")
@@ -59,7 +57,7 @@ class HtmlReporter(Reporter):
             ]:
             shutil.copyfile(
                 data_filename("htmlfiles/" + static),
-                os.path.join(directory, static)
+                os.path.join(self.directory, static)
                 )
 
     def html_file(self, cu, analysis):

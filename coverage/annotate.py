@@ -33,13 +33,13 @@ class AnnotateReporter(Reporter):
     blank_re = re.compile(r"\s*(#|$)")
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
-    def report(self, morfs, directory=None, omit=None, include=None):
+    def report(self, morfs, config, directory=None):
         """Run the report.
 
         See `coverage.report()` for arguments.
 
         """
-        self.report_files(self.annotate_file, morfs, directory, omit, include)
+        self.report_files(self.annotate_file, morfs, config, directory)
 
     def annotate_file(self, cu, analysis):
         """Annotate a single file.

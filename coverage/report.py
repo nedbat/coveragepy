@@ -25,21 +25,19 @@ class Reporter(object):
         # classes.
         self.directory = None
 
-    def find_code_units(self, morfs, omit, include):
+    def find_code_units(self, morfs, config):
         """Find the code units we'll report on.
 
-        `morfs` is a list of modules or filenames.
-
-        See `coverage.report()` for other arguments.
+        `morfs` is a list of modules or filenames. `config` is a
+        CoverageConfig instance.
 
         """
         morfs = morfs or self.coverage.data.executed_files()
         file_locator = self.coverage.file_locator
         self.code_units = code_unit_factory(morfs, file_locator)
 
-        if include:
-            assert not isinstance(include, string_class) # common mistake
-            patterns = [file_locator.abs_file(p) for p in include]
+        if config.include:
+            patterns = [file_locator.abs_file(p) for p in config.include]
             filtered = []
             for cu in self.code_units:
                 for pattern in patterns:
@@ -48,9 +46,8 @@ class Reporter(object):
                         break
             self.code_units = filtered
 
-        if omit:
-            assert not isinstance(omit, string_class) # common mistake
-            patterns = [file_locator.abs_file(p) for p in omit]
+        if config.omit:
+            patterns = [file_locator.abs_file(p) for p in config.omit]
             filtered = []
             for cu in self.code_units:
                 for pattern in patterns:
@@ -62,18 +59,15 @@ class Reporter(object):
 
         self.code_units.sort()
 
-    def report_files(self, report_fn, morfs, directory=None,
-                        omit=None, include=None):
+    def report_files(self, report_fn, morfs, config, directory=None):
         """Run a reporting function on a number of morfs.
 
         `report_fn` is called for each relative morf in `morfs`.
 
-        `include` is a list of filename patterns. CodeUnits that match
-        those patterns will be included in the list. CodeUnits that match
-        `omit` will be omitted from the list.
+        `config` is a CoverageConfig instance.
 
         """
-        self.find_code_units(morfs, omit, include)
+        self.find_code_units(morfs, config)
 
         if not self.code_units:
             raise CoverageException("No data to report.")

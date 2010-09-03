@@ -499,10 +499,7 @@ class coverage(object):
         reporter = SummaryReporter(
             self, show_missing, self.config.ignore_errors
             )
-        reporter.report(
-            morfs, outfile=file, omit=self.config.omit,
-            include=self.config.include
-            )
+        reporter.report(morfs, outfile=file, config=self.config)
 
     def annotate(self, morfs=None, directory=None, ignore_errors=None,
                     omit=None, include=None):
@@ -520,11 +517,7 @@ class coverage(object):
             ignore_errors=ignore_errors, omit=omit, include=include
             )
         reporter = AnnotateReporter(self, self.config.ignore_errors)
-        reporter.report(
-            morfs, directory=directory,
-            omit=self.config.omit,
-            include=self.config.include
-            )
+        reporter.report(morfs, config=self.config, directory=directory)
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
                     omit=None, include=None):
@@ -538,11 +531,7 @@ class coverage(object):
             html_dir=directory,
             )
         reporter = HtmlReporter(self, self.config.ignore_errors)
-        reporter.report(
-            morfs, directory=self.config.html_dir,
-            omit=self.config.omit,
-            include=self.config.include
-            )
+        reporter.report(morfs, config=self.config)
 
     def xml_report(self, morfs=None, outfile=None, ignore_errors=None,
                     omit=None, include=None):
@@ -569,10 +558,7 @@ class coverage(object):
                 file_to_close = outfile
         try:
             reporter = XmlReporter(self, self.config.ignore_errors)
-            reporter.report(
-                morfs, omit=self.config.omit, include=self.config.include,
-                outfile=outfile
-                )
+            reporter.report(morfs, outfile=outfile, config=self.config)
         finally:
             if file_to_close:
                 file_to_close.close()
