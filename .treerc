@@ -2,6 +2,7 @@
 [default]
 ignore =
     .treerc
+    build
     htmlcov
     distribute_setup.py ez_setup.py mock.py
     *.min.js
