@@ -211,8 +211,8 @@ class CoverageData(object):
         """Ensure that `filename` appears in the data, empty if needed."""
         self.lines.setdefault(filename, {})
 
-    def executed_files(self):
-        """A list of all files that had been measured as executed."""
+    def measured_files(self):
+        """A list of all files that had been measured."""
         return list(self.lines.keys())
 
     def executed_lines(self, filename):

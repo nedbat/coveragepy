@@ -11,13 +11,13 @@ from coveragetest import CoverageTest
 
 DATA_1 = { 'a.py': {1:None, 2:None}, 'b.py': {3:None} }
 SUMMARY_1 = { 'a.py':2, 'b.py':1 }
-EXECED_FILES_1 = [ 'a.py', 'b.py' ]
+MEASURED_FILES_1 = [ 'a.py', 'b.py' ]
 A_PY_LINES_1 = [1,2]
 B_PY_LINES_1 = [3]
 
 DATA_2 = { 'a.py': {1:None, 5:None}, 'c.py': {17:None} }
 SUMMARY_1_2 = { 'a.py':3, 'b.py':1, 'c.py':1 }
-EXECED_FILES_1_2 = [ 'a.py', 'b.py', 'c.py' ]
+MEASURED_FILES_1_2 = [ 'a.py', 'b.py', 'c.py' ]
 
 ARC_DATA_3 = { 'x.py': {(1,2):None, (2,3):None}, 'y.py': {(17,23):None} }
 X_PY_ARCS_3 = [(1,2), (2,3)]
@@ -30,9 +30,9 @@ class DataTest(CoverageTest):
         """Check that the summary of `covdata` is `summary`."""
         self.assertEqual(covdata.summary(), summary)
 
-    def assert_executed_files(self, covdata, execed):
-        """Check that `covdata`'s executed files are `execed`."""
-        self.assertSameElements(covdata.executed_files(), execed)
+    def assert_measured_files(self, covdata, measured):
+        """Check that `covdata`'s measured files are `measured`."""
+        self.assertSameElements(covdata.measured_files(), measured)
 
     def test_reading_empty(self):
         covdata = CoverageData()
@@ -43,13 +43,13 @@ class DataTest(CoverageTest):
         covdata = CoverageData()
         covdata.add_line_data(DATA_1)
         self.assert_summary(covdata, SUMMARY_1)
-        self.assert_executed_files(covdata, EXECED_FILES_1)
+        self.assert_measured_files(covdata, MEASURED_FILES_1)
 
     def test_touch_file(self):
         covdata = CoverageData()
         covdata.add_line_data(DATA_1)
         covdata.touch_file('x.py')
-        self.assert_executed_files(covdata, EXECED_FILES_1 + ['x.py'])
+        self.assert_measured_files(covdata, MEASURED_FILES_1 + ['x.py'])
 
     def test_writing_and_reading(self):
         covdata1 = CoverageData()
@@ -72,7 +72,7 @@ class DataTest(CoverageTest):
         covdata3 = CoverageData()
         covdata3.combine_parallel_data()
         self.assert_summary(covdata3, SUMMARY_1_2)
-        self.assert_executed_files(covdata3, EXECED_FILES_1_2)
+        self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
 
     def test_erasing(self):
         covdata1 = CoverageData()
@@ -98,7 +98,7 @@ class DataTest(CoverageTest):
             fdata.close()
 
         lines = data['lines']
-        self.assertSameElements(lines.keys(), EXECED_FILES_1)
+        self.assertSameElements(lines.keys(), MEASURED_FILES_1)
         self.assertSameElements(lines['a.py'], A_PY_LINES_1)
         self.assertSameElements(lines['b.py'], B_PY_LINES_1)
         # If not measuring branches, there's no arcs entry.

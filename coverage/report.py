@@ -31,7 +31,7 @@ class Reporter(object):
         CoverageConfig instance.
 
         """
-        morfs = morfs or self.coverage.data.executed_files()
+        morfs = morfs or self.coverage.data.measured_files()
         file_locator = self.coverage.file_locator
         self.code_units = code_unit_factory(morfs, file_locator)
 
