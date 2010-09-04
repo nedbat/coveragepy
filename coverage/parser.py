@@ -488,7 +488,6 @@ class ByteParser(object):
             penult = ult
             ult = bc
 
-
         if chunks:
             # The last two bytecodes could be a dummy "return None" that
             # shouldn't be counted as real code. Every Python code object seems
@@ -500,13 +499,13 @@ class ByteParser(object):
                         # This is "return None", but is it dummy?  A real line
                         # would be a last chunk all by itself.
                         if chunks[-1].byte != penult.offset:
-                            exit = -self.code.co_firstlineno
+                            ex = -self.code.co_firstlineno
                             # Split the last chunk
                             last_chunk = chunks[-1]
-                            last_chunk.exits.remove(exit)
+                            last_chunk.exits.remove(ex)
                             last_chunk.exits.add(penult.offset)
                             chunk = Chunk(penult.offset)
-                            chunk.exits.add(exit)
+                            chunk.exits.add(ex)
                             chunks.append(chunk)
 
             # Give all the chunks a length.
