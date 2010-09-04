@@ -324,6 +324,8 @@ class SourceOmitIncludeTest(CoverageTest):
         self.assertEqual(lines['p1b.py'], 3)
         self.assertEqual(lines['p2a.py'], 3)
         self.assertEqual(lines['p2b.py'], 3)
+        # Because there was no source= specified, we don't search for
+        # unexecuted files.
         self.assert_('p1c.py' not in lines)
 
     def test_source_package(self):
@@ -332,6 +334,8 @@ class SourceOmitIncludeTest(CoverageTest):
         self.assertEqual(lines['p1b.py'], 3)
         self.assert_('p2a.py' not in lines)
         self.assert_('p2b.py' not in lines)
+        # Because source= was specified, we do search for unexecuted files.
+        self.assertEqual(lines['p1c.py'], 0)
 
     def test_source_package_dotted(self):
         lines = self.coverage_usepkgs_summary(source=["pkg1.p1b"])
@@ -339,6 +343,7 @@ class SourceOmitIncludeTest(CoverageTest):
         self.assertEqual(lines['p1b.py'], 3)
         self.assert_('p2a.py' not in lines)
         self.assert_('p2b.py' not in lines)
+        self.assert_('p1c.py' not in lines)
 
     def test_include(self):
         lines = self.coverage_usepkgs_summary(include=["*/p1a.py"])

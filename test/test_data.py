@@ -45,6 +45,12 @@ class DataTest(CoverageTest):
         self.assert_summary(covdata, SUMMARY_1)
         self.assert_executed_files(covdata, EXECED_FILES_1)
 
+    def test_touch_file(self):
+        covdata = CoverageData()
+        covdata.add_line_data(DATA_1)
+        covdata.touch_file('x.py')
+        self.assert_executed_files(covdata, EXECED_FILES_1 + ['x.py'])
+
     def test_writing_and_reading(self):
         covdata1 = CoverageData()
         covdata1.add_line_data(DATA_1)

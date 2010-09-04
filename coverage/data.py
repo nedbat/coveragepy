@@ -207,6 +207,10 @@ class CoverageData(object):
         for filename, arcs in arc_data.items():
             self.arcs.setdefault(filename, {}).update(arcs)
 
+    def touch_file(self, filename):
+        """Ensure that `filename` appears in the data, empty if needed."""
+        self.lines.setdefault(filename, {})
+
     def executed_files(self):
         """A list of all files that had been measured as executed."""
         return list(self.lines.keys())

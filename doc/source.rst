@@ -28,7 +28,9 @@ all code, unless it is part of the Python standard library.
 You can specify source to measure with the ``--source`` command-line switch,
 or the ``[run] source`` configuration value.  The value is a list of directories
 or package names.  If specified, only source inside these directories or
-packages will be measured.
+packages will be measured.  Specifying the source option also enables
+coverage.py to report on unexecuted files, since it can search the source tree
+for files that haven't been measured at all.
 
 You can further fine-tune coverage.py's attention with the ``--include`` and
 ``--omit`` switches (or ``[run] include`` and ``[run] omit`` configuration
@@ -71,5 +73,4 @@ reporting.
 
 Note that these are ways of specifying files to measure.  You can also exclude
 individual source lines.  See :ref:`excluding` for details.
-
 

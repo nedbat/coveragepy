@@ -6,6 +6,10 @@ Change history for Coverage.py
 Version 3.4b2
 -------------
 
+- Completely unexecuted files can now be included in coverage results, reported
+  as 0% covered.  This only happens if the --source option is specified, since
+  coverage.py needs guidance about where to look for source files.
+
 - Coverage percentages are now displayed uniformly across reporting methods.  A
   percentage is only reported as 0% or 100% if they are truly 0 or 100, and
   are rounded otherwise.  Fixes `issue 41` and issue 70`.

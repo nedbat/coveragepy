@@ -9,6 +9,7 @@ from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
+from coverage.files import find_python_files
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none
 from coverage.results import Analysis, Numbers
@@ -303,6 +304,7 @@ class coverage(object):
                     else:
                         pkg_file = self._source_for_file(pkg_file)
                     pkg_file = self.file_locator.canonical_filename(pkg_file)
+                    self.source.append(pkg_file)
                     self.source_match.add(pkg_file)
 
             for pkg in found:
@@ -436,6 +438,11 @@ class coverage(object):
             summary = self.data.summary()
             if not summary:
                 self._warn("No data was collected.")
+
+            # Find files that were never executed at all.
+            for src in self.source:
+                for py_file in find_python_files(src):
+                    self.data.touch_file(py_file)
 
             self._harvested = True
 
