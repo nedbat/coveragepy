@@ -6,6 +6,4 @@ for %%v in (23 24 25 26 27 31 32) do (
     )
 
 call \ned\bin\switchpy c:\vpy\coverage\26
-set TAR_OPTIONS=--group=100
-python setup.py sdist --formats=gztar %1
-set TAR_OPTIONS=
+python setup.py --command-packages=distcmd sdist --keep-temp --formats=gztar fixtar %1

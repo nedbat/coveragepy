@@ -23,7 +23,7 @@ clean:
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	-rm -rf doc/_build/*
 
-LINTABLE = coverage setup.py test
+LINTABLE = coverage setup.py test distcmd
 
 lint:
 	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc $(LINTABLE)
@@ -46,7 +46,7 @@ $(TEST_EGG): test/eggsrc/setup.py test/eggsrc/egg1/egg1.py
 	cd test/eggsrc; python setup.py -q bdist_egg
 
 kit:
-	python setup.py sdist --formats=gztar
+	python setup.py --command-packages=distcmd sdist --keep-temp --formats=gztar fixtar
 	python setup.py bdist_wininst
 
 pypi:
