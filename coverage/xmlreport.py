@@ -9,7 +9,7 @@ from coverage.report import Reporter
 
 def rate(hit, num):
     """Return the fraction of `hit`/`num`."""
-    return hit / (num or 1.0)
+    return float(hit) / (num or 1.0)
 
 
 class XmlReporter(Reporter):
@@ -105,7 +105,7 @@ class XmlReporter(Reporter):
         xclass.setAttribute("filename", cu.name + ext)
         xclass.setAttribute("complexity", "0.0")
 
-        branch_lines = analysis.branch_lines()
+        branch_stats = analysis.branch_stats()
 
         # For each statement, create an XML 'line' element.
         for line in analysis.statements:
@@ -117,20 +117,20 @@ class XmlReporter(Reporter):
             xline.setAttribute("hits", str(int(not line in analysis.missing)))
 
             if self.arcs:
-                if line in branch_lines:
+                if line in branch_stats:
+                    total, taken = branch_stats[line]
                     xline.setAttribute("branch", "true")
+                    xline.setAttribute("condition-coverage",
+                        "%d%% (%d/%d)" % (100*taken/total, taken, total)
+                        )
             xlines.appendChild(xline)
 
         class_lines = 1.0 * len(analysis.statements)
         class_hits = class_lines - len(analysis.missing)
 
         if self.arcs:
-            # We assume here that every branch line has 2 exits, which is
-            # usually true.  In theory, though, we could have a branch line
-            # with more exits..
-            class_branches = 2.0 * len(branch_lines)
-            missed_branch_targets = analysis.missing_branch_arcs().values()
-            missing_branches = sum([len(b) for b in missed_branch_targets])
+            class_branches = sum([t for t,k in branch_stats.values()])
+            missing_branches = sum([t-k for t,k in branch_stats.values()])
             class_branch_hits = class_branches - missing_branches
         else:
             class_branches = 0.0

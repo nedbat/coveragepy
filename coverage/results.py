@@ -94,7 +94,7 @@ class Analysis(object):
         return sorted(unpredicted)
 
     def branch_lines(self):
-        """Returns lines that have more than one exit."""
+        """Returns a list of line numbers that have more than one exit."""
         exit_counts = self.parser.exit_counts()
         return [l1 for l1,count in exit_counts.items() if count > 1]
 
@@ -118,6 +118,25 @@ class Analysis(object):
                     mba[l1] = []
                 mba[l1].append(l2)
         return mba
+
+    def branch_stats(self):
+        """Get stats about branches.
+
+        Returns a dict mapping line numbers to a tuple:
+        (total_exits, taken_exits).
+        """
+
+        exit_counts = self.parser.exit_counts()
+        missing_arcs = self.missing_branch_arcs()
+        stats = {}
+        for lnum in self.branch_lines():
+            exits = exit_counts[lnum]
+            try:
+                missing = len(missing_arcs[lnum])
+            except KeyError:
+                missing = 0
+            stats[lnum] = (exits, exits - missing)
+        return stats
 
 
 class Numbers(object):

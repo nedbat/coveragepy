@@ -10,7 +10,7 @@
 					<methods/>
 					<lines>
 						<line hits="1" number="3"/>
-						<line branch="true" hits="1" number="4"/>
+						<line branch="true" condition-coverage="50% (1/2)" hits="1" number="4"/>
 						<line hits="1" number="5"/>
 						<line hits="0" number="7"/>
 						<line hits="1" number="9"/>

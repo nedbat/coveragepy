@@ -10,21 +10,27 @@ Version 3.4b2
   as 0% covered.  This only happens if the --source option is specified, since
   coverage.py needs guidance about where to look for source files.
 
-- Coverage percentages are now displayed uniformly across reporting methods.  A
-  percentage is only reported as 0% or 100% if they are truly 0 or 100, and
-  are rounded otherwise.  Fixes `issue 41` and issue 70`.
+- The XML report output now properly includes a percentage for branch coverage,
+  fixing `issue 65`_ and `issue 81`_.
+
+- Coverage percentages are now displayed uniformly across reporting methods.
+  Previously, different reports could round percentages differently.  Also,
+  percentages are only reported as 0% or 100% if they are truly 0 or 100, and
+  are rounded otherwise.  Fixes `issue 41`_ and `issue 70`_.
 
 - The precision of reported coverage percentages can be set with the
   ``[report] precision`` config file setting.  Default is still 0.  Completes
-  ``issue 16``.
+  `issue 16`_.
 
 - Threads derived from ``threading.Thread`` with an overridden `run` method
   would report no coverage for the `run` method.  This is now fixed, closing
-  ``issue 85``.
+  `issue 85`_.
 
-.. _issue 70: http://bitbucket.org/ned/coveragepy/issue/70/text-report-and-html-report-disagree-on-coverage
-.. _issue 41: http://bitbucket.org/ned/coveragepy/issue/41/report-says-100-when-it-isnt-quite-there
 .. _issue 16: http://bitbucket.org/ned/coveragepy/issue/16/allow-configuration-of-accuracy-of-percentage-totals
+.. _issue 41: http://bitbucket.org/ned/coveragepy/issue/41/report-says-100-when-it-isnt-quite-there
+.. _issue 65: http://bitbucket.org/ned/coveragepy/issue/65/branch-option-not-reported-in-cobertura
+.. _issue 70: http://bitbucket.org/ned/coveragepy/issue/70/text-report-and-html-report-disagree-on-coverage
+.. _issue 81: http://bitbucket.org/ned/coveragepy/issue/81/xml-report-does-not-have-condition-coverage-attribute-for-lines-with-a
 .. _issue 85: http://bitbucket.org/ned/coveragepy/issue/85/threadrun-isnt-measured
 
 
