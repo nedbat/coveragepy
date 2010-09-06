@@ -41,7 +41,7 @@ Version 3.4 beta --- 6 September 2010
 - Completely unexecuted files can now be included in coverage results, reported
   as 0% covered.  This only happens if the --source option is specified, since
   coverage.py needs guidance about where to look for source files.
- 
+
 - Various warnings are printed to stderr for problems encountered during data
   measurement: if a ``--source`` module has no Python source to measure, or is
   never encountered at all, or if no data is collected.
