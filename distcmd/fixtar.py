@@ -42,9 +42,9 @@ class fixtar(Command):
         for itarinfo in itar:
             otarinfo = otar.gettarinfo(itarinfo.name)
             if the_dir is None:
-                n = itarinfo.name
-                assert n.count("/") == 1 and n.endswith("/")
-                the_dir = n[:-1]
+                n = itarinfo.name.rstrip("/")
+                assert "/" not in n
+                the_dir = n
             if itarinfo.isfile():
                 otarinfo.mode = 0644
             else:
