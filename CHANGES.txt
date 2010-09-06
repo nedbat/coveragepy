@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Version 3.4b2
--------------
+Version 3.4b2 --- 6 September 2010
+----------------------------------
 
 - Completely unexecuted files can now be included in coverage results, reported
   as 0% covered.  This only happens if the --source option is specified, since
@@ -19,8 +19,7 @@ Version 3.4b2
   are rounded otherwise.  Fixes `issue 41`_ and `issue 70`_.
 
 - The precision of reported coverage percentages can be set with the
-  ``[report] precision`` config file setting.  Default is still 0.  Completes
-  `issue 16`_.
+  ``[report] precision`` config file setting.  Completes `issue 16`_.
 
 - Threads derived from ``threading.Thread`` with an overridden `run` method
   would report no coverage for the `run` method.  This is now fixed, closing

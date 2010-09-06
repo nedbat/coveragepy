@@ -13,8 +13,8 @@ Major change history for coverage.py
 :history: 20100221T151900, changes for 3.3
 :history: 20100306T181400, changes for 3.3.1
 :history: 20100725T211700, updated for 3.4.
-:history: 20100820T151500, updated for 3.4beta1.
-
+:history: 20100820T151500, updated for 3.4b1
+:history: 20100906T133800, updated for 3.4b2
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
@@ -22,8 +22,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
-Version 3.4 beta --- 21 August 2010
------------------------------------
+Version 3.4 beta --- 6 September 2010
+-------------------------------------
 
 - BACKWARD INCOMPATIBILITY: the ``--omit`` and ``--include`` switches now take
   file patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
@@ -38,6 +38,10 @@ Version 3.4 beta --- 21 August 2010
   to control what modules it measures.  This can speed execution and reduce the
   amount of data during reporting. Thanks Zooko.
 
+- Completely unexecuted files can now be included in coverage results, reported
+  as 0% covered.  This only happens if the --source option is specified, since
+  coverage.py needs guidance about where to look for source files.
+ 
 - Various warnings are printed to stderr for problems encountered during data
   measurement: if a ``--source`` module has no Python source to measure, or is
   never encountered at all, or if no data is collected.
@@ -54,6 +58,21 @@ Version 3.4 beta --- 21 August 2010
   rather than increasing the executed lines to varying targets.  Once
   suggested, this seemed blindingly obvious.
 
+- Coverage percentages are now displayed uniformly across reporting methods.
+  Previously, different reports could round percentages differently.  Also,
+  percentages are only reported as 0% or 100% if they are truly 0 or 100, and
+  are rounded otherwise.  Fixes `issue 41`_ and `issue 70`_.
+
+- The XML report output now properly includes a percentage for branch coverage,
+  fixing `issue 65`_ and `issue 81`_.
+
+- The precision of reported coverage percentages can be set with the
+  ``[report] precision`` config file setting.  Completes `issue 16`_.
+
+- Threads derived from ``threading.Thread`` with an overridden `run` method
+  would report no coverage for the `run` method.  This is now fixed, closing
+  `issue 85`_.
+
 - Line numbers in HTML source pages are clickable, linking directly to that
   line, which is highlighted on arrival.  Added a link back to the index page
   at the bottom of each HTML page.
@@ -69,12 +88,17 @@ Version 3.4 beta --- 21 August 2010
   can't be reported anyway.  Fixes `issue 52`_ and `issue 61`_.
 
 .. _issue 1:  http://bitbucket.org/ned/coveragepy/issue/1/empty-__init__py-files-are-reported-as-1-executable
+.. _issue 16: http://bitbucket.org/ned/coveragepy/issue/16/allow-configuration-of-accuracy-of-percentage-totals
 .. _issue 34: http://bitbucket.org/ned/coveragepy/issue/34/enhanced-omit-globbing-handling
 .. _issue 36: http://bitbucket.org/ned/coveragepy/issue/36/provide-regex-style-omit
+.. _issue 41: http://bitbucket.org/ned/coveragepy/issue/41/report-says-100-when-it-isnt-quite-there
 .. _issue 52: http://bitbucket.org/ned/coveragepy/issue/52/doctesttestfile-confuses-source-detection
-.. _issue 56: http://bitbucket.org/ned/coveragepy/issue/56
+.. _issue 56: http://bitbucket.org/ned/coveragepy/issue/56/coveragepy-cant-trace-child-processes-of-a
 .. _issue 61: http://bitbucket.org/ned/coveragepy/issue/61/annotate-i-doesnt-work
-
+.. _issue 65: http://bitbucket.org/ned/coveragepy/issue/65/branch-option-not-reported-in-cobertura
+.. _issue 70: http://bitbucket.org/ned/coveragepy/issue/70/text-report-and-html-report-disagree-on-coverage
+.. _issue 81: http://bitbucket.org/ned/coveragepy/issue/81/xml-report-does-not-have-condition-coverage-attribute-for-lines-with-a
+.. _issue 85: http://bitbucket.org/ned/coveragepy/issue/85/threadrun-isnt-measured
 
 Version 3.3.1 --- 6 March 2010
 ------------------------------
