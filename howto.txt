@@ -52,6 +52,7 @@
 
 * Building
 
+- Install fixtar on any Python used to make source kits: http://bitbucket.org/ned/fixtar
 - Create PythonXX\Lib\distutils\distutils.cfg::
     [build]
     compiler = mingw32
