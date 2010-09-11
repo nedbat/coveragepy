@@ -60,14 +60,15 @@ class XmlReporter(Reporter):
         bnum_tot, bhits_tot = 0, 0
 
         # Populate the XML DOM with the package info.
-        for pkg_name, pkg_data in self.packages.items():
+        for pkg_name in sorted(self.packages.keys()):
+            pkg_data = self.packages[pkg_name]
             class_elts, lhits, lnum, bhits, bnum = pkg_data
             xpackage = self.xml_out.createElement("package")
             xpackages.appendChild(xpackage)
             xclasses = self.xml_out.createElement("classes")
             xpackage.appendChild(xclasses)
-            for className in sorted(class_elts.keys()):
-                xclasses.appendChild(class_elts[className])
+            for class_name in sorted(class_elts.keys()):
+                xclasses.appendChild(class_elts[class_name])
             xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
             xpackage.setAttribute("line-rate", rate(lhits, lnum))
             xpackage.setAttribute("branch-rate", rate(bhits, bnum))
