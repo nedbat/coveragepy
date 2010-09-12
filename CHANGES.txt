@@ -3,6 +3,14 @@ Change history for Coverage.py
 ------------------------------
 
 
+Version 3.4
+-----------
+
+- The XML report is now sorted by package name, fixing `issue 88`_.
+
+.. _issue 88: http://bitbucket.org/ned/coveragepy/issue/88/xml-report-lists-packages-in-random-order
+
+
 Version 3.4b2 --- 6 September 2010
 ----------------------------------
 

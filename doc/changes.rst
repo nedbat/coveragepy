@@ -64,7 +64,8 @@ Version 3.4 beta --- 6 September 2010
   are rounded otherwise.  Fixes `issue 41`_ and `issue 70`_.
 
 - The XML report output now properly includes a percentage for branch coverage,
-  fixing `issue 65`_ and `issue 81`_.
+  fixing `issue 65`_ and `issue 81`_, and the report is sorted by package
+  name, fixing `issue 88`_.
 
 - The precision of reported coverage percentages can be set with the
   ``[report] precision`` config file setting.  Completes `issue 16`_.
@@ -99,6 +100,7 @@ Version 3.4 beta --- 6 September 2010
 .. _issue 70: http://bitbucket.org/ned/coveragepy/issue/70/text-report-and-html-report-disagree-on-coverage
 .. _issue 81: http://bitbucket.org/ned/coveragepy/issue/81/xml-report-does-not-have-condition-coverage-attribute-for-lines-with-a
 .. _issue 85: http://bitbucket.org/ned/coveragepy/issue/85/threadrun-isnt-measured
+.. _issue 88: http://bitbucket.org/ned/coveragepy/issue/88/xml-report-lists-packages-in-random-order
 
 Version 3.3.1 --- 6 March 2010
 ------------------------------
