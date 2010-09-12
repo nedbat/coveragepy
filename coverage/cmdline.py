@@ -470,6 +470,8 @@ class CoverageScript(object):
                 if info == 'sys':
                     print("-- sys ----------------------------------------")
                     for label, info in self.coverage.sysinfo():
+                        if info == []:
+                            info = "-none-"
                         if isinstance(info, list):
                             print("%15s:" % label)
                             for e in info:
