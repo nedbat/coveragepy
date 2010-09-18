@@ -8,6 +8,9 @@ Version 3.4
 
 - The XML report is now sorted by package name, fixing `issue 88`_.
 
+- Programs that exited with ``sys.exit()`` with no argument weren't handled
+  properly, producing a coverage.py stack trace.  That is now fixed.
+
 .. _issue 88: http://bitbucket.org/ned/coveragepy/issue/88/xml-report-lists-packages-in-random-order
 
 

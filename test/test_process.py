@@ -204,6 +204,23 @@ class ProcessTest(CoverageTest):
         self.assertEqual(status, status2)
         self.assertEqual(status, 17)
 
+    def test_code_exits_no_arg(self):
+        self.make_file("exit_none.py", """\
+            import sys
+            def f1():
+                print("about to exit quietly..")
+                sys.exit()
+
+            f1()
+            """)
+        status, out = self.run_command_status("coverage run exit_none.py", 0)
+        status2, out2 = self.run_command_status("python exit_none.py", 0)
+        self.assertMultiLineEqual(out, out2)
+        self.assertMultiLineEqual(out, "about to exit quietly..\n")
+        self.assertEqual(status, status2)
+        self.assertEqual(status, 0)
+
+
     if hasattr(os, 'fork'):
         def test_fork(self):
             self.make_file("fork.py", """\

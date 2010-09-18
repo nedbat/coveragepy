@@ -652,7 +652,10 @@ def main(argv=None):
         print(err)
         status = ERR
     except SystemExit:
-        # The user called `sys.exit()`.  Exit with their status code.
+        # The user called `sys.exit()`.  Exit with their argument, if any.
         _, err, _ = sys.exc_info()
-        status = err.args[0]
+        if err.args:
+            status = err.args[0]
+        else:
+            status = None
     return status
