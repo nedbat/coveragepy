@@ -58,4 +58,4 @@ If all went well, you should be able to open a command prompt, and see
 coverage installed properly::
 
     $ coverage --version
-    Coverage.py, version 3.4b2.  http://nedbatchelder.com/code/coverage/3.4b2
+    Coverage.py, version 3.4.  http://nedbatchelder.com/code/coverage

@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Version 3.4
------------
+Version 3.4 --- 19 September 2010
+---------------------------------
 
 - The XML report is now sorted by package name, fixing `issue 88`_.
 

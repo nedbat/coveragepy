@@ -5,7 +5,7 @@ http://nedbatchelder.com/code/coverage
 
 """
 
-__version__ = "3.4c1"    # see detailed history in CHANGES.txt
+__version__ = "3.4"     # see detailed history in CHANGES.txt
 
 __url__ = "http://nedbatchelder.com/code/coverage"
 if 'b' in __version__:
