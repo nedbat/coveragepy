@@ -53,8 +53,12 @@ a.nav:hover {
     font-family: "courier new", monospace;
     }
 
-#footer {
+#indexfile #footer {
     margin: 1em 3em;
+    }
+
+#pyfile #footer {
+    margin: 1em 1em;
     }
 
 #footer .content {
@@ -108,6 +112,18 @@ h2.stats {
     font-size: .625em;   /* 10/16 */
     line-height: 1.6em;  /* 16/10 */
     }
+.linenos p.highlight {
+    background: #ffdd00;
+    }
+.linenos p a {
+    text-decoration: none;
+    color: #999999;
+    }
+.linenos p a:hover {
+    text-decoration: underline;
+    color: #999999;
+    }
+
 td.text {
     width: 100%;
     }

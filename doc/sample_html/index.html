@@ -8,10 +8,10 @@
     <script type='text/javascript' src='jquery.tablesorter.min.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
     <script type='text/javascript' charset='utf-8'>
-        jQuery(document).ready(index_page_ready);
+        jQuery(document).ready(index_ready);
     </script>
 </head>
-<body>
+<body id='indexfile'>
 
 <div id='header'>
     <div class='content'>
@@ -28,11 +28,11 @@
             <tr class='tablehead' title='Click to sort'>
                 <th class='name left headerSortDown'>Module</th>
                 <th>statements</th>
-                <th>run</th>
+                <th>missing</th>
                 <th>excluded</th>
                 
                 <th>branches</th>
-                <th>br exec</th>
+                <th>partial</th>
                 
                 <th class='right'>coverage</th>
             </tr>
@@ -42,11 +42,11 @@
             <tr class='total'>
                 <td class='name left'>Total</td>
                 <td>1326</td>
-                <td>568</td>
+                <td>758</td>
                 <td>23</td>
                 
                 <td>305</td>
-                <td>104</td>
+                <td>201</td>
                 
                 <td class='right'>41%</td>
             </tr>
@@ -56,11 +56,11 @@
             <tr class='file'>
                 <td class='name left'><a href='_ned_py_path.html'>c:\ned\py\path</a></td>
                 <td>286</td>
-                <td>114</td>
+                <td>172</td>
                 <td>0</td>
                 
                 <td>104</td>
-                <td>22</td>
+                <td>82</td>
                 
                 <td class='right'>35%</td>
             </tr>
@@ -68,11 +68,11 @@
             <tr class='file'>
                 <td class='name left'><a href='cogapp_cogapp.html'>cogapp\cogapp</a></td>
                 <td>387</td>
-                <td>219</td>
+                <td>168</td>
                 <td>3</td>
                 
                 <td>153</td>
-                <td>54</td>
+                <td>99</td>
                 
                 <td class='right'>51%</td>
             </tr>
@@ -80,11 +80,11 @@
             <tr class='file'>
                 <td class='name left'><a href='cogapp_makefiles.html'>cogapp\makefiles</a></td>
                 <td>29</td>
-                <td>6</td>
+                <td>23</td>
                 <td>3</td>
                 
                 <td>16</td>
-                <td>0</td>
+                <td>16</td>
                 
                 <td class='right'>13%</td>
             </tr>
@@ -92,7 +92,7 @@
             <tr class='file'>
                 <td class='name left'><a href='cogapp_test_cogapp.html'>cogapp\test_cogapp</a></td>
                 <td>587</td>
-                <td>195</td>
+                <td>392</td>
                 <td>17</td>
                 
                 <td>4</td>
@@ -104,11 +104,11 @@
             <tr class='file'>
                 <td class='name left'><a href='cogapp_whiteutils.html'>cogapp\whiteutils</a></td>
                 <td>37</td>
-                <td>34</td>
+                <td>3</td>
                 <td>0</td>
                 
                 <td>28</td>
-                <td>26</td>
+                <td>2</td>
                 
                 <td class='right'>92%</td>
             </tr>
@@ -120,7 +120,7 @@
 <div id='footer'>
     <div class='content'>
         <p>
-            <a class='nav' href='http://nedbatchelder.com/code/coverage'>coverage.py v3.3.1</a>
+            <a class='nav' href='http://nedbatchelder.com/code/coverage'>coverage.py v3.4</a>
         </p>
     </div>
 </div>

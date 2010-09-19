@@ -1,7 +1,7 @@
 // Coverage.py HTML report browser code.
 
 // Loaded on index.html
-function index_page_ready($) {
+function index_ready($) {
     // Look for a cookie containing previous sort settings:
     sort_list = [];
     cookie_name = "COVERAGE_INDEX_SORT";
@@ -29,7 +29,7 @@ function index_page_ready($) {
             if (table.config.sortList.length == 0 && sort_list.length > 0) {
                 // This table hasn't been sorted before - we'll use
                 // our stored settings:
-                jQuery(table).trigger('sorton', [sort_list]);
+                $(table).trigger('sorton', [sort_list]);
             }
             else {
                 // This is not the first load - something has
@@ -43,7 +43,7 @@ function index_page_ready($) {
     // Configure our tablesorter to handle the variable number of
     // columns produced depending on report options:
     var headers = {};
-    var col_count = jQuery("table.index > thead > tr > th").length;
+    var col_count = $("table.index > thead > tr > th").length;
 
     headers[0] = { sorter: 'text' };
     for (var i = 1; i < col_count-1; i++) {
@@ -65,8 +65,16 @@ function index_page_ready($) {
 
 // -- pyfile stuff --
 
+function pyfile_ready($) {
+    // If we're directed to a particular line number, highlight the line.
+    var frag = location.hash;
+    if (frag.length > 2 && frag[1] == 'n') {
+        $(frag).addClass('highlight');
+    }
+}
+
 function toggle_lines(btn, cls) {
-    var btn = $(btn);
+    btn = $(btn);
     var hide = "hide_"+cls;
     if (btn.hasClass(hide)) {
         $("#source ."+cls).removeClass(hide);
