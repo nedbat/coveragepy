@@ -1,24 +1,12 @@
 Coverage TODO
 
 * --source stuff:
-    - warn if a package is never found.
-    - warn if no data was collected
+    + warn if a package is never found.
+    + warn if no data was collected
     - tie --source into reporting
-
-* plugin work
-    + add --cover-include.
-    + add --cover-rcfile.
-    - maybe remove a bunch of options.
-
-* 3.3
-
-- Config file
-    + A command switch to point to the rc file.
-    - Write docs
 
 * Soon
 
-- Ship the nose and py.test plugin.
 + Better omit handling that ignores files during measurement.
     - Deal with ~ in specified paths correctly.
 - while TRUE claims to be partial.
@@ -42,15 +30,6 @@ Coverage TODO
 + XML report needs to get branch information.
 + Add branch info to "coverage debug data"
 + Polish up the help, and double-check the docs.
-
-
-
-* Test-runner plugin
-
-- Support distribute/3k installation, register py.test-entrypoint there
-  as well as py-1.1.1 is 2.4-3.1 compatible.
-- Skip registering plugin entrypoints if not running on Jython.
-- Update docs to include a section about the plugin.
 
 
 * Speed
@@ -105,7 +84,6 @@ x Tricky swapping of collector like figleaf, pycov, et al. (Don't need to do
 - Why can't a morf also be a string, the name of a module?
 - ignore by module as well as file?
 + Use a .coveragerc file to control Coverage without the programmatic API.
-- Own the nose --with-cover plugin.
 - Add a --data switch to explicitly control the data file on the command line.
 x Why can't you specify execute (-x) and report (-r) in the same invocation?
     Maybe just because -x needs the rest of the command line?
@@ -118,7 +96,7 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
     class definitions, etc, when coverage is started after the class is defined.
 - Different categories of exclude pragma? So you can enable and disable them
     from the command line, to reconsider exclusions.
-- Reporting on files never touched by coverage (package completeness)
++ Reporting on files never touched by coverage (package completeness)
 - A setup.py command? http://jeetworks.org/node/50
 - Deltas: indicate the change in coverage percentage from the last run.
 + Show lines missing rather than lines run in the reporting, since that's what
