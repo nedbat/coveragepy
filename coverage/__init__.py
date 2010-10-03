@@ -8,7 +8,7 @@ http://nedbatchelder.com/code/coverage
 __version__ = "3.5a1"     # see detailed history in CHANGES.txt
 
 __url__ = "http://nedbatchelder.com/code/coverage"
-if max(__version__) in "abc":
+if max(__version__).isalpha():
     # For pre-releases, use a version-specific URL.
     __url__ += "/" + __version__
 
