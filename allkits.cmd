@@ -6,4 +6,4 @@ for %%v in (23 24 25 26 27 31 32) do (
     )
 
 call \ned\bin\switchpy c:\vpy\coverage\26
-python setup.py --command-packages=distcmd sdist --keep-temp --formats=gztar fixtar --owner=ned --group=coverage --clean %1
+python setup.py sdist --keep-temp --formats=gztar fixtar --owner=ned --group=coverage --clean %1
