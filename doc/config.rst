@@ -20,7 +20,7 @@ sub-processes.  See :ref:`subprocess` for more details.
 The default name for configuration files is ``.coveragerc``, in the same
 directory coverage.py is being run in.  Most of the settings in the
 configuration file are tied to your source code and how it should be
-measured, so it should be stored with your source, and checked into 
+measured, so it should be stored with your source, and checked into
 source control, rather than put in your home directory.
 
 
