@@ -26,7 +26,7 @@ can show which parts of your code are being exercised by tests, and which are
 not.
 
 The latest version is 3.4, released 19 September 2010.
-It is supported on Python 2.3 through 3.2 alpha 2.
+It is supported on Python 2.3 through 3.2 alpha 3.
 
 
 Quick start
