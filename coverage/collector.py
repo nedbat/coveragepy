@@ -43,8 +43,8 @@ class PyTracer(object):
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
 
-        #print "trace event: %s %r @%d" % (
-        #           event, frame.f_code.co_filename, frame.f_lineno)
+        #print("trace event: %s %r @%d" % (
+        #           event, frame.f_code.co_filename, frame.f_lineno))
 
         if self.last_exc_back:
             if frame == self.last_exc_back:
@@ -64,6 +64,8 @@ class PyTracer(object):
             if tracename is None:
                 tracename = self.should_trace(filename, frame)
                 self.should_trace_cache[filename] = tracename
+            #print("called, stack is %d deep, tracename is %r" % (
+            #               len(self.data_stack), tracename))
             if tracename:
                 if tracename not in self.data:
                     self.data[tracename] = {}
@@ -77,10 +79,10 @@ class PyTracer(object):
             # Record an executed line.
             if self.cur_file_data is not None:
                 if self.arcs:
-                    #print "lin", self.last_line, frame.f_lineno
+                    #print("lin", self.last_line, frame.f_lineno)
                     self.cur_file_data[(self.last_line, frame.f_lineno)] = None
                 else:
-                    #print "lin", frame.f_lineno
+                    #print("lin", frame.f_lineno)
                     self.cur_file_data[frame.f_lineno] = None
             self.last_line = frame.f_lineno
         elif event == 'return':
@@ -89,8 +91,9 @@ class PyTracer(object):
                 self.cur_file_data[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
             self.cur_file_data, self.last_line = self.data_stack.pop()
+            #print("returned, stack is %d deep" % (len(self.data_stack)))
         elif event == 'exception':
-            #print "exc", self.last_line, frame.f_lineno
+            #print("exc", self.last_line, frame.f_lineno)
             self.last_exc_back = frame.f_back
             self.last_exc_firstlineno = frame.f_code.co_firstlineno
         return self._trace
