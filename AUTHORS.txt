@@ -4,27 +4,27 @@ extended and maintained by Ned Batchelder.
 Other contributions have been made by:
 
 Chris Adams
+Geoff Bache
+Titus Brown
+Guillaume Chazarain
+David Christian
 Danek Duvall
-Ross Lawley
 Ben Finney
+Martin Fuzzey
+Imri Goldberg
 Bill Hart
 Christian Heimes
-Detlev Offenbach
-George Song
-David Christian
-Imri Goldberg
-Patrick Mezard
+Ross Lawley
 Edward Loper
-Guillaume Chazarain
-Titus Brown
+Patrick Mezard
 Noel O'Boyle
+Detlev Offenbach
 Catherine Proulx
+Greg Rogers
+George Song
+David Stanek
 Joseph Tate
 Sigve Tjora
 Mark van der Wal
-Geoff Bache
-Martin Fuzzey
-Greg Rogers
-Christoph Zwerschke
 Zooko Wilcox-O'Hearn
-David Stanek
+Christoph Zwerschke
