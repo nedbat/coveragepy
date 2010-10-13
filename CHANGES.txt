@@ -7,7 +7,7 @@ Version 3.5
 -----------
 
 - A little bit of Jython support: `coverage run` can now measure Jython
-  execution by adapting when $py.class files are traced.
+  execution by adapting when $py.class files are traced. Thanks, Adi Roiban.
 
 
 Version 3.4 --- 19 September 2010
