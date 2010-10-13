@@ -231,6 +231,11 @@ class coverage(object):
         dunder_file = frame.f_globals.get('__file__')
         if dunder_file:
             filename = self._source_for_file(dunder_file)
+
+        # Jython reports the .class file to the tracer, use the source file.
+        if filename.endswith("$py.class"):
+            filename = filename[:-9] + ".py"
+
         canonical = self.file_locator.canonical_filename(filename)
 
         # If the user specified source, then that's authoritative about what to
