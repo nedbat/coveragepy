@@ -28,7 +28,7 @@ Configuring Python for subprocess coverage
 
 To measure coverage in subprocesses, you have to do two things: set a value for
 the ``COVERAGE_PROCESS_START`` environment variable, and then invoke
-:func:`coverage.process_startup`.  
+:func:`coverage.process_startup`.
 
 How you set ``COVERAGE_PROCESS_START`` depends on the details of how you create
 subprocesses.  As long as the environment variable is visible in your subprocess,
