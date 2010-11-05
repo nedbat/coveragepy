@@ -1,7 +1,9 @@
 // Coverage.py HTML report browser code.
 
+coverage = {};
+
 // Loaded on index.html
-function index_ready($) {
+coverage.index_ready = function($) {
     // Look for a cookie containing previous sort settings:
     sort_list = [];
     cookie_name = "COVERAGE_INDEX_SORT";
@@ -65,7 +67,7 @@ function index_ready($) {
 
 // -- pyfile stuff --
 
-function pyfile_ready($) {
+coverage.pyfile_ready = function($) {
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
     if (frag.length > 2 && frag[1] == 'n') {
@@ -73,7 +75,7 @@ function pyfile_ready($) {
     }
 }
 
-function toggle_lines(btn, cls) {
+coverage.toggle_lines = function(btn, cls) {
     btn = $(btn);
     var hide = "hide_"+cls;
     if (btn.hasClass(hide)) {
@@ -85,3 +87,4 @@ function toggle_lines(btn, cls) {
         btn.addClass(hide);
     }
 }
+
