@@ -63,8 +63,9 @@ class RecursionTest(CoverageTest):
                     return recur(n-1)+1
 
             recur(495)  # We can get at least this many stack frames.
+            i = 8       # and this line will be traced
             """,
-            [1,2,3,5,7], "")
+            [1,2,3,5,7,8], "")
 
     def test_long_recursion(self):
         # We can't finish a very deep recursion, but we don't crash.
@@ -79,6 +80,52 @@ class RecursionTest(CoverageTest):
             recur(100000)  # This is definitely too many frames.
             """,
             [1,2,3,5,7], "")
+
+    def test_long_recursion_recovery(self):
+        # Test the core of bug 93: http://bitbucket.org/ned/coveragepy/issue/93
+        # When recovering from a stack overflow, the Python trace function is
+        # disabled, but the C trace function is not.  So if we're using a
+        # Python trace function, we won't trace anything after the stack
+        # overflow, and there should be a warning about it.  If we're using
+        # the C trace function, only line 3 will be missing, and all else
+        # will be traced.
+
+        self.make_file("recur.py", """\
+            def recur(n):
+                if n == 0:
+                    return 0    # never hit
+                else:
+                    return recur(n-1)+1
+
+            try:
+                recur(100000)  # This is definitely too many frames.
+            except RuntimeError:
+                i = 10
+            i = 11
+            """)
+
+        cov = coverage.coverage()
+        cov.start()
+        self.import_local_file("recur")
+        cov.stop()
+
+        pytrace = (cov.collector.tracer_name() == "PyTracer")
+        expected_missing = [3]
+        if pytrace:
+            expected_missing += [9,10,11]
+
+        _, statements, missing, _ = cov.analysis("recur.py")
+        self.assertEqual(statements, [1,2,3,5,7,8,9,10,11])
+        self.assertEqual(missing, expected_missing)
+
+        # We can get a warning about the stackoverflow effect on the tracing
+        # function only if we have sys.gettrace
+        if pytrace and hasattr(sys, "gettrace"):
+            self.assertEqual(cov._warnings,
+                ["Trace function changed, measurement is likely wrong: None"]
+                )
+        else:
+            self.assertEqual(cov._warnings, [])
 
 
 class MemoryLeakTest(CoverageTest):

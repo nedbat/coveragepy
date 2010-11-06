@@ -63,6 +63,7 @@ typedef struct {
 
     /* Python objects manipulated directly by the Collector class. */
     PyObject * should_trace;
+    PyObject * warn;
     PyObject * data;
     PyObject * should_trace_cache;
     PyObject * arcs;
@@ -134,6 +135,7 @@ Tracer_init(Tracer *self, PyObject *args_unused, PyObject *kwds_unused)
 #endif /* COLLECT_STATS */
 
     self->should_trace = NULL;
+    self->warn = NULL;
     self->data = NULL;
     self->should_trace_cache = NULL;
     self->arcs = NULL;
@@ -166,6 +168,7 @@ Tracer_dealloc(Tracer *self)
     }
 
     Py_XDECREF(self->should_trace);
+    Py_XDECREF(self->warn);
     Py_XDECREF(self->data);
     Py_XDECREF(self->should_trace_cache);
 
@@ -538,6 +541,9 @@ static PyMemberDef
 Tracer_members[] = {
     { "should_trace",       T_OBJECT, offsetof(Tracer, should_trace), 0,
             PyDoc_STR("Function indicating whether to trace a file.") },
+
+    { "warn",               T_OBJECT, offsetof(Tracer, warn), 0,
+            PyDoc_STR("Function for issuing warnings.") },
 
     { "data",               T_OBJECT, offsetof(Tracer, data), 0,
             PyDoc_STR("The raw dictionary of trace data.") },

@@ -69,6 +69,9 @@ class coverage(object):
         """
         from coverage import __version__
 
+        # A record of all the warnings that have been issued.
+        self._warnings = []
+
         # Build our configuration from a number of sources:
         # 1: defaults:
         self.config = CoverageConfig()
@@ -120,7 +123,7 @@ class coverage(object):
 
         self.collector = Collector(
             self._should_trace, timid=self.config.timid,
-            branch=self.config.branch
+            branch=self.config.branch, warn=self._warn
             )
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
@@ -274,7 +277,8 @@ class coverage(object):
 
     def _warn(self, msg):
         """Use `msg` as a warning."""
-        sys.stderr.write("Coverage.py warning: " + msg + "\n")
+        self._warnings.append(msg)
+        sys.stderr.write("Coverage.py warning: %s\n" % msg)
 
     def _abs_files(self, files):
         """Return a list of absolute file names for the names in `files`."""

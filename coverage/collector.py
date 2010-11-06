@@ -33,6 +33,7 @@ class PyTracer(object):
         self.data = None
         self.should_trace = None
         self.should_trace_cache = None
+        self.warn = None
         self.cur_file_data = None
         self.last_line = 0
         self.data_stack = []
@@ -109,6 +110,10 @@ class PyTracer(object):
 
     def stop(self):
         """Stop this Tracer."""
+        if hasattr(sys, "gettrace") and self.warn:
+            if sys.gettrace() != self._trace:
+                msg = "Trace function changed, measurement is likely wrong: %r"
+                self.warn(msg % sys.gettrace())
         sys.settrace(None)
 
     def get_stats(self):
@@ -137,7 +142,7 @@ class Collector(object):
     # the top, and resumed when they become the top again.
     _collectors = []
 
-    def __init__(self, should_trace, timid, branch):
+    def __init__(self, should_trace, timid, branch, warn):
         """Create a collector.
 
         `should_trace` is a function, taking a filename, and returning a
@@ -153,8 +158,12 @@ class Collector(object):
         collecting data on which statements followed each other (arcs).  Use
         `get_arc_data` to get the arc data.
 
+        `warn` is a warning function, taking a single string message argument,
+        to be used if a warning needs to be issued.
+
         """
         self.should_trace = should_trace
+        self.warn = warn
         self.branch = branch
         self.reset()
 
@@ -194,6 +203,7 @@ class Collector(object):
         tracer.arcs = self.branch
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
+        tracer.warn = self.warn
         fn = tracer.start()
         self.tracers.append(tracer)
         return fn
