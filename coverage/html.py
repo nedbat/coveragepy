@@ -24,6 +24,14 @@ def data(fname):
 class HtmlReporter(Reporter):
     """HTML reporting."""
 
+    # These files will be copied from the htmlfiles dir to the output dir.
+    STATIC_FILES = [
+            "style.css", 
+            "jquery-1.4.3.min.js", 
+            "jquery.tablesorter.min.js",
+            "coverage_html.js",
+            ]
+
     def __init__(self, coverage, ignore_errors=False):
         super(HtmlReporter, self).__init__(coverage, ignore_errors)
         self.directory = None
@@ -51,10 +59,7 @@ class HtmlReporter(Reporter):
         self.index_file()
 
         # Create the once-per-directory files.
-        for static in [
-            "style.css", "coverage_html.js",
-            "jquery-1.3.2.min.js", "jquery.tablesorter.min.js"
-            ]:
+        for static in self.STATIC_FILES:
             shutil.copyfile(
                 data_filename("htmlfiles/" + static),
                 os.path.join(self.directory, static)
