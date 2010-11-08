@@ -29,6 +29,7 @@ class HtmlReporter(Reporter):
             "style.css", 
             "jquery-1.4.3.min.js", 
             "jquery.tablesorter.min.js",
+            "jquery.hotkeys.js",
             "coverage_html.js",
             ]
 

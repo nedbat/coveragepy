@@ -2,6 +2,20 @@
 
 coverage = {};
 
+// Find all the elements with shortkey_* class, and use them to assign a shotrtcut key.
+coverage.assign_shortkeys = function() {
+    $("*[class*='shortkey_']").each(function(i, e) {
+        console.log(i, e);
+        $.each($(e).attr("class").split(" "), function(i, c) {
+            if (/^shortkey_/.test(c)) {
+                $(document).bind('keydown', c.substr(9), function() {
+                    $(e).click();
+                });
+            }
+        });
+    });
+}
+
 // Loaded on index.html
 coverage.index_ready = function($) {
     // Look for a cookie containing previous sort settings:
@@ -59,6 +73,8 @@ coverage.index_ready = function($) {
         headers: headers
     });
 
+    coverage.assign_shortkeys();
+
     // Watch for page unload events so we can save the final sort settings:
     $(window).unload(function() {
         document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/"
@@ -73,6 +89,8 @@ coverage.pyfile_ready = function($) {
     if (frag.length > 2 && frag[1] == 'n') {
         $(frag).addClass('highlight');
     }
+
+    coverage.assign_shortkeys();
 }
 
 coverage.toggle_lines = function(btn, cls) {

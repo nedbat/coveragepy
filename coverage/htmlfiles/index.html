@@ -6,6 +6,7 @@
     <link rel='stylesheet' href='style.css' type='text/css'>
     <script type='text/javascript' src='jquery-1.4.3.min.js'></script>
     <script type='text/javascript' src='jquery.tablesorter.min.js'></script>
+    <script type='text/javascript' src='jquery.hotkeys.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
     <script type='text/javascript' charset='utf-8'>
         jQuery(document).ready(coverage.index_ready);
@@ -26,15 +27,15 @@
         <thead>
             {# The title='' attr doesn't work in Safari. #}
             <tr class='tablehead' title='Click to sort'>
-                <th class='name left headerSortDown'>Module</th>
-                <th>statements</th>
-                <th>missing</th>
-                <th>excluded</th>
+                <th class='name left headerSortDown shortkey_n'>Module</th>
+                <th class='shortkey_s'>statements</th>
+                <th class='shortkey_m'>missing</th>
+                <th class='shortkey_x'>excluded</th>
                 {% if arcs %}
-                <th>branches</th>
-                <th>partial</th>
+                <th class='shortkey_b'>branches</th>
+                <th class='shortkey_p'>partial</th>
                 {% endif %}
-                <th class='right'>coverage</th>
+                <th class='right shortkey_c'>coverage</th>
             </tr>
         </thead>
         {# HTML syntax requires thead, tfoot, tbody #}

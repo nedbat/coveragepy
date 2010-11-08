@@ -8,6 +8,7 @@
     <title>Coverage for {{cu.name|escape}}: {{nums.pc_covered_str}}%</title>
     <link rel='stylesheet' href='style.css' type='text/css'>
     <script type='text/javascript' src='jquery-1.4.3.min.js'></script>
+    <script type='text/javascript' src='jquery.hotkeys.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
     <script type='text/javascript' charset='utf-8'>
         jQuery(document).ready(coverage.pyfile_ready);
@@ -22,11 +23,11 @@
         </h1>
         <h2 class='stats'>
             {{nums.n_statements}} statements
-            <span class='{{c_run}}' onclick='coverage.toggle_lines(this, "run")'>{{nums.n_executed}} run</span>
-            <span class='{{c_mis}}' onclick='coverage.toggle_lines(this, "mis")'>{{nums.n_missing}} missing</span>
-            <span class='{{c_exc}}' onclick='coverage.toggle_lines(this, "exc")'>{{nums.n_excluded}} excluded</span>
+            <span class='{{c_run}} shortkey_r' onclick='coverage.toggle_lines(this, "run")'>{{nums.n_executed}} run</span>
+            <span class='{{c_mis}} shortkey_m' onclick='coverage.toggle_lines(this, "mis")'>{{nums.n_missing}} missing</span>
+            <span class='{{c_exc}} shortkey_x' onclick='coverage.toggle_lines(this, "exc")'>{{nums.n_excluded}} excluded</span>
             {% if arcs %}
-                <span class='{{c_par}}' onclick='coverage.toggle_lines(this, "par")'>{{n_par}} partial</span>
+                <span class='{{c_par}} shortkey_p' onclick='coverage.toggle_lines(this, "par")'>{{n_par}} partial</span>
             {% endif %}
         </h2>
     </div>
