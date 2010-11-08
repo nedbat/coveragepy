@@ -26,8 +26,8 @@ class HtmlReporter(Reporter):
 
     # These files will be copied from the htmlfiles dir to the output dir.
     STATIC_FILES = [
-            "style.css", 
-            "jquery-1.4.3.min.js", 
+            "style.css",
+            "jquery-1.4.3.min.js",
             "jquery.tablesorter.min.js",
             "jquery.hotkeys.js",
             "coverage_html.js",
