@@ -420,6 +420,19 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB AD BC CD D.",
             arcz_missing="3D AB BC CD", arcz_unpredicted="")
 
+    def xxx_xest_finally_in_loop_2(self):
+        self.check_coverage("""\
+            for i in range(5):
+                try:
+                    j = 3
+                finally:
+                    f = 5
+                g = 6
+            h = 7
+            """,
+            arcz=".1 12 23 35 56 61 17 7.",
+            arcz_missing="", arcz_unpredicted="")
+
     if sys.version_info >= (2, 5):
         # Try-except-finally was new in 2.5
         def test_except_finally(self):
