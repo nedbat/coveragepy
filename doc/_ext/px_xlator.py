@@ -29,6 +29,10 @@ class PxTranslator(BaseHtmlXlator):
         if self.section_level == 1:
             raise nodes.SkipNode
         else:
+            # The id for the h2 tag is on the parent, move it 
+            # down here so we'll get the right HTML.
+            if not node['ids'] and len(node.parent['ids']) > 1:
+                node['ids'] = [node.parent['ids'][1]]
             BaseHtmlXlator.visit_title(self, node)
 
     def visit_field_list(self, node):
