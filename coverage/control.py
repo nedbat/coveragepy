@@ -193,6 +193,8 @@ class coverage(object):
         if not filename.endswith(".py"):
             if filename[-4:-1] == ".py":
                 filename = filename[:-1]
+            elif filename.endswith("$py.class"): # jython
+                filename = filename[:-9] + ".py"
         return filename
 
     def _should_trace(self, filename, frame):
@@ -307,7 +309,7 @@ class coverage(object):
                     self._warn("Module %s has no python source." % pkg)
                 else:
                     d, f = os.path.split(pkg_file)
-                    if f.startswith('__init__.'):
+                    if f.startswith('__init__'):
                         # This is actually a package, return the directory.
                         pkg_file = d
                     else:
