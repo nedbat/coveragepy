@@ -9,6 +9,7 @@ syntax: glob
 *.bak
 .coverage
 .coverage.*
+*.swp
 
 # Stuff in the root.
 build
