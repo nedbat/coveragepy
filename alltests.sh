@@ -16,7 +16,7 @@ do
     echo "=== $v c ==="
     COVERAGE_TEST_TRACER=c nosetests $@
     echo "=== $v py ==="
-    rm coverage/tracer.so
+    rm coverage/tracer*.so
     COVERAGE_TEST_TRACER=py nosetests $@
 done
 
