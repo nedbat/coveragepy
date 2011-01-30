@@ -16,7 +16,7 @@ class ParserTest(CoverageTest):
     def parse_source(self, text):
         """Parse `text` as source, and return the `CodeParser` used."""
         text = textwrap.dedent(text)
-        cp = CodeParser(text, exclude="nocover")
+        cp = CodeParser(text=text, exclude="nocover")
         cp.parse_source()
         return cp
 
@@ -94,3 +94,34 @@ class ParserTest(CoverageTest):
             b = 6
             """)
         self.assertEqual(cp.exit_counts(), { 1:1, 2:1, 3:1, 6:1 })
+
+
+class ParserFileTest(CoverageTest):
+    """Tests for Coverage.py's code parsing from files."""
+
+    def parse_file(self, filename):
+        """Parse `text` as source, and return the `CodeParser` used."""
+        cp = CodeParser(filename=filename, exclude="nocover")
+        cp.parse_source()
+        return cp
+
+    def test_line_endings(self):
+        text = """\
+            # check some basic branch counting
+            class Foo:
+                def foo(self, a):
+                    if a:
+                        return 5
+                    else:
+                        return 7
+
+            class Bar:
+                pass
+            """
+        counts = { 2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1 }
+        name_endings = (("unix", "\n"), ("dos", "\r\n"), ("mac", "\r"))
+        for fname, newline in name_endings:
+            fname = fname + ".py"
+            self.make_file(fname, text, newline=newline)
+            cp = self.parse_file(fname)
+            self.assertEqual(cp.exit_counts(), counts)
