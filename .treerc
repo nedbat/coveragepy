@@ -7,3 +7,4 @@ ignore =
     distribute_setup.py ez_setup.py mock.py
     *.min.js
     sample_html
+    *.so *.pyd
