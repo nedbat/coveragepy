@@ -19,7 +19,11 @@ Version 3.5
   coverage.py will issue a warning, at least alerting you to the problem.
   Closes `issue 93`_.  Thanks to Marius Gedminas for the idea.
 
+- Internally, files are now closed explicitly, fixing `issue 104`.  Thanks,
+  Brett Cannon.
+
 .. _issue 93: http://bitbucket.org/ned/coveragepy/issue/93/copying-a-mock-object-breaks-coverage
+.. _issue 104: https://bitbucket.org/ned/coveragepy/issue/104/explicitly-close-files
 
 
 Version 3.4 --- 19 September 2010
