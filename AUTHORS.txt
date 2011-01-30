@@ -6,6 +6,7 @@ Other contributions have been made by:
 Chris Adams
 Geoff Bache
 Titus Brown
+Brett Cannon
 Guillaume Chazarain
 David Christian
 Danek Duvall
