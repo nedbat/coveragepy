@@ -109,3 +109,11 @@ class CoverageTestTest(CoverageTest):
         # A deeper directory
         self.make_file("sub/deeper/evenmore/third.txt")
         self.assertEqual(open("sub/deeper/evenmore/third.txt").read(), "")
+
+    def test_make_file_newline(self):
+        self.make_file("unix.txt", "Hello\n")
+        self.assertEqual(open("unix.txt", "rb").read().decode('ascii'), "Hello\n")
+        self.make_file("dos.txt", "Hello\n", newline="\r\n")
+        self.assertEqual(open("dos.txt", "rb").read().decode('ascii'), "Hello\r\n")
+        self.make_file("mac.txt", "Hello\n", newline="\r")
+        self.assertEqual(open("mac.txt", "rb").read().decode('ascii'), "Hello\r")
