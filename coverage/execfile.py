@@ -2,7 +2,7 @@
 
 import imp, os, sys
 
-from coverage.backward import exec_code_object
+from coverage.backward import exec_code_object, open_source
 from coverage.misc import NoSource, ExceptionDuringRun
 
 
@@ -38,7 +38,7 @@ def run_python_file(filename, args):
     try:
         # Open the source file.
         try:
-            source_file = open(filename, 'rU')
+            source_file = open_source(filename)
         except IOError:
             raise NoSource("No file to run: %r" % filename)
 

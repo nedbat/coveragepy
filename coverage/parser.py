@@ -304,7 +304,7 @@ class ByteParser(object):
         else:
             if not text:
                 assert filename, "If no code or text, need a filename"
-                sourcef = open(filename, 'rU')
+                sourcef = open_source(filename)
                 try:
                     text = sourcef.read()
                 finally:
