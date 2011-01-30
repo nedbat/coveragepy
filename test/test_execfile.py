@@ -55,8 +55,10 @@ class RunTest(CoverageTest):
         pylines = """# try newlines|print('Hello, world!')|""".split('|')
         for nl in ('\n', '\r\n', '\r'):
             fpy = open('nl.py', 'wb')
-            fpy.write(nl.join(pylines).encode('utf-8'))
-            fpy.close()
+            try:
+                fpy.write(nl.join(pylines).encode('utf-8'))
+            finally:
+                fpy.close()
             run_python_file('nl.py', ['nl.py'])
         self.assertEqual(self.stdout(), "Hello, world!\n"*3)
 

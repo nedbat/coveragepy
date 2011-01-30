@@ -145,8 +145,10 @@ class HtmlReporter(Reporter):
         html_path = os.path.join(self.directory, html_filename)
         html = spaceless(self.source_tmpl.render(locals()))
         fhtml = open(html_path, 'w')
-        fhtml.write(html)
-        fhtml.close()
+        try:
+            fhtml.write(html)
+        finally:
+            fhtml.close()
 
         # Save this file's information for the index file.
         self.files.append({
@@ -166,8 +168,10 @@ class HtmlReporter(Reporter):
         totals = sum([f['nums'] for f in files])
 
         fhtml = open(os.path.join(self.directory, "index.html"), "w")
-        fhtml.write(index_tmpl.render(locals()))
-        fhtml.close()
+        try:
+            fhtml.write(index_tmpl.render(locals()))
+        finally:
+            fhtml.close()
 
 
 # Helpers for templates and generating HTML

@@ -146,8 +146,10 @@ class CoverageTest(TestCase):
 
         # Create the file.
         f = open(filename, 'w')
-        f.write(text)
-        f.close()
+        try:
+            f.write(text)
+        finally:
+            f.close()
 
         return filename
 

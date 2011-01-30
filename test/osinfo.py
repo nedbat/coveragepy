@@ -45,8 +45,10 @@ elif sys.platform == 'linux2':
         try:
             # get pseudo file /proc/<pid>/status
             t = open('/proc/%d/status' % os.getpid())
-            v = t.read()
-            t.close()
+            try:
+                v = t.read()
+            finally:
+                t.close()
         except IOError:
             return 0    # non-Linux?
          # get VmKey line e.g. 'VmRSS:  9999  kB\n ...'

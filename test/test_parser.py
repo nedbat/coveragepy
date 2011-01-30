@@ -125,3 +125,10 @@ class ParserFileTest(CoverageTest):
             self.make_file(fname, text, newline=newline)
             cp = self.parse_file(fname)
             self.assertEqual(cp.exit_counts(), counts)
+
+    def test_encoding(self):
+        self.make_file("encoded.py", """\
+            coverage = "\xe7\xf6v\xear\xe3g\xe9"
+            """)
+        cp = self.parse_file("encoded.py")
+        cp.exit_counts()

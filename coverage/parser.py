@@ -24,8 +24,10 @@ class CodeParser(object):
         if not self.text:
             try:
                 sourcef = open_source(self.filename)
-                self.text = sourcef.read()
-                sourcef.close()
+                try:
+                    self.text = sourcef.read()
+                finally:
+                    sourcef.close()
             except IOError:
                 _, err, _ = sys.exc_info()
                 raise NoSource(
@@ -303,8 +305,10 @@ class ByteParser(object):
             if not text:
                 assert filename, "If no code or text, need a filename"
                 sourcef = open(filename, 'rU')
-                text = sourcef.read()
-                sourcef.close()
+                try:
+                    text = sourcef.read()
+                finally:
+                    sourcef.close()
 
             try:
                 # Python 2.3 and 2.4 don't like partial last lines, so be sure
