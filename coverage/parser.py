@@ -3,6 +3,7 @@
 import glob, opcode, os, re, sys, token, tokenize
 
 from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
+from coverage.backward import open_source
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, CoverageException, NoSource, expensive
 
@@ -22,10 +23,7 @@ class CodeParser(object):
         self.text = text
         if not self.text:
             try:
-                if hasattr(tokenize, 'open'):  # Python 3.2 and later
-                    sourcef = tokenize.open(self.filename)
-                else:
-                    sourcef = open(self.filename, 'rU')
+                sourcef = open_source(self.filename)
                 self.text = sourcef.read()
                 sourcef.close()
             except IOError:

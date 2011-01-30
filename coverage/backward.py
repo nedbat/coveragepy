@@ -71,3 +71,13 @@ try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+
+# Python 3.2 provides `tokenize.open`, the best way to open source files.
+try:
+    import tokenize
+    open_source = tokenize.open
+except AttributeError:
+    def open_source(fname):
+        """Open a source file the best way."""
+        return open(fname, "rU")
+
