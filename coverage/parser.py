@@ -22,7 +22,10 @@ class CodeParser(object):
         self.text = text
         if not self.text:
             try:
-                sourcef = open(self.filename, 'rU')
+                if hasattr(tokenize, 'open'):  # Python 3.2 and later
+                    sourcef = tokenize.open(self.filename)
+                else:
+                    sourcef = open(self.filename, 'rU')
                 self.text = sourcef.read()
                 sourcef.close()
             except IOError:
@@ -30,7 +33,6 @@ class CodeParser(object):
                 raise NoSource(
                     "No source for code: %r: %s" % (self.filename, err)
                     )
-        self.text = self.text.replace('\r\n', '\n')
 
         self.exclude = exclude
 

@@ -18,7 +18,11 @@ def data_filename(fname):
 
 def data(fname):
     """Return the contents of a data file of ours."""
-    return open(data_filename(fname)).read()
+    data_file = open(data_filename(fname))
+    try:
+        return data_file.read()
+    finally:
+        data_file.close()
 
 
 class HtmlReporter(Reporter):
@@ -68,8 +72,11 @@ class HtmlReporter(Reporter):
 
     def html_file(self, cu, analysis):
         """Generate an HTML file for one source file."""
-
-        source = cu.source_file().read()
+        source_file = cu.source_file()
+        try:
+            source = source_file.read()
+        finally:
+            source_file.close()
 
         nums = analysis.numbers
 

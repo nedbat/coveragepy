@@ -1,6 +1,6 @@
 """Code unit (module) handling for Coverage."""
 
-import glob, os
+import glob, os, tokenize
 
 from coverage.backward import string_class, StringIO
 from coverage.misc import CoverageException
@@ -104,7 +104,10 @@ class CodeUnit(object):
         """Return an open file for reading the source of the code unit."""
         if os.path.exists(self.filename):
             # A regular text file: open it.
-            return open(self.filename)
+            if hasattr(tokenize, 'open'):  # Python 3.2 and later
+                return tokenize.open(self.filename)
+            else:
+                return open(self.filename)
 
         # Maybe it's in a zip file?
         source = self.file_locator.get_zip_data(self.filename)
