@@ -13,9 +13,9 @@ for v in 24 25 26 27 31 32  # 23
 do 
     source ../ve/$v/bin/activate
     python setup.py -q develop
-    echo "=== $v c ==="
+    python -c "import platform; print('=== Python %s with C tracer ===' % platform.python_version())"
     COVERAGE_TEST_TRACER=c nosetests $@
-    echo "=== $v py ==="
+    python -c "import platform; print('=== Python %s with Python tracer ===' % platform.python_version())"
     rm coverage/tracer*.so
     COVERAGE_TEST_TRACER=py nosetests $@
 done
