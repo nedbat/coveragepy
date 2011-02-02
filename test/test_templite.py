@@ -3,7 +3,7 @@
 from coverage.templite import Templite
 import unittest
 
-# pylint: disable-msg=W0612,E1101
+# pylint: disable=W0612,E1101
 # Disable W0612 (Unused variable) and
 # E1101 (Instance of 'foo' has no 'bar' member)
 

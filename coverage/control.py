@@ -269,7 +269,7 @@ class coverage(object):
     # To log what should_trace returns, change this to "if 1:"
     if 0:
         _real_should_trace = _should_trace
-        def _should_trace(self, filename, frame):   # pylint: disable-msg=E0102
+        def _should_trace(self, filename, frame):   # pylint: disable=E0102
             """A logging decorator around the real _should_trace function."""
             ret = self._real_should_trace(filename, frame)
             print("should_trace: %r -> %r" % (filename, ret))
@@ -496,7 +496,7 @@ class coverage(object):
         return Analysis(self, it)
 
     def report(self, morfs=None, show_missing=True, ignore_errors=None,
-                file=None,                          # pylint: disable-msg=W0622
+                file=None,                          # pylint: disable=W0622
                 omit=None, include=None
                 ):
         """Write a summary report to `file`.

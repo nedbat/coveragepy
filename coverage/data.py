@@ -2,7 +2,7 @@
 
 import os
 
-from coverage.backward import pickle, sorted        # pylint: disable-msg=W0622
+from coverage.backward import pickle, sorted        # pylint: disable=W0622
 
 
 class CoverageData(object):

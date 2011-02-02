@@ -372,7 +372,7 @@ class FakeCoverageForDebugData(object):
         """Fake coverage().data.has_arcs()"""
         return False
 
-    def summary(self, fullpath):                    # pylint: disable-msg=W0613
+    def summary(self, fullpath):                    # pylint: disable=W0613
         """Fake coverage().data.summary()"""
         return self._summary
 

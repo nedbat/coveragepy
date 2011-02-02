@@ -27,8 +27,8 @@ clean:
 LINTABLE = coverage setup.py test
 
 lint:
-	-python -x /Python25/Scripts/pylint.bat --rcfile=.pylintrc $(LINTABLE)
-	python /Python25/Lib/tabnanny.py $(LINTABLE)
+	-pylint --rcfile=.pylintrc $(LINTABLE)
+	python -m tabnanny $(LINTABLE)
 	python checkeol.py
 
 pep8:

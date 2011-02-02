@@ -2,7 +2,7 @@
 
 import glob, opcode, os, re, sys, token, tokenize
 
-from coverage.backward import set, sorted, StringIO # pylint: disable-msg=W0622
+from coverage.backward import set, sorted, StringIO # pylint: disable=W0622
 from coverage.backward import open_source
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, CoverageException, NoSource, expensive

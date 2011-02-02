@@ -46,7 +46,7 @@ else:
 use_setuptools()
 
 from setuptools import setup
-from distutils.core import Extension    # pylint: disable-msg=E0611,F0401
+from distutils.core import Extension    # pylint: disable=E0611,F0401
 
 # Get or massage our metadata.
 

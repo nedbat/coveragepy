@@ -1,7 +1,7 @@
 """Add things to old Pythons so I can pretend they are newer."""
 
 # This file does lots of tricky stuff, so disable a bunch of lintisms.
-# pylint: disable-msg=F0401,W0611,W0622
+# pylint: disable=F0401,W0611,W0622
 # F0401: Unable to import blah
 # W0611: Unused import blah
 # W0622: Redefining built-in blah

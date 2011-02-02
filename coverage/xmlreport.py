@@ -4,7 +4,7 @@ import os, sys, time
 import xml.dom.minidom
 
 from coverage import __url__, __version__
-from coverage.backward import sorted            # pylint: disable-msg=W0622
+from coverage.backward import sorted            # pylint: disable=W0622
 from coverage.report import Reporter
 
 def rate(hit, num):

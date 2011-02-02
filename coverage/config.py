@@ -1,7 +1,7 @@
 """Config file for coverage.py"""
 
 import os
-from coverage.backward import configparser          # pylint: disable-msg=W0622
+from coverage.backward import configparser          # pylint: disable=W0622
 
 
 class CoverageConfig(object):

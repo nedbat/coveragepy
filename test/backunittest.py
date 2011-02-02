@@ -2,7 +2,7 @@
 
 import difflib, re, sys, unittest
 
-from coverage.backward import set                   # pylint: disable-msg=W0622
+from coverage.backward import set                   # pylint: disable=W0622
 
 
 def _need(method):

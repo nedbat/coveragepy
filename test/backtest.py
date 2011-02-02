@@ -1,6 +1,6 @@
 """Add things to old Pythons so I can pretend they are newer, for tests."""
 
-# pylint: disable-msg=W0622
+# pylint: disable=W0622
 # (Redefining built-in blah)
 # The whole point of this file is to redefine built-ins, so shut up about it.
 

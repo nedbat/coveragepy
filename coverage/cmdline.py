@@ -2,7 +2,7 @@
 
 import optparse, re, sys, traceback
 
-from coverage.backward import sorted                # pylint: disable-msg=W0622
+from coverage.backward import sorted                # pylint: disable=W0622
 from coverage.execfile import run_python_file
 from coverage.misc import CoverageException, ExceptionDuringRun
 

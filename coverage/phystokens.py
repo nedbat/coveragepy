@@ -1,7 +1,7 @@
 """Better tokenizing for coverage.py."""
 
 import keyword, re, token, tokenize
-from coverage.backward import StringIO              # pylint: disable-msg=W0622
+from coverage.backward import StringIO              # pylint: disable=W0622
 
 def phys_tokens(toks):
     """Return all physical tokens, even line continuations.

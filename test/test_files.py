@@ -4,7 +4,7 @@ import os, sys
 
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import find_python_files
-from coverage.backward import set                   # pylint: disable-msg=W0622
+from coverage.backward import set                   # pylint: disable=W0622
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest

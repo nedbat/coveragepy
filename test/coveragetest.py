@@ -3,7 +3,7 @@
 import imp, os, random, shlex, shutil, sys, tempfile, textwrap
 
 import coverage
-from coverage.backward import sorted, StringIO      # pylint: disable-msg=W0622
+from coverage.backward import sorted, StringIO      # pylint: disable=W0622
 from backtest import run_command
 from backunittest import TestCase
 
@@ -167,7 +167,7 @@ class CoverageTest(TestCase):
             if suff[0] == '.py':
                 break
         try:
-            # pylint: disable-msg=W0631
+            # pylint: disable=W0631
             # (Using possibly undefined loop variable 'suff')
             mod = imp.load_module(modname, f, modfile, suff)
         finally:
