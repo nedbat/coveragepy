@@ -96,6 +96,10 @@ class TestingTest(TestCase):
 class CoverageTestTest(CoverageTest):
     """Test the methods in `CoverageTest`."""
 
+    def file_text(self, fname):
+        """Return the text read from a file."""
+        return open(fname, "rb").read().decode('ascii')
+
     def test_make_file(self):
         # A simple file.
         self.make_file("fooey.boo", "Hello there")
@@ -112,8 +116,8 @@ class CoverageTestTest(CoverageTest):
 
     def test_make_file_newline(self):
         self.make_file("unix.txt", "Hello\n")
-        self.assertEqual(open("unix.txt", "rb").read().decode('ascii'), "Hello\n")
+        self.assertEqual(self.file_text("unix.txt"), "Hello\n")
         self.make_file("dos.txt", "Hello\n", newline="\r\n")
-        self.assertEqual(open("dos.txt", "rb").read().decode('ascii'), "Hello\r\n")
+        self.assertEqual(self.file_text("dos.txt"), "Hello\r\n")
         self.make_file("mac.txt", "Hello\n", newline="\r")
-        self.assertEqual(open("mac.txt", "rb").read().decode('ascii'), "Hello\r")
+        self.assertEqual(self.file_text("mac.txt"), "Hello\r")

@@ -230,4 +230,4 @@ class Numbers(object):
         # Implementing 0+Numbers allows us to sum() a list of Numbers.
         if other == 0:
             return self
-        raise NotImplemented
+        return NotImplemented

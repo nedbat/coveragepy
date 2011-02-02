@@ -75,7 +75,7 @@ except ImportError:
 # Python 3.2 provides `tokenize.open`, the best way to open source files.
 try:
     import tokenize
-    open_source = tokenize.open
+    open_source = tokenize.open     # pylint: disable=E1101
 except AttributeError:
     def open_source(fname):
         """Open a source file the best way."""
