@@ -71,6 +71,11 @@ class Opts(object):
                 ".coverage data file name to simplify collecting data from "
                 "many processes."
         )
+    module = optparse.make_option(
+        '-m', '--module', action='store_true',
+        help="First argument is a Python module, not a script path,"
+                " which should be run as `python -m` would run it."
+        )
     rcfile = optparse.make_option(
         '', '--rcfile', action='store',
         help="Specify configuration file.  Defaults to '.coveragerc'"
@@ -111,6 +116,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             include=None,
             omit=None,
             parallel_mode=None,
+            module=None,
             pylib=None,
             rcfile=True,
             show_missing=None,
@@ -294,6 +300,7 @@ CMDS = {
             Opts.branch,
             Opts.pylib,
             Opts.parallel_mode,
+            Opts.module,
             Opts.timid,
             Opts.source,
             Opts.omit,
@@ -326,7 +333,8 @@ OK, ERR = 0, 1
 class CoverageScript(object):
     """The command-line interface to Coverage."""
 
-    def __init__(self, _covpkg=None, _run_python_file=None, _help_fn=None):
+    def __init__(self, _covpkg=None, _run_python_file=None,
+                 _run_python_module=None, _help_fn=None):
         # _covpkg is for dependency injection, so we can test this code.
         if _covpkg:
             self.covpkg = _covpkg
@@ -334,10 +342,9 @@ class CoverageScript(object):
             import coverage
             self.covpkg = coverage
 
-        # _run_python_file is for dependency injection also.
+        # For dependency injection:
         self.run_python_file = _run_python_file or run_python_file
-
-        # _help_fn is for dependency injection.
+        self.run_python_module = _run_python_module or run_python_module
         self.help_fn = _help_fn or self.help
 
         self.coverage = None
@@ -505,8 +512,8 @@ class CoverageScript(object):
             # Run the script.
             self.coverage.start()
             try:
-                if args[0].startswith('DASHM'):
-                    run_python_module(args[0][1:], args)
+                if options.module:
+                    self.run_python_module(args[0], args)
                 else:
                     self.run_python_file(args[0], args)
             finally:
