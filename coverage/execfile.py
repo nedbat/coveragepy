@@ -14,7 +14,42 @@ except KeyError:
     BUILTINS = sys.modules['builtins']
 
 
-def run_python_file(filename, args):
+def run_python_module(modulename, args):
+    """Run a python module, as though with ``python -m name args...``.
+
+    """
+    # Search for the module - inside its parent package, if any - using
+    # standard import mechanics.
+    if '.' in modulename:
+        packagename, name = modulename.rsplit('.')
+        package = __import__(packagename, fromlist=['__path__'])
+        searchpath = package.__path__
+    else:
+        packagename = None
+        name = modulename
+        searchpath = None  # means "top-level search" to find_module()
+    openfile, pathname, description = imp.find_module(name, searchpath)
+
+    # Complain if this is a magic non-file module.
+    if openfile is None and pathname is None:
+        raise NoSource("module does not live in a file: %r" % modulename)
+
+    # If `modulename` is actually a package, not a mere module, then we
+    # pretend to be Python 2.7 and try running its __main__.py script.
+    if openfile is None:
+        packagename = modulename
+        name = '__main__'
+
+        package = __import__(packagename, fromlist=['__path__'])
+        searchpath = package.__path__
+        openfile, pathname, description = imp.find_module(name, searchpath)
+
+    # Finally, hand the file off to run_python_file for execution.
+    openfile.close()
+    run_python_file(pathname, args, package=packagename)
+
+
+def run_python_file(filename, args, package=None):
     """Run a python file as if it were the main program on the command line.
 
     `filename` is the path to the file to execute, it need not be a .py file.
@@ -27,6 +62,7 @@ def run_python_file(filename, args):
     main_mod = imp.new_module('__main__')
     sys.modules['__main__'] = main_mod
     main_mod.__file__ = filename
+    main_mod.__package__ = package
     main_mod.__builtins__ = BUILTINS
 
     # Set sys.argv and the first path element properly.

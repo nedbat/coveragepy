@@ -3,7 +3,7 @@
 import optparse, re, sys, traceback
 
 from coverage.backward import sorted                # pylint: disable=W0622
-from coverage.execfile import run_python_file
+from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import CoverageException, ExceptionDuringRun
 
 
@@ -505,7 +505,10 @@ class CoverageScript(object):
             # Run the script.
             self.coverage.start()
             try:
-                self.run_python_file(args[0], args)
+                if args[0].startswith('DASHM'):
+                    run_python_module(args[0][1:], args)
+                else:
+                    self.run_python_file(args[0], args)
             finally:
                 self.coverage.stop()
                 self.coverage.save()
