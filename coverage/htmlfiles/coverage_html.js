@@ -1,11 +1,12 @@
 // Coverage.py HTML report browser code.
+/*jslint browser:true, indent: 4 */
+/*global coverage:true, document window $ */
 
 coverage = {};
 
 // Find all the elements with shortkey_* class, and use them to assign a shotrtcut key.
 coverage.assign_shortkeys = function() {
     $("*[class*='shortkey_']").each(function(i, e) {
-        console.log(i, e);
         $.each($(e).attr("class").split(" "), function(i, c) {
             if (/^shortkey_/.test(c)) {
                 $(document).bind('keydown', c.substr(9), function() {
@@ -14,21 +15,22 @@ coverage.assign_shortkeys = function() {
             }
         });
     });
-}
+};
 
 // Loaded on index.html
 coverage.index_ready = function($) {
     // Look for a cookie containing previous sort settings:
-    sort_list = [];
-    cookie_name = "COVERAGE_INDEX_SORT";
+    var sort_list = [];
+    var cookie_name = "COVERAGE_INDEX_SORT";
+    var i;
 
     // This almost makes it worth installing the jQuery cookie plugin:
     if (document.cookie.indexOf(cookie_name) > -1) {
-        cookies = document.cookie.split(";");
-        for (var i=0; i < cookies.length; i++) {
-            parts = cookies[i].split("=")
+        var cookies = document.cookie.split(";");
+        for (i = 0; i < cookies.length; i++) {
+            var parts = cookies[i].split("=");
 
-            if ($.trim(parts[0]) == cookie_name && parts[1]) {
+            if ($.trim(parts[0]) === cookie_name && parts[1]) {
                 sort_list = eval("[[" + parts[1] + "]]");
                 break;
             }
@@ -42,7 +44,7 @@ coverage.index_ready = function($) {
 
         // Format is called by the widget before displaying:
         format: function(table) {
-            if (table.config.sortList.length == 0 && sort_list.length > 0) {
+            if (table.config.sortList.length === 0 && sort_list.length > 0) {
                 // This table hasn't been sorted before - we'll use
                 // our stored settings:
                 $(table).trigger('sorton', [sort_list]);
@@ -62,7 +64,7 @@ coverage.index_ready = function($) {
     var col_count = $("table.index > thead > tr > th").length;
 
     headers[0] = { sorter: 'text' };
-    for (var i = 1; i < col_count-1; i++) {
+    for (i = 1; i < col_count-1; i++) {
         headers[i] = { sorter: 'digit' };
     }
     headers[col_count-1] = { sorter: 'percent' };
@@ -77,21 +79,21 @@ coverage.index_ready = function($) {
 
     // Watch for page unload events so we can save the final sort settings:
     $(window).unload(function() {
-        document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/"
+        document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/";
     });
-}
+};
 
 // -- pyfile stuff --
 
 coverage.pyfile_ready = function($) {
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
-    if (frag.length > 2 && frag[1] == 'n') {
+    if (frag.length > 2 && frag[1] === 'n') {
         $(frag).addClass('highlight');
     }
 
     coverage.assign_shortkeys();
-}
+};
 
 coverage.toggle_lines = function(btn, cls) {
     btn = $(btn);
@@ -104,5 +106,5 @@ coverage.toggle_lines = function(btn, cls) {
         $("#source ."+cls).addClass(hide);
         btn.addClass(hide);
     }
-}
+};
 
