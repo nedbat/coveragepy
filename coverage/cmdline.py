@@ -73,8 +73,8 @@ class Opts(object):
         )
     module = optparse.make_option(
         '-m', '--module', action='store_true',
-        help="First argument is a Python module, not a script path,"
-                " which should be run as `python -m` would run it."
+        help="<pyfile> is an importable Python module, not a script path, "
+                "to be run as 'python -m' would run it."
         )
     rcfile = optparse.make_option(
         '', '--rcfile', action='store',

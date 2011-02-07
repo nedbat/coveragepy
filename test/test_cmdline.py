@@ -33,7 +33,8 @@ class CmdLineTest(CoverageTest):
         """
         m = self.model_object()
         ret = coverage.CoverageScript(
-            _covpkg=m, _run_python_file=m.run_python_file, _help_fn=m.help_fn
+            _covpkg=m, _run_python_file=m.run_python_file,
+            _run_python_module=m.run_python_module, _help_fn=m.help_fn
             ).command_line(shlex.split(args))
         return m, ret
 
@@ -520,6 +521,33 @@ class NewCmdLineTest(CmdLineTest):
             .stop()
             .save()
             """)
+
+    def test_run_module(self):
+        self.cmd_executes("run -m mymodule", """\
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, source=None, include=None, omit=None)
+            .erase()
+            .start()
+            .run_python_module('mymodule', ['mymodule'])
+            .stop()
+            .save()
+            """)
+        self.cmd_executes("run -m mymodule -qq arg1 arg2", """\
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, source=None, include=None, omit=None)
+            .erase()
+            .start()
+            .run_python_module('mymodule', ['mymodule', '-qq', 'arg1', 'arg2'])
+            .stop()
+            .save()
+            """)
+        self.cmd_executes("run --branch -m mymodule", """\
+            .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=True, config_file=True, source=None, include=None, omit=None)
+            .erase()
+            .start()
+            .run_python_module('mymodule', ['mymodule'])
+            .stop()
+            .save()
+            """)
+        self.cmd_executes_same("run -m mymodule", "run --module mymodule")
 
     def test_xml(self):
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]

@@ -66,7 +66,9 @@ command::
 
 Your program runs just as if it had been invoked with the Python command line.
 Arguments after your file name are passed to your program as usual in
-``sys.argv``.
+``sys.argv``.  Rather than providing a filename, you can use the ``-m`` switch
+and specify an importable module name instead, just as you can with the
+Python ``-m`` switch.
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.

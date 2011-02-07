@@ -21,6 +21,7 @@ Patrick Mezard
 Noel O'Boyle
 Detlev Offenbach
 Catherine Proulx
+Brandon Rhodes
 Adi Roiban
 Greg Rogers
 George Song
