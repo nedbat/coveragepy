@@ -111,7 +111,7 @@ class ClassicCmdLineTest(CmdLineTest):
             .load()
             .start()
             .run_python_file('foo.py', ['foo.py'])
-            .stop()
+            .stop(False)
             .save()
             """)
         # -e -x calls coverage.erase first.
@@ -120,7 +120,7 @@ class ClassicCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
-            .stop()
+            .stop(False)
             .save()
             """)
         # --timid sets a flag, and program arguments get passed through.
@@ -129,7 +129,7 @@ class ClassicCmdLineTest(CmdLineTest):
             .load()
             .start()
             .run_python_file('foo.py', ['foo.py', 'abc', '123'])
-            .stop()
+            .stop(False)
             .save()
             """)
         # -L sets a flag, and flags for the program don't confuse us.
@@ -138,7 +138,7 @@ class ClassicCmdLineTest(CmdLineTest):
             .load()
             .start()
             .run_python_file('foo.py', ['foo.py', '-a', '-b'])
-            .stop()
+            .stop(False)
             .save()
             """)
 
@@ -470,7 +470,7 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
-            .stop()
+            .stop(False)
             .save()
             """)
         self.cmd_executes("run --rcfile=myrc.rc foo.py", """\
@@ -478,7 +478,7 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
-            .stop()
+            .stop(False)
             .save()
             """)
         self.cmd_executes("run --include=pre1,pre2 foo.py", """\
@@ -486,7 +486,7 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
-            .stop()
+            .stop(False)
             .save()
             """)
         self.cmd_executes("run --omit=opre1,opre2 foo.py", """\
@@ -494,7 +494,7 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
-            .stop()
+            .stop(False)
             .save()
             """)
         self.cmd_executes("run --include=pre1,pre2 --omit=opre1,opre2 foo.py",
@@ -506,7 +506,7 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
-            .stop()
+            .stop(False)
             .save()
             """)
         self.cmd_executes("run --source=quux,hi.there,/home/bar foo.py",
@@ -518,7 +518,7 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
-            .stop()
+            .stop(False)
             .save()
             """)
 
@@ -528,7 +528,7 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_module('mymodule', ['mymodule'])
-            .stop()
+            .stop(False)
             .save()
             """)
         self.cmd_executes("run -m mymodule -qq arg1 arg2", """\
@@ -536,7 +536,7 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_module('mymodule', ['mymodule', '-qq', 'arg1', 'arg2'])
-            .stop()
+            .stop(False)
             .save()
             """)
         self.cmd_executes("run --branch -m mymodule", """\
@@ -544,7 +544,7 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             .start()
             .run_python_module('mymodule', ['mymodule'])
-            .stop()
+            .stop(False)
             .save()
             """)
         self.cmd_executes_same("run -m mymodule", "run --module mymodule")

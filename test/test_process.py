@@ -275,3 +275,13 @@ class ProcessTest(CoverageTest):
             Coverage.py warning: Module quux was never imported.
             Coverage.py warning: No data was collected.
             """) in out)
+    
+    def test_warnings_if_never_run(self):
+        out = self.run_command("coverage run i_dont_exist.py")
+        self.assertTrue("No file to run: 'i_dont_exist.py'" in out)
+        self.assertTrue("warning" not in out)
+
+        out = self.run_command("coverage run -m no_such_module")
+        self.assertTrue("No module named no_such_module" in out)
+        self.assertTrue("warning" not in out)
+

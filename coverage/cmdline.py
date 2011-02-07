@@ -4,7 +4,7 @@ import optparse, re, sys, traceback
 
 from coverage.backward import sorted                # pylint: disable=W0622
 from coverage.execfile import run_python_file, run_python_module
-from coverage.misc import CoverageException, ExceptionDuringRun
+from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
 
 
 class Opts(object):
@@ -511,13 +511,18 @@ class CoverageScript(object):
         if 'execute' in options.actions:
             # Run the script.
             self.coverage.start()
+            never_run = False
             try:
-                if options.module:
-                    self.run_python_module(args[0], args)
-                else:
-                    self.run_python_file(args[0], args)
+                try:
+                    if options.module:
+                        self.run_python_module(args[0], args)
+                    else:
+                        self.run_python_file(args[0], args)
+                except NoSource:
+                    never_run = True
+                    raise
             finally:
-                self.coverage.stop()
+                self.coverage.stop(never_run)
                 self.coverage.save()
 
         if 'combine' in options.actions:

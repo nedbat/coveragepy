@@ -172,6 +172,10 @@ class coverage(object):
 
         # Only _harvest_data once per measurement cycle.
         self._harvested = False
+        
+        # When stop() is called, we can tell it that in fact no product code
+        # was run, to make the warnings more reasonable.
+        self._never_run = False
 
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
@@ -361,8 +365,14 @@ class coverage(object):
         self._harvested = False
         self.collector.start()
 
-    def stop(self):
-        """Stop measuring code coverage."""
+    def stop(self, never_run=False):
+        """Stop measuring code coverage.
+        
+        Set `never_run` to True to indicate that no product code was run, so
+        we don't warn unnecessarily.
+
+        """
+        self._never_run = never_run
         self.collector.stop()
         self._harvest_data()
 
@@ -444,9 +454,10 @@ class coverage(object):
                 self._warn("Module %s was never imported." % pkg)
 
             # Find out if we got any data.
-            summary = self.data.summary()
-            if not summary:
-                self._warn("No data was collected.")
+            if not self._never_run:
+                summary = self.data.summary()
+                if not summary:
+                    self._warn("No data was collected.")
 
             # Find files that were never executed at all.
             for src in self.source:
