@@ -441,7 +441,7 @@ class coverage(object):
             # If there are still entries in the source_pkgs list, then we never
             # encountered those packages.
             for pkg in self.source_pkgs:
-                self._warn("Source module %s was never encountered." % pkg)
+                self._warn("Module %s was never imported." % pkg)
 
             # Find out if we got any data.
             summary = self.data.summary()

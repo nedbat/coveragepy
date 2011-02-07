@@ -271,7 +271,7 @@ class ProcessTest(CoverageTest):
         self.assertTrue("Hello\n" in out)
         self.assertTrue(textwrap.dedent("""\
             Coverage.py warning: Module sys has no python source.
-            Coverage.py warning: Source module xyzzy was never encountered.
-            Coverage.py warning: Source module quux was never encountered.
+            Coverage.py warning: Module xyzzy was never imported.
+            Coverage.py warning: Module quux was never imported.
             Coverage.py warning: No data was collected.
             """) in out)
