@@ -511,7 +511,7 @@ class CoverageScript(object):
         if 'execute' in options.actions:
             # Run the script.
             self.coverage.start()
-            never_run = False
+            code_ran = True
             try:
                 try:
                     if options.module:
@@ -519,11 +519,12 @@ class CoverageScript(object):
                     else:
                         self.run_python_file(args[0], args)
                 except NoSource:
-                    never_run = True
+                    code_ran = False
                     raise
             finally:
-                self.coverage.stop(never_run)
-                self.coverage.save()
+                if code_ran:
+                    self.coverage.stop()
+                    self.coverage.save()
 
         if 'combine' in options.actions:
             self.coverage.combine()
