@@ -73,6 +73,7 @@ WEBHOME = c:/ned/web/stellated/pages/code/coverage
 px:
 	$(SPHINXBUILD) -b px $(SPHINXOPTS) doc/_build/px
 	rm doc/_build/px/search.px
+	python doc/_ext/px_cleaner.py doc/_build/px/*.px
 
 dochtml:
 	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
