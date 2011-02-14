@@ -51,7 +51,7 @@ importing the modules that define your functions.
 
 **Q: Does coverage.py work on Python 3.x?**
 
-Yes, Python 3.1 is fully supported.
+Yes, Pythons 3.1 and 3.2 are fully supported.
 
 
 **Q: Isn't coverage testing the best thing ever?**
@@ -80,20 +80,32 @@ __ http://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
     .. _django-coverage: http://pypi.python.org/pypi/django-coverage
 
 
-Getting more help
------------------
+**Q: Where can I get more help with coverage.py?**
 
 You can discuss coverage.py or get help using it on the `Testing In Python`_
 mailing list.
 
 .. _Testing In Python: http://lists.idyll.org/listinfo/testing-in-python
 
-Bug reports are gladly accepted at the `bitbucket issue tracker`_.
-Bitbucket also hosts the `code repository`_.
+Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
 
-.. _bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
-.. _code repository: http://bitbucket.org/ned/coveragepy
+.. _Bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
 
-Lastly, `I can be reached`__ in a number of ways.
+`I can be reached`__ in a number of ways, I'm happy to answer questions about
+using coverage.py.  I'm also available hourly for consultation or custom
+development.
 
 __  http://nedbatchelder.com/site/aboutned.html
+
+
+History
+-------
+
+Coverage.py was originally written by `Gareth Rees`_.
+Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
+`many others`_.  The :ref:`change history <changes>` has all the details.
+
+.. _Gareth Rees:    http://garethrees.org/
+.. _Ned Batchelder: http://nedbatchelder.com
+.. _many others:    http://bitbucket.org/ned/coveragepy/src/tip/AUTHORS.txt
+

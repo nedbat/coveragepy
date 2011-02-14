@@ -16,6 +16,7 @@ coverage.py
 :history: 20100820T151500, updated for 3.4b1.
 :history: 20100906T134700, updated for 3.4b2.
 :history: 20100919T163500, updated for 3.4 release.
+:history: 20110213T081200, claim true 3.2 compatibility.
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
 monitors your program, noting which parts of the code have been executed, then
@@ -26,7 +27,7 @@ can show which parts of your code are being exercised by tests, and which are
 not.
 
 The latest version is 3.4, released 19 September 2010.
-It is supported on Python 2.3 through 3.2 alpha 3.
+It is supported on Python 2.3 through 3.2.
 
 
 Quick start
@@ -90,16 +91,26 @@ details.
 .. _cover plug-in:  http://somethingaboutorange.com/mrl/projects/nose/0.11.1/plugins/cover.html
 
 
-History
--------
+Getting help
+------------
 
-Coverage.py was originally written by `Gareth Rees`_.
-Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
-`many others`_.  The :ref:`change history <changes>` has all the details.
+If the :ref:`FAQ <faq>` doesn't answer your question, you can discuss
+coverage.py or get help using it on the `Testing In Python`_ mailing list.
 
-.. _Gareth Rees:    http://garethrees.org/
-.. _Ned Batchelder: http://nedbatchelder.com
-.. _many others:    http://bitbucket.org/ned/coveragepy/src/tip/AUTHORS.txt
+.. _Testing In Python: http://lists.idyll.org/listinfo/testing-in-python
+
+Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
+Bitbucket also hosts the `code repository`_.
+
+.. _Bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
+.. _code repository: http://bitbucket.org/ned/coveragepy
+
+`I can be reached`__ in a number of ways, I'm happy to answer questions about
+using coverage.py.  I'm also available hourly for consultation or custom
+development.
+
+__  http://nedbatchelder.com/site/aboutned.html
+
 
 
 More information
