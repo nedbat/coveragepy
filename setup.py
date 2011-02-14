@@ -33,7 +33,7 @@ Topic :: Software Development :: Testing
 """
 
 # Pull in the tools we need.
-import sys
+import sys, traceback
 
 # Distribute is a new fork of setuptools.  It's supported on Py3.x, so we use
 # it there, but stick with classic setuptools on Py2.x until Distribute becomes
@@ -99,7 +99,7 @@ setup_args = dict(
     url = __url__,
     )
 
-# Is there a duck-typing way to know we can't compile extensions?
+# Jython can't compile C extensions
 if not sys.platform.startswith('java'):
     setup_args.update(dict(
         ext_modules = [
@@ -112,4 +112,15 @@ if sys.version_info >= (3, 0):
         use_2to3=False,
         ))
 
-setup(**setup_args)
+# For a variety of reasons, it might not be possible to install the C
+# extension.  Try it with, and if it fails, try it without.
+try:
+    setup(**setup_args)
+except:
+    if 'ext_modules' not in setup_args:
+        raise
+    msg = "Couldn't install with extension module, trying without it..."
+    exc_msg = traceback.format_exc(0).split('\n')[-2]
+    print("**\n** %s\n** %s\n**" % (msg, exc_msg))
+    del setup_args['ext_modules']
+    setup(**setup_args)
