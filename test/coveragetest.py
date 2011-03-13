@@ -145,7 +145,7 @@ class CoverageTest(TestCase):
             os.makedirs(dirs)
 
         # Create the file.
-        f = open(filename, 'w')
+        f = open(filename, 'wb')
         try:
             f.write(text)
         finally:
