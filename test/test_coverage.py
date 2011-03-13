@@ -147,13 +147,13 @@ class SimpleStatementTest(CoverageTest):
             12
             23
             """,
-            [2], "")
+            ([1,2],[2]), "")
         self.check_coverage("""\
             12
             23
             a = 3
             """,
-            [3], "")
+            ([1,2,3],[3]), "")
         self.check_coverage("""\
             1 + 2
             1 + \\
