@@ -140,12 +140,33 @@ class SimpleStatementTest(CoverageTest):
     """Testing simple single-line statements."""
 
     def test_expression(self):
+        # Bare expressions as statements are tricky: some implementations
+        # optimize some of them away.  All implementations seem to count
+        # the implicit return at the end as executable.
+        self.check_coverage("""\
+            12
+            23
+            """,
+            [2], "")
+        self.check_coverage("""\
+            12
+            23
+            a = 3
+            """,
+            [3], "")
         self.check_coverage("""\
             1 + 2
             1 + \\
                 2
             """,
-            [1,2], "")
+            ([1,2], [2]), "")
+        self.check_coverage("""\
+            1 + 2
+            1 + \\
+                2
+            a = 4
+            """,
+            ([1,2,4], [4]), "")
 
     def test_assert(self):
         self.check_coverage("""\
@@ -560,7 +581,7 @@ class SimpleStatementTest(CoverageTest):
             c = 6
             assert (a,b,c) == (1,3,6)
             """,
-            ([1,3,5,6,7], [1,3,4,5,6,7]), "")
+            ([1,3,6,7], [1,3,5,6,7], [1,3,4,5,6,7]), "")
 
 
 class CompoundStatementTest(CoverageTest):
