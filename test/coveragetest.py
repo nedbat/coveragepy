@@ -4,6 +4,7 @@ import imp, os, random, shlex, shutil, sys, tempfile, textwrap
 
 import coverage
 from coverage.backward import sorted, StringIO      # pylint: disable=W0622
+from coverage.backward import to_bytes
 from backtest import run_command
 from backunittest import TestCase
 
@@ -147,7 +148,7 @@ class CoverageTest(TestCase):
         # Create the file.
         f = open(filename, 'wb')
         try:
-            f.write(text)
+            f.write(to_bytes(text))
         finally:
             f.close()
 

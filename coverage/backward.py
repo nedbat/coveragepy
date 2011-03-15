@@ -81,3 +81,19 @@ except AttributeError:
         """Open a source file the best way."""
         return open(fname, "rU")
 
+# Python 3.x is picky about bytes and strings, so provide methods to 
+# get them right, and make them no-ops in 2.x
+if sys.version_info >= (3, 0):
+    def to_bytes(s):
+        return s.encode('utf8')
+
+    def to_string(b):
+        return b.decode('utf8')
+
+else:
+    def to_bytes(s):
+        return s
+
+    def to_string(b):
+        return b
+
