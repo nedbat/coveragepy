@@ -7,12 +7,11 @@ def trace(frame, event, arg):
     #if event == 'line':
     global nest
     
-    print "%s%s %s %d (%r)" % (
+    print "%s%s %s %d" % (
         "   " * nest,
         event,
         os.path.basename(frame.f_code.co_filename),
         frame.f_lineno,
-        arg
         )
     
     if event == 'call':
