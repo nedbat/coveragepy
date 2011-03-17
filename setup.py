@@ -116,7 +116,7 @@ if sys.version_info >= (3, 0):
 # extension.  Try it with, and if it fails, try it without.
 try:
     setup(**setup_args)
-except:
+except:     # pylint: disable=W0702
     if 'ext_modules' not in setup_args:
         raise
     msg = "Couldn't install with extension module, trying without it..."

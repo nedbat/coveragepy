@@ -226,8 +226,8 @@ class coverage(object):
         self._check_for_packages()
 
         # Compiled Python files have two filenames: frame.f_code.co_filename is
-        # the filename at the time the .pyc was compiled.  The second name
-        # is __file__, which is where the .pyc was actually loaded from.  Since
+        # the filename at the time the .pyc was compiled.  The second name is
+        # __file__, which is where the .pyc was actually loaded from.  Since
         # .pyc files can be moved after compilation (for example, by being
         # installed), we look for __file__ in the frame and prefer it to the
         # co_filename value.

@@ -81,19 +81,23 @@ except AttributeError:
         """Open a source file the best way."""
         return open(fname, "rU")
 
-# Python 3.x is picky about bytes and strings, so provide methods to 
+# Python 3.x is picky about bytes and strings, so provide methods to
 # get them right, and make them no-ops in 2.x
 if sys.version_info >= (3, 0):
     def to_bytes(s):
+        """Convert string `s` to bytes."""
         return s.encode('utf8')
 
     def to_string(b):
+        """Convert bytes `b` to a string."""
         return b.decode('utf8')
 
 else:
     def to_bytes(s):
+        """Convert string `s` to bytes (no-op in 2.x)."""
         return s
 
     def to_string(b):
+        """Convert bytes `b` to a string (no-op in 2.x)."""
         return b
 

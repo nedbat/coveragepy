@@ -27,7 +27,7 @@ Version 3.5
   Closes `issue 107`, thanks, Brett Cannon.
 
 - Installation from source now succeeds on machines without a C compiler,
-  closing `issue 80`. 
+  closing `issue 80`.
 
 - Internally, files are now closed explicitly, fixing `issue 104`.  Thanks,
   Brett Cannon.
