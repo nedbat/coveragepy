@@ -32,6 +32,9 @@ class CoverageTest(TestCase):
     run_in_temp_dir = True
 
     def setUp(self):
+        # tearDown will restore the original sys.path
+        self.old_syspath = sys.path[:]
+
         if self.run_in_temp_dir:
             # Create a temporary directory.
             self.noise = str(random.random())[2:]
@@ -41,9 +44,7 @@ class CoverageTest(TestCase):
             self.old_dir = os.getcwd()
             os.chdir(self.temp_dir)
 
-
             # Modules should be importable from this temp directory.
-            self.old_syspath = sys.path[:]
             sys.path.insert(0, '')
 
             # Keep a counter to make every call to check_coverage unique.
@@ -67,10 +68,10 @@ class CoverageTest(TestCase):
         self.old_modules = dict(sys.modules)
 
     def tearDown(self):
-        if self.run_in_temp_dir:
-            # Restore the original sys.path.
-            sys.path = self.old_syspath
+        # Restore the original sys.path.
+        sys.path = self.old_syspath
 
+        if self.run_in_temp_dir:
             # Get rid of the temporary directory.
             os.chdir(self.old_dir)
             shutil.rmtree(self.temp_root)

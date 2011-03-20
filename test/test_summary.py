@@ -141,6 +141,8 @@ class SummaryTest2(CoverageTest):
         sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
 
     def test_empty_files(self):
+        # Shows that empty files like __init__.py are listed as having zero
+        # statements, not one statement.
         cov = coverage.coverage()
         cov.start()
         import usepkgs                      # pylint: disable=F0401,W0612
