@@ -121,3 +121,12 @@ class CoverageTestTest(CoverageTest):
         self.assertEqual(self.file_text("dos.txt"), "Hello\r\n")
         self.make_file("mac.txt", "Hello\n", newline="\r")
         self.assertEqual(self.file_text("mac.txt"), "Hello\r")
+
+    def test_file_exists(self):
+        self.make_file("whoville.txt", "We are here!")
+        self.assert_exists("whoville.txt")
+        self.assert_doesnt_exist("shadow.txt")
+        self.assertRaises(AssertionError, self.assert_doesnt_exist,
+                                                            "whoville.txt")
+        self.assertRaises(AssertionError, self.assert_exists, "shadow.txt")
+

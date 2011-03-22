@@ -1704,7 +1704,7 @@ class ReportingTest(CoverageTest):
             CoverageException, "No data to report.",
             self.command_line, "annotate -d ann"
             )
-        self.assertFalse(os.path.exists("ann"))
+        self.assert_doesnt_exist("ann")
 
     def test_no_data_to_report_on_html(self):
         # Reporting with no data produces a nice message and no output dir.
@@ -1712,7 +1712,7 @@ class ReportingTest(CoverageTest):
             CoverageException, "No data to report.",
             self.command_line, "html -d htmlcov"
             )
-        self.assertFalse(os.path.exists("htmlcov"))
+        self.assert_doesnt_exist("htmlcov")
 
     def test_no_data_to_report_on_xml(self):
         # Reporting with no data produces a nice message.

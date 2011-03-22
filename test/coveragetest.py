@@ -340,6 +340,16 @@ class CoverageTest(TestCase):
         flist2_nice = [self.nice_file(f) for f in flist2]
         self.assertSameElements(flist1_nice, flist2_nice)
 
+    def assert_exists(self, fname):
+        """Assert that `fname` is a file that exists."""
+        msg = "File %r should exist" % fname
+        self.assert_(os.path.exists(fname), msg)
+
+    def assert_doesnt_exist(self, fname):
+        """Assert that `fname` is a file that doesn't exist."""
+        msg = "File %r shouldn't exist" % fname
+        self.assert_(not os.path.exists(fname), msg)
+
     def command_line(self, args, ret=OK, _covpkg=None):
         """Run `args` through the command line.
 
