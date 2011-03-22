@@ -43,9 +43,8 @@ the set.
 
 The ``include`` and ``omit`` filename patterns follow typical shell syntax:
 ``*`` matches any number of characters and ``?`` matches a single character.
-The full semantics are specified in the `fnmatch docs`_.
-
-.. _fnmatch docs: http://docs.python.org/library/fnmatch.html
+Patterns that start with a wildcard character are used as-is, other patterns
+are interpreted relative to the current directory.
 
 The ``source``, ``include``, and ``omit`` values all work together to determine
 the source that will be measured.

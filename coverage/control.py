@@ -118,8 +118,8 @@ class coverage(object):
             else:
                 self.source_pkgs.append(src)
 
-        self.omit = self._abs_files(self.config.omit)
-        self.include = self._abs_files(self.config.include)
+        self.omit = self._prep_patterns(self.config.omit)
+        self.include = self._prep_patterns(self.config.include)
 
         self.collector = Collector(
             self._should_trace, timid=self.config.timid,
@@ -280,10 +280,24 @@ class coverage(object):
         self._warnings.append(msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
 
-    def _abs_files(self, files):
-        """Return a list of absolute file names for the names in `files`."""
-        files = files or []
-        return [self.file_locator.abs_file(f) for f in files]
+    def _prep_patterns(self, patterns):
+        """Prepare the file patterns for use in a `FnmatchMatcher`.
+        
+        If a pattern starts with a wildcard, it is used as a pattern
+        as-is.  If it does not start with a wildcard, then it is made
+        absolute with the current directory.
+
+        If `patterns` is None, an empty list is returned.
+
+        """
+        patterns = patterns or []
+        prepped = []
+        for p in patterns or []:
+            if p.startswith("*") or p.startswith("?"):
+                prepped.append(p)
+            else:
+                prepped.append(self.file_locator.abs_file(p))
+        return prepped
 
     def _check_for_packages(self):
         """Update the source_match matcher with latest imported packages."""
