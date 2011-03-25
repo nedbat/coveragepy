@@ -212,7 +212,8 @@ class HtmlReporter(Reporter):
 
 
 class HtmlStatus(object):
-    # A pickle of hashes for controlling deltas.
+    """The status information we keep to support incremental reporting."""
+
     STATUS_FILE = "latest.dat"
     STATUS_VERSION = 1
 
@@ -220,51 +221,60 @@ class HtmlStatus(object):
         self.reset()
 
     def reset(self):
+        """Initialize to empty."""
         self.settings = ''
-        self.status = {}
+        self.files = {}
 
     def read(self, directory):
+        """Read the last status in `directory`."""
         self.reset()
         try:
             status_file = os.path.join(directory, self.STATUS_FILE)
-            data = pickle.load(open(status_file, "rb"))
+            status = pickle.load(open(status_file, "rb"))
         except IOError:
             pass
         else:
-            if data['version'] == self.STATUS_VERSION:
-                self.status = data['files']
-                self.settings = data['settings']
+            if status['version'] == self.STATUS_VERSION:
+                self.files = status['files']
+                self.settings = status['settings']
 
     def write(self, directory):
+        """Write the current status to `directory`."""
         status_file = os.path.join(directory, self.STATUS_FILE)
-        data = {
+        status = {
             'version': self.STATUS_VERSION,
             'settings': self.settings,
-            'files': self.status,
+            'files': self.files,
             }
         fout = open(status_file, "wb")
         try:
-            pickle.dump(data, fout)
+            pickle.dump(status, fout)
         finally:
             fout.close()
 
     def settings_hash(self):
+        """Get the hash of the coverage.py settings."""
         return self.settings
 
     def set_settings_hash(self, settings):
+        """Set the hash of the coverage.py settings."""
         self.settings = settings
 
     def file_hash(self, fname):
-        return self.status.get(fname, {}).get('hash', '')
+        """Get the hash of `fname`'s contents."""
+        return self.files.get(fname, {}).get('hash', '')
 
     def set_file_hash(self, fname, val):
-        self.status.setdefault(fname, {})['hash'] = val
+        """Set the hash of `fname`'s contents."""
+        self.files.setdefault(fname, {})['hash'] = val
 
     def index_info(self, fname):
-        return self.status.get(fname, {}).get('index', {})
+        """Get the information for index.html for `fname`."""
+        return self.files.get(fname, {}).get('index', {})
 
     def set_index_info(self, fname, info):
-        self.status.setdefault(fname, {})['index'] = info
+        """Set the information for index.html for `fname`."""
+        self.files.setdefault(fname, {})['index'] = info
 
 
 # Helpers for templates and generating HTML
