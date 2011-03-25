@@ -14,6 +14,12 @@ except KeyError:
     BUILTINS = sys.modules['builtins']
 
 
+def rsplit1(s, sep):
+    """The same as s.rsplit(sep, 1), but works in 2.3"""
+    parts = s.split(sep)
+    return sep.join(parts[:-1]), parts[-1]
+
+
 def run_python_module(modulename, args):
     """Run a python module, as though with ``python -m name args...``.
 
@@ -29,7 +35,7 @@ def run_python_module(modulename, args):
             # Search for the module - inside its parent package, if any - using
             # standard import mechanics.
             if '.' in modulename:
-                packagename, name = modulename.rsplit('.', 1)
+                packagename, name = rsplit1(modulename, '.')
                 package = __import__(packagename, glo, loc, ['__path__'])
                 searchpath = package.__path__
             else:

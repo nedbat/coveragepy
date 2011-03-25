@@ -1,7 +1,8 @@
 """Miscellaneous stuff for Coverage."""
 
 import inspect
-from coverage.backward import md5, string_class, to_bytes
+from coverage.backward import md5, sorted       # pylint: disable=W0622
+from coverage.backward import string_class, to_bytes
 
 
 def nice_pair(pair):
