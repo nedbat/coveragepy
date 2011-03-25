@@ -3,7 +3,8 @@
 import os, re, shutil
 
 from coverage import __url__, __version__           # pylint: disable=W0611
-from coverage.misc import CoverageException
+from coverage.backward import pickle
+from coverage.misc import CoverageException, Hasher
 from coverage.phystokens import source_token_lines
 from coverage.report import Reporter
 from coverage.templite import Templite
@@ -41,9 +42,11 @@ class HtmlReporter(Reporter):
         super(HtmlReporter, self).__init__(coverage, ignore_errors)
         self.directory = None
         self.source_tmpl = Templite(data("htmlfiles/pyfile.html"), globals())
+        self.coverage = coverage
 
         self.files = []
-        self.arcs = coverage.data.has_arcs()
+        self.arcs = self.coverage.data.has_arcs()
+        self.status = HtmlStatus()
 
     def report(self, morfs, config=None):
         """Generate an HTML report for `morfs`.
@@ -53,6 +56,17 @@ class HtmlReporter(Reporter):
 
         """
         assert config.html_dir, "must provide a directory for html reporting"
+
+        # Read the status data.
+        self.status.read(config.html_dir)
+
+        # Check that this run used the same settings as the last run.
+        m = Hasher()
+        m.update(config)
+        these_settings = m.digest()
+        if self.status.settings_hash() != these_settings:
+            self.status.reset()
+            self.status.set_settings_hash(these_settings)
 
         # Process all the files.
         self.report_files(self.html_file, morfs, config, config.html_dir)
@@ -70,6 +84,13 @@ class HtmlReporter(Reporter):
                 os.path.join(self.directory, static)
                 )
 
+    def file_hash(self, source, cu):
+        """Compute a hash that changes if the file needs to be re-reported."""
+        m = Hasher()
+        m.update(source)
+        self.coverage.data.add_to_hash(cu.filename, m)
+        return m.digest()
+
     def html_file(self, cu, analysis):
         """Generate an HTML file for one source file."""
         source_file = cu.source_file()
@@ -77,6 +98,17 @@ class HtmlReporter(Reporter):
             source = source_file.read()
         finally:
             source_file.close()
+
+        # Find out if the file on disk is already correct.
+        flat_rootname = cu.flat_rootname()
+        this_hash = self.file_hash(source, cu)
+        that_hash = self.status.file_hash(flat_rootname)
+        if this_hash == that_hash:
+            # Nothing has changed to require the file to be reported again.
+            self.files.append(self.status.index_info(flat_rootname))
+            return
+
+        self.status.set_file_hash(flat_rootname, this_hash)
 
         nums = analysis.numbers
 
@@ -141,7 +173,7 @@ class HtmlReporter(Reporter):
             })
 
         # Write the HTML page for this file.
-        html_filename = cu.flat_rootname() + ".html"
+        html_filename = flat_rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)
         html = spaceless(self.source_tmpl.render(locals()))
         fhtml = open(html_path, 'w')
@@ -151,12 +183,14 @@ class HtmlReporter(Reporter):
             fhtml.close()
 
         # Save this file's information for the index file.
-        self.files.append({
+        index_info = {
             'nums': nums,
             'par': n_par,
             'html_filename': html_filename,
-            'cu': cu,
-            })
+            'name': cu.name,
+            }
+        self.files.append(index_info)
+        self.status.set_index_info(flat_rootname, index_info)
 
     def index_file(self):
         """Write the index.html file for this report."""
@@ -172,6 +206,65 @@ class HtmlReporter(Reporter):
             fhtml.write(index_tmpl.render(locals()))
         finally:
             fhtml.close()
+
+        # Write the latest hashes for next time.
+        self.status.write(self.directory)
+
+
+class HtmlStatus(object):
+    # A pickle of hashes for controlling deltas.
+    STATUS_FILE = "latest.dat"
+    STATUS_VERSION = 1
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.settings = ''
+        self.status = {}
+
+    def read(self, directory):
+        self.reset()
+        try:
+            status_file = os.path.join(directory, self.STATUS_FILE)
+            data = pickle.load(open(status_file, "rb"))
+        except IOError:
+            pass
+        else:
+            if data['version'] == self.STATUS_VERSION:
+                self.status = data['files']
+                self.settings = data['settings']
+
+    def write(self, directory):
+        status_file = os.path.join(directory, self.STATUS_FILE)
+        data = {
+            'version': self.STATUS_VERSION,
+            'settings': self.settings,
+            'files': self.status,
+            }
+        fout = open(status_file, "wb")
+        try:
+            pickle.dump(data, fout)
+        finally:
+            fout.close()
+
+    def settings_hash(self):
+        return self.settings
+
+    def set_settings_hash(self, settings):
+        self.settings = settings
+
+    def file_hash(self, fname):
+        return self.status.get(fname, {}).get('hash', '')
+
+    def set_file_hash(self, fname, val):
+        self.status.setdefault(fname, {})['hash'] = val
+
+    def index_info(self, fname):
+        return self.status.get(fname, {}).get('index', {})
+
+    def set_index_info(self, fname, info):
+        self.status.setdefault(fname, {})['index'] = info
 
 
 # Helpers for templates and generating HTML

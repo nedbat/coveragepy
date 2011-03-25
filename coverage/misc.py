@@ -1,5 +1,9 @@
 """Miscellaneous stuff for Coverage."""
 
+import inspect
+from coverage.backward import md5, string_class, to_bytes
+
+
 def nice_pair(pair):
     """Make a nice string representation of a pair of numbers.
 
@@ -66,6 +70,41 @@ def bool_or_none(b):
         return None
     else:
         return bool(b)
+
+
+class Hasher(object):
+    """Hashes Python data into md5."""
+    def __init__(self):
+        self.md5 = md5()
+
+    def update(self, v):
+        """Add `v` to the hash, recursively if needed."""
+        self.md5.update(to_bytes(str(type(v))))
+        if isinstance(v, string_class):
+            self.md5.update(to_bytes(v))
+        elif isinstance(v, (int, float)):
+            self.update(str(v))
+        elif isinstance(v, (tuple, list)):
+            for e in v:
+                self.update(e)
+        elif isinstance(v, dict):
+            keys = v.keys()
+            for k in sorted(keys):
+                self.update(k)
+                self.update(v[k])
+        else:
+            for k in dir(v):
+                if k.startswith('__'):
+                    continue
+                a = getattr(v, k)
+                if inspect.isroutine(a):
+                    continue
+                self.update(k)
+                self.update(a)
+
+    def digest(self):
+        """Retrieve the digest of the hash."""
+        return self.md5.digest()
 
 
 class CoverageException(Exception):

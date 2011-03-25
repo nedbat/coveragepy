@@ -22,6 +22,10 @@ Version 3.5
 - A little bit of Jython support: `coverage run` can now measure Jython
   execution by adapting when $py.class files are traced. Thanks, Adi Roiban.
 
+- HTML reporting is now incremental: a record is kept of the data that
+  produced the HTML reports, and only files whose data has changed will
+  be generated.  This should make most HTML reporting faster.
+
 - Pathological code execution could disable the trace function behind our
   backs, leading to incorrect code measurement.  Now if this happens,
   coverage.py will issue a warning, at least alerting you to the problem.

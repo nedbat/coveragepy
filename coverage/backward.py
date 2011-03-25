@@ -101,3 +101,10 @@ else:
         """Convert bytes `b` to a string (no-op in 2.x)."""
         return b
 
+# Md5 is available in different places.
+try:
+    import hashlib
+    md5 = hashlib.md5
+except ImportError:
+    import md5
+    md5 = md5.new

@@ -61,7 +61,13 @@ class Reporter(object):
     def report_files(self, report_fn, morfs, config, directory=None):
         """Run a reporting function on a number of morfs.
 
-        `report_fn` is called for each relative morf in `morfs`.
+        `report_fn` is called for each relative morf in `morfs`.  It is called
+        as::
+
+            report_fn(code_unit, analysis)
+
+        where `code_unit` is the `CodeUnit` for the morf, and `analysis` is
+        the `Analysis` for the morf.
 
         `config` is a CoverageConfig instance.
 

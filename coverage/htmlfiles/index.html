@@ -55,7 +55,7 @@
         <tbody>
             {% for file in files %}
             <tr class='file'>
-                <td class='name left'><a href='{{file.html_filename}}'>{{file.cu.name}}</a></td>
+                <td class='name left'><a href='{{file.html_filename}}'>{{file.name}}</a></td>
                 <td>{{file.nums.n_statements}}</td>
                 <td>{{file.nums.n_missing}}</td>
                 <td>{{file.nums.n_excluded}}</td>

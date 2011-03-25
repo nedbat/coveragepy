@@ -228,6 +228,11 @@ class CoverageData(object):
         """A map containing all the arcs executed in `filename`."""
         return self.arcs.get(filename) or {}
 
+    def add_to_hash(self, filename, hasher):
+        """Contribute `filename`'s data to the Md5Hash `hasher`."""
+        hasher.update(self.executed_lines(filename))
+        hasher.update(self.executed_arcs(filename))
+
     def summary(self, fullpath=False):
         """Return a dict summarizing the coverage data.
 
