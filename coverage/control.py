@@ -282,7 +282,7 @@ class coverage(object):
 
     def _prep_patterns(self, patterns):
         """Prepare the file patterns for use in a `FnmatchMatcher`.
-        
+
         If a pattern starts with a wildcard, it is used as a pattern
         as-is.  If it does not start with a wildcard, then it is made
         absolute with the current directory.

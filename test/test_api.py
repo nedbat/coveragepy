@@ -328,14 +328,14 @@ class SourceOmitIncludeTest(CoverageTest):
     def filenames_in_summary(self, summary, filenames):
         """Assert the `filenames` are in the keys of `summary`."""
         for filename in filenames.split():
-            self.assert_(filename in summary, 
+            self.assert_(filename in summary,
                 "%s should be in %r" % (filename, summary)
                 )
 
     def filenames_not_in_summary(self, summary, filenames):
         """Assert the `filenames` are not in the keys of `summary`."""
         for filename in filenames.split():
-            self.assert_(filename not in summary, 
+            self.assert_(filename not in summary,
                 "%s should not be in %r" % (filename, summary)
                 )
 
