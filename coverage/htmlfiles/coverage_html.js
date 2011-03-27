@@ -90,7 +90,14 @@ coverage.pyfile_ready = function($) {
     var frag = location.hash;
     if (frag.length > 2 && frag[1] === 'n') {
         $(frag).addClass('highlight');
+        coverage.sel_begin = parseInt(frag.substr(2));
+        coverage.sel_end = coverage.sel_begin + 1;
     }
+
+    $(document).bind('keydown', 'j', coverage.to_next_chunk);
+    $(document).bind('keydown', 'k', coverage.to_prev_chunk);
+    $(document).bind('keydown', '0', coverage.to_top);
+    $(document).bind('keydown', '1', coverage.to_first_chunk);
 
     coverage.assign_shortkeys();
 };
@@ -105,6 +112,100 @@ coverage.toggle_lines = function(btn, cls) {
     else {
         $("#source ."+cls).addClass(hide);
         btn.addClass(hide);
+    }
+};
+
+// The first line selected, and the next line not selected.
+coverage.sel_begin = 0;
+coverage.sel_end = 1;
+
+coverage.to_top = function() {
+    coverage.sel_begin = 0;
+    coverage.sel_end = 1;
+    $("html").animate({scrollTop: 0}, 200);
+}
+
+coverage.to_first_chunk = function() {
+    coverage.sel_begin = 0;
+    coverage.sel_end = 1;
+    coverage.to_next_chunk();
+}
+
+coverage.to_next_chunk = function() {
+    var c = coverage; 
+
+    // Find the start of the next colored chunk.
+    var probe = c.sel_end;
+    var color = $("#t" + probe).css("background-color");
+    while (color === "transparent") {
+        probe += 1;
+        var probe_line = $("#t" + probe);
+        if (probe_line.length === 0) {
+            return;
+        }
+        color = probe_line.css("background-color");
+    }
+
+    // There's a next chunk, `probe` points to it.
+    c.sel_begin = probe;
+
+    // Find the end of this chunk.
+    var next_color = color;
+    while (next_color === color) {
+        probe += 1;
+        next_color = $("#t" + probe).css("background-color");
+    }
+    c.sel_end = probe;
+    coverage.show_selected_chunk();
+};
+
+coverage.to_prev_chunk = function() {
+    var c = coverage; 
+
+    // Find the end of the prev colored chunk.
+    var probe = c.sel_begin-1;
+    var color = $("#t" + probe).css("background-color");
+    while (probe > 0 && color === "transparent") {
+        probe -= 1;
+        var probe_line = $("#t" + probe);
+        if (probe_line.length === 0) {
+            return;
+        }
+        color = probe_line.css("background-color");
+    }
+
+    // There's a prev chunk, `probe` points to its last line.
+    c.sel_end = probe+1;
+
+    // Find the beginning of this chunk.
+    var prev_color = color;
+    while (prev_color === color) {
+        probe -= 1;
+        prev_color = $("#t" + probe).css("background-color");
+    }
+    c.sel_begin = probe+1;
+    coverage.show_selected_chunk();
+};
+
+coverage.show_selected_chunk = function() {
+    var c = coverage;
+
+    // Highlight the lines in the chunk
+    $(".linenos p").removeClass("highlight");
+    var probe = c.sel_begin;
+    while (probe > 0 && probe < c.sel_end) {
+        $("#n" + probe).addClass("highlight");
+        probe += 1;
+    }
+
+    // Scroll the page if the chunk isn't fully visible.
+    var top = $("#t" + c.sel_begin);
+    var bot = $("#t" + (c.sel_end-1));
+
+    if (!top.isOnScreen() || !bot.isOnScreen()) {
+        // Need to move the page.
+        var top_pos = parseInt(top.offset().top);
+        $("html").animate({scrollTop: top_pos-30}, 300);
     }
 };
 

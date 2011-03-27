@@ -33,8 +33,9 @@ class HtmlReporter(Reporter):
     STATIC_FILES = [
             "style.css",
             "jquery-1.4.3.min.js",
-            "jquery.tablesorter.min.js",
             "jquery.hotkeys.js",
+            "jquery.isonscreen.js",
+            "jquery.tablesorter.min.js",
             "coverage_html.js",
             ]
 

@@ -12,7 +12,7 @@ Coverage TODO
 - while TRUE claims to be partial.
     - A way to mark lines as partial branches, with a regex?
         - Default to "while True:", "while 1:"
-- HTML keyboard short cuts
++ HTML keyboard short cuts
 
 
 * 3.2
@@ -111,8 +111,8 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
     - Rolled-up statistics.
     - Some way to focus in on red and yellow
         - Show only lines near highlights?
-        - Jump to next highlight?
-            - Keyboard navigation: N and P
+        + Jump to next highlight?
+            + Keyboard navigation: j and k.
     - Cookie for changes to pyfile.html state.
     + Clickable column headers on the index page.
     + Syntax coloring in HTML report.

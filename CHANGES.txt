@@ -9,7 +9,10 @@ Version 3.5
 - The HTML report now has hotkeys.  Try ``n``, ``s``, ``m``, ``x``, ``b``,
   ``p``, and ``c`` on the overview page to change the column sorting.
   On a file page, ``r``, ``m``, ``x``, and ``p`` toggle the run, missing,
-  excluded, and partial line markings.
+  excluded, and partial line markings.  You can navigate the highlighted
+  sections of code by using the ``j`` and ``k`` keys for next and previous.
+  The ``1`` (one) key jumps to the first highlighted section in the file,
+  and ``0`` (zero) scrolls to the top of the file.
 
 - The ``--omit`` and ``--include`` switches now interpret their values more
   usefully.  If the value starts with a wildcard character, it is used as-is.
