@@ -2,7 +2,7 @@
 
 import os, re, shutil
 
-from coverage import __url__, __version__           # pylint: disable=W0611
+import coverage
 from coverage.backward import pickle
 from coverage.misc import CoverageException, Hasher
 from coverage.phystokens import source_token_lines
@@ -39,11 +39,19 @@ class HtmlReporter(Reporter):
             "coverage_html.js",
             ]
 
-    def __init__(self, coverage, ignore_errors=False):
-        super(HtmlReporter, self).__init__(coverage, ignore_errors)
+    def __init__(self, cov, ignore_errors=False):
+        super(HtmlReporter, self).__init__(cov, ignore_errors)
         self.directory = None
-        self.source_tmpl = Templite(data("htmlfiles/pyfile.html"), globals())
-        self.coverage = coverage
+        self.template_globals = {
+            'escape': escape,
+            '__url__': coverage.__url__,
+            '__version__': coverage.__version__,
+            }
+        self.source_tmpl = Templite(
+            data("htmlfiles/pyfile.html"), self.template_globals
+            )
+
+        self.coverage = cov
 
         self.files = []
         self.arcs = self.coverage.data.has_arcs()
@@ -195,7 +203,9 @@ class HtmlReporter(Reporter):
 
     def index_file(self):
         """Write the index.html file for this report."""
-        index_tmpl = Templite(data("htmlfiles/index.html"), globals())
+        index_tmpl = Templite(
+            data("htmlfiles/index.html"), self.template_globals
+            )
 
         files = self.files
         arcs = self.arcs
@@ -215,8 +225,8 @@ class HtmlReporter(Reporter):
 class HtmlStatus(object):
     """The status information we keep to support incremental reporting."""
 
-    STATUS_FILE = "latest.dat"
-    STATUS_VERSION = 1
+    STATUS_FILE = "status.dat"
+    STATUS_FORMAT = 1
 
     def __init__(self):
         self.reset()
@@ -228,22 +238,31 @@ class HtmlStatus(object):
 
     def read(self, directory):
         """Read the last status in `directory`."""
-        self.reset()
+        usable = False
         try:
             status_file = os.path.join(directory, self.STATUS_FILE)
             status = pickle.load(open(status_file, "rb"))
         except IOError:
-            pass
+            usable = False
         else:
-            if status['version'] == self.STATUS_VERSION:
-                self.files = status['files']
-                self.settings = status['settings']
+            usable = True
+            if status['format'] != self.STATUS_FORMAT:
+                usable = False
+            elif status['version'] != coverage.__version__:
+                usable = False
+
+        if usable:
+            self.files = status['files']
+            self.settings = status['settings']
+        else:
+            self.reset()
 
     def write(self, directory):
         """Write the current status to `directory`."""
         status_file = os.path.join(directory, self.STATUS_FILE)
         status = {
-            'version': self.STATUS_VERSION,
+            'format': self.STATUS_FORMAT,
+            'version': coverage.__version__,
             'settings': self.settings,
             'files': self.files,
             }

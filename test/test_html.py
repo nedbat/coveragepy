@@ -8,6 +8,17 @@ from coveragetest import CoverageTest
 class HtmlTest(CoverageTest):
     """HTML!"""
 
+    def setUp(self):
+        super(HtmlTest, self).setUp()
+
+        # At least one of our tests monkey-patches the version of coverage,
+        # so grab it here to restore it later.
+        self.real_coverage_version = coverage.__version__
+
+    def tearDown(self):
+        coverage.__version__ = self.real_coverage_version
+        super(HtmlTest, self).tearDown()
+
     def create_initial_files(self):
         """Create the source files we need to run these tests."""
         self.make_file("main_file.py", """\
@@ -111,11 +122,34 @@ class HtmlTest(CoverageTest):
 
         self.run_coverage(timid=True)
 
-        # Only the changed files should have been created.
+        # All the files have been reported again.
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/helper1.html")
         self.assert_exists("htmlcov/main_file.html")
         self.assert_exists("htmlcov/helper2.html")
         index2 = open("htmlcov/index.html").read()
         self.assertMultiLineEqual(index1, index2)
+
+    def test_html_delta_from_coverage_version_change(self):
+        # HTML generation can create only the files that have changed.
+        # In this case, everything changes because the coverage version has
+        # changed.
+        self.create_initial_files()
+        self.run_coverage()
+        index1 = open("htmlcov/index.html").read()
+        self.remove_html_files()
+
+        # "Upgrade" coverage.py!
+        coverage.__version__ = "XYZZY"
+
+        self.run_coverage()
+
+        # All the files have been reported again.
+        self.assert_exists("htmlcov/index.html")
+        self.assert_exists("htmlcov/helper1.html")
+        self.assert_exists("htmlcov/main_file.html")
+        self.assert_exists("htmlcov/helper2.html")
+        index2 = open("htmlcov/index.html").read()
+        fixed_index2 = index2.replace("XYZZY", self.real_coverage_version)
+        self.assertMultiLineEqual(index1, fixed_index2)
 
