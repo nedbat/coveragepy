@@ -94,10 +94,12 @@ coverage.pyfile_ready = function($) {
         coverage.sel_end = coverage.sel_begin + 1;
     }
 
-    $(document).bind('keydown', 'j', coverage.to_next_chunk);
-    $(document).bind('keydown', 'k', coverage.to_prev_chunk);
-    $(document).bind('keydown', '0', coverage.to_top);
-    $(document).bind('keydown', '1', coverage.to_first_chunk);
+    $(document)
+        .bind('keydown', 'j', coverage.to_next_chunk)
+        .bind('keydown', 'k', coverage.to_prev_chunk)
+        .bind('keydown', '0', coverage.to_top)
+        .bind('keydown', '1', coverage.to_first_chunk)
+        ;
 
     coverage.assign_shortkeys();
 };
@@ -123,27 +125,29 @@ coverage.to_top = function() {
     coverage.sel_begin = 0;
     coverage.sel_end = 1;
     $("html").animate({scrollTop: 0}, 200);
-}
+};
 
 coverage.to_first_chunk = function() {
     coverage.sel_begin = 0;
     coverage.sel_end = 1;
     coverage.to_next_chunk();
-}
+};
 
 coverage.to_next_chunk = function() {
     var c = coverage; 
 
     // Find the start of the next colored chunk.
     var probe = c.sel_end;
-    var color = $("#t" + probe).css("background-color");
-    while (color === "transparent") {
-        probe += 1;
+    while (true) {
         var probe_line = $("#t" + probe);
         if (probe_line.length === 0) {
             return;
         }
-        color = probe_line.css("background-color");
+        var color = probe_line.css("background-color");
+        if (color !== "transparent") {
+            break;
+        }
+        probe += 1;
     }
 
     // There's a next chunk, `probe` points to it.
@@ -200,9 +204,9 @@ coverage.show_selected_chunk = function() {
 
     // Scroll the page if the chunk isn't fully visible.
     var top = $("#t" + c.sel_begin);
-    var bot = $("#t" + (c.sel_end-1));
+    var next = $("#t" + c.sel_end);
 
-    if (!top.isOnScreen() || !bot.isOnScreen()) {
+    if (!top.isOnScreen() || !next.isOnScreen()) {
         // Need to move the page.
         var top_pos = parseInt(top.offset().top);
         $("html").animate({scrollTop: top_pos-30}, 300);
