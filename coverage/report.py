@@ -2,7 +2,7 @@
 
 import fnmatch, os
 from coverage.codeunit import code_unit_factory
-from coverage.misc import CoverageException, NoSource
+from coverage.misc import CoverageException, NoSource, NotPython
 
 class Reporter(object):
     """A base class for all reporters."""
@@ -84,6 +84,6 @@ class Reporter(object):
         for cu in self.code_units:
             try:
                 report_fn(cu, self.coverage._analyze(cu))
-            except NoSource:
+            except (NoSource, NotPython):
                 if not self.ignore_errors:
                     raise

@@ -113,7 +113,11 @@ class CoverageException(Exception):
     pass
 
 class NoSource(CoverageException):
-    """Used to indicate we couldn't find the source for a module."""
+    """We couldn't find the source for a module."""
+    pass
+
+class NotPython(CoverageException):
+    """A source file turned out not to be parsable Python."""
     pass
 
 class ExceptionDuringRun(CoverageException):
