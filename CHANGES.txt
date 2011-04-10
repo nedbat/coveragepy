@@ -44,6 +44,10 @@ Version 3.5
 - Installation from source now succeeds on machines without a C compiler,
   closing `issue 80`.
 
+- Coverage.py can now be run directly from a working tree by specifying
+  the directory name to python:  ``python coverage_py_working_dir run ...``.
+  Thanks, Brett Cannon.
+
 - Internally, files are now closed explicitly, fixing `issue 104`.  Thanks,
   Brett Cannon.
 
