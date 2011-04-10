@@ -38,6 +38,9 @@ Version 3.5
   possible, to get the best handling of Python source files with encodings.
   Closes `issue 107`, thanks, Brett Cannon.
 
+- Syntax errors in supposed Python files can now be ignored during reporting
+  with the ``-i`` switch just like other source errors.  Closes `issue 115`.
+
 - Installation from source now succeeds on machines without a C compiler,
   closing `issue 80`.
 
@@ -49,6 +52,7 @@ Version 3.5
 .. _issue 95: https://bitbucket.org/ned/coveragepy/issue/95/run-subcommand-should-take-a-module-name
 .. _issue 104: https://bitbucket.org/ned/coveragepy/issue/104/explicitly-close-files
 .. _issue 107: https://bitbucket.org/ned/coveragepy/issue/107/codeparser-not-opening-source-files-with
+.. _issue 115: https://bitbucket.org/ned/coveragepy/issue/115/fail-gracefully-when-reporting-on-file
 .. _issue 121: https://bitbucket.org/ned/coveragepy/issue/121/filename-patterns-are-applied-stupidly
 
 
