@@ -100,6 +100,9 @@ Execution and measurement:
 - When measuring code running in a virtualenv, most of the system library was
   being measured when it shouldn't have been.  This is now fixed.
 
+- Coverage can now be run as a module: ``python -m coverage``.  Thanks,
+  Brett Cannon.
+
 .. _issue 1:  http://bitbucket.org/ned/coveragepy/issue/1/empty-__init__py-files-are-reported-as-1-executable
 .. _issue 16: http://bitbucket.org/ned/coveragepy/issue/16/allow-configuration-of-accuracy-of-percentage-totals
 .. _issue 34: http://bitbucket.org/ned/coveragepy/issue/34/enhanced-omit-globbing-handling

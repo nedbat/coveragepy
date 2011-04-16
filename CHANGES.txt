@@ -149,6 +149,9 @@ Version 3.4b1 --- 21 August 2010
   and parent processes.  Use ``coverage run -p`` to get two data files that can
   be combined with ``coverage combine``.  Fixes `issue 56`_.
 
+- Coverage is now runnable as a module: ``python -m coverage``.  Thanks,
+  Brett Cannon.
+
 - When measuring code running in a virtualenv, most of the system library was
   being measured when it shouldn't have been.  This is now fixed.
 
