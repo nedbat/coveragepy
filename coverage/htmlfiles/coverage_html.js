@@ -121,15 +121,28 @@ coverage.toggle_lines = function(btn, cls) {
 coverage.sel_begin = 0;
 coverage.sel_end = 1;
 
+// Return the nth line.  This function is overridden in the tests to allow use
+// of many fixtures.
+coverage.line_elt = function(n) {
+    return $("#t" + n);
+};
+
+coverage.num_elt = function(n) {
+    return $("#n" + n);
+};
+
+coverage.set_sel = function(b, e) {
+    coverage.sel_begin = b;
+    coverage.sel_end = e;
+};
+
 coverage.to_top = function() {
-    coverage.sel_begin = 0;
-    coverage.sel_end = 1;
+    coverage.set_sel(0, 1);
     $("html").animate({scrollTop: 0}, 200);
 };
 
 coverage.to_first_chunk = function() {
-    coverage.sel_begin = 0;
-    coverage.sel_end = 1;
+    coverage.set_sel(0, 1);
     coverage.to_next_chunk();
 };
 
@@ -139,7 +152,7 @@ coverage.to_next_chunk = function() {
     // Find the start of the next colored chunk.
     var probe = c.sel_end;
     while (true) {
-        var probe_line = $("#t" + probe);
+        var probe_line = c.line_elt(probe);
         if (probe_line.length === 0) {
             return;
         }
@@ -147,7 +160,7 @@ coverage.to_next_chunk = function() {
         if (color !== "transparent") {
             break;
         }
-        probe += 1;
+        probe++;
     }
 
     // There's a next chunk, `probe` points to it.
@@ -156,11 +169,12 @@ coverage.to_next_chunk = function() {
     // Find the end of this chunk.
     var next_color = color;
     while (next_color === color) {
-        probe += 1;
-        next_color = $("#t" + probe).css("background-color");
+        probe++;
+        probe_line = c.line_elt(probe); 
+        next_color = probe_line.css("background-color");
     }
     c.sel_end = probe;
-    coverage.show_selected_chunk();
+    c.show_selection();
 };
 
 coverage.to_prev_chunk = function() {
@@ -168,10 +182,14 @@ coverage.to_prev_chunk = function() {
 
     // Find the end of the prev colored chunk.
     var probe = c.sel_begin-1;
-    var color = $("#t" + probe).css("background-color");
+    var probe_line = c.line_elt(probe);
+    if (probe_line.length === 0) {
+        return;
+    }
+    var color = probe_line.css("background-color");
     while (probe > 0 && color === "transparent") {
-        probe -= 1;
-        var probe_line = $("#t" + probe);
+        probe--;
+        probe_line = c.line_elt(probe);
         if (probe_line.length === 0) {
             return;
         }
@@ -184,27 +202,30 @@ coverage.to_prev_chunk = function() {
     // Find the beginning of this chunk.
     var prev_color = color;
     while (prev_color === color) {
-        probe -= 1;
-        prev_color = $("#t" + probe).css("background-color");
+        probe--;
+        probe_line = c.line_elt(probe);
+        prev_color = probe_line.css("background-color");
     }
     c.sel_begin = probe+1;
-    coverage.show_selected_chunk();
+    c.show_selection();
 };
 
-coverage.show_selected_chunk = function() {
+coverage.show_selection = function() {
     var c = coverage;
 
     // Highlight the lines in the chunk
     $(".linenos p").removeClass("highlight");
-    var probe = c.sel_begin;
-    while (probe > 0 && probe < c.sel_end) {
-        $("#n" + probe).addClass("highlight");
-        probe += 1;
+    for (var probe = c.sel_begin; probe > 0 && probe < c.sel_end; probe++) {
+        c.num_elt(probe).addClass("highlight");
     }
 
+    c.scroll_to_selection();
+};
+
+coverage.scroll_to_selection = function() {
     // Scroll the page if the chunk isn't fully visible.
-    var top = $("#t" + c.sel_begin);
-    var next = $("#t" + c.sel_end);
+    var top = coverage.line_elt(c.sel_begin);
+    var next = coverage.line_elt(c.sel_end);
 
     if (!top.isOnScreen() || !next.isOnScreen()) {
         // Need to move the page.
