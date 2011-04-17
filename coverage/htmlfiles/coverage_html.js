@@ -131,6 +131,10 @@ coverage.num_elt = function(n) {
     return $("#n" + n);
 };
 
+coverage.code_container = function(n) {
+    return $(".linenos");
+}
+
 coverage.set_sel = function(b, e) {
     coverage.sel_begin = b;
     coverage.sel_end = e;
@@ -147,7 +151,7 @@ coverage.to_first_chunk = function() {
 };
 
 coverage.to_next_chunk = function() {
-    var c = coverage; 
+    var c = coverage;
 
     // Find the start of the next colored chunk.
     var probe = c.sel_end;
@@ -170,7 +174,7 @@ coverage.to_next_chunk = function() {
     var next_color = color;
     while (next_color === color) {
         probe++;
-        probe_line = c.line_elt(probe); 
+        probe_line = c.line_elt(probe);
         next_color = probe_line.css("background-color");
     }
     c.sel_end = probe;
@@ -178,7 +182,7 @@ coverage.to_next_chunk = function() {
 };
 
 coverage.to_prev_chunk = function() {
-    var c = coverage; 
+    var c = coverage;
 
     // Find the end of the prev colored chunk.
     var probe = c.sel_begin-1;
@@ -214,7 +218,7 @@ coverage.show_selection = function() {
     var c = coverage;
 
     // Highlight the lines in the chunk
-    $(".linenos p").removeClass("highlight");
+    c.code_container().find(".highlight").removeClass("highlight");
     for (var probe = c.sel_begin; probe > 0 && probe < c.sel_end; probe++) {
         c.num_elt(probe).addClass("highlight");
     }
@@ -224,8 +228,8 @@ coverage.show_selection = function() {
 
 coverage.scroll_to_selection = function() {
     // Scroll the page if the chunk isn't fully visible.
-    var top = coverage.line_elt(c.sel_begin);
-    var next = coverage.line_elt(c.sel_end);
+    var top = coverage.line_elt(coverage.sel_begin);
+    var next = coverage.line_elt(coverage.sel_end);
 
     if (!top.isOnScreen() || !next.isOnScreen()) {
         // Need to move the page.

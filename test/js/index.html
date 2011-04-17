@@ -4,15 +4,40 @@
 	<title>Coverage.py Javascript Test Suite</title>
 	<link rel="stylesheet" href="../qunit/qunit.css" type="text/css" media="screen">
 	<script type="text/javascript" src="../../coverage/htmlfiles/jquery-1.4.3.min.js"></script>
+    <script type='text/javascript' src="../../coverage/htmlfiles/jquery.isonscreen.js"></script>
     <script type="text/javascript" src="../../coverage/htmlfiles/coverage_html.js"></script>
 	<script type="text/javascript" src="../qunit/qunit.js"></script>
+    <script type="text/javascript" src="../qunit/jquery.tmpl.min.js"></script>
 
     <style>
-    .red { background-color: red; }
-    .white { }
-    .blue { background-color: blue; }
+    .r { background-color: red; }
+    .w { }
+    .b { background-color: blue; }
     </style>
 
+    <!-- Templates for the coverage report output -->
+    <script id="fixture-template" type="text/x-jquery-tmpl">
+        <table cellspacing='0' cellpadding='0'>
+            <tr>
+                <td class='linenos' valign='top'>
+                    <!-- #lineno-template goes here -->
+                </td>
+                <td class='text' valign='top'>
+                    <!-- #text-template goes here -->
+                </td>
+            </tr>
+        </table>
+    </script>
+
+    <script id="lineno-template" type="text/x-jquery-tmpl">
+        <p id='n${number}' class='${klass}'><a href='#n${number}'>${number}</a></p>
+    </script>
+
+    <script id="text-template" type="text/x-jquery-tmpl">
+        <p id='t${number}' class='${klass}'>Hello, world!</p>
+    </script>
+
+    <!-- Pull in the tests -->
     <script type="text/javascript" src="tests.js"></script>
 
 </head>
@@ -22,41 +47,6 @@
 	<div id="qunit-testrunner-toolbar"></div>
 	<h2 id="qunit-userAgent"></h2>
 	<ol id="qunit-tests"></ol>
-    <div id="qunit-fixture">
-    
-        <div id='rrwwrr'>
-            <p class='t1 red'>red</p>
-            <p class='t2 red'>red</p>
-            <p class='t3 white'>white</p>
-            <p class='t4 white'>white</p>
-            <p class='t5 red'>red</p>
-            <p class='t6 red'>red</p>
-        </div>
-    
-        <div id='rb'>
-            <p class='t1 red'>red</p>
-            <p class='t2 blue'>blue</p>
-        </div>
-
-        <div id='wrrwrrw'>
-            <p class='t1 white'>white</p>
-            <p class='t2 red'>red</p>
-            <p class='t3 red'>red</p>
-            <p class='t4 white'>white</p>
-            <p class='t5 red'>red</p>
-            <p class='t6 red'>red</p>
-            <p class='t7 white'>white</p>
-        </div>
-
-        <div id='rrrbbb'>
-            <p class='t1 red'>red</p>
-            <p class='t2 red'>red</p>
-            <p class='t3 red'>red</p>
-            <p class='t4 blue'>blue</p>
-            <p class='t5 blue'>blue</p>
-            <p class='t6 blue'>blue</p>
-        </div>
-    
-    </div>
+    <div id="qunit-fixture"></div>
 </body>
 </html>
