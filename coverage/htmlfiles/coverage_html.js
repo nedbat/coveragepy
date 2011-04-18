@@ -90,8 +90,10 @@ coverage.pyfile_ready = function($) {
     var frag = location.hash;
     if (frag.length > 2 && frag[1] === 'n') {
         $(frag).addClass('highlight');
-        coverage.sel_begin = parseInt(frag.substr(2));
-        coverage.sel_end = coverage.sel_begin + 1;
+        coverage.set_sel(parseInt(frag.substr(2)));
+    }
+    else {
+        coverage.set_sel(0);
     }
 
     $(document)
@@ -117,27 +119,26 @@ coverage.toggle_lines = function(btn, cls) {
     }
 };
 
-// The first line selected, and the next line not selected.
-coverage.sel_begin = 0;
-coverage.sel_end = 1;
-
-// Return the nth line.  This function is overridden in the tests to allow use
-// of many fixtures.
+// Return the nth line.
 coverage.line_elt = function(n) {
     return $("#t" + n);
 };
 
+// Return the nth line number.
 coverage.num_elt = function(n) {
     return $("#n" + n);
 };
 
+// Return the container of all the code.
 coverage.code_container = function(n) {
     return $(".linenos");
 }
 
 coverage.set_sel = function(b, e) {
+    // The first line selected.
     coverage.sel_begin = b;
-    coverage.sel_end = e;
+    // The next line not selected.
+    coverage.sel_end = (e === undefined) ? b+1 : e;
 };
 
 coverage.to_top = function() {
@@ -168,7 +169,7 @@ coverage.to_next_chunk = function() {
     }
 
     // There's a next chunk, `probe` points to it.
-    c.sel_begin = probe;
+    var begin = probe;
 
     // Find the end of this chunk.
     var next_color = color;
@@ -177,7 +178,7 @@ coverage.to_next_chunk = function() {
         probe_line = c.line_elt(probe);
         next_color = probe_line.css("background-color");
     }
-    c.sel_end = probe;
+    c.set_sel(begin, probe);
     c.show_selection();
 };
 
@@ -201,7 +202,7 @@ coverage.to_prev_chunk = function() {
     }
 
     // There's a prev chunk, `probe` points to its last line.
-    c.sel_end = probe+1;
+    var end = probe+1;
 
     // Find the beginning of this chunk.
     var prev_color = color;
@@ -210,7 +211,7 @@ coverage.to_prev_chunk = function() {
         probe_line = c.line_elt(probe);
         prev_color = probe_line.css("background-color");
     }
-    c.sel_begin = probe+1;
+    c.set_sel(probe+1, end);
     c.show_selection();
 };
 
@@ -237,4 +238,3 @@ coverage.scroll_to_selection = function() {
         $("html").animate({scrollTop: top_pos-30}, 300);
     }
 };
-
