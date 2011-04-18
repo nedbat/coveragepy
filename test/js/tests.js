@@ -1,4 +1,5 @@
 // Tests of coverage.py HTML report chunk navigation.
+/* global: coverage, test, module, equals, jQuery, $ */
 
 // Test helpers
 
@@ -10,9 +11,10 @@ function selection_is(sel) {
 }
 
 function build_fixture(spec) {
+    var i, data;
     $("#fixture-template").tmpl().appendTo("#qunit-fixture");
-    for (var i = 0; i < spec.length; i++) {
-        var data = {number: i+1, klass: spec.substr(i, 1)};
+    for (i = 0; i < spec.length; i++) {
+        data = {number: i+1, klass: spec.substr(i, 1)};
         $("#lineno-template").tmpl(data).appendTo("#qunit-fixture .linenos");
         $("#text-template").tmpl(data).appendTo("#qunit-fixture .text");
     }

@@ -90,7 +90,7 @@ coverage.pyfile_ready = function ($) {
     var frag = location.hash;
     if (frag.length > 2 && frag[1] === 'n') {
         $(frag).addClass('highlight');
-        coverage.set_sel(parseInt(frag.substr(2)));
+        coverage.set_sel(parseInt(frag.substr(2), 10));
     }
     else {
         coverage.set_sel(0);
@@ -132,7 +132,7 @@ coverage.num_elt = function (n) {
 // Return the container of all the code.
 coverage.code_container = function (n) {
     return $(".linenos");
-}
+};
 
 coverage.set_sel = function (b, e) {
     // The first line selected.
@@ -234,7 +234,7 @@ coverage.scroll_to_selection = function () {
 
     if (!top.isOnScreen() || !next.isOnScreen()) {
         // Need to move the page.
-        var top_pos = parseInt(top.offset().top);
+        var top_pos = parseInt(top.offset().top, 10);
         $("html").animate({scrollTop: top_pos-30}, 300);
     }
 };
