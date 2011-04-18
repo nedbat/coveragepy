@@ -5,11 +5,11 @@
 coverage = {};
 
 // Find all the elements with shortkey_* class, and use them to assign a shotrtcut key.
-coverage.assign_shortkeys = function() {
-    $("*[class*='shortkey_']").each(function(i, e) {
-        $.each($(e).attr("class").split(" "), function(i, c) {
+coverage.assign_shortkeys = function () {
+    $("*[class*='shortkey_']").each(function (i, e) {
+        $.each($(e).attr("class").split(" "), function (i, c) {
             if (/^shortkey_/.test(c)) {
-                $(document).bind('keydown', c.substr(9), function() {
+                $(document).bind('keydown', c.substr(9), function () {
                     $(e).click();
                 });
             }
@@ -18,7 +18,7 @@ coverage.assign_shortkeys = function() {
 };
 
 // Loaded on index.html
-coverage.index_ready = function($) {
+coverage.index_ready = function ($) {
     // Look for a cookie containing previous sort settings:
     var sort_list = [];
     var cookie_name = "COVERAGE_INDEX_SORT";
@@ -43,7 +43,7 @@ coverage.index_ready = function($) {
         id: "persistentSort",
 
         // Format is called by the widget before displaying:
-        format: function(table) {
+        format: function (table) {
             if (table.config.sortList.length === 0 && sort_list.length > 0) {
                 // This table hasn't been sorted before - we'll use
                 // our stored settings:
@@ -78,14 +78,14 @@ coverage.index_ready = function($) {
     coverage.assign_shortkeys();
 
     // Watch for page unload events so we can save the final sort settings:
-    $(window).unload(function() {
+    $(window).unload(function () {
         document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/";
     });
 };
 
 // -- pyfile stuff --
 
-coverage.pyfile_ready = function($) {
+coverage.pyfile_ready = function ($) {
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
     if (frag.length > 2 && frag[1] === 'n') {
@@ -106,7 +106,7 @@ coverage.pyfile_ready = function($) {
     coverage.assign_shortkeys();
 };
 
-coverage.toggle_lines = function(btn, cls) {
+coverage.toggle_lines = function (btn, cls) {
     btn = $(btn);
     var hide = "hide_"+cls;
     if (btn.hasClass(hide)) {
@@ -120,38 +120,38 @@ coverage.toggle_lines = function(btn, cls) {
 };
 
 // Return the nth line.
-coverage.line_elt = function(n) {
+coverage.line_elt = function (n) {
     return $("#t" + n);
 };
 
 // Return the nth line number.
-coverage.num_elt = function(n) {
+coverage.num_elt = function (n) {
     return $("#n" + n);
 };
 
 // Return the container of all the code.
-coverage.code_container = function(n) {
+coverage.code_container = function (n) {
     return $(".linenos");
 }
 
-coverage.set_sel = function(b, e) {
+coverage.set_sel = function (b, e) {
     // The first line selected.
     coverage.sel_begin = b;
     // The next line not selected.
     coverage.sel_end = (e === undefined) ? b+1 : e;
 };
 
-coverage.to_top = function() {
+coverage.to_top = function () {
     coverage.set_sel(0, 1);
     $("html").animate({scrollTop: 0}, 200);
 };
 
-coverage.to_first_chunk = function() {
+coverage.to_first_chunk = function () {
     coverage.set_sel(0, 1);
     coverage.to_next_chunk();
 };
 
-coverage.to_next_chunk = function() {
+coverage.to_next_chunk = function () {
     var c = coverage;
 
     // Find the start of the next colored chunk.
@@ -182,7 +182,7 @@ coverage.to_next_chunk = function() {
     c.show_selection();
 };
 
-coverage.to_prev_chunk = function() {
+coverage.to_prev_chunk = function () {
     var c = coverage;
 
     // Find the end of the prev colored chunk.
@@ -215,7 +215,7 @@ coverage.to_prev_chunk = function() {
     c.show_selection();
 };
 
-coverage.show_selection = function() {
+coverage.show_selection = function () {
     var c = coverage;
 
     // Highlight the lines in the chunk
@@ -227,7 +227,7 @@ coverage.show_selection = function() {
     c.scroll_to_selection();
 };
 
-coverage.scroll_to_selection = function() {
+coverage.scroll_to_selection = function () {
     // Scroll the page if the chunk isn't fully visible.
     var top = coverage.line_elt(coverage.sel_begin);
     var next = coverage.line_elt(coverage.sel_end);

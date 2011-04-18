@@ -24,18 +24,18 @@ function build_fixture(spec) {
 // Zero-chunk tests
 
 module("Zero-chunk navigation", {
-    setup: function() {
+    setup: function () {
         build_fixture("wwww");
     }
 });
 
-test("set_sel defaults", function() {
+test("set_sel defaults", function () {
     coverage.set_sel(2);
     equals(coverage.sel_begin, 2);
     equals(coverage.sel_end, 3);
 });
 
-test("No first chunk to select", function() {
+test("No first chunk to select", function () {
     coverage.to_first_chunk();
 });
 
@@ -47,35 +47,35 @@ $.each([
     ['wwrrrr', [3,7]],
     ['wwrrrrww', [3,7]],
     ['rrrrww', [1,5]]
-], function(i, params) {
+], function (i, params) {
 
     // Each of these tests uses a fixture with one highlighted chunks.
     var id = params[0];
     var c1 = params[1];
 
     module("One-chunk navigation - " + id, {
-        setup: function() {
+        setup: function () {
             build_fixture(id);
         }
     });
 
-    test("First chunk", function() {
+    test("First chunk", function () {
         coverage.to_first_chunk();
         selection_is(c1);
     });
 
-    test("Next chunk is first chunk", function() {
+    test("Next chunk is first chunk", function () {
         coverage.to_next_chunk();
         selection_is(c1);
     });
 
-    test("There is no next chunk", function() {
+    test("There is no next chunk", function () {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
         selection_is(c1);
     });
 
-    test("There is no prev chunk", function() {
+    test("There is no prev chunk", function () {
         coverage.to_first_chunk();
         coverage.to_prev_chunk();
         selection_is(c1);
@@ -91,7 +91,7 @@ $.each([
     ['rrrrrrrrrrb', [1,11], [11,12]],
     ['wrrwrrrrw', [2,4], [5,9]],
     ['rrrbbb', [1,4], [4,7]]
-], function(i, params) {
+], function (i, params) {
 
     // Each of these tests uses a fixture with two highlighted chunks.
     var id = params[0];
@@ -99,49 +99,49 @@ $.each([
     var c2 = params[2];
 
     module("Two-chunk navigation - " + id, {
-        setup: function() {
+        setup: function () {
             build_fixture(id);
         }
     });
 
-    test("First chunk", function() {
+    test("First chunk", function () {
         coverage.to_first_chunk();
         selection_is(c1);
     });
 
-    test("Next chunk is first chunk", function() {
+    test("Next chunk is first chunk", function () {
         coverage.to_next_chunk();
         selection_is(c1);
     });
 
-    test("Move to next chunk", function() {
+    test("Move to next chunk", function () {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
         selection_is(c2);
     });
 
-    test("Move to first chunk", function() {
+    test("Move to first chunk", function () {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
         coverage.to_first_chunk();
         selection_is(c1);
     });
 
-    test("Move to previous chunk", function() {
+    test("Move to previous chunk", function () {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
         coverage.to_prev_chunk();
         selection_is(c1);
     });
 
-    test("Next doesn't move after last chunk", function() {
+    test("Next doesn't move after last chunk", function () {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
         coverage.to_next_chunk();
         selection_is(c2);
     });
 
-    test("Prev doesn't move before first chunk", function() {
+    test("Prev doesn't move before first chunk", function () {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
         coverage.to_prev_chunk();
@@ -153,7 +153,7 @@ $.each([
 
 module("Miscellaneous");
 
-test("Jump from a line selected", function() {
+test("Jump from a line selected", function () {
     build_fixture("rrwwrr");
     coverage.set_sel(3);
     coverage.to_next_chunk();
