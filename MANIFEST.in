@@ -9,4 +9,3 @@ include README.txt
 include CHANGES.txt
 include AUTHORS.txt
 prune test
-prune __main__.py
