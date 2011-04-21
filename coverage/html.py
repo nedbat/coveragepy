@@ -37,6 +37,8 @@ class HtmlReporter(Reporter):
             "jquery.isonscreen.js",
             "jquery.tablesorter.min.js",
             "coverage_html.js",
+            "keybd_closed.png",
+            "keybd_open.png",
             ]
 
     def __init__(self, cov, ignore_errors=False):

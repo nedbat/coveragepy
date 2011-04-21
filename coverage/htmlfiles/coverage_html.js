@@ -17,6 +17,25 @@ coverage.assign_shortkeys = function () {
     });
 };
 
+// Create the events for the help panel.
+coverage.wire_up_help_panel = function () {
+    $("#keyboard_icon").click(function () {
+        // Show the help panel, and position it so the keyboard icon in the
+        // panel is in the same place as the keyboard icon in the header.
+        $(".help_panel").show();
+        var top, left;
+        var koff = $("#keyboard_icon").offset();
+        var poff = $("#panel_icon").position();
+        $(".help_panel").offset({
+            top: koff.top-poff.top,
+            left: koff.left-poff.left
+        });
+    });
+    $("#panel_icon").click(function () {
+        $(".help_panel").hide();
+    });
+};
+
 // Loaded on index.html
 coverage.index_ready = function ($) {
     // Look for a cookie containing previous sort settings:
@@ -104,6 +123,7 @@ coverage.pyfile_ready = function ($) {
         ;
 
     coverage.assign_shortkeys();
+    coverage.wire_up_help_panel();
 };
 
 coverage.toggle_lines = function (btn, cls) {
