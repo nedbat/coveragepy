@@ -7,10 +7,12 @@
     <meta http-equiv='X-UA-Compatible' content='IE=emulateIE7' />
     <title>Coverage for m3: 100%</title>
     <link rel='stylesheet' href='style.css' type='text/css'>
-    <script type='text/javascript' src='jquery-1.3.2.min.js'></script>
+    <script type='text/javascript' src='jquery-1.4.3.min.js'></script>
+    <script type='text/javascript' src='jquery.hotkeys.js'></script>
+    <script type='text/javascript' src='jquery.isonscreen.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
     <script type='text/javascript' charset='utf-8'>
-        jQuery(document).ready(pyfile_ready);
+        jQuery(document).ready(coverage.pyfile_ready);
     </script>
 </head>
 <body id='pyfile'>
@@ -20,13 +22,37 @@
         <h1>Coverage for <b>m3</b> :
             <span class='pc_cov'>100%</span>
         </h1>
+        <img id='keyboard_icon' src='keybd_closed.png'>
         <h2 class='stats'>
             2 statements
-            <span class='run hide_run' onclick='toggle_lines(this, "run")'>2 run</span>
-            <span class='mis' onclick='toggle_lines(this, "mis")'>0 missing</span>
-            <span class='exc' onclick='toggle_lines(this, "exc")'>0 excluded</span>
+            <span class='run hide_run shortkey_r' onclick='coverage.toggle_lines(this, "run")'>2 run</span>
+            <span class='mis shortkey_m' onclick='coverage.toggle_lines(this, "mis")'>0 missing</span>
+            <span class='exc shortkey_x' onclick='coverage.toggle_lines(this, "exc")'>0 excluded</span>
             
         </h2>
+    </div>
+</div>
+
+<div class='help_panel'>
+    <img id='panel_icon' src='keybd_open.png'>
+<p class='legend'>Hot-keys on this page</p>
+    <div>
+<p class='keyhelp'>
+        <span class='key'>r</span>
+        <span class='key'>m</span>
+        <span class='key'>x</span>
+        <span class='key'>p</span> &nbsp; toggle line displays
+    </p>
+<p class='keyhelp'>
+        <span class='key'>j</span>
+        <span class='key'>k</span> &nbsp; next/prev highlighted chunk
+    </p>
+<p class='keyhelp'>
+        <span class='key'>0</span> &nbsp; (zero) top of page
+    </p>
+<p class='keyhelp'>
+        <span class='key'>1</span> &nbsp; (one) first highlighted chunk
+    </p>
     </div>
 </div>
 
@@ -50,7 +76,7 @@
 <div id='footer'>
     <div class='content'>
         <p>
-            <a class='nav' href='index.html'>&#xab; index</a> &nbsp; &nbsp; <a class='nav' href='http://nedbatchelder.com/code/coverage'>coverage.py v3.3.2a1</a>
+            <a class='nav' href='index.html'>&#xab; index</a> &nbsp; &nbsp; <a class='nav' href='http://nedbatchelder.com/code/coverage/3.5a1'>coverage.py v3.5a1</a>
         </p>
     </div>
 </div>

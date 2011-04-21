@@ -4,11 +4,12 @@
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
     <title>Coverage report</title>
     <link rel='stylesheet' href='style.css' type='text/css'>
-    <script type='text/javascript' src='jquery-1.3.2.min.js'></script>
+    <script type='text/javascript' src='jquery-1.4.3.min.js'></script>
     <script type='text/javascript' src='jquery.tablesorter.min.js'></script>
+    <script type='text/javascript' src='jquery.hotkeys.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
     <script type='text/javascript' charset='utf-8'>
-        jQuery(document).ready(index_ready);
+        jQuery(document).ready(coverage.index_ready);
     </script>
 </head>
 <body id='indexfile'>
@@ -26,15 +27,15 @@
         <thead>
             
             <tr class='tablehead' title='Click to sort'>
-                <th class='name left headerSortDown'>Module</th>
-                <th>statements</th>
-                <th>missing</th>
-                <th>excluded</th>
+                <th class='name left headerSortDown shortkey_n'>Module</th>
+                <th class='shortkey_s'>statements</th>
+                <th class='shortkey_m'>missing</th>
+                <th class='shortkey_x'>excluded</th>
                 
-                <th>branches</th>
-                <th>partial</th>
+                <th class='shortkey_b'>branches</th>
+                <th class='shortkey_p'>partial</th>
                 
-                <th class='right'>coverage</th>
+                <th class='right shortkey_c'>coverage</th>
             </tr>
         </thead>
         
@@ -72,7 +73,7 @@
 <div id='footer'>
     <div class='content'>
         <p>
-            <a class='nav' href='http://nedbatchelder.com/code/coverage'>coverage.py v3.3.2a1</a>
+            <a class='nav' href='http://nedbatchelder.com/code/coverage/3.5a1'>coverage.py v3.5a1</a>
         </p>
     </div>
 </div>
