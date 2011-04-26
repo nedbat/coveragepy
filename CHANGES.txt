@@ -17,13 +17,13 @@ Version 3.5
 - The ``--omit`` and ``--include`` switches now interpret their values more
   usefully.  If the value starts with a wildcard character, it is used as-is.
   If it does not, it is interpreted relative to the current directory.
-  Closes `issue 121`.
+  Closes `issue 121`_.
 
 - The ``coverage()`` constructor accepts single strings for the ``omit=`` and
   ``include=`` arguments, adapting to a common error in programmatic use.
 
 - Modules can now be run directly using ``coverage run -m modulename``, to
-  mirror Python's ``-m`` flag.  Closes `issue 95_`, thanks, Brandon Rhodes.
+  mirror Python's ``-m`` flag.  Closes `issue 95`_, thanks, Brandon Rhodes.
 
 - A little bit of Jython support: `coverage run` can now measure Jython
   execution by adapting when $py.class files are traced. Thanks, Adi Roiban.
@@ -39,19 +39,19 @@ Version 3.5
 
 - Source files are now opened with Python 3.2's ``tokenize.open()`` where
   possible, to get the best handling of Python source files with encodings.
-  Closes `issue 107`, thanks, Brett Cannon.
+  Closes `issue 107`_, thanks, Brett Cannon.
 
 - Syntax errors in supposed Python files can now be ignored during reporting
-  with the ``-i`` switch just like other source errors.  Closes `issue 115`.
+  with the ``-i`` switch just like other source errors.  Closes `issue 115`_.
 
 - Installation from source now succeeds on machines without a C compiler,
-  closing `issue 80`.
+  closing `issue 80`_.
 
 - Coverage.py can now be run directly from a working tree by specifying
   the directory name to python:  ``python coverage_py_working_dir run ...``.
   Thanks, Brett Cannon.
 
-- Internally, files are now closed explicitly, fixing `issue 104`.  Thanks,
+- Internally, files are now closed explicitly, fixing `issue 104`_.  Thanks,
   Brett Cannon.
 
 .. _issue 80: https://bitbucket.org/ned/coveragepy/issue/80/is-there-a-duck-typing-way-to-know-we-cant
