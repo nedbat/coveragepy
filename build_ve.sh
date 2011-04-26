@@ -31,7 +31,7 @@ do
     echo The version is $ver
 
     # Make the virtualenv
-    $p/bin/virtualenv$suff $ve/$ver
+    $p/bin/virtualenv $ve/$ver
 
     # Activate the virtualenv
     source $ve/$ver/bin/activate
