@@ -64,7 +64,8 @@ class coverage(object):
         measured.
 
         `include` and `omit` are lists of filename patterns. Files that match
-        `include` will be measured, files that match `omit` will not.
+        `include` will be measured, files that match `omit` will not.  Each
+        will also accept a single string argument.
 
         """
         from coverage import __version__
@@ -95,6 +96,10 @@ class coverage(object):
             self.config.data_file = env_data_file
 
         # 4: from constructor arguments:
+        if isinstance(omit, string_class):
+            omit = [omit]
+        if isinstance(include, string_class):
+            include = [include]
         self.config.from_args(
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),

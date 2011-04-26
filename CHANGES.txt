@@ -19,6 +19,9 @@ Version 3.5
   If it does not, it is interpreted relative to the current directory.
   Closes `issue 121`.
 
+- The ``coverage()`` constructor accepts single strings for the ``omit=`` and
+  ``include=`` arguments, adapting to a common error in programmatic use.
+
 - Modules can now be run directly using ``coverage run -m modulename``, to
   mirror Python's ``-m`` flag.  Closes `issue 95_`, thanks, Brandon Rhodes.
 

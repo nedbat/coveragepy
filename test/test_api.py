@@ -388,6 +388,15 @@ class SourceOmitIncludeTest(CoverageTest):
             "p1b.py p1c.py p2b.py otherb.py osb.py"
             )
 
+    def test_include_as_string(self):
+        lines = self.coverage_usepkgs_summary(include="*a.py")
+        self.filenames_in_summary(lines,
+            "p1a.py p2a.py othera.py osa.py"
+            )
+        self.filenames_not_in_summary(lines,
+            "p1b.py p1c.py p2b.py otherb.py osb.py"
+            )
+
     def test_omit(self):
         lines = self.coverage_usepkgs_summary(omit=["*/p1a.py"])
         self.filenames_in_summary(lines,
@@ -399,6 +408,15 @@ class SourceOmitIncludeTest(CoverageTest):
 
     def test_omit_2(self):
         lines = self.coverage_usepkgs_summary(omit=["*a.py"])
+        self.filenames_in_summary(lines,
+            "p1b.py p2b.py otherb.py osb.py"
+            )
+        self.filenames_not_in_summary(lines,
+            "p1a.py p1c.py p2a.py othera.py osa.py"
+            )
+
+    def test_omit_as_string(self):
+        lines = self.coverage_usepkgs_summary(omit="*a.py")
         self.filenames_in_summary(lines,
             "p1b.py p2b.py otherb.py osb.py"
             )
