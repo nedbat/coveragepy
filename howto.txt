@@ -52,7 +52,7 @@
 
 * Building
 
-- Install fixtar on any Python used to make source kits: http://bitbucket.org/ned/fixtar
+- Install fixtar on any Windows Python used to make source kits: http://bitbucket.org/ned/fixtar
 - Create PythonXX\Lib\distutils\distutils.cfg::
     [build]
     compiler = mingw32
@@ -64,10 +64,6 @@
 - On Py 2.x: need setuptools installed
 - On Py 3.x: need Distribute installed
 - Need nose installed
-    - nose for py 2.x
-    - nose3 for py 3.x
-        - copy Scripts\nosetest3.exe to Scripts\nosetests.exe
-        - copy Scripts\nosetest3-script.py to Scripts\nosetests-script.py
 - Need to have coverage dev-installed
 - In each Python installation to be used, create a "coverage_test_egg.pth"
   containing::
