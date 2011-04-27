@@ -348,3 +348,37 @@ if sys.version_info >= (2, 5):
                 doctest.testmod(sys.modules[__name__])  # we're not __main__ :(
                 ''',
                 [1,11,12,14,16,17], "")
+
+
+if hasattr(sys, 'gettrace'):
+    class GettraceTest(CoverageTest):
+        """Tests that we work properly with `sys.gettrace()`."""
+        def test_round_trip(self):
+            self.check_coverage('''\
+                import sys
+                def foo(n):
+                    return 3*n
+                def bar(n):
+                    return 5*n
+                a = foo(6)
+                sys.settrace(sys.gettrace())
+                a = bar(8)
+                ''',
+                [1,2,3,4,5,6,7,8], "")
+
+        def test_multi_layers(self):
+            self.check_coverage('''\
+                import sys
+                def level1():
+                    a = 3
+                    level2()
+                    b = 5
+                def level2():
+                    c = 7
+                    sys.settrace(sys.gettrace())
+                    d = 9
+                e = 10
+                level1()
+                f = 12
+                ''',
+                [1,2,3,4,5,6,7,8,9,10,11,12], "")

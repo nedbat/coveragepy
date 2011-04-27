@@ -365,6 +365,9 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
                 }
             }
             self->cur_file_data = file_data;
+            /* Make the frame right in case settrace(gettrace()) happens. */
+            Py_INCREF(self);
+            frame->f_trace = (PyObject*)self;
             SHOWLOG(self->depth, frame->f_lineno, filename, "traced");
         }
         else {
@@ -462,7 +465,7 @@ Tracer_pytrace(Tracer *self, PyObject *args)
 {
     PyFrameObject *frame;
     PyObject *what_str;
-    PyObject *arg_unused;
+    PyObject *arg;
     int what;
     static char *what_names[] = {
         "call", "exception", "line", "return",
@@ -470,8 +473,12 @@ Tracer_pytrace(Tracer *self, PyObject *args)
         NULL
         };
 
+    #if WHAT_LOG
+    printf("pytrace\n");
+    #endif
+
     if (!PyArg_ParseTuple(args, "O!O!O:Tracer_pytrace",
-            &PyFrame_Type, &frame, &MyText_Type, &what_str, &arg_unused)) {
+            &PyFrame_Type, &frame, &MyText_Type, &what_str, &arg)) {
         goto done;
     }
 
@@ -484,12 +491,30 @@ Tracer_pytrace(Tracer *self, PyObject *args)
     }
 
     /* Invoke the C function, and return ourselves. */
-    if (Tracer_trace(self, frame, what, arg_unused) == RET_OK) {
+    if (Tracer_trace(self, frame, what, arg) == RET_OK) {
         return PyObject_GetAttrString((PyObject*)self, "pytrace");
     }
 
 done:
     return NULL;
+}
+
+/*
+ * Python has two ways to set the trace function: sys.settrace(fn), which
+ * takes a Python callable, and PyEval_SetTrace(func, obj), which takes
+ * a C function and a Python object.  The way these work together is that
+ * sys.settrace(pyfn) calls PyEval_SetTrace(builtin_func, pyfn), using the
+ * Python callable as the object in PyEval_SetTrace.  So sys.gettrace()
+ * simply returns the Python object used as the second argument to
+ * PyEval_SetTrace.  So sys.gettrace() will return our self parameter, which
+ * means it must be callable to be used in sys.settrace().
+ *
+ * So we make our self callable, equivalent to invoking our trace function.
+ */
+static PyObject *
+Tracer_call(Tracer *self, PyObject *args, PyObject *kwds_unused)
+{
+    return Tracer_pytrace(self, args);
 }
 
 static PyObject *
@@ -590,7 +615,7 @@ TracerType = {
     0,                         /*tp_as_sequence*/
     0,                         /*tp_as_mapping*/
     0,                         /*tp_hash */
-    0,                         /*tp_call*/
+    (ternaryfunc)Tracer_call,  /*tp_call*/
     0,                         /*tp_str*/
     0,                         /*tp_getattro*/
     0,                         /*tp_setattro*/
@@ -678,3 +703,4 @@ inittracer(void)
 }
 
 #endif /* Py3k */
+

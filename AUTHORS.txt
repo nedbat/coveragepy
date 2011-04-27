@@ -15,6 +15,7 @@ Martin Fuzzey
 Imri Goldberg
 Bill Hart
 Christian Heimes
+Devin Jeanpierre
 Ross Lawley
 Edward Loper
 Sandra Martocchia

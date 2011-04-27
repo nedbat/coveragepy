@@ -37,6 +37,10 @@ Version 3.5
   coverage.py will issue a warning, at least alerting you to the problem.
   Closes `issue 93`_.  Thanks to Marius Gedminas for the idea.
 
+- The C-based trace function now behaves properly when saved and restored
+  with ``sys.gettrace()`` and ``sys.settrace()``.  This fixes `issue 125`_
+  and `issue 123`_.  Thanks, Devin Jeanpierre.
+
 - Source files are now opened with Python 3.2's ``tokenize.open()`` where
   possible, to get the best handling of Python source files with encodings.
   Closes `issue 107`_, thanks, Brett Cannon.
@@ -61,7 +65,8 @@ Version 3.5
 .. _issue 107: https://bitbucket.org/ned/coveragepy/issue/107/codeparser-not-opening-source-files-with
 .. _issue 115: https://bitbucket.org/ned/coveragepy/issue/115/fail-gracefully-when-reporting-on-file
 .. _issue 121: https://bitbucket.org/ned/coveragepy/issue/121/filename-patterns-are-applied-stupidly
-
+.. _issue 123: https://bitbucket.org/ned/coveragepy/issue/123/pyeval_settrace-used-in-way-that-breaks
+.. _issue 125: https://bitbucket.org/ned/coveragepy/issue/125/coverage-removes-decoratortoolss-tracing
 
 Version 3.4 --- 19 September 2010
 ---------------------------------
