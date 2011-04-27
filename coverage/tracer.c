@@ -365,6 +365,9 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
                 }
             }
             self->cur_file_data = file_data;
+            /* Make the frame right in case settrace(gettrace()) happens. */
+            Py_INCREF(self);
+            frame->f_trace = (PyObject*)self;
             SHOWLOG(self->depth, frame->f_lineno, filename, "traced");
         }
         else {
@@ -497,12 +500,12 @@ done:
 }
 
 /*
- * Python has two ways to set the trace function: sys.settrace(fn), which 
+ * Python has two ways to set the trace function: sys.settrace(fn), which
  * takes a Python callable, and PyEval_SetTrace(func, obj), which takes
  * a C function and a Python object.  The way these work together is that
  * sys.settrace(pyfn) calls PyEval_SetTrace(builtin_func, pyfn), using the
  * Python callable as the object in PyEval_SetTrace.  So sys.gettrace()
- * simply returns the Python object used as the second argument to 
+ * simply returns the Python object used as the second argument to
  * PyEval_SetTrace.  So sys.gettrace() will return our self parameter, which
  * means it must be callable to be used in sys.settrace().
  *

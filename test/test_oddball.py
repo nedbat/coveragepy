@@ -365,3 +365,20 @@ if hasattr(sys, 'gettrace'):
                 a = bar(8)
                 ''',
                 [1,2,3,4,5,6,7,8], "")
+
+        def test_multi_layers(self):
+            self.check_coverage('''\
+                import sys
+                def level1():
+                    a = 3
+                    level2()
+                    b = 5
+                def level2():
+                    c = 7
+                    sys.settrace(sys.gettrace())
+                    d = 9
+                e = 10
+                level1()
+                f = 12
+                ''',
+                [1,2,3,4,5,6,7,8,9,10,11,12], "")
