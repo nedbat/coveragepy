@@ -458,10 +458,19 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
 }
 
 /*
- * A sys.settrace-compatible function that invokes our C trace function.
+ * Python has two ways to set the trace function: sys.settrace(fn), which
+ * takes a Python callable, and PyEval_SetTrace(func, obj), which takes
+ * a C function and a Python object.  The way these work together is that
+ * sys.settrace(pyfn) calls PyEval_SetTrace(builtin_func, pyfn), using the
+ * Python callable as the object in PyEval_SetTrace.  So sys.gettrace()
+ * simply returns the Python object used as the second argument to
+ * PyEval_SetTrace.  So sys.gettrace() will return our self parameter, which
+ * means it must be callable to be used in sys.settrace().
+ *
+ * So we make our self callable, equivalent to invoking our trace function.
  */
 static PyObject *
-Tracer_pytrace(Tracer *self, PyObject *args)
+Tracer_call(Tracer *self, PyObject *args, PyObject *kwds_unused)
 {
     PyFrameObject *frame;
     PyObject *what_str;
@@ -477,7 +486,7 @@ Tracer_pytrace(Tracer *self, PyObject *args)
     printf("pytrace\n");
     #endif
 
-    if (!PyArg_ParseTuple(args, "O!O!O:Tracer_pytrace",
+    if (!PyArg_ParseTuple(args, "O!O!O:Tracer_call",
             &PyFrame_Type, &frame, &MyText_Type, &what_str, &arg)) {
         goto done;
     }
@@ -492,29 +501,12 @@ Tracer_pytrace(Tracer *self, PyObject *args)
 
     /* Invoke the C function, and return ourselves. */
     if (Tracer_trace(self, frame, what, arg) == RET_OK) {
-        return PyObject_GetAttrString((PyObject*)self, "pytrace");
+        Py_INCREF(self);
+        return (PyObject *)self;
     }
 
 done:
     return NULL;
-}
-
-/*
- * Python has two ways to set the trace function: sys.settrace(fn), which
- * takes a Python callable, and PyEval_SetTrace(func, obj), which takes
- * a C function and a Python object.  The way these work together is that
- * sys.settrace(pyfn) calls PyEval_SetTrace(builtin_func, pyfn), using the
- * Python callable as the object in PyEval_SetTrace.  So sys.gettrace()
- * simply returns the Python object used as the second argument to
- * PyEval_SetTrace.  So sys.gettrace() will return our self parameter, which
- * means it must be callable to be used in sys.settrace().
- *
- * So we make our self callable, equivalent to invoking our trace function.
- */
-static PyObject *
-Tracer_call(Tracer *self, PyObject *args, PyObject *kwds_unused)
-{
-    return Tracer_pytrace(self, args);
 }
 
 static PyObject *
@@ -526,7 +518,8 @@ Tracer_start(Tracer *self, PyObject *args_unused)
     self->last_line = -1;
 
     /* start() returns a trace function usable with sys.settrace() */
-    return PyObject_GetAttrString((PyObject*)self, "pytrace");
+    Py_INCREF(self);
+    return (PyObject *)self;
 }
 
 static PyObject *
@@ -584,9 +577,6 @@ Tracer_members[] = {
 
 static PyMethodDef
 Tracer_methods[] = {
-    { "pytrace",    (PyCFunction) Tracer_pytrace,       METH_VARARGS,
-            PyDoc_STR("A trace function compatible with sys.settrace()") },
-
     { "start",      (PyCFunction) Tracer_start,         METH_VARARGS,
             PyDoc_STR("Start the tracer") },
 
