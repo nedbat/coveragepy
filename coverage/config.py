@@ -66,16 +66,16 @@ class CoverageConfig(object):
             self.cover_pylib = cp.getboolean('run', 'cover_pylib')
         if cp.has_option('run', 'data_file'):
             self.data_file = cp.get('run', 'data_file')
-        if cp.has_option('run', 'parallel'):
-            self.parallel = cp.getboolean('run', 'parallel')
-        if cp.has_option('run', 'timid'):
-            self.timid = cp.getboolean('run', 'timid')
-        if cp.has_option('run', 'source'):
-            self.source = self.get_list(cp, 'run', 'source')
-        if cp.has_option('run', 'omit'):
-            self.omit = self.get_list(cp, 'run', 'omit')
         if cp.has_option('run', 'include'):
             self.include = self.get_list(cp, 'run', 'include')
+        if cp.has_option('run', 'omit'):
+            self.omit = self.get_list(cp, 'run', 'omit')
+        if cp.has_option('run', 'parallel'):
+            self.parallel = cp.getboolean('run', 'parallel')
+        if cp.has_option('run', 'source'):
+            self.source = self.get_list(cp, 'run', 'source')
+        if cp.has_option('run', 'timid'):
+            self.timid = cp.getboolean('run', 'timid')
 
         # [report]
         if cp.has_option('report', 'exclude_lines'):
@@ -84,10 +84,10 @@ class CoverageConfig(object):
             self.exclude_list = list(filter(None, exclude_list.split('\n')))
         if cp.has_option('report', 'ignore_errors'):
             self.ignore_errors = cp.getboolean('report', 'ignore_errors')
-        if cp.has_option('report', 'omit'):
-            self.omit = self.get_list(cp, 'report', 'omit')
         if cp.has_option('report', 'include'):
             self.include = self.get_list(cp, 'report', 'include')
+        if cp.has_option('report', 'omit'):
+            self.omit = self.get_list(cp, 'report', 'omit')
         if cp.has_option('report', 'precision'):
             self.precision = cp.getint('report', 'precision')
 
