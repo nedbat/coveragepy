@@ -3,6 +3,26 @@
 import os
 from coverage.backward import configparser          # pylint: disable=W0622
 
+# The default line exclusion regexes
+DEFAULT_EXCLUDE = [
+    '(?i)# *pragma[: ]*no *cover',
+    ]
+
+# The default partial branch regexes, to be modified by the user.
+DEFAULT_PARTIAL = [
+    '(?i)# *pragma[: ]*no *branch',
+    ]
+
+# The default partial branch regexes, based on Python semantics.
+# These are any Python branching constructs that can't actually execute all
+# their branches.
+DEFAULT_PARTIAL_ALWAYS = [
+    'while True:',
+    'while 1:',
+    'if 0:',
+    'if 1:',
+    ]
+
 
 class CoverageConfig(object):
     """Coverage.py configuration.
@@ -23,10 +43,12 @@ class CoverageConfig(object):
         self.source = None
 
         # Defaults for [report]
-        self.exclude_list = ['(?i)# *pragma[: ]*no *cover']
+        self.exclude_list = DEFAULT_EXCLUDE[:]
         self.ignore_errors = False
-        self.omit = None
         self.include = None
+        self.omit = None
+        self.partial_list = DEFAULT_PARTIAL[:]
+        self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
         self.precision = 0
 
         # Defaults for [html]
@@ -79,15 +101,17 @@ class CoverageConfig(object):
 
         # [report]
         if cp.has_option('report', 'exclude_lines'):
-            # exclude_lines is a list of lines, leave out the blank ones.
-            exclude_list = cp.get('report', 'exclude_lines')
-            self.exclude_list = list(filter(None, exclude_list.split('\n')))
+            self.exclude_list = self.get_line_list(cp, 'report', 'exclude_lines')
         if cp.has_option('report', 'ignore_errors'):
             self.ignore_errors = cp.getboolean('report', 'ignore_errors')
         if cp.has_option('report', 'include'):
             self.include = self.get_list(cp, 'report', 'include')
         if cp.has_option('report', 'omit'):
             self.omit = self.get_list(cp, 'report', 'omit')
+        if cp.has_option('report', 'partial_branches'):
+            self.partial_list = self.get_line_list(cp, 'report', 'partial_branches')
+        if cp.has_option('report', 'partial_branches_always'):
+            self.partial_always_list = self.get_line_list(cp, 'report', 'partial_branches_always')
         if cp.has_option('report', 'precision'):
             self.precision = cp.getint('report', 'precision')
 
@@ -116,3 +140,16 @@ class CoverageConfig(object):
                 if value:
                     values.append(value)
         return values
+
+    def get_line_list(self, cp, section, option):
+        """Read a list of full-line strings from the ConfigParser `cp`.
+
+        The value of `section` and `option` is treated as a newline-separated
+        list of strings.  Each value is stripped of whitespace.
+
+        Returns the list of strings.
+
+        """
+        value_list = cp.get(section, option)
+        return list(filter(None, value_list.split('\n')))
+

@@ -3,7 +3,7 @@
 import os
 
 from coverage.backward import set, sorted           # pylint: disable=W0622
-from coverage.misc import format_lines, NoSource
+from coverage.misc import format_lines, join_regex, NoSource
 from coverage.parser import CodeParser
 
 
@@ -35,11 +35,16 @@ class Analysis(object):
         self.missing = sorted(set(self.statements) - set(exec1))
 
         if self.coverage.data.has_arcs():
+            self.no_branch = self.parser.lines_matching(
+                join_regex(self.coverage.config.partial_list),
+                join_regex(self.coverage.config.partial_always_list)
+                )
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
             n_missing_branches = sum([len(v) for v in mba.values()])
         else:
             n_branches = n_missing_branches = 0
+            self.no_branch = set()
 
         self.numbers = Numbers(
             n_files=1,
@@ -64,7 +69,10 @@ class Analysis(object):
 
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
-        return self.parser.arcs()
+        arcs = self.parser.arcs()
+        if self.no_branch:
+            arcs = [(a,b) for (a,b) in arcs if a not in self.no_branch]
+        return arcs
 
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
@@ -89,7 +97,9 @@ class Analysis(object):
         # trouble, and here is where it's the least burden to remove them.
         unpredicted = [
             e for e in executed
-                if e not in possible and e[0] != e[1]
+                if e not in possible 
+                    and e[0] != e[1] 
+                    and e[0] not in self.no_branch
             ]
         return sorted(unpredicted)
 
@@ -193,8 +203,9 @@ class Numbers(object):
     def _get_pc_covered_str(self):
         """Returns the percent covered, as a string, without a percent sign.
 
-        The important thing here is that "0" only be returned when it's truly
-        zero, and "100" only be returned when it's truly 100.
+        Note that "0" is only returned when the value is truly zero, and "100"
+        is only returned when the value is truly 100.  Rounding can never
+        result in either "0" or "100".
 
         """
         pc = self.pc_covered

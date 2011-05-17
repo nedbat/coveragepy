@@ -5,7 +5,7 @@ import glob, opcode, os, re, sys, token, tokenize
 from coverage.backward import set, sorted, StringIO # pylint: disable=W0622
 from coverage.backward import open_source
 from coverage.bytecode import ByteCodes, CodeObjects
-from coverage.misc import nice_pair, expensive
+from coverage.misc import nice_pair, expensive, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
 
 
@@ -15,7 +15,7 @@ class CodeParser(object):
     def __init__(self, text=None, filename=None, exclude=None):
         """
         Source can be provided as `text`, the text itself, or `filename`, from
-        which text will be read.  Excluded lines are those that match
+        which the text will be read.  Excluded lines are those that match
         `exclude`, a regex.
 
         """
@@ -68,6 +68,21 @@ class CodeParser(object):
         return self._byte_parser
     byte_parser = property(_get_byte_parser)
 
+    def lines_matching(self, *regexes):
+        """Find the lines matching one of a list of regexes.
+
+        Returns a set of line numbers, the lines that contain a match for one
+        of the regexes in `regexes`.  The entire line needn't match, just a
+        part of it.
+
+        """
+        regex_c = re.compile(join_regex(regexes))
+        matches = set()
+        for i, ltext in enumerate(self.lines):
+            if regex_c.search(ltext):
+                matches.add(i+1)
+        return matches
+
     def _raw_parse(self):
         """Parse the source to find the interesting facts about its lines.
 
@@ -76,10 +91,7 @@ class CodeParser(object):
         """
         # Find lines which match an exclusion pattern.
         if self.exclude:
-            re_exclude = re.compile(self.exclude)
-            for i, ltext in enumerate(self.lines):
-                if re_exclude.search(ltext):
-                    self.excluded.add(i+1)
+            self.excluded = self.lines_matching(self.exclude)
 
         # Tokenize, to find excluded suites, to find docstrings, and to find
         # multi-line statements.

@@ -73,6 +73,14 @@ def bool_or_none(b):
         return bool(b)
 
 
+def join_regex(regexes):
+    """Combine a list of regexes into one that matches any of them."""
+    if len(regexes) > 1:
+        return "(" + ")|(".join(regexes) + ")"
+    else:
+        return regexes[0]
+
+
 class Hasher(object):
     """Hashes Python data into md5."""
     def __init__(self):

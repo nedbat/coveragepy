@@ -11,7 +11,7 @@ from coverage.data import CoverageData
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import find_python_files
 from coverage.html import HtmlReporter
-from coverage.misc import CoverageException, bool_or_none
+from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
@@ -414,7 +414,7 @@ class coverage(object):
 
     def _compile_exclude(self):
         """Build the internal usable form of the exclude list."""
-        self.exclude_re = "(" + ")|(".join(self.config.exclude_list) + ")"
+        self.exclude_re = join_regex(self.config.exclude_list)
 
     def get_exclude_list(self):
         """Return the list of excluded regex patterns."""

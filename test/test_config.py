@@ -127,6 +127,12 @@ class ConfigFileTest(CoverageTest):
                     yet_more
             precision = 3
 
+            partial_branches =
+                pragma:?\\s+no branch
+            partial_branches_always =
+                if 0:
+                while True:
+
             [html]
 
             directory    =     c:\\tricky\\dir.somewhere
@@ -153,6 +159,12 @@ class ConfigFileTest(CoverageTest):
             )
         self.assertEqual(cov.config.precision, 3)
 
+        self.assertEqual(cov.config.partial_list,
+            ["pragma:?\s+no branch"]
+            )
+        self.assertEqual(cov.config.partial_always_list,
+            ["if 0:", "while True:"]
+            )
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
 
         self.assertEqual(cov.config.xml_output, "mycov.xml")
