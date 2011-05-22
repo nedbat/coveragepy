@@ -25,6 +25,10 @@ Version 3.5
 - Modules can now be run directly using ``coverage run -m modulename``, to
   mirror Python's ``-m`` flag.  Closes `issue 95`_, thanks, Brandon Rhodes.
 
+- ``coverage run`` didn't emulate Python accurately in one detail: the
+  current directory inserted into ``sys.path`` was relative rather than
+  absolute. This is now fixed.
+
 - A little bit of Jython support: `coverage run` can now measure Jython
   execution by adapting when $py.class files are traced. Thanks, Adi Roiban.
 

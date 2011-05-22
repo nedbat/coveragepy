@@ -89,7 +89,7 @@ def run_python_file(filename, args, package=None):
     old_argv = sys.argv
     old_path0 = sys.path[0]
     sys.argv = args
-    sys.path[0] = os.path.dirname(filename)
+    sys.path[0] = os.path.abspath(os.path.dirname(filename))
 
     try:
         # Open the source file.

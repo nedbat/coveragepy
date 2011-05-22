@@ -6,6 +6,7 @@ import coverage
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
+here = os.path.dirname(__file__)
 
 class ProcessTest(CoverageTest):
     """Tests of the per-process behavior of coverage.py."""
@@ -220,6 +221,12 @@ class ProcessTest(CoverageTest):
         self.assertEqual(status, status2)
         self.assertEqual(status, 0)
 
+    def test_coverage_run_is_like_python(self):
+        tryfile = os.path.join(here, "try_execfile.py")
+        self.make_file("run_me.py", open(tryfile).read())
+        out = self.run_command("coverage run run_me.py")
+        out2 = self.run_command("python run_me.py")
+        self.assertMultiLineEqual(out, out2)
 
     if hasattr(os, 'fork'):
         def test_fork(self):
