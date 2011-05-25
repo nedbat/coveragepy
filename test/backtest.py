@@ -30,10 +30,10 @@ else:
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT
                 )
-        status = proc.wait()
+        output, _ = proc.communicate()
+        status = proc.returncode
 
         # Get the output, and canonicalize it to strings with newlines.
-        output = proc.stdout.read()
         if not isinstance(output, str):
             output = output.decode('utf-8')
         output = output.replace('\r', '')
