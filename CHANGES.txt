@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Version 3.5
------------
+Version 3.5b1
+-------------
 
 - The HTML report now has hotkeys.  Try ``n``, ``s``, ``m``, ``x``, ``b``,
   ``p``, and ``c`` on the overview page to change the column sorting.
@@ -25,12 +25,9 @@ Version 3.5
 - Modules can now be run directly using ``coverage run -m modulename``, to
   mirror Python's ``-m`` flag.  Closes `issue 95`_, thanks, Brandon Rhodes.
 
-- ``coverage run`` didn't emulate Python accurately in one detail: the
+- ``coverage run`` didn't emulate Python accurately in one small detail: the
   current directory inserted into ``sys.path`` was relative rather than
   absolute. This is now fixed.
-
-- A little bit of Jython support: `coverage run` can now measure Jython
-  execution by adapting when $py.class files are traced. Thanks, Adi Roiban.
 
 - HTML reporting is now incremental: a record is kept of the data that
   produced the HTML reports, and only files whose data has changed will
@@ -59,6 +56,11 @@ Version 3.5
   the directory name to python:  ``python coverage_py_working_dir run ...``.
   Thanks, Brett Cannon.
 
+- A little bit of Jython support: `coverage run` can now measure Jython
+  execution by adapting when $py.class files are traced. Thanks, Adi Roiban.
+  Jython still doesn't provide the Python libraries needed to make
+  coverage reporting work, unfortunately.
+
 - Internally, files are now closed explicitly, fixing `issue 104`_.  Thanks,
   Brett Cannon.
 
@@ -71,6 +73,7 @@ Version 3.5
 .. _issue 121: https://bitbucket.org/ned/coveragepy/issue/121/filename-patterns-are-applied-stupidly
 .. _issue 123: https://bitbucket.org/ned/coveragepy/issue/123/pyeval_settrace-used-in-way-that-breaks
 .. _issue 125: https://bitbucket.org/ned/coveragepy/issue/125/coverage-removes-decoratortoolss-tracing
+
 
 Version 3.4 --- 19 September 2010
 ---------------------------------
