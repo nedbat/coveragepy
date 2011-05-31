@@ -97,8 +97,8 @@ class Analysis(object):
         # trouble, and here is where it's the least burden to remove them.
         unpredicted = [
             e for e in executed
-                if e not in possible 
-                    and e[0] != e[1] 
+                if e not in possible
+                    and e[0] != e[1]
                     and e[0] not in self.no_branch
             ]
         return sorted(unpredicted)
