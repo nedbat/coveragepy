@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Version 3.5
------------
+Version 3.5b1
+-------------
 
 - The HTML report now has hotkeys.  Try ``n``, ``s``, ``m``, ``x``, ``b``,
   ``p``, and ``c`` on the overview page to change the column sorting.
@@ -18,6 +18,13 @@ Version 3.5
   usefully.  If the value starts with a wildcard character, it is used as-is.
   If it does not, it is interpreted relative to the current directory.
   Closes `issue 121`_.
+
+- Partial branch warnings can now be pragma'd away.  The configuration option
+  ``partial_branches`` is a list of regular expressions.  Lines matching any of
+  those expressions will never be marked as a partial branch.  In addition,
+  there's a built-in list of regular expressions marking statements which should
+  never be marked as partial.  This list includes ``while True:``, ``while 1:``,
+  ``if 1:``, and ``if 0:``.
 
 - The ``coverage()`` constructor accepts single strings for the ``omit=`` and
   ``include=`` arguments, adapting to a common error in programmatic use.
@@ -71,6 +78,7 @@ Version 3.5
 .. _issue 121: https://bitbucket.org/ned/coveragepy/issue/121/filename-patterns-are-applied-stupidly
 .. _issue 123: https://bitbucket.org/ned/coveragepy/issue/123/pyeval_settrace-used-in-way-that-breaks
 .. _issue 125: https://bitbucket.org/ned/coveragepy/issue/125/coverage-removes-decoratortoolss-tracing
+
 
 Version 3.4 --- 19 September 2010
 ---------------------------------

@@ -31,8 +31,8 @@ A coverage.py configuration file is in classic .ini file format: sections are
 introduced by a ``[section]`` header, and contain ``name = value`` entries.
 Lines beginning with ``#`` or ``;`` are ignored as comments.
 
-Strings don't need quotes. Multi-strings can be created by indenting values on
-multiple lines.
+Strings don't need quotes. Multi-valued strings can be created by indenting
+values on multiple lines.
 
 Boolean values can be specified as ``on``, ``off``, ``true``, ``false``, ``1``,
 or ``0`` and are case-insensitive.

@@ -5,13 +5,22 @@ Coverage TODO
     + warn if no data was collected
     - tie --source into reporting
 
+* 3.5b1
+
+- Update changes.rst
+- Document partial branch exclusion
+- Document HTML reporting
+    - Keyboard shortcuts
+    - Delta reporting
+
+
 * Soon
 
 + Better omit handling that ignores files during measurement.
     - Deal with ~ in specified paths correctly.
-- while TRUE claims to be partial.
-    - A way to mark lines as partial branches, with a regex?
-        - Default to "while True:", "while 1:"
++ while TRUE claims to be partial.
+    + A way to mark lines as partial branches, with a regex?
+        + Default to "while True:", "while 1:"
 + HTML keyboard short cuts
 
 

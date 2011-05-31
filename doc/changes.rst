@@ -23,6 +23,75 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
+Version 3.5b1 --- ?? June 2011
+------------------------------
+
+HTML reporting:
+
+- The HTML report now has hotkeys.  Try ``n``, ``s``, ``m``, ``x``, ``b``,
+  ``p``, and ``c`` on the overview page to change the column sorting.
+  On a file page, ``r``, ``m``, ``x``, and ``p`` toggle the run, missing,
+  excluded, and partial line markings.  You can navigate the highlighted
+  sections of code by using the ``j`` and ``k`` keys for next and previous.
+  The ``1`` (one) key jumps to the first highlighted section in the file,
+  and ``0`` (zero) scrolls to the top of the file.
+
+- HTML reporting is now incremental: a record is kept of the data that
+  produced the HTML reports, and only files whose data has changed will
+  be generated.  This should make most HTML reporting faster.
+
+
+Running Python files
+
+- Modules can now be run directly using ``coverage run -m modulename``, to
+  mirror Python's ``-m`` flag.  Closes `issue 95`_, thanks, Brandon Rhodes.
+
+- ``coverage run`` didn't emulate Python accurately in one detail: the
+  current directory inserted into ``sys.path`` was relative rather than
+  absolute. This is now fixed.
+
+- Pathological code execution could disable the trace function behind our
+  backs, leading to incorrect code measurement.  Now if this happens,
+  coverage.py will issue a warning, at least alerting you to the problem.
+  Closes `issue 93`_.  Thanks to Marius Gedminas for the idea.
+
+- The C-based trace function now behaves properly when saved and restored
+  with ``sys.gettrace()`` and ``sys.settrace()``.  This fixes `issue 125`_
+  and `issue 123`_.  Thanks, Devin Jeanpierre.
+
+- Coverage.py can now be run directly from a working tree by specifying
+  the directory name to python:  ``python coverage_py_working_dir run ...``.
+  Thanks, Brett Cannon.
+
+- A little bit of Jython support: `coverage run` can now measure Jython
+  execution by adapting when $py.class files are traced. Thanks, Adi Roiban.
+
+
+Reporting
+
+- Partial branch warnings can now be pragma'd away.  The configuration option
+  ``partial_branches`` is a list of regular expressions.  Lines matching any of
+  those expressions will never be marked as a partial branch.  In addition,
+  there's a built-in list of regular expressions marking statements which should
+  never be marked as partial.  This list includes ``while True:``, ``while 1:``,
+  ``if 1:``, and ``if 0:``.
+
+- The ``--omit`` and ``--include`` switches now interpret their values more
+  usefully.  If the value starts with a wildcard character, it is used as-is.
+  If it does not, it is interpreted relative to the current directory.
+  Closes `issue 121`_.
+
+- Syntax errors in supposed Python files can now be ignored during reporting
+  with the ``-i`` switch just like other source errors.  Closes `issue 115`_.
+
+.. _issue 93: http://bitbucket.org/ned/coveragepy/issue/93/copying-a-mock-object-breaks-coverage
+.. _issue 95: https://bitbucket.org/ned/coveragepy/issue/95/run-subcommand-should-take-a-module-name
+.. _issue 115: https://bitbucket.org/ned/coveragepy/issue/115/fail-gracefully-when-reporting-on-file
+.. _issue 121: https://bitbucket.org/ned/coveragepy/issue/121/filename-patterns-are-applied-stupidly
+.. _issue 123: https://bitbucket.org/ned/coveragepy/issue/123/pyeval_settrace-used-in-way-that-breaks
+.. _issue 125: https://bitbucket.org/ned/coveragepy/issue/125/coverage-removes-decoratortoolss-tracing
+
+
 Version 3.4 --- 19 September 2010
 ---------------------------------
 
