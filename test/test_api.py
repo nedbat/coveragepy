@@ -337,10 +337,10 @@ class SourceOmitIncludeTest(CoverageTest):
     def setUp(self):
         super(SourceOmitIncludeTest, self).setUp()
         # Parent class saves and restores sys.path, we can just modify it.
-        #sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
         self.old_dir = os.getcwd()
         os.chdir(self.nice_file(os.path.dirname(__file__), 'modules'))
         sys.path.append(".")
+        sys.path.append("../moremodules")
 
     def tearDown(self):
         os.chdir(self.old_dir)

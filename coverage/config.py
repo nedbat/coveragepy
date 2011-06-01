@@ -99,7 +99,8 @@ class CoverageConfig(object):
 
         # [report]
         if cp.has_option('report', 'exclude_lines'):
-            self.exclude_list = self.get_line_list(cp, 'report', 'exclude_lines')
+            self.exclude_list = \
+                self.get_line_list(cp, 'report', 'exclude_lines')
         if cp.has_option('report', 'ignore_errors'):
             self.ignore_errors = cp.getboolean('report', 'ignore_errors')
         if cp.has_option('report', 'include'):
@@ -107,9 +108,11 @@ class CoverageConfig(object):
         if cp.has_option('report', 'omit'):
             self.omit = self.get_list(cp, 'report', 'omit')
         if cp.has_option('report', 'partial_branches'):
-            self.partial_list = self.get_line_list(cp, 'report', 'partial_branches')
+            self.partial_list = \
+                self.get_line_list(cp, 'report', 'partial_branches')
         if cp.has_option('report', 'partial_branches_always'):
-            self.partial_always_list = self.get_line_list(cp, 'report', 'partial_branches_always')
+            self.partial_always_list = \
+                self.get_line_list(cp, 'report', 'partial_branches_always')
         if cp.has_option('report', 'precision'):
             self.precision = cp.getint('report', 'precision')
 
