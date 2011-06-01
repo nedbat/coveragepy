@@ -251,8 +251,9 @@ class CoverageTest(TestCase):
         s2 = "\n".join([repr(a) for a in a2]) + "\n"
         self.assertMultiLineEqual(s1, s2, msg)
 
-    def check_coverage(self, text, lines=None, missing="", excludes=None,
-            report="", arcz=None, arcz_missing="", arcz_unpredicted=""):
+    def check_coverage(self, text, lines=None, missing="", report="",
+            excludes=None, partials="",
+            arcz=None, arcz_missing="", arcz_unpredicted=""):
         """Check the coverage measurement of `text`.
 
         The source `text` is run and measured.  `lines` are the line numbers
@@ -285,6 +286,8 @@ class CoverageTest(TestCase):
         cov.erase()
         for exc in excludes or []:
             cov.exclude(exc)
+        for par in partials or []:
+            cov.exclude(par, which='partial')
         cov.start()
 
         try:                                    # pragma: recursive coverage

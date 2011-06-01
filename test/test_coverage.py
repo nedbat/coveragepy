@@ -1155,7 +1155,7 @@ class ExcludeTest(CoverageTest):
             if 0:
                 a = 4   # -cc
             """,
-            [1,3], "", ['-cc'])
+            [1,3], "", excludes=['-cc'])
 
     def test_two_excludes(self):
         self.check_coverage("""\
@@ -1167,7 +1167,7 @@ class ExcludeTest(CoverageTest):
                 c = 6   # -xx
             assert a == 1 and b == 2
             """,
-            [1,3,5,7], "5", ['-cc', '-xx'])
+            [1,3,5,7], "5", excludes=['-cc', '-xx'])
 
     def test_excluding_if_suite(self):
         self.check_coverage("""\
@@ -1179,7 +1179,7 @@ class ExcludeTest(CoverageTest):
                 c = 6
             assert a == 1 and b == 2
             """,
-            [1,7], "", ['if 0:'])
+            [1,7], "", excludes=['if 0:'])
 
     def test_excluding_if_but_not_else_suite(self):
         self.check_coverage("""\
@@ -1194,7 +1194,7 @@ class ExcludeTest(CoverageTest):
                 b = 9
             assert a == 8 and b == 9
             """,
-            [1,8,9,10], "", ['if 0:'])
+            [1,8,9,10], "", excludes=['if 0:'])
 
     def test_excluding_else_suite(self):
         self.check_coverage("""\
@@ -1209,7 +1209,7 @@ class ExcludeTest(CoverageTest):
                 b = 9
             assert a == 4 and b == 5 and c == 6
             """,
-            [1,3,4,5,6,10], "", ['#pragma: NO COVER'])
+            [1,3,4,5,6,10], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 1; b = 2
 
@@ -1229,7 +1229,7 @@ class ExcludeTest(CoverageTest):
                 b = 9
             assert a == 4 and b == 5 and c == 6
             """,
-            [1,3,4,5,6,17], "", ['#pragma: NO COVER'])
+            [1,3,4,5,6,17], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_elif_suites(self):
         self.check_coverage("""\
@@ -1247,7 +1247,7 @@ class ExcludeTest(CoverageTest):
                 b = 12
             assert a == 4 and b == 5 and c == 6
             """,
-            [1,3,4,5,6,11,12,13], "11-12", ['#pragma: NO COVER'])
+            [1,3,4,5,6,11,12,13], "11-12", excludes=['#pragma: NO COVER'])
 
     def test_excluding_oneline_if(self):
         self.check_coverage("""\
@@ -1258,7 +1258,7 @@ class ExcludeTest(CoverageTest):
 
             foo()
             """,
-            [1,2,4,6], "", ["no cover"])
+            [1,2,4,6], "", excludes=["no cover"])
 
     def test_excluding_a_colon_not_a_suite(self):
         self.check_coverage("""\
@@ -1269,7 +1269,7 @@ class ExcludeTest(CoverageTest):
 
             foo()
             """,
-            [1,2,4,6], "", ["no cover"])
+            [1,2,4,6], "", excludes=["no cover"])
 
     def test_excluding_for_suite(self):
         self.check_coverage("""\
@@ -1278,7 +1278,7 @@ class ExcludeTest(CoverageTest):
                 a += i
             assert a == 15
             """,
-            [1,4], "", ['#pragma: NO COVER'])
+            [1,4], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 0
             for i in [1,
@@ -1287,7 +1287,7 @@ class ExcludeTest(CoverageTest):
                 a += i
             assert a == 15
             """,
-            [1,6], "", ['#pragma: NO COVER'])
+            [1,6], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 0
             for i in [1,2,3,4,5
@@ -1297,7 +1297,7 @@ class ExcludeTest(CoverageTest):
                 a = 99
             assert a == 1
             """,
-            [1,7], "", ['#pragma: NO COVER'])
+            [1,7], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_for_else(self):
         self.check_coverage("""\
@@ -1310,7 +1310,7 @@ class ExcludeTest(CoverageTest):
                 a = 123
             assert a == 1
             """,
-            [1,2,3,4,5,8], "5", ['#pragma: NO COVER'])
+            [1,2,3,4,5,8], "5", excludes=['#pragma: NO COVER'])
 
     def test_excluding_while(self):
         self.check_coverage("""\
@@ -1321,7 +1321,7 @@ class ExcludeTest(CoverageTest):
                 b = 99
             assert a == 3 and b == 0
             """,
-            [1,6], "", ['#pragma: NO COVER'])
+            [1,6], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 3; b = 0
             while (
@@ -1332,7 +1332,7 @@ class ExcludeTest(CoverageTest):
                 b = 99
             assert a == 3 and b == 0
             """,
-            [1,8], "", ['#pragma: NO COVER'])
+            [1,8], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_while_else(self):
         self.check_coverage("""\
@@ -1345,7 +1345,7 @@ class ExcludeTest(CoverageTest):
                 b = 123
             assert a == 3 and b == 1
             """,
-            [1,2,3,4,5,8], "5", ['#pragma: NO COVER'])
+            [1,2,3,4,5,8], "5", excludes=['#pragma: NO COVER'])
 
     def test_excluding_try_except(self):
         self.check_coverage("""\
@@ -1356,7 +1356,7 @@ class ExcludeTest(CoverageTest):
                 a = 99
             assert a == 1
             """,
-            [1,2,3,6], "", ['#pragma: NO COVER'])
+            [1,2,3,6], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 0
             try:
@@ -1366,7 +1366,7 @@ class ExcludeTest(CoverageTest):
                 a = 99
             assert a == 99
             """,
-            [1,2,3,4,5,6,7], "", ['#pragma: NO COVER'])
+            [1,2,3,4,5,6,7], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 0
             try:
@@ -1378,7 +1378,7 @@ class ExcludeTest(CoverageTest):
                 a = 123
             assert a == 123
             """,
-            [1,2,3,4,7,8,9], "", ['#pragma: NO COVER'])
+            [1,2,3,4,7,8,9], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 0
             try:
@@ -1389,7 +1389,7 @@ class ExcludeTest(CoverageTest):
                 a = 123
             assert a == 123
             """,
-            [1,2,3,7,8], "", ['#pragma: NO COVER'])
+            [1,2,3,7,8], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 0
             try:
@@ -1401,7 +1401,7 @@ class ExcludeTest(CoverageTest):
                 a = 123
             assert a == 99
             """,
-            [1,2,3,4,5,6,9], "", ['#pragma: NO COVER'])
+            [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_try_except_pass(self):
         self.check_coverage("""\
@@ -1412,7 +1412,7 @@ class ExcludeTest(CoverageTest):
                 x = 2
             assert a == 1
             """,
-            [1,2,3,6], "", ['#pragma: NO COVER'])
+            [1,2,3,6], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 0
             try:
@@ -1424,7 +1424,7 @@ class ExcludeTest(CoverageTest):
                 a = 123
             assert a == 123
             """,
-            [1,2,3,4,7,8,9], "", ['#pragma: NO COVER'])
+            [1,2,3,4,7,8,9], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 0
             try:
@@ -1435,7 +1435,7 @@ class ExcludeTest(CoverageTest):
                 a = 123
             assert a == 123
             """,
-            [1,2,3,7,8], "", ['#pragma: NO COVER'])
+            [1,2,3,7,8], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 0
             try:
@@ -1447,7 +1447,7 @@ class ExcludeTest(CoverageTest):
                 x = 2
             assert a == 99
             """,
-            [1,2,3,4,5,6,9], "", ['#pragma: NO COVER'])
+            [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_if_pass(self):
         # From a comment on the coverage page by Michael McNeil Forbes:
@@ -1460,7 +1460,7 @@ class ExcludeTest(CoverageTest):
 
             f()
             """,
-            [1,7], "", ["no cover"])
+            [1,7], "", excludes=["no cover"])
 
     def test_excluding_function(self):
         self.check_coverage("""\
@@ -1472,7 +1472,7 @@ class ExcludeTest(CoverageTest):
             x = 1
             assert x == 1
             """,
-            [6,7], "", ['#pragma: NO COVER'])
+            [6,7], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_method(self):
         self.check_coverage("""\
@@ -1486,7 +1486,7 @@ class ExcludeTest(CoverageTest):
             x = Fooey()
             assert x.a == 1
             """,
-            [1,2,3,8,9], "", ['#pragma: NO COVER'])
+            [1,2,3,8,9], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_class(self):
         self.check_coverage("""\
@@ -1500,7 +1500,7 @@ class ExcludeTest(CoverageTest):
             x = 1
             assert x == 1
             """,
-            [8,9], "", ['#pragma: NO COVER'])
+            [8,9], "", excludes=['#pragma: NO COVER'])
 
 
 if sys.version_info >= (2, 4):

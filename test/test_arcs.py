@@ -213,15 +213,14 @@ class LoopArcTest(CoverageTest):
                 i += 1
             assert a == 4 and i == 3
             """,
-            arcz=".1 12 34 45 36 63 57 7.",
-            #arcz_missing="27"   # while loop never exits naturally.
+            arcz=".1 12 23 27 34 45 36 63 57 7.",
             )
         # With "while True", 2.x thinks it's computation, 3.x thinks it's
         # constant.
         if sys.version_info >= (3, 0):
-            arcz = ".1 12 34 45 36 63 57 7."
+            arcz = ".1 12 23 27 34 45 36 63 57 7."
         else:
-            arcz = ".1 12 34 45 36 62 57 7."
+            arcz = ".1 12 23 27 34 45 36 62 57 7."
         self.check_coverage("""\
             a, i = 1, 0
             while True:
@@ -232,7 +231,6 @@ class LoopArcTest(CoverageTest):
             assert a == 4 and i == 3
             """,
             arcz=arcz,
-            #arcz_missing="27"   # while loop never exits naturally.
             )
 
     def test_for_if_else_for(self):
@@ -481,3 +479,33 @@ class MiscArcTest(CoverageTest):
             assert d
             """,
             arcz=".1 19 9.")
+
+
+class ExcludeTest(CoverageTest):
+    """Tests of exclusions to indicate known partial branches."""
+
+    def test_default(self):
+        # A number of forms of pragma comment are accepted.
+        self.check_coverage("""\
+            a = 1
+            if a:   #pragma: no branch
+                b = 3
+            c = 4
+            if c:   # pragma NOBRANCH
+                d = 6
+            e = 7
+            """,
+            [1,2,3,4,5,6,7],
+            arcz=".1 12 23 24 34 45 56 57 67 7.", arcz_missing="")
+
+    def test_custom_pragmas(self):
+        self.check_coverage("""\
+            a = 1
+            while a:    # [only some]
+                c = 3
+                break
+            assert c == 5-2
+            """,
+            [1,2,3,4,5],
+            partials=["only some"],
+            arcz=".1 12 23 34 45 25 5.", arcz_missing="")

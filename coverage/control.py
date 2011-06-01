@@ -109,8 +109,10 @@ class coverage(object):
         self.auto_data = auto_data
         self.atexit_registered = False
 
-        self.exclude_re = ""
-        self._compile_exclude()
+        # _exclude_re is a dict mapping exclusion list names to compiled
+        # regexes.
+        self._exclude_re = {}
+        self._exclude_regex_stale()
 
         self.file_locator = FileLocator()
 
@@ -395,30 +397,49 @@ class coverage(object):
         self.collector.reset()
         self.data.erase()
 
-    def clear_exclude(self):
+    def clear_exclude(self, which='exclude'):
         """Clear the exclude list."""
-        self.config.exclude_list = []
-        self.exclude_re = ""
+        setattr(self.config, which + "_list", [])
+        self._exclude_regex_stale()
 
-    def exclude(self, regex):
+    def exclude(self, regex, which='exclude'):
         """Exclude source lines from execution consideration.
 
-        `regex` is a regular expression.  Lines matching this expression are
-        not considered executable when reporting code coverage.  A list of
-        regexes is maintained; this function adds a new regex to the list.
-        Matching any of the regexes excludes a source line.
+        A number of lists of regular expressions are maintained.  Each list
+        selects lines that are treated differently during reporting.
+
+        `which` determines which list is modified.  The "exclude" list selects
+        lines that are not considered executable at all.  The "partial" list
+        indicates lines with branches that are not taken.
+
+        `regex` is a regular expression.  The regex is added to the specified
+        list.  If any of the regexes in the list is found in a line, the line
+        is marked for special treatment during reporting.
 
         """
-        self.config.exclude_list.append(regex)
-        self._compile_exclude()
+        excl_list = getattr(self.config, which + "_list")
+        excl_list.append(regex)
+        self._exclude_regex_stale()
 
-    def _compile_exclude(self):
-        """Build the internal usable form of the exclude list."""
-        self.exclude_re = join_regex(self.config.exclude_list)
+    def _exclude_regex_stale(self):
+        """Drop all the compiled exclusion regexes, a list was modified."""
+        self._exclude_re.clear()
 
-    def get_exclude_list(self):
-        """Return the list of excluded regex patterns."""
-        return self.config.exclude_list
+    def _exclude_regex(self, which):
+        """Return a compiled regex for the given exclusion list."""
+        if which not in self._exclude_re:
+            excl_list = getattr(self.config, which + "_list")
+            self._exclude_re[which] = join_regex(excl_list)
+        return self._exclude_re[which]
+
+    def get_exclude_list(self, which='exclude'):
+        """Return a list of excluded regex patterns.
+
+        `which` indicates which list is desired.  See `exclude` for the lists
+        that are available, and their meaning.
+
+        """
+        return getattr(self.config, which + "_list")
 
     def save(self):
         """Save the collected coverage data to the data file."""

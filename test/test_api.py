@@ -220,9 +220,42 @@ class ApiTest(CoverageTest):
         self.assertEqual(cov.get_exclude_list(), ["foo"])
         cov.exclude("bar")
         self.assertEqual(cov.get_exclude_list(), ["foo", "bar"])
-        self.assertEqual(cov.exclude_re, "(foo)|(bar)")
+        self.assertEqual(cov._exclude_regex('exclude'), "(foo)|(bar)")
         cov.clear_exclude()
         self.assertEqual(cov.get_exclude_list(), [])
+
+    def test_exclude_partial_list(self):
+        cov = coverage.coverage()
+        cov.clear_exclude(which='partial')
+        self.assertEqual(cov.get_exclude_list(which='partial'), [])
+        cov.exclude("foo", which='partial')
+        self.assertEqual(cov.get_exclude_list(which='partial'), ["foo"])
+        cov.exclude("bar", which='partial')
+        self.assertEqual(cov.get_exclude_list(which='partial'), ["foo", "bar"])
+        self.assertEqual(cov._exclude_regex(which='partial'), "(foo)|(bar)")
+        cov.clear_exclude(which='partial')
+        self.assertEqual(cov.get_exclude_list(which='partial'), [])
+
+    def test_exclude_and_partial_are_separate_lists(self):
+        cov = coverage.coverage()
+        cov.clear_exclude(which='partial')
+        cov.clear_exclude(which='exclude')
+        cov.exclude("foo", which='partial')
+        self.assertEqual(cov.get_exclude_list(which='partial'), ['foo'])
+        self.assertEqual(cov.get_exclude_list(which='exclude'), [])
+        cov.exclude("bar", which='exclude')
+        self.assertEqual(cov.get_exclude_list(which='partial'), ['foo'])
+        self.assertEqual(cov.get_exclude_list(which='exclude'), ['bar'])
+        cov.exclude("p2", which='partial')
+        cov.exclude("e2", which='exclude')
+        self.assertEqual(cov.get_exclude_list(which='partial'), ['foo', 'p2'])
+        self.assertEqual(cov.get_exclude_list(which='exclude'), ['bar', 'e2'])
+        cov.clear_exclude(which='partial')
+        self.assertEqual(cov.get_exclude_list(which='partial'), [])
+        self.assertEqual(cov.get_exclude_list(which='exclude'), ['bar', 'e2'])
+        cov.clear_exclude(which='exclude')
+        self.assertEqual(cov.get_exclude_list(which='partial'), [])
+        self.assertEqual(cov.get_exclude_list(which='exclude'), [])
 
     def test_datafile_default(self):
         # Default data file behavior: it's .coverage

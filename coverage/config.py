@@ -17,10 +17,8 @@ DEFAULT_PARTIAL = [
 # These are any Python branching constructs that can't actually execute all
 # their branches.
 DEFAULT_PARTIAL_ALWAYS = [
-    'while True:',
-    'while 1:',
-    'if 0:',
-    'if 1:',
+    'while (True|1|False|0):',
+    'if (True|1|False|0):',
     ]
 
 

@@ -25,7 +25,7 @@ class Analysis(object):
 
         self.parser = CodeParser(
             text=source, filename=self.filename,
-            exclude=self.coverage.exclude_re
+            exclude=self.coverage._exclude_regex('exclude')
             )
         self.statements, self.excluded = self.parser.parse_source()
 
@@ -70,8 +70,6 @@ class Analysis(object):
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
         arcs = self.parser.arcs()
-        if self.no_branch:
-            arcs = [(a,b) for (a,b) in arcs if a not in self.no_branch]
         return arcs
 
     def arcs_executed(self):
@@ -85,7 +83,11 @@ class Analysis(object):
         """Returns a sorted list of the arcs in the code not executed."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
-        missing = [p for p in possible if p not in executed]
+        missing = [
+            p for p in possible
+                if p not in executed
+                    and p[0] not in self.no_branch
+            ]
         return sorted(missing)
 
     def arcs_unpredicted(self):
@@ -99,7 +101,6 @@ class Analysis(object):
             e for e in executed
                 if e not in possible
                     and e[0] != e[1]
-                    and e[0] not in self.no_branch
             ]
         return sorted(unpredicted)
 

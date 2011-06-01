@@ -77,8 +77,10 @@ def join_regex(regexes):
     """Combine a list of regexes into one that matches any of them."""
     if len(regexes) > 1:
         return "(" + ")|(".join(regexes) + ")"
-    else:
+    elif regexes:
         return regexes[0]
+    else:
+        return ""
 
 
 class Hasher(object):
