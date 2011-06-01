@@ -86,8 +86,11 @@ class CoverageTest(TestCase):
         self.clean_modules()
 
     def clean_modules(self):
-        # Remove any new modules imported during the test run. This lets us
-        # import the same source files for more than one test.
+        """Remove any new modules imported during the test run.
+
+        This lets us import the same source files for more than one test.
+
+        """
         for m in [m for m in sys.modules if m not in self.old_modules]:
             del sys.modules[m]
 

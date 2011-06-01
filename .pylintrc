@@ -73,8 +73,9 @@ disable=
     R0201,C0321,R0401,W0403,E1103,
 # Messages that are noisy for now, eventually maybe we'll turn them on:
 #   C0103:256:coverage.morf_filename: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
+#   W0212: 86:Reporter.report_files: Access to a protected member _analyze of a client class     
 #   W0404: 22:run_tests_with_coverage: Reimport 'coverage' (imported line 18)
-    C0103,W0404
+    C0103,W0212,W0404
 
 [REPORTS]
 
