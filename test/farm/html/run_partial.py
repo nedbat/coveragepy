@@ -1,3 +1,5 @@
+import sys
+
 def html_it():
     """Run coverage and make an HTML report for partial."""
     import coverage
@@ -21,7 +23,10 @@ contains("html_partial/partial.html",
     )
 contains("html_partial/index.html",
     "<a href='partial.html'>partial</a>",
-    "<span class='pc_cov'>100%</span>"
     )
+if sys.version_info >= (2, 4):
+    contains("html_partial/index.html",
+        "<span class='pc_cov'>100%</span>"
+        )
 
 clean("html_partial")

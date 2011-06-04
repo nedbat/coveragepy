@@ -842,6 +842,16 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,4,5,7,9,10], "4, 7")
 
+    if sys.version_info >= (2, 4):
+        # In 2.4 and up, constant if's were compiled away.
+        def test_constant_if(self):
+            self.check_coverage("""\
+                if 1:
+                    a = 2
+                assert a == 2
+                """,
+                [2,3], "")
+
     def test_while(self):
         self.check_coverage("""\
             a = 3; b = 0
