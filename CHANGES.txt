@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Version 3.5b1
--------------
+Version 3.5b1 --- 5 June 2011
+-----------------------------
 
 - The HTML report now has hotkeys.  Try ``n``, ``s``, ``m``, ``x``, ``b``,
   ``p``, and ``c`` on the overview page to change the column sorting.
