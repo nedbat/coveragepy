@@ -17,6 +17,9 @@ New in 3.3: .coveragerc files.
 
 New in 3.4: Better control over source to measure, and unexecuted files
 can be reported.
+
+New in 3.5: Branch coverage exclusions, keyboard shortcuts in HTML report.
+
 """
 
 # This file is used unchanged under all versions of Python, 2.x and 3.x.
