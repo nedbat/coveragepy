@@ -5,15 +5,6 @@ Coverage TODO
     + warn if no data was collected
     - tie --source into reporting
 
-* 3.5b1
-
-- Update changes.rst
-- Document partial branch exclusion
-- Document HTML reporting
-    - Keyboard shortcuts
-    - Delta reporting
-
-
 * Soon
 
 + Better omit handling that ignores files during measurement.

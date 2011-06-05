@@ -6,6 +6,7 @@ Branch coverage measurement
 
 :history: 20091127T201300, new for version 3.2
 :history: 20100725T211700, updated for 3.4.
+:history: 20110604T181700, updated for 3.5.
 
 .. highlight:: python
    :linenothreshold: 5
@@ -30,7 +31,7 @@ or line 4. Statement coverage would show all lines of the function as executed.
 But the if was never evaluated as false, so line 2 never jumps to line 4.
 
 Branch coverage will flag this code as not fully covered because of the missing
-jump from line 2 to line 4.
+jump from line 2 to line 4.  This is known as a partial branch.
 
 
 How to measure branch coverage
@@ -86,18 +87,34 @@ Because the ``else`` clause is excluded, the ``if`` only has one possible
 next line, so it isn't considered a branch at all.
 
 
-Problems
---------
+Structurally partial branches
+-----------------------------
 
-Some Python constructs are difficult to measure properly.  For example, an
-unconditional loop will be marked as partially executed::
+Sometimes branching constructs are used in unusual ways that don't actually
+branch.  For example::
 
-    while True:                         # line 1
-        if some_condition():            #      2
+    while True:
+        if cond:
             break
-        body_of_loop()                  #      4
+        do_something()
 
-    keep_working()                      #      6
+Here the while loop will never exit normally, so it doesn't take both of its
+"possible" branches.  For some of these constructs, such as "while True:" and
+"if 0:", coverage.py understands what is going on.  In these cases, the line
+will not be marked as a partial branch.
 
-Because the loop never terminates naturally (jumping from line 1 to 6),
-coverage.py considers the branch partially executed.
+But there are many ways in your own code to write intentionally partial 
+branches, and you don't want coverage.py pestering you about them.  You can
+tell coverage.py that you don't want them flagged by marking them with a 
+pragma::
+
+    i = 0
+    while i < 999999999:    # pragma: no partial
+        if eventually():
+            break
+
+Here the while loop will never complete because the break will always be taken
+at some point.  Coverage.py can't work that out on its own, but the 
+"no partial" pragma indicates that the branch is known to be partial, and
+the line is not flagged.
+

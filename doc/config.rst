@@ -7,6 +7,7 @@ Configuration files
 :history: 20100223T201600, new for 3.3
 :history: 20100725T211700, updated for 3.4.
 :history: 20100824T092900, added ``precision``.
+:history: 20110604T184400, updated for 3.5.
 
 
 Coverage.py options can be specified in a configuration file.  This makes it
@@ -121,6 +122,12 @@ in reporting.  See :ref:`source` for details.
 
 ``omit`` (multi-string): a list of filename patterns, the files to leave out
 of reporting.  See :ref:`source` for details.
+
+``partial_branches`` (multi-string): a list of regular expressions.  Any line
+of code that matches one of these regexes is excused from being reported as
+a partial branch.  More details are in :ref:`branch`.  If you use this option,
+you are replacing all the partial branch regexes so you'll need to also
+supply the "pragma: no branch" regex if you still want to use it.
 
 ``precision`` (integer): the number of digits after the decimal point to
 display for reported coverage percentages.  The default is 0, displaying

@@ -92,6 +92,18 @@ If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate
 during measurement.  See :ref:`cmd_combining` below.
 
+During execution, coverage.py may warn you about conditions it detects that
+could affect the measurement process.  The possible warnings include:
+
+* "Trace function changed, measurement is likely wrong"
+
+* "Module has no Python source"
+
+* "Module was never imported"
+
+* "No data was collected"
+
+
 
 .. _cmd_datafile:
 
@@ -213,11 +225,19 @@ Lines are highlighted green for executed, red for missing, and gray for
 excluded.  The counts at the top of the file are buttons to turn on and off
 the highlighting.
 
+A number of keyboard shortcuts are available for navigating the report.
+Click the keyboard icon in the upper right to see the complete list.
+
 The ``-d`` argument specifies an output directory, defaulting to "htmlcov"::
 
     $ coverage html -d coverage_html
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
+
+Generating the HTML report can be time-consuming.  Stored with the HTML report
+is a data file that is used to speed up reporting the next time.  If you
+generate a new report into the same directory, coverage.py will skip
+generating unchanged pages, making the process faster.
 
 
 .. _cmd_annotation:

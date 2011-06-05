@@ -7,6 +7,7 @@ Excluding code from coverage
 :history: 20090613T090500, brand new docs.
 :history: 20100224T200900, updated for 3.3.
 :history: 20100725T211700, updated for 3.4.
+:history: 20110604T184400, updated for 3.5.
 
 
 You may have code in your project that you know won't be executed, and you want
@@ -76,7 +77,7 @@ all of them by adding a regex to the exclusion list::
     [report]
     exclude_lines = def __repr__
 
-Here's a list of exclusions I've used::
+For example, here's a list of exclusions I've used::
 
     [report]
     exclude_lines =
@@ -92,6 +93,9 @@ Here's a list of exclusions I've used::
 Note that when using the ``exclude_lines`` option in a configuration file, you
 are taking control of the entire list of regexes, so you need to re-specify the
 default "pragma: no cover" match if you still want it to apply.
+
+A similar pragma, "no partial", can be used to tailor branch coverage
+measurement.  See :ref:`branch` for details.
 
 
 Excluding source files
