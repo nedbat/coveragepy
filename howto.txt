@@ -14,16 +14,19 @@
     - Version and date in doc/index.rst
     - Version and copyright date in doc/conf.py
     - Version --version output in doc/install.rst
+    - Generate new sample_html to get the latest, incl footer version number:
+        cd C:\ned\cog\trunk
+        rmdir/s/q htmlcov
+        coverage run --branch --source=cogapp cogapp\test_cogapp.py CogTestsInMemory
+        coverage html
+        - IF BETA:
+            copy/y htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html_beta
+        - ELSE:
+            copy/y htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html
     - IF BETA:
         - Build and publish docs:
             $ make publishbeta
     - ELSE:
-        - Generate new sample_html to get the latest, incl footer version number:
-            cd C:\ned\cog\trunk
-            rmdir/s/q htmlcov
-            coverage run --branch --source=cogapp cogapp\test_cogapp.py CogTestsInMemory
-            coverage html
-            copy/y htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html
         - Build and publish docs:
             $ make px publish
 - Kits:

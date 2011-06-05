@@ -27,8 +27,19 @@ Coverage measurement is typically used to gauge the effectiveness of tests. It
 can show which parts of your code are being exercised by tests, and which are
 not.
 
-The latest version is 3.5b1, released 5 June 2011.
-It is supported on Python versions 2.3 through 3.2.
+.. ifconfig:: not prerelease
+
+    The latest version is coverage.py 3.4, released 10 September 2010.
+    It is supported on Python versions 2.3 through 3.2.
+
+.. ifconfig:: prerelease
+
+    The latest version is coverage.py 3.5b1, released 5 June 2011.
+    This is a pre-release build.  The usual warnings about possible bugs apply.
+    It is supported on Python versions 2.3 through 3.2.
+    The latest stable version is coverage.py 3.4, `described here`_.
+
+.. _described here: http://nedbatchelder.com/code.coverage
 
 
 Quick start
@@ -66,11 +77,19 @@ Getting started is easy:
 
         $ coverage html
 
-    Then visit htmlcov/index.html in your browser, to see a
-    `report like this`_.
+    .. ifconfig:: not prerelease
+
+        Then visit htmlcov/index.html in your browser, to see a
+        `report like this`_.
+
+    .. ifconfig:: prerelease
+
+        Then visit htmlcov/index.html in your browser, to see a
+        `report like this one`_.
 
 .. _coverage page on the Python Package Index: http://pypi.python.org/pypi/coverage
 .. _report like this: /code/coverage/sample_html/index.html
+.. _report like this one: /code/coverage/sample_html_beta/index.html
 
 
 Using coverage.py
@@ -106,11 +125,11 @@ Bitbucket also hosts the `code repository`_.
 .. _Bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
 .. _code repository: http://bitbucket.org/ned/coveragepy
 
-`I can be reached`__ in a number of ways, I'm happy to answer questions about
+`I can be reached`_ in a number of ways. I'm happy to answer questions about
 using coverage.py.  I'm also available hourly for consultation or custom
 development.
 
-__  http://nedbatchelder.com/site/aboutned.html
+.. _I can be reached:  http://nedbatchelder.com/site/aboutned.html
 
 
 
@@ -123,11 +142,11 @@ More information
     install
     cmd
     config
-    api
     source
     excluding
     branch
     subprocess
+    api
     faq
     changes
 
