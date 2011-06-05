@@ -95,6 +95,7 @@ coverage.index_ready = function ($) {
     });
 
     coverage.assign_shortkeys();
+    coverage.wire_up_help_panel();
 
     // Watch for page unload events so we can save the final sort settings:
     $(window).unload(function () {

@@ -114,6 +114,13 @@ h2.stats {
     padding: .5em;
     border: 1px solid #883;
     display: none;
+}
+
+#indexfile .help_panel {
+    width: 20em; height: 4em;
+}
+
+#pyfile .help_panel {
     width: 16em; height: 8em;
 }
 
