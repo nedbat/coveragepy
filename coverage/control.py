@@ -325,7 +325,7 @@ class coverage(object):
                 try:
                     pkg_file = mod.__file__
                 except AttributeError:
-                    self._warn("Module %s has no python source." % pkg)
+                    self._warn("Module %s has no Python source." % pkg)
                 else:
                     d, f = os.path.split(pkg_file)
                     if f.startswith('__init__.'):
