@@ -28,7 +28,7 @@
             $ make publishbeta
     - ELSE:
         - Build and publish docs:
-            $ make px publish
+            $ make publish
 - Kits:
     - source .tgz and windows .exe for each Python
         - $ allkits.cmd

@@ -35,11 +35,11 @@ not.
 .. ifconfig:: prerelease
 
     The latest version is coverage.py 3.5b1, released 5 June 2011.
-    This is a pre-release build.  The usual warnings about possible bugs apply.
+    *This is a pre-release build.  The usual warnings about possible bugs apply.*
     It is supported on Python versions 2.3 through 3.2.
     The latest stable version is coverage.py 3.4, `described here`_.
 
-.. _described here: http://nedbatchelder.com/code.coverage
+.. _described here: http://nedbatchelder.com/code/coverage
 
 
 Quick start
