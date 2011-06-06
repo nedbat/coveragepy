@@ -103,9 +103,9 @@ Here the while loop will never exit normally, so it doesn't take both of its
 "if 0:", coverage.py understands what is going on.  In these cases, the line
 will not be marked as a partial branch.
 
-But there are many ways in your own code to write intentionally partial 
+But there are many ways in your own code to write intentionally partial
 branches, and you don't want coverage.py pestering you about them.  You can
-tell coverage.py that you don't want them flagged by marking them with a 
+tell coverage.py that you don't want them flagged by marking them with a
 pragma::
 
     i = 0
@@ -114,7 +114,7 @@ pragma::
             break
 
 Here the while loop will never complete because the break will always be taken
-at some point.  Coverage.py can't work that out on its own, but the 
+at some point.  Coverage.py can't work that out on its own, but the
 "no partial" pragma indicates that the branch is known to be partial, and
 the line is not flagged.
 

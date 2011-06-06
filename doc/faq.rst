@@ -91,7 +91,7 @@ Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
 
 .. _Bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
 
-Announcements of new coverage.py releases are sent to the 
+Announcements of new coverage.py releases are sent to the
 `coveragepy-announce`_ mailing list.
 
 .. _coveragepy-announce: http://groups.google.com/group/coveragepy-announce
