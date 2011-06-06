@@ -7,11 +7,11 @@ FAQ and other help
 :history: 20090613T141800, brand new docs.
 :history: 20091005T073900, updated for 3.1.
 :history: 20091127T201500, updated for 3.2.
+:history: 20110605T175500, add the announcement mailing list.
 
 
 Frequently asked questions
 --------------------------
-
 
 **Q: I use nose to run my tests, and its cover plugin doesn't let me create
 HTML or XML reports.  What should I do?**
@@ -90,6 +90,11 @@ mailing list.
 Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
 
 .. _Bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
+
+Announcements of new coverage.py releases are sent to the 
+`coveragepy-announce`_ mailing list.
+
+.. _coveragepy-announce: http://groups.google.com/group/coveragepy-announce
 
 `I can be reached`__ in a number of ways, I'm happy to answer questions about
 using coverage.py.  I'm also available hourly for consultation or custom
