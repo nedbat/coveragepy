@@ -1,6 +1,6 @@
 // Coverage.py HTML report browser code.
-/*jslint browser:true, indent: 4 */
-/*global coverage:true, document window $ */
+/*jslint browser: true, sloppy: true, vars: true, plusplus: true, maxerr: 50, indent: 4 */
+/*global coverage: true, document, window, $ */
 
 coverage = {};
 
@@ -23,7 +23,6 @@ coverage.wire_up_help_panel = function () {
         // Show the help panel, and position it so the keyboard icon in the
         // panel is in the same place as the keyboard icon in the header.
         $(".help_panel").show();
-        var top, left;
         var koff = $("#keyboard_icon").offset();
         var poff = $("#panel_icon").position();
         $(".help_panel").offset({
@@ -79,7 +78,7 @@ coverage.index_ready = function ($) {
 
     // Configure our tablesorter to handle the variable number of
     // columns produced depending on report options:
-    var headers = {};
+    var headers = [];
     var col_count = $("table.index > thead > tr > th").length;
 
     headers[0] = { sorter: 'text' };
@@ -151,7 +150,7 @@ coverage.num_elt = function (n) {
 };
 
 // Return the container of all the code.
-coverage.code_container = function (n) {
+coverage.code_container = function () {
     return $(".linenos");
 };
 
