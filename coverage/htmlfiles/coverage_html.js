@@ -163,7 +163,7 @@ coverage.set_sel = function (b, e) {
 
 coverage.to_top = function () {
     coverage.set_sel(0, 1);
-    $("html").animate({scrollTop: 0}, 200);
+    $("html,body").animate({scrollTop: 0}, 200);
 };
 
 coverage.to_first_chunk = function () {
