@@ -172,6 +172,11 @@ coverage.to_first_chunk = function () {
     coverage.to_next_chunk();
 };
 
+coverage.is_transparent = function (color) {
+    // Different browsers return different colors for "none".
+    return color === "transparent" || color === "rgba(0, 0, 0, 0)";
+};
+
 coverage.to_next_chunk = function () {
     var c = coverage;
 
@@ -183,7 +188,7 @@ coverage.to_next_chunk = function () {
             return;
         }
         var color = probe_line.css("background-color");
-        if (color !== "transparent") {
+        if (!c.is_transparent(color)) {
             break;
         }
         probe++;
@@ -213,7 +218,7 @@ coverage.to_prev_chunk = function () {
         return;
     }
     var color = probe_line.css("background-color");
-    while (probe > 0 && color === "transparent") {
+    while (probe > 0 && c.is_transparent(color)) {
         probe--;
         probe_line = c.line_elt(probe);
         if (probe_line.length === 0) {
@@ -254,8 +259,9 @@ coverage.scroll_to_selection = function () {
     var next = coverage.line_elt(coverage.sel_end);
 
     if (!top.isOnScreen() || !next.isOnScreen()) {
-        // Need to move the page.
+        // Need to move the page. The html,body trick makes it scroll in all
+        // browsers, got it from http://stackoverflow.com/questions/3042651
         var top_pos = parseInt(top.offset().top, 10);
-        $("html").animate({scrollTop: top_pos-30}, 300);
+        $("html,body").animate({scrollTop: top_pos-30}, 300);
     }
 };
