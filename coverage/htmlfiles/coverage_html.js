@@ -299,7 +299,7 @@ coverage.to_prev_chunk_nicely = function () {
     coverage.to_prev_chunk();
 };
 
-// Select line number lineno, or if it is in a colored chunk, select the 
+// Select line number lineno, or if it is in a colored chunk, select the
 // entire chunk
 coverage.select_line_or_chunk = function (lineno) {
     var c = coverage;
