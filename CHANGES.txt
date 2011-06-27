@@ -2,6 +2,14 @@
 Change history for Coverage.py
 ------------------------------
 
+Version 3.5b2
+-------------
+
+- The HTML report hotkeys now behave slightly differently when the current
+  chunk isn't visible at all:  a chunk on the screen will be selected,
+  instead of the old behavior of jumping to the literal next chunk.
+  The hotkeys now work in Google Chrome.  Thanks, Guido van Rossum.
+
 
 Version 3.5b1 --- 5 June 2011
 -----------------------------

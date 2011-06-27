@@ -1,13 +1,19 @@
 // Tests of coverage.py HTML report chunk navigation.
-/* global: coverage, test, module, equals, jQuery, $ */
+/*global coverage, test, module, equals, jQuery, $ */
 
 // Test helpers
 
 function selection_is(sel) {
+    raw_selection_is(sel, true);
+}
+
+function raw_selection_is(sel, check_highlight) {
     var beg = sel[0], end = sel[1];
     equals(coverage.sel_begin, beg);
     equals(coverage.sel_end, end);
-    equals(coverage.code_container().find(".highlight").length, end-beg);
+    if (check_highlight) {
+        equals(coverage.code_container().find(".highlight").length, end-beg);
+    }
 }
 
 function build_fixture(spec) {
@@ -160,4 +166,39 @@ test("Jump from a line selected", function () {
     coverage.set_sel(3);
     coverage.to_next_chunk();
     selection_is([5,7]);
+});
+
+// Tests of select_line_or_chunk.
+
+$.each([
+    // The data for each test: a spec for the fixture to build, and an array
+    // of the selection that will be selected by select_line_or_chunk for
+    // each line in the fixture.
+    ['rrwwrr', [[1,3], [1,3], [3,4], [4,5], [5,7], [5,7]]],
+    ['rb', [[1,2], [2,3]]],
+    ['r', [[1,2]]],
+    ['w', [[1,2]]],
+    ['www', [[1,2], [2,3], [3,4]]],
+    ['wwwrrr', [[1,2], [2,3], [3,4], [4,7], [4,7], [4,7]]],
+    ['rrrwww', [[1,4], [1,4], [1,4], [4,5], [5,6], [6,7]]],
+    ['rrrbbb', [[1,4], [1,4], [1,4], [4,7], [4,7], [4,7]]]
+], function (i, params) {
+
+    // Each of these tests uses a fixture with two highlighted chunks.
+    var id = params[0];
+    var sels = params[1];
+
+    module("Select line or chunk - " + id, {
+        setup: function () {
+            build_fixture(id);
+        }
+    });
+
+    $.each(sels, function (i, sel) {
+        i++;
+        test("Select line " + i, function () {
+            coverage.select_line_or_chunk(i);
+            raw_selection_is(sel);
+        });
+    });
 });

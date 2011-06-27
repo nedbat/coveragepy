@@ -116,8 +116,8 @@ coverage.pyfile_ready = function ($) {
     }
 
     $(document)
-        .bind('keydown', 'j', coverage.to_next_chunk)
-        .bind('keydown', 'k', coverage.to_prev_chunk)
+        .bind('keydown', 'j', coverage.to_next_chunk_nicely)
+        .bind('keydown', 'k', coverage.to_prev_chunk_nicely)
         .bind('keydown', '0', coverage.to_top)
         .bind('keydown', '1', coverage.to_first_chunk)
         ;
@@ -139,12 +139,12 @@ coverage.toggle_lines = function (btn, cls) {
     }
 };
 
-// Return the nth line.
+// Return the nth line div.
 coverage.line_elt = function (n) {
     return $("#t" + n);
 };
 
-// Return the nth line number.
+// Return the nth line number div.
 coverage.num_elt = function (n) {
     return $("#n" + n);
 };
@@ -154,6 +154,7 @@ coverage.code_container = function () {
     return $(".linenos");
 };
 
+// Set the selection.  b and e are line numbers.
 coverage.set_sel = function (b, e) {
     // The first line selected.
     coverage.sel_begin = b;
@@ -163,7 +164,7 @@ coverage.set_sel = function (b, e) {
 
 coverage.to_top = function () {
     coverage.set_sel(0, 1);
-    $("html,body").animate({scrollTop: 0}, 200);
+    coverage.scroll_window(0);
 };
 
 coverage.to_first_chunk = function () {
@@ -240,6 +241,104 @@ coverage.to_prev_chunk = function () {
     c.show_selection();
 };
 
+// Return the line number of the line nearest pixel position pos
+coverage.line_at_pos = function (pos) {
+    var l1 = coverage.line_elt(1),
+        l2 = coverage.line_elt(2),
+        result;
+    if (l1.length && l2.length) {
+        var l1_top = l1.offset().top,
+            line_height = l2.offset().top - l1_top,
+            nlines = (pos - l1_top) / line_height;
+        if (nlines < 1) {
+            result = 1;
+        }
+        else {
+            result = Math.ceil(nlines);
+        }
+    }
+    else {
+        result = 1;
+    }
+    return result;
+};
+
+// Returns 0, 1, or 2: how many of the two ends of the selection are on
+// the screen right now?
+coverage.selection_ends_on_screen = function () {
+    if (coverage.sel_begin === 0) {
+        return 0;
+    }
+
+    var top = coverage.line_elt(coverage.sel_begin);
+    var next = coverage.line_elt(coverage.sel_end-1);
+
+    return (
+        (top.isOnScreen() ? 1 : 0) +
+        (next.isOnScreen() ? 1 : 0)
+    );
+};
+
+coverage.to_next_chunk_nicely = function () {
+    coverage.finish_scrolling();
+    if (coverage.selection_ends_on_screen() === 0) {
+        // The selection is entirely off the screen: select the top line on
+        // the screen.
+        var win = $(window);
+        coverage.select_line_or_chunk(coverage.line_at_pos(win.scrollTop()));
+    }
+    coverage.to_next_chunk();
+};
+
+coverage.to_prev_chunk_nicely = function () {
+    coverage.finish_scrolling();
+    if (coverage.selection_ends_on_screen() === 0) {
+        var win = $(window);
+        coverage.select_line_or_chunk(coverage.line_at_pos(win.scrollTop() + win.height()));
+    }
+    coverage.to_prev_chunk();
+};
+
+// Select line number lineno, or if it is in a colored chunk, select the 
+// entire chunk
+coverage.select_line_or_chunk = function (lineno) {
+    var c = coverage;
+    var probe_line = c.line_elt(lineno);
+    if (probe_line.length === 0) {
+        return;
+    }
+    var the_color = probe_line.css("background-color");
+    if (!c.is_transparent(the_color)) {
+        // The line is in a highlighted chunk.
+        // Search backward for the first line.
+        var probe = lineno;
+        var color = the_color;
+        while (probe > 0 && color === the_color) {
+            probe--;
+            probe_line = c.line_elt(probe);
+            if (probe_line.length === 0) {
+                break;
+            }
+            color = probe_line.css("background-color");
+        }
+        var begin = probe + 1;
+
+        // Search forward for the last line.
+        probe = lineno;
+        color = the_color;
+        while (color === the_color) {
+            probe++;
+            probe_line = c.line_elt(probe);
+            color = probe_line.css("background-color");
+        }
+
+        coverage.set_sel(begin, probe);
+    }
+    else {
+        coverage.set_sel(lineno);
+    }
+};
+
 coverage.show_selection = function () {
     var c = coverage;
 
@@ -254,13 +353,20 @@ coverage.show_selection = function () {
 
 coverage.scroll_to_selection = function () {
     // Scroll the page if the chunk isn't fully visible.
-    var top = coverage.line_elt(coverage.sel_begin);
-    var next = coverage.line_elt(coverage.sel_end);
-
-    if (!top.isOnScreen() || !next.isOnScreen()) {
+    if (coverage.selection_ends_on_screen() < 2) {
         // Need to move the page. The html,body trick makes it scroll in all
         // browsers, got it from http://stackoverflow.com/questions/3042651
+        var top = coverage.line_elt(coverage.sel_begin);
         var top_pos = parseInt(top.offset().top, 10);
-        $("html,body").animate({scrollTop: top_pos-30}, 300);
+        coverage.scroll_window(top_pos - 30);
     }
 };
+
+coverage.scroll_window = function (to_pos) {
+    $("html,body").animate({scrollTop: to_pos}, 200);
+};
+
+coverage.finish_scrolling = function () {
+    $("html,body").stop(true, true);
+};
+
