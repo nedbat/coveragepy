@@ -83,3 +83,8 @@
   "zzz_coverage_process_start.pth" containing::
 
     import coverage; coverage.process_startup()
+
+- To run the Javascript tests:
+
+    open test/js/index.html in variety of browsers.
+
