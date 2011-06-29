@@ -17,6 +17,7 @@ Major change history for coverage.py
 :history: 20100906T133800, updated for 3.4b2
 :history: 20100919T163400, updated for 3.4 release.
 :history: 20110604T214100, updated for 3.5b1
+:history: 20110629T082200, updated for 3.5
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -25,8 +26,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
-Version 3.5b1 --- 5 June 2011
------------------------------
+Version 3.5 --- 29 June 2011
+----------------------------
 
 HTML reporting:
 

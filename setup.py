@@ -11,14 +11,14 @@ Coverage.py runs on Pythons 2.3 through 3.2.
 Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
 tracker are at `bitbucket.org <http://bitbucket.org/ned/coveragepy>`_.
 
-New in 3.2: Branch coverage!
-
-New in 3.3: .coveragerc files.
+New in 3.5: Branch coverage exclusions, keyboard shortcuts in HTML report.
 
 New in 3.4: Better control over source to measure, and unexecuted files
 can be reported.
 
-New in 3.5: Branch coverage exclusions, keyboard shortcuts in HTML report.
+New in 3.3: .coveragerc files.
+
+New in 3.2: Branch coverage!
 
 """
 
