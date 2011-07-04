@@ -5,10 +5,19 @@ import opcode, sys, types
 class ByteCode(object):
     """A single bytecode."""
     def __init__(self):
+        # The offset of this bytecode in the code object.
         self.offset = -1
+
+        # The opcode, defined in the `opcode` module.
         self.op = -1
+
+        # The argument, a small integer, whose meaning depends on the opcode.
         self.arg = -1
+
+        # The offset in the code object of the next bytecode.
         self.next_offset = -1
+
+        # The offset to jump to.
         self.jump_to = -1
 
 
