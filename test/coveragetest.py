@@ -32,6 +32,9 @@ class CoverageTest(TestCase):
     run_in_temp_dir = True
 
     def setUp(self):
+        # Tell newer unittest implementations to print long helpful messages.
+        self.longMessage = True
+
         # tearDown will restore the original sys.path
         self.old_syspath = sys.path[:]
 
