@@ -260,6 +260,21 @@ class LoopArcTest(CoverageTest):
             arcz_missing="26 6."
             )
 
+    def test_for_else(self):
+        self.check_coverage("""\
+            def forelse(seq):
+                for n in seq:
+                    if n > 5:
+                        break
+                else:
+                    print('None of the values were greater than 5')
+                print('Done')
+            forelse([1,2])
+            forelse([1,6])
+            """,
+            arcz=".1 .2 23 32 34 47 26 67 7. 18 89 9."
+            )
+
 
 class ExceptionArcTest(CoverageTest):
     """Arc-measuring tests involving exception handling."""

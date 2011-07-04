@@ -297,7 +297,7 @@ OPS_EXCEPT_BLOCKS = _opcode_set('SETUP_EXCEPT', 'SETUP_FINALLY')
 OPS_POP_BLOCK = _opcode_set('POP_BLOCK')
 
 # Opcodes that have a jump destination, but aren't really a jump.
-OPS_NO_JUMP = _opcode_set('SETUP_EXCEPT', 'SETUP_FINALLY')
+OPS_NO_JUMP = OPS_PUSH_BLOCK
 
 # Individual opcodes we need below.
 OP_BREAK_LOOP = _opcode('BREAK_LOOP')
