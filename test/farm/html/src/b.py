@@ -16,13 +16,14 @@ def two(x):
 
 two(1)
 
-def three_way():
-    # for-else can be a three-way branch.
-    for i in range(10):
-        if i == 3:
-            break
-    else:
-        return 23
-    return 17
+def three():
+    try:
+        # This if has two branches, *neither* one taken.
+        if name_error_this_variable_doesnt_exist:
+            a = 1
+        else:
+            a = 2
+    except:
+        pass
 
-three_way()
+three()

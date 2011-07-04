@@ -5,6 +5,10 @@ Change history for Coverage.py
 Version 3.5.1
 -------------
 
+- for-else constructs are understood better, and don't cause erroneous partial
+  branch warnings.  Fixes `issue 122`_.
+
+.. _issue 122: http://bitbucket.org/ned/coveragepy/issue/122/for-else-always-reports-missing-branch
 
 
 Version 3.5 --- 29 June 2011
