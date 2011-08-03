@@ -5,6 +5,9 @@ Change history for Coverage.py
 Version 3.5.1
 -------------
 
+- The number of partial branches reported on the HTML summary page was 
+  different than the number reported on the individual file pages.  This is
+  now fixed.
 
 
 Version 3.5 --- 29 June 2011

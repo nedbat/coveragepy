@@ -467,3 +467,36 @@ class SourceOmitIncludeTest(CoverageTest):
         self.filenames_not_in_summary(lines,
             "p1a.py p1c.py p2a.py p2b.py"
             )
+
+
+class AnalysisTest(CoverageTest):
+    """Test the numerical analysis of results."""
+    def test_many_missing_branches(self):
+        cov = coverage.coverage(branch=True)
+
+        self.make_file("missing.py", """\
+            def fun1(x):
+                if x == 1:
+                    print("one")
+                else:
+                    print("not one")
+                print("done")           # pragma: nocover
+
+            def fun2(x):
+                print("x")
+
+            fun2(3)
+            """)
+
+        # Import the python file, executing it.
+        cov.start()
+        self.import_local_file("missing")       # pragma: recursive coverage
+        cov.stop()                              # pragma: recursive coverage
+
+        nums = cov._analyze("missing.py").numbers
+        self.assertEqual(nums.n_files, 1)
+        self.assertEqual(nums.n_statements, 7)
+        self.assertEqual(nums.n_excluded, 1)
+        self.assertEqual(nums.n_missing, 3)
+        self.assertEqual(nums.n_branches, 2)
+        self.assertEqual(nums.n_missing_branches, 0)
