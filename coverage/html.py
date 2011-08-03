@@ -88,7 +88,10 @@ class HtmlReporter(Reporter):
         # Write the index file.
         self.index_file()
 
-        # Create the once-per-directory files.
+        self.make_local_static_report_files()
+
+    def make_local_static_report_files(self):
+        """ Make local instances of static files for HTML report. """
         for static in self.STATIC_FILES:
             shutil.copyfile(
                 data_filename("htmlfiles/" + static),
