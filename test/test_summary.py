@@ -138,8 +138,9 @@ class SummaryTest2(CoverageTest):
     def setUp(self):
         super(SummaryTest2, self).setUp()
         # Parent class saves and restores sys.path, we can just modify it.
-        sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
-        sys.path.append(self.nice_file(os.path.dirname(__file__), 'moremodules'))
+        this_dir = os.path.dirname(__file__)
+        sys.path.append(self.nice_file(this_dir, 'modules'))
+        sys.path.append(self.nice_file(this_dir, 'moremodules'))
 
     def test_empty_files(self):
         # Shows that empty files like __init__.py are listed as having zero

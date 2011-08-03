@@ -41,7 +41,9 @@ class Analysis(object):
                 )
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
-            n_missing_branches = sum([len(v) for v in mba.values()])
+            n_missing_branches = sum(
+                [len(v) for k,v in mba.items() if k not in self.missing]
+                )
         else:
             n_branches = n_missing_branches = 0
             self.no_branch = set()
