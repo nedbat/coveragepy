@@ -176,13 +176,9 @@ class ApiTest(CoverageTest):
 
     def test_ignore_stdlib(self):
         self.make_file("mymain.py", """\
-            import mymod, colorsys
+            import colorsys
             a = 1
             hls = colorsys.rgb_to_hls(1.0, 0.5, 0.0)
-            """)
-
-        self.make_file("mymod.py", """\
-            fooey = 17
             """)
 
         # Measure without the stdlib.
@@ -211,6 +207,27 @@ class ApiTest(CoverageTest):
         # and some were marked executed in colorsys.py
         _, statements, missing, _ = cov2.analysis("colorsys.py")
         self.assertNotEqual(statements, missing)
+
+    def test_include_can_measure_stdlib(self):
+        self.make_file("mymain.py", """\
+            import colorsys, random
+            a = 1
+            r, g, b = [random.random() for _ in range(3)]
+            hls = colorsys.rgb_to_hls(r, g, b)
+            """)
+
+        # Measure without the stdlib, but include colorsys.
+        cov1 = coverage.coverage(cover_pylib=False, include=["*/colorsys.py"])
+        cov1.start()
+        self.import_local_file("mymain")        # pragma: recursive coverage
+        cov1.stop()                             # pragma: recursive coverage
+
+        # some statements were marked executed in colorsys.py
+        _, statements, missing, _ = cov1.analysis("colorsys.py")
+        self.assertNotEqual(statements, missing)
+        # but none were in random.py
+        _, statements, missing, _ = cov1.analysis("random.py")
+        self.assertEqual(statements, missing)
 
     def test_exclude_list(self):
         cov = coverage.coverage()

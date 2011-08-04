@@ -248,11 +248,15 @@ class coverage(object):
 
         canonical = self.file_locator.canonical_filename(filename)
 
-        # If the user specified source, then that's authoritative about what to
-        # measure.  If they didn't, then we have to exclude the stdlib and
-        # coverage.py directories.
+        # If the user specified source or include, then that's authoritative
+        # about the outer bound of what to measure and we don't have to apply
+        # any canned exclusions. If they didn't, then we have to exclude the
+        # stdlib and coverage.py directories.
         if self.source_match:
             if not self.source_match.match(canonical):
+                return False
+        elif self.include_match:
+            if not self.include_match.match(canonical):
                 return False
         else:
             # If we aren't supposed to trace installed code, then check if this
@@ -265,9 +269,7 @@ class coverage(object):
             if self.cover_match and self.cover_match.match(canonical):
                 return False
 
-        # Check the file against the include and omit patterns.
-        if self.include_match and not self.include_match.match(canonical):
-            return False
+        # Check the file against the omit pattern.
         if self.omit_match and self.omit_match.match(canonical):
             return False
 
