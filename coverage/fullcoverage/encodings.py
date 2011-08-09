@@ -17,13 +17,22 @@ import sys
 
 class FullCoverageTracer(object):
     def __init__(self):
+        # `traces` is a list of trace events.  Frames are tricky: the same
+        # frame object is used for a whole scope, with new line numbers
+        # written into it.  So in one scope, all the frame objects are the
+        # same object, and will eventually all will point to the last line
+        # executed.  So we keep the line numbers alongside the frames.
+        # The list looks like:
+        #
+        #   traces = [
+        #       ((frame, event, arg), lineno), ...
+        #       ]
+        #
         self.traces = []
 
     def fullcoverage_trace(self, *args):
         frame, event, arg = args
-        #if "os.py" in frame.f_code.co_filename:
-        #    print("%s @ %d" % (frame.f_code.co_filename, frame.f_lineno))
-        self.traces.append(args)
+        self.traces.append((args, frame.f_lineno))
         return self.fullcoverage_trace
 
 sys.settrace(FullCoverageTracer().fullcoverage_trace)

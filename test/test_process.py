@@ -292,3 +292,23 @@ class ProcessTest(CoverageTest):
         self.assertTrue("No module named no_such_module" in out)
         self.assertTrue("warning" not in out)
 
+    if sys.version_info >= (2, 7):   # Need coverage runnable as a module.
+        def test_fullcoverage(self):
+            # fullcoverage is a trick to get stdlib modules measured from the
+            # very beginning of the process. Here we import os and then check
+            # how many lines are measured. 
+            self.make_file("getenv.py", """\
+                import os
+                print("FOOEY == %s" % os.getenv("FOOEY"))
+                """)
+
+            fullcov = os.path.join(os.path.dirname(coverage.__file__), "fullcoverage")
+            self.set_environ("FOOEY", "BOO")
+            self.set_environ("PYTHONPATH", fullcov)
+            out = self.run_command("python -m coverage run -L getenv.py")
+            self.assertEqual(out, "FOOEY == BOO\n")
+            data = coverage.CoverageData()
+            data.read_file(".coverage")
+            # The actual number of lines in os.py executed when it is imported
+            # is 120 or so.  Just running os.getenv executes about 5.
+            self.assertGreater(data.summary()['os.py'], 50)

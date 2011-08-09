@@ -17,6 +17,11 @@ Version 3.5.1
   directive takes precendence, and the files will be measured.  Fixes
   `issue 138`_.
 
+- In order to help the core developers measure the test coverage of the
+  standard library, Brandon Rhodes devised an aggressive hack to trick Python
+  into running some coverage code before anything else in the process.
+  See the fullcoverage directory if you are interested.
+
 .. _issue 122: http://bitbucket.org/ned/coveragepy/issue/122/for-else-always-reports-missing-branch
 .. _issue 138: https://bitbucket.org/ned/coveragepy/issue/138/include-should-take-precedence-over-is
 

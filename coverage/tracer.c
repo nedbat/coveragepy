@@ -468,14 +468,26 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
  * means it must be callable to be used in sys.settrace().
  *
  * So we make our self callable, equivalent to invoking our trace function.
+ *
+ * To help with the process of replaying stored frames, this function has an
+ * optional keyword argument:
+ *
+ *      def Tracer_call(frame, event, arg, lineno=0)
+ * 
+ * If provided, the lineno argument is used as the line number, and the
+ * frame's f_lineno member is ignored.
  */
 static PyObject *
-Tracer_call(Tracer *self, PyObject *args, PyObject *kwds_unused)
+Tracer_call(Tracer *self, PyObject *args, PyObject *kwds)
 {
     PyFrameObject *frame;
     PyObject *what_str;
     PyObject *arg;
+    int lineno = 0;
     int what;
+    int orig_lineno;
+    PyObject *ret = NULL;
+
     static char *what_names[] = {
         "call", "exception", "line", "return",
         "c_call", "c_exception", "c_return",
@@ -486,8 +498,10 @@ Tracer_call(Tracer *self, PyObject *args, PyObject *kwds_unused)
     printf("pytrace\n");
     #endif
 
-    if (!PyArg_ParseTuple(args, "O!O!O:Tracer_call",
-            &PyFrame_Type, &frame, &MyText_Type, &what_str, &arg)) {
+    static char *kwlist[] = {"frame", "event", "arg", "lineno", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O|i:Tracer_call", kwlist, 
+            &PyFrame_Type, &frame, &MyText_Type, &what_str, &arg, &lineno)) {
         goto done;
     }
 
@@ -499,14 +513,23 @@ Tracer_call(Tracer *self, PyObject *args, PyObject *kwds_unused)
         }
     }
 
+    /* Save off the frame's lineno, and use the forced one, if provided. */
+    orig_lineno = frame->f_lineno;
+    if (lineno > 0) {
+        frame->f_lineno = lineno;
+    }
+
     /* Invoke the C function, and return ourselves. */
     if (Tracer_trace(self, frame, what, arg) == RET_OK) {
         Py_INCREF(self);
-        return (PyObject *)self;
+        ret = (PyObject *)self;
     }
 
+    /* Clean up. */
+    frame->f_lineno = orig_lineno;
+
 done:
-    return NULL;
+    return ret;
 }
 
 static PyObject *

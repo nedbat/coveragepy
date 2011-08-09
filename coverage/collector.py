@@ -234,7 +234,7 @@ class Collector(object):
         self._collectors.append(self)
         #print >>sys.stderr, "Started: %r" % self._collectors
         
-		# Check to see whether we had a fullcoverage tracer installed.
+        # Check to see whether we had a fullcoverage tracer installed.
         traces0 = None
         if hasattr(sys, "gettrace"):
             fn0 = sys.gettrace()
@@ -247,10 +247,9 @@ class Collector(object):
         fn = self._start_tracer()
 
         if traces0:
-            #print("traces0 has %d" % len(traces0))
             for args in traces0:
-                frame, event, arg = args
-                fn(*args)
+                (frame, event, arg), lineno = args
+                fn(frame, event, arg, lineno=lineno)
 
         # Install our installation tracer in threading, to jump start other
         # threads.
