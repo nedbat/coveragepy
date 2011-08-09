@@ -473,7 +473,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
  * optional keyword argument:
  *
  *      def Tracer_call(frame, event, arg, lineno=0)
- * 
+ *
  * If provided, the lineno argument is used as the line number, and the
  * frame's f_lineno member is ignored.
  */
@@ -500,7 +500,7 @@ Tracer_call(Tracer *self, PyObject *args, PyObject *kwds)
 
     static char *kwlist[] = {"frame", "event", "arg", "lineno", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O|i:Tracer_call", kwlist, 
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O|i:Tracer_call", kwlist,
             &PyFrame_Type, &frame, &MyText_Type, &what_str, &arg, &lineno)) {
         goto done;
     }

@@ -43,8 +43,8 @@ sys.settrace(FullCoverageTracer().fullcoverage_trace)
 # happen last, since all of the symbols in this module will become None
 # at that exact moment, including "sys".
 
-import os
-this = os.path.dirname(__file__)
-sys.path.remove(this)
+parentdirs = [ d for d in sys.path if __file__.startswith(d) ]
+parentdirs.sort(key=len)
+sys.path.remove(parentdirs[-1])
 del sys.modules['encodings']
 import encodings

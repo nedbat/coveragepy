@@ -233,7 +233,7 @@ class Collector(object):
             self._collectors[-1].pause()
         self._collectors.append(self)
         #print >>sys.stderr, "Started: %r" % self._collectors
-        
+
         # Check to see whether we had a fullcoverage tracer installed.
         traces0 = None
         if hasattr(sys, "gettrace"):
