@@ -143,20 +143,21 @@ class SimpleArcTest(CoverageTest):
             )
 
 
-class WithTest(CoverageTest):
-    """Arc-measuring tests involving context managers."""
+if sys.version_info >= (2, 6):
+    class WithTest(CoverageTest):
+        """Arc-measuring tests involving context managers."""
 
-    def test_with(self):
-        self.check_coverage("""\
-            def example(): 
-                with open("test", "w") as f: # exit
-                    f.write("") 
-                    return 1 
-             
-            example()
-            """,
-            arcz=".1 .2 23 34 4. 16 6."
-            )
+        def test_with(self):
+            self.check_coverage("""\
+                def example(): 
+                    with open("test", "w") as f: # exit
+                        f.write("") 
+                        return 1 
+                
+                example()
+                """,
+                arcz=".1 .2 23 34 4. 16 6."
+                )
 
 
 class LoopArcTest(CoverageTest):
