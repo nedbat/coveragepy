@@ -149,11 +149,11 @@ if sys.version_info >= (2, 6):
 
         def test_with(self):
             self.check_coverage("""\
-                def example(): 
+                def example():
                     with open("test", "w") as f: # exit
-                        f.write("") 
-                        return 1 
-                
+                        f.write("")
+                        return 1
+
                 example()
                 """,
                 arcz=".1 .2 23 34 4. 16 6."

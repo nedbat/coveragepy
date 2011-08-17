@@ -219,7 +219,7 @@ class HtmlReporter(Reporter):
         totals = sum([f['nums'] for f in files])
 
         self.write_html(
-            os.path.join(self.directory, "index.html"), 
+            os.path.join(self.directory, "index.html"),
             index_tmpl.render(locals())
             )
 
