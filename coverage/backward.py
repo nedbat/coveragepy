@@ -101,6 +101,27 @@ else:
         """Convert bytes `b` to a string (no-op in 2.x)."""
         return b
 
+# A few details about writing encoded text are different in 2.x and 3.x.
+if sys.version_info >= (3, 0):
+    def write_encoded(fname, text, encoding='utf8', errors='strict'):
+        '''Write string `text` to file names `fname`, with encoding.'''
+        # Don't use "with", so that this file is still good for old 2.x.
+        f = open(fname, 'w', encoding=encoding, errors=errors)
+        try:
+            f.write(text)
+        finally:
+            f.close()
+else:
+    # It's not clear that using utf8 strings in 2.x is the right thing to do.
+    def write_encoded(fname, text, encoding='utf8', errors='strict'):
+        '''Write utf8 string `text` to file names `fname`, with encoding.'''
+        import codecs
+        f = codecs.open(fname, 'w', encoding=encoding, errors=errors)
+        try:
+            f.write(text.decode('utf8'))
+        finally:
+            f.close()
+
 # Md5 is available in different places.
 try:
     import hashlib

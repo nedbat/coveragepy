@@ -3,7 +3,7 @@
 import os, re, shutil
 
 import coverage
-from coverage.backward import pickle
+from coverage.backward import pickle, write_encoded
 from coverage.misc import CoverageException, Hasher
 from coverage.phystokens import source_token_lines
 from coverage.report import Reporter
@@ -98,6 +98,10 @@ class HtmlReporter(Reporter):
                 os.path.join(self.directory, static)
                 )
 
+    def write_html(self, fname, html):
+        """Write `html` to `fname`, properly encoded."""
+        write_encoded(fname, html, 'ascii', 'xmlcharrefreplace')
+
     def file_hash(self, source, cu):
         """Compute a hash that changes if the file needs to be re-reported."""
         m = Hasher()
@@ -189,12 +193,9 @@ class HtmlReporter(Reporter):
         # Write the HTML page for this file.
         html_filename = flat_rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)
+
         html = spaceless(self.source_tmpl.render(locals()))
-        fhtml = open(html_path, 'w')
-        try:
-            fhtml.write(html)
-        finally:
-            fhtml.close()
+        self.write_html(html_path, html)
 
         # Save this file's information for the index file.
         index_info = {
@@ -217,11 +218,10 @@ class HtmlReporter(Reporter):
 
         totals = sum([f['nums'] for f in files])
 
-        fhtml = open(os.path.join(self.directory, "index.html"), "w")
-        try:
-            fhtml.write(index_tmpl.render(locals()))
-        finally:
-            fhtml.close()
+        self.write_html(
+            os.path.join(self.directory, "index.html"), 
+            index_tmpl.render(locals())
+            )
 
         # Write the latest hashes for next time.
         self.status.write(self.directory)
