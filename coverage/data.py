@@ -1,8 +1,10 @@
 """Coverage data for Coverage."""
 
-import os
+import fnmatch, os, re
 
 from coverage.backward import pickle, sorted        # pylint: disable=W0622
+from coverage.files import PathAliases
+from coverage.misc import CoverageException
 
 
 class CoverageData(object):
@@ -169,13 +171,17 @@ class CoverageData(object):
             pass
         return lines, arcs
 
-    def combine_parallel_data(self):
+    def combine_parallel_data(self, aliases=None):
         """Combine a number of data files together.
 
         Treat `self.filename` as a file prefix, and combine the data from all
         of the data files starting with that prefix plus a dot.
 
+        If `aliases` is provided, it's a PathAliases object that is used to
+        re-map paths to match the local machine's.
+
         """
+        aliases = aliases or PathAliases()
         data_dir, local = os.path.split(self.filename)
         localdot = local + '.'
         for f in os.listdir(data_dir or '.'):
@@ -183,8 +189,10 @@ class CoverageData(object):
                 full_path = os.path.join(data_dir, f)
                 new_lines, new_arcs = self._read_file(full_path)
                 for filename, file_data in new_lines.items():
+                    filename = aliases.map(filename)
                     self.lines.setdefault(filename, {}).update(file_data)
                 for filename, file_data in new_arcs.items():
+                    filename = aliases.map(filename)
                     self.arcs.setdefault(filename, {}).update(file_data)
                 if f != local:
                     os.remove(full_path)

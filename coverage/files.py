@@ -1,7 +1,8 @@
 """File wrangling."""
 
 from coverage.backward import to_string
-import fnmatch, os, sys
+from coverage.misc import CoverageException
+import fnmatch, os, re, sys
 
 class FileLocator(object):
     """Understand how filenames work."""
@@ -116,6 +117,81 @@ class FnmatchMatcher(object):
             if fnmatch.fnmatch(fpath, pat):
                 return True
         return False
+
+
+class PathAliases(object):
+    """A collection of aliases for paths.
+
+    When combining data files from remote machines, often the paths to source
+    code are different, for example, due to OS differences, or because of
+    serialized checkouts on continuous integration machines.
+
+    A `PathAliases` object tracks a list of pattern/result pairs, and can
+    map a path through those aliases to produce a unified path.
+
+    """
+    def __init__(self):
+        self.aliases = []
+
+    def _sep(self, s):
+        """Find the path separator used in this string, or os.sep if none."""
+        sep_match = re.search(r"[\\/]", s)
+        if sep_match:
+            sep = sep_match.group(0)
+        else:
+            sep = os.sep
+        return sep
+
+    def add(self, pattern, result):
+        """Add the `pattern`/`result` pair to the list of aliases.
+
+        `pattern` is an `fnmatch`-style pattern.  `result` is a simple
+        string.  When mapping paths, if a path starts with a match against
+        `pattern`, then that match is replaced with `result`.  This models
+        isomorphic source trees being rooted at different places on two
+        different machines.
+
+        `pattern` can't end with a wildcard component, since that would
+        match an entire tree, and not just its root.
+
+        """
+        # The pattern can't end with a wildcard component.
+        pattern = pattern.rstrip(r"\/")
+        if pattern.endswith("*"):
+            raise CoverageException("Pattern must not end with wildcards.")
+        pattern_sep = self._sep(pattern)
+        pattern += pattern_sep
+
+        # Make a regex from the pattern.  fnmatch always adds a \Z to match
+        # the whole string, which we don't want.
+        regex_pat = fnmatch.translate(pattern).replace(r'\Z', '')
+        regex = re.compile("(?i)" + regex_pat)
+
+        # Normalize the result: it must end with a path separator.
+        result_sep = self._sep(result)
+        result = result.rstrip(r"\/") + result_sep
+        self.aliases.append((regex, result, pattern_sep, result_sep))
+
+    def map(self, path):
+        """Map `path` through the aliases.
+
+        `path` is checked against all of the patterns.  The first pattern to
+        match is used to replace the root of the path with the result root.
+        Only one pattern is ever used.  If no patterns match, `path` is
+        returned unchanged.
+
+        The separator style in the result is made to match that of the result
+        in the alias.
+
+        """
+        for regex, result, pattern_sep, result_sep in self.aliases:
+            m = regex.match(path)
+            if m:
+                new = path.replace(m.group(0), result)
+                if pattern_sep != result_sep:
+                    new = new.replace(pattern_sep, result_sep)
+                return new
+        return path
 
 
 def find_python_files(dirname):

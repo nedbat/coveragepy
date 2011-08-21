@@ -3,8 +3,9 @@
 import os, sys
 
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
-from coverage.files import find_python_files
+from coverage.files import PathAliases, find_python_files
 from coverage.backward import set                   # pylint: disable=W0622
+from coverage.misc import CoverageException
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
@@ -70,6 +71,63 @@ class MatcherTest(CoverageTest):
         self.assertTrue(fnm.match(fl.canonical_filename(file3)))
         self.assertTrue(fnm.match(fl.canonical_filename(file4)))
         self.assertFalse(fnm.match(fl.canonical_filename(file5)))
+
+
+class PathAliasesTest(CoverageTest):
+    def test_noop(self):
+        aliases = PathAliases()
+        self.assertEqual(aliases.map('/ned/home/a.py'), '/ned/home/a.py')
+
+    def test_nomatch(self):
+        aliases = PathAliases()
+        aliases.add('/ned/home/*/src', './mysrc')
+        self.assertEqual(aliases.map('/ned/home/foo/a.py'), '/ned/home/foo/a.py')
+
+    def test_wildcard(self):
+        aliases = PathAliases()
+        aliases.add('/ned/home/*/src', './mysrc')
+        self.assertEqual(aliases.map('/ned/home/foo/src/a.py'), './mysrc/a.py')
+        aliases = PathAliases()
+        aliases.add('/ned/home/*/src/', './mysrc')
+        self.assertEqual(aliases.map('/ned/home/foo/src/a.py'), './mysrc/a.py')
+
+    def test_no_accidental_match(self):
+        aliases = PathAliases()
+        aliases.add('/ned/home/*/src', './mysrc')
+        self.assertEqual(aliases.map('/ned/home/foo/srcetc'), '/ned/home/foo/srcetc')
+
+    def test_multiple_patterns(self):
+        aliases = PathAliases()
+        aliases.add('/ned/home/*/src', './mysrc')
+        aliases.add('/ned/lib/*/libsrc', './mylib')
+        self.assertEqual(aliases.map('/ned/home/foo/src/a.py'), './mysrc/a.py')
+        self.assertEqual(aliases.map('/ned/lib/foo/libsrc/a.py'), './mylib/a.py')
+
+    def test_cant_have_wildcard_at_end(self):
+        aliases = PathAliases()
+        self.assertRaisesRegexp(
+            CoverageException, "Pattern must not end with wildcards.",
+            aliases.add, "/ned/home/*", "fooey"
+            )
+        self.assertRaisesRegexp(
+            CoverageException, "Pattern must not end with wildcards.",
+            aliases.add, "/ned/home/*/", "fooey"
+            )
+        self.assertRaisesRegexp(
+            CoverageException, "Pattern must not end with wildcards.",
+            aliases.add, "/ned/home/*/*/", "fooey"
+            )
+
+    def test_paths_are_os_corrected(self):
+        aliases = PathAliases()
+        aliases.add('/ned/home/*/src', './mysrc')
+        aliases.add(r'c:\ned\foo\src', './mysrc')
+        self.assertEqual(aliases.map(r'C:\Ned\foo\src\sub\a.py'), './mysrc/sub/a.py')
+
+        aliases = PathAliases()
+        aliases.add('/ned/home/*/src', r'.\mysrc')
+        aliases.add(r'c:\ned\foo\src', r'.\mysrc')
+        self.assertEqual(aliases.map(r'/ned/home/foo/src/sub/a.py'), r'.\mysrc\sub\a.py')
 
 
 class FindPythonFilesTest(CoverageTest):
