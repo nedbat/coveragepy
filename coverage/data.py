@@ -1,10 +1,9 @@
 """Coverage data for Coverage."""
 
-import fnmatch, os, re
+import os
 
 from coverage.backward import pickle, sorted        # pylint: disable=W0622
 from coverage.files import PathAliases
-from coverage.misc import CoverageException
 
 
 class CoverageData(object):

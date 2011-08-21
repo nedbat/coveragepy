@@ -74,14 +74,16 @@ class MatcherTest(CoverageTest):
 
 
 class PathAliasesTest(CoverageTest):
+    """Tests for coverage/files.py:PathAliases"""
+
     def test_noop(self):
         aliases = PathAliases()
         self.assertEqual(aliases.map('/ned/home/a.py'), '/ned/home/a.py')
 
     def test_nomatch(self):
         aliases = PathAliases()
-        aliases.add('/ned/home/*/src', './mysrc')
-        self.assertEqual(aliases.map('/ned/home/foo/a.py'), '/ned/home/foo/a.py')
+        aliases.add('/home/*/src', './mysrc')
+        self.assertEqual(aliases.map('/home/foo/a.py'), '/home/foo/a.py')
 
     def test_wildcard(self):
         aliases = PathAliases()
@@ -93,15 +95,15 @@ class PathAliasesTest(CoverageTest):
 
     def test_no_accidental_match(self):
         aliases = PathAliases()
-        aliases.add('/ned/home/*/src', './mysrc')
-        self.assertEqual(aliases.map('/ned/home/foo/srcetc'), '/ned/home/foo/srcetc')
+        aliases.add('/home/*/src', './mysrc')
+        self.assertEqual(aliases.map('/home/foo/srcetc'), '/home/foo/srcetc')
 
     def test_multiple_patterns(self):
         aliases = PathAliases()
-        aliases.add('/ned/home/*/src', './mysrc')
-        aliases.add('/ned/lib/*/libsrc', './mylib')
-        self.assertEqual(aliases.map('/ned/home/foo/src/a.py'), './mysrc/a.py')
-        self.assertEqual(aliases.map('/ned/lib/foo/libsrc/a.py'), './mylib/a.py')
+        aliases.add('/home/*/src', './mysrc')
+        aliases.add('/lib/*/libsrc', './mylib')
+        self.assertEqual(aliases.map('/home/foo/src/a.py'), './mysrc/a.py')
+        self.assertEqual(aliases.map('/lib/foo/libsrc/a.py'), './mylib/a.py')
 
     def test_cant_have_wildcard_at_end(self):
         aliases = PathAliases()
@@ -120,14 +122,16 @@ class PathAliasesTest(CoverageTest):
 
     def test_paths_are_os_corrected(self):
         aliases = PathAliases()
-        aliases.add('/ned/home/*/src', './mysrc')
-        aliases.add(r'c:\ned\foo\src', './mysrc')
-        self.assertEqual(aliases.map(r'C:\Ned\foo\src\sub\a.py'), './mysrc/sub/a.py')
+        aliases.add('/home/ned/*/src', './mysrc')
+        aliases.add(r'c:\ned\src', './mysrc')
+        mapped = aliases.map(r'C:\Ned\src\sub\a.py')
+        self.assertEqual(mapped, './mysrc/sub/a.py')
 
         aliases = PathAliases()
-        aliases.add('/ned/home/*/src', r'.\mysrc')
-        aliases.add(r'c:\ned\foo\src', r'.\mysrc')
-        self.assertEqual(aliases.map(r'/ned/home/foo/src/sub/a.py'), r'.\mysrc\sub\a.py')
+        aliases.add('/home/ned/*/src', r'.\mysrc')
+        aliases.add(r'c:\ned\src', r'.\mysrc')
+        mapped = aliases.map(r'/home/ned/foo/src/sub/a.py')
+        self.assertEqual(mapped, r'.\mysrc\sub\a.py')
 
 
 class FindPythonFilesTest(CoverageTest):

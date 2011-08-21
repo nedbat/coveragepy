@@ -143,5 +143,7 @@ class DataTest(CoverageTest):
         aliases.add("/home/ned/proj/src/", "./")
         aliases.add(r"c:\ned\test", "./")
         covdata3.combine_parallel_data(aliases=aliases)
-        self.assert_summary(covdata3, { './a.py':4, './sub/b.py':2 }, fullpath=True)
+        self.assert_summary(
+            covdata3, { './a.py':4, './sub/b.py':2 }, fullpath=True
+            )
         self.assert_measured_files(covdata3, [ './a.py', './sub/b.py' ])
