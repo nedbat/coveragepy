@@ -164,7 +164,7 @@ class PathAliases(object):
 
         # Make a regex from the pattern.  fnmatch always adds a \Z or $ to
         # match the whole string, which we don't want.
-        regex_pat = fnmatch.translate(pattern).replace(r'\Z', '')
+        regex_pat = fnmatch.translate(pattern).replace(r'\Z(', '(')
         if regex_pat.endswith("$"):
             regex_pat = regex_pat[:-1]
         regex = re.compile("(?i)" + regex_pat)

@@ -120,6 +120,13 @@ class PathAliasesTest(CoverageTest):
             aliases.add, "/ned/home/*/*/", "fooey"
             )
 
+    def test_no_accidental_munging(self):
+        aliases = PathAliases()
+        aliases.add(r'c:\Zoo\boo', 'src/')
+        aliases.add('/home/ned$', 'src/')
+        self.assertEqual(aliases.map(r'c:\Zoo\boo\foo.py'), 'src/foo.py')
+        self.assertEqual(aliases.map(r'/home/ned$/foo.py'), 'src/foo.py')
+
     def test_paths_are_os_corrected(self):
         aliases = PathAliases()
         aliases.add('/home/ned/*/src', './mysrc')
