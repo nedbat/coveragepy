@@ -119,6 +119,16 @@ class FnmatchMatcher(object):
         return False
 
 
+def sep(s):
+    """Find the path separator used in this string, or os.sep if none."""
+    sep_match = re.search(r"[\\/]", s)
+    if sep_match:
+        the_sep = sep_match.group(0)
+    else:
+        the_sep = os.sep
+    return the_sep
+
+
 class PathAliases(object):
     """A collection of aliases for paths.
 
@@ -132,15 +142,6 @@ class PathAliases(object):
     """
     def __init__(self):
         self.aliases = []
-
-    def _sep(self, s):
-        """Find the path separator used in this string, or os.sep if none."""
-        sep_match = re.search(r"[\\/]", s)
-        if sep_match:
-            sep = sep_match.group(0)
-        else:
-            sep = os.sep
-        return sep
 
     def add(self, pattern, result):
         """Add the `pattern`/`result` pair to the list of aliases.
@@ -159,7 +160,7 @@ class PathAliases(object):
         pattern = pattern.rstrip(r"\/")
         if pattern.endswith("*"):
             raise CoverageException("Pattern must not end with wildcards.")
-        pattern_sep = self._sep(pattern)
+        pattern_sep = sep(pattern)
         pattern += pattern_sep
 
         # Make a regex from the pattern.  fnmatch always adds a \Z or $ to
@@ -170,7 +171,7 @@ class PathAliases(object):
         regex = re.compile("(?i)" + regex_pat)
 
         # Normalize the result: it must end with a path separator.
-        result_sep = self._sep(result)
+        result_sep = sep(result)
         result = result.rstrip(r"\/") + result_sep
         self.aliases.append((regex, result, pattern_sep, result_sep))
 
