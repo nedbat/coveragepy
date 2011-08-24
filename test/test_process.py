@@ -173,7 +173,10 @@ class ProcessTest(CoverageTest):
         # files have been combined together.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.summary(fullpath=True), {'src/x.py': 6})
+        summary = data.summary(fullpath=True)
+        self.assertEqual(len(summary), 1)
+        self.assertEqual(summary.keys()[0], os.path.normpath('src/x.py'))
+        self.assertEqual(summary.values()[0], 6)
 
     def test_missing_source_file(self):
         # Check what happens if the source is missing when reporting happens.

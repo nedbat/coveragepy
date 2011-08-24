@@ -168,6 +168,10 @@ class PathAliases(object):
         regex_pat = fnmatch.translate(pattern).replace(r'\Z(', '(')
         if regex_pat.endswith("$"):
             regex_pat = regex_pat[:-1]
+        # We want */a/b.py to match on Windows to, so change slash to match
+        # either separator.
+        regex_pat = regex_pat.replace(r"\/", r"[\\/]")
+        # We want case-insensitive matching, so add that flag.
         regex = re.compile("(?i)" + regex_pat)
 
         # Normalize the result: it must end with a path separator.
