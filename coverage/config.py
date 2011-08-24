@@ -55,6 +55,9 @@ class CoverageConfig(object):
         # Defaults for [xml]
         self.xml_output = "coverage.xml"
 
+        # Defaults for [paths]
+        self.paths = {}
+
     def from_environment(self, env_var):
         """Read configuration from the `env_var` environment variable."""
         # Timidity: for nose users, read an environment variable.  This is a
@@ -123,6 +126,11 @@ class CoverageConfig(object):
         # [xml]
         if cp.has_option('xml', 'output'):
             self.xml_output = cp.get('xml', 'output')
+
+        # [paths]
+        if cp.has_section('paths'):
+            for option in cp.options('paths'):
+                self.paths[option] = self.get_list(cp, 'paths', option)
 
     def get_list(self, cp, section, option):
         """Read a list of strings from the ConfigParser `cp`.

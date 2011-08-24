@@ -129,6 +129,52 @@ class ProcessTest(CoverageTest):
             b_or_c       7      0   100%
             """))
 
+    def test_combine_with_aliases(self):
+        self.make_file("d1/x.py", """\
+            a = 1
+            b = 2
+            print("%s %s" % (a, b))
+            """)
+
+        self.make_file("d2/x.py", """\
+            # 1
+            # 2
+            # 3
+            c = 4
+            d = 5
+            print("%s %s" % (c, d))
+            """)
+
+        self.make_file(".coveragerc", """\
+            [run]
+            parallel = True
+
+            [paths]
+            source =
+                src
+                */d1
+                */d2
+            """)
+
+        out = self.run_command("coverage run " + os.path.normpath("d1/x.py"))
+        self.assertEqual(out, '1 2\n')
+        out = self.run_command("coverage run " + os.path.normpath("d2/x.py"))
+        self.assertEqual(out, '4 5\n')
+
+        self.assertEqual(self.number_of_data_files(), 2)
+
+        self.run_command("coverage combine")
+        self.assert_exists(".coverage")
+
+        # After combining, there should be only the .coverage file.
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        # Read the coverage data file and see that the two different x.py
+        # files have been combined together.
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.summary(fullpath=True), {'src/x.py': 6})
+
     def test_missing_source_file(self):
         # Check what happens if the source is missing when reporting happens.
         self.make_file("fleeting.py", """\

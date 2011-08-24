@@ -9,7 +9,7 @@ from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
-from coverage.files import find_python_files
+from coverage.files import PathAliases, find_python_files
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.results import Analysis, Numbers
@@ -467,7 +467,14 @@ class coverage(object):
         current measurements.
 
         """
-        self.data.combine_parallel_data()
+        aliases = None
+        if self.config.paths:
+            aliases = PathAliases()
+            for paths in self.config.paths.values():
+                result = paths[0]
+                for pattern in paths[1:]:
+                    aliases.add(pattern, result)
+        self.data.combine_parallel_data(aliases=aliases)
 
     def _harvest_data(self):
         """Get the collected data and reset the collector.

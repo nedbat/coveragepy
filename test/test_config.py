@@ -140,6 +140,13 @@ class ConfigFileTest(CoverageTest):
             [xml]
             output=mycov.xml
 
+            [paths]
+            source =
+                .
+                /home/ned/src/
+
+            other = other, /home/ned/other, c:\\Ned\\etc
+
             """)
         cov = coverage.coverage()
 
@@ -168,3 +175,9 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
 
         self.assertEqual(cov.config.xml_output, "mycov.xml")
+
+        self.assertEqual(cov.config.paths, {
+            'source': ['.', '/home/ned/src/'],
+            'other': ['other', '/home/ned/other', 'c:\\Ned\\etc']
+            })
+

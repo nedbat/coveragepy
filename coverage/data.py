@@ -176,7 +176,7 @@ class CoverageData(object):
         Treat `self.filename` as a file prefix, and combine the data from all
         of the data files starting with that prefix plus a dot.
 
-        If `aliases` is provided, it's a PathAliases object that is used to
+        If `aliases` is provided, it's a `PathAliases` object that is used to
         re-map paths to match the local machine's.
 
         """
