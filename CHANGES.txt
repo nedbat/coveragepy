@@ -5,6 +5,11 @@ Change history for Coverage.py
 Version 3.5.1
 -------------
 
+- When combining data files from parallel runs, you can now instruct coverage
+  about which directories are equivalent on different machines.  A ``[paths]``
+  section in the configuration file lists paths that are to be considered
+  equivalent.
+
 - for-else constructs are understood better, and don't cause erroneous partial
   branch warnings.  Fixes `issue 122`_.
 

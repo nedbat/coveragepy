@@ -8,6 +8,7 @@ Configuration files
 :history: 20100725T211700, updated for 3.4.
 :history: 20100824T092900, added ``precision``.
 :history: 20110604T184400, updated for 3.5.
+:history: 20110827T212700, updated for 3.5.1
 
 
 Coverage.py options can be specified in a configuration file.  This makes it
@@ -101,6 +102,33 @@ measure during execution.  See :ref:`source` for details.
 
 ``timid`` (boolean, default False): use a simpler but slower trace method.
 Try this if you get seemingly impossible results.
+
+
+.. _config_paths:
+
+[paths]
+-------
+
+The entries in this section are lists of file paths that should be
+considered equivalent when combining data from different machines::
+
+    [paths]
+    source =
+        src/
+        /jenkins/build/*/src
+        c:\myproj\src
+
+The names of the entries are ignored, you may choose any name that
+you like.  The value is a lists of strings.  When combining data
+with the ``combine`` command, two file paths will be combined
+if they start with paths from the same list.
+
+The first value must be an actual file path on the machine where
+the reporting will happen, so that source code can be found.
+The other values can be file patterns to match against the paths
+of collected data.
+
+See :ref:`cmd_combining` for more information.
 
 
 [report]

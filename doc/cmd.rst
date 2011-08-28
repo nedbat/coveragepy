@@ -11,6 +11,7 @@ Coverage command line usage
 :history: 20091127T200700, changes for 3.2
 :history: 20100223T200600, changes for 3.3
 :history: 20100725T211700, updated for 3.4
+:history: 20110827T212500, updated for 3.5.1, combining aliases
 
 .. highlight:: console
 
@@ -138,6 +139,11 @@ directory, and use the **combine** command to combine them into one .coverage
 data file::
 
     $ coverage combine
+
+If the different machines run your code from different places in their file
+systems, coverage won't know how to combine the data.  You can tell coverage
+how the different locations correlate with a ``[paths]`` section in your
+configuration file.  See :ref:`config_paths` for details.
 
 
 .. _cmd_reporting:
