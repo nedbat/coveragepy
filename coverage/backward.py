@@ -73,13 +73,29 @@ except ImportError:
     import ConfigParser as configparser
 
 # Python 3.2 provides `tokenize.open`, the best way to open source files.
+import tokenize
 try:
-    import tokenize
     open_source = tokenize.open     # pylint: disable=E1101
 except AttributeError:
-    def open_source(fname):
-        """Open a source file the best way."""
-        return open(fname, "rU")
+    try:
+        detect_encoding = tokenize.detect_encoding
+    except AttributeError:
+        def open_source(fname):
+            """Open a source file the best way."""
+            return open(fname, "rU")
+    else:
+        from io import TextIOWrapper
+        # Copied from the 3.2 stdlib:
+        def open_source(fname):
+            """Open a file in read only mode using the encoding detected by
+            detect_encoding().
+            """
+            buffer = open(fname, 'rb')
+            encoding, lines = detect_encoding(buffer.readline)
+            buffer.seek(0)
+            text = TextIOWrapper(buffer, encoding, line_buffering=True)
+            text.mode = 'r'
+            return text
 
 # Python 3.x is picky about bytes and strings, so provide methods to
 # get them right, and make them no-ops in 2.x
