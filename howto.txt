@@ -54,6 +54,15 @@
 - Ask Christophe Zwerschke (cito@online.de) to build win64 kits.
 
 
+* Making virtualenvs on Windows
+
+- cd c:\vpy\coverage
+- \py32\xx\python ..\virtualenv.py xx
+- copy ..\distutils.cfg xx\Lib\distutils
+- cd nose_source_directory_someplace
+- \vpy\coverage\xx\Scripts\python.exe setup.py install
+
+
 * Building
 
 - Install fixtar on any Windows Python used to make source kits: http://bitbucket.org/ned/fixtar

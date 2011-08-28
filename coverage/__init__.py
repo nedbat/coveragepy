@@ -5,7 +5,7 @@ http://nedbatchelder.com/code/coverage
 
 """
 
-__version__ = "3.5.1a0"     # see detailed history in CHANGES.txt
+__version__ = "3.5.1b1"     # see detailed history in CHANGES.txt
 
 __url__ = "http://nedbatchelder.com/code/coverage"
 if max(__version__).isalpha():

@@ -2,8 +2,8 @@
 Change history for Coverage.py
 ------------------------------
 
-Version 3.5.1
--------------
+Version 3.5.1b1 --- 28 August 2011
+----------------------------------
 
 - When combining data files from parallel runs, you can now instruct coverage
   about which directories are equivalent on different machines.  A ``[paths]``
