@@ -78,7 +78,7 @@ try:
     open_source = tokenize.open     # pylint: disable=E1101
 except AttributeError:
     try:
-        detect_encoding = tokenize.detect_encoding
+        detect_encoding = tokenize.detect_encoding  # pylint: disable=E1101
     except AttributeError:
         def open_source(fname):
             """Open a source file the best way."""
@@ -91,7 +91,7 @@ except AttributeError:
             detect_encoding().
             """
             buffer = open(fname, 'rb')
-            encoding, lines = detect_encoding(buffer.readline)
+            encoding, _ = detect_encoding(buffer.readline)
             buffer.seek(0)
             text = TextIOWrapper(buffer, encoding, line_buffering=True)
             text.mode = 'r'
