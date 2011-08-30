@@ -88,6 +88,8 @@ publish: px
 
 publishbeta: px
 	rm -f $(WEBHOME)/beta/*.px
+	mkdir -p $(WEBHOME)/beta
 	cp doc/_build/px/*.px $(WEBHOME)/beta
 	rm -f $(WEBHOME)/sample_html_beta/*.*
+	mkdir -p $(WEBHOME)/sample_html_beta
 	cp doc/sample_html_beta/*.* $(WEBHOME)/sample_html_beta
