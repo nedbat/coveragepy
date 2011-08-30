@@ -8,7 +8,7 @@ Version 3.5.1b1 --- 28 August 2011
 - When combining data files from parallel runs, you can now instruct coverage
   about which directories are equivalent on different machines.  A ``[paths]``
   section in the configuration file lists paths that are to be considered
-  equivalent.
+  equivalent.  Finishes `issue 17`_.
 
 - for-else constructs are understood better, and don't cause erroneous partial
   branch warnings.  Fixes `issue 122`_.
@@ -33,6 +33,7 @@ Version 3.5.1b1 --- 28 August 2011
   into running some coverage code before anything else in the process.
   See the coverage/fullcoverage directory if you are interested.
 
+.. _issue 17: http://bitbucket.org/ned/coveragepy/issue/17/support-combining-coverage-data-from
 .. _issue 122: http://bitbucket.org/ned/coveragepy/issue/122/for-else-always-reports-missing-branch
 .. _issue 124: http://bitbucket.org/ned/coveragepy/issue/124/no-arbitrary-unicode-in-html-reports-in
 .. _issue 128: http://bitbucket.org/ned/coveragepy/issue/128/branch-coverage-of-with-statement-in-27
