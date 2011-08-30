@@ -42,7 +42,7 @@ class PxTranslator(BaseHtmlXlator):
         if self.history:
             self.body.append("<history>\n")
             for hist in self.history:
-                when, what = hist.split(',')
+                when, what = hist.split(',', 1)
                 self.body.append("<what when='%s'>%s</what>\n" % (when, self.encode(what.strip())))
             self.body.append("</history>\n")
             
