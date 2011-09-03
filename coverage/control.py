@@ -469,7 +469,7 @@ class coverage(object):
         """
         aliases = None
         if self.config.paths:
-            aliases = PathAliases()
+            aliases = PathAliases(self.file_locator)
             for paths in self.config.paths.values():
                 result = paths[0]
                 for pattern in paths[1:]:
