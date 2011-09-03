@@ -194,7 +194,6 @@ class PathAliases(object):
         in the alias.
 
         """
-        opath = path
         for regex, result, pattern_sep, result_sep in self.aliases:
             m = regex.match(path)
             if m:
