@@ -21,7 +21,7 @@ contains("out/showtraceout.txt", "timid PyTracer")
 if os.environ.get('COVERAGE_TEST_TRACER', 'c') == 'c':
     # If the C trace function is being tested, then regular running should have
     # the C function, which registers itself as f_trace.
-    contains("out/showtraceout.txt", "regular Tracer")
+    contains("out/showtraceout.txt", "regular CTracer")
 else:
     # If the Python trace function is being tested, then regular running will
     # also show the Python function.

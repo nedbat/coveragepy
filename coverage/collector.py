@@ -4,10 +4,10 @@ import sys, threading
 
 try:
     # Use the C extension code when we can, for speed.
-    from coverage.tracer import Tracer
+    from coverage.tracer import CTracer
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
-    Tracer = None
+    CTracer = None
 
 
 class PyTracer(object):
@@ -173,7 +173,7 @@ class Collector(object):
         else:
             # Being fast: use the C Tracer if it is available, else the Python
             # trace function.
-            self._trace_class = Tracer or PyTracer
+            self._trace_class = CTracer or PyTracer
 
     def __repr__(self):
         return "<Collector at 0x%x>" % id(self)

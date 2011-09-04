@@ -56,7 +56,7 @@ typedef struct {
     int last_line;
 } DataStackEntry;
 
-/* The Tracer type. */
+/* The CTracer type. */
 
 typedef struct {
     PyObject_HEAD
@@ -115,12 +115,12 @@ typedef struct {
         unsigned int errors;
     } stats;
 #endif /* COLLECT_STATS */
-} Tracer;
+} CTracer;
 
 #define STACK_DELTA    100
 
 static int
-Tracer_init(Tracer *self, PyObject *args_unused, PyObject *kwds_unused)
+CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 {
 #if COLLECT_STATS
     self->stats.calls = 0;
@@ -161,7 +161,7 @@ Tracer_init(Tracer *self, PyObject *args_unused, PyObject *kwds_unused)
 }
 
 static void
-Tracer_dealloc(Tracer *self)
+CTracer_dealloc(CTracer *self)
 {
     if (self->started) {
         PyEval_SetTrace(NULL, NULL);
@@ -227,7 +227,7 @@ static const char * what_sym[] = {"CALL", "EXC ", "LINE", "RET "};
 
 /* Record a pair of integers in self->cur_file_data. */
 static int
-Tracer_record_pair(Tracer *self, int l1, int l2)
+CTracer_record_pair(CTracer *self, int l1, int l2)
 {
     int ret = RET_OK;
 
@@ -252,7 +252,7 @@ Tracer_record_pair(Tracer *self, int l1, int l2)
  * The Trace Function
  */
 static int
-Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
+CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
 {
     int ret = RET_OK;
     PyObject * filename = NULL;
@@ -286,7 +286,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
             STATS( self->stats.missed_returns++; )
             if (self->depth >= 0) {
                 if (self->tracing_arcs && self->cur_file_data) {
-                    if (Tracer_record_pair(self, self->last_line, -self->last_exc_firstlineno) < 0) {
+                    if (CTracer_record_pair(self, self->last_line, -self->last_exc_firstlineno) < 0) {
                         return RET_ERROR;
                     }
                 }
@@ -386,7 +386,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
         if (self->depth >= 0) {
             if (self->tracing_arcs && self->cur_file_data) {
                 int first = frame->f_code->co_firstlineno;
-                if (Tracer_record_pair(self, self->last_line, -first) < 0) {
+                if (CTracer_record_pair(self, self->last_line, -first) < 0) {
                     return RET_ERROR;
                 }
             }
@@ -406,7 +406,7 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
                 /* We're tracing in this frame: record something. */
                 if (self->tracing_arcs) {
                     /* Tracing arcs: key is (last_line,this_line). */
-                    if (Tracer_record_pair(self, self->last_line, frame->f_lineno) < 0) {
+                    if (CTracer_record_pair(self, self->last_line, frame->f_lineno) < 0) {
                         return RET_ERROR;
                     }
                 }
@@ -472,13 +472,13 @@ Tracer_trace(Tracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
  * To help with the process of replaying stored frames, this function has an
  * optional keyword argument:
  *
- *      def Tracer_call(frame, event, arg, lineno=0)
+ *      def CTracer_call(frame, event, arg, lineno=0)
  *
  * If provided, the lineno argument is used as the line number, and the
  * frame's f_lineno member is ignored.
  */
 static PyObject *
-Tracer_call(Tracer *self, PyObject *args, PyObject *kwds)
+CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
 {
     PyFrameObject *frame;
     PyObject *what_str;
@@ -520,7 +520,7 @@ Tracer_call(Tracer *self, PyObject *args, PyObject *kwds)
     }
 
     /* Invoke the C function, and return ourselves. */
-    if (Tracer_trace(self, frame, what, arg) == RET_OK) {
+    if (CTracer_trace(self, frame, what, arg) == RET_OK) {
         Py_INCREF(self);
         ret = (PyObject *)self;
     }
@@ -533,9 +533,9 @@ done:
 }
 
 static PyObject *
-Tracer_start(Tracer *self, PyObject *args_unused)
+CTracer_start(CTracer *self, PyObject *args_unused)
 {
-    PyEval_SetTrace((Py_tracefunc)Tracer_trace, (PyObject*)self);
+    PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
     self->started = 1;
     self->tracing_arcs = self->arcs && PyObject_IsTrue(self->arcs);
     self->last_line = -1;
@@ -546,7 +546,7 @@ Tracer_start(Tracer *self, PyObject *args_unused)
 }
 
 static PyObject *
-Tracer_stop(Tracer *self, PyObject *args_unused)
+CTracer_stop(CTracer *self, PyObject *args_unused)
 {
     if (self->started) {
         PyEval_SetTrace(NULL, NULL);
@@ -557,7 +557,7 @@ Tracer_stop(Tracer *self, PyObject *args_unused)
 }
 
 static PyObject *
-Tracer_get_stats(Tracer *self)
+CTracer_get_stats(CTracer *self)
 {
 #if COLLECT_STATS
     return Py_BuildValue(
@@ -579,46 +579,46 @@ Tracer_get_stats(Tracer *self)
 }
 
 static PyMemberDef
-Tracer_members[] = {
-    { "should_trace",       T_OBJECT, offsetof(Tracer, should_trace), 0,
+CTracer_members[] = {
+    { "should_trace",       T_OBJECT, offsetof(CTracer, should_trace), 0,
             PyDoc_STR("Function indicating whether to trace a file.") },
 
-    { "warn",               T_OBJECT, offsetof(Tracer, warn), 0,
+    { "warn",               T_OBJECT, offsetof(CTracer, warn), 0,
             PyDoc_STR("Function for issuing warnings.") },
 
-    { "data",               T_OBJECT, offsetof(Tracer, data), 0,
+    { "data",               T_OBJECT, offsetof(CTracer, data), 0,
             PyDoc_STR("The raw dictionary of trace data.") },
 
-    { "should_trace_cache", T_OBJECT, offsetof(Tracer, should_trace_cache), 0,
+    { "should_trace_cache", T_OBJECT, offsetof(CTracer, should_trace_cache), 0,
             PyDoc_STR("Dictionary caching should_trace results.") },
 
-    { "arcs",               T_OBJECT, offsetof(Tracer, arcs), 0,
+    { "arcs",               T_OBJECT, offsetof(CTracer, arcs), 0,
             PyDoc_STR("Should we trace arcs, or just lines?") },
 
     { NULL }
 };
 
 static PyMethodDef
-Tracer_methods[] = {
-    { "start",      (PyCFunction) Tracer_start,         METH_VARARGS,
+CTracer_methods[] = {
+    { "start",      (PyCFunction) CTracer_start,        METH_VARARGS,
             PyDoc_STR("Start the tracer") },
 
-    { "stop",       (PyCFunction) Tracer_stop,          METH_VARARGS,
+    { "stop",       (PyCFunction) CTracer_stop,         METH_VARARGS,
             PyDoc_STR("Stop the tracer") },
 
-    { "get_stats",  (PyCFunction) Tracer_get_stats,     METH_VARARGS,
+    { "get_stats",  (PyCFunction) CTracer_get_stats,    METH_VARARGS,
             PyDoc_STR("Get statistics about the tracing") },
 
     { NULL }
 };
 
 static PyTypeObject
-TracerType = {
+CTracerType = {
     MyType_HEAD_INIT
-    "coverage.Tracer",         /*tp_name*/
-    sizeof(Tracer),            /*tp_basicsize*/
+    "coverage.CTracer",        /*tp_name*/
+    sizeof(CTracer),           /*tp_basicsize*/
     0,                         /*tp_itemsize*/
-    (destructor)Tracer_dealloc, /*tp_dealloc*/
+    (destructor)CTracer_dealloc, /*tp_dealloc*/
     0,                         /*tp_print*/
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
@@ -628,28 +628,28 @@ TracerType = {
     0,                         /*tp_as_sequence*/
     0,                         /*tp_as_mapping*/
     0,                         /*tp_hash */
-    (ternaryfunc)Tracer_call,  /*tp_call*/
+    (ternaryfunc)CTracer_call, /*tp_call*/
     0,                         /*tp_str*/
     0,                         /*tp_getattro*/
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
-    "Tracer objects",          /* tp_doc */
+    "CTracer objects",         /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
     0,                         /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
-    Tracer_methods,            /* tp_methods */
-    Tracer_members,            /* tp_members */
+    CTracer_methods,           /* tp_methods */
+    CTracer_members,           /* tp_members */
     0,                         /* tp_getset */
     0,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
-    (initproc)Tracer_init,     /* tp_init */
+    (initproc)CTracer_init,    /* tp_init */
     0,                         /* tp_alloc */
     0,                         /* tp_new */
 };
@@ -682,14 +682,14 @@ PyInit_tracer(void)
         return NULL;
     }
 
-    TracerType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&TracerType) < 0) {
+    CTracerType.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&CTracerType) < 0) {
         Py_DECREF(mod);
         return NULL;
     }
 
-    Py_INCREF(&TracerType);
-    PyModule_AddObject(mod, "Tracer", (PyObject *)&TracerType);
+    Py_INCREF(&CTracerType);
+    PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType);
 
     return mod;
 }
@@ -706,13 +706,13 @@ inittracer(void)
         return;
     }
 
-    TracerType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&TracerType) < 0) {
+    CTracerType.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&CTracerType) < 0) {
         return;
     }
 
-    Py_INCREF(&TracerType);
-    PyModule_AddObject(mod, "Tracer", (PyObject *)&TracerType);
+    Py_INCREF(&CTracerType);
+    PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType);
 }
 
 #endif /* Py3k */
