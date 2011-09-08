@@ -634,6 +634,11 @@ class coverage(object):
         import coverage as covmod
         import platform, re
 
+        try:
+            implementation = platform.python_implementation()
+        except AttributeError:
+            implementation = "unknown"
+
         info = [
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
@@ -643,6 +648,7 @@ class coverage(object):
             ('data_path', self.data.filename),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
+            ('implementation', implementation),
             ('cwd', os.getcwd()),
             ('path', sys.path),
             ('environment', [
