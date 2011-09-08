@@ -9,8 +9,8 @@ from coverage.misc import CoverageException
 from coverage.parser import ByteParser, CodeParser
 
 
-class AdHocMain(object):
-    """An ad-hoc main for code parsing experiments."""
+class ParserMain(object):
+    """A main for code parsing experiments."""
 
     def main(self, args):
         """A main function for trying the code from the command line."""
@@ -45,11 +45,13 @@ class AdHocMain(object):
                 root = "."
             for root, _, _ in os.walk(root):
                 for f in glob.glob(root + "/*.py"):
-                    self.adhoc_one_file(options, f)
+                    self.one_file(options, f)
+        elif not args:
+            parser.print_help()
         else:
-            self.adhoc_one_file(options, args[0])
+            self.one_file(options, args[0])
 
-    def adhoc_one_file(self, options, filename):
+    def one_file(self, options, filename):
         """Process just one file."""
 
         if options.dis or options.chunks:
@@ -173,5 +175,5 @@ class AdHocMain(object):
         return arc_width, arc_chars
 
 if __name__ == '__main__':
-    AdHocMain().main(sys.argv[1:])
+    ParserMain().main(sys.argv[1:])
 
