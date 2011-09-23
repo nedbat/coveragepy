@@ -3,6 +3,9 @@ Change history for Coverage.py
 ------------------------------
 
 
+Version 3.5.1 --- 23 September 2011
+-----------------------------------
+
 - The ``[paths]`` feature unfortunately didn't work in real world situations
   where you wanted to, you know, report on the combined data.  Now all paths
   stored in the combined file are canonicalized properly.

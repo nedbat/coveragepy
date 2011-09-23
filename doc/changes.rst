@@ -18,12 +18,52 @@ Major change history for coverage.py
 :history: 20100919T163400, updated for 3.4 release.
 :history: 20110604T214100, updated for 3.5b1
 :history: 20110629T082200, updated for 3.5
+:history: 20110923T081600, updated for 3.5.1
 
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+
+
+Version 3.5.1 --- 23 September 2011
+-----------------------------------
+
+- When combining data files from parallel runs, you can now instruct coverage
+  about which directories are equivalent on different machines.  A ``[paths]``
+  section in the configuration file lists paths that are to be considered
+  equivalent.  Finishes `issue 17`_.
+
+- for-else constructs are understood better, and don't cause erroneous partial
+  branch warnings.  Fixes `issue 122`_.
+
+- Branch coverage for ``with`` statements is improved, fixing `issue 128`_.
+
+- The number of partial branches reported on the HTML summary page was
+  different than the number reported on the individual file pages.  This is
+  now fixed.
+
+- An explicit include directive to measure files in the Python installation
+  wouldn't work because of the standard library exclusion.  Now the include
+  directive takes precendence, and the files will be measured.  Fixes
+  `issue 138`_.
+
+- The HTML report now handles Unicode characters in Python source files
+  properly.  This fixes `issue 124`_ and `issue 144`_. Thanks, Devin
+  Jeanpierre.
+
+- In order to help the core developers measure the test coverage of the
+  standard library, Brandon Rhodes devised an aggressive hack to trick Python
+  into running some coverage code before anything else in the process.
+  See the coverage/fullcoverage directory if you are interested.
+
+.. _issue 17: http://bitbucket.org/ned/coveragepy/issue/17/support-combining-coverage-data-from
+.. _issue 122: http://bitbucket.org/ned/coveragepy/issue/122/for-else-always-reports-missing-branch
+.. _issue 124: http://bitbucket.org/ned/coveragepy/issue/124/no-arbitrary-unicode-in-html-reports-in
+.. _issue 128: http://bitbucket.org/ned/coveragepy/issue/128/branch-coverage-of-with-statement-in-27
+.. _issue 138: http://bitbucket.org/ned/coveragepy/issue/138/include-should-take-precedence-over-is
+.. _issue 144: http://bitbucket.org/ned/coveragepy/issue/144/failure-generating-html-output-for
 
 
 Version 3.5 --- 29 June 2011
