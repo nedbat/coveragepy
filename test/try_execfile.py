@@ -1,6 +1,6 @@
 """Test file for run_python_file."""
 
-import pprint, sys
+import os, pprint, sys
 
 DATA = "xyzzy"
 
@@ -18,11 +18,12 @@ globals_to_check = {
     '__doc__': __doc__,
     '__builtins__.has_open': hasattr(__builtins__, 'open'),
     '__builtins__.dir': dir(__builtins__),
+    '__package__': __package__,
     'DATA': DATA,
     'FN_VAL': FN_VAL,
     '__main__.DATA': getattr(__main__, "DATA", "nothing"),
     'argv': sys.argv,
-    'path0': sys.path[0],
+    'path': [os.path.normcase(p) for p in sys.path],
 }
 
 pprint.pprint(globals_to_check)
