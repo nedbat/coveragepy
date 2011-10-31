@@ -83,7 +83,8 @@ def run_python_file(filename, args, package=None):
     main_mod = imp.new_module('__main__')
     sys.modules['__main__'] = main_mod
     main_mod.__file__ = filename
-    main_mod.__package__ = package
+    if package:
+        main_mod.__package__ = package
     main_mod.__builtins__ = BUILTINS
 
     # Set sys.argv and the first path element properly.

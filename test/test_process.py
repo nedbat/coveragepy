@@ -279,11 +279,12 @@ class ProcessTest(CoverageTest):
         out2 = self.run_command("python run_me.py")
         self.assertMultiLineEqual(out, out2)
 
-    def test_coverage_run_dashm_is_like_python_dashm(self):
-        # These -m commands assume the coverage tree is on the path.
-        out = self.run_command("coverage run -m test.try_execfile")
-        out2 = self.run_command("python -m test.try_execfile")
-        self.assertMultiLineEqual(out, out2)
+    if sys.version_info >= (2, 6):  # Doesn't work in 2.5, and I don't care!
+        def test_coverage_run_dashm_is_like_python_dashm(self):
+            # These -m commands assume the coverage tree is on the path.
+            out = self.run_command("coverage run -m test.try_execfile")
+            out2 = self.run_command("python -m test.try_execfile")
+            self.assertMultiLineEqual(out, out2)
 
     if hasattr(os, 'fork'):
         def test_fork(self):
