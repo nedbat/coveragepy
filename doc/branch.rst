@@ -7,6 +7,7 @@ Branch coverage measurement
 :history: 20091127T201300, new for version 3.2
 :history: 20100725T211700, updated for 3.4.
 :history: 20110604T181700, updated for 3.5.
+:history: 20111214T181800, Fix a bug that Guido pointed out.
 
 .. highlight:: python
    :linenothreshold: 5
@@ -109,12 +110,12 @@ tell coverage.py that you don't want them flagged by marking them with a
 pragma::
 
     i = 0
-    while i < 999999999:    # pragma: no partial
+    while i < 999999999:    # pragma: no branch
         if eventually():
             break
 
 Here the while loop will never complete because the break will always be taken
 at some point.  Coverage.py can't work that out on its own, but the
-"no partial" pragma indicates that the branch is known to be partial, and
+"no branch" pragma indicates that the branch is known to be partial, and
 the line is not flagged.
 

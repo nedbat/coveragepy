@@ -94,7 +94,7 @@ Note that when using the ``exclude_lines`` option in a configuration file, you
 are taking control of the entire list of regexes, so you need to re-specify the
 default "pragma: no cover" match if you still want it to apply.
 
-A similar pragma, "no partial", can be used to tailor branch coverage
+A similar pragma, "no branch", can be used to tailor branch coverage
 measurement.  See :ref:`branch` for details.
 
 
