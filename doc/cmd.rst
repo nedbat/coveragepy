@@ -12,6 +12,7 @@ Coverage command line usage
 :history: 20100223T200600, changes for 3.3
 :history: 20100725T211700, updated for 3.4
 :history: 20110827T212500, updated for 3.5.1, combining aliases
+:history: 20120119T075600, Added some clarification from George Paci
 
 .. highlight:: console
 
@@ -69,14 +70,21 @@ Your program runs just as if it had been invoked with the Python command line.
 Arguments after your file name are passed to your program as usual in
 ``sys.argv``.  Rather than providing a filename, you can use the ``-m`` switch
 and specify an importable module name instead, just as you can with the
-Python ``-m`` switch.
+Python ``-m`` switch::
+
+    $ coverage run -m packagename.modulename arg1 arg2
+    blah blah ..your program's output.. blah blah
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
 
 You can specify the code to measure with the ``--source``, ``--include``, and
 ``--omit`` switches.  See :ref:`Specifying source files <source_execution>` for
-more details.
+details of their interpretation.  Remember to put options for run after "run",
+but before the program invocation::
+
+    $ coverage run --source=dir1,dir2 my_program.py arg1 arg2
+    $ coverage run --source=dir1,dir2 -m packagename.modulename arg1 arg2
 
 By default, coverage does not measure code installed with the Python
 interpreter, for example, the standard library. If you want to measure that
