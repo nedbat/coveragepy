@@ -11,6 +11,9 @@ Version 3.5.2b1
   ``coverage run -m unittest discover`` not work if you had tests in a
   directory named "test".  This fixes `issue 155`_.
 
+- Now the exit status of your product code is properly used as the process
+  status when running ``python -m coverage run ...``.  Thanks, JT Olds.
+
 .. _issue 155: https://bitbucket.org/ned/coveragepy/issue/155/cant-use-coverage-run-m-unittest-discover
 
 
