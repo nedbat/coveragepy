@@ -102,8 +102,19 @@ setup_args = dict(
     url = __url__,
     )
 
-# Jython can't compile C extensions
+# There are a few reasons we might not be able to compile the C extension.
+
+compile_extension = True
+
 if not sys.platform.startswith('java'):
+    # Jython can't compile C extensions
+    compile_extension = False
+
+if hasattr(sys, "pypy_version_info"):
+    # Pypy can't compile C extensions
+    compile_extension = False
+
+if compile_extension:
     setup_args.update(dict(
         ext_modules = [
             Extension("coverage.tracer", sources=["coverage/tracer.c"])
