@@ -106,7 +106,7 @@ setup_args = dict(
 
 compile_extension = True
 
-if not sys.platform.startswith('java'):
+if sys.platform.startswith('java'):
     # Jython can't compile C extensions
     compile_extension = False
 
