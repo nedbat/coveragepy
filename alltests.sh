@@ -15,10 +15,18 @@ for v in 23 24 25 26 27 31 32
 do 
     source $ve/$v/bin/activate
     python setup.py -q develop
-    python -c "import platform, sys; print('=== Python %s with C tracer (%s) ===' % (platform.python_version(), sys.executable))"
+    python pybanner.py "with C tracer"
     COVERAGE_TEST_TRACER=c nosetests $@
-    python -c "import platform, sys; print('=== Python %s with Python tracer (%s) ===' % (platform.python_version(), sys.executable))"
+    python pybanner.py "with Python tracer"
     rm coverage/tracer*.so
+    COVERAGE_TEST_TRACER=py nosetests $@
+done
+
+for v in pypy
+do
+    source $ve/$v/bin/activate
+    python setup.py -q develop
+    python pybanner.py "with Python tracer"
     COVERAGE_TEST_TRACER=py nosetests $@
 done
 
