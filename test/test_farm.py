@@ -52,7 +52,8 @@ class FarmTestCase(object):
     def addtopath(self, directory):
         """Add `directory` to the path, and return the old path."""
         oldpath = sys.path[:]
-        sys.path.insert(0, directory)
+        if directory is not None:
+            sys.path.insert(0, directory)
         return oldpath
 
     def restorepath(self, path):
@@ -144,6 +145,8 @@ class FarmTestCase(object):
 
         """
         cwd = self.cd(rundir)
+        if outfile:
+            fout = open(outfile, "a+")
         try:
             for cmd in cmds.split("\n"):
                 cmd = cmd.strip()
@@ -152,10 +155,12 @@ class FarmTestCase(object):
                 retcode, output = run_command(cmd)
                 print(output.rstrip())
                 if outfile:
-                    open(outfile, "a+").write(output)
+                    fout.write(output)
                 if retcode:
                     raise Exception("command exited abnormally")
         finally:
+            if outfile:
+                fout.close()
             self.cd(cwd)
 
     def runfunc(self, fn, rundir="src", addtopath=None):
@@ -321,7 +326,12 @@ def main():     # pragma: no cover
     clean           - Clean all the output for all tests.
 
     """
-    op = sys.argv[1]
+    op = 'help'
+    try:
+        op = sys.argv[1]
+    except IndexError:
+        pass
+
     if op == 'run':
         # Run the test for real.
         case = FarmTestCase(sys.argv[2])
@@ -335,7 +345,7 @@ def main():     # pragma: no cover
         for test in test_farm(clean_only=True):
             test[0].run_fully()
     else:
-        print("Need an operation: run, out, clean")
+        print(main.__doc__)
 
 # So that we can run just one farm run.py at a time.
 if __name__ == '__main__':

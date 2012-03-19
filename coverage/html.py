@@ -246,7 +246,11 @@ class HtmlStatus(object):
         usable = False
         try:
             status_file = os.path.join(directory, self.STATUS_FILE)
-            status = pickle.load(open(status_file, "rb"))
+            fstatus = open(status_file, "rb")
+            try:
+                status = pickle.load(fstatus)
+            finally:
+                fstatus.close()
         except IOError:
             usable = False
         else:
