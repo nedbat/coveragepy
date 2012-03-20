@@ -110,7 +110,7 @@ if sys.platform.startswith('java'):
     # Jython can't compile C extensions
     compile_extension = False
 
-if hasattr(sys, "pypy_version_info"):
+if '__pypy__' in sys.builtin_module_names:
     # Pypy can't compile C extensions
     compile_extension = False
 

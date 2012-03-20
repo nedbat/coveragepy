@@ -226,6 +226,10 @@ class ProcessTest(CoverageTest):
         # same traceback.
         status, out = self.run_command_status("coverage run throw.py", 1)
         out2 = self.run_command("python throw.py")
+        if '__pypy__' in sys.builtin_module_names:
+            # Pypy has an extra frame in the traceback for some reason
+            lines2 = out2.splitlines()
+            out2 = "".join([l+"\n" for l in lines2 if "toplevel" not in l])
         self.assertMultiLineEqual(out, out2)
 
         # But also make sure that the output is what we expect.

@@ -8,4 +8,9 @@ try:
 except AttributeError:
     impl = "Python"
 
-print('=== %s %s %s (%s) ===' % (impl, platform.python_version(), sys.argv[1], sys.executable))
+version = platform.python_version()
+
+if '__pypy__' in sys.builtin_module_names:
+    version += " (pypy %s)" % ".".join([str(v) for v in sys.pypy_version_info])
+
+print('=== %s %s %s (%s) ===' % (impl, version, sys.argv[1], sys.executable))
