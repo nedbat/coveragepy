@@ -1,11 +1,11 @@
 """HTML reporting for Coverage."""
 
-import os, re, shutil
+import os, re, shutil, sys
 
 import coverage
-from coverage.backward import pickle, write_encoded
+from coverage.backward import pickle
 from coverage.misc import CoverageException, Hasher
-from coverage.phystokens import source_token_lines
+from coverage.phystokens import source_token_lines, source_encoding
 from coverage.report import Reporter
 from coverage.templite import Templite
 
@@ -100,7 +100,11 @@ class HtmlReporter(Reporter):
 
     def write_html(self, fname, html):
         """Write `html` to `fname`, properly encoded."""
-        write_encoded(fname, html, 'ascii', 'xmlcharrefreplace')
+        fout = open(fname, "wb")
+        try:
+            fout.write(html.encode('ascii', 'xmlcharrefreplace'))
+        finally:
+            fout.close()
 
     def file_hash(self, source, cu):
         """Compute a hash that changes if the file needs to be re-reported."""
@@ -128,6 +132,12 @@ class HtmlReporter(Reporter):
 
         self.status.set_file_hash(flat_rootname, this_hash)
 
+        # If need be, determine the encoding of the source file. We use it
+        # later to properly write the HTML.
+        if sys.version_info < (3, 0):
+            encoding = source_encoding(source)
+
+        # Get the numbers for this file.
         nums = analysis.numbers
 
         missing_branch_arcs = analysis.missing_branch_arcs()
@@ -195,6 +205,8 @@ class HtmlReporter(Reporter):
         html_path = os.path.join(self.directory, html_filename)
 
         html = spaceless(self.source_tmpl.render(locals()))
+        if sys.version_info < (3, 0):
+            html = html.decode(encoding)
         self.write_html(html_path, html)
 
         # Save this file's information for the index file.

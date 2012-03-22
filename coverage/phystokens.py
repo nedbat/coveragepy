@@ -1,6 +1,6 @@
 """Better tokenizing for coverage.py."""
 
-import keyword, re, token, tokenize
+import codecs, keyword, re, sys, token, tokenize
 from coverage.backward import StringIO              # pylint: disable=W0622
 
 def phys_tokens(toks):
@@ -106,3 +106,101 @@ def source_token_lines(source):
 
     if line:
         yield line
+
+def source_encoding(source):
+    """Determine the encoding for `source` (a string), according to PEP 263.
+
+    Returns a string, the name of the encoding.
+
+    """
+    # Note: this function should never be called on Python 3, since py3 has
+    # built-in tools to do this.
+    assert sys.version_info < (3, 0)
+
+    # This is mostly code adapted rom Py3.2's tokenize module.
+
+    cookie_re = re.compile("coding[:=]\s*([-\w.]+)")
+
+    # Do this so the detect_encode code we copied will work.
+    readline = iter(source.splitlines()).next
+
+    def _get_normal_name(orig_enc):
+        """Imitates get_normal_name in tokenizer.c."""
+        # Only care about the first 12 characters.
+        enc = orig_enc[:12].lower().replace("_", "-")
+        if re.match(r"^utf-8($|-)", enc):
+            return "utf-8"
+        if re.match(r"^(latin-1|iso-8859-1|iso-latin-1)($|-)", enc):
+            return "iso-8859-1"
+        return orig_enc
+
+    # From detect_encode():
+    # It detects the encoding from the presence of a utf-8 bom or an encoding
+    # cookie as specified in pep-0263.  If both a bom and a cookie are present,
+    # but disagree, a SyntaxError will be raised.  If the encoding cookie is an
+    # invalid charset, raise a SyntaxError.  Note that if a utf-8 bom is found,
+    # 'utf-8-sig' is returned.
+
+    # If no encoding is specified, then the default will be returned.  The
+    # default varied with version.
+
+    if sys.version_info <= (2, 4):
+        default = 'iso-8859-1'
+    else:
+        default = 'ascii'
+
+    bom_found = False
+    encoding = None
+
+    def read_or_stop():
+        """Get the next source line, or ''."""
+        try:
+            return readline()
+        except StopIteration:
+            return ''
+
+    def find_cookie(line):
+        """Find an encoding cookie in `line`."""
+        try:
+            line_string = line.decode('ascii')
+        except UnicodeDecodeError:
+            return None
+
+        matches = cookie_re.findall(line_string)
+        if not matches:
+            return None
+        encoding = _get_normal_name(matches[0])
+        try:
+            codec = codecs.lookup(encoding)
+        except LookupError:
+            # This behaviour mimics the Python interpreter
+            raise SyntaxError("unknown encoding: " + encoding)
+
+        if bom_found:
+            if codec.name != 'utf-8':
+                # This behaviour mimics the Python interpreter
+                raise SyntaxError('encoding problem: utf-8')
+            encoding += '-sig'
+        return encoding
+
+    first = read_or_stop()
+    if first.startswith(codecs.BOM_UTF8):
+        bom_found = True
+        first = first[3:]
+        default = 'utf-8-sig'
+    if not first:
+        return default
+
+    encoding = find_cookie(first)
+    if encoding:
+        return encoding
+
+    second = read_or_stop()
+    if not second:
+        return default
+
+    encoding = find_cookie(second)
+    if encoding:
+        return encoding
+
+    return default

@@ -6,7 +6,7 @@
 # W0611: Unused import blah
 # W0622: Redefining built-in blah
 
-import os, sys
+import os, re, sys
 
 # Python 2.3 doesn't have `set`
 try:
@@ -72,30 +72,38 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-# Python 3.2 provides `tokenize.open`, the best way to open source files.
-import tokenize
-try:
-    open_source = tokenize.open     # pylint: disable=E1101
-except AttributeError:
+# Reading Python source and interpreting the coding comment is a big deal.
+if sys.version_info >= (3, 0):
+    # Python 3.2 provides `tokenize.open`, the best way to open source files.
+    import tokenize
     try:
-        detect_encoding = tokenize.detect_encoding  # pylint: disable=E1101
+        open_source = tokenize.open     # pylint: disable=E1101
     except AttributeError:
-        def open_source(fname):
-            """Open a source file the best way."""
-            return open(fname, "rU")
-    else:
-        from io import TextIOWrapper
-        # Copied from the 3.2 stdlib:
-        def open_source(fname):
-            """Open a file in read only mode using the encoding detected by
-            detect_encoding().
-            """
-            buffer = open(fname, 'rb')
-            encoding, _ = detect_encoding(buffer.readline)
-            buffer.seek(0)
-            text = TextIOWrapper(buffer, encoding, line_buffering=True)
-            text.mode = 'r'
-            return text
+        try:
+            detect_encoding = tokenize.detect_encoding  # pylint: disable=E1101
+        except AttributeError:
+            assert 3 == 4
+            def open_source(fname):
+                """Open a source file the best way."""
+                return open(fname, "rU")
+        else:
+            from io import TextIOWrapper
+            # Copied from the 3.2 stdlib:
+            def open_source(fname):
+                """Open a file in read only mode using the encoding detected by
+                detect_encoding().
+                """
+                buffer = open(fname, 'rb')
+                encoding, _ = detect_encoding(buffer.readline)
+                buffer.seek(0)
+                text = TextIOWrapper(buffer, encoding, line_buffering=True)
+                text.mode = 'r'
+                return text
+else:
+    def open_source(fname):
+        """Open a source file the best way."""
+        return open(fname, "rU")
+
 
 # Python 3.x is picky about bytes and strings, so provide methods to
 # get them right, and make them no-ops in 2.x
@@ -116,27 +124,6 @@ else:
     def to_string(b):
         """Convert bytes `b` to a string (no-op in 2.x)."""
         return b
-
-# A few details about writing encoded text are different in 2.x and 3.x.
-if sys.version_info >= (3, 0):
-    def write_encoded(fname, text, encoding='utf8', errors='strict'):
-        '''Write string `text` to file names `fname`, with encoding.'''
-        # Don't use "with", so that this file is still good for old 2.x.
-        f = open(fname, 'w', encoding=encoding, errors=errors)
-        try:
-            f.write(text)
-        finally:
-            f.close()
-else:
-    # It's not clear that using utf8 strings in 2.x is the right thing to do.
-    def write_encoded(fname, text, encoding='utf8', errors='strict'):
-        '''Write utf8 string `text` to file names `fname`, with encoding.'''
-        import codecs
-        f = codecs.open(fname, 'w', encoding=encoding, errors=errors)
-        try:
-            f.write(text.decode('utf8'))
-        finally:
-            f.close()
 
 # Md5 is available in different places.
 try:
