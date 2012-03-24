@@ -215,5 +215,8 @@ def find_python_files(dirname):
             del dirnames[:]
             continue
         for filename in filenames:
-            if fnmatch.fnmatch(filename, "*.py"):
+            # We're only interested in files that look like reasonable Python
+            # files: Must end with .py, and must not have certain funny
+            # characters that probably mean they are editor junk.
+            if re.match(r"^[^.#~!$@%^&*()+=,]+\.py$", filename):
                 yield os.path.join(dirpath, filename)
