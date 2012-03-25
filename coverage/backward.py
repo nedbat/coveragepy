@@ -79,26 +79,19 @@ if sys.version_info >= (3, 0):
     try:
         open_source = tokenize.open     # pylint: disable=E1101
     except AttributeError:
-        try:
-            detect_encoding = tokenize.detect_encoding  # pylint: disable=E1101
-        except AttributeError:
-            assert 3 == 4
-            def open_source(fname):
-                """Open a source file the best way."""
-                return open(fname, "rU")
-        else:
-            from io import TextIOWrapper
-            # Copied from the 3.2 stdlib:
-            def open_source(fname):
-                """Open a file in read only mode using the encoding detected by
-                detect_encoding().
-                """
-                buffer = open(fname, 'rb')
-                encoding, _ = detect_encoding(buffer.readline)
-                buffer.seek(0)
-                text = TextIOWrapper(buffer, encoding, line_buffering=True)
-                text.mode = 'r'
-                return text
+        from io import TextIOWrapper
+        detect_encoding = tokenize.detect_encoding  # pylint: disable=E1101
+        # Copied from the 3.2 stdlib:
+        def open_source(fname):
+            """Open a file in read only mode using the encoding detected by
+            detect_encoding().
+            """
+            buffer = open(fname, 'rb')
+            encoding, _ = detect_encoding(buffer.readline)
+            buffer.seek(0)
+            text = TextIOWrapper(buffer, encoding, line_buffering=True)
+            text.mode = 'r'
+            return text
 else:
     def open_source(fname):
         """Open a source file the best way."""
