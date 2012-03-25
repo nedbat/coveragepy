@@ -351,7 +351,10 @@ class ProcessTest(CoverageTest):
         self.assertTrue("warning" not in out)
 
         out = self.run_command("coverage run -m no_such_module")
-        self.assertTrue("No module named no_such_module" in out)
+        self.assertTrue(
+            ("No module named no_such_module" in out) or
+            ("No module named 'no_such_module'" in out)
+            )
         self.assertTrue("warning" not in out)
 
     if sys.version_info >= (3, 0):   # This only works on 3.x for now.

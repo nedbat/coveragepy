@@ -11,7 +11,7 @@ echo "Testing in $ve"
 source $ve/26/bin/activate
 make --quiet testdata
 
-for v in 23 24 25 26 27 31 32
+for v in 23 24 25 26 27 31 32 33
 do 
     source $ve/$v/bin/activate
     python setup.py -q develop
