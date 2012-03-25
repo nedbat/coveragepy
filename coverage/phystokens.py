@@ -117,7 +117,7 @@ def source_encoding(source):
     # built-in tools to do this.
     assert sys.version_info < (3, 0)
 
-    # This is mostly code adapted rom Py3.2's tokenize module.
+    # This is mostly code adapted from Py3.2's tokenize module.
 
     cookie_re = re.compile("coding[:=]\s*([-\w.]+)")
 
