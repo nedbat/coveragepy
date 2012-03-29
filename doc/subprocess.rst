@@ -26,9 +26,19 @@ multiple coverage.py runs will each write their data to a distinct file.
 Configuring Python for subprocess coverage
 ------------------------------------------
 
-To measure coverage in subprocesses, you have to do two things: set a value for
-the ``COVERAGE_PROCESS_START`` environment variable, and then invoke
-:func:`coverage.process_startup`.
+Measuring coverage in subprocesses is a little tricky.  When you spawn a
+subprocess, you are invoking Python to run your program.  Usually, to get
+coverage measurement, you have to use coverage.py to run your program.
+Your subprocess won't be using coverage.py, so we have to convince Python
+to use coverage even when not explicitly invokved.
+
+To do that, we'll configure Python to run a little coverage.py code when it
+starts.  That code will look for an environment variable that tells it to
+start coverage measurement at the start of the process.
+
+To arrange all this, you have to do two things: set a value for the
+``COVERAGE_PROCESS_START`` environment variable, and then configure Python to
+invoke :func:`coverage.process_startup` when Python processes start.
 
 How you set ``COVERAGE_PROCESS_START`` depends on the details of how you create
 subprocesses.  As long as the environment variable is visible in your subprocess,
