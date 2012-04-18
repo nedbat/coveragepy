@@ -557,10 +557,11 @@ class coverage(object):
 
         """
         self.config.from_args(
-            ignore_errors=ignore_errors, omit=omit, include=include
+            ignore_errors=ignore_errors, omit=omit, include=include,
+            show_missing=show_missing,
             )
         reporter = SummaryReporter(
-            self, show_missing, self.config.ignore_errors
+            self, self.config.show_missing, self.config.ignore_errors
             )
         reporter.report(morfs, outfile=file, config=self.config)
 

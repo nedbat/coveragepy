@@ -161,12 +161,15 @@ supply the "pragma: no branch" regex if you still want to use it.
 display for reported coverage percentages.  The default is 0, displaying
 for example "87%".  A value of 2 will display percentages like "87.32%".
 
+``show_missing`` (boolean, default False): when running a summary report,
+show missing lines.  See :ref:`cmd_summary` for more information.
+
 
 [html]
 ------
 
 Values particular to HTML reporting.  The values in the ``[report]`` section
-also apply to HTML output.
+also apply to HTML output, where appropriate.
 
 ``directory`` (string, default "htmlcov"): where to write the HTML report files.
 
@@ -175,6 +178,6 @@ also apply to HTML output.
 -----
 
 Values particular to XML reporting.  The values in the ``[report]`` section
-also apply to XML output.
+also apply to XML output, where appropriate.
 
 ``output`` (string, default "coverage.xml"): where to write the XML report.

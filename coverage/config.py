@@ -48,6 +48,7 @@ class CoverageConfig(object):
         self.partial_list = DEFAULT_PARTIAL[:]
         self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
         self.precision = 0
+        self.show_missing = False
 
         # Defaults for [html]
         self.html_dir = "htmlcov"
@@ -118,6 +119,8 @@ class CoverageConfig(object):
                 self.get_line_list(cp, 'report', 'partial_branches_always')
         if cp.has_option('report', 'precision'):
             self.precision = cp.getint('report', 'precision')
+        if cp.has_option('report', 'show_missing'):
+            self.show_missing = cp.getboolean('report', 'show_missing')
 
         # [html]
         if cp.has_option('html', 'directory'):

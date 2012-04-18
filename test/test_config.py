@@ -133,6 +133,8 @@ class ConfigFileTest(CoverageTest):
                 if 0:
                 while True:
 
+            show_missing= TruE
+
             [html]
 
             directory    =     c:\\tricky\\dir.somewhere
@@ -172,6 +174,7 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.partial_always_list,
             ["if 0:", "while True:"]
             )
+        self.assertTrue(cov.config.show_missing)
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
 
         self.assertEqual(cov.config.xml_output, "mycov.xml")
