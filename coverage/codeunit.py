@@ -115,3 +115,23 @@ class CodeUnit(object):
         raise CoverageException(
             "No source for code %r." % self.filename
             )
+
+    def should_be_python(self):
+        """Does it seem like this file should contain Python?
+
+        This is used to decide if a file reported as part of the exection of
+        a program was really likely to have contained Python in the first
+        place.
+
+        """
+        # Get the file extension.
+        _, ext = os.path.splitext(self.filename)
+
+        # Anything named *.py* should be Python.
+        if ext.startswith('.py'):
+            return True
+        # A file with no extension should be Python.
+        if not ext:
+            return True
+        # Everything else is probably not Python.
+        return False

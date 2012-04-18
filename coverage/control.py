@@ -222,14 +222,6 @@ class coverage(object):
             # can't do anything with the data later anyway.
             return False
 
-        if filename.endswith(".html"):
-            # Jinja and maybe other templating systems compile templates into
-            # Python code, but use the template filename as the filename in
-            # the compiled code.  Of course, those filenames are useless later
-            # so don't bother collecting.  TODO: How should we really separate
-            # out good file extensions from bad?
-            return False
-
         self._check_for_packages()
 
         # Compiled Python files have two filenames: frame.f_code.co_filename is
