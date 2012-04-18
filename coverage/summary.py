@@ -4,6 +4,7 @@ import sys
 
 from coverage.report import Reporter
 from coverage.results import Numbers
+from coverage.misc import NotPython
 
 
 class SummaryReporter(Reporter):
@@ -66,8 +67,12 @@ class SummaryReporter(Reporter):
             except KeyboardInterrupt:                       # pragma: no cover
                 raise
             except:
-                if not self.ignore_errors:
+                report_it = not self.ignore_errors
+                if report_it:
                     typ, msg = sys.exc_info()[:2]
+                    if typ is NotPython and not cu.should_be_python(".py"):
+                        report_it = False
+                if report_it:
                     outfile.write(fmt_err % (cu.name, typ.__name__, msg))
 
         if total.n_files > 1:

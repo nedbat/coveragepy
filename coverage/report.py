@@ -84,6 +84,11 @@ class Reporter(object):
         for cu in self.code_units:
             try:
                 report_fn(cu, self.coverage._analyze(cu))
-            except (NoSource, NotPython):
+            except NoSource:
                 if not self.ignore_errors:
+                    raise
+            except NotPython:
+                # Only report errors for .py files, and only if we didn't
+                # explicitly suppress those errors.
+                if cu.should_be_python(".py") and not self.ignore_errors:
                     raise
