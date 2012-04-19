@@ -15,20 +15,19 @@ def rate(hit, num):
 class XmlReporter(Reporter):
     """A reporter for writing Cobertura-style XML coverage results."""
 
-    def __init__(self, coverage, ignore_errors=False):
-        super(XmlReporter, self).__init__(coverage, ignore_errors)
+    def __init__(self, coverage, config):
+        super(XmlReporter, self).__init__(coverage, config)
 
         self.packages = None
         self.xml_out = None
         self.arcs = coverage.data.has_arcs()
 
-    def report(self, morfs, outfile=None, config=None):
+    def report(self, morfs, outfile=None):
         """Generate a Cobertura-compatible XML report for `morfs`.
 
         `morfs` is a list of modules or filenames.
 
-        `outfile` is a file object to write the XML to.  `config` is a
-        CoverageConfig instance.
+        `outfile` is a file object to write the XML to.
 
         """
         # Initial setup.
@@ -54,7 +53,7 @@ class XmlReporter(Reporter):
 
         # Call xml_file for each file in the data.
         self.packages = {}
-        self.report_files(self.xml_file, morfs, config)
+        self.report_files(self.xml_file, morfs)
 
         lnum_tot, lhits_tot = 0, 0
         bnum_tot, bhits_tot = 0, 0

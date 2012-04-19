@@ -560,10 +560,8 @@ class coverage(object):
             ignore_errors=ignore_errors, omit=omit, include=include,
             show_missing=show_missing,
             )
-        reporter = SummaryReporter(
-            self, self.config.show_missing, self.config.ignore_errors
-            )
-        reporter.report(morfs, outfile=file, config=self.config)
+        reporter = SummaryReporter(self, self.config)
+        reporter.report(morfs, outfile=file)
 
     def annotate(self, morfs=None, directory=None, ignore_errors=None,
                     omit=None, include=None):
@@ -580,8 +578,8 @@ class coverage(object):
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include
             )
-        reporter = AnnotateReporter(self, self.config.ignore_errors)
-        reporter.report(morfs, config=self.config, directory=directory)
+        reporter = AnnotateReporter(self, self.config)
+        reporter.report(morfs, directory=directory)
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
                     omit=None, include=None):
@@ -594,8 +592,8 @@ class coverage(object):
             ignore_errors=ignore_errors, omit=omit, include=include,
             html_dir=directory,
             )
-        reporter = HtmlReporter(self, self.config.ignore_errors)
-        reporter.report(morfs, config=self.config)
+        reporter = HtmlReporter(self, self.config)
+        reporter.report(morfs)
 
     def xml_report(self, morfs=None, outfile=None, ignore_errors=None,
                     omit=None, include=None):
@@ -621,8 +619,8 @@ class coverage(object):
                 outfile = open(self.config.xml_output, "w")
                 file_to_close = outfile
         try:
-            reporter = XmlReporter(self, self.config.ignore_errors)
-            reporter.report(morfs, outfile=outfile, config=self.config)
+            reporter = XmlReporter(self, self.config)
+            reporter.report(morfs, outfile=outfile)
         finally:
             if file_to_close:
                 file_to_close.close()

@@ -41,8 +41,8 @@ class HtmlReporter(Reporter):
             "keybd_open.png",
             ]
 
-    def __init__(self, cov, ignore_errors=False):
-        super(HtmlReporter, self).__init__(cov, ignore_errors)
+    def __init__(self, cov, config):
+        super(HtmlReporter, self).__init__(cov, config)
         self.directory = None
         self.template_globals = {
             'escape': escape,
@@ -59,28 +59,27 @@ class HtmlReporter(Reporter):
         self.arcs = self.coverage.data.has_arcs()
         self.status = HtmlStatus()
 
-    def report(self, morfs, config=None):
+    def report(self, morfs):
         """Generate an HTML report for `morfs`.
 
-        `morfs` is a list of modules or filenames.  `config` is a
-        CoverageConfig instance.
+        `morfs` is a list of modules or filenames.
 
         """
-        assert config.html_dir, "must provide a directory for html reporting"
+        assert self.config.html_dir, "must give a directory for html reporting"
 
         # Read the status data.
-        self.status.read(config.html_dir)
+        self.status.read(self.config.html_dir)
 
         # Check that this run used the same settings as the last run.
         m = Hasher()
-        m.update(config)
+        m.update(self.config)
         these_settings = m.digest()
         if self.status.settings_hash() != these_settings:
             self.status.reset()
             self.status.set_settings_hash(these_settings)
 
         # Process all the files.
-        self.report_files(self.html_file, morfs, config, config.html_dir)
+        self.report_files(self.html_file, morfs, self.config.html_dir)
 
         if not self.files:
             raise CoverageException("No data to report.")
