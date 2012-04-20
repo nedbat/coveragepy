@@ -87,5 +87,5 @@ class Reporter(object):
             except NotPython:
                 # Only report errors for .py files, and only if we didn't
                 # explicitly suppress those errors.
-                if cu.should_be_python(".py") and not self.config.ignore_errors:
+                if cu.should_be_python() and not self.config.ignore_errors:
                     raise

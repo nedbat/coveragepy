@@ -144,7 +144,7 @@ class SummaryTest(CoverageTest):
         last = re.sub("parse '.*mycode.py", "parse 'mycode.py", last)
         # The actual error message varies version to version
         last = re.sub(": '.*' at", ": 'error' at", last)
-        self.assertEqual(last, 
+        self.assertEqual(last,
             "mycode NotPython: "
             "Couldn't parse 'mycode.py' as Python source: "
             "'error' at line 1"
@@ -172,10 +172,10 @@ class SummaryTest(CoverageTest):
         # Before reporting, change it to be an HTML file.
         self.make_file("mycode.html", "<h1>This isn't python at all!</h1>")
         report = self.report_from_command("coverage -r mycode.html")
-      
+
         # Name     Stmts   Miss  Cover
         # ----------------------------
-       
+
         self.assertEqual(self.line_count(report), 2)
 
 

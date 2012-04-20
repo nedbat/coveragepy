@@ -2,6 +2,8 @@
 
 import os.path, sys
 import coverage
+from coverage.misc import NotPython
+
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
@@ -116,7 +118,7 @@ class HtmlTest(CoverageTest):
         # In this case, everything changes because the coverage settings have
         # changed.
         self.create_initial_files()
-        self.run_coverage()
+        self.run_coverage(timid=False)
         index1 = open("htmlcov/index.html").read()
         self.remove_html_files()
 
@@ -153,3 +155,43 @@ class HtmlTest(CoverageTest):
         fixed_index2 = index2.replace("XYZZY", self.real_coverage_version)
         self.assertMultiLineEqual(index1, fixed_index2)
 
+
+class HtmlWithUnparsableFilesTest(CoverageTest):
+    """Test the behavior when measuring unparsable files."""
+
+    def test_dotpy_not_python(self):
+        self.make_file("innocuous.py", "a = 1")
+        cov = coverage.coverage()
+        cov.start()
+        self.import_local_file("innocuous")
+        cov.stop()
+        self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
+        self.assertRaisesRegexp(
+            NotPython,
+            "Couldn't parse '.*innocuous.py' as Python source: '.*' at line 1",
+            cov.html_report
+            )
+
+    def test_dotpy_not_python_ignored(self):
+        self.make_file("innocuous.py", "a = 1")
+        cov = coverage.coverage()
+        cov.start()
+        self.import_local_file("innocuous")
+        cov.stop()
+        self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
+        cov.html_report(ignore_errors=True)
+        self.assert_exists("htmlcov/index.html")
+        # this would be better as a glob, if the html layout changes:
+        self.assert_doesnt_exist("htmlcov/innocuous.html")
+
+    def test_dothtml_not_python(self):
+        # We run a .html file, and when reporting, we can't parse it as
+        # Python.  Since it wasn't .py, no error is reported.
+
+        # Run an "html" file
+        self.make_file("innocuous.html", "a = 1")
+        self.run_command("coverage run innocuous.html")
+        # Before reporting, change it to be an HTML file.
+        self.make_file("innocuous.html", "<h1>This isn't python at all!</h1>")
+        output = self.run_command("coverage html")
+        self.assertEqual(output.strip(), "No data to report.")
