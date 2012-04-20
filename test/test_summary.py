@@ -127,6 +127,58 @@ class SummaryTest(CoverageTest):
         self.assertEqual(self.last_line_squeezed(report),
                                                         "mybranch 5 0 2 1 86%")
 
+    def test_dotpy_not_python(self):
+        # We run a .py file, and when reporting, we can't parse it as Python.
+        # We should get an error message in the report.
+
+        self.run_command("coverage run mycode.py")
+        self.make_file("mycode.py", "This isn't python at all!")
+        report = self.report_from_command("coverage -r mycode.py")
+
+        # Name     Stmts   Miss  Cover
+        # ----------------------------
+        # mycode   NotPython: Couldn't parse '/tmp/test_cover/63354509363/mycode.py' as Python source: 'invalid syntax' at line 1
+
+        last = self.last_line_squeezed(report)
+        # The actual file name varies run to run.
+        last = re.sub("parse '.*mycode.py", "parse 'mycode.py", last)
+        # The actual error message varies version to version
+        last = re.sub(": '.*' at", ": 'error' at", last)
+        self.assertEqual(last, 
+            "mycode NotPython: "
+            "Couldn't parse 'mycode.py' as Python source: "
+            "'error' at line 1"
+            )
+
+    def test_dotpy_not_python_ignored(self):
+        # We run a .py file, and when reporting, we can't parse it as Python,
+        # but we've said to ignore errors, so there's no error reported.
+        self.run_command("coverage run mycode.py")
+        self.make_file("mycode.py", "This isn't python at all!")
+        report = self.report_from_command("coverage -r -i mycode.py")
+
+        # Name     Stmts   Miss  Cover
+        # ----------------------------
+
+        self.assertEqual(self.line_count(report), 2)
+
+    def test_dothtml_not_python(self):
+        # We run a .html file, and when reporting, we can't parse it as
+        # Python.  Since it wasn't .py, no error is reported.
+
+        # Run an "html" file
+        self.make_file("mycode.html", "a = 1")
+        self.run_command("coverage run mycode.html")
+        # Before reporting, change it to be an HTML file.
+        self.make_file("mycode.html", "<h1>This isn't python at all!</h1>")
+        report = self.report_from_command("coverage -r mycode.html")
+      
+        # Name     Stmts   Miss  Cover
+        # ----------------------------
+       
+        self.assertEqual(self.line_count(report), 2)
+
+
 class SummaryTest2(CoverageTest):
     """Another bunch of summary tests."""
     # This class exists because tests naturally clump into classes based on the

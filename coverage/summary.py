@@ -68,7 +68,7 @@ class SummaryReporter(Reporter):
                 report_it = not self.config.ignore_errors
                 if report_it:
                     typ, msg = sys.exc_info()[:2]
-                    if typ is NotPython and not cu.should_be_python(".py"):
+                    if typ is NotPython and not cu.should_be_python():
                         report_it = False
                 if report_it:
                     outfile.write(fmt_err % (cu.name, typ.__name__, msg))
