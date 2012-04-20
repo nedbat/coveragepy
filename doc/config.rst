@@ -173,6 +173,10 @@ also apply to HTML output, where appropriate.
 
 ``directory`` (string, default "htmlcov"): where to write the HTML report files.
 
+``extra_css`` (string): the path to a file of CSS to apply to the HTML report.
+The file will be copied into the HTML output directory.  Don't name it
+"style.css".
+
 
 [xml]
 -----

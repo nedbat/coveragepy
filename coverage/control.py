@@ -582,15 +582,22 @@ class coverage(object):
         reporter.report(morfs, directory=directory)
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
-                    omit=None, include=None):
+                    omit=None, include=None, extra_css=None):
         """Generate an HTML report.
+
+        The HTML is written to `directory`.  The file "index.html" is the
+        overview starting point, with links to more detailed pages for
+        individual modules.
+
+        `extra_css` is a path to a file of other CSS to apply on the page.
+        It will be copied into the HTML directory.
 
         See `coverage.report()` for other arguments.
 
         """
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
-            html_dir=directory,
+            html_dir=directory, extra_css=extra_css,
             )
         reporter = HtmlReporter(self, self.config)
         reporter.report(morfs)

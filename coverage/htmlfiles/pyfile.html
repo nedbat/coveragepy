@@ -7,6 +7,9 @@
     <meta http-equiv='X-UA-Compatible' content='IE=emulateIE7' />
     <title>Coverage for {{cu.name|escape}}: {{nums.pc_covered_str}}%</title>
     <link rel='stylesheet' href='style.css' type='text/css'>
+    {% if extra_css %}
+        <link rel='stylesheet' href='{{ extra_css }}' type='text/css'>
+    {% endif %}
     <script type='text/javascript' src='jquery-1.4.3.min.js'></script>
     <script type='text/javascript' src='jquery.hotkeys.js'></script>
     <script type='text/javascript' src='jquery.isonscreen.js'></script>

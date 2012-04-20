@@ -58,6 +58,7 @@ class HtmlReporter(Reporter):
         self.files = []
         self.arcs = self.coverage.data.has_arcs()
         self.status = HtmlStatus()
+        self.extra_css = None
 
     def report(self, morfs):
         """Generate an HTML report for `morfs`.
@@ -78,6 +79,10 @@ class HtmlReporter(Reporter):
             self.status.reset()
             self.status.set_settings_hash(these_settings)
 
+        # The user may have extra CSS they want copied.
+        if self.config.extra_css:
+            self.extra_css = os.path.basename(self.config.extra_css)
+
         # Process all the files.
         self.report_files(self.html_file, morfs, self.config.html_dir)
 
@@ -91,10 +96,18 @@ class HtmlReporter(Reporter):
 
     def make_local_static_report_files(self):
         """Make local instances of static files for HTML report."""
+        # The files we provide must always be copied.
         for static in self.STATIC_FILES:
             shutil.copyfile(
                 data_filename("htmlfiles/" + static),
                 os.path.join(self.directory, static)
+                )
+
+        # The user may have extra CSS they want copied.
+        if self.extra_css:
+            shutil.copyfile(
+                self.config.extra_css,
+                os.path.join(self.directory, self.extra_css)
                 )
 
     def write_html(self, fname, html):
@@ -202,6 +215,7 @@ class HtmlReporter(Reporter):
         # Write the HTML page for this file.
         html_filename = flat_rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)
+        extra_css = self.extra_css
 
         html = spaceless(self.source_tmpl.render(locals()))
         if sys.version_info < (3, 0):
@@ -228,6 +242,7 @@ class HtmlReporter(Reporter):
         arcs = self.arcs
 
         totals = sum([f['nums'] for f in files])
+        extra_css = self.extra_css
 
         self.write_html(
             os.path.join(self.directory, "index.html"),
