@@ -46,6 +46,12 @@ $(TEST_ZIP): test/covmodzip1.py
 $(TEST_EGG): test/eggsrc/setup.py test/eggsrc/egg1/egg1.py
 	cd test/eggsrc; python setup.py -q bdist_egg
 
+covcov: testready
+	python test/meta_coverage.py run
+	python test/meta_coverage.py report
+
+# Kitting
+
 kit:
 	python setup.py sdist --keep-temp --formats=gztar fixtar --owner=ned --group=coverage --clean
 	python setup.py bdist_wininst
@@ -65,6 +71,8 @@ $(DEVINST_FILE): coverage/tracer.c
 uninstall:
 	-rm -rf $(PYHOME)/lib/site-packages/coverage*
 	-rm -rf $(PYHOME)/scripts/coverage*
+
+# Documentation
 
 SPHINXBUILD = sphinx-build
 SPHINXOPTS = -a -E doc
