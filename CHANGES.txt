@@ -5,6 +5,9 @@ Change history for Coverage.py
 Version 3.5.2b1
 ---------------
 
+- The HTML report has slightly tweaked controls: the buttons at the top of
+  the page are color-coded to the source lines they affect.
+
 - Custom CSS can be applied to the HTML report by specifying a CSS file as
   the extra_css configuration value in the [html] section.
 
