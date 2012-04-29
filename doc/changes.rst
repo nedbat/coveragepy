@@ -19,12 +19,57 @@ Major change history for coverage.py
 :history: 20110604T214100, updated for 3.5b1
 :history: 20110629T082200, updated for 3.5
 :history: 20110923T081600, updated for 3.5.1
+:history: 20120429T162100, updated for 3.5.2b1
 
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+
+
+Version 3.5.2b1 --- 29 April 2012
+---------------------------------
+
+- The HTML report has slightly tweaked controls: the buttons at the top of
+  the page are color-coded to the source lines they affect.
+
+- Custom CSS can be applied to the HTML report by specifying a CSS file as
+  the extra_css configuration value in the [html] section.
+
+- Source files with custom encodings declared in a comment at the top are now
+  properly handled during reporting on Python 2.  Python 3 always handled them
+  properly.  This fixes `issue 157`_.
+
+- Backup files left behind by editors are no longer collected by the source=
+  option, fixing `issue 168`_.
+
+- If a file doesn't parse properly as Python, we don't report it as an error
+  if the filename seems like maybe it wasn't meant to be Python.  This is a
+  pragmatic fix for `issue 82`_.
+
+- The ``-m`` switch on ``coverage report``, which includes missing line numbers
+  in the summary report, can now be specifed as ``show_missing`` in the
+  config file.  Closes `issue 173`_.
+
+- When running a module with ``coverage run -m <modulename>``, certain details
+  of the execution environment weren't the same as for
+  ``python -m <modulename>``.  This had the unfortunate side-effect of making
+  ``coverage run -m unittest discover`` not work if you had tests in a
+  directory named "test".  This fixes `issue 155`_.
+
+- Now the exit status of your product code is properly used as the process
+  status when running ``python -m coverage run ...``.  Thanks, JT Olds.
+
+- When installing into pypy, we no longer attempt (and fail) to compile
+  the C tracer function, closing `issue 166`_.
+
+.. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
+.. _issue 155: https://bitbucket.org/ned/coveragepy/issue/155/cant-use-coverage-run-m-unittest-discover
+.. _issue 157: https://bitbucket.org/ned/coveragepy/issue/157/chokes-on-source-files-with-non-utf-8
+.. _issue 166: https://bitbucket.org/ned/coveragepy/issue/166/dont-try-to-compile-c-extension-on-pypy
+.. _issue 168: https://bitbucket.org/ned/coveragepy/issue/168/dont-be-alarmed-by-emacs-droppings
+.. _issue 173: https://bitbucket.org/ned/coveragepy/issue/173/theres-no-way-to-specify-show-missing-in
 
 
 Version 3.5.1 --- 23 September 2011
