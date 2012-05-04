@@ -165,6 +165,8 @@ for example "87%".  A value of 2 will display percentages like "87.32%".
 show missing lines.  See :ref:`cmd_summary` for more information.
 
 
+.. _config_html:
+
 [html]
 ------
 
@@ -175,7 +177,8 @@ also apply to HTML output, where appropriate.
 
 ``extra_css`` (string): the path to a file of CSS to apply to the HTML report.
 The file will be copied into the HTML output directory.  Don't name it
-"style.css".
+"style.css".  This CSS is in addition to the CSS normally used, though you can
+overwrite as many of the rules as you like.
 
 
 [xml]

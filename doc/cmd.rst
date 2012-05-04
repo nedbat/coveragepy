@@ -13,6 +13,7 @@ Coverage command line usage
 :history: 20100725T211700, updated for 3.4
 :history: 20110827T212500, updated for 3.5.1, combining aliases
 :history: 20120119T075600, Added some clarification from George Paci
+:history: 20120504T091800, Added info about execution warnings, and 3.5.2 stuff.
 
 .. highlight:: console
 
@@ -104,13 +105,30 @@ during measurement.  See :ref:`cmd_combining` below.
 During execution, coverage.py may warn you about conditions it detects that
 could affect the measurement process.  The possible warnings include:
 
-* "Trace function changed, measurement is likely wrong"
+* "Trace function changed, measurement is likely wrong: XXX"
 
-* "Module has no Python source"
+  Coverage measurement depends on a Python setting called the trace function.
+  Other Python code in your product might change that function, which will
+  disrupt coverage.py's measurement.  This warning indicate that has happened.
+  The XXX in the message is the new trace function value, which might provide
+  a clue to the cause.
 
-* "Module was never imported"
+* "Module XXX has no Python source"
+
+  You asked coverage.py to measure module XXX, but once it was imported, it
+  turned out not to have a corresponding .py file.  Without a .py file,
+  coverage.py can't report on missing lines.
+
+* "Module XXX was never imported"
+
+  You asked coverage.py to measure module XXX, but it was never imported by
+  your program.
 
 * "No data was collected"
+
+  Coverage.py ran your program, but didn't measure any lines as executed.
+  This could be because you asked to measure only modules that never ran,
+  or for other reasons.
 
 
 
@@ -238,6 +256,10 @@ __ /code/coverage/sample_html/index.html
 Lines are highlighted green for executed, red for missing, and gray for
 excluded.  The counts at the top of the file are buttons to turn on and off
 the highlighting.
+
+If you prefer a different style for your HTML report, you can provide your
+own CSS file to apply, by specifying a CSS file in the [html] section of the
+configuration file.  See :ref:`config_html` for details.
 
 A number of keyboard shortcuts are available for navigating the report.
 Click the keyboard icon in the upper right to see the complete list.
