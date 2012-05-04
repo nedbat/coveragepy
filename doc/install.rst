@@ -10,7 +10,8 @@ Installation
 :history: 20110604T213400, updated for 3.5b1.
 :history: 20110629T082400, updated for 3.5.
 :history: 20110923T081900, updated for 3.5.1.
-:history: 20120429T162500, updated for 3.5.2b1
+:history: 20120429T162500, updated for 3.5.2b1.
+:history: 20120503T234000, updated for 3.5.2.
 
 
 .. highlight:: console
@@ -63,5 +64,5 @@ If all went well, you should be able to open a command prompt, and see
 coverage installed properly::
 
     $ coverage --version
-    Coverage.py, version 3.5.2b1.  http://nedbatchelder.com/code/coverage
+    Coverage.py, version 3.5.2.  http://nedbatchelder.com/code/coverage
 

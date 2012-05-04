@@ -20,6 +20,7 @@ Major change history for coverage.py
 :history: 20110629T082200, updated for 3.5
 :history: 20110923T081600, updated for 3.5.1
 :history: 20120429T162100, updated for 3.5.2b1
+:history: 20120503T233700, updated for 3.5.2
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -28,8 +29,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
-Version 3.5.2b1 --- 29 April 2012
----------------------------------
+Version 3.5.2 --- 4 May 2012
+----------------------------
 
 - The HTML report has slightly tweaked controls: the buttons at the top of
   the page are color-coded to the source lines they affect.
