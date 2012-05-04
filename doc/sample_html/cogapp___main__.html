@@ -5,7 +5,7 @@
     
     
     <meta http-equiv='X-UA-Compatible' content='IE=emulateIE7' />
-    <title>Coverage for cogapp\__init__: 100%</title>
+    <title>Coverage for cogapp\__main__: 0%</title>
     <link rel='stylesheet' href='style.css' type='text/css'>
     
     <script type='text/javascript' src='jquery-1.4.3.min.js'></script>
@@ -20,14 +20,14 @@
 
 <div id='header'>
     <div class='content'>
-        <h1>Coverage for <b>cogapp\__init__</b> :
-            <span class='pc_cov'>100%</span>
+        <h1>Coverage for <b>cogapp\__main__</b> :
+            <span class='pc_cov'>0%</span>
         </h1>
         <img id='keyboard_icon' src='keybd_closed.png'>
         <h2 class='stats'>
-            2 statements &nbsp;
-            <span class='run hide_run shortkey_r button_toggle_run'>2 run</span>
-            <span class='mis shortkey_m button_toggle_mis'>0 missing</span>
+            3 statements &nbsp;
+            <span class='run hide_run shortkey_r button_toggle_run'>0 run</span>
+            <span class='mis shortkey_m button_toggle_mis'>3 missing</span>
             <span class='exc shortkey_x button_toggle_exc'>0 excluded</span>
             
                 <span class='par run hide_run shortkey_p button_toggle_par'>0 partial</span>
@@ -64,26 +64,18 @@
         <tr>
             <td class='linenos' valign='top'>
 <p id='n1' class='pln'><a href='#n1'>1</a></p>
-<p id='n2' class='pln'><a href='#n2'>2</a></p>
-<p id='n3' class='pln'><a href='#n3'>3</a></p>
+<p id='n2' class='stm mis'><a href='#n2'>2</a></p>
+<p id='n3' class='stm mis'><a href='#n3'>3</a></p>
 <p id='n4' class='pln'><a href='#n4'>4</a></p>
-<p id='n5' class='pln'><a href='#n5'>5</a></p>
-<p id='n6' class='pln'><a href='#n6'>6</a></p>
-<p id='n7' class='stm run hide_run'><a href='#n7'>7</a></p>
-<p id='n8' class='pln'><a href='#n8'>8</a></p>
-<p id='n9' class='stm run hide_run'><a href='#n9'>9</a></p>
+<p id='n5' class='stm mis'><a href='#n5'>5</a></p>
                 
             </td>
             <td class='text' valign='top'>
-<p id='t1' class='pln'><span class='str'>&quot;&quot;&quot; Cog code generation tool.</span><span class='strut'>&nbsp;</span></p>
-<p id='t2' class='pln'><span class='str'>&nbsp; &nbsp; http://nedbatchelder.com/code/cog</span><span class='strut'>&nbsp;</span></p>
-<p id='t3' class='pln'><span class='str'>&nbsp; &nbsp; </span><span class='strut'>&nbsp;</span></p>
-<p id='t4' class='pln'><span class='str'>&nbsp; &nbsp; Copyright 2004-2012, Ned Batchelder.</span><span class='strut'>&nbsp;</span></p>
-<p id='t5' class='pln'><span class='str'>&quot;&quot;&quot;</span><span class='strut'>&nbsp;</span></p>
-<p id='t6' class='pln'><span class='strut'>&nbsp;</span></p>
-<p id='t7' class='stm run hide_run'><span class='key'>from</span> <span class='nam'>__future__</span> <span class='key'>import</span> <span class='nam'>absolute_import</span><span class='strut'>&nbsp;</span></p>
-<p id='t8' class='pln'><span class='strut'>&nbsp;</span></p>
-<p id='t9' class='stm run hide_run'><span class='key'>from</span> <span class='op'>.</span><span class='nam'>cogapp</span> <span class='key'>import</span> <span class='op'>*</span><span class='strut'>&nbsp;</span></p>
+<p id='t1' class='pln'><span class='str'>&quot;&quot;&quot;Make Cog runnable directly from the module.&quot;&quot;&quot;</span><span class='strut'>&nbsp;</span></p>
+<p id='t2' class='stm mis'><span class='key'>import</span> <span class='nam'>sys</span><span class='strut'>&nbsp;</span></p>
+<p id='t3' class='stm mis'><span class='key'>from</span> <span class='nam'>cogapp</span> <span class='key'>import</span> <span class='nam'>Cog</span><span class='strut'>&nbsp;</span></p>
+<p id='t4' class='pln'><span class='strut'>&nbsp;</span></p>
+<p id='t5' class='stm mis'><span class='nam'>sys</span><span class='op'>.</span><span class='nam'>exit</span><span class='op'>(</span><span class='nam'>Cog</span><span class='op'>(</span><span class='op'>)</span><span class='op'>.</span><span class='nam'>main</span><span class='op'>(</span><span class='nam'>sys</span><span class='op'>.</span><span class='nam'>argv</span><span class='op'>)</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
                 
             </td>
         </tr>
