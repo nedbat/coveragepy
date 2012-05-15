@@ -35,6 +35,10 @@ class CodeParser(object):
                     "No source for code: %r: %s" % (self.filename, err)
                     )
 
+        # Scrap the BOM if it exists.
+        if self.text and ord(self.text[0]) == 0xfeff:
+            self.text = self.text[1:]
+
         self.exclude = exclude
 
         self.show_tokens = False

@@ -2,6 +2,15 @@
 Change history for Coverage.py
 ------------------------------
 
+Version 3.5.3b1
+---------------
+
+- Files encoded as UTF-8 with a BOM are now properly handled, fixing
+  `issue 179`_.  Thanks, Pablo Carballo.
+
+.. _issue 179: https://bitbucket.org/ned/coveragepy/issue/179/htmlreporter-fails-when-source-file-is
+
+
 Version 3.5.2 --- 4 May 2012
 ----------------------------
 

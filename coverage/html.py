@@ -148,6 +148,10 @@ class HtmlReporter(Reporter):
         # later to properly write the HTML.
         if sys.version_info < (3, 0):
             encoding = source_encoding(source)
+            # Some UTF8 files have the dreaded UTF8 BOM. If so, junk it.
+            if encoding.startswith("utf-8") and source[:3] == "\xef\xbb\xbf":
+                source = source[3:]
+                encoding = "utf-8"
 
         # Get the numbers for this file.
         nums = analysis.numbers
