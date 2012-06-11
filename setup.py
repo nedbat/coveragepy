@@ -36,7 +36,7 @@ Topic :: Software Development :: Testing
 """
 
 # Pull in the tools we need.
-import sys, traceback
+import sys
 
 # Distribute is a new fork of setuptools.  It's supported on Py3.x, so we use
 # it there, but stick with classic setuptools on Py2.x until Distribute becomes
@@ -131,10 +131,15 @@ if sys.version_info >= (3, 0):
 try:
     setup(**setup_args)
 except:     # pylint: disable=W0702
-    if 'ext_modules' not in setup_args:
+    # When setup() can't compile, it tries to exit.  We'll catch SystemExit
+    # here :-(, and try again. 
+    if 'install' not in sys.argv or 'ext_modules' not in setup_args:
+        # We weren't trying to install an extension, so forget it.
         raise
     msg = "Couldn't install with extension module, trying without it..."
-    exc_msg = traceback.format_exc(0).split('\n')[-2]
+    exc = sys.exc_info()[1]
+    exc_msg = "%s: %s" % (exc.__class__.__name__, exc)
     print("**\n** %s\n** %s\n**" % (msg, exc_msg))
+
     del setup_args['ext_modules']
     setup(**setup_args)
