@@ -132,7 +132,7 @@ try:
     setup(**setup_args)
 except:     # pylint: disable=W0702
     # When setup() can't compile, it tries to exit.  We'll catch SystemExit
-    # here :-(, and try again. 
+    # here :-(, and try again.
     if 'install' not in sys.argv or 'ext_modules' not in setup_args:
         # We weren't trying to install an extension, so forget it.
         raise
