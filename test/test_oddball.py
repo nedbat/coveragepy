@@ -131,7 +131,7 @@ class RecursionTest(CoverageTest):
 class MemoryLeakTest(CoverageTest):
     """Attempt the impossible: test that memory doesn't leak.
 
-    Note: this test is truly unusual, and may fail unexpectedly.  
+    Note: this test is truly unusual, and may fail unexpectedly.
     In particular, it is known to fail on PyPy if test_oddball.py is run in
     isolation: https://bitbucket.org/ned/coveragepy/issue/186
 

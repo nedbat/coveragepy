@@ -1,12 +1,23 @@
 """Raw data collector for Coverage."""
 
-import sys, threading
+import os, sys, threading
 
 try:
     # Use the C extension code when we can, for speed.
     from coverage.tracer import CTracer
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
+    if os.getenv('COVERAGE_TEST_TRACER') == 'c':
+        # During testing, we use the COVERAGE_TEST_TRACER env var to indicate
+        # that we've fiddled with the environment to test this fallback code.
+        # If we thought we had a C tracer, but couldn't import it, then exit
+        # quickly and clearly instead of dribbling confusing errors. I'm using
+        # sys.exit here instead of an exception because an exception here
+        # causes all sorts of other noise in unittest.
+        sys.stderr.write(
+            "*** COVERAGE_TEST_TRACER is 'c' but can't import CTracer!\n"
+            )
+        sys.exit(1)
     CTracer = None
 
 
