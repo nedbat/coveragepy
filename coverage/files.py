@@ -207,9 +207,17 @@ class PathAliases(object):
 
 
 def find_python_files(dirname):
-    """Yield all of the importable Python files in `dirname`, recursively."""
-    for dirpath, dirnames, filenames in os.walk(dirname, topdown=True):
-        if '__init__.py' not in filenames:
+    """Yield all of the importable Python files in `dirname`, recursively.
+
+    To be importable, the files have to be in a directory with a __init__.py,
+    except for `dirname` itself, which isn't required to have one.  The
+    assumption is that `dirname` was specified directly, so the user knows
+    best, but subdirectories are checked for a __init__.py to be sure we only
+    find the importable files.
+
+    """
+    for i, (dirpath, dirnames, filenames) in enumerate(os.walk(dirname)):
+        if i > 0 and '__init__.py' not in filenames:
             # If a directory doesn't have __init__.py, then it isn't
             # importable and neither are its files
             del dirnames[:]

@@ -3,6 +3,7 @@ extended and maintained by Ned Batchelder.
 
 Other contributions have been made by:
 
+Marc Abramowitz
 Chris Adams
 Geoff Bache
 Titus Brown

@@ -5,6 +5,10 @@ Change history for Coverage.py
 Version 3.5.3b1
 ---------------
 
+- When specifying a directory as the source= option, the directory itself no
+  longer needs to have a ``__init__.py`` file, though its subdirectories do, to
+  be considered as source files.
+
 - Files encoded as UTF-8 with a BOM are now properly handled, fixing
   `issue 179`_.  Thanks, Pablo Carballo.
 
