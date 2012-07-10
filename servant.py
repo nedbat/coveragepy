@@ -5,10 +5,16 @@ import zipfile
 from nose import core as nose_core
 
 if sys.argv[1] == "remove_extension":
-    try:
-        os.remove("coverage/tracer.so")
-    except OSError:
-        pass
+    so_names = """
+        tracer.so
+        tracer.cpython-32m.so
+        """.split()
+
+    for filename in so_names:
+        try:
+            os.remove(os.path.join("coverage", filename))
+        except OSError:
+            pass
 
 elif sys.argv[1] == "test_with_tracer":
     os.environ["COVERAGE_TEST_TRACER"] = sys.argv[2]
