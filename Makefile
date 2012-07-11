@@ -29,7 +29,7 @@ LINTABLE = coverage setup.py test
 lint:
 	-pylint --rcfile=.pylintrc $(LINTABLE)
 	python -m tabnanny $(LINTABLE)
-	python checkeol.py
+	python igor.py check_eol
 
 pep8:
 	pep8 --filename=*.py --ignore=E401,E301 --repeat coverage
