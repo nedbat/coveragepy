@@ -6,6 +6,7 @@ of in shell scripts, batch files, or Makefiles.
 """
 
 import fnmatch
+import glob
 import os
 import sys
 import zipfile
@@ -13,16 +14,18 @@ import zipfile
 def do_remove_extension(args):
     """Remove the compiled C extension, no matter what its name."""
 
-    so_names = """
+    so_patterns = """
         tracer.so
-        tracer.cpython-32m.so
+        tracer.*.so
         """.split()
 
-    for filename in so_names:
-        try:
-            os.remove(os.path.join("coverage", filename))
-        except OSError:
-            pass
+    for pattern in so_patterns:
+        pattern = os.path.join("coverage", pattern)
+        for filename in glob.glob(pattern):
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
 
 def do_test_with_tracer(args):
     """Run nosetests with a particular tracer."""
@@ -45,12 +48,12 @@ def do_check_eol(args):
         for n, line in enumerate(open(fname, "rb")):
             if crlf:
                 if "\r" in line:
-                    print "%s@%d: CR found" % (fname, n+1)
+                    print("%s@%d: CR found" % (fname, n+1))
                     return
             if trail_white:
                 line = line[:-1]
                 if line.rstrip() != line:
-                    print "%s@%d: trailing whitespace found" % (fname, n+1)
+                    print("%s@%d: trailing whitespace found" % (fname, n+1))
                     return
 
     def check_files(root, patterns, **kwargs):
