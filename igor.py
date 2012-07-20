@@ -17,6 +17,7 @@ def do_remove_extension(args):
     so_patterns = """
         tracer.so
         tracer.*.so
+        tracer.pyd
         """.split()
 
     for pattern in so_patterns:
