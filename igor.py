@@ -8,8 +8,10 @@ of in shell scripts, batch files, or Makefiles.
 import fnmatch
 import glob
 import os
+import platform
 import sys
 import zipfile
+
 
 def do_remove_extension(args):
     """Remove the compiled C extension, no matter what its name."""
@@ -31,7 +33,13 @@ def do_remove_extension(args):
 def do_test_with_tracer(args):
     """Run nosetests with a particular tracer."""
     import nose.core
-    os.environ["COVERAGE_TEST_TRACER"] = args[0]
+    tracer = args[0]
+    if tracer == "py":
+        label = "with Python tracer"
+    else:
+        label = "with C tracer"
+    print_banner(label)
+    os.environ["COVERAGE_TEST_TRACER"] = tracer
     nose_args = ["nosetests"] + args[1:]
     nose.core.main(argv=nose_args)
 
@@ -77,6 +85,22 @@ def do_check_eol(args):
     check_file("setup.py")
     check_files("doc", ["*.rst"])
     check_files(".", ["*.txt"])
+
+
+def print_banner(label):
+    """Print the version of Python."""
+    try:
+        impl = platform.python_implementation()
+    except AttributeError:
+        impl = "Python"
+
+    version = platform.python_version()
+
+    if '__pypy__' in sys.builtin_module_names:
+        pypy_version = ".".join([str(v) for v in sys.pypy_version_info])
+        version += " (pypy %s)" % pypy_version
+
+    print('=== %s %s %s (%s) ===' % (impl, version, label, sys.executable))
 
 
 def main(args):
