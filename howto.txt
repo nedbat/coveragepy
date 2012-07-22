@@ -56,15 +56,6 @@
 - Ask Christophe Zwerschke (cito@online.de) to build win64 kits.
 
 
-* Making virtualenvs on Windows
-
-- cd c:\vpy\coverage
-- \py32\xx\python ..\virtualenv.py xx
-- copy ..\distutils.cfg xx\Lib\distutils
-- cd nose_source_directory_someplace
-- \vpy\coverage\xx\Scripts\python.exe setup.py install
-
-
 * Building
 
 - Install fixtar on any Windows Python used to make source kits: http://bitbucket.org/ned/fixtar
@@ -74,21 +65,12 @@
 
 * Testing
 
-(automate these someday)
+- Testing of Python code is handled by tox.
+    - Create a virtualenv
+    - install tox into it
+    - activate the virtualenv
+    - $ tox
 
-- On Py 2.x: need setuptools installed
-- On Py 3.x: need Distribute installed
-- Need nose installed
-- Need to have coverage dev-installed
-- In each Python installation to be used, create a "coverage_test_egg.pth"
-  containing::
-
-    c:\ned\coverage\trunk\test\eggsrc\dist\covtestegg1-0.0.0-py2.5.egg
-
-  (or equivalent).
-
-  These go in c:\python26\lib\site-packages or
-  /usr/local/lib/python2.6/dist-packages, for example.
 
 - For complete coverage testing, in each Python installation, create a
   "zzz_coverage_process_start.pth" containing::
