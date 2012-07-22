@@ -19,7 +19,7 @@ Version 3.5.3b1
 
 .. _issue 179: https://bitbucket.org/ned/coveragepy/issue/179/htmlreporter-fails-when-source-file-is
 .. _issue 183: https://bitbucket.org/ned/coveragepy/issue/183/install-fails-for-python-23
-.. _tox: tox.readthedocs.org/
+.. _tox: http://tox.readthedocs.org/
 
 
 Version 3.5.2 --- 4 May 2012
