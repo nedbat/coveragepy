@@ -52,8 +52,14 @@ def do_check_eol(args):
     """Check files for incorrect newlines and trailing whitespace."""
 
     ignore_dirs = ['.svn', '.hg', '.tox']
+    checked = set([])
 
     def check_file(fname, crlf=True, trail_white=True):
+        fname = os.path.relpath(fname)
+        if fname in checked:
+            return
+        checked.add(fname)
+
         for n, line in enumerate(open(fname, "rb")):
             if crlf:
                 if "\r" in line:
@@ -61,6 +67,8 @@ def do_check_eol(args):
                     return
             if trail_white:
                 line = line[:-1]
+                if not crlf:
+                    line = line.rstrip('\r')
                 if line.rstrip() != line:
                     print("%s@%d: trailing whitespace found" % (fname, n+1))
                     return
@@ -73,12 +81,13 @@ def do_check_eol(args):
                     if fnmatch.fnmatch(fname, p):
                         check_file(fname, **kwargs)
                         break
-            for pattern in ignore_dirs:
-                if pattern in dirs:
-                    dirs.remove(pattern)
+            for dir_name in ignore_dirs:
+                if dir_name in dirs:
+                    dirs.remove(dir_name)
 
     check_files("coverage", ["*.py", "*.c"])
     check_files("coverage/htmlfiles", ["*.html", "*.css", "*.js"])
+    check_file("test/farm/html/src/bom.py", crlf=False)
     check_files("test", ["*.py"])
     check_files("test", ["*,cover"], trail_white=False)
     check_files("test/js", ["*.js", "*.html"])
