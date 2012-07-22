@@ -30,8 +30,10 @@
         - Build and publish docs:
             $ make publish
 - Kits:
-    - source .tgz and windows .exe for each Python
-        - $ allkits.cmd
+    - Source kit:
+        - $ make kit
+    - Windows .exe for each Python
+        - $ tox -c tox_winkits.ini
 - Update PyPi:
     - $ make pypi
     - upload the kits:

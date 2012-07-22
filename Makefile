@@ -54,7 +54,6 @@ covcov: testready
 
 kit:
 	python setup.py sdist --keep-temp --formats=gztar fixtar --owner=ned --group=coverage --clean
-	python setup.py bdist_wininst
 
 pypi:
 	python setup.py register
