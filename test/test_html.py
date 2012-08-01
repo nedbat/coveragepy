@@ -215,3 +215,4 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         self.import_local_file("liar")
         cov.stop()
         cov.html_report()
+        self.assert_exists("htmlcov/index.html")
