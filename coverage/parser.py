@@ -203,7 +203,6 @@ class CodeParser(object):
         statements.
 
         """
-
         try:
             self._raw_parse()
         except tokenize.TokenError:

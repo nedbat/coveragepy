@@ -204,7 +204,6 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         have been raised when writing the HTML report.
 
         """
-
         source = "exec compile('', '', 'exec') in {'__file__' : 'liar.html'}"
         self.make_file("liar.py", source)
         self.make_file("liar.html", "{# Whoops, not python code #}")
