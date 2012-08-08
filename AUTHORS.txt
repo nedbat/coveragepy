@@ -6,6 +6,7 @@ Other contributions have been made by:
 Marc Abramowitz
 Chris Adams
 Geoff Bache
+Julian Berman
 Titus Brown
 Brett Cannon
 Pablo Carballo
