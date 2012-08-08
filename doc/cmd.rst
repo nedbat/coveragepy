@@ -173,10 +173,10 @@ how the different locations correlate with a ``[paths]`` section in your
 configuration file.  See :ref:`config_paths` for details.
 
 If you are collecting and renaming your own data files, you'll need to name
-properly for **combine** to find them.   It looks for files named after the
-data file (defaulting to ".coverage", overridable with COVERAGE_FILE), with a
-dotted suffix.  All such files in the current directory will be combined.  Here
-are some examples of combinable data files::
+them properly for **combine** to find them.   It looks for files named after
+the data file (defaulting to ".coverage", overridable with COVERAGE_FILE), with
+a dotted suffix.  All such files in the current directory will be combined.
+Here are some examples of combinable data files::
 
     .coverage.machine1
     .coverage.20120807T212300
