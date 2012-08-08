@@ -14,6 +14,7 @@ Coverage command line usage
 :history: 20110827T212500, updated for 3.5.1, combining aliases
 :history: 20120119T075600, Added some clarification from George Paci
 :history: 20120504T091800, Added info about execution warnings, and 3.5.2 stuff.
+:history: 20120807T211600, Clarified the combine rules.
 
 .. highlight:: console
 
@@ -170,6 +171,16 @@ If the different machines run your code from different places in their file
 systems, coverage won't know how to combine the data.  You can tell coverage
 how the different locations correlate with a ``[paths]`` section in your
 configuration file.  See :ref:`config_paths` for details.
+
+If you are collecting and renaming your own data files, you'll need to name
+properly for **combine** to find them.   It looks for files named after the
+data file (defaulting to ".coverage", overridable with COVERAGE_FILE), with a
+dotted suffix.  All such files in the current directory will be combined.  Here
+are some examples of combinable data files::
+
+    .coverage.machine1
+    .coverage.20120807T212300
+    .coverage.last_good_run.ok
 
 
 .. _cmd_reporting:
