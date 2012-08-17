@@ -56,7 +56,8 @@ class PyTracer(object):
         """The trace function passed to sys.settrace."""
 
         #print("trace event: %s %r @%d" % (
-        #           event, frame.f_code.co_filename, frame.f_lineno))
+        #           event, frame.f_code.co_filename, frame.f_lineno),
+        #      file=sys.stderr)
 
         if self.last_exc_back:
             if frame == self.last_exc_back:
@@ -243,10 +244,10 @@ class Collector(object):
         if self._collectors:
             self._collectors[-1].pause()
         self._collectors.append(self)
-        #print >>sys.stderr, "Started: %r" % self._collectors
+        #print("Started: %r" % self._collectors, file=sys.stderr)
 
         # Check to see whether we had a fullcoverage tracer installed.
-        traces0 = None
+        traces0 = []
         if hasattr(sys, "gettrace"):
             fn0 = sys.gettrace()
             if fn0:
@@ -257,10 +258,8 @@ class Collector(object):
         # Install the tracer on this thread.
         fn = self._start_tracer()
 
-        if traces0:
-            for args in traces0:
-                (frame, event, arg), lineno = args
-                fn(frame, event, arg, lineno=lineno)
+        for args in traces0:
+            fn(*args)
 
         # Install our installation tracer in threading, to jump start other
         # threads.

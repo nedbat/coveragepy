@@ -31,8 +31,7 @@ class FullCoverageTracer(object):
         self.traces = []
 
     def fullcoverage_trace(self, *args):
-        frame, event, arg = args
-        self.traces.append((args, frame.f_lineno))
+        self.traces.append(args)
         return self.fullcoverage_trace
 
 sys.settrace(FullCoverageTracer().fullcoverage_trace)
@@ -43,8 +42,7 @@ sys.settrace(FullCoverageTracer().fullcoverage_trace)
 # happen last, since all of the symbols in this module will become None
 # at that exact moment, including "sys".
 
-parentdirs = [ d for d in sys.path if __file__.startswith(d) ]
-parentdirs.sort(key=len)
+parentdirs = sorted(filter(__file__.startswith, sys.path), key=len)
 sys.path.remove(parentdirs[-1])
 del sys.modules['encodings']
 import encodings
