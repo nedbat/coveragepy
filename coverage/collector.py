@@ -259,7 +259,8 @@ class Collector(object):
         fn = self._start_tracer()
 
         for args in traces0:
-            fn(*args)
+            (frame, event, arg), lineno = args
+            fn(frame, event, arg, lineno=lineno)
 
         # Install our installation tracer in threading, to jump start other
         # threads.
