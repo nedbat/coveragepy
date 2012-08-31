@@ -260,7 +260,12 @@ class Collector(object):
 
         for args in traces0:
             (frame, event, arg), lineno = args
-            fn(frame, event, arg, lineno=lineno)
+            try:
+                fn(frame, event, arg, lineno=lineno)
+            except TypeError:
+                raise Exception(
+                    "fullcoverage must be run with the C trace function."
+                )
 
         # Install our installation tracer in threading, to jump start other
         # threads.
