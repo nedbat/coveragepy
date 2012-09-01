@@ -37,7 +37,7 @@
 
 #define MyText_Type         PyString_Type
 #define MyText_Check(o)     PyString_Check(o)
-#define MyText_AS_BYTES(o)  (Py_INCREF(o); o)
+#define MyText_AS_BYTES(o)  (Py_INCREF(o), o)
 #define MyText_AS_STRING(o) PyString_AS_STRING(o)
 #define MyInt_FromLong(l)   PyInt_FromLong(l)
 
