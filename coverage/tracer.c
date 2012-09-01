@@ -27,7 +27,8 @@
 
 #define MyText_Type         PyUnicode_Type
 #define MyText_Check(o)     PyUnicode_Check(o)
-#define MyText_AS_STRING(o) PyBytes_AS_STRING(PyUnicode_AsASCIIString(o))
+#define MyText_AS_BYTES(o)  PyUnicode_AsASCIIString(o)
+#define MyText_AS_STRING(o) PyBytes_AS_STRING(o)
 #define MyInt_FromLong(l)   PyLong_FromLong(l)
 
 #define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
@@ -36,6 +37,7 @@
 
 #define MyText_Type         PyString_Type
 #define MyText_Check(o)     PyString_Check(o)
+#define MyText_AS_BYTES(o)  (Py_INCREF(o); o)
 #define MyText_AS_STRING(o) PyString_AS_STRING(o)
 #define MyInt_FromLong(l)   PyInt_FromLong(l)
 
@@ -207,7 +209,9 @@ showlog(int depth, int lineno, PyObject * filename, const char * msg)
             printf("    ");
         }
         if (filename) {
-            printf(" %s", MyText_AS_STRING(filename));
+            PyObject *ascii = MyText_AS_BYTES(filename);
+            printf(" %s", MyText_AS_STRING(ascii));
+            Py_DECREF(ascii);
         }
         if (msg) {
             printf(" %s", msg);
@@ -257,17 +261,24 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     int ret = RET_OK;
     PyObject * filename = NULL;
     PyObject * tracename = NULL;
+    #if WHAT_LOG || TRACE_LOG
+    PyObject * ascii = NULL;
+    #endif
 
     #if WHAT_LOG
     if (what <= sizeof(what_sym)/sizeof(const char *)) {
-        printf("trace: %s @ %s %d\n", what_sym[what], MyText_AS_STRING(frame->f_code->co_filename), frame->f_lineno);
+        ascii = MyText_AS_BYTES(frame->f_code->co_filename);
+        printf("trace: %s @ %s %d\n", what_sym[what], MyText_AS_STRING(ascii), frame->f_lineno);
+        Py_DECREF(ascii);
     }
     #endif
 
     #if TRACE_LOG
-    if (strstr(MyText_AS_STRING(frame->f_code->co_filename), start_file) && frame->f_lineno == start_line) {
+    ascii = MyText_AS_BYTES(o);
+    if (strstr(MyText_AS_STRING(ascii), start_file) && frame->f_lineno == start_line) {
         logging = 1;
     }
+    Py_DECREF(ascii);
     #endif
 
     /* See below for details on missing-return detection. */
@@ -508,7 +519,10 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     /* In Python, the what argument is a string, we need to find an int
        for the C function. */
     for (what = 0; what_names[what]; what++) {
-        if (!strcmp(MyText_AS_STRING(what_str), what_names[what])) {
+        PyObject *ascii = MyText_AS_BYTES(what_str);
+        int should_break = !strcmp(MyText_AS_STRING(ascii), what_names[what]);
+        Py_DECREF(ascii);
+        if (should_break) {
             break;
         }
     }
