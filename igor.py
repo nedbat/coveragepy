@@ -38,6 +38,9 @@ def do_test_with_tracer(args):
         label = "with Python tracer"
     else:
         label = "with C tracer"
+        if os.environ.get("COVERAGE_NO_EXTENSION"):
+            print("Skipping tests, no C extension in this environment")
+            return
     print_banner(label)
     os.environ["COVERAGE_TEST_TRACER"] = tracer
     nose_args = ["nosetests"] + args[1:]
