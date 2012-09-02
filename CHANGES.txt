@@ -16,6 +16,8 @@ Version 3.5.3b1
   then not being able to parse them as Python.  Closes `issue 82` (again).
   Thanks, Julian Berman.
 
+- Fixed memory leaks under Python 3, thanks, Brett Cannon.
+
 - Try to do a better job of the impossible task of detecting when we can't
   build the C extension, fixing `issue 183`_.
 
