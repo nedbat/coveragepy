@@ -9,3 +9,4 @@ ignore =
     *.min.js
     sample_html
     *.so *.pyd
+    *.zip
