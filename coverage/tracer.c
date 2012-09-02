@@ -274,7 +274,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     #endif
 
     #if TRACE_LOG
-    ascii = MyText_AS_BYTES(o);
+    ascii = MyText_AS_BYTES(frame->f_code->co_filename);
     if (strstr(MyText_AS_STRING(ascii), start_file) && frame->f_lineno == start_line) {
         logging = 1;
     }
