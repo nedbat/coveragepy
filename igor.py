@@ -47,6 +47,7 @@ def do_zip_mods(args):
     """Build the zipmods.zip file."""
     zf = zipfile.ZipFile("test/zipmods.zip", "w")
     zf.write("test/covmodzip1.py", "covmodzip1.py")
+    zf.close()
 
 def do_check_eol(args):
     """Check files for incorrect newlines and trailing whitespace."""
