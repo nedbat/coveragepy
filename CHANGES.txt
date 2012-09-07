@@ -18,6 +18,9 @@ Version 3.5.3b1
 
 - Fixed memory leaks under Python 3, thanks, Brett Cannon.
 
+- Optimized .pyo files may not have been handled correctly, `issue 195`_.
+  Thanks, Marius Gedminas.
+
 - Try to do a better job of the impossible task of detecting when we can't
   build the C extension, fixing `issue 183`_.
 
@@ -26,7 +29,9 @@ Version 3.5.3b1
 .. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 179: https://bitbucket.org/ned/coveragepy/issue/179/htmlreporter-fails-when-source-file-is
 .. _issue 183: https://bitbucket.org/ned/coveragepy/issue/183/install-fails-for-python-23
+.. _issue 195: https://bitbucket.org/ned/coveragepy/issue/195/pyo-file-handling-in-codeunit
 .. _tox: http://tox.readthedocs.org/
+
 
 
 Version 3.5.2 --- 4 May 2012

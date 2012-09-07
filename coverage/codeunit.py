@@ -52,7 +52,7 @@ class CodeUnit(object):
         else:
             f = morf
         # .pyc files should always refer to a .py instead.
-        if f.endswith('.pyc'):
+        if f.endswith('.pyc') or f.endswith('.pyo'):
             f = f[:-1]
         self.filename = self.file_locator.canonical_filename(f)
 
