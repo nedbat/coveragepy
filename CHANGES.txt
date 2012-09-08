@@ -21,6 +21,9 @@ Version 3.5.3b1
 - Optimized .pyo files may not have been handled correctly, `issue 195`_.
   Thanks, Marius Gedminas.
 
+- Certain unusually named file paths could have been mangled during reporting,
+  `issue 194`_.  Thanks, Marius Gedminas.
+
 - Try to do a better job of the impossible task of detecting when we can't
   build the C extension, fixing `issue 183`_.
 
@@ -29,6 +32,7 @@ Version 3.5.3b1
 .. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 179: https://bitbucket.org/ned/coveragepy/issue/179/htmlreporter-fails-when-source-file-is
 .. _issue 183: https://bitbucket.org/ned/coveragepy/issue/183/install-fails-for-python-23
+.. _issue 194: https://bitbucket.org/ned/coveragepy/issue/194/filelocatorrelative_filename-could-mangle
 .. _issue 195: https://bitbucket.org/ned/coveragepy/issue/195/pyo-file-handling-in-codeunit
 .. _tox: http://tox.readthedocs.org/
 

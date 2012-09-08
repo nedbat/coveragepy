@@ -37,6 +37,13 @@ class FileLocatorTest(CoverageTest):
         self.assertEqual(fl.relative_filename(a1), "file1.py")
         self.assertEqual(fl.relative_filename(a2), a2)
 
+    def test_filepath_contains_absolute_prefix_twice(self):
+        # https://bitbucket.org/ned/coveragepy/issue/194/filelocatorrelative_filename-could-mangle
+        fl = FileLocator()
+        d = fl.abs_file(os.curdir)
+        rel = os.path.join('sub', d.lstrip(os.path.sep), 'file1.py')
+        self.assertEqual(fl.relative_filename(fl.abs_file(rel)), rel)
+
 
 class MatcherTest(CoverageTest):
     """Tests of file matchers."""

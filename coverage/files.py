@@ -27,7 +27,7 @@ class FileLocator(object):
 
         """
         if filename.startswith(self.relative_dir):
-            filename = filename.replace(self.relative_dir, "")
+            filename = filename.replace(self.relative_dir, "", 1)
         return filename
 
     def canonical_filename(self, filename):
