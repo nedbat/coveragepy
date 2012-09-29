@@ -24,8 +24,8 @@ html>body {
 
 /* Set base font size to 12/16 */
 p {
-    font-size: .75em;        /* 12/16 */
-    line-height: 1.3333em;   /* 16/12 */
+    font-size: .75em;           /* 12/16 */
+    line-height: 1.33333333em;  /* 16/12 */
     }
 
 table {
