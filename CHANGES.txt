@@ -2,8 +2,8 @@
 Change history for Coverage.py
 ------------------------------
 
-Version 3.5.3b1
----------------
+Version 3.5.3 --- 29 September 2012
+-----------------------------------
 
 - Line numbers in the HTML report line up better with the source lines, fixing
   `issue 197`, thanks Marius Gedminas.
@@ -19,7 +19,7 @@ Version 3.5.3b1
   then not being able to parse them as Python.  Closes `issue 82` (again).
   Thanks, Julian Berman.
 
-- Fixed memory leaks under Python 3, thanks, Brett Cannon.
+- Fixed memory leaks under Python 3, thanks, Brett Cannon. Closes `issue 147`_.
 
 - Optimized .pyo files may not have been handled correctly, `issue 195`_.
   Thanks, Marius Gedminas.
@@ -33,6 +33,7 @@ Version 3.5.3b1
 - Testing is now done with `tox`_, thanks, Marc Abramowitz.
 
 .. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
+.. _issue 147: https://bitbucket.org/ned/coveragepy/issue/147/massive-memory-usage-by-ctracer
 .. _issue 179: https://bitbucket.org/ned/coveragepy/issue/179/htmlreporter-fails-when-source-file-is
 .. _issue 183: https://bitbucket.org/ned/coveragepy/issue/183/install-fails-for-python-23
 .. _issue 194: https://bitbucket.org/ned/coveragepy/issue/194/filelocatorrelative_filename-could-mangle

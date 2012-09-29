@@ -21,12 +21,50 @@ Major change history for coverage.py
 :history: 20110923T081600, updated for 3.5.1
 :history: 20120429T162100, updated for 3.5.2b1
 :history: 20120503T233700, updated for 3.5.2
+:history: 20120929T093100, updated for 3.5.3
 
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+
+
+Version 3.5.3 --- 29 September 2012
+-----------------------------------
+
+- Line numbers in the HTML report line up better with the source lines, fixing
+  `issue 197`, thanks Marius Gedminas.
+
+- When specifying a directory as the source= option, the directory itself no
+  longer needs to have a ``__init__.py`` file, though its subdirectories do, to
+  be considered as source files.
+
+- Files encoded as UTF-8 with a BOM are now properly handled, fixing
+  `issue 179`_.  Thanks, Pablo Carballo.
+
+- Fixed more cases of non-Python files being reported as Python source, and
+  then not being able to parse them as Python.  Closes `issue 82` (again).
+  Thanks, Julian Berman.
+
+- Fixed memory leaks under Python 3, thanks, Brett Cannon. Closes `issue 147`_.
+
+- Optimized .pyo files may not have been handled correctly, `issue 195`_.
+  Thanks, Marius Gedminas.
+
+- Certain unusually named file paths could have been mangled during reporting,
+  `issue 194`_.  Thanks, Marius Gedminas.
+
+- Try to do a better job of the impossible task of detecting when we can't
+  build the C extension, fixing `issue 183`_.
+
+.. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
+.. _issue 147: https://bitbucket.org/ned/coveragepy/issue/147/massive-memory-usage-by-ctracer
+.. _issue 179: https://bitbucket.org/ned/coveragepy/issue/179/htmlreporter-fails-when-source-file-is
+.. _issue 183: https://bitbucket.org/ned/coveragepy/issue/183/install-fails-for-python-23
+.. _issue 194: https://bitbucket.org/ned/coveragepy/issue/194/filelocatorrelative_filename-could-mangle
+.. _issue 195: https://bitbucket.org/ned/coveragepy/issue/195/pyo-file-handling-in-codeunit
+.. _issue 197: https://bitbucket.org/ned/coveragepy/issue/197/line-numbers-in-html-report-do-not-align
 
 
 Version 3.5.2 --- 4 May 2012
