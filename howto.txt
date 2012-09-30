@@ -37,7 +37,8 @@
 - Update PyPi:
     - $ make pypi
     - upload the kits:
-        - $ allkits.cmd upload
+        - $ make kit_upload
+        - $ tox -c tox_winkits.ini upload
         # note: this seems to try to upload each file twice, so you'll have a
         # successful upload, then a failure, but the file gets there.
     - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage :

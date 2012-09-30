@@ -52,9 +52,14 @@ covcov: testready
 
 # Kitting
 
-kit:
-	python setup.py sdist --keep-temp --formats=gztar fixtar --owner=ned --group=coverage --clean
+SDIST_CMD = python setup.py sdist --keep-temp --formats=gztar fixtar --owner=ned --group=coverage --clean
 
+kit:
+	$(SDIST_CMD)
+
+kit_upload:
+	$(SDIST_CMD) upload
+	
 pypi:
 	python setup.py register
 
