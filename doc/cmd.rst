@@ -15,6 +15,7 @@ Coverage command line usage
 :history: 20120119T075600, Added some clarification from George Paci
 :history: 20120504T091800, Added info about execution warnings, and 3.5.2 stuff.
 :history: 20120807T211600, Clarified the combine rules.
+:history: 20121003T074600, Fixed an option reference, https://bitbucket.org/ned/coveragepy/issue/200/documentation-mentions-output-xml-instead
 
 .. highlight:: console
 
@@ -329,7 +330,7 @@ compatible with `Cobertura`_.
 
 .. _Cobertura: http://cobertura.sourceforge.net
 
-You can specify the name of the output file with the ``--output-xml`` switch.
+You can specify the name of the output file with the ``-o`` switch.
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
