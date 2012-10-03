@@ -4,7 +4,7 @@ ignore =
     .treerc
     build
     htmlcov
-    .tox
+    .tox* 
     distribute_setup.py ez_setup.py mock.py
     *.min.js
     sample_html
