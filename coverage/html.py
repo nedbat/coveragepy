@@ -281,7 +281,7 @@ class HtmlStatus(object):
                 status = pickle.load(fstatus)
             finally:
                 fstatus.close()
-        except IOError:
+        except (IOError, ValueError):
             usable = False
         else:
             usable = True
