@@ -253,7 +253,7 @@ class Collector(object):
             if fn0:
                 tracer0 = getattr(fn0, '__self__', None)
                 if tracer0:
-                    traces0 = getattr(tracer0, 'traces', None)
+                    traces0 = getattr(tracer0, 'traces', [])
 
         # Install the tracer on this thread.
         fn = self._start_tracer()
