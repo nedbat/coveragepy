@@ -90,7 +90,7 @@ class SingletonApiTest(CoverageTest):
 class ApiTest(CoverageTest):
     """Api-oriented tests for Coverage."""
 
-    def clean_files(self, files, *pats):
+    def clean_files(self, files, pats):
         """Remove names matching `pats` from `files`, a list of filenames."""
         good = []
         for f in files:
@@ -104,7 +104,7 @@ class ApiTest(CoverageTest):
     def listdir(self, where):
         """Like os.listdir, but exclude files we don't care about."""
         files = os.listdir(where)
-        return self.clean_files(files, "*.pyc", "__pycache__")
+        return self.clean_files(files, ["*.pyc", "__pycache__"])
 
     def test_unexecuted_file(self):
         cov = coverage.coverage()

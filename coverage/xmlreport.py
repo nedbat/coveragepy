@@ -114,7 +114,7 @@ class XmlReporter(Reporter):
 
             # Q: can we get info about the number of times a statement is
             # executed?  If so, that should be recorded here.
-            xline.setAttribute("hits", str(int(not line in analysis.missing)))
+            xline.setAttribute("hits", str(int(line not in analysis.missing)))
 
             if self.arcs:
                 if line in branch_stats:
