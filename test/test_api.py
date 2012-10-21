@@ -101,10 +101,11 @@ class ApiTest(CoverageTest):
                 good.append(f)
         return good
 
-    def listdir(self, where):
-        """Like os.listdir, but exclude files we don't care about."""
-        files = os.listdir(where)
-        return self.clean_files(files, ["*.pyc", "__pycache__"])
+    def assertFiles(self, files):
+        """Assert that the files here are `files`, ignoring the usual junk."""
+        here = os.listdir(".")
+        here = self.clean_files(here, ["*.pyc", "__pycache__"])
+        self.assertSameElements(here, files)
 
     def test_unexecuted_file(self):
         cov = coverage.coverage()
@@ -280,14 +281,13 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        self.assertSameElements(self.listdir("."), ["datatest1.py"])
+        self.assertFiles(["datatest1.py"])
         cov = coverage.coverage()
         cov.start()
         self.import_local_file("datatest1")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
-        self.assertSameElements(self.listdir("."),
-                            ["datatest1.py", ".coverage"])
+        self.assertFiles(["datatest1.py", ".coverage"])
 
     def test_datafile_specified(self):
         # You can specify the data file name.
@@ -295,14 +295,13 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        self.assertSameElements(self.listdir("."), ["datatest2.py"])
+        self.assertFiles(["datatest2.py"])
         cov = coverage.coverage(data_file="cov.data")
         cov.start()
         self.import_local_file("datatest2")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
-        self.assertSameElements(self.listdir("."),
-                            ["datatest2.py", "cov.data"])
+        self.assertFiles(["datatest2.py", "cov.data"])
 
     def test_datafile_and_suffix_specified(self):
         # You can specify the data file name and suffix.
@@ -310,14 +309,13 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        self.assertSameElements(self.listdir("."), ["datatest3.py"])
+        self.assertFiles(["datatest3.py"])
         cov = coverage.coverage(data_file="cov.data", data_suffix="14")
         cov.start()
         self.import_local_file("datatest3")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
-        self.assertSameElements(self.listdir("."),
-                            ["datatest3.py", "cov.data.14"])
+        self.assertFiles(["datatest3.py", "cov.data.14"])
 
     def test_datafile_from_rcfile(self):
         # You can specify the data file name in the .coveragerc file
@@ -329,15 +327,13 @@ class ApiTest(CoverageTest):
             data_file = mydata.dat
             """)
 
-        self.assertSameElements(self.listdir("."),
-                                            ["datatest4.py", ".coveragerc"])
+        self.assertFiles(["datatest4.py", ".coveragerc"])
         cov = coverage.coverage()
         cov.start()
         self.import_local_file("datatest4")     # pragma: recursive coverage
         cov.stop()                              # pragma: recursive coverage
         cov.save()
-        self.assertSameElements(self.listdir("."),
-                ["datatest4.py", ".coveragerc", "mydata.dat"])
+        self.assertFiles(["datatest4.py", ".coveragerc", "mydata.dat"])
 
     def test_empty_reporting(self):
         # Used to be you'd get an exception reporting on nothing...
