@@ -12,8 +12,12 @@ Version 3.5.4b1
 - Running coverage under a debugger is unlikely to work, but it shouldn't fail
   with "TypeError: 'NoneType' object is not iterable".  Fixes `issue 201`_.
 
+- Docstrings for the legacy singleton methods are more helpful.  Thanks Marius
+  Gedminas.  Closes `issue 205`_.
+
 .. _issue 193: https://bitbucket.org/ned/coveragepy/issue/193/unicodedecodeerror-on-htmlpy
 .. _issue 201: https://bitbucket.org/ned/coveragepy/issue/201/coverage-using-django-14-with-pydb-on
+.. _issue 205: https://bitbucket.org/ned/coveragepy/issue/205/make-pydoc-coverage-more-friendly
 
 
 Version 3.5.3 --- 29 September 2012
