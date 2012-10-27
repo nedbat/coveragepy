@@ -346,13 +346,13 @@ class ApiTest(CoverageTest):
         cov.report()
 
 
-class SourceOmitIncludeTest(CoverageTest):
-    """Test using `source`, `omit` and `include` when measuring code."""
+class UsingModulesMixin(object):
+    """A mixin for importing modules from test/modules and test/moremodules."""
 
     run_in_temp_dir = False
 
     def setUp(self):
-        super(SourceOmitIncludeTest, self).setUp()
+        super(UsingModulesMixin, self).setUp()
         # Parent class saves and restores sys.path, we can just modify it.
         self.old_dir = os.getcwd()
         os.chdir(self.nice_file(os.path.dirname(__file__), 'modules'))
@@ -361,7 +361,11 @@ class SourceOmitIncludeTest(CoverageTest):
 
     def tearDown(self):
         os.chdir(self.old_dir)
-        super(SourceOmitIncludeTest, self).tearDown()
+        super(UsingModulesMixin, self).tearDown()
+
+
+class SourceOmitIncludeTest(UsingModulesMixin, CoverageTest):
+    """Test using `source`, `omit` and `include` when measuring code."""
 
     def coverage_usepkgs_summary(self, **kwargs):
         """Run coverage on usepkgs and return the line summary.
