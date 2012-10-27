@@ -42,6 +42,24 @@ def _singleton_method(name):
         if not _the_coverage:
             _the_coverage = coverage(auto_data=True)
         return getattr(_the_coverage, name)(*args, **kwargs)
+
+    import inspect
+    meth = getattr(coverage, name)
+    args, varargs, kw, defaults = inspect.getargspec(meth)
+    argspec = inspect.formatargspec(args[1:], varargs, kw, defaults)
+    docstring = meth.__doc__
+    wrapper.__doc__ = ("""\
+        A first-use-singleton wrapper around coverage.%(name)s.
+
+        This wrapper is provided for backward compatibility with legacy code.
+        New code should use coverage.%(name)s directly.
+
+        %(name)s%(argspec)s:
+
+        %(docstring)s
+        """ % locals()
+        )
+
     return wrapper
 
 

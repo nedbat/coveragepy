@@ -10,3 +10,4 @@ ignore =
     sample_html
     *.so *.pyd
     *.zip
+    _build
