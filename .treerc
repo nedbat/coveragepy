@@ -2,12 +2,13 @@
 [default]
 ignore =
     .treerc
+    .hgtags
     build
     htmlcov
     .tox* 
     distribute_setup.py ez_setup.py mock.py
     *.min.js
-    sample_html
+    sample_html sample_html_beta
     *.so *.pyd
     *.zip
     _build
