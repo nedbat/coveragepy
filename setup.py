@@ -55,6 +55,10 @@ from distutils.core import Extension    # pylint: disable=E0611,F0401
 
 from coverage import __url__, __version__
 
+scripts = ['coverage = coverage:main']
+if sys.version_info >= (3, 0):
+    scripts.append('coverage3 = coverage:main')
+
 doclines = (__doc__ % __url__).split('\n')
 
 classifier_list = [c for c in classifiers.split("\n") if c]
@@ -83,11 +87,7 @@ setup_args = dict(
             ]
         },
 
-    entry_points = {
-        'console_scripts': [
-            'coverage = coverage:main',
-            ],
-        },
+    entry_points = {'console_scripts': scripts},
 
     # We need to get HTML assets from our htmlfiles dir.
     zip_safe = False,
