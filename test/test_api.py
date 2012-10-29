@@ -360,10 +360,70 @@ class UsingModulesMixin(object):
         super(UsingModulesMixin, self).tearDown()
 
 
-class SourceOmitIncludeTest(UsingModulesMixin, CoverageTest):
+class OmitIncludeTestsMixin(UsingModulesMixin):
+    """Test methods for coverage methods taking include and omit."""
+
+    def filenames_in(self, summary, filenames):
+        """Assert the `filenames` are in the keys of `summary`."""
+        for filename in filenames.split():
+            self.assert_(filename in summary,
+                "%s should be in %r" % (filename, summary)
+                )
+
+    def filenames_not_in(self, summary, filenames):
+        """Assert the `filenames` are not in the keys of `summary`."""
+        for filename in filenames.split():
+            self.assert_(filename not in summary,
+                "%s should not be in %r" % (filename, summary)
+                )
+
+    def test_nothing_specified(self):
+        result = self.coverage_usepkgs()
+        self.filenames_in(result, "p1a p1b p2a p2b othera otherb osa osb")
+        self.filenames_not_in(result, "p1c")
+        # Because there was no source= specified, we don't search for
+        # unexecuted files.
+
+    def test_include(self):
+        result = self.coverage_usepkgs(include=["*/p1a.py"])
+        self.filenames_in(result, "p1a")
+        self.filenames_not_in(result, "p1b p1c p2a p2b othera otherb osa osb")
+
+    def test_include_2(self):
+        result = self.coverage_usepkgs(include=["*a.py"])
+        self.filenames_in(result, "p1a p2a othera osa")
+        self.filenames_not_in(result, "p1b p1c p2b otherb osb")
+
+    def test_include_as_string(self):
+        result = self.coverage_usepkgs(include="*a.py")
+        self.filenames_in(result, "p1a p2a othera osa")
+        self.filenames_not_in(result, "p1b p1c p2b otherb osb")
+
+    def test_omit(self):
+        result = self.coverage_usepkgs(omit=["*/p1a.py"])
+        self.filenames_in(result, "p1b p2a p2b")
+        self.filenames_not_in(result, "p1a p1c")
+
+    def test_omit_2(self):
+        result = self.coverage_usepkgs(omit=["*a.py"])
+        self.filenames_in(result, "p1b p2b otherb osb")
+        self.filenames_not_in(result, "p1a p1c p2a othera osa")
+
+    def test_omit_as_string(self):
+        result = self.coverage_usepkgs(omit="*a.py")
+        self.filenames_in(result, "p1b p2b otherb osb")
+        self.filenames_not_in(result, "p1a p1c p2a othera osa")
+
+    def test_omit_and_include(self):
+        result = self.coverage_usepkgs( include=["*/p1*"], omit=["*/p1a.py"])
+        self.filenames_in(result, "p1b")
+        self.filenames_not_in(result, "p1a p1c p2a p2b")
+
+
+class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
     """Test using `source`, `omit` and `include` when measuring code."""
 
-    def coverage_usepkgs_summary(self, **kwargs):
+    def coverage_usepkgs(self, **kwargs):
         """Run coverage on usepkgs and return the line summary.
 
         Arguments are passed to the `coverage.coverage` constructor.
@@ -373,117 +433,55 @@ class SourceOmitIncludeTest(UsingModulesMixin, CoverageTest):
         cov.start()
         import usepkgs                      # pylint: disable=F0401,W0612
         cov.stop()
-        return cov.data.summary()
-
-    def filenames_in_summary(self, summary, filenames):
-        """Assert the `filenames` are in the keys of `summary`."""
-        for filename in filenames.split():
-            self.assert_(filename in summary,
-                "%s should be in %r" % (filename, summary)
-                )
-
-    def filenames_not_in_summary(self, summary, filenames):
-        """Assert the `filenames` are not in the keys of `summary`."""
-        for filename in filenames.split():
-            self.assert_(filename not in summary,
-                "%s should not be in %r" % (filename, summary)
-                )
-
-    def test_nothing_specified(self):
-        lines = self.coverage_usepkgs_summary()
-        self.filenames_in_summary(lines,
-            "p1a.py p1b.py p2a.py p2b.py othera.py otherb.py osa.py osb.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p1c.py"
-            )
-        # Because there was no source= specified, we don't search for
-        # unexecuted files.
+        summary = cov.data.summary()
+        for k, v in summary.items():
+            assert k.endswith(".py")
+            summary[k[:-3]] = v
+        return summary
 
     def test_source_package(self):
-        lines = self.coverage_usepkgs_summary(source=["pkg1"])
-        self.filenames_in_summary(lines,
-            "p1a.py p1b.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p2a.py p2b.py othera.py otherb.py osa.py osb.py"
-            )
+        lines = self.coverage_usepkgs(source=["pkg1"])
+        self.filenames_in(lines, "p1a p1b")
+        self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
         # Because source= was specified, we do search for unexecuted files.
-        self.assertEqual(lines['p1c.py'], 0)
+        self.assertEqual(lines['p1c'], 0)
 
     def test_source_package_dotted(self):
-        lines = self.coverage_usepkgs_summary(source=["pkg1.p1b"])
-        self.filenames_in_summary(lines,
-            "p1b.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p1a.py p1c.py p2a.py p2b.py othera.py otherb.py osa.py osb.py"
-            )
+        lines = self.coverage_usepkgs(source=["pkg1.p1b"])
+        self.filenames_in(lines, "p1b")
+        self.filenames_not_in(lines, "p1a p1c p2a p2b othera otherb osa osb")
 
-    def test_include(self):
-        lines = self.coverage_usepkgs_summary(include=["*/p1a.py"])
-        self.filenames_in_summary(lines,
-            "p1a.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p1b.py p1c.py p2a.py p2b.py othera.py otherb.py osa.py osb.py"
-            )
 
-    def test_include_2(self):
-        lines = self.coverage_usepkgs_summary(include=["*a.py"])
-        self.filenames_in_summary(lines,
-            "p1a.py p2a.py othera.py osa.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p1b.py p1c.py p2b.py otherb.py osb.py"
-            )
+class ReportIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
+    """Tests of the report include/omit functionality."""
 
-    def test_include_as_string(self):
-        lines = self.coverage_usepkgs_summary(include="*a.py")
-        self.filenames_in_summary(lines,
-            "p1a.py p2a.py othera.py osa.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p1b.py p1c.py p2b.py otherb.py osb.py"
-            )
+    def coverage_usepkgs(self, **kwargs):
+        """Try coverage.report()."""
+        cov = coverage.coverage()
+        cov.start()
+        import usepkgs                      # pylint: disable=F0401,W0612
+        cov.stop()
+        report = StringIO()
+        cov.report(file=report, **kwargs)
+        return report.getvalue()
 
-    def test_omit(self):
-        lines = self.coverage_usepkgs_summary(omit=["*/p1a.py"])
-        self.filenames_in_summary(lines,
-            "p1b.py p2a.py p2b.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p1a.py p1c.py"
-            )
 
-    def test_omit_2(self):
-        lines = self.coverage_usepkgs_summary(omit=["*a.py"])
-        self.filenames_in_summary(lines,
-            "p1b.py p2b.py otherb.py osb.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p1a.py p1c.py p2a.py othera.py osa.py"
-            )
+class XmlIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
+    """Tests of the xml include/omit functionality.
+    
+    This also takes care of the HTML and annotate include/omit, by virtue
+    of the structure of the code.
 
-    def test_omit_as_string(self):
-        lines = self.coverage_usepkgs_summary(omit="*a.py")
-        self.filenames_in_summary(lines,
-            "p1b.py p2b.py otherb.py osb.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p1a.py p1c.py p2a.py othera.py osa.py"
-            )
+    """
 
-    def test_omit_and_include(self):
-        lines = self.coverage_usepkgs_summary(
-                            include=["*/p1*"], omit=["*/p1a.py"]
-                            )
-        self.filenames_in_summary(lines,
-            "p1b.py"
-            )
-        self.filenames_not_in_summary(lines,
-            "p1a.py p1c.py p2a.py p2b.py"
-            )
+    def coverage_usepkgs(self, **kwargs):
+        """Try coverage.xml_report()."""
+        cov = coverage.coverage()
+        cov.start()
+        import usepkgs                      # pylint: disable=F0401,W0612
+        cov.stop()
+        cov.xml_report(outfile="-", **kwargs)
+        return self.stdout()
 
 
 class AnalysisTest(CoverageTest):

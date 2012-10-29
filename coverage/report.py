@@ -2,6 +2,7 @@
 
 import fnmatch, os
 from coverage.codeunit import code_unit_factory
+from coverage.files import prep_patterns
 from coverage.misc import CoverageException, NoSource, NotPython
 
 class Reporter(object):
@@ -35,7 +36,7 @@ class Reporter(object):
         self.code_units = code_unit_factory(morfs, file_locator)
 
         if self.config.include:
-            patterns = [file_locator.abs_file(p) for p in self.config.include]
+            patterns = prep_patterns(self.config.include)
             filtered = []
             for cu in self.code_units:
                 for pattern in patterns:
@@ -45,7 +46,7 @@ class Reporter(object):
             self.code_units = filtered
 
         if self.config.omit:
-            patterns = [file_locator.abs_file(p) for p in self.config.omit]
+            patterns = prep_patterns(self.config.omit)
             filtered = []
             for cu in self.code_units:
                 for pattern in patterns:

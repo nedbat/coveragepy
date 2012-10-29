@@ -2,6 +2,7 @@
 
 import os
 from coverage.backward import configparser          # pylint: disable=W0622
+from coverage.backward import string_class          # pylint: disable=W0622
 
 # The default line exclusion regexes
 DEFAULT_EXCLUDE = [
@@ -69,10 +70,14 @@ class CoverageConfig(object):
         if env:
             self.timid = ('--timid' in env)
 
+    MUST_BE_LIST = ["omit", "include"]
+
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
         for k, v in kwargs.items():
             if v is not None:
+                if k in self.MUST_BE_LIST and isinstance(v, string_class):
+                    v = [v]
                 setattr(self, k, v)
 
     def from_file(self, *files):
@@ -167,4 +172,3 @@ class CoverageConfig(object):
         """
         value_list = cp.get(section, option)
         return list(filter(None, value_list.split('\n')))
-

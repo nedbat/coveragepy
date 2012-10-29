@@ -3,7 +3,7 @@
 import os, sys
 
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
-from coverage.files import PathAliases, find_python_files
+from coverage.files import PathAliases, find_python_files, abs_file
 from coverage.backward import set                   # pylint: disable=W0622
 from coverage.misc import CoverageException
 
@@ -43,10 +43,10 @@ class FileLocatorTest(CoverageTest):
         # Technically, this test doesn't do that on Windows, but drive
         # letters make that impractical to acheive.
         fl = FileLocator()
-        d = fl.abs_file(os.curdir)
+        d = abs_file(os.curdir)
         trick = os.path.splitdrive(d)[1].lstrip(os.path.sep)
         rel = os.path.join('sub', trick, 'file1.py')
-        self.assertEqual(fl.relative_filename(fl.abs_file(rel)), rel)
+        self.assertEqual(fl.relative_filename(abs_file(rel)), rel)
 
 
 class MatcherTest(CoverageTest):
@@ -168,4 +168,3 @@ class FindPythonFilesTest(CoverageTest):
             "sub/a.py", "sub/b.py",
             "sub/ssub/__init__.py", "sub/ssub/s.py",
             ])
-

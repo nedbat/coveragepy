@@ -9,15 +9,11 @@ class FileLocator(object):
 
     def __init__(self):
         # The absolute path to our current directory.
-        self.relative_dir = self.abs_file(os.curdir) + os.sep
+        self.relative_dir = abs_file(os.curdir) + os.sep
 
         # Cache of results of calling the canonical_filename() method, to
         # avoid duplicating work.
         self.canonical_filename_cache = {}
-
-    def abs_file(self, filename):
-        """Return the absolute normalized form of `filename`."""
-        return os.path.normcase(os.path.abspath(os.path.realpath(filename)))
 
     def relative_filename(self, filename):
         """Return the relative form of `filename`.
@@ -49,7 +45,7 @@ class FileLocator(object):
                     if os.path.exists(g):
                         f = g
                         break
-            cf = self.abs_file(f)
+            cf = abs_file(f)
             self.canonical_filename_cache[filename] = cf
         return self.canonical_filename_cache[filename]
 
@@ -76,6 +72,31 @@ class FileLocator(object):
                     continue
                 return to_string(data)
         return None
+
+
+def abs_file(filename):
+    """Return the absolute normalized form of `filename`."""
+    return os.path.normcase(os.path.abspath(os.path.realpath(filename)))
+
+
+def prep_patterns(patterns):
+    """Prepare the file patterns for use in a `FnmatchMatcher`.
+
+    If a pattern starts with a wildcard, it is used as a pattern
+    as-is.  If it does not start with a wildcard, then it is made
+    absolute with the current directory.
+
+    If `patterns` is None, an empty list is returned.
+
+    """
+    patterns = patterns or []
+    prepped = []
+    for p in patterns or []:
+        if p.startswith("*") or p.startswith("?"):
+            prepped.append(p)
+        else:
+            prepped.append(abs_file(p))
+    return prepped
 
 
 class TreeMatcher(object):

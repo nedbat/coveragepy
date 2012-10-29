@@ -9,7 +9,7 @@ from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
-from coverage.files import PathAliases, find_python_files
+from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.results import Analysis, Numbers
@@ -96,10 +96,6 @@ class coverage(object):
             self.config.data_file = env_data_file
 
         # 4: from constructor arguments:
-        if isinstance(omit, string_class):
-            omit = [omit]
-        if isinstance(include, string_class):
-            include = [include]
         self.config.from_args(
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
@@ -125,8 +121,8 @@ class coverage(object):
             else:
                 self.source_pkgs.append(src)
 
-        self.omit = self._prep_patterns(self.config.omit)
-        self.include = self._prep_patterns(self.config.include)
+        self.omit = prep_patterns(self.config.omit)
+        self.include = prep_patterns(self.config.include)
 
         self.collector = Collector(
             self._should_trace, timid=self.config.timid,
@@ -280,25 +276,6 @@ class coverage(object):
         """Use `msg` as a warning."""
         self._warnings.append(msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
-
-    def _prep_patterns(self, patterns):
-        """Prepare the file patterns for use in a `FnmatchMatcher`.
-
-        If a pattern starts with a wildcard, it is used as a pattern
-        as-is.  If it does not start with a wildcard, then it is made
-        absolute with the current directory.
-
-        If `patterns` is None, an empty list is returned.
-
-        """
-        patterns = patterns or []
-        prepped = []
-        for p in patterns or []:
-            if p.startswith("*") or p.startswith("?"):
-                prepped.append(p)
-            else:
-                prepped.append(self.file_locator.abs_file(p))
-        return prepped
 
     def _check_for_packages(self):
         """Update the source_match matcher with latest imported packages."""
