@@ -434,7 +434,7 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         import usepkgs                      # pylint: disable=F0401,W0612
         cov.stop()
         summary = cov.data.summary()
-        for k, v in summary.items():
+        for k, v in list(summary.items()):
             assert k.endswith(".py")
             summary[k[:-3]] = v
         return summary
