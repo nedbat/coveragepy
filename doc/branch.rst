@@ -118,4 +118,3 @@ Here the while loop will never complete because the break will always be taken
 at some point.  Coverage.py can't work that out on its own, but the
 "no branch" pragma indicates that the branch is known to be partial, and
 the line is not flagged.
-

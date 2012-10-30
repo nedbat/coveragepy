@@ -468,7 +468,7 @@ class ReportIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
 
 class XmlIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
     """Tests of the xml include/omit functionality.
-    
+
     This also takes care of the HTML and annotate include/omit, by virtue
     of the structure of the code.
 

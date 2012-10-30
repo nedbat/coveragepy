@@ -129,4 +129,3 @@ class CoverageTestTest(CoverageTest):
         self.assertRaises(AssertionError, self.assert_doesnt_exist,
                                                             "whoville.txt")
         self.assertRaises(AssertionError, self.assert_exists, "shadow.txt")
-

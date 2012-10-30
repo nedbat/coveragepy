@@ -184,4 +184,3 @@ class ConfigFileTest(CoverageTest):
             'source': ['.', '/home/ned/src/'],
             'other': ['other', '/home/ned/other', 'c:\\Ned\\etc']
             })
-

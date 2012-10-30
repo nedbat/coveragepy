@@ -66,4 +66,3 @@ coverage installed properly::
 
     $ coverage --version
     Coverage.py, version 3.5.3.  http://nedbatchelder.com/code/coverage
-

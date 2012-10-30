@@ -25,4 +25,3 @@ class HasherTest(CoverageTest):
         h2 = Hasher()
         h2.update({'b': 23, 'a': 17})
         self.assertEqual(h1.digest(), h2.digest())
-

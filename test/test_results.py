@@ -62,4 +62,3 @@ class NumbersTest(CoverageTest):
         self.assertEqual(n9999.pc_covered_str, "0.1")
         self.assertEqual(n10000.pc_covered_str, "0.0")
         Numbers.set_precision(0)
-

@@ -64,6 +64,7 @@ def do_check_eol(args):
             return
         checked.add(fname)
 
+        line = None
         for n, line in enumerate(open(fname, "rb")):
             if crlf:
                 if "\r" in line:
@@ -76,6 +77,9 @@ def do_check_eol(args):
                 if line.rstrip() != line:
                     print("%s@%d: trailing whitespace found" % (fname, n+1))
                     return
+
+        if line is not None and not line.strip():
+            print("%s: final blank line" % (fname,))
 
     def check_files(root, patterns, **kwargs):
         for root, dirs, files in os.walk(root):

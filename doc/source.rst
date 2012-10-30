@@ -72,4 +72,3 @@ reporting.
 
 Note that these are ways of specifying files to measure.  You can also exclude
 individual source lines.  See :ref:`excluding` for details.
-
