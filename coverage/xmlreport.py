@@ -89,9 +89,11 @@ class XmlReporter(Reporter):
 
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
-        dirname, fname = os.path.split(cu.name)
-        dirname = dirname or '.'
-        package = self.packages.setdefault(dirname, [ {}, 0, 0, 0, 0 ])
+        package_name, _ = ('.' + cu.name).rsplit('.', 1)
+        package_name = package_name[1:]
+        className = cu.name
+
+        package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])
 
         xclass = self.xml_out.createElement("class")
 
@@ -99,10 +101,9 @@ class XmlReporter(Reporter):
 
         xlines = self.xml_out.createElement("lines")
         xclass.appendChild(xlines)
-        className = fname.replace('.', '_')
+
         xclass.setAttribute("name", className)
-        ext = os.path.splitext(cu.filename)[1]
-        xclass.setAttribute("filename", cu.name + ext)
+        xclass.setAttribute("filename", cu.file_locator.relative_filename(cu.filename))
         xclass.setAttribute("complexity", "0")
 
         branch_stats = analysis.branch_stats()
