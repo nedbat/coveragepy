@@ -209,3 +209,38 @@ class SummaryTest2(CoverageTest):
         report = re.sub(r"\s+", " ", report)
         self.assert_("test/modules/pkg1/__init__ 1 0 100%" in report)
         self.assert_("test/modules/pkg2/__init__ 0 0 100%" in report)
+
+
+class ReportingReturnValue(CoverageTest):
+    def run_coverage(self):
+        self.make_file("doit.py", """\
+            a = 1
+            b = 2
+            c = 3
+            d = 4
+            if a > 10:
+                f = 6
+            g = 7
+            """)
+
+        cov = coverage.coverage()
+        cov.start()
+        self.import_local_file("doit")
+        cov.stop()
+        return cov
+
+    def test_report(self):
+        cov = self.run_coverage()
+        repout = StringIO()
+        val = cov.report(include="*/doit.py")
+        self.assertAlmostEqual(val, 85.7, 1)
+
+    def test_html(self):
+        cov = self.run_coverage()
+        val = cov.html_report(include="*/doit.py")
+        self.assertAlmostEqual(val, 85.7, 1)
+
+    def test_xml(self):
+        cov = self.run_coverage()
+        val = cov.xml_report(include="*/doit.py")
+        self.assertAlmostEqual(val, 85.7, 1)

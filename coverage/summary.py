@@ -82,3 +82,5 @@ class SummaryReporter(Reporter):
             if self.config.show_missing:
                 args += ("",)
             outfile.write(fmt_coverage % args)
+
+        return total.pc_covered

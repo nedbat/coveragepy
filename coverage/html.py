@@ -94,6 +94,8 @@ class HtmlReporter(Reporter):
 
         self.make_local_static_report_files()
 
+        return self.totals.pc_covered
+
     def make_local_static_report_files(self):
         """Make local instances of static files for HTML report."""
         # The files we provide must always be copied.
@@ -245,7 +247,7 @@ class HtmlReporter(Reporter):
         files = self.files
         arcs = self.arcs
 
-        totals = sum([f['nums'] for f in files])
+        self.totals = totals = sum([f['nums'] for f in files])
         extra_css = self.extra_css
 
         self.write_html(

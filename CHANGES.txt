@@ -13,6 +13,10 @@ Version 3.5.4b1
   configuration file, please check carefully that you were not relying on the
   old broken behavior.
 
+- The reporting functions coverage.report(), coverage.html_report(), and
+  coverage.xml_report() now all return a float, the total percentage covered
+  measurement.
+
 - Running an HTML report in Python 3 in the same directory as an old Python 2
   HTML report would fail with a UnicodeDecodeError. This issue (`issue 193`_)
   is now fixed.

@@ -532,13 +532,15 @@ class coverage(object):
         match those patterns will be included in the report. Modules matching
         `omit` will not be included in the report.
 
+        Returns a float, the total percentage covered.
+
         """
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
             show_missing=show_missing,
             )
         reporter = SummaryReporter(self, self.config)
-        reporter.report(morfs, outfile=file)
+        return reporter.report(morfs, outfile=file)
 
     def annotate(self, morfs=None, directory=None, ignore_errors=None,
                     omit=None, include=None):
@@ -571,13 +573,15 @@ class coverage(object):
 
         See `coverage.report()` for other arguments.
 
+        Returns a float, the total percentage covered.
+
         """
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
             html_dir=directory, extra_css=extra_css,
             )
         reporter = HtmlReporter(self, self.config)
-        reporter.report(morfs)
+        return reporter.report(morfs)
 
     def xml_report(self, morfs=None, outfile=None, ignore_errors=None,
                     omit=None, include=None):
@@ -589,6 +593,8 @@ class coverage(object):
         path to write the file to, "-" will write to stdout.
 
         See `coverage.report()` for other arguments.
+
+        Returns a float, the total percentage covered.
 
         """
         self.config.from_args(
@@ -604,7 +610,7 @@ class coverage(object):
                 file_to_close = outfile
         try:
             reporter = XmlReporter(self, self.config)
-            reporter.report(morfs, outfile=outfile)
+            return reporter.report(morfs, outfile=outfile)
         finally:
             if file_to_close:
                 file_to_close.close()
