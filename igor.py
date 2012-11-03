@@ -55,7 +55,7 @@ def do_zip_mods(args):
 def do_check_eol(args):
     """Check files for incorrect newlines and trailing whitespace."""
 
-    ignore_dirs = ['.svn', '.hg', '.tox', '.tox_kits']
+    ignore_dirs = ['.svn', '.hg', '.tox', '.tox_kits', 'coverage.egg-info']
     checked = set([])
 
     def check_file(fname, crlf=True, trail_white=True):
