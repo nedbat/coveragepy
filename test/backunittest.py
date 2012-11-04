@@ -66,11 +66,12 @@ class TestCase(unittest.TestCase):
             self.assertEqual(set(s1), set(s2))
 
     if _need('assertRegexpMatches'):
-        def assertRegexpMatches(self, s, regex):
-            """Assert that `s` matches `regex`."""
-            m = re.search(regex, s)
+        def assertRegexpMatches(self, text, regex, msg=None):
+            """Assert that `text` matches `regex`."""
+            m = re.search(regex, text)
             if not m:
-                raise self.failureException("%r doesn't match %r" % (s, regex))
+                msg = msg or ("%r doesn't match %r" % (text, regex))
+                raise self.failureException(msg)
 
     if _need('assertMultiLineEqual'):
         def assertMultiLineEqual(self, first, second, msg=None):
