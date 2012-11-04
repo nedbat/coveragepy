@@ -13,6 +13,10 @@ Version 3.5.4b1
   configuration file, please check carefully that you were not relying on the
   old broken behavior.
 
+- The **report**, **html**, and **xml** commands now accept a ``--fail-under``
+  switch that indicates in the exit status whether the coverage percentage was
+  less than a particular value.  Closes `issue 139`_.
+
 - The reporting functions coverage.report(), coverage.html_report(), and
   coverage.xml_report() now all return a float, the total percentage covered
   measurement.
@@ -27,6 +31,7 @@ Version 3.5.4b1
 - Docstrings for the legacy singleton methods are more helpful.  Thanks Marius
   Gedminas.  Closes `issue 205`_.
 
+.. _issue 139: https://bitbucket.org/ned/coveragepy/issue/139/easy-check-for-a-certain-coverage-in-tests
 .. _issue 163: https://bitbucket.org/ned/coveragepy/issue/163/problem-with-include-and-omit-filename
 .. _issue 193: https://bitbucket.org/ned/coveragepy/issue/193/unicodedecodeerror-on-htmlpy
 .. _issue 201: https://bitbucket.org/ned/coveragepy/issue/201/coverage-using-django-14-with-pydb-on
