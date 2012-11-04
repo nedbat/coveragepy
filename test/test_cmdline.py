@@ -604,6 +604,12 @@ class CmdLineStdoutTest(CmdLineTest):
         assert "Code coverage for Python." in out
         assert out.count("\n") < 4
 
+    def test_version(self):
+        self.command_line("--version")
+        out = self.stdout()
+        assert "ersion " in out
+        assert out.count("\n") < 4
+
     def test_help(self):
         self.command_line("help")
         out = self.stdout()

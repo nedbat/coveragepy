@@ -1,6 +1,6 @@
 """Command-line support for Coverage."""
 
-import optparse, re, sys, traceback
+import optparse, sys, traceback
 
 from coverage.backward import sorted                # pylint: disable=W0622
 from coverage.execfile import run_python_file, run_python_module
@@ -365,10 +365,7 @@ class CoverageScript(object):
         elif parser:
             print(parser.format_help().strip())
         else:
-            # Parse out the topic we want from HELP_TOPICS
-            topic_list = re.split("(?m)^=+ (\w+) =+$", HELP_TOPICS)
-            topics = dict(zip(topic_list[1::2], topic_list[2::2]))
-            help_msg = topics.get(topic, '').strip()
+            help_msg = HELP_TOPICS.get(topic, '').strip()
             if help_msg:
                 print(help_msg % self.covpkg.__dict__)
             else:
@@ -581,9 +578,9 @@ def unshell_list(s):
     return s.split(',')
 
 
-HELP_TOPICS = r"""
-
-== classic ====================================================================
+HELP_TOPICS = {
+# -------------------------
+'classic': """\
 Coverage.py version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
 
@@ -628,8 +625,9 @@ coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
 
 Coverage data is saved in the file .coverage by default.  Set the
 COVERAGE_FILE environment variable to save it somewhere else.
-
-== help =======================================================================
+""",
+# -------------------------
+'help': """\
 Coverage.py, version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
 
@@ -648,14 +646,16 @@ Commands:
 Use "coverage help <command>" for detailed help on any command.
 Use "coverage help classic" for help on older command syntax.
 For more information, see %(__url__)s
-
-== minimum_help ===============================================================
+""",
+# -------------------------
+'minimum_help': """\
 Code coverage for Python.  Use 'coverage help' for help.
-
-== version ====================================================================
+""",
+# -------------------------
+'version': """\
 Coverage.py, version %(__version__)s.  %(__url__)s
-
-"""
+""",
+}
 
 
 def main(argv=None):
