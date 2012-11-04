@@ -7,6 +7,7 @@ from coverage.backward import pickle
 from coverage.misc import CoverageException, Hasher
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.report import Reporter
+from coverage.results import Numbers
 from coverage.templite import Templite
 
 # Disable pylint msg W0612, because a bunch of variables look unused, but
@@ -59,6 +60,7 @@ class HtmlReporter(Reporter):
         self.arcs = self.coverage.data.has_arcs()
         self.status = HtmlStatus()
         self.extra_css = None
+        self.totals = Numbers()
 
     def report(self, morfs):
         """Generate an HTML report for `morfs`.

@@ -212,7 +212,10 @@ class SummaryTest2(CoverageTest):
 
 
 class ReportingReturnValue(CoverageTest):
+    """Tests of reporting functions returning values."""
+
     def run_coverage(self):
+        """Run coverage on doit.py and return the coverage object."""
         self.make_file("doit.py", """\
             a = 1
             b = 2
@@ -231,7 +234,6 @@ class ReportingReturnValue(CoverageTest):
 
     def test_report(self):
         cov = self.run_coverage()
-        repout = StringIO()
         val = cov.report(include="*/doit.py")
         self.assertAlmostEqual(val, 85.7, 1)
 

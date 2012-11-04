@@ -395,23 +395,23 @@ class FailUnderTest(CoverageTest):
                 b = 3
                 c = 4
             """)
-        status, out = self.run_command_status("coverage run fifty.py", 0)
-        self.assertEqual(status, 0)
+        st, _ = self.run_command_status("coverage run fifty.py", 0)
+        self.assertEqual(st, 0)
 
     def test_report(self):
-        status, out = self.run_command_status("coverage report --fail-under=50", 0)
-        self.assertEqual(status, 0)
-        status, out = self.run_command_status("coverage report --fail-under=51", 2)
-        self.assertEqual(status, 2)
+        st, _ = self.run_command_status("coverage report --fail-under=50", 0)
+        self.assertEqual(st, 0)
+        st, _ = self.run_command_status("coverage report --fail-under=51", 2)
+        self.assertEqual(st, 2)
 
     def test_html_report(self):
-        status, out = self.run_command_status("coverage html --fail-under=50", 0)
-        self.assertEqual(status, 0)
-        status, out = self.run_command_status("coverage html --fail-under=51", 2)
-        self.assertEqual(status, 2)
+        st, _ = self.run_command_status("coverage html --fail-under=50", 0)
+        self.assertEqual(st, 0)
+        st, _ = self.run_command_status("coverage html --fail-under=51", 2)
+        self.assertEqual(st, 2)
 
     def test_xml_report(self):
-        status, out = self.run_command_status("coverage xml --fail-under=50", 0)
-        self.assertEqual(status, 0)
-        status, out = self.run_command_status("coverage xml --fail-under=51", 2)
-        self.assertEqual(status, 2)
+        st, _ = self.run_command_status("coverage xml --fail-under=50", 0)
+        self.assertEqual(st, 0)
+        st, _ = self.run_command_status("coverage xml --fail-under=51", 2)
+        self.assertEqual(st, 2)
