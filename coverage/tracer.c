@@ -235,10 +235,8 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
 {
     int ret = RET_OK;
 
-    PyObject * t = PyTuple_New(2);
+    PyObject * t = Py_BuildValue("(ii)", l1, l2);
     if (t != NULL) {
-        PyTuple_SET_ITEM(t, 0, MyInt_FromLong(l1));
-        PyTuple_SET_ITEM(t, 1, MyInt_FromLong(l2));
         if (PyDict_SetItem(self->cur_file_data, t, Py_None) < 0) {
             STATS( self->stats.errors++; )
             ret = RET_ERROR;
