@@ -204,6 +204,11 @@ encountered trying to find source files to report on.  This can be useful if
 some files are missing, or if your Python execution is tricky enough that file
 names are synthesized without real source files.
 
+If you provide a ``--fail-under`` value, the total percentage covered will be
+compared to that value.  If it is less, the command will exit with a status
+code of 2, indicating that the total coverage was less than your target.  This
+can be used as part of a pass/fail condition, for example in a continuous
+integration server.  This option isn't available for **annotate**.
 
 
 .. _cmd_summary:

@@ -20,9 +20,12 @@ class Opts(object):
         help="Measure branch coverage in addition to statement coverage."
         )
     directory = optparse.make_option(
-        '-d', '--directory', action='store',
-        metavar="DIR",
+        '-d', '--directory', action='store', metavar="DIR",
         help="Write the output files to DIR."
+        )
+    fail_under = optparse.make_option(
+        '', '--fail-under', action='store', metavar="MIN", type="int",
+        help="Exit with a status of 2 if the total coverage is less than MIN."
         )
     help = optparse.make_option(
         '-h', '--help', action='store_true',
@@ -111,6 +114,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             actions=[],
             branch=None,
             directory=None,
+            fail_under=None,
             help=None,
             ignore_errors=None,
             include=None,
@@ -273,6 +277,7 @@ CMDS = {
     'html': CmdOptionParser("html",
         [
             Opts.directory,
+            Opts.fail_under,
             Opts.ignore_errors,
             Opts.omit,
             Opts.include,
@@ -285,6 +290,7 @@ CMDS = {
 
     'report': CmdOptionParser("report",
         [
+            Opts.fail_under,
             Opts.ignore_errors,
             Opts.omit,
             Opts.include,
@@ -314,6 +320,7 @@ CMDS = {
 
     'xml': CmdOptionParser("xml",
         [
+            Opts.fail_under,
             Opts.ignore_errors,
             Opts.omit,
             Opts.include,
@@ -327,7 +334,7 @@ CMDS = {
     }
 
 
-OK, ERR = 0, 1
+OK, ERR, FAIL_UNDER = 0, 1, 2
 
 
 class CoverageScript(object):
@@ -539,19 +546,25 @@ class CoverageScript(object):
             )
 
         if 'report' in options.actions:
-            self.coverage.report(
+            total = self.coverage.report(
                 show_missing=options.show_missing, **report_args)
         if 'annotate' in options.actions:
             self.coverage.annotate(
                 directory=options.directory, **report_args)
         if 'html' in options.actions:
-            self.coverage.html_report(
+            total = self.coverage.html_report(
                 directory=options.directory, **report_args)
         if 'xml' in options.actions:
             outfile = options.outfile
-            self.coverage.xml_report(outfile=outfile, **report_args)
+            total = self.coverage.xml_report(outfile=outfile, **report_args)
 
-        return OK
+        if options.fail_under is not None:
+            if total >= options.fail_under:
+                return OK
+            else:
+                return FAIL_UNDER
+        else:
+            return OK
 
 
 def unshell_list(s):

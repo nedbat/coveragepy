@@ -382,3 +382,36 @@ class ProcessTest(CoverageTest):
                 # imported is 120 or so.  Just running os.getenv executes
                 # about 5.
                 self.assertGreater(data.summary()['os.py'], 50)
+
+class FailUnderTest(CoverageTest):
+    """Tests of the --fail-under switch."""
+
+    def setUp(self):
+        super(FailUnderTest, self).setUp()
+        self.make_file("fifty.py", """\
+            # I have 50% coverage!
+            a = 1
+            if a > 2:
+                b = 3
+                c = 4
+            """)
+        status, out = self.run_command_status("coverage run fifty.py", 0)
+        self.assertEqual(status, 0)
+
+    def test_report(self):
+        status, out = self.run_command_status("coverage report --fail-under=50", 0)
+        self.assertEqual(status, 0)
+        status, out = self.run_command_status("coverage report --fail-under=51", 2)
+        self.assertEqual(status, 2)
+
+    def test_html_report(self):
+        status, out = self.run_command_status("coverage html --fail-under=50", 0)
+        self.assertEqual(status, 0)
+        status, out = self.run_command_status("coverage html --fail-under=51", 2)
+        self.assertEqual(status, 2)
+
+    def test_xml_report(self):
+        status, out = self.run_command_status("coverage xml --fail-under=50", 0)
+        self.assertEqual(status, 0)
+        status, out = self.run_command_status("coverage xml --fail-under=51", 2)
+        self.assertEqual(status, 2)
