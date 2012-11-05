@@ -135,6 +135,7 @@ class SummaryTest(CoverageTest):
         self.make_file("mycode.py", "This isn't python at all!")
         report = self.report_from_command("coverage -r mycode.py")
 
+        # pylint: disable=C0301
         # Name     Stmts   Miss  Cover
         # ----------------------------
         # mycode   NotPython: Couldn't parse '/tmp/test_cover/63354509363/mycode.py' as Python source: 'invalid syntax' at line 1

@@ -38,7 +38,7 @@ class FileLocatorTest(CoverageTest):
         self.assertEqual(fl.relative_filename(a2), a2)
 
     def test_filepath_contains_absolute_prefix_twice(self):
-        # https://bitbucket.org/ned/coveragepy/issue/194/filelocatorrelative_filename-could-mangle
+        # https://bitbucket.org/ned/coveragepy/issue/194
         # Build a path that has two pieces matching the absolute path prefix.
         # Technically, this test doesn't do that on Windows, but drive
         # letters make that impractical to acheive.
