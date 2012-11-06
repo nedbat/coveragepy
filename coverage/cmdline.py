@@ -692,9 +692,9 @@ Coverage.py, version %(__version__)s.  %(__url__)s
 
 
 def main(argv=None):
-    """The main entrypoint to Coverage.
+    """The main entry point to Coverage.
 
-    This is installed as the script entrypoint.
+    This is installed as the script entry point.
 
     """
     if argv is None:
