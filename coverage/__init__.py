@@ -78,6 +78,12 @@ analysis2 = _singleton_method('analysis2')
 report =    _singleton_method('report')
 annotate =  _singleton_method('annotate')
 
+# Because of the "from coverage.control import fooey" lines at the top of the
+# file, there's an entry for coverage.coverage in sys.modules, mapped to None.
+# This makes some inspection tools (like pydoc) unable to find the class
+# coverage.coverage.  So remove that entry.
+import sys
+del sys.modules['coverage.coverage']
 
 # COPYRIGHT AND LICENSE
 #
