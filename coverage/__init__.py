@@ -83,7 +83,10 @@ annotate =  _singleton_method('annotate')
 # This makes some inspection tools (like pydoc) unable to find the class
 # coverage.coverage.  So remove that entry.
 import sys
-del sys.modules['coverage.coverage']
+try:
+    del sys.modules['coverage.coverage']
+except KeyError:
+    pass
 
 # COPYRIGHT AND LICENSE
 #
