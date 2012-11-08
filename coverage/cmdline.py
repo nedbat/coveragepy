@@ -327,7 +327,6 @@ CMDS = {
             Opts.output_xml,
             ] + GLOBAL_ARGS,
         cmd = "xml",
-        defaults = {'outfile': 'coverage.xml'},
         usage = "[options] [modules]",
         description = "Generate an XML report of coverage results."
         ),

@@ -17,6 +17,9 @@ Version 3.5.4b1
   switch that indicates in the exit status whether the coverage percentage was
   less than a particular value.  Closes `issue 139`_.
 
+- Embarrassingly, the `[xml] output=' setting in the .coveragerc file simply
+  didn't work.  Now it does.
+
 - The reporting functions coverage.report(), coverage.html_report(), and
   coverage.xml_report() now all return a float, the total percentage covered
   measurement.

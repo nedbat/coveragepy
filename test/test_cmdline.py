@@ -553,11 +553,11 @@ class NewCmdLineTest(CmdLineTest):
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("xml", self.INIT_LOAD + """\
             .xml_report(ignore_errors=None, omit=None, include=None, morfs=[],
-                    outfile="coverage.xml")
+                    outfile=None)
             """)
         self.cmd_executes("xml -i", self.INIT_LOAD + """\
             .xml_report(ignore_errors=True, omit=None, include=None, morfs=[],
-                    outfile="coverage.xml")
+                    outfile=None)
             """)
         self.cmd_executes("xml -o myxml.foo", self.INIT_LOAD + """\
             .xml_report(ignore_errors=None, omit=None, include=None, morfs=[],
@@ -571,21 +571,21 @@ class NewCmdLineTest(CmdLineTest):
             .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, source=None, include=None, omit=["fooey"])
             .load()
             .xml_report(ignore_errors=None, omit=["fooey"], include=None, morfs=[],
-                    outfile="coverage.xml")
+                    outfile=None)
             """)
         self.cmd_executes("xml --omit fooey,booey", """\
             .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, source=None, include=None, omit=["fooey", "booey"])
             .load()
             .xml_report(ignore_errors=None, omit=["fooey", "booey"], include=None,
-                    morfs=[], outfile="coverage.xml")
+                    morfs=[], outfile=None)
             """)
         self.cmd_executes("xml mod1", self.INIT_LOAD + """\
             .xml_report(ignore_errors=None, omit=None, include=None, morfs=["mod1"],
-                    outfile="coverage.xml")
+                    outfile=None)
             """)
         self.cmd_executes("xml mod1 mod2 mod3", self.INIT_LOAD + """\
             .xml_report(ignore_errors=None, omit=None, include=None,
-                    morfs=["mod1", "mod2", "mod3"], outfile="coverage.xml")
+                    morfs=["mod1", "mod2", "mod3"], outfile=None)
             """)
 
     def test_no_arguments_at_all(self):
