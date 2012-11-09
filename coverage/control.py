@@ -602,6 +602,7 @@ class coverage(object):
             xml_output=outfile,
             )
         file_to_close = None
+        delete_file = False
         if self.config.xml_output:
             if self.config.xml_output == '-':
                 outfile = sys.stdout
@@ -611,9 +612,17 @@ class coverage(object):
         try:
             reporter = XmlReporter(self, self.config)
             return reporter.report(morfs, outfile=outfile)
+        except CoverageException:
+            delete_file = True
+            raise
         finally:
             if file_to_close:
                 file_to_close.close()
+                if delete_file:
+                    try:
+                        os.remove(self.config.xml_output)
+                    except Exception:
+                        pass
 
     def sysinfo(self):
         """Return a list of (key, value) pairs showing internal information."""

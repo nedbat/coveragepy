@@ -28,6 +28,9 @@ Version 3.5.4b1
   HTML report would fail with a UnicodeDecodeError. This issue (`issue 193`_)
   is now fixed.
 
+- If `coverage xml` fails because there is no data to report, it used to
+  create a zero-length XML file.  Now it doesn't, fixing `issue 210`_.
+
 - Running coverage under a debugger is unlikely to work, but it shouldn't fail
   with "TypeError: 'NoneType' object is not iterable".  Fixes `issue 201`_.
 
@@ -43,6 +46,7 @@ Version 3.5.4b1
 .. _issue 201: https://bitbucket.org/ned/coveragepy/issue/201/coverage-using-django-14-with-pydb-on
 .. _issue 205: https://bitbucket.org/ned/coveragepy/issue/205/make-pydoc-coverage-more-friendly
 .. _issue 206: https://bitbucket.org/ned/coveragepy/issue/206/pydoc-coveragecoverage-fails-with-an-error
+.. _issue 210: https://bitbucket.org/ned/coveragepy/issue/210/if-theres-no-coverage-data-coverage-xml
 
 
 Version 3.5.3 --- 29 September 2012
