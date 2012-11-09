@@ -110,7 +110,7 @@ def run_python_file(filename, args, package=None):
 
         # We have the source.  `compile` still needs the last line to be clean,
         # so make sure it is, then compile a code object from it.
-        if source[-1] != '\n':
+        if not source or source[-1] != '\n':
             source += '\n'
         code = compile(source, filename, "exec")
 
