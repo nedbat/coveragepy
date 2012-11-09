@@ -29,6 +29,13 @@ class TestCase(unittest.TestCase):
             if exp:
                 self.fail(msg)
 
+    if _need('assertIn'):
+        def assertIn(self, member, container, msg=None):
+            """Assert that `member` is in `container`."""
+            if member not in container:
+                msg = msg or ('%r not found in %r' % (member, container))
+                self.fail(msg)
+
     if _need('assertRaisesRegexp'):
         def assertRaisesRegexp(self, excClass, regexp, callobj, *args, **kw):
             """ Just like unittest.TestCase.assertRaises,
@@ -46,7 +53,7 @@ class TestCase(unittest.TestCase):
                     # Message provided, and it didn't match: fail!
                     raise self.failureException(
                         "Right exception, wrong message: "
-                            "'%s' doesn't match '%s'" % (excMsg, regexp)
+                            "%r doesn't match %r" % (excMsg, regexp)
                         )
             # No need to catch other exceptions: They'll fail the test all by
             # themselves!

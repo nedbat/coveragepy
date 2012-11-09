@@ -92,6 +92,14 @@ class TestingTest(TestCase):
         self.assertFalse(False)
         self.assertRaises(AssertionError, self.assertFalse, True)
 
+    def test_assert_contains(self):
+        self.assertIn("abc", "hello abc")
+        self.assertIn("abc", ["xyz", "abc", "foo"])
+        self.assertIn("abc", {'abc': 1, 'xyz': 2})
+        self.assertRaises(AssertionError, self.assertIn, "abc", "xyz")
+        self.assertRaises(AssertionError, self.assertIn, "abc", ["x", "xabc"])
+        self.assertRaises(AssertionError, self.assertIn, "abc", {'x':'abc'})
+
 
 class CoverageTestTest(CoverageTest):
     """Test the methods in `CoverageTest`."""
