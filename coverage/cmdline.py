@@ -619,8 +619,8 @@ def unshell_list(s):
 
 HELP_TOPICS = {
 # -------------------------
-'classic': """\
-Coverage.py version %(__version__)s
+'classic':
+r"""Coverage.py version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
 
 Usage:

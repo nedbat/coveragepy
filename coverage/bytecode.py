@@ -27,6 +27,7 @@ class ByteCodes(object):
     Returns `ByteCode` objects.
 
     """
+    # pylint: disable=R0924
     def __init__(self, code):
         self.code = code
         self.offset = 0

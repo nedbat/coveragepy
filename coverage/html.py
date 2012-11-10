@@ -366,5 +366,5 @@ def spaceless(html):
     Get rid of some.
 
     """
-    html = re.sub(">\s+<p ", ">\n<p ", html)
+    html = re.sub(r">\s+<p ", ">\n<p ", html)
     return html

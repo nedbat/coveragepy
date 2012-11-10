@@ -3,7 +3,6 @@
 
 import os, sys
 import coverage
-from coverage.backward import to_bytes
 from coverage.misc import CoverageException
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
@@ -162,7 +161,7 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.parallel)
 
         self.assertEqual(cov.get_exclude_list(),
-            ["if 0:", "pragma:?\s+no cover", "another_tab"]
+            ["if 0:", r"pragma:?\s+no cover", "another_tab"]
             )
         self.assertTrue(cov.config.ignore_errors)
         self.assertEqual(cov.config.include, ["a/", "b/"])
@@ -172,7 +171,7 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.precision, 3)
 
         self.assertEqual(cov.config.partial_list,
-            ["pragma:?\s+no branch"]
+            [r"pragma:?\s+no branch"]
             )
         self.assertEqual(cov.config.partial_always_list,
             ["if 0:", "while True:"]

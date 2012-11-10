@@ -142,9 +142,9 @@ class SummaryTest(CoverageTest):
 
         last = self.last_line_squeezed(report)
         # The actual file name varies run to run.
-        last = re.sub("parse '.*mycode.py", "parse 'mycode.py", last)
+        last = re.sub(r"parse '.*mycode.py", "parse 'mycode.py", last)
         # The actual error message varies version to version
-        last = re.sub(": '.*' at", ": 'error' at", last)
+        last = re.sub(r": '.*' at", ": 'error' at", last)
         self.assertEqual(last,
             "mycode NotPython: "
             "Couldn't parse 'mycode.py' as Python source: "

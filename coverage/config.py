@@ -15,10 +15,10 @@ class HandyConfigParser(configparser.ConfigParser):
 
     def read(self, filename):
         """Read a filename as UTF-8 configuration data."""
+        kwargs = {}
         if sys.version_info >= (3, 2):
-            super().read(filename, encoding="utf-8")
-        else:
-            configparser.ConfigParser.read(self, filename)
+            kwargs['encoding'] = "utf-8"
+        configparser.ConfigParser.read(self, filename, **kwargs)
 
     def getlist(self, section, option):
         """Read a list of strings.

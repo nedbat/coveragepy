@@ -31,7 +31,7 @@ else:
                 stderr=subprocess.STDOUT
                 )
         output, _ = proc.communicate()
-        status = proc.returncode
+        status = proc.returncode        # pylint: disable=E1101
 
         # Get the output, and canonicalize it to strings with newlines.
         if not isinstance(output, str):

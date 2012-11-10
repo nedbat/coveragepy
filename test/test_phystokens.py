@@ -37,8 +37,8 @@ class PhysTokensTest(CoverageTest):
         # source_token_lines doesn't preserve trailing spaces, so trim all that
         # before comparing.
         source = source.replace('\r\n', '\n')
-        source = re.sub("(?m)[ \t]+$", "", source)
-        tokenized = re.sub("(?m)[ \t]+$", "", tokenized)
+        source = re.sub(r"(?m)[ \t]+$", "", source)
+        tokenized = re.sub(r"(?m)[ \t]+$", "", tokenized)
         self.assertMultiLineEqual(source, tokenized)
 
     def check_file_tokenization(self, fname):

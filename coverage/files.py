@@ -196,7 +196,7 @@ class PathAliases(object):
         # either separator.
         regex_pat = regex_pat.replace(r"\/", r"[\\/]")
         # We want case-insensitive matching, so add that flag.
-        regex = re.compile("(?i)" + regex_pat)
+        regex = re.compile(r"(?i)" + regex_pat)
 
         # Normalize the result: it must end with a path separator.
         result_sep = sep(result)

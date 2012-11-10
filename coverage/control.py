@@ -652,7 +652,7 @@ class coverage(object):
             ('path', sys.path),
             ('environment', [
                 ("%s = %s" % (k, v)) for k, v in os.environ.items()
-                    if re.search("^COV|^PY", k)
+                    if re.search(r"^COV|^PY", k)
                 ]),
             ]
         return info
