@@ -180,6 +180,9 @@ The file will be copied into the HTML output directory.  Don't name it
 "style.css".  This CSS is in addition to the CSS normally used, though you can
 overwrite as many of the rules as you like.
 
+``title`` (string, default "Coverage report"): the title to use for the report.
+Note this is text, not HTML.
+
 
 [xml]
 -----

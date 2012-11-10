@@ -561,7 +561,7 @@ class coverage(object):
         reporter.report(morfs, directory=directory)
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
-                    omit=None, include=None, extra_css=None):
+                    omit=None, include=None, extra_css=None, title=None):
         """Generate an HTML report.
 
         The HTML is written to `directory`.  The file "index.html" is the
@@ -571,6 +571,9 @@ class coverage(object):
         `extra_css` is a path to a file of other CSS to apply on the page.
         It will be copied into the HTML directory.
 
+        `title` is a text string (not HTML) to use as the title of the HTML
+        report.
+
         See `coverage.report()` for other arguments.
 
         Returns a float, the total percentage covered.
@@ -578,7 +581,7 @@ class coverage(object):
         """
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
-            html_dir=directory, extra_css=extra_css,
+            html_dir=directory, extra_css=extra_css, html_title=title,
             )
         reporter = HtmlReporter(self, self.config)
         return reporter.report(morfs)

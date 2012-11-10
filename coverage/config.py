@@ -54,6 +54,7 @@ class CoverageConfig(object):
         # Defaults for [html]
         self.html_dir = "htmlcov"
         self.extra_css = None
+        self.html_title = "Coverage report"
 
         # Defaults for [xml]
         self.xml_output = "coverage.xml"
@@ -133,6 +134,8 @@ class CoverageConfig(object):
             self.html_dir = cp.get('html', 'directory')
         if cp.has_option('html', 'extra_css'):
             self.extra_css = cp.get('html', 'extra_css')
+        if cp.has_option('html', 'title'):
+            self.html_title = cp.get('html', 'title')
 
         # [xml]
         if cp.has_option('xml', 'output'):

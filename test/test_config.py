@@ -139,6 +139,7 @@ class ConfigFileTest(CoverageTest):
 
             directory    =     c:\\tricky\\dir.somewhere
             extra_css=something/extra.css
+            title = My report & stuff # numbers
             [xml]
             output=mycov.xml
 
@@ -177,6 +178,7 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.show_missing)
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
         self.assertEqual(cov.config.extra_css, "something/extra.css")
+        self.assertEqual(cov.config.html_title, "My report & stuff # numbers")
 
         self.assertEqual(cov.config.xml_output, "mycov.xml")
 

@@ -92,6 +92,10 @@ class Opts(object):
         help="Use a simpler but slower trace method.  Try this if you get "
                 "seemingly impossible results!"
         )
+    title = optparse.make_option(
+        '', '--title', action='store', metavar="TITLE",
+        help="A text string to use as the title on the HTML."
+        )
     version = optparse.make_option(
         '', '--version', action='store_true',
         help="Display version information and exit."
@@ -126,6 +130,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             show_missing=None,
             source=None,
             timid=None,
+            title=None,
             erase_first=None,
             version=None,
             )
@@ -281,6 +286,7 @@ CMDS = {
             Opts.ignore_errors,
             Opts.omit,
             Opts.include,
+            Opts.title,
             ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Create an HTML report of the coverage of the files.  "
@@ -442,7 +448,8 @@ class CoverageScript(object):
                 directory=options.directory, **report_args)
         if 'html' in options.actions:
             total = self.coverage.html_report(
-                directory=options.directory, **report_args)
+                directory=options.directory, title=options.title,
+                **report_args)
         if 'xml' in options.actions:
             outfile = options.outfile
             total = self.coverage.xml_report(outfile=outfile, **report_args)

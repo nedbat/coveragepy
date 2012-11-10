@@ -251,35 +251,35 @@ class ClassicCmdLineTest(CmdLineTest):
     def test_html_report(self):
         # coverage -b -d DIR [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("-b", self.INIT_LOAD + """\
-            .html_report(directory=None, ignore_errors=None,
+            .html_report(directory=None, ignore_errors=None, title=None,
                     omit=None, include=None, morfs=[])
             """)
         self.cmd_executes("-b -d dir1", self.INIT_LOAD + """\
-            .html_report(directory="dir1", ignore_errors=None,
+            .html_report(directory="dir1", ignore_errors=None, title=None,
                     omit=None, include=None, morfs=[])
             """)
         self.cmd_executes("-b -i", self.INIT_LOAD + """\
-            .html_report(directory=None, ignore_errors=True,
+            .html_report(directory=None, ignore_errors=True, title=None,
                     omit=None, include=None, morfs=[])
             """)
         self.cmd_executes("-b -o fooey", """\
             .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, source=None, include=None, omit=["fooey"])
             .load()
-            .html_report(directory=None, ignore_errors=None,
+            .html_report(directory=None, ignore_errors=None, title=None,
                     omit=["fooey"], include=None, morfs=[])
             """)
         self.cmd_executes("-b -o fooey,booey", """\
             .coverage(cover_pylib=None, data_suffix=None, timid=None, branch=None, config_file=True, source=None, include=None, omit=["fooey", "booey"])
             .load()
-            .html_report(directory=None, ignore_errors=None,
+            .html_report(directory=None, ignore_errors=None, title=None,
                     omit=["fooey", "booey"], include=None, morfs=[])
             """)
         self.cmd_executes("-b mod1", self.INIT_LOAD + """\
-            .html_report(directory=None, ignore_errors=None,
+            .html_report(directory=None, ignore_errors=None, title=None,
                     omit=None, include=None, morfs=["mod1"])
             """)
         self.cmd_executes("-b mod1 mod2 mod3", self.INIT_LOAD + """\
-            .html_report(directory=None, ignore_errors=None,
+            .html_report(directory=None, ignore_errors=None, title=None,
                     omit=None, include=None, morfs=["mod1", "mod2", "mod3"])
             """)
 
@@ -447,6 +447,14 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_executes_same("html --omit f,b", "-b --omit f,b")
         self.cmd_executes_same("html m1", "-b m1")
         self.cmd_executes_same("html m1 m2 m3", "-b m1 m2 m3")
+        self.cmd_executes("html", self.INIT_LOAD + """\
+            .html_report(ignore_errors=None, omit=None, include=None, morfs=[],
+                    directory=None, title=None)
+            """)
+        self.cmd_executes("html --title=Hello_there", self.INIT_LOAD + """\
+            .html_report(ignore_errors=None, omit=None, include=None, morfs=[],
+                    directory=None, title='Hello_there')
+            """)
 
     def test_report(self):
         self.cmd_executes_same("report", "-r")

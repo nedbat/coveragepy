@@ -47,6 +47,7 @@ class HtmlReporter(Reporter):
         self.directory = None
         self.template_globals = {
             'escape': escape,
+            'title': self.config.html_title,
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
             }
@@ -252,9 +253,12 @@ class HtmlReporter(Reporter):
         self.totals = totals = sum([f['nums'] for f in files])
         extra_css = self.extra_css
 
+        html = index_tmpl.render(locals())
+        if sys.version_info < (3, 0):
+            html = html.decode("utf-8")
         self.write_html(
             os.path.join(self.directory, "index.html"),
-            index_tmpl.render(locals())
+            html
             )
 
         # Write the latest hashes for next time.

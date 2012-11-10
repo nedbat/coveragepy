@@ -17,6 +17,9 @@ Version 3.5.4b1
   switch that indicates in the exit status whether the coverage percentage was
   less than a particular value.  Closes `issue 139`_.
 
+- The HTML report's title can now be set in the configuration file, with the
+  ``--title`` switch on the command line, or via the API.
+
 - Embarrassingly, the `[xml] output=' setting in the .coveragerc file simply
   didn't work.  Now it does.
 

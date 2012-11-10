@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests that HTML generation is awesome."""
 
 import os.path, sys
@@ -38,14 +39,14 @@ class HtmlTest(CoverageTest):
                 print("x is %d" % x)
             """)
 
-    def run_coverage(self, **kwargs):
+    def run_coverage(self, covargs=None, htmlargs=None):
         """Run coverage on main_file.py, and create an HTML report."""
         self.clean_local_file_imports()
-        cov = coverage.coverage(**kwargs)
+        cov = coverage.coverage(**(covargs or {}))
         cov.start()
         self.import_local_file("main_file")
         cov.stop()
-        cov.html_report()
+        cov.html_report(**(htmlargs or {}))
 
     def remove_html_files(self):
         """Remove the HTML files created as part of the HTML report."""
@@ -118,11 +119,11 @@ class HtmlTest(CoverageTest):
         # In this case, everything changes because the coverage settings have
         # changed.
         self.create_initial_files()
-        self.run_coverage(timid=False)
+        self.run_coverage(covargs=dict(timid=False))
         index1 = open("htmlcov/index.html").read()
         self.remove_html_files()
 
-        self.run_coverage(timid=True)
+        self.run_coverage(covargs=dict(timid=True))
 
         # All the files have been reported again.
         self.assert_exists("htmlcov/index.html")
@@ -154,6 +155,29 @@ class HtmlTest(CoverageTest):
         index2 = open("htmlcov/index.html").read()
         fixed_index2 = index2.replace("XYZZY", self.real_coverage_version)
         self.assertMultiLineEqual(index1, fixed_index2)
+
+    def test_default_title(self):
+        self.create_initial_files()
+        self.run_coverage()
+        index = open("htmlcov/index.html").read()
+        self.assertIn("<title>Coverage report</title>", index)
+        self.assertIn("<h1>Coverage report:", index)
+
+    def test_title_set_in_config_file(self):
+        self.create_initial_files()
+        self.make_file(".coveragerc", "[html]\ntitle = My nüms & stüff!\n")
+        self.run_coverage()
+        index = open("htmlcov/index.html").read()
+        self.assertIn("<title>My n&#252;ms &amp; st&#252;ff!</title>", index)
+        self.assertIn("<h1>My n&#252;ms &amp; st&#252;ff!:", index)
+
+    def test_title_set_in_args(self):
+        self.create_initial_files()
+        self.make_file(".coveragerc", "[html]\ntitle = Good title\n")
+        self.run_coverage(htmlargs=dict(title="My nüms & stüff!"))
+        index = open("htmlcov/index.html").read()
+        self.assertIn("<title>My n&#252;ms &amp; st&#252;ff!</title>", index)
+        self.assertIn("<h1>My n&#252;ms &amp; st&#252;ff!:", index)
 
 
 class HtmlWithUnparsableFilesTest(CoverageTest):
