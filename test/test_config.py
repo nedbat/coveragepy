@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 """Test the config file handling for coverage.py"""
 
 import os, sys
 import coverage
+from coverage.backward import to_bytes
 from coverage.misc import CoverageException
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
@@ -139,7 +141,7 @@ class ConfigFileTest(CoverageTest):
 
             directory    =     c:\\tricky\\dir.somewhere
             extra_css=something/extra.css
-            title = My report & stuff # numbers
+            title = Title & nums # nums!
             [xml]
             output=mycov.xml
 
@@ -178,7 +180,7 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.show_missing)
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
         self.assertEqual(cov.config.extra_css, "something/extra.css")
-        self.assertEqual(cov.config.html_title, "My report & stuff # numbers")
+        self.assertEqual(cov.config.html_title, "Title & nums # nums!")
 
         self.assertEqual(cov.config.xml_output, "mycov.xml")
 
@@ -186,3 +188,16 @@ class ConfigFileTest(CoverageTest):
             'source': ['.', '/home/ned/src/'],
             'other': ['other', '/home/ned/other', 'c:\\Ned\\etc']
             })
+
+    if sys.version_info[:2] != (3,1):
+        def test_one(self):
+            # This sample file tries to use lots of variation of syntax...
+            self.make_file(".coveragerc", """\
+                [html]
+                title = tabblo & «ταБЬℓσ» # numbers
+                """)
+            cov = coverage.coverage()
+
+            self.assertEqual(cov.config.html_title,
+                "tabblo & «ταБЬℓσ» # numbers"
+                )

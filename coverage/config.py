@@ -1,7 +1,7 @@
 """Config file for coverage.py"""
 
-import os
-from coverage.backward import string_class          # pylint: disable=W0622
+import os, sys
+from coverage.backward import string_class
 
 # In py3, # ConfigParser was renamed to the more-standard configparser
 try:
@@ -12,6 +12,13 @@ except ImportError:
 
 class HandyConfigParser(configparser.ConfigParser):
     """Our specialization of ConfigParser."""
+
+    def read(self, filename):
+        """Read a filename as UTF-8 configuration data."""
+        if sys.version_info >= (3, 2):
+            super().read(filename, encoding="utf-8")
+        else:
+            configparser.ConfigParser.read(self, filename)
 
     def getlist(self, section, option):
         """Read a list of strings.
