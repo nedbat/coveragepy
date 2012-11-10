@@ -24,6 +24,9 @@ clean:
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	-rm -rf doc/_build/*
 
+sterile: clean
+	-rm -rf .tox .tox_kits
+
 LINTABLE = coverage setup.py test
 
 lint:
