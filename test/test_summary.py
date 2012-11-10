@@ -208,8 +208,8 @@ class SummaryTest2(CoverageTest):
 
         report = repout.getvalue().replace('\\', '/')
         report = re.sub(r"\s+", " ", report)
-        self.assert_("test/modules/pkg1/__init__ 1 0 100%" in report)
-        self.assert_("test/modules/pkg2/__init__ 0 0 100%" in report)
+        self.assertIn("test/modules/pkg1/__init__ 1 0 100%", report)
+        self.assertIn("test/modules/pkg2/__init__ 0 0 100%", report)
 
 
 class ReportingReturnValue(CoverageTest):

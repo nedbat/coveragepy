@@ -36,6 +36,13 @@ class TestCase(unittest.TestCase):
                 msg = msg or ('%r not found in %r' % (member, container))
                 self.fail(msg)
 
+    if _need('assertNotIn'):
+        def assertNotIn(self, member, container, msg=None):
+            """Assert that `member` is not in `container`."""
+            if member in container:
+                msg = msg or ('%r found in %r' % (member, container))
+                self.fail(msg)
+
     if _need('assertRaisesRegexp'):
         def assertRaisesRegexp(self, excClass, regexp, callobj, *args, **kw):
             """ Just like unittest.TestCase.assertRaises,

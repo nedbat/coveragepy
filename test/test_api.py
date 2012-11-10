@@ -366,16 +366,12 @@ class OmitIncludeTestsMixin(UsingModulesMixin):
     def filenames_in(self, summary, filenames):
         """Assert the `filenames` are in the keys of `summary`."""
         for filename in filenames.split():
-            self.assert_(filename in summary,
-                "%s should be in %r" % (filename, summary)
-                )
+            self.assertIn(filename, summary)
 
     def filenames_not_in(self, summary, filenames):
         """Assert the `filenames` are not in the keys of `summary`."""
         for filename in filenames.split():
-            self.assert_(filename not in summary,
-                "%s should not be in %r" % (filename, summary)
-                )
+            self.assertNotIn(filename, summary)
 
     def test_nothing_specified(self):
         result = self.coverage_usepkgs()
