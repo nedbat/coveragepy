@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 """Tests that our test infrastructure is really working!"""
 
 import os, sys
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
+from coverage.backward import to_bytes
 from backunittest import TestCase
 from coveragetest import CoverageTest
 
@@ -130,10 +132,18 @@ class CoverageTestTest(CoverageTest):
         self.make_file("mac.txt", "Hello\n", newline="\r")
         self.assertEqual(self.file_text("mac.txt"), "Hello\r")
 
+    def test_make_file_non_ascii(self):
+        self.make_file("unicode.txt", "tabblo: «ταБЬℓσ»")
+        self.assertEqual(
+            open("unicode.txt", "rb").read(),
+            to_bytes("tabblo: «ταБЬℓσ»")
+            )
+
     def test_file_exists(self):
         self.make_file("whoville.txt", "We are here!")
         self.assert_exists("whoville.txt")
         self.assert_doesnt_exist("shadow.txt")
-        self.assertRaises(AssertionError, self.assert_doesnt_exist,
-                                                            "whoville.txt")
+        self.assertRaises(
+            AssertionError, self.assert_doesnt_exist, "whoville.txt"
+            )
         self.assertRaises(AssertionError, self.assert_exists, "shadow.txt")
