@@ -5,7 +5,7 @@ from coverage.backward import string_class          # pylint: disable=W0622
 
 # In py3, # ConfigParser was renamed to the more-standard configparser
 try:
-    import configparser
+    import configparser                             # pylint: disable=F0401
 except ImportError:
     import ConfigParser as configparser
 
@@ -167,9 +167,9 @@ class CoverageConfig(object):
         ('xml_output', 'xml:output'),
         ]
 
-    def set_attr_from_config_option(self, cp, attr, where, type=''):
+    def set_attr_from_config_option(self, cp, attr, where, type_=''):
         """Set an attribute on self if it exists in the ConfigParser."""
         section, option = where.split(":")
         if cp.has_option(section, option):
-            method = getattr(cp, 'get'+type)
+            method = getattr(cp, 'get'+type_)
             setattr(self, attr, method(section, option))
