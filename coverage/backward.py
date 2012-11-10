@@ -66,12 +66,6 @@ else:
             )
         )
 
-# ConfigParser was renamed to the more-standard configparser
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
-
 # Reading Python source and interpreting the coding comment is a big deal.
 if sys.version_info >= (3, 0):
     # Python 3.2 provides `tokenize.open`, the best way to open source files.

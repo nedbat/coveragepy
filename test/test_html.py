@@ -165,19 +165,31 @@ class HtmlTest(CoverageTest):
 
     def test_title_set_in_config_file(self):
         self.create_initial_files()
-        self.make_file(".coveragerc", "[html]\ntitle = My nüms & stüff!\n")
+        self.make_file(".coveragerc", "[html]\ntitle = «ταБЬℓσ» & stüff!\n")
         self.run_coverage()
         index = open("htmlcov/index.html").read()
-        self.assertIn("<title>My n&#252;ms &amp; st&#252;ff!</title>", index)
-        self.assertIn("<h1>My n&#252;ms &amp; st&#252;ff!:", index)
+        self.assertIn(
+            "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
+            " &amp; st&#252;ff!</title>", index
+            )
+        self.assertIn(
+            "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
+            " &amp; st&#252;ff!:", index
+            )
 
     def test_title_set_in_args(self):
         self.create_initial_files()
         self.make_file(".coveragerc", "[html]\ntitle = Good title\n")
-        self.run_coverage(htmlargs=dict(title="My nüms & stüff!"))
+        self.run_coverage(htmlargs=dict(title="«ταБЬℓσ» & stüff!"))
         index = open("htmlcov/index.html").read()
-        self.assertIn("<title>My n&#252;ms &amp; st&#252;ff!</title>", index)
-        self.assertIn("<h1>My n&#252;ms &amp; st&#252;ff!:", index)
+        self.assertIn(
+            "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
+            " &amp; st&#252;ff!</title>", index
+            )
+        self.assertIn(
+            "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
+            " &amp; st&#252;ff!:", index
+            )
 
 
 class HtmlWithUnparsableFilesTest(CoverageTest):

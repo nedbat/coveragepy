@@ -1,8 +1,48 @@
 """Config file for coverage.py"""
 
 import os
-from coverage.backward import configparser          # pylint: disable=W0622
 from coverage.backward import string_class          # pylint: disable=W0622
+
+# In py3, # ConfigParser was renamed to the more-standard configparser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
+
+
+class HandyConfigParser(configparser.ConfigParser):
+    """Our specialization of ConfigParser."""
+
+    def getlist(self, section, option):
+        """Read a list of strings.
+
+        The value of `section` and `option` is treated as a comma- and newline-
+        separated list of strings.  Each value is stripped of whitespace.
+
+        Returns the list of strings.
+
+        """
+        value_list = self.get(section, option)
+        values = []
+        for value_line in value_list.split('\n'):
+            for value in value_line.split(','):
+                value = value.strip()
+                if value:
+                    values.append(value)
+        return values
+
+    def getlinelist(self, section, option):
+        """Read a list of full-line strings.
+
+        The value of `section` and `option` is treated as a newline-separated
+        list of strings.  Each value is stripped of whitespace.
+
+        Returns the list of strings.
+
+        """
+        value_list = self.get(section, option)
+        return list(filter(None, value_list.split('\n')))
+
 
 # The default line exclusion regexes
 DEFAULT_EXCLUDE = [
@@ -30,7 +70,6 @@ class CoverageConfig(object):
     operation of coverage.py.
 
     """
-
     def __init__(self):
         """Initialize the configuration attributes to their defaults."""
         # Defaults for [run]
@@ -81,97 +120,56 @@ class CoverageConfig(object):
                     v = [v]
                 setattr(self, k, v)
 
-    def from_file(self, *files):
-        """Read configuration from .rc files.
+    def from_file(self, filename):
+        """Read configuration from a .rc file.
 
-        Each argument in `files` is a file name to read.
+        `filename` is a file name to read.
 
         """
-        cp = configparser.RawConfigParser()
-        cp.read(files)
+        cp = HandyConfigParser()
+        cp.read(filename)
 
-        # [run]
-        if cp.has_option('run', 'branch'):
-            self.branch = cp.getboolean('run', 'branch')
-        if cp.has_option('run', 'cover_pylib'):
-            self.cover_pylib = cp.getboolean('run', 'cover_pylib')
-        if cp.has_option('run', 'data_file'):
-            self.data_file = cp.get('run', 'data_file')
-        if cp.has_option('run', 'include'):
-            self.include = self.get_list(cp, 'run', 'include')
-        if cp.has_option('run', 'omit'):
-            self.omit = self.get_list(cp, 'run', 'omit')
-        if cp.has_option('run', 'parallel'):
-            self.parallel = cp.getboolean('run', 'parallel')
-        if cp.has_option('run', 'source'):
-            self.source = self.get_list(cp, 'run', 'source')
-        if cp.has_option('run', 'timid'):
-            self.timid = cp.getboolean('run', 'timid')
+        for option_spec in self.CONFIG_FILE_OPTIONS:
+            self.set_attr_from_config_option(cp, *option_spec)
 
-        # [report]
-        if cp.has_option('report', 'exclude_lines'):
-            self.exclude_list = \
-                self.get_line_list(cp, 'report', 'exclude_lines')
-        if cp.has_option('report', 'ignore_errors'):
-            self.ignore_errors = cp.getboolean('report', 'ignore_errors')
-        if cp.has_option('report', 'include'):
-            self.include = self.get_list(cp, 'report', 'include')
-        if cp.has_option('report', 'omit'):
-            self.omit = self.get_list(cp, 'report', 'omit')
-        if cp.has_option('report', 'partial_branches'):
-            self.partial_list = \
-                self.get_line_list(cp, 'report', 'partial_branches')
-        if cp.has_option('report', 'partial_branches_always'):
-            self.partial_always_list = \
-                self.get_line_list(cp, 'report', 'partial_branches_always')
-        if cp.has_option('report', 'precision'):
-            self.precision = cp.getint('report', 'precision')
-        if cp.has_option('report', 'show_missing'):
-            self.show_missing = cp.getboolean('report', 'show_missing')
-
-        # [html]
-        if cp.has_option('html', 'directory'):
-            self.html_dir = cp.get('html', 'directory')
-        if cp.has_option('html', 'extra_css'):
-            self.extra_css = cp.get('html', 'extra_css')
-        if cp.has_option('html', 'title'):
-            self.html_title = cp.get('html', 'title')
-
-        # [xml]
-        if cp.has_option('xml', 'output'):
-            self.xml_output = cp.get('xml', 'output')
-
-        # [paths]
+        # [paths] is special
         if cp.has_section('paths'):
             for option in cp.options('paths'):
-                self.paths[option] = self.get_list(cp, 'paths', option)
+                self.paths[option] = cp.getlist('paths', option)
 
-    def get_list(self, cp, section, option):
-        """Read a list of strings from the ConfigParser `cp`.
+    CONFIG_FILE_OPTIONS = [
+        # [run]
+        ('branch', 'run:branch', 'boolean'),
+        ('cover_pylib', 'run:cover_pylib', 'boolean'),
+        ('data_file', 'run:data_file'),
+        ('include', 'run:include', 'list'),
+        ('omit', 'run:omit', 'list'),
+        ('parallel', 'run:parallel', 'boolean'),
+        ('source', 'run:source', 'list'),
+        ('timid', 'run:timid', 'boolean'),
 
-        The value of `section` and `option` is treated as a comma- and newline-
-        separated list of strings.  Each value is stripped of whitespace.
+        # [report]
+        ('exclude_list', 'report:exclude_lines', 'linelist'),
+        ('ignore_errors', 'report:ignore_errors', 'boolean'),
+        ('include', 'report:include', 'list'),
+        ('omit', 'report:omit', 'list'),
+        ('partial_list', 'report:partial_branches', 'linelist'),
+        ('partial_always_list', 'report:partial_branches_always', 'linelist'),
+        ('precision', 'report:precision', 'int'),
+        ('show_missing', 'report:show_missing', 'boolean'),
 
-        Returns the list of strings.
+        # [html]
+        ('html_dir', 'html:directory'),
+        ('extra_css', 'html:extra_css'),
+        ('html_title', 'html:title'),
 
-        """
-        value_list = cp.get(section, option)
-        values = []
-        for value_line in value_list.split('\n'):
-            for value in value_line.split(','):
-                value = value.strip()
-                if value:
-                    values.append(value)
-        return values
+        # [xml]
+        ('xml_output', 'xml:output'),
+        ]
 
-    def get_line_list(self, cp, section, option):
-        """Read a list of full-line strings from the ConfigParser `cp`.
-
-        The value of `section` and `option` is treated as a newline-separated
-        list of strings.  Each value is stripped of whitespace.
-
-        Returns the list of strings.
-
-        """
-        value_list = cp.get(section, option)
-        return list(filter(None, value_list.split('\n')))
+    def set_attr_from_config_option(self, cp, attr, where, type=''):
+        """Set an attribute on self if it exists in the ConfigParser."""
+        section, option = where.split(":")
+        if cp.has_option(section, option):
+            method = getattr(cp, 'get'+type)
+            setattr(self, attr, method(section, option))
