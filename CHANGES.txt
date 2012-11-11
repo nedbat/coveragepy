@@ -27,6 +27,9 @@ Version 3.5.4b1
   coverage.xml_report() now all return a float, the total percentage covered
   measurement.
 
+- On Windows, files are now reported in their correct case.  Fixes
+  `issue 89`_ and `issue 203`_.
+
 - Running an HTML report in Python 3 in the same directory as an old Python 2
   HTML report would fail with a UnicodeDecodeError. This issue (`issue 193`_)
   is now fixed.
@@ -43,10 +46,12 @@ Version 3.5.4b1
 - The pydoc tool can now show docmentation for the class `coverage.coverage`.
   Closes `issue 206`_.
 
+.. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 139: https://bitbucket.org/ned/coveragepy/issue/139/easy-check-for-a-certain-coverage-in-tests
 .. _issue 163: https://bitbucket.org/ned/coveragepy/issue/163/problem-with-include-and-omit-filename
 .. _issue 193: https://bitbucket.org/ned/coveragepy/issue/193/unicodedecodeerror-on-htmlpy
 .. _issue 201: https://bitbucket.org/ned/coveragepy/issue/201/coverage-using-django-14-with-pydb-on
+.. _issue 203: https://bitbucket.org/ned/coveragepy/issue/203/duplicate-filenames-reported-when-filename
 .. _issue 205: https://bitbucket.org/ned/coveragepy/issue/205/make-pydoc-coverage-more-friendly
 .. _issue 206: https://bitbucket.org/ned/coveragepy/issue/206/pydoc-coveragecoverage-fails-with-an-error
 .. _issue 210: https://bitbucket.org/ned/coveragepy/issue/210/if-theres-no-coverage-data-coverage-xml

@@ -179,6 +179,36 @@ class SummaryTest(CoverageTest):
 
         self.assertEqual(self.line_count(report), 2)
 
+    def run_TheCode_and_report_it(self):
+        """A helper for the next few tests."""
+        cov = coverage.coverage()
+        cov.start()
+        import TheCode
+        cov.stop()
+
+        repout = StringIO()
+        cov.report(file=repout, show_missing=False)
+        report = repout.getvalue().replace('\\', '/')
+        report = re.sub(r"\s+", " ", report)
+        return report
+
+    def test_bug_203_mixed_case_listed_twice_with_rc(self):
+        self.make_file("TheCode.py", "a = 1\n")
+        self.make_file(".coveragerc", "[run]\nsource = .\n")
+
+        report = self.run_TheCode_and_report_it()
+
+        self.assertIn("TheCode", report)
+        self.assertNotIn("thecode", report)
+
+    def test_bug_203_mixed_case_listed_twice(self):
+        self.make_file("TheCode.py", "a = 1\n")
+
+        report = self.run_TheCode_and_report_it()
+
+        self.assertIn("TheCode", report)
+        self.assertNotIn("thecode", report)
+
 
 class SummaryTest2(CoverageTest):
     """Another bunch of summary tests."""

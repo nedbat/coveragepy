@@ -37,6 +37,14 @@ class FullCoverageTracer(object):
 
 sys.settrace(FullCoverageTracer().fullcoverage_trace)
 
+# In coverage/files.py is actual_filename(), which uses glob.glob.  I don't
+# understand why, but that use of glob borks everything if fullcoverage is in
+# effect.  So here we make an ugly hail-mary pass to switch off glob.glob over
+# there.  This means when using fullcoverage, Windows path names will not be
+# their actual case.
+
+#sys.fullcoverage = True
+
 # Finally, remove our own directory from sys.path; remove ourselves from
 # sys.modules; and re-import "encodings", which will be the real package
 # this time.  Note that the delete from sys.modules dictionary has to

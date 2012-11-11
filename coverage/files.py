@@ -9,7 +9,7 @@ class FileLocator(object):
 
     def __init__(self):
         # The absolute path to our current directory.
-        self.relative_dir = abs_file(os.curdir) + os.sep
+        self.relative_dir = os.path.normcase(abs_file(os.curdir) + os.sep)
 
         # Cache of results of calling the canonical_filename() method, to
         # avoid duplicating work.
@@ -22,8 +22,9 @@ class FileLocator(object):
         `FileLocator` was constructed.
 
         """
-        if filename.startswith(self.relative_dir):
-            filename = filename.replace(self.relative_dir, "", 1)
+        fnorm = os.path.normcase(filename)
+        if fnorm.startswith(self.relative_dir):
+            filename = filename[len(self.relative_dir):]
         return filename
 
     def canonical_filename(self, filename):
@@ -74,9 +75,49 @@ class FileLocator(object):
         return None
 
 
+if sys.platform == 'win32':
+    import ctypes
+
+    def getLongPathName(path):
+        """Call Windows' GetLongPathNameW, unicode to unicode."""
+        buf = ctypes.create_unicode_buffer(260)
+        rv = ctypes.windll.kernel32.GetLongPathNameW(path, buf, 260)
+        if rv == 0 or rv > 260:
+            return path
+        else:
+            return buf.value
+
+    def getShortPathName(path):
+        """Call Windows' GetShortPathNameW, unicode to unicode."""
+        buf = ctypes.create_unicode_buffer(260)
+        rv = ctypes.windll.kernel32.GetShortPathNameW(path, buf, 260)
+        if rv == 0 or rv > 260:
+            return path
+        else:
+            return buf.value
+
+    def actual_path(path):
+        """Get the actual path of `path`, including the correct case."""
+        if sys.version_info >= (3,0):
+            path = path.encode('utf-16')
+        else:
+            path = path.decode('utf8')
+        actual = getLongPathName(getShortPathName(path))
+        if sys.version_info >= (3,0):
+            actual = actual.decode('utf-16')
+        else:
+            actual = actual.encode('utf8')
+        return actual
+else:
+    def actual_filename(filename):
+        """The actual filename for non-Windows platforms."""
+        return filename
+
 def abs_file(filename):
     """Return the absolute normalized form of `filename`."""
-    return os.path.normcase(os.path.abspath(os.path.realpath(filename)))
+    path = os.path.abspath(os.path.realpath(filename))
+    path = actual_filename(path)
+    return path
 
 
 def prep_patterns(patterns):

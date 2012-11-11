@@ -475,6 +475,7 @@ class coverage(object):
             # Find files that were never executed at all.
             for src in self.source:
                 for py_file in find_python_files(src):
+                    py_file = self.file_locator.canonical_filename(py_file)
                     self.data.touch_file(py_file)
 
             self._harvested = True
