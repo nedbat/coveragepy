@@ -190,7 +190,7 @@ class ProcessTest(CoverageTest):
         os.remove("fleeting.py")
         out = self.run_command("coverage html -d htmlcov")
         self.assertRegexpMatches(out, "No source for code: '.*fleeting.py'")
-        self.assertFalse("Traceback" in out)
+        self.assertNotIn("Traceback", out)
 
         # It happens that the code paths are different for *.py and other
         # files, so try again with no extension.
@@ -202,13 +202,13 @@ class ProcessTest(CoverageTest):
         os.remove("fleeting")
         status, out = self.run_command_status("coverage html -d htmlcov", 1)
         self.assertRegexpMatches(out, "No source for code: '.*fleeting'")
-        self.assertFalse("Traceback" in out)
+        self.assertNotIn("Traceback", out)
         self.assertEqual(status, 1)
 
     def test_running_missing_file(self):
         status, out = self.run_command_status("coverage run xyzzy.py", 1)
         self.assertRegexpMatches(out, "No file to run: .*xyzzy.py")
-        self.assertFalse("Traceback" in out)
+        self.assertNotIn("Traceback", out)
         self.assertEqual(status, 1)
 
     def test_code_throws(self):
@@ -233,9 +233,9 @@ class ProcessTest(CoverageTest):
         self.assertMultiLineEqual(out, out2)
 
         # But also make sure that the output is what we expect.
-        self.assertTrue('File "throw.py", line 5, in f2' in out)
-        self.assertTrue('raise Exception("hey!")' in out)
-        self.assertFalse('coverage' in out)
+        self.assertIn('File "throw.py", line 5, in f2', out)
+        self.assertIn('raise Exception("hey!")', out)
+        self.assertNotIn('coverage', out)
         self.assertEqual(status, 1)
 
     def test_code_exits(self):
@@ -346,25 +346,25 @@ class ProcessTest(CoverageTest):
             """)
         out = self.run_command("coverage run --source=sys,xyzzy,quux hello.py")
 
-        self.assertTrue("Hello\n" in out)
-        self.assertTrue(textwrap.dedent("""\
+        self.assertIn("Hello\n", out)
+        self.assertIn(textwrap.dedent("""\
             Coverage.py warning: Module sys has no Python source.
             Coverage.py warning: Module xyzzy was never imported.
             Coverage.py warning: Module quux was never imported.
             Coverage.py warning: No data was collected.
-            """) in out)
+            """), out)
 
     def test_warnings_if_never_run(self):
         out = self.run_command("coverage run i_dont_exist.py")
-        self.assertTrue("No file to run: 'i_dont_exist.py'" in out)
-        self.assertTrue("warning" not in out)
+        self.assertIn("No file to run: 'i_dont_exist.py'", out)
+        self.assertNotIn("warning", out)
 
         out = self.run_command("coverage run -m no_such_module")
         self.assertTrue(
             ("No module named no_such_module" in out) or
             ("No module named 'no_such_module'" in out)
             )
-        self.assertTrue("warning" not in out)
+        self.assertNotIn("warning", out)
 
     if sys.version_info >= (3, 0):   # This only works on 3.x for now.
         # It only works with the C tracer.

@@ -84,7 +84,7 @@ class SingletonApiTest(CoverageTest):
         self.do_report_work("mycode4")
         coverage.report()
         rpt = re.sub(r"\s+", " ", self.stdout())
-        self.assertTrue("mycode4 7 3 57% 4-6" in rpt)
+        self.assertIn("mycode4 7 3 57% 4-6", rpt)
 
 
 class ApiTest(CoverageTest):

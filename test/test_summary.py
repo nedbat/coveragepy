@@ -25,7 +25,7 @@ class SummaryTest(CoverageTest):
     def report_from_command(self, cmd):
         """Return the report from the `cmd`, with some convenience added."""
         report = self.run_command(cmd).replace('\\', '/')
-        self.assertFalse("error" in report.lower())
+        self.assertNotIn("error", report.lower())
         return report
 
     def line_count(self, report):
@@ -51,10 +51,10 @@ class SummaryTest(CoverageTest):
         # ---------------------------------------------------------------------
         # TOTAL                                                 8      0   100%
 
-        self.assertFalse("/coverage/__init__/" in report)
-        self.assertTrue("/test/modules/covmod1 " in report)
-        self.assertTrue("/test/zipmods.zip/covmodzip1 " in report)
-        self.assertTrue("mycode " in report)
+        self.assertNotIn("/coverage/__init__/", report)
+        self.assertIn("/test/modules/covmod1 ", report)
+        self.assertIn("/test/zipmods.zip/covmodzip1 ", report)
+        self.assertIn("mycode ", report)
         self.assertEqual(self.last_line_squeezed(report), "TOTAL 8 0 100%")
 
     def test_report_just_one(self):
@@ -67,10 +67,10 @@ class SummaryTest(CoverageTest):
         # mycode       4      0   100%
 
         self.assertEqual(self.line_count(report), 3)
-        self.assertFalse("/coverage/" in report)
-        self.assertFalse("/test/modules/covmod1 " in report)
-        self.assertFalse("/test/zipmods.zip/covmodzip1 " in report)
-        self.assertTrue("mycode " in report)
+        self.assertNotIn("/coverage/", report)
+        self.assertNotIn("/test/modules/covmod1 ", report)
+        self.assertNotIn("/test/zipmods.zip/covmodzip1 ", report)
+        self.assertIn("mycode ", report)
         self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
     def test_report_omitting(self):
@@ -84,10 +84,10 @@ class SummaryTest(CoverageTest):
         # mycode       4      0   100%
 
         self.assertEqual(self.line_count(report), 3)
-        self.assertFalse("/coverage/" in report)
-        self.assertFalse("/test/modules/covmod1 " in report)
-        self.assertFalse("/test/zipmods.zip/covmodzip1 " in report)
-        self.assertTrue("mycode " in report)
+        self.assertNotIn("/coverage/", report)
+        self.assertNotIn("/test/modules/covmod1 ", report)
+        self.assertNotIn("/test/zipmods.zip/covmodzip1 ", report)
+        self.assertIn("mycode ", report)
         self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
     def test_report_including(self):
@@ -100,10 +100,10 @@ class SummaryTest(CoverageTest):
         # mycode       4      0   100%
 
         self.assertEqual(self.line_count(report), 3)
-        self.assertFalse("/coverage/" in report)
-        self.assertFalse("/test/modules/covmod1 " in report)
-        self.assertFalse("/test/zipmods.zip/covmodzip1 " in report)
-        self.assertTrue("mycode " in report)
+        self.assertNotIn("/coverage/", report)
+        self.assertNotIn("/test/modules/covmod1 ", report)
+        self.assertNotIn("/test/zipmods.zip/covmodzip1 ", report)
+        self.assertIn("mycode ", report)
         self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
     def test_report_branches(self):
@@ -123,7 +123,7 @@ class SummaryTest(CoverageTest):
         # mybranch       5      0      2      1    85%
 
         self.assertEqual(self.line_count(report), 3)
-        self.assertTrue("mybranch " in report)
+        self.assertIn("mybranch ", report)
         self.assertEqual(self.last_line_squeezed(report),
                                                         "mybranch 5 0 2 1 86%")
 
