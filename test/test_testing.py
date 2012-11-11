@@ -104,8 +104,12 @@ class TestingTest(TestCase):
 
     def test_assert_not_in(self):
         self.assertRaises(AssertionError, self.assertNotIn, "abc", "hello abc")
-        self.assertRaises(AssertionError, self.assertNotIn, "abc", ["xyz", "abc", "foo"])
-        self.assertRaises(AssertionError, self.assertNotIn, "abc", {'abc': 1, 'xyz': 2})
+        self.assertRaises(AssertionError,
+            self.assertNotIn, "abc", ["xyz", "abc", "foo"]
+            )
+        self.assertRaises(AssertionError,
+            self.assertNotIn, "abc", {'abc': 1, 'xyz': 2}
+            )
         self.assertNotIn("abc", "xyz")
         self.assertNotIn("abc", ["x", "xabc"])
         self.assertNotIn("abc", {'x':'abc'})

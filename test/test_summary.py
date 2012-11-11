@@ -183,7 +183,7 @@ class SummaryTest(CoverageTest):
         """A helper for the next few tests."""
         cov = coverage.coverage()
         cov.start()
-        import TheCode
+        import TheCode                          # pylint: disable=F0401,W0612
         cov.stop()
 
         repout = StringIO()
