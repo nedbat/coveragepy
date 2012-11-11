@@ -109,14 +109,14 @@ if sys.platform == 'win32':
             actual = actual.encode('utf8')
         return actual
 else:
-    def actual_filename(filename):
-        """The actual filename for non-Windows platforms."""
+    def actual_path(filename):
+        """The actual path for non-Windows platforms."""
         return filename
 
 def abs_file(filename):
     """Return the absolute normalized form of `filename`."""
     path = os.path.abspath(os.path.realpath(filename))
-    path = actual_filename(path)
+    path = actual_path(path)
     return path
 
 
