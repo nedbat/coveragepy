@@ -7,11 +7,11 @@ Version 3.5.4b1
 
 - Wildcards in ``include=`` and ``omit=`` arguments were not handled properly
   in reporting functions, though they were when running.  Now they are handled
-  uniformly, closing `issue 163`.  **NOTE**: it is possible that your
-  configurations may now be incorrect.  If you use ``include`` or ``omit``
-  during reporting, whether on the command line, through the API, or in a
-  configuration file, please check carefully that you were not relying on the
-  old broken behavior.
+  uniformly, closing `issue 143` and `issue 163`.  **NOTE**: it is possible
+  that your configurations may now be incorrect.  If you use ``include`` or
+  ``omit`` during reporting, whether on the command line, through the API, or
+  in a configuration file, please check carefully that you were not relying on
+  the old broken behavior.
 
 - The **report**, **html**, and **xml** commands now accept a ``--fail-under``
   switch that indicates in the exit status whether the coverage percentage was
@@ -50,6 +50,7 @@ Version 3.5.4b1
 
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 139: https://bitbucket.org/ned/coveragepy/issue/139/easy-check-for-a-certain-coverage-in-tests
+.. _issue 143: https://bitbucket.org/ned/coveragepy/issue/143/omit-doesnt-seem-to-work-in-coverage
 .. _issue 153: https://bitbucket.org/ned/coveragepy/issue/153/non-existent-filename-triggers
 .. _issue 163: https://bitbucket.org/ned/coveragepy/issue/163/problem-with-include-and-omit-filename
 .. _issue 193: https://bitbucket.org/ned/coveragepy/issue/193/unicodedecodeerror-on-htmlpy
