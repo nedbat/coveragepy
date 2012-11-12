@@ -60,10 +60,6 @@ class CoverageData(object):
         #
         self.arcs = {}
 
-        self.os = os
-        self.sorted = sorted
-        self.pickle = pickle
-
     def usefile(self, use_file=True):
         """Set whether or not to use a disk file for data."""
         self.use_file = use_file
@@ -101,13 +97,13 @@ class CoverageData(object):
     def line_data(self):
         """Return the map from filenames to lists of line numbers executed."""
         return dict(
-            [(f, self.sorted(lmap.keys())) for f, lmap in self.lines.items()]
+            [(f, sorted(lmap.keys())) for f, lmap in self.lines.items()]
             )
 
     def arc_data(self):
         """Return the map from filenames to lists of line number pairs."""
         return dict(
-            [(f, self.sorted(amap.keys())) for f, amap in self.arcs.items()]
+            [(f, sorted(amap.keys())) for f, amap in self.arcs.items()]
             )
 
     def write_file(self, filename):
@@ -127,7 +123,7 @@ class CoverageData(object):
         # Write the pickle to the file.
         fdata = open(filename, 'wb')
         try:
-            self.pickle.dump(data, fdata, 2)
+            pickle.dump(data, fdata, 2)
         finally:
             fdata.close()
 
@@ -252,7 +248,7 @@ class CoverageData(object):
         if fullpath:
             filename_fn = lambda f: f
         else:
-            filename_fn = self.os.path.basename
+            filename_fn = os.path.basename
         for filename, lines in self.lines.items():
             summ[filename_fn(filename)] = len(lines)
         return summ

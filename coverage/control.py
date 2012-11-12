@@ -179,14 +179,6 @@ class coverage(object):
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
 
-        # When tearing down the coverage object, modules can become None.
-        # Saving the modules as object attributes avoids problems, but it is
-        # quite ad-hoc which modules need to be saved and which references
-        # need to use the object attributes.
-        self.socket = socket
-        self.os = os
-        self.random = random
-
     def _canonical_dir(self, f):
         """Return the canonical directory of the file `f`."""
         return os.path.split(self.file_locator.canonical_filename(f))[0]
@@ -208,9 +200,6 @@ class coverage(object):
         should not.
 
         """
-        if os is None:
-            return False
-
         if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
             # filenames like "<string>", "<doctest readme.txt[0]>", or
@@ -426,8 +415,8 @@ class coverage(object):
             # `save()` at the last minute so that the pid will be correct even
             # if the process forks.
             data_suffix = "%s.%s.%06d" % (
-                self.socket.gethostname(), self.os.getpid(),
-                self.random.randint(0, 99999)
+                socket.gethostname(), os.getpid(),
+                random.randint(0, 99999)
                 )
 
         self._harvest_data()
