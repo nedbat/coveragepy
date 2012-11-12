@@ -46,8 +46,11 @@ Version 3.5.4b1
 - The pydoc tool can now show docmentation for the class `coverage.coverage`.
   Closes `issue 206`_.
 
+- Other minor bugs fixed: `issue 153`_.
+
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 139: https://bitbucket.org/ned/coveragepy/issue/139/easy-check-for-a-certain-coverage-in-tests
+.. _issue 153: https://bitbucket.org/ned/coveragepy/issue/153/non-existent-filename-triggers
 .. _issue 163: https://bitbucket.org/ned/coveragepy/issue/163/problem-with-include-and-omit-filename
 .. _issue 193: https://bitbucket.org/ned/coveragepy/issue/193/unicodedecodeerror-on-htmlpy
 .. _issue 201: https://bitbucket.org/ned/coveragepy/issue/201/coverage-using-django-14-with-pydb-on

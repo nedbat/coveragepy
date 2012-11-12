@@ -562,8 +562,8 @@ class CoverageScript(object):
                 code_ran = False
                 raise
         finally:
+            self.coverage.stop()
             if code_ran:
-                self.coverage.stop()
                 self.coverage.save()
 
     def do_debug(self, args):

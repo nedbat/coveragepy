@@ -362,7 +362,6 @@ class coverage(object):
     def stop(self):
         """Stop measuring code coverage."""
         self.collector.stop()
-        self._harvest_data()
 
     def erase(self):
         """Erase previously-collected coverage data.
@@ -515,6 +514,7 @@ class coverage(object):
         Returns an `Analysis` object.
 
         """
+        self._harvest_data()
         if not isinstance(it, CodeUnit):
             it = code_unit_factory(it, self.file_locator)[0]
 
@@ -536,6 +536,7 @@ class coverage(object):
         Returns a float, the total percentage covered.
 
         """
+        self._harvest_data()
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
             show_missing=show_missing,
@@ -555,6 +556,7 @@ class coverage(object):
         See `coverage.report()` for other arguments.
 
         """
+        self._harvest_data()
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include
             )
@@ -580,6 +582,7 @@ class coverage(object):
         Returns a float, the total percentage covered.
 
         """
+        self._harvest_data()
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
@@ -601,6 +604,7 @@ class coverage(object):
         Returns a float, the total percentage covered.
 
         """
+        self._harvest_data()
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
             xml_output=outfile,

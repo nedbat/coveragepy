@@ -358,6 +358,7 @@ class ProcessTest(CoverageTest):
         out = self.run_command("coverage run i_dont_exist.py")
         self.assertIn("No file to run: 'i_dont_exist.py'", out)
         self.assertNotIn("warning", out)
+        self.assertNotIn("Exception", out)
 
         out = self.run_command("coverage run -m no_such_module")
         self.assertTrue(
@@ -365,6 +366,7 @@ class ProcessTest(CoverageTest):
             ("No module named 'no_such_module'" in out)
             )
         self.assertNotIn("warning", out)
+        self.assertNotIn("Exception", out)
 
     if sys.version_info >= (3, 0):   # This only works on 3.x for now.
         # It only works with the C tracer.
