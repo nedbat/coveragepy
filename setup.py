@@ -1,4 +1,4 @@
-# setup.py for coverage.
+# setup.py for coverage.py
 
 """Code coverage measurement for Python
 
@@ -19,12 +19,11 @@ can be reported.
 New in 3.3: .coveragerc files.
 
 New in 3.2: Branch coverage!
-
 """
 
 # This file is used unchanged under all versions of Python, 2.x and 3.x.
 
-classifiers = """
+classifiers = """\
 Environment :: Console
 Intended Audience :: Developers
 License :: OSI Approved :: BSD License
@@ -36,7 +35,7 @@ Topic :: Software Development :: Testing
 """
 
 # Pull in the tools we need.
-import sys
+import os, sys
 
 # Distribute is a new fork of setuptools.  It's supported on Py3.x, so we use
 # it there, but stick with classic setuptools on Py2.x until Distribute becomes
@@ -51,13 +50,17 @@ use_setuptools()
 from setuptools import setup
 from distutils.core import Extension    # pylint: disable=E0611,F0401
 
-# Get or massage our metadata.
+# Get or massage our metadata.  We exec coverage/version.py so we can avoid
+# importing the product code into setup.py.
 
-from coverage import __url__, __version__
+doc = __doc__                   # __doc__ will be overwritten by version.py.
+__version__ = __url__ = ""      # keep pylint happy.
 
-doclines = (__doc__ % __url__).split('\n')
+cov_ver_py = os.path.join(os.path.split(__file__)[0], "coverage/version.py")
+exec(compile(open(cov_ver_py).read(), cov_ver_py, 'exec'))
 
-classifier_list = [c for c in classifiers.split("\n") if c]
+doclines = (doc % __url__).splitlines()
+classifier_list = classifiers.splitlines()
 
 if 'a' in __version__:
     devstat = "3 - Alpha"
@@ -67,7 +70,7 @@ else:
     devstat = "5 - Production/Stable"
 classifier_list.append("Development Status :: " + devstat)
 
-# Set it up!
+# Create the keyword arguments for setup()
 
 setup_args = dict(
     name = 'coverage',

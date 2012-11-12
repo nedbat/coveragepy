@@ -5,18 +5,12 @@ http://nedbatchelder.com/code/coverage
 
 """
 
-__version__ = "3.5.4b1"       # see detailed history in CHANGES.txt
-
-__url__ = "http://nedbatchelder.com/code/coverage"
-if max(__version__).isalpha():
-    # For pre-releases, use a version-specific URL.
-    __url__ += "/" + __version__
+from coverage.version import __version__, __url__
 
 from coverage.control import coverage, process_startup
 from coverage.data import CoverageData
 from coverage.cmdline import main, CoverageScript
 from coverage.misc import CoverageException
-
 
 # Module-level functions.  The original API to this module was based on
 # functions defined directly in the module, with a singleton of the coverage()
