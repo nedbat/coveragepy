@@ -129,20 +129,25 @@ if sys.version_info >= (3, 0):
         use_2to3=False,
         ))
 
-# For a variety of reasons, it might not be possible to install the C
-# extension.  Try it with, and if it fails, try it without.
-try:
-    setup(**setup_args)
-except:     # pylint: disable=W0702
-    # When setup() can't compile, it tries to exit.  We'll catch SystemExit
-    # here :-(, and try again.
-    if 'install' not in sys.argv or 'ext_modules' not in setup_args:
-        # We weren't trying to install an extension, so forget it.
-        raise
-    msg = "Couldn't install with extension module, trying without it..."
-    exc = sys.exc_info()[1]
-    exc_msg = "%s: %s" % (exc.__class__.__name__, exc)
-    print("**\n** %s\n** %s\n**" % (msg, exc_msg))
+def main():
+    """Actually invoke setup() with the arguments we built above."""
+    # For a variety of reasons, it might not be possible to install the C
+    # extension.  Try it with, and if it fails, try it without.
+    try:
+        setup(**setup_args)
+    except:     # pylint: disable=W0702
+        # When setup() can't compile, it tries to exit.  We'll catch SystemExit
+        # here :-(, and try again.
+        if 'install' not in sys.argv or 'ext_modules' not in setup_args:
+            # We weren't trying to install an extension, so forget it.
+            raise
+        msg = "Couldn't install with extension module, trying without it..."
+        exc = sys.exc_info()[1]
+        exc_msg = "%s: %s" % (exc.__class__.__name__, exc)
+        print("**\n** %s\n** %s\n**" % (msg, exc_msg))
 
-    del setup_args['ext_modules']
-    setup(**setup_args)
+        del setup_args['ext_modules']
+        setup(**setup_args)
+
+if __name__ == '__main__':
+    main()
