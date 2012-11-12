@@ -175,8 +175,8 @@ class ProcessTest(CoverageTest):
         data.read_file(".coverage")
         summary = data.summary(fullpath=True)
         self.assertEqual(len(summary), 1)
-        actual = os.path.abspath(list(summary.keys())[0])
-        expected = os.path.abspath('src/x.py')
+        actual = os.path.normcase(os.path.abspath(list(summary.keys())[0]))
+        expected = os.path.normcase(os.path.abspath('src/x.py'))
         self.assertEqual(actual, expected)
         self.assertEqual(list(summary.values())[0], 6)
 

@@ -2,7 +2,7 @@
 
 from coverage.backward import to_string
 from coverage.misc import CoverageException
-import fnmatch, os, re, sys
+import fnmatch, os, os.path, re, sys
 
 class FileLocator(object):
     """Understand how filenames work."""
@@ -76,38 +76,39 @@ class FileLocator(object):
 
 
 if sys.platform == 'win32':
-    import ctypes
-
-    def getLongPathName(path):
-        """Call Windows' GetLongPathNameW, unicode to unicode."""
-        buf = ctypes.create_unicode_buffer(260)
-        rv = ctypes.windll.kernel32.GetLongPathNameW(path, buf, 260)
-        if rv == 0 or rv > 260:
-            return path
-        else:
-            return buf.value
-
-    def getShortPathName(path):
-        """Call Windows' GetShortPathNameW, unicode to unicode."""
-        buf = ctypes.create_unicode_buffer(260)
-        rv = ctypes.windll.kernel32.GetShortPathNameW(path, buf, 260)
-        if rv == 0 or rv > 260:
-            return path
-        else:
-            return buf.value
 
     def actual_path(path):
         """Get the actual path of `path`, including the correct case."""
-        if sys.version_info >= (3,0):
-            path = path.encode('utf-16')
+        if path in actual_path.cache:
+            return actual_path.cache[path]
+
+        head, tail = os.path.split(path)
+        if not tail:
+            actpath = head
+        elif not head:
+            actpath = tail
         else:
-            path = path.decode('utf8')
-        actual = getLongPathName(getShortPathName(path))
-        if sys.version_info >= (3,0):
-            actual = actual.decode('utf-16')
-        else:
-            actual = actual.encode('utf8')
-        return actual
+            head = actual_path(head)
+            if head in actual_path.list_cache:
+                files = actual_path.list_cache[head]
+            else:
+                try:
+                    files = os.listdir(head)
+                except OSError:
+                    files = []
+                actual_path.list_cache[head] = files
+            normtail = os.path.normcase(tail)
+            for f in files:
+                if os.path.normcase(f) == normtail:
+                    tail = f
+                    break
+            actpath = os.path.join(head, tail)
+        actual_path.cache[path] = actpath
+        return actpath
+
+    actual_path.cache = {}
+    actual_path.list_cache = {}
+
 else:
     def actual_path(filename):
         """The actual path for non-Windows platforms."""
