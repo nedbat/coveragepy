@@ -46,6 +46,9 @@ Version 3.5.4b1
 - The pydoc tool can now show docmentation for the class `coverage.coverage`.
   Closes `issue 206`_.
 
+- Added a page to the docs about contributing to coverage.py, closing
+  `issue 171`_.
+
 - Other minor bugs fixed: `issue 153`_.
 
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
@@ -53,6 +56,7 @@ Version 3.5.4b1
 .. _issue 143: https://bitbucket.org/ned/coveragepy/issue/143/omit-doesnt-seem-to-work-in-coverage
 .. _issue 153: https://bitbucket.org/ned/coveragepy/issue/153/non-existent-filename-triggers
 .. _issue 163: https://bitbucket.org/ned/coveragepy/issue/163/problem-with-include-and-omit-filename
+.. _issue 171: https://bitbucket.org/ned/coveragepy/issue/171/how-to-contribute-and-run-tests
 .. _issue 193: https://bitbucket.org/ned/coveragepy/issue/193/unicodedecodeerror-on-htmlpy
 .. _issue 201: https://bitbucket.org/ned/coveragepy/issue/201/coverage-using-django-14-with-pydb-on
 .. _issue 203: https://bitbucket.org/ned/coveragepy/issue/203/duplicate-filenames-reported-when-filename

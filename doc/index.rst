@@ -154,6 +154,7 @@ More information
     branch
     subprocess
     api
+    contributing
     faq
     changes
 

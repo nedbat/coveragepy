@@ -1,0 +1,166 @@
+.. _contributing:
+
+===========================
+Contributing to coverage.py
+===========================
+
+:history: 20121112T154100, brand new docs.
+
+I welcome contributions to coverage.py.  Over the years, dozens of people have
+provided patches of various sizes to add features or fix bugs.  This page
+should have all the information you need to make a contribution.
+
+One source of history or ideas are the `bug reports`_ against coverage.py.
+There you can find ideas for requested features, or the remains of rejected
+ideas.
+
+.. _bug reports: https://bitbucket.org/ned/coveragepy/issues?status=new&status=open
+
+
+Before you begin
+----------------
+
+If you have an idea for coverage.py, run it by me before you begin writing
+code.  This way, I can get you going in the right direction, or point you to
+previous work in the area.  Things are not always as straightforward as they
+seem, and having the benefit of lessons learned by those before you can save
+you frustration.
+
+
+Getting the code
+----------------
+
+The coverage.py code is hosted on a `Mercurial`_ repository at
+https://bitbucket.org/ned/coveragepy.  To get a working environment, follow
+these steps:
+
+#.  (Optional, but recommended) Create a virtualenv to work in, and activate
+    it.
+
+#.  Clone the repo:
+
+    .. code-block:: console
+
+        $ hg clone https://bitbucket.org/ned/coveragepy
+
+#.  Install the requirements:
+
+    .. code-block:: console
+
+        $ pip install -r requirements.txt
+
+#.  Install a number of versions of Python.  Coverage.py supports a wide range
+    of Python versions.  The more you can test with, the more easily your code
+    can be used as-is.  If you only have one version, that's OK too, but may
+    mean more work integrating your contribution.
+
+
+Running the tests
+-----------------
+
+The tests are written as standard unittest-style tests, and are run with
+`tox`_:
+
+    .. code-block:: console
+
+        $ tox
+        GLOB sdist-make: /home/ned/coverage/setup.py
+        py25 sdist-reinst: /home/ned/coverage/tox/dist/coverage-3.5.4b1.zip
+        py25 runtests: commands[0]
+        py25 runtests: commands[1]
+        py25 runtests: commands[2]
+        py25 runtests: commands[3]
+        py25 runtests: commands[4]
+        === Python 2.5.5 with Python tracer (/home/ned/coverage/tox/py25/bin/python) ===
+        ...........................................................................................(etc)
+        ----------------------------------------------------------------------
+        Ran 360 tests in 10.836s
+
+        OK
+        py25 runtests: commands[5]
+        py25 runtests: commands[6]
+        === Python 2.5.5 with C tracer (/home/ned/coverage/tox/py25/bin/python) ===
+        ...........................................................................................(etc)
+        ----------------------------------------------------------------------
+        Ran 360 tests in 10.044s
+
+        OK
+        py26 sdist-reinst: /home/ned/coverage/trunk/.tox/dist/coverage-3.5.4b1.zip
+        py26 runtests: commands[0]
+        py26 runtests: commands[1]
+        py26 runtests: commands[2]
+        py26 runtests: commands[3]
+        py26 runtests: commands[4]
+        === CPython 2.6.6 with Python tracer (/home/ned/coverage/tox/py26/bin/python) ===
+        ...........................................................................................(etc)
+        ----------------------------------------------------------------------
+        Ran 364 tests in 12.572s
+
+        OK
+        py26 runtests: commands[5]
+        py26 runtests: commands[6]
+        === CPython 2.6.6 with C tracer (/home/ned/coverage/tox/py26/bin/python) ===
+        ...........................................................................................(etc)
+        ----------------------------------------------------------------------
+        Ran 364 tests in 11.458s
+
+        OK
+        (and so on...)
+
+Tox runs the complete test suite twice for each version of Python you have
+installed.  The first run uses the Python implementation of the trace
+function, the second uses the C implementation.
+
+To limit tox to just a few versions of Python, use the ``-e`` switch:
+
+    .. code-block:: console
+
+        $ tox -e py27,py33
+
+To run just a few tests, you can use nose test selector syntax:
+
+    .. code-block:: console
+
+        $ tox test.test_misc:SetupPyTest.test_metadata
+
+This looks in `test/test_misc.py` to find the `SetupPyTest` class, and runs the
+`test_metadata` test method.
+
+Of course, run all the tests on every version of Python you have, before
+submitting a change.
+
+
+Lint, etc
+---------
+
+I try to keep the coverage.py as clean as possible.  I use pylint to alert me
+to possible problems:
+
+    .. code-block:: console
+
+        $ make lint
+        pylint --rcfile=.pylintrc coverage setup.py test
+        ************* Module coverage.collector
+        F0401:  7,4: Unable to import 'coverage.tracer'
+        E0611:  7,4: No name 'tracer' in module 'coverage'
+        ************* Module coverage.parser
+        W0631:532,32:ByteParser._split_into_chunks: Using possibly undefined loop variable 'bc'
+        W0631:579,40:ByteParser._arcs: Using possibly undefined loop variable 'ch'
+        make: [lint] Error 7 (ignored)
+        python -m tabnanny coverage setup.py test
+        python igor.py check_eol
+
+As you can see, a few warnings persist, don't worry about them.  But clean up
+any ones you may be responsible for.
+
+
+Contributing
+------------
+
+When you are ready to contribute a change, any way you can get it to me is
+probably fine.  A pull request on Bitbucket is great, but a simple diff or
+patch is great too.
+
+
+.. _Mercurial: http://mercurial.selenic.com/
+.. _tox: http://tox.testrun.org/
