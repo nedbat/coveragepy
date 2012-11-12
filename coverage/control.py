@@ -25,7 +25,7 @@ class coverage(object):
 
         cov = coverage()
         cov.start()
-        #.. blah blah (run your code) blah blah ..
+        #.. call your code ..
         cov.stop()
         cov.html_report(directory='covhtml')
 
@@ -320,7 +320,12 @@ class coverage(object):
         self.data.read()
 
     def start(self):
-        """Start measuring code coverage."""
+        """Start measuring code coverage.
+
+        Coverage measurement actually occurs in functions called after `start`
+        is invoked.  Statements in the same scope as `start` won't be measured.
+
+        """
         if self.run_suffix:
             # Calling start() means we're running code, so use the run_suffix
             # as the data_suffix when we eventually save the data.

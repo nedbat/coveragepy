@@ -8,6 +8,7 @@ Coverage API
 :history: 20090613T164000, final touches for 3.0
 :history: 20100221T151500, docs for 3.3 (on the plane back from PyCon)
 :history: 20100725T211700, updated for 3.4.
+:history: 20121111T235800, added a bit of clarification.
 
 
 The API to coverage.py is very simple, contained in a single module called
@@ -20,10 +21,12 @@ in the command line interface. For example, a simple use would be::
     cov = coverage.coverage()
     cov.start()
 
-    # .. run your code ..
+    # .. call your code ..
 
     cov.stop()
     cov.save()
+
+    cov.html_report()
 
 
 The coverage module
