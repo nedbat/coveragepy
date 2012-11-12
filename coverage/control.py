@@ -17,7 +17,7 @@ from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
 
 class coverage(object):
-    """Programmatic access to Coverage.
+    """Programmatic access to coverage.py.
 
     To use::
 
@@ -324,6 +324,9 @@ class coverage(object):
 
         Coverage measurement actually occurs in functions called after `start`
         is invoked.  Statements in the same scope as `start` won't be measured.
+
+        Once you invoke `start`, you must also call `stop` eventually, or your
+        process might not shut down cleanly.
 
         """
         if self.run_suffix:
