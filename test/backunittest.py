@@ -43,6 +43,13 @@ class TestCase(unittest.TestCase):
                 msg = msg or ('%r found in %r' % (member, container))
                 self.fail(msg)
 
+    if _need('assertGreater'):
+        def assertGreater(self, a, b, msg=None):
+            """Assert that `a` is greater than `b`."""
+            if not a > b:
+                msg = msg or ('%r not greater than %r' % (a, b))
+                self.fail(msg)
+
     if _need('assertRaisesRegexp'):
         def assertRaisesRegexp(self, excClass, regexp, callobj, *args, **kw):
             """ Just like unittest.TestCase.assertRaises,

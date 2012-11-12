@@ -114,6 +114,14 @@ class TestingTest(TestCase):
         self.assertNotIn("abc", ["x", "xabc"])
         self.assertNotIn("abc", {'x':'abc'})
 
+    def test_assert_greater(self):
+        self.assertGreater(10, 9)
+        self.assertGreater("xyz", "abc")
+        self.assertRaises(AssertionError, self.assertGreater, 9, 10)
+        self.assertRaises(AssertionError, self.assertGreater, 10, 10)
+        self.assertRaises(AssertionError, self.assertGreater, "abc", "xyz")
+        self.assertRaises(AssertionError, self.assertGreater, "xyz", "xyz")
+
 
 class CoverageTestTest(CoverageTest):
     """Test the methods in `CoverageTest`."""
