@@ -1,6 +1,10 @@
 """Miscellaneous stuff for Coverage."""
 
+import errno
 import inspect
+import os
+import sys
+
 from coverage.backward import md5, sorted       # pylint: disable=W0622
 from coverage.backward import string_class, to_bytes
 
@@ -81,6 +85,16 @@ def join_regex(regexes):
         return regexes[0]
     else:
         return ""
+
+
+def file_be_gone(path):
+    """Remove a file, and don't get annoyed if it doesn't exist."""
+    try:
+        os.remove(path)
+    except OSError:
+        _, e, _ = sys.exc_info()
+        if e.errno != errno.ENOENT:
+            raise
 
 
 class Hasher(object):

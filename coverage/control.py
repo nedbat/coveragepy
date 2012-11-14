@@ -12,6 +12,7 @@ from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
+from coverage.misc import file_be_gone
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
@@ -624,10 +625,7 @@ class coverage(object):
             if file_to_close:
                 file_to_close.close()
                 if delete_file:
-                    try:
-                        os.remove(self.config.xml_output)
-                    except Exception:
-                        pass
+                    file_be_gone(self.config.xml_output)
 
     def sysinfo(self):
         """Return a list of (key, value) pairs showing internal information."""

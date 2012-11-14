@@ -1,10 +1,10 @@
 """Coverage data for Coverage."""
 
 import os
-import errno
 
 from coverage.backward import pickle, sorted        # pylint: disable=W0622
 from coverage.files import PathAliases
+from coverage.misc import file_be_gone
 
 
 class CoverageData(object):
@@ -91,11 +91,7 @@ class CoverageData(object):
         """Erase the data, both in this object, and from its file storage."""
         if self.use_file:
             if self.filename:
-                try:
-                    os.remove(self.filename)
-                except OSError as e:
-                    if e.errno != errno.ENOENT:
-                        raise
+                file_be_gone(self.filename)
         self.lines = {}
         self.arcs = {}
 

@@ -2,7 +2,7 @@
 
 import os, sys
 
-from coverage.misc import Hasher
+from coverage.misc import Hasher, file_be_gone
 from coverage import __version__, __url__
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
@@ -26,6 +26,25 @@ class HasherTest(CoverageTest):
         h2 = Hasher()
         h2.update({'b': 23, 'a': 17})
         self.assertEqual(h1.digest(), h2.digest())
+
+
+class RemoveFileTest(CoverageTest):
+    """Tests of misc.file_be_gone."""
+
+    def test_remove_nonexistent_file(self):
+        # it's ok to try to remove a file that doesn't exist.
+        file_be_gone("not_here.txt")
+
+    def test_remove_actual_file(self):
+        # it really does remove a file that does exist.
+        self.make_file("here.txt", "We are here, we are here, we are here!")
+        file_be_gone("here.txt")
+        self.assert_doesnt_exist("here.txt")
+
+    def test_actual_errors(self):
+        # Errors can still happen.
+        # ". is a directory" on Unix, or "Access denied" on Windows
+        self.assertRaises(OSError, file_be_gone, ".")
 
 
 class SetupPyTest(CoverageTest):
