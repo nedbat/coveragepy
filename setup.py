@@ -62,7 +62,6 @@ try:
     exec(compile(_version_file.read(), cov_ver_py, 'exec'))
 finally:
     _version_file.close()
-    del _version_file
 
 doclines = (doc % __url__).splitlines()
 classifier_list = classifiers.splitlines()
