@@ -61,7 +61,7 @@ The tests are written as standard unittest-style tests, and are run with
 
     $ tox
     GLOB sdist-make: /home/ned/coverage/setup.py
-    py25 sdist-reinst: /home/ned/coverage/tox/dist/coverage-3.5.4b1.zip
+    py25 sdist-reinst: /home/ned/coverage/tox/dist/coverage-3.6b1.zip
     py25 runtests: commands[0]
     py25 runtests: commands[1]
     py25 runtests: commands[2]
@@ -81,7 +81,7 @@ The tests are written as standard unittest-style tests, and are run with
     Ran 360 tests in 10.044s
 
     OK
-    py26 sdist-reinst: /home/ned/coverage/trunk/.tox/dist/coverage-3.5.4b1.zip
+    py26 sdist-reinst: /home/ned/coverage/trunk/.tox/dist/coverage-3.6b1.zip
     py26 runtests: commands[0]
     py26 runtests: commands[1]
     py26 runtests: commands[2]

@@ -10,5 +10,5 @@ ignore =
     *.min.js
     sample_html sample_html_beta
     *.so *.pyd
-    *.zip
+    *.gz *.zip
     _build
