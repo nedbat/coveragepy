@@ -1,10 +1,13 @@
 # MANIFEST.in file for coverage.py
+global-exclude *.pyc
+
+recursive-include coverage/htmlfiles *
+recursive-include coverage/fullcoverage *
+
 include coverage.egg-info/*.*
-include coverage/*.py
-include coverage/htmlfiles/*.*
-include coverage/fullcoverage/*.*
 include setup.py
 include README.txt
 include CHANGES.txt
 include AUTHORS.txt
+
 prune test
