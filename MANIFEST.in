@@ -1,6 +1,4 @@
 # MANIFEST.in file for coverage.py
-global-exclude *.pyc
-
 recursive-include coverage/htmlfiles *
 recursive-include coverage/fullcoverage *
 
@@ -11,3 +9,4 @@ include CHANGES.txt
 include AUTHORS.txt
 
 prune test
+global-exclude *.pyc
