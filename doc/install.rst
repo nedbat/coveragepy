@@ -13,13 +13,17 @@ Installation
 :history: 20120429T162500, updated for 3.5.2b1.
 :history: 20120503T234000, updated for 3.5.2.
 :history: 20120929T093600, updated for 3.5.3.
+:history: 20121117T095000, Now setuptools is a pre-req.
 
 
 .. highlight:: console
 .. _coverage_pypi: http://pypi.python.org/pypi/coverage
+.. _setuptools: http://pypi.python.org/pypi/setuptools
+.. _Distribute: http://packages.python.org/distribute/
 
 
-Installing coverage.py is fairly standard:
+Installing coverage.py is done in the usual ways. You must have `setuptools`_
+or `Distribute`_ installed already, and then you:
 
 #.  Download the appropriate kit from the
     `coverage page on the Python Package Index`__.
@@ -28,11 +32,11 @@ Installing coverage.py is fairly standard:
 
 or, use::
 
-    $ easy_install coverage
+    $ pip install coverage
 
 or even::
 
-    $ pip install coverage
+    $ easy_install coverage
 
 .. __: coverage_pypi_
 
@@ -55,7 +59,6 @@ installed as a pre-requisite, but otherwise are self-contained.  They have the
 C extension pre-compiled so there's no need to worry about compilers.
 
 .. __: coverage_pypi_
-.. _setuptools: http://pypi.python.org/pypi/setuptools
 
 
 Checking the installation

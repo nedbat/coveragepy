@@ -37,16 +37,6 @@ Topic :: Software Development :: Testing
 # Pull in the tools we need.
 import os, sys
 
-# Distribute is a new fork of setuptools.  It's supported on Py3.x, so we use
-# it there, but stick with classic setuptools on Py2.x until Distribute becomes
-# more accepted.
-if sys.version_info >= (3, 0):
-    from distribute_setup import use_setuptools
-else:
-    from ez_setup import use_setuptools
-
-use_setuptools()
-
 from setuptools import setup
 from distutils.core import Extension    # pylint: disable=E0611,F0401
 

@@ -24,6 +24,7 @@ coverage.py
 :history: 20120429T162100, updated for 3.5.2b1
 :history: 20120503T233800, updated for 3.5.2
 :history: 20120929T093500, updated for 3.5.3
+:history: 20121117T094900, Change from easy_install to pip.
 
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
@@ -55,7 +56,7 @@ Quick start
 Getting started is easy:
 
 #.  Install coverage.py from the `coverage page on the Python Package Index`_,
-    or by using "easy_install coverage".  For a few more details, see
+    or by using "pip install coverage".  For a few more details, see
     :ref:`install`.
 
 #.  Use ``coverage run`` to run your program and gather data:

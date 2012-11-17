@@ -33,6 +33,10 @@ Version 3.5.4b1
   A "coverage-X.Y" command will also be created corresponding to your specific
   version of Python.  Closes `issue 111`.
 
+- The coverage.py installer no longer tries to bootstrap setuptools or
+  Distribute.  You must have one of them installed first, as `issue 202`
+  recommended.
+
 - On Windows, files are now reported in their correct case, fixing `issue 89`_
   and `issue 203`_.
 
@@ -66,6 +70,7 @@ Version 3.5.4b1
 .. _issue 171: https://bitbucket.org/ned/coveragepy/issue/171/how-to-contribute-and-run-tests
 .. _issue 193: https://bitbucket.org/ned/coveragepy/issue/193/unicodedecodeerror-on-htmlpy
 .. _issue 201: https://bitbucket.org/ned/coveragepy/issue/201/coverage-using-django-14-with-pydb-on
+.. _issue 202: https://bitbucket.org/ned/coveragepy/issue/202/get-rid-of-ez_setuppy-and
 .. _issue 203: https://bitbucket.org/ned/coveragepy/issue/203/duplicate-filenames-reported-when-filename
 .. _issue 205: https://bitbucket.org/ned/coveragepy/issue/205/make-pydoc-coverage-more-friendly
 .. _issue 206: https://bitbucket.org/ned/coveragepy/issue/206/pydoc-coveragecoverage-fails-with-an-error
