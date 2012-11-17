@@ -74,6 +74,12 @@ else:
     devstat = "5 - Production/Stable"
 classifier_list.append("Development Status :: " + devstat)
 
+# Install a script as "coverage", and as "coverage[23]"
+scripts = [
+    'coverage = coverage:main',
+    'coverage%d = coverage:main' % sys.version_info[0],
+    ]
+
 # Create the keyword arguments for setup()
 
 setup_args = dict(
@@ -90,11 +96,7 @@ setup_args = dict(
             ]
         },
 
-    entry_points = {
-        'console_scripts': [
-            'coverage = coverage:main',
-            ],
-        },
+    entry_points = {'console_scripts': scripts},
 
     # We need to get HTML assets from our htmlfiles dir.
     zip_safe = False,

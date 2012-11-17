@@ -394,6 +394,15 @@ class ProcessTest(CoverageTest):
                 # about 5.
                 self.assertGreater(data.summary()['os.py'], 50)
 
+    def test_version_aliases(self):
+        cmd = "coverage%d" % sys.version_info[0]
+        out = self.run_command(cmd)
+        self.assertIn("Code coverage for Python", out)
+        badcmd = "coverage%d" % (5 - sys.version_info[0])
+        out = self.run_command(badcmd)
+        self.assertNotIn("Code coverage for Python", out)
+
+
 class FailUnderTest(CoverageTest):
     """Tests of the --fail-under switch."""
 

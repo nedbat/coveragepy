@@ -27,6 +27,10 @@ Version 3.5.4b1
 - Embarrassingly, the `[xml] output=' setting in the .coveragerc file simply
   didn't work.  Now it does.
 
+- When installing, now in addition to creating a "coverage" command, a
+  "coverage2" or "coverage3" command will be created, depending on whether you
+  are installing in Python 2.x or 3.x.  Thanks, Julian Berman.
+
 - On Windows, files are now reported in their correct case, fixing `issue 89`_
   and `issue 203`_.
 

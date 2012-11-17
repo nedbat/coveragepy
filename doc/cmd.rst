@@ -21,8 +21,11 @@ Coverage command line usage
 
 
 When you install coverage.py, a command-line script simply called ``coverage``
-is placed in your Python scripts directory.  Coverage has a number of commands
-which determine the action performed:
+is placed in your Python scripts directory.  To help with multi-version
+installs, it will also create either a ``coverage2`` or ``coverage3`` alias,
+depending on the version of Python you're using.
+
+Coverage has a number of commands which determine the action performed:
 
 * **run** -- Run a Python program and collect execution data.
 
