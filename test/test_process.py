@@ -394,13 +394,27 @@ class ProcessTest(CoverageTest):
                 # about 5.
                 self.assertGreater(data.summary()['os.py'], 50)
 
-    def test_version_aliases(self):
+
+class AliasedCommandTests(CoverageTest):
+    """Tests of the version-specific command aliases."""
+
+    def test__major_version_works(self):
+        # "coverage2" works on py2
         cmd = "coverage%d" % sys.version_info[0]
         out = self.run_command(cmd)
         self.assertIn("Code coverage for Python", out)
+
+    def test_wrong_alias_doesnt_work(self):
+        # "coverage3" doesn't work on py2
         badcmd = "coverage%d" % (5 - sys.version_info[0])
         out = self.run_command(badcmd)
         self.assertNotIn("Code coverage for Python", out)
+
+    def test_specific_alias_works(self):
+        # "coverage-2.7" works on py2.7
+        cmd = "coverage-%d.%d" % sys.version_info[:2]
+        out = self.run_command(cmd)
+        self.assertIn("Code coverage for Python", out)
 
 
 class FailUnderTest(CoverageTest):

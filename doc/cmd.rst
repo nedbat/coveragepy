@@ -23,7 +23,9 @@ Coverage command line usage
 When you install coverage.py, a command-line script simply called ``coverage``
 is placed in your Python scripts directory.  To help with multi-version
 installs, it will also create either a ``coverage2`` or ``coverage3`` alias,
-depending on the version of Python you're using.
+and a ``coverage-X.Y`` alias, depending on the version of Python you're using.
+For example, when installing on Python 2.7, you will be able to use
+``coverage``, ``coverage2``, or ``coverage-2.7`` on the command line.
 
 Coverage has a number of commands which determine the action performed:
 
