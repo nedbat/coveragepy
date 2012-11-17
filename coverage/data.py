@@ -2,7 +2,7 @@
 
 import os
 
-from coverage.backward import pickle, sorted        # pylint: disable=W0622
+from coverage.backward import iitems, pickle, sorted    # pylint: disable=W0622
 from coverage.files import PathAliases
 from coverage.misc import file_be_gone
 
@@ -98,13 +98,13 @@ class CoverageData(object):
     def line_data(self):
         """Return the map from filenames to lists of line numbers executed."""
         return dict(
-            [(f, sorted(lmap.keys())) for f, lmap in self.lines.items()]
+            [(f, sorted(lmap.keys())) for f, lmap in iitems(self.lines)]
             )
 
     def arc_data(self):
         """Return the map from filenames to lists of line number pairs."""
         return dict(
-            [(f, sorted(amap.keys())) for f, amap in self.arcs.items()]
+            [(f, sorted(amap.keys())) for f, amap in iitems(self.arcs)]
             )
 
     def write_file(self, filename):
@@ -156,12 +156,12 @@ class CoverageData(object):
                 # Unpack the 'lines' item.
                 lines = dict([
                     (f, dict.fromkeys(linenos, None))
-                        for f, linenos in data.get('lines', {}).items()
+                        for f, linenos in iitems(data.get('lines', {}))
                     ])
                 # Unpack the 'arcs' item.
                 arcs = dict([
                     (f, dict.fromkeys(arcpairs, None))
-                        for f, arcpairs in data.get('arcs', {}).items()
+                        for f, arcpairs in iitems(data.get('arcs', {}))
                     ])
         except Exception:
             pass
@@ -184,10 +184,10 @@ class CoverageData(object):
             if f.startswith(localdot):
                 full_path = os.path.join(data_dir, f)
                 new_lines, new_arcs = self._read_file(full_path)
-                for filename, file_data in new_lines.items():
+                for filename, file_data in iitems(new_lines):
                     filename = aliases.map(filename)
                     self.lines.setdefault(filename, {}).update(file_data)
-                for filename, file_data in new_arcs.items():
+                for filename, file_data in iitems(new_arcs):
                     filename = aliases.map(filename)
                     self.arcs.setdefault(filename, {}).update(file_data)
                 if f != local:
@@ -199,7 +199,7 @@ class CoverageData(object):
         `line_data` is { filename: { lineno: None, ... }, ...}
 
         """
-        for filename, linenos in line_data.items():
+        for filename, linenos in iitems(line_data):
             self.lines.setdefault(filename, {}).update(linenos)
 
     def add_arc_data(self, arc_data):
@@ -208,7 +208,7 @@ class CoverageData(object):
         `arc_data` is { filename: { (l1,l2): None, ... }, ...}
 
         """
-        for filename, arcs in arc_data.items():
+        for filename, arcs in iitems(arc_data):
             self.arcs.setdefault(filename, {}).update(arcs)
 
     def touch_file(self, filename):
@@ -250,7 +250,7 @@ class CoverageData(object):
             filename_fn = lambda f: f
         else:
             filename_fn = os.path.basename
-        for filename, lines in self.lines.items():
+        for filename, lines in iitems(self.lines):
             summ[filename_fn(filename)] = len(lines)
         return summ
 

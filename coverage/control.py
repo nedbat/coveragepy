@@ -3,7 +3,7 @@
 import atexit, os, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
-from coverage.backward import string_class
+from coverage.backward import string_class, iitems
 from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
@@ -651,7 +651,7 @@ class coverage(object):
             ('cwd', os.getcwd()),
             ('path', sys.path),
             ('environment', [
-                ("%s = %s" % (k, v)) for k, v in os.environ.items()
+                ("%s = %s" % (k, v)) for k, v in iitems(os.environ)
                     if re.search(r"^COV|^PY", k)
                 ]),
             ]

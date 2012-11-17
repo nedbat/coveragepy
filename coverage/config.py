@@ -1,7 +1,7 @@
 """Config file for coverage.py"""
 
 import os, sys
-from coverage.backward import string_class
+from coverage.backward import string_class, iitems
 
 # In py3, # ConfigParser was renamed to the more-standard configparser
 try:
@@ -121,7 +121,7 @@ class CoverageConfig(object):
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
-        for k, v in kwargs.items():
+        for k, v in iitems(kwargs):
             if v is not None:
                 if k in self.MUST_BE_LIST and isinstance(v, string_class):
                     v = [v]

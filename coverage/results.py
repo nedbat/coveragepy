@@ -2,7 +2,7 @@
 
 import os
 
-from coverage.backward import set, sorted           # pylint: disable=W0622
+from coverage.backward import iitems, set, sorted       # pylint: disable=W0622
 from coverage.misc import format_lines, join_regex, NoSource
 from coverage.parser import CodeParser
 
@@ -42,7 +42,7 @@ class Analysis(object):
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
             n_missing_branches = sum(
-                [len(v) for k,v in mba.items() if k not in self.missing]
+                [len(v) for k,v in iitems(mba) if k not in self.missing]
                 )
         else:
             n_branches = n_missing_branches = 0
@@ -109,7 +109,7 @@ class Analysis(object):
     def branch_lines(self):
         """Returns a list of line numbers that have more than one exit."""
         exit_counts = self.parser.exit_counts()
-        return [l1 for l1,count in exit_counts.items() if count > 1]
+        return [l1 for l1,count in iitems(exit_counts) if count > 1]
 
     def total_branches(self):
         """How many total branches are there?"""
