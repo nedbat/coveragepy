@@ -16,6 +16,7 @@ Coverage command line usage
 :history: 20120504T091800, Added info about execution warnings, and 3.5.2 stuff.
 :history: 20120807T211600, Clarified the combine rules.
 :history: 20121003T074600, Fixed an option reference, https://bitbucket.org/ned/coveragepy/issue/200/documentation-mentions-output-xml-instead
+:history: 20121117T091000, Added command aliases.
 
 .. highlight:: console
 
