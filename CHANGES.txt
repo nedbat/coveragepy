@@ -37,6 +37,8 @@ Version 3.6b1
   Distribute.  You must have one of them installed first, as `issue 202`
   recommended.
 
+- The coverage.py kit now includes docs (closing `issue 137`) and tests.
+
 - On Windows, files are now reported in their correct case, fixing `issue 89`_
   and `issue 203`_.
 
@@ -63,6 +65,7 @@ Version 3.6b1
 
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 111: https://bitbucket.org/ned/coveragepy/issue/111/when-installing-coverage-with-pip-not
+.. _issue 137: https://bitbucket.org/ned/coveragepy/issue/137/provide-docs-with-source-distribution
 .. _issue 139: https://bitbucket.org/ned/coveragepy/issue/139/easy-check-for-a-certain-coverage-in-tests
 .. _issue 143: https://bitbucket.org/ned/coveragepy/issue/143/omit-doesnt-seem-to-work-in-coverage
 .. _issue 153: https://bitbucket.org/ned/coveragepy/issue/153/non-existent-filename-triggers

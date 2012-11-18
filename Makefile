@@ -22,10 +22,10 @@ clean:
 	-rm -f $(TEST_ZIP)
 	-rm -rf test/eggsrc/build test/eggsrc/dist test/eggsrc/*.egg-info
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
-	-rm -rf doc/_build/*
+	-rm -rf doc/_build
 
 sterile: clean
-	-rm -rf .tox .tox_kits
+	-rm -rf .tox*
 
 LINTABLE = coverage setup.py test
 

@@ -7,6 +7,10 @@ include setup.py
 include README.txt
 include CHANGES.txt
 include AUTHORS.txt
+include requirements.txt
+include igor.py
+include tox.ini
 
-prune test
+recursive-include test *
+recursive-include doc *.rst
 global-exclude *.pyc
