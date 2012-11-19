@@ -8,21 +8,8 @@ from coverage.misc import NotPython
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
 
-class HtmlTest(CoverageTest):
-    """HTML!"""
-
-    def setUp(self):
-        super(HtmlTest, self).setUp()
-
-        # At least one of our tests monkey-patches the version of coverage,
-        # so grab it here to restore it later.
-        self.real_coverage_version = coverage.__version__
-
-        self.maxDiff = None
-
-    def tearDown(self):
-        coverage.__version__ = self.real_coverage_version
-        super(HtmlTest, self).tearDown()
+class HtmlTestHelpers(object):
+    """Methods that help with HTML tests."""
 
     def create_initial_files(self):
         """Create the source files we need to run these tests."""
@@ -56,6 +43,23 @@ class HtmlTest(CoverageTest):
         os.remove("htmlcov/main_file.html")
         os.remove("htmlcov/helper1.html")
         os.remove("htmlcov/helper2.html")
+
+
+class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
+    """Tests of the HTML delta speed-ups."""
+
+    def setUp(self):
+        super(HtmlDeltaTest, self).setUp()
+
+        # At least one of our tests monkey-patches the version of coverage,
+        # so grab it here to restore it later.
+        self.real_coverage_version = coverage.__version__
+
+        self.maxDiff = None
+
+    def tearDown(self):
+        coverage.__version__ = self.real_coverage_version
+        super(HtmlDeltaTest, self).tearDown()
 
     def test_html_created(self):
         # Test basic HTML generation: files should be created.
@@ -157,6 +161,10 @@ class HtmlTest(CoverageTest):
         index2 = open("htmlcov/index.html").read()
         fixed_index2 = index2.replace("XYZZY", self.real_coverage_version)
         self.assertMultiLineEqual(index1, fixed_index2)
+
+
+class HtmlTitleTests(HtmlTestHelpers, CoverageTest):
+    """Tests of the HTML title support."""
 
     def test_default_title(self):
         self.create_initial_files()
