@@ -254,13 +254,9 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         self.assertEqual(output.strip(), "No data to report.")
 
     def test_execed_liar_ignored(self):
-        """
-        Jinja2 sets __file__ to be a non-Python file, and then execs code.
-
-        If that file contains non-Python code, a TokenError shouldn't
-        have been raised when writing the HTML report.
-
-        """
+        # Jinja2 sets __file__ to be a non-Python file, and then execs code.
+        # If that file contains non-Python code, a TokenError shouldn't
+        # have been raised when writing the HTML report.
         if sys.version_info < (3, 0):
             source = "exec compile('','','exec') in {'__file__': 'liar.html'}"
         else:
