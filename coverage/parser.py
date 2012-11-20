@@ -529,7 +529,7 @@ class ByteParser(object):
                             chunks.append(chunk)
 
             # Give all the chunks a length.
-            chunks[-1].length = bc.next_offset - chunks[-1].byte
+            chunks[-1].length = bc.next_offset - chunks[-1].byte # pylint: disable=W0631,C0301
             for i in range(len(chunks)-1):
                 chunks[i].length = chunks[i+1].byte - chunks[i].byte
 
@@ -576,7 +576,7 @@ class ByteParser(object):
                     else:
                         # No chunk for this byte!
                         raise Exception("Couldn't find chunk @ %d" % byte)
-                    byte_chunks[byte] = ch
+                    byte_chunks[byte] = ch          # pylint: disable=W0631
 
                 if ch.line:
                     lines.add(ch.line)

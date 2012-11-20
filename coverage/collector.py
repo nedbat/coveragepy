@@ -4,7 +4,7 @@ import os, sys, threading
 
 try:
     # Use the C extension code when we can, for speed.
-    from coverage.tracer import CTracer
+    from coverage.tracer import CTracer         # pylint: disable=F0401,E0611
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
     if os.getenv('COVERAGE_TEST_TRACER') == 'c':

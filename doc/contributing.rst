@@ -130,18 +130,12 @@ to possible problems::
 
     $ make lint
     pylint --rcfile=.pylintrc coverage setup.py test
-    ************* Module coverage.collector
-    F0401:  7,4: Unable to import 'coverage.tracer'
-    E0611:  7,4: No name 'tracer' in module 'coverage'
-    ************* Module coverage.parser
-    W0631:532,32:ByteParser._split_into_chunks: Using possibly undefined loop variable 'bc'
-    W0631:579,40:ByteParser._arcs: Using possibly undefined loop variable 'ch'
-    make: [lint] Error 7 (ignored)
     python -m tabnanny coverage setup.py test
     python igor.py check_eol
 
-As you can see, a few warnings persist, don't worry about them.  But clean up
-any ones you may be responsible for.
+The source is pylint-clean, even if it's because there are pragmas quieting
+some warnings.  Please try to keep it that way, but don't let pylint warnings
+keep you from sending patches.  I can clean them up.
 
 
 Contributing
