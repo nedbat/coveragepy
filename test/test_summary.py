@@ -201,7 +201,7 @@ class SummaryTest(CoverageTest):
             """)
         cov = coverage.coverage(branch=True, source=["."])
         cov.start()
-        import main
+        import main                             # pylint: disable=F0401,W0612
         cov.stop()
         report = self.get_report(cov).splitlines()
         self.assertIn("mybranch 5 5 2 2 0%", report)
