@@ -41,11 +41,12 @@ class Analysis(object):
                 )
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
-            n_missing_branches = sum(
+            n_partial_branches = sum(
                 [len(v) for k,v in iitems(mba) if k not in self.missing]
                 )
+            n_missing_branches = sum([len(v) for k,v in iitems(mba)])
         else:
-            n_branches = n_missing_branches = 0
+            n_branches = n_partial_branches = n_missing_branches = 0
             self.no_branch = set()
 
         self.numbers = Numbers(
@@ -54,6 +55,7 @@ class Analysis(object):
             n_excluded=len(self.excluded),
             n_missing=len(self.missing),
             n_branches=n_branches,
+            n_partial_branches=n_partial_branches,
             n_missing_branches=n_missing_branches,
             )
 
@@ -166,13 +168,14 @@ class Numbers(object):
     _near100 = 99.0
 
     def __init__(self, n_files=0, n_statements=0, n_excluded=0, n_missing=0,
-                    n_branches=0, n_missing_branches=0
+                    n_branches=0, n_partial_branches=0, n_missing_branches=0
                     ):
         self.n_files = n_files
         self.n_statements = n_statements
         self.n_excluded = n_excluded
         self.n_missing = n_missing
         self.n_branches = n_branches
+        self.n_partial_branches = n_partial_branches
         self.n_missing_branches = n_missing_branches
 
     def set_precision(cls, precision):
@@ -236,8 +239,12 @@ class Numbers(object):
         nums.n_excluded = self.n_excluded + other.n_excluded
         nums.n_missing = self.n_missing + other.n_missing
         nums.n_branches = self.n_branches + other.n_branches
-        nums.n_missing_branches = (self.n_missing_branches +
-                                                    other.n_missing_branches)
+        nums.n_partial_branches = (
+            self.n_partial_branches + other.n_partial_branches
+            )
+        nums.n_missing_branches = (
+            self.n_missing_branches + other.n_missing_branches
+            )
         return nums
 
     def __radd__(self, other):

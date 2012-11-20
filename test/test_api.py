@@ -511,4 +511,5 @@ class AnalysisTest(CoverageTest):
         self.assertEqual(nums.n_excluded, 1)
         self.assertEqual(nums.n_missing, 3)
         self.assertEqual(nums.n_branches, 2)
-        self.assertEqual(nums.n_missing_branches, 0)
+        self.assertEqual(nums.n_partial_branches, 0)
+        self.assertEqual(nums.n_missing_branches, 2)

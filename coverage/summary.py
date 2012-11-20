@@ -29,7 +29,7 @@ class SummaryReporter(Reporter):
         header = (fmt_name % "Name") + " Stmts   Miss"
         fmt_coverage = fmt_name + "%6d %6d"
         if self.branches:
-            header += " Branch BrPart"
+            header += " Branch BrMiss"
             fmt_coverage += " %6d %6d"
         width100 = Numbers.pc_str_width()
         header += "%*s" % (width100+4, "Cover")

@@ -118,7 +118,7 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'x\n')
         report = self.report_from_command("coverage report")
 
-        # Name       Stmts   Miss Branch BrPart  Cover
+        # Name       Stmts   Miss Branch BrMiss  Cover
         # --------------------------------------------
         # mybranch       5      0      2      1    85%
 
@@ -179,18 +179,40 @@ class SummaryTest(CoverageTest):
 
         self.assertEqual(self.line_count(report), 2)
 
+    def get_report(self, cov):
+        """Get the report from `cov`, and canonicalize it."""
+        repout = StringIO()
+        cov.report(file=repout, show_missing=False)
+        report = repout.getvalue().replace('\\', '/')
+        report = re.sub(r" +", " ", report)
+        return report
+
+    def test_bug_156_file_not_run_should_be_zero(self):
+        # https://bitbucket.org/ned/coveragepy/issue/156
+        self.make_file("mybranch.py", """\
+            def branch(x):
+                if x:
+                    print("x")
+                return x
+            branch(1)
+            """)
+        self.make_file("main.py", """\
+            print("y")
+            """)
+        cov = coverage.coverage(branch=True, source=["."])
+        cov.start()
+        import main
+        cov.stop()
+        report = self.get_report(cov).splitlines()
+        self.assertIn("mybranch 5 5 2 2 0%", report)
+
     def run_TheCode_and_report_it(self):
         """A helper for the next few tests."""
         cov = coverage.coverage()
         cov.start()
         import TheCode                          # pylint: disable=F0401,W0612
         cov.stop()
-
-        repout = StringIO()
-        cov.report(file=repout, show_missing=False)
-        report = repout.getvalue().replace('\\', '/')
-        report = re.sub(r"\s+", " ", report)
-        return report
+        return self.get_report(cov)
 
     def test_bug_203_mixed_case_listed_twice_with_rc(self):
         self.make_file("TheCode.py", "a = 1\n")

@@ -27,6 +27,11 @@ Version 3.6b1
 - Embarrassingly, the `[xml] output=' setting in the .coveragerc file simply
   didn't work.  Now it does.
 
+- Coverage percentage metrics are computed slightly differently under branch
+  coverage.  This means that completely unexecuted files will now correctly
+  have 0% coverage, fixing `issue 156`_.  This also means that your total
+  coverage numbers will be lower in general if you are using branch coverage.
+
 - When installing, now in addition to creating a "coverage" command, two new
   aliases are also installed.  A "coverage2" or "coverage3" command will be
   created, depending on whether you are installing in Python 2.x or 3.x.
@@ -69,6 +74,7 @@ Version 3.6b1
 .. _issue 139: https://bitbucket.org/ned/coveragepy/issue/139/easy-check-for-a-certain-coverage-in-tests
 .. _issue 143: https://bitbucket.org/ned/coveragepy/issue/143/omit-doesnt-seem-to-work-in-coverage
 .. _issue 153: https://bitbucket.org/ned/coveragepy/issue/153/non-existent-filename-triggers
+.. _issue 156: https://bitbucket.org/ned/coveragepy/issue/156/a-completely-unexecuted-file-shows-14
 .. _issue 163: https://bitbucket.org/ned/coveragepy/issue/163/problem-with-include-and-omit-filename
 .. _issue 171: https://bitbucket.org/ned/coveragepy/issue/171/how-to-contribute-and-run-tests
 .. _issue 193: https://bitbucket.org/ned/coveragepy/issue/193/unicodedecodeerror-on-htmlpy

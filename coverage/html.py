@@ -162,7 +162,6 @@ class HtmlReporter(Reporter):
         nums = analysis.numbers
 
         missing_branch_arcs = analysis.missing_branch_arcs()
-        n_par = 0   # accumulated below.
         arcs = self.arcs
 
         # These classes determine which lines are highlighted by default.
@@ -187,7 +186,6 @@ class HtmlReporter(Reporter):
                 line_class.append(c_mis)
             elif self.arcs and lineno in missing_branch_arcs:
                 line_class.append(c_par)
-                n_par += 1
                 annlines = []
                 for b in missing_branch_arcs[lineno]:
                     if b < 0:
@@ -234,7 +232,6 @@ class HtmlReporter(Reporter):
         # Save this file's information for the index file.
         index_info = {
             'nums': nums,
-            'par': n_par,
             'html_filename': html_filename,
             'name': cu.name,
             }
