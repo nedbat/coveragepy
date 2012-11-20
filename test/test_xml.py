@@ -1,6 +1,7 @@
 """Tests for XML reports from coverage.py."""
 
-import os, sys
+import os, re, sys
+import coverage
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
@@ -32,5 +33,57 @@ class XmlReportTest(CoverageTest):
         self.assert_exists("xml.out")
 
     def test_no_data(self):
+        # https://bitbucket.org/ned/coveragepy/issue/210
         self.run_command("coverage xml")
         self.assert_doesnt_exist("coverage.xml")
+
+    def test_no_source(self):
+        # Written while investigating a bug, might as well keep it.
+        # https://bitbucket.org/ned/coveragepy/issue/208
+        self.make_file("innocuous.py", "a = 1")
+        cov = coverage.coverage()
+        cov.start()
+        self.import_local_file("innocuous")
+        cov.stop()
+        os.remove("innocuous.py")
+        cov.xml_report(ignore_errors=True)
+        self.assert_exists("coverage.xml")
+
+    def run_doit(self):
+        """Construct a simple sub-package."""
+        self.make_file("sub/__init__.py")
+        self.make_file("sub/doit.py", "print('doit!')")
+        self.make_file("main.py", "import sub.doit")
+        cov = coverage.coverage()
+        cov.start()
+        self.import_local_file("main")
+        cov.stop()
+        return cov
+
+    def test_filename_format_showing_everything(self):
+        cov = self.run_doit()
+        cov.xml_report(outfile="-")
+        xml = self.stdout()
+        doit_line = re_line(xml, "class.*doit")
+        self.assertIn('filename="sub/doit.py"', doit_line)
+
+    def test_filename_format_including_filename(self):
+        cov = self.run_doit()
+        cov.xml_report(["sub/doit.py"], outfile="-")
+        xml = self.stdout()
+        doit_line = re_line(xml, "class.*doit")
+        self.assertIn('filename="sub/doit.py"', doit_line)
+
+    def test_filename_format_including_module(self):
+        cov = self.run_doit()
+        import sub.doit
+        cov.xml_report([sub.doit], outfile="-")
+        xml = self.stdout()
+        doit_line = re_line(xml, "class.*doit")
+        self.assertIn('filename="sub/doit.py"', doit_line)
+
+
+def re_line(text, pat):
+    """Return the one line in `text` that matches regex `pat`."""
+    lines = [l for l in text.splitlines() if re.search(pat, l)]
+    return lines[0]
