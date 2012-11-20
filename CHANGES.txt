@@ -27,10 +27,11 @@ Version 3.6b1
 - Embarrassingly, the `[xml] output=' setting in the .coveragerc file simply
   didn't work.  Now it does.
 
-- Coverage percentage metrics are computed slightly differently under branch
-  coverage.  This means that completely unexecuted files will now correctly
-  have 0% coverage, fixing `issue 156`_.  This also means that your total
-  coverage numbers will be lower in general if you are using branch coverage.
+- Coverage percentage metrics are now computed slightly differently under
+  branch coverage.  This means that completely unexecuted files will now
+  correctly have 0% coverage, fixing `issue 156`_.  This also means that your
+  total coverage numbers will generally now be lower if you are measuring
+  branch coverage.
 
 - When installing, now in addition to creating a "coverage" command, two new
   aliases are also installed.  A "coverage2" or "coverage3" command will be
