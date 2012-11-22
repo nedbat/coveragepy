@@ -22,6 +22,12 @@ class Tee(object):
         for f in self._files:
             f.write(data)
 
+    if 0:
+        # Use this if you need to use a debugger, though it makes some tests
+        # fail, I'm not sure why...
+        def __getattr__(self, name):
+            return getattr(self._files[0], name)
+
 
 # Status returns for the command line.
 OK, ERR = 0, 1
