@@ -230,7 +230,7 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
             )
 
     def test_dotpy_not_python_ignored(self):
-        self.make_file("innocuous.py", "a = 1")
+        self.make_file("innocuous.py", "a = 2")
         cov = coverage.coverage()
         cov.start()
         self.import_local_file("innocuous")
@@ -246,7 +246,7 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         # Python.  Since it wasn't .py, no error is reported.
 
         # Run an "html" file
-        self.make_file("innocuous.html", "a = 1")
+        self.make_file("innocuous.html", "a = 3")
         self.run_command("coverage run innocuous.html")
         # Before reporting, change it to be an HTML file.
         self.make_file("innocuous.html", "<h1>This isn't python at all!</h1>")

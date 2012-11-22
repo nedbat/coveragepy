@@ -40,7 +40,7 @@ class XmlReportTest(CoverageTest):
     def test_no_source(self):
         # Written while investigating a bug, might as well keep it.
         # https://bitbucket.org/ned/coveragepy/issue/208
-        self.make_file("innocuous.py", "a = 1")
+        self.make_file("innocuous.py", "a = 4")
         cov = coverage.coverage()
         cov.start()
         self.import_local_file("innocuous")
@@ -76,7 +76,7 @@ class XmlReportTest(CoverageTest):
 
     def test_filename_format_including_module(self):
         cov = self.run_doit()
-        import sub.doit
+        import sub.doit                         # pylint: disable=F0401
         cov.xml_report([sub.doit], outfile="-")
         xml = self.stdout()
         doit_line = re_line(xml, "class.*doit")
