@@ -106,7 +106,8 @@ class XmlReporter(Reporter):
         xclass.appendChild(xlines)
 
         xclass.setAttribute("name", className)
-        xclass.setAttribute("filename", cu.file_locator.relative_filename(cu.filename))
+        filename = cu.file_locator.relative_filename(cu.filename)
+        xclass.setAttribute("filename", filename.replace("\\", "/"))
         xclass.setAttribute("complexity", "0")
 
         branch_stats = analysis.branch_stats()
