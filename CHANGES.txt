@@ -27,6 +27,9 @@ Version 3.6b1
 - Embarrassingly, the `[xml] output=' setting in the .coveragerc file simply
   didn't work.  Now it does.
 
+- The XML report now consistently uses filenames for the filename attribute,
+  rather than sometimes using module names.  Fixes `issue 67`_.
+
 - Coverage percentage metrics are now computed slightly differently under
   branch coverage.  This means that completely unexecuted files will now
   correctly have 0% coverage, fixing `issue 156`_.  This also means that your
@@ -72,6 +75,7 @@ Version 3.6b1
 
 - Other minor bugs fixed: `issue 153`_.
 
+.. _issue 67: https://bitbucket.org/ned/coveragepy/issue/67/xml-report-filenames-may-be-generated
 .. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 111: https://bitbucket.org/ned/coveragepy/issue/111/when-installing-coverage-with-pip-not
