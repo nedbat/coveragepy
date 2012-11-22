@@ -29,6 +29,7 @@ Version 3.6b1
 
 - The XML report now consistently uses filenames for the filename attribute,
   rather than sometimes using module names.  Fixes `issue 67`_.
+  Thanks, Marcus Cobden.
 
 - Coverage percentage metrics are now computed slightly differently under
   branch coverage.  This means that completely unexecuted files will now
