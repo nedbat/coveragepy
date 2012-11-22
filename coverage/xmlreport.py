@@ -92,8 +92,7 @@ class XmlReporter(Reporter):
 
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
-        package_name, _ = ('.' + cu.name).rsplit('.', 1)
-        package_name = package_name[1:]
+        package_name = cu.name.rpartition(".")[0]
         className = cu.name
 
         package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])
