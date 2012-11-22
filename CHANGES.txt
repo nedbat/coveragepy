@@ -52,6 +52,9 @@ Version 3.6b1
   HTML report would fail with a UnicodeDecodeError. This issue (`issue 193`_)
   is now fixed.
 
+- Fixed yet another error trying to parse non-Python files as Python, this
+  time an IndentationError, closing `issue 82`_ for the fourth time...
+
 - If `coverage xml` fails because there is no data to report, it used to
   create a zero-length XML file.  Now it doesn't, fixing `issue 210`_.
 
@@ -69,6 +72,7 @@ Version 3.6b1
 
 - Other minor bugs fixed: `issue 153`_.
 
+.. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 111: https://bitbucket.org/ned/coveragepy/issue/111/when-installing-coverage-with-pip-not
 .. _issue 137: https://bitbucket.org/ned/coveragepy/issue/137/provide-docs-with-source-distribution

@@ -253,18 +253,6 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         output = self.run_command("coverage html")
         self.assertEqual(output.strip(), "No data to report.")
 
-    def test_dothtml_not_python_indentation_error(self):
-        # We run a .html file, and when reporting, we can't parse it as
-        # Python.  Since it wasn't .py, no error is reported.
-
-        # Run an "html" file
-        self.make_file("innocuous.html", "a = 1")
-        self.run_command("coverage run innocuous.html")
-        # Before reporting, change it to be an indentation error.
-        self.make_file("innocuous.html", "  hello\n bye\n")
-        output = self.run_command("coverage html")
-        self.assertEqual(output.strip(), "No data to report.")
-
     def test_execed_liar_ignored(self):
         # Jinja2 sets __file__ to be a non-Python file, and then execs code.
         # If that file contains non-Python code, a TokenError shouldn't
@@ -284,14 +272,15 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
 
     def test_execed_liar_ignored_indentation_error(self):
         # Jinja2 sets __file__ to be a non-Python file, and then execs code.
-        # If that file contains non-Python code, a TokenError shouldn't
-        # have been raised when writing the HTML report.
+        # If that file contains untokenizable code, we shouldn't get an
+        # exception.
         if sys.version_info < (3, 0):
-            source = "exec compile('','','exec') in {'__file__': 'liar.jinja2'}"
+            source = "exec compile('','','exec') in {'__file__': 'liar.html'}"
         else:
-            source = "exec(compile('','','exec'), {'__file__': 'liar.jinja2'})"
+            source = "exec(compile('','','exec'), {'__file__': 'liar.html'})"
         self.make_file("liar.py", source)
-        self.make_file("liar.jinja2", "  hello\n bye\n")
+        # Tokenize will raise an IndentationError if it can't dedent.
+        self.make_file("liar.html", "0\n  2\n 1\n")
         cov = coverage.coverage()
         cov.start()
         self.import_local_file("liar")

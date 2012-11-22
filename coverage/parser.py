@@ -205,7 +205,7 @@ class CodeParser(object):
         """
         try:
             self._raw_parse()
-        except tokenize.TokenError:
+        except (tokenize.TokenError, IndentationError):
             _, tokerr, _ = sys.exc_info()
             msg, lineno = tokerr.args
             raise NotPython(
