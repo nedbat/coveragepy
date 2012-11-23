@@ -65,6 +65,11 @@ Version 3.6b1
 - Running coverage under a debugger is unlikely to work, but it shouldn't fail
   with "TypeError: 'NoneType' object is not iterable".  Fixes `issue 201`_.
 
+- On some Linux distributions, when installed with the OS package manager,
+  coverage.py would report its own code as part of the results.  Now it won't,
+  fixing `issue 214`_, though this will take some time to be repackaged by the
+  operating systems.
+
 - Docstrings for the legacy singleton methods are more helpful.  Thanks Marius
   Gedminas.  Closes `issue 205`_.
 
@@ -94,6 +99,7 @@ Version 3.6b1
 .. _issue 205: https://bitbucket.org/ned/coveragepy/issue/205/make-pydoc-coverage-more-friendly
 .. _issue 206: https://bitbucket.org/ned/coveragepy/issue/206/pydoc-coveragecoverage-fails-with-an-error
 .. _issue 210: https://bitbucket.org/ned/coveragepy/issue/210/if-theres-no-coverage-data-coverage-xml
+.. _issue 214: https://bitbucket.org/ned/coveragepy/issue/214/coveragepy-measures-itself-on-precise
 
 
 Version 3.5.3 --- 29 September 2012
