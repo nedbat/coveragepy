@@ -161,7 +161,7 @@ class coverage(object):
             # we've imported, and take all the different ones.
             for m in (atexit, os, random, socket):
                 if hasattr(m, "__file__"):
-                    m_dir = self._canonical_dir(m.__file__)
+                    m_dir = self._canonical_dir(m)
                     if m_dir not in self.pylib_dirs:
                         self.pylib_dirs.append(m_dir)
 
@@ -180,9 +180,9 @@ class coverage(object):
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
 
-    def _canonical_dir(self, f):
-        """Return the canonical directory of the file `f`."""
-        return os.path.split(self.file_locator.canonical_filename(f))[0]
+    def _canonical_dir(self, morf):
+        """Return the canonical directory of the module or file `morf`."""
+        return os.path.split(CodeUnit(morf, self.file_locator).filename)[0]
 
     def _source_for_file(self, filename):
         """Return the source file for `filename`."""
