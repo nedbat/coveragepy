@@ -579,9 +579,10 @@ class CoverageScript(object):
                     if info == []:
                         info = "-none-"
                     if isinstance(info, list):
-                        print("%15s:" % label)
+                        prefix = "%15s:" % label
                         for e in info:
-                            print("%15s  %s" % ("", e))
+                            print("%16s %s" % (prefix, e))
+                            prefix = ""
                     else:
                         print("%15s: %s" % (label, info))
             elif info == 'data':
