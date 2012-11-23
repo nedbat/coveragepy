@@ -54,6 +54,8 @@ class CodeUnit(object):
         # .pyc files should always refer to a .py instead.
         if f.endswith('.pyc') or f.endswith('.pyo'):
             f = f[:-1]
+        elif f.endswith('$py.class'): # jython
+            f = f[:-9] + ".py"
         self.filename = self.file_locator.canonical_filename(f)
 
         if hasattr(morf, '__name__'):
