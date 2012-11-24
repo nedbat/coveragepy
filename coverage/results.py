@@ -21,7 +21,7 @@ class Analysis(object):
             if not os.path.exists(self.filename):
                 source = self.coverage.file_locator.get_zip_data(self.filename)
                 if not source:
-                    raise NoSource("No source for code: %r" % self.filename)
+                    raise NoSource("No source for code: '%s'" % self.filename)
 
         self.parser = CodeParser(
             text=source, filename=self.filename,

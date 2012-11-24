@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests that HTML generation is awesome."""
 
-import os.path, sys
+import os.path, re, sys
 import coverage
 from coverage.misc import NotPython, NoSource
 
@@ -302,9 +302,9 @@ class HtmlTest(CoverageTest):
         self.import_local_file('thefile')
         cov.stop()
         os.remove("sub/another.py")
-    
+
         missing_file = os.path.join(self.temp_dir, "sub", "another.py")
         self.assertRaisesRegexp(NoSource, 
-            "No source for code: '%s'" % missing_file,
+            "(?i)No source for code: '%s'" % re.escape(missing_file),
             cov.html_report
             )

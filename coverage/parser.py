@@ -32,7 +32,7 @@ class CodeParser(object):
             except IOError:
                 _, err, _ = sys.exc_info()
                 raise NoSource(
-                    "No source for code: %r: %s" % (self.filename, err)
+                    "No source for code: '%s': %s" % (self.filename, err)
                     )
 
         # Scrap the BOM if it exists.
