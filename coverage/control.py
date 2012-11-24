@@ -650,6 +650,7 @@ class coverage(object):
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('implementation', implementation),
+            ('executable', sys.executable),
             ('cwd', os.getcwd()),
             ('path', sys.path),
             ('environment', [
