@@ -52,6 +52,10 @@ Version 3.6b1
 - On Windows, files are now reported in their correct case, fixing `issue 89`_
   and `issue 203`_.
 
+- If a file is missing during reporting, the path shown in the error message
+  is now correct, rather than an incorrect path in the current directory.
+  Fixes `issue 60`_.
+
 - Running an HTML report in Python 3 in the same directory as an old Python 2
   HTML report would fail with a UnicodeDecodeError. This issue (`issue 193`_)
   is now fixed.
@@ -81,6 +85,7 @@ Version 3.6b1
 
 - Other minor bugs fixed: `issue 153`_.
 
+.. _issue 60: https://bitbucket.org/ned/coveragepy/issue/60/incorrect-path-to-orphaned-pyc-files
 .. _issue 67: https://bitbucket.org/ned/coveragepy/issue/67/xml-report-filenames-may-be-generated
 .. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in

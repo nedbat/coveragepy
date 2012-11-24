@@ -3,7 +3,7 @@
 
 import os.path, sys
 import coverage
-from coverage.misc import NotPython
+from coverage.misc import NotPython, NoSource
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coveragetest import CoverageTest
@@ -287,3 +287,24 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         cov.stop()
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
+
+
+class HtmlTest(CoverageTest):
+    """Moar HTML tests."""
+
+    def test_missing_source_file_incorrect_message(self):
+        # https://bitbucket.org/ned/coveragepy/issue/60
+        self.make_file("thefile.py", "import sub.another\n")
+        self.make_file("sub/__init__.py", "")
+        self.make_file("sub/another.py", "print('another')\n")
+        cov = coverage.coverage()
+        cov.start()
+        self.import_local_file('thefile')
+        cov.stop()
+        os.remove("sub/another.py")
+    
+        missing_file = os.path.join(self.temp_dir, "sub", "another.py")
+        self.assertRaisesRegexp(NoSource, 
+            "No source for code: '%s'" % missing_file,
+            cov.html_report
+            )

@@ -34,19 +34,15 @@ class FileLocator(object):
 
         """
         if filename not in self.canonical_filename_cache:
-            f = filename
-            if os.path.isabs(f) and not os.path.exists(f):
-                if self.get_zip_data(f) is None:
-                    f = os.path.basename(f)
-            if not os.path.isabs(f):
+            if not os.path.isabs(filename):
                 for path in [os.curdir] + sys.path:
                     if path is None:
                         continue
-                    g = os.path.join(path, f)
-                    if os.path.exists(g):
-                        f = g
+                    f = os.path.join(path, filename)
+                    if os.path.exists(f):
+                        filename = f
                         break
-            cf = abs_file(f)
+            cf = abs_file(filename)
             self.canonical_filename_cache[filename] = cf
         return self.canonical_filename_cache[filename]
 
