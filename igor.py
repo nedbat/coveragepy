@@ -129,7 +129,7 @@ def do_help(args):
     items.sort()
     for name, value in items:
         if name.startswith('do_'):
-            print "%-20s%s" % (name[3:], value.__doc__)
+            print("%-20s%s" % (name[3:], value.__doc__))
 
 
 def main(args):
