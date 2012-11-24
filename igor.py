@@ -123,6 +123,15 @@ def print_banner(label):
     print('=== %s %s %s (%s) ===' % (impl, version, label, sys.executable))
 
 
+def do_help(args):
+    """List the available commands"""
+    items = globals().items()
+    items.sort()
+    for name, value in items:
+        if name.startswith('do_'):
+            print "%-20s%s" % (name[3:], value.__doc__)
+
+
 def main(args):
     handler = globals().get('do_'+args[0])
     if handler is None:
