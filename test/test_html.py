@@ -304,7 +304,7 @@ class HtmlTest(CoverageTest):
         os.remove("sub/another.py")
 
         missing_file = os.path.join(self.temp_dir, "sub", "another.py")
-        self.assertRaisesRegexp(NoSource, 
+        self.assertRaisesRegexp(NoSource,
             "(?i)No source for code: '%s'" % re.escape(missing_file),
             cov.html_report
             )
