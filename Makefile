@@ -27,7 +27,7 @@ clean:
 sterile: clean
 	-rm -rf .tox*
 
-LINTABLE = coverage setup.py test
+LINTABLE = coverage igor.py setup.py test
 
 lint:
 	-pylint --rcfile=.pylintrc $(LINTABLE)

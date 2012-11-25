@@ -13,7 +13,7 @@ import sys
 import zipfile
 
 
-def do_remove_extension(args):
+def do_remove_extension(args_unused):
     """Remove the compiled C extension, no matter what its name."""
 
     so_patterns = """
@@ -50,12 +50,13 @@ def run_tests_with_coverage(args):
     """Run tests, but with coverage."""
     import coverage
 
-    os.environ['COVERAGE_COVERAGE'] = 'yes please'
     os.environ['COVERAGE_PROCESS_START'] = os.path.abspath('metacov.ini')
+    os.environ['COVERAGE_HOME'] = os.getcwd()
 
     # Create the .pth file that will let us measure coverage in sub-processes.
     import nose
-    pth_path = os.path.join(os.path.dirname(os.path.dirname(nose.__file__)), "covcov.pth")
+    pth_dir = os.path.dirname(os.path.dirname(nose.__file__))
+    pth_path = os.path.join(pth_dir, "covcov.pth")
     pth_file = open(pth_path, "w")
     try:
         pth_file.write("import coverage; coverage.process_startup()\n")
@@ -75,23 +76,22 @@ def run_tests_with_coverage(args):
     cov.start()
 
     try:
-        # Re-import coverage to get it coverage tested!  I don't understand all the
-        # mechanics here, but if I don't carry over the imported modules (in
-        # covmods), then things go haywire (os == None, eventually).
+        # Re-import coverage to get it coverage tested!  I don't understand all
+        # the mechanics here, but if I don't carry over the imported modules
+        # (in covmods), then things go haywire (os == None, eventually).
         covmods = {}
         covdir = os.path.split(coverage.__file__)[0]
         # We have to make a list since we'll be deleting in the loop.
         modules = list(sys.modules.items())
         for name, mod in modules:
             if name.startswith('coverage'):
-                if hasattr(mod, '__file__') and mod.__file__.startswith(covdir):
+                if getattr(mod, '__file__', "??").startswith(covdir):
                     covmods[name] = mod
                     del sys.modules[name]
         import coverage     # don't warn about re-import: pylint: disable=W0404
         sys.modules.update(covmods)
 
         # Run nosetests, with the arguments from our command line.
-        print(":: Running nosetests")
         try:
             run_tests(args)
         except SystemExit:
@@ -101,11 +101,12 @@ def run_tests_with_coverage(args):
         cov.stop()
         os.remove(pth_path)
 
-    print(":: Saving data %s" % suffix)
     cov.save()
 
-def do_combine_html(args):
+def do_combine_html(args_unused):
+    """Combine data from a meta-coverage run, and make the HTML report."""
     import coverage
+    os.environ['COVERAGE_HOME'] = os.getcwd()
     cov = coverage.coverage(config_file="metacov.ini")
     cov.combine()
     cov.save()
@@ -118,13 +119,13 @@ def do_test_with_tracer(args):
     else:
         return run_tests(args)
 
-def do_zip_mods(args):
+def do_zip_mods(args_unused):
     """Build the zipmods.zip file."""
     zf = zipfile.ZipFile("test/zipmods.zip", "w")
     zf.write("test/covmodzip1.py", "covmodzip1.py")
     zf.close()
 
-def do_check_eol(args):
+def do_check_eol(args_unused):
     """Check files for incorrect newlines and trailing whitespace."""
 
     ignore_dirs = [
@@ -134,6 +135,7 @@ def do_check_eol(args):
     checked = set([])
 
     def check_file(fname, crlf=True, trail_white=True):
+        """Check a single file for whitespace abuse."""
         fname = os.path.relpath(fname)
         if fname in checked:
             return
@@ -157,6 +159,7 @@ def do_check_eol(args):
             print("%s: final blank line" % (fname,))
 
     def check_files(root, patterns, **kwargs):
+        """Check a number of files for whitespace abuse."""
         for root, dirs, files in os.walk(root):
             for f in files:
                 fname = os.path.join(root, f)
@@ -189,13 +192,13 @@ def print_banner(label):
     version = platform.python_version()
 
     if '__pypy__' in sys.builtin_module_names:
-        pypy_version = ".".join([str(v) for v in sys.pypy_version_info])
-        version += " (pypy %s)" % pypy_version
+        pypy_version = sys.pypy_version_info         # pylint: disable=E1101
+        version += " (pypy %s)" % ".".join([str(v) for v in pypy_version])
 
     print('=== %s %s %s (%s) ===' % (impl, version, label, sys.executable))
 
 
-def do_help(args):
+def do_help(args_unused):
     """List the available commands"""
     items = globals().items()
     items.sort()
@@ -205,6 +208,7 @@ def do_help(args):
 
 
 def main(args):
+    """Main command-line execution for igor."""
     handler = globals().get('do_'+args[0])
     if handler is None:
         print("*** No handler for %r" % args[0])
