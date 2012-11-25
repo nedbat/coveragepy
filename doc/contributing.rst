@@ -138,6 +138,20 @@ some warnings.  Please try to keep it that way, but don't let pylint warnings
 keep you from sending patches.  I can clean them up.
 
 
+Coverage testing coverage.py
+----------------------------
+
+Coverage.py can measure itself, but it's complicated.  The process has been
+packaged up to make it easier::
+
+    $ COVERAGE_COVERAGE=yes tox
+    $ python igor.py combine_html
+
+Then look at htmlcov/index.html.  Note that due to the recursive nature of
+coverage.py measuring itself, there are some parts of the code that will never
+appear as covered, even though they are executed.
+
+
 Contributing
 ------------
 

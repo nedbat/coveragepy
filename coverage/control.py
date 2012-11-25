@@ -104,7 +104,6 @@ class coverage(object):
             )
 
         self.auto_data = auto_data
-        self.atexit_registered = False
 
         # _exclude_re is a dict mapping exclusion list names to compiled
         # regexes.
@@ -179,6 +178,12 @@ class coverage(object):
 
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
+
+        # Is it ok for no data to be collected?
+        self._warn_no_data = True
+        self._started = False
+
+        atexit.register(self._atexit)
 
     def _canonical_dir(self, morf):
         """Return the canonical directory of the module or file `morf`."""
@@ -338,10 +343,6 @@ class coverage(object):
             self.data_suffix = self.run_suffix
         if self.auto_data:
             self.load()
-            # Save coverage data when Python exits.
-            if not self.atexit_registered:
-                atexit.register(self.save)
-                self.atexit_registered = True
 
         # Create the matchers we need for _should_trace
         if self.source or self.source_pkgs:
@@ -358,10 +359,19 @@ class coverage(object):
 
         self._harvested = False
         self.collector.start()
+        self._started = True
 
     def stop(self):
         """Stop measuring code coverage."""
+        self._started = False
         self.collector.stop()
+
+    def _atexit(self):
+        """Clean up on process shutdown."""
+        if self._started:
+            self.stop()
+        if self.auto_data:
+            self.save()
 
     def erase(self):
         """Erase previously-collected coverage data.
@@ -468,7 +478,7 @@ class coverage(object):
 
             # Find out if we got any data.
             summary = self.data.summary()
-            if not summary:
+            if not summary and self._warn_no_data:
                 self._warn("No data was collected.")
 
             # Find files that were never executed at all.
@@ -688,3 +698,4 @@ def process_startup():
             # Measuring coverage within coverage.py takes yet more trickery.
             cov.cover_dir = "Please measure coverage.py!"
         cov.start()
+        cov._warn_no_data = False

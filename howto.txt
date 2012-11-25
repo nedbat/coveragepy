@@ -72,11 +72,10 @@
     - activate the virtualenv
     - $ tox
 
+- For complete coverage testing:
 
-- For complete coverage testing, in each Python installation, create a
-  "zzz_coverage_process_start.pth" containing::
-
-    import coverage; coverage.process_startup()
+    $ COVERAGE_COVERAGE=yes tox
+    $ python igor.py combine_html
 
 - To run the Javascript tests:
 

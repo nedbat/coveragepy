@@ -30,8 +30,8 @@ def do_remove_extension(args):
             except OSError:
                 pass
 
-def do_test_with_tracer(args):
-    """Run nosetests with a particular tracer."""
+def run_tests(args):
+    """The actual running of tests."""
     import nose.core
     tracer = args[0]
     if tracer == "py":
@@ -45,6 +45,78 @@ def do_test_with_tracer(args):
     os.environ["COVERAGE_TEST_TRACER"] = tracer
     nose_args = ["nosetests"] + args[1:]
     nose.core.main(argv=nose_args)
+
+def run_tests_with_coverage(args):
+    """Run tests, but with coverage."""
+    import coverage
+
+    os.environ['COVERAGE_COVERAGE'] = 'yes please'
+    os.environ['COVERAGE_PROCESS_START'] = os.path.abspath('metacov.ini')
+
+    # Create the .pth file that will let us measure coverage in sub-processes.
+    import nose
+    pth_path = os.path.join(os.path.dirname(os.path.dirname(nose.__file__)), "covcov.pth")
+    pth_file = open(pth_path, "w")
+    try:
+        pth_file.write("import coverage; coverage.process_startup()\n")
+    finally:
+        pth_file.close()
+
+    tracer = os.environ.get('COVERAGE_TEST_TRACER', 'c')
+    version = "%s%s" % sys.version_info[:2]
+    suffix = "%s_%s" % (version, tracer)
+
+    cov = coverage.coverage(config_file="metacov.ini", data_suffix=suffix)
+    # Cheap trick: the coverage code itself is excluded from measurement, but
+    # if we clobber the cover_prefix in the coverage object, we can defeat the
+    # self-detection.
+    cov.cover_prefix = "Please measure coverage.py!"
+    cov.erase()
+    cov.start()
+
+    try:
+        # Re-import coverage to get it coverage tested!  I don't understand all the
+        # mechanics here, but if I don't carry over the imported modules (in
+        # covmods), then things go haywire (os == None, eventually).
+        covmods = {}
+        covdir = os.path.split(coverage.__file__)[0]
+        # We have to make a list since we'll be deleting in the loop.
+        modules = list(sys.modules.items())
+        for name, mod in modules:
+            if name.startswith('coverage'):
+                if hasattr(mod, '__file__') and mod.__file__.startswith(covdir):
+                    covmods[name] = mod
+                    del sys.modules[name]
+        import coverage     # don't warn about re-import: pylint: disable=W0404
+        sys.modules.update(covmods)
+
+        # Run nosetests, with the arguments from our command line.
+        print(":: Running nosetests")
+        try:
+            run_tests(args)
+        except SystemExit:
+            # nose3 seems to raise SystemExit, not sure why?
+            pass
+    finally:
+        cov.stop()
+        os.remove(pth_path)
+
+    print(":: Saving data %s" % suffix)
+    cov.save()
+
+def do_combine_html(args):
+    import coverage
+    cov = coverage.coverage(config_file="metacov.ini")
+    cov.combine()
+    cov.save()
+    cov.html_report()
+
+def do_test_with_tracer(args):
+    """Run nosetests with a particular tracer."""
+    if os.environ.get("COVERAGE_COVERAGE", ""):
+        return run_tests_with_coverage(args)
+    else:
+        return run_tests(args)
 
 def do_zip_mods(args):
     """Build the zipmods.zip file."""
