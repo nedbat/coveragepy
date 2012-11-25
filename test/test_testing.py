@@ -170,17 +170,22 @@ class CoverageTestTest(CoverageTest):
 
     def test_sub_python_is_this_python(self):
         # Try it with a python command.
+        os.environ['COV_FOOBAR'] = 'XYZZY'
         self.make_file("showme.py", """\
             import os, sys
             print(sys.executable)
             print(os.__file__)
+            print(os.environ['COV_FOOBAR'])
             """)
         out = self.run_command("python showme.py").splitlines()
         self.assertEqual(out[0], sys.executable)
         self.assertEqual(out[1], os.__file__)
+        self.assertEqual(out[2], 'XYZZY')
 
         # Try it with a "coverage debug sys" command.
         out = self.run_command("coverage debug sys").splitlines()
         executable = [l for l in out if "executable:" in l][0]
         executable = executable.split(":", 1)[1].strip()
         self.assertEqual(executable, sys.executable)
+        environ = [l for l in out if "COV_FOOBAR" in l][0].strip()
+        self.assertEqual(environ, "COV_FOOBAR = XYZZY")
