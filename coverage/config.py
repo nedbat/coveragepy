@@ -1,6 +1,6 @@
 """Config file for coverage.py"""
 
-import os, sys
+import os, re, sys
 from coverage.backward import string_class, iitems
 
 # In py3, # ConfigParser was renamed to the more-standard configparser
@@ -10,7 +10,7 @@ except ImportError:
     import ConfigParser as configparser
 
 
-class HandyConfigParser(configparser.ConfigParser):
+class HandyConfigParser(configparser.RawConfigParser):
     """Our specialization of ConfigParser."""
 
     def read(self, filename):
@@ -18,7 +18,28 @@ class HandyConfigParser(configparser.ConfigParser):
         kwargs = {}
         if sys.version_info >= (3, 2):
             kwargs['encoding'] = "utf-8"
-        configparser.ConfigParser.read(self, filename, **kwargs)
+        configparser.RawConfigParser.read(self, filename, **kwargs)
+
+    def get(self, *args, **kwargs):
+        v = configparser.RawConfigParser.get(self, *args, **kwargs)
+        def dollar_replace(m):
+            """Called for each $replacement."""
+            # Only one of the groups will have matched, just get its text.
+            word = [w for w in m.groups() if w is not None][0]
+            if word == "$":
+                return "$"
+            else:
+                return os.environ.get(word, '')
+
+        dollar_pattern = r"""(?x)   # Use extended regex syntax
+            \$(?:                   # A dollar sign, then
+            (?P<v1>\w+) |           #   a plain word,
+            {(?P<v2>\w+)} |         #   or a {-wrapped word,
+            (?P<char>[$])           #   or a dollar sign.
+            )
+            """
+        v = re.sub(dollar_pattern, dollar_replace, v)
+        return v
 
     def getlist(self, section, option):
         """Read a list of strings.

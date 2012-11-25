@@ -39,6 +39,11 @@ values on multiple lines.
 Boolean values can be specified as ``on``, ``off``, ``true``, ``false``, ``1``,
 or ``0`` and are case-insensitive.
 
+Environment variables can be substituted in by using dollar signs: ``$WORD``
+``${WORD}`` will be replaced with the value of ``WORD`` in the environment.
+A dollar sign can be inserted with ``$$``.  Missing environment variables
+will result in empty strings with no error.
+
 Many sections and values correspond roughly to commands and options in
 the :ref:`command-line interface <cmd>`.
 

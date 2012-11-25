@@ -98,6 +98,30 @@ class ConfigTest(CoverageTest):
             """)
         self.assertRaises(CoverageException, coverage.coverage)
 
+    def test_environment_vars_in_config(self):
+        # Config files can have $envvars in them.
+        self.make_file(".coveragerc", """\
+            [run]
+            data_file = $DATA_FILE.fooey
+            branch = $OKAY
+            [report]
+            exclude_lines =
+                the_$$one
+                another${THING}
+                x${THING}y
+                x${NOTHING}y
+                huh$${X}what
+            """)
+        self.set_environ("DATA_FILE", "hello-world")
+        self.set_environ("THING", "ZZZ")
+        self.set_environ("OKAY", "yes")
+        cov = coverage.coverage()
+        self.assertEqual(cov.config.data_file, "hello-world.fooey")
+        self.assertEqual(cov.config.branch, True)
+        self.assertEqual(cov.config.exclude_list,
+            ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
+            )
+
 
 class ConfigFileTest(CoverageTest):
     """Tests of the config file settings in particular."""
