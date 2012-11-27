@@ -7,7 +7,7 @@ Version 3.6b1
 
 - Wildcards in ``include=`` and ``omit=`` arguments were not handled properly
   in reporting functions, though they were when running.  Now they are handled
-  uniformly, closing `issue 143` and `issue 163`.  **NOTE**: it is possible
+  uniformly, closing `issue 143`_ and `issue 163`_.  **NOTE**: it is possible
   that your configurations may now be incorrect.  If you use ``include`` or
   ``omit`` during reporting, whether on the command line, through the API, or
   in a configuration file, please check carefully that you were not relying on
@@ -44,13 +44,13 @@ Version 3.6b1
   aliases are also installed.  A "coverage2" or "coverage3" command will be
   created, depending on whether you are installing in Python 2.x or 3.x.
   A "coverage-X.Y" command will also be created corresponding to your specific
-  version of Python.  Closes `issue 111`.
+  version of Python.  Closes `issue 111`_.
 
 - The coverage.py installer no longer tries to bootstrap setuptools or
-  Distribute.  You must have one of them installed first, as `issue 202`
+  Distribute.  You must have one of them installed first, as `issue 202`_
   recommended.
 
-- The coverage.py kit now includes docs (closing `issue 137`) and tests.
+- The coverage.py kit now includes docs (closing `issue 137`_) and tests.
 
 - On Windows, files are now reported in their correct case, fixing `issue 89`_
   and `issue 203`_.
@@ -69,6 +69,8 @@ Version 3.6b1
 - If `coverage xml` fails because there is no data to report, it used to
   create a zero-length XML file.  Now it doesn't, fixing `issue 210`_.
 
+- Jython files now work with the ``--source`` option, fixing `issue 100`_.
+
 - Running coverage under a debugger is unlikely to work, but it shouldn't fail
   with "TypeError: 'NoneType' object is not iterable".  Fixes `issue 201`_.
 
@@ -86,13 +88,16 @@ Version 3.6b1
 - Added a page to the docs about contributing to coverage.py, closing
   `issue 171`_.
 
-- Other minor bugs fixed: `issue 153`_.
+- When coverage.py ended unsuccessfully, it may have reported odd errors like
+  ``'NoneType' object has no attribute 'isabs'``.  It no longer does,
+  so kiss `issue 153`_ goodbye.
 
 .. _issue 60: https://bitbucket.org/ned/coveragepy/issue/60/incorrect-path-to-orphaned-pyc-files
 .. _issue 67: https://bitbucket.org/ned/coveragepy/issue/67/xml-report-filenames-may-be-generated
 .. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 97: https://bitbucket.org/ned/coveragepy/issue/97/allow-environment-variables-to-be
+.. _issue 100: https://bitbucket.org/ned/coveragepy/issue/100/source-directive-doesnt-work-for-packages
 .. _issue 111: https://bitbucket.org/ned/coveragepy/issue/111/when-installing-coverage-with-pip-not
 .. _issue 137: https://bitbucket.org/ned/coveragepy/issue/137/provide-docs-with-source-distribution
 .. _issue 139: https://bitbucket.org/ned/coveragepy/issue/139/easy-check-for-a-certain-coverage-in-tests
@@ -115,7 +120,7 @@ Version 3.5.3 --- 29 September 2012
 -----------------------------------
 
 - Line numbers in the HTML report line up better with the source lines, fixing
-  `issue 197`, thanks Marius Gedminas.
+  `issue 197`_, thanks Marius Gedminas.
 
 - When specifying a directory as the source= option, the directory itself no
   longer needs to have a ``__init__.py`` file, though its subdirectories do, to
@@ -125,7 +130,7 @@ Version 3.5.3 --- 29 September 2012
   `issue 179`_.  Thanks, Pablo Carballo.
 
 - Fixed more cases of non-Python files being reported as Python source, and
-  then not being able to parse them as Python.  Closes `issue 82` (again).
+  then not being able to parse them as Python.  Closes `issue 82`_ (again).
   Thanks, Julian Berman.
 
 - Fixed memory leaks under Python 3, thanks, Brett Cannon. Closes `issue 147`_.
@@ -437,7 +442,7 @@ Version 3.4b1 --- 21 August 2010
 
 - Jinja HTML templates compile into Python code using the HTML filename,
   which confused coverage.py.  Now these files are no longer traced, fixing
-  `issue 82`.
+  `issue 82`_.
 
 - Source files can have more than one dot in them (foo.test.py), and will be
   treated properly while reporting.  Fixes `issue 46`_.
@@ -566,7 +571,7 @@ Version 3.2b2 --- 19 November 2009
 - Fixed some problems syntax coloring sources with line continuations and
   source with tabs: `issue 30`_ and `issue 31`_.
 
-- The --omit option now works much better than before, fixing `issue 14` and
+- The --omit option now works much better than before, fixing `issue 14`_ and
   `issue 33`_.  Thanks, Danek Duvall.
 
 .. _issue 14: http://bitbucket.org/ned/coveragepy/issue/14
@@ -638,17 +643,17 @@ Version 3.0.1 --- 7 July 2009
 -----------------------------
 
 - Removed the recursion limit in the tracer function.  Previously, code that
-  ran more than 500 frames deep would crash. Fixed `issue 9`.
+  ran more than 500 frames deep would crash. Fixed `issue 9`_.
 
 - Fixed a bizarre problem involving pyexpat, whereby lines following XML parser
-  invocations could be overlooked.  Fixed `issue 10`.
+  invocations could be overlooked.  Fixed `issue 10`_.
 
 - On Python 2.3, coverage.py could mis-measure code with exceptions being
   raised.  This is now fixed.
 
 - The coverage.py code itself will now not be measured by coverage.py, and no
   coverage modules will be mentioned in the nose --with-cover plug-in.  Fixed
-  `issue 8`.
+  `issue 8`_.
 
 - When running source files, coverage.py now opens them in universal newline
   mode just like Python does.  This lets it run Windows files on Mac, for
@@ -666,7 +671,7 @@ Version 3.0 --- 13 June 2009
   excluded the old way.
 
 - Tabs are now properly converted in HTML reports.  Previously indentation was
-  lost.  Fixed `issue 6`.
+  lost.  Fixed `issue 6`_.
 
 - Nested modules now get a proper flat_rootname.  Thanks, Christian Heimes.
 

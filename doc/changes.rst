@@ -34,7 +34,7 @@ Version 3.5.3 --- 29 September 2012
 -----------------------------------
 
 - Line numbers in the HTML report line up better with the source lines, fixing
-  `issue 197`, thanks Marius Gedminas.
+  `issue 197`_, thanks Marius Gedminas.
 
 - When specifying a directory as the source= option, the directory itself no
   longer needs to have a ``__init__.py`` file, though its subdirectories do, to
@@ -44,7 +44,7 @@ Version 3.5.3 --- 29 September 2012
   `issue 179`_.  Thanks, Pablo Carballo.
 
 - Fixed more cases of non-Python files being reported as Python source, and
-  then not being able to parse them as Python.  Closes `issue 82` (again).
+  then not being able to parse them as Python.  Closes `issue 82`_ (again).
   Thanks, Julian Berman.
 
 - Fixed memory leaks under Python 3, thanks, Brett Cannon. Closes `issue 147`_.
