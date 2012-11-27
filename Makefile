@@ -37,21 +37,12 @@ lint:
 pep8:
 	pep8 --filename=*.py --ignore=E401,E301 --repeat coverage
 
-testready: testdata devinst
+tests:
+	tox -e py27
 
-tests: testready
-	nosetests
-
-testdata: $(TEST_ZIP) $(TEST_EGG)
-$(TEST_ZIP): test/covmodzip1.py
-	zip -j $@ $+
-
-$(TEST_EGG): test/eggsrc/setup.py test/eggsrc/egg1/egg1.py
-	cd test/eggsrc; python setup.py -q bdist_egg
-
-covcov: testready
-	python test/meta_coverage.py run
-	python test/meta_coverage.py report
+metacov: 
+	COVERAGE_COVERAGE=yes tox
+	python igor.py combine_html
 
 # Kitting
 
