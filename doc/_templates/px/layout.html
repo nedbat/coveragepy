@@ -2,7 +2,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 {%- endblock %}
 
-<page title='{{ title|striptags }}' {% if "beta" in release %}index='no'{% endif %}>
+<page title='{{ title|striptags }}' {% if "b" in release %}index='no'{% endif %}>
 {% block document -%}
   {%- block body %} {% endblock -%}
 {%- endblock %}

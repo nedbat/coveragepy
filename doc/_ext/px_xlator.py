@@ -46,7 +46,7 @@ class PxTranslator(BaseHtmlXlator):
                 self.body.append("<what when='%s'>%s</what>\n" % (when, self.encode(what.strip())))
             self.body.append("</history>\n")
             
-        if "beta" in self.builder.config.release:
+        if "b" in self.builder.config.release:
             self.body.append("""
                 <box>
                 These docs are for a beta release, %s. 
@@ -95,7 +95,7 @@ class PxBuilder(StandaloneHTMLBuilder):
         self.out_suffix = '.px'
         self.link_suffix = '.html'
         
-        if "beta" in self.config.release:
+        if "b" in self.config.release:
             self.px_uri = "/code/coverage/beta/"
         else:
             self.px_uri = "/code/coverage/"
