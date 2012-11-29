@@ -69,3 +69,8 @@ coverage installed properly::
 
     $ coverage --version
     Coverage.py, version 3.5.3.  http://nedbatchelder.com/code/coverage
+
+You can also invoke coverage as a module::
+
+    $ python -m coverage --version
+    Coverage.py, version 3.5.3.  http://nedbatchelder.com/code/coverage

@@ -13,7 +13,7 @@ Coverage API
 
 The API to coverage.py is very simple, contained in a single module called
 `coverage`.  Most of the interface is in a single class, also called
-`coverage`.  Methods on the coverage object correspond to operations available
+`coverage`.  Methods on the coverage object correspond roughly to operations available
 in the command line interface. For example, a simple use would be::
 
     import coverage
