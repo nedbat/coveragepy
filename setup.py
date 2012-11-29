@@ -6,7 +6,7 @@ Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been executed.
 
-Coverage.py runs on Pythons 2.3 through 3.3, and PyPy 1.8.
+Coverage.py runs on Pythons 2.3 through 3.3, and PyPy 1.9.
 
 Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
 tracker are at `bitbucket.org <http://bitbucket.org/ned/coveragepy>`_.
