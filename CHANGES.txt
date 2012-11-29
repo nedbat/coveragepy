@@ -27,7 +27,7 @@ Version 3.6b1 -- 28 November 2012
 - Configuration files now support substitution of environment variables, using
   syntax like ``${WORD}``.  Closes `issue 97`_.
 
-- Embarrassingly, the `[xml] output=' setting in the .coveragerc file simply
+- Embarrassingly, the `[xml] output=` setting in the .coveragerc file simply
   didn't work.  Now it does.
 
 - The XML report now consistently uses filenames for the filename attribute,
