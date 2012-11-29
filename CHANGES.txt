@@ -2,8 +2,8 @@
 Change history for Coverage.py
 ------------------------------
 
-Version 3.6b1
--------------
+Version 3.6b1 -- 28 November 2012
+---------------------------------
 
 - Wildcards in ``include=`` and ``omit=`` arguments were not handled properly
   in reporting functions, though they were when running.  Now they are handled
