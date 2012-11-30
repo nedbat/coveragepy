@@ -1,11 +1,11 @@
-# Test that the --timid command line argument properly swaps the tracer function
-# for a simpler one.
+# Test that the --timid command line argument properly swaps the tracer
+# function for a simpler one.
 #
-# This is complicated by the fact that alltests.cmd will run the test suite
-# twice for each version: once with a compiled C-based trace function, and once
-# without it, to also test the Python trace function.  So this test has to
-# examine an environment variable set in alltests.cmd to know whether to expect
-# to see the C trace function or not.
+# This is complicated by the fact that the tests are run twice for each
+# version: once with a compiled C-based trace function, and once without it, to
+# also test the Python trace function.  So this test has to examine an
+# environment variable set in igor.py to know whether to expect to see the C
+# trace function or not.
 
 import os
 

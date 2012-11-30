@@ -63,7 +63,7 @@ def run_tests_with_coverage(args):
     finally:
         pth_file.close()
 
-    tracer = os.environ.get('COVERAGE_TEST_TRACER', 'c')
+    tracer = args[0]
     version = "%s%s" % sys.version_info[:2]
     suffix = "%s_%s" % (version, tracer)
 
