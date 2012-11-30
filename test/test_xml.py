@@ -42,9 +42,7 @@ class XmlReportTest(CoverageTest):
         # https://bitbucket.org/ned/coveragepy/issue/208
         self.make_file("innocuous.py", "a = 4")
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("innocuous")
-        cov.stop()
+        self.start_import_stop(cov, "innocuous")
         os.remove("innocuous.py")
         cov.xml_report(ignore_errors=True)
         self.assert_exists("coverage.xml")
@@ -55,9 +53,7 @@ class XmlReportTest(CoverageTest):
         self.make_file("sub/doit.py", "print('doit!')")
         self.make_file("main.py", "import sub.doit")
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("main")
-        cov.stop()
+        self.start_import_stop(cov, "main")
         return cov
 
     def test_filename_format_showing_everything(self):

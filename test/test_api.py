@@ -33,9 +33,7 @@ class SingletonApiTest(CoverageTest):
             """)
 
         # Import the python file, executing it.
-        coverage.start()
-        self.import_local_file(modname)         # pragma: recursive coverage
-        coverage.stop()                         # pragma: recursive coverage
+        self.start_import_stop(coverage, modname)
 
     def test_simple(self):
         coverage.erase()
@@ -49,9 +47,7 @@ class SingletonApiTest(CoverageTest):
             """)
 
         # Import the python file, executing it.
-        coverage.start()
-        self.import_local_file("mycode")        # pragma: recursive coverage
-        coverage.stop()                         # pragma: recursive coverage
+        self.start_import_stop(coverage, "mycode")
 
         _, statements, missing, missingtext = coverage.analysis("mycode.py")
         self.assertEqual(statements, [1,2,3,4,5])
@@ -123,9 +119,7 @@ class ApiTest(CoverageTest):
             """)
 
         # Import the python file, executing it.
-        cov.start()
-        self.import_local_file("mycode")        # pragma: recursive coverage
-        cov.stop()                              # pragma: recursive coverage
+        self.start_import_stop(cov, "mycode")
 
         _, statements, missing, _ = cov.analysis("not_run.py")
         self.assertEqual(statements, [1])
@@ -144,9 +138,7 @@ class ApiTest(CoverageTest):
 
         # Import the python file, executing it.
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("mymain")        # pragma: recursive coverage
-        cov.stop()                              # pragma: recursive coverage
+        self.start_import_stop(cov, "mymain")
 
         filename, _, _, _ = cov.analysis("mymain.py")
         self.assertEqual(os.path.basename(filename), "mymain.py")
@@ -161,9 +153,7 @@ class ApiTest(CoverageTest):
         # Import the python file, executing it again, once it's been compiled
         # already.
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("mymain")        # pragma: recursive coverage
-        cov.stop()                              # pragma: recursive coverage
+        self.start_import_stop(cov, "mymain")
 
         filename, _, _, _ = cov.analysis("mymain.py")
         self.assertEqual(os.path.basename(filename), "mymain.py")
@@ -185,9 +175,7 @@ class ApiTest(CoverageTest):
         # Measure without the stdlib.
         cov1 = coverage.coverage()
         self.assertEqual(cov1.config.cover_pylib, False)
-        cov1.start()
-        self.import_local_file("mymain")        # pragma: recursive coverage
-        cov1.stop()                             # pragma: recursive coverage
+        self.start_import_stop(cov1, "mymain")
 
         # some statements were marked executed in mymain.py
         _, statements, missing, _ = cov1.analysis("mymain.py")
@@ -198,9 +186,7 @@ class ApiTest(CoverageTest):
 
         # Measure with the stdlib.
         cov2 = coverage.coverage(cover_pylib=True)
-        cov2.start()
-        self.import_local_file("mymain")        # pragma: recursive coverage
-        cov2.stop()                             # pragma: recursive coverage
+        self.start_import_stop(cov2, "mymain")
 
         # some statements were marked executed in mymain.py
         _, statements, missing, _ = cov2.analysis("mymain.py")
@@ -219,9 +205,7 @@ class ApiTest(CoverageTest):
 
         # Measure without the stdlib, but include colorsys.
         cov1 = coverage.coverage(cover_pylib=False, include=["*/colorsys.py"])
-        cov1.start()
-        self.import_local_file("mymain")        # pragma: recursive coverage
-        cov1.stop()                             # pragma: recursive coverage
+        self.start_import_stop(cov1, "mymain")
 
         # some statements were marked executed in colorsys.py
         _, statements, missing, _ = cov1.analysis("colorsys.py")
@@ -283,9 +267,7 @@ class ApiTest(CoverageTest):
 
         self.assertFiles(["datatest1.py"])
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("datatest1")     # pragma: recursive coverage
-        cov.stop()                              # pragma: recursive coverage
+        self.start_import_stop(cov, "datatest1")
         cov.save()
         self.assertFiles(["datatest1.py", ".coverage"])
 
@@ -297,9 +279,7 @@ class ApiTest(CoverageTest):
 
         self.assertFiles(["datatest2.py"])
         cov = coverage.coverage(data_file="cov.data")
-        cov.start()
-        self.import_local_file("datatest2")     # pragma: recursive coverage
-        cov.stop()                              # pragma: recursive coverage
+        self.start_import_stop(cov, "datatest2")
         cov.save()
         self.assertFiles(["datatest2.py", "cov.data"])
 
@@ -311,9 +291,7 @@ class ApiTest(CoverageTest):
 
         self.assertFiles(["datatest3.py"])
         cov = coverage.coverage(data_file="cov.data", data_suffix="14")
-        cov.start()
-        self.import_local_file("datatest3")     # pragma: recursive coverage
-        cov.stop()                              # pragma: recursive coverage
+        self.start_import_stop(cov, "datatest3")
         cov.save()
         self.assertFiles(["datatest3.py", "cov.data.14"])
 
@@ -329,9 +307,7 @@ class ApiTest(CoverageTest):
 
         self.assertFiles(["datatest4.py", ".coveragerc"])
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("datatest4")     # pragma: recursive coverage
-        cov.stop()                              # pragma: recursive coverage
+        self.start_import_stop(cov, "datatest4")
         cov.save()
         self.assertFiles(["datatest4.py", ".coveragerc", "mydata.dat"])
 
@@ -501,9 +477,7 @@ class AnalysisTest(CoverageTest):
             """)
 
         # Import the python file, executing it.
-        cov.start()
-        self.import_local_file("missing")       # pragma: recursive coverage
-        cov.stop()                              # pragma: recursive coverage
+        self.start_import_stop(cov, "missing")
 
         nums = cov._analyze("missing.py").numbers
         self.assertEqual(nums.n_files, 1)

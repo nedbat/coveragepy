@@ -280,9 +280,7 @@ class ReportingReturnValue(CoverageTest):
             """)
 
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("doit")
-        cov.stop()
+        self.start_import_stop(cov, "doit")
         return cov
 
     def test_report(self):

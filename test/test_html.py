@@ -32,9 +32,7 @@ class HtmlTestHelpers(CoverageTest):
         """Run coverage on main_file.py, and create an HTML report."""
         self.clean_local_file_imports()
         cov = coverage.coverage(**(covargs or {}))
-        cov.start()
-        self.import_local_file("main_file")
-        cov.stop()
+        self.start_import_stop(cov, "main_file")
         cov.html_report(**(htmlargs or {}))
 
     def remove_html_files(self):
@@ -219,9 +217,7 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
     def test_dotpy_not_python(self):
         self.make_file("innocuous.py", "a = 1")
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("innocuous")
-        cov.stop()
+        self.start_import_stop(cov, "innocuous")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         self.assertRaisesRegexp(
             NotPython,
@@ -232,9 +228,7 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
     def test_dotpy_not_python_ignored(self):
         self.make_file("innocuous.py", "a = 2")
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("innocuous")
-        cov.stop()
+        self.start_import_stop(cov, "innocuous")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         cov.html_report(ignore_errors=True)
         self.assert_exists("htmlcov/index.html")
@@ -264,9 +258,7 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         self.make_file("liar.py", source)
         self.make_file("liar.html", "{# Whoops, not python code #}")
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("liar")
-        cov.stop()
+        self.start_import_stop(cov, "liar")
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
 
@@ -282,9 +274,7 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         # Tokenize will raise an IndentationError if it can't dedent.
         self.make_file("liar.html", "0\n  2\n 1\n")
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("liar")
-        cov.stop()
+        self.start_import_stop(cov, "liar")
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
 
@@ -298,9 +288,7 @@ class HtmlTest(CoverageTest):
         self.make_file("sub/__init__.py", "")
         self.make_file("sub/another.py", "print('another')\n")
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file('thefile')
-        cov.stop()
+        self.start_import_stop(cov, 'thefile')
         os.remove("sub/another.py")
 
         missing_file = os.path.join(self.temp_dir, "sub", "another.py")

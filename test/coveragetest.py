@@ -212,6 +212,24 @@ class CoverageTest(TestCase):
             f.close()
         return mod
 
+    def start_import_stop(self, cov, modname):
+        """Start coverage, import a file, then stop coverage.
+
+        `cov` is started and stopped, with an `import_local_file` of
+        `modname` in the middle.
+
+        The imported module is returned.
+
+        """
+        cov.start()
+        try:                                    # pragma: recursive coverage
+            # Import the python file, executing it.
+            mod = self.import_local_file(modname)
+        finally:                                # pragma: recursive coverage
+            # Stop Coverage.
+            cov.stop()
+        return mod
+
     def get_module_name(self):
         """Return the module name to use for this test run."""
         # We append self.n because otherwise two calls in one test will use the
@@ -304,14 +322,8 @@ class CoverageTest(TestCase):
             cov.exclude(exc)
         for par in partials or []:
             cov.exclude(par, which='partial')
-        cov.start()
 
-        try:                                    # pragma: recursive coverage
-            # Import the python file, executing it.
-            mod = self.import_local_file(modname)
-        finally:                                # pragma: recursive coverage
-            # Stop Coverage.
-            cov.stop()
+        mod = self.start_import_stop(cov, modname)
 
         # Clean up our side effects
         del sys.modules[modname]

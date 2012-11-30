@@ -105,9 +105,7 @@ class RecursionTest(CoverageTest):
             """)
 
         cov = coverage.coverage()
-        cov.start()
-        self.import_local_file("recur")
-        cov.stop()
+        self.start_import_stop(cov, "recur")
 
         pytrace = (cov.collector.tracer_name() == "PyTracer")
         expected_missing = [3]
@@ -200,9 +198,7 @@ class PyexpatTest(CoverageTest):
         cov.erase()
 
         # Import the python file, executing it.
-        cov.start()
-        self.import_local_file("outer")
-        cov.stop()
+        self.start_import_stop(cov, "outer")
 
         _, statements, missing, _ = cov.analysis("trydom.py")
         self.assertEqual(statements, [1,3,8,9,10,11,13])
