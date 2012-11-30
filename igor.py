@@ -7,13 +7,14 @@ of in shell scripts, batch files, or Makefiles.
 
 import fnmatch
 import glob
+import inspect
 import os
 import platform
 import sys
 import zipfile
 
 
-def do_remove_extension(args_unused):
+def do_remove_extension():
     """Remove the compiled C extension, no matter what its name."""
 
     so_patterns = """
@@ -30,10 +31,9 @@ def do_remove_extension(args_unused):
             except OSError:
                 pass
 
-def run_tests(args):
+def run_tests(tracer, *nose_args):
     """The actual running of tests."""
     import nose.core
-    tracer = args[0]
     if tracer == "py":
         label = "with Python tracer"
     else:
@@ -43,10 +43,10 @@ def run_tests(args):
             return
     print_banner(label)
     os.environ["COVERAGE_TEST_TRACER"] = tracer
-    nose_args = ["nosetests"] + args[1:]
+    nose_args = ["nosetests"] + list(nose_args)
     nose.core.main(argv=nose_args)
 
-def run_tests_with_coverage(args):
+def run_tests_with_coverage(tracer, *nose_args):
     """Run tests, but with coverage."""
     import coverage
 
@@ -63,7 +63,6 @@ def run_tests_with_coverage(args):
     finally:
         pth_file.close()
 
-    tracer = args[0]
     version = "%s%s" % sys.version_info[:2]
     suffix = "%s_%s" % (version, tracer)
 
@@ -93,7 +92,7 @@ def run_tests_with_coverage(args):
 
         # Run nosetests, with the arguments from our command line.
         try:
-            run_tests(args)
+            run_tests(tracer, *nose_args)
         except SystemExit:
             # nose3 seems to raise SystemExit, not sure why?
             pass
@@ -103,7 +102,7 @@ def run_tests_with_coverage(args):
 
     cov.save()
 
-def do_combine_html(args_unused):
+def do_combine_html():
     """Combine data from a meta-coverage run, and make the HTML report."""
     import coverage
     os.environ['COVERAGE_HOME'] = os.getcwd()
@@ -112,20 +111,20 @@ def do_combine_html(args_unused):
     cov.save()
     cov.html_report()
 
-def do_test_with_tracer(args):
+def do_test_with_tracer(tracer, *noseargs):
     """Run nosetests with a particular tracer."""
     if os.environ.get("COVERAGE_COVERAGE", ""):
-        return run_tests_with_coverage(args)
+        return run_tests_with_coverage(tracer, *noseargs)
     else:
-        return run_tests(args)
+        return run_tests(tracer, *noseargs)
 
-def do_zip_mods(args_unused):
+def do_zip_mods():
     """Build the zipmods.zip file."""
     zf = zipfile.ZipFile("test/zipmods.zip", "w")
     zf.write("test/covmodzip1.py", "covmodzip1.py")
     zf.close()
 
-def do_check_eol(args_unused):
+def do_check_eol():
     """Check files for incorrect newlines and trailing whitespace."""
 
     ignore_dirs = [
@@ -198,7 +197,7 @@ def print_banner(label):
     print('=== %s %s %s (%s) ===' % (impl, version, label, sys.executable))
 
 
-def do_help(args_unused):
+def do_help():
     """List the available commands"""
     items = globals().items()
     items.sort()
@@ -208,12 +207,32 @@ def do_help(args_unused):
 
 
 def main(args):
-    """Main command-line execution for igor."""
-    handler = globals().get('do_'+args[0])
-    if handler is None:
-        print("*** No handler for %r" % args[0])
-        return 1
-    return handler(args[1:])
+    """Main command-line execution for igor.
+    
+    Verbs are taken from the command line, and extra words taken as directed
+    by the arguments needed by the handler.
+
+    """
+    while args:
+        verb = args.pop(0)
+        handler = globals().get('do_'+verb)
+        if handler is None:
+            print("*** No handler for %r" % verb)
+            return 1
+        argspec = inspect.getargspec(handler)
+        if argspec[1]:
+            # Handler has *args, give it all the rest of the command line.
+            handler_args = args
+            args = []
+        else:
+            # Handler has specific arguments, give it only what it needs.
+            num_args = len(argspec[0])
+            handler_args = args[:num_args]
+            args = args[num_args:]
+        ret = handler(*handler_args)
+        # If a handler returns a failure-like value, stop.
+        if ret:
+            return ret
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
