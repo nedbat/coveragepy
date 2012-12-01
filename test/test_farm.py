@@ -1,6 +1,7 @@
 """Run tests in the farm subdirectory.  Designed for nose."""
 
 import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
+from nose.plugins.skip import SkipTest
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from backtest import run_command, execfile          # pylint: disable=W0622
@@ -67,13 +68,15 @@ class FarmTestCase(object):
         cwd = self.cd(self.dir)
 
         # Prepare a dictionary of globals for the run.py files to use.
-        fns = "copy run runfunc compare contains doesnt_contain clean".split()
+        fns = """
+            copy run runfunc compare contains doesnt_contain clean skip
+            """.split()
         if self.clean_only:
             glo = dict([(fn, self.noop) for fn in fns])
             glo['clean'] = self.clean
         else:
             glo = dict([(fn, getattr(self, fn)) for fn in fns])
-            if self.dont_clean:
+            if self.dont_clean:                 # pragma: not covered
                 glo['clean'] = self.noop
 
         old_mods = dict(sys.modules)
@@ -116,7 +119,7 @@ class FarmTestCase(object):
     def tearDown(self):
         """Test tear down, run by nose after __call__."""
         # Make sure no matter what, the test is cleaned up.
-        if not self.dont_clean:
+        if not self.dont_clean:         # pragma: part covered
             self.clean_only = True
             self()
 
@@ -303,17 +306,21 @@ class FarmTestCase(object):
         # I've seen it take over 100 tries, so, 1000!  This is probably the
         # most unpleasant hack I've written in a long time...
         tries = 1000
-        while tries:
+        while tries:                    # pragma: part covered
             if os.path.exists(cleandir):
                 try:
                     shutil.rmtree(cleandir)
-                except OSError:
+                except OSError:         # pragma: not covered
                     if tries == 1:
                         raise
                     else:
                         tries -= 1
                         continue
             break
+
+    def skip(self, msg=None):
+        """Skip the current test."""
+        raise SkipTest(msg)
 
 
 def main():     # pragma: not covered

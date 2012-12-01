@@ -91,6 +91,14 @@ class CmdLineTest(CoverageTest):
                 )
 
 
+class CmdLineTestTest(CmdLineTest):
+    """Tests that our CmdLineTest helpers work."""
+    def test_assert_same_method_calls(self):
+        # All the other tests here use self.cmd_executes_same in successful
+        # ways, so here we just check that it fails.
+        self.assertRaises(AssertionError, self.cmd_executes_same, "-e", "-c")
+
+
 class ClassicCmdLineTest(CmdLineTest):
     """Tests of the classic coverage.py command line."""
 

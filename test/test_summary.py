@@ -201,8 +201,8 @@ class SummaryTest(CoverageTest):
             """)
         cov = coverage.coverage(branch=True, source=["."])
         cov.start()
-        import main                             # pylint: disable=F0401,W0612
-        cov.stop()
+        import main     # pragma: not covered # pylint: disable=F0401,W0612
+        cov.stop()      # pragma: not covered
         report = self.get_report(cov).splitlines()
         self.assertIn("mybranch 5 5 2 2 0%", report)
 
@@ -210,8 +210,8 @@ class SummaryTest(CoverageTest):
         """A helper for the next few tests."""
         cov = coverage.coverage()
         cov.start()
-        import TheCode                          # pylint: disable=F0401,W0612
-        cov.stop()
+        import TheCode  # pragma: not covered # pylint: disable=F0401,W0612
+        cov.stop()      # pragma: not covered
         return self.get_report(cov)
 
     def test_bug_203_mixed_case_listed_twice_with_rc(self):
@@ -252,8 +252,8 @@ class SummaryTest2(CoverageTest):
         # statements, not one statement.
         cov = coverage.coverage()
         cov.start()
-        import usepkgs                      # pylint: disable=F0401,W0612
-        cov.stop()
+        import usepkgs  # pragma: not covered # pylint: disable=F0401,W0612
+        cov.stop()      # pragma: not covered
 
         repout = StringIO()
         cov.report(file=repout, show_missing=False)

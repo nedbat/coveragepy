@@ -123,11 +123,11 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         # In this case, everything changes because the coverage settings have
         # changed.
         self.create_initial_files()
-        self.run_coverage(covargs=dict(timid=False))
+        self.run_coverage(covargs=dict(omit=[]))
         index1 = open("htmlcov/index.html").read()
         self.remove_html_files()
 
-        self.run_coverage(covargs=dict(timid=True))
+        self.run_coverage(covargs=dict(omit=['xyzzy*']))
 
         # All the files have been reported again.
         self.assert_exists("htmlcov/index.html")
