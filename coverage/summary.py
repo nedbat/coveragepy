@@ -62,7 +62,7 @@ class SummaryReporter(Reporter):
                     args += (analysis.missing_formatted(),)
                 outfile.write(fmt_coverage % args)
                 total += nums
-            except KeyboardInterrupt:                       # pragma: no cover
+            except KeyboardInterrupt:                   # pragma: not covered
                 raise
             except:
                 report_it = not self.config.ignore_errors

@@ -108,7 +108,7 @@ class CodeParser(object):
 
         tokgen = tokenize.generate_tokens(StringIO(self.text).readline)
         for toktype, ttext, (slineno, _), (elineno, _), ltext in tokgen:
-            if self.show_tokens:                # pragma: no cover
+            if self.show_tokens:                # pragma: not covered
                 print("%10s %5s %-20r %r" % (
                     tokenize.tok_name.get(toktype, toktype),
                     nice_pair((slineno, elineno)), ttext, ltext

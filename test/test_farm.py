@@ -86,7 +86,7 @@ class FarmTestCase(object):
             for m in [m for m in sys.modules if m not in old_mods]:
                 del sys.modules[m]
 
-    def run_fully(self):        # pragma: no cover
+    def run_fully(self):        # pragma: not covered
         """Run as a full test case, with setUp and tearDown."""
         self.setUp()
         try:
@@ -316,7 +316,7 @@ class FarmTestCase(object):
             break
 
 
-def main():     # pragma: no cover
+def main():     # pragma: not covered
     """Command-line access to test_farm.
 
     Commands:

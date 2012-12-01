@@ -222,10 +222,10 @@ class CoverageTest(TestCase):
 
         """
         cov.start()
-        try:                                    # pragma: recursive coverage
+        try:                                    # pragma: not covered
             # Import the python file, executing it.
             mod = self.import_local_file(modname)
-        finally:                                # pragma: recursive coverage
+        finally:                                # pragma: not covered
             # Stop Coverage.
             cov.stop()
         return mod
