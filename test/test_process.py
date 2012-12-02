@@ -369,7 +369,7 @@ class ProcessTest(CoverageTest):
         self.assertNotIn("Exception", out)
 
     if sys.version_info >= (3, 0):   # This only works on 3.x for now.
-        # It only works with the C tracer, 
+        # It only works with the C tracer,
         c_tracer = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
         # and if we aren't measuring ourselves.
         metacov = os.getenv('COVERAGE_COVERAGE', '') != ''

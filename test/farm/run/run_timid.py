@@ -9,7 +9,7 @@
 
 import os
 
-# When meta-coverage testing, this test doesn't work, because it finds 
+# When meta-coverage testing, this test doesn't work, because it finds
 # coverage.py's own trace function.
 if os.environ.get('COVERAGE_COVERAGE', ''):
     skip("Can't test timid during coverage measurement.")
