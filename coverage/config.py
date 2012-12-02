@@ -18,7 +18,7 @@ class HandyConfigParser(configparser.RawConfigParser):
         kwargs = {}
         if sys.version_info >= (3, 2):
             kwargs['encoding'] = "utf-8"
-        configparser.RawConfigParser.read(self, filename, **kwargs)
+        return configparser.RawConfigParser.read(self, filename, **kwargs)
 
     def get(self, *args, **kwargs):
         v = configparser.RawConfigParser.get(self, *args, **kwargs)
@@ -101,6 +101,7 @@ class CoverageConfig(object):
     def __init__(self):
         """Initialize the configuration attributes to their defaults."""
         # Metadata about the config.
+        self.attempted_config_files = []
         self.config_files = []
 
         # Defaults for [run]
@@ -157,10 +158,12 @@ class CoverageConfig(object):
         `filename` is a file name to read.
 
         """
-        self.config_files.append(filename)
+        self.attempted_config_files.append(filename)
 
         cp = HandyConfigParser()
-        cp.read(filename)
+        files_read = cp.read(filename)
+        if files_read is not None:  # return value changed in 2.4
+            self.config_files.extend(files_read)
 
         for option_spec in self.CONFIG_FILE_OPTIONS:
             self.set_attr_from_config_option(cp, *option_spec)
