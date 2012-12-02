@@ -10,6 +10,7 @@ import glob
 import inspect
 import os
 import platform
+import socket
 import sys
 import zipfile
 
@@ -64,7 +65,7 @@ def run_tests_with_coverage(tracer, *nose_args):
         pth_file.close()
 
     version = "%s%s" % sys.version_info[:2]
-    suffix = "%s_%s" % (version, tracer)
+    suffix = "%s_%s_%s" % (version, tracer, socket.gethostname())
 
     cov = coverage.coverage(config_file="metacov.ini", data_suffix=suffix)
     # Cheap trick: the coverage code itself is excluded from measurement, but

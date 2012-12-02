@@ -42,6 +42,8 @@ tests:
 
 metacov: 
 	COVERAGE_COVERAGE=yes tox
+
+metahtml:
 	python igor.py combine_html
 
 # Kitting
