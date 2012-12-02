@@ -3,8 +3,8 @@ def html_it():
     import coverage
     cov = coverage.coverage(config_file="run_a_xml_2.ini")
     cov.start()
-    import a
-    cov.stop()
+    import a            # pragma: nested
+    cov.stop()          # pragma: nested
     cov.xml_report(a)
 
 import os

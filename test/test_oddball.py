@@ -298,8 +298,8 @@ class ExceptionTest(CoverageTest):
             cov.start()
             # Call our list of functions: invoke the first, with the rest as
             # an argument.
-            calls[0](calls[1:])
-            cov.stop()
+            calls[0](calls[1:])     # pragma: nested
+            cov.stop()              # pragma: nested
 
             # Clean the line data and compare to expected results.
             # The filenames are absolute, so keep just the base.

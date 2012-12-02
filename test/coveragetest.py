@@ -222,10 +222,10 @@ class CoverageTest(TestCase):
 
         """
         cov.start()
-        try:                                    # pragma: not covered
+        try:                                    # pragma: nested
             # Import the python file, executing it.
             mod = self.import_local_file(modname)
-        finally:                                # pragma: not covered
+        finally:                                # pragma: nested
             # Stop Coverage.
             cov.stop()
         return mod

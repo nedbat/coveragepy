@@ -5,8 +5,8 @@ def html_it():
     import coverage
     cov = coverage.coverage()
     cov.start()
-    import unicode
-    cov.stop()
+    import unicode          # pragma: nested
+    cov.stop()              # pragma: nested
     cov.html_report(unicode, directory="../html_unicode")
 
 runfunc(html_it, rundir="src")

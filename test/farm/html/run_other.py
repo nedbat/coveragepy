@@ -3,8 +3,8 @@ def html_it():
     import coverage
     cov = coverage.coverage()
     cov.start()
-    import here
-    cov.stop()
+    import here         # pragma: nested
+    cov.stop()          # pragma: nested
     cov.html_report(directory="../html_other")
 
 runfunc(html_it, rundir="src", addtopath="../othersrc")

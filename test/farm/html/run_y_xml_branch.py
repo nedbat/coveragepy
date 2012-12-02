@@ -3,8 +3,8 @@ def xml_it():
     import coverage
     cov = coverage.coverage(branch=True)
     cov.start()
-    import y
-    cov.stop()
+    import y            # pragma: nested
+    cov.stop()          # pragma: nested
     cov.xml_report(y, outfile="../xml_branch/coverage.xml")
 
 import os
