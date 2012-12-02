@@ -108,6 +108,7 @@ def do_combine_html():
     import coverage
     os.environ['COVERAGE_HOME'] = os.getcwd()
     cov = coverage.coverage(config_file="metacov.ini")
+    cov.load()
     cov.combine()
     cov.save()
     cov.html_report()
