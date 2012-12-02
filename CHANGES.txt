@@ -2,6 +2,12 @@
 Change history for Coverage.py
 ------------------------------
 
+Version 3.6b2
+-------------
+
+- ``debug sys`` now shows the configuration file path that was read.
+
+
 Version 3.6b1 -- 28 November 2012
 ---------------------------------
 

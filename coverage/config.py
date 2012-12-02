@@ -100,6 +100,9 @@ class CoverageConfig(object):
     """
     def __init__(self):
         """Initialize the configuration attributes to their defaults."""
+        # Metadata about the config.
+        self.config_files = []
+
         # Defaults for [run]
         self.branch = False
         self.cover_pylib = False
@@ -154,6 +157,8 @@ class CoverageConfig(object):
         `filename` is a file name to read.
 
         """
+        self.config_files.append(filename)
+
         cp = HandyConfigParser()
         cp.read(filename)
 

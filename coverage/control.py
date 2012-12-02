@@ -656,6 +656,7 @@ class coverage(object):
             ('cover_dir', self.cover_dir),
             ('pylib_dirs', self.pylib_dirs),
             ('tracer', self.collector.tracer_name()),
+            ('config_files', self.config.config_files),
             ('data_path', self.data.filename),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
