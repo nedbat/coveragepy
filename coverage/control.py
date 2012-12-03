@@ -437,7 +437,7 @@ class coverage(object):
             # if the process forks.
             data_suffix = "%s.%s.%06d" % (
                 socket.gethostname(), os.getpid(),
-                random.randint(0, 99999)
+                random.randint(0, 999999)
                 )
 
         self._harvest_data()
