@@ -1,6 +1,6 @@
 """Tests for process behavior of coverage.py."""
 
-import os, sys, textwrap
+import glob, os, sys, textwrap
 import coverage
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
@@ -208,7 +208,8 @@ class ProcessTest(CoverageTest):
     def test_running_missing_file(self):
         status, out = self.run_command_status("coverage run xyzzy.py", 1)
         self.assertRegexpMatches(out, "No file to run: .*xyzzy.py")
-        self.assertNotIn("Traceback", out)
+        self.assertNotIn("raceback", out)
+        self.assertNotIn("rror", out)
         self.assertEqual(status, 1)
 
     def test_code_throws(self):
@@ -452,3 +453,56 @@ class FailUnderTest(CoverageTest):
         self.assertEqual(st, 0)
         st, _ = self.run_command_status("coverage xml --fail-under=51", 2)
         self.assertEqual(st, 2)
+
+
+class ProcessStartupTest(CoverageTest):
+    """Test that we can measure coverage in subprocesses."""
+
+    def setUp(self):
+        super(ProcessStartupTest, self).setUp()
+        # Find a place to put a .pth file.
+        for d in sys.path:
+            g = glob.glob(os.path.join(d, "*.pth"))
+            if g:
+                pth_path = os.path.join(d, "subcover.pth")
+                pth = open(pth_path, "w")
+                try:
+                    pth.write("import coverage; coverage.process_startup()\n")
+                    self.pth_path = pth_path
+                    break
+                except (IOError, OSError):
+                    pass
+                finally:
+                    pth.close()
+        else:
+            raise Exception("Couldn't find a place for the .pth file")
+
+    def tearDown(self):
+        super(ProcessStartupTest, self).tearDown()
+        # Clean up the .pth file we made.
+        os.remove(self.pth_path)
+
+    def test_subprocess_with_pth_files(self):
+        # Main will run sub.py
+        self.make_file("main.py", """\
+            import os
+            os.system("python sub.py")
+            """)
+        # sub.py will write a few lines.
+        self.make_file("sub.py", """\
+            f = open("out.txt", "w")
+            f.write("Hello, world!\\n")
+            f.close()
+            """)
+        self.make_file("coverage.ini", """\
+            [run]
+            data_file = .mycovdata
+            """)
+        self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
+        import main
+
+        self.assertEqual(open("out.txt").read(), "Hello, world!\n")
+        # Read the data from .coverage 
+        data = coverage.CoverageData()
+        data.read_file(".mycovdata")
+        self.assertEqual(data.summary()['sub.py'], 3)
