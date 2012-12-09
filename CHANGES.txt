@@ -5,6 +5,9 @@ Change history for Coverage.py
 Version 3.6b2
 -------------
 
+- Combining data files would create entries for phantom files if used with
+  ``source`` and path aliases.  It no longer does.
+
 - ``debug sys`` now shows the configuration file path that was read.
 
 

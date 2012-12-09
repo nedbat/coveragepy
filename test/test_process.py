@@ -1,6 +1,7 @@
 """Tests for process behavior of coverage.py."""
 
 import glob, os, sys, textwrap
+from nose.plugins.skip import SkipTest
 import coverage
 
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
@@ -461,7 +462,7 @@ class ProcessStartupTest(CoverageTest):
     def setUp(self):
         super(ProcessStartupTest, self).setUp()
         # Find a place to put a .pth file.
-        for d in sys.path:
+        for d in sys.path:                          # pragma: part covered
             g = glob.glob(os.path.join(d, "*.pth"))
             if g:
                 pth_path = os.path.join(d, "subcover.pth")
@@ -470,11 +471,11 @@ class ProcessStartupTest(CoverageTest):
                     pth.write("import coverage; coverage.process_startup()\n")
                     self.pth_path = pth_path
                     break
-                except (IOError, OSError):
+                except (IOError, OSError):          # pragma: not covered
                     pass
                 finally:
                     pth.close()
-        else:
+        else:                                       # pragma: not covered
             raise Exception("Couldn't find a place for the .pth file")
 
     def tearDown(self):
@@ -483,6 +484,10 @@ class ProcessStartupTest(CoverageTest):
         os.remove(self.pth_path)
 
     def test_subprocess_with_pth_files(self):
+        if os.environ.get('COVERAGE_COVERAGE', ''):
+            raise SkipTest(
+                "Can't test subprocess pth file suppport during metacoverage"
+                )
         # Main will run sub.py
         self.make_file("main.py", """\
             import os
@@ -499,10 +504,10 @@ class ProcessStartupTest(CoverageTest):
             data_file = .mycovdata
             """)
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
-        import main
+        import main             # pylint: disable=F0401,W0612
 
         self.assertEqual(open("out.txt").read(), "Hello, world!\n")
-        # Read the data from .coverage 
+        # Read the data from .coverage
         data = coverage.CoverageData()
         data.read_file(".mycovdata")
         self.assertEqual(data.summary()['sub.py'], 3)
