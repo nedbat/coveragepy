@@ -38,10 +38,10 @@ pep8:
 	pep8 --filename=*.py --ignore=E401,E301 --repeat coverage
 
 tests:
-	tox -e py27
+	tox -e py27 $(ARGS)
 
 metacov: 
-	COVERAGE_COVERAGE=yes tox
+	COVERAGE_COVERAGE=yes tox $(ARGS)
 
 metahtml:
 	python igor.py combine_html
