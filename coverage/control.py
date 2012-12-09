@@ -465,6 +465,8 @@ class coverage(object):
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
         self.data.combine_parallel_data(aliases=aliases)
+        # Combining is a kind of harvesting.
+        self._harvested = True
 
     def _harvest_data(self):
         """Get the collected data and reset the collector.
@@ -702,11 +704,9 @@ def process_startup():
     cps = os.environ.get("COVERAGE_PROCESS_START")
     if cps:
         cov = coverage(config_file=cps, auto_data=True)
-        if os.environ.get("COVERAGE_COVERAGE"):
-            # Measuring coverage within coverage.py takes yet more trickery.
-            cov.cover_dir = "Please measure coverage.py!"
         cov.start()
         cov._warn_no_data = False
 
 
-_TEST_NAME_FILE = "/tmp/covtest.txt" # r"c:\foo\covtest.txt"
+# A hack for debugging testing in subprocesses.
+_TEST_NAME_FILE = "" #"/tmp/covtest.txt"

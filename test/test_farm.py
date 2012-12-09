@@ -6,6 +6,8 @@ from nose.plugins.skip import SkipTest
 sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from backtest import run_command, execfile          # pylint: disable=W0622
 
+from coverage.control import _TEST_NAME_FILE
+
 
 def test_farm(clean_only=False):
     """A test-generating function for nose to find and run."""
@@ -65,6 +67,11 @@ class FarmTestCase(object):
         """Execute the test from the run.py file.
 
         """
+        if _TEST_NAME_FILE:
+            f = open(_TEST_NAME_FILE, "w")
+            f.write(self.description.replace("/", "_"))
+            f.close()
+
         cwd = self.cd(self.dir)
 
         # Prepare a dictionary of globals for the run.py files to use.
