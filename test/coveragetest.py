@@ -5,6 +5,7 @@ import glob, imp, os, random, shlex, shutil, sys, tempfile, textwrap
 import coverage
 from coverage.backward import sorted, StringIO      # pylint: disable=W0622
 from coverage.backward import to_bytes
+from coverage.control import _TEST_NAME_FILE
 from backtest import run_command
 from backunittest import TestCase
 
@@ -40,9 +41,10 @@ class CoverageTest(TestCase):
     def setUp(self):
         super(CoverageTest, self).setUp()
 
-        if coverage._TEST_NAME_FILE:
-            with open(coverage._TEST_NAME_FILE, "w") as f:
-                f.write("%s_%s" % (self.__class__.__name__, self._testMethodName))
+        if _TEST_NAME_FILE:
+            f = open(_TEST_NAME_FILE, "w")
+            f.write("%s_%s" % (self.__class__.__name__, self._testMethodName))
+            f.close()
 
         # Tell newer unittest implementations to print long helpful messages.
         self.longMessage = True

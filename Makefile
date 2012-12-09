@@ -41,7 +41,7 @@ tests:
 	tox -e py27
 
 metacov: 
-	COVERAGE_COVERAGE=yes tox -e py27
+	COVERAGE_COVERAGE=yes tox
 
 metahtml:
 	python igor.py combine_html

@@ -435,14 +435,16 @@ class coverage(object):
             # plenty of distinguishing information.  We do this here in
             # `save()` at the last minute so that the pid will be correct even
             # if the process forks.
-            data_suffix = "%s.%s.%06d" % (
-                socket.gethostname(), os.getpid(),
+            extra = ""
+            if _TEST_NAME_FILE:
+                f = open(_TEST_NAME_FILE)
+                test_name = f.read()
+                f.close()
+                extra = "." + test_name
+            data_suffix = "%s%s.%s.%06d" % (
+                socket.gethostname(), extra, os.getpid(),
                 random.randint(0, 999999)
                 )
-            if _TEST_NAME_FILE:
-                with open(_TEST_NAME_FILE) as f:
-                    test_name = f.read()
-                    data_suffix += "." + test_name
 
         self._harvest_data()
         self.data.write(suffix=data_suffix)
@@ -707,4 +709,4 @@ def process_startup():
         cov._warn_no_data = False
 
 
-_TEST_NAME_FILE = "" # r"c:\foo\covtest.txt"
+_TEST_NAME_FILE = "/tmp/covtest.txt" # r"c:\foo\covtest.txt"
