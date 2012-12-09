@@ -40,6 +40,10 @@ class CoverageTest(TestCase):
     def setUp(self):
         super(CoverageTest, self).setUp()
 
+        if coverage._TEST_NAME_FILE:
+            with open(coverage._TEST_NAME_FILE, "w") as f:
+                f.write("%s_%s" % (self.__class__.__name__, self._testMethodName))
+
         # Tell newer unittest implementations to print long helpful messages.
         self.longMessage = True
 

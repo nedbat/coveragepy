@@ -439,6 +439,10 @@ class coverage(object):
                 socket.gethostname(), os.getpid(),
                 random.randint(0, 999999)
                 )
+            if _TEST_NAME_FILE:
+                with open(_TEST_NAME_FILE) as f:
+                    test_name = f.read()
+                    data_suffix += "." + test_name
 
         self._harvest_data()
         self.data.write(suffix=data_suffix)
@@ -701,3 +705,6 @@ def process_startup():
             cov.cover_dir = "Please measure coverage.py!"
         cov.start()
         cov._warn_no_data = False
+
+
+_TEST_NAME_FILE = "" # r"c:\foo\covtest.txt"
