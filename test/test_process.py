@@ -402,7 +402,7 @@ class ProcessTest(CoverageTest):
 class AliasedCommandTests(CoverageTest):
     """Tests of the version-specific command aliases."""
 
-    def test__major_version_works(self):
+    def test_major_version_works(self):
         # "coverage2" works on py2
         cmd = "coverage%d" % sys.version_info[0]
         out = self.run_command(cmd)
