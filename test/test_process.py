@@ -483,7 +483,7 @@ class ProcessStartupTest(CoverageTest):
         # Clean up the .pth file we made.
         os.remove(self.pth_path)
 
-    def test_subprocess_with_pth_files(self):
+    def test_subprocess_with_pth_files(self):           # pragma: not covered
         if os.environ.get('COVERAGE_COVERAGE', ''):
             raise SkipTest(
                 "Can't test subprocess pth file suppport during metacoverage"
