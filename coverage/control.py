@@ -181,6 +181,7 @@ class coverage(object):
 
         # Is it ok for no data to be collected?
         self._warn_no_data = True
+        self._warn_unimported_source = True
         self._started = False
 
         atexit.register(self._atexit)
@@ -481,8 +482,9 @@ class coverage(object):
 
             # If there are still entries in the source_pkgs list, then we never
             # encountered those packages.
-            for pkg in self.source_pkgs:
-                self._warn("Module %s was never imported." % pkg)
+            if self._warn_unimported_source:
+                for pkg in self.source_pkgs:
+                    self._warn("Module %s was never imported." % pkg)
 
             # Find out if we got any data.
             summary = self.data.summary()
@@ -706,6 +708,7 @@ def process_startup():
         cov = coverage(config_file=cps, auto_data=True)
         cov.start()
         cov._warn_no_data = False
+        cov._warn_unimported_source = False
 
 
 # A hack for debugging testing in subprocesses.
