@@ -209,6 +209,10 @@ class coverage(object):
         should not.
 
         """
+        if not filename:
+            # Empty string is pretty useless
+            return False
+
         if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
             # filenames like "<string>", "<doctest readme.txt[0]>", or
