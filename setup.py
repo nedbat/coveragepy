@@ -40,9 +40,9 @@ Topic :: Software Development :: Testing
 import os, sys
 
 from setuptools import setup
-from distutils.core import Extension    # pylint: disable=E0611,F0401
-from distutils.command.build_ext import build_ext
-from distutils.errors import (
+from distutils.core import Extension            # pylint: disable=E0611,F0401
+from distutils.command import build_ext         # pylint: disable=E0611,F0401
+from distutils.errors import (                  # pylint: disable=E0611,F0401
     CCompilerError, DistutilsExecError, DistutilsPlatformError
     )
 
@@ -114,29 +114,30 @@ setup_args = dict(
 
 ext_errors = (CCompilerError, DistutilsExecError, DistutilsPlatformError)
 if sys.platform == 'win32' and sys.version_info > (2, 6):
-   # 2.6's distutils.msvc9compiler can raise an IOError when failing to
-   # find the compiler
-   ext_errors += (IOError,)
+    # 2.6's distutils.msvc9compiler can raise an IOError when failing to
+    # find the compiler
+    ext_errors += (IOError,)
 
 class BuildFailed(Exception):
     """Raise this to indicate the C extension wouldn't build."""
     def __init__(self):
+        Exception.__init__()
         self.cause = sys.exc_info()[1] # work around py 2/3 different syntax
 
-class ve_build_ext(build_ext):
+class ve_build_ext(build_ext.build_ext):
     """Build C extensions, but fail with a straightforward exception."""
 
     def run(self):
         """Wrap `run` with `BuildFailed`."""
         try:
-            build_ext.run(self)
+            build_ext.build_ext.run(self)
         except DistutilsPlatformError:
             raise BuildFailed()
 
     def build_extension(self, ext):
         """Wrap `build_extension` with `BuildFailed`."""
         try:
-            build_ext.build_extension(self, ext)
+            build_ext.build_ext.build_extension(self, ext)
         except ext_errors:
             raise BuildFailed()
         except ValueError:
