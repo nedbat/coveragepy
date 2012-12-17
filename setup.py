@@ -41,6 +41,10 @@ import os, sys
 
 from setuptools import setup
 from distutils.core import Extension    # pylint: disable=E0611,F0401
+from distutils.command.build_ext import build_ext
+from distutils.errors import (
+    CCompilerError, DistutilsExecError, DistutilsPlatformError
+    )
 
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid
 # importing the product code into setup.py.
@@ -105,7 +109,44 @@ setup_args = dict(
     url = __url__,
     )
 
+# A replacement for the build_ext command which raises a single exception
+# if the build fails, so we can fallback nicely.
+
+ext_errors = (CCompilerError, DistutilsExecError, DistutilsPlatformError)
+if sys.platform == 'win32' and sys.version_info > (2, 6):
+   # 2.6's distutils.msvc9compiler can raise an IOError when failing to
+   # find the compiler
+   ext_errors += (IOError,)
+
+class BuildFailed(Exception):
+    """Raise this to indicate the C extension wouldn't build."""
+    def __init__(self):
+        self.cause = sys.exc_info()[1] # work around py 2/3 different syntax
+
+class ve_build_ext(build_ext):
+    """Build C extensions, but fail with a straightforward exception."""
+
+    def run(self):
+        """Wrap `run` with `BuildFailed`."""
+        try:
+            build_ext.run(self)
+        except DistutilsPlatformError:
+            raise BuildFailed()
+
+    def build_extension(self, ext):
+        """Wrap `build_extension` with `BuildFailed`."""
+        try:
+            build_ext.build_extension(self, ext)
+        except ext_errors:
+            raise BuildFailed()
+        except ValueError:
+            # this can happen on Windows 64 bit, see Python issue 7511
+            if "'path'" in str(sys.exc_info()[1]): # works with both py 2/3
+                raise BuildFailed()
+            raise
+
 # There are a few reasons we might not be able to compile the C extension.
+# Figure out if we should attempt the C extension or not.
 
 compile_extension = True
 
@@ -122,7 +163,12 @@ if compile_extension:
         ext_modules = [
             Extension("coverage.tracer", sources=["coverage/tracer.c"])
             ],
+        cmdclass = {
+            'build_ext': ve_build_ext,
+            },
         ))
+
+# Py3.x-specific details.
 
 if sys.version_info >= (3, 0):
     setup_args.update(dict(
@@ -135,15 +181,10 @@ def main():
     # extension.  Try it with, and if it fails, try it without.
     try:
         setup(**setup_args)
-    except:     # pylint: disable=W0702
-        # When setup() can't compile, it tries to exit.  We'll catch SystemExit
-        # here :-(, and try again.
-        if 'install' not in sys.argv or 'ext_modules' not in setup_args:
-            # We weren't trying to install an extension, so forget it.
-            raise
+    except BuildFailed:
         msg = "Couldn't install with extension module, trying without it..."
         exc = sys.exc_info()[1]
-        exc_msg = "%s: %s" % (exc.__class__.__name__, exc)
+        exc_msg = "%s: %s" % (exc.__class__.__name__, exc.cause)
         print("**\n** %s\n** %s\n**" % (msg, exc_msg))
 
         del setup_args['ext_modules']
