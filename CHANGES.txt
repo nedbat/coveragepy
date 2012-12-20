@@ -5,6 +5,8 @@ Change history for Coverage.py
 Version 3.6b2
 -------------
 
+- Coverage.py runs on Python 2.3 and 2.4 again.
+
 - The C extension is optionally compiled using a different more widely-used
   technique, taking another stab at fixing ``issue 80``_ once and for all.
 
