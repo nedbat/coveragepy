@@ -462,17 +462,19 @@ class ProcessStartupTest(CoverageTest):
     def setUp(self):
         super(ProcessStartupTest, self).setUp()
         # Find a place to put a .pth file.
+        pth_contents = "import coverage; coverage.process_startup()\n"
         for d in sys.path:                          # pragma: part covered
             g = glob.glob(os.path.join(d, "*.pth"))
             if g:
                 pth_path = os.path.join(d, "subcover.pth")
                 pth = open(pth_path, "w")
                 try:
-                    pth.write("import coverage; coverage.process_startup()\n")
-                    self.pth_path = pth_path
-                    break
-                except (IOError, OSError):          # pragma: not covered
-                    pass
+                    try:
+                        pth.write(pth_contents)
+                        self.pth_path = pth_path
+                        break
+                    except (IOError, OSError):          # pragma: not covered
+                        pass
                 finally:
                     pth.close()
         else:                                       # pragma: not covered

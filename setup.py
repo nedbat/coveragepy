@@ -42,9 +42,9 @@ import os, sys
 from setuptools import setup
 from distutils.core import Extension            # pylint: disable=E0611,F0401
 from distutils.command import build_ext         # pylint: disable=E0611,F0401
-from distutils.errors import (                  # pylint: disable=E0611,F0401
-    CCompilerError, DistutilsExecError, DistutilsPlatformError
-    )
+from distutils.errors import CCompilerError         # pylint: disable=E0611,F0401,C0301
+from distutils.errors import DistutilsExecError     # pylint: disable=E0611,F0401,C0301
+from distutils.errors import DistutilsPlatformError # pylint: disable=E0611,F0401,C0301
 
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid
 # importing the product code into setup.py.

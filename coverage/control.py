@@ -642,11 +642,12 @@ class coverage(object):
                 outfile = open(self.config.xml_output, "w")
                 file_to_close = outfile
         try:
-            reporter = XmlReporter(self, self.config)
-            return reporter.report(morfs, outfile=outfile)
-        except CoverageException:
-            delete_file = True
-            raise
+            try:
+                reporter = XmlReporter(self, self.config)
+                return reporter.report(morfs, outfile=outfile)
+            except CoverageException:
+                delete_file = True
+                raise
         finally:
             if file_to_close:
                 file_to_close.close()
