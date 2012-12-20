@@ -121,7 +121,7 @@ if sys.platform == 'win32' and sys.version_info > (2, 6):
 class BuildFailed(Exception):
     """Raise this to indicate the C extension wouldn't build."""
     def __init__(self):
-        Exception.__init__()
+        Exception.__init__(self)
         self.cause = sys.exc_info()[1] # work around py 2/3 different syntax
 
 class ve_build_ext(build_ext.build_ext):
