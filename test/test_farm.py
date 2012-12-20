@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from backtest import run_command, execfile          # pylint: disable=W0622
 
 from coverage.control import _TEST_NAME_FILE
+from coverage.misc import short_stack
 
 
 def test_farm(clean_only=False):
@@ -93,7 +94,10 @@ class FarmTestCase(object):
             self.cd(cwd)
             # Remove any new modules imported during the test run. This lets us
             # import the same source files for more than one test.
-            for m in [m for m in sys.modules if m not in old_mods]:
+            to_del = [m for m in sys.modules if m not in old_mods]
+            with open(r"\foo\cov.txt", "a") as f:
+                print >>f, ("Deleting modules: %s, %r\n%s" % (self.description, to_del, short_stack()))
+            for m in to_del:
                 del sys.modules[m]
 
     def run_fully(self):        # pragma: not covered
