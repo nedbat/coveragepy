@@ -126,12 +126,26 @@ def do_zip_mods():
     zf.write("test/covmodzip1.py", "covmodzip1.py")
     zf.close()
 
+def do_install_egg():
+    """Install the egg1 egg for tests."""
+    # I am pretty certain there are easier ways to install eggs...
+    # pylint: disable=F0401,E0611,E1101
+    import distutils.core       
+    cur_dir = os.getcwd()
+    os.chdir("test/eggsrc")
+    distutils.core.run_setup("setup.py", ["--quiet", "bdist_egg"])
+    egg = glob.glob("dist/*.egg")[0]
+    distutils.core.run_setup(
+        "setup.py", ["--quiet", "easy_install", "--no-deps", "--zip-ok", egg]
+        )
+    os.chdir(cur_dir)
+
 def do_check_eol():
     """Check files for incorrect newlines and trailing whitespace."""
 
     ignore_dirs = [
         '.svn', '.hg', '.tox', '.tox_kits', 'coverage.egg-info',
-        '_build',
+        '_build', 'covtestegg1.egg-info',
         ]
     checked = set([])
 

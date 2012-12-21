@@ -89,7 +89,14 @@ class CodeUnitTest(CoverageTest):
         assert bcu > acu and bcu >= acu and bcu != acu
 
     def test_egg(self):
+        # Test that we can get files out of eggs, and read their source files.
+        # The egg1 module is installed by an action in igor.py.
         import egg1, egg1.egg1
+        # Verify that we really imported from an egg.  If we did, then the
+        # __file__ won't be an actual file, because one of the "directories"
+        # in the path is actually the .egg zip file.
+        self.assert_doesnt_exist(egg1.__file__)
+
         cu = code_unit_factory([egg1, egg1.egg1], FileLocator())
         self.assertEqual(cu[0].source_file().read(), "")
         self.assertEqual(cu[1].source_file().read().split("\n")[0],
