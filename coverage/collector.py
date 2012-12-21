@@ -2,8 +2,6 @@
 
 import os, sys, threading
 
-from coverage.misc import short_stack
-
 try:
     # Use the C extension code when we can, for speed.
     from coverage.tracer import CTracer         # pylint: disable=F0401,E0611
@@ -126,8 +124,11 @@ class PyTracer(object):
         """Stop this Tracer."""
         if hasattr(sys, "gettrace") and self.warn:
             if sys.gettrace() != self._trace:
-                msg = "Trace function changed, measurement is likely wrong: %r\n%s"
-                self.warn(msg % (sys.gettrace(), short_stack()))
+                msg = "Trace function changed, measurement is likely wrong: %r"
+                self.warn(msg % (sys.gettrace(),))
+                #--debug
+                #from coverage.misc import short_stack
+                #self.warn(msg % (sys.gettrace()))#, short_stack()))
         sys.settrace(None)
 
     def get_stats(self):
