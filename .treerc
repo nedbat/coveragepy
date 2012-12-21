@@ -13,4 +13,4 @@ ignore =
     *.so *.pyd
     *.gz *.zip
     _build
-    *.egg-info
+    *.egg *.egg-info
