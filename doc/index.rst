@@ -117,7 +117,7 @@ that you know aren't interesting.  See :ref:`source` and :ref:`excluding` for
 details.
 
 .. _nose:           http://somethingaboutorange.com/mrl/projects/nose
-.. _cover plug-in:  http://somethingaboutorange.com/mrl/projects/nose/0.11.1/plugins/cover.html
+.. _cover plug-in:  https://nose.readthedocs.org/en/latest/plugins/cover.html
 
 
 Getting help
