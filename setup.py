@@ -139,6 +139,8 @@ class ve_build_ext(build_ext):
     def build_extension(self, ext):
         """Wrap `build_extension` with `BuildFailed`."""
         try:
+            # Uncomment to test compile failures:
+            #   raise errors.CCompilerError("OOPS")
             build_ext.build_extension(self, ext)
         except ext_errors:
             raise BuildFailed()
