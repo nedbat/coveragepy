@@ -40,17 +40,15 @@ Topic :: Software Development :: Testing
 import os, sys
 
 from setuptools import setup
-from distutils.core import Extension            # pylint: disable=E0611,F0401
-from distutils.command import build_ext         # pylint: disable=E0611,F0401
-from distutils.errors import CCompilerError         # pylint: disable=E0611,F0401,C0301
-from distutils.errors import DistutilsExecError     # pylint: disable=E0611,F0401,C0301
-from distutils.errors import DistutilsPlatformError # pylint: disable=E0611,F0401,C0301
+from distutils.core import Extension        # pylint: disable=E0611,F0401
+from distutils.command.build_ext import build_ext   # pylint: disable=E0611,F0401,C0301
+from distutils import errors                # pylint: disable=E0611,F0401
 
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid
 # importing the product code into setup.py.
 
 doc = __doc__                   # __doc__ will be overwritten by version.py.
-__version__ = __url__ = ""      # keep pylint happy.
+__version__ = __url__ = ""      # Keep pylint happy.
 
 cov_ver_py = os.path.join(os.path.split(__file__)[0], "coverage/version.py")
 version_file = open(cov_ver_py)
@@ -112,7 +110,11 @@ setup_args = dict(
 # A replacement for the build_ext command which raises a single exception
 # if the build fails, so we can fallback nicely.
 
-ext_errors = (CCompilerError, DistutilsExecError, DistutilsPlatformError)
+ext_errors = (
+    errors.CCompilerError,
+    errors.DistutilsExecError,
+    errors.DistutilsPlatformError,
+)
 if sys.platform == 'win32' and sys.version_info > (2, 6):
     # 2.6's distutils.msvc9compiler can raise an IOError when failing to
     # find the compiler
@@ -124,20 +126,20 @@ class BuildFailed(Exception):
         Exception.__init__(self)
         self.cause = sys.exc_info()[1] # work around py 2/3 different syntax
 
-class ve_build_ext(build_ext.build_ext):
+class ve_build_ext(build_ext):
     """Build C extensions, but fail with a straightforward exception."""
 
     def run(self):
         """Wrap `run` with `BuildFailed`."""
         try:
-            build_ext.build_ext.run(self)
-        except DistutilsPlatformError:
+            build_ext.run(self)
+        except errors.DistutilsPlatformError:
             raise BuildFailed()
 
     def build_extension(self, ext):
         """Wrap `build_extension` with `BuildFailed`."""
         try:
-            build_ext.build_ext.build_extension(self, ext)
+            build_ext.build_extension(self, ext)
         except ext_errors:
             raise BuildFailed()
         except ValueError:
@@ -173,7 +175,7 @@ if compile_extension:
 
 if sys.version_info >= (3, 0):
     setup_args.update(dict(
-        use_2to3=False,
+        use_2to3 = False,
         ))
 
 def main():
