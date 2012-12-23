@@ -80,6 +80,46 @@ class ProcessTest(CoverageTest):
         data.read_file(".coverage")
         self.assertEqual(data.summary()['b_or_c.py'], 7)
 
+    def test_combine_parallel_data_in_two_steps(self):
+        self.make_file("b_or_c.py", """\
+            import sys
+            a = 1
+            if sys.argv[1] == 'b':
+                b = 1
+            else:
+                c = 1
+            d = 1
+            print ('done')
+            """)
+
+        out = self.run_command("coverage -x -p b_or_c.py b")
+        self.assertEqual(out, 'done\n')
+        self.assert_doesnt_exist(".coverage")
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        # Combine the (one) parallel coverage data file into .coverage .
+        self.run_command("coverage -c")
+        self.assert_exists(".coverage")
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        out = self.run_command("coverage -x -p b_or_c.py c")
+        self.assertEqual(out, 'done\n')
+        self.assert_exists(".coverage")
+        self.assertEqual(self.number_of_data_files(), 2)
+
+        # Combine the parallel coverage data files into .coverage .
+        self.run_command("coverage -c")
+        self.assert_exists(".coverage")
+
+        # After combining, there should be only the .coverage file.
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.summary()['b_or_c.py'], 7)
+
     def test_combine_with_rc(self):
         self.make_file("b_or_c.py", """\
             import sys
