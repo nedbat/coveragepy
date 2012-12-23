@@ -2,13 +2,13 @@
 Change history for Coverage.py
 ------------------------------
 
-Version 3.6b2
--------------
+Version 3.6b2 -- 23 December 2012
+---------------------------------
 
-- Coverage.py runs on Python 2.3 and 2.4 again.
+- Coverage.py runs on Python 2.3 and 2.4 again. It was broken in 3.6b1.
 
 - The C extension is optionally compiled using a different more widely-used
-  technique, taking another stab at fixing ``issue 80``_ once and for all.
+  technique, taking another stab at fixing `issue 80`_ once and for all.
 
 - Combining data files would create entries for phantom files if used with
   ``source`` and path aliases.  It no longer does.
