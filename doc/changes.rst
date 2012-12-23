@@ -23,12 +23,33 @@ Major change history for coverage.py
 :history: 20120503T233700, updated for 3.5.2
 :history: 20120929T093100, updated for 3.5.3
 :history: 20121129T060100, updated for 3.6b1.
+:history: 20121223T180600, updated for 3.6b2.
 
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+
+Version 3.6b2 -- 23 December 2012
+---------------------------------
+
+- Coverage.py runs on Python 2.3 and 2.4 again. It was broken in 3.6b1.
+
+- The C extension is optionally compiled using a different more widely-used
+  technique, taking another stab at fixing `issue 80`_ once and for all.
+
+- Combining data files would create entries for phantom files if used with
+  ``source`` and path aliases.  It no longer does.
+
+- ``debug sys`` now shows the configuration file path that was read.
+
+- If an oddly-behaved package claims that code came from an empty-string
+  filename, coverage.py no longer associates it with the directory name,
+  fixing `issue 221`_.
+
+.. _issue 80: https://bitbucket.org/ned/coveragepy/issue/80/is-there-a-duck-typing-way-to-know-we-cant
+.. _issue 221: https://bitbucket.org/ned/coveragepy/issue/221/coveragepy-incompatible-with-pyratemp
 
 
 Version 3.6b1 -- 28 November 2012
