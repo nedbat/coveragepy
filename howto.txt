@@ -74,8 +74,19 @@
 
 - For complete coverage testing:
 
-    $ COVERAGE_COVERAGE=yes tox
-    $ python igor.py combine_html
+    $ make metacov
+
+    This will run coverage under its own measurement.  You can do this in
+    different environments (Linux vs. Windows, for example), then copy the
+    data files (.coverage.meta.*) to one machine for combination and
+    reporting.  To combine and report:
+
+    $ make metahtml
+
+- For testing on Python <= 2.4:
+
+    - Set up the Python as your current python, probably with a virtualenv.
+    - $ . ./test_old.sh
 
 - To run the Javascript tests:
 
