@@ -2,6 +2,14 @@
 Change history for Coverage.py
 ------------------------------
 
+Version 3.6b3
+-------------
+
+- Beta 2 broke the nose plugin. It's fixed again, closing `issue 224`_.
+
+.. _issue 224: https://bitbucket.org/ned/coveragepy/issue/224/36b2-breaks-nosexcover
+
+
 Version 3.6b2 -- 23 December 2012
 ---------------------------------
 
