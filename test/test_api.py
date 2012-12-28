@@ -487,3 +487,42 @@ class AnalysisTest(CoverageTest):
         self.assertEqual(nums.n_branches, 2)
         self.assertEqual(nums.n_partial_branches, 0)
         self.assertEqual(nums.n_missing_branches, 2)
+
+
+class PluginTest(CoverageTest):
+    """Test that the API works properly the way the plugins call it.
+
+    We don't actually use the plugins, but these tests call the API the same
+    way they do.
+
+    """
+    def pretend_to_be_nose_with_cover(self, erase):
+        """This is what the nose --with-cover plugin does."""
+        cov = coverage.coverage()
+
+        self.make_file("no_biggie.py", """\
+            a = 1
+            b = 2
+            if b == 1:
+                c = 4
+            """)
+
+        if erase:
+            cov.combine()
+            cov.erase()
+        cov.load()
+        self.start_import_stop(cov, "no_biggie")
+        cov.combine()
+        cov.save()
+        cov.report(["no_biggie.py"])
+        self.assertEqual(self.stdout(), textwrap.dedent("""\
+            Name        Stmts   Miss  Cover   Missing
+            -----------------------------------------
+            no_biggie       4      1    75%   4
+            """))
+
+    def test_nose_plugin(self):
+        self.pretend_to_be_nose_with_cover(erase=False)
+
+    def test_nose_plugin_with_erase(self):
+        self.pretend_to_be_nose_with_cover(erase=True)
