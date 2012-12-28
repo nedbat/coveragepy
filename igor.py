@@ -130,7 +130,7 @@ def do_install_egg():
     """Install the egg1 egg for tests."""
     # I am pretty certain there are easier ways to install eggs...
     # pylint: disable=F0401,E0611,E1101
-    import distutils.core       
+    import distutils.core
     cur_dir = os.getcwd()
     os.chdir("test/eggsrc")
     distutils.core.run_setup("setup.py", ["--quiet", "bdist_egg"])
@@ -193,6 +193,7 @@ def do_check_eol():
     check_files("test", ["*,cover"], trail_white=False)
     check_files("test/js", ["*.js", "*.html"])
     check_file("setup.py")
+    check_file("igor.py")
     check_files("doc", ["*.rst"])
     check_files(".", ["*.txt"])
 
@@ -224,7 +225,7 @@ def do_help():
 
 def main(args):
     """Main command-line execution for igor.
-    
+
     Verbs are taken from the command line, and extra words taken as directed
     by the arguments needed by the handler.
 

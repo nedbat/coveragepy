@@ -173,9 +173,6 @@ class coverage(object):
         self.pylib_match = self.cover_match = None
         self.include_match = self.omit_match = None
 
-        # Only _harvest_data once per measurement cycle.
-        self._harvested = False
-
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
 
@@ -362,7 +359,6 @@ class coverage(object):
         if self.omit:
             self.omit_match = FnmatchMatcher(self.omit)
 
-        self._harvested = False
         self.collector.start()
         self._started = True
 
@@ -470,8 +466,6 @@ class coverage(object):
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
         self.data.combine_parallel_data(aliases=aliases)
-        # Combining is a kind of harvesting.
-        self._harvested = True
 
     def _harvest_data(self):
         """Get the collected data and reset the collector.
@@ -479,29 +473,26 @@ class coverage(object):
         Also warn about various problems collecting data.
 
         """
-        if not self._harvested:
-            self.data.add_line_data(self.collector.get_line_data())
-            self.data.add_arc_data(self.collector.get_arc_data())
-            self.collector.reset()
+        self.data.add_line_data(self.collector.get_line_data())
+        self.data.add_arc_data(self.collector.get_arc_data())
+        self.collector.reset()
 
-            # If there are still entries in the source_pkgs list, then we never
-            # encountered those packages.
-            if self._warn_unimported_source:
-                for pkg in self.source_pkgs:
-                    self._warn("Module %s was never imported." % pkg)
+        # If there are still entries in the source_pkgs list, then we never
+        # encountered those packages.
+        if self._warn_unimported_source:
+            for pkg in self.source_pkgs:
+                self._warn("Module %s was never imported." % pkg)
 
-            # Find out if we got any data.
-            summary = self.data.summary()
-            if not summary and self._warn_no_data:
-                self._warn("No data was collected.")
+        # Find out if we got any data.
+        summary = self.data.summary()
+        if not summary and self._warn_no_data:
+            self._warn("No data was collected.")
 
-            # Find files that were never executed at all.
-            for src in self.source:
-                for py_file in find_python_files(src):
-                    py_file = self.file_locator.canonical_filename(py_file)
-                    self.data.touch_file(py_file)
-
-            self._harvested = True
+        # Find files that were never executed at all.
+        for src in self.source:
+            for py_file in find_python_files(src):
+                py_file = self.file_locator.canonical_filename(py_file)
+                self.data.touch_file(py_file)
 
     # Backward compatibility with version 1.
     def analysis(self, morf):
