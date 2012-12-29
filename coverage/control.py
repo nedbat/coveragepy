@@ -179,7 +179,12 @@ class coverage(object):
         # Is it ok for no data to be collected?
         self._warn_no_data = True
         self._warn_unimported_source = True
+
+        # State machine variables:
+        # Have we started collecting and not stopped it?
         self._started = False
+        # Have we measured some data and not harvested it?
+        self._measured = False
 
         atexit.register(self._atexit)
 
@@ -361,6 +366,7 @@ class coverage(object):
 
         self.collector.start()
         self._started = True
+        self._measured = True
 
     def stop(self):
         """Stop measuring code coverage."""
@@ -473,26 +479,29 @@ class coverage(object):
         Also warn about various problems collecting data.
 
         """
-        self.data.add_line_data(self.collector.get_line_data())
-        self.data.add_arc_data(self.collector.get_arc_data())
-        self.collector.reset()
+        if self._measured:
+            self.data.add_line_data(self.collector.get_line_data())
+            self.data.add_arc_data(self.collector.get_arc_data())
+            self.collector.reset()
 
-        # If there are still entries in the source_pkgs list, then we never
-        # encountered those packages.
-        if self._warn_unimported_source:
-            for pkg in self.source_pkgs:
-                self._warn("Module %s was never imported." % pkg)
+            # If there are still entries in the source_pkgs list, then we never
+            # encountered those packages.
+            if self._warn_unimported_source:
+                for pkg in self.source_pkgs:
+                    self._warn("Module %s was never imported." % pkg)
 
-        # Find out if we got any data.
-        summary = self.data.summary()
-        if not summary and self._warn_no_data:
-            self._warn("No data was collected.")
+            # Find out if we got any data.
+            summary = self.data.summary()
+            if not summary and self._warn_no_data:
+                self._warn("No data was collected.")
 
-        # Find files that were never executed at all.
-        for src in self.source:
-            for py_file in find_python_files(src):
-                py_file = self.file_locator.canonical_filename(py_file)
-                self.data.touch_file(py_file)
+            # Find files that were never executed at all.
+            for src in self.source:
+                for py_file in find_python_files(src):
+                    py_file = self.file_locator.canonical_filename(py_file)
+                    self.data.touch_file(py_file)
+
+            self._measured = False
 
     # Backward compatibility with version 1.
     def analysis(self, morf):

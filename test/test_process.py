@@ -408,7 +408,7 @@ class ProcessTest(CoverageTest):
             """)
         self.make_file(".coveragerc", """\
             [run]
-            source = 
+            source =
                 .
                 xyzzy
             """)
