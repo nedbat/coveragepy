@@ -396,6 +396,27 @@ class ProcessTest(CoverageTest):
             Coverage.py warning: No data was collected.
             """), out)
 
+    def test_warnings_during_reporting(self):
+        # While fixing issue #224, the warnings were being printed far too
+        # often.  Make sure they're not any more.
+        self.make_file("hello.py", """\
+            import sys, os, the_other
+            print("Hello")
+            """)
+        self.make_file("the_other.py", """\
+            print("What?")
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            source = 
+                .
+                xyzzy
+            """)
+
+        self.run_command("coverage run hello.py")
+        out = self.run_command("coverage html")
+        self.assertEqual(out.count("Module xyzzy was never imported."), 0)
+
     def test_warnings_if_never_run(self):
         out = self.run_command("coverage run i_dont_exist.py")
         self.assertIn("No file to run: 'i_dont_exist.py'", out)
