@@ -16,6 +16,7 @@ Installation
 :history: 20121117T095000, Now setuptools is a pre-req.
 :history: 20121128T203000, updated for 3.6b1.
 :history: 20121223T180800, updated for 3.6b2.
+:history: 20121229T112400, updated for 3.6b3.
 
 
 .. highlight:: console
@@ -70,9 +71,9 @@ If all went well, you should be able to open a command prompt, and see
 coverage installed properly::
 
     $ coverage --version
-    Coverage.py, version 3.6b2.  http://nedbatchelder.com/code/coverage/3.6b2
+    Coverage.py, version 3.6b3.  http://nedbatchelder.com/code/coverage/3.6b3
 
 You can also invoke coverage as a module::
 
     $ python -m coverage --version
-    Coverage.py, version 3.6b2.  http://nedbatchelder.com/code/coverage/3.6b2
+    Coverage.py, version 3.6b3.  http://nedbatchelder.com/code/coverage/3.6b3

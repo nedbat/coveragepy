@@ -31,6 +31,14 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
+Version 3.6b3 -- 29 December 2012
+---------------------------------
+
+- Beta 2 broke the nose plugin. It's fixed again, closing `issue 224`_.
+
+.. _issue 224: https://bitbucket.org/ned/coveragepy/issue/224/36b2-breaks-nosexcover
+
+
 Version 3.6b2 -- 23 December 2012
 ---------------------------------
 
