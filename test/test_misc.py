@@ -1,11 +1,8 @@
 """Tests of miscellaneous stuff."""
 
-import os, sys
-
 from coverage.misc import Hasher, file_be_gone
 from coverage import __version__, __url__
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from test.coveragetest import CoverageTest
 
 class HasherTest(CoverageTest):
     """Test our wrapper of md5 hashing."""

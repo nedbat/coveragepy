@@ -1,10 +1,7 @@
 """Tests for Coverage.py's improved tokenizer."""
 
-import os, re, sys
-
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
-
+import os, re
+from test.coveragetest import CoverageTest
 from coverage.phystokens import source_token_lines
 
 

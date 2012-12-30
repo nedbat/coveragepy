@@ -1,10 +1,9 @@
 """Tests for XML reports from coverage.py."""
 
-import os, re, sys
+import os, re
 import coverage
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from test.coveragetest import CoverageTest
 
 class XmlReportTest(CoverageTest):
     """Tests of the XML reports from coverage.py."""

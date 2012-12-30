@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """Test the config file handling for coverage.py"""
 
-import os, sys
+import sys
 import coverage
 from coverage.misc import CoverageException
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from test.coveragetest import CoverageTest
 
 
 class ConfigTest(CoverageTest):

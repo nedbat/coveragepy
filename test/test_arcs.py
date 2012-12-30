@@ -1,9 +1,7 @@
 """Tests for Coverage.py's arc measurement."""
 
-import os, sys
-
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+import sys
+from test.coveragetest import CoverageTest
 
 
 class SimpleArcTest(CoverageTest):

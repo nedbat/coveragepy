@@ -3,9 +3,8 @@
 import os, sys
 import coverage
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
-import osinfo
+from test.coveragetest import CoverageTest
+from test import osinfo
 
 class ThreadingTest(CoverageTest):
     """Tests of the threading support."""

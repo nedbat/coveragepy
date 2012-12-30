@@ -5,8 +5,7 @@ import os, re, sys
 import coverage
 from coverage.backward import StringIO
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from test.coveragetest import CoverageTest
 
 class SummaryTest(CoverageTest):
     """Tests of the text summary reporting for coverage.py."""

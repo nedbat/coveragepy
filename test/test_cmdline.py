@@ -1,13 +1,12 @@
 """Test cmdline.py for coverage."""
 
-import os, pprint, re, shlex, sys, textwrap
+import pprint, re, shlex, sys, textwrap
 import mock
 import coverage
 import coverage.cmdline
 from coverage.misc import ExceptionDuringRun
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest, OK, ERR
+from test.coveragetest import CoverageTest, OK, ERR
 
 
 class CmdLineTest(CoverageTest):

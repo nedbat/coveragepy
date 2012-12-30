@@ -2,10 +2,9 @@
 """Tests that our test infrastructure is really working!"""
 
 import os, sys
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
 from coverage.backward import to_bytes, rpartition
-from backunittest import TestCase
-from coveragetest import CoverageTest
+from test.backunittest import TestCase
+from test.coveragetest import CoverageTest
 
 from coverage.backward import set                   # pylint: disable=W0622
 

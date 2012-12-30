@@ -1,10 +1,7 @@
 """Tests for Coverage.py's code parsing."""
 
-import os, sys, textwrap
-
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
-
+import textwrap
+from test.coveragetest import CoverageTest
 from coverage.parser import CodeParser
 
 

@@ -5,8 +5,7 @@ import os, sys
 from coverage.codeunit import code_unit_factory
 from coverage.files import FileLocator
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from test.coveragetest import CoverageTest
 
 # pylint: disable=F0401
 # Unable to import 'aa' (No module named aa)

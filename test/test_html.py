@@ -5,8 +5,7 @@ import os.path, re, sys
 import coverage
 from coverage.misc import NotPython, NoSource
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from test.coveragetest import CoverageTest
 
 class HtmlTestHelpers(CoverageTest):
     """Methods that help with HTML tests."""

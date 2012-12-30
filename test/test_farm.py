@@ -3,8 +3,7 @@
 import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
 from nose.plugins.skip import SkipTest
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from backtest import run_command, execfile          # pylint: disable=W0622
+from test.backtest import run_command, execfile      # pylint: disable=W0622
 
 from coverage.control import _TEST_NAME_FILE
 

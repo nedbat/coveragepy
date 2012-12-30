@@ -6,8 +6,8 @@ import coverage
 from coverage.backward import sorted, StringIO      # pylint: disable=W0622
 from coverage.backward import to_bytes
 from coverage.control import _TEST_NAME_FILE
-from backtest import run_command
-from backunittest import TestCase
+from test.backtest import run_command
+from test.backunittest import TestCase
 
 class Tee(object):
     """A file-like that writes to all the file-likes it has."""

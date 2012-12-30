@@ -1,11 +1,7 @@
 """Tests for Coverage.py's results analysis."""
 
-import os, sys
-
 from coverage.results import Numbers
-
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from test.coveragetest import CoverageTest
 
 
 class NumbersTest(CoverageTest):

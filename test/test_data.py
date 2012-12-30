@@ -1,13 +1,10 @@
 """Tests for coverage.data"""
 
-import os, sys
-
 from coverage.backward import pickle
 from coverage.data import CoverageData
 from coverage.files import PathAliases
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from test.coveragetest import CoverageTest
 
 
 DATA_1 = { 'a.py': {1:None, 2:None}, 'b.py': {3:None} }

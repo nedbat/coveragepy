@@ -5,8 +5,7 @@ import os, sys
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import NoSource
 
-sys.path.insert(0, os.path.split(__file__)[0]) # Force relative import for Py3k
-from coveragetest import CoverageTest
+from test.coveragetest import CoverageTest
 
 here = os.path.dirname(__file__)
 
