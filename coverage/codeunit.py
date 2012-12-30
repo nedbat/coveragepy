@@ -79,12 +79,18 @@ class CodeUnit(object):
     # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
     # of them defined.
 
-    def __lt__(self, other): return self.name <  other.name
-    def __le__(self, other): return self.name <= other.name
-    def __eq__(self, other): return self.name == other.name
-    def __ne__(self, other): return self.name != other.name
-    def __gt__(self, other): return self.name >  other.name
-    def __ge__(self, other): return self.name >= other.name
+    def __lt__(self, other):
+        return self.name < other.name
+    def __le__(self, other):
+        return self.name <= other.name
+    def __eq__(self, other):
+        return self.name == other.name
+    def __ne__(self, other):
+        return self.name != other.name
+    def __gt__(self, other):
+        return self.name > other.name
+    def __ge__(self, other):
+        return self.name >= other.name
 
     def flat_rootname(self):
         """A base for a flat filename to correspond to this code unit.
