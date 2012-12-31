@@ -316,6 +316,25 @@ class ApiTest(CoverageTest):
         cov.erase()
         cov.report()
 
+    def test_start_stop_start_stop(self):
+        self.make_file("code1.py", """\
+            code1 = 1
+            """)
+        self.make_file("code2.py", """\
+            code2 = 1
+            code2 = 2
+            """)
+        cov = coverage.coverage()
+        self.start_import_stop(cov, "code1")
+        cov.save()
+        self.start_import_stop(cov, "code2")
+        _, statements, missing, _ = cov.analysis("code1.py")
+        self.assertEqual(statements, [1])
+        self.assertEqual(missing, [])
+        _, statements, missing, _ = cov.analysis("code2.py")
+        self.assertEqual(statements, [1, 2])
+        self.assertEqual(missing, [])
+
 
 class UsingModulesMixin(object):
     """A mixin for importing modules from test/modules and test/moremodules."""
