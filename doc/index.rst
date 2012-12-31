@@ -122,6 +122,8 @@ details.
 .. _cover plug-in:  https://nose.readthedocs.org/en/latest/plugins/cover.html
 
 
+.. _contact:
+
 Getting help
 ------------
 
