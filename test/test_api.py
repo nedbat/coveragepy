@@ -335,6 +335,31 @@ class ApiTest(CoverageTest):
         self.assertEqual(statements, [1, 2])
         self.assertEqual(missing, [])
 
+    if 0:   # Skipping failing test
+        # for https://bitbucket.org/ned/coveragepy/issue/79
+        def test_start_save_stop(self):
+            self.make_file("code1.py", """\
+                code1 = 1
+                """)
+            self.make_file("code2.py", """\
+                code2 = 1
+                code2 = 2
+                """)
+            cov = coverage.coverage()
+            cov.start()
+            self.import_local_file("code1")
+            cov.save()
+            self.import_local_file("code2")
+            cov.stop()
+
+            _, statements, missing, _ = cov.analysis("code1.py")
+            self.assertEqual(statements, [1])
+            self.assertEqual(missing, [])
+            _, statements, missing, _ = cov.analysis("code2.py")
+            self.assertEqual(statements, [1, 2])
+            self.assertEqual(missing, [])
+
+
 
 class UsingModulesMixin(object):
     """A mixin for importing modules from test/modules and test/moremodules."""
