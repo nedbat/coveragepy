@@ -1,5 +1,12 @@
 Coverage TODO
 
+Key:
+    * Heading
+    - Not done yet.
+    + Done.
+    x Not going to do.
+
+
 * --source stuff:
     + warn if a package is never found.
     + warn if no data was collected
@@ -160,8 +167,8 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
 
 * Installation
 
-- How will Coverage package install over coverage.py module?
-- pip can't install it: it reads the coverage html page, and finds the kit link,
+x How will Coverage package install over coverage.py module?
+x pip can't install it: it reads the coverage html page, and finds the kit link,
     but then can't handle the root-relative link.
 
 
