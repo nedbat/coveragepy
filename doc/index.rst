@@ -159,6 +159,7 @@ More information
     subprocess
     api
     contributing
+    trouble
     faq
     changes
 
