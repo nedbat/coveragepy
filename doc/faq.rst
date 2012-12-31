@@ -8,6 +8,7 @@ FAQ and other help
 :history: 20091005T073900, updated for 3.1.
 :history: 20091127T201500, updated for 3.2.
 :history: 20110605T175500, add the announcement mailing list.
+:history: 20121231T104700, Tweak the py3 text.
 
 
 Frequently asked questions
@@ -51,7 +52,7 @@ importing the modules that define your functions.
 
 **Q: Does coverage.py work on Python 3.x?**
 
-Yes, Pythons 3.1 and 3.2 are fully supported.
+Yes, Python 3 is fully supported.
 
 
 **Q: Isn't coverage testing the best thing ever?**
