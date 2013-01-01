@@ -331,9 +331,9 @@ class ProcessTest(CoverageTest):
             out2 = self.run_command("python -m test.try_execfile")
             self.assertMultiLineEqual(out, out2)
 
-    if 0:
+    if 0:   # Expected failure
         # For https://bitbucket.org/ned/coveragepy/issue/207
-        def test_coverage_run_dashm_is_like_python_dashm_with__main__(self):
+        def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
             self.make_file("package/__init__.py")   # empty
             self.make_file("package/__main__.py", "#\n")   # empty
             out = self.run_command("coverage run -m package")

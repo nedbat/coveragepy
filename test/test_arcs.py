@@ -448,7 +448,7 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB AD BC CD D.",
             arcz_missing="3D AB BC CD", arcz_unpredicted="")
 
-    if 0:
+    if 0:   # expected failure
         def test_finally_in_loop_2(self):
             self.check_coverage("""\
                 for i in range(5):

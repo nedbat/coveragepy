@@ -335,7 +335,7 @@ class ApiTest(CoverageTest):
         self.assertEqual(statements, [1, 2])
         self.assertEqual(missing, [])
 
-    if 0:   # Skipping failing test
+    if 0:   # expected failure
         # for https://bitbucket.org/ned/coveragepy/issue/79
         def test_start_save_stop(self):
             self.make_file("code1.py", """\
