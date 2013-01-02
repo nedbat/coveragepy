@@ -140,6 +140,15 @@ class SimpleArcTest(CoverageTest):
             arcz=".1 16 6.  .2 23 3. 25 5.", arcz_missing="25 5."
             )
 
+    if 0:   # expected failure
+        def test_lambdas_are_confusing_bug_90(self):
+            self.check_coverage("""\
+                fn = lambda x: x
+                a = 1
+                """,
+                arcz=".1 12 2."
+                )
+
 
 if sys.version_info >= (2, 6):
     class WithTest(CoverageTest):
@@ -289,6 +298,26 @@ class LoopArcTest(CoverageTest):
             """,
             arcz=".1 .2 23 32 34 47 26 67 7. 18 89 9."
             )
+
+    if 0:   # expected failure
+        def test_confusing_for_loop_bug_175(self):
+            self.check_coverage("""\
+                o = [(1,2), (3,4)]
+                o = [a for a in o if a[0] > 1]
+                for tup in o:
+                    x = tup[0]
+                    y = tup[1]
+                """,
+                arcz=".1 12 23 34 45 53 3.",
+                arcz_missing="", arcz_unpredicted="")
+            self.check_coverage("""\
+                o = [(1,2), (3,4)]
+                for tup in [a for a in o if a[0] > 1]:
+                    x = tup[0]
+                    y = tup[1]
+                """,
+                arcz=".1 12 23 34 42 2.",
+                arcz_missing="", arcz_unpredicted="")
 
 
 class ExceptionArcTest(CoverageTest):
