@@ -24,6 +24,7 @@ Major change history for coverage.py
 :history: 20120929T093100, updated for 3.5.3
 :history: 20121129T060100, updated for 3.6b1.
 :history: 20121223T180600, updated for 3.6b2.
+:history: 20130105T173500, updated for 3.6
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -31,45 +32,11 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
-Version 3.6b3 -- 29 December 2012
----------------------------------
 
-- Beta 2 broke the nose plugin. It's fixed again, closing `issue 224`_.
+Version 3.6 --- 5 January 2013
+------------------------------
 
-.. _issue 224: https://bitbucket.org/ned/coveragepy/issue/224/36b2-breaks-nosexcover
-
-
-Version 3.6b2 -- 23 December 2012
----------------------------------
-
-- Coverage.py runs on Python 2.3 and 2.4 again. It was broken in 3.6b1.
-
-- The C extension is optionally compiled using a different more widely-used
-  technique, taking another stab at fixing `issue 80`_ once and for all.
-
-- Combining data files would create entries for phantom files if used with
-  ``source`` and path aliases.  It no longer does.
-
-- ``debug sys`` now shows the configuration file path that was read.
-
-- If an oddly-behaved package claims that code came from an empty-string
-  filename, coverage.py no longer associates it with the directory name,
-  fixing `issue 221`_.
-
-.. _issue 80: https://bitbucket.org/ned/coveragepy/issue/80/is-there-a-duck-typing-way-to-know-we-cant
-.. _issue 221: https://bitbucket.org/ned/coveragepy/issue/221/coveragepy-incompatible-with-pyratemp
-
-
-Version 3.6b1 -- 28 November 2012
----------------------------------
-
-- Wildcards in ``include=`` and ``omit=`` arguments were not handled properly
-  in reporting functions, though they were when running.  Now they are handled
-  uniformly, closing `issue 143`_ and `issue 163`_.  **NOTE**: it is possible
-  that your configurations may now be incorrect.  If you use ``include`` or
-  ``omit`` during reporting, whether on the command line, through the API, or
-  in a configuration file, please check carefully that you were not relying on
-  the old broken behavior.
+Features:
 
 - The **report**, **html**, and **xml** commands now accept a ``--fail-under``
   switch that indicates in the exit status whether the coverage percentage was
@@ -85,18 +52,10 @@ Version 3.6b1 -- 28 November 2012
 - Configuration files now support substitution of environment variables, using
   syntax like ``${WORD}``.  Closes `issue 97`_.
 
-- Embarrassingly, the `[xml] output=` setting in the .coveragerc file simply
-  didn't work.  Now it does.
+Packaging:
 
-- The XML report now consistently uses filenames for the filename attribute,
-  rather than sometimes using module names.  Fixes `issue 67`_.
-  Thanks, Marcus Cobden.
-
-- Coverage percentage metrics are now computed slightly differently under
-  branch coverage.  This means that completely unexecuted files will now
-  correctly have 0% coverage, fixing `issue 156`_.  This also means that your
-  total coverage numbers will generally now be lower if you are measuring
-  branch coverage.
+- The C extension is optionally compiled using a different more widely-used
+  technique, taking another stab at fixing `issue 80`_ once and for all.
 
 - When installing, now in addition to creating a "coverage" command, two new
   aliases are also installed.  A "coverage2" or "coverage3" command will be
@@ -109,6 +68,54 @@ Version 3.6b1 -- 28 November 2012
   recommended.
 
 - The coverage.py kit now includes docs (closing `issue 137`_) and tests.
+
+Docs:
+
+- Added a page to the docs about :doc:`contributing <contributing>` to
+  coverage.py, closing `issue 171`_.
+  
+- Added a page to the docs about :doc:`troublesome situations <trouble>`,
+  closing `issue 226`_.
+  
+- Docstrings for the legacy singleton methods are more helpful.  Thanks Marius
+  Gedminas.  Closes `issue 205`_.
+
+- The pydoc tool can now show docmentation for the class `coverage.coverage`.
+  Closes `issue 206`_.
+
+- Added some info to the TODO file, closing `issue 227`_.
+
+Fixes:
+
+- Wildcards in ``include=`` and ``omit=`` arguments were not handled properly
+  in reporting functions, though they were when running.  Now they are handled
+  uniformly, closing `issue 143`_ and `issue 163`_.  **NOTE**: it is possible
+  that your configurations may now be incorrect.  If you use ``include`` or
+  ``omit`` during reporting, whether on the command line, through the API, or
+  in a configuration file, please check carefully that you were not relying on
+  the old broken behavior.
+
+- Embarrassingly, the `[xml] output=` setting in the .coveragerc file simply
+  didn't work.  Now it does.
+
+- Combining data files would create entries for phantom files if used with
+  ``source`` and path aliases.  It no longer does.
+
+- ``debug sys`` now shows the configuration file path that was read.
+
+- If an oddly-behaved package claims that code came from an empty-string
+  filename, coverage.py no longer associates it with the directory name,
+  fixing `issue 221`_.
+
+- The XML report now consistently uses filenames for the filename attribute,
+  rather than sometimes using module names.  Fixes `issue 67`_.
+  Thanks, Marcus Cobden.
+
+- Coverage percentage metrics are now computed slightly differently under
+  branch coverage.  This means that completely unexecuted files will now
+  correctly have 0% coverage, fixing `issue 156`_.  This also means that your
+  total coverage numbers will generally now be lower if you are measuring
+  branch coverage.
 
 - On Windows, files are now reported in their correct case, fixing `issue 89`_
   and `issue 203`_.
@@ -137,21 +144,14 @@ Version 3.6b1 -- 28 November 2012
   fixing `issue 214`_, though this will take some time to be repackaged by the
   operating systems.
 
-- Docstrings for the legacy singleton methods are more helpful.  Thanks Marius
-  Gedminas.  Closes `issue 205`_.
-
-- The pydoc tool can now show docmentation for the class `coverage.coverage`.
-  Closes `issue 206`_.
-
-- Added a page to the docs about contributing to coverage.py, closing
-  `issue 171`_.
-
 - When coverage.py ended unsuccessfully, it may have reported odd errors like
   ``'NoneType' object has no attribute 'isabs'``.  It no longer does,
   so kiss `issue 153`_ goodbye.
 
+
 .. _issue 60: https://bitbucket.org/ned/coveragepy/issue/60/incorrect-path-to-orphaned-pyc-files
 .. _issue 67: https://bitbucket.org/ned/coveragepy/issue/67/xml-report-filenames-may-be-generated
+.. _issue 80: https://bitbucket.org/ned/coveragepy/issue/80/is-there-a-duck-typing-way-to-know-we-cant
 .. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 97: https://bitbucket.org/ned/coveragepy/issue/97/allow-environment-variables-to-be
@@ -172,6 +172,9 @@ Version 3.6b1 -- 28 November 2012
 .. _issue 206: https://bitbucket.org/ned/coveragepy/issue/206/pydoc-coveragecoverage-fails-with-an-error
 .. _issue 210: https://bitbucket.org/ned/coveragepy/issue/210/if-theres-no-coverage-data-coverage-xml
 .. _issue 214: https://bitbucket.org/ned/coveragepy/issue/214/coveragepy-measures-itself-on-precise
+.. _issue 221: https://bitbucket.org/ned/coveragepy/issue/221/coveragepy-incompatible-with-pyratemp
+.. _issue 226: https://bitbucket.org/ned/coveragepy/issue/226/make-readme-section-to-describe-when
+.. _issue 227: https://bitbucket.org/ned/coveragepy/issue/227/update-todo
 
 
 Version 3.5.3 --- 29 September 2012

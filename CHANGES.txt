@@ -2,16 +2,26 @@
 Change history for Coverage.py
 ------------------------------
 
-Version 3.6b3 -- 29 December 2012
----------------------------------
+Version 3.6 --- 5 January 2013
+------------------------------
+
+- Added a page to the docs about troublesome situations, closing `issue 226`_,
+  and added some info to the TODO file, closing `issue 227`_.
+
+.. _issue 226: https://bitbucket.org/ned/coveragepy/issue/226/make-readme-section-to-describe-when
+.. _issue 227: https://bitbucket.org/ned/coveragepy/issue/227/update-todo
+
+
+Version 3.6b3 --- 29 December 2012
+----------------------------------
 
 - Beta 2 broke the nose plugin. It's fixed again, closing `issue 224`_.
 
 .. _issue 224: https://bitbucket.org/ned/coveragepy/issue/224/36b2-breaks-nosexcover
 
 
-Version 3.6b2 -- 23 December 2012
----------------------------------
+Version 3.6b2 --- 23 December 2012
+----------------------------------
 
 - Coverage.py runs on Python 2.3 and 2.4 again. It was broken in 3.6b1.
 
@@ -31,8 +41,8 @@ Version 3.6b2 -- 23 December 2012
 .. _issue 221: https://bitbucket.org/ned/coveragepy/issue/221/coveragepy-incompatible-with-pyratemp
 
 
-Version 3.6b1 -- 28 November 2012
----------------------------------
+Version 3.6b1 --- 28 November 2012
+----------------------------------
 
 - Wildcards in ``include=`` and ``omit=`` arguments were not handled properly
   in reporting functions, though they were when running.  Now they are handled

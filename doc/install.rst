@@ -17,6 +17,7 @@ Installation
 :history: 20121128T203000, updated for 3.6b1.
 :history: 20121223T180800, updated for 3.6b2.
 :history: 20121229T112400, updated for 3.6b3.
+:history: 20130105T174400, updated for 3.6.
 
 
 .. highlight:: console
@@ -71,9 +72,9 @@ If all went well, you should be able to open a command prompt, and see
 coverage installed properly::
 
     $ coverage --version
-    Coverage.py, version 3.6b3.  http://nedbatchelder.com/code/coverage/3.6b3
+    Coverage.py, version 3.6.  http://nedbatchelder.com/code/coverage
 
 You can also invoke coverage as a module::
 
     $ python -m coverage --version
-    Coverage.py, version 3.6b3.  http://nedbatchelder.com/code/coverage/3.6b3
+    Coverage.py, version 3.6.  http://nedbatchelder.com/code/coverage
