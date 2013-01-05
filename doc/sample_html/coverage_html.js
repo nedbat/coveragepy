@@ -374,4 +374,3 @@ coverage.scroll_window = function (to_pos) {
 coverage.finish_scrolling = function () {
     $("html,body").stop(true, true);
 };
-

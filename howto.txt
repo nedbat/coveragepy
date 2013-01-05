@@ -15,6 +15,7 @@
     - Version and copyright date in doc/conf.py
     - Version --version output in doc/install.rst
     - Generate new sample_html to get the latest, incl footer version number:
+        python setup.py develop
         cd C:\ned\cog\trunk
         rmdir/s/q htmlcov
         coverage run --branch --source=cogapp -m cogapp.test_cogapp CogTestsInMemory
