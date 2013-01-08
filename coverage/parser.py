@@ -381,27 +381,25 @@ class ByteParser(object):
         """Map byte offsets to line numbers in `code`.
 
         Uses co_lnotab described in Python/compile.c to map byte offsets to
-        line numbers.  Returns a list: [(b0, l0), (b1, l1), ...]
+        line numbers.  Produces a sequence: (b0, l0), (b1, l1), ...
 
         """
         # Adapted from dis.py in the standard library.
         byte_increments = self._lnotab_increments(self.code.co_lnotab[0::2])
         line_increments = self._lnotab_increments(self.code.co_lnotab[1::2])
 
-        bytes_lines = []
         last_line_num = None
         line_num = self.code.co_firstlineno
         byte_num = 0
         for byte_incr, line_incr in zip(byte_increments, line_increments):
             if byte_incr:
                 if line_num != last_line_num:
-                    bytes_lines.append((byte_num, line_num))
+                    yield (byte_num, line_num)
                     last_line_num = line_num
                 byte_num += byte_incr
             line_num += line_incr
         if line_num != last_line_num:
-            bytes_lines.append((byte_num, line_num))
-        return bytes_lines
+            yield (byte_num, line_num)
 
     def _find_statements(self):
         """Find the statements in `self.code`.
@@ -426,7 +424,6 @@ class ByteParser(object):
         Returns a list of `Chunk` objects.
 
         """
-
         # The list of chunks so far, and the one we're working on.
         chunks = []
         chunk = None
@@ -634,11 +631,11 @@ class ByteParser(object):
 
 
 class Chunk(object):
-    """A sequence of bytecodes with a single entrance.
+    """A sequence of byte codes with a single entrance.
 
     To analyze byte code, we have to divide it into chunks, sequences of byte
-    codes such that each basic block has only one entrance, the first
-    instruction in the block.
+    codes such that each chunk has only one entrance, the first instruction in
+    the block.
 
     This is almost the CS concept of `basic block`_, except that we're willing
     to have many exits from a chunk, and "basic block" is a more cumbersome
