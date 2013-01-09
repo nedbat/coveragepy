@@ -3,7 +3,7 @@
 import opcode, re, sys, token, tokenize
 
 from coverage.backward import set, sorted, StringIO # pylint: disable=W0622
-from coverage.backward import open_source
+from coverage.backward import open_source, range    # pylint: disable=W0622
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, expensive, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
@@ -134,8 +134,7 @@ class CodeParser(object):
                 # (a trick from trace.py in the stdlib.) This works for
                 # 99.9999% of cases.  For the rest (!) see:
                 # http://stackoverflow.com/questions/1769332/x/1769794#1769794
-                for i in range(slineno, elineno+1):
-                    self.docstrings.add(i)
+                self.docstrings.update(range(slineno, elineno+1))
             elif toktype == token.NEWLINE:
                 if first_line is not None and elineno != first_line:
                     # We're at the end of a line, and we've ended on a
@@ -370,12 +369,14 @@ class ByteParser(object):
     # Getting numbers from the lnotab value changed in Py3.0.
     if sys.version_info >= (3, 0):
         def _lnotab_increments(self, lnotab):
-            """Return a list of ints from the lnotab bytes in 3.x"""
-            return list(lnotab)
+            """Produce ints from the lnotab bytes in 3.x"""
+            # co_lnotab is a bytes object, which iterates as ints.
+            return lnotab
     else:
         def _lnotab_increments(self, lnotab):
-            """Return a list of ints from the lnotab string in 2.x"""
-            return [ord(c) for c in lnotab]
+            """Produce ints from the lnotab string in 2.x"""
+            for c in lnotab:
+                yield ord(c)
 
     def _bytes_lines(self):
         """Map byte offsets to line numbers in `code`.
@@ -404,16 +405,14 @@ class ByteParser(object):
     def _find_statements(self):
         """Find the statements in `self.code`.
 
-        Return a set of line numbers that start statements.  Recurses into all
-        code objects reachable from `self.code`.
+        Produce a sequence of line numbers that start statements.  Recurses
+        into all code objects reachable from `self.code`.
 
         """
-        stmts = set()
         for bp in self.child_parsers():
             # Get all of the lineno information from this code.
             for _, l in bp._bytes_lines():
-                stmts.add(l)
-        return stmts
+                yield l
 
     def _split_into_chunks(self):
         """Split the code object into a list of `Chunk` objects.
@@ -589,7 +588,6 @@ class ByteParser(object):
             byte_lines[byte_to_add] = lines
 
         # Figure out for each chunk where the exits go.
-        arcs = set()
         for chunk in chunks:
             if chunk.line:
                 for ex in chunk.exits:
@@ -599,11 +597,9 @@ class ByteParser(object):
                         exit_lines = byte_lines[ex]
                     for exit_line in exit_lines:
                         if chunk.line != exit_line:
-                            arcs.add((chunk.line, exit_line))
+                            yield (chunk.line, exit_line)
         for line in byte_lines[0]:
-            arcs.add((-1, line))
-
-        return arcs
+            yield (-1, line)
 
     def _all_chunks(self):
         """Returns a list of `Chunk` objects for this code and its children.

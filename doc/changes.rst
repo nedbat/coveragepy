@@ -73,10 +73,10 @@ Docs:
 
 - Added a page to the docs about :doc:`contributing <contributing>` to
   coverage.py, closing `issue 171`_.
-  
+
 - Added a page to the docs about :doc:`troublesome situations <trouble>`,
   closing `issue 226`_.
-  
+
 - Docstrings for the legacy singleton methods are more helpful.  Thanks Marius
   Gedminas.  Closes `issue 205`_.
 
