@@ -66,13 +66,13 @@ class ParserMain(object):
             print("Main code:")
             self.disassemble(bp)
 
-        if options.chunks:
+        arcs = bp._all_arcs()
+        if options.chunks and not options.dis:
             chunks = bp._all_chunks()
             if options.recursive:
                 print("%6d: %s" % (len(chunks), filename))
             else:
                 print("Chunks: %r" % chunks)
-                arcs = bp._all_arcs()
                 print("Arcs: %r" % sorted(arcs))
 
         if options.source or options.tokens:
@@ -121,14 +121,13 @@ class ParserMain(object):
             for disline in disgen.disgen(bp.code):
                 if disline.first:
                     if srclines:
-                        print("%80s%s" % ("", srclines[disline.lineno-1]))
+                        print("%100s%s" % ("", srclines[disline.lineno-1]))
                     elif disline.offset > 0:
                         print("")
                 line = disgen.format_dis_line(disline)
                 chunk = chunkd.get(disline.offset)
                 if chunk:
-                    exits = " ".join(str(e) for e in sorted(chunk.exits))
-                    chunkstr = ": %s" % exits
+                    chunkstr = ":: %r" % chunk
                 else:
                     chunkstr = ""
                 print("%-70s%s" % (line, chunkstr))
