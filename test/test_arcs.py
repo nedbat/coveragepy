@@ -303,7 +303,7 @@ class LoopArcTest(CoverageTest):
         def test_confusing_for_loop_bug_175(self):
             self.check_coverage("""\
                 o = [(1,2), (3,4)]
-                o = [a for a in o if a[0] > 1]
+                o = [a for a in o]
                 for tup in o:
                     x = tup[0]
                     y = tup[1]
@@ -312,7 +312,7 @@ class LoopArcTest(CoverageTest):
                 arcz_missing="", arcz_unpredicted="")
             self.check_coverage("""\
                 o = [(1,2), (3,4)]
-                for tup in [a for a in o if a[0] > 1]:
+                for tup in [a for a in o]:
                     x = tup[0]
                     y = tup[1]
                 """,
