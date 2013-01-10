@@ -24,6 +24,15 @@ except NameError:
         lst.sort()
         return lst
 
+# Python 2.3 doesn't have `reversed`.
+try:
+    reversed = reversed
+except NameError:
+    def reversed(iterable):
+        """A 2.3-compatible implementation of `reversed`."""
+        lst = list(iterable)
+        return lst[::-1]
+
 # rpartition is new in 2.5
 try:
     "".rpartition

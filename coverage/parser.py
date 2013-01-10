@@ -4,6 +4,7 @@ import opcode, re, sys, token, tokenize
 
 from coverage.backward import set, sorted, StringIO # pylint: disable=W0622
 from coverage.backward import open_source, range    # pylint: disable=W0622
+from coverage.backward import reversed              # pylint: disable=W0622
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, expensive, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
@@ -384,6 +385,9 @@ class ByteParser(object):
         Uses co_lnotab described in Python/compile.c to map byte offsets to
         line numbers.  Produces a sequence: (b0, l0), (b1, l1), ...
 
+        Only byte offsets that correspond to line numbers are included in the
+        results.
+
         """
         # Adapted from dis.py in the standard library.
         byte_increments = self._lnotab_increments(self.code.co_lnotab[0::2])
@@ -426,6 +430,8 @@ class ByteParser(object):
         # The list of chunks so far, and the one we're working on.
         chunks = []
         chunk = None
+
+        # A dict mapping byte offsets of line starts to the line numbers.
         bytes_lines_map = dict(self._bytes_lines())
 
         # The block stack: loops and try blocks get pushed here for the
@@ -492,9 +498,9 @@ class ByteParser(object):
                     chunk.exits.add(block_stack[-1][1])
                 # For the finally clause we need to find the closest exception
                 # block, and use its jump target as an exit.
-                for iblock in range(len(block_stack)-1, -1, -1):
-                    if block_stack[iblock][0] in OPS_EXCEPT_BLOCKS:
-                        chunk.exits.add(block_stack[iblock][1])
+                for block in reversed(block_stack):
+                    if block[0] in OPS_EXCEPT_BLOCKS:
+                        chunk.exits.add(block[1])
                         break
             if bc.op == OP_COMPARE_OP and bc.arg == COMPARE_EXCEPTION:
                 # This is an except clause.  We want to overlook the next
