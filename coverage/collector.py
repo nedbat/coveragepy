@@ -55,9 +55,10 @@ class PyTracer(object):
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
 
-        #print("trace event: %s %r @%d" % (
-        #           event, frame.f_code.co_filename, frame.f_lineno),
-        #      file=sys.stderr)
+        if 0:
+            sys.stderr.write("trace event: %s %r @%d\n" % (
+                event, frame.f_code.co_filename, frame.f_lineno
+            ))
 
         if self.last_exc_back:
             if frame == self.last_exc_back:
