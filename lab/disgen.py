@@ -14,14 +14,11 @@ __all__ = ["dis", "disassemble", "distb", "disco",
            "findlinestarts", "findlabels"] + _opcodes_all
 del _opcodes_all
 
-_have_code = (types.MethodType, types.FunctionType, types.CodeType,
-              types.ClassType, type)
-
 def dis(x=None):
     for disline in disgen(x):
         if disline.first and disline.offset > 0:
-            print
-        print format_dis_line(disline)
+            print()
+        print(format_dis_line(disline))
 
 def format_dis_line(disline):
     if disline.first:
@@ -39,40 +36,24 @@ def format_dis_line(disline):
     return "%s    %s %4r %-20s %5s %s" % (lineno, label, disline.offset, disline.opcode, oparg, disline.argstr)
 
 def disgen(x=None):
-    """Disassemble classes, methods, functions, or code.
+    """Disassemble methods, functions, or code.
 
     With no argument, disassemble the last traceback.
 
     """
     if x is None:
         return distb()
-    if isinstance(x, types.InstanceType):
-        x = x.__class__
     if hasattr(x, 'im_func'):
         x = x.im_func
     if hasattr(x, 'func_code'):
         x = x.func_code
-    if hasattr(x, '__dict__'):
-        assert False
-        items = x.__dict__.items()
-        items.sort()
-        for name, x1 in items:
-            if isinstance(x1, _have_code):
-                print "Disassembly of %s:" % name
-                try:
-                    dis(x1)
-                except TypeError, msg:
-                    print "Sorry:", msg
-                print
-    elif hasattr(x, 'co_code'):
+    if hasattr(x, 'co_code'):
         return disassemble(x)
-    elif isinstance(x, str):
-        assert False
-        disassemble_string(x)
     else:
-        raise TypeError, \
-              "don't know how to disassemble %s objects" % \
-              type(x).__name__
+        raise TypeError(
+            "don't know how to disassemble %s objects" %
+            type(x).__name__
+        )
 
 def distb(tb=None):
     """Disassemble a traceback (default: last traceback)."""
@@ -80,8 +61,9 @@ def distb(tb=None):
         try:
             tb = sys.last_traceback
         except AttributeError:
-            raise RuntimeError, "no last traceback to disassemble"
-        while tb.tb_next: tb = tb.tb_next
+            raise RuntimeError("no last traceback to disassemble")
+        while tb.tb_next: 
+            tb = tb.tb_next
     return disassemble(tb.tb_frame.f_code, tb.tb_lasti)
 
 DisLine = collections.namedtuple(
@@ -103,8 +85,7 @@ def disassemble(co, lasti=-1):
     lineno = linestarts[0]
 
     while i < n:
-        c = code[i]
-        op = ord(c)
+        op = byte_from_code(code, i)
         first = i in linestarts
         if first:
             lineno = linestarts[i]
@@ -116,17 +97,19 @@ def disassemble(co, lasti=-1):
         opcode = opname[op]
         i = i+1
         if op >= HAVE_ARGUMENT:
-            oparg = ord(code[i]) + ord(code[i+1])*256 + extended_arg
+            oparg = byte_from_code(code, i) + byte_from_code(code, i+1)*256 + extended_arg
             extended_arg = 0
             i = i+2
             if op == EXTENDED_ARG:
-                extended_arg = oparg*65536L
+                extended_arg = oparg*65536
             if op in hasconst:
                 argstr = '(' + repr(co.co_consts[oparg]) + ')'
             elif op in hasname:
                 argstr = '(' + co.co_names[oparg] + ')'
+            elif op in hasjabs:
+                argstr = '(-> ' + repr(oparg) + ')'
             elif op in hasjrel:
-                argstr = '(to ' + repr(i + oparg) + ')'
+                argstr = '(-> ' + repr(i + oparg) + ')'
             elif op in haslocal:
                 argstr = '(' + co.co_varnames[oparg] + ')'
             elif op in hascompare:
@@ -143,47 +126,11 @@ def disassemble(co, lasti=-1):
         yield DisLine(lineno=lineno, first=first, target=target, offset=offset, opcode=opcode, oparg=oparg, argstr=argstr)
 
 
-def disassemble_string(code, lasti=-1, varnames=None, names=None,
-                       constants=None):
-    labels = findlabels(code)
-    n = len(code)
-    i = 0
-    while i < n:
-        c = code[i]
-        op = ord(c)
-        if i == lasti: print '-->',
-        else: print '   ',
-        if i in labels: print '>>',
-        else: print '  ',
-        print repr(i).rjust(4),
-        print opname[op].ljust(15),
-        i = i+1
-        if op >= HAVE_ARGUMENT:
-            oparg = ord(code[i]) + ord(code[i+1])*256
-            i = i+2
-            print repr(oparg).rjust(5),
-            if op in hasconst:
-                if constants:
-                    print '(' + repr(constants[oparg]) + ')',
-                else:
-                    print '(%d)'%oparg,
-            elif op in hasname:
-                if names is not None:
-                    print '(' + names[oparg] + ')',
-                else:
-                    print '(%d)'%oparg,
-            elif op in hasjrel:
-                print '(to ' + repr(i + oparg) + ')',
-            elif op in haslocal:
-                if varnames:
-                    print '(' + varnames[oparg] + ')',
-                else:
-                    print '(%d)' % oparg,
-            elif op in hascompare:
-                print '(' + cmp_op[oparg] + ')',
-        print
-
-disco = disassemble                     # XXX For backwards compatibility
+def byte_from_code(code, i):
+    byte = code[i]
+    if not isinstance(byte, int):
+        byte = ord(byte)
+    return byte
 
 def findlabels(code):
     """Detect all offsets in a byte code which are jump targets.
@@ -195,11 +142,10 @@ def findlabels(code):
     n = len(code)
     i = 0
     while i < n:
-        c = code[i]
-        op = ord(c)
+        op = byte_from_code(code, i)
         i = i+1
         if op >= HAVE_ARGUMENT:
-            oparg = ord(code[i]) + ord(code[i+1])*256
+            oparg = byte_from_code(code, i) + byte_from_code(code, i+1)*256
             i = i+2
             label = -1
             if op in hasjrel:
@@ -217,8 +163,8 @@ def findlinestarts(code):
     Generate pairs (offset, lineno) as described in Python/compile.c.
 
     """
-    byte_increments = [ord(c) for c in code.co_lnotab[0::2]]
-    line_increments = [ord(c) for c in code.co_lnotab[1::2]]
+    byte_increments = [byte_from_code(code.co_lnotab, i) for i in range(0, len(code.co_lnotab), 2)]
+    line_increments = [byte_from_code(code.co_lnotab, i) for i in range(1, len(code.co_lnotab), 2)]
 
     lastlineno = None
     lineno = code.co_firstlineno
