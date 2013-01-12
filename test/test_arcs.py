@@ -299,25 +299,31 @@ class LoopArcTest(CoverageTest):
             arcz=".1 .2 23 32 34 47 26 67 7. 18 89 9."
             )
 
-    if 0:   # expected failure
-        def test_confusing_for_loop_bug_175(self):
-            self.check_coverage("""\
-                o = [(1,2), (3,4)]
-                o = [a for a in o]
-                for tup in o:
-                    x = tup[0]
-                    y = tup[1]
-                """,
-                arcz=".1 12 23 34 45 53 3.",
-                arcz_missing="", arcz_unpredicted="")
-            self.check_coverage("""\
-                o = [(1,2), (3,4)]
-                for tup in [a for a in o]:
-                    x = tup[0]
-                    y = tup[1]
-                """,
-                arcz=".1 12 23 34 42 2.",
-                arcz_missing="", arcz_unpredicted="")
+    def test_confusing_for_loop_bug_175(self):
+        if sys.version_info >= (3, 0):
+            # Py3 counts the list comp as a separate code object.
+            arcz = ".1 .2 2-2 12 23 34 45 53 3."
+        else:
+            arcz = ".1 12 23 34 45 53 3."
+        self.check_coverage("""\
+            o = [(1,2), (3,4)]
+            o = [a for a in o]
+            for tup in o:
+                x = tup[0]
+                y = tup[1]
+            """,
+            arcz=arcz, arcz_missing="", arcz_unpredicted="")
+        if sys.version_info >= (3, 0):
+            arcz = ".1 12 .2 2-2 23 34 42 2."
+        else:
+            arcz = ".1 12 23 34 42 2."
+        self.check_coverage("""\
+            o = [(1,2), (3,4)]
+            for tup in [a for a in o]:
+                x = tup[0]
+                y = tup[1]
+            """,
+            arcz=arcz, arcz_missing="", arcz_unpredicted="")
 
 
 class ExceptionArcTest(CoverageTest):

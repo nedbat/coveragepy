@@ -2,6 +2,14 @@
 Change history for Coverage.py
 ------------------------------
 
+Next
+----
+
+- Improved the branch coverage mechanism, fixing `issue 175`_.
+
+.. _issue 175: https://bitbucket.org/ned/coveragepy/issue/175/branch-coverage-gets-confused-in-certain
+
+
 Version 3.6 --- 5 January 2013
 ------------------------------
 

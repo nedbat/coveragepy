@@ -446,24 +446,37 @@ class ByteParser(object):
         # We have to handle the last two bytecodes specially.
         ult = penult = None
 
+        # Get a set of all of the jump-to points.
+        jump_to = set()
+        for bc in ByteCodes(self.code.co_code):
+            if bc.jump_to >= 0:
+                jump_to.add(bc.jump_to)
+
+        chunk_lineno = 0
+
+        # Walk the byte codes building chunks.
         for bc in ByteCodes(self.code.co_code):
             # Maybe have to start a new chunk
+            start_new_chunk = False
+            first_chunk = False
             if bc.offset in bytes_lines_map:
                 # Start a new chunk for each source line number.
-                if chunk:
-                    chunk.exits.add(bc.offset)
-                chunk = Chunk(bc.offset, bytes_lines_map[bc.offset])
-                chunks.append(chunk)
+                start_new_chunk = True
+                chunk_lineno = bytes_lines_map[bc.offset]
+                first_chunk = True
+            elif bc.offset in jump_to:
+                # To make chunks have a single entrance, we have to make a new
+                # chunk when we get to a place some bytecode jumps to.
+                start_new_chunk = True
             elif bc.op in OPS_CHUNK_BEGIN:
                 # Jumps deserve their own unnumbered chunk.  This fixes
                 # problems with jumps to jumps getting confused.
+                start_new_chunk = True
+
+            if not chunk or start_new_chunk:
                 if chunk:
                     chunk.exits.add(bc.offset)
-                chunk = Chunk(bc.offset)
-                chunks.append(chunk)
-
-            if not chunk:
-                chunk = Chunk(bc.offset)
+                chunk = Chunk(bc.offset, chunk_lineno, first_chunk)
                 chunks.append(chunk)
 
             # Look at the opcode
@@ -526,7 +539,9 @@ class ByteParser(object):
                             last_chunk = chunks[-1]
                             last_chunk.exits.remove(ex)
                             last_chunk.exits.add(penult.offset)
-                            chunk = Chunk(penult.offset)
+                            chunk = Chunk(
+                                penult.offset, last_chunk.line, False
+                            )
                             chunk.exits.add(ex)
                             chunks.append(chunk)
 
@@ -535,14 +550,22 @@ class ByteParser(object):
             for i in range(len(chunks)-1):
                 chunks[i].length = chunks[i+1].byte - chunks[i].byte
 
+        #self.validate_chunks(chunks)
         return chunks
+
+    def validate_chunks(self, chunks):
+        """Validate the rule that chunks have a single entrance."""
+        # starts is the entrances to the chunks
+        starts = set([ch.byte for ch in chunks])
+        for ch in chunks:
+            assert all((ex in starts or ex < 0) for ex in ch.exits)
 
     def _arcs(self):
         """Find the executable arcs in the code.
 
-        Returns a set of pairs, (from,to).  From and to are integer line
-        numbers.  If from is < 0, then the arc is an entrance into the code
-        object.  If to is < 0, the arc is an exit from the code object.
+        Yields pairs: (from,to).  From and to are integer line numbers.  If
+        from is < 0, then the arc is an entrance into the code object.  If to
+        is < 0, the arc is an exit from the code object.
 
         """
         chunks = self._split_into_chunks()
@@ -550,62 +573,43 @@ class ByteParser(object):
         # A map from byte offsets to chunks jumped into.
         byte_chunks = dict([(c.byte, c) for c in chunks])
 
-        # Build a map from byte offsets to actual lines reached.
-        byte_lines = {}
-        bytes_to_add = set([c.byte for c in chunks])
+        # There's always an entrance at the first chunk.
+        yield (-1, byte_chunks[0].line)
 
-        while bytes_to_add:
-            byte_to_add = bytes_to_add.pop()
-            if byte_to_add in byte_lines or byte_to_add < 0:
+        # Traverse from the first chunk in each line, and yield arcs where
+        # the trace function will be invoked.
+        for chunk in chunks:
+            if not chunk.first:
                 continue
 
-            # Which lines does this chunk lead to?
-            bytes_considered = set()
-            bytes_to_consider = [byte_to_add]
-            lines = set()
+            chunks_considered = set()
+            chunks_to_consider = [chunk]
+            while chunks_to_consider:
+                # Get the chunk we're considering, and make sure we don't
+                # consider it again
+                this_chunk = chunks_to_consider.pop()
+                chunks_considered.add(this_chunk)
 
-            while bytes_to_consider:
-                byte = bytes_to_consider.pop()
-                bytes_considered.add(byte)
-
-                # Find chunk for byte
-                try:
-                    ch = byte_chunks[byte]
-                except KeyError:
-                    for ch in chunks:
-                        if ch.byte <= byte < ch.byte+ch.length:
-                            break
-                    else:
-                        # No chunk for this byte!
-                        raise Exception("Couldn't find chunk @ %d" % byte)
-                    byte_chunks[byte] = ch          # pylint: disable=W0631
-
-                if ch.line:
-                    lines.add(ch.line)
-                else:
-                    for ex in ch.exits:
-                        if ex < 0:
-                            lines.add(ex)
-                        elif ex not in bytes_considered:
-                            bytes_to_consider.append(ex)
-
-                bytes_to_add.update(ch.exits)
-
-            byte_lines[byte_to_add] = lines
-
-        # Figure out for each chunk where the exits go.
-        for chunk in chunks:
-            if chunk.line:
-                for ex in chunk.exits:
+                # For each exit, add the line number if the trace function
+                # would be triggered, or add the chunk to those being
+                # considered if not.
+                for ex in this_chunk.exits:
                     if ex < 0:
-                        exit_lines = [ex]
+                        yield (chunk.line, ex)
                     else:
-                        exit_lines = byte_lines[ex]
-                    for exit_line in exit_lines:
-                        if chunk.line != exit_line:
-                            yield (chunk.line, exit_line)
-        for line in byte_lines[0]:
-            yield (-1, line)
+                        next_chunk = byte_chunks[ex]
+                        if next_chunk in chunks_considered:
+                            continue
+
+                        # The trace function is invoked if visiting the first
+                        # bytecode in a line, or if the transition is a
+                        # backward jump.
+                        backward_jump = next_chunk.byte < this_chunk.byte
+                        if next_chunk.first or backward_jump:
+                            if next_chunk.line != chunk.line:
+                                yield (chunk.line, next_chunk.line)
+                        else:
+                            chunks_to_consider.append(next_chunk)
 
     def _all_chunks(self):
         """Returns a list of `Chunk` objects for this code and its children.
@@ -645,17 +649,26 @@ class Chunk(object):
 
     .. _basic block: http://en.wikipedia.org/wiki/Basic_block
 
+    `line` is the source line number containing this chunk.
+
+    `first` is true if this is the first chunk in the source line.
+
     An exit < 0 means the chunk can leave the code (return).  The exit is
     the negative of the starting line number of the code block.
 
     """
-    def __init__(self, byte, line=0):
+    def __init__(self, byte, line, first):
         self.byte = byte
         self.line = line
+        self.first = first
         self.length = 0
         self.exits = set()
 
     def __repr__(self):
-        return "<%d+%d @%d %r>" % (
-            self.byte, self.length, self.line, list(self.exits)
+        if self.first:
+            bang = "!"
+        else:
+            bang = ""
+        return "<%d+%d @%d%s %r>" % (
+            self.byte, self.length, self.line, bang, list(self.exits)
             )
