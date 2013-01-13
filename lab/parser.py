@@ -118,10 +118,14 @@ class ParserMain(object):
             else:
                 srclines = None
             print("\n%s: " % bp.code)
+            upto = None
             for disline in disgen.disgen(bp.code):
                 if disline.first:
                     if srclines:
-                        print("%100s%s" % ("", srclines[disline.lineno-1]))
+                        upto = upto or disline.lineno-1
+                        while upto <= disline.lineno-1:
+                            print("%100s%s" % ("", srclines[upto]))
+                            upto += 1
                     elif disline.offset > 0:
                         print("")
                 line = disgen.format_dis_line(disline)

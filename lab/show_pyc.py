@@ -12,6 +12,9 @@ def show_pyc_file(fname):
 
 def show_py_file(fname):
     text = open(fname).read().replace('\r\n', '\n')
+    show_py_text(text, fname=fname)
+
+def show_py_text(text, fname="<string>"):
     code = compile(text, fname, "exec")
     show_code(code)
 
@@ -55,10 +58,13 @@ def show_file(fname):
         show_py_file(fname)
     else:
         print "Odd file:", fname
-        
+
 def main(args):
-    for a in args:
-        show_file(a)
-        
+    if args[0] == '-c':
+        show_py_text(" ".join(args[1:]).replace(";", "\n"))
+    else:
+        for a in args:
+            show_file(a)
+
 if __name__ == '__main__':
     main(sys.argv[1:])
