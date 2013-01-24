@@ -2,8 +2,8 @@
 Change history for Coverage.py
 ------------------------------
 
-Next
-----
+3.6.1
+-----
 
 - Improved the branch coverage mechanism, fixing `issue 175`_.
 
