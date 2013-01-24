@@ -194,6 +194,7 @@ def do_check_eol():
     check_files("test/js", ["*.js", "*.html"])
     check_file("setup.py")
     check_file("igor.py")
+    check_file("Makefile")
     check_files("doc", ["*.rst"])
     check_files(".", ["*.txt"])
 

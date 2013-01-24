@@ -40,7 +40,7 @@ pep8:
 tests:
 	tox -e py27 $(ARGS)
 
-metacov: 
+metacov:
 	COVERAGE_COVERAGE=yes tox $(ARGS)
 
 metahtml:
@@ -55,7 +55,7 @@ kit:
 
 kit_upload:
 	$(SDIST_CMD) upload
-	
+
 pypi:
 	python setup.py register
 
