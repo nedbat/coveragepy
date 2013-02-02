@@ -6,8 +6,8 @@ import coverage
 from coverage.backward import sorted, StringIO      # pylint: disable=W0622
 from coverage.backward import to_bytes
 from coverage.control import _TEST_NAME_FILE
-from test.backtest import run_command
-from test.backunittest import TestCase
+from tests.backtest import run_command
+from tests.backunittest import TestCase
 
 class Tee(object):
     """A file-like that writes to all the file-likes it has."""
@@ -452,8 +452,8 @@ class CoverageTest(TestCase):
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...
         here = os.path.dirname(self.nice_file(coverage.__file__, ".."))
-        testmods = self.nice_file(here, 'test/modules')
-        zipfile = self.nice_file(here, 'test/zipmods.zip')
+        testmods = self.nice_file(here, 'tests/modules')
+        zipfile = self.nice_file(here, 'tests/zipmods.zip')
         pypath = os.getenv('PYTHONPATH', '')
         if pypath:
             pypath += os.pathsep

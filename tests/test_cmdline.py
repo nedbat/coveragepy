@@ -6,7 +6,7 @@ import coverage
 import coverage.cmdline
 from coverage.misc import ExceptionDuringRun
 
-from test.coveragetest import CoverageTest, OK, ERR
+from tests.coveragetest import CoverageTest, OK, ERR
 
 
 class CmdLineTest(CoverageTest):

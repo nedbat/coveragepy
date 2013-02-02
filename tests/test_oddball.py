@@ -3,8 +3,8 @@
 import os, sys
 import coverage
 
-from test.coveragetest import CoverageTest
-from test import osinfo
+from tests.coveragetest import CoverageTest
+from tests import osinfo
 
 class ThreadingTest(CoverageTest):
     """Tests of the threading support."""

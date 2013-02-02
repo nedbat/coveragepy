@@ -2,7 +2,7 @@
 
 from coverage.misc import Hasher, file_be_gone
 from coverage import __version__, __url__
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 class HasherTest(CoverageTest):
     """Test our wrapper of md5 hashing."""

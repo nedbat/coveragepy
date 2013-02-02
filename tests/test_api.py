@@ -5,7 +5,7 @@ import fnmatch, os, re, sys, textwrap
 import coverage
 from coverage.backward import StringIO
 
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 
 class SingletonApiTest(CoverageTest):

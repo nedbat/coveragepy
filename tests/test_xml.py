@@ -3,7 +3,7 @@
 import os, re
 import coverage
 
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 class XmlReportTest(CoverageTest):
     """Tests of the XML reports from coverage.py."""

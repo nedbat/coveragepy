@@ -5,7 +5,7 @@ import os, re, sys
 import coverage
 from coverage.backward import StringIO
 
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 class SummaryTest(CoverageTest):
     """Tests of the text summary reporting for coverage.py."""
@@ -44,15 +44,15 @@ class SummaryTest(CoverageTest):
 
         # Name                                              Stmts   Miss  Cover
         # ---------------------------------------------------------------------
-        # c:/ned/coverage/trunk/test/modules/covmod1            2      0   100%
-        # c:/ned/coverage/trunk/test/zipmods.zip/covmodzip1     2      0   100%
+        # c:/ned/coverage/trunk/tests/modules/covmod1           2      0   100%
+        # c:/ned/coverage/trunk/tests/zipmods.zip/covmodzip1    2      0   100%
         # mycode                                                4      0   100%
         # ---------------------------------------------------------------------
         # TOTAL                                                 8      0   100%
 
         self.assertNotIn("/coverage/__init__/", report)
-        self.assertIn("/test/modules/covmod1 ", report)
-        self.assertIn("/test/zipmods.zip/covmodzip1 ", report)
+        self.assertIn("/tests/modules/covmod1 ", report)
+        self.assertIn("/tests/zipmods.zip/covmodzip1 ", report)
         self.assertIn("mycode ", report)
         self.assertEqual(self.last_line_squeezed(report), "TOTAL 8 0 100%")
 
@@ -67,8 +67,8 @@ class SummaryTest(CoverageTest):
 
         self.assertEqual(self.line_count(report), 3)
         self.assertNotIn("/coverage/", report)
-        self.assertNotIn("/test/modules/covmod1 ", report)
-        self.assertNotIn("/test/zipmods.zip/covmodzip1 ", report)
+        self.assertNotIn("/tests/modules/covmod1 ", report)
+        self.assertNotIn("/tests/zipmods.zip/covmodzip1 ", report)
         self.assertIn("mycode ", report)
         self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
@@ -84,8 +84,8 @@ class SummaryTest(CoverageTest):
 
         self.assertEqual(self.line_count(report), 3)
         self.assertNotIn("/coverage/", report)
-        self.assertNotIn("/test/modules/covmod1 ", report)
-        self.assertNotIn("/test/zipmods.zip/covmodzip1 ", report)
+        self.assertNotIn("/tests/modules/covmod1 ", report)
+        self.assertNotIn("/tests/zipmods.zip/covmodzip1 ", report)
         self.assertIn("mycode ", report)
         self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
@@ -100,8 +100,8 @@ class SummaryTest(CoverageTest):
 
         self.assertEqual(self.line_count(report), 3)
         self.assertNotIn("/coverage/", report)
-        self.assertNotIn("/test/modules/covmod1 ", report)
-        self.assertNotIn("/test/zipmods.zip/covmodzip1 ", report)
+        self.assertNotIn("/tests/modules/covmod1 ", report)
+        self.assertNotIn("/tests/zipmods.zip/covmodzip1 ", report)
         self.assertIn("mycode ", report)
         self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
@@ -259,8 +259,8 @@ class SummaryTest2(CoverageTest):
 
         report = repout.getvalue().replace('\\', '/')
         report = re.sub(r"\s+", " ", report)
-        self.assertIn("test/modules/pkg1/__init__ 1 0 100%", report)
-        self.assertIn("test/modules/pkg2/__init__ 0 0 100%", report)
+        self.assertIn("tests/modules/pkg1/__init__ 1 0 100%", report)
+        self.assertIn("tests/modules/pkg2/__init__ 0 0 100%", report)
 
 
 class ReportingReturnValue(CoverageTest):

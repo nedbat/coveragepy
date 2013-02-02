@@ -5,7 +5,7 @@ import os, sys
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import NoSource
 
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 here = os.path.dirname(__file__)
 

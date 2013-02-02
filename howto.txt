@@ -91,4 +91,4 @@
 
 - To run the Javascript tests:
 
-    open test/js/index.html in variety of browsers.
+    open tests/js/index.html in variety of browsers.

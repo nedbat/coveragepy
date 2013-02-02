@@ -113,9 +113,9 @@ To limit tox to just a few versions of Python, use the ``-e`` switch::
 
 To run just a few tests, you can use nose test selector syntax::
 
-    $ tox test.test_misc:SetupPyTest.test_metadata
+    $ tox tests.test_misc:SetupPyTest.test_metadata
 
-This looks in `test/test_misc.py` to find the `SetupPyTest` class, and runs the
+This looks in `tests/test_misc.py` to find the `SetupPyTest` class, and runs the
 `test_metadata` test method.
 
 Of course, run all the tests on every version of Python you have, before
@@ -129,8 +129,8 @@ I try to keep the coverage.py as clean as possible.  I use pylint to alert me
 to possible problems::
 
     $ make lint
-    pylint --rcfile=.pylintrc coverage setup.py test
-    python -m tabnanny coverage setup.py test
+    pylint --rcfile=.pylintrc coverage setup.py tests
+    python -m tabnanny coverage setup.py tests
     python igor.py check_eol
 
 The source is pylint-clean, even if it's because there are pragmas quieting

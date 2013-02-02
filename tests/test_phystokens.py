@@ -1,7 +1,7 @@
 """Tests for Coverage.py's improved tokenizer."""
 
 import os, re
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 from coverage.phystokens import source_token_lines
 
 

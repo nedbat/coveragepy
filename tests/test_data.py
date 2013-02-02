@@ -4,7 +4,7 @@ from coverage.backward import pickle
 from coverage.data import CoverageData
 from coverage.files import PathAliases
 
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 
 DATA_1 = { 'a.py': {1:None, 2:None}, 'b.py': {3:None} }

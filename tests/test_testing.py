@@ -3,8 +3,8 @@
 
 import os, sys
 from coverage.backward import to_bytes, rpartition
-from test.backunittest import TestCase
-from test.coveragetest import CoverageTest
+from tests.backunittest import TestCase
+from tests.coveragetest import CoverageTest
 
 from coverage.backward import set                   # pylint: disable=W0622
 

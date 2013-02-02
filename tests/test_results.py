@@ -1,7 +1,7 @@
 """Tests for Coverage.py's results analysis."""
 
 from coverage.results import Numbers
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 
 class NumbersTest(CoverageTest):

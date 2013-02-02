@@ -4,7 +4,7 @@ import glob, os, sys, textwrap
 from nose.plugins.skip import SkipTest
 import coverage
 
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 here = os.path.dirname(__file__)
 
@@ -327,8 +327,8 @@ class ProcessTest(CoverageTest):
     if sys.version_info >= (2, 6):  # Doesn't work in 2.5, and I don't care!
         def test_coverage_run_dashm_is_like_python_dashm(self):
             # These -m commands assume the coverage tree is on the path.
-            out = self.run_command("coverage run -m test.try_execfile")
-            out2 = self.run_command("python -m test.try_execfile")
+            out = self.run_command("coverage run -m tests.try_execfile")
+            out2 = self.run_command("python -m tests.try_execfile")
             self.assertMultiLineEqual(out, out2)
 
     if 0:   # Expected failure

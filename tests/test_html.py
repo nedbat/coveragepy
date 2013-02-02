@@ -5,7 +5,7 @@ import os.path, re, sys
 import coverage
 from coverage.misc import NotPython, NoSource
 
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 class HtmlTestHelpers(CoverageTest):
     """Methods that help with HTML tests."""

@@ -3,14 +3,14 @@
 import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
 from nose.plugins.skip import SkipTest
 
-from test.backtest import run_command, execfile      # pylint: disable=W0622
+from tests.backtest import run_command, execfile      # pylint: disable=W0622
 
 from coverage.control import _TEST_NAME_FILE
 
 
 def test_farm(clean_only=False):
     """A test-generating function for nose to find and run."""
-    for fname in glob.glob("test/farm/*/*.py"):
+    for fname in glob.glob("tests/farm/*/*.py"):
         case = FarmTestCase(fname, clean_only)
         yield (case,)
 

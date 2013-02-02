@@ -1,7 +1,7 @@
 """Tests for Coverage.py's code parsing."""
 
 import textwrap
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 from coverage.parser import CodeParser
 
 

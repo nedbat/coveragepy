@@ -122,8 +122,8 @@ def do_test_with_tracer(tracer, *noseargs):
 
 def do_zip_mods():
     """Build the zipmods.zip file."""
-    zf = zipfile.ZipFile("test/zipmods.zip", "w")
-    zf.write("test/covmodzip1.py", "covmodzip1.py")
+    zf = zipfile.ZipFile("tests/zipmods.zip", "w")
+    zf.write("tests/covmodzip1.py", "covmodzip1.py")
     zf.close()
 
 def do_install_egg():
@@ -132,7 +132,7 @@ def do_install_egg():
     # pylint: disable=F0401,E0611,E1101
     import distutils.core
     cur_dir = os.getcwd()
-    os.chdir("test/eggsrc")
+    os.chdir("tests/eggsrc")
     distutils.core.run_setup("setup.py", ["--quiet", "bdist_egg"])
     egg = glob.glob("dist/*.egg")[0]
     distutils.core.run_setup(
@@ -188,10 +188,10 @@ def do_check_eol():
 
     check_files("coverage", ["*.py", "*.c"])
     check_files("coverage/htmlfiles", ["*.html", "*.css", "*.js"])
-    check_file("test/farm/html/src/bom.py", crlf=False)
-    check_files("test", ["*.py"])
-    check_files("test", ["*,cover"], trail_white=False)
-    check_files("test/js", ["*.js", "*.html"])
+    check_file("tests/farm/html/src/bom.py", crlf=False)
+    check_files("tests", ["*.py"])
+    check_files("tests", ["*,cover"], trail_white=False)
+    check_files("tests/js", ["*.js", "*.html"])
     check_file("setup.py")
     check_file("igor.py")
     check_file("Makefile")

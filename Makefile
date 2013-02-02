@@ -3,13 +3,13 @@
 default:
 	@echo "* No default action *"
 
-TEST_ZIP = test/zipmods.zip
-TEST_EGG = test/eggsrc/dist/covtestegg1-0.0.0-py*.egg
+TEST_ZIP = tests/zipmods.zip
+TEST_EGG = tests/eggsrc/dist/covtestegg1-0.0.0-py*.egg
 
 clean:
 	-rm -f *.pyd */*.pyd
 	-rm -f *.so */*.so
-	PYTHONPATH=. python test/test_farm.py clean
+	PYTHONPATH=. python tests/test_farm.py clean
 	-rm -rf build coverage.egg-info dist htmlcov
 	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
 	-rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
@@ -20,14 +20,14 @@ clean:
 	-rm -f MANIFEST
 	-rm -f .coverage .coverage.* coverage.xml
 	-rm -f $(TEST_ZIP)
-	-rm -rf test/eggsrc/build test/eggsrc/dist test/eggsrc/*.egg-info
+	-rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	-rm -rf doc/_build
 
 sterile: clean
 	-rm -rf .tox*
 
-LINTABLE = coverage igor.py setup.py test
+LINTABLE = coverage igor.py setup.py tests
 
 lint:
 	-pylint --rcfile=.pylintrc $(LINTABLE)
@@ -37,7 +37,7 @@ lint:
 pep8:
 	pep8 --filename=*.py --ignore=E401,E301 --repeat coverage
 
-tests:
+test:
 	tox -e py27 $(ARGS)
 
 metacov:

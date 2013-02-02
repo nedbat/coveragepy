@@ -5,7 +5,7 @@ import os, sys
 from coverage.codeunit import code_unit_factory
 from coverage.files import FileLocator
 
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 # pylint: disable=F0401
 # Unable to import 'aa' (No module named aa)

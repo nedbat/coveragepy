@@ -1,7 +1,7 @@
 """Tests for Coverage.py's arc measurement."""
 
 import sys
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 
 class SimpleArcTest(CoverageTest):

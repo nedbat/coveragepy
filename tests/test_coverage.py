@@ -4,7 +4,7 @@
 import sys
 import coverage
 from coverage.misc import CoverageException
-from test.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest
 
 
 class TestCoverageTest(CoverageTest):
