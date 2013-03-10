@@ -51,6 +51,7 @@ class PyTracer(object):
         self.last_exc_back = None
         self.last_exc_firstlineno = 0
         self.arcs = False
+        self.thread = None
 
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
@@ -118,18 +119,21 @@ class PyTracer(object):
         Return a Python function suitable for use with sys.settrace().
 
         """
+        self.thread = threading.currentThread()
         sys.settrace(self._trace)
         return self._trace
 
     def stop(self):
         """Stop this Tracer."""
+        if self.thread != threading.currentThread():
+            # Called on a different thread than started us: do nothing.
+            return
+
         if hasattr(sys, "gettrace") and self.warn:
             if sys.gettrace() != self._trace:
                 msg = "Trace function changed, measurement is likely wrong: %r"
                 self.warn(msg % (sys.gettrace(),))
-                #--debug
-                #from coverage.misc import short_stack
-                #self.warn(msg % (sys.gettrace()))#, short_stack()))
+        #print("Stopping tracer on %s" % threading.current_thread().ident)
         sys.settrace(None)
 
     def get_stats(self):

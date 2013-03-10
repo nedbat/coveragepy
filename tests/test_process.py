@@ -430,6 +430,39 @@ class ProcessTest(CoverageTest):
         self.assertNotIn("warning", out)
         self.assertNotIn("Exception", out)
 
+    def test_warnings_trace_function_changed_with_threads(self):
+        # https://bitbucket.org/ned/coveragepy/issue/164
+        self.make_file("bug164.py", """\
+            import threading
+            import time
+
+            class MyThread (threading.Thread):
+                def run(self):
+                    print("Hello")
+
+            thr = MyThread()
+            thr.start()
+            thr.join()
+            """)
+        out = self.run_command("coverage run --timid bug164.py")
+
+        self.assertIn("Hello\n", out)
+        self.assertNotIn("warning", out)
+
+    def test_warning_trace_function_changed(self):
+        self.make_file("settrace.py", """\
+            import sys
+            print("Hello")
+            sys.settrace(None)
+            print("Goodbye")
+            """)
+        out = self.run_command("coverage run --timid settrace.py")
+        self.assertIn("Hello\n", out)
+        self.assertIn("Goodbye\n", out)
+
+        if hasattr(sys, "gettrace"):
+            self.assertIn("Trace function changed", out)
+
     if sys.version_info >= (3, 0):   # This only works on 3.x for now.
         # It only works with the C tracer,
         c_tracer = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
