@@ -7,6 +7,11 @@ Change history for Coverage.py
 
 - Improved the branch coverage mechanism, fixing `issue 175`_.
 
+- When running a threaded program under the Python tracer, coverage would issue
+  a spurious warning about the trace function changing: "Trace function
+  changed, measurement is likely wrong: None." This is now fixed.
+
+.. _issue 164: https://bitbucket.org/ned/coveragepy/issue/164/trace-function-changed-warning-when-using
 .. _issue 175: https://bitbucket.org/ned/coveragepy/issue/175/branch-coverage-gets-confused-in-certain
 
 
