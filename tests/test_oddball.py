@@ -306,7 +306,10 @@ class ExceptionTest(CoverageTest):
             lines = cov.data.line_data()
             clean_lines = {}
             for f, llist in lines.items():
-                if f == __file__:
+                # f is a path to a python module, so we drop the '.py' to get
+                # a callname
+                callname = os.path.basename(f)[:-3]
+                if callname not in callnames:
                     # ignore this file.
                     continue
                 clean_lines[os.path.basename(f)] = llist

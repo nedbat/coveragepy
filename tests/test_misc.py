@@ -1,4 +1,5 @@
 """Tests of miscellaneous stuff."""
+import sys
 
 from coverage.misc import Hasher, file_be_gone
 from coverage import __version__, __url__
@@ -61,6 +62,8 @@ class SetupPyTest(CoverageTest):
         self.assertIn("Ned Batchelder", out[3])
 
     def test_more_metadata(self):
+        # Let's be sure we pick up our own setup.py
+        sys.path.insert(0, '')
         from setup import setup_args
 
         classifiers = setup_args['classifiers']
