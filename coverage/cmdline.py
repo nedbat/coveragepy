@@ -1,6 +1,6 @@
 """Command-line support for Coverage."""
 
-import optparse, sys, traceback
+import optparse, os, sys, traceback
 
 from coverage.backward import sorted                # pylint: disable=W0622
 from coverage.execfile import run_python_file, run_python_module
@@ -549,15 +549,21 @@ class CoverageScript(object):
     def do_execute(self, options, args):
         """Implementation of 'coverage run'."""
 
+        # Set the first path element properly.
+        old_path0 = sys.path[0]
+
         # Run the script.
         self.coverage.start()
         code_ran = True
         try:
             try:
                 if options.module:
+                    sys.path[0] = ''
                     self.run_python_module(args[0], args)
                 else:
-                    self.run_python_file(args[0], args)
+                    filename = args[0]
+                    sys.path[0] = os.path.abspath(os.path.dirname(filename))
+                    self.run_python_file(filename, args)
             except NoSource:
                 code_ran = False
                 raise
@@ -565,6 +571,9 @@ class CoverageScript(object):
             self.coverage.stop()
             if code_ran:
                 self.coverage.save()
+
+            # Restore the old path
+            sys.path[0] = old_path0
 
     def do_debug(self, args):
         """Implementation of 'coverage debug'."""

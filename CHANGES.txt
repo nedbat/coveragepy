@@ -7,13 +7,17 @@ Change history for Coverage.py
 
 - Improved the branch coverage mechanism, fixing `issue 175`_.
 
+- Running code with ``coverage run -m`` now behaves more like Python does,
+  setting sys.path properly, which fixes `issue 207`_ and `issue 242`.
+
 - When running a threaded program under the Python tracer, coverage would issue
   a spurious warning about the trace function changing: "Trace function
   changed, measurement is likely wrong: None." This is now fixed.
 
 .. _issue 164: https://bitbucket.org/ned/coveragepy/issue/164/trace-function-changed-warning-when-using
 .. _issue 175: https://bitbucket.org/ned/coveragepy/issue/175/branch-coverage-gets-confused-in-certain
-
+.. _issue 207: https://bitbucket.org/ned/coveragepy/issue/207/run-m-cannot-find-module-or-package-in
+.. _issue 242: https://bitbucket.org/ned/coveragepy/issue/242/running-a-two-level-package-doesnt-work
 
 Version 3.6 --- 5 January 2013
 ------------------------------

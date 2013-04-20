@@ -320,25 +320,38 @@ class ProcessTest(CoverageTest):
     def test_coverage_run_is_like_python(self):
         tryfile = os.path.join(here, "try_execfile.py")
         self.make_file("run_me.py", open(tryfile).read())
-        out = self.run_command("coverage run run_me.py")
-        out2 = self.run_command("python run_me.py")
-        self.assertMultiLineEqual(out, out2)
+        out_cov = self.run_command("coverage run run_me.py")
+        out_py = self.run_command("python run_me.py")
+        self.assertMultiLineEqual(out_cov, out_py)
 
-    if sys.version_info >= (2, 6):  # Doesn't work in 2.5, and I don't care!
+    if sys.version_info >= (2, 6):
+        # Doesn't work in 2.5, and I don't care! For some reason, python -m
+        # in 2.5 has __builtins__ as a dictionary instead of a module?
         def test_coverage_run_dashm_is_like_python_dashm(self):
             # These -m commands assume the coverage tree is on the path.
-            out = self.run_command("coverage run -m tests.try_execfile")
-            out2 = self.run_command("python -m tests.try_execfile")
-            self.assertMultiLineEqual(out, out2)
+            out_cov = self.run_command("coverage run -m tests.try_execfile")
+            out_py = self.run_command("python -m tests.try_execfile")
+            self.assertMultiLineEqual(out_cov, out_py)
 
-    if 0:   # Expected failure
-        # For https://bitbucket.org/ned/coveragepy/issue/207
+        def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
+            # https://bitbucket.org/ned/coveragepy/issue/242
+            tryfile = os.path.join(here, "try_execfile.py")
+            self.make_file("sub/__init__.py", "")
+            self.make_file("sub/run_me.py", open(tryfile).read())
+            out_cov = self.run_command("coverage run -m sub.run_me")
+            out_py = self.run_command("python -m sub.run_me")
+            self.assertMultiLineEqual(out_cov, out_py)
+
+    if sys.version_info >= (2, 7):
+        # Coverage isn't bug-for-bug compatible in the behavior of -m for
+        # Pythons < 2.7
         def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
-            self.make_file("package/__init__.py")   # empty
-            self.make_file("package/__main__.py", "#\n")   # empty
-            out = self.run_command("coverage run -m package")
-            out2 = self.run_command("python -m package")
-            self.assertMultiLineEqual(out, out2)
+            # https://bitbucket.org/ned/coveragepy/issue/207
+            self.make_file("package/__init__.py", "print('init')")
+            self.make_file("package/__main__.py", "print('main')")
+            out_cov = self.run_command("coverage run -m package")
+            out_py = self.run_command("python -m package")
+            self.assertMultiLineEqual(out_cov, out_py)
 
     if hasattr(os, 'fork'):
         def test_fork(self):

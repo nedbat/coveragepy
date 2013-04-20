@@ -65,6 +65,7 @@ def run_python_module(modulename, args):
             openfile.close()
 
     # Finally, hand the file off to run_python_file for execution.
+    pathname = os.path.abspath(pathname)
     args[0] = pathname
     run_python_file(pathname, args, package=packagename)
 
@@ -87,14 +88,9 @@ def run_python_file(filename, args, package=None):
         main_mod.__package__ = package
     main_mod.__builtins__ = BUILTINS
 
-    # Set sys.argv and the first path element properly.
+    # Set sys.argv properly.
     old_argv = sys.argv
-    old_path0 = sys.path[0]
     sys.argv = args
-    if package:
-        sys.path[0] = ''
-    else:
-        sys.path[0] = os.path.abspath(os.path.dirname(filename))
 
     try:
         # Open the source file.
@@ -135,4 +131,3 @@ def run_python_file(filename, args, package=None):
 
         # Restore the old argv and path
         sys.argv = old_argv
-        sys.path[0] = old_path0
