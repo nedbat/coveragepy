@@ -127,9 +127,8 @@ def prep_patterns(patterns):
     If `patterns` is None, an empty list is returned.
 
     """
-    patterns = patterns or []
     prepped = []
-    for p in patterns:
+    for p in patterns or []:
         if p.startswith("*") or p.startswith("?"):
             prepped.append(p)
         else:

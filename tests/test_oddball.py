@@ -308,11 +308,10 @@ class ExceptionTest(CoverageTest):
             for f, llist in lines.items():
                 # f is a path to a python module, so we drop the '.py' to get
                 # a callname
-                callname = os.path.basename(f)[:-3]
-                if callname not in callnames:
-                    # ignore this file.
-                    continue
-                clean_lines[os.path.basename(f)] = llist
+                basename = os.path.basename(f)
+                assert basename.endswith(".py")
+                if basename[:-3] in callnames:
+                    clean_lines[basename] = llist
             self.assertEqual(clean_lines, lines_expected)
 
 
