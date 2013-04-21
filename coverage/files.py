@@ -129,7 +129,7 @@ def prep_patterns(patterns):
     """
     patterns = patterns or []
     prepped = []
-    for p in patterns or []:
+    for p in patterns:
         if p.startswith("*") or p.startswith("?"):
             prepped.append(p)
         else:
