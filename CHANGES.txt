@@ -8,7 +8,11 @@ Change history for Coverage.py
 - Improved the branch coverage mechanism, fixing `issue 175`_.
 
 - Running code with ``coverage run -m`` now behaves more like Python does,
-  setting sys.path properly, which fixes `issue 207`_ and `issue 242`.
+  setting sys.path properly, which fixes `issue 207`_ and `issue 242`_.
+
+- Omitting files within a tree specified with the ``source`` option would
+  cause them to be incorrectly marked as unexecuted, as described in
+  `issue 218`_.  This is now fixed.
 
 - When running a threaded program under the Python tracer, coverage would issue
   a spurious warning about the trace function changing: "Trace function
@@ -18,6 +22,8 @@ Change history for Coverage.py
 .. _issue 175: https://bitbucket.org/ned/coveragepy/issue/175/branch-coverage-gets-confused-in-certain
 .. _issue 207: https://bitbucket.org/ned/coveragepy/issue/207/run-m-cannot-find-module-or-package-in
 .. _issue 242: https://bitbucket.org/ned/coveragepy/issue/242/running-a-two-level-package-doesnt-work
+.. _issue 218: https://bitbucket.org/ned/coveragepy/issue/218/run-command-does-not-respect-the-omit-flag
+
 
 Version 3.6 --- 5 January 2013
 ------------------------------

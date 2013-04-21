@@ -499,6 +499,12 @@ class coverage(object):
             for src in self.source:
                 for py_file in find_python_files(src):
                     py_file = self.file_locator.canonical_filename(py_file)
+
+                    if self.omit_match and self.omit_match.match(py_file):
+                        # Turns out this file was omitted, so don't pull it
+                        # back in as unexecuted.
+                        continue
+
                     self.data.touch_file(py_file)
 
             self._measured = False

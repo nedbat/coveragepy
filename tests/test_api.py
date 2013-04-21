@@ -430,7 +430,7 @@ class OmitIncludeTestsMixin(UsingModulesMixin):
         self.filenames_not_in(result, "p1a p1c p2a othera osa")
 
     def test_omit_and_include(self):
-        result = self.coverage_usepkgs( include=["*/p1*"], omit=["*/p1a.py"])
+        result = self.coverage_usepkgs(include=["*/p1*"], omit=["*/p1a.py"])
         self.filenames_in(result, "p1b")
         self.filenames_not_in(result, "p1a p1c p2a p2b")
 
@@ -466,6 +466,16 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         lines = self.coverage_usepkgs(source=["pkg1.p1b"])
         self.filenames_in(lines, "p1b")
         self.filenames_not_in(lines, "p1a p1c p2a p2b othera otherb osa osb")
+
+    def test_source_package_part_omitted(self):
+        # https://bitbucket.org/ned/coveragepy/issue/218
+        # Used to be if you omitted something executed and inside the source,
+        # then after it was executed but not recorded, it would be found in
+        # the search for unexecuted files, and given a score of 0%.
+        lines = self.coverage_usepkgs(source=["pkg1"], omit=["pkg1/p1b.py"])
+        self.filenames_in(lines, "p1a")
+        self.filenames_not_in(lines, "p1b")
+        self.assertEqual(lines['p1c'], 0)
 
 
 class ReportIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
