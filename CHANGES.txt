@@ -253,7 +253,7 @@ Version 3.5.2b1 --- 29 April 2012
   of the execution environment weren't the same as for
   ``python -m <modulename>``.  This had the unfortunate side-effect of making
   ``coverage run -m unittest discover`` not work if you had tests in a
-  directory named "test".  This fixes `issue 155`_.
+  directory named "test".  This fixes `issue 155`_ and `issue 142`_.
 
 - Now the exit status of your product code is properly used as the process
   status when running ``python -m coverage run ...``.  Thanks, JT Olds.
@@ -262,6 +262,7 @@ Version 3.5.2b1 --- 29 April 2012
   the C tracer function, closing `issue 166`_.
 
 .. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
+.. _issue 142: https://bitbucket.org/ned/coveragepy/issue/142/executing-python-file-syspath-is-replaced
 .. _issue 155: https://bitbucket.org/ned/coveragepy/issue/155/cant-use-coverage-run-m-unittest-discover
 .. _issue 157: https://bitbucket.org/ned/coveragepy/issue/157/chokes-on-source-files-with-non-utf-8
 .. _issue 166: https://bitbucket.org/ned/coveragepy/issue/166/dont-try-to-compile-c-extension-on-pypy
