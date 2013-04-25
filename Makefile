@@ -30,7 +30,7 @@ sterile: clean
 LINTABLE = coverage igor.py setup.py tests
 
 lint:
-	-pylint --rcfile=.pylintrc $(LINTABLE)
+	-pylint $(LINTABLE)
 	python -m tabnanny $(LINTABLE)
 	python igor.py check_eol
 
