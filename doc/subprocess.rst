@@ -64,3 +64,8 @@ The .pth technique seems like a hack, but works, and is documented behavior.
 On the plus side, you can create the file with any name you like so you don't
 have to coordinate with other .pth files.  On the minus side, you have to create
 the file in a system-defined directory, so you may need privileges to write it.
+
+Note that if you use one of these techniques, you must undo them if you
+uninstall coverage.py, since you will now me trying to import it during Python
+startup.  Be sure to remove the change when you uninstall coverage.py, or use a
+more defensive approach to importing it.
