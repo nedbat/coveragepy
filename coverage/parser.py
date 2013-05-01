@@ -418,6 +418,13 @@ class ByteParser(object):
             for _, l in bp._bytes_lines():
                 yield l
 
+    def _block_stack_repr(self, block_stack):
+        """Get a string version of `block_stack`, for debugging."""
+        blocks = ", ".join(
+            ["(%s, %r)" % (opcode.opname[b[0]], b[1]) for b in block_stack]
+        )
+        return "[" + blocks + "]"
+
     def _split_into_chunks(self):
         """Split the code object into a list of `Chunk` objects.
 
@@ -508,6 +515,7 @@ class ByteParser(object):
                 if block_stack:
                     # A break that goes through a finally will jump to whatever
                     # block is on top of the stack.
+                    # print self._block_stack_repr(block_stack)
                     chunk.exits.add(block_stack[-1][1])
                 # For the finally clause we need to find the closest exception
                 # block, and use its jump target as an exit.
