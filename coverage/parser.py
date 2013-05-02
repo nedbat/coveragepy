@@ -1,6 +1,6 @@
 """Code parsing for Coverage."""
 
-import opcode, re, sys, token, tokenize
+import dis, re, sys, token, tokenize
 
 from coverage.backward import set, sorted, StringIO # pylint: disable=W0622
 from coverage.backward import open_source, range    # pylint: disable=W0622
@@ -270,8 +270,8 @@ class CodeParser(object):
 ## Opcodes that guide the ByteParser.
 
 def _opcode(name):
-    """Return the opcode by name from the opcode module."""
-    return opcode.opmap[name]
+    """Return the opcode by name from the dis module."""
+    return dis.opmap[name]
 
 def _opcode_set(*names):
     """Return a set of opcodes by the names in `names`."""
@@ -421,7 +421,7 @@ class ByteParser(object):
     def _block_stack_repr(self, block_stack):
         """Get a string version of `block_stack`, for debugging."""
         blocks = ", ".join(
-            ["(%s, %r)" % (opcode.opname[b[0]], b[1]) for b in block_stack]
+            ["(%s, %r)" % (dis.opname[b[0]], b[1]) for b in block_stack]
         )
         return "[" + blocks + "]"
 
