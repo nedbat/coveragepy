@@ -167,6 +167,18 @@ if sys.version_info >= (2, 6):
                 arcz=".1 .2 23 34 4. 16 6."
                 )
 
+        def test_bug_146(self):
+            # https://bitbucket.org/ned/coveragepy/issue/146
+            self.check_coverage("""\
+                for i in range(2):
+                    with open("test", "w") as f:
+                        print 3
+                    print 4
+                print 5
+                """,
+                arcz=".1 12 23 34 41 15 5."
+                )
+
 
 class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""
