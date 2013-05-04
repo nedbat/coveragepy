@@ -172,9 +172,9 @@ if sys.version_info >= (2, 6):
             self.check_coverage("""\
                 for i in range(2):
                     with open("test", "w") as f:
-                        print 3
-                    print 4
-                print 5
+                        print(3)
+                    print(4)
+                print(5)
                 """,
                 arcz=".1 12 23 34 41 15 5."
                 )
@@ -509,6 +509,26 @@ class ExceptionArcTest(CoverageTest):
                 """,
                 arcz=".1 12 23 35 56 61 17 7.",
                 arcz_missing="", arcz_unpredicted="")
+
+    def test_bug_212(self):
+        self.check_coverage("""\
+            def b(exc):
+                try:
+                    while True:
+                        raise Exception(exc)
+                except Exception as e:
+                    if e.args != ('expected',):
+                        raise e
+                    q = 1
+
+            b('expected')
+            try:
+                b('unexpected')
+            except:
+                pass
+            """,
+            arcz=".1 .2 1A 23 34 56 67 68 8. 85 AB BC C. DE E.",
+            arcz_missing="")
 
     if sys.version_info >= (2, 5):
         # Try-except-finally was new in 2.5
