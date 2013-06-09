@@ -512,11 +512,6 @@ class ByteParser(object):
                     chunk.exits.add(block_stack[-1][1])
                 chunk = None
             if bc.op == OP_END_FINALLY:
-                if block_stack:
-                    # A break that goes through a finally will jump to whatever
-                    # block is on top of the stack.
-                    # print self._block_stack_repr(block_stack)
-                    chunk.exits.add(block_stack[-1][1])
                 # For the finally clause we need to find the closest exception
                 # block, and use its jump target as an exit.
                 for block in reversed(block_stack):

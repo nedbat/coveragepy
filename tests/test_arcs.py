@@ -141,7 +141,7 @@ class SimpleArcTest(CoverageTest):
             )
 
     if 0:   # expected failure
-        def test_lambdas_are_confusing_bug_90(self):
+        def test_unused_lambdas_are_confusing_bug_90(self):
             self.check_coverage("""\
                 a = 1
                 fn = lambda x: x
@@ -456,8 +456,8 @@ class ExceptionArcTest(CoverageTest):
                 d = 12                              # C
             assert a == 5 and c == 10 and d == 12   # D
             """,
-            arcz=".1 12 23 34 3D 45 56 67 68 8A A3 AB AD BC CD D.",
-            arcz_missing="3D AD", arcz_unpredicted="7A")
+            arcz=".1 12 23 34 3D 45 56 67 68 8A A3 AB BC CD D.",
+            arcz_missing="3D", arcz_unpredicted="7A")
         self.check_coverage("""\
             a, c, d, i = 1, 1, 1, 99
             try:
@@ -473,8 +473,8 @@ class ExceptionArcTest(CoverageTest):
                 d = 12                              # C
             assert a == 8 and c == 10 and d == 1    # D
             """,
-            arcz=".1 12 23 34 3D 45 56 67 68 8A A3 AB AD BC CD D.",
-            arcz_missing="67 AB AD BC CD", arcz_unpredicted="")
+            arcz=".1 12 23 34 3D 45 56 67 68 8A A3 AB BC CD D.",
+            arcz_missing="67 AB BC CD", arcz_unpredicted="")
 
 
     def test_break_in_finally(self):
@@ -493,42 +493,43 @@ class ExceptionArcTest(CoverageTest):
                 d = 12                              # C
             assert a == 5 and c == 10 and d == 1    # D
             """,
-            arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB AD BC CD D.",
-            arcz_missing="3D AB BC CD", arcz_unpredicted="")
+            arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB BC CD D.",
+            arcz_missing="3D AB BC CD", arcz_unpredicted="AD")
 
-    if 0:   # expected failure
-        def test_finally_in_loop_bug_92(self):
-            self.check_coverage("""\
-                for i in range(5):
-                    try:
-                        j = 3
-                    finally:
-                        f = 5
-                    g = 6
-                h = 7
-                """,
-                arcz=".1 12 23 35 56 61 17 7.",
-                arcz_missing="", arcz_unpredicted="")
-
-    def test_bug_212(self):
+    def test_finally_in_loop_bug_92(self):
         self.check_coverage("""\
-            def b(exc):
+            for i in range(5):
                 try:
-                    while True:
-                        raise Exception(exc)
-                except Exception as e:
-                    if e.args != ('expected',):
-                        raise e
-                    q = 1
-
-            b('expected')
-            try:
-                b('unexpected')
-            except:
-                pass
+                    j = 3
+                finally:
+                    f = 5
+                g = 6
+            h = 7
             """,
-            arcz=".1 .2 1A 23 34 56 67 68 8. 85 AB BC C. DE E.",
-            arcz_missing="")
+            arcz=".1 12 23 35 56 61 17 7.",
+            arcz_missing="", arcz_unpredicted="")
+
+    if sys.version_info >= (2, 6):
+        # "except Exception as e" is crucial here.
+        def test_bug_212(self):
+            self.check_coverage("""\
+                def b(exc):
+                    try:
+                        while 1:
+                            raise Exception(exc)    # 4
+                    except Exception as e:
+                        if exc != 'expected':
+                            raise
+                        q = 8
+
+                b('expected')
+                try:
+                    b('unexpected')     # C
+                except:
+                    pass
+                """,
+                arcz=".1 .2 1A 23 34 56 67 68 8. AB BC C. DE E.",
+                arcz_missing="C.", arcz_unpredicted="45 7. CD")
 
     if sys.version_info >= (2, 5):
         # Try-except-finally was new in 2.5
