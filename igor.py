@@ -217,7 +217,7 @@ def print_banner(label):
 
 def do_help():
     """List the available commands"""
-    items = globals().items()
+    items = list(globals().items())
     items.sort()
     for name, value in items:
         if name.startswith('do_'):
