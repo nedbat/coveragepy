@@ -48,7 +48,9 @@ metahtml:
 
 # Kitting
 
-SDIST_CMD = python setup.py sdist --keep-temp --formats=gztar fixtar --owner=ned --group=coverage --clean
+# For kitting on Windows:
+# SDIST_CMD = python setup.py sdist --keep-temp --formats=gztar fixtar --owner=ned --group=coverage --clean
+SDIST_CMD = python setup.py sdist --formats=gztar
 
 kit:
 	$(SDIST_CMD)

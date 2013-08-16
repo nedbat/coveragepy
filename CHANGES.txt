@@ -18,12 +18,16 @@ Change history for Coverage.py
   a spurious warning about the trace function changing: "Trace function
   changed, measurement is likely wrong: None." This fixes `issue 164`_.
 
+- The source kit omitted the __main__.py file in the root coverage directory.
+  It's now included, fixing `issue 255`_.
+
 .. _issue 92: https://bitbucket.org/ned/coveragepy/issue/92/finally-clauses-arent-treated-properly-in
 .. _issue 164: https://bitbucket.org/ned/coveragepy/issue/164/trace-function-changed-warning-when-using
 .. _issue 175: https://bitbucket.org/ned/coveragepy/issue/175/branch-coverage-gets-confused-in-certain
 .. _issue 207: https://bitbucket.org/ned/coveragepy/issue/207/run-m-cannot-find-module-or-package-in
 .. _issue 242: https://bitbucket.org/ned/coveragepy/issue/242/running-a-two-level-package-doesnt-work
 .. _issue 218: https://bitbucket.org/ned/coveragepy/issue/218/run-command-does-not-respect-the-omit-flag
+.. _issue 255: https://bitbucket.org/ned/coveragepy/issue/255/directory-level-__main__py-not-included-in
 
 
 Version 3.6 --- 5 January 2013

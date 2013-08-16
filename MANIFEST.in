@@ -4,6 +4,7 @@ recursive-include coverage/fullcoverage *
 
 include coverage.egg-info/*.*
 include setup.py
+include __main__.py
 include README.txt
 include CHANGES.txt
 include AUTHORS.txt
