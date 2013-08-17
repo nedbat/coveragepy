@@ -17,6 +17,14 @@ from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
 
+# Pypy has some unusual stuff in the "stdlib".  Consider those locations
+# when deciding where the stdlib is.
+try:
+    import _structseq       # pylint: disable=F0401
+except ImportError:
+    _structseq = None
+
+
 class coverage(object):
     """Programmatic access to coverage.py.
 
@@ -158,8 +166,8 @@ class coverage(object):
             # environments (virtualenv, for example), these modules may be
             # spread across a few locations. Look at all the candidate modules
             # we've imported, and take all the different ones.
-            for m in (atexit, os, random, socket):
-                if hasattr(m, "__file__"):
+            for m in (atexit, os, random, socket, _structseq):
+                if m is not None and hasattr(m, "__file__"):
                     m_dir = self._canonical_dir(m)
                     if m_dir not in self.pylib_dirs:
                         self.pylib_dirs.append(m_dir)
