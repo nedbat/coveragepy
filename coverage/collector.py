@@ -75,10 +75,11 @@ class PyTracer(object):
             # in this file.
             self.data_stack.append((self.cur_file_data, self.last_line))
             filename = frame.f_code.co_filename
-            tracename = self.should_trace_cache.get(filename)
-            if tracename is None:
+            if filename not in self.should_trace_cache:
                 tracename = self.should_trace(filename, frame)
                 self.should_trace_cache[filename] = tracename
+            else:
+                tracename = self.should_trace_cache[filename]
             #print("called, stack is %d deep, tracename is %r" % (
             #               len(self.data_stack), tracename))
             if tracename:
