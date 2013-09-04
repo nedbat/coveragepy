@@ -19,6 +19,10 @@ class Opts(object):
         '', '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage."
         )
+    debug = optparse.make_option(
+        '', '--debug', action='store', metavar="OPTS",
+        help="Debug options, separated by commas"
+        )
     directory = optparse.make_option(
         '-d', '--directory', action='store', metavar="DIR",
         help="Write the output files to DIR."
@@ -117,6 +121,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
         self.set_defaults(
             actions=[],
             branch=None,
+            debug=None,
             directory=None,
             fail_under=None,
             help=None,
@@ -310,6 +315,7 @@ CMDS = {
         [
             Opts.append,
             Opts.branch,
+            Opts.debug,
             Opts.pylib,
             Opts.parallel_mode,
             Opts.module,
@@ -404,6 +410,7 @@ class CoverageScript(object):
         source = unshell_list(options.source)
         omit = unshell_list(options.omit)
         include = unshell_list(options.include)
+        debug = unshell_list(options.debug)
 
         # Do something.
         self.coverage = self.covpkg.coverage(
@@ -415,6 +422,7 @@ class CoverageScript(object):
             source = source,
             omit = omit,
             include = include,
+            debug = debug,
             )
 
         if 'debug' in options.actions:

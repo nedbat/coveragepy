@@ -111,6 +111,7 @@ class CoverageConfig(object):
         self.parallel = False
         self.timid = False
         self.source = None
+        self.debug = []
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
@@ -142,7 +143,7 @@ class CoverageConfig(object):
         if env:
             self.timid = ('--timid' in env)
 
-    MUST_BE_LIST = ["omit", "include"]
+    MUST_BE_LIST = ["omit", "include", "debug"]
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
@@ -178,6 +179,7 @@ class CoverageConfig(object):
         ('branch', 'run:branch', 'boolean'),
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
+        ('debug', 'run:debug', 'list'),
         ('include', 'run:include', 'list'),
         ('omit', 'run:omit', 'list'),
         ('parallel', 'run:parallel', 'boolean'),

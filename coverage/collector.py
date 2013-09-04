@@ -166,7 +166,7 @@ class Collector(object):
         """Create a collector.
 
         `should_trace` is a function, taking a filename, and returning a
-        canonicalized filename, or False depending on whether the file should
+        canonicalized filename, or None depending on whether the file should
         be traced or not.
 
         If `timid` is true, then a slower simpler trace function will be
@@ -210,7 +210,7 @@ class Collector(object):
 
         # A cache of the results from should_trace, the decision about whether
         # to trace execution in a file. A dict of filename to (filename or
-        # False).
+        # None).
         self.should_trace_cache = {}
 
         # Our active Tracers.

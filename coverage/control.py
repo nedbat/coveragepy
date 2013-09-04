@@ -41,7 +41,7 @@ class coverage(object):
     """
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
-                source=None, omit=None, include=None):
+                source=None, omit=None, include=None, debug=()):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -76,6 +76,9 @@ class coverage(object):
         `include` will be measured, files that match `omit` will not.  Each
         will also accept a single string argument.
 
+        `debug` is a sequence of strings indicating what debugging information
+        is desired.
+
         """
         from coverage import __version__
 
@@ -108,7 +111,7 @@ class coverage(object):
         self.config.from_args(
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
-            source=source, omit=omit, include=include
+            source=source, omit=omit, include=include, debug=debug,
             )
 
         self.auto_data = auto_data
@@ -209,26 +212,28 @@ class coverage(object):
                 filename = filename[:-9] + ".py"
         return filename
 
-    def _should_trace(self, filename, frame):
-        """Decide whether to trace execution in `filename`
+    def _should_trace_with_reason(self, filename, frame):
+        """Decide whether to trace execution in `filename`, with a reason.
 
         This function is called from the trace function.  As each new file name
         is encountered, this function determines whether it is traced or not.
 
-        Returns a canonicalized filename if it should be traced, False if it
-        should not.
+        Returns a pair of values:  the first indicates whether the file should
+        be traced: it's a canonicalized filename if it should be traced, None
+        if it should not.  The second value is a string, the resason for the
+        decision.
 
         """
         if not filename:
             # Empty string is pretty useless
-            return False
+            return None, "empty string isn't a filename"
 
         if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
             # filenames like "<string>", "<doctest readme.txt[0]>", or
             # "<exec_function>".  Don't ever trace these executions, since we
             # can't do anything with the data later anyway.
-            return False
+            return None, "not a real filename"
 
         self._check_for_packages()
 
@@ -254,35 +259,38 @@ class coverage(object):
         # stdlib and coverage.py directories.
         if self.source_match:
             if not self.source_match.match(canonical):
-                return False
+                return None, "falls outside the --source trees"
         elif self.include_match:
             if not self.include_match.match(canonical):
-                return False
+                return None, "falls outside the --include trees"
         else:
             # If we aren't supposed to trace installed code, then check if this
             # is near the Python standard library and skip it if so.
             if self.pylib_match and self.pylib_match.match(canonical):
-                return False
+                return None, "is in the stdlib"
 
             # We exclude the coverage code itself, since a little of it will be
             # measured otherwise.
             if self.cover_match and self.cover_match.match(canonical):
-                return False
+                return None, "is part of coverage.py"
 
         # Check the file against the omit pattern.
         if self.omit_match and self.omit_match.match(canonical):
-            return False
+            return None, "is inside an --omit pattern"
 
+        return canonical, "because we love you"
+
+    def _should_trace(self, filename, frame):
+        """Decide whether to trace execution in `filename`.
+
+        Calls `_should_trace_with_reason`, and returns just the decision.
+
+        """
+        canonical, reason = self._should_trace_with_reason(filename, frame)
+        if not canonical:
+            if 'notrace' in self.config.debug:
+                sys.stderr.write("Not tracing %r: %s\n" % (filename, reason))
         return canonical
-
-    # To log what should_trace returns, change this to "if 1:"
-    if 0:
-        _real_should_trace = _should_trace
-        def _should_trace(self, filename, frame):   # pylint: disable=E0102
-            """A logging decorator around the real _should_trace function."""
-            ret = self._real_should_trace(filename, frame)
-            print("should_trace: %r -> %r" % (filename, ret))
-            return ret
 
     def _warn(self, msg):
         """Use `msg` as a warning."""
