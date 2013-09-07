@@ -6,8 +6,8 @@ Change history for Coverage.py
 -----
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts one option now,
-  ``notrace``, to log decisions not to trace files.  I'm hoping this will help
-  people diagnose why their code isn't being traced.
+  ``trace``, to log decisions whether to trace files.  I'm hoping this will
+  help people diagnose why their code isn't being traced.
 
 - Improved the branch coverage facility, fixing `issue 90`_ and `issue 175`_.
 

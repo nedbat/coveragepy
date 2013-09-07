@@ -41,7 +41,7 @@ class coverage(object):
     """
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
-                source=None, omit=None, include=None, debug=()):
+                source=None, omit=None, include=None, debug=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -287,9 +287,12 @@ class coverage(object):
 
         """
         canonical, reason = self._should_trace_with_reason(filename, frame)
-        if not canonical:
-            if 'notrace' in self.config.debug:
-                sys.stderr.write("Not tracing %r: %s\n" % (filename, reason))
+        if 'trace' in self.config.debug:
+            if not canonical:
+                msg = "Not tracing %r: %s\n" % (filename, reason)
+            else:
+                msg = "Tracing %r\n" % (filename,)
+            sys.stderr.write(msg)
         return canonical
 
     def _warn(self, msg):
