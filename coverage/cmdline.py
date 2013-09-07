@@ -5,6 +5,7 @@ import optparse, os, sys, traceback
 from coverage.backward import sorted                # pylint: disable=W0622
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
+from coverage.misc import info_formatter
 
 
 class Opts(object):
@@ -592,16 +593,8 @@ class CoverageScript(object):
         for info in args:
             if info == 'sys':
                 print("-- sys ----------------------------------------")
-                for label, info in self.coverage.sysinfo():
-                    if info == []:
-                        info = "-none-"
-                    if isinstance(info, list):
-                        prefix = "%15s:" % label
-                        for e in info:
-                            print("%16s %s" % (prefix, e))
-                            prefix = ""
-                    else:
-                        print("%15s: %s" % (label, info))
+                for line in info_formatter(self.coverage.sysinfo()):
+                    print(line)
             elif info == 'data':
                 print("-- data ---------------------------------------")
                 self.coverage.load()
