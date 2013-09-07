@@ -145,7 +145,7 @@ def info_formatter(info):
     nicely formatted, ready to print.
 
     """
-    label_len = max([len(l) for l, d in info]) + 1
+    label_len = max([len(l) for l, d in info])
     for label, data in info:
         if data == []:
             data = "-none-"

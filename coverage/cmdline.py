@@ -594,7 +594,7 @@ class CoverageScript(object):
             if info == 'sys':
                 print("-- sys ----------------------------------------")
                 for line in info_formatter(self.coverage.sysinfo()):
-                    print(line)
+                    print(" %s" % line)
             elif info == 'data':
                 print("-- data ---------------------------------------")
                 self.coverage.load()

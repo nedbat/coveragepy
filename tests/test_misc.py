@@ -56,13 +56,13 @@ class InfoFormatterTest(CoverageTest):
             ('nothing', []),
         ]))
         self.assertEqual(lines, [
-            '               x: hello there',
-            ' very long label: one element',
-            '         regular: abc',
-            '                  def',
-            '                  ghi',
-            '                  jkl',
-            '         nothing: -none-',
+            '              x: hello there',
+            'very long label: one element',
+            '        regular: abc',
+            '                 def',
+            '                 ghi',
+            '                 jkl',
+            '        nothing: -none-',
         ])
 
 
