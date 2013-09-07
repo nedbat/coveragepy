@@ -144,6 +144,10 @@ class TreeMatcher(object):
     def __repr__(self):
         return "<TreeMatcher %r>" % self.dirs
 
+    def info(self):
+        """A list of strings for displaying when dumping state."""
+        return self.dirs
+
     def add(self, directory):
         """Add another directory to the list we match for."""
         self.dirs.append(directory)
@@ -168,6 +172,10 @@ class FnmatchMatcher(object):
 
     def __repr__(self):
         return "<FnmatchMatcher %r>" % self.pats
+
+    def info(self):
+        """A list of strings for displaying when dumping state."""
+        return self.pats
 
     def match(self, fpath):
         """Does `fpath` match one of our filename patterns?"""

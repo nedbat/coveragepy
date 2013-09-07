@@ -58,15 +58,18 @@ class MatcherTest(CoverageTest):
         file4 = self.make_file("sub3/file4.py")
         file5 = self.make_file("sub3/file5.c")
         fl = FileLocator()
-        tm = TreeMatcher([
+        trees = [
             fl.canonical_filename("sub"),
             fl.canonical_filename(file4),
-            ])
+            ]
+        tm = TreeMatcher(trees)
         self.assertTrue(tm.match(fl.canonical_filename(file1)))
         self.assertTrue(tm.match(fl.canonical_filename(file2)))
         self.assertFalse(tm.match(fl.canonical_filename(file3)))
         self.assertTrue(tm.match(fl.canonical_filename(file4)))
         self.assertFalse(tm.match(fl.canonical_filename(file5)))
+
+        self.assertEqual(tm.info(), trees)
 
     def test_fnmatch_matcher(self):
         file1 = self.make_file("sub/file1.py")
@@ -81,6 +84,8 @@ class MatcherTest(CoverageTest):
         self.assertTrue(fnm.match(fl.canonical_filename(file3)))
         self.assertTrue(fnm.match(fl.canonical_filename(file4)))
         self.assertFalse(fnm.match(fl.canonical_filename(file5)))
+
+        self.assertEqual(fnm.info(), ["*.py", "*/sub2/*"])
 
 
 class PathAliasesTest(CoverageTest):
