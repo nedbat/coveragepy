@@ -43,5 +43,12 @@ class CollectorTest(CoverageTest):
 
         # Grab all the filenames mentioned in debug output, there should be no
         # duplicates.
-        filenames = re.findall(r"'[^']+'", debug_out.getvalue())
+        trace_lines = [
+            l for l in debug_out.getvalue().splitlines()
+            if l.startswith("Tracing ") or l.startswith("Not tracing ")
+        ]
+        filenames = [re.search(r"'[^']+'", l).group() for l in trace_lines]
         self.assertEqual(len(filenames), len(set(filenames)))
+
+        # Double-check that the tracing messages are in there somewhere.
+        self.assertTrue(len(filenames) > 5)
