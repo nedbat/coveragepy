@@ -5,7 +5,7 @@ import optparse, os, sys, traceback
 from coverage.backward import sorted                # pylint: disable=W0622
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
-from coverage.misc import info_formatter
+from coverage.debug import info_formatter
 
 
 class Opts(object):

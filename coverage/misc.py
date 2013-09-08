@@ -138,26 +138,6 @@ class Hasher(object):
         return self.md5.digest()
 
 
-def info_formatter(info):
-    """Produce a sequence of formatted lines from info.
-
-    `info` is a sequence of pairs (label, data).  The produced lines are
-    nicely formatted, ready to print.
-
-    """
-    label_len = max([len(l) for l, d in info])
-    for label, data in info:
-        if data == []:
-            data = "-none-"
-        if isinstance(data, (list, tuple)):
-            prefix = "%*s:" % (label_len, label)
-            for e in data:
-                yield "%*s %s" % (label_len+1, prefix, e)
-                prefix = ""
-        else:
-            yield "%*s: %s" % (label_len, label, data)
-
-
 class CoverageException(Exception):
     """An exception specific to Coverage."""
     pass

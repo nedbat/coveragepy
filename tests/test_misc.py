@@ -1,7 +1,8 @@
 """Tests of miscellaneous stuff."""
+
 import sys
 
-from coverage.misc import Hasher, file_be_gone, info_formatter
+from coverage.misc import Hasher, file_be_gone
 from coverage import __version__, __url__
 from tests.coveragetest import CoverageTest
 
@@ -43,27 +44,6 @@ class RemoveFileTest(CoverageTest):
         # Errors can still happen.
         # ". is a directory" on Unix, or "Access denied" on Windows
         self.assertRaises(OSError, file_be_gone, ".")
-
-
-class InfoFormatterTest(CoverageTest):
-    """Tests of misc.info_formatter."""
-
-    def test_info_formatter(self):
-        lines = list(info_formatter([
-            ('x', 'hello there'),
-            ('very long label', ['one element']),
-            ('regular', ['abc', 'def', 'ghi', 'jkl']),
-            ('nothing', []),
-        ]))
-        self.assertEqual(lines, [
-            '              x: hello there',
-            'very long label: one element',
-            '        regular: abc',
-            '                 def',
-            '                 ghi',
-            '                 jkl',
-            '        nothing: -none-',
-        ])
 
 
 class SetupPyTest(CoverageTest):

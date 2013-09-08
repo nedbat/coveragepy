@@ -23,15 +23,18 @@ class CoverageData(object):
 
     """
 
-    def __init__(self, basename=None, collector=None):
+    def __init__(self, basename=None, collector=None, debug=None):
         """Create a CoverageData.
 
         `basename` is the name of the file to use for storing data.
 
         `collector` is a string describing the coverage measurement software.
 
+        `debug` is a `DebugControl` object for writing debug messages.
+
         """
         self.collector = collector or 'unknown'
+        self.debug = debug
 
         self.use_file = True
 
@@ -121,6 +124,9 @@ class CoverageData(object):
         if self.collector:
             data['collector'] = self.collector
 
+        if self.debug and self.debug.should('dataio'):
+            self.debug.write("Writing data to %r" % (filename,))
+
         # Write the pickle to the file.
         fdata = open(filename, 'wb')
         try:
@@ -134,6 +140,8 @@ class CoverageData(object):
 
     def raw_data(self, filename):
         """Return the raw pickled data from `filename`."""
+        if self.debug and self.debug.should('dataio'):
+            self.debug.write("Reading data from %r" % (filename,))
         fdata = open(filename, 'rb')
         try:
             data = pickle.load(fdata)

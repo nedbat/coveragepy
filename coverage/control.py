@@ -3,11 +3,12 @@
 import atexit, os, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
-from coverage.backward import string_class, iitems
+from coverage.backward import string_class, iitems, sorted  # pylint: disable=W0622
 from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
+from coverage.debug import DebugControl
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.html import HtmlReporter
@@ -41,7 +42,8 @@ class coverage(object):
     """
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
-                source=None, omit=None, include=None, debug=None):
+                source=None, omit=None, include=None, debug=None,
+                debug_file=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -76,8 +78,9 @@ class coverage(object):
         `include` will be measured, files that match `omit` will not.  Each
         will also accept a single string argument.
 
-        `debug` is a sequence of strings indicating what debugging information
-        is desired.
+        `debug` is a list of strings indicating what debugging information is
+        desired. `debug_file` is the file to write debug messages to,
+        defaulting to stderr.
 
         """
         from coverage import __version__
@@ -113,6 +116,9 @@ class coverage(object):
             branch=branch, parallel=bool_or_none(data_suffix),
             source=source, omit=omit, include=include, debug=debug,
             )
+
+        # Create and configure the debugging controller.
+        self.debug = DebugControl(self.config.debug, debug_file or sys.stderr)
 
         self.auto_data = auto_data
 
@@ -158,7 +164,8 @@ class coverage(object):
         # started rather than wherever the process eventually chdir'd to.
         self.data = CoverageData(
             basename=self.config.data_file,
-            collector="coverage v%s" % __version__
+            collector="coverage v%s" % __version__,
+            debug=self.debug,
             )
 
         # The dirs for files considered "installed with the interpreter".
@@ -179,7 +186,7 @@ class coverage(object):
         # where we are.
         self.cover_dir = self._canonical_dir(__file__)
 
-        # The matchers for _should_trace, created when tracing starts.
+        # The matchers for _should_trace.
         self.source_match = None
         self.pylib_match = self.cover_match = None
         self.include_match = self.omit_match = None
@@ -287,12 +294,12 @@ class coverage(object):
 
         """
         canonical, reason = self._should_trace_with_reason(filename, frame)
-        if 'trace' in self.config.debug:
+        if self.debug.should('trace'):
             if not canonical:
-                msg = "Not tracing %r: %s\n" % (filename, reason)
+                msg = "Not tracing %r: %s" % (filename, reason)
             else:
-                msg = "Tracing %r\n" % (filename,)
-            sys.stderr.write(msg)
+                msg = "Tracing %r" % (filename,)
+            self.debug.write(msg)
         return canonical
 
     def _warn(self, msg):
@@ -382,6 +389,16 @@ class coverage(object):
             self.include_match = FnmatchMatcher(self.include)
         if self.omit:
             self.omit_match = FnmatchMatcher(self.omit)
+
+        # The user may want to debug things, show info if desired.
+        if self.debug.should('config'):
+            self.debug.write("Configuration values:")
+            config_info = sorted(self.config.__dict__.items())
+            self.debug.write_formatted_info(config_info)
+
+        if self.debug.should('sys'):
+            self.debug.write("Debugging info:")
+            self.debug.write_formatted_info(self.sysinfo())
 
         self.collector.start()
         self._started = True
@@ -707,11 +724,23 @@ class coverage(object):
             ('executable', sys.executable),
             ('cwd', os.getcwd()),
             ('path', sys.path),
-            ('environment', [
+            ('environment', sorted([
                 ("%s = %s" % (k, v)) for k, v in iitems(os.environ)
                     if re.search(r"^COV|^PY", k)
-                ]),
+                ])),
+            ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
             ]
+        if self.source_match:
+            info.append(('source_match', self.source_match.info()))
+        if self.include_match:
+            info.append(('include_match', self.include_match.info()))
+        if self.omit_match:
+            info.append(('omit_match', self.omit_match.info()))
+        if self.cover_match:
+            info.append(('cover_match', self.cover_match.info()))
+        if self.pylib_match:
+            info.append(('pylib_match', self.pylib_match.info()))
+
         return info
 
 
