@@ -13,6 +13,8 @@ class CollectorTest(CoverageTest):
 
     def test_should_trace_cache(self):
         # The tracers should only invoke should_trace once for each file name.
+        # TODO: Might be better to do this with a mocked _should_trace,
+        # rather than by examining debug output.
 
         # Make some files that invoke each other.
         self.make_file("f1.py", """\
@@ -33,6 +35,7 @@ class CollectorTest(CoverageTest):
                 func(i)
             """)
 
+        # Trace one file, but not the other, and get the debug output.
         debug_out = StringIO()
         cov = coverage.coverage(
             include=["f1.py"], debug=['trace'], debug_file=debug_out
@@ -51,4 +54,4 @@ class CollectorTest(CoverageTest):
         self.assertEqual(len(filenames), len(set(filenames)))
 
         # Double-check that the tracing messages are in there somewhere.
-        self.assertTrue(len(filenames) > 5)
+        self.assertGreater(len(filenames), 5)
