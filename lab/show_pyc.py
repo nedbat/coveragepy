@@ -41,7 +41,7 @@ def show_code(code, indent=''):
     print "%sname %r" % (indent, code.co_name)
     print "%sfirstlineno %d" % (indent, code.co_firstlineno)
     show_hex("lnotab", code.co_lnotab, indent=indent)
-    
+
 def show_hex(label, h, indent):
     h = h.encode('hex')
     if len(h) < 60:

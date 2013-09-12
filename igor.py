@@ -195,6 +195,7 @@ def do_check_eol():
     check_file("setup.py")
     check_file("igor.py")
     check_file("Makefile")
+    check_file(".hgignore")
     check_files("doc", ["*.rst"])
     check_files(".", ["*.txt"])
 
