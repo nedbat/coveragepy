@@ -1,0 +1,19 @@
+language: python
+
+python:
+  - 2.5
+  - 2.6
+  - 2.7
+  - 3.2
+  - pypy
+
+env:
+  - COVERAGE_TEST_TRACER=py
+  - COVERAGE_TEST_TRACER=c
+
+install:
+  - python setup.py clean install
+
+script:
+  - make testdata
+  - PYTHONPATH=test/eggsrc nosetests -e test_farm -e is_like_python test 
