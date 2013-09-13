@@ -16,4 +16,4 @@ install:
 
 script:
   - make testdata
-  - PYTHONPATH=test/eggsrc nosetests -e test_farm -e is_like_python test 
+  - PYTHONPATH=test/eggsrc nosetests -e test_farm -e is_like_python test
