@@ -1,4 +1,5 @@
-# Tell Travis (travisci.org) what to do
+# Tell Travis what to do
+# https://travis-ci.org/nedbat/coveragepy
 
 language: python
 
@@ -10,13 +11,13 @@ python:
   - 3.3
   - pypy
 
-#install:
-#  - python setup.py clean install
-#  - python igor.py zip_mods install_egg remove_extension
+install:
+  - python setup.py clean install
+  #- python igor.py zip_mods install_egg remove_extension
 
 script:
-  - python setup.py clean develop
-  - python igor.py zip_mods install_egg remove_extension
-  - python igor.py test_with_tracer py
-  - python setup.py build_ext --inplace
+  #- python setup.py clean develop
+  - python igor.py zip_mods install_egg
   - python igor.py test_with_tracer c
+  - python igor.py remove_extension
+  - python igor.py test_with_tracer py
