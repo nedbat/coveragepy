@@ -1,3 +1,5 @@
+# Tell Travis (travisci.org) what to do
+
 language: python
 
 python:
