@@ -7,15 +7,13 @@ python:
   - 2.6
   - 2.7
   - 3.2
+  - 3.3
   - pypy
-
-env:
-  - COVERAGE_TEST_TRACER=py
-  - COVERAGE_TEST_TRACER=c
 
 install:
   - python setup.py clean install
+  - python igor.py zip_mods install_egg remove_extension
 
 script:
-  - make testdata
-  - PYTHONPATH=test/eggsrc nosetests -e test_farm -e is_like_python test
+  - python igor.py test_with_tracer py
+  - python igor.py test_with_tracer c
