@@ -15,6 +15,10 @@ import sys
 import zipfile
 
 
+# Functions named do_* are executable from the command line: do_blah is run
+# by "python igor.py blah".
+
+
 def do_remove_extension():
     """Remove the compiled C extension, no matter what its name."""
 

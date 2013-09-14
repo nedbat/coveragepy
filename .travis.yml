@@ -12,7 +12,7 @@ python:
   - pypy
 
 install:
-  - python setup.py clean install
+  - python setup.py clean develop
   #- python igor.py zip_mods install_egg remove_extension
 
 script:
