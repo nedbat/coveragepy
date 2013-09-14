@@ -13,10 +13,8 @@ python:
 
 install:
   - python setup.py clean develop
-  #- python igor.py zip_mods install_egg remove_extension
 
 script:
-  #- python setup.py clean develop
   - python igor.py zip_mods install_egg
   - python igor.py test_with_tracer c
   - python igor.py remove_extension
