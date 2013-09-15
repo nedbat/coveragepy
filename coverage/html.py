@@ -10,10 +10,6 @@ from coverage.report import Reporter
 from coverage.results import Numbers
 from coverage.templite import Templite
 
-# Disable pylint msg W0612, because a bunch of variables look unused, but
-# they're accessed in a Templite context via locals().
-# pylint: disable=W0612
-
 def data_filename(fname):
     """Return the path to a data file of ours."""
     return os.path.join(os.path.split(__file__)[0], fname)
@@ -162,7 +158,6 @@ class HtmlReporter(Reporter):
         nums = analysis.numbers
 
         missing_branch_arcs = analysis.missing_branch_arcs()
-        arcs = self.arcs
 
         # These classes determine which lines are highlighted by default.
         c_run = "run hide_run"
@@ -220,13 +215,17 @@ class HtmlReporter(Reporter):
             })
 
         # Write the HTML page for this file.
-        html_filename = flat_rootname + ".html"
-        html_path = os.path.join(self.directory, html_filename)
-        extra_css = self.extra_css
+        html = spaceless(self.source_tmpl.render({
+            'c_exc': c_exc, 'c_mis': c_mis, 'c_par': c_par, 'c_run': c_run,
+            'arcs': self.arcs, 'extra_css': self.extra_css,
+            'cu': cu, 'nums': nums, 'lines': lines,
+        }))
 
-        html = spaceless(self.source_tmpl.render(locals()))
         if sys.version_info < (3, 0):
             html = html.decode(encoding)
+
+        html_filename = flat_rootname + ".html"
+        html_path = os.path.join(self.directory, html_filename)
         self.write_html(html_path, html)
 
         # Save this file's information for the index file.
@@ -244,13 +243,15 @@ class HtmlReporter(Reporter):
             data("htmlfiles/index.html"), self.template_globals
             )
 
-        files = self.files
-        arcs = self.arcs
+        self.totals = sum([f['nums'] for f in self.files])
 
-        self.totals = totals = sum([f['nums'] for f in files])
-        extra_css = self.extra_css
+        html = index_tmpl.render({
+            'arcs': self.arcs,
+            'extra_css': self.extra_css,
+            'files': self.files,
+            'totals': self.totals,
+        })
 
-        html = index_tmpl.render(locals())
         if sys.version_info < (3, 0):
             html = html.decode("utf-8")
         self.write_html(
