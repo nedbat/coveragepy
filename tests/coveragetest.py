@@ -36,7 +36,11 @@ OK, ERR = 0, 1
 class CoverageTest(TestCase):
     """A base class for Coverage test cases."""
 
+    # Our own setting: most CoverageTests run in their own temp directory.
     run_in_temp_dir = True
+
+    # Standard unittest setting: show me diffs even if they are very long.
+    maxDiff = None
 
     def setUp(self):
         super(CoverageTest, self).setUp()

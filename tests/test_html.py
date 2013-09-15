@@ -52,8 +52,6 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         # so grab it here to restore it later.
         self.real_coverage_version = coverage.__version__
 
-        self.maxDiff = None
-
     def tearDown(self):
         coverage.__version__ = self.real_coverage_version
         super(HtmlDeltaTest, self).tearDown()
