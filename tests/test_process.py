@@ -583,7 +583,7 @@ class ProcessStartupTest(CoverageTest):
                         pass
                 finally:
                     pth.close()
-        else:                                       # pragma: not covered
+        else:                                           # pragma: not covered
             raise Exception("Couldn't find a place for the .pth file")
 
     def tearDown(self):
@@ -615,7 +615,9 @@ class ProcessStartupTest(CoverageTest):
         import main             # pylint: disable=F0401,W0612
 
         self.assertEqual(open("out.txt").read(), "Hello, world!\n")
+
         # Read the data from .coverage
+        self.assert_exists(".mycovdata")
         data = coverage.CoverageData()
         data.read_file(".mycovdata")
         self.assertEqual(data.summary()['sub.py'], 3)
