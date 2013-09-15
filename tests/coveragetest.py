@@ -61,8 +61,11 @@ class CoverageTest(TestCase):
             self.old_dir = os.getcwd()
             os.chdir(self.temp_dir)
 
-            # Modules should be importable from this temp directory.
-            sys.path.insert(0, '')
+            # Modules should be importable from this temp directory.  We don't
+            # use '' because we make lots of different temp directories and
+            # nose's caching importer can get confused.  The full path prevents
+            # problems.
+            sys.path.insert(0, os.getcwd())
 
             # Keep a counter to make every call to check_coverage unique.
             self.n = 0
