@@ -195,9 +195,9 @@ class FarmTestCase(object):
         """Compare files matching `file_pattern` in `dir1` and `dir2`.
 
         `dir2` is interpreted as a prefix, with Python version numbers appended
-        to find the actual directory to compare with. "foo" will compare against
-        "foo_v241", "foo_v24", "foo_v2", or "foo", depending on which directory
-        is found first.
+        to find the actual directory to compare with. "foo" will compare
+        against "foo_v241", "foo_v24", "foo_v2", or "foo", depending on which
+        directory is found first.
 
         `size_within` is a percentage delta for the file sizes.  If non-zero,
         then the file contents are not compared (since they are expected to
