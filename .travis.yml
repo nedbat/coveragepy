@@ -15,7 +15,9 @@ install:
   - python setup.py clean develop
 
 before_script:
-  - python -m coverage debug sys
+  - pwd
+  - ls -l
+  - coverage debug sys
 
 script:
   - python igor.py zip_mods install_egg
