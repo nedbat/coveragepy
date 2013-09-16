@@ -2,7 +2,7 @@
 
 import os, re
 from tests.coveragetest import CoverageTest
-from coverage.phystokens import source_token_lines
+from coverage.phystokens import source_token_lines, source_encoding
 
 
 SIMPLE = """\
@@ -77,3 +77,17 @@ class PhysTokensTest(CoverageTest):
         self.check_file_tokenization(stress)
         stress = os.path.join(HERE, "stress_phystoken_dos.tok")
         self.check_file_tokenization(stress)
+
+    def test_source_encoding_detect_utf8(self):
+        source = """\
+# coding=utf-8
+"""
+        self.assertEqual(source_encoding(source), 'utf-8')
+
+    def test_source_encoding_second_line_detect_utf8(self):
+        """ Verifies that UTF-8 encoding will still be detected in spite of the newline."""
+        source = """\
+
+# coding=utf-8
+"""
+        self.assertEqual(source_encoding(source), 'utf-8')

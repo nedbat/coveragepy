@@ -188,7 +188,7 @@ def source_encoding(source):
         bom_found = True
         first = first[3:]
         default = 'utf-8-sig'
-    if not first:
+    if first is None:
         return default
 
     encoding = find_cookie(first)
