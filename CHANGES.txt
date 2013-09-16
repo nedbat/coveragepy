@@ -21,6 +21,9 @@ Change history for Coverage.py
   issues a spurious warning about the trace function changing: "Trace function
   changed, measurement is likely wrong: None."  This fixes `issue 164`_.
 
+- Source files with encoding declarations, but a blank first line, were not
+  decoded properly.  Now they are.  Thanks, Roger Hu.
+
 - The source kit now includes the `__main__.py` file in the root coverage
   directory, fixing `issue 255`_.
 

@@ -20,6 +20,7 @@ Martin Fuzzey
 Imri Goldberg
 Bill Hart
 Christian Heimes
+Roger Hu
 Devin Jeanpierre
 Ross Lawley
 Edward Loper

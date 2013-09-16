@@ -122,7 +122,7 @@ def source_encoding(source):
     cookie_re = re.compile(r"coding[:=]\s*([-\w.]+)")
 
     # Do this so the detect_encode code we copied will work.
-    readline = iter(source.splitlines()).next
+    readline = iter(source.splitlines(True)).next
 
     def _get_normal_name(orig_enc):
         """Imitates get_normal_name in tokenizer.c."""
@@ -188,7 +188,7 @@ def source_encoding(source):
         bom_found = True
         first = first[3:]
         default = 'utf-8-sig'
-    if first is None:
+    if not first:
         return default
 
     encoding = find_cookie(first)

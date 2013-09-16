@@ -1,6 +1,6 @@
 """Tests for Coverage.py's improved tokenizer."""
 
-import os, re
+import os, re, sys
 from tests.coveragetest import CoverageTest
 from coverage.phystokens import source_token_lines, source_encoding
 
@@ -78,16 +78,49 @@ class PhysTokensTest(CoverageTest):
         stress = os.path.join(HERE, "stress_phystoken_dos.tok")
         self.check_file_tokenization(stress)
 
-    def test_source_encoding_detect_utf8(self):
-        source = """\
-# coding=utf-8
-"""
-        self.assertEqual(source_encoding(source), 'utf-8')
 
-    def test_source_encoding_second_line_detect_utf8(self):
-        """ Verifies that UTF-8 encoding will still be detected in spite of the newline."""
-        source = """\
+# source_encoding is only used on Py2.
+if sys.version_info < (3, 0):
+    class SourceEncodingTest(CoverageTest):
+        """Tests of source_encoding() for detecting encodings on Py2."""
 
-# coding=utf-8
-"""
-        self.assertEqual(source_encoding(source), 'utf-8')
+        run_in_temp_dir = False
+
+        if sys.version_info >= (2,4):
+            default_encoding = 'ascii'
+        else:
+            default_encoding = 'iso8859-1'
+
+        def test_detect_source_encoding(self):
+            # Various forms from http://www.python.org/dev/peps/pep-0263/
+            source = "# coding=cp850\n\n"
+            self.assertEqual(source_encoding(source), 'cp850')
+            source = "#!/usr/bin/python\n# -*- coding: utf-8 -*-\n"
+            self.assertEqual(source_encoding(source), 'utf-8')
+            source = "#!/usr/bin/python\n# vim: set fileencoding=utf8 :\n"
+            self.assertEqual(source_encoding(source), 'utf8')
+            source = "# This Python file uses this encoding: utf-8\n"
+            self.assertEqual(source_encoding(source), 'utf-8')
+
+        def test_detect_source_encoding_on_second_line(self):
+            # A coding declaration should be found despite a first blank line.
+            source = "\n# coding=cp850\n\n"
+            self.assertEqual(source_encoding(source), 'cp850')
+
+        def test_dont_detect_source_encoding_on_third_line(self):
+            # A coding declaration doesn't count on the third line.
+            source = "\n\n# coding=cp850\n\n"
+            self.assertEqual(source_encoding(source), self.default_encoding)
+
+        def test_detect_source_encoding_of_empty_file(self):
+            # An important edge case.
+            self.assertEqual(source_encoding(""), self.default_encoding)
+
+        def test_bom(self):
+            # A BOM means utf-8.
+            source = "\xEF\xBB\xBFtext = 'hello'\n"
+            self.assertEqual(source_encoding(source), 'utf-8-sig')
+
+            # But it has to be the only authority.
+            source = "\xEF\xBB\xBF# coding: cp850\n"
+            self.assertRaises(SyntaxError, source_encoding, source)
