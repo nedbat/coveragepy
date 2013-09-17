@@ -52,9 +52,13 @@ class PyTracer(object):
         self.last_exc_firstlineno = 0
         self.arcs = False
         self.thread = None
+        self.stopped = False
 
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
+
+        if self.stopped:
+            return
 
         if 0:
             sys.stderr.write("trace event: %s %r @%d\n" % (
@@ -126,8 +130,11 @@ class PyTracer(object):
 
     def stop(self):
         """Stop this Tracer."""
+        self.stopped = True
         if self.thread != threading.currentThread():
-            # Called on a different thread than started us: do nothing.
+            # Called on a different thread than started us: we can't unhook
+            # ourseves, but we've set the flag that we should stop, so we won't
+            # do any more tracing.
             return
 
         if hasattr(sys, "gettrace") and self.warn:
