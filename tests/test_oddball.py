@@ -128,24 +128,24 @@ class RecursionTest(CoverageTest):
 class MemoryLeakTest(CoverageTest):
     """Attempt the impossible: test that memory doesn't leak.
 
-    Note: this test is truly unusual, and may fail unexpectedly.
-    In particular, it is known to fail on PyPy if test_oddball.py is run in
-    isolation: https://bitbucket.org/ned/coveragepy/issue/186
+    Note: this test is truly unusual, and has had a colorful history.  See
+    for example: https://bitbucket.org/ned/coveragepy/issue/186
+
+    It may still fail occasionally, especially on PyPy.
 
     """
-
     def test_for_leaks(self):
-        lines = list(range(301, 315))
-        lines.remove(306)
-        # Ugly string mumbo jumbo to get 300 blank lines at the beginning..
+        # Our original bad memory leak only happened on line numbers > 255, so
+        # make a code object with more lines than that.  Ugly string mumbo
+        # jumbo to get 300 blank lines at the beginning..
         code = """\
             # blank line\n""" * 300 + """\
-            def once(x):
+            def once(x):                                        # line 301
                 if x % 100 == 0:
                     raise Exception("100!")
                 elif x % 2:
                     return 10
-                else:
+                else:                                           # line 306
                     return 11
             i = 0 # Portable loop without alloc'ing memory.
             while i < ITERS:
@@ -153,15 +153,29 @@ class MemoryLeakTest(CoverageTest):
                     once(i)
                 except:
                     pass
-                i += 1
+                i += 1                                          # line 315
             """
-        ram_0 = osinfo.process_ram()
-        self.check_coverage(code.replace("ITERS", "10"), lines, "")
-        ram_1 = osinfo.process_ram()
-        self.check_coverage(code.replace("ITERS", "10000"), lines, "")
-        ram_2 = osinfo.process_ram()
-        ram_growth = (ram_2 - ram_1) - (ram_1 - ram_0)
-        self.assertTrue(ram_growth < 100000, "RAM grew by %d" % (ram_growth))
+        lines = list(range(301, 315))
+        lines.remove(306)       # Line 306 is the "else".
+
+        # This is a non-deterministic test, so try it a few times, and fail it
+        # only if it predominantly fails.
+        fails = 0
+        for _ in range(10):
+            ram_0 = osinfo.process_ram()
+            self.check_coverage(code.replace("ITERS", "10"), lines, "")
+            ram_10 = osinfo.process_ram()
+            self.check_coverage(code.replace("ITERS", "10000"), lines, "")
+            ram_10k = osinfo.process_ram()
+            # Running the code 10k times shouldn't grow the ram much more than
+            # running it 10 times.
+            ram_growth = (ram_10k - ram_10) - (ram_10 - ram_0)
+            if ram_growth > 100000:
+                fails += 1
+
+        if fails > 8:
+            self.fail("RAM grew by %d" % (ram_growth))
+
 
 
 class PyexpatTest(CoverageTest):
