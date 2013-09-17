@@ -290,7 +290,7 @@ def find_python_files(dirname):
             continue
         for filename in filenames:
             # We're only interested in files that look like reasonable Python
-            # files: Must end with .py, and must not have certain funny
+            # files: Must end with .py or .pyw, and must not have certain funny
             # characters that probably mean they are editor junk.
-            if re.match(r"^[^.#~!$@%^&*()+=,]+\.py$", filename):
+            if re.match(r"^[^.#~!$@%^&*()+=,]+\.pyw?$", filename):
                 yield os.path.join(dirpath, filename)

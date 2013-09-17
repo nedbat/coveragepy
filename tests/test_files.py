@@ -167,8 +167,10 @@ class FindPythonFilesTest(CoverageTest):
         self.make_file("sub/ssub/s.py")
         self.make_file("sub/ssub/~s.py")            # nope: editor effluvia
         self.make_file("sub/lab/exp.py")            # nope: no __init__.py
+        self.make_file("sub/windows.pyw")
         py_files = set(find_python_files("sub"))
         self.assert_same_files(py_files, [
             "sub/a.py", "sub/b.py",
             "sub/ssub/__init__.py", "sub/ssub/s.py",
+            "sub/windows.pyw",
             ])
