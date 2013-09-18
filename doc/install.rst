@@ -48,8 +48,9 @@ or even::
 Installing from source
 ----------------------
 
-Coverage.py includes a C extension for speed. If you are installing from source,
-you may need to install the python-dev support files, for example with::
+Coverage.py includes a C extension for speed. If you are installing from
+source, you may need to install the python-dev support files, for example
+with::
 
     $ sudo apt-get install python-dev
 
@@ -58,9 +59,9 @@ Installing on Windows
 ---------------------
 
 For Windows, kits are provided on the `PyPI page`__ for different versions of
-Python and different CPU architectures. These kits require that `setuptools`_ be
-installed as a pre-requisite, but otherwise are self-contained.  They have the
-C extension pre-compiled so there's no need to worry about compilers.
+Python and different CPU architectures. These kits require that `setuptools`_
+be installed as a pre-requisite, but otherwise are self-contained.  They have
+the C extension pre-compiled so there's no need to worry about compilers.
 
 .. __: coverage_pypi_
 
@@ -68,8 +69,8 @@ C extension pre-compiled so there's no need to worry about compilers.
 Checking the installation
 -------------------------
 
-If all went well, you should be able to open a command prompt, and see
-coverage installed properly::
+If all went well, you should be able to open a command prompt, and see coverage
+installed properly::
 
     $ coverage --version
     Coverage.py, version 3.6.  http://nedbatchelder.com/code/coverage

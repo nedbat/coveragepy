@@ -11,9 +11,9 @@ there are some situations it can't cope with.  This page details some known
 problems, with possible courses of action, and links to coverage.py bug reports
 with more information.
 
-I would love to :ref:`hear from you <contact>` if you have information about any of
-these problems, even just to explain to me why you want them to start working
-properly.
+I would love to :ref:`hear from you <contact>` if you have information about
+any of these problems, even just to explain to me why you want them to start
+working properly.
 
 If your problem isn't discussed here, you can of course search the `coverage.py
 bug tracker`_ directly to see if there is some mention of it.
@@ -75,7 +75,8 @@ Really obscure things
 ---------------------
 
 * Python 2.5 had a bug (`1569356`_) that could make your program behave
-  differently when being measured with coverage.  This is diagnosed in `issue 51`_.
+  differently when being measured with coverage.  This is diagnosed in
+  `issue 51`_.
 
 .. _issue 51: http://bitbucket.org/ned/coveragepy/issue/51/turbogears-15-test-failing-with-coverage
 .. _1569356: http://bugs.python.org/issue1569356
@@ -84,5 +85,6 @@ Really obscure things
 Still having trouble?
 ---------------------
 
-If your problem isn't mentioned here, and isn't already reported in the `coverage.py bug tracker`_,
-please :ref:`get in touch with me <contact>`, we'll figure out a solution.
+If your problem isn't mentioned here, and isn't already reported in the
+`coverage.py bug tracker`_, please :ref:`get in touch with me <contact>`,
+we'll figure out a solution.

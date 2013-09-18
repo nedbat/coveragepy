@@ -104,8 +104,8 @@ The tests are written as standard unittest-style tests, and are run with
     (and so on...)
 
 Tox runs the complete test suite twice for each version of Python you have
-installed.  The first run uses the Python implementation of the trace
-function, the second uses the C implementation.
+installed.  The first run uses the Python implementation of the trace function,
+the second uses the C implementation.
 
 To limit tox to just a few versions of Python, use the ``-e`` switch::
 
@@ -115,8 +115,8 @@ To run just a few tests, you can use nose test selector syntax::
 
     $ tox tests.test_misc:SetupPyTest.test_metadata
 
-This looks in `tests/test_misc.py` to find the `SetupPyTest` class, and runs the
-`test_metadata` test method.
+This looks in `tests/test_misc.py` to find the `SetupPyTest` class, and runs
+the `test_metadata` test method.
 
 Of course, run all the tests on every version of Python you have, before
 submitting a change.

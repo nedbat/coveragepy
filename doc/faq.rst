@@ -26,9 +26,9 @@ the :ref:`command line <cmd>` to create the reports you need from that data.
 
 **Q: Why do unexecutable lines show up as executed?**
 
-Usually this is because you've updated your code and run coverage on it
-again without erasing the old data.  Coverage records line numbers executed, so
-the old data may have recorded a line number which has since moved, causing
+Usually this is because you've updated your code and run coverage on it again
+without erasing the old data.  Coverage records line numbers executed, so the
+old data may have recorded a line number which has since moved, causing
 coverage to claim a line has been executed which cannot be.
 
 If you are using the ``-x`` command line action, it doesn't erase first by
@@ -98,8 +98,7 @@ Announcements of new coverage.py releases are sent to the
 .. _coveragepy-announce: http://groups.google.com/group/coveragepy-announce
 
 `I can be reached`__ in a number of ways, I'm happy to answer questions about
-using coverage.py.  I'm also available hourly for consultation or custom
-development.
+using coverage.py.
 
 __  http://nedbatchelder.com/site/aboutned.html
 

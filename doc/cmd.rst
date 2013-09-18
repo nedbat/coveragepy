@@ -168,9 +168,9 @@ coverage can combine multiple files into one for reporting. Use the ``-p`` flag
 during execution to append distinguishing information to the .coverage data
 file name.
 
-Once you have created a number of these files, you can copy them all to a single
-directory, and use the **combine** command to combine them into one .coverage
-data file::
+Once you have created a number of these files, you can copy them all to a
+single directory, and use the **combine** command to combine them into one
+.coverage data file::
 
     $ coverage combine
 
@@ -308,10 +308,10 @@ generating unchanged pages, making the process faster.
 Text annotation
 ---------------
 
-The **annotate** command produces a text annotation of your source code.  With a
-``-d`` argument specifying an output directory, each Python file becomes a text
-file in that directory.  Without ``-d``, the files are written into the same
-directories as the original Python files.
+The **annotate** command produces a text annotation of your source code.  With
+a ``-d`` argument specifying an output directory, each Python file becomes a
+text file in that directory.  Without ``-d``, the files are written into the
+same directories as the original Python files.
 
 Coverage status for each line of source is indicated with a character prefix::
 

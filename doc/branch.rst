@@ -73,8 +73,8 @@ __ http://ivory.idyll.org/blog
 Excluding code
 --------------
 
-If you have :ref:`excluded code <excluding>`, a condtional will not be
-counted as a branch if one of its choices is excluded::
+If you have :ref:`excluded code <excluding>`, a condtional will not be counted
+as a branch if one of its choices is excluded::
 
     def only_one_choice(x):
         if x:
@@ -84,8 +84,8 @@ counted as a branch if one of its choices is excluded::
             # x is always true.
             blah3()
 
-Because the ``else`` clause is excluded, the ``if`` only has one possible
-next line, so it isn't considered a branch at all.
+Because the ``else`` clause is excluded, the ``if`` only has one possible next
+line, so it isn't considered a branch at all.
 
 
 Structurally partial branches
@@ -115,6 +115,6 @@ pragma::
             break
 
 Here the while loop will never complete because the break will always be taken
-at some point.  Coverage.py can't work that out on its own, but the
-"no branch" pragma indicates that the branch is known to be partial, and
-the line is not flagged.
+at some point.  Coverage.py can't work that out on its own, but the "no branch"
+pragma indicates that the branch is known to be partial, and the line is not
+flagged.

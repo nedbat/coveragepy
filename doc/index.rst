@@ -140,8 +140,7 @@ Bitbucket also hosts the `code repository`_.
 .. _code repository: http://bitbucket.org/ned/coveragepy
 
 `I can be reached`_ in a number of ways. I'm happy to answer questions about
-using coverage.py.  I'm also available hourly for consultation or custom
-development.
+using coverage.py.
 
 .. _I can be reached:  http://nedbatchelder.com/site/aboutned.html
 

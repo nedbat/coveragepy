@@ -21,9 +21,9 @@ sub-processes.  See :ref:`subprocess` for more details.
 
 The default name for configuration files is ``.coveragerc``, in the same
 directory coverage.py is being run in.  Most of the settings in the
-configuration file are tied to your source code and how it should be
-measured, so it should be stored with your source, and checked into
-source control, rather than put in your home directory.
+configuration file are tied to your source code and how it should be measured,
+so it should be stored with your source, and checked into source control,
+rather than put in your home directory.
 
 
 Syntax
@@ -114,8 +114,8 @@ Try this if you get seemingly impossible results.
 [paths]
 -------
 
-The entries in this section are lists of file paths that should be
-considered equivalent when combining data from different machines::
+The entries in this section are lists of file paths that should be considered
+equivalent when combining data from different machines::
 
     [paths]
     source =
@@ -123,15 +123,14 @@ considered equivalent when combining data from different machines::
         /jenkins/build/*/src
         c:\myproj\src
 
-The names of the entries are ignored, you may choose any name that
-you like.  The value is a lists of strings.  When combining data
-with the ``combine`` command, two file paths will be combined
-if they start with paths from the same list.
+The names of the entries are ignored, you may choose any name that you like.
+The value is a lists of strings.  When combining data with the ``combine``
+command, two file paths will be combined if they start with paths from the same
+list.
 
-The first value must be an actual file path on the machine where
-the reporting will happen, so that source code can be found.
-The other values can be file patterns to match against the paths
-of collected data.
+The first value must be an actual file path on the machine where the reporting
+will happen, so that source code can be found.  The other values can be file
+patterns to match against the paths of collected data.
 
 See :ref:`cmd_combining` for more information.
 
@@ -163,11 +162,11 @@ you are replacing all the partial branch regexes so you'll need to also
 supply the "pragma: no branch" regex if you still want to use it.
 
 ``precision`` (integer): the number of digits after the decimal point to
-display for reported coverage percentages.  The default is 0, displaying
-for example "87%".  A value of 2 will display percentages like "87.32%".
+display for reported coverage percentages.  The default is 0, displaying for
+example "87%".  A value of 2 will display percentages like "87.32%".
 
-``show_missing`` (boolean, default False): when running a summary report,
-show missing lines.  See :ref:`cmd_summary` for more information.
+``show_missing`` (boolean, default False): when running a summary report, show
+missing lines.  See :ref:`cmd_summary` for more information.
 
 
 .. _config_html:

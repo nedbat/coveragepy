@@ -39,8 +39,8 @@ function is not reported as missing::
             return "<MyObject>"
 
 Excluded code is executed as usual, and its execution is recorded in the
-coverage data as usual. When producing reports though, coverage excludes it from
-the list of missing code.
+coverage data as usual. When producing reports though, coverage excludes it
+from the list of missing code.
 
 
 Branch coverage
@@ -57,8 +57,8 @@ counted as a branch if one of its choices is excluded::
             # x is always true.
             blah3()
 
-Because the ``else`` clause is excluded, the ``if`` only has one possible
-next line, so it isn't considered a branch at all.
+Because the ``else`` clause is excluded, the ``if`` only has one possible next
+line, so it isn't considered a branch at all.
 
 
 Advanced exclusion
@@ -70,8 +70,8 @@ expressions. Using :ref:`configuration files <config>` or the coverage
 often-used constructs to exclude that can be matched with a regex. You can
 exclude them all at once without littering your code with exclusion pragmas.
 
-For example, you might decide that __repr__ functions are usually only used
-in debugging code, and are uninteresting to test themselves.  You could exclude
+For example, you might decide that __repr__ functions are usually only used in
+debugging code, and are uninteresting to test themselves.  You could exclude
 all of them by adding a regex to the exclusion list::
 
     [report]

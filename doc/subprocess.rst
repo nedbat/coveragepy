@@ -28,21 +28,21 @@ Configuring Python for subprocess coverage
 
 Measuring coverage in subprocesses is a little tricky.  When you spawn a
 subprocess, you are invoking Python to run your program.  Usually, to get
-coverage measurement, you have to use coverage.py to run your program.
-Your subprocess won't be using coverage.py, so we have to convince Python
-to use coverage even when not explicitly invokved.
+coverage measurement, you have to use coverage.py to run your program.  Your
+subprocess won't be using coverage.py, so we have to convince Python to use
+coverage even when not explicitly invokved.
 
 To do that, we'll configure Python to run a little coverage.py code when it
-starts.  That code will look for an environment variable that tells it to
-start coverage measurement at the start of the process.
+starts.  That code will look for an environment variable that tells it to start
+coverage measurement at the start of the process.
 
 To arrange all this, you have to do two things: set a value for the
 ``COVERAGE_PROCESS_START`` environment variable, and then configure Python to
 invoke :func:`coverage.process_startup` when Python processes start.
 
 How you set ``COVERAGE_PROCESS_START`` depends on the details of how you create
-subprocesses.  As long as the environment variable is visible in your subprocess,
-it will work.
+subprocesses.  As long as the environment variable is visible in your
+subprocess, it will work.
 
 You can configure your Python installation to invoke the ``process_startup``
 function in two ways:
@@ -56,14 +56,16 @@ function in two ways:
 
     import coverage; coverage.process_startup()
 
-The sitecustomize.py technique is cleaner, but may involve modifying an existing
-sitecustomize.py, since there can be only one.  If there is no sitecustomize.py
-already, you can create it in any directory on the Python path.
+The sitecustomize.py technique is cleaner, but may involve modifying an
+existing sitecustomize.py, since there can be only one.  If there is no
+sitecustomize.py already, you can create it in any directory on the Python
+path.
 
 The .pth technique seems like a hack, but works, and is documented behavior.
 On the plus side, you can create the file with any name you like so you don't
-have to coordinate with other .pth files.  On the minus side, you have to create
-the file in a system-defined directory, so you may need privileges to write it.
+have to coordinate with other .pth files.  On the minus side, you have to
+create the file in a system-defined directory, so you may need privileges to
+write it.
 
 Note that if you use one of these techniques, you must undo them if you
 uninstall coverage.py, since you will be trying to import it during Python

@@ -25,8 +25,8 @@ Execution
 When running your code, the ``coverage run`` command will by default measure
 all code, unless it is part of the Python standard library.
 
-You can specify source to measure with the ``--source`` command-line switch,
-or the ``[run] source`` configuration value.  The value is a list of directories
+You can specify source to measure with the ``--source`` command-line switch, or
+the ``[run] source`` configuration value.  The value is a list of directories
 or package names.  If specified, only source inside these directories or
 packages will be measured.  Specifying the source option also enables
 coverage.py to report on unexecuted files, since it can search the source tree
