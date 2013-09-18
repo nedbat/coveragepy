@@ -1,0 +1,203 @@
+===============
+python-coverage
+===============
+
+-------------------------------------------------
+measure code coverage of Python program execution
+-------------------------------------------------
+
+:Author: |author|
+:Date: 2013-09-09
+:Copyright: BSD license, attribution and disclaimer required.
+:Manual section: 1
+:Manual group: Coverage
+
+..  |command| replace:: **python-coverage**
+
+
+SYNOPSIS
+========
+
+| |command| `command` [ `option` ... ]
+| |command| **help** [ `command` ]
+| |command| **help** **classic**
+
+
+DESCRIPTION
+===========
+
+|command| executes a Python program and measures which of its
+statements are executed and which are not. It stores the information
+in the file ``.coverage`` in the current working directory.
+
+
+COMMAND OVERVIEW
+================
+
+|command| **annotate**
+    Annotate source files with execution information.
+
+|command| **combine**
+    Combine a number of data files.
+
+|command| **erase**
+    Erase previously collected coverage data.
+
+|command| **help**
+    Get help on using coverage.py.
+
+|command| **html**
+    Create an HTML report.
+
+|command| **report**
+    Report coverage stats on modules.
+
+|command| **run**
+    Run a Python program and measure code execution.
+
+|command| **xml**
+    Create an XML report of coverage results.
+
+
+GLOBAL OPTIONS
+==============
+
+--help, -h
+    Describe how to use Coverage, in general or a command.
+
+--rcfile `RCFILE`
+    Specify configuration file `RCFILE`. Defaults to ``.coveragerc``.
+
+--omit `PATTERN` [ , ... ]
+    Omit files when their filename matches one of these PATTERNs.
+    Usually needs quoting on the command line.
+
+--include `PATTERN` [ , ... ]
+    Include files only when their filename path matches one of these
+    PATTERNs. Usually needs quoting on the command line.
+
+
+COMMAND REFERENCE
+=================
+
+|command| **annotate**
+
+    Options:
+
+    \-d DIR, --directory=DIR
+        Write the output files to DIR.
+
+    \-i, --ignore-errors
+        Ignore errors while reading source files.
+
+|command| **combine**
+
+    Combine data from multiple coverage files collected with ``run -p``.
+    The combined results are written to a single file representing the
+    union of the data.
+
+|command| **erase**
+
+    Erase previously collected coverage data.
+
+|command| **help** [ `command` ]
+
+    Describe how to use Coverage.
+
+|command| **help** **classic**
+
+    Describe help on older command syntax.
+
+|command| **html** [ `option` ... ] [ `module` ... ]
+
+    Create an HTML report of the coverage of each `module` file. Each file
+    gets its own page, with the source decorated to show executed,
+    excluded, and missed lines.
+
+    Options:
+
+    \-d `DIR`, --directory `DIR`
+        Write the output files to `DIR`.
+
+    \-i, --ignore-errors
+        Ignore errors while reading source files.
+
+|command| **report** [ `option` ... ] [ `module` ... ]
+
+    Report coverage statistics on each `module`.
+
+    Options:
+
+    \-i, --ignore-errors
+        Ignore errors while reading source files.
+
+    \-m, --show-missing
+        Show line numbers of statements in each module that weren't
+        executed.
+
+|command| **run** [ `options` ... ] `pyfile` [ `program_options` ]
+
+    Run a Python program `pyfile`, measuring code execution.
+
+    Options:
+
+    \-a, --append
+        Append coverage data to .coverage, otherwise it is started clean with each run.
+
+    \--branch
+        Measure branch coverage in addition to statement coverage.
+
+    \-L, --pylib
+        Measure coverage even inside the Python installed library, which
+        isn't done by default.
+
+    \-p, --parallel-mode
+        Append the machine name, process id and random number to the
+        ``.coverage`` data file name to simplify collecting data from many
+        processes.
+
+    \--timid
+        Use a simpler but slower trace method. Try this if you get
+        seemingly impossible results!
+
+    \--source `SOURCE` [ , ... ]
+        A list of packages or directories of code to be measured.
+
+|command| **xml** [ `options` ... ] [ `modules` ... ]
+
+    Generate an XML report of coverage results.
+
+    Options:
+
+    \-i, --ignore-errors
+        Ignore errors while reading source files.
+
+    \-o `OUTFILE`
+        Write the XML report to `OUTFILE`. Defaults to ``coverage.xml``.
+
+
+HISTORY
+=======
+
+The ``python-coverage`` command is a Python program which calls the
+``coverage`` Python library to do all the work.
+
+The library was originally developed by Gareth Rees, and is now developed
+by Ned Batchelder.
+
+This manual page was written by |author|.
+
+..  |author| replace:: |authorname| |authoremail|
+..  |authorname| replace:: Ben Finney
+..  |authoremail| replace:: <ben+python@benfinney.id.au>
+
+..
+    Local variables:
+    mode: rst
+    coding: utf-8
+    time-stamp-format: "%:y-%02m-%02d"
+    time-stamp-start: "^:Date:[         ]+"
+    time-stamp-end: "$"
+    time-stamp-line-limit: 20
+    End:
+    vim: filetype=rst fileencoding=utf-8 :
