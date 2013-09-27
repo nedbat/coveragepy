@@ -9,6 +9,7 @@ Configuration files
 :history: 20100824T092900, added ``precision``.
 :history: 20110604T184400, updated for 3.5.
 :history: 20110827T212700, updated for 3.5.1
+:history: 20130926T222300, updated for 3.6.1
 
 
 Coverage.py options can be specified in a configuration file.  This makes it
@@ -130,7 +131,8 @@ list.
 
 The first value must be an actual file path on the machine where the reporting
 will happen, so that source code can be found.  The other values can be file
-patterns to match against the paths of collected data.
+patterns to match against the paths of collected data, or they can be absolute
+or relative file paths on the current machine.
 
 See :ref:`cmd_combining` for more information.
 

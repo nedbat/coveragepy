@@ -3,6 +3,7 @@
 from coverage.backward import to_string
 from coverage.misc import CoverageException
 import fnmatch, os, os.path, re, sys
+import ntpath, posixpath
 
 class FileLocator(object):
     """Understand how filenames work."""
@@ -110,11 +111,18 @@ else:
         """The actual path for non-Windows platforms."""
         return filename
 
+
 def abs_file(filename):
     """Return the absolute normalized form of `filename`."""
-    path = os.path.abspath(os.path.realpath(filename))
+    path = os.path.expandvars(os.path.expanduser(filename))
+    path = os.path.abspath(os.path.realpath(path))
     path = actual_path(path)
     return path
+
+
+def isabs_anywhere(filename):
+    """Is `filename` an absolute path on any OS?"""
+    return ntpath.isabs(filename) or posixpath.isabs(filename)
 
 
 def prep_patterns(patterns):
@@ -230,6 +238,11 @@ class PathAliases(object):
         if pattern.endswith("*"):
             raise CoverageException("Pattern must not end with wildcards.")
         pattern_sep = sep(pattern)
+
+        # The pattern is meant to match a filepath.  Let's make it absolute
+        # unless it already is, or is meant to match any prefix.
+        if not pattern.startswith('*') and not isabs_anywhere(pattern):
+            pattern = abs_file(pattern)
         pattern += pattern_sep
 
         # Make a regex from the pattern.  fnmatch always adds a \Z or $ to
@@ -237,7 +250,7 @@ class PathAliases(object):
         regex_pat = fnmatch.translate(pattern).replace(r'\Z(', '(')
         if regex_pat.endswith("$"):
             regex_pat = regex_pat[:-1]
-        # We want */a/b.py to match on Windows to, so change slash to match
+        # We want */a/b.py to match on Windows too, so change slash to match
         # either separator.
         regex_pat = regex_pat.replace(r"\/", r"[\\/]")
         # We want case-insensitive matching, so add that flag.

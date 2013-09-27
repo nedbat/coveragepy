@@ -17,6 +17,13 @@ Change history for Coverage.py
   cause them to be incorrectly marked as unexecuted, as described in
   `issue 218`_.  This is now fixed.
 
+- When specifying paths to alias together during data combining, you can now
+  specify relative paths, fixing `issue 267`_.
+
+- Most file paths can now be specified with username expansion (``~/src``, or
+  ``~build/src``, for example), and with environment variable expansion
+  (``build/$BUILDNUM/src``).
+
 - When running a threaded program under the Python tracer, coverage no longer
   issues a spurious warning about the trace function changing: "Trace function
   changed, measurement is likely wrong: None."  This fixes `issue 164`_.
@@ -34,6 +41,7 @@ Change history for Coverage.py
 .. _issue 242: https://bitbucket.org/ned/coveragepy/issue/242/running-a-two-level-package-doesnt-work
 .. _issue 218: https://bitbucket.org/ned/coveragepy/issue/218/run-command-does-not-respect-the-omit-flag
 .. _issue 255: https://bitbucket.org/ned/coveragepy/issue/255/directory-level-__main__py-not-included-in
+.. _issue 267: https://bitbucket.org/ned/coveragepy/issue/267/relative-path-aliases-dont-work
 
 
 Version 3.6 --- 5 January 2013

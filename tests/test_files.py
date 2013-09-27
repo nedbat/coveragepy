@@ -1,6 +1,6 @@
 """Tests for files.py"""
 
-import os
+import os, os.path
 
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, abs_file
@@ -91,6 +91,8 @@ class MatcherTest(CoverageTest):
 class PathAliasesTest(CoverageTest):
     """Tests for coverage/files.py:PathAliases"""
 
+    run_in_temp_dir = False
+
     def test_noop(self):
         aliases = PathAliases()
         self.assertEqual(aliases.map('/ned/home/a.py'), '/ned/home/a.py')
@@ -154,6 +156,28 @@ class PathAliasesTest(CoverageTest):
         aliases.add(r'c:\ned\src', r'.\mysrc')
         mapped = aliases.map(r'/home/ned/foo/src/sub/a.py')
         self.assertEqual(mapped, r'.\mysrc\sub\a.py')
+
+    def test_leading_wildcard(self):
+        aliases = PathAliases()
+        aliases.add('*/d1', './mysrc1')
+        aliases.add('*/d2', './mysrc2')
+        self.assertEqual(aliases.map('/foo/bar/d1/x.py'), './mysrc1/x.py')
+        self.assertEqual(aliases.map('/foo/bar/d2/y.py'), './mysrc2/y.py')
+
+
+class RelativePathAliasesTest(CoverageTest):
+    """Tests for coverage/files.py:PathAliases, with relative files."""
+
+    def test_dot(self):
+        for d in ('.', '..', '../other', '~'):
+            aliases = PathAliases()
+            aliases.add(d, '/the/source')
+            the_file = os.path.join(d, 'a.py')
+            the_file = os.path.expanduser(the_file)
+            the_file = os.path.abspath(the_file)
+
+            assert '~' not in the_file  # to be sure the test is pure.
+            self.assertEqual(aliases.map(the_file), '/the/source/a.py')
 
 
 class FindPythonFilesTest(CoverageTest):
