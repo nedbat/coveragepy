@@ -1696,6 +1696,8 @@ if sys.version_info >= (2, 5):
 class ModuleTest(CoverageTest):
     """Tests for the module-level behavior of the `coverage` module."""
 
+    run_in_temp_dir = False
+
     def test_not_singleton(self):
         # You *can* create another coverage object.
         coverage.coverage()
@@ -1705,6 +1707,10 @@ class ModuleTest(CoverageTest):
 class ReportingTest(CoverageTest):
     """Tests of some reporting behavior."""
 
+    # We don't make any temp files, but we need an empty directory to run the
+    # tests in.
+    run_in_temp_dir = True
+
     def test_no_data_to_report_on_annotate(self):
         # Reporting with no data produces a nice message and no output dir.
         self.assertRaisesRegexp(
@@ -1712,6 +1718,10 @@ class ReportingTest(CoverageTest):
             self.command_line, "annotate -d ann"
             )
         self.assert_doesnt_exist("ann")
+
+        # CoverageTest will yell at us for using a temp directory with no files
+        # made. Instead of adding a way to shut it up, just make a file.
+        self.make_file("touch.txt", "")
 
     def test_no_data_to_report_on_html(self):
         # Reporting with no data produces a nice message and no output dir.
@@ -1727,4 +1737,4 @@ class ReportingTest(CoverageTest):
             CoverageException, "No data to report.",
             self.command_line, "xml"
             )
-        # Currently, this leaves an empty coverage.xml file... :(
+        self.assert_doesnt_exist("coverage.xml")

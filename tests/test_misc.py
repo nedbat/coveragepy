@@ -9,6 +9,8 @@ from tests.coveragetest import CoverageTest
 class HasherTest(CoverageTest):
     """Test our wrapper of md5 hashing."""
 
+    run_in_temp_dir = False
+
     def test_string_hashing(self):
         h1 = Hasher()
         h1.update("Hello, world!")

@@ -12,6 +12,8 @@ from tests.coveragetest import CoverageTest
 class InfoFormatterTest(CoverageTest):
     """Tests of misc.info_formatter."""
 
+    run_in_temp_dir = False
+
     def test_info_formatter(self):
         lines = list(info_formatter([
             ('x', 'hello there'),

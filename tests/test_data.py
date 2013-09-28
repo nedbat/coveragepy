@@ -25,6 +25,8 @@ Y_PY_ARCS_3 = [(17,23)]
 class DataTest(CoverageTest):
     """Test cases for coverage.data."""
 
+    run_in_temp_dir = False
+
     def assert_summary(self, covdata, summary, fullpath=False):
         """Check that the summary of `covdata` is `summary`."""
         self.assertEqual(covdata.summary(fullpath), summary)

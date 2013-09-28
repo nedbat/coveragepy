@@ -506,8 +506,10 @@ class ProcessTest(CoverageTest):
                 self.assertGreater(data.summary()['os.py'], 50)
 
 
-class AliasedCommandTests(CoverageTest):
+class AliasedCommandTest(CoverageTest):
     """Tests of the version-specific command aliases."""
+
+    run_in_temp_dir = False
 
     def test_major_version_works(self):
         # "coverage2" works on py2

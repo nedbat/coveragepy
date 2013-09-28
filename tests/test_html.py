@@ -158,7 +158,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.assertMultiLineEqual(index1, fixed_index2)
 
 
-class HtmlTitleTests(HtmlTestHelpers, CoverageTest):
+class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML title support."""
 
     def test_default_title(self):

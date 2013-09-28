@@ -263,7 +263,7 @@ class SummaryTest2(CoverageTest):
         self.assertIn("tests/modules/pkg2/__init__ 0 0 100%", report)
 
 
-class ReportingReturnValue(CoverageTest):
+class ReportingReturnValueTest(CoverageTest):
     """Tests of reporting functions returning values."""
 
     def run_coverage(self):

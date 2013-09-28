@@ -680,6 +680,8 @@ class CmdLineStdoutTest(CmdLineTest):
 class CmdMainTest(CoverageTest):
     """Tests of coverage.cmdline.main(), using mocking for isolation."""
 
+    run_in_temp_dir = False
+
     class CoverageScriptStub(object):
         """A stub for coverage.cmdline.CoverageScript, used by CmdMainTest."""
 

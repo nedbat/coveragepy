@@ -168,6 +168,8 @@ class PathAliasesTest(CoverageTest):
 class RelativePathAliasesTest(CoverageTest):
     """Tests for coverage/files.py:PathAliases, with relative files."""
 
+    run_in_temp_dir = False
+
     def test_dot(self):
         for d in ('.', '..', '../other', '~'):
             aliases = PathAliases()
