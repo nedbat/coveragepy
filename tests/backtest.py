@@ -6,7 +6,7 @@
 
 import os
 
-# Py2k and 3k don't agree on how to run commands in a subprocess.
+# Py2 and Py3 don't agree on how to run commands in a subprocess.
 try:
     import subprocess
 except ImportError:
@@ -40,9 +40,9 @@ else:
 
         return status, output
 
-# No more execfile in Py3k
+# No more execfile in Py3
 try:
-    execfile = execfile
+    execfile
 except NameError:
     def execfile(filename, globs):
         """A Python 3 implementation of execfile."""
