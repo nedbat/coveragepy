@@ -75,14 +75,16 @@ except NameError:
     range = range
 
 # A function to iterate listlessly over a dict's items.
-if "iteritems" in dir({}):
-    def iitems(d):
-        """Produce the items from dict `d`."""
-        return d.iteritems()
-else:
+try:
+    {}.iteritems
+except AttributeError:
     def iitems(d):
         """Produce the items from dict `d`."""
         return d.items()
+else:
+    def iitems(d):
+        """Produce the items from dict `d`."""
+        return d.iteritems()
 
 # Exec is a statement in Py2, a function in Py3
 if sys.version_info >= (3, 0):
