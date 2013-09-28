@@ -151,8 +151,8 @@ def make_code_from_pyc(filename):
         raise NoCode("No file to run: %r" % filename)
 
     try:
-        # First four bytes are a version-specific magic number.  It has to match
-        # or we won't run the file.
+        # First four bytes are a version-specific magic number.  It has to
+        # match or we won't run the file.
         magic = fpyc.read(4)
         if magic != imp.get_magic():
             raise NoCode("Bad magic number in .pyc file")
