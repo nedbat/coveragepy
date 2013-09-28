@@ -140,6 +140,19 @@ if sys.version_info >= (3, 0):
         """Convert bytes `b` to a string."""
         return b.decode('utf8')
 
+    def binary_bytes(byte_values):
+        """Produce a byte string with the ints from `byte_values`."""
+        return bytes(byte_values)
+
+    def byte_to_int(byte_value):
+        """Turn an element of a bytes object into an int."""
+        return byte_value
+
+    def bytes_to_ints(bytes_value):
+        """Turn a bytes object into a sequence of ints."""
+        # In Py3, iterating bytes gives ints.
+        return bytes_value
+
 else:
     def to_bytes(s):
         """Convert string `s` to bytes (no-op in 2.x)."""
@@ -148,6 +161,19 @@ else:
     def to_string(b):
         """Convert bytes `b` to a string (no-op in 2.x)."""
         return b
+
+    def binary_bytes(byte_values):
+        """Produce a byte string with the ints from `byte_values`."""
+        return "".join(chr(b) for b in byte_values)
+
+    def byte_to_int(byte_value):
+        """Turn an element of a bytes object into an int."""
+        return ord(byte_value)
+
+    def bytes_to_ints(bytes_value):
+        """Turn a bytes object into a sequence of ints."""
+        for byte in bytes_value:
+            yield ord(byte)
 
 # Md5 is available in different places.
 try:

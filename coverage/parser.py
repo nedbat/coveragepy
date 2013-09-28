@@ -5,6 +5,7 @@ import dis, re, sys, token, tokenize
 from coverage.backward import set, sorted, StringIO # pylint: disable=W0622
 from coverage.backward import open_source, range    # pylint: disable=W0622
 from coverage.backward import reversed              # pylint: disable=W0622
+from coverage.backward import bytes_to_ints
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, expensive, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
@@ -367,18 +368,6 @@ class ByteParser(object):
         children = CodeObjects(self.code)
         return [ByteParser(code=c, text=self.text) for c in children]
 
-    # Getting numbers from the lnotab value changed in Py3.0.
-    if sys.version_info >= (3, 0):
-        def _lnotab_increments(self, lnotab):
-            """Produce ints from the lnotab bytes in 3.x"""
-            # co_lnotab is a bytes object, which iterates as ints.
-            return lnotab
-    else:
-        def _lnotab_increments(self, lnotab):
-            """Produce ints from the lnotab string in 2.x"""
-            for c in lnotab:
-                yield ord(c)
-
     def _bytes_lines(self):
         """Map byte offsets to line numbers in `code`.
 
@@ -390,8 +379,8 @@ class ByteParser(object):
 
         """
         # Adapted from dis.py in the standard library.
-        byte_increments = self._lnotab_increments(self.code.co_lnotab[0::2])
-        line_increments = self._lnotab_increments(self.code.co_lnotab[1::2])
+        byte_increments = bytes_to_ints(self.code.co_lnotab[0::2])
+        line_increments = bytes_to_ints(self.code.co_lnotab[1::2])
 
         last_line_num = None
         line_num = self.code.co_firstlineno

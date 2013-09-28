@@ -1,6 +1,8 @@
 """Bytecode manipulation for coverage.py"""
 
-import opcode, sys, types
+import opcode, types
+
+from coverage.backward import byte_to_int
 
 class ByteCode(object):
     """A single bytecode."""
@@ -31,12 +33,8 @@ class ByteCodes(object):
     def __init__(self, code):
         self.code = code
 
-    if sys.version_info >= (3, 0):
-        def __getitem__(self, i):
-            return self.code[i]
-    else:
-        def __getitem__(self, i):
-            return ord(self.code[i])
+    def __getitem__(self, i):
+        return byte_to_int(self.code[i])
 
     def __iter__(self):
         offset = 0
