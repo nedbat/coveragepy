@@ -1,6 +1,7 @@
 """Base test case class for coverage testing."""
 
 import glob, imp, os, random, shlex, shutil, sys, tempfile, textwrap
+import atexit, collections
 
 import coverage
 from coverage.backward import sorted, StringIO      # pylint: disable=W0622
@@ -91,6 +92,11 @@ class CoverageTest(TestCase):
         # Record sys.modules here so we can restore it in tearDown.
         self.old_modules = dict(sys.modules)
 
+        class_behavior = self.class_behavior()
+        class_behavior.tests += 1
+        class_behavior.test_method_made_any_files = False
+        class_behavior.temp_dir = self.run_in_temp_dir
+
     def tearDown(self):
         super(CoverageTest, self).tearDown()
 
@@ -110,6 +116,10 @@ class CoverageTest(TestCase):
         sys.stderr = self.old_stderr
 
         self.clean_modules()
+
+        class_behavior = self.class_behavior()
+        if class_behavior.test_method_made_any_files:
+            class_behavior.tests_making_files += 1
 
     def clean_modules(self):
         """Remove any new modules imported during the test run.
@@ -169,6 +179,8 @@ class CoverageTest(TestCase):
         """
         # Tests that call `make_file` should be run in a temp environment.
         assert self.run_in_temp_dir
+        self.class_behavior().test_method_made_any_files = True
+
         text = textwrap.dedent(text)
         if newline:
             text = text.replace("\n", newline)
@@ -470,3 +482,55 @@ class CoverageTest(TestCase):
         status, output = run_command(cmd, status=status)
         print(output)
         return status, output
+
+    # We run some tests in temporary directories, because they may need to make
+    # files for the tests. But this is expensive, so we can change per-class
+    # whether a temp dir is used or not.  It's easy to forget to set that
+    # option properly, so we track information about what the tests did, and
+    # then report at the end of the process on test classes that were set
+    # wrong.
+
+    class ClassBehavior(object):
+        """A value object to store per-class in CoverageTest."""
+        def __init__(self):
+            self.tests = 0
+            self.temp_dir = True
+            self.tests_making_files = 0
+            self.test_method_made_any_files = False
+
+    # Map from class to info about how it ran.
+    class_behaviors = collections.defaultdict(ClassBehavior)
+
+    @classmethod
+    def report_on_class_behavior(cls):
+        """Called at process exit to report on class behavior."""
+        for test_class, behavior in cls.class_behaviors.items():
+            if behavior.temp_dir and behavior.tests_making_files == 0:
+                bad = "Inefficient"
+            elif not behavior.temp_dir and behavior.tests_making_files > 0:
+                bad = "Unsafe"
+            else:
+                bad = ""
+
+            if bad:
+                if behavior.temp_dir:
+                    where = "in a temp directory"
+                else:
+                    where = "without a temp directory"
+                print(
+                    "%s: %s ran %d tests, %d made files %s" % (
+                        bad,
+                        test_class.__name__,
+                        behavior.tests,
+                        behavior.tests_making_files,
+                        where,
+                    )
+                )
+
+    def class_behavior(self):
+        """Get the ClassBehavior instance for this test."""
+        return self.class_behaviors[self.__class__]
+
+
+# When the process ends, find out about bad classes.
+atexit.register(CoverageTest.report_on_class_behavior)
