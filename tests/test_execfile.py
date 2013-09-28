@@ -1,9 +1,10 @@
 """Tests for coverage.execfile"""
 
-import os, sys
+import compileall, os, re, sys
 
+from coverage.backward import binary_bytes
 from coverage.execfile import run_python_file, run_python_module
-from coverage.misc import NoSource
+from coverage.misc import NoCode, NoSource
 
 from tests.coveragetest import CoverageTest
 
@@ -75,6 +76,60 @@ class RunFileTest(CoverageTest):
 
     def test_no_such_file(self):
         self.assertRaises(NoSource, run_python_file, "xyzzy.py", [])
+
+
+class RunPycFileTest(CoverageTest):
+    """Test cases for `run_python_file`."""
+
+    def make_pyc(self):
+        """Create a .pyc file, and return the relative path to it."""
+        self.make_file("compiled.py", """\
+            def doit():
+                print("I am here!")
+
+            doit()
+            """)
+        compileall.compile_dir(".", quiet=True)
+        os.remove("compiled.py")
+
+        # Find the .pyc file!
+        for there, _, files in os.walk("."):
+            for f in files:
+                if f.endswith(".pyc"):
+                    return os.path.join(there, f)
+
+    def test_running_pyc(self):
+        pycfile = self.make_pyc()
+        run_python_file(pycfile, [pycfile])
+        self.assertEqual(self.stdout(), "I am here!\n")
+
+    def test_running_pyo(self):
+        pycfile = self.make_pyc()
+        pyofile = re.sub(r"[.]pyc$", ".pyo", pycfile)
+        self.assertNotEqual(pycfile, pyofile)
+        os.rename(pycfile, pyofile)
+        run_python_file(pyofile, [pyofile])
+        self.assertEqual(self.stdout(), "I am here!\n")
+
+    def test_running_pyc_from_wrong_python(self):
+        pycfile = self.make_pyc()
+
+        # Jam Python 2.1 magic number into the .pyc file.
+        fpyc = open(pycfile, "r+b")
+        fpyc.seek(0)
+        fpyc.write(binary_bytes([0x2a, 0xeb, 0x0d, 0x0a]))
+        fpyc.close()
+
+        self.assertRaisesRegexp(
+            NoCode, "Bad magic number in .pyc file",
+            run_python_file, pycfile, [pycfile]
+        )
+
+    def test_no_such_pyc_file(self):
+        self.assertRaisesRegexp(
+            NoCode, "No file to run: 'xyzzy.pyc'",
+            run_python_file, "xyzzy.pyc", []
+        )
 
 
 class RunModuleTest(CoverageTest):

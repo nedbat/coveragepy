@@ -146,6 +146,10 @@ class NoSource(CoverageException):
     """We couldn't find the source for a module."""
     pass
 
+class NoCode(NoSource):
+    """We couldn't find any code at all."""
+    pass
+
 class NotPython(CoverageException):
     """A source file turned out not to be parsable Python."""
     pass

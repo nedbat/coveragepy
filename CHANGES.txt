@@ -13,6 +13,8 @@ Change history for Coverage.py
 - Running code with ``coverage run -m`` now behaves more like Python does,
   setting sys.path properly, which fixes `issue 207`_ and `issue 242`_.
 
+- Coverage can now run .pyc files directly, closing `issue 264`_.
+
 - Omitting files within a tree specified with the ``source`` option would
   cause them to be incorrectly marked as unexecuted, as described in
   `issue 218`_.  This is now fixed.
@@ -41,6 +43,7 @@ Change history for Coverage.py
 .. _issue 242: https://bitbucket.org/ned/coveragepy/issue/242/running-a-two-level-package-doesnt-work
 .. _issue 218: https://bitbucket.org/ned/coveragepy/issue/218/run-command-does-not-respect-the-omit-flag
 .. _issue 255: https://bitbucket.org/ned/coveragepy/issue/255/directory-level-__main__py-not-included-in
+.. _issue 264: https://bitbucket.org/ned/coveragepy/issue/264/coverage-wont-run-pyc-files
 .. _issue 267: https://bitbucket.org/ned/coveragepy/issue/267/relative-path-aliases-dont-work
 
 
