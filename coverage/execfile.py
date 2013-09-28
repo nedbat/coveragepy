@@ -150,18 +150,22 @@ def make_code_from_pyc(filename):
     except IOError:
         raise NoCode("No file to run: %r" % filename)
 
-    # First four bytes are a version-specific magic number.  It has to match
-    # or we won't run the file.
-    magic = fpyc.read(4)
-    if magic != imp.get_magic():
-        raise NoCode("Bad magic number in .pyc file")
+    try:
+        # First four bytes are a version-specific magic number.  It has to match
+        # or we won't run the file.
+        magic = fpyc.read(4)
+        if magic != imp.get_magic():
+            raise NoCode("Bad magic number in .pyc file")
 
-    # Skip the junk in the header that we don't need.
-    fpyc.read(4)            # Skip the moddate.
-    if sys.version_info >= (3, 3):
-        # 3.3 added another long to the header (size), skip it.
-        fpyc.read(4)
+        # Skip the junk in the header that we don't need.
+        fpyc.read(4)            # Skip the moddate.
+        if sys.version_info >= (3, 3):
+            # 3.3 added another long to the header (size), skip it.
+            fpyc.read(4)
 
-    # The rest of the file is the code object we want.
-    code = marshal.load(fpyc)
+        # The rest of the file is the code object we want.
+        code = marshal.load(fpyc)
+    finally:
+        fpyc.close()
+
     return code
