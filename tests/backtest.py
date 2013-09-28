@@ -42,7 +42,7 @@ else:
 
 # No more execfile in Py3
 try:
-    execfile
+    execfile = execfile
 except NameError:
     def execfile(filename, globs):
         """A Python 3 implementation of execfile."""
