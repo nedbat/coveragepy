@@ -230,6 +230,27 @@ class SummaryTest(CoverageTest):
         self.assertIn("TheCode", report)
         self.assertNotIn("thecode", report)
 
+    if sys.platform == 'win32':
+        def test_pyw_files(self):
+            # https://bitbucket.org/ned/coveragepy/issue/261
+            self.make_file("start.pyw", """\
+                import mod
+                print("In start.pyw")
+                """)
+            self.make_file("mod.pyw", """\
+                print("In mod.pyw")
+                """)
+            cov = coverage.coverage()
+            cov.start()
+            import start    # pragma: nested
+            cov.stop()      # pragma: nested
+
+            report = self.get_report(cov)
+            self.assertNotIn("NoSource", report)
+            report = report.splitlines()
+            self.assertIn("start 2 0 100%", report)
+            self.assertIn("mod 1 0 100%", report)
+
 
 class SummaryTest2(CoverageTest):
     """Another bunch of summary tests."""

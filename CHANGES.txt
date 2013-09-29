@@ -15,6 +15,8 @@ Change history for Coverage.py
 
 - Coverage can now run .pyc files directly, closing `issue 264`_.
 
+- Coverage properly supports .pyw files, fixing `issue 261`_.
+
 - Omitting files within a tree specified with the ``source`` option would
   cause them to be incorrectly marked as unexecuted, as described in
   `issue 218`_.  This is now fixed.
@@ -31,12 +33,12 @@ Change history for Coverage.py
   changed, measurement is likely wrong: None."  This fixes `issue 164`_.
 
 - Static files necessary for HTML reports are found in system-installed places,
-  to ease OS-level packaging of coverage.py.  Closes `issue 259`.
+  to ease OS-level packaging of coverage.py.  Closes `issue 259`_.
 
 - Source files with encoding declarations, but a blank first line, were not
   decoded properly.  Now they are.  Thanks, Roger Hu.
 
-- The source kit now includes the `__main__.py` file in the root coverage
+- The source kit now includes the ``__main__.py`` file in the root coverage
   directory, fixing `issue 255`_.
 
 .. _issue 92: https://bitbucket.org/ned/coveragepy/issue/92/finally-clauses-arent-treated-properly-in
@@ -47,6 +49,7 @@ Change history for Coverage.py
 .. _issue 218: https://bitbucket.org/ned/coveragepy/issue/218/run-command-does-not-respect-the-omit-flag
 .. _issue 255: https://bitbucket.org/ned/coveragepy/issue/255/directory-level-__main__py-not-included-in
 .. _issue 259: https://bitbucket.org/ned/coveragepy/issue/259/allow-use-of-system-installed-third-party
+.. _issue 261: https://bitbucket.org/ned/coveragepy/issue/261/pyw-files-arent-reported-properly
 .. _issue 264: https://bitbucket.org/ned/coveragepy/issue/264/coverage-wont-run-pyc-files
 .. _issue 267: https://bitbucket.org/ned/coveragepy/issue/267/relative-path-aliases-dont-work
 
