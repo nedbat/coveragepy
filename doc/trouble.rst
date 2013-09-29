@@ -40,6 +40,10 @@ coverage.py from working properly:
   of these manipulate the C stack, and therefore confuse coverage.py.
   `Issue 149`_ has some pointers to more information.
 
+* `thread`_, in the Python standard library, is the low-level threading
+  interface.  Threads created with this module will not be traced.  Use the
+  higher-level `threading`_ module instead.
+
 * `sys.settrace`_ is the Python feature that coverage.py uses to see what's
   happening in your program.  If another part of your program is using
   sys.settrace, then it will conflict with coverage.py, and it won't be
@@ -50,7 +54,9 @@ coverage.py from working properly:
 .. _gevent: http://www.gevent.org/
 .. _greenlet: http://greenlet.readthedocs.org/
 .. _eventlet: http://eventlet.net/
-.. _sys.settrace: docs.python.org/library/sys.html#sys.settrace
+.. _sys.settrace: http://docs.python.org/library/sys.html#sys.settrace
+.. _thread: http://docs.python.org/library/thread.html
+.. _threading: http://docs.python.org/library/threading.html
 .. _issue 43: https://bitbucket.org/ned/coveragepy/issue/43/coverage-measurement-fails-on-code
 .. _issue 117: https://bitbucket.org/ned/coveragepy/issue/117/enable-coverage-measurement-of-code-run-by
 .. _issue 149: https://bitbucket.org/ned/coveragepy/issue/149/coverage-gevent-looks-broken
