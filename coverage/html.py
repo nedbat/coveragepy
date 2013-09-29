@@ -10,9 +10,28 @@ from coverage.report import Reporter
 from coverage.results import Numbers
 from coverage.templite import Templite
 
+
+# Static files are looked for in a list of places.
+STATIC_PATH = [
+    # The place Debian puts system Javascript libraries.
+    "/usr/share/javascript",
+
+    # Our htmlfiles directory.
+    os.path.join(os.path.dirname(__file__), "htmlfiles"),
+]
+
 def data_filename(fname):
-    """Return the path to a data file of ours."""
-    return os.path.join(os.path.split(__file__)[0], fname)
+    """Return the path to a data file of ours.
+
+    The file is searched for on `STATIC_PATH`, and the first place it's found,
+    is returned.
+
+    """
+    for static_dir in STATIC_PATH:
+        static_filename = os.path.join(static_dir, fname)
+        if os.path.exists(static_filename):
+            return static_filename
+    raise CoverageException("Couldn't find static file %r" % fname)
 
 def data(fname):
     """Return the contents of a data file of ours."""
@@ -29,7 +48,7 @@ class HtmlReporter(Reporter):
     # These files will be copied from the htmlfiles dir to the output dir.
     STATIC_FILES = [
             "style.css",
-            "jquery-1.4.3.min.js",
+            "jquery.min.js",
             "jquery.hotkeys.js",
             "jquery.isonscreen.js",
             "jquery.tablesorter.min.js",
@@ -48,7 +67,7 @@ class HtmlReporter(Reporter):
             '__version__': coverage.__version__,
             }
         self.source_tmpl = Templite(
-            data("htmlfiles/pyfile.html"), self.template_globals
+            data("pyfile.html"), self.template_globals
             )
 
         self.coverage = cov
@@ -100,7 +119,7 @@ class HtmlReporter(Reporter):
         # The files we provide must always be copied.
         for static in self.STATIC_FILES:
             shutil.copyfile(
-                data_filename("htmlfiles/" + static),
+                data_filename(static),
                 os.path.join(self.directory, static)
                 )
 
@@ -240,7 +259,7 @@ class HtmlReporter(Reporter):
     def index_file(self):
         """Write the index.html file for this report."""
         index_tmpl = Templite(
-            data("htmlfiles/index.html"), self.template_globals
+            data("index.html"), self.template_globals
             )
 
         self.totals = sum([f['nums'] for f in self.files])

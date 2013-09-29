@@ -3,7 +3,8 @@
 
 import os.path, re, sys
 import coverage
-from coverage.misc import NotPython, NoSource
+import coverage.html
+from coverage.misc import CoverageException, NotPython, NoSource
 
 from tests.coveragetest import CoverageTest
 
@@ -290,7 +291,43 @@ class HtmlTest(CoverageTest):
 
         missing_file = os.path.join(self.temp_dir, "sub", "another.py")
         missing_file = os.path.realpath(missing_file)
-        self.assertRaisesRegexp(NoSource,
+        self.assertRaisesRegexp(
+            NoSource,
             "(?i)No source for code: '%s'" % re.escape(missing_file),
+            cov.html_report
+            )
+
+class HtmlStaticFileTest(CoverageTest):
+    """Tests of the static file copying for the HTML report."""
+
+    def setUp(self):
+        super(HtmlStaticFileTest, self).setUp()
+        self.original_path = list(coverage.html.STATIC_PATH)
+
+    def tearDown(self):
+        coverage.html.STATIC_PATH = self.original_path
+        super(HtmlStaticFileTest, self).tearDown()
+
+    def test_copying_static_files_from_system(self):
+        # Make a new place for static files.
+        self.make_file("static_here/jquery.min.js", "Not Really JQuery!")
+        coverage.html.STATIC_PATH.insert(0, "static_here")
+
+        self.make_file("main.py", "print(17)")
+        cov = coverage.coverage()
+        self.start_import_stop(cov, "main")
+        cov.html_report()
+        jquery = open("htmlcov/jquery.min.js").read()
+        self.assertEqual(jquery, "Not Really JQuery!")
+
+    def test_cant_find_static_files(self):
+        # Make the path point to useless places.
+        coverage.html.STATIC_PATH = ["/xyzzy"]
+
+        self.make_file("main.py", "print(17)")
+        cov = coverage.coverage()
+        self.start_import_stop(cov, "main")
+        self.assertRaisesRegexp(
+            CoverageException, "Couldn't find static file '.*'",
             cov.html_report
             )
