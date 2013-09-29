@@ -242,7 +242,7 @@ class SummaryTest(CoverageTest):
                 """)
             cov = coverage.coverage()
             cov.start()
-            import start    # pragma: nested
+            import start    # pragma: nested # pylint: disable=F0401,W0612
             cov.stop()      # pragma: nested
 
             report = self.get_report(cov)
