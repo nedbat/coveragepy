@@ -85,7 +85,12 @@ class XmlReporter(Reporter):
         outfile.write(self.xml_out.toprettyxml())
 
         # Return the total percentage.
-        return 100.0 * (lhits_tot + bhits_tot) / (lnum_tot + bnum_tot)
+        denom = lnum_tot + bnum_tot
+        if denom == 0:
+            pct = 0.0
+        else:
+            pct = 100.0 * (lhits_tot + bhits_tot) / denom
+        return pct
 
     def xml_file(self, cu, analysis):
         """Add to the XML report for a single file."""

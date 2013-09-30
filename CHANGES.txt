@@ -28,6 +28,9 @@ Change history for Coverage.py
   ``~build/src``, for example), and with environment variable expansion
   (``build/$BUILDNUM/src``).
 
+- Trying to create an XML report with the nose plugin, but no files to report
+  on, would cause a ZeroDivideError, but no longer does, fixing `issue 250`_.
+
 - When running a threaded program under the Python tracer, coverage no longer
   issues a spurious warning about the trace function changing: "Trace function
   changed, measurement is likely wrong: None."  This fixes `issue 164`_.
@@ -47,6 +50,7 @@ Change history for Coverage.py
 .. _issue 207: https://bitbucket.org/ned/coveragepy/issue/207/run-m-cannot-find-module-or-package-in
 .. _issue 242: https://bitbucket.org/ned/coveragepy/issue/242/running-a-two-level-package-doesnt-work
 .. _issue 218: https://bitbucket.org/ned/coveragepy/issue/218/run-command-does-not-respect-the-omit-flag
+.. _issue 250: https://bitbucket.org/ned/coveragepy/issue/250/uncaught-zerodivisionerror-when-generating
 .. _issue 255: https://bitbucket.org/ned/coveragepy/issue/255/directory-level-__main__py-not-included-in
 .. _issue 259: https://bitbucket.org/ned/coveragepy/issue/259/allow-use-of-system-installed-third-party
 .. _issue 261: https://bitbucket.org/ned/coveragepy/issue/261/pyw-files-arent-reported-properly

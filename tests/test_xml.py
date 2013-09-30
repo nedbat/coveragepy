@@ -1,9 +1,11 @@
 """Tests for XML reports from coverage.py."""
 
-import os, re
+import os
+import re
 import coverage
 
 from tests.coveragetest import CoverageTest
+
 
 class XmlReportTest(CoverageTest):
     """Tests of the XML reports from coverage.py."""
@@ -77,8 +79,21 @@ class XmlReportTest(CoverageTest):
         doit_line = re_line(xml, "class.*doit")
         self.assertIn('filename="sub/doit.py"', doit_line)
 
+    def test_reporting_on_nothing(self):
+        # Used to raise a zero division error:
+        # https://bitbucket.org/ned/coveragepy/issue/250
+        self.make_file("empty.py", "")
+        cov = coverage.coverage()
+        empty = self.start_import_stop(cov, "empty")
+        cov.xml_report([empty], outfile="-")
+        xml = self.stdout()
+        empty_line = re_line(xml, "class.*empty")
+        self.assertIn('filename="empty.py"', empty_line)
+        self.assertIn('line-rate="0"', empty_line)
+
 
 def re_line(text, pat):
     """Return the one line in `text` that matches regex `pat`."""
     lines = [l for l in text.splitlines() if re.search(pat, l)]
+    assert len(lines) == 1
     return lines[0]
