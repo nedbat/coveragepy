@@ -142,10 +142,14 @@ COMMAND REFERENCE
     Options:
 
     \-a, --append
-        Append coverage data to .coverage, otherwise it is started clean with each run.
+        Append coverage data to .coverage, otherwise it is started clean
+        with each run.
 
     \--branch
         Measure branch coverage in addition to statement coverage.
+
+    \--debug `OPTION` [ , ... ]
+        Debug options, separated by commas.
 
     \-L, --pylib
         Measure coverage even inside the Python installed library, which
@@ -156,12 +160,12 @@ COMMAND REFERENCE
         ``.coverage`` data file name to simplify collecting data from many
         processes.
 
+    \--source `SOURCE` [ , ... ]
+        A list of packages or directories of code to be measured.
+
     \--timid
         Use a simpler but slower trace method. Try this if you get
         seemingly impossible results!
-
-    \--source `SOURCE` [ , ... ]
-        A list of packages or directories of code to be measured.
 
 |command| **xml** [ `options` ... ] [ `modules` ... ]
 
@@ -179,8 +183,8 @@ COMMAND REFERENCE
 HISTORY
 =======
 
-The ``python-coverage`` command is a Python program which calls the
-``coverage`` Python library to do all the work.
+The |command| command is a Python program which calls the ``coverage``
+Python library to do all the work.
 
 The library was originally developed by Gareth Rees, and is now developed
 by Ned Batchelder.
