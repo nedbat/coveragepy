@@ -6,6 +6,7 @@ python-coverage
 measure code coverage of Python program execution
 -------------------------------------------------
 
+:Author: Ned Batchelder <ned@nedbatchelder.com>
 :Author: |author|
 :Date: 2013-09-09
 :Copyright: BSD license, attribution and disclaimer required.
@@ -14,13 +15,16 @@ measure code coverage of Python program execution
 
 ..  |command| replace:: **python-coverage**
 
+..
+    To test this file:
+    $ rst2man < doc/python-coverage.1.txt  | groff -man -Tascii
+
 
 SYNOPSIS
 ========
 
 | |command| `command` [ `option` ... ]
 | |command| **help** [ `command` ]
-| |command| **help** **classic**
 
 
 DESCRIPTION
