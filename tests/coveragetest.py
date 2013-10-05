@@ -452,6 +452,14 @@ class CoverageTest(TestCase):
         Returns the process' stdout text.
 
         """
+        # Running Python subprocesses can be tricky.  Use the real name of our
+        # own executable.  So "python foo.py" might get executed as
+        # "python3.3 foo.py".  This is important because Python 3.x doesn't
+        # install as "python", so you might get a Python 2 executable instead
+        # if you don't use the executable's basename.
+        if cmd.startswith("python "):
+            cmd = os.path.basename(sys.executable) + cmd[6:]
+
         _, output = self.run_command_status(cmd)
         return output
 

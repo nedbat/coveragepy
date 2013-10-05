@@ -598,10 +598,12 @@ class ProcessStartupTest(CoverageTest):
             raise SkipTest(
                 "Can't test subprocess pth file suppport during metacoverage"
                 )
+
         # Main will run sub.py
         self.make_file("main.py", """\
-            import os
-            os.system("python sub.py")
+            import os, os.path, sys
+            ex = os.path.basename(sys.executable)
+            os.system(ex + " sub.py")
             """)
         # sub.py will write a few lines.
         self.make_file("sub.py", """\
