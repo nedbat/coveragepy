@@ -550,7 +550,7 @@ class ByteParser(object):
         # starts is the entrances to the chunks
         starts = set([ch.byte for ch in chunks])
         for ch in chunks:
-            assert all((ex in starts or ex < 0) for ex in ch.exits)
+            assert all([(ex in starts or ex < 0) for ex in ch.exits])
 
     def _arcs(self):
         """Find the executable arcs in the code.
