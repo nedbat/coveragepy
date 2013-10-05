@@ -1,7 +1,7 @@
 """Base test case class for coverage testing."""
 
 import glob, imp, os, random, shlex, shutil, sys, tempfile, textwrap
-import atexit, collections
+import atexit
 
 import coverage
 from coverage.backward import sorted, StringIO      # pylint: disable=W0622
@@ -499,9 +499,8 @@ class CoverageTest(TestCase):
             self.test_method_made_any_files = False
 
     # Map from class to info about how it ran.
-    class_behaviors = collections.defaultdict(ClassBehavior)
+    class_behaviors = {}
 
-    @classmethod
     def report_on_class_behavior(cls):
         """Called at process exit to report on class behavior."""
         for test_class, behavior in cls.class_behaviors.items():
@@ -526,10 +525,14 @@ class CoverageTest(TestCase):
                         where,
                     )
                 )
+    report_on_class_behavior = classmethod(report_on_class_behavior)
 
     def class_behavior(self):
         """Get the ClassBehavior instance for this test."""
-        return self.class_behaviors[self.__class__]
+        cls = self.__class__
+        if cls not in self.class_behaviors:
+            self.class_behaviors[cls] = self.ClassBehavior()
+        return self.class_behaviors[cls]
 
 
 # When the process ends, find out about bad classes.

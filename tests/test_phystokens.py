@@ -89,7 +89,7 @@ if sys.version_info < (3, 0):
         if sys.version_info >= (2,4):
             default_encoding = 'ascii'
         else:
-            default_encoding = 'iso8859-1'
+            default_encoding = 'iso-8859-1'
 
         def test_detect_source_encoding(self):
             # Various forms from http://www.python.org/dev/peps/pep-0263/

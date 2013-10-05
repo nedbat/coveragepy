@@ -177,7 +177,9 @@ def source_encoding(source):
             raise SyntaxError("unknown encoding: " + encoding)
 
         if bom_found:
-            if codec.name != 'utf-8':
+            # codecs in 2.3 were raw tuples of functions, assume the best.
+            codec_name = getattr(codec, 'name', encoding)
+            if codec_name != 'utf-8':
                 # This behaviour mimics the Python interpreter
                 raise SyntaxError('encoding problem: utf-8')
             encoding += '-sig'

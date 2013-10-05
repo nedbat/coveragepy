@@ -186,7 +186,34 @@ class CoverageTestTest(CoverageTest):
         # "environment: COV_FOOBAR = XYZZY" or "COV_FOOBAR = XYZZY"
         executable = [l for l in out if "executable:" in l][0]
         executable = executable.split(":", 1)[1].strip()
-        self.assertEqual(executable, sys.executable)
+        self.assertTrue(same_python_executable(executable, sys.executable))
         environ = [l for l in out if "COV_FOOBAR" in l][0]
         _, _, environ = rpartition(environ, ":")
         self.assertEqual(environ.strip(), "COV_FOOBAR = XYZZY")
+
+
+def same_python_executable(e1, e2):
+    """Determine if `e1` and `e2` refer to the same Python executable.
+
+    Either path could include symbolic links.  The two paths might not refer
+    to the exact same file, but if they are in the same directory and their
+    numeric suffixes aren't different, they are the same executable.
+
+    """
+    e1 = os.path.abspath(os.path.realpath(e1))
+    e2 = os.path.abspath(os.path.realpath(e2))
+
+    if os.path.dirname(e1) != os.path.dirname(e2):
+        return False
+
+    e1 = os.path.basename(e1)
+    e2 = os.path.basename(e2)
+
+    if e1 == "python" or e2 == "python" or e1 == e2:
+        # python and python2.3: ok
+        # python2.3 and python: ok
+        # python and python: ok
+        # python2.3 and python2.3: ok
+        return True
+
+    return False

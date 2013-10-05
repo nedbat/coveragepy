@@ -4,6 +4,7 @@ import re
 
 import coverage
 from coverage.backward import StringIO
+from coverage.backward import set                   # pylint: disable=W0622
 
 from tests.coveragetest import CoverageTest
 
