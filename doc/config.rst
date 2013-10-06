@@ -93,6 +93,9 @@ standard library.
 ``data_file`` (string, default ".coverage"): the name of the data file to use
 for storing or reporting coverage.
 
+``debug`` (multi-string): a list of debug options.  See :ref:`the run
+--debug option <cmd_run_debug>` for details.
+
 ``include`` (multi-string): a list of filename patterns, the files to include
 in measurement or reporting.  See :ref:`source` for details.
 

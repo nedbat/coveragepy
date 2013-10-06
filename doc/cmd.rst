@@ -138,6 +138,24 @@ could affect the measurement process.  The possible warnings include:
   This could be because you asked to measure only modules that never ran,
   or for other reasons.
 
+.. _cmd_run_debug:
+
+The ``--debug`` option instructs coverage to log internal details of its
+operation, to help with diagnosing problems.  It takes a comma-separated list
+of options, each indicating a facet of operation to log to stderr:
+
+* ``trace``: print every decision about whether to trace a file or not. For
+  files not being traced, the reason is also given.
+
+* ``config``: before starting, dump all the :ref:`configuration <config>`
+  values.
+
+* ``sys``: before starting, dump all the system and environment information,
+  as with :ref:`coverage debug sys <cmd_debug>`.
+  
+* ``dataio``: log when reading or writing any data file.
+  
+* ``pid``: annotate all debug output with the process id.
 
 
 .. _cmd_datafile:
