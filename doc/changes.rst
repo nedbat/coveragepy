@@ -40,7 +40,8 @@ Version 3.7 --- 6 October 2013
 ------------------------------
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
-  options indicating the type of internal activity to log to stderr.
+  options indicating the type of internal activity to log to stderr. For
+  details, see :ref:`the run --debug options <cmd_run_debug>`.
 
 - Improved the branch coverage facility, fixing `issue 92`_ and `issue 175`_.
 
