@@ -34,8 +34,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
-Version 3.7b1 --- 6 October 2013
---------------------------------
+Version 3.7 --- 6 October 2013
+------------------------------
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
   options indicating the type of internal activity to log to stderr.

@@ -53,6 +53,8 @@
     - Issue tracker should get new version number in picker.
     # Note: don't delete old version numbers: it marks changes on the tickets
     # with that number.
+- Update github:
+    - hg bookmark -r default master -f && hg push github
 - Announce on coveragepy-announce@googlegroups.com .
 - Announce on TIP.
 - Ask Christophe Zwerschke (cito@online.de) to build win64 kits.
