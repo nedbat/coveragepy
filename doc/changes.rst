@@ -34,6 +34,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
+.. _changes_37:
+
 Version 3.7 --- 6 October 2013
 ------------------------------
 
