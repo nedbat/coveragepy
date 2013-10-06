@@ -25,12 +25,69 @@ Major change history for coverage.py
 :history: 20121129T060100, updated for 3.6b1.
 :history: 20121223T180600, updated for 3.6b2.
 :history: 20130105T173500, updated for 3.6
+:history: 20131005T205700, updated for 3.7
 
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+
+
+Version 3.7b1 --- 6 October 2013
+--------------------------------
+
+- Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
+  options indicating the type of internal activity to log to stderr.
+
+- Improved the branch coverage facility, fixing `issue 92`_ and `issue 175`_.
+
+- Running code with ``coverage run -m`` now behaves more like Python does,
+  setting sys.path properly, which fixes `issue 207`_ and `issue 242`_.
+
+- Coverage can now run .pyc files directly, closing `issue 264`_.
+
+- Coverage properly supports .pyw files, fixing `issue 261`_.
+
+- Omitting files within a tree specified with the ``source`` option would
+  cause them to be incorrectly marked as unexecuted, as described in
+  `issue 218`_.  This is now fixed.
+
+- When specifying paths to alias together during data combining, you can now
+  specify relative paths, fixing `issue 267`_.
+
+- Most file paths can now be specified with username expansion (``~/src``, or
+  ``~build/src``, for example), and with environment variable expansion
+  (``build/$BUILDNUM/src``).
+
+- Trying to create an XML report with no files to report on, would cause a
+  ZeroDivideError, but no longer does, fixing `issue 250`_.
+
+- When running a threaded program under the Python tracer, coverage no longer
+  issues a spurious warning about the trace function changing: "Trace function
+  changed, measurement is likely wrong: None."  This fixes `issue 164`_.
+
+- Static files necessary for HTML reports are found in system-installed places,
+  to ease OS-level packaging of coverage.py.  Closes `issue 259`_.
+
+- Source files with encoding declarations, but a blank first line, were not
+  decoded properly.  Now they are.  Thanks, Roger Hu.
+
+- The source kit now includes the ``__main__.py`` file in the root coverage
+  directory, fixing `issue 255`_.
+
+.. _issue 92: https://bitbucket.org/ned/coveragepy/issue/92/finally-clauses-arent-treated-properly-in
+.. _issue 164: https://bitbucket.org/ned/coveragepy/issue/164/trace-function-changed-warning-when-using
+.. _issue 175: https://bitbucket.org/ned/coveragepy/issue/175/branch-coverage-gets-confused-in-certain
+.. _issue 207: https://bitbucket.org/ned/coveragepy/issue/207/run-m-cannot-find-module-or-package-in
+.. _issue 242: https://bitbucket.org/ned/coveragepy/issue/242/running-a-two-level-package-doesnt-work
+.. _issue 218: https://bitbucket.org/ned/coveragepy/issue/218/run-command-does-not-respect-the-omit-flag
+.. _issue 250: https://bitbucket.org/ned/coveragepy/issue/250/uncaught-zerodivisionerror-when-generating
+.. _issue 255: https://bitbucket.org/ned/coveragepy/issue/255/directory-level-__main__py-not-included-in
+.. _issue 259: https://bitbucket.org/ned/coveragepy/issue/259/allow-use-of-system-installed-third-party
+.. _issue 261: https://bitbucket.org/ned/coveragepy/issue/261/pyw-files-arent-reported-properly
+.. _issue 264: https://bitbucket.org/ned/coveragepy/issue/264/coverage-wont-run-pyc-files
+.. _issue 267: https://bitbucket.org/ned/coveragepy/issue/267/relative-path-aliases-dont-work
 
 
 Version 3.6 --- 5 January 2013

@@ -2,8 +2,8 @@
 Change history for Coverage.py
 ------------------------------
 
-3.6.1
------
+3.7b1 --- 6 October 2013
+------------------------
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
   options indicating the type of internal activity to log to stderr.
@@ -28,8 +28,8 @@ Change history for Coverage.py
   ``~build/src``, for example), and with environment variable expansion
   (``build/$BUILDNUM/src``).
 
-- Trying to create an XML report with the nose plugin, but no files to report
-  on, would cause a ZeroDivideError, but no longer does, fixing `issue 250`_.
+- Trying to create an XML report with no files to report on, would cause a
+  ZeroDivideError, but no longer does, fixing `issue 250`_.
 
 - When running a threaded program under the Python tracer, coverage no longer
   issues a spurious warning about the trace function changing: "Trace function

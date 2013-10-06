@@ -29,6 +29,7 @@ coverage.py
 :history: 20121223T180600, Updated for 3.6b2.
 :history: 20121229T112300, Updated for 3.6b3.
 :history: 20130105T174000, Updated for 3.6
+:history: 20131005T210000, Updated for 3.7
 
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
@@ -41,8 +42,8 @@ not.
 
 .. ifconfig:: not prerelease
 
-    The latest version is coverage.py 3.6, released 5 January 2013.
-    It is supported on Python versions 2.3 through 3.3, and PyPy 1.8.
+    The latest version is coverage.py 3.7, released 6 October 2013.
+    It is supported on Python versions 2.3 through 3.4, and PyPy 2.1.
 
 .. ifconfig:: prerelease
 
@@ -134,10 +135,12 @@ coverage.py or get help using it on the `Testing In Python`_ mailing list.
 .. _Testing In Python: http://lists.idyll.org/listinfo/testing-in-python
 
 Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
-Bitbucket also hosts the `code repository`_.
+Bitbucket also hosts the `code repository`_. There is a `mirrored repo`_ on
+Github.
 
 .. _Bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
 .. _code repository: http://bitbucket.org/ned/coveragepy
+.. _mirrored repo: https://github.com/nedbat/coveragepy
 
 `I can be reached`_ in a number of ways. I'm happy to answer questions about
 using coverage.py.

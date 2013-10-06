@@ -1,7 +1,7 @@
 """The version and URL for coverage.py"""
 # This file is exec'ed in setup.py, don't import anything!
 
-__version__ = "3.6.1a1"         # see detailed history in CHANGES.txt
+__version__ = "3.7b1"           # see detailed history in CHANGES.txt
 
 __url__ = "http://nedbatchelder.com/code/coverage"
 if max(__version__).isalpha():

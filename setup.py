@@ -9,7 +9,10 @@ library to determine which lines are executable, and which have been executed.
 Coverage.py runs on Pythons 2.3 through 3.3, and PyPy 1.9.
 
 Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
-tracker are at `bitbucket.org <http://bitbucket.org/ned/coveragepy>`_.
+tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_, with a
+mirrored repo on `Github <https://github.com/nedbat/coveragepy>`_.
+
+New in 3.7: ``--debug``, and 12 bugs closed.
 
 New in 3.6: ``--fail-under``, and >20 bugs closed.
 
