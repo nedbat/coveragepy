@@ -2,8 +2,8 @@
 Change history for Coverage.py
 ------------------------------
 
-3.7b1 --- 6 October 2013
-------------------------
+3.7 --- 6 October 2013
+----------------------
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
   options indicating the type of internal activity to log to stderr.
