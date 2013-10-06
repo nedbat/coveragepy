@@ -14,7 +14,7 @@ S'cogapp_test_cogapp.html'
 p9
 sS'name'
 p10
-S'cogapp\\test_cogapp'
+S'cogapp/test_cogapp'
 p11
 sS'nums'
 p12
@@ -52,7 +52,7 @@ p24
 I2
 sbssS'hash'
 p25
-S'\x80\x80\x9b_ssS*\xdd\x13\xe1d\xc5\x8cw:'
+S'Mg\x80>V\xccq\x0c\x8d\x95.\xda\xc5F\x9f@'
 p26
 ssS'cogapp_whiteutils'
 p27
@@ -63,7 +63,7 @@ g8
 S'cogapp_whiteutils.html'
 p30
 sg10
-S'cogapp\\whiteutils'
+S'cogapp/whiteutils'
 p31
 sg12
 g13
@@ -97,7 +97,7 @@ g8
 S'cogapp_test_makefiles.html'
 p38
 sg10
-S'cogapp\\test_makefiles'
+S'cogapp/test_makefiles'
 p39
 sg12
 g13
@@ -131,7 +131,7 @@ g8
 S'cogapp_makefiles.html'
 p46
 sg10
-S'cogapp\\makefiles'
+S'cogapp/makefiles'
 p47
 sg12
 g13
@@ -165,7 +165,7 @@ g8
 S'cogapp_backward.html'
 p54
 sg10
-S'cogapp\\backward'
+S'cogapp/backward'
 p55
 sg12
 g13
@@ -199,7 +199,7 @@ g8
 S'cogapp___main__.html'
 p62
 sg10
-S'cogapp\\__main__'
+S'cogapp/__main__'
 p63
 sg12
 g13
@@ -233,7 +233,7 @@ g8
 S'cogapp_test_whiteutils.html'
 p70
 sg10
-S'cogapp\\test_whiteutils'
+S'cogapp/test_whiteutils'
 p71
 sg12
 g13
@@ -267,7 +267,7 @@ g8
 S'cogapp_cogapp.html'
 p78
 sg10
-S'cogapp\\cogapp'
+S'cogapp/cogapp'
 p79
 sg12
 g13
@@ -278,7 +278,7 @@ NtRp80
 g18
 I1
 sg19
-I161
+I158
 sg20
 I403
 sg21
@@ -288,7 +288,7 @@ I26
 sg23
 I180
 sg24
-I107
+I104
 sbssg25
 S'\xc3\xb9\xed\xa9\xe7\xf8\x87\xabv\x8a\rO\xb7nB\x0c'
 p82
@@ -301,7 +301,7 @@ g8
 S'cogapp___init__.html'
 p86
 sg10
-S'cogapp\\__init__'
+S'cogapp/__init__'
 p87
 sg12
 g13
@@ -328,11 +328,11 @@ S't\xfe\x8e\x84\x9f\xb2\xed\x06\xb8Co\xe50\x90\x10\xd2'
 p90
 sssS'version'
 p91
-S'3.6'
+S'3.7'
 p92
 sS'settings'
 p93
-S'3\xcf\xa1\x19.\x88o$\x8cA\xde\xbd\xcd\x06\xa1\x0f'
+S'\xa3rd\x80\x8f\xb5t?p5\x04R\x18\x85\xda\x82'
 p94
 sS'format'
 p95

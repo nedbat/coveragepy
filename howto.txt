@@ -17,13 +17,13 @@
     - Generate new sample_html to get the latest, incl footer version number:
         python setup.py develop
         cd C:\ned\cog\trunk
-        rmdir/s/q htmlcov
+        rm -rf htmlcov
         coverage run --branch --source=cogapp -m cogapp.test_cogapp CogTestsInMemory
         coverage html
         - IF BETA:
-            copy/y htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html_beta
+            cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
         - ELSE:
-            copy/y htmlcov\*.* C:\ned\coverage\trunk\doc\sample_html
+            cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
     - IF BETA:
         - Build and publish docs:
             $ make publishbeta
