@@ -6,6 +6,30 @@ Key:
     + Done.
     x Not going to do.
 
+* 4.0
+
+- What defaults should change?
+    - --source = . ?
+    - --branch = True ?
+
+- Remove 2.3, 2.4, 2.5 limitations
+    - set, sorted, reversed, rpartition
+    - generator expressions
+    - decorators
+    - collections.defaultdict
+    - .startswith((,))
+
+
+- Remove code only run on <2.6
+- Change data file to json
+- Create data api
+- New ast-based branch coverage?
+- gevent, etc.
+- Remove the old command-line syntax
+    - A pain, b/c of the structure of the tests.
+    - BTW: make an easier way to write those tests.
+
+
 
 * --source stuff:
     + warn if a package is never found.
@@ -127,7 +151,7 @@ x Why can't you specify execute (-x) and report (-r) in the same invocation?
     + Footer in reports pointing to coverage home page.
     + Baseline grid for linenumber font.
     + Separate out css and HTML.
-    - Does it work right with utf-8 source files? http://www.python.org/dev/peps/pep-0263/
+    + Does it work right with utf-8 source files? http://www.python.org/dev/peps/pep-0263/
     - Use vim modeline to determine tab width: http://vimdoc.sourceforge.net/htmldoc/options.html#modeline
 
 
