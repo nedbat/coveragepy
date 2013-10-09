@@ -152,9 +152,9 @@ of options, each indicating a facet of operation to log to stderr:
 
 * ``sys``: before starting, dump all the system and environment information,
   as with :ref:`coverage debug sys <cmd_debug>`.
-  
+
 * ``dataio``: log when reading or writing any data file.
-  
+
 * ``pid``: annotate all debug output with the process id.
 
 
