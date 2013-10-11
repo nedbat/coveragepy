@@ -8,7 +8,7 @@ measure code coverage of Python program execution
 
 :Author: Ned Batchelder <ned@nedbatchelder.com>
 :Author: |author|
-:Date: 2013-09-09
+:Date: 2013-10-10
 :Copyright: BSD license, attribution and disclaimer required.
 :Manual section: 1
 :Manual group: Coverage
@@ -30,9 +30,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-|command| executes a Python program and measures which of its
-statements are executed and which are not. It stores the information
-in the file ``.coverage`` in the current working directory.
+|command| executes a Python program and measures which of its statements are
+executed and which are not, and reports these coverage measurements.
 
 
 COMMAND OVERVIEW
@@ -66,17 +65,17 @@ COMMAND OVERVIEW
 GLOBAL OPTIONS
 ==============
 
---help, -h
+**--help**, **-h**
     Describe how to use Coverage, in general or a command.
 
---rcfile `RCFILE`
+**--rcfile** `RCFILE`
     Specify configuration file `RCFILE`. Defaults to ``.coveragerc``.
 
---omit `PATTERN` [ , ... ]
+**--omit** `PATTERN` [ , ... ]
     Omit files when their filename matches one of these PATTERNs.
     Usually needs quoting on the command line.
 
---include `PATTERN` [ , ... ]
+**--include** `PATTERN` [ , ... ]
     Include files only when their filename path matches one of these
     PATTERNs. Usually needs quoting on the command line.
 
@@ -84,37 +83,37 @@ GLOBAL OPTIONS
 COMMAND REFERENCE
 =================
 
-|command| **annotate**
+**annotate**
 
     Options:
 
-    \-d DIR, --directory=DIR
+    \-d `DIR`, --directory=`DIR`
         Write the output files to DIR.
 
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
-|command| **combine**
+**combine**
 
     Combine data from multiple coverage files collected with ``run -p``.
     The combined results are written to a single file representing the
     union of the data.
 
-|command| **erase**
+**erase**
 
     Erase previously collected coverage data.
 
-|command| **help** [ `command` ]
+**help** [ `command` ]
 
     Describe how to use Coverage.
 
-|command| **help** **classic**
+**help** **classic**
 
     Describe help on older command syntax.
 
-|command| **html** [ `option` ... ] [ `module` ... ]
+**html** [ `option` ... ] [ `MODULE` ... ]
 
-    Create an HTML report of the coverage of each `module` file. Each file
+    Create an HTML report of the coverage of each `MODULE` file. Each file
     gets its own page, with the source decorated to show executed,
     excluded, and missed lines.
 
@@ -123,15 +122,24 @@ COMMAND REFERENCE
     \-d `DIR`, --directory `DIR`
         Write the output files to `DIR`.
 
+    \--fail-under `MIN`
+        Exit with a status of 2 if the total coverage is less than `MIN`.
+        
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
-|command| **report** [ `option` ... ] [ `module` ... ]
+    \--title `TITLE`
+        Use the text string `TITLE` as the title on the HTML.
 
-    Report coverage statistics on each `module`.
+**report** [ `option` ... ] [ `MODULE` ... ]
+
+    Report coverage statistics on each `MODULE`.
 
     Options:
 
+    \--fail-under `MIN`
+        Exit with a status of 2 if the total coverage is less than `MIN`.
+        
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
@@ -139,9 +147,9 @@ COMMAND REFERENCE
         Show line numbers of statements in each module that weren't
         executed.
 
-|command| **run** [ `options` ... ] `pyfile` [ `program_options` ]
+**run** [ `options` ... ] `PROGRAMFILE` [ `program_options` ]
 
-    Run a Python program `pyfile`, measuring code execution.
+    Run a Python program `PROGRAMFILE`, measuring code execution.
 
     Options:
 
@@ -152,8 +160,8 @@ COMMAND REFERENCE
     \--branch
         Measure branch coverage in addition to statement coverage.
 
-    \--debug `OPTION` [ , ... ]
-        Debug options, separated by commas.
+    \--debug `DEBUGOPT`,...
+        Debug options `DEBUGOPT`, separated by commas.
 
     \-L, --pylib
         Measure coverage even inside the Python installed library, which
@@ -164,24 +172,36 @@ COMMAND REFERENCE
         ``.coverage`` data file name to simplify collecting data from many
         processes.
 
-    \--source `SOURCE` [ , ... ]
+    \--source `SOURCE` ...
         A list of packages or directories of code to be measured.
 
     \--timid
         Use a simpler but slower trace method. Try this if you get
         seemingly impossible results!
 
-|command| **xml** [ `options` ... ] [ `modules` ... ]
+**xml** [ `options` ... ] [ `MODULES` ... ]
 
-    Generate an XML report of coverage results.
+    Generate an XML report of coverage results on each `MODULE`.
 
     Options:
 
+    \--fail-under `MIN`
+        Exit with a status of 2 if the total coverage is less than `MIN`.
+        
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
     \-o `OUTFILE`
         Write the XML report to `OUTFILE`. Defaults to ``coverage.xml``.
+
+
+ENVIRONMENT VARIABLES
+=====================
+
+COVERAGE_FILE
+
+    Path to the file where coverage measurements are collected to and
+    reported from. Default: ``.coverage`` in the current working directory.
 
 
 HISTORY
