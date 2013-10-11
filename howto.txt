@@ -14,6 +14,7 @@
     - Version and date in doc/index.rst
     - Version and copyright date in doc/conf.py
     - Version --version output in doc/install.rst
+    - Don't forget the man page: doc/python-coverage.1.txt
     - Generate new sample_html to get the latest, incl footer version number:
         python setup.py develop
         cd C:\ned\cog\trunk
