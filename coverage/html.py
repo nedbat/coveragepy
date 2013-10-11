@@ -20,18 +20,26 @@ STATIC_PATH = [
     os.path.join(os.path.dirname(__file__), "htmlfiles"),
 ]
 
-def data_filename(fname):
+def data_filename(fname, pkgdir=""):
     """Return the path to a data file of ours.
 
     The file is searched for on `STATIC_PATH`, and the first place it's found,
     is returned.
+
+    Each directory in `STATIC_PATH` is searched as-is, and also, if `pkgdir`
+    is provided, at that subdirectory.
 
     """
     for static_dir in STATIC_PATH:
         static_filename = os.path.join(static_dir, fname)
         if os.path.exists(static_filename):
             return static_filename
+        if pkgdir:
+            static_filename = os.path.join(static_dir, pkgdir, fname)
+            if os.path.exists(static_filename):
+                return static_filename
     raise CoverageException("Couldn't find static file %r" % fname)
+
 
 def data(fname):
     """Return the contents of a data file of ours."""
@@ -47,14 +55,14 @@ class HtmlReporter(Reporter):
 
     # These files will be copied from the htmlfiles dir to the output dir.
     STATIC_FILES = [
-            "style.css",
-            "jquery.min.js",
-            "jquery.hotkeys.js",
-            "jquery.isonscreen.js",
-            "jquery.tablesorter.min.js",
-            "coverage_html.js",
-            "keybd_closed.png",
-            "keybd_open.png",
+            ("style.css", ""),
+            ("jquery.min.js", "jquery"),
+            ("jquery.hotkeys.js", "jquery-hotkeys"),
+            ("jquery.isonscreen.js", "jquery-isonscreen"),
+            ("jquery.tablesorter.min.js", "jquery-tablesorter"),
+            ("coverage_html.js", ""),
+            ("keybd_closed.png", ""),
+            ("keybd_open.png", ""),
             ]
 
     def __init__(self, cov, config):
@@ -117,9 +125,9 @@ class HtmlReporter(Reporter):
     def make_local_static_report_files(self):
         """Make local instances of static files for HTML report."""
         # The files we provide must always be copied.
-        for static in self.STATIC_FILES:
+        for static, pkgdir in self.STATIC_FILES:
             shutil.copyfile(
-                data_filename(static),
+                data_filename(static, pkgdir),
                 os.path.join(self.directory, static)
                 )
 

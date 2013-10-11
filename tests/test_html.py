@@ -317,8 +317,31 @@ class HtmlStaticFileTest(CoverageTest):
         cov = coverage.coverage()
         self.start_import_stop(cov, "main")
         cov.html_report()
+
         jquery = open("htmlcov/jquery.min.js").read()
         self.assertEqual(jquery, "Not Really JQuery!")
+
+    def test_copying_static_files_from_system_in_dir(self):
+        # Make a new place for static files.
+        INSTALLED = [
+            "jquery/jquery.min.js",
+            "jquery-hotkeys/jquery.hotkeys.js",
+            "jquery-isonscreen/jquery.isonscreen.js",
+            "jquery-tablesorter/jquery.tablesorter.min.js",
+        ]
+        for fpath in INSTALLED:
+            self.make_file(os.path.join("static_here", fpath), "Not real.")
+        coverage.html.STATIC_PATH.insert(0, "static_here")
+
+        self.make_file("main.py", "print(17)")
+        cov = coverage.coverage()
+        self.start_import_stop(cov, "main")
+        cov.html_report()
+
+        for fpath in INSTALLED:
+            the_file = os.path.basename(fpath)
+            contents = open(os.path.join("htmlcov", the_file)).read()
+            self.assertEqual(contents, "Not real.")
 
     def test_cant_find_static_files(self):
         # Make the path point to useless places.
