@@ -2,6 +2,13 @@
 Change history for Coverage.py
 ------------------------------
 
+3.7.1
+-----
+
+- Fixed the mechanism for finding OS-installed static files for the HTML report
+  so that it will actually find OS-installed static files.
+
+
 3.7 --- 6 October 2013
 ----------------------
 

@@ -124,7 +124,7 @@ COMMAND REFERENCE
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
-        
+
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
@@ -139,7 +139,7 @@ COMMAND REFERENCE
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
-        
+
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
@@ -187,7 +187,7 @@ COMMAND REFERENCE
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
-        
+
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
