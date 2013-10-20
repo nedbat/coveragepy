@@ -219,6 +219,7 @@ class CodeParser(object):
 
         return lines, excluded_lines
 
+    @expensive
     def arcs(self):
         """Get information about the arcs available in the code.
 
@@ -233,8 +234,8 @@ class CodeParser(object):
             if fl1 != fl2:
                 all_arcs.append((fl1, fl2))
         return sorted(all_arcs)
-    arcs = expensive(arcs)
 
+    @expensive
     def exit_counts(self):
         """Get a mapping from line numbers to count of exits from that line.
 
@@ -262,7 +263,6 @@ class CodeParser(object):
                 exit_counts[l] -= 1
 
         return exit_counts
-    exit_counts = expensive(exit_counts)
 
 
 ## Opcodes that guide the ByteParser.
