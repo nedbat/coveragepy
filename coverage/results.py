@@ -1,5 +1,6 @@
 """Results of coverage measurement."""
 
+import collections
 import os
 
 from coverage.backward import iitems
@@ -158,11 +159,9 @@ class Analysis(object):
         """
         missing = self.arcs_missing()
         branch_lines = set(self.branch_lines())
-        mba = {}
+        mba = collections.defaultdict(list)
         for l1, l2 in missing:
             if l1 in branch_lines:
-                if l1 not in mba:
-                    mba[l1] = []
                 mba[l1].append(l2)
         return mba
 

@@ -1,6 +1,6 @@
 """Code parsing for Coverage."""
 
-import dis, re, sys, token, tokenize
+import collections, dis, re, sys, token, tokenize
 
 from coverage.backward import StringIO
 from coverage.backward import open_source, range    # pylint: disable=W0622
@@ -242,7 +242,7 @@ class CodeParser(object):
 
         """
         excluded_lines = self.first_lines(self.excluded)
-        exit_counts = {}
+        exit_counts = collections.defaultdict(int)
         for l1, l2 in self.arcs():
             if l1 < 0:
                 # Don't ever report -1 as a line number
@@ -253,8 +253,6 @@ class CodeParser(object):
             if l2 in excluded_lines:
                 # Arcs to excluded lines shouldn't count.
                 continue
-            if l1 not in exit_counts:
-                exit_counts[l1] = 0
             exit_counts[l1] += 1
 
         # Class definitions have one extra exit, so remove one for each:

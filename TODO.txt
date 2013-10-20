@@ -16,10 +16,10 @@ Key:
     + set, sorted, reversed, rpartition
     + generator expressions
     + decorators
-    - collections.defaultdict
+    + collections.defaultdict
     + .startswith((,))
     - "with" statements
-
+    - .format() ?
 
 + Remove code only run on <2.6
 - Change data file to json
