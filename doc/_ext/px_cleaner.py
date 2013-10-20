@@ -5,17 +5,11 @@ import sys
 def clean_px(fname):
     """Clean a px file."""
 
-    f = open(fname)
-    try:
+    with open(fname) as f:
         text = f.read()
-    finally:
-        f.close()
     text = text.lstrip()
-    f = open(fname, "w")
-    try:
+    with open(fname, "w") as f:
         f.write(text)
-    finally:
-        f.close()
 
 def clean_px_files(fnames):
     for fname in fnames:
@@ -23,4 +17,3 @@ def clean_px_files(fnames):
 
 if __name__ == '__main__':
     clean_px_files(sys.argv[1:])
-

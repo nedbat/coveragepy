@@ -128,11 +128,8 @@ class CoverageData(object):
             self.debug.write("Writing data to %r" % (filename,))
 
         # Write the pickle to the file.
-        fdata = open(filename, 'wb')
-        try:
+        with open(filename, 'wb') as fdata:
             pickle.dump(data, fdata, 2)
-        finally:
-            fdata.close()
 
     def read_file(self, filename):
         """Read the coverage data from `filename`."""
@@ -142,11 +139,8 @@ class CoverageData(object):
         """Return the raw pickled data from `filename`."""
         if self.debug and self.debug.should('dataio'):
             self.debug.write("Reading data from %r" % (filename,))
-        fdata = open(filename, 'rb')
-        try:
+        with open(filename, 'rb') as fdata:
             data = pickle.load(fdata)
-        finally:
-            fdata.close()
         return data
 
     def _read_file(self, filename):

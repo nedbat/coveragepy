@@ -62,11 +62,8 @@ def run_tests_with_coverage(tracer, *nose_args):
     import nose
     pth_dir = os.path.dirname(os.path.dirname(nose.__file__))
     pth_path = os.path.join(pth_dir, "covcov.pth")
-    pth_file = open(pth_path, "w")
-    try:
+    with open(pth_path, "w") as pth_file:
         pth_file.write("import coverage; coverage.process_startup()\n")
-    finally:
-        pth_file.close()
 
     version = "%s%s" % sys.version_info[:2]
     suffix = "%s_%s_%s" % (version, tracer, socket.gethostname())

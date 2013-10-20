@@ -54,11 +54,8 @@ doc = __doc__                   # __doc__ will be overwritten by version.py.
 __version__ = __url__ = ""      # Keep pylint happy.
 
 cov_ver_py = os.path.join(os.path.split(__file__)[0], "coverage/version.py")
-version_file = open(cov_ver_py)
-try:
+with open(cov_ver_py) as version_file:
     exec(compile(version_file.read(), cov_ver_py, 'exec'))
-finally:
-    version_file.close()
 
 doclines = (doc % __url__).splitlines()
 classifier_list = classifiers.splitlines()

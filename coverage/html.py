@@ -43,11 +43,8 @@ def data_filename(fname, pkgdir=""):
 
 def data(fname):
     """Return the contents of a data file of ours."""
-    data_file = open(data_filename(fname))
-    try:
+    with open(data_filename(fname)) as data_file:
         return data_file.read()
-    finally:
-        data_file.close()
 
 
 class HtmlReporter(Reporter):
@@ -140,11 +137,8 @@ class HtmlReporter(Reporter):
 
     def write_html(self, fname, html):
         """Write `html` to `fname`, properly encoded."""
-        fout = open(fname, "wb")
-        try:
+        with open(fname, "wb") as fout:
             fout.write(html.encode('ascii', 'xmlcharrefreplace'))
-        finally:
-            fout.close()
 
     def file_hash(self, source, cu):
         """Compute a hash that changes if the file needs to be re-reported."""
@@ -156,10 +150,8 @@ class HtmlReporter(Reporter):
     def html_file(self, cu, analysis):
         """Generate an HTML file for one source file."""
         source_file = cu.source_file()
-        try:
+        with source_file:
             source = source_file.read()
-        finally:
-            source_file.close()
 
         # Find out if the file on disk is already correct.
         flat_rootname = cu.flat_rootname()
@@ -309,11 +301,8 @@ class HtmlStatus(object):
         usable = False
         try:
             status_file = os.path.join(directory, self.STATUS_FILE)
-            fstatus = open(status_file, "rb")
-            try:
+            with open(status_file, "rb") as fstatus:
                 status = pickle.load(fstatus)
-            finally:
-                fstatus.close()
         except (IOError, ValueError):
             usable = False
         else:
@@ -338,11 +327,8 @@ class HtmlStatus(object):
             'settings': self.settings,
             'files': self.files,
             }
-        fout = open(status_file, "wb")
-        try:
+        with open(status_file, "wb") as fout:
             pickle.dump(status, fout)
-        finally:
-            fout.close()
 
     def settings_hash(self):
         """Get the hash of the coverage.py settings."""

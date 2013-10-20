@@ -129,10 +129,8 @@ def make_code_from_py(filename):
     except IOError:
         raise NoSource("No file to run: %r" % filename)
 
-    try:
+    with source_file:
         source = source_file.read()
-    finally:
-        source_file.close()
 
     # We have the source.  `compile` still needs the last line to be clean,
     # so make sure it is, then compile a code object from it.
@@ -150,7 +148,7 @@ def make_code_from_pyc(filename):
     except IOError:
         raise NoCode("No file to run: %r" % filename)
 
-    try:
+    with fpyc:
         # First four bytes are a version-specific magic number.  It has to
         # match or we won't run the file.
         magic = fpyc.read(4)
@@ -165,7 +163,5 @@ def make_code_from_pyc(filename):
 
         # The rest of the file is the code object we want.
         code = marshal.load(fpyc)
-    finally:
-        fpyc.close()
 
     return code

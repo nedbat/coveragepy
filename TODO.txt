@@ -18,8 +18,9 @@ Key:
     + decorators
     + collections.defaultdict
     + .startswith((,))
-    - "with" statements
+    + "with" statements
     - .format() ?
+    - try/except/finally
 
 + Remove code only run on <2.6
 - Change data file to json

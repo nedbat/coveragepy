@@ -25,11 +25,8 @@ class CodeParser(object):
         self.text = text
         if not self.text:
             try:
-                sourcef = open_source(self.filename)
-                try:
+                with open_source(self.filename) as sourcef:
                     self.text = sourcef.read()
-                finally:
-                    sourcef.close()
             except IOError:
                 _, err, _ = sys.exc_info()
                 raise NoSource(
@@ -328,11 +325,8 @@ class ByteParser(object):
         else:
             if not text:
                 assert filename, "If no code or text, need a filename"
-                sourcef = open_source(filename)
-                try:
+                with open_source(filename) as sourcef:
                     text = sourcef.read()
-                finally:
-                    sourcef.close()
             self.text = text
 
             try:

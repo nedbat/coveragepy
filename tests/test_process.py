@@ -572,16 +572,13 @@ class ProcessStartupTest(CoverageTest):
             g = glob.glob(os.path.join(d, "*.pth"))
             if g:
                 pth_path = os.path.join(d, "subcover.pth")
-                pth = open(pth_path, "w")
-                try:
+                with open(pth_path, "w") as pth:
                     try:
                         pth.write(pth_contents)
                         self.pth_path = pth_path
                         break
                     except (IOError, OSError):          # pragma: not covered
                         pass
-                finally:
-                    pth.close()
         else:                                           # pragma: not covered
             raise Exception("Couldn't find a place for the .pth file")
 

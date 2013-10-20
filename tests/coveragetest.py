@@ -190,11 +190,8 @@ class CoverageTest(TestCase):
             os.makedirs(dirs)
 
         # Create the file.
-        f = open(filename, 'wb')
-        try:
+        with open(filename, 'wb') as f:
             f.write(to_bytes(text))
-        finally:
-            f.close()
 
         return filename
 
@@ -223,17 +220,16 @@ class CoverageTest(TestCase):
 
         """
         modfile = modname + '.py'
-        f = open(modfile, 'r')
 
         for suff in imp.get_suffixes():
             if suff[0] == '.py':
                 break
-        try:
+
+        with open(modfile, 'r') as f:
             # pylint: disable=W0631
             # (Using possibly undefined loop variable 'suff')
             mod = imp.load_module(modname, f, modfile, suff)
-        finally:
-            f.close()
+
         return mod
 
     def start_import_stop(self, cov, modname):

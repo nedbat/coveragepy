@@ -92,11 +92,8 @@ class DataTest(CoverageTest):
         covdata.add_line_data(DATA_1)
         covdata.write()
 
-        fdata = open(".coverage", 'rb')
-        try:
+        with open(".coverage", 'rb') as fdata:
             data = pickle.load(fdata)
-        finally:
-            fdata.close()
 
         lines = data['lines']
         self.assertSameElements(lines.keys(), MEASURED_FILES_1)
@@ -111,11 +108,8 @@ class DataTest(CoverageTest):
         covdata.add_arc_data(ARC_DATA_3)
         covdata.write()
 
-        fdata = open(".coverage", 'rb')
-        try:
+        with open(".coverage", 'rb') as fdata:
             data = pickle.load(fdata)
-        finally:
-            fdata.close()
 
         self.assertSameElements(data['lines'].keys(), [])
         arcs = data['arcs']
