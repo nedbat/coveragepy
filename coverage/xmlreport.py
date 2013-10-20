@@ -4,7 +4,6 @@ import os, sys, time
 import xml.dom.minidom
 
 from coverage import __url__, __version__
-from coverage.backward import sorted, rpartition    # pylint: disable=W0622
 from coverage.report import Reporter
 
 def rate(hit, num):
@@ -97,7 +96,7 @@ class XmlReporter(Reporter):
 
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
-        package_name = rpartition(cu.name, ".")[0]
+        package_name = cu.name.rpartition(".")[0]
         className = cu.name
 
         package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])

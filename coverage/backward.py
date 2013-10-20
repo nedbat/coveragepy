@@ -8,47 +8,6 @@
 
 import os, re, sys
 
-# Python 2.3 doesn't have `set`
-try:
-    set = set       # new in 2.4
-except NameError:
-    from sets import Set as set
-
-# Python 2.3 doesn't have `sorted`.
-try:
-    sorted = sorted
-except NameError:
-    def sorted(iterable):
-        """A 2.3-compatible implementation of `sorted`."""
-        lst = list(iterable)
-        lst.sort()
-        return lst
-
-# Python 2.3 doesn't have `reversed`.
-try:
-    reversed = reversed
-except NameError:
-    def reversed(iterable):
-        """A 2.3-compatible implementation of `reversed`."""
-        lst = list(iterable)
-        return lst[::-1]
-
-# rpartition is new in 2.5
-try:
-    "".rpartition
-except AttributeError:
-    def rpartition(s, sep):
-        """Implement s.rpartition(sep) for old Pythons."""
-        i = s.rfind(sep)
-        if i == -1:
-            return ('', '', s)
-        else:
-            return (s[:i], sep, s[i+len(sep):])
-else:
-    def rpartition(s, sep):
-        """A common interface for new Pythons."""
-        return s.rpartition(sep)
-
 # Pythons 2 and 3 differ on where to get StringIO
 try:
     from cStringIO import StringIO

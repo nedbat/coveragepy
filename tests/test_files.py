@@ -4,7 +4,6 @@ import os, os.path
 
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, abs_file
-from coverage.backward import set                   # pylint: disable=W0622
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest

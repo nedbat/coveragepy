@@ -5,7 +5,7 @@ import inspect
 import os
 import sys
 
-from coverage.backward import md5, sorted       # pylint: disable=W0622
+from coverage.backward import md5
 from coverage.backward import string_class, to_bytes
 
 

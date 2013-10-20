@@ -2,9 +2,8 @@
 
 import dis, re, sys, token, tokenize
 
-from coverage.backward import set, sorted, StringIO # pylint: disable=W0622
+from coverage.backward import StringIO
 from coverage.backward import open_source, range    # pylint: disable=W0622
-from coverage.backward import reversed              # pylint: disable=W0622
 from coverage.backward import bytes_to_ints
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, expensive, join_regex

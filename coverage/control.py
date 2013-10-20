@@ -3,7 +3,7 @@
 import atexit, os, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
-from coverage.backward import string_class, iitems, sorted  # pylint: disable=W0622
+from coverage.backward import string_class, iitems
 from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.config import CoverageConfig

@@ -2,7 +2,7 @@
 
 import os
 
-from coverage.backward import iitems, pickle, sorted    # pylint: disable=W0622
+from coverage.backward import iitems, pickle
 from coverage.files import PathAliases
 from coverage.misc import file_be_gone
 

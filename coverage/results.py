@@ -2,7 +2,7 @@
 
 import os
 
-from coverage.backward import iitems, set, sorted       # pylint: disable=W0622
+from coverage.backward import iitems
 from coverage.misc import format_lines, join_regex, NoSource
 from coverage.parser import CodeParser
 

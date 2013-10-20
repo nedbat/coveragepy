@@ -2,11 +2,10 @@
 """Tests that our test infrastructure is really working!"""
 
 import os, sys
-from coverage.backward import to_bytes, rpartition
+from coverage.backward import to_bytes
 from tests.backunittest import TestCase
 from tests.coveragetest import CoverageTest
 
-from coverage.backward import set                   # pylint: disable=W0622
 
 class TestingTest(TestCase):
     """Tests of helper methods on `backunittest.TestCase`."""
@@ -188,7 +187,7 @@ class CoverageTestTest(CoverageTest):
         executable = executable.split(":", 1)[1].strip()
         self.assertTrue(same_python_executable(executable, sys.executable))
         environ = [l for l in out if "COV_FOOBAR" in l][0]
-        _, _, environ = rpartition(environ, ":")
+        _, _, environ = environ.rpartition(":")
         self.assertEqual(environ.strip(), "COV_FOOBAR = XYZZY")
 
 

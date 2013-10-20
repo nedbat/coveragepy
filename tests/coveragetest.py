@@ -4,8 +4,7 @@ import glob, imp, os, random, shlex, shutil, sys, tempfile, textwrap
 import atexit
 
 import coverage
-from coverage.backward import sorted, StringIO      # pylint: disable=W0622
-from coverage.backward import to_bytes
+from coverage.backward import StringIO, to_bytes
 from coverage.control import _TEST_NAME_FILE
 from tests.backtest import run_command
 from tests.backunittest import TestCase

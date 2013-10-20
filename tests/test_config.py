@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Test the config file handling for coverage.py"""
 
-import sys
 import coverage
 from coverage.misc import CoverageException
 
