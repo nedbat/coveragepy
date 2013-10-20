@@ -2,6 +2,12 @@
 Change history for Coverage.py
 ------------------------------
 
+4.0
+---
+
+- Python versions supported are now 2.6, 2.7, 3.2, 3.3.
+
+
 3.7.1
 -----
 

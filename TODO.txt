@@ -20,7 +20,7 @@ Key:
     - .startswith((,))
 
 
-- Remove code only run on <2.6
++ Remove code only run on <2.6
 - Change data file to json
 - Create data api
 - New ast-based branch coverage?
