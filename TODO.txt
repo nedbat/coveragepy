@@ -20,7 +20,7 @@ Key:
     + .startswith((,))
     + "with" statements
     - .format() ?
-    - try/except/finally
+    + try/except/finally
 
 + Remove code only run on <2.6
 - Change data file to json

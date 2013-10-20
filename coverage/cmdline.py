@@ -564,17 +564,16 @@ class CoverageScript(object):
         self.coverage.start()
         code_ran = True
         try:
-            try:
-                if options.module:
-                    sys.path[0] = ''
-                    self.run_python_module(args[0], args)
-                else:
-                    filename = args[0]
-                    sys.path[0] = os.path.abspath(os.path.dirname(filename))
-                    self.run_python_file(filename, args)
-            except NoSource:
-                code_ran = False
-                raise
+            if options.module:
+                sys.path[0] = ''
+                self.run_python_module(args[0], args)
+            else:
+                filename = args[0]
+                sys.path[0] = os.path.abspath(os.path.dirname(filename))
+                self.run_python_file(filename, args)
+        except NoSource:
+            code_ran = False
+            raise
         finally:
             self.coverage.stop()
             if code_ran:
