@@ -94,7 +94,7 @@ def run_python_file(filename, args, package=None):
 
     try:
         # Make a code object somehow.
-        if filename.endswith(".pyc") or filename.endswith(".pyo"):
+        if filename.endswith((".pyc", ".pyo")):
             code = make_code_from_pyc(filename)
         else:
             code = make_code_from_py(filename)

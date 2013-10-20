@@ -17,7 +17,7 @@ Key:
     - generator expressions
     - decorators
     - collections.defaultdict
-    - .startswith((,))
+    + .startswith((,))
 
 
 + Remove code only run on <2.6

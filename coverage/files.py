@@ -137,7 +137,7 @@ def prep_patterns(patterns):
     """
     prepped = []
     for p in patterns or []:
-        if p.startswith("*") or p.startswith("?"):
+        if p.startswith(("*", "?")):
             prepped.append(p)
         else:
             prepped.append(abs_file(p))
