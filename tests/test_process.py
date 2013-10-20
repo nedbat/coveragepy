@@ -35,7 +35,7 @@ class ProcessTest(CoverageTest):
             import covmod1
             import covmodzip1
             a = 1
-            print ('done')
+            print('done')
             """)
 
         self.assert_doesnt_exist(".coverage")
@@ -52,7 +52,7 @@ class ProcessTest(CoverageTest):
             else:
                 c = 1
             d = 1
-            print ('done')
+            print('done')
             """)
 
         out = self.run_command("coverage -x -p b_or_c.py b")
@@ -88,7 +88,7 @@ class ProcessTest(CoverageTest):
             else:
                 c = 1
             d = 1
-            print ('done')
+            print('done')
             """)
 
         out = self.run_command("coverage -x -p b_or_c.py b")
@@ -128,7 +128,7 @@ class ProcessTest(CoverageTest):
             else:
                 c = 1
             d = 1
-            print ('done')
+            print('done')
             """)
 
         self.make_file(".coveragerc", """\
