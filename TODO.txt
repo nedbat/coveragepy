@@ -15,9 +15,10 @@ Key:
 - Remove 2.3, 2.4, 2.5 limitations
     + set, sorted, reversed, rpartition
     - generator expressions
-    - decorators
+    + decorators
     - collections.defaultdict
     + .startswith((,))
+    - "with" statements
 
 
 + Remove code only run on <2.6

@@ -210,25 +210,26 @@ class Numbers(object):
         self.n_partial_branches = n_partial_branches
         self.n_missing_branches = n_missing_branches
 
+    @classmethod
     def set_precision(cls, precision):
         """Set the number of decimal places used to report percentages."""
         assert 0 <= precision < 10
         cls._precision = precision
         cls._near0 = 1.0 / 10**precision
         cls._near100 = 100.0 - cls._near0
-    set_precision = classmethod(set_precision)
 
-    def _get_n_executed(self):
+    @property
+    def n_executed(self):
         """Returns the number of executed statements."""
         return self.n_statements - self.n_missing
-    n_executed = property(_get_n_executed)
 
-    def _get_n_executed_branches(self):
+    @property
+    def n_executed_branches(self):
         """Returns the number of executed branches."""
         return self.n_branches - self.n_missing_branches
-    n_executed_branches = property(_get_n_executed_branches)
 
-    def _get_pc_covered(self):
+    @property
+    def pc_covered(self):
         """Returns a single percentage value for coverage."""
         if self.n_statements > 0:
             pc_cov = (100.0 * (self.n_executed + self.n_executed_branches) /
@@ -236,9 +237,9 @@ class Numbers(object):
         else:
             pc_cov = 100.0
         return pc_cov
-    pc_covered = property(_get_pc_covered)
 
-    def _get_pc_covered_str(self):
+    @property
+    def pc_covered_str(self):
         """Returns the percent covered, as a string, without a percent sign.
 
         Note that "0" is only returned when the value is truly zero, and "100"
@@ -254,15 +255,14 @@ class Numbers(object):
         else:
             pc = round(pc, self._precision)
         return "%.*f" % (self._precision, pc)
-    pc_covered_str = property(_get_pc_covered_str)
 
+    @classmethod
     def pc_str_width(cls):
         """How many characters wide can pc_covered_str be?"""
         width = 3   # "100"
         if cls._precision > 0:
             width += 1 + cls._precision
         return width
-    pc_str_width = classmethod(pc_str_width)
 
     def __add__(self, other):
         nums = Numbers()

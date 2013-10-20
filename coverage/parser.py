@@ -65,13 +65,13 @@ class CodeParser(object):
         # Lazily-created ByteParser
         self._byte_parser = None
 
-    def _get_byte_parser(self):
+    @property
+    def byte_parser(self):
         """Create a ByteParser on demand."""
         if not self._byte_parser:
             self._byte_parser = \
                             ByteParser(text=self.text, filename=self.filename)
         return self._byte_parser
-    byte_parser = property(_get_byte_parser)
 
     def lines_matching(self, *regexes):
         """Find the lines matching one of a list of regexes.

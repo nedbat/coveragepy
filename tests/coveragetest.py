@@ -508,6 +508,7 @@ class CoverageTest(TestCase):
     # Map from class to info about how it ran.
     class_behaviors = {}
 
+    @classmethod
     def report_on_class_behavior(cls):
         """Called at process exit to report on class behavior."""
         for test_class, behavior in cls.class_behaviors.items():
@@ -532,7 +533,6 @@ class CoverageTest(TestCase):
                         where,
                     )
                 )
-    report_on_class_behavior = classmethod(report_on_class_behavior)
 
     def class_behavior(self):
         """Get the ClassBehavior instance for this test."""
