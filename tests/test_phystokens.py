@@ -29,7 +29,7 @@ class PhysTokensTest(CoverageTest):
         """Tokenize `source`, then put it back together, should be the same."""
         tokenized = ""
         for line in source_token_lines(source):
-            text = "".join([t for _,t in line])
+            text = "".join(t for _, t in line)
             tokenized += text + "\n"
         # source_token_lines doesn't preserve trailing spaces, so trim all that
         # before comparing.

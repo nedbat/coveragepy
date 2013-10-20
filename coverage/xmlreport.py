@@ -137,8 +137,8 @@ class XmlReporter(Reporter):
         class_hits = class_lines - len(analysis.missing)
 
         if self.arcs:
-            class_branches = sum([t for t,k in branch_stats.values()])
-            missing_branches = sum([t-k for t,k in branch_stats.values()])
+            class_branches = sum(t for t, k in branch_stats.values())
+            missing_branches = sum(t - k for t, k in branch_stats.values())
             class_br_hits = class_branches - missing_branches
         else:
             class_branches = 0.0

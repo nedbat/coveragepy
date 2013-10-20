@@ -36,9 +36,9 @@ class Analysis(object):
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
             n_partial_branches = sum(
-                [len(v) for k,v in iitems(mba) if k not in self.missing]
+                len(v) for k,v in iitems(mba) if k not in self.missing
                 )
-            n_missing_branches = sum([len(v) for k,v in iitems(mba)])
+            n_missing_branches = sum(len(v) for k,v in iitems(mba))
         else:
             n_branches = n_partial_branches = n_missing_branches = 0
             self.no_branch = set()
@@ -112,18 +112,18 @@ class Analysis(object):
         """Returns a sorted list of the arcs actually executed in the code."""
         executed = self.coverage.data.executed_arcs(self.filename)
         m2fl = self.parser.first_line
-        executed = [(m2fl(l1), m2fl(l2)) for (l1,l2) in executed]
+        executed = ((m2fl(l1), m2fl(l2)) for (l1,l2) in executed)
         return sorted(executed)
 
     def arcs_missing(self):
         """Returns a sorted list of the arcs in the code not executed."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
-        missing = [
+        missing = (
             p for p in possible
                 if p not in executed
                     and p[0] not in self.no_branch
-            ]
+        )
         return sorted(missing)
 
     def arcs_unpredicted(self):
@@ -133,11 +133,11 @@ class Analysis(object):
         # Exclude arcs here which connect a line to itself.  They can occur
         # in executed data in some cases.  This is where they can cause
         # trouble, and here is where it's the least burden to remove them.
-        unpredicted = [
+        unpredicted = (
             e for e in executed
                 if e not in possible
                     and e[0] != e[1]
-            ]
+        )
         return sorted(unpredicted)
 
     def branch_lines(self):
@@ -148,7 +148,7 @@ class Analysis(object):
     def total_branches(self):
         """How many total branches are there?"""
         exit_counts = self.parser.exit_counts()
-        return sum([count for count in exit_counts.values() if count > 1])
+        return sum(count for count in exit_counts.values() if count > 1)
 
     def missing_branch_arcs(self):
         """Return arcs that weren't executed from branch lines.

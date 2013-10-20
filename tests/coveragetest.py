@@ -266,10 +266,10 @@ class CoverageTest(TestCase):
 
     # Map chars to numbers for arcz_to_arcs
     _arcz_map = {'.': -1}
-    _arcz_map.update(dict([(c, ord(c)-ord('0')) for c in '123456789']))
+    _arcz_map.update(dict((c, ord(c)-ord('0')) for c in '123456789'))
     _arcz_map.update(dict(
-        [(c, 10+ord(c)-ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
-        ))
+        (c, 10+ord(c)-ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    ))
 
     def arcz_to_arcs(self, arcz):
         """Convert a compact textual representation of arcs to a list of pairs.
@@ -305,8 +305,8 @@ class CoverageTest(TestCase):
     def assertEqualArcs(self, a1, a2, msg=None):
         """Assert that the arc lists `a1` and `a2` are equal."""
         # Make them into multi-line strings so we can see what's going wrong.
-        s1 = "\n".join([repr(a) for a in a1]) + "\n"
-        s2 = "\n".join([repr(a) for a in a2]) + "\n"
+        s1 = "\n".join(repr(a) for a in a1) + "\n"
+        s2 = "\n".join(repr(a) for a in a2) + "\n"
         self.assertMultiLineEqual(s1, s2, msg)
 
     def check_coverage(self, text, lines=None, missing="", report="",

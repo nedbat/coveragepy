@@ -270,7 +270,7 @@ class ProcessTest(CoverageTest):
         if '__pypy__' in sys.builtin_module_names:
             # Pypy has an extra frame in the traceback for some reason
             lines2 = out2.splitlines()
-            out2 = "".join([l+"\n" for l in lines2 if "toplevel" not in l])
+            out2 = "".join(l+"\n" for l in lines2 if "toplevel" not in l)
         self.assertMultiLineEqual(out, out2)
 
         # But also make sure that the output is what we expect.

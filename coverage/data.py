@@ -101,13 +101,13 @@ class CoverageData(object):
     def line_data(self):
         """Return the map from filenames to lists of line numbers executed."""
         return dict(
-            [(f, sorted(lmap.keys())) for f, lmap in iitems(self.lines)]
+            (f, sorted(lmap.keys())) for f, lmap in iitems(self.lines)
             )
 
     def arc_data(self):
         """Return the map from filenames to lists of line number pairs."""
         return dict(
-            [(f, sorted(amap.keys())) for f, amap in iitems(self.arcs)]
+            (f, sorted(amap.keys())) for f, amap in iitems(self.arcs)
             )
 
     def write_file(self, filename):

@@ -183,10 +183,10 @@ class CoverageTestTest(CoverageTest):
         # Try it with a "coverage debug sys" command.
         out = self.run_command("coverage debug sys").splitlines()
         # "environment: COV_FOOBAR = XYZZY" or "COV_FOOBAR = XYZZY"
-        executable = [l for l in out if "executable:" in l][0]
+        executable = next(l for l in out if "executable:" in l)
         executable = executable.split(":", 1)[1].strip()
         self.assertTrue(same_python_executable(executable, sys.executable))
-        environ = [l for l in out if "COV_FOOBAR" in l][0]
+        environ = next(l for l in out if "COV_FOOBAR" in l)
         _, _, environ = environ.rpartition(":")
         self.assertEqual(environ.strip(), "COV_FOOBAR = XYZZY")
 

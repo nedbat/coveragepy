@@ -216,7 +216,7 @@ def print_banner(label):
 
     if '__pypy__' in sys.builtin_module_names:
         pypy_version = sys.pypy_version_info         # pylint: disable=E1101
-        version += " (pypy %s)" % ".".join([str(v) for v in pypy_version])
+        version += " (pypy %s)" % ".".join(str(v) for v in pypy_version)
 
     print('=== %s %s %s (%s) ===' % (impl, version, label, sys.executable))
 

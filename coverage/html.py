@@ -270,7 +270,7 @@ class HtmlReporter(Reporter):
             data("index.html"), self.template_globals
             )
 
-        self.totals = sum([f['nums'] for f in self.files])
+        self.totals = sum(f['nums'] for f in self.files)
 
         html = index_tmpl.render({
             'arcs': self.arcs,

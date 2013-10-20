@@ -365,7 +365,7 @@ class ByteParser(object):
 
         """
         children = CodeObjects(self.code)
-        return [ByteParser(code=c, text=self.text) for c in children]
+        return (ByteParser(code=c, text=self.text) for c in children)
 
     def _bytes_lines(self):
         """Map byte offsets to line numbers in `code`.
@@ -409,7 +409,7 @@ class ByteParser(object):
     def _block_stack_repr(self, block_stack):
         """Get a string version of `block_stack`, for debugging."""
         blocks = ", ".join(
-            ["(%s, %r)" % (dis.opname[b[0]], b[1]) for b in block_stack]
+            "(%s, %r)" % (dis.opname[b[0]], b[1]) for b in block_stack
         )
         return "[" + blocks + "]"
 
@@ -547,9 +547,9 @@ class ByteParser(object):
     def validate_chunks(self, chunks):
         """Validate the rule that chunks have a single entrance."""
         # starts is the entrances to the chunks
-        starts = set([ch.byte for ch in chunks])
+        starts = set(ch.byte for ch in chunks)
         for ch in chunks:
-            assert all([(ex in starts or ex < 0) for ex in ch.exits])
+            assert all((ex in starts or ex < 0) for ex in ch.exits)
 
     def _arcs(self):
         """Find the executable arcs in the code.
@@ -562,7 +562,7 @@ class ByteParser(object):
         chunks = self._split_into_chunks()
 
         # A map from byte offsets to chunks jumped into.
-        byte_chunks = dict([(c.byte, c) for c in chunks])
+        byte_chunks = dict((c.byte, c) for c in chunks)
 
         # There's always an entrance at the first chunk.
         yield (-1, byte_chunks[0].line)
