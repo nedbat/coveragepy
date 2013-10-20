@@ -57,8 +57,7 @@ class ParserMain(object):
         if options.dis or options.chunks:
             try:
                 bp = ByteParser(filename=filename)
-            except CoverageException:
-                _, err, _ = sys.exc_info()
+            except CoverageException as err:
                 print("%s" % (err,))
                 return
 

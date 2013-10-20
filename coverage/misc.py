@@ -3,7 +3,6 @@
 import errno
 import inspect
 import os
-import sys
 
 from coverage.backward import md5
 from coverage.backward import string_class, to_bytes
@@ -97,8 +96,7 @@ def file_be_gone(path):
     """Remove a file, and don't get annoyed if it doesn't exist."""
     try:
         os.remove(path)
-    except OSError:
-        _, e, _ = sys.exc_info()
+    except OSError as e:
         if e.errno != errno.ENOENT:
             raise
 

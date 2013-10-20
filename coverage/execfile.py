@@ -56,8 +56,7 @@ def run_python_module(modulename, args):
             package = __import__(packagename, glo, loc, ['__path__'])
             searchpath = package.__path__
             openfile, pathname, _ = imp.find_module(name, searchpath)
-    except ImportError:
-        _, err, _ = sys.exc_info()
+    except ImportError as err:
         raise NoSource(str(err))
     finally:
         if openfile:

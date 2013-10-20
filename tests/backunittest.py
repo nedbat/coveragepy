@@ -1,6 +1,6 @@
 """Implementations of unittest features from the future."""
 
-import difflib, re, sys, unittest
+import difflib, re, unittest
 
 
 def _need(method):
@@ -55,8 +55,7 @@ class TestCase(unittest.TestCase):
             """
             try:
                 callobj(*args, **kw)
-            except excClass:
-                _, exc, _ = sys.exc_info()
+            except excClass as exc:
                 excMsg = str(exc)
                 if re.search(regexp, excMsg):
                     # Message provided, and we got the right one: it passes.

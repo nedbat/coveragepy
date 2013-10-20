@@ -1,6 +1,6 @@
 """Code parsing for Coverage."""
 
-import collections, dis, re, sys, token, tokenize
+import collections, dis, re, token, tokenize
 
 from coverage.backward import StringIO
 from coverage.backward import open_source, range    # pylint: disable=W0622
@@ -27,8 +27,7 @@ class CodeParser(object):
             try:
                 with open_source(self.filename) as sourcef:
                     self.text = sourcef.read()
-            except IOError:
-                _, err, _ = sys.exc_info()
+            except IOError as err:
                 raise NoSource(
                     "No source for code: '%s': %s" % (self.filename, err)
                     )
@@ -202,8 +201,7 @@ class CodeParser(object):
         """
         try:
             self._raw_parse()
-        except (tokenize.TokenError, IndentationError):
-            _, tokerr, _ = sys.exc_info()
+        except (tokenize.TokenError, IndentationError) as tokerr:
             msg, lineno = tokerr.args
             raise NotPython(
                 "Couldn't parse '%s' as Python source: '%s' at %s" %
@@ -333,8 +331,7 @@ class ByteParser(object):
                 # Python 2.3 and 2.4 don't like partial last lines, so be sure
                 # the text ends nicely for them.
                 self.code = compile(text + '\n', filename, "exec")
-            except SyntaxError:
-                _, synerr, _ = sys.exc_info()
+            except SyntaxError as synerr:
                 raise NotPython(
                     "Couldn't parse '%s' as Python source: '%s' at line %d" %
                         (filename, synerr.msg, synerr.lineno)

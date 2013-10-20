@@ -144,9 +144,9 @@ class ve_build_ext(build_ext):
             build_ext.build_extension(self, ext)
         except ext_errors:
             raise BuildFailed()
-        except ValueError:
+        except ValueError as err:
             # this can happen on Windows 64 bit, see Python issue 7511
-            if "'path'" in str(sys.exc_info()[1]): # works with both py 2/3
+            if "'path'" in str(err): # works with both py 2/3
                 raise BuildFailed()
             raise
 
@@ -186,9 +186,8 @@ def main():
     # extension.  Try it with, and if it fails, try it without.
     try:
         setup(**setup_args)
-    except BuildFailed:
+    except BuildFailed as exc:
         msg = "Couldn't install with extension module, trying without it..."
-        exc = sys.exc_info()[1]
         exc_msg = "%s: %s" % (exc.__class__.__name__, exc.cause)
         print("**\n** %s\n** %s\n**" % (msg, exc_msg))
 

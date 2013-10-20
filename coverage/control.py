@@ -98,8 +98,7 @@ class coverage(object):
                 config_file = ".coveragerc"
             try:
                 self.config.from_file(config_file)
-            except ValueError:
-                _, err, _ = sys.exc_info()
+            except ValueError as err:
                 raise CoverageException(
                     "Couldn't read config file %s: %s" % (config_file, err)
                     )
