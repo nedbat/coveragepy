@@ -15,18 +15,6 @@ class TestCase(unittest.TestCase):
     the builtin `unittest` doesn't have them.
 
     """
-    if _need('assertTrue'):
-        def assertTrue(self, exp, msg=None):
-            """Assert that `exp` is true."""
-            if not exp:
-                self.fail(msg)
-
-    if _need('assertFalse'):
-        def assertFalse(self, exp, msg=None):
-            """Assert that `exp` is false."""
-            if exp:
-                self.fail(msg)
-
     if _need('assertIn'):
         def assertIn(self, member, container, msg=None):
             """Assert that `member` is in `container`."""
