@@ -211,15 +211,14 @@ class ConfigFileTest(CoverageTest):
             'other': ['other', '/home/ned/other', 'c:\\Ned\\etc']
             })
 
-    if sys.version_info[:2] != (3,1):
-        def test_one(self):
-            # This sample file tries to use lots of variation of syntax...
-            self.make_file(".coveragerc", """\
-                [html]
-                title = tabblo & «ταБЬℓσ» # numbers
-                """)
-            cov = coverage.coverage()
+    def test_one(self):
+        # This sample file tries to use lots of variation of syntax...
+        self.make_file(".coveragerc", """\
+            [html]
+            title = tabblo & «ταБЬℓσ» # numbers
+            """)
+        cov = coverage.coverage()
 
-            self.assertEqual(cov.config.html_title,
-                "tabblo & «ταБЬℓσ» # numbers"
-                )
+        self.assertEqual(cov.config.html_title,
+            "tabblo & «ταБЬℓσ» # numbers"
+            )

@@ -6,7 +6,7 @@ Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been executed.
 
-Coverage.py runs on Pythons 2.3 through 3.3, and PyPy 1.9.
+Coverage.py runs on Pythons 2.6, 2.7, 3.2, 3.3, and PyPy 1.9.
 
 Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
 tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_, with a
@@ -118,8 +118,8 @@ ext_errors = (
     errors.DistutilsExecError,
     errors.DistutilsPlatformError,
 )
-if sys.platform == 'win32' and sys.version_info > (2, 6):
-    # 2.6's distutils.msvc9compiler can raise an IOError when failing to
+if sys.platform == 'win32':
+    # distutils.msvc9compiler can raise an IOError when failing to
     # find the compiler
     ext_errors += (IOError,)
 

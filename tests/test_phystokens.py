@@ -86,11 +86,6 @@ if sys.version_info < (3, 0):
 
         run_in_temp_dir = False
 
-        if sys.version_info >= (2,4):
-            default_encoding = 'ascii'
-        else:
-            default_encoding = 'iso-8859-1'
-
         def test_detect_source_encoding(self):
             # Various forms from http://www.python.org/dev/peps/pep-0263/
             source = "# coding=cp850\n\n"
@@ -110,11 +105,11 @@ if sys.version_info < (3, 0):
         def test_dont_detect_source_encoding_on_third_line(self):
             # A coding declaration doesn't count on the third line.
             source = "\n\n# coding=cp850\n\n"
-            self.assertEqual(source_encoding(source), self.default_encoding)
+            self.assertEqual(source_encoding(source), 'ascii')
 
         def test_detect_source_encoding_of_empty_file(self):
             # An important edge case.
-            self.assertEqual(source_encoding(""), self.default_encoding)
+            self.assertEqual(source_encoding(""), 'ascii')
 
         def test_bom(self):
             # A BOM means utf-8.

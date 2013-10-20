@@ -324,23 +324,20 @@ class ProcessTest(CoverageTest):
         out_py = self.run_command("python run_me.py")
         self.assertMultiLineEqual(out_cov, out_py)
 
-    if sys.version_info >= (2, 6):
-        # Doesn't work in 2.5, and I don't care! For some reason, python -m
-        # in 2.5 has __builtins__ as a dictionary instead of a module?
-        def test_coverage_run_dashm_is_like_python_dashm(self):
-            # These -m commands assume the coverage tree is on the path.
-            out_cov = self.run_command("coverage run -m tests.try_execfile")
-            out_py = self.run_command("python -m tests.try_execfile")
-            self.assertMultiLineEqual(out_cov, out_py)
+    def test_coverage_run_dashm_is_like_python_dashm(self):
+        # These -m commands assume the coverage tree is on the path.
+        out_cov = self.run_command("coverage run -m tests.try_execfile")
+        out_py = self.run_command("python -m tests.try_execfile")
+        self.assertMultiLineEqual(out_cov, out_py)
 
-        def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
-            # https://bitbucket.org/ned/coveragepy/issue/242
-            tryfile = os.path.join(here, "try_execfile.py")
-            self.make_file("sub/__init__.py", "")
-            self.make_file("sub/run_me.py", open(tryfile).read())
-            out_cov = self.run_command("coverage run -m sub.run_me")
-            out_py = self.run_command("python -m sub.run_me")
-            self.assertMultiLineEqual(out_cov, out_py)
+    def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
+        # https://bitbucket.org/ned/coveragepy/issue/242
+        tryfile = os.path.join(here, "try_execfile.py")
+        self.make_file("sub/__init__.py", "")
+        self.make_file("sub/run_me.py", open(tryfile).read())
+        out_cov = self.run_command("coverage run -m sub.run_me")
+        out_py = self.run_command("python -m sub.run_me")
+        self.assertMultiLineEqual(out_cov, out_py)
 
     if sys.version_info >= (2, 7):
         # Coverage isn't bug-for-bug compatible in the behavior of -m for
