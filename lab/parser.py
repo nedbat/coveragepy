@@ -54,12 +54,11 @@ class ParserMain(object):
     def one_file(self, options, filename):
         """Process just one file."""
 
-        if options.dis or options.chunks:
-            try:
-                bp = ByteParser(filename=filename)
-            except CoverageException as err:
-                print("%s" % (err,))
-                return
+        try:
+            bp = ByteParser(filename=filename)
+        except CoverageException as err:
+            print("%s" % (err,))
+            return
 
         if options.dis:
             print("Main code:")
