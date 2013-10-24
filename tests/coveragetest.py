@@ -355,20 +355,21 @@ class CoverageTest(TestCase):
 
         # Get the analysis results, and check that they are right.
         analysis = cov._analyze(mod)
+        statements = sorted(analysis.statements)
         if lines is not None:
             if type(lines[0]) == type(1):
                 # lines is just a list of numbers, it must match the statements
                 # found in the code.
-                self.assertEqual(analysis.statements, lines)
+                self.assertEqual(statements, lines)
             else:
                 # lines is a list of possible line number lists, one of them
                 # must match.
                 for line_list in lines:
-                    if analysis.statements == line_list:
+                    if statements == line_list:
                         break
                 else:
                     self.fail("None of the lines choices matched %r" %
-                                                        analysis.statements
+                                                                statements
                         )
 
             if type(missing) == type(""):

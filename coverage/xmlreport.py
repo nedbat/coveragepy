@@ -117,7 +117,7 @@ class XmlReporter(Reporter):
         branch_stats = analysis.branch_stats()
 
         # For each statement, create an XML 'line' element.
-        for line in analysis.statements:
+        for line in sorted(analysis.statements):
             xline = self.xml_out.createElement("line")
             xline.setAttribute("number", str(line))
 

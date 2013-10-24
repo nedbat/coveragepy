@@ -175,16 +175,18 @@ class CodeParser(object):
             first_line = line
         return first_line
 
-    def first_lines(self, lines, ignore=None):
+    def first_lines(self, lines, *ignores):
         """Map the line numbers in `lines` to the correct first line of the
         statement.
 
-        Skip any line mentioned in `ignore`.
+        Skip any line mentioned in any of the sequences in `ignores`.
 
-        Returns a sorted list of the first lines.
+        Returns a set of the first lines.
 
         """
-        ignore = ignore or []
+        ignore = set()
+        for ign in ignores:
+            ignore.update(ign)
         lset = set()
         for l in lines:
             if l in ignore:
@@ -192,13 +194,13 @@ class CodeParser(object):
             new_l = self.first_line(l)
             if new_l not in ignore:
                 lset.add(new_l)
-        return sorted(lset)
+        return lset
 
     def parse_source(self):
         """Parse source text to find executable lines, excluded lines, etc.
 
-        Return values are 1) a sorted list of executable line numbers, and
-        2) a sorted list of excluded line numbers.
+        Return values are 1) a set of executable line numbers, and 2) a set of
+        excluded line numbers.
 
         Reported line numbers are normalized to the first line of multi-line
         statements.
@@ -215,8 +217,11 @@ class CodeParser(object):
                 )
 
         excluded_lines = self.first_lines(self.excluded)
-        ignore = excluded_lines + list(self.docstrings)
-        lines = self.first_lines(self.statement_starts, ignore)
+        lines = self.first_lines(
+            self.statement_starts,
+            excluded_lines,
+            self.docstrings
+        )
 
         return lines, excluded_lines
 

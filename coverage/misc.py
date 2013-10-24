@@ -38,6 +38,8 @@ def format_lines(statements, lines):
     i = 0
     j = 0
     start = None
+    statements = sorted(statements)
+    lines = sorted(lines)
     while i < len(statements) and j < len(lines):
         if statements[i] == lines[j]:
             if start == None:

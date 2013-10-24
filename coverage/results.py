@@ -26,7 +26,7 @@ class Analysis(object):
         # Identify missing statements.
         executed = self.coverage.data.executed_lines(self.filename)
         exec1 = self.parser.first_lines(executed)
-        self.missing = sorted(set(self.statements) - set(exec1))
+        self.missing = self.statements - exec1
 
         if self.coverage.data.has_arcs():
             self.no_branch = self.parser.lines_matching(
