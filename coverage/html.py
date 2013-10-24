@@ -186,8 +186,7 @@ class HtmlReporter(Reporter):
 
         lines = []
 
-        for lineno, line in enumerate(source_token_lines(source)):
-            lineno += 1     # 1-based line numbers.
+        for lineno, line in enumerate(source_token_lines(source), start=1):
             # Figure out how to mark this line.
             line_class = []
             annotate_html = ""

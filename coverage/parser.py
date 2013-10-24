@@ -79,9 +79,9 @@ class CodeParser(object):
         """
         regex_c = re.compile(join_regex(regexes))
         matches = set()
-        for i, ltext in enumerate(self.lines):
+        for i, ltext in enumerate(self.lines, start=1):
             if regex_c.search(ltext):
-                matches.add(i+1)
+                matches.add(i)
         return matches
 
     def _raw_parse(self):

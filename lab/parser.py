@@ -86,8 +86,7 @@ class ParserMain(object):
 
                 exit_counts = cp.exit_counts()
 
-                for i, ltext in enumerate(cp.lines):
-                    lineno = i+1
+                for lineno, ltext in enumerate(cp.lines, start=1):
                     m0 = m1 = m2 = m3 = a = ' '
                     if lineno in cp.statement_starts:
                         m0 = '-'
