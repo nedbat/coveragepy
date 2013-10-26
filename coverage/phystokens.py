@@ -1,7 +1,7 @@
 """Better tokenizing for coverage.py."""
 
 import codecs, keyword, re, sys, token, tokenize
-from coverage.backward import StringIO              # pylint: disable=W0622
+from coverage.backward import set, StringIO             # pylint: disable=W0622
 
 def phys_tokens(toks):
     """Return all physical tokens, even line continuations.
@@ -18,7 +18,7 @@ def phys_tokens(toks):
     last_ttype = None
     for ttype, ttext, (slineno, scol), (elineno, ecol), ltext in toks:
         if last_lineno != elineno:
-            if last_line and last_line[-2:] == "\\\n":
+            if last_line and last_line.endswith("\\\n"):
                 # We are at the beginning of a new line, and the last line
                 # ended with a backslash.  We probably have to inject a
                 # backslash token into the stream. Unfortunately, there's more
@@ -74,7 +74,7 @@ def source_token_lines(source):
     is indistinguishable from a final line with a newline.
 
     """
-    ws_tokens = [token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL]
+    ws_tokens = set([token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL])
     line = []
     col = 0
     source = source.expandtabs(8).replace('\r\n', '\n')
