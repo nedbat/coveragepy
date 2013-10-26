@@ -1,7 +1,7 @@
 """Tests for coverage.templite."""
 
 from coverage.templite import Templite
-import unittest
+from tests.coveragetest import CoverageTest
 
 # pylint: disable=W0612,E1101
 # Disable W0612 (Unused variable) and
@@ -18,7 +18,7 @@ class AnyOldObject(object):
             setattr(self, n, v)
 
 
-class TempliteTest(unittest.TestCase):
+class TempliteTest(CoverageTest):
     """Tests for Templite."""
 
     def try_render(self, text, ctx, result):
@@ -165,6 +165,23 @@ class TempliteTest(unittest.TestCase):
             "Hi, NEDBEN!"
             )
 
+    def test_complex_if(self):
+        class Complex(AnyOldObject):
+            """A class to try out complex data access."""
+            def getit(self):
+                """Return it."""
+                return self.it
+        obj = Complex(it={'x':"Hello", 'y': 0})
+        self.try_render(
+            "@"
+            "{% if obj.getit.x %}X{% endif %}"
+            "{% if obj.getit.y %}Y{% endif %}"
+            "{% if obj.getit.y|str %}S{% endif %}"
+            "!",
+            { 'obj': obj, 'str': str },
+            "@XS!"
+            )
+
     def test_loop_if(self):
         self.try_render(
             "@{% for n in nums %}{% if n %}Z{% endif %}{{n}}{% endfor %}!",
@@ -184,9 +201,11 @@ class TempliteTest(unittest.TestCase):
 
     def test_nested_loops(self):
         self.try_render(
-            "@{% for n in nums %}"
+            "@"
+            "{% for n in nums %}"
                 "{% for a in abc %}{{a}}{{n}}{% endfor %}"
-            "{% endfor %}!",
+            "{% endfor %}"
+            "!",
             {'nums': [0,1,2], 'abc': ['a', 'b', 'c']},
             "@a0b0c0a1b1c1a2b2c2!"
             )
@@ -199,6 +218,20 @@ class TempliteTest(unittest.TestCase):
             )
 
     def test_bogus_tag_syntax(self):
-        self.assertRaises(SyntaxError, self.try_render,
+        self.assertRaisesRegexp(
+            SyntaxError, "Don't understand tag: 'bogus'",
+            self.try_render,
             "Huh: {% bogus %}!!{% endbogus %}??", {}, ""
+            )
+
+    def test_bad_nesting(self):
+        self.assertRaisesRegexp(
+            SyntaxError, "Unmatched action tag: 'if'",
+            self.try_render,
+            "{% if x %}X", {}, ""
+            )
+        self.assertRaisesRegexp(
+            SyntaxError, "Mismatched end tag: 'for'",
+            self.try_render,
+            "{% if x %}X{% endfor %}", {}, ""
             )
