@@ -115,8 +115,10 @@ class Hasher(object):
         self.md5.update(to_bytes(str(type(v))))
         if isinstance(v, string_class):
             self.md5.update(to_bytes(v))
+        elif v is None:
+            pass
         elif isinstance(v, (int, float)):
-            self.update(str(v))
+            self.md5.update(to_bytes(str(v)))
         elif isinstance(v, (tuple, list)):
             for e in v:
                 self.update(e)
