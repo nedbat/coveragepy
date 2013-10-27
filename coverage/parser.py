@@ -449,14 +449,15 @@ class ByteParser(object):
 
         # Get a set of all of the jump-to points.
         jump_to = set()
-        for bc in ByteCodes(self.code.co_code):
+        bytecodes = list(ByteCodes(self.code.co_code))
+        for bc in bytecodes:
             if bc.jump_to >= 0:
                 jump_to.add(bc.jump_to)
 
         chunk_lineno = 0
 
         # Walk the byte codes building chunks.
-        for bc in ByteCodes(self.code.co_code):
+        for bc in bytecodes:
             # Maybe have to start a new chunk
             start_new_chunk = False
             first_chunk = False
