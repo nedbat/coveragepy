@@ -108,7 +108,7 @@ class CodeParser(object):
         first_line = None
         empty = True
 
-        tokgen = tokenize.generate_tokens(StringIO(self.text).readline)
+        tokgen = generate_tokens(self.text)
         for toktype, ttext, (slineno, _), (elineno, _), ltext in tokgen:
             if self.show_tokens:                # pragma: not covered
                 print("%10s %5s %-20r %r" % (
@@ -669,3 +669,31 @@ class Chunk(object):
         return "<%d+%d @%d%s %r>" % (
             self.byte, self.length, self.line, bang, list(self.exits)
             )
+
+
+class CachedTokenizer(object):
+    """A one-element cache around tokenize.generate_tokens.
+
+    When reporting, coverage.py tokenizes files twice, once to find the
+    structure of the file, and once to syntax-color it.  Tokenizing is
+    expensive, and easily cached.
+
+    This is a one-element cache so that our twice-in-a-row tokenizing doesn't
+    actually tokenize twice.
+
+    """
+    def __init__(self):
+        self.last_text = None
+        self.last_tokens = None
+
+    def generate_tokens(self, text):
+        """A stand-in for `tokenize.generate_tokens`."""
+        if text != self.last_text:
+            self.last_text = text
+            self.last_tokens = list(
+                tokenize.generate_tokens(StringIO(text).readline)
+            )
+        return self.last_tokens
+
+# Create our generate_tokens cache as a callable replacement function.
+generate_tokens = CachedTokenizer().generate_tokens

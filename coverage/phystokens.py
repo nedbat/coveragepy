@@ -1,7 +1,9 @@
 """Better tokenizing for coverage.py."""
 
 import codecs, keyword, re, sys, token, tokenize
-from coverage.backward import set, StringIO             # pylint: disable=W0622
+from coverage.backward import set                       # pylint: disable=W0622
+from coverage.parser import generate_tokens
+
 
 def phys_tokens(toks):
     """Return all physical tokens, even line continuations.
@@ -78,7 +80,7 @@ def source_token_lines(source):
     line = []
     col = 0
     source = source.expandtabs(8).replace('\r\n', '\n')
-    tokgen = tokenize.generate_tokens(StringIO(source).readline)
+    tokgen = generate_tokens(source)
     for ttype, ttext, (_, scol), (_, ecol), _ in phys_tokens(tokgen):
         mark_start = True
         for part in re.split('(\n)', ttext):
