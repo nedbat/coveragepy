@@ -184,7 +184,8 @@ class HtmlReporter(Reporter):
         # Get the numbers for this file.
         nums = analysis.numbers
 
-        missing_branch_arcs = analysis.missing_branch_arcs()
+        if self.arcs:
+            missing_branch_arcs = analysis.missing_branch_arcs()
 
         # These classes determine which lines are highlighted by default.
         c_run = "run hide_run"
