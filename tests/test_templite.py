@@ -39,6 +39,14 @@ class TempliteTest(CoverageTest):
         # Variables use {{var}} syntax.
         self.try_render("Hello, {{name}}!", {'name':'Ned'}, "Hello, Ned!")
 
+    def test_undefined_variables(self):
+        # Using undefined names is an error.
+        self.assertRaises(
+            Exception,
+            self.try_render,
+            "Hi, {{name}}!", {}, "xyz"
+        )
+
     def test_pipes(self):
         # Variables can be filtered with pipes.
         data = {
