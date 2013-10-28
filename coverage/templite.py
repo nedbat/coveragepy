@@ -4,6 +4,8 @@
 
 import re
 
+from coverage.backward import set                       # pylint: disable=W0622
+
 
 class CodeBuilder(object):
     """Build source code conveniently."""
@@ -37,7 +39,7 @@ class CodeBuilder(object):
         self.indent_amount -= 4
 
     def __str__(self):
-        return "".join(str(c) for c in self.code)
+        return "".join([str(c) for c in self.code])
 
     def get_function(self, fn_name):
         """Compile the code, and return the function `fn_name`."""
