@@ -26,12 +26,24 @@ Major change history for coverage.py
 :history: 20121223T180600, updated for 3.6b2.
 :history: 20130105T173500, updated for 3.6
 :history: 20131005T205700, updated for 3.7
+:history: 20131212T213100, updated for 3.7.1
 
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+
+
+.. _changes_371:
+
+Version 3.7.1 --- 13 December 2013
+----------------------------------
+
+- Improved the speed of HTML report generation by about 20%.
+
+- Fixed the mechanism for finding OS-installed static files for the HTML report
+  so that it will actually find OS-installed static files.
 
 
 .. _changes_37:
