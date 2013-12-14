@@ -2,7 +2,6 @@
 
 import optparse, os, sys, time, traceback
 
-from coverage.backward import sorted                # pylint: disable=W0622
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
 from coverage.debug import info_formatter
@@ -565,17 +564,16 @@ class CoverageScript(object):
         self.coverage.start()
         code_ran = True
         try:
-            try:
-                if options.module:
-                    sys.path[0] = ''
-                    self.run_python_module(args[0], args)
-                else:
-                    filename = args[0]
-                    sys.path[0] = os.path.abspath(os.path.dirname(filename))
-                    self.run_python_file(filename, args)
-            except NoSource:
-                code_ran = False
-                raise
+            if options.module:
+                sys.path[0] = ''
+                self.run_python_module(args[0], args)
+            else:
+                filename = args[0]
+                sys.path[0] = os.path.abspath(os.path.dirname(filename))
+                self.run_python_file(filename, args)
+        except NoSource:
+            code_ran = False
+            raise
         finally:
             self.coverage.stop()
             if code_ran:
@@ -722,21 +720,18 @@ def main(argv=None):
         end = time.clock()
         if 0:
             print("time: %.3fs" % (end - start))
-    except ExceptionDuringRun:
+    except ExceptionDuringRun as err:
         # An exception was caught while running the product code.  The
         # sys.exc_info() return tuple is packed into an ExceptionDuringRun
         # exception.
-        _, err, _ = sys.exc_info()
         traceback.print_exception(*err.args)
         status = ERR
-    except CoverageException:
+    except CoverageException as err:
         # A controlled error inside coverage.py: print the message to the user.
-        _, err, _ = sys.exc_info()
         print(err)
         status = ERR
-    except SystemExit:
+    except SystemExit as err:
         # The user called `sys.exit()`.  Exit with their argument, if any.
-        _, err, _ = sys.exc_info()
         if err.args:
             status = err.args[0]
         else:

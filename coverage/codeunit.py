@@ -52,7 +52,7 @@ class CodeUnit(object):
         else:
             f = morf
         # .pyc files should always refer to a .py instead.
-        if f.endswith('.pyc') or f.endswith('.pyo'):
+        if f.endswith(('.pyc', '.pyo')):
             f = f[:-1]
         elif f.endswith('$py.class'): # Jython
             f = f[:-9] + ".py"

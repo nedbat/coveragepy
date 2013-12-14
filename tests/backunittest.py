@@ -1,8 +1,6 @@
 """Implementations of unittest features from the future."""
 
-import difflib, re, sys, unittest
-
-from coverage.backward import set                   # pylint: disable=W0622
+import difflib, re, unittest
 
 
 def _need(method):
@@ -17,18 +15,6 @@ class TestCase(unittest.TestCase):
     the builtin `unittest` doesn't have them.
 
     """
-    if _need('assertTrue'):
-        def assertTrue(self, exp, msg=None):
-            """Assert that `exp` is true."""
-            if not exp:
-                self.fail(msg)
-
-    if _need('assertFalse'):
-        def assertFalse(self, exp, msg=None):
-            """Assert that `exp` is false."""
-            if exp:
-                self.fail(msg)
-
     if _need('assertIn'):
         def assertIn(self, member, container, msg=None):
             """Assert that `member` is in `container`."""
@@ -57,8 +43,7 @@ class TestCase(unittest.TestCase):
             """
             try:
                 callobj(*args, **kw)
-            except excClass:
-                _, exc, _ = sys.exc_info()
+            except excClass as exc:
                 excMsg = str(exc)
                 if re.search(regexp, excMsg):
                     # Message provided, and we got the right one: it passes.

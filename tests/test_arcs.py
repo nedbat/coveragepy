@@ -88,12 +88,6 @@ class SimpleArcTest(CoverageTest):
             arcz=".1 14 45 5.  .2 2. 23 3.", arcz_missing="23 3.")
 
     def test_multiline(self):
-        # The firstlineno of the a assignment below differs among Python
-        # versions.
-        if sys.version_info >= (2, 5):
-            arcz = ".1 15 5-2"
-        else:
-            arcz = ".1 15 5-1"
         self.check_coverage("""\
             a = (
                 2 +
@@ -102,7 +96,7 @@ class SimpleArcTest(CoverageTest):
             b = \\
                 6
             """,
-            arcz=arcz, arcz_missing="")
+            arcz=".1 15 5-2", arcz_missing="")
 
     def test_if_return(self):
         self.check_coverage("""\
@@ -151,33 +145,32 @@ class SimpleArcTest(CoverageTest):
                 )
 
 
-if sys.version_info >= (2, 6):
-    class WithTest(CoverageTest):
-        """Arc-measuring tests involving context managers."""
+class WithTest(CoverageTest):
+    """Arc-measuring tests involving context managers."""
 
-        def test_with(self):
-            self.check_coverage("""\
-                def example():
-                    with open("test", "w") as f: # exit
-                        f.write("")
-                        return 1
+    def test_with(self):
+        self.check_coverage("""\
+            def example():
+                with open("test", "w") as f: # exit
+                    f.write("")
+                    return 1
 
-                example()
-                """,
-                arcz=".1 .2 23 34 4. 16 6."
-                )
+            example()
+            """,
+            arcz=".1 .2 23 34 4. 16 6."
+            )
 
-        def test_bug_146(self):
-            # https://bitbucket.org/ned/coveragepy/issue/146
-            self.check_coverage("""\
-                for i in range(2):
-                    with open("test", "w") as f:
-                        print(3)
-                    print(4)
-                print(5)
-                """,
-                arcz=".1 12 23 34 41 15 5."
-                )
+    def test_bug_146(self):
+        # https://bitbucket.org/ned/coveragepy/issue/146
+        self.check_coverage("""\
+            for i in range(2):
+                with open("test", "w") as f:
+                    print(3)
+                print(4)
+            print(5)
+            """,
+            arcz=".1 12 23 34 41 15 5."
+            )
 
 
 class LoopArcTest(CoverageTest):
@@ -509,9 +502,9 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 35 56 61 17 7.",
             arcz_missing="", arcz_unpredicted="")
 
-    # Run this test only on 2.6 and 2.7 for now.  I hope to fix it on Py3
+    # Run this test only on Py2 for now.  I hope to fix it on Py3
     # eventually...
-    if (2, 6) <= sys.version_info < (3,):
+    if sys.version_info < (3, 0):
         # "except Exception as e" is crucial here.
         def test_bug_212(self):
             self.check_coverage("""\
@@ -533,36 +526,34 @@ class ExceptionArcTest(CoverageTest):
                 arcz=".1 .2 1A 23 34 56 67 68 8. AB BC C. DE E.",
                 arcz_missing="C.", arcz_unpredicted="45 7. CD")
 
-    if sys.version_info >= (2, 5):
-        # Try-except-finally was new in 2.5
-        def test_except_finally(self):
-            self.check_coverage("""\
-                a, b, c = 1, 1, 1
-                try:
-                    a = 3
-                except:
-                    b = 5
-                finally:
-                    c = 7
-                assert a == 3 and b == 1 and c == 7
-                """,
-                arcz=".1 12 23 45 37 57 78 8.", arcz_missing="45 57")
-            self.check_coverage("""\
-                a, b, c = 1, 1, 1
-                def oops(x):
-                    if x % 2: raise Exception("odd")
-                try:
-                    a = 5
-                    oops(1)
-                    a = 7
-                except:
-                    b = 9
-                finally:
-                    c = 11
-                assert a == 5 and b == 9 and c == 11
-                """,
-                arcz=".1 12 .3 3-2 24 45 56 67 7B 89 9B BC C.",
-                arcz_missing="67 7B", arcz_unpredicted="68")
+    def test_except_finally(self):
+        self.check_coverage("""\
+            a, b, c = 1, 1, 1
+            try:
+                a = 3
+            except:
+                b = 5
+            finally:
+                c = 7
+            assert a == 3 and b == 1 and c == 7
+            """,
+            arcz=".1 12 23 45 37 57 78 8.", arcz_missing="45 57")
+        self.check_coverage("""\
+            a, b, c = 1, 1, 1
+            def oops(x):
+                if x % 2: raise Exception("odd")
+            try:
+                a = 5
+                oops(1)
+                a = 7
+            except:
+                b = 9
+            finally:
+                c = 11
+            assert a == 5 and b == 9 and c == 11
+            """,
+            arcz=".1 12 .3 3-2 24 45 56 67 7B 89 9B BC C.",
+            arcz_missing="67 7B", arcz_unpredicted="68")
 
 
 class MiscArcTest(CoverageTest):

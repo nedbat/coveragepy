@@ -24,9 +24,8 @@ contains("html_partial/partial.html",
 contains("html_partial/index.html",
     "<a href='partial.html'>partial</a>",
     )
-if sys.version_info >= (2, 4):
-    contains("html_partial/index.html",
-        "<span class='pc_cov'>100%</span>"
-        )
+contains("html_partial/index.html",
+    "<span class='pc_cov'>100%</span>"
+    )
 
 clean("html_partial")

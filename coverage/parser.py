@@ -1,10 +1,9 @@
 """Code parsing for Coverage."""
 
-import dis, re, sys, token, tokenize
+import collections, dis, re, token, tokenize
 
-from coverage.backward import set, sorted, StringIO # pylint: disable=W0622
+from coverage.backward import StringIO
 from coverage.backward import open_source, range    # pylint: disable=W0622
-from coverage.backward import reversed              # pylint: disable=W0622
 from coverage.backward import bytes_to_ints
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, expensive, join_regex
@@ -26,13 +25,9 @@ class CodeParser(object):
         self.text = text
         if not self.text:
             try:
-                sourcef = open_source(self.filename)
-                try:
+                with open_source(self.filename) as sourcef:
                     self.text = sourcef.read()
-                finally:
-                    sourcef.close()
-            except IOError:
-                _, err, _ = sys.exc_info()
+            except IOError as err:
                 raise NoSource(
                     "No source for code: '%s': %s" % (self.filename, err)
                     )
@@ -66,13 +61,13 @@ class CodeParser(object):
         # Lazily-created ByteParser
         self._byte_parser = None
 
-    def _get_byte_parser(self):
+    @property
+    def byte_parser(self):
         """Create a ByteParser on demand."""
         if not self._byte_parser:
             self._byte_parser = \
                             ByteParser(text=self.text, filename=self.filename)
         return self._byte_parser
-    byte_parser = property(_get_byte_parser)
 
     def lines_matching(self, *regexes):
         """Find the lines matching one of a list of regexes.
@@ -84,9 +79,9 @@ class CodeParser(object):
         """
         regex_c = re.compile(join_regex(regexes))
         matches = set()
-        for i, ltext in enumerate(self.lines):
+        for i, ltext in enumerate(self.lines, start=1):
             if regex_c.search(ltext):
-                matches.add(i+1)
+                matches.add(i)
         return matches
 
     def _raw_parse(self):
@@ -208,8 +203,7 @@ class CodeParser(object):
         """
         try:
             self._raw_parse()
-        except (tokenize.TokenError, IndentationError):
-            _, tokerr, _ = sys.exc_info()
+        except (tokenize.TokenError, IndentationError) as tokerr:
             msg, lineno = tokerr.args
             raise NotPython(
                 "Couldn't parse '%s' as Python source: '%s' at %s" %
@@ -225,6 +219,7 @@ class CodeParser(object):
 
         return lines, excluded_lines
 
+    @expensive
     def arcs(self):
         """Get information about the arcs available in the code.
 
@@ -239,8 +234,8 @@ class CodeParser(object):
             if fl1 != fl2:
                 all_arcs.append((fl1, fl2))
         return sorted(all_arcs)
-    arcs = expensive(arcs)
 
+    @expensive
     def exit_counts(self):
         """Get a mapping from line numbers to count of exits from that line.
 
@@ -248,7 +243,7 @@ class CodeParser(object):
 
         """
         excluded_lines = self.first_lines(self.excluded)
-        exit_counts = {}
+        exit_counts = collections.defaultdict(int)
         for l1, l2 in self.arcs():
             if l1 < 0:
                 # Don't ever report -1 as a line number
@@ -259,8 +254,6 @@ class CodeParser(object):
             if l2 in excluded_lines:
                 # Arcs to excluded lines shouldn't count.
                 continue
-            if l1 not in exit_counts:
-                exit_counts[l1] = 0
             exit_counts[l1] += 1
 
         # Class definitions have one extra exit, so remove one for each:
@@ -270,7 +263,6 @@ class CodeParser(object):
                 exit_counts[l] -= 1
 
         return exit_counts
-    exit_counts = expensive(exit_counts)
 
 
 ## Opcodes that guide the ByteParser.
@@ -336,19 +328,15 @@ class ByteParser(object):
         else:
             if not text:
                 assert filename, "If no code or text, need a filename"
-                sourcef = open_source(filename)
-                try:
+                with open_source(filename) as sourcef:
                     text = sourcef.read()
-                finally:
-                    sourcef.close()
             self.text = text
 
             try:
                 # Python 2.3 and 2.4 don't like partial last lines, so be sure
                 # the text ends nicely for them.
                 self.code = compile(text + '\n', filename, "exec")
-            except SyntaxError:
-                _, synerr, _ = sys.exc_info()
+            except SyntaxError as synerr:
                 raise NotPython(
                     "Couldn't parse '%s' as Python source: '%s' at line %d" %
                         (filename, synerr.msg, synerr.lineno)
@@ -371,7 +359,7 @@ class ByteParser(object):
 
         """
         children = CodeObjects(self.code)
-        return [ByteParser(code=c, text=self.text) for c in children]
+        return (ByteParser(code=c, text=self.text) for c in children)
 
     def _bytes_lines(self):
         """Map byte offsets to line numbers in `code`.
@@ -415,7 +403,7 @@ class ByteParser(object):
     def _block_stack_repr(self, block_stack):
         """Get a string version of `block_stack`, for debugging."""
         blocks = ", ".join(
-            ["(%s, %r)" % (dis.opname[b[0]], b[1]) for b in block_stack]
+            "(%s, %r)" % (dis.opname[b[0]], b[1]) for b in block_stack
         )
         return "[" + blocks + "]"
 
@@ -554,9 +542,9 @@ class ByteParser(object):
     def validate_chunks(self, chunks):
         """Validate the rule that chunks have a single entrance."""
         # starts is the entrances to the chunks
-        starts = set([ch.byte for ch in chunks])
+        starts = set(ch.byte for ch in chunks)
         for ch in chunks:
-            assert all([(ex in starts or ex < 0) for ex in ch.exits])
+            assert all((ex in starts or ex < 0) for ex in ch.exits)
 
     def _arcs(self):
         """Find the executable arcs in the code.
@@ -569,7 +557,7 @@ class ByteParser(object):
         chunks = self._split_into_chunks()
 
         # A map from byte offsets to chunks jumped into.
-        byte_chunks = dict([(c.byte, c) for c in chunks])
+        byte_chunks = dict((c.byte, c) for c in chunks)
 
         # There's always an entrance at the first chunk.
         yield (-1, byte_chunks[0].line)

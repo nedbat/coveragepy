@@ -1,7 +1,6 @@
 """Better tokenizing for coverage.py."""
 
 import codecs, keyword, re, sys, token, tokenize
-from coverage.backward import set                       # pylint: disable=W0622
 from coverage.parser import generate_tokens
 
 
@@ -143,13 +142,8 @@ def source_encoding(source):
     # invalid charset, raise a SyntaxError.  Note that if a utf-8 bom is found,
     # 'utf-8-sig' is returned.
 
-    # If no encoding is specified, then the default will be returned.  The
-    # default varied with version.
-
-    if sys.version_info <= (2, 4):
-        default = 'iso-8859-1'
-    else:
-        default = 'ascii'
+    # If no encoding is specified, then the default will be returned.
+    default = 'ascii'
 
     bom_found = False
     encoding = None

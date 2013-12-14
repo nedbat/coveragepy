@@ -839,15 +839,13 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,4,5,7,9,10], "4, 7")
 
-    if sys.version_info >= (2, 4):
-        # In 2.4 and up, constant if's were compiled away.
-        def test_constant_if(self):
-            self.check_coverage("""\
-                if 1:
-                    a = 2
-                assert a == 2
-                """,
-                [2,3], "")
+    def test_constant_if(self):
+        self.check_coverage("""\
+            if 1:
+                a = 2
+            assert a == 2
+            """,
+            [2,3], "")
 
     def test_while(self):
         self.check_coverage("""\
@@ -1510,187 +1508,185 @@ class ExcludeTest(CoverageTest):
             [8,9], "", excludes=['#pragma: NO COVER'])
 
 
-if sys.version_info >= (2, 4):
-    class Py24Test(CoverageTest):
-        """Tests of new syntax in Python 2.4."""
+class Py24Test(CoverageTest):
+    """Tests of new syntax in Python 2.4."""
 
-        def test_function_decorators(self):
-            self.check_coverage("""\
-                def require_int(func):
+    def test_function_decorators(self):
+        self.check_coverage("""\
+            def require_int(func):
+                def wrapper(arg):
+                    assert isinstance(arg, int)
+                    return func(arg)
+
+                return wrapper
+
+            @require_int
+            def p1(arg):
+                return arg*2
+
+            assert p1(10) == 20
+            """,
+            [1,2,3,4,6,8,10,12], "")
+
+    def test_function_decorators_with_args(self):
+        self.check_coverage("""\
+            def boost_by(extra):
+                def decorator(func):
                     def wrapper(arg):
-                        assert isinstance(arg, int)
-                        return func(arg)
-
+                        return extra*func(arg)
                     return wrapper
+                return decorator
 
-                @require_int
-                def p1(arg):
-                    return arg*2
+            @boost_by(10)
+            def boosted(arg):
+                return arg*2
 
-                assert p1(10) == 20
-                """,
-                [1,2,3,4,6,8,10,12], "")
+            assert boosted(10) == 200
+            """,
+            [1,2,3,4,5,6,8,10,12], "")
 
-        def test_function_decorators_with_args(self):
-            self.check_coverage("""\
-                def boost_by(extra):
-                    def decorator(func):
-                        def wrapper(arg):
-                            return extra*func(arg)
-                        return wrapper
-                    return decorator
+    def test_double_function_decorators(self):
+        self.check_coverage("""\
+            def require_int(func):
+                def wrapper(arg):
+                    assert isinstance(arg, int)
+                    return func(arg)
+                return wrapper
 
-                @boost_by(10)
-                def boosted(arg):
-                    return arg*2
-
-                assert boosted(10) == 200
-                """,
-                [1,2,3,4,5,6,8,10,12], "")
-
-        def test_double_function_decorators(self):
-            self.check_coverage("""\
-                def require_int(func):
+            def boost_by(extra):
+                def decorator(func):
                     def wrapper(arg):
-                        assert isinstance(arg, int)
-                        return func(arg)
+                        return extra*func(arg)
                     return wrapper
+                return decorator
 
-                def boost_by(extra):
-                    def decorator(func):
-                        def wrapper(arg):
-                            return extra*func(arg)
-                        return wrapper
-                    return decorator
+            @require_int
+            @boost_by(10)
+            def boosted1(arg):
+                return arg*2
 
-                @require_int
-                @boost_by(10)
-                def boosted1(arg):
-                    return arg*2
+            assert boosted1(10) == 200
 
-                assert boosted1(10) == 200
+            @boost_by(10)
+            @require_int
+            def boosted2(arg):
+                return arg*2
 
-                @boost_by(10)
-                @require_int
-                def boosted2(arg):
-                    return arg*2
-
-                assert boosted2(10) == 200
-                """,
-                ([1,2,3,4,5,7,8,9,10,11,12,14,15,17,19,21,22,24,26],
-                 [1,2,3,4,5,7,8,9,10,11,12,14,   17,19,21,   24,26]), "")
+            assert boosted2(10) == 200
+            """,
+            ([1,2,3,4,5,7,8,9,10,11,12,14,15,17,19,21,22,24,26],
+                [1,2,3,4,5,7,8,9,10,11,12,14,   17,19,21,   24,26]), "")
 
 
-if sys.version_info >= (2, 5):
-    class Py25Test(CoverageTest):
-        """Tests of new syntax in Python 2.5."""
+class Py25Test(CoverageTest):
+    """Tests of new syntax in Python 2.5."""
 
-        def test_with_statement(self):
-            self.check_coverage("""\
-                from __future__ import with_statement
+    def test_with_statement(self):
+        self.check_coverage("""\
+            from __future__ import with_statement
 
-                class Managed:
-                    def __enter__(self):
-                        desc = "enter"
+            class Managed:
+                def __enter__(self):
+                    desc = "enter"
 
-                    def __exit__(self, type, value, tb):
-                        desc = "exit"
+                def __exit__(self, type, value, tb):
+                    desc = "exit"
 
-                m = Managed()
+            m = Managed()
+            with m:
+                desc = "block1a"
+                desc = "block1b"
+
+            try:
                 with m:
-                    desc = "block1a"
-                    desc = "block1b"
+                    desc = "block2"
+                    raise Exception("Boo!")
+            except:
+                desc = "caught"
+            """,
+            [1,3,4,5,7,8,10,11,12,13,15,16,17,18,19,20], "")
 
-                try:
-                    with m:
-                        desc = "block2"
-                        raise Exception("Boo!")
-                except:
-                    desc = "caught"
-                """,
-                [1,3,4,5,7,8,10,11,12,13,15,16,17,18,19,20], "")
-
-        def test_try_except_finally(self):
-            self.check_coverage("""\
-                a = 0; b = 0
-                try:
-                    a = 1
-                except:
-                    a = 99
-                finally:
-                    b = 2
-                assert a == 1 and b == 2
-                """,
-                [1,2,3,4,5,7,8], "4-5")
-            self.check_coverage("""\
-                a = 0; b = 0
-                try:
-                    a = 1
-                    raise Exception("foo")
-                except:
-                    a = 99
-                finally:
-                    b = 2
-                assert a == 99 and b == 2
-                """,
-                [1,2,3,4,5,6,8,9], "")
-            self.check_coverage("""\
-                a = 0; b = 0
-                try:
-                    a = 1
-                    raise Exception("foo")
-                except ImportError:
-                    a = 99
-                except:
-                    a = 123
-                finally:
-                    b = 2
-                assert a == 123 and b == 2
-                """,
-                [1,2,3,4,5,6,7,8,10,11], "6")
-            self.check_coverage("""\
-                a = 0; b = 0
-                try:
-                    a = 1
-                    raise IOError("foo")
-                except ImportError:
-                    a = 99
-                except IOError:
-                    a = 17
-                except:
-                    a = 123
-                finally:
-                    b = 2
-                assert a == 17 and b == 2
-                """,
-                [1,2,3,4,5,6,7,8,9,10,12,13], "6, 9-10")
-            self.check_coverage("""\
-                a = 0; b = 0
-                try:
-                    a = 1
-                except:
-                    a = 99
-                else:
-                    a = 123
-                finally:
-                    b = 2
-                assert a == 123 and b == 2
-                """,
-                [1,2,3,4,5,7,9,10], "4-5")
-            self.check_coverage("""\
-                a = 0; b = 0
-                try:
-                    a = 1
-                    raise Exception("foo")
-                except:
-                    a = 99
-                else:
-                    a = 123
-                finally:
-                    b = 2
-                assert a == 99 and b == 2
-                """,
-                [1,2,3,4,5,6,8,10,11], "8")
+    def test_try_except_finally(self):
+        self.check_coverage("""\
+            a = 0; b = 0
+            try:
+                a = 1
+            except:
+                a = 99
+            finally:
+                b = 2
+            assert a == 1 and b == 2
+            """,
+            [1,2,3,4,5,7,8], "4-5")
+        self.check_coverage("""\
+            a = 0; b = 0
+            try:
+                a = 1
+                raise Exception("foo")
+            except:
+                a = 99
+            finally:
+                b = 2
+            assert a == 99 and b == 2
+            """,
+            [1,2,3,4,5,6,8,9], "")
+        self.check_coverage("""\
+            a = 0; b = 0
+            try:
+                a = 1
+                raise Exception("foo")
+            except ImportError:
+                a = 99
+            except:
+                a = 123
+            finally:
+                b = 2
+            assert a == 123 and b == 2
+            """,
+            [1,2,3,4,5,6,7,8,10,11], "6")
+        self.check_coverage("""\
+            a = 0; b = 0
+            try:
+                a = 1
+                raise IOError("foo")
+            except ImportError:
+                a = 99
+            except IOError:
+                a = 17
+            except:
+                a = 123
+            finally:
+                b = 2
+            assert a == 17 and b == 2
+            """,
+            [1,2,3,4,5,6,7,8,9,10,12,13], "6, 9-10")
+        self.check_coverage("""\
+            a = 0; b = 0
+            try:
+                a = 1
+            except:
+                a = 99
+            else:
+                a = 123
+            finally:
+                b = 2
+            assert a == 123 and b == 2
+            """,
+            [1,2,3,4,5,7,9,10], "4-5")
+        self.check_coverage("""\
+            a = 0; b = 0
+            try:
+                a = 1
+                raise Exception("foo")
+            except:
+                a = 99
+            else:
+                a = 123
+            finally:
+                b = 2
+            assert a == 99 and b == 2
+            """,
+            [1,2,3,4,5,6,8,10,11], "8")
 
 
 class ModuleTest(CoverageTest):

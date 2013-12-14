@@ -4,8 +4,6 @@
 
 import re
 
-from coverage.backward import set                       # pylint: disable=W0622
-
 
 class CodeBuilder(object):
     """Build source code conveniently."""

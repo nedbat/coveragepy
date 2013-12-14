@@ -2,7 +2,7 @@
 
 import sys
 
-if sys.version_info >= (2, 5) and sys.platform == 'win32':
+if sys.platform == 'win32':
     # Windows implementation
     def process_ram():
         """How much RAM is this process using? (Windows)"""
@@ -44,11 +44,8 @@ elif sys.platform == 'linux2':
         """Read the /proc/PID/status file to find memory use."""
         try:
             # get pseudo file /proc/<pid>/status
-            t = open('/proc/%d/status' % os.getpid())
-            try:
+            with open('/proc/%d/status' % os.getpid()) as t:
                 v = t.read()
-            finally:
-                t.close()
         except IOError:
             return 0    # non-Linux?
          # get VmKey line e.g. 'VmRSS:  9999  kB\n ...'

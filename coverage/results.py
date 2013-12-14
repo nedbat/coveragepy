@@ -1,8 +1,9 @@
 """Results of coverage measurement."""
 
+import collections
 import os
 
-from coverage.backward import iitems, set, sorted       # pylint: disable=W0622
+from coverage.backward import iitems
 from coverage.misc import format_lines, join_regex, NoSource
 from coverage.parser import CodeParser
 
@@ -36,9 +37,9 @@ class Analysis(object):
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
             n_partial_branches = sum(
-                [len(v) for k,v in iitems(mba) if k not in self.missing]
+                len(v) for k,v in iitems(mba) if k not in self.missing
                 )
-            n_missing_branches = sum([len(v) for k,v in iitems(mba)])
+            n_missing_branches = sum(len(v) for k,v in iitems(mba))
         else:
             n_branches = n_partial_branches = n_missing_branches = 0
             self.no_branch = set()
@@ -112,18 +113,18 @@ class Analysis(object):
         """Returns a sorted list of the arcs actually executed in the code."""
         executed = self.coverage.data.executed_arcs(self.filename)
         m2fl = self.parser.first_line
-        executed = [(m2fl(l1), m2fl(l2)) for (l1,l2) in executed]
+        executed = ((m2fl(l1), m2fl(l2)) for (l1,l2) in executed)
         return sorted(executed)
 
     def arcs_missing(self):
         """Returns a sorted list of the arcs in the code not executed."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
-        missing = [
+        missing = (
             p for p in possible
                 if p not in executed
                     and p[0] not in self.no_branch
-            ]
+        )
         return sorted(missing)
 
     def arcs_unpredicted(self):
@@ -133,11 +134,11 @@ class Analysis(object):
         # Exclude arcs here which connect a line to itself.  They can occur
         # in executed data in some cases.  This is where they can cause
         # trouble, and here is where it's the least burden to remove them.
-        unpredicted = [
+        unpredicted = (
             e for e in executed
                 if e not in possible
                     and e[0] != e[1]
-            ]
+        )
         return sorted(unpredicted)
 
     def branch_lines(self):
@@ -148,7 +149,7 @@ class Analysis(object):
     def total_branches(self):
         """How many total branches are there?"""
         exit_counts = self.parser.exit_counts()
-        return sum([count for count in exit_counts.values() if count > 1])
+        return sum(count for count in exit_counts.values() if count > 1)
 
     def missing_branch_arcs(self):
         """Return arcs that weren't executed from branch lines.
@@ -158,11 +159,9 @@ class Analysis(object):
         """
         missing = self.arcs_missing()
         branch_lines = set(self.branch_lines())
-        mba = {}
+        mba = collections.defaultdict(list)
         for l1, l2 in missing:
             if l1 in branch_lines:
-                if l1 not in mba:
-                    mba[l1] = []
                 mba[l1].append(l2)
         return mba
 
@@ -210,25 +209,26 @@ class Numbers(object):
         self.n_partial_branches = n_partial_branches
         self.n_missing_branches = n_missing_branches
 
+    @classmethod
     def set_precision(cls, precision):
         """Set the number of decimal places used to report percentages."""
         assert 0 <= precision < 10
         cls._precision = precision
         cls._near0 = 1.0 / 10**precision
         cls._near100 = 100.0 - cls._near0
-    set_precision = classmethod(set_precision)
 
-    def _get_n_executed(self):
+    @property
+    def n_executed(self):
         """Returns the number of executed statements."""
         return self.n_statements - self.n_missing
-    n_executed = property(_get_n_executed)
 
-    def _get_n_executed_branches(self):
+    @property
+    def n_executed_branches(self):
         """Returns the number of executed branches."""
         return self.n_branches - self.n_missing_branches
-    n_executed_branches = property(_get_n_executed_branches)
 
-    def _get_pc_covered(self):
+    @property
+    def pc_covered(self):
         """Returns a single percentage value for coverage."""
         if self.n_statements > 0:
             pc_cov = (100.0 * (self.n_executed + self.n_executed_branches) /
@@ -236,9 +236,9 @@ class Numbers(object):
         else:
             pc_cov = 100.0
         return pc_cov
-    pc_covered = property(_get_pc_covered)
 
-    def _get_pc_covered_str(self):
+    @property
+    def pc_covered_str(self):
         """Returns the percent covered, as a string, without a percent sign.
 
         Note that "0" is only returned when the value is truly zero, and "100"
@@ -254,15 +254,14 @@ class Numbers(object):
         else:
             pc = round(pc, self._precision)
         return "%.*f" % (self._precision, pc)
-    pc_covered_str = property(_get_pc_covered_str)
 
+    @classmethod
     def pc_str_width(cls):
         """How many characters wide can pc_covered_str be?"""
         width = 3   # "100"
         if cls._precision > 0:
             width += 1 + cls._precision
         return width
-    pc_str_width = classmethod(pc_str_width)
 
     def __add__(self, other):
         nums = Numbers()

@@ -78,10 +78,10 @@ class FarmTestCase(object):
             copy run runfunc compare contains doesnt_contain clean skip
             """.split()
         if self.clean_only:
-            glo = dict([(fn, self.noop) for fn in fns])
+            glo = dict((fn, self.noop) for fn in fns)
             glo['clean'] = self.clean
         else:
-            glo = dict([(fn, getattr(self, fn)) for fn in fns])
+            glo = dict((fn, getattr(self, fn)) for fn in fns)
             if self.dont_clean:                 # pragma: not covered
                 glo['clean'] = self.noop
 

@@ -3,7 +3,7 @@
 import atexit, os, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
-from coverage.backward import string_class, iitems, sorted  # pylint: disable=W0622
+from coverage.backward import string_class, iitems
 from coverage.codeunit import code_unit_factory, CodeUnit
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
@@ -98,8 +98,7 @@ class coverage(object):
                 config_file = ".coveragerc"
             try:
                 self.config.from_file(config_file)
-            except ValueError:
-                _, err, _ = sys.exc_info()
+            except ValueError as err:
                 raise CoverageException(
                     "Couldn't read config file %s: %s" % (config_file, err)
                     )
@@ -689,12 +688,11 @@ class coverage(object):
                 outfile = open(self.config.xml_output, "w")
                 file_to_close = outfile
         try:
-            try:
-                reporter = XmlReporter(self, self.config)
-                return reporter.report(morfs, outfile=outfile)
-            except CoverageException:
-                delete_file = True
-                raise
+            reporter = XmlReporter(self, self.config)
+            return reporter.report(morfs, outfile=outfile)
+        except CoverageException:
+            delete_file = True
+            raise
         finally:
             if file_to_close:
                 file_to_close.close()

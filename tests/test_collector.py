@@ -4,7 +4,6 @@ import re
 
 import coverage
 from coverage.backward import StringIO
-from coverage.backward import set                   # pylint: disable=W0622
 
 from tests.coveragetest import CoverageTest
 
@@ -49,7 +48,7 @@ class CollectorTest(CoverageTest):
         # duplicates.
         trace_lines = [
             l for l in debug_out.getvalue().splitlines()
-            if l.startswith("Tracing ") or l.startswith("Not tracing ")
+            if l.startswith(("Tracing ", "Not tracing "))
         ]
         filenames = [re.search(r"'[^']+'", l).group() for l in trace_lines]
         self.assertEqual(len(filenames), len(set(filenames)))

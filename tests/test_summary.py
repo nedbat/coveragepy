@@ -16,7 +16,7 @@ class SummaryTest(CoverageTest):
             import covmod1
             import covmodzip1
             a = 1
-            print ('done')
+            print('done')
             """)
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))

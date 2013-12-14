@@ -177,22 +177,21 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
         self.assertIn("<title>Metrics &amp; stuff!</title>", index)
         self.assertIn("<h1>Metrics &amp; stuff!:", index)
 
-    if sys.version_info[:2] != (3,1):
-        def test_non_ascii_title_set_in_config_file(self):
-            self.create_initial_files()
-            self.make_file(".coveragerc",
-                "[html]\ntitle = «ταБЬℓσ» numbers"
-                )
-            self.run_coverage()
-            index = open("htmlcov/index.html").read()
-            self.assertIn(
-                "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
-                " numbers", index
-                )
-            self.assertIn(
-                "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
-                " numbers", index
-                )
+    def test_non_ascii_title_set_in_config_file(self):
+        self.create_initial_files()
+        self.make_file(".coveragerc",
+            "[html]\ntitle = «ταБЬℓσ» numbers"
+            )
+        self.run_coverage()
+        index = open("htmlcov/index.html").read()
+        self.assertIn(
+            "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
+            " numbers", index
+            )
+        self.assertIn(
+            "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
+            " numbers", index
+            )
 
     def test_title_set_in_args(self):
         self.create_initial_files()

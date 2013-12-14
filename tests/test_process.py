@@ -35,7 +35,7 @@ class ProcessTest(CoverageTest):
             import covmod1
             import covmodzip1
             a = 1
-            print ('done')
+            print('done')
             """)
 
         self.assert_doesnt_exist(".coverage")
@@ -52,7 +52,7 @@ class ProcessTest(CoverageTest):
             else:
                 c = 1
             d = 1
-            print ('done')
+            print('done')
             """)
 
         out = self.run_command("coverage -x -p b_or_c.py b")
@@ -88,7 +88,7 @@ class ProcessTest(CoverageTest):
             else:
                 c = 1
             d = 1
-            print ('done')
+            print('done')
             """)
 
         out = self.run_command("coverage -x -p b_or_c.py b")
@@ -128,7 +128,7 @@ class ProcessTest(CoverageTest):
             else:
                 c = 1
             d = 1
-            print ('done')
+            print('done')
             """)
 
         self.make_file(".coveragerc", """\
@@ -270,7 +270,7 @@ class ProcessTest(CoverageTest):
         if '__pypy__' in sys.builtin_module_names:
             # Pypy has an extra frame in the traceback for some reason
             lines2 = out2.splitlines()
-            out2 = "".join([l+"\n" for l in lines2 if "toplevel" not in l])
+            out2 = "".join(l+"\n" for l in lines2 if "toplevel" not in l)
         self.assertMultiLineEqual(out, out2)
 
         # But also make sure that the output is what we expect.
@@ -324,23 +324,20 @@ class ProcessTest(CoverageTest):
         out_py = self.run_command("python run_me.py")
         self.assertMultiLineEqual(out_cov, out_py)
 
-    if sys.version_info >= (2, 6):
-        # Doesn't work in 2.5, and I don't care! For some reason, python -m
-        # in 2.5 has __builtins__ as a dictionary instead of a module?
-        def test_coverage_run_dashm_is_like_python_dashm(self):
-            # These -m commands assume the coverage tree is on the path.
-            out_cov = self.run_command("coverage run -m tests.try_execfile")
-            out_py = self.run_command("python -m tests.try_execfile")
-            self.assertMultiLineEqual(out_cov, out_py)
+    def test_coverage_run_dashm_is_like_python_dashm(self):
+        # These -m commands assume the coverage tree is on the path.
+        out_cov = self.run_command("coverage run -m tests.try_execfile")
+        out_py = self.run_command("python -m tests.try_execfile")
+        self.assertMultiLineEqual(out_cov, out_py)
 
-        def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
-            # https://bitbucket.org/ned/coveragepy/issue/242
-            tryfile = os.path.join(here, "try_execfile.py")
-            self.make_file("sub/__init__.py", "")
-            self.make_file("sub/run_me.py", open(tryfile).read())
-            out_cov = self.run_command("coverage run -m sub.run_me")
-            out_py = self.run_command("python -m sub.run_me")
-            self.assertMultiLineEqual(out_cov, out_py)
+    def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
+        # https://bitbucket.org/ned/coveragepy/issue/242
+        tryfile = os.path.join(here, "try_execfile.py")
+        self.make_file("sub/__init__.py", "")
+        self.make_file("sub/run_me.py", open(tryfile).read())
+        out_cov = self.run_command("coverage run -m sub.run_me")
+        out_py = self.run_command("python -m sub.run_me")
+        self.assertMultiLineEqual(out_cov, out_py)
 
     if sys.version_info >= (2, 7):
         # Coverage isn't bug-for-bug compatible in the behavior of -m for
@@ -575,16 +572,13 @@ class ProcessStartupTest(CoverageTest):
             g = glob.glob(os.path.join(d, "*.pth"))
             if g:
                 pth_path = os.path.join(d, "subcover.pth")
-                pth = open(pth_path, "w")
-                try:
+                with open(pth_path, "w") as pth:
                     try:
                         pth.write(pth_contents)
                         self.pth_path = pth_path
                         break
                     except (IOError, OSError):          # pragma: not covered
                         pass
-                finally:
-                    pth.close()
         else:                                           # pragma: not covered
             raise Exception("Couldn't find a place for the .pth file")
 

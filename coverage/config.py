@@ -25,7 +25,7 @@ class HandyConfigParser(configparser.RawConfigParser):
         def dollar_replace(m):
             """Called for each $replacement."""
             # Only one of the groups will have matched, just get its text.
-            word = [w for w in m.groups() if w is not None][0]
+            word = next(w for w in m.groups() if w is not None)
             if word == "$":
                 return "$"
             else:

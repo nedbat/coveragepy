@@ -1,11 +1,10 @@
 """Base test case class for coverage testing."""
 
 import glob, imp, os, random, shlex, shutil, sys, tempfile, textwrap
-import atexit
+import atexit, collections
 
 import coverage
-from coverage.backward import sorted, StringIO      # pylint: disable=W0622
-from coverage.backward import to_bytes
+from coverage.backward import StringIO, to_bytes
 from coverage.control import _TEST_NAME_FILE
 from tests.backtest import run_command
 from tests.backunittest import TestCase
@@ -191,11 +190,8 @@ class CoverageTest(TestCase):
             os.makedirs(dirs)
 
         # Create the file.
-        f = open(filename, 'wb')
-        try:
+        with open(filename, 'wb') as f:
             f.write(to_bytes(text))
-        finally:
-            f.close()
 
         return filename
 
@@ -224,17 +220,16 @@ class CoverageTest(TestCase):
 
         """
         modfile = modname + '.py'
-        f = open(modfile, 'r')
 
         for suff in imp.get_suffixes():
             if suff[0] == '.py':
                 break
-        try:
+
+        with open(modfile, 'r') as f:
             # pylint: disable=W0631
             # (Using possibly undefined loop variable 'suff')
             mod = imp.load_module(modname, f, modfile, suff)
-        finally:
-            f.close()
+
         return mod
 
     def start_import_stop(self, cov, modname):
@@ -267,10 +262,10 @@ class CoverageTest(TestCase):
 
     # Map chars to numbers for arcz_to_arcs
     _arcz_map = {'.': -1}
-    _arcz_map.update(dict([(c, ord(c)-ord('0')) for c in '123456789']))
+    _arcz_map.update(dict((c, ord(c)-ord('0')) for c in '123456789'))
     _arcz_map.update(dict(
-        [(c, 10+ord(c)-ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
-        ))
+        (c, 10+ord(c)-ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    ))
 
     def arcz_to_arcs(self, arcz):
         """Convert a compact textual representation of arcs to a list of pairs.
@@ -306,8 +301,8 @@ class CoverageTest(TestCase):
     def assertEqualArcs(self, a1, a2, msg=None):
         """Assert that the arc lists `a1` and `a2` are equal."""
         # Make them into multi-line strings so we can see what's going wrong.
-        s1 = "\n".join([repr(a) for a in a1]) + "\n"
-        s2 = "\n".join([repr(a) for a in a2]) + "\n"
+        s1 = "\n".join(repr(a) for a in a1) + "\n"
+        s2 = "\n".join(repr(a) for a in a2) + "\n"
         self.assertMultiLineEqual(s1, s2, msg)
 
     def check_coverage(self, text, lines=None, missing="", report="",
@@ -508,8 +503,9 @@ class CoverageTest(TestCase):
             self.test_method_made_any_files = False
 
     # Map from class to info about how it ran.
-    class_behaviors = {}
+    class_behaviors = collections.defaultdict(ClassBehavior)
 
+    @classmethod
     def report_on_class_behavior(cls):
         """Called at process exit to report on class behavior."""
         for test_class, behavior in cls.class_behaviors.items():
@@ -534,14 +530,10 @@ class CoverageTest(TestCase):
                         where,
                     )
                 )
-    report_on_class_behavior = classmethod(report_on_class_behavior)
 
     def class_behavior(self):
         """Get the ClassBehavior instance for this test."""
-        cls = self.__class__
-        if cls not in self.class_behaviors:
-            self.class_behaviors[cls] = self.ClassBehavior()
-        return self.class_behaviors[cls]
+        return self.class_behaviors[self.__class__]
 
 
 # When the process ends, find out about bad classes.

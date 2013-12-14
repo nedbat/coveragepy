@@ -2,7 +2,6 @@
 
 import os, re
 
-from coverage.backward import sorted                    # pylint: disable=W0622
 from coverage.report import Reporter
 
 class AnnotateReporter(Reporter):

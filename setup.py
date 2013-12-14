@@ -6,7 +6,7 @@ Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been executed.
 
-Coverage.py runs on Pythons 2.3 through 3.3, and PyPy 1.9.
+Coverage.py runs on Pythons 2.6, 2.7, 3.2, 3.3, and PyPy 1.9.
 
 Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
 tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_, with a
@@ -54,11 +54,8 @@ doc = __doc__                   # __doc__ will be overwritten by version.py.
 __version__ = __url__ = ""      # Keep pylint happy.
 
 cov_ver_py = os.path.join(os.path.split(__file__)[0], "coverage/version.py")
-version_file = open(cov_ver_py)
-try:
+with open(cov_ver_py) as version_file:
     exec(compile(version_file.read(), cov_ver_py, 'exec'))
-finally:
-    version_file.close()
 
 doclines = (doc % __url__).splitlines()
 classifier_list = classifiers.splitlines()
@@ -118,8 +115,8 @@ ext_errors = (
     errors.DistutilsExecError,
     errors.DistutilsPlatformError,
 )
-if sys.platform == 'win32' and sys.version_info > (2, 6):
-    # 2.6's distutils.msvc9compiler can raise an IOError when failing to
+if sys.platform == 'win32':
+    # distutils.msvc9compiler can raise an IOError when failing to
     # find the compiler
     ext_errors += (IOError,)
 
@@ -147,9 +144,9 @@ class ve_build_ext(build_ext):
             build_ext.build_extension(self, ext)
         except ext_errors:
             raise BuildFailed()
-        except ValueError:
+        except ValueError as err:
             # this can happen on Windows 64 bit, see Python issue 7511
-            if "'path'" in str(sys.exc_info()[1]): # works with both py 2/3
+            if "'path'" in str(err): # works with both py 2/3
                 raise BuildFailed()
             raise
 
@@ -189,9 +186,8 @@ def main():
     # extension.  Try it with, and if it fails, try it without.
     try:
         setup(**setup_args)
-    except BuildFailed:
+    except BuildFailed as exc:
         msg = "Couldn't install with extension module, trying without it..."
-        exc = sys.exc_info()[1]
         exc_msg = "%s: %s" % (exc.__class__.__name__, exc.cause)
         print("**\n** %s\n** %s\n**" % (msg, exc_msg))
 

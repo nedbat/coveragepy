@@ -2,7 +2,7 @@
 
 import os
 
-from coverage.backward import iitems, pickle, sorted    # pylint: disable=W0622
+from coverage.backward import iitems, pickle
 from coverage.files import PathAliases
 from coverage.misc import file_be_gone
 
@@ -101,13 +101,13 @@ class CoverageData(object):
     def line_data(self):
         """Return the map from filenames to lists of line numbers executed."""
         return dict(
-            [(f, sorted(lmap.keys())) for f, lmap in iitems(self.lines)]
+            (f, sorted(lmap.keys())) for f, lmap in iitems(self.lines)
             )
 
     def arc_data(self):
         """Return the map from filenames to lists of line number pairs."""
         return dict(
-            [(f, sorted(amap.keys())) for f, amap in iitems(self.arcs)]
+            (f, sorted(amap.keys())) for f, amap in iitems(self.arcs)
             )
 
     def write_file(self, filename):
@@ -128,11 +128,8 @@ class CoverageData(object):
             self.debug.write("Writing data to %r" % (filename,))
 
         # Write the pickle to the file.
-        fdata = open(filename, 'wb')
-        try:
+        with open(filename, 'wb') as fdata:
             pickle.dump(data, fdata, 2)
-        finally:
-            fdata.close()
 
     def read_file(self, filename):
         """Read the coverage data from `filename`."""
@@ -142,11 +139,8 @@ class CoverageData(object):
         """Return the raw pickled data from `filename`."""
         if self.debug and self.debug.should('dataio'):
             self.debug.write("Reading data from %r" % (filename,))
-        fdata = open(filename, 'rb')
-        try:
+        with open(filename, 'rb') as fdata:
             data = pickle.load(fdata)
-        finally:
-            fdata.close()
         return data
 
     def _read_file(self, filename):
