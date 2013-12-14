@@ -37,7 +37,7 @@ class CodeBuilder(object):
         self.indent_amount -= 4
 
     def __str__(self):
-        return "".join([str(c) for c in self.code])
+        return "".join(str(c) for c in self.code)
 
     def get_function(self, fn_name):
         """Compile the code, and return the function `fn_name`."""
@@ -175,8 +175,8 @@ class Templite(object):
         elif "." in expr:
             dots = expr.split(".")
             code = self.expr_code(dots[0])
-            args = [repr(d) for d in dots[1:]]
-            code = "dot(%s, %s)" % (code, ", ".join(args))
+            args = ", ".join(repr(d) for d in dots[1:])
+            code = "dot(%s, %s)" % (code, args)
         else:
             self.all_vars.add(expr)
             code = "c_%s" % expr
