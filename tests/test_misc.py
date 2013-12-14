@@ -72,7 +72,7 @@ class SetupPyTest(CoverageTest):
 
         classifiers = setup_args['classifiers']
         self.assertGreater(len(classifiers), 7)
-        self.assertTrue(classifiers[-1].startswith("Development Status ::"))
+        self.assert_starts_with(classifiers[-1], "Development Status ::")
 
         long_description = setup_args['long_description'].splitlines()
         self.assertGreater(len(long_description), 7)

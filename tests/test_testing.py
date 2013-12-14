@@ -166,6 +166,17 @@ class CoverageTestTest(CoverageTest):
             )
         self.assertRaises(AssertionError, self.assert_exists, "shadow.txt")
 
+    def test_assert_startwith(self):
+        self.assert_starts_with("xyzzy", "xy")
+        self.assert_starts_with("xyz\nabc", "xy")
+        self.assert_starts_with("xyzzy", ("x", "z"))
+        self.assertRaises(
+            AssertionError, self.assert_starts_with, "xyz", "a"
+        )
+        self.assertRaises(
+            AssertionError, self.assert_starts_with, "xyz\nabc", "a"
+        )
+
     def test_sub_python_is_this_python(self):
         # Try it with a python command.
         os.environ['COV_FOOBAR'] = 'XYZZY'

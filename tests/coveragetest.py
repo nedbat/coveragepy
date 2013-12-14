@@ -422,6 +422,11 @@ class CoverageTest(TestCase):
         msg = "File %r shouldn't exist" % fname
         self.assert_(not os.path.exists(fname), msg)
 
+    def assert_starts_with(self, s, prefix, msg=None):
+        """Assert that `s` starts with `prefix`."""
+        if not s.startswith(prefix):
+            self.fail(msg or ("%r doesn't start with %r" % (s, prefix)))
+
     def command_line(self, args, ret=OK, _covpkg=None):
         """Run `args` through the command line.
 
