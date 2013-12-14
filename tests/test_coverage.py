@@ -377,7 +377,7 @@ class SimpleStatementTest(CoverageTest):
             a,b,c = gen()
             assert a == 1 and b == 9 and c == (1,2)
             """,
-            [1,2,3,4,7,9,10], "")
+            [1,2,3,6,8,9], "")
 
     def test_break(self):
         self.check_coverage("""\
@@ -1601,7 +1601,7 @@ class Py25Test(CoverageTest):
             except:
                 desc = "caught"
             """,
-            [1,3,4,5,7,8,10,11,12,13,15,16,17,18,19,20], "")
+            [1,2,3,5,6,8,9,10,11,13,14,15,16,17,18], "")
 
     def test_try_except_finally(self):
         self.check_coverage("""\
