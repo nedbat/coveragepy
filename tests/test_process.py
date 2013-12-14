@@ -527,6 +527,30 @@ class AliasedCommandTest(CoverageTest):
         self.assertIn("Code coverage for Python", out)
 
 
+class PydocTest(CoverageTest):
+    """Test that pydoc can get our information."""
+
+    run_in_temp_dir = False
+
+    def assert_pydoc_ok(self, name, thing):
+        """Check that pydoc of `name` finds the docstring from `thing`."""
+        # Run pydoc.
+        out = self.run_command("python -m pydoc " + name)
+        # It should say "Help on..", and not have a traceback
+        self.assert_starts_with(out, "Help on ")
+        self.assertNotIn("Traceback", out)
+
+        # All of the lines in the docstring should be there somewhere.
+        for line in thing.__doc__.splitlines():
+            self.assertIn(line.strip(), out)
+
+    def test_pydoc_coverage(self):
+        self.assert_pydoc_ok("coverage", coverage)
+
+    def test_pydoc_coverage_coverage(self):
+        self.assert_pydoc_ok("coverage.coverage", coverage.coverage)
+
+
 class FailUnderTest(CoverageTest):
     """Tests of the --fail-under switch."""
 
