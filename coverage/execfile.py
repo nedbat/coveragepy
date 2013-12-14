@@ -2,7 +2,7 @@
 
 import imp, marshal, os, sys
 
-from coverage.backward import exec_code_object, open_source
+from coverage.backward import open_source
 from coverage.misc import ExceptionDuringRun, NoCode, NoSource
 
 
@@ -99,7 +99,7 @@ def run_python_file(filename, args, package=None):
 
         # Execute the code object.
         try:
-            exec_code_object(code, main_mod.__dict__)
+            exec(code, main_mod.__dict__)
         except SystemExit:
             # The user called sys.exit().  Just pass it along to the upper
             # layers, where it will be handled.
@@ -107,11 +107,11 @@ def run_python_file(filename, args, package=None):
         except:
             # Something went wrong while executing the user code.
             # Get the exc_info, and pack them into an exception that we can
-            # throw up to the outer loop.  We peel two layers off the traceback
+            # throw up to the outer loop.  We peel one layer off the traceback
             # so that the coverage.py code doesn't appear in the final printed
             # traceback.
             typ, err, tb = sys.exc_info()
-            raise ExceptionDuringRun(typ, err, tb.tb_next.tb_next)
+            raise ExceptionDuringRun(typ, err, tb.tb_next)
     finally:
         # Restore the old __main__
         sys.modules['__main__'] = old_main_mod
