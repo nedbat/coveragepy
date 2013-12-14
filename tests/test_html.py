@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests that HTML generation is awesome."""
 
-import os.path, re, sys
+import os.path, re
 import coverage
 import coverage.html
 from coverage.misc import CoverageException, NotPython, NoSource
@@ -248,10 +248,7 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         # Jinja2 sets __file__ to be a non-Python file, and then execs code.
         # If that file contains non-Python code, a TokenError shouldn't
         # have been raised when writing the HTML report.
-        if sys.version_info < (3, 0):
-            source = "exec compile('','','exec') in {'__file__': 'liar.html'}"
-        else:
-            source = "exec(compile('','','exec'), {'__file__': 'liar.html'})"
+        source = "exec(compile('','','exec'), {'__file__': 'liar.html'})"
         self.make_file("liar.py", source)
         self.make_file("liar.html", "{# Whoops, not python code #}")
         cov = coverage.coverage()
@@ -263,10 +260,7 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         # Jinja2 sets __file__ to be a non-Python file, and then execs code.
         # If that file contains untokenizable code, we shouldn't get an
         # exception.
-        if sys.version_info < (3, 0):
-            source = "exec compile('','','exec') in {'__file__': 'liar.html'}"
-        else:
-            source = "exec(compile('','','exec'), {'__file__': 'liar.html'})"
+        source = "exec(compile('','','exec'), {'__file__': 'liar.html'})"
         self.make_file("liar.py", source)
         # Tokenize will raise an IndentationError if it can't dedent.
         self.make_file("liar.html", "0\n  2\n 1\n")
