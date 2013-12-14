@@ -367,7 +367,6 @@ class SimpleStatementTest(CoverageTest):
 
     def test_yield(self):
         self.check_coverage("""\
-            from __future__ import generators
             def gen():
                 yield 1
                 yield (2+
@@ -1575,7 +1574,7 @@ class Py24Test(CoverageTest):
             assert boosted2(10) == 200
             """,
             ([1,2,3,4,5,7,8,9,10,11,12,14,15,17,19,21,22,24,26],
-                [1,2,3,4,5,7,8,9,10,11,12,14,   17,19,21,   24,26]), "")
+             [1,2,3,4,5,7,8,9,10,11,12,14,   17,19,21,   24,26]), "")
 
 
 class Py25Test(CoverageTest):
@@ -1583,8 +1582,6 @@ class Py25Test(CoverageTest):
 
     def test_with_statement(self):
         self.check_coverage("""\
-            from __future__ import with_statement
-
             class Managed:
                 def __enter__(self):
                     desc = "enter"
