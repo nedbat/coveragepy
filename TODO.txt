@@ -23,6 +23,7 @@ Key:
     + try/except/finally
     - with assertRaises
     + exec statement can look like a function in py2 (since when?)
+    - runpy ?
 
 + Remove code only run on <2.6
 - Change data file to json
