@@ -68,17 +68,18 @@ class RecursionTest(CoverageTest):
 
     def test_long_recursion(self):
         # We can't finish a very deep recursion, but we don't crash.
-        self.assertRaises(RuntimeError, self.check_coverage,
-            """\
-            def recur(n):
-                if n == 0:
-                    return 0
-                else:
-                    return recur(n-1)+1
+        with self.assertRaises(RuntimeError):
+            self.check_coverage("""\
+                def recur(n):
+                    if n == 0:
+                        return 0
+                    else:
+                        return recur(n-1)+1
 
-            recur(100000)  # This is definitely too many frames.
-            """,
-            [1,2,3,5,7], "")
+                recur(100000)  # This is definitely too many frames.
+                """,
+                [1,2,3,5,7], ""
+                )
 
     def test_long_recursion_recovery(self):
         # Test the core of bug 93: http://bitbucket.org/ned/coveragepy/issue/93

@@ -123,18 +123,13 @@ class PathAliasesTest(CoverageTest):
 
     def test_cant_have_wildcard_at_end(self):
         aliases = PathAliases()
-        self.assertRaisesRegexp(
-            CoverageException, "Pattern must not end with wildcards.",
-            aliases.add, "/ned/home/*", "fooey"
-            )
-        self.assertRaisesRegexp(
-            CoverageException, "Pattern must not end with wildcards.",
-            aliases.add, "/ned/home/*/", "fooey"
-            )
-        self.assertRaisesRegexp(
-            CoverageException, "Pattern must not end with wildcards.",
-            aliases.add, "/ned/home/*/*/", "fooey"
-            )
+        msg = "Pattern must not end with wildcards."
+        with self.assertRaisesRegexp(CoverageException, msg):
+            aliases.add("/ned/home/*", "fooey")
+        with self.assertRaisesRegexp(CoverageException, msg):
+            aliases.add("/ned/home/*/", "fooey")
+        with self.assertRaisesRegexp(CoverageException, msg):
+            aliases.add("/ned/home/*/*/", "fooey")
 
     def test_no_accidental_munging(self):
         aliases = PathAliases()

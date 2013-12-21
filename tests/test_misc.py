@@ -45,7 +45,8 @@ class RemoveFileTest(CoverageTest):
     def test_actual_errors(self):
         # Errors can still happen.
         # ". is a directory" on Unix, or "Access denied" on Windows
-        self.assertRaises(OSError, file_be_gone, ".")
+        with self.assertRaises(OSError):
+            file_be_gone(".")
 
 
 class SetupPyTest(CoverageTest):

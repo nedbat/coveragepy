@@ -46,27 +46,25 @@ class TestCoverageTest(CoverageTest):
 
     def test_failed_coverage(self):
         # If the lines are wrong, the message shows right and wrong.
-        self.assertRaisesRegexp(AssertionError,
-            r"\[1, 2] != \[1]",
-            self.check_coverage, """\
+        with self.assertRaisesRegexp(AssertionError, r"\[1, 2] != \[1]"):
+            self.check_coverage("""\
                 a = 1
                 b = 2
                 """,
                 [1]
             )
         # If the list of lines possibilities is wrong, the msg shows right.
-        self.assertRaisesRegexp(AssertionError,
-            r"None of the lines choices matched \[1, 2]",
-            self.check_coverage, """\
+        msg = r"None of the lines choices matched \[1, 2]"
+        with self.assertRaisesRegexp(AssertionError, msg):
+            self.check_coverage("""\
                 a = 1
                 b = 2
                 """,
                 ([1], [2])
             )
         # If the missing lines are wrong, the message shows right and wrong.
-        self.assertRaisesRegexp(AssertionError,
-            r"'3' != '37'",
-            self.check_coverage, """\
+        with self.assertRaisesRegexp(AssertionError, r"'3' != '37'"):
+            self.check_coverage("""\
                 a = 1
                 if a == 2:
                     a = 3
@@ -75,9 +73,9 @@ class TestCoverageTest(CoverageTest):
                 missing="37",
             )
         # If the missing lines possibilities are wrong, the msg shows right.
-        self.assertRaisesRegexp(AssertionError,
-            r"None of the missing choices matched '3'",
-            self.check_coverage, """\
+        msg = r"None of the missing choices matched '3'"
+        with self.assertRaisesRegexp(AssertionError, msg):
+            self.check_coverage("""\
                 a = 1
                 if a == 2:
                     a = 3
@@ -1673,10 +1671,8 @@ class ReportingTest(CoverageTest):
 
     def test_no_data_to_report_on_annotate(self):
         # Reporting with no data produces a nice message and no output dir.
-        self.assertRaisesRegexp(
-            CoverageException, "No data to report.",
-            self.command_line, "annotate -d ann"
-            )
+        with self.assertRaisesRegexp(CoverageException, "No data to report."):
+            self.command_line("annotate -d ann")
         self.assert_doesnt_exist("ann")
 
         # CoverageTest will yell at us for using a temp directory with no files
@@ -1685,16 +1681,12 @@ class ReportingTest(CoverageTest):
 
     def test_no_data_to_report_on_html(self):
         # Reporting with no data produces a nice message and no output dir.
-        self.assertRaisesRegexp(
-            CoverageException, "No data to report.",
-            self.command_line, "html -d htmlcov"
-            )
+        with self.assertRaisesRegexp(CoverageException, "No data to report."):
+            self.command_line("html -d htmlcov")
         self.assert_doesnt_exist("htmlcov")
 
     def test_no_data_to_report_on_xml(self):
         # Reporting with no data produces a nice message.
-        self.assertRaisesRegexp(
-            CoverageException, "No data to report.",
-            self.command_line, "xml"
-            )
+        with self.assertRaisesRegexp(CoverageException, "No data to report."):
+            self.command_line("xml")
         self.assert_doesnt_exist("coverage.xml")

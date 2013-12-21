@@ -21,7 +21,7 @@ Key:
     + "with" statements
     - .format() ?
     + try/except/finally
-    - with assertRaises
+    + with assertRaises
     + exec statement can look like a function in py2 (since when?)
     - runpy ?
 

@@ -72,7 +72,8 @@ class RunFileTest(CoverageTest):
         self.assertEqual(self.stdout(), "a is 1\n")
 
     def test_no_such_file(self):
-        self.assertRaises(NoSource, run_python_file, "xyzzy.py", [])
+        with self.assertRaises(NoSource):
+            run_python_file("xyzzy.py", [])
 
 
 class RunPycFileTest(CoverageTest):
@@ -117,16 +118,12 @@ class RunPycFileTest(CoverageTest):
         fpyc.write(binary_bytes([0x2a, 0xeb, 0x0d, 0x0a]))
         fpyc.close()
 
-        self.assertRaisesRegexp(
-            NoCode, "Bad magic number in .pyc file",
-            run_python_file, pycfile, [pycfile]
-        )
+        with self.assertRaisesRegexp(NoCode, "Bad magic number in .pyc file"):
+            run_python_file(pycfile, [pycfile])
 
     def test_no_such_pyc_file(self):
-        self.assertRaisesRegexp(
-            NoCode, "No file to run: 'xyzzy.pyc'",
-            run_python_file, "xyzzy.pyc", []
-        )
+        with self.assertRaisesRegexp(NoCode, "No file to run: 'xyzzy.pyc'"):
+            run_python_file("xyzzy.pyc", [])
 
 
 class RunModuleTest(CoverageTest):
@@ -160,9 +157,13 @@ class RunModuleTest(CoverageTest):
         self.assertEqual(self.stdout(), "pkg1.sub.__main__: passed hello\n")
 
     def test_no_such_module(self):
-        self.assertRaises(NoSource, run_python_module, "i_dont_exist", [])
-        self.assertRaises(NoSource, run_python_module, "i.dont_exist", [])
-        self.assertRaises(NoSource, run_python_module, "i.dont.exist", [])
+        with self.assertRaises(NoSource):
+            run_python_module("i_dont_exist", [])
+        with self.assertRaises(NoSource):
+            run_python_module("i.dont_exist", [])
+        with self.assertRaises(NoSource):
+            run_python_module("i.dont.exist", [])
 
     def test_no_main(self):
-        self.assertRaises(NoSource, run_python_module, "pkg2", ["pkg2", "hi"])
+        with self.assertRaises(NoSource):
+            run_python_module("pkg2", ["pkg2", "hi"])

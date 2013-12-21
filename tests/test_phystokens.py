@@ -118,4 +118,5 @@ if sys.version_info < (3, 0):
 
             # But it has to be the only authority.
             source = "\xEF\xBB\xBF# coding: cp850\n"
-            self.assertRaises(SyntaxError, source_encoding, source)
+            with self.assertRaises(SyntaxError):
+                source_encoding(source)

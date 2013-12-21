@@ -126,7 +126,8 @@ class CmdLineTestTest(CmdLineTest):
     def test_assert_same_method_calls(self):
         # All the other tests here use self.cmd_executes_same in successful
         # ways, so here we just check that it fails.
-        self.assertRaises(AssertionError, self.cmd_executes_same, "-e", "-c")
+        with self.assertRaises(AssertionError):
+            self.cmd_executes_same("-e", "-c")
 
 
 class ClassicCmdLineTest(CmdLineTest):
@@ -752,10 +753,8 @@ class CmdMainTest(CoverageTest):
         self.assertEqual(err[-2], 'Exception: oh noes!')
 
     def test_internalraise(self):
-        self.assertRaisesRegexp(ValueError,
-            "coverage is broken",
-            coverage.cmdline.main, ['internalraise']
-            )
+        with self.assertRaisesRegexp(ValueError, "coverage is broken"):
+            coverage.cmdline.main(['internalraise'])
 
     def test_exit(self):
         ret = coverage.cmdline.main(['exit'])

@@ -216,11 +216,9 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         cov = coverage.coverage()
         self.start_import_stop(cov, "innocuous")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
-        self.assertRaisesRegexp(
-            NotPython,
-            "Couldn't parse '.*innocuous.py' as Python source: '.*' at line 1",
-            cov.html_report
-            )
+        msg = "Couldn't parse '.*innocuous.py' as Python source: .* at line 1"
+        with self.assertRaisesRegexp(NotPython, msg):
+            cov.html_report()
 
     def test_dotpy_not_python_ignored(self):
         self.make_file("innocuous.py", "a = 2")
@@ -284,11 +282,9 @@ class HtmlTest(CoverageTest):
 
         missing_file = os.path.join(self.temp_dir, "sub", "another.py")
         missing_file = os.path.realpath(missing_file)
-        self.assertRaisesRegexp(
-            NoSource,
-            "(?i)No source for code: '%s'" % re.escape(missing_file),
-            cov.html_report
-            )
+        msg = "(?i)No source for code: '%s'" % re.escape(missing_file)
+        with self.assertRaisesRegexp(NoSource, msg):
+            cov.html_report()
 
 class HtmlStaticFileTest(CoverageTest):
     """Tests of the static file copying for the HTML report."""
@@ -343,7 +339,6 @@ class HtmlStaticFileTest(CoverageTest):
         self.make_file("main.py", "print(17)")
         cov = coverage.coverage()
         self.start_import_stop(cov, "main")
-        self.assertRaisesRegexp(
-            CoverageException, "Couldn't find static file '.*'",
-            cov.html_report
-            )
+        msg = "Couldn't find static file '.*'"
+        with self.assertRaisesRegexp(CoverageException, msg):
+            cov.html_report()

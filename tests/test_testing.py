@@ -15,12 +15,10 @@ class TestingTest(TestCase):
     def test_assert_same_elements(self):
         self.assertSameElements(set(), set())
         self.assertSameElements(set([1,2,3]), set([3,1,2]))
-        self.assertRaises(AssertionError, self.assertSameElements,
-            set([1,2,3]), set()
-            )
-        self.assertRaises(AssertionError, self.assertSameElements,
-            set([1,2,3]), set([4,5,6])
-            )
+        with self.assertRaises(AssertionError):
+            self.assertSameElements(set([1,2,3]), set())
+        with self.assertRaises(AssertionError):
+            self.assertSameElements(set([1,2,3]), set([4,5,6]))
 
 
 class CoverageTestTest(CoverageTest):
@@ -63,21 +61,19 @@ class CoverageTestTest(CoverageTest):
         self.make_file("whoville.txt", "We are here!")
         self.assert_exists("whoville.txt")
         self.assert_doesnt_exist("shadow.txt")
-        self.assertRaises(
-            AssertionError, self.assert_doesnt_exist, "whoville.txt"
-            )
-        self.assertRaises(AssertionError, self.assert_exists, "shadow.txt")
+        with self.assertRaises(AssertionError):
+            self.assert_doesnt_exist("whoville.txt")
+        with self.assertRaises(AssertionError):
+            self.assert_exists("shadow.txt")
 
     def test_assert_startwith(self):
         self.assert_starts_with("xyzzy", "xy")
         self.assert_starts_with("xyz\nabc", "xy")
         self.assert_starts_with("xyzzy", ("x", "z"))
-        self.assertRaises(
-            AssertionError, self.assert_starts_with, "xyz", "a"
-        )
-        self.assertRaises(
-            AssertionError, self.assert_starts_with, "xyz\nabc", "a"
-        )
+        with self.assertRaises(AssertionError):
+            self.assert_starts_with("xyz", "a")
+        with self.assertRaises(AssertionError):
+            self.assert_starts_with("xyz\nabc", "a")
 
     def test_sub_python_is_this_python(self):
         # Try it with a python command.

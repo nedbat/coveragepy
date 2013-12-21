@@ -94,7 +94,8 @@ class ConfigTest(CoverageTest):
             [run]
             timid = maybe?
             """)
-        self.assertRaises(CoverageException, coverage.coverage)
+        with self.assertRaises(CoverageException):
+            coverage.coverage()
 
     def test_environment_vars_in_config(self):
         # Config files can have $envvars in them.

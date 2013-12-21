@@ -41,11 +41,8 @@ class TempliteTest(CoverageTest):
 
     def test_undefined_variables(self):
         # Using undefined names is an error.
-        self.assertRaises(
-            Exception,
-            self.try_render,
-            "Hi, {{name}}!", {}, "xyz"
-        )
+        with self.assertRaises(Exception):
+            self.try_render("Hi, {{name}}!", {}, "xyz")
 
     def test_pipes(self):
         # Variables can be filtered with pipes.
@@ -223,25 +220,20 @@ class TempliteTest(CoverageTest):
     def test_exception_during_evaluation(self):
         # TypeError: Couldn't evaluate {{ foo.bar.baz }}:
         # 'NoneType' object is unsubscriptable
-        self.assertRaises(TypeError, self.try_render,
-            "Hey {{foo.bar.baz}} there", {'foo': None}, "Hey ??? there"
+        with self.assertRaises(TypeError):
+            self.try_render(
+                "Hey {{foo.bar.baz}} there", {'foo': None}, "Hey ??? there"
             )
 
     def test_bogus_tag_syntax(self):
-        self.assertRaisesRegexp(
-            SyntaxError, "Don't understand tag: 'bogus'",
-            self.try_render,
-            "Huh: {% bogus %}!!{% endbogus %}??", {}, ""
-            )
+        msg = "Don't understand tag: 'bogus'"
+        with self.assertRaisesRegexp(SyntaxError, msg):
+            self.try_render("Huh: {% bogus %}!!{% endbogus %}??", {}, "")
 
     def test_bad_nesting(self):
-        self.assertRaisesRegexp(
-            SyntaxError, "Unmatched action tag: 'if'",
-            self.try_render,
-            "{% if x %}X", {}, ""
-            )
-        self.assertRaisesRegexp(
-            SyntaxError, "Mismatched end tag: 'for'",
-            self.try_render,
-            "{% if x %}X{% endfor %}", {}, ""
-            )
+        msg = "Unmatched action tag: 'if'"
+        with self.assertRaisesRegexp(SyntaxError, msg):
+            self.try_render("{% if x %}X", {}, "")
+        msg = "Mismatched end tag: 'for'"
+        with self.assertRaisesRegexp(SyntaxError, msg):
+            self.try_render("{% if x %}X{% endfor %}", {}, "")
