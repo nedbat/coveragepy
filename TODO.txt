@@ -22,6 +22,7 @@ Key:
     - .format() ?
     + try/except/finally
     + with assertRaises
+    - addCleaup instead of tearDown
     + exec statement can look like a function in py2 (since when?)
     - runpy ?
 

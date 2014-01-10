@@ -1,6 +1,6 @@
 """Raw data collector for Coverage."""
 
-import os, sys, threading
+import collections, os, sys, threading
 
 try:
     # Use the C extension code when we can, for speed.
@@ -48,11 +48,14 @@ class PyTracer(object):
         self.cur_file_data = None
         self.last_line = 0
         self.data_stack = []
+        self.data_stacks = collections.defaultdict(list)
         self.last_exc_back = None
         self.last_exc_firstlineno = 0
         self.arcs = False
         self.thread = None
         self.stopped = False
+        self.coroutine_id_func = None
+        self.last_coroutine = None
 
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
@@ -71,12 +74,17 @@ class PyTracer(object):
                 if self.arcs and self.cur_file_data:
                     pair = (self.last_line, -self.last_exc_firstlineno)
                     self.cur_file_data[pair] = None
+                if self.coroutine_id_func:
+                    self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.cur_file_data, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
 
         if event == 'call':
             # Entering a new function context.  Decide if we should trace
             # in this file.
+            if self.coroutine_id_func:
+                self.data_stack = self.data_stacks[self.coroutine_id_func()]
+                self.last_coroutine = self.coroutine_id_func()
             self.data_stack.append((self.cur_file_data, self.last_line))
             filename = frame.f_code.co_filename
             if filename not in self.should_trace_cache:
@@ -97,6 +105,8 @@ class PyTracer(object):
             self.last_line = -1
         elif event == 'line':
             # Record an executed line.
+            #if self.coroutine_id_func:
+            #    assert self.last_coroutine == self.coroutine_id_func()
             if self.cur_file_data is not None:
                 if self.arcs:
                     #print("lin", self.last_line, frame.f_lineno)
@@ -110,6 +120,9 @@ class PyTracer(object):
                 first = frame.f_code.co_firstlineno
                 self.cur_file_data[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
+            if self.coroutine_id_func:
+                self.data_stack = self.data_stacks[self.coroutine_id_func()]
+                self.last_coroutine = self.coroutine_id_func()
             self.cur_file_data, self.last_line = self.data_stack.pop()
             #print("returned, stack is %d deep" % (len(self.data_stack)))
         elif event == 'exception':
@@ -170,7 +183,7 @@ class Collector(object):
     # the top, and resumed when they become the top again.
     _collectors = []
 
-    def __init__(self, should_trace, timid, branch, warn):
+    def __init__(self, should_trace, timid, branch, warn, coroutine):
         """Create a collector.
 
         `should_trace` is a function, taking a filename, and returning a
@@ -193,6 +206,17 @@ class Collector(object):
         self.should_trace = should_trace
         self.warn = warn
         self.branch = branch
+        if coroutine == "greenlet":
+            import greenlet
+            self.coroutine_id_func = greenlet.getcurrent
+        elif coroutine == "eventlet":
+            import eventlet.greenthread
+            self.coroutine_id_func = eventlet.greenthread.getcurrent
+        elif coroutine == "gevent":
+            import gevent
+            self.coroutine_id_func = gevent.getcurrent
+        else:
+            self.coroutine_id_func = None
         self.reset()
 
         if timid:
@@ -232,6 +256,8 @@ class Collector(object):
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
         tracer.warn = self.warn
+        if hasattr(tracer, 'coroutine_id_func'):
+            tracer.coroutine_id_func = self.coroutine_id_func
         fn = tracer.start()
         self.tracers.append(tracer)
         return fn

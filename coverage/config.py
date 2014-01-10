@@ -106,6 +106,7 @@ class CoverageConfig(object):
 
         # Defaults for [run]
         self.branch = False
+        self.coroutine = None
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.parallel = False
@@ -177,6 +178,7 @@ class CoverageConfig(object):
     CONFIG_FILE_OPTIONS = [
         # [run]
         ('branch', 'run:branch', 'boolean'),
+        ('coroutine', 'run:coroutine'),
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
