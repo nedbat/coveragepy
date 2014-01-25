@@ -76,8 +76,8 @@ GLOBAL OPTIONS
     Usually needs quoting on the command line.
 
 **--include** `PATTERN` [ , ... ]
-    Include files only when their filename path matches one of these
-    PATTERNs. Usually needs quoting on the command line.
+    Include only files whose paths match one of these
+    PATTERNs. Accepts shell-style wildcards, which must be quoted.
 
 
 COMMAND REFERENCE
