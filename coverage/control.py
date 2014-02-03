@@ -692,6 +692,14 @@ class coverage(object):
             if self.config.xml_output == '-':
                 outfile = sys.stdout
             else:
+                # ensure that the output directory is created; done here
+                # because this report pre-opens the output
+                # file. HTMLReport does this using the Report plumbing
+                # because its task is more complex, being multiple
+                # files.
+                output_dir = os.path.dirname(self.config.xml_output)
+                if output_dir and not os.path.isdir(output_dir):
+                    os.makedirs(output_dir)
                 outfile = open(self.config.xml_output, "w")
                 file_to_close = outfile
         try:
