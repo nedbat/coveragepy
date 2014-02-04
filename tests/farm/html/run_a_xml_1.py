@@ -16,6 +16,7 @@ runfunc(html_it, rundir="src")
 compare("gold_x_xml", "xml_1", scrubs=[
     (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
     (r' version="[-.\w]+"', ' version="VERSION"'),
+    (r'<source>(.*)</source>', '<source></source>'),
     (r'/code/coverage/?[-.\w]*', '/code/coverage/VER'),
     ])
 clean("xml_1")
