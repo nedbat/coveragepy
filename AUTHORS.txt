@@ -34,6 +34,7 @@ Catherine Proulx
 Brandon Rhodes
 Adi Roiban
 Greg Rogers
+Chris Rose
 George Song
 David Stanek
 Joseph Tate
@@ -41,4 +42,3 @@ Sigve Tjora
 Mark van der Wal
 Zooko Wilcox-O'Hearn
 Christoph Zwerschke
-Chris Rose
