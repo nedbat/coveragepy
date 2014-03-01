@@ -26,6 +26,13 @@ class XmlReportTest(CoverageTest):
         self.assert_doesnt_exist("coverage.xml")
         self.assert_exists("put_it_there.xml")
 
+    def test_config_file_directory_does_not_exist(self):
+        self.run_mycode()
+        self.run_command("coverage xml -o nonexistent/put_it_there.xml")
+        self.assert_doesnt_exist("coverage.xml")
+        self.assert_doesnt_exist("put_it_there.xml")
+        self.assert_exists("nonexistent/put_it_there.xml")
+
     def test_config_affects_xml_placement(self):
         self.run_mycode()
         self.make_file(".coveragerc", "[xml]\noutput = xml.out\n")
