@@ -209,7 +209,6 @@ Version 3.6b1 --- 28 November 2012
 
 .. _issue 60: https://bitbucket.org/ned/coveragepy/issue/60/incorrect-path-to-orphaned-pyc-files
 .. _issue 67: https://bitbucket.org/ned/coveragepy/issue/67/xml-report-filenames-may-be-generated
-.. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 97: https://bitbucket.org/ned/coveragepy/issue/97/allow-environment-variables-to-be
 .. _issue 100: https://bitbucket.org/ned/coveragepy/issue/100/source-directive-doesnt-work-for-packages
@@ -261,7 +260,6 @@ Version 3.5.3 --- 29 September 2012
 
 - Testing is now done with `tox`_, thanks, Marc Abramowitz.
 
-.. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 147: https://bitbucket.org/ned/coveragepy/issue/147/massive-memory-usage-by-ctracer
 .. _issue 179: https://bitbucket.org/ned/coveragepy/issue/179/htmlreporter-fails-when-source-file-is
 .. _issue 183: https://bitbucket.org/ned/coveragepy/issue/183/install-fails-for-python-23
@@ -314,7 +312,6 @@ Version 3.5.2b1 --- 29 April 2012
 - When installing into pypy, we no longer attempt (and fail) to compile
   the C tracer function, closing `issue 166`_.
 
-.. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 142: https://bitbucket.org/ned/coveragepy/issue/142/executing-python-file-syspath-is-replaced
 .. _issue 155: https://bitbucket.org/ned/coveragepy/issue/155/cant-use-coverage-run-m-unittest-discover
 .. _issue 157: https://bitbucket.org/ned/coveragepy/issue/157/chokes-on-source-files-with-non-utf-8
