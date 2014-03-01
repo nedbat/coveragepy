@@ -68,8 +68,7 @@ class CoroutineTest(CoverageTest):
         import threading
         try:
             import Queue
-        except ImportError:
-            # Python 3 :)
+        except ImportError:         # Python 3 :)
             import queue as Queue
         """ + COMMON
 
@@ -89,8 +88,10 @@ class CoroutineTest(CoverageTest):
 
     def try_some_code(self, code, args):
         """Run some coroutine testing code and see that it was all covered."""
-        raise SkipTest("Need to put this on a back burner for a while...")
+
         self.make_file("try_it.py", code)
+
+        raise SkipTest("Need to put this on a back burner for a while...")
 
         out = self.run_command("coverage run %s try_it.py" % args)
         expected_out = "%d\n" % (sum(range(1000)))
