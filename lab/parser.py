@@ -1,6 +1,9 @@
 """Parser.py: a main for invoking code in coverage/parser.py"""
 
+from __future__ import division
+
 import glob, os, sys
+import collections
 from optparse import OptionParser
 
 import disgen
@@ -8,6 +11,7 @@ import disgen
 from coverage.misc import CoverageException
 from coverage.parser import ByteParser, CodeParser
 
+opcode_counts = collections.Counter()
 
 class ParserMain(object):
     """A main for code parsing experiments."""
@@ -23,6 +27,10 @@ class ParserMain(object):
         parser.add_option(
             "-d", action="store_true", dest="dis",
             help="Disassemble"
+            )
+        parser.add_option(
+            "-H", action="store_true", dest="histogram",
+            help="Count occurrences of opcodes"
             )
         parser.add_option(
             "-R", action="store_true", dest="recursive",
@@ -51,18 +59,25 @@ class ParserMain(object):
         else:
             self.one_file(options, args[0])
 
+        if options.histogram:
+            total = sum(opcode_counts.values())
+            print("{} total opcodes".format(total))
+            for opcode, number in opcode_counts.most_common():
+                print("{:20s} {:6d}  {:.1%}".format(opcode, number, number/total))
+
+
     def one_file(self, options, filename):
         """Process just one file."""
 
         try:
             bp = ByteParser(filename=filename)
-        except CoverageException as err:
+        except Exception as err:
             print("%s" % (err,))
             return
 
         if options.dis:
             print("Main code:")
-            self.disassemble(bp)
+            self.disassemble(bp, histogram=options.histogram)
 
         arcs = bp._all_arcs()
         if options.chunks and not options.dis:
@@ -104,7 +119,7 @@ class ParserMain(object):
                                 (lineno, m0, m1, m2, m3, a, ltext)
                         )
 
-    def disassemble(self, byte_parser):
+    def disassemble(self, byte_parser, histogram=False):
         """Disassemble code, for ad-hoc experimenting."""
 
         for bp in byte_parser.child_parsers():
@@ -117,6 +132,9 @@ class ParserMain(object):
             print("\n%s: " % bp.code)
             upto = None
             for disline in disgen.disgen(bp.code):
+                if histogram:
+                    opcode_counts[disline.opcode] += 1
+                    continue
                 if disline.first:
                     if srclines:
                         upto = upto or disline.lineno-1
