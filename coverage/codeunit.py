@@ -127,7 +127,7 @@ class CodeUnit(object):
     def should_be_python(self):
         """Does it seem like this file should contain Python?
 
-        This is used to decide if a file reported as part of the exection of
+        This is used to decide if a file reported as part of the execution of
         a program was really likely to have contained Python in the first
         place.
 

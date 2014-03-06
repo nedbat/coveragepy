@@ -22,9 +22,10 @@ Key:
     - .format() ?
     + try/except/finally
     + with assertRaises
-    - addCleaup instead of tearDown
+    - addCleaup instead of tearDown (only in 2.7!)
     + exec statement can look like a function in py2 (since when?)
     - runpy ?
+    - we can use "except ExcClass as e:"
 
 + Remove code only run on <2.6
 - Change data file to json
