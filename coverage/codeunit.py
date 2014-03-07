@@ -4,6 +4,8 @@ import glob, os
 
 from coverage.backward import open_source, string_class, StringIO
 from coverage.misc import CoverageException
+from coverage.parser import CodeParser
+from coverage.results import Analysis
 
 
 def code_unit_factory(morfs, file_locator):
@@ -29,7 +31,7 @@ def code_unit_factory(morfs, file_locator):
             globbed.append(morf)
     morfs = globbed
 
-    code_units = [CodeUnit(morf, file_locator) for morf in morfs]
+    code_units = [PythonCodeUnit(morf, file_locator) for morf in morfs]
 
     return code_units
 
@@ -44,6 +46,7 @@ class CodeUnit(object):
     `relative` is a boolean.
 
     """
+
     def __init__(self, morf, file_locator):
         self.file_locator = file_locator
 
@@ -51,11 +54,7 @@ class CodeUnit(object):
             f = morf.__file__
         else:
             f = morf
-        # .pyc files should always refer to a .py instead.
-        if f.endswith(('.pyc', '.pyo')):
-            f = f[:-1]
-        elif f.endswith('$py.class'): # Jython
-            f = f[:-9] + ".py"
+        f = self.adjust_filename(f)
         self.filename = self.file_locator.canonical_filename(f)
 
         if hasattr(morf, '__name__'):
@@ -75,6 +74,9 @@ class CodeUnit(object):
 
     def __repr__(self):
         return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
+
+    def adjust_filename(self, fname):
+        return fname
 
     # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
     # of them defined.
@@ -123,6 +125,29 @@ class CodeUnit(object):
         raise CoverageException(
             "No source for code '%s'." % self.filename
             )
+
+    def should_be_python(self):
+        """Does it seem like this file should contain Python?
+
+        This is used to decide if a file reported as part of the execution of
+        a program was really likely to have contained Python in the first
+        place.
+        """
+        return False
+
+
+class PythonCodeUnit(CodeUnit):
+    """Represents a Python file."""
+
+    parser_class = CodeParser
+
+    def adjust_filename(self, fname):
+        # .pyc files should always refer to a .py instead.
+        if fname.endswith(('.pyc', '.pyo')):
+            fname = fname[:-1]
+        elif fname.endswith('$py.class'): # Jython
+            fname = fname[:-9] + ".py"
+        return fname
 
     def should_be_python(self):
         """Does it seem like this file should contain Python?

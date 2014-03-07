@@ -5,7 +5,6 @@ import os
 
 from coverage.backward import iitems
 from coverage.misc import format_lines, join_regex, NoSource
-from coverage.parser import CodeParser
 
 
 class Analysis(object):
@@ -18,7 +17,7 @@ class Analysis(object):
         self.filename = self.code_unit.filename
         actual_filename, source = self.find_source(self.filename)
 
-        self.parser = CodeParser(
+        self.parser = code_unit.parser_class(
             text=source, filename=actual_filename,
             exclude=self.coverage._exclude_regex('exclude')
             )
