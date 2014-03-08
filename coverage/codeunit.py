@@ -218,11 +218,11 @@ class MakoParser(object):
         self.py_to_html = {}
         html_linenum = None
         for linenum, line in enumerate(py_source.splitlines(), start=1):
-            m_source_line = re.search(r"^\s+# SOURCE LINE (\d+)$", line)
+            m_source_line = re.search(r"^\s*# SOURCE LINE (\d+)$", line)
             if m_source_line:
                 html_linenum = int(m_source_line.group(1))
             else:
-                m_boilerplate_line = re.search(r"^\s+# BOILERPLATE ", line)
+                m_boilerplate_line = re.search(r"^\s*# BOILERPLATE", line)
                 if m_boilerplate_line:
                     html_linenum = None
                 elif html_linenum:
