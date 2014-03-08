@@ -595,7 +595,7 @@ class coverage(object):
         if not isinstance(it, CodeUnit):
             it = code_unit_factory(it, self.file_locator)[0]
 
-        return Analysis(self, it)
+        return it.analysis_class(self, it)
 
     def report(self, morfs=None, show_missing=True, ignore_errors=None,
                 file=None,                          # pylint: disable=W0622

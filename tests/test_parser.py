@@ -13,7 +13,7 @@ class ParserTest(CoverageTest):
     def parse_source(self, text):
         """Parse `text` as source, and return the `CodeParser` used."""
         text = textwrap.dedent(text)
-        cp = CodeParser(text=text, exclude="nocover")
+        cp = CodeParser(None, text=text, exclude="nocover")
         cp.parse_source()
         return cp
 
@@ -98,7 +98,7 @@ class ParserFileTest(CoverageTest):
 
     def parse_file(self, filename):
         """Parse `text` as source, and return the `CodeParser` used."""
-        cp = CodeParser(filename=filename, exclude="nocover")
+        cp = CodeParser(None, filename=filename, exclude="nocover")
         cp.parse_source()
         return cp
 

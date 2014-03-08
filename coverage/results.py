@@ -18,13 +18,14 @@ class Analysis(object):
         actual_filename, source = self.find_source(self.filename)
 
         self.parser = code_unit.parser_class(
+            code_unit,
             text=source, filename=actual_filename,
             exclude=self.coverage._exclude_regex('exclude')
             )
         self.statements, self.excluded = self.parser.parse_source()
 
         # Identify missing statements.
-        executed = self.coverage.data.executed_lines(self.filename)
+        executed = self.parser.translate_lines(self.coverage.data.executed_lines(self.filename))
         exec1 = self.parser.first_lines(executed)
         self.missing = self.statements - exec1
 

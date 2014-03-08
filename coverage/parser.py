@@ -13,7 +13,7 @@ from coverage.misc import CoverageException, NoSource, NotPython
 class CodeParser(object):
     """Parse code to find executable lines, excluded lines, etc."""
 
-    def __init__(self, text=None, filename=None, exclude=None):
+    def __init__(self, cu, text=None, filename=None, exclude=None):
         """
         Source can be provided as `text`, the text itself, or `filename`, from
         which the text will be read.  Excluded lines are those that match
@@ -160,6 +160,9 @@ class CodeParser(object):
         # Find the starts of the executable statements.
         if not empty:
             self.statement_starts.update(self.byte_parser._find_statements())
+
+    def translate_lines(self, lines):
+        return lines
 
     def first_line(self, line):
         """Return the first line number of the statement including `line`."""

@@ -1,11 +1,12 @@
 """Code unit (module) handling for Coverage."""
 
-import glob, os
+import glob, os, re
 
 from coverage.backward import open_source, string_class, StringIO
 from coverage.misc import CoverageException
 from coverage.parser import CodeParser
 from coverage.results import Analysis
+from coverage.phystokens import source_token_lines, source_encoding
 
 
 def code_unit_factory(morfs, file_locator):
@@ -31,7 +32,19 @@ def code_unit_factory(morfs, file_locator):
             globbed.append(morf)
     morfs = globbed
 
-    code_units = [PythonCodeUnit(morf, file_locator) for morf in morfs]
+    code_units = []
+    for morf in morfs:
+        # Hacked-in Mako support. Disabled for going onto trunk.
+        if 0 and isinstance(morf, string_class) and "/mako/" in morf:
+            # Super hack! Do mako both ways!
+            if 0:
+                cu = PythonCodeUnit(morf, file_locator)
+                cu.name += '_fako'
+                code_units.append(cu)
+            klass = MakoCodeUnit
+        else:
+            klass = PythonCodeUnit
+        code_units.append(klass(morf, file_locator))
 
     return code_units
 
@@ -139,6 +152,7 @@ class CodeUnit(object):
 class PythonCodeUnit(CodeUnit):
     """Represents a Python file."""
 
+    analysis_class = Analysis
     parser_class = CodeParser
 
     def adjust_filename(self, fname):
@@ -168,3 +182,102 @@ class PythonCodeUnit(CodeUnit):
             return True
         # Everything else is probably not Python.
         return False
+
+    def source_token_lines(self, source):
+        return source_token_lines(source)
+
+    def source_encoding(self, source):
+        return source_encoding(source)
+
+
+def mako_template_name(py_filename):
+    with open(py_filename) as f:
+        py_source = f.read()
+
+    # Find the template filename. TODO: string escapes in the string.
+    m = re.search(r"^_template_filename = u?'([^']+)'", py_source, flags=re.MULTILINE)
+    if not m:
+        raise Exception("Couldn't find template filename in Mako file %r" % py_filename)
+    template_filename = m.group(1)
+    return template_filename
+
+
+class MakoParser(object):
+    def __init__(self, cu, text, filename, exclude):
+        self.cu = cu
+        self.text = text
+        self.filename = filename
+        self.exclude = exclude
+
+    def parse_source(self):
+        """Returns executable_line_numbers, excluded_line_numbers"""
+        with open(self.cu.filename) as f:
+            py_source = f.read()
+
+        # Get the line numbers.
+        self.py_to_html = {}
+        html_linenum = None
+        for linenum, line in enumerate(py_source.splitlines(), start=1):
+            m_source_line = re.search(r"^\s+# SOURCE LINE (\d+)$", line)
+            if m_source_line:
+                html_linenum = int(m_source_line.group(1))
+            else:
+                m_boilerplate_line = re.search(r"^\s+# BOILERPLATE ", line)
+                if m_boilerplate_line:
+                    html_linenum = None
+                elif html_linenum:
+                    self.py_to_html[linenum] = html_linenum
+
+        return set(self.py_to_html.values()), set()
+
+    def translate_lines(self, lines):
+        tlines = set(self.py_to_html.get(l, -1) for l in lines)
+        tlines.remove(-1)
+        return tlines
+
+    def first_lines(self, lines, *ignores):
+        return set(lines)
+
+    def first_line(self, line):
+        return line
+
+    def exit_counts(self):
+        return {}
+
+    def arcs(self):
+        return []
+
+
+class MakoAnalysis(Analysis):
+
+    def find_source(self, filename):
+        """Find the source for `filename`.
+
+        Returns two values: the actual filename, and the source.
+
+        """
+        mako_filename = mako_template_name(filename)
+        with open(mako_filename) as f:
+            source = f.read()
+
+        return mako_filename, source
+
+
+class MakoCodeUnit(CodeUnit):
+    analysis_class = MakoAnalysis
+    parser_class = MakoParser
+
+    def __init__(self, *args, **kwargs):
+        super(MakoCodeUnit, self).__init__(*args, **kwargs)
+        self.mako_filename = mako_template_name(self.filename)
+
+    def source_file(self):
+        return open(self.mako_filename)
+
+    def source_token_lines(self, source):
+        """Return the 'tokenized' text for the code."""
+        for line in source.splitlines():
+            yield [('txt', line)]
+
+    def source_encoding(self, source):
+        return "utf-8"
