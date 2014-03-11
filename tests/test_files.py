@@ -50,41 +50,49 @@ class FileLocatorTest(CoverageTest):
 class MatcherTest(CoverageTest):
     """Tests of file matchers."""
 
+    def setUp(self):
+        super(MatcherTest, self).setUp()
+        self.fl = FileLocator()
+
+    def assertMatches(self, matcher, filepath, matches):
+        """The `matcher` should agree with `matches` about `filepath`."""
+        canonical = self.fl.canonical_filename(filepath)
+        self.assertEqual(
+            matcher.match(canonical), matches,
+            "File %s should have matched as %s" % (filepath, matches)
+        )
+
     def test_tree_matcher(self):
-        file1 = self.make_file("sub/file1.py")
-        file2 = self.make_file("sub/file2.c")
-        file3 = self.make_file("sub2/file3.h")
-        file4 = self.make_file("sub3/file4.py")
-        file5 = self.make_file("sub3/file5.c")
+        matches_to_try = [
+            (self.make_file("sub/file1.py"), True),
+            (self.make_file("sub/file2.c"), True),
+            (self.make_file("sub2/file3.h"), False),
+            (self.make_file("sub3/file4.py"), True),
+            (self.make_file("sub3/file5.c"), False),
+        ]
         fl = FileLocator()
         trees = [
             fl.canonical_filename("sub"),
-            fl.canonical_filename(file4),
+            fl.canonical_filename("sub3/file4.py"),
             ]
         tm = TreeMatcher(trees)
-        self.assertTrue(tm.match(fl.canonical_filename(file1)))
-        self.assertTrue(tm.match(fl.canonical_filename(file2)))
-        self.assertFalse(tm.match(fl.canonical_filename(file3)))
-        self.assertTrue(tm.match(fl.canonical_filename(file4)))
-        self.assertFalse(tm.match(fl.canonical_filename(file5)))
-
         self.assertEqual(tm.info(), trees)
+        for filepath, matches in matches_to_try:
+            self.assertMatches(tm, filepath, matches)
 
     def test_fnmatch_matcher(self):
-        file1 = self.make_file("sub/file1.py")
-        file2 = self.make_file("sub/file2.c")
-        file3 = self.make_file("sub2/file3.h")
-        file4 = self.make_file("sub3/file4.py")
-        file5 = self.make_file("sub3/file5.c")
+        matches_to_try = [
+            (self.make_file("sub/file1.py"), True),
+            (self.make_file("sub/file2.c"), False),
+            (self.make_file("sub2/file3.h"), True),
+            (self.make_file("sub3/file4.py"), True),
+            (self.make_file("sub3/file5.c"), False),
+        ]
         fl = FileLocator()
         fnm = FnmatchMatcher(["*.py", "*/sub2/*"])
-        self.assertTrue(fnm.match(fl.canonical_filename(file1)))
-        self.assertFalse(fnm.match(fl.canonical_filename(file2)))
-        self.assertTrue(fnm.match(fl.canonical_filename(file3)))
-        self.assertTrue(fnm.match(fl.canonical_filename(file4)))
-        self.assertFalse(fnm.match(fl.canonical_filename(file5)))
-
         self.assertEqual(fnm.info(), ["*.py", "*/sub2/*"])
+        for filepath, matches in matches_to_try:
+            self.assertMatches(fnm, filepath, matches)
 
 
 class PathAliasesTest(CoverageTest):

@@ -167,13 +167,15 @@ class CoverageTest(TestCase):
         return self.captured_stderr.getvalue()
 
     def make_file(self, filename, text="", newline=None):
-        """Create a temp file.
+        """Create a file for testing.
 
-        `filename` is the path to the file, including directories if desired,
-        and `text` is the content. If `newline` is provided, it is a string
-        that will be used as the line endings in the created file.
+        `filename` is the relative path to the file, including directories if
+        desired, which will be created if need be.  `text` is the content to
+        create in the file. If `newline` is provided, it is a string that will
+        be used as the line endings in the created file, otherwise the line
+        endings are as provided in `text`.
 
-        Returns the path to the file.
+        Returns `filename`.
 
         """
         # Tests that call `make_file` should be run in a temp environment.
