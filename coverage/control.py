@@ -4,7 +4,7 @@ import atexit, os, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
-from coverage.codeunit import code_unit_factory, CodeUnit
+from coverage.codeunit import code_unit_factory, CodeUnit, PythonCodeUnit
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
@@ -214,7 +214,7 @@ class coverage(object):
 
     def _canonical_dir(self, morf):
         """Return the canonical directory of the module or file `morf`."""
-        return os.path.split(CodeUnit(morf, self.file_locator).filename)[0]
+        return os.path.split(PythonCodeUnit(morf, self.file_locator).filename)[0]
 
     def _source_for_file(self, filename):
         """Return the source file for `filename`."""
@@ -595,7 +595,7 @@ class coverage(object):
         if not isinstance(it, CodeUnit):
             it = code_unit_factory(it, self.file_locator)[0]
 
-        return it.analysis_class(self, it)
+        return Analysis(self, it)
 
     def report(self, morfs=None, show_missing=True, ignore_errors=None,
                 file=None,                          # pylint: disable=W0622

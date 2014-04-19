@@ -9,7 +9,7 @@ from optparse import OptionParser
 import disgen
 
 from coverage.misc import CoverageException
-from coverage.parser import ByteParser, CodeParser
+from coverage.parser import ByteParser, PythonParser
 
 opcode_counts = collections.Counter()
 
@@ -89,7 +89,7 @@ class ParserMain(object):
                 print("Arcs: %r" % sorted(arcs))
 
         if options.source or options.tokens:
-            cp = CodeParser(filename=filename, exclude=r"no\s*cover")
+            cp = PythonParser(filename=filename, exclude=r"no\s*cover")
             cp.show_tokens = options.tokens
             cp._raw_parse()
 

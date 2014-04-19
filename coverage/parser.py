@@ -11,6 +11,47 @@ from coverage.misc import CoverageException, NoSource, NotPython
 
 
 class CodeParser(object):
+    """
+    Base class for any code parser.
+    """
+    def _adjust_filename(self, fname):
+        return fname
+
+    def first_lines(self, lines, *ignores):
+        """Map the line numbers in `lines` to the correct first line of the
+        statement.
+
+        Skip any line mentioned in any of the sequences in `ignores`.
+
+        Returns a set of the first lines.
+
+        """
+        ignore = set()
+        for ign in ignores:
+            ignore.update(ign)
+        lset = set()
+        for l in lines:
+            if l in ignore:
+                continue
+            new_l = self.first_line(l)
+            if new_l not in ignore:
+                lset.add(new_l)
+        return lset
+
+    def first_line(self, line):
+        return line
+
+    def translate_lines(self, lines):
+        return lines
+
+    def exit_counts(self):
+        return {}
+
+    def arcs(self):
+        return []
+
+
+class PythonParser(CodeParser):
     """Parse code to find executable lines, excluded lines, etc."""
 
     def __init__(self, cu, text=None, filename=None, exclude=None):
@@ -20,7 +61,7 @@ class CodeParser(object):
         `exclude`, a regex.
 
         """
-        assert text or filename, "CodeParser needs either text or filename"
+        assert text or filename, "PythonParser needs either text or filename"
         self.filename = filename or "<code>"
         self.text = text
         if not self.text:
@@ -137,9 +178,8 @@ class CodeParser(object):
                     # We're at the end of a line, and we've ended on a
                     # different line than the first line of the statement,
                     # so record a multi-line range.
-                    rng = (first_line, elineno)
                     for l in range(first_line, elineno+1):
-                        self.multiline[l] = rng
+                        self.multiline[l] = first_line
                 first_line = None
 
             if ttext.strip() and toktype != tokenize.COMMENT:
@@ -161,38 +201,13 @@ class CodeParser(object):
         if not empty:
             self.statement_starts.update(self.byte_parser._find_statements())
 
-    def translate_lines(self, lines):
-        return lines
-
     def first_line(self, line):
         """Return the first line number of the statement including `line`."""
-        rng = self.multiline.get(line)
-        if rng:
-            first_line = rng[0]
+        first_line = self.multiline.get(line)
+        if first_line:
+            return first_line
         else:
-            first_line = line
-        return first_line
-
-    def first_lines(self, lines, *ignores):
-        """Map the line numbers in `lines` to the correct first line of the
-        statement.
-
-        Skip any line mentioned in any of the sequences in `ignores`.
-
-        Returns a set of the first lines.
-
-        """
-        ignore = set()
-        for ign in ignores:
-            ignore.update(ign)
-        lset = set()
-        for l in lines:
-            if l in ignore:
-                continue
-            new_l = self.first_line(l)
-            if new_l not in ignore:
-                lset.add(new_l)
-        return lset
+            return line
 
     def parse_source(self):
         """Parse source text to find executable lines, excluded lines, etc.

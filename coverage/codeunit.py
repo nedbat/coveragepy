@@ -3,9 +3,8 @@
 import glob, os, re
 
 from coverage.backward import open_source, string_class, StringIO
-from coverage.misc import CoverageException
-from coverage.parser import CodeParser
-from coverage.results import Analysis
+from coverage.misc import CoverageException, NoSource
+from coverage.parser import CodeParser, PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 
 
@@ -67,7 +66,7 @@ class CodeUnit(object):
             f = morf.__file__
         else:
             f = morf
-        f = self.adjust_filename(f)
+        f = self._adjust_filename(f)
         self.filename = self.file_locator.canonical_filename(f)
 
         if hasattr(morf, '__name__'):
@@ -87,9 +86,6 @@ class CodeUnit(object):
 
     def __repr__(self):
         return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
-
-    def adjust_filename(self, fname):
-        return fname
 
     # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
     # of them defined.
@@ -114,7 +110,7 @@ class CodeUnit(object):
         the same directory, but need to differentiate same-named files from
         different directories.
 
-        For example, the file a/b/c.py might return 'a_b_c'
+        For example, the file a/b/c.py will return 'a_b_c'
 
         """
         if self.modname:
@@ -152,16 +148,53 @@ class CodeUnit(object):
 class PythonCodeUnit(CodeUnit):
     """Represents a Python file."""
 
-    analysis_class = Analysis
-    parser_class = CodeParser
+    parser_class = PythonParser
 
-    def adjust_filename(self, fname):
+    def _adjust_filename(self, fname):
         # .pyc files should always refer to a .py instead.
         if fname.endswith(('.pyc', '.pyo')):
             fname = fname[:-1]
         elif fname.endswith('$py.class'): # Jython
             fname = fname[:-9] + ".py"
         return fname
+
+    def find_source(self, filename):
+        """Find the source for `filename`.
+
+        Returns two values: the actual filename, and the source.
+
+        The source returned depends on which of these cases holds:
+
+            * The filename seems to be a non-source file: returns None
+
+            * The filename is a source file, and actually exists: returns None.
+
+            * The filename is a source file, and is in a zip file or egg:
+              returns the source.
+
+            * The filename is a source file, but couldn't be found: raises
+              `NoSource`.
+
+        """
+        source = None
+
+        base, ext = os.path.splitext(filename)
+        TRY_EXTS = {
+            '.py':  ['.py', '.pyw'],
+            '.pyw': ['.pyw'],
+        }
+        try_exts = TRY_EXTS.get(ext)
+        if not try_exts:
+            return filename, None
+
+        for try_ext in try_exts:
+            try_filename = base + try_ext
+            if os.path.exists(try_filename):
+                return try_filename, None
+            source = self.file_locator.get_zip_data(try_filename)
+            if source:
+                return try_filename, source
+        raise NoSource("No source for code: '%s'" % filename)
 
     def should_be_python(self):
         """Does it seem like this file should contain Python?
@@ -202,7 +235,7 @@ def mako_template_name(py_filename):
     return template_filename
 
 
-class MakoParser(object):
+class MakoParser(CodeParser):
     def __init__(self, cu, text, filename, exclude):
         self.cu = cu
         self.text = text
@@ -235,20 +268,16 @@ class MakoParser(object):
         tlines.remove(-1)
         return tlines
 
-    def first_lines(self, lines, *ignores):
-        return set(lines)
 
-    def first_line(self, line):
-        return line
+class MakoCodeUnit(CodeUnit):
+    parser_class = MakoParser
 
-    def exit_counts(self):
-        return {}
+    def __init__(self, *args, **kwargs):
+        super(MakoCodeUnit, self).__init__(*args, **kwargs)
+        self.mako_filename = mako_template_name(self.filename)
 
-    def arcs(self):
-        return []
-
-
-class MakoAnalysis(Analysis):
+    def source_file(self):
+        return open(self.mako_filename)
 
     def find_source(self, filename):
         """Find the source for `filename`.
@@ -261,18 +290,6 @@ class MakoAnalysis(Analysis):
             source = f.read()
 
         return mako_filename, source
-
-
-class MakoCodeUnit(CodeUnit):
-    analysis_class = MakoAnalysis
-    parser_class = MakoParser
-
-    def __init__(self, *args, **kwargs):
-        super(MakoCodeUnit, self).__init__(*args, **kwargs)
-        self.mako_filename = mako_template_name(self.filename)
-
-    def source_file(self):
-        return open(self.mako_filename)
 
     def source_token_lines(self, source):
         """Return the 'tokenized' text for the code."""

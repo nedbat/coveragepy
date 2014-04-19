@@ -8,7 +8,7 @@
 
 import os, re, sys
 
-# Pythons 2 and 3 differ on where to get StringIO
+# Pythons 2 and 3 differ on where to get StringIO.
 try:
     from cStringIO import StringIO
     BytesIO = StringIO
