@@ -256,8 +256,8 @@ class FarmTestCase(object):
             # ourselves.
             text_diff = []
             for f in diff_files:
-                left = open(os.path.join(dir1, f), "rU").readlines()
-                right = open(os.path.join(dir2, f), "rU").readlines()
+                left = open(os.path.join(dir1, f), "rU").read()
+                right = open(os.path.join(dir2, f), "rU").read()
                 if scrubs:
                     left = self._scrub(left, scrubs)
                     right = self._scrub(right, scrubs)
@@ -271,19 +271,16 @@ class FarmTestCase(object):
         if not right_extra:
             assert not right_only, "Files in %s only: %s" % (dir2, right_only)
 
-    def _scrub(self, strlist, scrubs):
-        """Scrub uninteresting data from the strings in `strlist`.
+    def _scrub(self, strdata, scrubs):
+        """Scrub uninteresting data from the payload in `strdata`.
 
         `scrubs is a list of (find, replace) pairs of regexes that are used on
-        each string in `strlist`.  A list of scrubbed strings is returned.
+        `strdata`.  A string is returned.
 
         """
-        scrubbed = []
-        for s in strlist:
-            for rgx_find, rgx_replace in scrubs:
-                s = re.sub(rgx_find, rgx_replace, s)
-            scrubbed.append(s)
-        return scrubbed
+        for rgx_find, rgx_replace in scrubs:
+            strdata = re.sub(rgx_find, rgx_replace, strdata)
+        return strdata
 
     def contains(self, filename, *strlist):
         """Check that the file contains all of a list of strings.
