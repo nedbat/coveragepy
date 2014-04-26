@@ -8,6 +8,8 @@ import re
 class CodeBuilder(object):
     """Build source code conveniently."""
 
+    INDENT_STEP = 4      # PEP8 says so!
+
     def __init__(self, indent=0):
         self.code = []
         self.indent_amount = indent
@@ -18,9 +20,7 @@ class CodeBuilder(object):
         Don't include indentations or newlines.
 
         """
-        self.code.append(" " * self.indent_amount)
-        self.code.append(line)
-        self.code.append("\n")
+        self.code.extend([" " * self.indent_amount, line, "\n"])
 
     def add_section(self):
         """Add a section, a sub-CodeBuilder."""
@@ -30,22 +30,25 @@ class CodeBuilder(object):
 
     def indent(self):
         """Increase the current indent for following lines."""
-        self.indent_amount += 4
+        self.indent_amount += self.INDENT_STEP
 
     def dedent(self):
         """Decrease the current indent for following lines."""
-        self.indent_amount -= 4
+        self.indent_amount -= self.INDENT_STEP
 
     def __str__(self):
         return "".join(str(c) for c in self.code)
 
-    def get_function(self, fn_name):
-        """Compile the code, and return the function `fn_name`."""
+    def get_globals(self):
+        """Compile the code, and return a dict of globals it defines."""
+        # A check that the caller really finished all the blocks they started.
         assert self.indent_amount == 0
-        g = {}
-        code_text = str(self)
-        exec(code_text, g)
-        return g[fn_name]
+        # Get the Python source as a single string.
+        python_source = str(self)
+        # Execute the source, defining globals, and return them.
+        global_namespace = {}
+        exec(python_source, global_namespace)
+        return global_namespace
 
 
 class Templite(object):
@@ -83,6 +86,9 @@ class Templite(object):
         for context in contexts:
             self.context.update(context)
 
+        self.all_vars = set()
+        self.loop_vars = set()
+
         # We construct a function in source form, then compile it and hold onto
         # it, and execute it to render the template.
         code = CodeBuilder()
@@ -90,8 +96,6 @@ class Templite(object):
         code.add_line("def render(ctx, dot):")
         code.indent()
         vars_code = code.add_section()
-        self.all_vars = set()
-        self.loop_vars = set()
         code.add_line("result = []")
         code.add_line("a = result.append")
         code.add_line("e = result.extend")
@@ -107,29 +111,31 @@ class Templite(object):
             del buffered[:]
 
         # Split the text to form a list of tokens.
-        toks = re.split(r"(?s)({{.*?}}|{%.*?%}|{#.*?#})", text)
+        tokens = re.split(r"(?s)({{.*?}}|{%.*?%}|{#.*?#})", text)
 
         ops_stack = []
-        for tok in toks:
-            if tok.startswith('{{'):
+        for token in tokens:
+            if token.startswith('{{'):
                 # An expression to evaluate.
-                buffered.append("s(%s)" % self.expr_code(tok[2:-2].strip()))
-            elif tok.startswith('{#'):
+                buffered.append("s(%s)" % self.expr_code(token[2:-2].strip()))
+            elif token.startswith('{#'):
                 # Comment: ignore it and move on.
                 continue
-            elif tok.startswith('{%'):
+            elif token.startswith('{%'):
                 # Action tag: split into words and parse further.
                 flush_output()
-                words = tok[2:-2].strip().split()
+                words = token[2:-2].strip().split()
                 if words[0] == 'if':
                     # An if statement: evaluate the expression to determine if.
-                    assert len(words) == 2
+                    if len(words) != 2:
+                        self.syntax_error("Don't understand if", token)
                     ops_stack.append('if')
                     code.add_line("if %s:" % self.expr_code(words[1]))
                     code.indent()
                 elif words[0] == 'for':
                     # A loop: iterate over expression result.
-                    assert len(words) == 4 and words[2] == 'in'
+                    if len(words) != 4 or words[2] != 'in':
+                        self.syntax_error("Don't understand for", token)
                     ops_stack.append('for')
                     self.loop_vars.add(words[1])
                     code.add_line(
@@ -140,29 +146,33 @@ class Templite(object):
                     )
                     code.indent()
                 elif words[0].startswith('end'):
-                    # Endsomething.  Pop the ops stack
+                    # Endsomething.  Pop the ops stack.
                     end_what = words[0][3:]
                     if ops_stack[-1] != end_what:
-                        raise SyntaxError("Mismatched end tag: %r" % end_what)
+                        self.syntax_error("Mismatched end tag", end_what)
                     ops_stack.pop()
                     code.dedent()
                 else:
-                    raise SyntaxError("Don't understand tag: %r" % words[0])
+                    self.syntax_error("Don't understand tag", words[0])
             else:
                 # Literal content.  If it isn't empty, output it.
-                if tok:
-                    buffered.append("%r" % tok)
+                if token:
+                    buffered.append("%r" % token)
         flush_output()
 
         for var_name in self.all_vars - self.loop_vars:
             vars_code.add_line("c_%s = ctx[%r]" % (var_name, var_name))
 
         if ops_stack:
-            raise SyntaxError("Unmatched action tag: %r" % ops_stack[-1])
+            self.syntax_error("Unmatched action tag", ops_stack[-1])
 
         code.add_line("return ''.join(result)")
         code.dedent()
-        self.render_function = code.get_function('render')
+        self.render_function = code.get_globals()['render']
+
+    def syntax_error(self, msg, thing):
+        """Raise a syntax error using `msg`, and showing `thing`."""
+        raise SyntaxError("%s: %r" % (msg, thing))
 
     def expr_code(self, expr):
         """Generate a Python expression for `expr`."""
