@@ -4,7 +4,7 @@
     - Windows
     - Ubuntu
     - Mac
-    - Pythons 2.3, 2.4, 2.5, 2.6, 2.7, 3.1, 3.2, 3.3
+    - Pythons 2.6, 2.7, 3.2, 3.3, 3.4
 - Version number in coverage/version.py
     - 3.1a1, 3.1b1, 3.1c1, 3.1
 - Update CHANGES.txt, including release date.
