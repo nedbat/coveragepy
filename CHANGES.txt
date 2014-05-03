@@ -7,9 +7,13 @@ Change history for Coverage.py
 
 - Python versions supported are now 2.6, 2.7, 3.2, 3.3.
 
+- The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
+  Stan Hu.
+
 - The XML report will now create the output directory if need be, fixing
   `issue 285`_.  Thanks Chris Rose.
 
+.. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
 .. _issue 285: https://bitbucket.org/ned/coveragepy/issue/285/xml-report-fails-if-output-file-directory
 
 

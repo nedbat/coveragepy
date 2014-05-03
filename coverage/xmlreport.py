@@ -17,8 +17,8 @@ class XmlReporter(Reporter):
     def __init__(self, coverage, config):
         super(XmlReporter, self).__init__(coverage, config)
 
-        self.source_paths = None
-        self.packages = None
+        self.source_paths = set()
+        self.packages = {}
         self.xml_out = None
         self.arcs = coverage.data.has_arcs()
 
@@ -50,8 +50,6 @@ class XmlReporter(Reporter):
             ))
 
         # Call xml_file for each file in the data.
-        self.source_paths = set()
-        self.packages = {}
         self.report_files(self.xml_file, morfs)
 
         xsources = self.xml_out.createElement("sources")
@@ -112,7 +110,7 @@ class XmlReporter(Reporter):
         package_name = cu.name.rpartition(".")[0]
         className = cu.name
 
-        path = self.source_paths.add(cu.file_locator.relative_dir.rstrip('/'))
+        self.source_paths.add(cu.file_locator.relative_dir.rstrip('/'))
         package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])
 
         xclass = self.xml_out.createElement("class")
