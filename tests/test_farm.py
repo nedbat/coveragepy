@@ -238,8 +238,10 @@ class FarmTestCase(object):
             # guide for size comparison.
             wrong_size = []
             for f in diff_files:
-                left = open(os.path.join(dir1, f), "rb").read()
-                right = open(os.path.join(dir2, f), "rb").read()
+                with open(os.path.join(dir1, f), "rb") as fobj:
+                    left = fobj.read()
+                with open(os.path.join(dir2, f), "rb") as fobj:
+                    right = fobj.read()
                 size_l, size_r = len(left), len(right)
                 big, little = max(size_l, size_r), min(size_l, size_r)
                 if (big - little) / float(little) > size_within/100.0:
@@ -256,14 +258,18 @@ class FarmTestCase(object):
             # ourselves.
             text_diff = []
             for f in diff_files:
-                left = open(os.path.join(dir1, f), "rU").read()
-                right = open(os.path.join(dir2, f), "rU").read()
+                with open(os.path.join(dir1, f), "rU") as fobj:
+                    left = fobj.read()
+                with open(os.path.join(dir2, f), "rU") as fobj:
+                    right = fobj.read()
                 if scrubs:
                     left = self._scrub(left, scrubs)
                     right = self._scrub(right, scrubs)
                 if left != right:
                     text_diff.append(f)
-                    print("".join(list(difflib.Differ().compare(left, right))))
+                    left = left.splitlines()
+                    right = right.splitlines()
+                    print("\n".join(difflib.Differ().compare(left, right)))
             assert not text_diff, "Files differ: %s" % text_diff
 
         if not left_extra:
