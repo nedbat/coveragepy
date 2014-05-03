@@ -88,7 +88,6 @@ class MatcherTest(CoverageTest):
             (self.make_file("sub3/file4.py"), True),
             (self.make_file("sub3/file5.c"), False),
         ]
-        fl = FileLocator()
         fnm = FnmatchMatcher(["*.py", "*/sub2/*"])
         self.assertEqual(fnm.info(), ["*.py", "*/sub2/*"])
         for filepath, matches in matches_to_try:

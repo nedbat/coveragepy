@@ -5,7 +5,6 @@ import os, re, shutil, sys
 import coverage
 from coverage.backward import pickle
 from coverage.misc import CoverageException, Hasher
-from coverage.phystokens import source_token_lines, source_encoding
 from coverage.report import Reporter
 from coverage.results import Numbers
 from coverage.templite import Templite

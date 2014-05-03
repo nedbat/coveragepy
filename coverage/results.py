@@ -1,7 +1,6 @@
 """Results of coverage measurement."""
 
 import collections
-import os
 
 from coverage.backward import iitems
 from coverage.misc import format_lines, join_regex
@@ -25,9 +24,10 @@ class Analysis(object):
         self.statements, self.excluded = self.parser.parse_source()
 
         # Identify missing statements.
-        executed = self.parser.translate_lines(self.coverage.data.executed_lines(self.filename))
-        exec1 = self.parser.first_lines(executed)
-        self.missing = self.statements - exec1
+        executed = self.coverage.data.executed_lines(self.filename)
+        executed = self.parser.translate_lines(executed)
+        executed = self.parser.first_lines(executed)
+        self.missing = self.statements - executed
 
         if self.coverage.data.has_arcs():
             self.no_branch = self.parser.lines_matching(
