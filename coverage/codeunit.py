@@ -2,7 +2,7 @@
 
 import glob, os, re
 
-from coverage.backward import open_source, string_class, StringIO
+from coverage.backward import open_python_source, string_class, StringIO
 from coverage.misc import CoverageException, NoSource
 from coverage.parser import CodeParser, PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
@@ -123,7 +123,7 @@ class CodeUnit(object):
         """Return an open file for reading the source of the code unit."""
         if os.path.exists(self.filename):
             # A regular text file: open it.
-            return open_source(self.filename)
+            return open_python_source(self.filename)
 
         # Maybe it's in a zip file?
         source = self.file_locator.get_zip_data(self.filename)

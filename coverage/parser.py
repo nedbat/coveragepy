@@ -3,8 +3,8 @@
 import collections, dis, re, token, tokenize
 
 from coverage.backward import StringIO
-from coverage.backward import open_source, range    # pylint: disable=W0622
-from coverage.backward import bytes_to_ints
+from coverage.backward import range    # pylint: disable=W0622
+from coverage.backward import bytes_to_ints, open_python_source
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, expensive, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
@@ -17,26 +17,14 @@ class CodeParser(object):
     def _adjust_filename(self, fname):
         return fname
 
-    def first_lines(self, lines, *ignores):
+    def first_lines(self, lines):
         """Map the line numbers in `lines` to the correct first line of the
         statement.
-
-        Skip any line mentioned in any of the sequences in `ignores`.
 
         Returns a set of the first lines.
 
         """
-        ignore = set()
-        for ign in ignores:
-            ignore.update(ign)
-        lset = set()
-        for l in lines:
-            if l in ignore:
-                continue
-            new_l = self.first_line(l)
-            if new_l not in ignore:
-                lset.add(new_l)
-        return lset
+        return set(self.first_line(l) for l in lines)
 
     def first_line(self, line):
         return line
@@ -66,7 +54,7 @@ class PythonParser(CodeParser):
         self.text = text
         if not self.text:
             try:
-                with open_source(self.filename) as sourcef:
+                with open_python_source(self.filename) as sourcef:
                     self.text = sourcef.read()
             except IOError as err:
                 raise NoSource(
@@ -229,11 +217,12 @@ class PythonParser(CodeParser):
                 )
 
         excluded_lines = self.first_lines(self.excluded)
-        lines = self.first_lines(
-            self.statement_starts,
-            excluded_lines,
-            self.docstrings
-        )
+        ignore = set()
+        ignore.update(excluded_lines)
+        ignore.update(self.docstrings)
+        starts = self.statement_starts - ignore
+        lines = self.first_lines(starts)
+        lines -= ignore
 
         return lines, excluded_lines
 
@@ -346,7 +335,7 @@ class ByteParser(object):
         else:
             if not text:
                 assert filename, "If no code or text, need a filename"
-                with open_source(filename) as sourcef:
+                with open_python_source(filename) as sourcef:
                     text = sourcef.read()
             self.text = text
 

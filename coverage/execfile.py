@@ -2,7 +2,7 @@
 
 import imp, marshal, os, sys
 
-from coverage.backward import open_source
+from coverage.backward import open_python_source
 from coverage.misc import ExceptionDuringRun, NoCode, NoSource
 
 
@@ -123,7 +123,7 @@ def make_code_from_py(filename):
     """Get source from `filename` and make a code object of it."""
     # Open the source file.
     try:
-        source_file = open_source(filename)
+        source_file = open_python_source(filename)
     except IOError:
         raise NoSource("No file to run: %r" % filename)
 
