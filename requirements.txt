@@ -1,5 +1,6 @@
 nose
 mock
-tox
 pylint
 sphinx
+tox
+unittest2
