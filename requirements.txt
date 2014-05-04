@@ -3,4 +3,3 @@ mock
 pylint
 sphinx
 tox
-unittest2
