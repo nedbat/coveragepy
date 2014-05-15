@@ -31,6 +31,14 @@ p {
 table {
     border-collapse: collapse;
     }
+table tr.hidden {
+    display: none !important;
+    }
+
+p#no_rows {
+    display: none;
+    font-size: 1.2em;
+    }
 
 a.nav {
     text-decoration: none;
@@ -51,10 +59,32 @@ a.nav:hover {
 #source {
     padding: 1em;
     font-family: "courier new", monospace;
+    margin-top: 92px;
+    }
+
+#source span.indicator {
+    float: right;
+    margin: 0 -12px 0 3px;
+    font-weight: bold;
+    font-size: 1.5em;
+    }
+#source p.mis span.indicator {
+    color: #ff0000;
+    }
+#source p.run span.indicator {
+    color: #000000;
+    }
+#source p.exc span.indicator {
+    color: #000000;
     }
 
 #indexfile #footer {
     margin: 1em 3em;
+    }
+
+#pyfile #header {
+    position: fixed;
+    top: 0;
     }
 
 #pyfile #footer {
@@ -80,6 +110,16 @@ a.nav:hover {
 
 h1 {
     font-size: 1.25em;
+    display: inline-block;
+}
+
+form#filter_container {
+    display: inline-block;
+    float: right;
+    margin: 0 3em 0 0;
+}
+form#filter_container input {
+    width: 24em;
 }
 
 h2.stats {
@@ -92,6 +132,16 @@ h2.stats {
     margin: 0 .1em;
     cursor: pointer;
     border-color: #999 #ccc #ccc #999;
+}
+.stats button {
+    margin: 0 1em 0 0;
+    padding: 0 0 1px 0;
+    width: 1.5em;
+    font-size: 1em;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #999999 #CCCCCC #CCCCCC #999999;
 }
 .stats span.hide_run, .stats span.hide_exc,
 .stats span.hide_mis, .stats span.hide_par,
@@ -130,6 +180,7 @@ h2.stats {
 /* Help panel */
 #keyboard_icon {
     float: right;
+    margin: 5px;
     cursor: pointer;
 }
 

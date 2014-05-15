@@ -35,6 +35,146 @@ coverage.wire_up_help_panel = function () {
     });
 };
 
+// Create the events for the filter box.
+coverage.wire_up_filter = function () {
+    $("#filter").on("keyup change", $.debounce(150, function (event) {
+        var filter_value = $(this).val();
+
+        if (filter_value === "") {
+            // Filter box is empty, remove all filtering
+            $("table.index tr").removeClass("hidden");
+
+            // Hide placeholder, show table
+            if ($("#no_rows").length > 0) {
+                $("#no_rows").hide();
+            }
+            $("table.index").show();
+
+        } else {
+            // Filter table items by value
+            var hide = $([]);
+            var show = $([]);
+
+            // - Compile elements to hide / show
+            $.each($("table.index tr td.name a"), function () {
+                var element = $(this).parents("tr");
+
+                if ($(this).text().indexOf(filter_value) === -1) {
+                    // hide
+                    hide = hide.add(element);
+
+                } else {
+                    // show
+                    show = show.add(element);
+                }
+            });
+
+            // - Perform DOM manipulation
+            hide.addClass("hidden");
+            show.removeClass("hidden");
+
+            // - Show placeholder if no rows will be displayed
+            if ($("#no_rows").length > 0) {
+                if (show.length === 0) {
+                    // Show placeholder, hide table
+                    $("#no_rows").show();
+                    $("table.index").hide();
+
+                } else {
+                    // Hide placeholder, show table
+                    $("#no_rows").hide();
+                    $("table.index").show();
+                }
+            }
+
+            // Hide totals table footer if hiding any rows, as values will be inaccurate
+            if (hide.length > 0) {
+                // Hide footer
+                $("table.index tfoot tr").addClass("hidden");
+
+            } else {
+                // Show footer
+                $("table.index tfoot tr").removeClass("hidden");
+            }
+        }
+    }));
+
+    // Trigger change event on setup, to force filter on page refresh (filter value may still be present)
+    $("#filter").trigger("change");
+};
+
+// Create the events for the next buttons.
+coverage.wire_up_next_buttons = function () {
+    // Define next button handler.
+    function next_handler(event) {
+        event.preventDefault();
+
+        // Define selector based on clicked button.
+        var button_id = $(this).attr("id");
+        var selector;
+
+        if (button_id == "next_run") {
+            selector = ".run";
+
+        } else if (button_id == "next_missing") {
+            selector = ".mis";
+
+        } else if (button_id == "next_excluded") {
+            selector = ".exc";
+
+        } else {
+            return false;
+        }
+
+        // Go to first line, or next in sequence?
+        var target;
+        var previous_target = $(this).data("target");
+
+        if (previous_target === undefined) {
+            // First click, get first matching line.
+            target = $("p[id^='t']" + selector).first();
+
+        } else {
+            // Get next matching (non-contiguous) line.
+            var old_target = previous_target;
+            target = old_target.nextAll("p[id^='t']" + selector).first();
+
+            while ((parseInt(target.attr("id").match(/\d+/)[0]) - parseInt(old_target.attr("id").match(/\d+/)[0])) === 1) {
+                old_target = target;
+                target = old_target.nextAll("p[id^='t']" + selector).first();
+            }
+        }
+
+        // Set highlight styling and arrow indicator.
+        $("p[id^='n'].highlight").removeClass("highlight");
+        $("p[id^='n'] span.indicator").remove();
+
+        $("p#n" + target.attr("id").match(/\d+/)[0])
+            .prepend(
+                $("<span />")
+                    .addClass("indicator")
+                    .html("&loz;")
+            )
+            .addClass("highlight")
+
+        // Scroll to line.
+        $("html, body").animate({
+            scrollTop: (target.position().top - ($("#header").outerHeight() + 100))
+        }, 100);
+
+        // Save target reference in button element for next click.
+        $(this).data("target", target);
+
+        return false;
+    }
+
+
+    // Wire up buttons to handler.
+    $("#header .stats button")
+        .off("click.next")
+        .on("click.next", next_handler);
+};
+
 // Loaded on index.html
 coverage.index_ready = function ($) {
     // Look for a cookie containing previous sort settings:
@@ -95,6 +235,7 @@ coverage.index_ready = function ($) {
 
     coverage.assign_shortkeys();
     coverage.wire_up_help_panel();
+    coverage.wire_up_filter();
 
     // Watch for page unload events so we can save the final sort settings:
     $(window).unload(function () {
@@ -129,6 +270,7 @@ coverage.pyfile_ready = function ($) {
 
     coverage.assign_shortkeys();
     coverage.wire_up_help_panel();
+    coverage.wire_up_next_buttons();
 };
 
 coverage.toggle_lines = function (btn, cls) {

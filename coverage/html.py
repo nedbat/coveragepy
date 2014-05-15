@@ -53,6 +53,7 @@ class HtmlReporter(Reporter):
     STATIC_FILES = [
             ("style.css", ""),
             ("jquery.min.js", "jquery"),
+            ("jquery.debounce.min.js", "jquery-debounce"),
             ("jquery.hotkeys.js", "jquery-hotkeys"),
             ("jquery.isonscreen.js", "jquery-isonscreen"),
             ("jquery.tablesorter.min.js", "jquery-tablesorter"),
