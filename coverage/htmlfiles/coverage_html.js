@@ -50,12 +50,13 @@ coverage.wire_up_filter = function () {
             }
             $("table.index").show();
 
-        } else {
+        }
+        else {
             // Filter table items by value
             var hide = $([]);
             var show = $([]);
 
-            // - Compile elements to hide / show
+            // Compile elements to hide / show
             $.each($("table.index tr td.name a"), function () {
                 var element = $(this).parents("tr");
 
@@ -63,24 +64,26 @@ coverage.wire_up_filter = function () {
                     // hide
                     hide = hide.add(element);
 
-                } else {
+                }
+                else {
                     // show
                     show = show.add(element);
                 }
             });
 
-            // - Perform DOM manipulation
+            // Perform DOM manipulation
             hide.addClass("hidden");
             show.removeClass("hidden");
 
-            // - Show placeholder if no rows will be displayed
+            // Show placeholder if no rows will be displayed
             if ($("#no_rows").length > 0) {
                 if (show.length === 0) {
                     // Show placeholder, hide table
                     $("#no_rows").show();
                     $("table.index").hide();
 
-                } else {
+                }
+                else {
                     // Hide placeholder, show table
                     $("#no_rows").hide();
                     $("table.index").show();
@@ -92,7 +95,8 @@ coverage.wire_up_filter = function () {
                 // Hide footer
                 $("table.index tfoot tr").addClass("hidden");
 
-            } else {
+            }
+            else {
                 // Show footer
                 $("table.index tfoot tr").removeClass("hidden");
             }
@@ -115,14 +119,14 @@ coverage.wire_up_next_buttons = function () {
 
         if (button_id == "next_run") {
             selector = ".run";
-
-        } else if (button_id == "next_missing") {
+        }
+        else if (button_id == "next_missing") {
             selector = ".mis";
-
-        } else if (button_id == "next_excluded") {
+        }
+        else if (button_id == "next_excluded") {
             selector = ".exc";
-
-        } else {
+        }
+        else {
             return false;
         }
 
@@ -133,8 +137,8 @@ coverage.wire_up_next_buttons = function () {
         if (previous_target === undefined) {
             // First click, get first matching line.
             target = $("p[id^='t']" + selector).first();
-
-        } else {
+        }
+        else {
             // Get next matching (non-contiguous) line.
             var old_target = previous_target;
             target = old_target.nextAll("p[id^='t']" + selector).first();
