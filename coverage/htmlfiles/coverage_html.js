@@ -149,25 +149,27 @@ coverage.wire_up_next_buttons = function () {
             }
         }
 
-        // Set highlight styling and arrow indicator.
-        $("p[id^='n'].highlight").removeClass("highlight");
-        $("p[id^='n'] span.indicator").remove();
+        if (target.length > 0) {
+            // Set highlight styling and arrow indicator.
+            $("p[id^='n'].highlight").removeClass("highlight");
+            $("p[id^='n'] span.indicator").remove();
 
-        $("p#n" + target.attr("id").match(/\d+/)[0])
-            .prepend(
+            $("p#n" + target.attr("id").match(/\d+/)[0])
+                .prepend(
                 $("<span />")
                     .addClass("indicator")
                     .html("&loz;")
             )
-            .addClass("highlight")
+                .addClass("highlight");
 
-        // Scroll to line.
-        $("html, body").animate({
-            scrollTop: (target.position().top - ($("#header").outerHeight() + 100))
-        }, 100);
+            // Scroll to line.
+            $("html, body").animate({
+                scrollTop: (target.position().top - ($("#header").outerHeight() + 100))
+            }, 100);
 
-        // Save target reference in button element for next click.
-        $(this).data("target", target);
+            // Save target reference in button element for next click.
+            $(this).data("target", target);
+        }
 
         return false;
     }
