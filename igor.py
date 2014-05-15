@@ -12,7 +12,11 @@ import os
 import platform
 import socket
 import sys
+import warnings
 import zipfile
+
+
+warnings.simplefilter("default")
 
 
 # Functions named do_* are executable from the command line: do_blah is run

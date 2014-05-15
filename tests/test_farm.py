@@ -15,6 +15,10 @@ def test_farm(clean_only=False):
         yield (case,)
 
 
+# "rU" was deprecated in 3.4
+READ_MODE = "rU" if sys.version_info < (3, 4) else "r"
+
+
 class FarmTestCase(object):
     """A test case from the farm tree.
 
@@ -258,9 +262,9 @@ class FarmTestCase(object):
             # ourselves.
             text_diff = []
             for f in diff_files:
-                with open(os.path.join(dir1, f), "rU") as fobj:
+                with open(os.path.join(dir1, f), READ_MODE) as fobj:
                     left = fobj.read()
-                with open(os.path.join(dir2, f), "rU") as fobj:
+                with open(os.path.join(dir2, f), READ_MODE) as fobj:
                     right = fobj.read()
                 if scrubs:
                     left = self._scrub(left, scrubs)
@@ -280,7 +284,7 @@ class FarmTestCase(object):
     def _scrub(self, strdata, scrubs):
         """Scrub uninteresting data from the payload in `strdata`.
 
-        `scrubs is a list of (find, replace) pairs of regexes that are used on
+        `scrubs` is a list of (find, replace) pairs of regexes that are used on
         `strdata`.  A string is returned.
 
         """
@@ -295,7 +299,8 @@ class FarmTestCase(object):
         missing in `filename`.
 
         """
-        text = open(filename, "r").read()
+        with open(filename, "r") as fobj:
+            text = fobj.read()
         for s in strlist:
             assert s in text, "Missing content in %s: %r" % (filename, s)
 
@@ -306,7 +311,8 @@ class FarmTestCase(object):
         `filename`.
 
         """
-        text = open(filename, "r").read()
+        with open(filename, "r") as fobj:
+            text = fobj.read()
         for s in strlist:
             assert s not in text, "Forbidden content in %s: %r" % (filename, s)
 

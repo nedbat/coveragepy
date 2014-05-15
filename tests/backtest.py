@@ -46,4 +46,6 @@ try:
 except NameError:
     def execfile(filename, globs):
         """A Python 3 implementation of execfile."""
-        exec(compile(open(filename).read(), filename, 'exec'), globs)
+        with open(filename) as fobj:
+            code = fobj.read()
+        exec(compile(code, filename, 'exec'), globs)
