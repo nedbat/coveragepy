@@ -1,10 +1,11 @@
 """Add things to old Pythons so I can pretend they are newer."""
 
 # This file does lots of tricky stuff, so disable a bunch of lintisms.
-# pylint: disable=F0401,W0611,W0622
-# F0401: Unable to import blah
-# W0611: Unused import blah
-# W0622: Redefining built-in blah
+# pylint: disable=redefined-builtin
+# pylint: disable=import-error
+# pylint: disable=no-member
+# pylint: disable=unused-import
+# pylint: disable=no-name-in-module
 
 import os, re, sys
 
@@ -124,3 +125,23 @@ try:
 except ImportError:
     import md5
     md5 = md5.new
+
+
+# imp was deprecated in Python 3.4
+try:
+    import importlib, importlib.util
+    imp = None
+except ImportError:
+    importlib = None
+
+# we only want to use importlib if it has everything we need.
+try:
+    importlib.util.find_spec
+except Exception:
+    import imp
+    importlib = None
+
+try:
+    PYC_MAGIC_NUMBER = importlib.util.MAGIC_NUMBER
+except AttributeError:
+    PYC_MAGIC_NUMBER = imp.get_magic()

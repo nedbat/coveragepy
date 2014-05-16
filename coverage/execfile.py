@@ -1,8 +1,9 @@
 """Execute files of Python code."""
 
-import imp, marshal, os, sys
+import marshal, os, sys, types
 
 from coverage.backward import open_python_source
+from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib
 from coverage.misc import ExceptionDuringRun, NoCode, NoSource
 
 
@@ -20,6 +21,79 @@ def rsplit1(s, sep):
     return sep.join(parts[:-1]), parts[-1]
 
 
+if importlib:
+    def find_module(modulename):
+        """Find the module named `modulename`.
+
+        Returns the file path of the module, and the name of the enclosing
+        package.
+        """
+        # pylint: disable=no-member
+        try:
+            spec = importlib.util.find_spec(modulename)
+        except ImportError as err:
+            raise NoSource(str(err))
+        if not spec:
+            raise NoSource("No module named %r" % (modulename,))
+        pathname = spec.origin
+        packagename = spec.name
+        if pathname.endswith("__init__.py"):
+            mod_main = modulename + ".__main__"
+            spec = importlib.util.find_spec(mod_main)
+            if not spec:
+                raise NoSource(
+                    "No module named %s; "
+                    "%r is a package and cannot be directly executed"
+                    % (mod_main, modulename)
+                )
+            pathname = spec.origin
+            packagename = spec.name
+        packagename = packagename.rpartition(".")[0]
+        return pathname, packagename
+else:
+    def find_module(modulename):
+        """Find the module named `modulename`.
+
+        Returns the file path of the module, and the name of the enclosing
+        package.
+        """
+        openfile = None
+        glo, loc = globals(), locals()
+        try:
+            # Search for the module - inside its parent package, if any - using
+            # standard import mechanics.
+            if '.' in modulename:
+                packagename, name = rsplit1(modulename, '.')
+                package = __import__(packagename, glo, loc, ['__path__'])
+                searchpath = package.__path__
+            else:
+                packagename, name = None, modulename
+                searchpath = None  # "top-level search" in imp.find_module()
+            openfile, pathname, _ = imp.find_module(name, searchpath)
+
+            # Complain if this is a magic non-file module.
+            if openfile is None and pathname is None:
+                raise NoSource(
+                    "module does not live in a file: %r" % modulename
+                    )
+
+            # If `modulename` is actually a package, not a mere module, then we
+            # pretend to be Python 2.7 and try running its __main__.py script.
+            if openfile is None:
+                packagename = modulename
+                name = '__main__'
+                package = __import__(packagename, glo, loc, ['__path__'])
+                searchpath = package.__path__
+                openfile, pathname, _ = imp.find_module(name, searchpath)
+        except ImportError as err:
+            raise NoSource(str(err))
+        finally:
+            if openfile:
+                openfile.close()
+
+        return pathname, packagename
+
+
 def run_python_module(modulename, args):
     """Run a python module, as though with ``python -m name args...``.
 
@@ -28,41 +102,8 @@ def run_python_module(modulename, args):
     element naming the module being executed.
 
     """
-    openfile = None
-    glo, loc = globals(), locals()
-    try:
-        # Search for the module - inside its parent package, if any - using
-        # standard import mechanics.
-        if '.' in modulename:
-            packagename, name = rsplit1(modulename, '.')
-            package = __import__(packagename, glo, loc, ['__path__'])
-            searchpath = package.__path__
-        else:
-            packagename, name = None, modulename
-            searchpath = None  # "top-level search" in imp.find_module()
-        openfile, pathname, _ = imp.find_module(name, searchpath)
+    pathname, packagename = find_module(modulename)
 
-        # Complain if this is a magic non-file module.
-        if openfile is None and pathname is None:
-            raise NoSource(
-                "module does not live in a file: %r" % modulename
-                )
-
-        # If `modulename` is actually a package, not a mere module, then we
-        # pretend to be Python 2.7 and try running its __main__.py script.
-        if openfile is None:
-            packagename = modulename
-            name = '__main__'
-            package = __import__(packagename, glo, loc, ['__path__'])
-            searchpath = package.__path__
-            openfile, pathname, _ = imp.find_module(name, searchpath)
-    except ImportError as err:
-        raise NoSource(str(err))
-    finally:
-        if openfile:
-            openfile.close()
-
-    # Finally, hand the file off to run_python_file for execution.
     pathname = os.path.abspath(pathname)
     args[0] = pathname
     run_python_file(pathname, args, package=packagename)
@@ -79,7 +120,7 @@ def run_python_file(filename, args, package=None):
     """
     # Create a module to serve as __main__
     old_main_mod = sys.modules['__main__']
-    main_mod = imp.new_module('__main__')
+    main_mod = types.ModuleType('__main__')
     sys.modules['__main__'] = main_mod
     main_mod.__file__ = filename
     if package:
@@ -119,6 +160,7 @@ def run_python_file(filename, args, package=None):
         # Restore the old argv and path
         sys.argv = old_argv
 
+
 def make_code_from_py(filename):
     """Get source from `filename` and make a code object of it."""
     # Open the source file.
@@ -150,7 +192,7 @@ def make_code_from_pyc(filename):
         # First four bytes are a version-specific magic number.  It has to
         # match or we won't run the file.
         magic = fpyc.read(4)
-        if magic != imp.get_magic():
+        if magic != PYC_MAGIC_NUMBER:
             raise NoCode("Bad magic number in .pyc file")
 
         # Skip the junk in the header that we don't need.
