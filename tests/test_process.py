@@ -502,6 +502,18 @@ class ProcessTest(CoverageTest):
                 # about 5.
                 self.assertGreater(data.summary()['os.py'], 50)
 
+    def test_deprecation_warnings(self):
+        # Test that coverage doesn't trigger deprecation warnings.
+        # https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module
+        self.make_file("allok.py", """\
+            import warnings
+            warnings.simplefilter('default')
+            import coverage
+            print("No warnings!")
+            """)
+        out = self.run_command("python allok.py")
+        self.assertEqual(out, "No warnings!\n")
+
 
 class AliasedCommandTest(CoverageTest):
     """Tests of the version-specific command aliases."""
