@@ -127,6 +127,14 @@ except ImportError:
     md5 = md5.new
 
 
+try:
+    # In Py 2.x, the builtins were in __builtin__
+    BUILTINS = sys.modules['__builtin__']
+except KeyError:
+    # In Py 3.x, they're in builtins
+    BUILTINS = sys.modules['builtins']
+
+
 # imp was deprecated in Python 3.4
 try:
     import importlib, importlib.util

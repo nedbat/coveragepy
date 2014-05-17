@@ -2,23 +2,9 @@
 
 import marshal, os, sys, types
 
-from coverage.backward import open_python_source
+from coverage.backward import open_python_source, BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib
 from coverage.misc import ExceptionDuringRun, NoCode, NoSource
-
-
-try:
-    # In Py 2.x, the builtins were in __builtin__
-    BUILTINS = sys.modules['__builtin__']
-except KeyError:
-    # In Py 3.x, they're in builtins
-    BUILTINS = sys.modules['builtins']
-
-
-def rsplit1(s, sep):
-    """The same as s.rsplit(sep, 1), but works in 2.3"""
-    parts = s.split(sep)
-    return sep.join(parts[:-1]), parts[-1]
 
 
 if importlib:
@@ -63,7 +49,7 @@ else:
             # Search for the module - inside its parent package, if any - using
             # standard import mechanics.
             if '.' in modulename:
-                packagename, name = rsplit1(modulename, '.')
+                packagename, name = modulename.rsplit('.', 1)
                 package = __import__(packagename, glo, loc, ['__path__'])
                 searchpath = package.__path__
             else:
