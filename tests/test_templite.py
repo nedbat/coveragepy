@@ -40,7 +40,7 @@ class TempliteTest(CoverageTest):
         A context manager, and the message should be `msg`.
         """
         pat = "^" + re.escape(msg) + "$"
-        return self.assertRaisesRegexp(TempliteSyntaxError, pat)
+        return self.assertRaisesRegex(TempliteSyntaxError, pat)
 
     def test_passthrough(self):
         # Strings without variables are passed through unchanged.

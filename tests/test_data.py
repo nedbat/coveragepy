@@ -33,7 +33,7 @@ class DataTest(CoverageTest):
 
     def assert_measured_files(self, covdata, measured):
         """Check that `covdata`'s measured files are `measured`."""
-        self.assertSameElements(covdata.measured_files(), measured)
+        self.assertCountEqual(covdata.measured_files(), measured)
 
     def test_reading_empty(self):
         covdata = CoverageData()
@@ -96,9 +96,9 @@ class DataTest(CoverageTest):
             data = pickle.load(fdata)
 
         lines = data['lines']
-        self.assertSameElements(lines.keys(), MEASURED_FILES_1)
-        self.assertSameElements(lines['a.py'], A_PY_LINES_1)
-        self.assertSameElements(lines['b.py'], B_PY_LINES_1)
+        self.assertCountEqual(lines.keys(), MEASURED_FILES_1)
+        self.assertCountEqual(lines['a.py'], A_PY_LINES_1)
+        self.assertCountEqual(lines['b.py'], B_PY_LINES_1)
         # If not measuring branches, there's no arcs entry.
         self.assertEqual(data.get('arcs', 'not there'), 'not there')
 
@@ -111,10 +111,10 @@ class DataTest(CoverageTest):
         with open(".coverage", 'rb') as fdata:
             data = pickle.load(fdata)
 
-        self.assertSameElements(data['lines'].keys(), [])
+        self.assertCountEqual(data['lines'].keys(), [])
         arcs = data['arcs']
-        self.assertSameElements(arcs['x.py'], X_PY_ARCS_3)
-        self.assertSameElements(arcs['y.py'], Y_PY_ARCS_3)
+        self.assertCountEqual(arcs['x.py'], X_PY_ARCS_3)
+        self.assertCountEqual(arcs['y.py'], Y_PY_ARCS_3)
 
     def test_combining_with_aliases(self):
         covdata1 = CoverageData()

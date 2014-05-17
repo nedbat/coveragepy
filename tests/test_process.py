@@ -229,7 +229,7 @@ class ProcessTest(CoverageTest):
         self.run_command("coverage run fleeting.py")
         os.remove("fleeting.py")
         out = self.run_command("coverage html -d htmlcov")
-        self.assertRegexpMatches(out, "No source for code: '.*fleeting.py'")
+        self.assertRegex(out, "No source for code: '.*fleeting.py'")
         self.assertNotIn("Traceback", out)
 
         # It happens that the code paths are different for *.py and other
@@ -241,13 +241,13 @@ class ProcessTest(CoverageTest):
         self.run_command("coverage run fleeting")
         os.remove("fleeting")
         status, out = self.run_command_status("coverage html -d htmlcov", 1)
-        self.assertRegexpMatches(out, "No source for code: '.*fleeting'")
+        self.assertRegex(out, "No source for code: '.*fleeting'")
         self.assertNotIn("Traceback", out)
         self.assertEqual(status, 1)
 
     def test_running_missing_file(self):
         status, out = self.run_command_status("coverage run xyzzy.py", 1)
-        self.assertRegexpMatches(out, "No file to run: .*xyzzy.py")
+        self.assertRegex(out, "No file to run: .*xyzzy.py")
         self.assertNotIn("raceback", out)
         self.assertNotIn("rror", out)
         self.assertEqual(status, 1)

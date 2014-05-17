@@ -3,11 +3,11 @@
 import marshal, os, sys, types
 
 from coverage.backward import open_python_source, BUILTINS
-from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib
+from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
 from coverage.misc import ExceptionDuringRun, NoCode, NoSource
 
 
-if importlib:
+if importlib_util_find_spec:
     def find_module(modulename):
         """Find the module named `modulename`.
 
@@ -16,7 +16,7 @@ if importlib:
         """
         # pylint: disable=no-member
         try:
-            spec = importlib.util.find_spec(modulename)
+            spec = importlib_util_find_spec(modulename)
         except ImportError as err:
             raise NoSource(str(err))
         if not spec:
@@ -25,7 +25,7 @@ if importlib:
         packagename = spec.name
         if pathname.endswith("__init__.py"):
             mod_main = modulename + ".__main__"
-            spec = importlib.util.find_spec(mod_main)
+            spec = importlib_util_find_spec(mod_main)
             if not spec:
                 raise NoSource(
                     "No module named %s; "

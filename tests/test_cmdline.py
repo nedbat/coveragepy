@@ -754,7 +754,7 @@ class CmdMainTest(CoverageTest):
         self.assertEqual(err[-2], 'Exception: oh noes!')
 
     def test_internalraise(self):
-        with self.assertRaisesRegexp(ValueError, "coverage is broken"):
+        with self.assertRaisesRegex(ValueError, "coverage is broken"):
             coverage.cmdline.main(['internalraise'])
 
     def test_exit(self):

@@ -4,7 +4,7 @@ import glob, imp, os, random, shlex, shutil, sys, tempfile, textwrap
 import atexit, collections
 
 import coverage
-from coverage.backward import StringIO, to_bytes
+from coverage.backward import StringIO, to_bytes, imp, importlib, import_local_file
 from coverage.control import _TEST_NAME_FILE
 from tests.backtest import run_command
 from tests.backunittest import TestCase
@@ -221,18 +221,7 @@ class CoverageTest(TestCase):
         as `modname`, and returns the module object.
 
         """
-        modfile = modname + '.py'
-
-        for suff in imp.get_suffixes():
-            if suff[0] == '.py':
-                break
-
-        with open(modfile, 'r') as f:
-            # pylint: disable=W0631
-            # (Using possibly undefined loop variable 'suff')
-            mod = imp.load_module(modname, f, modfile, suff)
-
-        return mod
+        return import_local_file(modname)
 
     def start_import_stop(self, cov, modname):
         """Start coverage, import a file, then stop coverage.
@@ -412,17 +401,17 @@ class CoverageTest(TestCase):
         """Assert that `flist1` and `flist2` are the same set of file names."""
         flist1_nice = [self.nice_file(f) for f in flist1]
         flist2_nice = [self.nice_file(f) for f in flist2]
-        self.assertSameElements(flist1_nice, flist2_nice)
+        self.assertCountEqual(flist1_nice, flist2_nice)
 
     def assert_exists(self, fname):
         """Assert that `fname` is a file that exists."""
         msg = "File %r should exist" % fname
-        self.assert_(os.path.exists(fname), msg)
+        self.assertTrue(os.path.exists(fname), msg)
 
     def assert_doesnt_exist(self, fname):
         """Assert that `fname` is a file that doesn't exist."""
         msg = "File %r shouldn't exist" % fname
-        self.assert_(not os.path.exists(fname), msg)
+        self.assertTrue(not os.path.exists(fname), msg)
 
     def assert_starts_with(self, s, prefix, msg=None):
         """Assert that `s` starts with `prefix`."""

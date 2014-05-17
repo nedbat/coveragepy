@@ -20,7 +20,21 @@ class TestCase(unittest.TestCase):
     `unittest` doesn't have them.
 
     """
-    if _need('assertSameElements'):
-        def assertSameElements(self, s1, s2):
-            """Assert that the two arguments are equal as sets."""
-            self.assertEqual(set(s1), set(s2))
+    if _need('assertCountEqual'):
+        try:
+            assertCountEqual = assertSameElements
+        except NameError:
+            def assertCountEqual(self, s1, s2):
+                """Assert these have the same elements, regardless of order."""
+                self.assertEqual(set(s1), set(s2))
+        else:
+            def assertCountEqual(self, *args, **kwargs):
+                return self.assertSameElements(*args, **kwargs)
+
+    if _need('assertRaisesRegex'):
+        def assertRaisesRegex(self, *args, **kwargs):
+            return self.assertRaisesRegexp(*args, **kwargs)
+
+    if _need('assertRegex'):
+        def assertRegex(self, *args, **kwargs):
+            return self.assertRegexpMatches(*args, **kwargs)

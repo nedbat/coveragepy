@@ -118,11 +118,11 @@ class RunPycFileTest(CoverageTest):
         fpyc.write(binary_bytes([0x2a, 0xeb, 0x0d, 0x0a]))
         fpyc.close()
 
-        with self.assertRaisesRegexp(NoCode, "Bad magic number in .pyc file"):
+        with self.assertRaisesRegex(NoCode, "Bad magic number in .pyc file"):
             run_python_file(pycfile, [pycfile])
 
     def test_no_such_pyc_file(self):
-        with self.assertRaisesRegexp(NoCode, "No file to run: 'xyzzy.pyc'"):
+        with self.assertRaisesRegex(NoCode, "No file to run: 'xyzzy.pyc'"):
             run_python_file("xyzzy.pyc", [])
 
 
