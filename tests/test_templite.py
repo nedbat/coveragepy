@@ -35,6 +35,10 @@ class TempliteTest(CoverageTest):
             self.assertEqual(actual, result)
 
     def assertSynErr(self, msg):
+        """Assert that a `TempliteSyntaxError` will happen.
+
+        A context manager, and the message should be `msg`.
+        """
         pat = "^" + re.escape(msg) + "$"
         return self.assertRaisesRegexp(TempliteSyntaxError, pat)
 
