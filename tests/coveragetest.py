@@ -1,10 +1,11 @@
 """Base test case class for coverage testing."""
 
-import glob, imp, os, random, shlex, shutil, sys, tempfile, textwrap
+import glob, os, random, shlex, shutil, sys, tempfile, textwrap
 import atexit, collections
 
 import coverage
-from coverage.backward import StringIO, to_bytes, imp, importlib, import_local_file
+from coverage.backward import StringIO, to_bytes, import_local_file
+from coverage.backward import importlib     # pylint: disable=unused-import
 from coverage.control import _TEST_NAME_FILE
 from tests.backtest import run_command
 from tests.backunittest import TestCase

@@ -8,9 +8,9 @@ except ImportError:
     import unittest
 
 
-def _need(method):
-    """Do we need to define our own `method` method?"""
-    return not hasattr(unittest.TestCase, method)
+def unittest_has(method):
+    """Does `unitttest.TestCase` have `method` defined?"""
+    return hasattr(unittest.TestCase, method)
 
 
 class TestCase(unittest.TestCase):
@@ -20,21 +20,22 @@ class TestCase(unittest.TestCase):
     `unittest` doesn't have them.
 
     """
-    if _need('assertCountEqual'):
-        try:
-            assertCountEqual = assertSameElements
-        except NameError:
+    # pylint: disable=missing-docstring
+
+    if not unittest_has('assertCountEqual'):
+        if unittest_has('assertSameElements'):
+            def assertCountEqual(self, *args, **kwargs):
+                # pylint: disable=no-member
+                return self.assertSameElements(*args, **kwargs)
+        else:
             def assertCountEqual(self, s1, s2):
                 """Assert these have the same elements, regardless of order."""
                 self.assertEqual(set(s1), set(s2))
-        else:
-            def assertCountEqual(self, *args, **kwargs):
-                return self.assertSameElements(*args, **kwargs)
 
-    if _need('assertRaisesRegex'):
+    if not unittest_has('assertRaisesRegex'):
         def assertRaisesRegex(self, *args, **kwargs):
             return self.assertRaisesRegexp(*args, **kwargs)
 
-    if _need('assertRegex'):
+    if not unittest_has('assertRegex'):
         def assertRegex(self, *args, **kwargs):
             return self.assertRegexpMatches(*args, **kwargs)
