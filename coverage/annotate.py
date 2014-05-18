@@ -47,52 +47,44 @@ class AnnotateReporter(Reporter):
         `cu` is the CodeUnit for the file to annotate.
 
         """
-        filename = cu.filename
-        source = cu.source_file()
-        if self.directory:
-            dest_file = os.path.join(self.directory, cu.flat_rootname())
-            dest_file += ".py,cover"
-        else:
-            dest_file = filename + ",cover"
-        dest = open(dest_file, 'w')
-
         statements = sorted(analysis.statements)
         missing = sorted(analysis.missing)
         excluded = sorted(analysis.excluded)
 
-        lineno = 0
-        i = 0
-        j = 0
-        covered = True
-        while True:
-            line = source.readline()
-            if line == '':
-                break
-            lineno += 1
-            while i < len(statements) and statements[i] < lineno:
-                i += 1
-            while j < len(missing) and missing[j] < lineno:
-                j += 1
-            if i < len(statements) and statements[i] == lineno:
-                covered = j >= len(missing) or missing[j] > lineno
-            if self.blank_re.match(line):
-                dest.write('  ')
-            elif self.else_re.match(line):
-                # Special logic for lines containing only 'else:'.
-                if i >= len(statements) and j >= len(missing):
-                    dest.write('! ')
-                elif i >= len(statements) or j >= len(missing):
+        if self.directory:
+            dest_file = os.path.join(self.directory, cu.flat_rootname())
+            dest_file += ".py,cover"
+        else:
+            dest_file = cu.filename + ",cover"
+
+        with open(dest_file, 'w') as dest:
+            i = 0
+            j = 0
+            covered = True
+            source = cu.source_file().read()
+            for lineno, line in enumerate(source.splitlines(True), start=1):
+                while i < len(statements) and statements[i] < lineno:
+                    i += 1
+                while j < len(missing) and missing[j] < lineno:
+                    j += 1
+                if i < len(statements) and statements[i] == lineno:
+                    covered = j >= len(missing) or missing[j] > lineno
+                if self.blank_re.match(line):
+                    dest.write('  ')
+                elif self.else_re.match(line):
+                    # Special logic for lines containing only 'else:'.
+                    if i >= len(statements) and j >= len(missing):
+                        dest.write('! ')
+                    elif i >= len(statements) or j >= len(missing):
+                        dest.write('> ')
+                    elif statements[i] == missing[j]:
+                        dest.write('! ')
+                    else:
+                        dest.write('> ')
+                elif lineno in excluded:
+                    dest.write('- ')
+                elif covered:
                     dest.write('> ')
-                elif statements[i] == missing[j]:
-                    dest.write('! ')
                 else:
-                    dest.write('> ')
-            elif lineno in excluded:
-                dest.write('- ')
-            elif covered:
-                dest.write('> ')
-            else:
-                dest.write('! ')
-            dest.write(line)
-        source.close()
-        dest.close()
+                    dest.write('! ')
+                dest.write(line)
