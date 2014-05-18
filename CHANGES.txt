@@ -14,9 +14,13 @@ Change history for Coverage.py
 - The XML report will now create the output directory if need be, fixing
   `issue 285`_.  Thanks Chris Rose.
 
+- The annotate command will now annotate all files, not just ones relative to
+  the current directory, fixing `issue 57`_.
+
 - The coverage module no longer causes deprecation warnings on Python 3.4 by
   importing the imp module, fixing `issue 305`_.
 
+.. _issue 57: https://bitbucket.org/ned/coveragepy/issue/57/annotate-command-fails-to-annotate-many
 .. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
 .. _issue 285: https://bitbucket.org/ned/coveragepy/issue/285/xml-report-fails-if-output-file-directory
 .. _issue 305: https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module

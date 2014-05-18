@@ -47,9 +47,6 @@ class AnnotateReporter(Reporter):
         `cu` is the CodeUnit for the file to annotate.
 
         """
-        if not cu.relative:
-            return
-
         filename = cu.filename
         source = cu.source_file()
         if self.directory:
