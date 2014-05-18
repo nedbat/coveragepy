@@ -72,6 +72,22 @@ class SummaryTest(CoverageTest):
         self.assertIn("mycode ", report)
         self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
 
+    def test_report_wildcard(self):
+        # Try reporting using wildcards to get the modules.
+        self.run_command("coverage run mycode.py")
+        report = self.report_from_command("coverage report my*.py")
+
+        # Name     Stmts   Miss  Cover
+        # ----------------------------
+        # mycode       4      0   100%
+
+        self.assertEqual(self.line_count(report), 3)
+        self.assertNotIn("/coverage/", report)
+        self.assertNotIn("/tests/modules/covmod1 ", report)
+        self.assertNotIn("/tests/zipmods.zip/covmodzip1 ", report)
+        self.assertIn("mycode ", report)
+        self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
+
     def test_report_omitting(self):
         # Try reporting while omitting some modules
         prefix = os.path.split(__file__)[0]
