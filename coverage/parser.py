@@ -14,23 +14,11 @@ class CodeParser(object):
     """
     Base class for any code parser.
     """
-    def _adjust_filename(self, fname):
-        return fname
-
-    def first_lines(self, lines):
-        """Map the line numbers in `lines` to the correct first line of the
-        statement.
-
-        Returns a set of the first lines.
-
-        """
-        return set(self.first_line(l) for l in lines)
-
-    def first_line(self, line):
-        return line
-
     def translate_lines(self, lines):
         return lines
+
+    def translate_arcs(self, arcs):
+        return arcs
 
     def exit_counts(self):
         return {}
@@ -196,6 +184,24 @@ class PythonParser(CodeParser):
             return first_line
         else:
             return line
+
+    def first_lines(self, lines):
+        """Map the line numbers in `lines` to the correct first line of the
+        statement.
+
+        Returns a set of the first lines.
+
+        """
+        return set(self.first_line(l) for l in lines)
+
+    def translate_lines(self, lines):
+        return self.first_lines(lines)
+
+    def translate_arcs(self, arcs):
+        return [
+            (self.first_line(a), self.first_line(b))
+            for (a, b) in arcs
+        ]
 
     def parse_source(self):
         """Parse source text to find executable lines, excluded lines, etc.

@@ -26,7 +26,6 @@ class Analysis(object):
         # Identify missing statements.
         executed = self.coverage.data.executed_lines(self.filename)
         executed = self.parser.translate_lines(executed)
-        executed = self.parser.first_lines(executed)
         self.missing = self.statements - executed
 
         if self.coverage.data.has_arcs():
@@ -74,8 +73,7 @@ class Analysis(object):
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
         executed = self.coverage.data.executed_arcs(self.filename)
-        m2fl = self.parser.first_line
-        executed = ((m2fl(l1), m2fl(l2)) for (l1,l2) in executed)
+        executed = self.parser.translate_arcs(executed)
         return sorted(executed)
 
     def arcs_missing(self):
