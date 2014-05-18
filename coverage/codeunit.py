@@ -1,6 +1,6 @@
 """Code unit (module) handling for Coverage."""
 
-import glob, os, re
+import os, re
 
 from coverage.backward import open_python_source, string_class, StringIO
 from coverage.misc import CoverageException, NoSource
@@ -21,15 +21,6 @@ def code_unit_factory(morfs, file_locator):
     # Be sure we have a list.
     if not isinstance(morfs, (list, tuple)):
         morfs = [morfs]
-
-    # On Windows, the shell doesn't expand wildcards.  Do it here.
-    globbed = []
-    for morf in morfs:
-        if isinstance(morf, string_class) and ('?' in morf or '*' in morf):
-            globbed.extend(glob.glob(morf))
-        else:
-            globbed.append(morf)
-    morfs = globbed
 
     code_units = []
     for morf in morfs:
