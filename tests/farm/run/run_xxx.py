@@ -1,7 +1,7 @@
 copy("src", "out")
 run("""
-    coverage -e -x xxx
-    coverage -r
+    coverage run xxx
+    coverage report
     """, rundir="out", outfile="stdout.txt")
 contains("out/stdout.txt",
         "xxx: 3 4 0 7",

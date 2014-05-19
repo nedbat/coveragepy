@@ -1,7 +1,7 @@
 copy("src", "out")
 run("""
     coverage run chdir.py
-    coverage -r
+    coverage report
     """, rundir="out", outfile="stdout.txt")
 contains("out/stdout.txt",
         "Line One",

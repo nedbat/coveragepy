@@ -26,8 +26,8 @@ class FarmTestCase(object):
 
         copy("src", "out")
         run('''
-            coverage -x white.py
-            coverage -a white.py
+            coverage run white.py
+            coverage annotate white.py
             ''', rundir="out")
         compare("out", "gold", "*,cover")
         clean("out")

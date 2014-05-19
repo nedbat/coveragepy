@@ -38,9 +38,9 @@ class SummaryTest(CoverageTest):
         return re.sub(r"\s+", " ", last_line)
 
     def test_report(self):
-        out = self.run_command("coverage -x mycode.py")
+        out = self.run_command("coverage run mycode.py")
         self.assertEqual(out, 'done\n')
-        report = self.report_from_command("coverage -r")
+        report = self.report_from_command("coverage report")
 
         # Name                                              Stmts   Miss  Cover
         # ---------------------------------------------------------------------
@@ -58,8 +58,8 @@ class SummaryTest(CoverageTest):
 
     def test_report_just_one(self):
         # Try reporting just one module
-        self.run_command("coverage -x mycode.py")
-        report = self.report_from_command("coverage -r mycode.py")
+        self.run_command("coverage run mycode.py")
+        report = self.report_from_command("coverage report mycode.py")
 
         # Name     Stmts   Miss  Cover
         # ----------------------------
@@ -91,8 +91,8 @@ class SummaryTest(CoverageTest):
     def test_report_omitting(self):
         # Try reporting while omitting some modules
         prefix = os.path.split(__file__)[0]
-        self.run_command("coverage -x mycode.py")
-        report = self.report_from_command("coverage -r -o '%s/*'" % prefix)
+        self.run_command("coverage run mycode.py")
+        report = self.report_from_command("coverage report --omit '%s/*'" % prefix)
 
         # Name     Stmts   Miss  Cover
         # ----------------------------
@@ -148,7 +148,7 @@ class SummaryTest(CoverageTest):
 
         self.run_command("coverage run mycode.py")
         self.make_file("mycode.py", "This isn't python at all!")
-        report = self.report_from_command("coverage -r mycode.py")
+        report = self.report_from_command("coverage report mycode.py")
 
         # pylint: disable=C0301
         # Name     Stmts   Miss  Cover
@@ -171,7 +171,7 @@ class SummaryTest(CoverageTest):
         # but we've said to ignore errors, so there's no error reported.
         self.run_command("coverage run mycode.py")
         self.make_file("mycode.py", "This isn't python at all!")
-        report = self.report_from_command("coverage -r -i mycode.py")
+        report = self.report_from_command("coverage report -i mycode.py")
 
         # Name     Stmts   Miss  Cover
         # ----------------------------
@@ -187,7 +187,7 @@ class SummaryTest(CoverageTest):
         self.run_command("coverage run mycode.html")
         # Before reporting, change it to be an HTML file.
         self.make_file("mycode.html", "<h1>This isn't python at all!</h1>")
-        report = self.report_from_command("coverage -r mycode.html")
+        report = self.report_from_command("coverage report mycode.html")
 
         # Name     Stmts   Miss  Cover
         # ----------------------------

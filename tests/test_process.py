@@ -26,7 +26,7 @@ class ProcessTest(CoverageTest):
             """)
 
         self.assert_doesnt_exist(".coverage")
-        self.run_command("coverage -x mycode.py")
+        self.run_command("coverage run mycode.py")
         self.assert_exists(".coverage")
 
     def test_environment(self):
@@ -39,7 +39,7 @@ class ProcessTest(CoverageTest):
             """)
 
         self.assert_doesnt_exist(".coverage")
-        out = self.run_command("coverage -x mycode.py")
+        out = self.run_command("coverage run mycode.py")
         self.assert_exists(".coverage")
         self.assertEqual(out, 'done\n')
 
@@ -55,11 +55,11 @@ class ProcessTest(CoverageTest):
             print('done')
             """)
 
-        out = self.run_command("coverage -x -p b_or_c.py b")
+        out = self.run_command("coverage run -p b_or_c.py b")
         self.assertEqual(out, 'done\n')
         self.assert_doesnt_exist(".coverage")
 
-        out = self.run_command("coverage -x -p b_or_c.py c")
+        out = self.run_command("coverage run -p b_or_c.py c")
         self.assertEqual(out, 'done\n')
         self.assert_doesnt_exist(".coverage")
 
@@ -67,7 +67,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(self.number_of_data_files(), 2)
 
         # Combine the parallel coverage data files into .coverage .
-        self.run_command("coverage -c")
+        self.run_command("coverage combine")
         self.assert_exists(".coverage")
 
         # After combining, there should be only the .coverage file.
@@ -91,23 +91,23 @@ class ProcessTest(CoverageTest):
             print('done')
             """)
 
-        out = self.run_command("coverage -x -p b_or_c.py b")
+        out = self.run_command("coverage run -p b_or_c.py b")
         self.assertEqual(out, 'done\n')
         self.assert_doesnt_exist(".coverage")
         self.assertEqual(self.number_of_data_files(), 1)
 
         # Combine the (one) parallel coverage data file into .coverage .
-        self.run_command("coverage -c")
+        self.run_command("coverage combine")
         self.assert_exists(".coverage")
         self.assertEqual(self.number_of_data_files(), 1)
 
-        out = self.run_command("coverage -x -p b_or_c.py c")
+        out = self.run_command("coverage run --append -p b_or_c.py c")
         self.assertEqual(out, 'done\n')
         self.assert_exists(".coverage")
         self.assertEqual(self.number_of_data_files(), 2)
 
         # Combine the parallel coverage data files into .coverage .
-        self.run_command("coverage -c")
+        self.run_command("coverage combine")
         self.assert_exists(".coverage")
 
         # After combining, there should be only the .coverage file.
@@ -378,7 +378,7 @@ class ProcessTest(CoverageTest):
             self.assertEqual(self.number_of_data_files(), 2)
 
             # Combine the parallel coverage data files into .coverage .
-            self.run_command("coverage -c")
+            self.run_command("coverage combine")
             self.assert_exists(".coverage")
 
             # After combining, there should be only the .coverage file.
