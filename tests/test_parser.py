@@ -13,7 +13,7 @@ class PythonParserTest(CoverageTest):
     def parse_source(self, text):
         """Parse `text` as source, and return the `PythonParser` used."""
         text = textwrap.dedent(text)
-        parser = PythonParser(None, text=text, exclude="nocover")
+        parser = PythonParser(text=text, exclude="nocover")
         parser.parse_source()
         return parser
 
@@ -98,7 +98,7 @@ class ParserFileTest(CoverageTest):
 
     def parse_file(self, filename):
         """Parse `text` as source, and return the `PythonParser` used."""
-        parser = PythonParser(None, filename=filename, exclude="nocover")
+        parser = PythonParser(filename=filename, exclude="nocover")
         parser.parse_source()
         return parser
 

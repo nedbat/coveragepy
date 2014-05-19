@@ -61,7 +61,7 @@ class AnnotateReporter(Reporter):
             i = 0
             j = 0
             covered = True
-            source = cu.source_file().read()
+            source = cu.source()
             for lineno, line in enumerate(source.splitlines(True), start=1):
                 while i < len(statements) and statements[i] < lineno:
                     i += 1

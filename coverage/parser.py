@@ -30,7 +30,7 @@ class CodeParser(object):
 class PythonParser(CodeParser):
     """Parse code to find executable lines, excluded lines, etc."""
 
-    def __init__(self, cu, text=None, filename=None, exclude=None):
+    def __init__(self, text=None, filename=None, exclude=None):
         """
         Source can be provided as `text`, the text itself, or `filename`, from
         which the text will be read.  Excluded lines are those that match

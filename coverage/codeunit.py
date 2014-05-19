@@ -2,7 +2,7 @@
 
 import os, re
 
-from coverage.backward import open_python_source, string_class, StringIO
+from coverage.backward import open_python_source, string_class
 from coverage.misc import CoverageException, NoSource
 from coverage.parser import CodeParser, PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
@@ -110,16 +110,16 @@ class CodeUnit(object):
             root = os.path.splitdrive(self.name)[1]
             return root.replace('\\', '_').replace('/', '_').replace('.', '_')
 
-    def source_file(self):
-        """Return an open file for reading the source of the code unit."""
+    def source(self):
+        """Return the source code, as a string."""
         if os.path.exists(self.filename):
             # A regular text file: open it.
-            return open_python_source(self.filename)
+            return open_python_source(self.filename).read()
 
         # Maybe it's in a zip file?
         source = self.file_locator.get_zip_data(self.filename)
         if source is not None:
-            return StringIO(source)
+            return source
 
         # Couldn't find source.
         raise CoverageException(
@@ -139,8 +139,6 @@ class CodeUnit(object):
 class PythonCodeUnit(CodeUnit):
     """Represents a Python file."""
 
-    parser_class = PythonParser
-
     def _adjust_filename(self, fname):
         # .pyc files should always refer to a .py instead.
         if fname.endswith(('.pyc', '.pyo')):
@@ -149,7 +147,13 @@ class PythonCodeUnit(CodeUnit):
             fname = fname[:-9] + ".py"
         return fname
 
-    def find_source(self, filename):
+    def get_parser(self, exclude=None):
+        actual_filename, source = self._find_source(self.filename)
+        return PythonParser(
+            text=source, filename=actual_filename, exclude=exclude,
+        )
+
+    def _find_source(self, filename):
         """Find the source for `filename`.
 
         Returns two values: the actual filename, and the source.
@@ -227,10 +231,8 @@ def mako_template_name(py_filename):
 
 
 class MakoParser(CodeParser):
-    def __init__(self, cu, text, filename, exclude):
+    def __init__(self, cu, exclude):
         self.cu = cu
-        self.text = text
-        self.filename = filename
         self.exclude = exclude
 
     def parse_source(self):
@@ -261,14 +263,15 @@ class MakoParser(CodeParser):
 
 
 class MakoCodeUnit(CodeUnit):
-    parser_class = MakoParser
-
     def __init__(self, *args, **kwargs):
         super(MakoCodeUnit, self).__init__(*args, **kwargs)
         self.mako_filename = mako_template_name(self.filename)
 
-    def source_file(self):
-        return open(self.mako_filename)
+    def source(self):
+        return open(self.mako_filename).read()
+
+    def get_parser(self, exclude=None):
+        return MakoParser(self, exclude)
 
     def find_source(self, filename):
         """Find the source for `filename`.

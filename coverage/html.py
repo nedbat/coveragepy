@@ -148,9 +148,7 @@ class HtmlReporter(Reporter):
 
     def html_file(self, cu, analysis):
         """Generate an HTML file for one source file."""
-        source_file = cu.source_file()
-        with source_file:
-            source = source_file.read()
+        source = cu.source()
 
         # Find out if the file on disk is already correct.
         flat_rootname = cu.flat_rootname()

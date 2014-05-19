@@ -14,11 +14,7 @@ class Analysis(object):
         self.code_unit = code_unit
 
         self.filename = self.code_unit.filename
-        actual_filename, source = self.code_unit.find_source(self.filename)
-
-        self.parser = code_unit.parser_class(
-            code_unit,
-            text=source, filename=actual_filename,
+        self.parser = code_unit.get_parser(
             exclude=self.coverage._exclude_regex('exclude')
             )
         self.statements, self.excluded = self.parser.parse_source()
