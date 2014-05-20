@@ -1,6 +1,6 @@
 """Code unit (module) handling for Coverage."""
 
-import os, re
+import os
 
 from coverage.backward import open_python_source, string_class
 from coverage.misc import CoverageException, NoSource
@@ -121,7 +121,8 @@ class CodeUnit(object):
         """Return the source code, as a string."""
         if os.path.exists(self.filename):
             # A regular text file: open it.
-            return open_python_source(self.filename).read()
+            with open_python_source(self.filename) as f:
+                return f.read()
 
         # Maybe it's in a zip file?
         source = self.file_locator.get_zip_data(self.filename)
@@ -231,9 +232,8 @@ class MakoParser(CodeParser):
 
     def parse_source(self):
         """Returns executable_line_numbers, excluded_line_numbers"""
-        r = set(self.metadata['line_map'].values())
-        print r
-        return r, set()
+        executable = set(self.metadata['line_map'].values())
+        return executable, set()
 
     def translate_lines(self, lines):
         tlines = set(self.metadata['full_line_map'].get(l, -1) for l in lines)
