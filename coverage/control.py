@@ -242,6 +242,16 @@ class coverage(object):
             # Empty string is pretty useless
             return None, "empty string isn't a filename"
 
+        if filename.startswith('memory:'):
+            if 0:
+                import dis, sys, StringIO
+                _stdout = sys.stdout
+                sys.stdout = new_stdout = StringIO.StringIO()
+                dis.dis(frame.f_code)
+                sys.stdout = _stdout
+                return None, new_stdout.getvalue()
+            return None, "memory isn't traceable"
+
         if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
             # filenames like "<string>", "<doctest readme.txt[0]>", or

@@ -24,8 +24,11 @@ def code_unit_factory(morfs, file_locator):
 
     code_units = []
     for morf in morfs:
-        # Hacked-in Mako support. Disabled for going onto trunk.
-        if 0 and isinstance(morf, string_class) and "/mako/" in morf:
+        # Hacked-in Mako support. Define COVERAGE_MAKO_PATH as a fragment of
+        # the path that indicates the Python file is actually a compiled Mako
+        # template. THIS IS TEMPORARY!
+        MAKO_PATH = os.environ.get('COVERAGE_MAKO_PATH')
+        if MAKO_PATH and isinstance(morf, string_class) and MAKO_PATH in morf:
             # Super hack! Do mako both ways!
             if 0:
                 cu = PythonCodeUnit(morf, file_locator)
@@ -77,6 +80,10 @@ class CodeUnit(object):
 
     def __repr__(self):
         return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
+
+    def _adjust_filename(self, f):
+        # TODO: This shouldn't be in the base class, right?
+        return f
 
     # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
     # of them defined.
@@ -218,46 +225,18 @@ class PythonCodeUnit(CodeUnit):
         return source_encoding(source)
 
 
-def mako_template_name(py_filename):
-    with open(py_filename) as f:
-        py_source = f.read()
-
-    # Find the template filename. TODO: string escapes in the string.
-    m = re.search(r"^_template_filename = u?'([^']+)'", py_source, flags=re.MULTILINE)
-    if not m:
-        raise Exception("Couldn't find template filename in Mako file %r" % py_filename)
-    template_filename = m.group(1)
-    return template_filename
-
-
 class MakoParser(CodeParser):
-    def __init__(self, cu, exclude):
-        self.cu = cu
-        self.exclude = exclude
+    def __init__(self, metadata):
+        self.metadata = metadata
 
     def parse_source(self):
         """Returns executable_line_numbers, excluded_line_numbers"""
-        with open(self.cu.filename) as f:
-            py_source = f.read()
-
-        # Get the line numbers.
-        self.py_to_html = {}
-        html_linenum = None
-        for linenum, line in enumerate(py_source.splitlines(), start=1):
-            m_source_line = re.search(r"^\s*# SOURCE LINE (\d+)$", line)
-            if m_source_line:
-                html_linenum = int(m_source_line.group(1))
-            else:
-                m_boilerplate_line = re.search(r"^\s*# BOILERPLATE", line)
-                if m_boilerplate_line:
-                    html_linenum = None
-                elif html_linenum:
-                    self.py_to_html[linenum] = html_linenum
-
-        return set(self.py_to_html.values()), set()
+        r = set(self.metadata['line_map'].values())
+        print r
+        return r, set()
 
     def translate_lines(self, lines):
-        tlines = set(self.py_to_html.get(l, -1) for l in lines)
+        tlines = set(self.metadata['full_line_map'].get(l, -1) for l in lines)
         tlines.remove(-1)
         return tlines
 
@@ -265,30 +244,22 @@ class MakoParser(CodeParser):
 class MakoCodeUnit(CodeUnit):
     def __init__(self, *args, **kwargs):
         super(MakoCodeUnit, self).__init__(*args, **kwargs)
-        self.mako_filename = mako_template_name(self.filename)
+        from mako.template import ModuleInfo
+        py_source = open(self.filename).read()
+        self.metadata = ModuleInfo.get_module_source_metadata(py_source, full_line_map=True)
 
     def source(self):
-        return open(self.mako_filename).read()
+        return open(self.metadata['filename']).read()
 
     def get_parser(self, exclude=None):
-        return MakoParser(self, exclude)
-
-    def find_source(self, filename):
-        """Find the source for `filename`.
-
-        Returns two values: the actual filename, and the source.
-
-        """
-        mako_filename = mako_template_name(filename)
-        with open(mako_filename) as f:
-            source = f.read()
-
-        return mako_filename, source
+        return MakoParser(self.metadata)
 
     def source_token_lines(self, source):
         """Return the 'tokenized' text for the code."""
+        # TODO: Taking source here is wrong, change it?
         for line in source.splitlines():
             yield [('txt', line)]
 
     def source_encoding(self, source):
-        return "utf-8"
+        # TODO: Taking source here is wrong, change it!
+        return self.metadata['source_encoding']
