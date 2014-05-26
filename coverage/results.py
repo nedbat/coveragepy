@@ -90,8 +90,10 @@ class Analysis(object):
 
         """
         arcs = self.missing_branch_arcs()
+        line_exits = sorted(arcs.iteritems(), key=lambda (x, _): x)
         pairs = []
-        for line, exits in arcs.iteritems():
+        for line, exits in line_exits:
+            exits = sorted(exits)
             for exit in exits:
                 pair = '%d->%d' % (line, exit)
                 pairs.append(pair)
