@@ -142,6 +142,55 @@ class SummaryTest(CoverageTest):
         self.assertEqual(self.last_line_squeezed(report),
                                                         "mybranch 5 0 2 1 86%")
 
+    def test_report_show_missing(self):
+        self.make_file("mymissing.py", """\
+            def missing(x, y):
+                if x:
+                    print("x")
+                    return x
+                if y:
+                    print("y")
+                return x
+                return y
+            missing(0, 1)
+            """)
+        out = self.run_command("coverage run mymissing.py")
+        self.assertEqual(out, 'y\n')
+        report = self.report_from_command("coverage report --show-missing")
+
+        # Name        Stmts   Miss  Cover   Missing
+        # -----------------------------------------
+        # tests/tmp       9      3    67%   3-4, 8
+
+        self.assertEqual(self.line_count(report), 3)
+        self.assertIn("mymissing ", report)
+        self.assertEqual(self.last_line_squeezed(report),
+                         "mymissing 9 3 67% 3-4, 8")
+
+    def test_report_show_missing_branches(self):
+        self.make_file("mybranch.py", """\
+            def branch(x, y):
+                if x:
+                    print("x")
+                if y:
+                    print("y")
+                return x
+            branch(1, 0)
+            """)
+        out = self.run_command("coverage run --branch mybranch.py")
+        self.assertEqual(out, 'x\n')
+        report = self.report_from_command("coverage report --show-missing")
+
+        # pylint: disable=C0301
+        # Name        Stmts   Miss Branch BrMiss  Cover   Missing
+        # -------------------------------------------------------
+        # mybranch        7      1      4      2    73%   5, Branches: 2->4, 4->5
+
+        self.assertEqual(self.line_count(report), 3)
+        self.assertIn("mybranch ", report)
+        self.assertEqual(self.last_line_squeezed(report),
+                         "mybranch 7 1 4 2 73% 5, Branches: 2->4, 4->5")
+
     def test_dotpy_not_python(self):
         # We run a .py file, and when reporting, we can't parse it as Python.
         # We should get an error message in the report.

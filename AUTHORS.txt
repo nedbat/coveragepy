@@ -43,3 +43,4 @@ Sigve Tjora
 Mark van der Wal
 Zooko Wilcox-O'Hearn
 Christoph Zwerschke
+Steve Leonard
