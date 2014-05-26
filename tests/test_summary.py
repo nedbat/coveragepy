@@ -183,7 +183,7 @@ class SummaryTest(CoverageTest):
 
         # Name        Stmts   Miss Branch BrMiss  Cover   Missing
         # -------------------------------------------------------
-        # tests/tmp       7      0      4      2    82%   Branches: 2->4, 4->6
+        # mybranch        7      0      4      2    82%   Branches: 2->4, 4->6
 
         self.assertEqual(self.line_count(report), 3)
         self.assertIn("mybranch ", report)
@@ -210,7 +210,7 @@ class SummaryTest(CoverageTest):
         # pylint: disable=C0301
         # Name        Stmts   Miss Branch BrMiss  Cover   Missing
         # -------------------------------------------------------
-        # tests/tmp      10      2      8      5    61%   7-8, Branches: 2->4, 4->6, 6->7, 7->8, 7->9
+        # mybranch       10      2      8      5    61%   7-8, Branches: 2->4, 4->6, 6->7, 7->8, 7->9
 
         self.assertEqual(self.line_count(report), 3)
         self.assertIn("mybranch ", report)
