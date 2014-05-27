@@ -236,8 +236,12 @@ class MakoParser(CodeParser):
         return executable, set()
 
     def translate_lines(self, lines):
-        tlines = set(self.metadata['full_line_map'].get(l, -1) for l in lines)
-        tlines.remove(-1)
+        tlines = set()
+        for l in lines:
+            try:
+                tlines.add(self.metadata['full_line_map'][l])
+            except IndexError:
+                pass
         return tlines
 
 
