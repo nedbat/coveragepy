@@ -92,7 +92,9 @@ class SummaryTest(CoverageTest):
         # Try reporting while omitting some modules
         prefix = os.path.split(__file__)[0]
         self.run_command("coverage run mycode.py")
-        report = self.report_from_command("coverage report --omit '%s/*'" % prefix)
+        report = self.report_from_command(
+                    "coverage report --omit '%s/*'" % prefix
+                    )
 
         # Name     Stmts   Miss  Cover
         # ----------------------------
@@ -151,7 +153,6 @@ class SummaryTest(CoverageTest):
                 if y:
                     print("y")
                 return x
-                return y
             missing(0, 1)
             """)
         out = self.run_command("coverage run mymissing.py")
@@ -160,12 +161,12 @@ class SummaryTest(CoverageTest):
 
         # Name        Stmts   Miss  Cover   Missing
         # -----------------------------------------
-        # mymissing       9      3    67%   3-4, 8
+        # mymissing       8      2    75%   3-4
 
         self.assertEqual(self.line_count(report), 3)
         self.assertIn("mymissing ", report)
         self.assertEqual(self.last_line_squeezed(report),
-                         "mymissing 9 3 67% 3-4, 8")
+                         "mymissing 8 2 75% 3-4")
 
     def test_report_show_missing_branches(self):
         self.make_file("mybranch.py", """\

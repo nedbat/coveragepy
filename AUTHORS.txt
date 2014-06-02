@@ -24,6 +24,7 @@ Roger Hu
 Stan Hu
 Devin Jeanpierre
 Ross Lawley
+Steve Leonard
 Edward Loper
 Sandra Martocchia
 Patrick Mezard
@@ -43,4 +44,3 @@ Sigve Tjora
 Mark van der Wal
 Zooko Wilcox-O'Hearn
 Christoph Zwerschke
-Steve Leonard

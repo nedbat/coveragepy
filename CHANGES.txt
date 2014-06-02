@@ -8,6 +8,9 @@ Change history for Coverage.py
 - Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
   PyPy 2.2.
 
+- The ``report`` command can now show missing branches when reporting on branch
+  coverage.  Thanks, Steve Leonard.
+
 - The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
   Stan Hu.
 
