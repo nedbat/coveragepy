@@ -83,6 +83,22 @@ class Analysis(object):
         )
         return sorted(missing)
 
+    def arcs_missing_formatted(self):
+        """ The missing branch arcs, formatted.
+
+        Returns a string like "1->2, 1->3, 16->20"
+
+        """
+        arcs = self.missing_branch_arcs()
+        line_exits = sorted(arcs.iteritems(), key=lambda (x, _): x)
+        pairs = []
+        for line, exits in line_exits:
+            exits = sorted(exits)
+            for exit in exits:
+                pair = '%d->%d' % (line, exit)
+                pairs.append(pair)
+        return ', '.join(pairs)
+
     def arcs_unpredicted(self):
         """Returns a sorted list of the executed arcs missing from the code."""
         possible = self.arc_possibilities()
