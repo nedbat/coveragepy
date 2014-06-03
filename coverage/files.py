@@ -188,6 +188,7 @@ class FnmatchMatcher(object):
 
     def match(self, fpath):
         """Does `fpath` match one of our filename patterns?"""
+        #print("Matching %r against %r" % (self.re.pattern, fpath))
         return self.re.match(fpath) is not None
 
 

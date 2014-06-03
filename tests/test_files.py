@@ -93,6 +93,12 @@ class MatcherTest(CoverageTest):
         for filepath, matches in matches_to_try:
             self.assertMatches(fnm, filepath, matches)
 
+    def test_fnmatch_matcher_overload(self):
+        fnm = FnmatchMatcher(["*x%03d*.txt" % i for i in range(500)])
+        self.assertMatches(fnm, "x007foo.txt", True)
+        self.assertMatches(fnm, "x123foo.txt", True)
+        self.assertMatches(fnm, "x798bar.txt", False)
+
 
 class PathAliasesTest(CoverageTest):
     """Tests for coverage/files.py:PathAliases"""

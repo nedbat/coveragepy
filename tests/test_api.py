@@ -221,7 +221,7 @@ class ApiTest(CoverageTest):
         self.assertEqual(cov.get_exclude_list(), ["foo"])
         cov.exclude("bar")
         self.assertEqual(cov.get_exclude_list(), ["foo", "bar"])
-        self.assertEqual(cov._exclude_regex('exclude'), "(foo)|(bar)")
+        self.assertEqual(cov._exclude_regex('exclude'), "(?:foo)|(?:bar)")
         cov.clear_exclude()
         self.assertEqual(cov.get_exclude_list(), [])
 
@@ -233,7 +233,9 @@ class ApiTest(CoverageTest):
         self.assertEqual(cov.get_exclude_list(which='partial'), ["foo"])
         cov.exclude("bar", which='partial')
         self.assertEqual(cov.get_exclude_list(which='partial'), ["foo", "bar"])
-        self.assertEqual(cov._exclude_regex(which='partial'), "(foo)|(bar)")
+        self.assertEqual(
+            cov._exclude_regex(which='partial'), "(?:foo)|(?:bar)"
+        )
         cov.clear_exclude(which='partial')
         self.assertEqual(cov.get_exclude_list(which='partial'), [])
 
