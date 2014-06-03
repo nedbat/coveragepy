@@ -1,8 +1,8 @@
 """Reporter foundation for Coverage."""
 
-import fnmatch, os
+import os
 from coverage.codeunit import code_unit_factory
-from coverage.files import prep_patterns
+from coverage.files import prep_patterns, FnmatchMatcher
 from coverage.misc import CoverageException, NoSource, NotPython
 
 class Reporter(object):
@@ -37,22 +37,19 @@ class Reporter(object):
 
         if self.config.include:
             patterns = prep_patterns(self.config.include)
+            matcher = FnmatchMatcher(patterns)
             filtered = []
             for cu in self.code_units:
-                for pattern in patterns:
-                    if fnmatch.fnmatch(cu.filename, pattern):
-                        filtered.append(cu)
-                        break
+                if matcher.match(cu.filename):
+                    filtered.append(cu)
             self.code_units = filtered
 
         if self.config.omit:
             patterns = prep_patterns(self.config.omit)
+            matcher = FnmatchMatcher(patterns)
             filtered = []
             for cu in self.code_units:
-                for pattern in patterns:
-                    if fnmatch.fnmatch(cu.filename, pattern):
-                        break
-                else:
+                if not matcher.match(cu.filename):
                     filtered.append(cu)
             self.code_units = filtered
 

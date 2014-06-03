@@ -1,7 +1,7 @@
 """File wrangling."""
 
 from coverage.backward import to_string
-from coverage.misc import CoverageException
+from coverage.misc import CoverageException, join_regex
 import fnmatch, os, os.path, re, sys
 import ntpath, posixpath
 
@@ -177,6 +177,7 @@ class FnmatchMatcher(object):
     """A matcher for files by filename pattern."""
     def __init__(self, pats):
         self.pats = pats[:]
+        self.re = re.compile(join_regex([fnmatch.translate(p) for p in pats]))
 
     def __repr__(self):
         return "<FnmatchMatcher %r>" % self.pats
@@ -187,10 +188,7 @@ class FnmatchMatcher(object):
 
     def match(self, fpath):
         """Does `fpath` match one of our filename patterns?"""
-        for pat in self.pats:
-            if fnmatch.fnmatch(fpath, pat):
-                return True
-        return False
+        return self.re.match(fpath) is not None
 
 
 def sep(s):
