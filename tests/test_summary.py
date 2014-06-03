@@ -152,21 +152,27 @@ class SummaryTest(CoverageTest):
                     return x
                 if y:
                     print("y")
+                try:
+                    print("z")
+                    1/0
+                    print("Never!")
+                except ZeroDivisionError:
+                    pass
                 return x
             missing(0, 1)
             """)
         out = self.run_command("coverage run mymissing.py")
-        self.assertEqual(out, 'y\n')
+        self.assertEqual(out, 'y\nz\n')
         report = self.report_from_command("coverage report --show-missing")
 
         # Name        Stmts   Miss  Cover   Missing
         # -----------------------------------------
-        # mymissing       8      2    75%   3-4
+        # mymissing      14      3    79%   3-4, 10
 
         self.assertEqual(self.line_count(report), 3)
         self.assertIn("mymissing ", report)
         self.assertEqual(self.last_line_squeezed(report),
-                         "mymissing 8 2 75% 3-4")
+                         "mymissing 14 3 79% 3-4, 10")
 
     def test_report_show_missing_branches(self):
         self.make_file("mybranch.py", """\
