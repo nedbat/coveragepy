@@ -1,6 +1,6 @@
 """Base test case class for coverage testing."""
 
-import glob, os, random, shlex, shutil, sys, tempfile, textwrap
+import glob, os, random, re, shlex, shutil, sys, tempfile, textwrap
 import atexit, collections
 
 import coverage
@@ -485,6 +485,22 @@ class CoverageTest(TestCase):
         status, output = run_command(cmd, status=status)
         print(output)
         return status, output
+
+    def report_from_command(self, cmd):
+        """Return the report from the `cmd`, with some convenience added."""
+        report = self.run_command(cmd).replace('\\', '/')
+        self.assertNotIn("error", report.lower())
+        return report
+
+    def line_count(self, report):
+        """How many lines are in `report`?"""
+        self.assertEqual(report.split('\n')[-1], "")
+        return len(report.split('\n')) - 1
+
+    def last_line_squeezed(self, report):
+        """Return the last line of `report` with the spaces squeezed down."""
+        last_line = report.split('\n')[-2]
+        return re.sub(r"\s+", " ", last_line)
 
     # We run some tests in temporary directories, because they may need to make
     # files for the tests. But this is expensive, so we can change per-class

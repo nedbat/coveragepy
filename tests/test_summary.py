@@ -21,22 +21,6 @@ class SummaryTest(CoverageTest):
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
 
-    def report_from_command(self, cmd):
-        """Return the report from the `cmd`, with some convenience added."""
-        report = self.run_command(cmd).replace('\\', '/')
-        self.assertNotIn("error", report.lower())
-        return report
-
-    def line_count(self, report):
-        """How many lines are in `report`?"""
-        self.assertEqual(report.split('\n')[-1], "")
-        return len(report.split('\n')) - 1
-
-    def last_line_squeezed(self, report):
-        """Return the last line of `report` with the spaces squeezed down."""
-        last_line = report.split('\n')[-2]
-        return re.sub(r"\s+", " ", last_line)
-
     def test_report(self):
         out = self.run_command("coverage run mycode.py")
         self.assertEqual(out, 'done\n')

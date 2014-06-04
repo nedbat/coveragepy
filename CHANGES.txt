@@ -14,6 +14,9 @@ Change history for Coverage.py
 - The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
   Stan Hu.
 
+- The ``fail-under`` value is now rounded the same as reported results,
+  preventing paradoxical results, fixing `issue 284`_.
+
 - The XML report will now create the output directory if need be, fixing
   `issue 285`_.  Thanks Chris Rose.
 
@@ -25,6 +28,7 @@ Change history for Coverage.py
 
 .. _issue 57: https://bitbucket.org/ned/coveragepy/issue/57/annotate-command-fails-to-annotate-many
 .. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
+.. _issue 284: https://bitbucket.org/ned/coveragepy/issue/284/fail-under-should-show-more-precision
 .. _issue 285: https://bitbucket.org/ned/coveragepy/issue/285/xml-report-fails-if-output-file-directory
 .. _issue 305: https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module
 

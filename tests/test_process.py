@@ -568,32 +568,47 @@ class FailUnderTest(CoverageTest):
 
     def setUp(self):
         super(FailUnderTest, self).setUp()
-        self.make_file("fifty.py", """\
-            # I have 50% coverage!
+        self.make_file("forty_two_plus.py", """\
+            # I have 42.857% (3/7) coverage!
             a = 1
-            if a > 2:
-                b = 3
-                c = 4
+            b = 2
+            if a > 3:
+                b = 4
+                c = 5
+                d = 6
+                e = 7
             """)
-        st, _ = self.run_command_status("coverage run fifty.py", 0)
+        st, _ = self.run_command_status("coverage run forty_two_plus.py", 0)
         self.assertEqual(st, 0)
+        st, out = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+        self.assertEqual(
+            self.last_line_squeezed(out),
+            "forty_two_plus 7 4 43%"
+        )
 
     def test_report(self):
-        st, _ = self.run_command_status("coverage report --fail-under=50", 0)
+        st, _ = self.run_command_status("coverage report --fail-under=42", 0)
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage report --fail-under=51", 2)
+        st, _ = self.run_command_status("coverage report --fail-under=43", 0)
+        self.assertEqual(st, 0)
+        st, _ = self.run_command_status("coverage report --fail-under=44", 2)
         self.assertEqual(st, 2)
 
     def test_html_report(self):
-        st, _ = self.run_command_status("coverage html --fail-under=50", 0)
+        st, _ = self.run_command_status("coverage html --fail-under=42", 0)
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage html --fail-under=51", 2)
+        st, _ = self.run_command_status("coverage html --fail-under=43", 0)
+        self.assertEqual(st, 0)
+        st, _ = self.run_command_status("coverage html --fail-under=44", 2)
         self.assertEqual(st, 2)
 
     def test_xml_report(self):
-        st, _ = self.run_command_status("coverage xml --fail-under=50", 0)
+        st, _ = self.run_command_status("coverage xml --fail-under=42", 0)
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage xml --fail-under=51", 2)
+        st, _ = self.run_command_status("coverage xml --fail-under=43", 0)
+        self.assertEqual(st, 0)
+        st, _ = self.run_command_status("coverage xml --fail-under=44", 2)
         self.assertEqual(st, 2)
 
 

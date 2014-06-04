@@ -470,6 +470,14 @@ class CoverageScript(object):
             total = self.coverage.xml_report(outfile=outfile, **report_args)
 
         if options.fail_under is not None:
+            # Total needs to be rounded, but be careful of 0 and 100.
+            if 0 < total < 1:
+                total = 1
+            elif 99 < total < 100:
+                total = 99
+            else:
+                total = round(total)
+
             if total >= options.fail_under:
                 return OK
             else:
