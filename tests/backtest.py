@@ -4,41 +4,31 @@
 # (Redefining built-in blah)
 # The whole point of this file is to redefine built-ins, so shut up about it.
 
-import os
+import subprocess
 
-# Py2 and Py3 don't agree on how to run commands in a subprocess.
-try:
-    import subprocess
-except ImportError:
-    def run_command(cmd, status=0):
-        """Run a command in a subprocess.
 
-        Returns the exit status code and the combined stdout and stderr.
+# This isn't really a backward compatibility thing, should be moved into a
+# helpers file or something.
+def run_command(cmd):
+    """Run a command in a subprocess.
 
-        """
-        _, stdouterr = os.popen4(cmd)
-        return status, stdouterr.read()
+    Returns the exit status code and the combined stdout and stderr.
 
-else:
-    def run_command(cmd, status=0):
-        """Run a command in a subprocess.
+    """
+    proc = subprocess.Popen(cmd, shell=True,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT
+            )
+    output, _ = proc.communicate()
+    status = proc.returncode        # pylint: disable=E1101
 
-        Returns the exit status code and the combined stdout and stderr.
+    # Get the output, and canonicalize it to strings with newlines.
+    if not isinstance(output, str):
+        output = output.decode('utf-8')
+    output = output.replace('\r', '')
 
-        """
-        proc = subprocess.Popen(cmd, shell=True,
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-                )
-        output, _ = proc.communicate()
-        status = proc.returncode        # pylint: disable=E1101
+    return status, output
 
-        # Get the output, and canonicalize it to strings with newlines.
-        if not isinstance(output, str):
-            output = output.decode('utf-8')
-        output = output.replace('\r', '')
-
-        return status, output
 
 # No more execfile in Py3
 try:

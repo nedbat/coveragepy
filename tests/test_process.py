@@ -240,13 +240,13 @@ class ProcessTest(CoverageTest):
 
         self.run_command("coverage run fleeting")
         os.remove("fleeting")
-        status, out = self.run_command_status("coverage html -d htmlcov", 1)
+        status, out = self.run_command_status("coverage html -d htmlcov")
         self.assertRegex(out, "No source for code: '.*fleeting'")
         self.assertNotIn("Traceback", out)
         self.assertEqual(status, 1)
 
     def test_running_missing_file(self):
-        status, out = self.run_command_status("coverage run xyzzy.py", 1)
+        status, out = self.run_command_status("coverage run xyzzy.py")
         self.assertRegex(out, "No file to run: .*xyzzy.py")
         self.assertNotIn("raceback", out)
         self.assertNotIn("rror", out)
@@ -265,7 +265,7 @@ class ProcessTest(CoverageTest):
 
         # The important thing is for "coverage run" and "python" to report the
         # same traceback.
-        status, out = self.run_command_status("coverage run throw.py", 1)
+        status, out = self.run_command_status("coverage run throw.py")
         out2 = self.run_command("python throw.py")
         if '__pypy__' in sys.builtin_module_names:
             # Pypy has an extra frame in the traceback for some reason
@@ -294,8 +294,8 @@ class ProcessTest(CoverageTest):
 
         # The important thing is for "coverage run" and "python" to have the
         # same output.  No traceback.
-        status, out = self.run_command_status("coverage run exit.py", 17)
-        status2, out2 = self.run_command_status("python exit.py", 17)
+        status, out = self.run_command_status("coverage run exit.py")
+        status2, out2 = self.run_command_status("python exit.py")
         self.assertMultiLineEqual(out, out2)
         self.assertMultiLineEqual(out, "about to exit..\n")
         self.assertEqual(status, status2)
@@ -310,8 +310,8 @@ class ProcessTest(CoverageTest):
 
             f1()
             """)
-        status, out = self.run_command_status("coverage run exit_none.py", 0)
-        status2, out2 = self.run_command_status("python exit_none.py", 0)
+        status, out = self.run_command_status("coverage run exit_none.py")
+        status2, out2 = self.run_command_status("python exit_none.py")
         self.assertMultiLineEqual(out, out2)
         self.assertMultiLineEqual(out, "about to exit quietly..\n")
         self.assertEqual(status, status2)
@@ -578,7 +578,7 @@ class FailUnderTest(CoverageTest):
                 d = 6
                 e = 7
             """)
-        st, _ = self.run_command_status("coverage run forty_two_plus.py", 0)
+        st, _ = self.run_command_status("coverage run forty_two_plus.py")
         self.assertEqual(st, 0)
         st, out = self.run_command_status("coverage report")
         self.assertEqual(st, 0)
@@ -588,27 +588,27 @@ class FailUnderTest(CoverageTest):
         )
 
     def test_report(self):
-        st, _ = self.run_command_status("coverage report --fail-under=42", 0)
+        st, _ = self.run_command_status("coverage report --fail-under=42")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage report --fail-under=43", 0)
+        st, _ = self.run_command_status("coverage report --fail-under=43")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage report --fail-under=44", 2)
+        st, _ = self.run_command_status("coverage report --fail-under=44")
         self.assertEqual(st, 2)
 
     def test_html_report(self):
-        st, _ = self.run_command_status("coverage html --fail-under=42", 0)
+        st, _ = self.run_command_status("coverage html --fail-under=42")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage html --fail-under=43", 0)
+        st, _ = self.run_command_status("coverage html --fail-under=43")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage html --fail-under=44", 2)
+        st, _ = self.run_command_status("coverage html --fail-under=44")
         self.assertEqual(st, 2)
 
     def test_xml_report(self):
-        st, _ = self.run_command_status("coverage xml --fail-under=42", 0)
+        st, _ = self.run_command_status("coverage xml --fail-under=42")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage xml --fail-under=43", 0)
+        st, _ = self.run_command_status("coverage xml --fail-under=43")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage xml --fail-under=44", 2)
+        st, _ = self.run_command_status("coverage xml --fail-under=44")
         self.assertEqual(st, 2)
 
 

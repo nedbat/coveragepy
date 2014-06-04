@@ -458,7 +458,7 @@ class CoverageTest(TestCase):
         _, output = self.run_command_status(cmd)
         return output
 
-    def run_command_status(self, cmd, status=0):
+    def run_command_status(self, cmd):
         """Run the command-line `cmd` in a subprocess, and print its output.
 
         Use this when you need to test the process behavior of coverage.
@@ -466,9 +466,6 @@ class CoverageTest(TestCase):
         Compare with `command_line`.
 
         Returns a pair: the process' exit status and stdout text.
-
-        The `status` argument is returned as the status on older Pythons where
-        we can't get the actual exit status of the process.
 
         """
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
@@ -482,7 +479,7 @@ class CoverageTest(TestCase):
         pypath += testmods + os.pathsep + zipfile
         self.set_environ('PYTHONPATH', pypath)
 
-        status, output = run_command(cmd, status=status)
+        status, output = run_command(cmd)
         print(output)
         return status, output
 
