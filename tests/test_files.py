@@ -183,7 +183,7 @@ class RelativePathAliasesTest(CoverageTest):
             aliases.add(d, '/the/source')
             the_file = os.path.join(d, 'a.py')
             the_file = os.path.expanduser(the_file)
-            the_file = os.path.abspath(the_file)
+            the_file = os.path.abspath(os.path.realpath(the_file))
 
             assert '~' not in the_file  # to be sure the test is pure.
             self.assertEqual(aliases.map(the_file), '/the/source/a.py')
