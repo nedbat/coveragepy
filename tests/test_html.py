@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests that HTML generation is awesome."""
 
-import os.path, re
+import os.path, re, sys
 import coverage
 import coverage.html
 from coverage.misc import CoverageException, NotPython, NoSource
@@ -266,6 +266,27 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         self.start_import_stop(cov, "liar")
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
+
+    if sys.version_info < (3, 0):
+        def test_decode_error(self):
+            # imp.load_module won't load a file with an undecodable character
+            # in a comment, though Python will run them.  So we'll change the
+            # file after running.
+            self.make_file("main.py", "import sub.not_ascii")
+            self.make_file("sub/__init__.py")
+            self.make_file("sub/not_ascii.py", """\
+                a = 1  # Isn't this great?
+                """)
+            cov = coverage.coverage()
+            self.start_import_stop(cov, "main")
+
+            # Create the undecodable version of the file.
+            self.make_file("sub/not_ascii.py", """\
+                a = 1  # Isn't this great?\xcb
+                """)
+            msg = r"Couldn't decode '.*sub/not_ascii.py' as ascii: .*\\xcb.*"
+            with self.assertRaisesRegex(CoverageException, msg):
+                cov.html_report()
 
 
 class HtmlTest(CoverageTest):

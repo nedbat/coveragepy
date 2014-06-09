@@ -238,7 +238,15 @@ class HtmlReporter(Reporter):
         }))
 
         if sys.version_info < (3, 0):
-            html = html.decode(encoding)
+            try:
+                html = html.decode(encoding)
+            except UnicodeDecodeError as e:
+                sample = e.object[max([0, e.start-30]):e.start+30]
+                raise CoverageException(
+                    "Couldn't decode %r as %s: %r" % (
+                        cu.filename, e.encoding, sample
+                    )
+                )
 
         html_filename = flat_rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)
