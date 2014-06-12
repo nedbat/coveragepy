@@ -20,6 +20,9 @@ Change history for Coverage.py
 - The XML report will now create the output directory if need be, fixing
   `issue 285`_.  Thanks Chris Rose.
 
+- HTML reports no longer raise UnicodeDecodeError if a Python file has
+  undecodable characters, fixing `issue 303`_.
+
 - The annotate command will now annotate all files, not just ones relative to
   the current directory, fixing `issue 57`_.
 
@@ -30,6 +33,7 @@ Change history for Coverage.py
 .. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
 .. _issue 284: https://bitbucket.org/ned/coveragepy/issue/284/fail-under-should-show-more-precision
 .. _issue 285: https://bitbucket.org/ned/coveragepy/issue/285/xml-report-fails-if-output-file-directory
+.. _issue 303: https://bitbucket.org/ned/coveragepy/issue/303/unicodedecodeerror
 .. _issue 305: https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module
 
 

@@ -42,6 +42,13 @@ class HtmlTestHelpers(CoverageTest):
         os.remove("htmlcov/helper1.html")
         os.remove("htmlcov/helper2.html")
 
+    def get_html_report_content(self, module):
+        """Return the content of the HTML report for `module`."""
+        filename = module.replace(".py", ".html").replace("/", "_")
+        filename = os.path.join("htmlcov", filename)
+        with open(filename) as f:
+            return f.read()
+
 
 class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML delta speed-ups."""
@@ -208,7 +215,7 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
             )
 
 
-class HtmlWithUnparsableFilesTest(CoverageTest):
+class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
     """Test the behavior when measuring unparsable files."""
 
     def test_dotpy_not_python(self):
@@ -267,26 +274,30 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
 
-    if sys.version_info < (3, 0):
-        def test_decode_error(self):
-            # imp.load_module won't load a file with an undecodable character
-            # in a comment, though Python will run them.  So we'll change the
-            # file after running.
-            self.make_file("main.py", "import sub.not_ascii")
-            self.make_file("sub/__init__.py")
-            self.make_file("sub/not_ascii.py", """\
-                a = 1  # Isn't this great?
-                """)
-            cov = coverage.coverage()
-            self.start_import_stop(cov, "main")
+    def test_decode_error(self):
+        # imp.load_module won't load a file with an undecodable character
+        # in a comment, though Python will run them.  So we'll change the
+        # file after running.
+        self.make_file("main.py", "import sub.not_ascii")
+        self.make_file("sub/__init__.py")
+        self.make_file("sub/not_ascii.py", """\
+            a = 1  # Isn't this great?!
+            """)
+        cov = coverage.coverage()
+        self.start_import_stop(cov, "main")
 
-            # Create the undecodable version of the file.
-            self.make_file("sub/not_ascii.py", """\
-                a = 1  # Isn't this great?\xcb
-                """)
-            msg = r"Couldn't decode '.*sub/not_ascii.py' as ascii: .*\\xcb.*"
-            with self.assertRaisesRegex(CoverageException, msg):
-                cov.html_report()
+        # Create the undecodable version of the file.
+        self.make_file("sub/not_ascii.py", """\
+            a = 1  # Isn't this great?\xcb!
+            """)
+        cov.html_report()
+
+        html_report = self.get_html_report_content("sub/not_ascii.py")
+        if sys.version_info < (3, 0):
+            expected = "# Isn&#39;t this great?&#65533;!"
+        else:
+            expected = "# Isn&#39;t this great?&#203;!"
+        self.assertIn(expected, html_report)
 
 
 class HtmlTest(CoverageTest):
