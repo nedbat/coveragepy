@@ -15,7 +15,7 @@ class CodeParser(object):
     Base class for any code parser.
     """
     def translate_lines(self, lines):
-        return lines
+        return set(lines)
 
     def translate_arcs(self, arcs):
         return arcs

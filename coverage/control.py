@@ -18,6 +18,9 @@ from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
 
+from coverage.django import DjangoTracer
+
+
 # Pypy has some unusual stuff in the "stdlib".  Consider those locations
 # when deciding where the stdlib is.
 try:
@@ -152,6 +155,8 @@ class coverage(object):
             coroutine=self.config.coroutine,
             )
 
+        self.django_tracer = DjangoTracer()  # should this be a class? Singleton...
+
         # Suffixes are a bit tricky.  We want to use the data suffix only when
         # collecting data, not when combining data.  So we save it as
         # `self.run_suffix` now, and promote it to `self.data_suffix` if we
@@ -277,6 +282,10 @@ class coverage(object):
 
         canonical = self.file_locator.canonical_filename(filename)
 
+        # DJANGO HACK
+        if self.django_tracer.should_trace(canonical):
+            return canonical, self.django_tracer
+
         # If the user specified source or include, then that's authoritative
         # about the outer bound of what to measure and we don't have to apply
         # any canned exclusions. If they didn't, then we have to exclude the
@@ -302,7 +311,7 @@ class coverage(object):
         if self.omit_match and self.omit_match.match(canonical):
             return None, "is inside an --omit pattern"
 
-        return canonical, "because we love you"
+        return canonical, None
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.
@@ -310,14 +319,15 @@ class coverage(object):
         Calls `_should_trace_with_reason`, and returns just the decision.
 
         """
-        canonical, reason = self._should_trace_with_reason(filename, frame)
+        canonical, other = self._should_trace_with_reason(filename, frame)
         if self.debug.should('trace'):
             if not canonical:
-                msg = "Not tracing %r: %s" % (filename, reason)
+                msg = "Not tracing %r: %s" % (filename, other)
+                other = None
             else:
                 msg = "Tracing %r" % (filename,)
             self.debug.write(msg)
-        return canonical
+        return canonical, other
 
     def _warn(self, msg):
         """Use `msg` as a warning."""
