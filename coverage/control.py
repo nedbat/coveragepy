@@ -237,32 +237,24 @@ class coverage(object):
         This function is called from the trace function.  As each new file name
         is encountered, this function determines whether it is traced or not.
 
-        Returns a pair of values:  the first indicates whether the file should
-        be traced: it's a canonicalized filename if it should be traced, None
-        if it should not.  The second value is a string, the resason for the
-        decision.
+        Returns a FileDisposition object.
 
         """
+        disp = FileDisposition(filename)
+
         if not filename:
             # Empty string is pretty useless
-            return None, "empty string isn't a filename"
+            return disp.nope("empty string isn't a filename")
 
         if filename.startswith('memory:'):
-            if 0:
-                import dis, sys, StringIO
-                _stdout = sys.stdout
-                sys.stdout = new_stdout = StringIO.StringIO()
-                dis.dis(frame.f_code)
-                sys.stdout = _stdout
-                return None, new_stdout.getvalue()
-            return None, "memory isn't traceable"
+            return disp.nope("memory isn't traceable")
 
         if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
             # filenames like "<string>", "<doctest readme.txt[0]>", or
             # "<exec_function>".  Don't ever trace these executions, since we
             # can't do anything with the data later anyway.
-            return None, "not a real filename"
+            return disp.nope("not a real filename")
 
         self._check_for_packages()
 
@@ -284,7 +276,9 @@ class coverage(object):
 
         # DJANGO HACK
         if self.django_tracer.should_trace(canonical):
-            return canonical, self.django_tracer
+            disp.filename = canonical
+            disp.handler = self.django_tracer
+            return disp
 
         # If the user specified source or include, then that's authoritative
         # about the outer bound of what to measure and we don't have to apply
@@ -292,42 +286,38 @@ class coverage(object):
         # stdlib and coverage.py directories.
         if self.source_match:
             if not self.source_match.match(canonical):
-                return None, "falls outside the --source trees"
+                return disp.nope("falls outside the --source trees")
         elif self.include_match:
             if not self.include_match.match(canonical):
-                return None, "falls outside the --include trees"
+                return disp.nope("falls outside the --include trees")
         else:
             # If we aren't supposed to trace installed code, then check if this
             # is near the Python standard library and skip it if so.
             if self.pylib_match and self.pylib_match.match(canonical):
-                return None, "is in the stdlib"
+                return disp.nope("is in the stdlib")
 
             # We exclude the coverage code itself, since a little of it will be
             # measured otherwise.
             if self.cover_match and self.cover_match.match(canonical):
-                return None, "is part of coverage.py"
+                return disp.nope("is part of coverage.py")
 
         # Check the file against the omit pattern.
         if self.omit_match and self.omit_match.match(canonical):
-            return None, "is inside an --omit pattern"
+            return disp.nope("is inside an --omit pattern")
 
-        return canonical, None
+        disp.filename = canonical
+        return disp
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.
 
-        Calls `_should_trace_with_reason`, and returns just the decision.
+        Calls `_should_trace_with_reason`, and returns the FileDisposition.
 
         """
-        canonical, other = self._should_trace_with_reason(filename, frame)
+        disp = self._should_trace_with_reason(filename, frame)
         if self.debug.should('trace'):
-            if not canonical:
-                msg = "Not tracing %r: %s" % (filename, other)
-                other = None
-            else:
-                msg = "Tracing %r" % (filename,)
-            self.debug.write(msg)
-        return canonical, other
+            self.debug.write(disp.debug_message())
+        return disp
 
     def _warn(self, msg):
         """Use `msg` as a warning."""
@@ -778,6 +768,28 @@ class coverage(object):
             info.append(('pylib_match', self.pylib_match.info()))
 
         return info
+
+
+class FileDisposition(object):
+    """A simple object for noting a number of details of files to trace."""
+    def __init__(self, original_filename):
+        self.original_filename = original_filename
+        self.filename = None
+        self.reason = ""
+        self.handler = None
+
+    def nope(self, reason):
+        """A helper for return a NO answer from should_trace."""
+        self.reason = reason
+        return self
+
+    def debug_message(self):
+        """Produce a debugging message explaining the outcome."""
+        if not self.filename:
+            msg = "Not tracing %r: %s" % (self.original_filename, self.reason)
+        else:
+            msg = "Tracing %r" % (self.original_filename,)
+        return msg
 
 
 def process_startup():

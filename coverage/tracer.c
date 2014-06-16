@@ -259,6 +259,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     int ret = RET_OK;
     PyObject * filename = NULL;
     PyObject * tracename = NULL;
+    PyObject * disposition = NULL;
     #if WHAT_LOG || TRACE_LOG
     PyObject * ascii = NULL;
     #endif
@@ -335,41 +336,51 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
         /* Check if we should trace this line. */
         filename = frame->f_code->co_filename;
-        tracename = PyDict_GetItem(self->should_trace_cache, filename);
-        if (tracename == NULL) {
+        disposition = PyDict_GetItem(self->should_trace_cache, filename);
+        if (disposition == NULL) {
             STATS( self->stats.new_files++; )
             /* We've never considered this file before. */
             /* Ask should_trace about it. */
             PyObject * args = Py_BuildValue("(OO)", filename, frame);
-            tracename = PyObject_Call(self->should_trace, args, NULL);
+            disposition = PyObject_Call(self->should_trace, args, NULL);
             Py_DECREF(args);
-            if (tracename == NULL) {
+            if (disposition == NULL) {
                 /* An error occurred inside should_trace. */
                 STATS( self->stats.errors++; )
                 return RET_ERROR;
             }
-            if (PyDict_SetItem(self->should_trace_cache, filename, tracename) < 0) {
+            if (PyDict_SetItem(self->should_trace_cache, filename, disposition) < 0) {
                 STATS( self->stats.errors++; )
                 return RET_ERROR;
             }
         }
         else {
-            Py_INCREF(tracename);
+            Py_INCREF(disposition);
         }
 
         /* If tracename is a string, then we're supposed to trace. */
+        tracename = PyObject_GetAttrString(disposition, "filename");
+        if (tracename == NULL) {
+            STATS( self->stats.errors++; )
+            Py_DECREF(disposition);
+            return RET_ERROR;
+        }
         if (MyText_Check(tracename)) {
             PyObject * file_data = PyDict_GetItem(self->data, tracename);
             if (file_data == NULL) {
                 file_data = PyDict_New();
                 if (file_data == NULL) {
                     STATS( self->stats.errors++; )
+                    Py_DECREF(tracename);
+                    Py_DECREF(disposition);
                     return RET_ERROR;
                 }
                 ret = PyDict_SetItem(self->data, tracename, file_data);
                 Py_DECREF(file_data);
                 if (ret < 0) {
                     STATS( self->stats.errors++; )
+                    Py_DECREF(tracename);
+                    Py_DECREF(disposition);
                     return RET_ERROR;
                 }
             }
@@ -385,6 +396,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
         }
 
         Py_DECREF(tracename);
+        Py_DECREF(disposition);
 
         self->last_line = -1;
         break;

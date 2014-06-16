@@ -89,19 +89,20 @@ class PyTracer(object):
             self.data_stack.append((self.handler, self.cur_file_data, self.last_line))
             filename = frame.f_code.co_filename
             if filename not in self.should_trace_cache:
-                tracename, handler = self.should_trace(filename, frame)
-                self.should_trace_cache[filename] = tracename, handler
+                disp = self.should_trace(filename, frame)
+                self.should_trace_cache[filename] = disp
             else:
-                tracename, handler = self.should_trace_cache[filename]
+                disp = self.should_trace_cache[filename]
             #print("called, stack is %d deep, tracename is %r" % (
             #               len(self.data_stack), tracename))
-            if tracename and handler:
-                tracename = handler.file_name(frame)
+            tracename = disp.filename
+            if tracename and disp.handler:
+                tracename = disp.handler.file_name(frame)
             if tracename:
                 if tracename not in self.data:
                     self.data[tracename] = {}
                 self.cur_file_data = self.data[tracename]
-                self.handler = handler
+                self.handler = disp.handler
             else:
                 self.cur_file_data = None
             # Set the last_line to -1 because the next arc will be entering a
