@@ -21,6 +21,15 @@ class HandyConfigParser(configparser.RawConfigParser):
         return configparser.RawConfigParser.read(self, filename, **kwargs)
 
     def get(self, *args, **kwargs):
+        """Get a value, replacing environment variables also.
+
+        The arguments are the same as `RawConfigParser.get`, but in the found
+        value, ``$WORD`` or ``${WORD}`` are replaced by the value of the
+        environment variable ``WORD``.
+
+        Returns the finished value.
+
+        """
         v = configparser.RawConfigParser.get(self, *args, **kwargs)
         def dollar_replace(m):
             """Called for each $replacement."""
