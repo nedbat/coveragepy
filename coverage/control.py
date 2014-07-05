@@ -9,6 +9,7 @@ from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.debug import DebugControl
+from coverage.extension import load_extensions
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.html import HtmlReporter
@@ -17,8 +18,6 @@ from coverage.misc import file_be_gone
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
-
-from coverage.django import DjangoTracer
 
 
 # Pypy has some unusual stuff in the "stdlib".  Consider those locations
@@ -128,6 +127,10 @@ class coverage(object):
         # Create and configure the debugging controller.
         self.debug = DebugControl(self.config.debug, debug_file or sys.stderr)
 
+        # Load extensions
+        tracer_classes = load_extensions(self.config.extensions, "tracer")
+        self.tracer_extensions = [cls() for cls in tracer_classes]
+
         self.auto_data = auto_data
 
         # _exclude_re is a dict mapping exclusion list names to compiled
@@ -154,8 +157,6 @@ class coverage(object):
             branch=self.config.branch, warn=self._warn,
             coroutine=self.config.coroutine,
             )
-
-        self.django_tracer = DjangoTracer()  # should this be a class? Singleton...
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
         # collecting data, not when combining data.  So we save it as
@@ -274,11 +275,12 @@ class coverage(object):
 
         canonical = self.file_locator.canonical_filename(filename)
 
-        # DJANGO HACK
-        if self.django_tracer.should_trace(canonical):
-            disp.filename = canonical
-            disp.handler = self.django_tracer
-            return disp
+        # Try the extensions, see if they have an opinion about the file.
+        for tracer in self.tracer_extensions:
+            ext_disp = tracer.should_trace(canonical)
+            if ext_disp:
+                ext_disp.extension = tracer
+                return ext_disp
 
         # If the user specified source or include, then that's authoritative
         # about the outer bound of what to measure and we don't have to apply
@@ -535,8 +537,10 @@ class coverage(object):
         if not self._measured:
             return
 
+        # TODO: seems like this parallel structure is getting kinda old...
         self.data.add_line_data(self.collector.get_line_data())
         self.data.add_arc_data(self.collector.get_arc_data())
+        self.data.add_extension_data(self.collector.get_extension_data())
         self.collector.reset()
 
         # If there are still entries in the source_pkgs list, then we never
@@ -604,7 +608,8 @@ class coverage(object):
         """
         self._harvest_data()
         if not isinstance(it, CodeUnit):
-            it = code_unit_factory(it, self.file_locator)[0]
+            get_ext = self.data.extension_data().get
+            it = code_unit_factory(it, self.file_locator, get_ext)[0]
 
         return Analysis(self, it)
 
@@ -776,10 +781,10 @@ class FileDisposition(object):
         self.original_filename = original_filename
         self.filename = None
         self.reason = ""
-        self.handler = None
+        self.extension = None
 
     def nope(self, reason):
-        """A helper for return a NO answer from should_trace."""
+        """A helper for returning a NO answer from should_trace."""
         self.reason = reason
         return self
 

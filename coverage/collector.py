@@ -41,18 +41,21 @@ class PyTracer(object):
     # used to force the use of this tracer.
 
     def __init__(self):
+        # Attributes set from the collector:
         self.data = None
+        self.arcs = False
         self.should_trace = None
         self.should_trace_cache = None
         self.warn = None
-        self.handler = None
+        self.extensions = None
+
+        self.extension = None
         self.cur_file_data = None
         self.last_line = 0
         self.data_stack = []
         self.data_stacks = collections.defaultdict(list)
         self.last_exc_back = None
         self.last_exc_firstlineno = 0
-        self.arcs = False
         self.thread = None
         self.stopped = False
         self.coroutine_id_func = None
@@ -86,23 +89,24 @@ class PyTracer(object):
             if self.coroutine_id_func:
                 self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.last_coroutine = self.coroutine_id_func()
-            self.data_stack.append((self.handler, self.cur_file_data, self.last_line))
+            self.data_stack.append((self.extension, self.cur_file_data, self.last_line))
             filename = frame.f_code.co_filename
-            if filename not in self.should_trace_cache:
+            disp = self.should_trace_cache.get(filename)
+            if disp is None:
                 disp = self.should_trace(filename, frame)
                 self.should_trace_cache[filename] = disp
-            else:
-                disp = self.should_trace_cache[filename]
             #print("called, stack is %d deep, tracename is %r" % (
             #               len(self.data_stack), tracename))
             tracename = disp.filename
-            if tracename and disp.handler:
-                tracename = disp.handler.file_name(frame)
+            if tracename and disp.extension:
+                tracename = disp.extension.file_name(frame)
             if tracename:
                 if tracename not in self.data:
                     self.data[tracename] = {}
+                    if disp.extension:
+                        self.extensions[tracename] = disp.extension.__name__
                 self.cur_file_data = self.data[tracename]
-                self.handler = disp.handler
+                self.extension = disp.extension
             else:
                 self.cur_file_data = None
             # Set the last_line to -1 because the next arc will be entering a
@@ -112,8 +116,8 @@ class PyTracer(object):
             # Record an executed line.
             #if self.coroutine_id_func:
             #    assert self.last_coroutine == self.coroutine_id_func()
-            if self.handler:
-                lineno_from, lineno_to = self.handler.line_number_range(frame)
+            if self.extension:
+                lineno_from, lineno_to = self.extension.line_number_range(frame)
             else:
                 lineno_from, lineno_to = frame.f_lineno, frame.f_lineno
             if lineno_from != -1:
@@ -134,7 +138,7 @@ class PyTracer(object):
             if self.coroutine_id_func:
                 self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.last_coroutine = self.coroutine_id_func()
-            self.handler, self.cur_file_data, self.last_line = self.data_stack.pop()
+            self.extension, self.cur_file_data, self.last_line = self.data_stack.pop()
             #print("returned, stack is %d deep" % (len(self.data_stack)))
         elif event == 'exception':
             #print("exc", self.last_line, frame.f_lineno)
@@ -251,6 +255,8 @@ class Collector(object):
         # or mapping filenames to dicts with linenumber pairs as keys.
         self.data = {}
 
+        self.extensions = {}
+
         # A cache of the results from should_trace, the decision about whether
         # to trace execution in a file. A dict of filename to (filename or
         # None).
@@ -269,6 +275,8 @@ class Collector(object):
         tracer.warn = self.warn
         if hasattr(tracer, 'coroutine_id_func'):
             tracer.coroutine_id_func = self.coroutine_id_func
+        if hasattr(tracer, 'extensions'):
+            tracer.extensions = self.extensions
         fn = tracer.start()
         self.tracers.append(tracer)
         return fn
@@ -367,10 +375,7 @@ class Collector(object):
             # to show line data.
             line_data = {}
             for f, arcs in self.data.items():
-                line_data[f] = ldf = {}
-                for l1, _ in list(arcs.keys()):
-                    if l1:
-                        ldf[l1] = None
+                line_data[f] = dict((l1, None) for l1, _ in arcs.keys() if l1)
             return line_data
         else:
             return self.data
@@ -388,3 +393,6 @@ class Collector(object):
             return self.data
         else:
             return {}
+
+    def get_extension_data(self):
+        return self.extensions
