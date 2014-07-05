@@ -120,7 +120,7 @@ def source_encoding(source):
 
     # This is mostly code adapted from Py3.2's tokenize module.
 
-    cookie_re = re.compile(r"coding[:=]\s*([-\w.]+)")
+    cookie_re = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)")
 
     # Do this so the detect_encode code we copied will work.
     readline = iter(source.splitlines(True)).next
