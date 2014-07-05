@@ -29,6 +29,9 @@ Change history for Coverage.py
 - The coverage module no longer causes deprecation warnings on Python 3.4 by
   importing the imp module, fixing `issue 305`_.
 
+- Encoding declarations in source files are only considered if they are truly
+  comments.  Thanks, Anthony Sottile.
+
 .. _issue 57: https://bitbucket.org/ned/coveragepy/issue/57/annotate-command-fails-to-annotate-many
 .. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
 .. _issue 284: https://bitbucket.org/ned/coveragepy/issue/284/fail-under-should-show-more-precision
