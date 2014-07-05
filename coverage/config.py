@@ -21,6 +21,15 @@ class HandyConfigParser(configparser.RawConfigParser):
         return configparser.RawConfigParser.read(self, filename, **kwargs)
 
     def get(self, *args, **kwargs):
+        """Get a value, replacing environment variables also.
+
+        The arguments are the same as `RawConfigParser.get`, but in the found
+        value, ``$WORD`` or ``${WORD}`` are replaced by the value of the
+        environment variable ``WORD``.
+
+        Returns the finished value.
+
+        """
         v = configparser.RawConfigParser.get(self, *args, **kwargs)
         def dollar_replace(m):
             """Called for each $replacement."""
@@ -113,6 +122,7 @@ class CoverageConfig(object):
         self.timid = False
         self.source = None
         self.debug = []
+        self.extensions = []
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
@@ -144,7 +154,7 @@ class CoverageConfig(object):
         if env:
             self.timid = ('--timid' in env)
 
-    MUST_BE_LIST = ["omit", "include", "debug"]
+    MUST_BE_LIST = ["omit", "include", "debug", "extensions"]
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
@@ -176,12 +186,21 @@ class CoverageConfig(object):
                 self.paths[option] = cp.getlist('paths', option)
 
     CONFIG_FILE_OPTIONS = [
+        # These are *args for set_attr_from_config_option:
+        #   (attr, where, type_="")
+        #
+        #   attr is the attribute to set on the CoverageConfig object.
+        #   where is the section:name to read from the configuration file.
+        #   type_ is the optional type to apply, by using .getTYPE to read the
+        #       configuration value from the file.
+
         # [run]
         ('branch', 'run:branch', 'boolean'),
         ('coroutine', 'run:coroutine'),
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
+        ('extensions', 'run:extensions', 'list'),
         ('include', 'run:include', 'list'),
         ('omit', 'run:omit', 'list'),
         ('parallel', 'run:parallel', 'boolean'),

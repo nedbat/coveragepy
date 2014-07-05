@@ -9,6 +9,7 @@ from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.debug import DebugControl
+from coverage.extension import load_extensions
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.html import HtmlReporter
@@ -17,6 +18,7 @@ from coverage.misc import file_be_gone
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
+
 
 # Pypy has some unusual stuff in the "stdlib".  Consider those locations
 # when deciding where the stdlib is.
@@ -125,6 +127,10 @@ class coverage(object):
         # Create and configure the debugging controller.
         self.debug = DebugControl(self.config.debug, debug_file or sys.stderr)
 
+        # Load extensions
+        tracer_classes = load_extensions(self.config.extensions, "tracer")
+        self.tracer_extensions = [cls() for cls in tracer_classes]
+
         self.auto_data = auto_data
 
         # _exclude_re is a dict mapping exclusion list names to compiled
@@ -232,32 +238,24 @@ class coverage(object):
         This function is called from the trace function.  As each new file name
         is encountered, this function determines whether it is traced or not.
 
-        Returns a pair of values:  the first indicates whether the file should
-        be traced: it's a canonicalized filename if it should be traced, None
-        if it should not.  The second value is a string, the resason for the
-        decision.
+        Returns a FileDisposition object.
 
         """
+        disp = FileDisposition(filename)
+
         if not filename:
             # Empty string is pretty useless
-            return None, "empty string isn't a filename"
+            return disp.nope("empty string isn't a filename")
 
         if filename.startswith('memory:'):
-            if 0:
-                import dis, sys, StringIO
-                _stdout = sys.stdout
-                sys.stdout = new_stdout = StringIO.StringIO()
-                dis.dis(frame.f_code)
-                sys.stdout = _stdout
-                return None, new_stdout.getvalue()
-            return None, "memory isn't traceable"
+            return disp.nope("memory isn't traceable")
 
         if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
             # filenames like "<string>", "<doctest readme.txt[0]>", or
             # "<exec_function>".  Don't ever trace these executions, since we
             # can't do anything with the data later anyway.
-            return None, "not a real filename"
+            return disp.nope("not a real filename")
 
         self._check_for_packages()
 
@@ -277,47 +275,51 @@ class coverage(object):
 
         canonical = self.file_locator.canonical_filename(filename)
 
+        # Try the extensions, see if they have an opinion about the file.
+        for tracer in self.tracer_extensions:
+            ext_disp = tracer.should_trace(canonical)
+            if ext_disp:
+                ext_disp.extension = tracer
+                return ext_disp
+
         # If the user specified source or include, then that's authoritative
         # about the outer bound of what to measure and we don't have to apply
         # any canned exclusions. If they didn't, then we have to exclude the
         # stdlib and coverage.py directories.
         if self.source_match:
             if not self.source_match.match(canonical):
-                return None, "falls outside the --source trees"
+                return disp.nope("falls outside the --source trees")
         elif self.include_match:
             if not self.include_match.match(canonical):
-                return None, "falls outside the --include trees"
+                return disp.nope("falls outside the --include trees")
         else:
             # If we aren't supposed to trace installed code, then check if this
             # is near the Python standard library and skip it if so.
             if self.pylib_match and self.pylib_match.match(canonical):
-                return None, "is in the stdlib"
+                return disp.nope("is in the stdlib")
 
             # We exclude the coverage code itself, since a little of it will be
             # measured otherwise.
             if self.cover_match and self.cover_match.match(canonical):
-                return None, "is part of coverage.py"
+                return disp.nope("is part of coverage.py")
 
         # Check the file against the omit pattern.
         if self.omit_match and self.omit_match.match(canonical):
-            return None, "is inside an --omit pattern"
+            return disp.nope("is inside an --omit pattern")
 
-        return canonical, "because we love you"
+        disp.filename = canonical
+        return disp
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.
 
-        Calls `_should_trace_with_reason`, and returns just the decision.
+        Calls `_should_trace_with_reason`, and returns the FileDisposition.
 
         """
-        canonical, reason = self._should_trace_with_reason(filename, frame)
+        disp = self._should_trace_with_reason(filename, frame)
         if self.debug.should('trace'):
-            if not canonical:
-                msg = "Not tracing %r: %s" % (filename, reason)
-            else:
-                msg = "Tracing %r" % (filename,)
-            self.debug.write(msg)
-        return canonical
+            self.debug.write(disp.debug_message())
+        return disp
 
     def _warn(self, msg):
         """Use `msg` as a warning."""
@@ -535,8 +537,10 @@ class coverage(object):
         if not self._measured:
             return
 
+        # TODO: seems like this parallel structure is getting kinda old...
         self.data.add_line_data(self.collector.get_line_data())
         self.data.add_arc_data(self.collector.get_arc_data())
+        self.data.add_extension_data(self.collector.get_extension_data())
         self.collector.reset()
 
         # If there are still entries in the source_pkgs list, then we never
@@ -604,7 +608,8 @@ class coverage(object):
         """
         self._harvest_data()
         if not isinstance(it, CodeUnit):
-            it = code_unit_factory(it, self.file_locator)[0]
+            get_ext = self.data.extension_data().get
+            it = code_unit_factory(it, self.file_locator, get_ext)[0]
 
         return Analysis(self, it)
 
@@ -768,6 +773,28 @@ class coverage(object):
             info.append(('pylib_match', self.pylib_match.info()))
 
         return info
+
+
+class FileDisposition(object):
+    """A simple object for noting a number of details of files to trace."""
+    def __init__(self, original_filename):
+        self.original_filename = original_filename
+        self.filename = None
+        self.reason = ""
+        self.extension = None
+
+    def nope(self, reason):
+        """A helper for returning a NO answer from should_trace."""
+        self.reason = reason
+        return self
+
+    def debug_message(self):
+        """Produce a debugging message explaining the outcome."""
+        if not self.filename:
+            msg = "Not tracing %r: %s" % (self.original_filename, self.reason)
+        else:
+            msg = "Tracing %r" % (self.original_filename,)
+        return msg
 
 
 def process_startup():
