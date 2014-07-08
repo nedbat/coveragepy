@@ -174,14 +174,17 @@ class SummaryTest(CoverageTest):
 
         # Name        Stmts   Miss Branch BrMiss  Cover   Missing
         # -------------------------------------------------------
-        # mybranch        7      0      4      2    82%   Branches: 2->4, 4->6
+        # mybranch        7      0      4      2    82%   2->4, 4->6
 
         self.assertEqual(self.line_count(report), 3)
         self.assertIn("mybranch ", report)
         self.assertEqual(self.last_line_squeezed(report),
-                         "mybranch 7 0 4 2 82% Branches: 2->4, 4->6")
+                         "mybranch 7 0 4 2 82% 2->4, 4->6")
 
     def test_report_show_missing_branches_and_lines(self):
+        self.make_file("main.py", """\
+            import mybranch
+            """)
         self.make_file("mybranch.py", """\
             def branch(x, y, z):
                 if x:
@@ -194,20 +197,32 @@ class SummaryTest(CoverageTest):
                 return x
             branch(1, 1, 0)
             """)
-        out = self.run_command("coverage run --branch mybranch.py")
+        out = self.run_command("coverage run --branch main.py")
         self.assertEqual(out, 'x\ny\n')
         report = self.report_from_command("coverage report --show-missing")
 
         # pylint: disable=C0301
         # Name        Stmts   Miss Branch BrMiss  Cover   Missing
         # -------------------------------------------------------
-        # mybranch       10      2      8      5    61%   7-8, Branches: 2->4, 4->6, 6->7, 7->8, 7->9
+        # main            1      0      0      0   100%
+        # mybranch       10      2      8      5    61%   7-8, 2->4, 4->6
+        # -------------------------------------------------------
+        # TOTAL          11      2      8      5    63%
 
-        self.assertEqual(self.line_count(report), 3)
-        self.assertIn("mybranch ", report)
-        self.assertEqual(self.last_line_squeezed(report),
-                         "mybranch 10 2 8 5 61% "
-                         "7-8, Branches: 2->4, 4->6, 6->7, 7->8, 7->9")
+        self.assertEqual(self.line_count(report), 6)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(
+            squeezed[2],
+            "main 1 0 0 0 100%"
+        )
+        self.assertEqual(
+            squeezed[3],
+            "mybranch 10 2 8 5 61% 7-8, 2->4, 4->6"
+        )
+        self.assertEqual(
+            squeezed[5],
+            "TOTAL 11 2 8 5 63%"
+        )
 
     def test_dotpy_not_python(self):
         # We run a .py file, and when reporting, we can't parse it as Python.

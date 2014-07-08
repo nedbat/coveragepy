@@ -489,15 +489,24 @@ class CoverageTest(TestCase):
         self.assertNotIn("error", report.lower())
         return report
 
+    def report_lines(self, report):
+        """Return the lines of the report, as a list."""
+        lines = report.split('\n')
+        self.assertEqual(lines[-1], "")
+        return lines[:-1]
+
     def line_count(self, report):
         """How many lines are in `report`?"""
-        self.assertEqual(report.split('\n')[-1], "")
-        return len(report.split('\n')) - 1
+        return len(self.report_lines(report))
+
+    def squeezed_lines(self, report):
+        """Return a list of the lines in report, with the spaces squeezed."""
+        lines = self.report_lines(report)
+        return [re.sub(r"\s+", " ", l.strip()) for l in lines]
 
     def last_line_squeezed(self, report):
         """Return the last line of `report` with the spaces squeezed down."""
-        last_line = report.split('\n')[-2]
-        return re.sub(r"\s+", " ", last_line)
+        return self.squeezed_lines(report)[-1]
 
     # We run some tests in temporary directories, because they may need to make
     # files for the tests. But this is expensive, so we can change per-class

@@ -37,8 +37,6 @@ class SummaryReporter(Reporter):
         if self.config.show_missing:
             header += "   Missing"
             fmt_coverage += "   %s"
-            if self.branches:
-                fmt_coverage += "%sBranches: %s"
         rule = "-" * len(header) + "\n"
         header += "\n"
         fmt_coverage += "\n"
@@ -62,12 +60,13 @@ class SummaryReporter(Reporter):
                 args += (nums.pc_covered_str,)
                 if self.config.show_missing:
                     missing_fmtd = analysis.missing_formatted()
-                    args += (missing_fmtd,)
                     if self.branches:
-                        separator = ""
-                        if missing_fmtd:
-                            separator = ", "
-                        args += (separator, analysis.arcs_missing_formatted(),)
+                        branches_fmtd = analysis.arcs_missing_formatted()
+                        if branches_fmtd:
+                            if missing_fmtd:
+                                missing_fmtd += ", "
+                            missing_fmtd += branches_fmtd
+                    args += (missing_fmtd,)
                 outfile.write(fmt_coverage % args)
                 total += nums
             except KeyboardInterrupt:                   # pragma: not covered

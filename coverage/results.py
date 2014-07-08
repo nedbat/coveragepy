@@ -84,18 +84,20 @@ class Analysis(object):
         return sorted(missing)
 
     def arcs_missing_formatted(self):
-        """ The missing branch arcs, formatted.
+        """ The missing branch arcs, formatted nicely.
 
-        Returns a string like "1->2, 1->3, 16->20"
+        Returns a string like "1->2, 1->3, 16->20". Omits any mention of
+        missing lines, so if line 17 is missing, then 16->17 won't be included.
 
         """
         arcs = self.missing_branch_arcs()
+        missing = self.missing
         line_exits = sorted(iitems(arcs))
         pairs = []
         for line, exits in line_exits:
             for ex in sorted(exits):
-                pair = '%d->%d' % (line, ex)
-                pairs.append(pair)
+                if line not in missing and ex not in missing:
+                    pairs.append('%d->%d' % (line, ex))
         return ', '.join(pairs)
 
     def arcs_unpredicted(self):
