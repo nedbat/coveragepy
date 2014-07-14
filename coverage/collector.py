@@ -50,6 +50,7 @@ class PyTracer(object):
         self.extensions = None
 
         self.extension = None
+        self.cur_tracename = None   # TODO: This is only maintained for the if0 debugging output. Get rid of it eventually.
         self.cur_file_data = None
         self.last_line = 0
         self.data_stack = []
@@ -68,9 +69,31 @@ class PyTracer(object):
             return
 
         if 0:
-            sys.stderr.write("trace event: %s %r @%d\n" % (
-                event, frame.f_code.co_filename, frame.f_lineno
+            # A lot of debugging to try to understand why gevent isn't right.
+            import os.path, pprint
+            def short_ident(ident):
+                return "{}:{:06X}".format(ident.__class__.__name__, id(ident) & 0xFFFFFF)
+
+            ident = None
+            if self.coroutine_id_func:
+                ident = short_ident(self.coroutine_id_func())
+            sys.stdout.write("trace event: %s %s %r @%d\n" % (
+                event, ident, frame.f_code.co_filename, frame.f_lineno
             ))
+            pprint.pprint(
+                dict(
+                    (
+                        short_ident(ident),
+                        [
+                            (os.path.basename(tn or ""), sorted((cfd or {}).keys()), ll)
+                            for ex, tn, cfd, ll in data_stacks
+                        ]
+                    )
+                    for ident, data_stacks in self.data_stacks.items()
+                )
+                , width=250)
+            pprint.pprint(sorted((self.cur_file_data or {}).keys()), width=250)
+            print("TRYING: {}".format(sorted(next((v for k,v in self.data.items() if k.endswith("try_it.py")), {}).keys())))
 
         if self.last_exc_back:
             if frame == self.last_exc_back:
@@ -80,7 +103,7 @@ class PyTracer(object):
                     self.cur_file_data[pair] = None
                 if self.coroutine_id_func:
                     self.data_stack = self.data_stacks[self.coroutine_id_func()]
-                self.handler, self.cur_file_data, self.last_line = self.data_stack.pop()
+                self.handler, _, self.cur_file_data, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
 
         if event == 'call':
@@ -89,7 +112,7 @@ class PyTracer(object):
             if self.coroutine_id_func:
                 self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.last_coroutine = self.coroutine_id_func()
-            self.data_stack.append((self.extension, self.cur_file_data, self.last_line))
+            self.data_stack.append((self.extension, self.cur_tracename, self.cur_file_data, self.last_line))
             filename = frame.f_code.co_filename
             disp = self.should_trace_cache.get(filename)
             if disp is None:
@@ -105,6 +128,7 @@ class PyTracer(object):
                     self.data[tracename] = {}
                     if disp.extension:
                         self.extensions[tracename] = disp.extension.__name__
+                self.cur_tracename = tracename
                 self.cur_file_data = self.data[tracename]
                 self.extension = disp.extension
             else:
@@ -114,8 +138,10 @@ class PyTracer(object):
             self.last_line = -1
         elif event == 'line':
             # Record an executed line.
-            #if self.coroutine_id_func:
-            #    assert self.last_coroutine == self.coroutine_id_func()
+            if 0 and self.coroutine_id_func:
+                this_coroutine = self.coroutine_id_func()
+                if self.last_coroutine != this_coroutine:
+                    print("mismatch: {0} != {1}".format(self.last_coroutine, this_coroutine))
             if self.extension:
                 lineno_from, lineno_to = self.extension.line_number_range(frame)
             else:
@@ -138,7 +164,7 @@ class PyTracer(object):
             if self.coroutine_id_func:
                 self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.last_coroutine = self.coroutine_id_func()
-            self.extension, self.cur_file_data, self.last_line = self.data_stack.pop()
+            self.extension, _, self.cur_file_data, self.last_line = self.data_stack.pop()
             #print("returned, stack is %d deep" % (len(self.data_stack)))
         elif event == 'exception':
             #print("exc", self.last_line, frame.f_lineno)
