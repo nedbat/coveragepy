@@ -13,7 +13,7 @@ Change history for Coverage.py
   ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
 
 - The ``report`` command can now show missing branches when reporting on branch
-  coverage.  Thanks, Steve Leonard.
+  coverage.  Thanks, Steve Leonard. Closes `issue 230`.
 
 - The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
   Stan Hu.
@@ -38,6 +38,7 @@ Change history for Coverage.py
 
 .. _issue 57: https://bitbucket.org/ned/coveragepy/issue/57/annotate-command-fails-to-annotate-many
 .. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
+.. _issue 230: https://bitbucket.org/ned/coveragepy/issue/230/show-line-no-for-missing-branches-in
 .. _issue 284: https://bitbucket.org/ned/coveragepy/issue/284/fail-under-should-show-more-precision
 .. _issue 285: https://bitbucket.org/ned/coveragepy/issue/285/xml-report-fails-if-output-file-directory
 .. _issue 303: https://bitbucket.org/ned/coveragepy/issue/303/unicodedecodeerror
