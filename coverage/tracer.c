@@ -66,6 +66,7 @@ typedef struct {
     /* Python objects manipulated directly by the Collector class. */
     PyObject * should_trace;
     PyObject * warn;
+    PyObject * coroutine_id_func;
     PyObject * data;
     PyObject * should_trace_cache;
     PyObject * arcs;
@@ -138,6 +139,7 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 
     self->should_trace = NULL;
     self->warn = NULL;
+    self->coroutine_id_func = NULL;
     self->data = NULL;
     self->should_trace_cache = NULL;
     self->arcs = NULL;
@@ -171,6 +173,7 @@ CTracer_dealloc(CTracer *self)
 
     Py_XDECREF(self->should_trace);
     Py_XDECREF(self->warn);
+    Py_XDECREF(self->coroutine_id_func);
     Py_XDECREF(self->data);
     Py_XDECREF(self->should_trace_cache);
 
@@ -248,6 +251,18 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
         ret = RET_ERROR;
     }
     return ret;
+}
+
+/* Get the proper data_stack to use.  In Python, defaultdict makes this easier. */
+static int
+CTracer_get_data_stack(CTracer *self)
+{
+    if (self->coroutine_id_func) {
+    }
+    else {
+    }
+
+    return RET_OK;
 }
 
 /*
@@ -609,6 +624,9 @@ CTracer_members[] = {
 
     { "warn",               T_OBJECT, offsetof(CTracer, warn), 0,
             PyDoc_STR("Function for issuing warnings.") },
+
+    { "coroutine_id_func",  T_OBJECT, offsetof(CTracer, coroutine_id_func), 0,
+            PyDoc_STR("Function for determining coroutine context") },
 
     { "data",               T_OBJECT, offsetof(CTracer, data), 0,
             PyDoc_STR("The raw dictionary of trace data.") },
