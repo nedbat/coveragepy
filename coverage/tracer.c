@@ -30,6 +30,7 @@
 #define MyText_AS_BYTES(o)  PyUnicode_AsASCIIString(o)
 #define MyText_AS_STRING(o) PyBytes_AS_STRING(o)
 #define MyInt_FromLong(l)   PyLong_FromLong(l)
+#define MyInt_AsLong(o)     PyLong_AsLong(o)
 
 #define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
 
@@ -40,6 +41,7 @@
 #define MyText_AS_BYTES(o)  (Py_INCREF(o), o)
 #define MyText_AS_STRING(o) PyString_AS_STRING(o)
 #define MyInt_FromLong(l)   PyInt_FromLong(l)
+#define MyInt_AsLong(o)     PyInt_AsLong(o)
 
 #define MyType_HEAD_INIT    PyObject_HEAD_INIT(NULL)  0,
 
@@ -101,7 +103,12 @@ typedef struct {
         (None).
     */
 
-    DataStack data_stack;
+    DataStack data_stack;       /* Used if we aren't doing coroutines. */
+    PyObject * data_stack_index;     /* Used if we are doing coroutines. */
+    DataStack * data_stacks;
+    int data_stacks_alloc;
+    int data_stacks_used;
+
     DataStack * pdata_stack;
 
     /* The current file's data stack entry, copied from the stack. */
@@ -133,13 +140,8 @@ static int
 DataStack_init(CTracer *self, DataStack *pdata_stack)
 {
     pdata_stack->depth = -1;
-    pdata_stack->stack = PyMem_Malloc(STACK_DELTA*sizeof(DataStackEntry));
-    if (pdata_stack->stack == NULL) {
-        STATS( self->stats.errors++; )
-        PyErr_NoMemory();
-        return RET_ERROR;
-    }
-    pdata_stack->alloc = STACK_DELTA;
+    pdata_stack->stack = NULL;
+    pdata_stack->alloc = 0;
     return RET_OK;
 }
 
@@ -199,6 +201,16 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     if (DataStack_init(self, &self->data_stack)) {
         return RET_ERROR;
     }
+    self->data_stack_index = PyDict_New();
+    if (self->data_stack_index == NULL) {
+        STATS( self->stats.errors++; )
+        return RET_ERROR;
+    }
+
+    self->data_stacks = NULL;
+    self->data_stacks_alloc = 0;
+    self->data_stacks_used = 0;
+
     self->pdata_stack = &self->data_stack;
 
     self->cur_entry.file_data = NULL;
@@ -223,6 +235,14 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->should_trace_cache);
 
     DataStack_dealloc(self, &self->data_stack);
+    if (self->data_stacks) {
+        for (int i = 0; i < self->data_stacks_used; i++) {
+            DataStack_dealloc(self, self->data_stacks + i);
+        }
+        PyMem_Free(self->data_stacks);
+    }
+
+    Py_XDECREF(self->data_stack_index);
 
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
@@ -298,19 +318,61 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
     return ret;
 }
 
-/* Set self->pdata_stack to the proper data_stack to use.  In Python, defaultdict makes this easier. */
+/* Set self->pdata_stack to the proper data_stack to use. */
 static int
 CTracer_set_pdata_stack(CTracer *self)
 {
-    self->pdata_stack = &self->data_stack;
-    return RET_OK;
-/*
-    if (self->coroutine_id_func) {
+    if (self->coroutine_id_func != Py_None) {
+        PyObject * co_obj = NULL;
+        PyObject * stack_index = NULL;
+        long the_index = 0;
+
+        co_obj = PyObject_CallObject(self->coroutine_id_func, NULL);
+        if (co_obj == NULL) {
+            return RET_ERROR;
+        }
+        stack_index = PyDict_GetItem(self->data_stack_index, co_obj);
+        if (stack_index == NULL) {
+            /* A new coroutine object.  Make a new data stack. */
+            the_index = self->data_stacks_used;
+            stack_index = MyInt_FromLong(the_index);
+            if (PyDict_SetItem(self->data_stack_index, co_obj, stack_index) < 0) {
+                /* TODO */
+                Py_XDECREF(co_obj);
+                Py_XDECREF(stack_index);
+                return RET_ERROR;
+            }
+            self->data_stacks_used++;
+            if (self->data_stacks_used >= self->data_stacks_alloc) {
+                int bigger = self->data_stacks_alloc + 10;
+                DataStack * bigger_stacks = PyMem_Realloc(self->data_stacks, bigger * sizeof(DataStack));
+                if (bigger_stacks == NULL) {
+                    STATS( self->stats.errors++; )
+                    PyErr_NoMemory();
+                    Py_XDECREF(co_obj);
+                    Py_XDECREF(stack_index);
+                    return RET_ERROR;
+                }
+                self->data_stacks = bigger_stacks;
+                self->data_stacks_alloc = bigger;
+            }
+            DataStack_init(self, &self->data_stacks[the_index]);
+        }
+        else {
+            Py_INCREF(stack_index);
+            the_index = MyInt_AsLong(stack_index);
+        }
+        
+        self->pdata_stack = &self->data_stacks[the_index];
+
+        Py_XDECREF(co_obj);
+        Py_XDECREF(stack_index);
     }
     else {
-        return &self->data_stack;
+        self->pdata_stack = &self->data_stack;
     }
-*/
+
+    return RET_OK;
 }
 
 /*
