@@ -337,7 +337,7 @@ CTracer_set_pdata_stack(CTracer *self)
             the_index = self->data_stacks_used;
             stack_index = MyInt_FromLong(the_index);
             if (PyDict_SetItem(self->data_stack_index, co_obj, stack_index) < 0) {
-                /* TODO */
+                STATS( self->stats.errors++; )
                 Py_XDECREF(co_obj);
                 Py_XDECREF(stack_index);
                 return RET_ERROR;
