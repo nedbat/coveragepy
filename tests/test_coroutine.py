@@ -32,7 +32,7 @@ def line_count(s):
 class CoroutineTest(CoverageTest):
     """Tests of the coroutine support in coverage.py."""
 
-    LIMIT = 1000
+    LIMIT = 3   # Should be 1000, but this gives me a reasonable amount of output.
 
     # The code common to all the concurrency models.
     COMMON = """
@@ -135,6 +135,19 @@ class CoroutineTest(CoverageTest):
             raise SkipTest("No gevent available")
 
         self.try_some_code(self.GEVENT, "--coroutine=gevent")
+
+    def test_gevent_badly(self):
+        # This test shouldn't pass. It should fail because we are running
+        # gevent code without the --coroutine=gevent flag.  It's here so I can
+        # see how gevent code looks when it isn't measured properly.  The C
+        # extension implementation of coroutining is currently acting precisely
+        # as if no coroutine support is available (demonstrated by this test),
+        # and I don't know why.  This test is part of me debugging that
+        # problem.
+        if gevent is None:
+            raise SkipTest("No gevent available")
+
+        self.try_some_code(self.GEVENT, "")
 
 
 def print_simple_annotation(code, linenos):
