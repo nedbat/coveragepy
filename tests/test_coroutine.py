@@ -101,7 +101,7 @@ class CoroutineTest(CoverageTest):
 
         self.make_file("try_it.py", code)
 
-        out = self.run_command("coverage run --timid %s try_it.py" % args)
+        out = self.run_command("coverage run %s try_it.py" % args)
         expected_out = "%d\n" % (sum(range(self.LIMIT)))
         self.assertEqual(out, expected_out)
 
@@ -129,7 +129,7 @@ class CoroutineTest(CoverageTest):
         self.try_some_code(self.EVENTLET, "--coroutine=eventlet")
 
     def test_gevent(self):
-        raise SkipTest("Still not sure why gevent isn't working...")
+        #raise SkipTest("Still not sure why gevent isn't working...")
 
         if gevent is None:
             raise SkipTest("No gevent available")
