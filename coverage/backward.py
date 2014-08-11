@@ -1,10 +1,11 @@
 """Add things to old Pythons so I can pretend they are newer."""
 
 # This file does lots of tricky stuff, so disable a bunch of lintisms.
-# pylint: disable=F0401,W0611,W0622
-# F0401: Unable to import blah
-# W0611: Unused import blah
-# W0622: Redefining built-in blah
+# pylint: disable=redefined-builtin
+# pylint: disable=import-error
+# pylint: disable=no-member
+# pylint: disable=unused-import
+# pylint: disable=no-name-in-module
 
 import os, re, sys
 
@@ -124,3 +125,59 @@ try:
 except ImportError:
     import md5
     md5 = md5.new
+
+
+try:
+    # In Py 2.x, the builtins were in __builtin__
+    BUILTINS = sys.modules['__builtin__']
+except KeyError:
+    # In Py 3.x, they're in builtins
+    BUILTINS = sys.modules['builtins']
+
+
+# imp was deprecated in Python 3.3
+try:
+    import importlib, importlib.util
+    imp = None
+except ImportError:
+    importlib = None
+
+# we only want to use importlib if it has everything we need.
+try:
+    importlib_util_find_spec = importlib.util.find_spec
+except Exception:
+    import imp
+    importlib_util_find_spec = None
+
+try:
+    PYC_MAGIC_NUMBER = importlib.util.MAGIC_NUMBER
+except AttributeError:
+    PYC_MAGIC_NUMBER = imp.get_magic()
+
+
+def import_local_file(modname):
+    """Import a local file as a module.
+
+    Opens a file in the current directory named `modname`.py, imports it
+    as `modname`, and returns the module object.
+
+    """
+    try:
+        from importlib.machinery import SourceFileLoader
+    except ImportError:
+        SourceFileLoader = None
+
+    modfile = modname + '.py'
+    if SourceFileLoader:
+        mod = SourceFileLoader(modname, modfile).load_module()
+    else:
+        for suff in imp.get_suffixes():
+            if suff[0] == '.py':
+                break
+
+        with open(modfile, 'r') as f:
+            # pylint: disable=W0631
+            # (Using possibly undefined loop variable 'suff')
+            mod = imp.load_module(modname, f, modfile, suff)
+
+    return mod

@@ -1,10 +1,11 @@
 """Base test case class for coverage testing."""
 
-import glob, imp, os, random, shlex, shutil, sys, tempfile, textwrap
+import glob, os, random, re, shlex, shutil, sys, tempfile, textwrap
 import atexit, collections
 
 import coverage
-from coverage.backward import StringIO, to_bytes
+from coverage.backward import StringIO, to_bytes, import_local_file
+from coverage.backward import importlib     # pylint: disable=unused-import
 from coverage.control import _TEST_NAME_FILE
 from tests.backtest import run_command
 from tests.backunittest import TestCase
@@ -221,18 +222,7 @@ class CoverageTest(TestCase):
         as `modname`, and returns the module object.
 
         """
-        modfile = modname + '.py'
-
-        for suff in imp.get_suffixes():
-            if suff[0] == '.py':
-                break
-
-        with open(modfile, 'r') as f:
-            # pylint: disable=W0631
-            # (Using possibly undefined loop variable 'suff')
-            mod = imp.load_module(modname, f, modfile, suff)
-
-        return mod
+        return import_local_file(modname)
 
     def start_import_stop(self, cov, modname):
         """Start coverage, import a file, then stop coverage.
@@ -365,19 +355,21 @@ class CoverageTest(TestCase):
                     if statements == line_list:
                         break
                 else:
-                    self.fail("None of the lines choices matched %r" %
-                                                                statements
+                    self.fail(
+                        "None of the lines choices matched %r" % statements
                         )
 
+            missing_formatted = analysis.missing_formatted()
             if type(missing) == type(""):
-                self.assertEqual(analysis.missing_formatted(), missing)
+                self.assertEqual(missing_formatted, missing)
             else:
                 for missing_list in missing:
-                    if analysis.missing_formatted() == missing_list:
+                    if missing_formatted == missing_list:
                         break
                 else:
-                    self.fail("None of the missing choices matched %r" %
-                                            analysis.missing_formatted()
+                    self.fail(
+                        "None of the missing choices matched %r" %
+                        missing_formatted
                         )
 
         if arcs is not None:
@@ -412,17 +404,17 @@ class CoverageTest(TestCase):
         """Assert that `flist1` and `flist2` are the same set of file names."""
         flist1_nice = [self.nice_file(f) for f in flist1]
         flist2_nice = [self.nice_file(f) for f in flist2]
-        self.assertSameElements(flist1_nice, flist2_nice)
+        self.assertCountEqual(flist1_nice, flist2_nice)
 
     def assert_exists(self, fname):
         """Assert that `fname` is a file that exists."""
         msg = "File %r should exist" % fname
-        self.assert_(os.path.exists(fname), msg)
+        self.assertTrue(os.path.exists(fname), msg)
 
     def assert_doesnt_exist(self, fname):
         """Assert that `fname` is a file that doesn't exist."""
         msg = "File %r shouldn't exist" % fname
-        self.assert_(not os.path.exists(fname), msg)
+        self.assertTrue(not os.path.exists(fname), msg)
 
     def assert_starts_with(self, s, prefix, msg=None):
         """Assert that `s` starts with `prefix`."""
@@ -466,7 +458,7 @@ class CoverageTest(TestCase):
         _, output = self.run_command_status(cmd)
         return output
 
-    def run_command_status(self, cmd, status=0):
+    def run_command_status(self, cmd):
         """Run the command-line `cmd` in a subprocess, and print its output.
 
         Use this when you need to test the process behavior of coverage.
@@ -474,9 +466,6 @@ class CoverageTest(TestCase):
         Compare with `command_line`.
 
         Returns a pair: the process' exit status and stdout text.
-
-        The `status` argument is returned as the status on older Pythons where
-        we can't get the actual exit status of the process.
 
         """
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
@@ -490,9 +479,34 @@ class CoverageTest(TestCase):
         pypath += testmods + os.pathsep + zipfile
         self.set_environ('PYTHONPATH', pypath)
 
-        status, output = run_command(cmd, status=status)
+        status, output = run_command(cmd)
         print(output)
         return status, output
+
+    def report_from_command(self, cmd):
+        """Return the report from the `cmd`, with some convenience added."""
+        report = self.run_command(cmd).replace('\\', '/')
+        self.assertNotIn("error", report.lower())
+        return report
+
+    def report_lines(self, report):
+        """Return the lines of the report, as a list."""
+        lines = report.split('\n')
+        self.assertEqual(lines[-1], "")
+        return lines[:-1]
+
+    def line_count(self, report):
+        """How many lines are in `report`?"""
+        return len(self.report_lines(report))
+
+    def squeezed_lines(self, report):
+        """Return a list of the lines in report, with the spaces squeezed."""
+        lines = self.report_lines(report)
+        return [re.sub(r"\s+", " ", l.strip()) for l in lines]
+
+    def last_line_squeezed(self, report):
+        """Return the last line of `report` with the spaces squeezed down."""
+        return self.squeezed_lines(report)[-1]
 
     # We run some tests in temporary directories, because they may need to make
     # files for the tests. But this is expensive, so we can change per-class

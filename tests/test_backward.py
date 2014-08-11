@@ -12,7 +12,7 @@ class BackwardTest(TestCase):
     def test_iitems(self):
         d = {'a': 1, 'b': 2, 'c': 3}
         items = [('a', 1), ('b', 2), ('c', 3)]
-        self.assertSameElements(list(iitems(d)), items)
+        self.assertCountEqual(list(iitems(d)), items)
 
     def test_binary_bytes(self):
         byte_values = [0, 255, 17, 23, 42, 57]

@@ -21,26 +21,10 @@ class SummaryTest(CoverageTest):
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
 
-    def report_from_command(self, cmd):
-        """Return the report from the `cmd`, with some convenience added."""
-        report = self.run_command(cmd).replace('\\', '/')
-        self.assertNotIn("error", report.lower())
-        return report
-
-    def line_count(self, report):
-        """How many lines are in `report`?"""
-        self.assertEqual(report.split('\n')[-1], "")
-        return len(report.split('\n')) - 1
-
-    def last_line_squeezed(self, report):
-        """Return the last line of `report` with the spaces squeezed down."""
-        last_line = report.split('\n')[-2]
-        return re.sub(r"\s+", " ", last_line)
-
     def test_report(self):
-        out = self.run_command("coverage -x mycode.py")
+        out = self.run_command("coverage run mycode.py")
         self.assertEqual(out, 'done\n')
-        report = self.report_from_command("coverage -r")
+        report = self.report_from_command("coverage report")
 
         # Name                                              Stmts   Miss  Cover
         # ---------------------------------------------------------------------
@@ -58,8 +42,24 @@ class SummaryTest(CoverageTest):
 
     def test_report_just_one(self):
         # Try reporting just one module
-        self.run_command("coverage -x mycode.py")
-        report = self.report_from_command("coverage -r mycode.py")
+        self.run_command("coverage run mycode.py")
+        report = self.report_from_command("coverage report mycode.py")
+
+        # Name     Stmts   Miss  Cover
+        # ----------------------------
+        # mycode       4      0   100%
+
+        self.assertEqual(self.line_count(report), 3)
+        self.assertNotIn("/coverage/", report)
+        self.assertNotIn("/tests/modules/covmod1 ", report)
+        self.assertNotIn("/tests/zipmods.zip/covmodzip1 ", report)
+        self.assertIn("mycode ", report)
+        self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
+
+    def test_report_wildcard(self):
+        # Try reporting using wildcards to get the modules.
+        self.run_command("coverage run mycode.py")
+        report = self.report_from_command("coverage report my*.py")
 
         # Name     Stmts   Miss  Cover
         # ----------------------------
@@ -75,8 +75,10 @@ class SummaryTest(CoverageTest):
     def test_report_omitting(self):
         # Try reporting while omitting some modules
         prefix = os.path.split(__file__)[0]
-        self.run_command("coverage -x mycode.py")
-        report = self.report_from_command("coverage -r -o '%s/*'" % prefix)
+        self.run_command("coverage run mycode.py")
+        report = self.report_from_command(
+                    "coverage report --omit '%s/*'" % prefix
+                    )
 
         # Name     Stmts   Miss  Cover
         # ----------------------------
@@ -126,13 +128,109 @@ class SummaryTest(CoverageTest):
         self.assertEqual(self.last_line_squeezed(report),
                                                         "mybranch 5 0 2 1 86%")
 
+    def test_report_show_missing(self):
+        self.make_file("mymissing.py", """\
+            def missing(x, y):
+                if x:
+                    print("x")
+                    return x
+                if y:
+                    print("y")
+                try:
+                    print("z")
+                    1/0
+                    print("Never!")
+                except ZeroDivisionError:
+                    pass
+                return x
+            missing(0, 1)
+            """)
+        out = self.run_command("coverage run mymissing.py")
+        self.assertEqual(out, 'y\nz\n')
+        report = self.report_from_command("coverage report --show-missing")
+
+        # Name        Stmts   Miss  Cover   Missing
+        # -----------------------------------------
+        # mymissing      14      3    79%   3-4, 10
+
+        self.assertEqual(self.line_count(report), 3)
+        self.assertIn("mymissing ", report)
+        self.assertEqual(self.last_line_squeezed(report),
+                         "mymissing 14 3 79% 3-4, 10")
+
+    def test_report_show_missing_branches(self):
+        self.make_file("mybranch.py", """\
+            def branch(x, y):
+                if x:
+                    print("x")
+                if y:
+                    print("y")
+                return x
+            branch(1, 1)
+            """)
+        out = self.run_command("coverage run --branch mybranch.py")
+        self.assertEqual(out, 'x\ny\n')
+        report = self.report_from_command("coverage report --show-missing")
+
+        # Name        Stmts   Miss Branch BrMiss  Cover   Missing
+        # -------------------------------------------------------
+        # mybranch        7      0      4      2    82%   2->4, 4->6
+
+        self.assertEqual(self.line_count(report), 3)
+        self.assertIn("mybranch ", report)
+        self.assertEqual(self.last_line_squeezed(report),
+                         "mybranch 7 0 4 2 82% 2->4, 4->6")
+
+    def test_report_show_missing_branches_and_lines(self):
+        self.make_file("main.py", """\
+            import mybranch
+            """)
+        self.make_file("mybranch.py", """\
+            def branch(x, y, z):
+                if x:
+                    print("x")
+                if y:
+                    print("y")
+                if z:
+                    if x and y:
+                        print("z")
+                return x
+            branch(1, 1, 0)
+            """)
+        out = self.run_command("coverage run --branch main.py")
+        self.assertEqual(out, 'x\ny\n')
+        report = self.report_from_command("coverage report --show-missing")
+
+        # pylint: disable=C0301
+        # Name        Stmts   Miss Branch BrMiss  Cover   Missing
+        # -------------------------------------------------------
+        # main            1      0      0      0   100%
+        # mybranch       10      2      8      5    61%   7-8, 2->4, 4->6
+        # -------------------------------------------------------
+        # TOTAL          11      2      8      5    63%
+
+        self.assertEqual(self.line_count(report), 6)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(
+            squeezed[2],
+            "main 1 0 0 0 100%"
+        )
+        self.assertEqual(
+            squeezed[3],
+            "mybranch 10 2 8 5 61% 7-8, 2->4, 4->6"
+        )
+        self.assertEqual(
+            squeezed[5],
+            "TOTAL 11 2 8 5 63%"
+        )
+
     def test_dotpy_not_python(self):
         # We run a .py file, and when reporting, we can't parse it as Python.
         # We should get an error message in the report.
 
         self.run_command("coverage run mycode.py")
         self.make_file("mycode.py", "This isn't python at all!")
-        report = self.report_from_command("coverage -r mycode.py")
+        report = self.report_from_command("coverage report mycode.py")
 
         # pylint: disable=C0301
         # Name     Stmts   Miss  Cover
@@ -155,7 +253,7 @@ class SummaryTest(CoverageTest):
         # but we've said to ignore errors, so there's no error reported.
         self.run_command("coverage run mycode.py")
         self.make_file("mycode.py", "This isn't python at all!")
-        report = self.report_from_command("coverage -r -i mycode.py")
+        report = self.report_from_command("coverage report -i mycode.py")
 
         # Name     Stmts   Miss  Cover
         # ----------------------------
@@ -171,7 +269,7 @@ class SummaryTest(CoverageTest):
         self.run_command("coverage run mycode.html")
         # Before reporting, change it to be an HTML file.
         self.make_file("mycode.html", "<h1>This isn't python at all!</h1>")
-        report = self.report_from_command("coverage -r mycode.html")
+        report = self.report_from_command("coverage report mycode.html")
 
         # Name     Stmts   Miss  Cover
         # ----------------------------

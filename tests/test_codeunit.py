@@ -31,9 +31,9 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(acu[0].flat_rootname(), "aa_afile")
         self.assertEqual(bcu[0].flat_rootname(), "aa_bb_bfile")
         self.assertEqual(ccu[0].flat_rootname(), "aa_bb_cc_cfile")
-        self.assertEqual(acu[0].source_file().read(), "# afile.py\n")
-        self.assertEqual(bcu[0].source_file().read(), "# bfile.py\n")
-        self.assertEqual(ccu[0].source_file().read(), "# cfile.py\n")
+        self.assertEqual(acu[0].source(), "# afile.py\n")
+        self.assertEqual(bcu[0].source(), "# bfile.py\n")
+        self.assertEqual(ccu[0].source(), "# cfile.py\n")
 
     def test_odd_filenames(self):
         acu = code_unit_factory("aa/afile.odd.py", FileLocator())
@@ -45,9 +45,9 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(acu[0].flat_rootname(), "aa_afile_odd")
         self.assertEqual(bcu[0].flat_rootname(), "aa_bb_bfile_odd")
         self.assertEqual(b2cu[0].flat_rootname(), "aa_bb_odd_bfile")
-        self.assertEqual(acu[0].source_file().read(), "# afile.odd.py\n")
-        self.assertEqual(bcu[0].source_file().read(), "# bfile.odd.py\n")
-        self.assertEqual(b2cu[0].source_file().read(), "# bfile.py\n")
+        self.assertEqual(acu[0].source(), "# afile.odd.py\n")
+        self.assertEqual(bcu[0].source(), "# bfile.odd.py\n")
+        self.assertEqual(b2cu[0].source(), "# bfile.py\n")
 
     def test_modules(self):
         import aa, aa.bb, aa.bb.cc
@@ -58,9 +58,9 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(cu[0].flat_rootname(), "aa")
         self.assertEqual(cu[1].flat_rootname(), "aa_bb")
         self.assertEqual(cu[2].flat_rootname(), "aa_bb_cc")
-        self.assertEqual(cu[0].source_file().read(), "# aa\n")
-        self.assertEqual(cu[1].source_file().read(), "# bb\n")
-        self.assertEqual(cu[2].source_file().read(), "")  # yes, empty
+        self.assertEqual(cu[0].source(), "# aa\n")
+        self.assertEqual(cu[1].source(), "# bb\n")
+        self.assertEqual(cu[2].source(), "")  # yes, empty
 
     def test_module_files(self):
         import aa.afile, aa.bb.bfile, aa.bb.cc.cfile
@@ -72,9 +72,9 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(cu[0].flat_rootname(), "aa_afile")
         self.assertEqual(cu[1].flat_rootname(), "aa_bb_bfile")
         self.assertEqual(cu[2].flat_rootname(), "aa_bb_cc_cfile")
-        self.assertEqual(cu[0].source_file().read(), "# afile.py\n")
-        self.assertEqual(cu[1].source_file().read(), "# bfile.py\n")
-        self.assertEqual(cu[2].source_file().read(), "# cfile.py\n")
+        self.assertEqual(cu[0].source(), "# afile.py\n")
+        self.assertEqual(cu[1].source(), "# bfile.py\n")
+        self.assertEqual(cu[2].source(), "# cfile.py\n")
 
     def test_comparison(self):
         acu = code_unit_factory("aa/afile.py", FileLocator())[0]
@@ -97,7 +97,7 @@ class CodeUnitTest(CoverageTest):
         self.assert_doesnt_exist(egg1.__file__)
 
         cu = code_unit_factory([egg1, egg1.egg1], FileLocator())
-        self.assertEqual(cu[0].source_file().read(), "")
-        self.assertEqual(cu[1].source_file().read().split("\n")[0],
+        self.assertEqual(cu[0].source(), "")
+        self.assertEqual(cu[1].source().split("\n")[0],
                 "# My egg file!"
                 )

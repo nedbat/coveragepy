@@ -118,11 +118,11 @@ class RunPycFileTest(CoverageTest):
         fpyc.write(binary_bytes([0x2a, 0xeb, 0x0d, 0x0a]))
         fpyc.close()
 
-        with self.assertRaisesRegexp(NoCode, "Bad magic number in .pyc file"):
+        with self.assertRaisesRegex(NoCode, "Bad magic number in .pyc file"):
             run_python_file(pycfile, [pycfile])
 
     def test_no_such_pyc_file(self):
-        with self.assertRaisesRegexp(NoCode, "No file to run: 'xyzzy.pyc'"):
+        with self.assertRaisesRegex(NoCode, "No file to run: 'xyzzy.pyc'"):
             run_python_file("xyzzy.pyc", [])
 
 
@@ -138,22 +138,27 @@ class RunModuleTest(CoverageTest):
 
     def test_runmod1(self):
         run_python_module("runmod1", ["runmod1", "hello"])
+        self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "runmod1: passed hello\n")
 
     def test_runmod2(self):
         run_python_module("pkg1.runmod2", ["runmod2", "hello"])
+        self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "runmod2: passed hello\n")
 
     def test_runmod3(self):
         run_python_module("pkg1.sub.runmod3", ["runmod3", "hello"])
+        self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "runmod3: passed hello\n")
 
     def test_pkg1_main(self):
         run_python_module("pkg1", ["pkg1", "hello"])
+        self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "pkg1.__main__: passed hello\n")
 
     def test_pkg1_sub_main(self):
         run_python_module("pkg1.sub", ["pkg1.sub", "hello"])
+        self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "pkg1.sub.__main__: passed hello\n")
 
     def test_no_such_module(self):

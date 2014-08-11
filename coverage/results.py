@@ -14,11 +14,7 @@ class Analysis(object):
         self.code_unit = code_unit
 
         self.filename = self.code_unit.filename
-        actual_filename, source = self.code_unit.find_source(self.filename)
-
-        self.parser = code_unit.parser_class(
-            code_unit,
-            text=source, filename=actual_filename,
+        self.parser = code_unit.get_parser(
             exclude=self.coverage._exclude_regex('exclude')
             )
         self.statements, self.excluded = self.parser.parse_source()
@@ -26,7 +22,6 @@ class Analysis(object):
         # Identify missing statements.
         executed = self.coverage.data.executed_lines(self.filename)
         executed = self.parser.translate_lines(executed)
-        executed = self.parser.first_lines(executed)
         self.missing = self.statements - executed
 
         if self.coverage.data.has_arcs():
@@ -74,8 +69,7 @@ class Analysis(object):
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
         executed = self.coverage.data.executed_arcs(self.filename)
-        m2fl = self.parser.first_line
-        executed = ((m2fl(l1), m2fl(l2)) for (l1,l2) in executed)
+        executed = self.parser.translate_arcs(executed)
         return sorted(executed)
 
     def arcs_missing(self):
@@ -88,6 +82,23 @@ class Analysis(object):
                     and p[0] not in self.no_branch
         )
         return sorted(missing)
+
+    def arcs_missing_formatted(self):
+        """ The missing branch arcs, formatted nicely.
+
+        Returns a string like "1->2, 1->3, 16->20". Omits any mention of
+        missing lines, so if line 17 is missing, then 16->17 won't be included.
+
+        """
+        arcs = self.missing_branch_arcs()
+        missing = self.missing
+        line_exits = sorted(iitems(arcs))
+        pairs = []
+        for line, exits in line_exits:
+            for ex in sorted(exits):
+                if line not in missing and ex not in missing:
+                    pairs.append('%d->%d' % (line, ex))
+        return ', '.join(pairs)
 
     def arcs_unpredicted(self):
         """Returns a sorted list of the executed arcs missing from the code."""

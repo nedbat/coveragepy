@@ -149,9 +149,7 @@ class HtmlReporter(Reporter):
 
     def html_file(self, cu, analysis):
         """Generate an HTML file for one source file."""
-        source_file = cu.source_file()
-        with source_file:
-            source = source_file.read()
+        source = cu.source()
 
         # Find out if the file on disk is already correct.
         flat_rootname = cu.flat_rootname()
@@ -241,7 +239,9 @@ class HtmlReporter(Reporter):
         }))
 
         if sys.version_info < (3, 0):
-            html = html.decode(encoding)
+            # In theory, all the characters in the source can be decoded, but
+            # strange things happen, so use 'replace' to keep errors at bay.
+            html = html.decode(encoding, 'replace')
 
         html_filename = flat_rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)

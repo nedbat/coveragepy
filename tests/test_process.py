@@ -26,7 +26,7 @@ class ProcessTest(CoverageTest):
             """)
 
         self.assert_doesnt_exist(".coverage")
-        self.run_command("coverage -x mycode.py")
+        self.run_command("coverage run mycode.py")
         self.assert_exists(".coverage")
 
     def test_environment(self):
@@ -39,7 +39,7 @@ class ProcessTest(CoverageTest):
             """)
 
         self.assert_doesnt_exist(".coverage")
-        out = self.run_command("coverage -x mycode.py")
+        out = self.run_command("coverage run mycode.py")
         self.assert_exists(".coverage")
         self.assertEqual(out, 'done\n')
 
@@ -55,11 +55,11 @@ class ProcessTest(CoverageTest):
             print('done')
             """)
 
-        out = self.run_command("coverage -x -p b_or_c.py b")
+        out = self.run_command("coverage run -p b_or_c.py b")
         self.assertEqual(out, 'done\n')
         self.assert_doesnt_exist(".coverage")
 
-        out = self.run_command("coverage -x -p b_or_c.py c")
+        out = self.run_command("coverage run -p b_or_c.py c")
         self.assertEqual(out, 'done\n')
         self.assert_doesnt_exist(".coverage")
 
@@ -67,7 +67,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(self.number_of_data_files(), 2)
 
         # Combine the parallel coverage data files into .coverage .
-        self.run_command("coverage -c")
+        self.run_command("coverage combine")
         self.assert_exists(".coverage")
 
         # After combining, there should be only the .coverage file.
@@ -91,23 +91,23 @@ class ProcessTest(CoverageTest):
             print('done')
             """)
 
-        out = self.run_command("coverage -x -p b_or_c.py b")
+        out = self.run_command("coverage run -p b_or_c.py b")
         self.assertEqual(out, 'done\n')
         self.assert_doesnt_exist(".coverage")
         self.assertEqual(self.number_of_data_files(), 1)
 
         # Combine the (one) parallel coverage data file into .coverage .
-        self.run_command("coverage -c")
+        self.run_command("coverage combine")
         self.assert_exists(".coverage")
         self.assertEqual(self.number_of_data_files(), 1)
 
-        out = self.run_command("coverage -x -p b_or_c.py c")
+        out = self.run_command("coverage run --append -p b_or_c.py c")
         self.assertEqual(out, 'done\n')
         self.assert_exists(".coverage")
         self.assertEqual(self.number_of_data_files(), 2)
 
         # Combine the parallel coverage data files into .coverage .
-        self.run_command("coverage -c")
+        self.run_command("coverage combine")
         self.assert_exists(".coverage")
 
         # After combining, there should be only the .coverage file.
@@ -229,7 +229,7 @@ class ProcessTest(CoverageTest):
         self.run_command("coverage run fleeting.py")
         os.remove("fleeting.py")
         out = self.run_command("coverage html -d htmlcov")
-        self.assertRegexpMatches(out, "No source for code: '.*fleeting.py'")
+        self.assertRegex(out, "No source for code: '.*fleeting.py'")
         self.assertNotIn("Traceback", out)
 
         # It happens that the code paths are different for *.py and other
@@ -240,14 +240,14 @@ class ProcessTest(CoverageTest):
 
         self.run_command("coverage run fleeting")
         os.remove("fleeting")
-        status, out = self.run_command_status("coverage html -d htmlcov", 1)
-        self.assertRegexpMatches(out, "No source for code: '.*fleeting'")
+        status, out = self.run_command_status("coverage html -d htmlcov")
+        self.assertRegex(out, "No source for code: '.*fleeting'")
         self.assertNotIn("Traceback", out)
         self.assertEqual(status, 1)
 
     def test_running_missing_file(self):
-        status, out = self.run_command_status("coverage run xyzzy.py", 1)
-        self.assertRegexpMatches(out, "No file to run: .*xyzzy.py")
+        status, out = self.run_command_status("coverage run xyzzy.py")
+        self.assertRegex(out, "No file to run: .*xyzzy.py")
         self.assertNotIn("raceback", out)
         self.assertNotIn("rror", out)
         self.assertEqual(status, 1)
@@ -265,7 +265,7 @@ class ProcessTest(CoverageTest):
 
         # The important thing is for "coverage run" and "python" to report the
         # same traceback.
-        status, out = self.run_command_status("coverage run throw.py", 1)
+        status, out = self.run_command_status("coverage run throw.py")
         out2 = self.run_command("python throw.py")
         if '__pypy__' in sys.builtin_module_names:
             # Pypy has an extra frame in the traceback for some reason
@@ -294,8 +294,8 @@ class ProcessTest(CoverageTest):
 
         # The important thing is for "coverage run" and "python" to have the
         # same output.  No traceback.
-        status, out = self.run_command_status("coverage run exit.py", 17)
-        status2, out2 = self.run_command_status("python exit.py", 17)
+        status, out = self.run_command_status("coverage run exit.py")
+        status2, out2 = self.run_command_status("python exit.py")
         self.assertMultiLineEqual(out, out2)
         self.assertMultiLineEqual(out, "about to exit..\n")
         self.assertEqual(status, status2)
@@ -310,8 +310,8 @@ class ProcessTest(CoverageTest):
 
             f1()
             """)
-        status, out = self.run_command_status("coverage run exit_none.py", 0)
-        status2, out2 = self.run_command_status("python exit_none.py", 0)
+        status, out = self.run_command_status("coverage run exit_none.py")
+        status2, out2 = self.run_command_status("python exit_none.py")
         self.assertMultiLineEqual(out, out2)
         self.assertMultiLineEqual(out, "about to exit quietly..\n")
         self.assertEqual(status, status2)
@@ -378,7 +378,7 @@ class ProcessTest(CoverageTest):
             self.assertEqual(self.number_of_data_files(), 2)
 
             # Combine the parallel coverage data files into .coverage .
-            self.run_command("coverage -c")
+            self.run_command("coverage combine")
             self.assert_exists(".coverage")
 
             # After combining, there should be only the .coverage file.
@@ -502,6 +502,18 @@ class ProcessTest(CoverageTest):
                 # about 5.
                 self.assertGreater(data.summary()['os.py'], 50)
 
+    def test_deprecation_warnings(self):
+        # Test that coverage doesn't trigger deprecation warnings.
+        # https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module
+        self.make_file("allok.py", """\
+            import warnings
+            warnings.simplefilter('default')
+            import coverage
+            print("No warnings!")
+            """)
+        out = self.run_command("python allok.py")
+        self.assertEqual(out, "No warnings!\n")
+
 
 class AliasedCommandTest(CoverageTest):
     """Tests of the version-specific command aliases."""
@@ -556,32 +568,47 @@ class FailUnderTest(CoverageTest):
 
     def setUp(self):
         super(FailUnderTest, self).setUp()
-        self.make_file("fifty.py", """\
-            # I have 50% coverage!
+        self.make_file("forty_two_plus.py", """\
+            # I have 42.857% (3/7) coverage!
             a = 1
-            if a > 2:
-                b = 3
-                c = 4
+            b = 2
+            if a > 3:
+                b = 4
+                c = 5
+                d = 6
+                e = 7
             """)
-        st, _ = self.run_command_status("coverage run fifty.py", 0)
+        st, _ = self.run_command_status("coverage run forty_two_plus.py")
         self.assertEqual(st, 0)
+        st, out = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+        self.assertEqual(
+            self.last_line_squeezed(out),
+            "forty_two_plus 7 4 43%"
+        )
 
     def test_report(self):
-        st, _ = self.run_command_status("coverage report --fail-under=50", 0)
+        st, _ = self.run_command_status("coverage report --fail-under=42")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage report --fail-under=51", 2)
+        st, _ = self.run_command_status("coverage report --fail-under=43")
+        self.assertEqual(st, 0)
+        st, _ = self.run_command_status("coverage report --fail-under=44")
         self.assertEqual(st, 2)
 
     def test_html_report(self):
-        st, _ = self.run_command_status("coverage html --fail-under=50", 0)
+        st, _ = self.run_command_status("coverage html --fail-under=42")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage html --fail-under=51", 2)
+        st, _ = self.run_command_status("coverage html --fail-under=43")
+        self.assertEqual(st, 0)
+        st, _ = self.run_command_status("coverage html --fail-under=44")
         self.assertEqual(st, 2)
 
     def test_xml_report(self):
-        st, _ = self.run_command_status("coverage xml --fail-under=50", 0)
+        st, _ = self.run_command_status("coverage xml --fail-under=42")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage xml --fail-under=51", 2)
+        st, _ = self.run_command_status("coverage xml --fail-under=43")
+        self.assertEqual(st, 0)
+        st, _ = self.run_command_status("coverage xml --fail-under=44")
         self.assertEqual(st, 2)
 
 

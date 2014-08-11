@@ -17,8 +17,8 @@ if os.environ.get('COVERAGE_COVERAGE', ''):
 copy("src", "out")
 run("""
     python showtrace.py none
-    coverage -e -x showtrace.py regular
-    coverage -e -x --timid showtrace.py timid
+    coverage run showtrace.py regular
+    coverage run --timid showtrace.py timid
     """, rundir="out", outfile="showtraceout.txt")
 
 # When running without coverage, no trace function
@@ -42,8 +42,8 @@ old_opts = os.environ.get('COVERAGE_OPTIONS')
 os.environ['COVERAGE_OPTIONS'] = '--timid'
 
 run("""
-    coverage -e -x showtrace.py regular
-    coverage -e -x --timid showtrace.py timid
+    coverage run showtrace.py regular
+    coverage run --timid showtrace.py timid
     """, rundir="out", outfile="showtraceout.txt")
 
 contains("out/showtraceout.txt",

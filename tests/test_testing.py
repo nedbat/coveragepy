@@ -12,13 +12,13 @@ class TestingTest(TestCase):
 
     run_in_temp_dir = False
 
-    def test_assert_same_elements(self):
-        self.assertSameElements(set(), set())
-        self.assertSameElements(set([1,2,3]), set([3,1,2]))
+    def test_assert_count_equal(self):
+        self.assertCountEqual(set(), set())
+        self.assertCountEqual(set([1,2,3]), set([3,1,2]))
         with self.assertRaises(AssertionError):
-            self.assertSameElements(set([1,2,3]), set())
+            self.assertCountEqual(set([1,2,3]), set())
         with self.assertRaises(AssertionError):
-            self.assertSameElements(set([1,2,3]), set([4,5,6]))
+            self.assertCountEqual(set([1,2,3]), set([4,5,6]))
 
 
 class CoverageTestTest(CoverageTest):

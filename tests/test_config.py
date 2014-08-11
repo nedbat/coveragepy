@@ -125,58 +125,71 @@ class ConfigTest(CoverageTest):
 class ConfigFileTest(CoverageTest):
     """Tests of the config file settings in particular."""
 
-    def test_config_file_settings(self):
-        # This sample file tries to use lots of variation of syntax...
-        self.make_file(".coveragerc", """\
-            # This is a settings file for coverage.py
-            [run]
-            timid = yes
-            data_file = something_or_other.dat
-            branch = 1
-            cover_pylib = TRUE
-            parallel = on
-            include = a/   ,    b/
+    # This sample file tries to use lots of variation of syntax...
+    # The {section} placeholder lets us nest these settings in another file.
+    LOTSA_SETTINGS = """\
+        # This is a settings file for coverage.py
+        [{section}run]
+        timid = yes
+        data_file = something_or_other.dat
+        branch = 1
+        cover_pylib = TRUE
+        parallel = on
+        include = a/   ,    b/
 
-            [report]
-            ; these settings affect reporting.
-            exclude_lines =
-                if 0:
+        [{section}report]
+        ; these settings affect reporting.
+        exclude_lines =
+            if 0:
 
-                pragma:?\\s+no cover
-                    another_tab
+            pragma:?\\s+no cover
+                another_tab
 
-            ignore_errors = TRUE
-            omit =
-                one, another, some_more,
-                    yet_more
-            precision = 3
+        ignore_errors = TRUE
+        omit =
+            one, another, some_more,
+                yet_more
+        precision = 3
 
-            partial_branches =
-                pragma:?\\s+no branch
-            partial_branches_always =
-                if 0:
-                while True:
+        partial_branches =
+            pragma:?\\s+no branch
+        partial_branches_always =
+            if 0:
+            while True:
 
-            show_missing= TruE
+        show_missing= TruE
 
-            [html]
+        [{section}html]
 
-            directory    =     c:\\tricky\\dir.somewhere
-            extra_css=something/extra.css
-            title = Title & nums # nums!
-            [xml]
-            output=mycov.xml
+        directory    =     c:\\tricky\\dir.somewhere
+        extra_css=something/extra.css
+        title = Title & nums # nums!
+        [{section}xml]
+        output=mycov.xml
 
-            [paths]
-            source =
-                .
-                /home/ned/src/
+        [{section}paths]
+        source =
+            .
+            /home/ned/src/
 
-            other = other, /home/ned/other, c:\\Ned\\etc
+        other = other, /home/ned/other, c:\\Ned\\etc
 
-            """)
-        cov = coverage.coverage()
+        """
 
+    # Just some sample setup.cfg text from the docs.
+    SETUP_CFG = """\
+        [bdist_rpm]
+        release = 1
+        packager = Jane Packager <janep@pysoft.com>
+        doc_files = CHANGES.txt
+                    README.txt
+                    USAGE.txt
+                    doc/
+                    examples/
+        """
+
+    def assert_config_settings_are_correct(self, cov):
+        """Check that `cov` has all the settings from LOTSA_SETTINGS."""
         self.assertTrue(cov.config.timid)
         self.assertEqual(cov.config.data_file, "something_or_other.dat")
         self.assertTrue(cov.config.branch)
@@ -211,8 +224,33 @@ class ConfigFileTest(CoverageTest):
             'other': ['other', '/home/ned/other', 'c:\\Ned\\etc']
             })
 
+    def test_config_file_settings(self):
+        self.make_file(".coveragerc", self.LOTSA_SETTINGS.format(section=""))
+        cov = coverage.coverage()
+        self.assert_config_settings_are_correct(cov)
+
+    def test_config_file_settings_in_setupcfg(self):
+        nested = self.LOTSA_SETTINGS.format(section="coverage:")
+        self.make_file("setup.cfg", nested + "\n" + self.SETUP_CFG)
+        cov = coverage.coverage()
+        self.assert_config_settings_are_correct(cov)
+
+    def test_setupcfg_only_if_not_coveragerc(self):
+        self.make_file(".coveragerc", """\
+            [run]
+            include = foo
+            """)
+        self.make_file("setup.cfg", """\
+            [run]
+            omit = bar
+            branch = true
+            """)
+        cov = coverage.coverage()
+        self.assertEqual(cov.config.include, ["foo"])
+        self.assertEqual(cov.config.omit, None)
+        self.assertEqual(cov.config.branch, False)
+
     def test_one(self):
-        # This sample file tries to use lots of variation of syntax...
         self.make_file(".coveragerc", """\
             [html]
             title = tabblo & «ταБЬℓσ» # numbers

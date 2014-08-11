@@ -13,6 +13,11 @@ except ImportError:
 class HandyConfigParser(configparser.RawConfigParser):
     """Our specialization of ConfigParser."""
 
+    def __init__(self, section_prefix):
+        # pylint: disable=super-init-not-called
+        configparser.RawConfigParser.__init__(self)
+        self.section_prefix = section_prefix
+
     def read(self, filename):
         """Read a filename as UTF-8 configuration data."""
         kwargs = {}
@@ -20,8 +25,30 @@ class HandyConfigParser(configparser.RawConfigParser):
             kwargs['encoding'] = "utf-8"
         return configparser.RawConfigParser.read(self, filename, **kwargs)
 
-    def get(self, *args, **kwargs):
-        v = configparser.RawConfigParser.get(self, *args, **kwargs)
+    def has_option(self, section, option):
+        section = self.section_prefix + section
+        return configparser.RawConfigParser.has_option(self, section, option)
+
+    def has_section(self, section):
+        section = self.section_prefix + section
+        return configparser.RawConfigParser.has_section(self, section)
+
+    def options(self, section):
+        section = self.section_prefix + section
+        return configparser.RawConfigParser.options(self, section)
+
+    def get(self, section, *args, **kwargs):
+        """Get a value, replacing environment variables also.
+
+        The arguments are the same as `RawConfigParser.get`, but in the found
+        value, ``$WORD`` or ``${WORD}`` are replaced by the value of the
+        environment variable ``WORD``.
+
+        Returns the finished value.
+
+        """
+        section = self.section_prefix + section
+        v = configparser.RawConfigParser.get(self, section, *args, **kwargs)
         def dollar_replace(m):
             """Called for each $replacement."""
             # Only one of the groups will have matched, just get its text.
@@ -113,6 +140,7 @@ class CoverageConfig(object):
         self.timid = False
         self.source = None
         self.debug = []
+        self.extensions = []
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
@@ -144,7 +172,7 @@ class CoverageConfig(object):
         if env:
             self.timid = ('--timid' in env)
 
-    MUST_BE_LIST = ["omit", "include", "debug"]
+    MUST_BE_LIST = ["omit", "include", "debug", "extensions"]
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
@@ -154,18 +182,22 @@ class CoverageConfig(object):
                     v = [v]
                 setattr(self, k, v)
 
-    def from_file(self, filename):
+    def from_file(self, filename, section_prefix=""):
         """Read configuration from a .rc file.
 
         `filename` is a file name to read.
 
+        Returns True or False, whether the file could be read.
+
         """
         self.attempted_config_files.append(filename)
 
-        cp = HandyConfigParser()
+        cp = HandyConfigParser(section_prefix)
         files_read = cp.read(filename)
-        if files_read is not None:  # return value changed in 2.4
-            self.config_files.extend(files_read)
+        if not files_read:
+            return False
+
+        self.config_files.extend(files_read)
 
         for option_spec in self.CONFIG_FILE_OPTIONS:
             self.set_attr_from_config_option(cp, *option_spec)
@@ -175,13 +207,24 @@ class CoverageConfig(object):
             for option in cp.options('paths'):
                 self.paths[option] = cp.getlist('paths', option)
 
+        return True
+
     CONFIG_FILE_OPTIONS = [
+        # These are *args for set_attr_from_config_option:
+        #   (attr, where, type_="")
+        #
+        #   attr is the attribute to set on the CoverageConfig object.
+        #   where is the section:name to read from the configuration file.
+        #   type_ is the optional type to apply, by using .getTYPE to read the
+        #       configuration value from the file.
+
         # [run]
         ('branch', 'run:branch', 'boolean'),
         ('coroutine', 'run:coroutine'),
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
+        ('extensions', 'run:extensions', 'list'),
         ('include', 'run:include', 'list'),
         ('omit', 'run:omit', 'list'),
         ('parallel', 'run:parallel', 'boolean'),

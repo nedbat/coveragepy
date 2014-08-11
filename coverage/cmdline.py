@@ -1,6 +1,6 @@
 """Command-line support for Coverage."""
 
-import optparse, os, sys, time, traceback
+import glob, optparse, os, sys, time, traceback
 
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
@@ -449,7 +449,7 @@ class CoverageScript(object):
 
         # Remaining actions are reporting, with some common options.
         report_args = dict(
-            morfs = args,
+            morfs = unglob_args(args),
             ignore_errors = options.ignore_errors,
             omit = omit,
             include = include,
@@ -470,6 +470,14 @@ class CoverageScript(object):
             total = self.coverage.xml_report(outfile=outfile, **report_args)
 
         if options.fail_under is not None:
+            # Total needs to be rounded, but be careful of 0 and 100.
+            if 0 < total < 1:
+                total = 1
+            elif 99 < total < 100:
+                total = 99
+            else:
+                total = round(total)
+
             if total >= options.fail_under:
                 return OK
             else:
@@ -631,6 +639,19 @@ def unshell_list(s):
         # argument, so we have to strip them off here.
         s = s.strip("'")
     return s.split(',')
+
+
+def unglob_args(args):
+    """Interpret shell wildcards for platforms that need it."""
+    if sys.platform == 'win32':
+        globbed = []
+        for arg in args:
+            if '?' in arg or '*' in arg:
+                globbed.extend(glob.glob(arg))
+            else:
+                globbed.append(arg)
+        args = globbed
+    return args
 
 
 HELP_TOPICS = {

@@ -93,6 +93,12 @@ class MatcherTest(CoverageTest):
         for filepath, matches in matches_to_try:
             self.assertMatches(fnm, filepath, matches)
 
+    def test_fnmatch_matcher_overload(self):
+        fnm = FnmatchMatcher(["*x%03d*.txt" % i for i in range(500)])
+        self.assertMatches(fnm, "x007foo.txt", True)
+        self.assertMatches(fnm, "x123foo.txt", True)
+        self.assertMatches(fnm, "x798bar.txt", False)
+
 
 class PathAliasesTest(CoverageTest):
     """Tests for coverage/files.py:PathAliases"""
@@ -131,11 +137,11 @@ class PathAliasesTest(CoverageTest):
     def test_cant_have_wildcard_at_end(self):
         aliases = PathAliases()
         msg = "Pattern must not end with wildcards."
-        with self.assertRaisesRegexp(CoverageException, msg):
+        with self.assertRaisesRegex(CoverageException, msg):
             aliases.add("/ned/home/*", "fooey")
-        with self.assertRaisesRegexp(CoverageException, msg):
+        with self.assertRaisesRegex(CoverageException, msg):
             aliases.add("/ned/home/*/", "fooey")
-        with self.assertRaisesRegexp(CoverageException, msg):
+        with self.assertRaisesRegex(CoverageException, msg):
             aliases.add("/ned/home/*/*/", "fooey")
 
     def test_no_accidental_munging(self):
@@ -177,7 +183,7 @@ class RelativePathAliasesTest(CoverageTest):
             aliases.add(d, '/the/source')
             the_file = os.path.join(d, 'a.py')
             the_file = os.path.expanduser(the_file)
-            the_file = os.path.abspath(the_file)
+            the_file = os.path.abspath(os.path.realpath(the_file))
 
             assert '~' not in the_file  # to be sure the test is pure.
             self.assertEqual(aliases.map(the_file), '/the/source/a.py')

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests that HTML generation is awesome."""
 
-import os.path, re
+import os.path, re, sys
 import coverage
 import coverage.html
 from coverage.misc import CoverageException, NotPython, NoSource
@@ -41,6 +41,13 @@ class HtmlTestHelpers(CoverageTest):
         os.remove("htmlcov/main_file.html")
         os.remove("htmlcov/helper1.html")
         os.remove("htmlcov/helper2.html")
+
+    def get_html_report_content(self, module):
+        """Return the content of the HTML report for `module`."""
+        filename = module.replace(".py", ".html").replace("/", "_")
+        filename = os.path.join("htmlcov", filename)
+        with open(filename) as f:
+            return f.read()
 
 
 class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
@@ -208,7 +215,7 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
             )
 
 
-class HtmlWithUnparsableFilesTest(CoverageTest):
+class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
     """Test the behavior when measuring unparsable files."""
 
     def test_dotpy_not_python(self):
@@ -217,7 +224,7 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         self.start_import_stop(cov, "innocuous")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         msg = "Couldn't parse '.*innocuous.py' as Python source: .* at line 1"
-        with self.assertRaisesRegexp(NotPython, msg):
+        with self.assertRaisesRegex(NotPython, msg):
             cov.html_report()
 
     def test_dotpy_not_python_ignored(self):
@@ -267,6 +274,31 @@ class HtmlWithUnparsableFilesTest(CoverageTest):
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
 
+    def test_decode_error(self):
+        # imp.load_module won't load a file with an undecodable character
+        # in a comment, though Python will run them.  So we'll change the
+        # file after running.
+        self.make_file("main.py", "import sub.not_ascii")
+        self.make_file("sub/__init__.py")
+        self.make_file("sub/not_ascii.py", """\
+            a = 1  # Isn't this great?!
+            """)
+        cov = coverage.coverage()
+        self.start_import_stop(cov, "main")
+
+        # Create the undecodable version of the file.
+        self.make_file("sub/not_ascii.py", """\
+            a = 1  # Isn't this great?\xcb!
+            """)
+        cov.html_report()
+
+        html_report = self.get_html_report_content("sub/not_ascii.py")
+        if sys.version_info < (3, 0):
+            expected = "# Isn&#39;t this great?&#65533;!"
+        else:
+            expected = "# Isn&#39;t this great?&#203;!"
+        self.assertIn(expected, html_report)
+
 
 class HtmlTest(CoverageTest):
     """Moar HTML tests."""
@@ -283,7 +315,7 @@ class HtmlTest(CoverageTest):
         missing_file = os.path.join(self.temp_dir, "sub", "another.py")
         missing_file = os.path.realpath(missing_file)
         msg = "(?i)No source for code: '%s'" % re.escape(missing_file)
-        with self.assertRaisesRegexp(NoSource, msg):
+        with self.assertRaisesRegex(NoSource, msg):
             cov.html_report()
 
 class HtmlStaticFileTest(CoverageTest):
@@ -340,5 +372,5 @@ class HtmlStaticFileTest(CoverageTest):
         cov = coverage.coverage()
         self.start_import_stop(cov, "main")
         msg = "Couldn't find static file '.*'"
-        with self.assertRaisesRegexp(CoverageException, msg):
+        with self.assertRaisesRegex(CoverageException, msg):
             cov.html_report()
