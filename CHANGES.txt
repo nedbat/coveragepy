@@ -18,6 +18,9 @@ Change history for Coverage.py
 - The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
   Stan Hu.
 
+- The class defined in the coverage module is now called ``Coverage`` instead
+  of ``coverage``, though the old name still works, for backward compatibility.
+
 - The ``fail-under`` value is now rounded the same as reported results,
   preventing paradoxical results, fixing `issue 284`_.
 
