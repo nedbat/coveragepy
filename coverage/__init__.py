@@ -7,10 +7,13 @@ http://nedbatchelder.com/code/coverage
 
 from coverage.version import __version__, __url__
 
-from coverage.control import coverage, process_startup
+from coverage.control import Coverage, process_startup
 from coverage.data import CoverageData
 from coverage.cmdline import main, CoverageScript
 from coverage.misc import CoverageException
+
+# Backward compatibility.
+coverage = Coverage
 
 # Module-level functions.  The original API to this module was based on
 # functions defined directly in the module, with a singleton of the coverage()

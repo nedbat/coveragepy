@@ -28,14 +28,14 @@ except ImportError:
     _structseq = None
 
 
-class coverage(object):
+class Coverage(object):
     """Programmatic access to coverage.py.
 
     To use::
 
         from coverage import coverage
 
-        cov = coverage()
+        cov = Coverage()
         cov.start()
         #.. call your code ..
         cov.stop()
@@ -822,7 +822,7 @@ def process_startup():
     """
     cps = os.environ.get("COVERAGE_PROCESS_START")
     if cps:
-        cov = coverage(config_file=cps, auto_data=True)
+        cov = Coverage(config_file=cps, auto_data=True)
         cov.start()
         cov._warn_no_data = False
         cov._warn_unimported_source = False
