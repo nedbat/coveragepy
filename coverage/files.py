@@ -147,7 +147,7 @@ def prep_patterns(patterns):
 class TreeMatcher(object):
     """A matcher for files in a tree."""
     def __init__(self, directories):
-        self.dirs = directories[:]
+        self.dirs = list(directories)
 
     def __repr__(self):
         return "<TreeMatcher %r>" % self.dirs

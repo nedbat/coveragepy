@@ -186,7 +186,7 @@ class coverage(object):
             )
 
         # The dirs for files considered "installed with the interpreter".
-        self.pylib_dirs = []
+        self.pylib_dirs = set()
         if not self.config.cover_pylib:
             # Look at where some standard modules are located. That's the
             # indication for "installed with the interpreter". In some
@@ -195,9 +195,7 @@ class coverage(object):
             # we've imported, and take all the different ones.
             for m in (atexit, os, random, socket, _structseq):
                 if m is not None and hasattr(m, "__file__"):
-                    m_dir = self._canonical_dir(m)
-                    if m_dir not in self.pylib_dirs:
-                        self.pylib_dirs.append(m_dir)
+                    self.pylib_dirs.add(self._canonical_dir(m))
 
         # To avoid tracing the coverage code itself, we skip anything located
         # where we are.
