@@ -33,7 +33,7 @@ class Reporter(object):
         """
         morfs = morfs or self.coverage.data.measured_files()
         file_locator = self.coverage.file_locator
-        get_ext = self.coverage.data.extension_data().get
+        get_ext = self.coverage.data.plugin_data().get
         self.code_units = code_unit_factory(morfs, file_locator, get_ext)
 
         if self.config.include:

@@ -47,9 +47,9 @@ class PyTracer(object):
         self.should_trace = None
         self.should_trace_cache = None
         self.warn = None
-        self.extensions = None
+        self.plugins = None
 
-        self.extension = None
+        self.plugin = None
         self.cur_tracename = None   # TODO: This is only maintained for the if0 debugging output. Get rid of it eventually.
         self.cur_file_data = None
         self.last_line = 0
@@ -112,7 +112,7 @@ class PyTracer(object):
             if self.coroutine_id_func:
                 self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.last_coroutine = self.coroutine_id_func()
-            self.data_stack.append((self.extension, self.cur_tracename, self.cur_file_data, self.last_line))
+            self.data_stack.append((self.plugin, self.cur_tracename, self.cur_file_data, self.last_line))
             filename = frame.f_code.co_filename
             disp = self.should_trace_cache.get(filename)
             if disp is None:
@@ -121,16 +121,16 @@ class PyTracer(object):
             #print("called, stack is %d deep, tracename is %r" % (
             #               len(self.data_stack), tracename))
             tracename = disp.filename
-            if tracename and disp.extension:
-                tracename = disp.extension.file_name(frame)
+            if tracename and disp.plugin:
+                tracename = disp.plugin.file_name(frame)
             if tracename:
                 if tracename not in self.data:
                     self.data[tracename] = {}
-                    if disp.extension:
-                        self.extensions[tracename] = disp.extension.__name__
+                    if disp.plugin:
+                        self.plugins[tracename] = disp.plugin.__name__
                 self.cur_tracename = tracename
                 self.cur_file_data = self.data[tracename]
-                self.extension = disp.extension
+                self.plugin = disp.plugin
             else:
                 self.cur_file_data = None
             # Set the last_line to -1 because the next arc will be entering a
@@ -142,8 +142,8 @@ class PyTracer(object):
                 this_coroutine = self.coroutine_id_func()
                 if self.last_coroutine != this_coroutine:
                     print("mismatch: {0} != {1}".format(self.last_coroutine, this_coroutine))
-            if self.extension:
-                lineno_from, lineno_to = self.extension.line_number_range(frame)
+            if self.plugin:
+                lineno_from, lineno_to = self.plugin.line_number_range(frame)
             else:
                 lineno_from, lineno_to = frame.f_lineno, frame.f_lineno
             if lineno_from != -1:
@@ -164,7 +164,7 @@ class PyTracer(object):
             if self.coroutine_id_func:
                 self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.last_coroutine = self.coroutine_id_func()
-            self.extension, _, self.cur_file_data, self.last_line = self.data_stack.pop()
+            self.plugin, _, self.cur_file_data, self.last_line = self.data_stack.pop()
             #print("returned, stack is %d deep" % (len(self.data_stack)))
         elif event == 'exception':
             #print("exc", self.last_line, frame.f_lineno)
@@ -281,7 +281,7 @@ class Collector(object):
         # or mapping filenames to dicts with linenumber pairs as keys.
         self.data = {}
 
-        self.extensions = {}
+        self.plugins = {}
 
         # A cache of the results from should_trace, the decision about whether
         # to trace execution in a file. A dict of filename to (filename or
@@ -301,8 +301,8 @@ class Collector(object):
         tracer.warn = self.warn
         if hasattr(tracer, 'coroutine_id_func'):
             tracer.coroutine_id_func = self.coroutine_id_func
-        if hasattr(tracer, 'extensions'):
-            tracer.extensions = self.extensions
+        if hasattr(tracer, 'plugins'):
+            tracer.plugins = self.plugins
         fn = tracer.start()
         self.tracers.append(tracer)
         return fn
@@ -420,5 +420,5 @@ class Collector(object):
         else:
             return {}
 
-    def get_extension_data(self):
-        return self.extensions
+    def get_plugin_data(self):
+        return self.plugins

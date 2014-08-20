@@ -21,9 +21,9 @@ class CoverageData(object):
         * arcs: a dict mapping filenames to sorted lists of line number pairs:
             { 'file1': [(17,23), (17,25), (25,26)], ... }
 
-        * extensions: a dict mapping filenames to extension names:
+        * plugins: a dict mapping filenames to plugin names:
             { 'file1': "django.coverage", ... }
-            # TODO: how to handle the difference between a extension module
+            # TODO: how to handle the difference between a plugin module
             # name, and the class in the module?
 
     """
@@ -69,13 +69,13 @@ class CoverageData(object):
         #
         self.arcs = {}
 
-        # A map from canonical source file name to an extension module name:
+        # A map from canonical source file name to an plugin module name:
         #
         #   {
         #       'filename1.py': 'django.coverage',
         #       ...
         #       }
-        self.extensions = {}
+        self.plugins = {}
 
     def usefile(self, use_file=True):
         """Set whether or not to use a disk file for data."""
@@ -123,8 +123,8 @@ class CoverageData(object):
             (f, sorted(amap.keys())) for f, amap in iitems(self.arcs)
             )
 
-    def extension_data(self):
-        return self.extensions
+    def plugin_data(self):
+        return self.plugins
 
     def write_file(self, filename):
         """Write the coverage data to `filename`."""
@@ -229,8 +229,8 @@ class CoverageData(object):
         for filename, arcs in iitems(arc_data):
             self.arcs.setdefault(filename, {}).update(arcs)
 
-    def add_extension_data(self, extension_data):
-        self.extensions.update(extension_data)
+    def add_plugin_data(self, plugin_data):
+        self.plugins.update(plugin_data)
 
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""

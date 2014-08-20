@@ -9,7 +9,7 @@ from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.debug import DebugControl
-from coverage.extension import load_extensions
+from coverage.plugin import load_plugins
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.html import HtmlReporter
@@ -45,7 +45,7 @@ class Coverage(object):
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
                 source=None, omit=None, include=None, debug=None,
-                debug_file=None, coroutine=None):
+                debug_file=None, coroutine=None, plugins=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -87,7 +87,9 @@ class Coverage(object):
         `coroutine` is a string indicating the coroutining library being used
         in the measured code.  Without this, coverage.py will get incorrect
         results.  Valid strings are "greenlet", "eventlet", or "gevent", which
-        are all equivalent.
+        are all equivalent. TODO: really?
+
+        `plugins` TODO.
 
         """
         from coverage import __version__
@@ -126,15 +128,15 @@ class Coverage(object):
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
             source=source, omit=omit, include=include, debug=debug,
-            coroutine=coroutine,
+            coroutine=coroutine, plugins=plugins,
             )
 
         # Create and configure the debugging controller.
         self.debug = DebugControl(self.config.debug, debug_file or sys.stderr)
 
-        # Load extensions
-        tracer_classes = load_extensions(self.config.extensions, "tracer")
-        self.tracer_extensions = [cls() for cls in tracer_classes]
+        # Load plugins
+        tracer_classes = load_plugins(self.config.plugins, "tracer")
+        self.tracer_plugins = [cls() for cls in tracer_classes]
 
         self.auto_data = auto_data
 
@@ -278,8 +280,8 @@ class Coverage(object):
 
         canonical = self.file_locator.canonical_filename(filename)
 
-        # Try the extensions, see if they have an opinion about the file.
-        for tracer in self.tracer_extensions:
+        # Try the plugins, see if they have an opinion about the file.
+        for tracer in self.tracer_plugins:
             ext_disp = tracer.should_trace(canonical)
             if ext_disp:
                 ext_disp.extension = tracer
@@ -543,7 +545,7 @@ class Coverage(object):
         # TODO: seems like this parallel structure is getting kinda old...
         self.data.add_line_data(self.collector.get_line_data())
         self.data.add_arc_data(self.collector.get_arc_data())
-        self.data.add_extension_data(self.collector.get_extension_data())
+        self.data.add_plugin_data(self.collector.get_plugin_data())
         self.collector.reset()
 
         # If there are still entries in the source_pkgs list, then we never
@@ -611,7 +613,7 @@ class Coverage(object):
         """
         self._harvest_data()
         if not isinstance(it, CodeUnit):
-            get_ext = self.data.extension_data().get
+            get_ext = self.data.plugin_data().get
             it = code_unit_factory(it, self.file_locator, get_ext)[0]
 
         return Analysis(self, it)
@@ -784,7 +786,7 @@ class FileDisposition(object):
         self.original_filename = original_filename
         self.filename = None
         self.reason = ""
-        self.extension = None
+        self.plugin = None
 
     def nope(self, reason):
         """A helper for returning a NO answer from should_trace."""

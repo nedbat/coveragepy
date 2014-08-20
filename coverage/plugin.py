@@ -1,9 +1,9 @@
-"""Extension management for coverage.py"""
+"""Plugin management for coverage.py"""
 
-def load_extensions(modules, name):
-    """Load extensions from `modules`, finding them by `name`.
+def load_plugins(modules, name):
+    """Load plugins from `modules`, finding them by `name`.
 
-    Yields the loaded extensions.
+    Yields the loaded plugins.
 
     """
 
