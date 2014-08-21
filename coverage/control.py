@@ -135,8 +135,8 @@ class Coverage(object):
         self.debug = DebugControl(self.config.debug, debug_file or sys.stderr)
 
         # Load plugins
-        tracer_classes = load_plugins(self.config.plugins, "tracer")
-        self.tracer_plugins = [cls() for cls in tracer_classes]
+        plugins = load_plugins(self.config.plugins, self.config)
+        self.tracer_plugins = []#[cls() for cls in tracer_classes]
 
         self.auto_data = auto_data
 
@@ -282,10 +282,10 @@ class Coverage(object):
 
         # Try the plugins, see if they have an opinion about the file.
         for tracer in self.tracer_plugins:
-            ext_disp = tracer.should_trace(canonical)
-            if ext_disp:
-                ext_disp.extension = tracer
-                return ext_disp
+            plugin_disp = tracer.should_trace(canonical)
+            if plugin_disp:
+                plugin_disp.plugin = tracer
+                return plugin_disp
 
         # If the user specified source or include, then that's authoritative
         # about the outer bound of what to measure and we don't have to apply

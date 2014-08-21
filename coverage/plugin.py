@@ -1,20 +1,30 @@
 """Plugin management for coverage.py"""
 
-def load_plugins(modules, name):
-    """Load plugins from `modules`, finding them by `name`.
+import sys
 
-    Yields the loaded plugins.
+
+class CoveragePlugin(object):
+    """Base class for coverage.py plugins."""
+    def __init__(self, options):
+        self.options = options
+
+
+def load_plugins(modules, config):
+    """Load plugins from `modules`.
+
+    Returns a list of loaded and configured plugins.
 
     """
+    plugins = []
 
     for module in modules:
-        try:
-            __import__(module)
-            mod = sys.modules[module]
-        except ImportError:
-            blah()
-            continue
+        __import__(module)
+        mod = sys.modules[module]
 
-        entry = getattr(mod, name, None)
-        if entry:
-            yield entry
+        plugin_class = getattr(mod, "Plugin", None)
+        if plugin_class:
+            options = config.get_plugin_options(module)
+            plugin = plugin_class(options)
+            plugins.append(plugin)
+
+    return plugins
