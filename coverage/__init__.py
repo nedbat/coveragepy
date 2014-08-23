@@ -11,6 +11,7 @@ from coverage.control import Coverage, process_startup
 from coverage.data import CoverageData
 from coverage.cmdline import main, CoverageScript
 from coverage.misc import CoverageException
+from coverage.plugin import CoveragePlugin
 
 # Backward compatibility.
 coverage = Coverage

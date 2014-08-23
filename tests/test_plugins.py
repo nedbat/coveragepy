@@ -28,7 +28,7 @@ class PluginUnitTest(CoverageTest):
 
     def test_importing_and_configuring(self):
         self.make_file("plugin1.py", """\
-            from coverage.plugin import CoveragePlugin
+            from coverage import CoveragePlugin
 
             class Plugin(CoveragePlugin):
                 def __init__(self, options):
@@ -46,7 +46,7 @@ class PluginUnitTest(CoverageTest):
 
     def test_importing_and_configuring_more_than_one(self):
         self.make_file("plugin1.py", """\
-            from coverage.plugin import CoveragePlugin
+            from coverage import CoveragePlugin
 
             class Plugin(CoveragePlugin):
                 def __init__(self, options):
@@ -54,7 +54,7 @@ class PluginUnitTest(CoverageTest):
                     self.this_is = "me"
             """)
         self.make_file("plugin2.py", """\
-            from coverage.plugin import CoveragePlugin
+            from coverage import CoveragePlugin
 
             class Plugin(CoveragePlugin):
                 pass
@@ -75,7 +75,7 @@ class PluginUnitTest(CoverageTest):
 
     def test_ok_to_not_define_plugin(self):
         self.make_file("plugin2.py", """\
-            from coverage.plugin import CoveragePlugin
+            from coverage import CoveragePlugin
 
             Nothing = 0
             """)
