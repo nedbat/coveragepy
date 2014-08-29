@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import atexit, os, random, socket, sys
+import atexit, os, platform, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
@@ -195,7 +195,7 @@ class Coverage(object):
             # environments (virtualenv, for example), these modules may be
             # spread across a few locations. Look at all the candidate modules
             # we've imported, and take all the different ones.
-            for m in (atexit, os, random, socket, _structseq):
+            for m in (atexit, os, platform, random, socket, _structseq):
                 if m is not None and hasattr(m, "__file__"):
                     self.pylib_dirs.add(self._canonical_dir(m))
 
@@ -738,7 +738,6 @@ class Coverage(object):
         """Return a list of (key, value) pairs showing internal information."""
 
         import coverage as covmod
-        import platform, re
 
         try:
             implementation = platform.python_implementation()
@@ -760,10 +759,10 @@ class Coverage(object):
             ('executable', sys.executable),
             ('cwd', os.getcwd()),
             ('path', sys.path),
-            ('environment', sorted([
+            ('environment', sorted(
                 ("%s = %s" % (k, v)) for k, v in iitems(os.environ)
-                    if re.search(r"^COV|^PY", k)
-                ])),
+                    if k.startswith(("COV", "PY"))
+                )),
             ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
             ]
         if self.source_match:
