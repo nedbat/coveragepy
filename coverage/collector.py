@@ -47,12 +47,12 @@ class PyTracer(object):
         self.should_trace = None
         self.should_trace_cache = None
         self.warn = None
-        self.plugins = None
+        self.plugin_data = None
 
-        self.plugin = None
-        self.cur_tracename = None   # TODO: This is only maintained for the if0 debugging output. Get rid of it eventually.
-        self.cur_file_data = None
-        self.last_line = 0
+        self.plugin = []
+        self.cur_file_dict = []
+        self.last_line = [0]
+
         self.data_stack = []
         self.data_stacks = collections.defaultdict(list)
         self.last_exc_back = None
@@ -92,18 +92,18 @@ class PyTracer(object):
                     for ident, data_stacks in self.data_stacks.items()
                 )
                 , width=250)
-            pprint.pprint(sorted((self.cur_file_data or {}).keys()), width=250)
+            pprint.pprint(sorted((self.cur_file_dict or {}).keys()), width=250)
             print("TRYING: {}".format(sorted(next((v for k,v in self.data.items() if k.endswith("try_it.py")), {}).keys())))
 
-        if self.last_exc_back:
+        if self.last_exc_back:            # TODO: bring this up to speed
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
-                if self.arcs and self.cur_file_data:
+                if self.arcs and self.cur_file_dict:
                     pair = (self.last_line, -self.last_exc_firstlineno)
-                    self.cur_file_data[pair] = None
+                    self.cur_file_dict[pair] = None
                 if self.coroutine_id_func:
                     self.data_stack = self.data_stacks[self.coroutine_id_func()]
-                self.handler, _, self.cur_file_data, self.last_line = self.data_stack.pop()
+                self.plugin, self.cur_file_dict, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
 
         if event == 'call':
@@ -112,7 +112,7 @@ class PyTracer(object):
             if self.coroutine_id_func:
                 self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.last_coroutine = self.coroutine_id_func()
-            self.data_stack.append((self.plugin, self.cur_tracename, self.cur_file_data, self.last_line))
+            self.data_stack.append((self.plugin, self.cur_file_dict, self.last_line))
             filename = frame.f_code.co_filename
             disp = self.should_trace_cache.get(filename)
             if disp is None:
@@ -120,19 +120,26 @@ class PyTracer(object):
                 self.should_trace_cache[filename] = disp
             #print("called, stack is %d deep, tracename is %r" % (
             #               len(self.data_stack), tracename))
-            tracename = disp.filename
-            if tracename and disp.plugin:
-                tracename = disp.plugin.file_name(frame)
+            self.plugin = None
+            self.cur_file_dict = None
+            if disp.trace:
+                tracename = disp.source_filename
+                if disp.plugin:
+                    dyn_func = disp.plugin.dynamic_source_file_name()
+                    if dyn_func:
+                        tracename = dyn_func(tracename, frame)
+                        if tracename:
+                            if not self.check_include(tracename):
+                                tracename = None
+            else:
+                tracename = None
             if tracename:
                 if tracename not in self.data:
                     self.data[tracename] = {}
                     if disp.plugin:
-                        self.plugins[tracename] = disp.plugin.__name__
-                self.cur_tracename = tracename
-                self.cur_file_data = self.data[tracename]
+                        self.plugin_data[tracename] = disp.plugin.__name__
+                self.cur_file_dict = self.data[tracename]
                 self.plugin = disp.plugin
-            else:
-                self.cur_file_data = None
             # Set the last_line to -1 because the next arc will be entering a
             # code block, indicated by (-1, n).
             self.last_line = -1
@@ -142,29 +149,30 @@ class PyTracer(object):
                 this_coroutine = self.coroutine_id_func()
                 if self.last_coroutine != this_coroutine:
                     print("mismatch: {0} != {1}".format(self.last_coroutine, this_coroutine))
+
             if self.plugin:
                 lineno_from, lineno_to = self.plugin.line_number_range(frame)
             else:
                 lineno_from, lineno_to = frame.f_lineno, frame.f_lineno
             if lineno_from != -1:
-                if self.cur_file_data is not None:
+                if self.cur_file_dict is not None:
                     if self.arcs:
                         #print("lin", self.last_line, frame.f_lineno)
-                        self.cur_file_data[(self.last_line, lineno_from)] = None
+                        self.cur_file_dict[(self.last_line, lineno_from)] = None
                     else:
                         #print("lin", frame.f_lineno)
                         for lineno in range(lineno_from, lineno_to+1):
-                            self.cur_file_data[lineno] = None
+                            self.cur_file_dict[lineno] = None
                 self.last_line = lineno_to
         elif event == 'return':
-            if self.arcs and self.cur_file_data:
+            if self.arcs and self.cur_file_dict:
                 first = frame.f_code.co_firstlineno
-                self.cur_file_data[(self.last_line, -first)] = None
+                self.cur_file_dict[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
             if self.coroutine_id_func:
                 self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.last_coroutine = self.coroutine_id_func()
-            self.plugin, _, self.cur_file_data, self.last_line = self.data_stack.pop()
+            self.plugin, self.cur_file_dict, self.last_line = self.data_stack.pop()
             #print("returned, stack is %d deep" % (len(self.data_stack)))
         elif event == 'exception':
             #print("exc", self.last_line, frame.f_lineno)
@@ -224,12 +232,14 @@ class Collector(object):
     # the top, and resumed when they become the top again.
     _collectors = []
 
-    def __init__(self, should_trace, timid, branch, warn, coroutine):
+    def __init__(self, should_trace, check_include, timid, branch, warn, coroutine):
         """Create a collector.
 
         `should_trace` is a function, taking a filename, and returning a
         canonicalized filename, or None depending on whether the file should
         be traced or not.
+
+        TODO: `check_include`
 
         If `timid` is true, then a slower simpler trace function will be
         used.  This is important for some environments where manipulation of
@@ -243,10 +253,14 @@ class Collector(object):
         `warn` is a warning function, taking a single string message argument,
         to be used if a warning needs to be issued.
 
+        TODO: `coroutine`
+
         """
         self.should_trace = should_trace
+        self.check_include = check_include
         self.warn = warn
         self.branch = branch
+
         if coroutine == "greenlet":
             import greenlet
             self.coroutine_id_func = greenlet.getcurrent
@@ -258,6 +272,7 @@ class Collector(object):
             self.coroutine_id_func = gevent.getcurrent
         else:
             self.coroutine_id_func = None
+
         self.reset()
 
         if timid:
@@ -281,7 +296,7 @@ class Collector(object):
         # or mapping filenames to dicts with linenumber pairs as keys.
         self.data = {}
 
-        self.plugins = {}
+        self.plugin_data = {}
 
         # A cache of the results from should_trace, the decision about whether
         # to trace execution in a file. A dict of filename to (filename or
@@ -301,8 +316,8 @@ class Collector(object):
         tracer.warn = self.warn
         if hasattr(tracer, 'coroutine_id_func'):
             tracer.coroutine_id_func = self.coroutine_id_func
-        if hasattr(tracer, 'plugins'):
-            tracer.plugins = self.plugins
+        if hasattr(tracer, 'plugin_data'):
+            tracer.plugin_data = self.plugin_data
         fn = tracer.start()
         self.tracers.append(tracer)
         return fn
@@ -421,4 +436,4 @@ class Collector(object):
             return {}
 
     def get_plugin_data(self):
-        return self.plugins
+        return self.plugin_data

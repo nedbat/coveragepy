@@ -135,8 +135,14 @@ class Coverage(object):
         self.debug = DebugControl(self.config.debug, debug_file or sys.stderr)
 
         # Load plugins
-        plugins = load_plugins(self.config.plugins, self.config)
-        self.tracer_plugins = []#[cls() for cls in tracer_classes]
+        self.plugins = load_plugins(self.config.plugins, self.config)
+
+        self.trace_judges = []
+        for plugin in self.plugins:
+            trace_judge = plugin.trace_judge()
+            if trace_judge:
+                self.trace_judges.append((plugin, trace_judge))
+        self.trace_judges.append((None, None))      # The Python case.
 
         self.auto_data = auto_data
 
@@ -160,8 +166,11 @@ class Coverage(object):
         self.include = prep_patterns(self.config.include)
 
         self.collector = Collector(
-            self._should_trace, timid=self.config.timid,
-            branch=self.config.branch, warn=self._warn,
+            should_trace=self._should_trace,
+            check_include=self._tracing_check_include_omit_etc,
+            timid=self.config.timid,
+            branch=self.config.branch,
+            warn=self._warn,
             coroutine=self.config.coroutine,
             )
 
@@ -246,21 +255,11 @@ class Coverage(object):
         Returns a FileDisposition object.
 
         """
-        disp = FileDisposition(filename)
-
-        if not filename:
-            # Empty string is pretty useless
-            return disp.nope("empty string isn't a filename")
-
-        if filename.startswith('memory:'):
-            return disp.nope("memory isn't traceable")
-
-        if filename.startswith('<'):
-            # Lots of non-file execution is represented with artificial
-            # filenames like "<string>", "<doctest readme.txt[0]>", or
-            # "<exec_function>".  Don't ever trace these executions, since we
-            # can't do anything with the data later anyway.
-            return disp.nope("not a real filename")
+        original_filename = filename
+        def nope(reason):
+            disp = FileDisposition(original_filename)
+            disp.nope(reason)
+            return disp
 
         self._check_for_packages()
 
@@ -274,6 +273,20 @@ class Coverage(object):
         if dunder_file:
             filename = self._source_for_file(dunder_file)
 
+        if not filename:
+            # Empty string is pretty useless
+            return nope("empty string isn't a filename")
+
+        if filename.startswith('memory:'):
+            return nope("memory isn't traceable")
+
+        if filename.startswith('<'):
+            # Lots of non-file execution is represented with artificial
+            # filenames like "<string>", "<doctest readme.txt[0]>", or
+            # "<exec_function>".  Don't ever trace these executions, since we
+            # can't do anything with the data later anyway.
+            return nope("not a real filename")
+
         # Jython reports the .class file to the tracer, use the source file.
         if filename.endswith("$py.class"):
             filename = filename[:-9] + ".py"
@@ -281,39 +294,60 @@ class Coverage(object):
         canonical = self.file_locator.canonical_filename(filename)
 
         # Try the plugins, see if they have an opinion about the file.
-        for tracer in self.tracer_plugins:
-            plugin_disp = tracer.should_trace(canonical)
-            if plugin_disp:
-                plugin_disp.plugin = tracer
-                return plugin_disp
+        for plugin, judge in self.trace_judges:
+            if plugin:
+                disp = judge(canonical)
+            else:
+                disp = FileDisposition(original_filename)
+            if disp is not None:
+                if plugin:
+                    disp.source_filename = plugin.source_file_name(canonical)
+                else:
+                    disp.source_filename = canonical
+                disp.plugin = plugin
 
+                reason = self._check_include_omit_etc(disp.source_filename)
+                if reason:
+                    disp.nope(reason)
+
+                return disp
+
+        return nope("no plugin found")  # TODO: a test that causes this.
+
+    def _check_include_omit_etc(self, filename):
+        """Check a filename against the include, omit, etc, rules.
+
+        Returns a string or None.  String means, don't trace, and is the reason
+        why.  None means no reason found to not trace.
+
+        """
         # If the user specified source or include, then that's authoritative
         # about the outer bound of what to measure and we don't have to apply
         # any canned exclusions. If they didn't, then we have to exclude the
         # stdlib and coverage.py directories.
         if self.source_match:
-            if not self.source_match.match(canonical):
-                return disp.nope("falls outside the --source trees")
+            if not self.source_match.match(filename):
+                return "falls outside the --source trees"
         elif self.include_match:
-            if not self.include_match.match(canonical):
-                return disp.nope("falls outside the --include trees")
+            if not self.include_match.match(filename):
+                return "falls outside the --include trees"
         else:
             # If we aren't supposed to trace installed code, then check if this
             # is near the Python standard library and skip it if so.
-            if self.pylib_match and self.pylib_match.match(canonical):
-                return disp.nope("is in the stdlib")
+            if self.pylib_match and self.pylib_match.match(filename):
+                return "is in the stdlib"
 
             # We exclude the coverage code itself, since a little of it will be
             # measured otherwise.
-            if self.cover_match and self.cover_match.match(canonical):
-                return disp.nope("is part of coverage.py")
+            if self.cover_match and self.cover_match.match(filename):
+                return "is part of coverage.py"
 
         # Check the file against the omit pattern.
-        if self.omit_match and self.omit_match.match(canonical):
-            return disp.nope("is inside an --omit pattern")
+        if self.omit_match and self.omit_match.match(filename):
+            return "is inside an --omit pattern"
 
-        disp.filename = canonical
-        return disp
+        # No reason found to skip this file.
+        return None
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.
@@ -325,6 +359,22 @@ class Coverage(object):
         if self.debug.should('trace'):
             self.debug.write(disp.debug_message())
         return disp
+
+    def _tracing_check_include_omit_etc(self, filename):
+        """Check a filename against the include, omit, etc, rules, and say so.
+
+        Returns a boolean: True if the file should be traced, False if not.
+
+        """
+        reason = self._check_include_omit_etc(filename)
+        if self.debug.should('trace'):
+            if not reason:
+                msg = "Tracing %r" % (filename,)
+            else:
+                msg = "Not tracing %r: %s" % (filename, reason)
+            self.debug.write(msg)
+
+        return not reason
 
     def _warn(self, msg):
         """Use `msg` as a warning."""
@@ -783,21 +833,22 @@ class FileDisposition(object):
     """A simple object for noting a number of details of files to trace."""
     def __init__(self, original_filename):
         self.original_filename = original_filename
-        self.filename = None
+        self.source_filename = None
+        self.trace = True
         self.reason = ""
         self.plugin = None
 
     def nope(self, reason):
         """A helper for returning a NO answer from should_trace."""
+        self.trace = False
         self.reason = reason
-        return self
 
     def debug_message(self):
         """Produce a debugging message explaining the outcome."""
-        if not self.filename:
-            msg = "Not tracing %r: %s" % (self.original_filename, self.reason)
-        else:
+        if self.trace:
             msg = "Tracing %r" % (self.original_filename,)
+        else:
+            msg = "Not tracing %r: %s" % (self.original_filename, self.reason)
         return msg
 
 

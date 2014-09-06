@@ -260,6 +260,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     PyObject * filename = NULL;
     PyObject * tracename = NULL;
     PyObject * disposition = NULL;
+    PyObject * disp_trace = NULL;
     #if WHAT_LOG || TRACE_LOG
     PyObject * ascii = NULL;
     #endif
@@ -358,13 +359,28 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
             Py_INCREF(disposition);
         }
 
-        /* If tracename is a string, then we're supposed to trace. */
-        tracename = PyObject_GetAttrString(disposition, "filename");
-        if (tracename == NULL) {
+        disp_trace = PyObject_GetAttrString(disposition, "trace");
+        if (disp_trace == NULL) {
             STATS( self->stats.errors++; )
             Py_DECREF(disposition);
             return RET_ERROR;
         }
+
+        tracename = Py_None;
+        Py_INCREF(tracename);
+
+        if (disp_trace == Py_True) {
+            /* If tracename is a string, then we're supposed to trace. */
+            tracename = PyObject_GetAttrString(disposition, "source_filename");
+            if (tracename == NULL) {
+                STATS( self->stats.errors++; )
+                Py_DECREF(disposition);
+                Py_DECREF(disp_trace);
+                return RET_ERROR;
+            }
+        }
+        Py_DECREF(disp_trace);
+
         if (MyText_Check(tracename)) {
             PyObject * file_data = PyDict_GetItem(self->data, tracename);
             if (file_data == NULL) {

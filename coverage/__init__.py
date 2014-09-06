@@ -7,7 +7,7 @@ http://nedbatchelder.com/code/coverage
 
 from coverage.version import __version__, __url__
 
-from coverage.control import Coverage, process_startup
+from coverage.control import Coverage, process_startup, FileDisposition
 from coverage.data import CoverageData
 from coverage.cmdline import main, CoverageScript
 from coverage.misc import CoverageException
