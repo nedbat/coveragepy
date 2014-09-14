@@ -9,7 +9,7 @@ from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.debug import DebugControl
-from coverage.plugin import load_plugins
+from coverage.plugin import Plugins, plugin_implements
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.html import HtmlReporter
@@ -135,14 +135,13 @@ class Coverage(object):
         self.debug = DebugControl(self.config.debug, debug_file or sys.stderr)
 
         # Load plugins
-        self.plugins = load_plugins(self.config.plugins, self.config)
+        self.plugins = Plugins.load_plugins(self.config.plugins, self.config)
 
         self.trace_judges = []
         for plugin in self.plugins:
-            trace_judge = plugin.trace_judge()
-            if trace_judge:
-                self.trace_judges.append((plugin, trace_judge))
-        self.trace_judges.append((None, None))      # The Python case.
+            if plugin_implements(plugin, "trace_judge"):
+                self.trace_judges.append(plugin)
+        self.trace_judges.append(None)      # The Python case.
 
         self.auto_data = auto_data
 
@@ -255,10 +254,10 @@ class Coverage(object):
         Returns a FileDisposition object.
 
         """
-        original_filename = filename
-        def nope(reason):
-            disp = FileDisposition(original_filename)
-            disp.nope(reason)
+        disp = FileDisposition(filename)
+        def nope(disp, reason):
+            disp.trace = False
+            disp.reason = reason
             return disp
 
         self._check_for_packages()
@@ -275,44 +274,43 @@ class Coverage(object):
 
         if not filename:
             # Empty string is pretty useless
-            return nope("empty string isn't a filename")
+            return nope(disp, "empty string isn't a filename")
 
         if filename.startswith('memory:'):
-            return nope("memory isn't traceable")
+            return nope(disp, "memory isn't traceable")
 
         if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
             # filenames like "<string>", "<doctest readme.txt[0]>", or
             # "<exec_function>".  Don't ever trace these executions, since we
             # can't do anything with the data later anyway.
-            return nope("not a real filename")
+            return nope(disp, "not a real filename")
 
         # Jython reports the .class file to the tracer, use the source file.
         if filename.endswith("$py.class"):
             filename = filename[:-9] + ".py"
 
         canonical = self.file_locator.canonical_filename(filename)
+        disp.canonical_filename = canonical
 
         # Try the plugins, see if they have an opinion about the file.
-        for plugin, judge in self.trace_judges:
+        for plugin in self.trace_judges:
             if plugin:
-                disp = judge(canonical)
+                plugin.trace_judge(disp)
             else:
-                disp = FileDisposition(original_filename)
-            if disp is not None:
-                if plugin:
-                    disp.source_filename = plugin.source_file_name(canonical)
-                else:
-                    disp.source_filename = canonical
+                disp.trace = True
+                disp.source_filename = canonical
+            if disp.trace:
                 disp.plugin = plugin
 
-                reason = self._check_include_omit_etc(disp.source_filename)
-                if reason:
-                    disp.nope(reason)
+                if disp.check_filters:
+                    reason = self._check_include_omit_etc(disp.source_filename)
+                    if reason:
+                        nope(disp, reason)
 
                 return disp
 
-        return nope("no plugin found")  # TODO: a test that causes this.
+        return nope(disp, "no plugin found")  # TODO: a test that causes this.
 
     def _check_include_omit_etc(self, filename):
         """Check a filename against the include, omit, etc, rules.
@@ -661,10 +659,17 @@ class Coverage(object):
         Returns an `Analysis` object.
 
         """
+        def get_plugin(filename):
+            """For code_unit_factory to use to find the plugin for a file."""
+            plugin = None
+            plugin_name = self.data.plugin_data().get(filename)
+            if plugin_name:
+                plugin = self.plugins.get(plugin_name)
+            return plugin
+
         self._harvest_data()
         if not isinstance(it, CodeUnit):
-            get_ext = self.data.plugin_data().get
-            it = code_unit_factory(it, self.file_locator, get_ext)[0]
+            it = code_unit_factory(it, self.file_locator, get_plugin)[0]
 
         return Analysis(self, it)
 
@@ -833,15 +838,12 @@ class FileDisposition(object):
     """A simple object for noting a number of details of files to trace."""
     def __init__(self, original_filename):
         self.original_filename = original_filename
+        self.canonical_filename = original_filename
         self.source_filename = None
-        self.trace = True
+        self.check_filters = True
+        self.trace = False
         self.reason = ""
         self.plugin = None
-
-    def nope(self, reason):
-        """A helper for returning a NO answer from should_trace."""
-        self.trace = False
-        self.reason = reason
 
     def debug_message(self):
         """Produce a debugging message explaining the outcome."""

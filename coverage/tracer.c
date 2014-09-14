@@ -67,6 +67,7 @@ typedef struct {
     PyObject * should_trace;
     PyObject * warn;
     PyObject * data;
+    PyObject * plugin_data;
     PyObject * should_trace_cache;
     PyObject * arcs;
 
@@ -139,6 +140,7 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     self->should_trace = NULL;
     self->warn = NULL;
     self->data = NULL;
+    self->plugin_data = NULL;
     self->should_trace_cache = NULL;
     self->arcs = NULL;
 
@@ -172,6 +174,7 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->should_trace);
     Py_XDECREF(self->warn);
     Py_XDECREF(self->data);
+    Py_XDECREF(self->plugin_data);
     Py_XDECREF(self->should_trace_cache);
 
     PyMem_Free(self->data_stack);
@@ -383,6 +386,9 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
         if (MyText_Check(tracename)) {
             PyObject * file_data = PyDict_GetItem(self->data, tracename);
+            PyObject * disp_plugin = NULL;
+            PyObject * disp_plugin_name = NULL;
+
             if (file_data == NULL) {
                 file_data = PyDict_New();
                 if (file_data == NULL) {
@@ -398,6 +404,34 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                     Py_DECREF(tracename);
                     Py_DECREF(disposition);
                     return RET_ERROR;
+                }
+
+                if (self->plugin_data != NULL) {
+                    /* If the disposition mentions a plugin, record that. */
+                    disp_plugin = PyObject_GetAttrString(disposition, "plugin");
+                    if (disp_plugin == NULL) {
+                        STATS( self->stats.errors++; )
+                        Py_DECREF(tracename);
+                        Py_DECREF(disposition);
+                        return RET_ERROR;
+                    }
+                    if (disp_plugin != Py_None) {
+                        disp_plugin_name = PyObject_GetAttrString(disp_plugin, "__name__");
+                        Py_DECREF(disp_plugin);
+                        if (disp_plugin_name == NULL) {
+                            STATS( self->stats.errors++; )
+                            Py_DECREF(tracename);
+                            Py_DECREF(disposition);
+                            return RET_ERROR;
+                        }
+                        ret = PyDict_SetItem(self->plugin_data, tracename, disp_plugin_name);
+                        Py_DECREF(disp_plugin_name);
+                        if (ret < 0) {
+                            Py_DECREF(tracename);
+                            Py_DECREF(disposition);
+                            return RET_ERROR;
+                        }
+                    }
                 }
             }
             self->cur_file_data = file_data;
@@ -628,6 +662,9 @@ CTracer_members[] = {
 
     { "data",               T_OBJECT, offsetof(CTracer, data), 0,
             PyDoc_STR("The raw dictionary of trace data.") },
+
+    { "plugin_data",        T_OBJECT, offsetof(CTracer, plugin_data), 0,
+            PyDoc_STR("Mapping from filename to plugin name.") },
 
     { "should_trace_cache", T_OBJECT, offsetof(CTracer, should_trace_cache), 0,
             PyDoc_STR("Dictionary caching should_trace results.") },
