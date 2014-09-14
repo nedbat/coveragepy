@@ -92,6 +92,8 @@ class CodeUnit(object):
         self.name = n
         self.modname = modname
 
+        self._source = None
+
     def __repr__(self):
         return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
 
@@ -132,6 +134,11 @@ class CodeUnit(object):
             return root.replace('\\', '_').replace('/', '_').replace('.', '_')
 
     def source(self):
+        if self._source is None:
+            self._source = self.get_source()
+        return self._source
+
+    def get_source(self):
         """Return the source code, as a string."""
         if os.path.exists(self.filename):
             # A regular text file: open it.
@@ -148,10 +155,9 @@ class CodeUnit(object):
             "No source for code '%s'." % self.filename
             )
 
-    def source_token_lines(self, source):
+    def source_token_lines(self):
         """Return the 'tokenized' text for the code."""
-        # TODO: Taking source here is wrong, change it?
-        for line in source.splitlines():
+        for line in self.source().splitlines():
             yield [('txt', line)]
 
     def should_be_python(self):
@@ -242,11 +248,11 @@ class PythonCodeUnit(CodeUnit):
         # Everything else is probably not Python.
         return False
 
-    def source_token_lines(self, source):
-        return source_token_lines(source)
+    def source_token_lines(self):
+        return source_token_lines(self.source())
 
-    def source_encoding(self, source):
-        return source_encoding(source)
+    def source_encoding(self):
+        return source_encoding(self.source())
 
 
 class MakoParser(CodeParser):
@@ -275,26 +281,25 @@ class MakoCodeUnit(CodeUnit):
         py_source = open(self.filename).read()
         self.metadata = ModuleInfo.get_module_source_metadata(py_source, full_line_map=True)
 
-    def source(self):
+    def get_source(self):
         return open(self.metadata['filename']).read()
 
     def get_parser(self, exclude=None):
         return MakoParser(self.metadata)
 
-    def source_encoding(self, source):
-        # TODO: Taking source here is wrong, change it!
+    def source_encoding(self):
         return self.metadata['source_encoding']
 
 
 class DjangoCodeUnit(CodeUnit):
-    def source(self):
+    def get_source(self):
         with open(self.filename) as f:
             return f.read()
 
     def get_parser(self, exclude=None):
         return DjangoParser(self.filename)
 
-    def source_encoding(self, source):
+    def source_encoding(self):
         return "utf8"
 
 
