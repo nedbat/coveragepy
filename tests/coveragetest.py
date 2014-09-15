@@ -142,40 +142,20 @@ class StdStreamCapturingMixin(TestCase):
         return self.captured_stderr.getvalue()
 
 
-class CoverageTest(
-    ModuleAwareMixin,
-    SysPathAwareMixin,
-    EnvironmentAwareMixin,
-    StdStreamCapturingMixin,
-    TestCase
-):
-    """A base class for Coverage test cases."""
+class TempDirMixin(TestCase):
+    """A test case mixin that creates a temp directory and files in it."""
 
-    # Our own setting: most CoverageTests run in their own temp directory.
+    # Our own setting: most of these tests run in their own temp directory.
     run_in_temp_dir = True
 
-    # Standard unittest setting: show me diffs even if they are very long.
-    maxDiff = None
-
     def setUp(self):
-        super(CoverageTest, self).setUp()
-
-        if _TEST_NAME_FILE:
-            f = open(_TEST_NAME_FILE, "w")
-            f.write("%s_%s" % (self.__class__.__name__, self._testMethodName))
-            f.close()
-
-        # Tell newer unittest implementations to print long helpful messages.
-        self.longMessage = True
-
-        # Keep a counter to make every call to check_coverage unique.
-        self.n = 0
+        super(TempDirMixin, self).setUp()
 
         if self.run_in_temp_dir:
             # Create a temporary directory.
-            self.noise = str(random.random())[2:]
+            noise = str(random.random())[2:]
             self.temp_root = os.path.join(tempfile.gettempdir(), 'test_cover')
-            self.temp_dir = os.path.join(self.temp_root, self.noise)
+            self.temp_dir = os.path.join(self.temp_root, noise)
             os.makedirs(self.temp_dir)
             self.old_dir = os.getcwd()
             os.chdir(self.temp_dir)
@@ -191,8 +171,10 @@ class CoverageTest(
         class_behavior.test_method_made_any_files = False
         class_behavior.temp_dir = self.run_in_temp_dir
 
-    def tearDown(self):
-        super(CoverageTest, self).tearDown()
+        self.addCleanup(self.cleanup_temp_dir)
+
+    def cleanup_temp_dir(self):
+        """Clean up the temp directories we made."""
 
         if self.run_in_temp_dir:
             # Get rid of the temporary directory.
@@ -233,6 +215,82 @@ class CoverageTest(
             f.write(to_bytes(text))
 
         return filename
+
+    # We run some tests in temporary directories, because they may need to make
+    # files for the tests. But this is expensive, so we can change per-class
+    # whether a temp dir is used or not.  It's easy to forget to set that
+    # option properly, so we track information about what the tests did, and
+    # then report at the end of the process on test classes that were set
+    # wrong.
+
+    class ClassBehavior(object):
+        """A value object to store per-class."""
+        def __init__(self):
+            self.tests = 0
+            self.temp_dir = True
+            self.tests_making_files = 0
+            self.test_method_made_any_files = False
+
+    # Map from class to info about how it ran.
+    class_behaviors = collections.defaultdict(ClassBehavior)
+
+    @classmethod
+    def report_on_class_behavior(cls):
+        """Called at process exit to report on class behavior."""
+        for test_class, behavior in cls.class_behaviors.items():
+            if behavior.temp_dir and behavior.tests_making_files == 0:
+                bad = "Inefficient"
+            elif not behavior.temp_dir and behavior.tests_making_files > 0:
+                bad = "Unsafe"
+            else:
+                bad = ""
+
+            if bad:
+                if behavior.temp_dir:
+                    where = "in a temp directory"
+                else:
+                    where = "without a temp directory"
+                print(
+                    "%s: %s ran %d tests, %d made files %s" % (
+                        bad,
+                        test_class.__name__,
+                        behavior.tests,
+                        behavior.tests_making_files,
+                        where,
+                    )
+                )
+
+    def class_behavior(self):
+        """Get the ClassBehavior instance for this test."""
+        return self.class_behaviors[self.__class__]
+
+# When the process ends, find out about bad classes.
+atexit.register(TempDirMixin.report_on_class_behavior)
+
+
+class CoverageTest(
+    ModuleAwareMixin,
+    SysPathAwareMixin,
+    EnvironmentAwareMixin,
+    StdStreamCapturingMixin,
+    TempDirMixin,
+    TestCase
+):
+    """A base class for Coverage test cases."""
+
+    # Standard unittest setting: show me diffs even if they are very long.
+    maxDiff = None
+
+    # Tell newer unittest implementations to print long helpful messages.
+    longMessage = True
+
+    def setUp(self):
+        super(CoverageTest, self).setUp()
+
+        if _TEST_NAME_FILE:
+            f = open(_TEST_NAME_FILE, "w")
+            f.write("%s_%s" % (self.__class__.__name__, self._testMethodName))
+            f.close()
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
@@ -280,13 +338,7 @@ class CoverageTest(
 
     def get_module_name(self):
         """Return the module name to use for this test run."""
-        # We append self.n because otherwise two calls in one test will use the
-        # same filename and whether the test works or not depends on the
-        # timestamps in the .pyc file, so it becomes random whether the second
-        # call will use the compiled version of the first call's code or not!
-        modname = 'coverage_test_' + self.noise + str(self.n)
-        self.n += 1
-        return modname
+        return 'coverage_test_' + str(random.random())[2:]
 
     # Map chars to numbers for arcz_to_arcs
     _arcz_map = {'.': -1}
@@ -543,55 +595,3 @@ class CoverageTest(
     def last_line_squeezed(self, report):
         """Return the last line of `report` with the spaces squeezed down."""
         return self.squeezed_lines(report)[-1]
-
-    # We run some tests in temporary directories, because they may need to make
-    # files for the tests. But this is expensive, so we can change per-class
-    # whether a temp dir is used or not.  It's easy to forget to set that
-    # option properly, so we track information about what the tests did, and
-    # then report at the end of the process on test classes that were set
-    # wrong.
-
-    class ClassBehavior(object):
-        """A value object to store per-class in CoverageTest."""
-        def __init__(self):
-            self.tests = 0
-            self.temp_dir = True
-            self.tests_making_files = 0
-            self.test_method_made_any_files = False
-
-    # Map from class to info about how it ran.
-    class_behaviors = collections.defaultdict(ClassBehavior)
-
-    @classmethod
-    def report_on_class_behavior(cls):
-        """Called at process exit to report on class behavior."""
-        for test_class, behavior in cls.class_behaviors.items():
-            if behavior.temp_dir and behavior.tests_making_files == 0:
-                bad = "Inefficient"
-            elif not behavior.temp_dir and behavior.tests_making_files > 0:
-                bad = "Unsafe"
-            else:
-                bad = ""
-
-            if bad:
-                if behavior.temp_dir:
-                    where = "in a temp directory"
-                else:
-                    where = "without a temp directory"
-                print(
-                    "%s: %s ran %d tests, %d made files %s" % (
-                        bad,
-                        test_class.__name__,
-                        behavior.tests,
-                        behavior.tests_making_files,
-                        where,
-                    )
-                )
-
-    def class_behavior(self):
-        """Get the ClassBehavior instance for this test."""
-        return self.class_behaviors[self.__class__]
-
-
-# When the process ends, find out about bad classes.
-atexit.register(CoverageTest.report_on_class_behavior)
