@@ -2,15 +2,13 @@
 """Tests that our test infrastructure is really working!"""
 
 import os, sys
+from coverage.backunittest import TestCase
 from coverage.backward import to_bytes
-from tests.backunittest import TestCase
 from tests.coveragetest import TempDirMixin, CoverageTest
 
 
 class TestingTest(TestCase):
     """Tests of helper methods on `backunittest.TestCase`."""
-
-    run_in_temp_dir = False
 
     def test_assert_count_equal(self):
         self.assertCountEqual(set(), set())
