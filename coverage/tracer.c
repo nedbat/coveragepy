@@ -365,7 +365,7 @@ CTracer_set_pdata_stack(CTracer *self)
             Py_INCREF(stack_index);
             the_index = MyInt_AsLong(stack_index);
         }
-        
+
         self->pdata_stack = &self->data_stacks[the_index];
 
         Py_XDECREF(co_obj);
