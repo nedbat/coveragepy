@@ -2,7 +2,6 @@
 
 import os.path, sys
 
-from nose.plugins.skip import SkipTest
 import coverage
 
 from tests.coveragetest import CoverageTest
@@ -96,6 +95,15 @@ class CoroutineTest(CoverageTest):
         import gevent.queue as queue
         """ + COMMON
 
+    # Uncomplicated code that doesn't use any of the coroutining stuff, to test
+    # the simple case under each of the regimes.
+    SIMPLE = """\
+        total = 0
+        for i in range({LIMIT}):
+            total += i
+        print(total)
+        """.format(LIMIT=LIMIT)
+
     def try_some_code(self, code, args):
         """Run some coroutine testing code and see that it was all covered."""
 
@@ -122,22 +130,25 @@ class CoroutineTest(CoverageTest):
     def test_threads(self):
         self.try_some_code(self.THREAD, "")
 
-    def test_eventlet(self):
-        if eventlet is None:
-            raise SkipTest("No eventlet available")
+    def test_threads_simple_code(self):
+        self.try_some_code(self.SIMPLE, "")
 
-        self.try_some_code(self.EVENTLET, "--coroutine=eventlet")
+    if eventlet is not None:
+        def test_eventlet(self):
+            self.try_some_code(self.EVENTLET, "--coroutine=eventlet")
 
-    def test_gevent(self):
-        raise SkipTest("Still not sure why gevent isn't working...")
+        def test_eventlet_simple_code(self):
+            self.try_some_code(self.SIMPLE, "--coroutine=eventlet")
 
-        if gevent is None:
-            raise SkipTest("No gevent available")
+    if gevent is not None:
+        def test_gevent(self):
+            self.try_some_code(self.GEVENT, "--coroutine=gevent")
 
-        self.try_some_code(self.GEVENT, "--coroutine=gevent")
+        def test_gevent_simple_code(self):
+            self.try_some_code(self.SIMPLE, "--coroutine=gevent")
 
 
 def print_simple_annotation(code, linenos):
     """Print the lines in `code` with X for each line number in `linenos`."""
     for lineno, line in enumerate(code.splitlines(), start=1):
-        print(" {0:s} {1}".format("X" if lineno in linenos else " ", line))
+        print(" {0} {1}".format("X" if lineno in linenos else " ", line))

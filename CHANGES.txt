@@ -8,6 +8,10 @@ Change history for Coverage.py
 - Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
   PyPy 2.2.
 
+- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_. Huge
+  thanks to Peter Portante for initial implementation, and to Joe Jevnik for
+  the final insight that completed the work.
+
 - Options are now also read from a setup.cfg file, if any.  Sections are
   prefixed with "coverage:", so the ``[run]`` options will be read from the
   ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
@@ -41,6 +45,7 @@ Change history for Coverage.py
 
 .. _issue 57: https://bitbucket.org/ned/coveragepy/issue/57/annotate-command-fails-to-annotate-many
 .. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
+.. _issue 149: https://bitbucket.org/ned/coveragepy/issue/149/coverage-gevent-looks-broken
 .. _issue 230: https://bitbucket.org/ned/coveragepy/issue/230/show-line-no-for-missing-branches-in
 .. _issue 284: https://bitbucket.org/ned/coveragepy/issue/284/fail-under-should-show-more-precision
 .. _issue 285: https://bitbucket.org/ned/coveragepy/issue/285/xml-report-fails-if-output-file-directory

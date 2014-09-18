@@ -1,6 +1,6 @@
 """Raw data collector for Coverage."""
 
-import collections, os, sys, threading
+import collections, os, sys
 
 try:
     # Use the C extension code when we can, for speed.
@@ -48,6 +48,8 @@ class PyTracer(object):
         self.should_trace_cache = None
         self.warn = None
         self.plugin_data = None
+        # The threading module to use, if any.
+        self.threading = None
 
         self.plugin = []
         self.cur_file_dict = []
@@ -62,38 +64,18 @@ class PyTracer(object):
         self.coroutine_id_func = None
         self.last_coroutine = None
 
+    def __repr__(self):
+        return "<PyTracer at 0x{0:0x}: {1} lines in {2} files>".format(
+            id(self),
+            sum(len(v) for v in self.data.values()),
+            len(self.data),
+        )
+
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
 
         if self.stopped:
             return
-
-        if 0:
-            # A lot of debugging to try to understand why gevent isn't right.
-            import os.path, pprint
-            def short_ident(ident):
-                return "{}:{:06X}".format(ident.__class__.__name__, id(ident) & 0xFFFFFF)
-
-            ident = None
-            if self.coroutine_id_func:
-                ident = short_ident(self.coroutine_id_func())
-            sys.stdout.write("trace event: %s %s %r @%d\n" % (
-                event, ident, frame.f_code.co_filename, frame.f_lineno
-            ))
-            pprint.pprint(
-                dict(
-                    (
-                        short_ident(ident),
-                        [
-                            (os.path.basename(tn or ""), sorted((cfd or {}).keys()), ll)
-                            for ex, tn, cfd, ll in data_stacks
-                        ]
-                    )
-                    for ident, data_stacks in self.data_stacks.items()
-                )
-                , width=250)
-            pprint.pprint(sorted((self.cur_file_dict or {}).keys()), width=250)
-            print("TRYING: {}".format(sorted(next((v for k,v in self.data.items() if k.endswith("try_it.py")), {}).keys())))
 
         if self.last_exc_back:            # TODO: bring this up to speed
             if frame == self.last_exc_back:
@@ -186,14 +168,15 @@ class PyTracer(object):
         Return a Python function suitable for use with sys.settrace().
 
         """
-        self.thread = threading.currentThread()
+        if self.threading:
+            self.thread = self.threading.currentThread()
         sys.settrace(self._trace)
         return self._trace
 
     def stop(self):
         """Stop this Tracer."""
         self.stopped = True
-        if self.thread != threading.currentThread():
+        if self.threading and self.thread != self.threading.currentThread():
             # Called on a different thread than started us: we can't unhook
             # ourseves, but we've set the flag that we should stop, so we won't
             # do any more tracing.
@@ -203,7 +186,7 @@ class PyTracer(object):
             if sys.gettrace() != self._trace:
                 msg = "Trace function changed, measurement is likely wrong: %r"
                 self.warn(msg % (sys.gettrace(),))
-        #print("Stopping tracer on %s" % threading.current_thread().ident)
+
         sys.settrace(None)
 
     def get_stats(self):
@@ -260,6 +243,7 @@ class Collector(object):
         self.check_include = check_include
         self.warn = warn
         self.branch = branch
+        self.threading = None
 
         if coroutine == "greenlet":
             import greenlet
@@ -271,7 +255,12 @@ class Collector(object):
             import gevent
             self.coroutine_id_func = gevent.getcurrent
         else:
+            # It's important to import threading only if we need it. If it's
+            # imported early, and the program being measured uses gevent, then
+            # gevent's monkey-patching won't work properly.
+            import threading
             self.coroutine_id_func = None
+            self.threading = threading
 
         self.reset()
 
@@ -318,6 +307,8 @@ class Collector(object):
             tracer.coroutine_id_func = self.coroutine_id_func
         if hasattr(tracer, 'plugin_data'):
             tracer.plugin_data = self.plugin_data
+        if hasattr(tracer, 'threading'):
+            tracer.threading = self.threading
         fn = tracer.start()
         self.tracers.append(tracer)
         return fn
@@ -346,7 +337,6 @@ class Collector(object):
         if self._collectors:
             self._collectors[-1].pause()
         self._collectors.append(self)
-        #print("Started: %r" % self._collectors, file=sys.stderr)
 
         # Check to see whether we had a fullcoverage tracer installed.
         traces0 = []
@@ -371,11 +361,11 @@ class Collector(object):
 
         # Install our installation tracer in threading, to jump start other
         # threads.
-        threading.settrace(self._installation_trace)
+        if self.threading:
+            self.threading.settrace(self._installation_trace)
 
     def stop(self):
         """Stop collecting trace information."""
-        #print >>sys.stderr, "Stopping: %r" % self._collectors
         assert self._collectors
         assert self._collectors[-1] is self
 
@@ -397,13 +387,17 @@ class Collector(object):
                 print("\nCoverage.py tracer stats:")
                 for k in sorted(stats.keys()):
                     print("%16s: %s" % (k, stats[k]))
-        threading.settrace(None)
+        if self.threading:
+            self.threading.settrace(None)
 
     def resume(self):
         """Resume tracing after a `pause`."""
         for tracer in self.tracers:
             tracer.start()
-        threading.settrace(self._installation_trace)
+        if self.threading:
+            self.threading.settrace(self._installation_trace)
+        else:
+            self._start_tracer()
 
     def get_line_data(self):
         """Return the line data collected.
