@@ -109,7 +109,7 @@ class CoroutineTest(CoverageTest):
 
         self.make_file("try_it.py", code)
 
-        out = self.run_command("coverage run --timid %s try_it.py" % args)
+        out = self.run_command("coverage run %s try_it.py" % args)
         expected_out = "%d\n" % (sum(range(self.LIMIT)))
         self.assertEqual(out, expected_out)
 

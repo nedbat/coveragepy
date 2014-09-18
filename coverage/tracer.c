@@ -30,6 +30,7 @@
 #define MyText_AS_BYTES(o)  PyUnicode_AsASCIIString(o)
 #define MyText_AS_STRING(o) PyBytes_AS_STRING(o)
 #define MyInt_FromLong(l)   PyLong_FromLong(l)
+#define MyInt_AsLong(o)     PyLong_AsLong(o)
 
 #define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
 
@@ -40,6 +41,7 @@
 #define MyText_AS_BYTES(o)  (Py_INCREF(o), o)
 #define MyText_AS_STRING(o) PyString_AS_STRING(o)
 #define MyInt_FromLong(l)   PyInt_FromLong(l)
+#define MyInt_AsLong(o)     PyInt_AsLong(o)
 
 #define MyType_HEAD_INIT    PyObject_HEAD_INIT(NULL)  0,
 
@@ -54,9 +56,22 @@
     frame.
 */
 typedef struct {
-    PyObject * file_data;  /* PyMem_Malloc'ed, a borrowed ref. */
+    /* The current file_data dictionary.  Borrowed. */
+    PyObject * file_data;
+
+    /* The line number of the last line recorded, for tracing arcs.
+        -1 means there was no previous line, as when entering a code object.
+    */
     int last_line;
 } DataStackEntry;
+
+/* A data stack is a dynamically allocated vector of DataStackEntry's. */
+typedef struct {
+    int depth;      /* The index of the last-used entry in stack. */
+    int alloc;      /* number of entries allocated at stack. */
+    /* The file data at each level, or NULL if not recording. */
+    DataStackEntry * stack;
+} DataStack;
 
 /* The CTracer type. */
 
@@ -66,6 +81,7 @@ typedef struct {
     /* Python objects manipulated directly by the Collector class. */
     PyObject * should_trace;
     PyObject * warn;
+    PyObject * coroutine_id_func;
     PyObject * data;
     PyObject * plugin_data;
     PyObject * should_trace_cache;
@@ -87,19 +103,17 @@ typedef struct {
         the keys are line numbers.  In both cases, the value is irrelevant
         (None).
     */
-    /* The index of the last-used entry in data_stack. */
-    int depth;
-    /* The file data at each level, or NULL if not recording. */
-    DataStackEntry * data_stack;
-    int data_stack_alloc;       /* number of entries allocated at data_stack. */
 
-    /* The current file_data dictionary.  Borrowed. */
-    PyObject * cur_file_data;
+    DataStack data_stack;       /* Used if we aren't doing coroutines. */
+    PyObject * data_stack_index;     /* Used if we are doing coroutines. */
+    DataStack * data_stacks;
+    int data_stacks_alloc;
+    int data_stacks_used;
 
-    /* The line number of the last line recorded, for tracing arcs.
-        -1 means there was no previous line, as when entering a code object.
-    */
-    int last_line;
+    DataStack * pdata_stack;
+
+    /* The current file's data stack entry, copied from the stack. */
+    DataStackEntry cur_entry;
 
     /* The parent frame for the last exception event, to fix missing returns. */
     PyFrameObject * last_exc_back;
@@ -120,7 +134,45 @@ typedef struct {
 #endif /* COLLECT_STATS */
 } CTracer;
 
+
 #define STACK_DELTA    100
+
+static int
+DataStack_init(CTracer *self, DataStack *pdata_stack)
+{
+    pdata_stack->depth = -1;
+    pdata_stack->stack = NULL;
+    pdata_stack->alloc = 0;
+    return RET_OK;
+}
+
+static void
+DataStack_dealloc(CTracer *self, DataStack *pdata_stack)
+{
+    PyMem_Free(pdata_stack->stack);
+}
+
+static int
+DataStack_grow(CTracer *self, DataStack *pdata_stack)
+{
+    pdata_stack->depth++;
+    if (pdata_stack->depth >= pdata_stack->alloc) {
+        STATS( self->stats.stack_reallocs++; )
+        /* We've outgrown our data_stack array: make it bigger. */
+        int bigger = pdata_stack->alloc + STACK_DELTA;
+        DataStackEntry * bigger_data_stack = PyMem_Realloc(pdata_stack->stack, bigger * sizeof(DataStackEntry));
+        if (bigger_data_stack == NULL) {
+            STATS( self->stats.errors++; )
+            PyErr_NoMemory();
+            pdata_stack->depth--;
+            return RET_ERROR;
+        }
+        pdata_stack->stack = bigger_data_stack;
+        pdata_stack->alloc = bigger;
+    }
+    return RET_OK;
+}
+
 
 static int
 CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
@@ -139,6 +191,7 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 
     self->should_trace = NULL;
     self->warn = NULL;
+    self->coroutine_id_func = NULL;
     self->data = NULL;
     self->plugin_data = NULL;
     self->should_trace_cache = NULL;
@@ -147,17 +200,23 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     self->started = 0;
     self->tracing_arcs = 0;
 
-    self->depth = -1;
-    self->data_stack = PyMem_Malloc(STACK_DELTA*sizeof(DataStackEntry));
-    if (self->data_stack == NULL) {
-        STATS( self->stats.errors++; )
-        PyErr_NoMemory();
+    if (DataStack_init(self, &self->data_stack)) {
         return RET_ERROR;
     }
-    self->data_stack_alloc = STACK_DELTA;
+    self->data_stack_index = PyDict_New();
+    if (self->data_stack_index == NULL) {
+        STATS( self->stats.errors++; )
+        return RET_ERROR;
+    }
 
-    self->cur_file_data = NULL;
-    self->last_line = -1;
+    self->data_stacks = NULL;
+    self->data_stacks_alloc = 0;
+    self->data_stacks_used = 0;
+
+    self->pdata_stack = &self->data_stack;
+
+    self->cur_entry.file_data = NULL;
+    self->cur_entry.last_line = -1;
 
     self->last_exc_back = NULL;
 
@@ -173,11 +232,20 @@ CTracer_dealloc(CTracer *self)
 
     Py_XDECREF(self->should_trace);
     Py_XDECREF(self->warn);
+    Py_XDECREF(self->coroutine_id_func);
     Py_XDECREF(self->data);
     Py_XDECREF(self->plugin_data);
     Py_XDECREF(self->should_trace_cache);
 
-    PyMem_Free(self->data_stack);
+    DataStack_dealloc(self, &self->data_stack);
+    if (self->data_stacks) {
+        for (int i = 0; i < self->data_stacks_used; i++) {
+            DataStack_dealloc(self, self->data_stacks + i);
+        }
+        PyMem_Free(self->data_stacks);
+    }
+
+    Py_XDECREF(self->data_stack_index);
 
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
@@ -232,7 +300,7 @@ showlog(int depth, int lineno, PyObject * filename, const char * msg)
 static const char * what_sym[] = {"CALL", "EXC ", "LINE", "RET "};
 #endif
 
-/* Record a pair of integers in self->cur_file_data. */
+/* Record a pair of integers in self->cur_entry.file_data. */
 static int
 CTracer_record_pair(CTracer *self, int l1, int l2)
 {
@@ -240,7 +308,7 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
 
     PyObject * t = Py_BuildValue("(ii)", l1, l2);
     if (t != NULL) {
-        if (PyDict_SetItem(self->cur_file_data, t, Py_None) < 0) {
+        if (PyDict_SetItem(self->cur_entry.file_data, t, Py_None) < 0) {
             STATS( self->stats.errors++; )
             ret = RET_ERROR;
         }
@@ -251,6 +319,63 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
         ret = RET_ERROR;
     }
     return ret;
+}
+
+/* Set self->pdata_stack to the proper data_stack to use. */
+static int
+CTracer_set_pdata_stack(CTracer *self)
+{
+    if (self->coroutine_id_func != Py_None) {
+        PyObject * co_obj = NULL;
+        PyObject * stack_index = NULL;
+        long the_index = 0;
+
+        co_obj = PyObject_CallObject(self->coroutine_id_func, NULL);
+        if (co_obj == NULL) {
+            return RET_ERROR;
+        }
+        stack_index = PyDict_GetItem(self->data_stack_index, co_obj);
+        if (stack_index == NULL) {
+            /* A new coroutine object.  Make a new data stack. */
+            the_index = self->data_stacks_used;
+            stack_index = MyInt_FromLong(the_index);
+            if (PyDict_SetItem(self->data_stack_index, co_obj, stack_index) < 0) {
+                STATS( self->stats.errors++; )
+                Py_XDECREF(co_obj);
+                Py_XDECREF(stack_index);
+                return RET_ERROR;
+            }
+            self->data_stacks_used++;
+            if (self->data_stacks_used >= self->data_stacks_alloc) {
+                int bigger = self->data_stacks_alloc + 10;
+                DataStack * bigger_stacks = PyMem_Realloc(self->data_stacks, bigger * sizeof(DataStack));
+                if (bigger_stacks == NULL) {
+                    STATS( self->stats.errors++; )
+                    PyErr_NoMemory();
+                    Py_XDECREF(co_obj);
+                    Py_XDECREF(stack_index);
+                    return RET_ERROR;
+                }
+                self->data_stacks = bigger_stacks;
+                self->data_stacks_alloc = bigger;
+            }
+            DataStack_init(self, &self->data_stacks[the_index]);
+        }
+        else {
+            Py_INCREF(stack_index);
+            the_index = MyInt_AsLong(stack_index);
+        }
+        
+        self->pdata_stack = &self->data_stacks[the_index];
+
+        Py_XDECREF(co_obj);
+        Py_XDECREF(stack_index);
+    }
+    else {
+        self->pdata_stack = &self->data_stack;
+    }
+
+    return RET_OK;
 }
 
 /*
@@ -298,16 +423,18 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                we'll need to keep more of the missed frame's state.
             */
             STATS( self->stats.missed_returns++; )
-            if (self->depth >= 0) {
-                if (self->tracing_arcs && self->cur_file_data) {
-                    if (CTracer_record_pair(self, self->last_line, -self->last_exc_firstlineno) < 0) {
+            if (CTracer_set_pdata_stack(self)) {
+                return RET_ERROR;
+            }
+            if (self->pdata_stack->depth >= 0) {
+                if (self->tracing_arcs && self->cur_entry.file_data) {
+                    if (CTracer_record_pair(self, self->cur_entry.last_line, -self->last_exc_firstlineno) < 0) {
                         return RET_ERROR;
                     }
                 }
-                SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "missedreturn");
-                self->cur_file_data = self->data_stack[self->depth].file_data;
-                self->last_line = self->data_stack[self->depth].last_line;
-                self->depth--;
+                SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "missedreturn");
+                self->cur_entry = self->pdata_stack->stack[self->pdata_stack->depth];
+                self->pdata_stack->depth--;
             }
         }
         self->last_exc_back = NULL;
@@ -318,25 +445,15 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     case PyTrace_CALL:      /* 0 */
         STATS( self->stats.calls++; )
         /* Grow the stack. */
-        self->depth++;
-        if (self->depth >= self->data_stack_alloc) {
-            STATS( self->stats.stack_reallocs++; )
-            /* We've outgrown our data_stack array: make it bigger. */
-            int bigger = self->data_stack_alloc + STACK_DELTA;
-            DataStackEntry * bigger_data_stack = PyMem_Realloc(self->data_stack, bigger * sizeof(DataStackEntry));
-            if (bigger_data_stack == NULL) {
-                STATS( self->stats.errors++; )
-                PyErr_NoMemory();
-                self->depth--;
-                return RET_ERROR;
-            }
-            self->data_stack = bigger_data_stack;
-            self->data_stack_alloc = bigger;
+        if (CTracer_set_pdata_stack(self)) {
+            return RET_ERROR;
+        }
+        if (DataStack_grow(self, self->pdata_stack)) {
+            return RET_ERROR;
         }
 
         /* Push the current state on the stack. */
-        self->data_stack[self->depth].file_data = self->cur_file_data;
-        self->data_stack[self->depth].last_line = self->last_line;
+        self->pdata_stack->stack[self->pdata_stack->depth] = self->cur_entry;
 
         /* Check if we should trace this line. */
         filename = frame->f_code->co_filename;
@@ -434,50 +551,52 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                     }
                 }
             }
-            self->cur_file_data = file_data;
+            self->cur_entry.file_data = file_data;
             /* Make the frame right in case settrace(gettrace()) happens. */
             Py_INCREF(self);
             frame->f_trace = (PyObject*)self;
-            SHOWLOG(self->depth, frame->f_lineno, filename, "traced");
+            SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "traced");
         }
         else {
-            self->cur_file_data = NULL;
-            SHOWLOG(self->depth, frame->f_lineno, filename, "skipped");
+            self->cur_entry.file_data = NULL;
+            SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "skipped");
         }
 
         Py_DECREF(tracename);
         Py_DECREF(disposition);
 
-        self->last_line = -1;
+        self->cur_entry.last_line = -1;
         break;
 
     case PyTrace_RETURN:    /* 3 */
         STATS( self->stats.returns++; )
         /* A near-copy of this code is above in the missing-return handler. */
-        if (self->depth >= 0) {
-            if (self->tracing_arcs && self->cur_file_data) {
+        if (CTracer_set_pdata_stack(self)) {
+            return RET_ERROR;
+        }
+        if (self->pdata_stack->depth >= 0) {
+            if (self->tracing_arcs && self->cur_entry.file_data) {
                 int first = frame->f_code->co_firstlineno;
-                if (CTracer_record_pair(self, self->last_line, -first) < 0) {
+                if (CTracer_record_pair(self, self->cur_entry.last_line, -first) < 0) {
                     return RET_ERROR;
                 }
             }
 
-            SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "return");
-            self->cur_file_data = self->data_stack[self->depth].file_data;
-            self->last_line = self->data_stack[self->depth].last_line;
-            self->depth--;
+            SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "return");
+            self->cur_entry = self->pdata_stack->stack[self->pdata_stack->depth];
+            self->pdata_stack->depth--;
         }
         break;
 
     case PyTrace_LINE:      /* 2 */
         STATS( self->stats.lines++; )
-        if (self->depth >= 0) {
-            SHOWLOG(self->depth, frame->f_lineno, frame->f_code->co_filename, "line");
-            if (self->cur_file_data) {
+        if (self->pdata_stack->depth >= 0) {
+            SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "line");
+            if (self->cur_entry.file_data) {
                 /* We're tracing in this frame: record something. */
                 if (self->tracing_arcs) {
                     /* Tracing arcs: key is (last_line,this_line). */
-                    if (CTracer_record_pair(self, self->last_line, frame->f_lineno) < 0) {
+                    if (CTracer_record_pair(self, self->cur_entry.last_line, frame->f_lineno) < 0) {
                         return RET_ERROR;
                     }
                 }
@@ -488,7 +607,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                         STATS( self->stats.errors++; )
                         return RET_ERROR;
                     }
-                    ret = PyDict_SetItem(self->cur_file_data, this_line, Py_None);
+                    ret = PyDict_SetItem(self->cur_entry.file_data, this_line, Py_None);
                     Py_DECREF(this_line);
                     if (ret < 0) {
                         STATS( self->stats.errors++; )
@@ -496,7 +615,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                     }
                 }
             }
-            self->last_line = frame->f_lineno;
+            self->cur_entry.last_line = frame->f_lineno;
         }
         break;
 
@@ -612,7 +731,7 @@ CTracer_start(CTracer *self, PyObject *args_unused)
     PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
     self->started = 1;
     self->tracing_arcs = self->arcs && PyObject_IsTrue(self->arcs);
-    self->last_line = -1;
+    self->cur_entry.last_line = -1;
 
     /* start() returns a trace function usable with sys.settrace() */
     Py_INCREF(self);
@@ -644,7 +763,7 @@ CTracer_get_stats(CTracer *self)
         "new_files", self->stats.new_files,
         "missed_returns", self->stats.missed_returns,
         "stack_reallocs", self->stats.stack_reallocs,
-        "stack_alloc", self->data_stack_alloc,
+        "stack_alloc", self->pdata_stack->alloc,
         "errors", self->stats.errors
         );
 #else
@@ -659,6 +778,9 @@ CTracer_members[] = {
 
     { "warn",               T_OBJECT, offsetof(CTracer, warn), 0,
             PyDoc_STR("Function for issuing warnings.") },
+
+    { "coroutine_id_func",  T_OBJECT, offsetof(CTracer, coroutine_id_func), 0,
+            PyDoc_STR("Function for determining coroutine context") },
 
     { "data",               T_OBJECT, offsetof(CTracer, data), 0,
             PyDoc_STR("The raw dictionary of trace data.") },

@@ -45,6 +45,9 @@ def run_tests(tracer, *nose_args):
     import nose.core
     if tracer == "py":
         label = "with Python tracer"
+        if os.environ.get("COVERAGE_NO_PYTRACER"):
+            print("Skipping tests, don't want PyTracer")
+            return
     else:
         label = "with C tracer"
         if os.environ.get("COVERAGE_NO_EXTENSION"):
