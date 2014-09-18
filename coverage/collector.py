@@ -100,8 +100,7 @@ class PyTracer(object):
             if disp is None:
                 disp = self.should_trace(filename, frame)
                 self.should_trace_cache[filename] = disp
-            #print("called, stack is %d deep, tracename is %r" % (
-            #               len(self.data_stack), tracename))
+
             self.plugin = None
             self.cur_file_dict = None
             if disp.trace:
@@ -139,10 +138,8 @@ class PyTracer(object):
             if lineno_from != -1:
                 if self.cur_file_dict is not None:
                     if self.arcs:
-                        #print("lin", self.last_line, frame.f_lineno)
                         self.cur_file_dict[(self.last_line, lineno_from)] = None
                     else:
-                        #print("lin", frame.f_lineno)
                         for lineno in range(lineno_from, lineno_to+1):
                             self.cur_file_dict[lineno] = None
                 self.last_line = lineno_to
@@ -155,9 +152,7 @@ class PyTracer(object):
                 self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.last_coroutine = self.coroutine_id_func()
             self.plugin, self.cur_file_dict, self.last_line = self.data_stack.pop()
-            #print("returned, stack is %d deep" % (len(self.data_stack)))
         elif event == 'exception':
-            #print("exc", self.last_line, frame.f_lineno)
             self.last_exc_back = frame.f_back
             self.last_exc_firstlineno = frame.f_code.co_firstlineno
         return self._trace
