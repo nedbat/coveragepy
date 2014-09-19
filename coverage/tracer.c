@@ -226,6 +226,8 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 static void
 CTracer_dealloc(CTracer *self)
 {
+    int i;
+
     if (self->started) {
         PyEval_SetTrace(NULL, NULL);
     }
@@ -239,7 +241,7 @@ CTracer_dealloc(CTracer *self)
 
     DataStack_dealloc(self, &self->data_stack);
     if (self->data_stacks) {
-        for (int i = 0; i < self->data_stacks_used; i++) {
+        for (i = 0; i < self->data_stacks_used; i++) {
             DataStack_dealloc(self, self->data_stacks + i);
         }
         PyMem_Free(self->data_stacks);
