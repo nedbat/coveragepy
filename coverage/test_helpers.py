@@ -90,16 +90,6 @@ class EnvironmentAwareMixin(TestCase):
             self.environ_undos[name] = os.environ.get(name)
         os.environ[name] = value
 
-    def original_environ(self, name, if_missing=None):
-        """The environment variable `name` from when the test started."""
-        if name in self.environ_undos:
-            ret = self.environ_undos[name]
-        else:
-            ret = os.environ.get(name)
-        if ret is None:
-            ret = if_missing
-        return ret
-
     def cleanup_environ(self):
         """Undo all the changes made by `set_environ`."""
         for name, value in self.environ_undos.items():

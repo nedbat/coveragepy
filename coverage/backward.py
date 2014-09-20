@@ -50,22 +50,7 @@ else:
 if sys.version_info >= (3, 0):
     # Python 3.2 provides `tokenize.open`, the best way to open source files.
     import tokenize
-    try:
-        open_python_source = tokenize.open     # pylint: disable=E1101
-    except AttributeError:
-        from io import TextIOWrapper
-        detect_encoding = tokenize.detect_encoding  # pylint: disable=E1101
-        # Copied from the 3.2 stdlib:
-        def open_python_source(fname):
-            """Open a file in read only mode using the encoding detected by
-            detect_encoding().
-            """
-            buffer = open(fname, 'rb')
-            encoding, _ = detect_encoding(buffer.readline)
-            buffer.seek(0)
-            text = TextIOWrapper(buffer, encoding, line_buffering=True)
-            text.mode = 'r'
-            return text
+    open_python_source = tokenize.open     # pylint: disable=E1101
 else:
     def open_python_source(fname):
         """Open a source file the best way."""

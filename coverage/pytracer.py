@@ -151,7 +151,7 @@ class PyTracer(object):
             # do any more tracing.
             return
 
-        if hasattr(sys, "gettrace") and self.warn:
+        if self.warn:
             if sys.gettrace() != self._trace:
                 msg = "Trace function changed, measurement is likely wrong: %r"
                 self.warn(msg % (sys.gettrace(),))

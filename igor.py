@@ -80,6 +80,7 @@ def run_tests_with_coverage(tracer, *nose_args):
     # if we clobber the cover_prefix in the coverage object, we can defeat the
     # self-detection.
     cov.cover_prefix = "Please measure coverage.py!"
+    cov._warn_unimported_source = False
     cov.erase()
     cov.start()
 

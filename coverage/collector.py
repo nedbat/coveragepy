@@ -196,12 +196,11 @@ class Collector(object):
 
         # Check to see whether we had a fullcoverage tracer installed.
         traces0 = []
-        if hasattr(sys, "gettrace"):
-            fn0 = sys.gettrace()
-            if fn0:
-                tracer0 = getattr(fn0, '__self__', None)
-                if tracer0:
-                    traces0 = getattr(tracer0, 'traces', [])
+        fn0 = sys.gettrace()
+        if fn0:
+            tracer0 = getattr(fn0, '__self__', None)
+            if tracer0:
+                traces0 = getattr(tracer0, 'traces', [])
 
         # Install the tracer on this thread.
         fn = self._start_tracer()
