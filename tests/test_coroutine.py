@@ -19,6 +19,11 @@ try:
 except ImportError:
     gevent = None
 
+try:
+    import greenlet         # pylint: disable=import-error
+except ImportError:
+    greenlet = None
+
 # Are we running with the C tracer or not?
 C_TRACER = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
 
@@ -107,12 +112,13 @@ class CoroutineTest(CoverageTest):
         print(total)
         """.format(LIMIT=LIMIT)
 
-    def try_some_code(self, code, coroutine, the_module):
+    def try_some_code(self, code, coroutine, the_module, expected_out=None):
         """Run some coroutine testing code and see that it was all covered.
 
         `code` is the Python code to execute.  `coroutine` is the name of the
         coroutine regime to test it under.  `the_module` is the imported module
-        that must be available for this to work at all.
+        that must be available for this to work at all. `expected_out` is the
+        text we expect the code to produce.
 
         """
 
@@ -132,7 +138,8 @@ class CoroutineTest(CoverageTest):
         elif C_TRACER or coroutine == "thread":
             # We can fully measure the code if we are using the C tracer, which
             # can support all the coroutining, or if we are using threads.
-            expected_out = "%d\n" % (sum(range(self.LIMIT)))
+            if expected_out is None:
+                expected_out = "%d\n" % (sum(range(self.LIMIT)))
             self.assertEqual(out, expected_out)
 
             # Read the coverage file and see that try_it.py has all its lines
@@ -172,6 +179,27 @@ class CoroutineTest(CoverageTest):
 
     def test_gevent_simple_code(self):
         self.try_some_code(self.SIMPLE, "gevent", gevent)
+
+    def test_greenlet(self):
+        GREENLET = """\
+            from greenlet import greenlet
+
+            def test1(x, y):
+                z = gr2.switch(x+y)
+                print(z)
+
+            def test2(u):
+                print(u)
+                gr1.switch(42)
+
+            gr1 = greenlet(test1)
+            gr2 = greenlet(test2)
+            gr1.switch("hello", " world")
+            """
+        self.try_some_code(GREENLET, "greenlet", greenlet, "hello world\n42\n")
+
+    def test_greenlet_simple_code(self):
+        self.try_some_code(self.SIMPLE, "greenlet", greenlet)
 
 
 def print_simple_annotation(code, linenos):
