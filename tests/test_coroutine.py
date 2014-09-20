@@ -1,6 +1,6 @@
 """Tests for coroutining."""
 
-import os.path, sys
+import os, os.path, sys, threading
 
 import coverage
 
@@ -18,6 +18,9 @@ try:
     import gevent           # pylint: disable=import-error
 except ImportError:
     gevent = None
+
+# Are we running with the C tracer or not?
+C_TRACER = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
 
 
 def line_count(s):
@@ -104,48 +107,71 @@ class CoroutineTest(CoverageTest):
         print(total)
         """.format(LIMIT=LIMIT)
 
-    def try_some_code(self, code, args):
-        """Run some coroutine testing code and see that it was all covered."""
+    def try_some_code(self, code, coroutine, the_module):
+        """Run some coroutine testing code and see that it was all covered.
+
+        `code` is the Python code to execute.  `coroutine` is the name of the
+        coroutine regime to test it under.  `the_module` is the imported module
+        that must be available for this to work at all.
+
+        """
 
         self.make_file("try_it.py", code)
 
-        out = self.run_command("coverage run %s try_it.py" % args)
-        expected_out = "%d\n" % (sum(range(self.LIMIT)))
-        self.assertEqual(out, expected_out)
+        cmd = "coverage run --coroutine=%s try_it.py" % coroutine
+        out = self.run_command(cmd)
 
-        # Read the coverage file and see that try_it.py has all its lines
-        # executed.
-        data = coverage.CoverageData()
-        data.read_file(".coverage")
+        if not the_module:
+            # We don't even have the underlying module installed, we expect
+            # coverage to alert us to this fact.
+            expected_out = (
+                "Couldn't trace with coroutine=%s, "
+                "the module isn't installed.\n" % coroutine
+            )
+            self.assertEqual(out, expected_out)
+        elif C_TRACER or coroutine == "thread":
+            # We can fully measure the code if we are using the C tracer, which
+            # can support all the coroutining, or if we are using threads.
+            expected_out = "%d\n" % (sum(range(self.LIMIT)))
+            self.assertEqual(out, expected_out)
 
-        # If the test fails, it's helpful to see this info:
-        fname = os.path.abspath("try_it.py")
-        linenos = data.executed_lines(fname).keys()
-        print("{0}: {1}".format(len(linenos), linenos))
-        print_simple_annotation(code, linenos)
+            # Read the coverage file and see that try_it.py has all its lines
+            # executed.
+            data = coverage.CoverageData()
+            data.read_file(".coverage")
 
-        lines = line_count(code)
-        self.assertEqual(data.summary()['try_it.py'], lines)
+            # If the test fails, it's helpful to see this info:
+            fname = os.path.abspath("try_it.py")
+            linenos = data.executed_lines(fname).keys()
+            print("{0}: {1}".format(len(linenos), linenos))
+            print_simple_annotation(code, linenos)
+
+            lines = line_count(code)
+            self.assertEqual(data.summary()['try_it.py'], lines)
+        else:
+            expected_out = (
+                "Can't support coroutine=%s with PyTracer, "
+                "only threads are supported\n" % coroutine
+            )
+            self.assertEqual(out, expected_out)
 
     def test_threads(self):
-        self.try_some_code(self.THREAD, "")
+        self.try_some_code(self.THREAD, "thread", threading)
 
     def test_threads_simple_code(self):
-        self.try_some_code(self.SIMPLE, "")
+        self.try_some_code(self.SIMPLE, "thread", threading)
 
-    if eventlet is not None:
-        def test_eventlet(self):
-            self.try_some_code(self.EVENTLET, "--coroutine=eventlet")
+    def test_eventlet(self):
+        self.try_some_code(self.EVENTLET, "eventlet", eventlet)
 
-        def test_eventlet_simple_code(self):
-            self.try_some_code(self.SIMPLE, "--coroutine=eventlet")
+    def test_eventlet_simple_code(self):
+        self.try_some_code(self.SIMPLE, "eventlet", eventlet)
 
-    if gevent is not None:
-        def test_gevent(self):
-            self.try_some_code(self.GEVENT, "--coroutine=gevent")
+    def test_gevent(self):
+        self.try_some_code(self.GEVENT, "gevent", gevent)
 
-        def test_gevent_simple_code(self):
-            self.try_some_code(self.SIMPLE, "--coroutine=gevent")
+    def test_gevent_simple_code(self):
+        self.try_some_code(self.SIMPLE, "gevent", gevent)
 
 
 def print_simple_annotation(code, linenos):

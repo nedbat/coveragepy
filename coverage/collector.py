@@ -2,6 +2,7 @@
 
 import os, sys
 
+from coverage.misc import CoverageException
 from coverage.pytracer import PyTracer
 
 try:
@@ -44,7 +45,9 @@ class Collector(object):
     # the top, and resumed when they become the top again.
     _collectors = []
 
-    def __init__(self, should_trace, check_include, timid, branch, warn, coroutine):
+    def __init__(self,
+        should_trace, check_include, timid, branch, warn, coroutine,
+    ):
         """Create a collector.
 
         `should_trace` is a function, taking a filename, and returning a
@@ -73,23 +76,35 @@ class Collector(object):
         self.warn = warn
         self.branch = branch
         self.threading = None
+        self.coroutine = coroutine
 
-        if coroutine == "greenlet":
-            import greenlet
-            self.coroutine_id_func = greenlet.getcurrent
-        elif coroutine == "eventlet":
-            import eventlet.greenthread
-            self.coroutine_id_func = eventlet.greenthread.getcurrent
-        elif coroutine == "gevent":
-            import gevent
-            self.coroutine_id_func = gevent.getcurrent
-        else:
-            # It's important to import threading only if we need it. If it's
-            # imported early, and the program being measured uses gevent, then
-            # gevent's monkey-patching won't work properly.
-            import threading
-            self.coroutine_id_func = None
-            self.threading = threading
+        self.coroutine_id_func = None
+
+        try:
+            if coroutine == "greenlet":
+                import greenlet
+                self.coroutine_id_func = greenlet.getcurrent
+            elif coroutine == "eventlet":
+                import eventlet.greenthread
+                self.coroutine_id_func = eventlet.greenthread.getcurrent
+            elif coroutine == "gevent":
+                import gevent
+                self.coroutine_id_func = gevent.getcurrent
+            elif coroutine == "thread" or not coroutine:
+                # It's important to import threading only if we need it.  If
+                # it's imported early, and the program being measured uses
+                # gevent, then gevent's monkey-patching won't work properly.
+                import threading
+                self.threading = threading
+            else:
+                raise CoverageException(
+                    "Don't understand coroutine=%s" % coroutine
+                )
+        except ImportError:
+            raise CoverageException(
+                "Couldn't trace with coroutine=%s, "
+                "the module isn't installed." % coroutine
+            )
 
         self.reset()
 
@@ -100,6 +115,7 @@ class Collector(object):
             # Being fast: use the C Tracer if it is available, else the Python
             # trace function.
             self._trace_class = CTracer or PyTracer
+
 
     def __repr__(self):
         return "<Collector at 0x%x>" % id(self)
@@ -132,14 +148,25 @@ class Collector(object):
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
         tracer.warn = self.warn
+
         if hasattr(tracer, 'coroutine_id_func'):
             tracer.coroutine_id_func = self.coroutine_id_func
+        elif self.coroutine_id_func:
+            raise CoverageException(
+                "Can't support coroutine=%s with %s, "
+                "only threads are supported" % (
+                    self.coroutine, self.tracer_name(),
+                )
+            )
+
         if hasattr(tracer, 'plugin_data'):
             tracer.plugin_data = self.plugin_data
         if hasattr(tracer, 'threading'):
             tracer.threading = self.threading
+
         fn = tracer.start()
         self.tracers.append(tracer)
+
         return fn
 
     # The trace function has to be set individually on each thread before

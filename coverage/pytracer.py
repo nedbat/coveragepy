@@ -1,6 +1,6 @@
 """Raw data collector for Coverage."""
 
-import collections, sys
+import sys
 
 
 class PyTracer(object):
@@ -38,13 +38,10 @@ class PyTracer(object):
         self.last_line = [0]
 
         self.data_stack = []
-        self.data_stacks = collections.defaultdict(list)
         self.last_exc_back = None
         self.last_exc_firstlineno = 0
         self.thread = None
         self.stopped = False
-        self.coroutine_id_func = None
-        self.last_coroutine = None
 
     def __repr__(self):
         return "<PyTracer at 0x{0:0x}: {1} lines in {2} files>".format(
@@ -65,8 +62,6 @@ class PyTracer(object):
                 if self.arcs and self.cur_file_dict:
                     pair = (self.last_line, -self.last_exc_firstlineno)
                     self.cur_file_dict[pair] = None
-                if self.coroutine_id_func:
-                    self.data_stack = self.data_stacks[self.coroutine_id_func()]
                 self.plugin, self.cur_file_dict, self.last_line = (
                     self.data_stack.pop()
                 )
@@ -75,9 +70,6 @@ class PyTracer(object):
         if event == 'call':
             # Entering a new function context.  Decide if we should trace
             # in this file.
-            if self.coroutine_id_func:
-                self.data_stack = self.data_stacks[self.coroutine_id_func()]
-                self.last_coroutine = self.coroutine_id_func()
             self.data_stack.append(
                 (self.plugin, self.cur_file_dict, self.last_line)
             )
@@ -119,7 +111,9 @@ class PyTracer(object):
             if lineno_from != -1:
                 if self.cur_file_dict is not None:
                     if self.arcs:
-                        self.cur_file_dict[(self.last_line, lineno_from)] = None
+                        self.cur_file_dict[
+                            (self.last_line, lineno_from)
+                        ] = None
                     else:
                         for lineno in range(lineno_from, lineno_to+1):
                             self.cur_file_dict[lineno] = None
@@ -129,9 +123,6 @@ class PyTracer(object):
                 first = frame.f_code.co_firstlineno
                 self.cur_file_dict[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
-            if self.coroutine_id_func:
-                self.data_stack = self.data_stacks[self.coroutine_id_func()]
-                self.last_coroutine = self.coroutine_id_func()
             self.plugin, self.cur_file_dict, self.last_line = (
                 self.data_stack.pop()
             )
