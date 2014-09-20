@@ -23,14 +23,9 @@ class TestCase(unittest.TestCase):
     # pylint: disable=missing-docstring
 
     if not unittest_has('assertCountEqual'):
-        if unittest_has('assertSameElements'):
-            def assertCountEqual(self, *args, **kwargs):
-                # pylint: disable=no-member
-                return self.assertSameElements(*args, **kwargs)
-        else:
-            def assertCountEqual(self, s1, s2):
-                """Assert these have the same elements, regardless of order."""
-                self.assertEqual(set(s1), set(s2))
+        def assertCountEqual(self, s1, s2):
+            """Assert these have the same elements, regardless of order."""
+            self.assertEqual(set(s1), set(s2))
 
     if not unittest_has('assertRaisesRegex'):
         def assertRaisesRegex(self, *args, **kwargs):

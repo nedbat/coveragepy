@@ -1,10 +1,10 @@
 """Miscellaneous stuff for Coverage."""
 
 import errno
+import hashlib
 import inspect
 import os
 
-from coverage.backward import md5
 from coverage.backward import string_class, to_bytes
 
 
@@ -106,7 +106,7 @@ def file_be_gone(path):
 class Hasher(object):
     """Hashes Python data into md5."""
     def __init__(self):
-        self.md5 = md5()
+        self.md5 = hashlib.md5()
 
     def update(self, v):
         """Add `v` to the hash, recursively if needed."""

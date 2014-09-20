@@ -118,14 +118,6 @@ else:
         for byte in bytes_value:
             yield ord(byte)
 
-# Md5 is available in different places.
-try:
-    import hashlib
-    md5 = hashlib.md5
-except ImportError:
-    import md5
-    md5 = md5.new
-
 
 try:
     # In Py 2.x, the builtins were in __builtin__
