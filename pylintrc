@@ -68,6 +68,8 @@ disable=
 #   R0201: 42:Tracer.stop: Method could be a function
 #   E1103: 26:RunTests.test_run_python_file: Instance of 'file' has no 'getvalue' member (but some types could not be inferred)
     R0201,E1103,
+# formatting stuff
+    superfluous-parens,bad-continuation,
 # Messages that are noisy for now, eventually maybe we'll turn them on:
 #   C0103:256:coverage.morf_filename: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
 #   W0212: 86:Reporter.report_files: Access to a protected member _analyze of a client class     
@@ -78,9 +80,6 @@ disable=
 # set the output format. Available formats are text, parseable, colorized, msvs
 # (visual studio) and html
 output-format=text
-
-# Include message's id in output
-include-ids=yes
 
 # Put messages in a separate file for each module / package specified on the
 # command line instead of printing them on stdout. Reports (if any) will be

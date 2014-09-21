@@ -71,7 +71,7 @@ class SummaryReporter(Reporter):
                 total += nums
             except KeyboardInterrupt:                   # pragma: not covered
                 raise
-            except:
+            except Exception:
                 report_it = not self.config.ignore_errors
                 if report_it:
                     typ, msg = sys.exc_info()[:2]

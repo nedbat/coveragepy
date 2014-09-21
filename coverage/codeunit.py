@@ -7,8 +7,6 @@ from coverage.misc import CoverageException, NoSource
 from coverage.parser import CodeParser, PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 
-from coverage.django import DjangoTracer
-
 
 def code_unit_factory(morfs, file_locator, get_plugin=None):
     """Construct a list of CodeUnits from polymorphic inputs.
