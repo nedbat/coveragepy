@@ -106,7 +106,7 @@ class PluginTest(CoverageTest):
     def test_missing_plugin_raises_import_error(self):
         # Prove that a missing plugin will raise an ImportError.
         with self.assertRaises(ImportError):
-            cov = coverage.Coverage(plugins=["foo"])
+            cov = coverage.Coverage(plugins=["does_not_exist_woijwoicweo"])
             cov.start()
 
     def test_bad_plugin_isnt_hidden(self):
