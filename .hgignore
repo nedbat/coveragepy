@@ -9,6 +9,7 @@ syntax: glob
 *.bak
 .coverage
 .coverage.*
+.metacov
 .metacov.*
 *.swp
 
