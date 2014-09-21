@@ -116,7 +116,6 @@ class Collector(object):
             # trace function.
             self._trace_class = CTracer or PyTracer
 
-
     def __repr__(self):
         return "<Collector at 0x%x>" % id(self)
 

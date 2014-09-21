@@ -66,9 +66,11 @@ def run_tests_with_coverage(tracer, *nose_args):
     os.environ['COVERAGE_HOME'] = os.getcwd()
 
     # Create the .pth file that will let us measure coverage in sub-processes.
+    # The .pth file seems to have to be alphabetically after easy-install.pth
+    # or the sys.path entries aren't created right?
     import nose
     pth_dir = os.path.dirname(os.path.dirname(nose.__file__))
-    pth_path = os.path.join(pth_dir, "covcov.pth")
+    pth_path = os.path.join(pth_dir, "zzz_metacov.pth")
     with open(pth_path, "w") as pth_file:
         pth_file.write("import coverage; coverage.process_startup()\n")
 
@@ -223,7 +225,8 @@ def print_banner(label):
         pypy_version = sys.pypy_version_info         # pylint: disable=E1101
         version += " (pypy %s)" % ".".join(str(v) for v in pypy_version)
 
-    print('=== %s %s %s (%s) ===' % (impl, version, label, sys.executable))
+    which_python = os.path.relpath(sys.executable)
+    print('=== %s %s %s (%s) ===' % (impl, version, label, which_python))
 
 
 def do_help():
