@@ -177,7 +177,12 @@ class FnmatchMatcher(object):
     """A matcher for files by filename pattern."""
     def __init__(self, pats):
         self.pats = pats[:]
-        self.re = re.compile(join_regex([fnmatch.translate(p) for p in pats]))
+        # fnmatch is platform-specific. On Windows, it does the Windows thing
+        # of treating / and \ as equivalent. But on other platforms, we need to
+        # take care of that ourselves.
+        fnpats = [fnmatch.translate(p) for p in pats]
+        fnpats = [p.replace(r"\/", r"[\\/]") for p in fnpats]
+        self.re = re.compile(join_regex(fnpats))
 
     def __repr__(self):
         return "<FnmatchMatcher %r>" % self.pats
