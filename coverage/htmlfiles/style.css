@@ -61,22 +61,6 @@ a.nav:hover {
     font-family: "courier new", monospace;
     }
 
-#source span.indicator {
-    float: right;
-    margin: 0 -12px 0 3px;
-    font-weight: bold;
-    font-size: 1.5em;
-    }
-#source p.mis span.indicator {
-    color: #ff0000;
-    }
-#source p.run span.indicator {
-    color: #000000;
-    }
-#source p.exc span.indicator {
-    color: #000000;
-    }
-
 #indexfile #footer {
     margin: 1em 3em;
     }
