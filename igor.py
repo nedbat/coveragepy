@@ -45,6 +45,9 @@ def run_tests(tracer, *nose_args):
     import nose.core
     if tracer == "py":
         label = "with Python tracer"
+        if os.environ.get("COVERAGE_NO_PYTRACER"):
+            print("Skipping tests, don't want PyTracer")
+            return
     else:
         label = "with C tracer"
         if os.environ.get("COVERAGE_NO_EXTENSION"):
@@ -63,9 +66,11 @@ def run_tests_with_coverage(tracer, *nose_args):
     os.environ['COVERAGE_HOME'] = os.getcwd()
 
     # Create the .pth file that will let us measure coverage in sub-processes.
+    # The .pth file seems to have to be alphabetically after easy-install.pth
+    # or the sys.path entries aren't created right?
     import nose
     pth_dir = os.path.dirname(os.path.dirname(nose.__file__))
-    pth_path = os.path.join(pth_dir, "covcov.pth")
+    pth_path = os.path.join(pth_dir, "zzz_metacov.pth")
     with open(pth_path, "w") as pth_file:
         pth_file.write("import coverage; coverage.process_startup()\n")
 
@@ -77,6 +82,7 @@ def run_tests_with_coverage(tracer, *nose_args):
     # if we clobber the cover_prefix in the coverage object, we can defeat the
     # self-detection.
     cov.cover_prefix = "Please measure coverage.py!"
+    cov._warn_unimported_source = False
     cov.erase()
     cov.start()
 
@@ -219,7 +225,8 @@ def print_banner(label):
         pypy_version = sys.pypy_version_info         # pylint: disable=E1101
         version += " (pypy %s)" % ".".join(str(v) for v in pypy_version)
 
-    print('=== %s %s %s (%s) ===' % (impl, version, label, sys.executable))
+    which_python = os.path.relpath(sys.executable)
+    print('=== %s %s %s (%s) ===' % (impl, version, label, which_python))
 
 
 def do_help():

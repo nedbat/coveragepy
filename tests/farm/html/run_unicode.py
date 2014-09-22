@@ -1,5 +1,3 @@
-import sys
-
 def html_it():
     """Run coverage and make an HTML report for unicode.py."""
     import coverage
@@ -18,13 +16,9 @@ contains("html_unicode/unicode.html",
     "<span class='str'>&quot;&#654;d&#729;&#477;b&#592;&#633;&#477;&#652;o&#596;&quot;</span>",
     )
 
-if sys.maxunicode == 65535:
-    contains("html_unicode/unicode.html",
-        "<span class='str'>&quot;db40,dd00: x&#56128;&#56576;&quot;</span>",
-        )
-else:
-    contains("html_unicode/unicode.html",
-        "<span class='str'>&quot;db40,dd00: x&#917760;&quot;</span>",
-        )
+contains_any("html_unicode/unicode.html",
+    "<span class='str'>&quot;db40,dd00: x&#56128;&#56576;&quot;</span>",
+    "<span class='str'>&quot;db40,dd00: x&#917760;&quot;</span>",
+    )
 
 clean("html_unicode")

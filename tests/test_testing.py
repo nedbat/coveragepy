@@ -2,15 +2,13 @@
 """Tests that our test infrastructure is really working!"""
 
 import os, sys
+from coverage.backunittest import TestCase
 from coverage.backward import to_bytes
-from tests.backunittest import TestCase
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import TempDirMixin, CoverageTest
 
 
 class TestingTest(TestCase):
     """Tests of helper methods on `backunittest.TestCase`."""
-
-    run_in_temp_dir = False
 
     def test_assert_count_equal(self):
         self.assertCountEqual(set(), set())
@@ -21,26 +19,27 @@ class TestingTest(TestCase):
             self.assertCountEqual(set([1,2,3]), set([4,5,6]))
 
 
-class CoverageTestTest(CoverageTest):
-    """Test the methods in `CoverageTest`."""
+class TempDirMixinTest(TempDirMixin, TestCase):
+    """Test the methods in TempDirMixin."""
 
     def file_text(self, fname):
         """Return the text read from a file."""
-        return open(fname, "rb").read().decode('ascii')
+        with open(fname, "rb") as f:
+            return f.read().decode('ascii')
 
     def test_make_file(self):
         # A simple file.
         self.make_file("fooey.boo", "Hello there")
-        self.assertEqual(open("fooey.boo").read(), "Hello there")
+        self.assertEqual(self.file_text("fooey.boo"), "Hello there")
         # A file in a sub-directory
         self.make_file("sub/another.txt", "Another")
-        self.assertEqual(open("sub/another.txt").read(), "Another")
+        self.assertEqual(self.file_text("sub/another.txt"), "Another")
         # A second file in that sub-directory
         self.make_file("sub/second.txt", "Second")
-        self.assertEqual(open("sub/second.txt").read(), "Second")
+        self.assertEqual(self.file_text("sub/second.txt"), "Second")
         # A deeper directory
         self.make_file("sub/deeper/evenmore/third.txt")
-        self.assertEqual(open("sub/deeper/evenmore/third.txt").read(), "")
+        self.assertEqual(self.file_text("sub/deeper/evenmore/third.txt"), "")
 
     def test_make_file_newline(self):
         self.make_file("unix.txt", "Hello\n")
@@ -52,10 +51,13 @@ class CoverageTestTest(CoverageTest):
 
     def test_make_file_non_ascii(self):
         self.make_file("unicode.txt", "tabblo: «ταБЬℓσ»")
-        self.assertEqual(
-            open("unicode.txt", "rb").read(),
-            to_bytes("tabblo: «ταБЬℓσ»")
-            )
+        with open("unicode.txt", "rb") as f:
+            text = f.read()
+        self.assertEqual(text, to_bytes("tabblo: «ταБЬℓσ»"))
+
+
+class CoverageTestTest(CoverageTest):
+    """Test the methods in `CoverageTest`."""
 
     def test_file_exists(self):
         self.make_file("whoville.txt", "We are here!")

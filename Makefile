@@ -3,9 +3,6 @@
 default:
 	@echo "* No default action *"
 
-TEST_ZIP = tests/zipmods.zip
-TEST_EGG = tests/eggsrc/dist/covtestegg1-0.0.0-py*.egg
-
 clean:
 	-rm -f *.pyd */*.pyd
 	-rm -f *.so */*.so
@@ -18,8 +15,8 @@ clean:
 	-rm -rf __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__ */*/*/*/__pycache__ */*/*/*/*/__pycache__
 	-rm -f coverage/*,cover
 	-rm -f MANIFEST
-	-rm -f .coverage .coverage.* coverage.xml
-	-rm -f $(TEST_ZIP)
+	-rm -f .coverage .coverage.* coverage.xml .metacov*
+	-rm -f tests/zipmods.zip
 	-rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	-rm -rf doc/_build

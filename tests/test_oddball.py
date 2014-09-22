@@ -116,9 +116,8 @@ class RecursionTest(CoverageTest):
         self.assertEqual(statements, [1,2,3,5,7,8,9,10,11])
         self.assertEqual(missing, expected_missing)
 
-        # We can get a warning about the stackoverflow effect on the tracing
-        # function only if we have sys.gettrace
-        if pytrace and hasattr(sys, "gettrace"):
+        # Get a warning about the stackoverflow effect on the tracing function.
+        if pytrace:
             self.assertEqual(cov._warnings,
                 ["Trace function changed, measurement is likely wrong: None"]
                 )
@@ -368,35 +367,34 @@ class DoctestTest(CoverageTest):
             [1,11,12,14,16,17], "")
 
 
-if hasattr(sys, 'gettrace'):
-    class GettraceTest(CoverageTest):
-        """Tests that we work properly with `sys.gettrace()`."""
-        def test_round_trip(self):
-            self.check_coverage('''\
-                import sys
-                def foo(n):
-                    return 3*n
-                def bar(n):
-                    return 5*n
-                a = foo(6)
-                sys.settrace(sys.gettrace())
-                a = bar(8)
-                ''',
-                [1,2,3,4,5,6,7,8], "")
+class GettraceTest(CoverageTest):
+    """Tests that we work properly with `sys.gettrace()`."""
+    def test_round_trip(self):
+        self.check_coverage('''\
+            import sys
+            def foo(n):
+                return 3*n
+            def bar(n):
+                return 5*n
+            a = foo(6)
+            sys.settrace(sys.gettrace())
+            a = bar(8)
+            ''',
+            [1,2,3,4,5,6,7,8], "")
 
-        def test_multi_layers(self):
-            self.check_coverage('''\
-                import sys
-                def level1():
-                    a = 3
-                    level2()
-                    b = 5
-                def level2():
-                    c = 7
-                    sys.settrace(sys.gettrace())
-                    d = 9
-                e = 10
-                level1()
-                f = 12
-                ''',
-                [1,2,3,4,5,6,7,8,9,10,11,12], "")
+    def test_multi_layers(self):
+        self.check_coverage('''\
+            import sys
+            def level1():
+                a = 3
+                level2()
+                b = 5
+            def level2():
+                c = 7
+                sys.settrace(sys.gettrace())
+                d = 9
+            e = 10
+            level1()
+            f = 12
+            ''',
+            [1,2,3,4,5,6,7,8,9,10,11,12], "")

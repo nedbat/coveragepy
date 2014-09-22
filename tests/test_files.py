@@ -99,6 +99,14 @@ class MatcherTest(CoverageTest):
         self.assertMatches(fnm, "x123foo.txt", True)
         self.assertMatches(fnm, "x798bar.txt", False)
 
+    def test_fnmatch_windows_paths(self):
+        # We should be able to match Windows paths even if we are running on
+        # a non-Windows OS.
+        fnm = FnmatchMatcher(["*/foo.py"])
+        self.assertMatches(fnm, r"dir\foo.py", True)
+        fnm = FnmatchMatcher([r"*\foo.py"])
+        self.assertMatches(fnm, r"dir\foo.py", True)
+
 
 class PathAliasesTest(CoverageTest):
     """Tests for coverage/files.py:PathAliases"""

@@ -16,7 +16,7 @@ class RunFileTest(CoverageTest):
     def test_run_python_file(self):
         tryfile = os.path.join(here, "try_execfile.py")
         run_python_file(tryfile, [tryfile, "arg1", "arg2"])
-        mod_globs = eval(self.stdout())
+        mod_globs = eval(self.stdout())             # pylint: disable=eval-used
 
         # The file should think it is __main__
         self.assertEqual(mod_globs['__name__'], "__main__")
