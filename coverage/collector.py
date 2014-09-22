@@ -23,6 +23,11 @@ except ImportError:
         sys.exit(1)
     CTracer = None
 
+try:
+    import __pypy__
+except ImportError:
+    __pypy__ = None
+
 
 class Collector(object):
     """Collects trace data.
@@ -134,7 +139,10 @@ class Collector(object):
         # A cache of the results from should_trace, the decision about whether
         # to trace execution in a file. A dict of filename to (filename or
         # None).
-        self.should_trace_cache = {}
+        if __pypy__ is not None:
+            self.should_trace_cache = __pypy__.newdict("module")
+        else:
+            self.should_trace_cache = {}
 
         # Our active Tracers.
         self.tracers = []
