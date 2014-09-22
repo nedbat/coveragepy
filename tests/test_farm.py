@@ -79,7 +79,8 @@ class FarmTestCase(object):
 
         # Prepare a dictionary of globals for the run.py files to use.
         fns = """
-            copy run runfunc compare contains doesnt_contain clean skip
+            copy run runfunc clean skip
+            compare contains contains_any doesnt_contain
             """.split()
         if self.clean_only:
             glo = dict((fn, self.noop) for fn in fns)
@@ -303,6 +304,22 @@ class FarmTestCase(object):
             text = fobj.read()
         for s in strlist:
             assert s in text, "Missing content in %s: %r" % (filename, s)
+
+    def contains_any(self, filename, *strlist):
+        """Check that the file contains at least one of a list of strings.
+
+        An assert will be raised if none of the arguments in `strlist` is in
+        `filename`.
+
+        """
+        with open(filename, "r") as fobj:
+            text = fobj.read()
+        for s in strlist:
+            if s in text:
+                return
+        assert False, "Missing content in %s: %r [1 of %d]" % (
+            filename, strlist[0], len(strlist),
+        )
 
     def doesnt_contain(self, filename, *strlist):
         """Check that the file contains none of a list of strings.

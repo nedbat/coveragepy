@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import atexit, os, random, socket, sys
+import atexit, os, platform, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
@@ -9,7 +9,7 @@ from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.debug import DebugControl
-from coverage.extension import load_extensions
+from coverage.plugin import Plugins, plugin_implements
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.html import HtmlReporter
@@ -28,14 +28,14 @@ except ImportError:
     _structseq = None
 
 
-class coverage(object):
+class Coverage(object):
     """Programmatic access to coverage.py.
 
     To use::
 
         from coverage import coverage
 
-        cov = coverage()
+        cov = Coverage()
         cov.start()
         #.. call your code ..
         cov.stop()
@@ -45,7 +45,7 @@ class coverage(object):
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
                 source=None, omit=None, include=None, debug=None,
-                debug_file=None, coroutine=None):
+                debug_file=None, coroutine=None, plugins=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -87,7 +87,9 @@ class coverage(object):
         `coroutine` is a string indicating the coroutining library being used
         in the measured code.  Without this, coverage.py will get incorrect
         results.  Valid strings are "greenlet", "eventlet", or "gevent", which
-        are all equivalent.
+        are all equivalent. TODO: really?
+
+        `plugins` TODO.
 
         """
         from coverage import __version__
@@ -126,15 +128,20 @@ class coverage(object):
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
             source=source, omit=omit, include=include, debug=debug,
-            coroutine=coroutine,
+            coroutine=coroutine, plugins=plugins,
             )
 
         # Create and configure the debugging controller.
         self.debug = DebugControl(self.config.debug, debug_file or sys.stderr)
 
-        # Load extensions
-        tracer_classes = load_extensions(self.config.extensions, "tracer")
-        self.tracer_extensions = [cls() for cls in tracer_classes]
+        # Load plugins
+        self.plugins = Plugins.load_plugins(self.config.plugins, self.config)
+
+        self.trace_judges = []
+        for plugin in self.plugins:
+            if plugin_implements(plugin, "trace_judge"):
+                self.trace_judges.append(plugin)
+        self.trace_judges.append(None)      # The Python case.
 
         self.auto_data = auto_data
 
@@ -158,8 +165,11 @@ class coverage(object):
         self.include = prep_patterns(self.config.include)
 
         self.collector = Collector(
-            self._should_trace, timid=self.config.timid,
-            branch=self.config.branch, warn=self._warn,
+            should_trace=self._should_trace,
+            check_include=self._tracing_check_include_omit_etc,
+            timid=self.config.timid,
+            branch=self.config.branch,
+            warn=self._warn,
             coroutine=self.config.coroutine,
             )
 
@@ -186,18 +196,16 @@ class coverage(object):
             )
 
         # The dirs for files considered "installed with the interpreter".
-        self.pylib_dirs = []
+        self.pylib_dirs = set()
         if not self.config.cover_pylib:
             # Look at where some standard modules are located. That's the
             # indication for "installed with the interpreter". In some
             # environments (virtualenv, for example), these modules may be
             # spread across a few locations. Look at all the candidate modules
             # we've imported, and take all the different ones.
-            for m in (atexit, os, random, socket, _structseq):
+            for m in (atexit, os, platform, random, socket, _structseq):
                 if m is not None and hasattr(m, "__file__"):
-                    m_dir = self._canonical_dir(m)
-                    if m_dir not in self.pylib_dirs:
-                        self.pylib_dirs.append(m_dir)
+                    self.pylib_dirs.add(self._canonical_dir(m))
 
         # To avoid tracing the coverage code itself, we skip anything located
         # where we are.
@@ -247,20 +255,10 @@ class coverage(object):
 
         """
         disp = FileDisposition(filename)
-
-        if not filename:
-            # Empty string is pretty useless
-            return disp.nope("empty string isn't a filename")
-
-        if filename.startswith('memory:'):
-            return disp.nope("memory isn't traceable")
-
-        if filename.startswith('<'):
-            # Lots of non-file execution is represented with artificial
-            # filenames like "<string>", "<doctest readme.txt[0]>", or
-            # "<exec_function>".  Don't ever trace these executions, since we
-            # can't do anything with the data later anyway.
-            return disp.nope("not a real filename")
+        def nope(disp, reason):
+            disp.trace = False
+            disp.reason = reason
+            return disp
 
         self._check_for_packages()
 
@@ -274,46 +272,80 @@ class coverage(object):
         if dunder_file:
             filename = self._source_for_file(dunder_file)
 
+        if not filename:
+            # Empty string is pretty useless
+            return nope(disp, "empty string isn't a filename")
+
+        if filename.startswith('memory:'):
+            return nope(disp, "memory isn't traceable")
+
+        if filename.startswith('<'):
+            # Lots of non-file execution is represented with artificial
+            # filenames like "<string>", "<doctest readme.txt[0]>", or
+            # "<exec_function>".  Don't ever trace these executions, since we
+            # can't do anything with the data later anyway.
+            return nope(disp, "not a real filename")
+
         # Jython reports the .class file to the tracer, use the source file.
         if filename.endswith("$py.class"):
             filename = filename[:-9] + ".py"
 
         canonical = self.file_locator.canonical_filename(filename)
+        disp.canonical_filename = canonical
 
-        # Try the extensions, see if they have an opinion about the file.
-        for tracer in self.tracer_extensions:
-            ext_disp = tracer.should_trace(canonical)
-            if ext_disp:
-                ext_disp.extension = tracer
-                return ext_disp
+        # Try the plugins, see if they have an opinion about the file.
+        for plugin in self.trace_judges:
+            if plugin:
+                plugin.trace_judge(disp)
+            else:
+                disp.trace = True
+                disp.source_filename = canonical
+            if disp.trace:
+                disp.plugin = plugin
 
+                if disp.check_filters:
+                    reason = self._check_include_omit_etc(disp.source_filename)
+                    if reason:
+                        nope(disp, reason)
+
+                return disp
+
+        return nope(disp, "no plugin found")  # TODO: a test that causes this.
+
+    def _check_include_omit_etc(self, filename):
+        """Check a filename against the include, omit, etc, rules.
+
+        Returns a string or None.  String means, don't trace, and is the reason
+        why.  None means no reason found to not trace.
+
+        """
         # If the user specified source or include, then that's authoritative
         # about the outer bound of what to measure and we don't have to apply
         # any canned exclusions. If they didn't, then we have to exclude the
         # stdlib and coverage.py directories.
         if self.source_match:
-            if not self.source_match.match(canonical):
-                return disp.nope("falls outside the --source trees")
+            if not self.source_match.match(filename):
+                return "falls outside the --source trees"
         elif self.include_match:
-            if not self.include_match.match(canonical):
-                return disp.nope("falls outside the --include trees")
+            if not self.include_match.match(filename):
+                return "falls outside the --include trees"
         else:
             # If we aren't supposed to trace installed code, then check if this
             # is near the Python standard library and skip it if so.
-            if self.pylib_match and self.pylib_match.match(canonical):
-                return disp.nope("is in the stdlib")
+            if self.pylib_match and self.pylib_match.match(filename):
+                return "is in the stdlib"
 
             # We exclude the coverage code itself, since a little of it will be
             # measured otherwise.
-            if self.cover_match and self.cover_match.match(canonical):
-                return disp.nope("is part of coverage.py")
+            if self.cover_match and self.cover_match.match(filename):
+                return "is part of coverage.py"
 
         # Check the file against the omit pattern.
-        if self.omit_match and self.omit_match.match(canonical):
-            return disp.nope("is inside an --omit pattern")
+        if self.omit_match and self.omit_match.match(filename):
+            return "is inside an --omit pattern"
 
-        disp.filename = canonical
-        return disp
+        # No reason found to skip this file.
+        return None
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.
@@ -325,6 +357,22 @@ class coverage(object):
         if self.debug.should('trace'):
             self.debug.write(disp.debug_message())
         return disp
+
+    def _tracing_check_include_omit_etc(self, filename):
+        """Check a filename against the include, omit, etc, rules, and say so.
+
+        Returns a boolean: True if the file should be traced, False if not.
+
+        """
+        reason = self._check_include_omit_etc(filename)
+        if self.debug.should('trace'):
+            if not reason:
+                msg = "Tracing %r" % (filename,)
+            else:
+                msg = "Not tracing %r: %s" % (filename, reason)
+            self.debug.write(msg)
+
+        return not reason
 
     def _warn(self, msg):
         """Use `msg` as a warning."""
@@ -545,7 +593,7 @@ class coverage(object):
         # TODO: seems like this parallel structure is getting kinda old...
         self.data.add_line_data(self.collector.get_line_data())
         self.data.add_arc_data(self.collector.get_arc_data())
-        self.data.add_extension_data(self.collector.get_extension_data())
+        self.data.add_plugin_data(self.collector.get_plugin_data())
         self.collector.reset()
 
         # If there are still entries in the source_pkgs list, then we never
@@ -611,10 +659,17 @@ class coverage(object):
         Returns an `Analysis` object.
 
         """
+        def get_plugin(filename):
+            """For code_unit_factory to use to find the plugin for a file."""
+            plugin = None
+            plugin_name = self.data.plugin_data().get(filename)
+            if plugin_name:
+                plugin = self.plugins.get(plugin_name)
+            return plugin
+
         self._harvest_data()
         if not isinstance(it, CodeUnit):
-            get_ext = self.data.extension_data().get
-            it = code_unit_factory(it, self.file_locator, get_ext)[0]
+            it = code_unit_factory(it, self.file_locator, get_plugin)[0]
 
         return Analysis(self, it)
 
@@ -738,7 +793,6 @@ class coverage(object):
         """Return a list of (key, value) pairs showing internal information."""
 
         import coverage as covmod
-        import platform, re
 
         try:
             implementation = platform.python_implementation()
@@ -760,10 +814,10 @@ class coverage(object):
             ('executable', sys.executable),
             ('cwd', os.getcwd()),
             ('path', sys.path),
-            ('environment', sorted([
+            ('environment', sorted(
                 ("%s = %s" % (k, v)) for k, v in iitems(os.environ)
-                    if re.search(r"^COV|^PY", k)
-                ])),
+                    if k.startswith(("COV", "PY"))
+                )),
             ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
             ]
         if self.source_match:
@@ -784,21 +838,19 @@ class FileDisposition(object):
     """A simple object for noting a number of details of files to trace."""
     def __init__(self, original_filename):
         self.original_filename = original_filename
-        self.filename = None
+        self.canonical_filename = original_filename
+        self.source_filename = None
+        self.check_filters = True
+        self.trace = False
         self.reason = ""
-        self.extension = None
-
-    def nope(self, reason):
-        """A helper for returning a NO answer from should_trace."""
-        self.reason = reason
-        return self
+        self.plugin = None
 
     def debug_message(self):
         """Produce a debugging message explaining the outcome."""
-        if not self.filename:
-            msg = "Not tracing %r: %s" % (self.original_filename, self.reason)
-        else:
+        if self.trace:
             msg = "Tracing %r" % (self.original_filename,)
+        else:
+            msg = "Not tracing %r: %s" % (self.original_filename, self.reason)
         return msg
 
 
@@ -824,7 +876,7 @@ def process_startup():
     """
     cps = os.environ.get("COVERAGE_PROCESS_START")
     if cps:
-        cov = coverage(config_file=cps, auto_data=True)
+        cov = Coverage(config_file=cps, auto_data=True)
         cov.start()
         cov._warn_no_data = False
         cov._warn_unimported_source = False

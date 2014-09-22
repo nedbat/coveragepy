@@ -45,7 +45,7 @@ def info_formatter(info):
     for label, data in info:
         if data == []:
             data = "-none-"
-        if isinstance(data, (list, tuple)):
+        if isinstance(data, (list, set, tuple)):
             prefix = "%*s:" % (label_len, label)
             for e in data:
                 yield "%*s %s" % (label_len+1, prefix, e)

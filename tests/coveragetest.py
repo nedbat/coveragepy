@@ -1,47 +1,38 @@
 """Base test case class for coverage testing."""
 
-import glob, os, random, re, shlex, shutil, sys, tempfile, textwrap
-import atexit, collections
+import glob, os, random, re, shlex, shutil, sys
 
 import coverage
-from coverage.backward import StringIO, to_bytes, import_local_file
+from coverage.backunittest import TestCase
+from coverage.backward import StringIO, import_local_file
 from coverage.backward import importlib     # pylint: disable=unused-import
 from coverage.control import _TEST_NAME_FILE
+from coverage.test_helpers import (
+    ModuleAwareMixin, SysPathAwareMixin, EnvironmentAwareMixin,
+    StdStreamCapturingMixin, TempDirMixin,
+)
+
 from tests.backtest import run_command
-from tests.backunittest import TestCase
-
-class Tee(object):
-    """A file-like that writes to all the file-likes it has."""
-
-    def __init__(self, *files):
-        """Make a Tee that writes to all the files in `files.`"""
-        self._files = files
-        if hasattr(files[0], "encoding"):
-            self.encoding = files[0].encoding
-
-    def write(self, data):
-        """Write `data` to all the files."""
-        for f in self._files:
-            f.write(data)
-
-    if 0:
-        # Use this if you need to use a debugger, though it makes some tests
-        # fail, I'm not sure why...
-        def __getattr__(self, name):
-            return getattr(self._files[0], name)
 
 
 # Status returns for the command line.
 OK, ERR = 0, 1
 
-class CoverageTest(TestCase):
+class CoverageTest(
+    ModuleAwareMixin,
+    SysPathAwareMixin,
+    EnvironmentAwareMixin,
+    StdStreamCapturingMixin,
+    TempDirMixin,
+    TestCase
+):
     """A base class for Coverage test cases."""
-
-    # Our own setting: most CoverageTests run in their own temp directory.
-    run_in_temp_dir = True
 
     # Standard unittest setting: show me diffs even if they are very long.
     maxDiff = None
+
+    # Tell newer unittest implementations to print long helpful messages.
+    longMessage = True
 
     def setUp(self):
         super(CoverageTest, self).setUp()
@@ -51,153 +42,6 @@ class CoverageTest(TestCase):
             f.write("%s_%s" % (self.__class__.__name__, self._testMethodName))
             f.close()
 
-        # Tell newer unittest implementations to print long helpful messages.
-        self.longMessage = True
-
-        # tearDown will restore the original sys.path
-        self.old_syspath = sys.path[:]
-
-        if self.run_in_temp_dir:
-            # Create a temporary directory.
-            self.noise = str(random.random())[2:]
-            self.temp_root = os.path.join(tempfile.gettempdir(), 'test_cover')
-            self.temp_dir = os.path.join(self.temp_root, self.noise)
-            os.makedirs(self.temp_dir)
-            self.old_dir = os.getcwd()
-            os.chdir(self.temp_dir)
-
-            # Modules should be importable from this temp directory.  We don't
-            # use '' because we make lots of different temp directories and
-            # nose's caching importer can get confused.  The full path prevents
-            # problems.
-            sys.path.insert(0, os.getcwd())
-
-            # Keep a counter to make every call to check_coverage unique.
-            self.n = 0
-
-        # Record environment variables that we changed with set_environ.
-        self.environ_undos = {}
-
-        # Capture stdout and stderr so we can examine them in tests.
-        # nose keeps stdout from littering the screen, so we can safely Tee it,
-        # but it doesn't capture stderr, so we don't want to Tee stderr to the
-        # real stderr, since it will interfere with our nice field of dots.
-        self.old_stdout = sys.stdout
-        self.captured_stdout = StringIO()
-        sys.stdout = Tee(sys.stdout, self.captured_stdout)
-        self.old_stderr = sys.stderr
-        self.captured_stderr = StringIO()
-        sys.stderr = self.captured_stderr
-
-        # Record sys.modules here so we can restore it in tearDown.
-        self.old_modules = dict(sys.modules)
-
-        class_behavior = self.class_behavior()
-        class_behavior.tests += 1
-        class_behavior.test_method_made_any_files = False
-        class_behavior.temp_dir = self.run_in_temp_dir
-
-    def tearDown(self):
-        super(CoverageTest, self).tearDown()
-
-        # Restore the original sys.path.
-        sys.path = self.old_syspath
-
-        if self.run_in_temp_dir:
-            # Get rid of the temporary directory.
-            os.chdir(self.old_dir)
-            shutil.rmtree(self.temp_root)
-
-        # Restore the environment.
-        self.undo_environ()
-
-        # Restore stdout and stderr
-        sys.stdout = self.old_stdout
-        sys.stderr = self.old_stderr
-
-        self.clean_modules()
-
-        class_behavior = self.class_behavior()
-        if class_behavior.test_method_made_any_files:
-            class_behavior.tests_making_files += 1
-
-    def clean_modules(self):
-        """Remove any new modules imported during the test run.
-
-        This lets us import the same source files for more than one test.
-
-        """
-        for m in [m for m in sys.modules if m not in self.old_modules]:
-            del sys.modules[m]
-
-    def set_environ(self, name, value):
-        """Set an environment variable `name` to be `value`.
-
-        The environment variable is set, and record is kept that it was set,
-        so that `tearDown` can restore its original value.
-
-        """
-        if name not in self.environ_undos:
-            self.environ_undos[name] = os.environ.get(name)
-        os.environ[name] = value
-
-    def original_environ(self, name, if_missing=None):
-        """The environment variable `name` from when the test started."""
-        if name in self.environ_undos:
-            ret = self.environ_undos[name]
-        else:
-            ret = os.environ.get(name)
-        if ret is None:
-            ret = if_missing
-        return ret
-
-    def undo_environ(self):
-        """Undo all the changes made by `set_environ`."""
-        for name, value in self.environ_undos.items():
-            if value is None:
-                del os.environ[name]
-            else:
-                os.environ[name] = value
-
-    def stdout(self):
-        """Return the data written to stdout during the test."""
-        return self.captured_stdout.getvalue()
-
-    def stderr(self):
-        """Return the data written to stderr during the test."""
-        return self.captured_stderr.getvalue()
-
-    def make_file(self, filename, text="", newline=None):
-        """Create a file for testing.
-
-        `filename` is the relative path to the file, including directories if
-        desired, which will be created if need be.  `text` is the content to
-        create in the file. If `newline` is provided, it is a string that will
-        be used as the line endings in the created file, otherwise the line
-        endings are as provided in `text`.
-
-        Returns `filename`.
-
-        """
-        # Tests that call `make_file` should be run in a temp environment.
-        assert self.run_in_temp_dir
-        self.class_behavior().test_method_made_any_files = True
-
-        text = textwrap.dedent(text)
-        if newline:
-            text = text.replace("\n", newline)
-
-        # Make sure the directories are available.
-        dirs, _ = os.path.split(filename)
-        if dirs and not os.path.exists(dirs):
-            os.makedirs(dirs)
-
-        # Create the file.
-        with open(filename, 'wb') as f:
-            f.write(to_bytes(text))
-
-        return filename
-
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
 
@@ -206,7 +50,7 @@ class CoverageTest(TestCase):
 
         """
         # So that we can re-import files, clean them out first.
-        self.clean_modules()
+        self.cleanup_modules()
         # Also have to clean out the .pyc file, since the timestamp
         # resolution is only one second, a changed file might not be
         # picked up.
@@ -244,13 +88,7 @@ class CoverageTest(TestCase):
 
     def get_module_name(self):
         """Return the module name to use for this test run."""
-        # We append self.n because otherwise two calls in one test will use the
-        # same filename and whether the test works or not depends on the
-        # timestamps in the .pyc file, so it becomes random whether the second
-        # call will use the compiled version of the first call's code or not!
-        modname = 'coverage_test_' + self.noise + str(self.n)
-        self.n += 1
-        return modname
+        return 'coverage_test_' + str(random.random())[2:]
 
     # Map chars to numbers for arcz_to_arcs
     _arcz_map = {'.': -1}
@@ -507,55 +345,3 @@ class CoverageTest(TestCase):
     def last_line_squeezed(self, report):
         """Return the last line of `report` with the spaces squeezed down."""
         return self.squeezed_lines(report)[-1]
-
-    # We run some tests in temporary directories, because they may need to make
-    # files for the tests. But this is expensive, so we can change per-class
-    # whether a temp dir is used or not.  It's easy to forget to set that
-    # option properly, so we track information about what the tests did, and
-    # then report at the end of the process on test classes that were set
-    # wrong.
-
-    class ClassBehavior(object):
-        """A value object to store per-class in CoverageTest."""
-        def __init__(self):
-            self.tests = 0
-            self.temp_dir = True
-            self.tests_making_files = 0
-            self.test_method_made_any_files = False
-
-    # Map from class to info about how it ran.
-    class_behaviors = collections.defaultdict(ClassBehavior)
-
-    @classmethod
-    def report_on_class_behavior(cls):
-        """Called at process exit to report on class behavior."""
-        for test_class, behavior in cls.class_behaviors.items():
-            if behavior.temp_dir and behavior.tests_making_files == 0:
-                bad = "Inefficient"
-            elif not behavior.temp_dir and behavior.tests_making_files > 0:
-                bad = "Unsafe"
-            else:
-                bad = ""
-
-            if bad:
-                if behavior.temp_dir:
-                    where = "in a temp directory"
-                else:
-                    where = "without a temp directory"
-                print(
-                    "%s: %s ran %d tests, %d made files %s" % (
-                        bad,
-                        test_class.__name__,
-                        behavior.tests,
-                        behavior.tests_making_files,
-                        where,
-                    )
-                )
-
-    def class_behavior(self):
-        """Get the ClassBehavior instance for this test."""
-        return self.class_behaviors[self.__class__]
-
-
-# When the process ends, find out about bad classes.
-atexit.register(CoverageTest.report_on_class_behavior)

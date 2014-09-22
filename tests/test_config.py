@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test the config file handling for coverage.py"""
 
+import sys, os
+
 import coverage
 from coverage.misc import CoverageException
 
@@ -125,6 +127,12 @@ class ConfigTest(CoverageTest):
 class ConfigFileTest(CoverageTest):
     """Tests of the config file settings in particular."""
 
+    def setUp(self):
+        super(ConfigFileTest, self).setUp()
+        # Parent class saves and restores sys.path, we can just modify it.
+        # Add modules to the path so we can import plugins.
+        sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
+
     # This sample file tries to use lots of variation of syntax...
     # The {section} placeholder lets us nest these settings in another file.
     LOTSA_SETTINGS = """\
@@ -136,6 +144,9 @@ class ConfigFileTest(CoverageTest):
         cover_pylib = TRUE
         parallel = on
         include = a/   ,    b/
+        plugins =
+            plugins.a_plugin
+            plugins.another
 
         [{section}report]
         ; these settings affect reporting.
@@ -174,6 +185,10 @@ class ConfigFileTest(CoverageTest):
 
         other = other, /home/ned/other, c:\\Ned\\etc
 
+        [{section}plugins.a_plugin]
+        hello = world
+        ; comments still work.
+        names = Jane/John/Jenny
         """
 
     # Just some sample setup.cfg text from the docs.
@@ -212,6 +227,9 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.partial_always_list,
             ["if 0:", "while True:"]
             )
+        self.assertEqual(cov.config.plugins,
+            ["plugins.a_plugin", "plugins.another"]
+            )
         self.assertTrue(cov.config.show_missing)
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
         self.assertEqual(cov.config.extra_css, "something/extra.css")
@@ -223,6 +241,12 @@ class ConfigFileTest(CoverageTest):
             'source': ['.', '/home/ned/src/'],
             'other': ['other', '/home/ned/other', 'c:\\Ned\\etc']
             })
+
+        self.assertEqual(cov.config.get_plugin_options("plugins.a_plugin"), {
+            'hello': 'world',
+            'names': 'Jane/John/Jenny',
+            })
+        self.assertEqual(cov.config.get_plugin_options("plugins.another"), {})
 
     def test_config_file_settings(self):
         self.make_file(".coveragerc", self.LOTSA_SETTINGS.format(section=""))

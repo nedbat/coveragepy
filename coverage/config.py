@@ -37,6 +37,13 @@ class HandyConfigParser(configparser.RawConfigParser):
         section = self.section_prefix + section
         return configparser.RawConfigParser.options(self, section)
 
+    def get_section(self, section):
+        """Get the contents of a section, as a dictionary."""
+        d = {}
+        for opt in self.options(section):
+            d[opt] = self.get(section, opt)
+        return d
+
     def get(self, section, *args, **kwargs):
         """Get a value, replacing environment variables also.
 
@@ -140,7 +147,7 @@ class CoverageConfig(object):
         self.timid = False
         self.source = None
         self.debug = []
-        self.extensions = []
+        self.plugins = []
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
@@ -163,6 +170,9 @@ class CoverageConfig(object):
         # Defaults for [paths]
         self.paths = {}
 
+        # Options for plugins
+        self.plugin_options = {}
+
     def from_environment(self, env_var):
         """Read configuration from the `env_var` environment variable."""
         # Timidity: for nose users, read an environment variable.  This is a
@@ -172,7 +182,7 @@ class CoverageConfig(object):
         if env:
             self.timid = ('--timid' in env)
 
-    MUST_BE_LIST = ["omit", "include", "debug", "extensions"]
+    MUST_BE_LIST = ["omit", "include", "debug", "plugins"]
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
@@ -200,17 +210,22 @@ class CoverageConfig(object):
         self.config_files.extend(files_read)
 
         for option_spec in self.CONFIG_FILE_OPTIONS:
-            self.set_attr_from_config_option(cp, *option_spec)
+            self._set_attr_from_config_option(cp, *option_spec)
 
         # [paths] is special
         if cp.has_section('paths'):
             for option in cp.options('paths'):
                 self.paths[option] = cp.getlist('paths', option)
 
+        # plugins can have options
+        for plugin in self.plugins:
+            if cp.has_section(plugin):
+                self.plugin_options[plugin] = cp.get_section(plugin)
+
         return True
 
     CONFIG_FILE_OPTIONS = [
-        # These are *args for set_attr_from_config_option:
+        # These are *args for _set_attr_from_config_option:
         #   (attr, where, type_="")
         #
         #   attr is the attribute to set on the CoverageConfig object.
@@ -224,7 +239,7 @@ class CoverageConfig(object):
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
-        ('extensions', 'run:extensions', 'list'),
+        ('plugins', 'run:plugins', 'list'),
         ('include', 'run:include', 'list'),
         ('omit', 'run:omit', 'list'),
         ('parallel', 'run:parallel', 'boolean'),
@@ -250,9 +265,13 @@ class CoverageConfig(object):
         ('xml_output', 'xml:output'),
         ]
 
-    def set_attr_from_config_option(self, cp, attr, where, type_=''):
+    def _set_attr_from_config_option(self, cp, attr, where, type_=''):
         """Set an attribute on self if it exists in the ConfigParser."""
         section, option = where.split(":")
         if cp.has_option(section, option):
             method = getattr(cp, 'get'+type_)
             setattr(self, attr, method(section, option))
+
+    def get_plugin_options(self, plugin):
+        """Get a dictionary of options for the plugin named `plugin`."""
+        return self.plugin_options.get(plugin, {})

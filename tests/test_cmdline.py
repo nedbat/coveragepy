@@ -72,7 +72,7 @@ class CmdLineTest(CoverageTest):
         code = re.sub(r"(?m)^\.", "m2.", code)
         m2 = self.model_object()
         code_obj = compile(code, "<code>", "exec")
-        eval(code_obj, globals(), { 'm2': m2 })
+        eval(code_obj, globals(), { 'm2': m2 })     # pylint: disable=eval-used
 
         # Many of our functions take a lot of arguments, and cmdline.py
         # calls them with many.  But most of them are just the defaults, which

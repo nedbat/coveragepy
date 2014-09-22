@@ -1,10 +1,10 @@
 """Miscellaneous stuff for Coverage."""
 
 import errno
+import hashlib
 import inspect
 import os
 
-from coverage.backward import md5
 from coverage.backward import string_class, to_bytes
 
 
@@ -86,12 +86,7 @@ def bool_or_none(b):
 
 def join_regex(regexes):
     """Combine a list of regexes into one that matches any of them."""
-    if len(regexes) > 1:
-        return "|".join("(?:%s)" % r for r in regexes)
-    elif regexes:
-        return regexes[0]
-    else:
-        return ""
+    return "|".join("(?:%s)" % r for r in regexes)
 
 
 def file_be_gone(path):
@@ -106,7 +101,7 @@ def file_be_gone(path):
 class Hasher(object):
     """Hashes Python data into md5."""
     def __init__(self):
-        self.md5 = md5()
+        self.md5 = hashlib.md5()
 
     def update(self, v):
         """Add `v` to the hash, recursively if needed."""

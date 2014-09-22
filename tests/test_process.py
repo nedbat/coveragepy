@@ -470,8 +470,7 @@ class ProcessTest(CoverageTest):
         self.assertIn("Hello\n", out)
         self.assertIn("Goodbye\n", out)
 
-        if hasattr(sys, "gettrace"):
-            self.assertIn("Trace function changed", out)
+        self.assertIn("Trace function changed", out)
 
     if sys.version_info >= (3, 0):   # This only works on 3.x for now.
         # It only works with the C tracer,

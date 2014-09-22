@@ -7,17 +7,17 @@ from coverage.misc import CoverageException, NoSource
 from coverage.parser import CodeParser, PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 
-from coverage.django import DjangoTracer
 
-
-def code_unit_factory(morfs, file_locator, get_ext=None):
+def code_unit_factory(morfs, file_locator, get_plugin=None):
     """Construct a list of CodeUnits from polymorphic inputs.
 
     `morfs` is a module or a filename, or a list of same.
 
     `file_locator` is a FileLocator that can help resolve filenames.
 
-    `get_ext` TODO
+    `get_plugin` is a function taking a filename, and returning a plugin
+    responsible for the file.  It can also return None if there is no plugin
+    claiming the file.
 
     Returns a list of CodeUnit objects.
 
@@ -26,15 +26,14 @@ def code_unit_factory(morfs, file_locator, get_ext=None):
     if not isinstance(morfs, (list, tuple)):
         morfs = [morfs]
 
-    django_tracer = DjangoTracer()
-
     code_units = []
     for morf in morfs:
-        ext = None
-        if isinstance(morf, string_class) and get_ext:
-            ext = get_ext(morf)
-        if ext:
-            klass = DjangoTracer # NOT REALLY! TODO
+        plugin = None
+        if isinstance(morf, string_class) and get_plugin:
+            plugin = get_plugin(morf)
+        if plugin:
+            klass = plugin.code_unit_class(morf)
+            #klass = DjangoTracer # NOT REALLY! TODO
             # Hacked-in Mako support. Define COVERAGE_MAKO_PATH as a fragment of
             # the path that indicates the Python file is actually a compiled Mako
             # template. THIS IS TEMPORARY!
@@ -91,6 +90,8 @@ class CodeUnit(object):
         self.name = n
         self.modname = modname
 
+        self._source = None
+
     def __repr__(self):
         return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
 
@@ -131,6 +132,11 @@ class CodeUnit(object):
             return root.replace('\\', '_').replace('/', '_').replace('.', '_')
 
     def source(self):
+        if self._source is None:
+            self._source = self.get_source()
+        return self._source
+
+    def get_source(self):
         """Return the source code, as a string."""
         if os.path.exists(self.filename):
             # A regular text file: open it.
@@ -147,10 +153,9 @@ class CodeUnit(object):
             "No source for code '%s'." % self.filename
             )
 
-    def source_token_lines(self, source):
+    def source_token_lines(self):
         """Return the 'tokenized' text for the code."""
-        # TODO: Taking source here is wrong, change it?
-        for line in source.splitlines():
+        for line in self.source().splitlines():
             yield [('txt', line)]
 
     def should_be_python(self):
@@ -161,6 +166,9 @@ class CodeUnit(object):
         place.
         """
         return False
+
+    def get_parser(self, exclude=None):
+        raise NotImplementedError
 
 
 class PythonCodeUnit(CodeUnit):
@@ -238,11 +246,11 @@ class PythonCodeUnit(CodeUnit):
         # Everything else is probably not Python.
         return False
 
-    def source_token_lines(self, source):
-        return source_token_lines(source)
+    def source_token_lines(self):
+        return source_token_lines(self.source())
 
-    def source_encoding(self, source):
-        return source_encoding(source)
+    def source_encoding(self):
+        return source_encoding(self.source())
 
 
 class MakoParser(CodeParser):
@@ -271,26 +279,25 @@ class MakoCodeUnit(CodeUnit):
         py_source = open(self.filename).read()
         self.metadata = ModuleInfo.get_module_source_metadata(py_source, full_line_map=True)
 
-    def source(self):
+    def get_source(self):
         return open(self.metadata['filename']).read()
 
     def get_parser(self, exclude=None):
         return MakoParser(self.metadata)
 
-    def source_encoding(self, source):
-        # TODO: Taking source here is wrong, change it!
+    def source_encoding(self):
         return self.metadata['source_encoding']
 
 
 class DjangoCodeUnit(CodeUnit):
-    def source(self):
+    def get_source(self):
         with open(self.filename) as f:
             return f.read()
 
     def get_parser(self, exclude=None):
         return DjangoParser(self.filename)
 
-    def source_encoding(self, source):
+    def source_encoding(self):
         return "utf8"
 
 
