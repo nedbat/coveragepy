@@ -180,8 +180,13 @@ class FnmatchMatcher(object):
         # fnmatch is platform-specific. On Windows, it does the Windows thing
         # of treating / and \ as equivalent. But on other platforms, we need to
         # take care of that ourselves.
-        fnpats = [fnmatch.translate(p) for p in pats]
-        fnpats = [p.replace(r"\/", r"[\\/]") for p in fnpats]
+        fnpats = (fnmatch.translate(p) for p in pats)
+        fnpats = (p.replace(r"\/", r"[\\/]") for p in fnpats)
+        if sys.platform == 'win32':
+            # Windows is also case-insensitive.  BTW: the regex docs say that
+            # flags like (?i) have to be at the beginning, but fnmatch puts
+            # them at the end, and have two there seems to work fine.
+            fnpats = (p + "(?i)" for p in fnpats)
         self.re = re.compile(join_regex(fnpats))
 
     def __repr__(self):
