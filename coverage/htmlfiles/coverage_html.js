@@ -4,7 +4,7 @@
 
 coverage = {};
 
-// Find all the elements with shortkey_* class, and use them to assign a shotrtcut key.
+// Find all the elements with shortkey_* class, and use them to assign a shortcut key.
 coverage.assign_shortkeys = function () {
     $("*[class*='shortkey_']").each(function (i, e) {
         $.each($(e).attr("class").split(" "), function (i, c) {
@@ -37,27 +37,50 @@ coverage.wire_up_help_panel = function () {
 
 // Create the events for the filter box.
 coverage.wire_up_filter = function () {
+    // Cache elements.
+    var table = $("table.index");
+    var table_rows = table.find("tbody tr");
+    var table_row_names = table_rows.find("td.name a");
+    var table_cells = {
+        2: table_rows.find('td:nth-child(2)'),
+        3: table_rows.find('td:nth-child(3)'),
+        4: table_rows.find('td:nth-child(4)'),
+        5: table_rows.find('td:nth-child(5)')
+    };
+    var no_rows = $("#no_rows");
+
+    // Create a duplicate table footer that we can modify with dynamic summed values.
+    var table_footer = $("table.index tfoot tr");
+    var table_dynamic_footer = table_footer.clone();
+    table_dynamic_footer.attr('class', 'total_dynamic hidden');
+    table_footer.after(table_dynamic_footer);
+
+    // Observe filter keyevents.
     $("#filter").on("keyup change", $.debounce(150, function (event) {
         var filter_value = $(this).val();
 
         if (filter_value === "") {
-            // Filter box is empty, remove all filtering
-            $("table.index tr").removeClass("hidden");
+            // Filter box is empty, remove all filtering.
+            table_rows.removeClass("hidden");
 
-            // Hide placeholder, show table
-            if ($("#no_rows").length > 0) {
-                $("#no_rows").hide();
+            // Show standard footer, hide dynamic footer.
+            table_footer.removeClass("hidden");
+            table_dynamic_footer.addClass("hidden");
+
+            // Hide placeholder, show table.
+            if (no_rows.length > 0) {
+                no_rows.hide();
             }
-            $("table.index").show();
+            table.show();
 
         }
         else {
-            // Filter table items by value
+            // Filter table items by value.
             var hide = $([]);
             var show = $([]);
 
-            // Compile elements to hide / show
-            $.each($("table.index tr td.name a"), function () {
+            // Compile elements to hide / show.
+            $.each(table_row_names, function () {
                 var element = $(this).parents("tr");
 
                 if ($(this).text().indexOf(filter_value) === -1) {
@@ -71,114 +94,65 @@ coverage.wire_up_filter = function () {
                 }
             });
 
-            // Perform DOM manipulation
+            // Perform DOM manipulation.
             hide.addClass("hidden");
             show.removeClass("hidden");
 
-            // Show placeholder if no rows will be displayed
-            if ($("#no_rows").length > 0) {
+            // Show placeholder if no rows will be displayed.
+            if (no_rows.length > 0) {
                 if (show.length === 0) {
-                    // Show placeholder, hide table
-                    $("#no_rows").show();
-                    $("table.index").hide();
+                    // Show placeholder, hide table.
+                    no_rows.show();
+                    table.hide();
 
                 }
                 else {
-                    // Hide placeholder, show table
-                    $("#no_rows").hide();
-                    $("table.index").show();
+                    // Hide placeholder, show table.
+                    no_rows.hide();
+                    table.show();
                 }
             }
 
-            // Hide totals table footer if hiding any rows, as values will be inaccurate
+            // Manage dynamic header:
             if (hide.length > 0) {
-                // Hide footer
-                $("table.index tfoot tr").addClass("hidden");
+                // Calculate new dynamic sum values based on visible rows.
+                for (var column in table_cells) {
+                    // Calculate summed value.
+                    var tmp = 0;
+                    $.each(table_cells[column].filter(':visible'), function () {
+                        tmp += parseInt(this.innerHTML, 10);
+                    });
+
+                    // Get footer cell element.
+                    var footer_cell = table_dynamic_footer.find('td:nth-child(' + column + ')');
+
+                    // Set value into dynamic footer cell element.
+                    if (column === '5') {
+                        // Value of 5th "coverage" column is expressed as a percentage
+                        footer_cell.text(parseInt((tmp / show.length), 10) + '%');
+
+                    } else {
+                        footer_cell.text(tmp);
+                    }
+                }
+
+
+                // Hide standard footer, show dynamic footer.
+                table_footer.addClass("hidden");
+                table_dynamic_footer.removeClass("hidden");
 
             }
             else {
-                // Show footer
-                $("table.index tfoot tr").removeClass("hidden");
+                // Show standard footer, hide dynamic footer.
+                table_footer.removeClass("hidden");
+                table_dynamic_footer.addClass("hidden");
             }
         }
     }));
 
-    // Trigger change event on setup, to force filter on page refresh (filter value may still be present)
+    // Trigger change event on setup, to force filter on page refresh
+    // (filter value may still be present).
     $("#filter").trigger("change");
-};
-
-// Create the events for the next buttons.
-coverage.wire_up_next_buttons = function () {
-    // Define next button handler.
-    function next_handler(event) {
-        event.preventDefault();
-
-        // Define selector based on clicked button.
-        var button_id = $(this).attr("id");
-        var selector;
-
-        if (button_id == "next_run") {
-            selector = ".run";
-        }
-        else if (button_id == "next_missing") {
-            selector = ".mis";
-        }
-        else if (button_id == "next_excluded") {
-            selector = ".exc";
-        }
-        else {
-            return false;
-        }
-
-        // Go to first line, or next in sequence?
-        var target;
-        var previous_target = $(this).data("target");
-
-        if (previous_target === undefined) {
-            // First click, get first matching line.
-            target = $("p[id^='t']" + selector).first();
-        }
-        else {
-            // Get next matching (non-contiguous) line.
-            var old_target = previous_target;
-            target = old_target.nextAll("p[id^='t']" + selector).first();
-
-            while ((parseInt(target.attr("id").match(/\d+/)[0]) - parseInt(old_target.attr("id").match(/\d+/)[0])) === 1) {
-                old_target = target;
-                target = old_target.nextAll("p[id^='t']" + selector).first();
-            }
-        }
-
-        if (target.length > 0) {
-            // Set highlight styling and arrow indicator.
-            $("p[id^='n'].highlight").removeClass("highlight");
-            $("p[id^='n'] span.indicator").remove();
-
-            $("p#n" + target.attr("id").match(/\d+/)[0])
-                .prepend(
-                $("<span />")
-                    .addClass("indicator")
-                    .html("&loz;")
-            )
-                .addClass("highlight");
-
-            // Scroll to line.
-            $("html, body").animate({
-                scrollTop: (target.position().top - ($("#header").outerHeight() + 100))
-            }, 100);
-
-            // Save target reference in button element for next click.
-            $(this).data("target", target);
-        }
-
-        return false;
-    }
-
-
-    // Wire up buttons to handler.
-    $("#header .stats button")
-        .off("click.next")
-        .on("click.next", next_handler);
 };
 
 // Loaded on index.html
@@ -276,7 +250,6 @@ coverage.pyfile_ready = function ($) {
 
     coverage.assign_shortkeys();
     coverage.wire_up_help_panel();
-    coverage.wire_up_next_buttons();
 };
 
 coverage.toggle_lines = function (btn, cls) {

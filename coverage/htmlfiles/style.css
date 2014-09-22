@@ -59,7 +59,6 @@ a.nav:hover {
 #source {
     padding: 1em;
     font-family: "courier new", monospace;
-    margin-top: 92px;
     }
 
 #source span.indicator {
@@ -80,11 +79,6 @@ a.nav:hover {
 
 #indexfile #footer {
     margin: 1em 3em;
-    }
-
-#pyfile #header {
-    position: fixed;
-    top: 0;
     }
 
 #pyfile #footer {
@@ -132,16 +126,6 @@ h2.stats {
     margin: 0 .1em;
     cursor: pointer;
     border-color: #999 #ccc #ccc #999;
-}
-.stats button {
-    margin: 0 1em 0 0;
-    padding: 0 0 1px 0;
-    width: 1.5em;
-    font-size: 1em;
-    cursor: pointer;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #999999 #CCCCCC #CCCCCC #999999;
 }
 .stats span.hide_run, .stats span.hide_exc,
 .stats span.hide_mis, .stats span.hide_par,
@@ -339,9 +323,11 @@ td.text {
     text-decoration: underline;
     color: #000;
     }
-#index tr.total {
+#index tr.total,
+#index tr.total_dynamic {
     }
-#index tr.total td {
+#index tr.total td,
+#index tr.total_dynamic td {
     font-weight: bold;
     border-top: 1px solid #ccc;
     border-bottom: none;
