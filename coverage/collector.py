@@ -204,6 +204,7 @@ class Collector(object):
         # Install the tracer on this thread.
         fn = self._start_tracer()
 
+        # Replay all the events from fullcoverage into the new trace function.
         for args in traces0:
             (frame, event, arg), lineno = args
             try:
