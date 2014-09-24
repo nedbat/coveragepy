@@ -17,6 +17,7 @@ Matthew Desmarais
 Danek Duvall
 Ben Finney
 Martin Fuzzey
+Carl Gieringer
 Imri Goldberg
 Bill Hart
 Christian Heimes
