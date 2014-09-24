@@ -17,9 +17,9 @@ from coverage.plugin import CoveragePlugin
 coverage = Coverage
 
 # Module-level functions.  The original API to this module was based on
-# functions defined directly in the module, with a singleton of the coverage()
+# functions defined directly in the module, with a singleton of the Coverage()
 # class.  That design hampered programmability, so the current api uses
-# explicitly-created coverage objects.  But for backward compatibility, here we
+# explicitly-created Coverage objects.  But for backward compatibility, here we
 # define the top-level functions to create the singleton when they are first
 # called.
 
@@ -28,7 +28,7 @@ coverage = Coverage
 _the_coverage = None
 
 def _singleton_method(name):
-    """Return a function to the `name` method on a singleton `coverage` object.
+    """Return a function to the `name` method on a singleton `Coverage` object.
 
     The singleton object is created the first time one of these functions is
     called.
@@ -42,19 +42,19 @@ def _singleton_method(name):
         """Singleton wrapper around a coverage method."""
         global _the_coverage
         if not _the_coverage:
-            _the_coverage = coverage(auto_data=True)
+            _the_coverage = Coverage(auto_data=True)
         return getattr(_the_coverage, name)(*args, **kwargs)
 
     import inspect
-    meth = getattr(coverage, name)
+    meth = getattr(Coverage, name)
     args, varargs, kw, defaults = inspect.getargspec(meth)
     argspec = inspect.formatargspec(args[1:], varargs, kw, defaults)
     docstring = meth.__doc__
     wrapper.__doc__ = ("""\
-        A first-use-singleton wrapper around coverage.%(name)s.
+        A first-use-singleton wrapper around Coverage.%(name)s.
 
         This wrapper is provided for backward compatibility with legacy code.
-        New code should use coverage.%(name)s directly.
+        New code should use Coverage.%(name)s directly.
 
         %(name)s%(argspec)s:
 
