@@ -17,6 +17,7 @@ Coverage command line usage
 :history: 20120807T211600, Clarified the combine rules.
 :history: 20121003T074600, Fixed an option reference, https://bitbucket.org/ned/coveragepy/issue/200/documentation-mentions-output-xml-instead
 :history: 20121117T091000, Added command aliases.
+:history: 20140924T193000, Added --concurrency
 
 .. highlight:: console
 
@@ -94,6 +95,16 @@ but before the program invocation::
 
     $ coverage run --source=dir1,dir2 my_program.py arg1 arg2
     $ coverage run --source=dir1,dir2 -m packagename.modulename arg1 arg2
+
+Coverage can measure multi-threaded programs by default. If you are using
+more exotic concurrency, with the `greenlet`_, `eventlet`_, or `gevent`_
+libraries, then coverage will get very confused.  Use the ``--concurrency``
+switch to properly measure programs using these libraries.  Give it a value of
+``greenlet``, ``eventlet``, or ``gevent``.
+
+.. _greenlet: http://greenlet.readthedocs.org/en/latest/
+.. _gevent: http://www.gevent.org/
+.. _eventlet: http://eventlet.net/
 
 By default, coverage does not measure code installed with the Python
 interpreter, for example, the standard library. If you want to measure that

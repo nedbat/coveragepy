@@ -31,6 +31,7 @@ coverage.py
 :history: 20130105T174000, Updated for 3.6
 :history: 20131005T210000, Updated for 3.7
 :history: 20131212T213300, Updated for 3.7.1
+:history: 20140924T073000, Updated for 4.0a1
 
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
@@ -44,14 +45,14 @@ not.
 .. ifconfig:: not prerelease
 
     The latest version is coverage.py 3.7.1, released 13 December 2013.
-    It is supported on Python versions 2.3 through 3.4, and PyPy 2.1.
+    It is supported on Python versions 2.6 through 3.4, and PyPy 2.2.
 
 .. ifconfig:: prerelease
 
-    The latest version is coverage.py 3.6b3, released 29 December 2012.
-    It is supported on Python versions 2.3 through 3.3, and PyPy 1.9.
+    The latest version is coverage.py 4.0a1, released 25 September 2014.
+    It is supported on Python versions 2.6 through 3.4, and PyPy 2.2.
     **This is a pre-release build.  The usual warnings about possible bugs apply.**
-    The latest stable version is coverage.py 3.5.3, `described here`_.
+    The latest stable version is coverage.py 3.7.1, `described here`_.
 
 .. _described here: http://nedbatchelder.com/code/coverage
 

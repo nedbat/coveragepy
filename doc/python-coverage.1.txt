@@ -160,6 +160,10 @@ COMMAND REFERENCE
     \--branch
         Measure branch coverage in addition to statement coverage.
 
+    \--concurrency `LIB`
+        Properly measure code using a concurrency library. Valid values are:
+        thread, gevent, greenlet, eventlet.
+
     \--debug `DEBUGOPT`,...
         Debug options `DEBUGOPT`, separated by commas.
 
