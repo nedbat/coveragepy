@@ -19,9 +19,9 @@ class Opts(object):
         '', '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage."
         )
-    coroutine = optparse.make_option(
-        '', '--coroutine', action='store', metavar="LIB",
-        help="Properly measure code using coroutines."
+    concurrency = optparse.make_option(
+        '', '--concurrency', action='store', metavar="LIB",
+        help="Properly measure code using a concurrency library."
         )
     debug = optparse.make_option(
         '', '--debug', action='store', metavar="OPTS",
@@ -125,7 +125,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
         self.set_defaults(
             actions=[],
             branch=None,
-            coroutine=None,
+            concurrency=None,
             debug=None,
             directory=None,
             fail_under=None,
@@ -320,7 +320,7 @@ CMDS = {
         [
             Opts.append,
             Opts.branch,
-            Opts.coroutine,
+            Opts.concurrency,
             Opts.debug,
             Opts.pylib,
             Opts.parallel_mode,
@@ -429,7 +429,7 @@ class CoverageScript(object):
             omit = omit,
             include = include,
             debug = debug,
-            coroutine = options.coroutine,
+            concurrency = options.concurrency,
             )
 
         if 'debug' in options.actions:

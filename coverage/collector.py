@@ -46,7 +46,7 @@ class Collector(object):
     _collectors = []
 
     def __init__(self,
-        should_trace, check_include, timid, branch, warn, coroutine,
+        should_trace, check_include, timid, branch, warn, concurrency,
     ):
         """Create a collector.
 
@@ -68,7 +68,7 @@ class Collector(object):
         `warn` is a warning function, taking a single string message argument,
         to be used if a warning needs to be issued.
 
-        TODO: `coroutine`
+        TODO: `concurrency`
 
         """
         self.should_trace = should_trace
@@ -76,21 +76,21 @@ class Collector(object):
         self.warn = warn
         self.branch = branch
         self.threading = None
-        self.coroutine = coroutine
+        self.concurrency = concurrency
 
-        self.coroutine_id_func = None
+        self.concur_id_func = None
 
         try:
-            if coroutine == "greenlet":
-                import greenlet
-                self.coroutine_id_func = greenlet.getcurrent
-            elif coroutine == "eventlet":
-                import eventlet.greenthread
-                self.coroutine_id_func = eventlet.greenthread.getcurrent
-            elif coroutine == "gevent":
-                import gevent
-                self.coroutine_id_func = gevent.getcurrent
-            elif coroutine == "thread" or not coroutine:
+            if concurrency == "greenlet":
+                import greenlet                 # pylint: disable=import-error
+                self.concur_id_func = greenlet.getcurrent
+            elif concurrency == "eventlet":
+                import eventlet.greenthread     # pylint: disable=import-error
+                self.concur_id_func = eventlet.greenthread.getcurrent
+            elif concurrency == "gevent":
+                import gevent                   # pylint: disable=import-error
+                self.concur_id_func = gevent.getcurrent
+            elif concurrency == "thread" or not concurrency:
                 # It's important to import threading only if we need it.  If
                 # it's imported early, and the program being measured uses
                 # gevent, then gevent's monkey-patching won't work properly.
@@ -98,12 +98,12 @@ class Collector(object):
                 self.threading = threading
             else:
                 raise CoverageException(
-                    "Don't understand coroutine=%s" % coroutine
+                    "Don't understand concurrency=%s" % concurrency
                 )
         except ImportError:
             raise CoverageException(
-                "Couldn't trace with coroutine=%s, "
-                "the module isn't installed." % coroutine
+                "Couldn't trace with concurrency=%s, "
+                "the module isn't installed." % concurrency
             )
 
         self.reset()
@@ -148,13 +148,13 @@ class Collector(object):
         tracer.should_trace_cache = self.should_trace_cache
         tracer.warn = self.warn
 
-        if hasattr(tracer, 'coroutine_id_func'):
-            tracer.coroutine_id_func = self.coroutine_id_func
-        elif self.coroutine_id_func:
+        if hasattr(tracer, 'concur_id_func'):
+            tracer.concur_id_func = self.concur_id_func
+        elif self.concur_id_func:
             raise CoverageException(
-                "Can't support coroutine=%s with %s, "
+                "Can't support concurrency=%s with %s, "
                 "only threads are supported" % (
-                    self.coroutine, self.tracer_name(),
+                    self.concurrency, self.tracer_name(),
                 )
             )
 

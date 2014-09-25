@@ -45,7 +45,7 @@ class Coverage(object):
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
                 source=None, omit=None, include=None, debug=None,
-                debug_file=None, coroutine=None, plugins=None):
+                debug_file=None, concurrency=None, plugins=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -84,7 +84,7 @@ class Coverage(object):
         desired. `debug_file` is the file to write debug messages to,
         defaulting to stderr.
 
-        `coroutine` is a string indicating the coroutining library being used
+        `concurrency` is a string indicating the concurrency library being used
         in the measured code.  Without this, coverage.py will get incorrect
         results.  Valid strings are "greenlet", "eventlet", or "gevent", which
         are all equivalent. TODO: really?
@@ -128,7 +128,7 @@ class Coverage(object):
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
             source=source, omit=omit, include=include, debug=debug,
-            coroutine=coroutine, plugins=plugins,
+            concurrency=concurrency, plugins=plugins,
             )
 
         # Create and configure the debugging controller.
@@ -170,7 +170,7 @@ class Coverage(object):
             timid=self.config.timid,
             branch=self.config.branch,
             warn=self._warn,
-            coroutine=self.config.coroutine,
+            concurrency=self.config.concurrency,
             )
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
