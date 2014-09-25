@@ -277,6 +277,19 @@ The ``-m`` flag also shows the line numbers of missing statements::
     -------------------------------------------------------
     TOTAL                        91     12    87%
 
+If you are using branch coverage, then branch statistics will be reported in
+the Branch and BrMiss columns, the Missing column will detail the missed
+branches::
+
+    $ coverage report -m
+    Name                      Stmts   Miss Branch BrMiss  Cover   Missing
+    ---------------------------------------------------------------------
+    my_program                   20      4     10      2    80%   33-35, 36->38, 39
+    my_module                    15      2      3      0    86%   8, 12
+    my_other_module              56      6      5      1    89%   17-23, 40->45
+    ---------------------------------------------------------------------
+    TOTAL                        91     12     18      3    87%
+
 You can restrict the report to only certain files by naming them on the
 command line::
 

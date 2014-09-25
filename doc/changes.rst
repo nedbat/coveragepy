@@ -35,6 +35,30 @@ history, see the `CHANGES.txt`_ file in the source tree.
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
 
+.. _changes_40:
+
+Version 4.0 --- pre-release
+---------------------------
+
+- Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
+  PyPy 2.2.
+
+- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_. Huge
+  thanks to Peter Portante for initial implementation, and to Joe Jevnik for
+  the final insight that completed the work.
+
+- Options are now also read from a setup.cfg file, if any.  Sections are
+  prefixed with "coverage:", so the ``[run]`` options will be read from the
+  ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
+
+- The ``report`` command can now show missing branches when reporting on branch
+  coverage.  Thanks, Steve Leonard. Closes `issue 230`_.
+
+.. _issue 149: https://bitbucket.org/ned/coveragepy/issue/149/coverage-gevent-looks-broken
+.. _issue 230: https://bitbucket.org/ned/coveragepy/issue/230/show-line-no-for-missing-branches-in
+.. _issue 304: https://bitbucket.org/ned/coveragepy/issue/304/attempt-to-get-configuration-from-setupcfg
+
+
 .. _changes_371:
 
 Version 3.7.1 --- 13 December 2013

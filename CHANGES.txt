@@ -17,7 +17,7 @@ Change history for Coverage.py
   ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
 
 - The ``report`` command can now show missing branches when reporting on branch
-  coverage.  Thanks, Steve Leonard. Closes `issue 230`.
+  coverage.  Thanks, Steve Leonard. Closes `issue 230`_.
 
 - The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
   Stan Hu.
