@@ -8,6 +8,8 @@ from coverage.misc import ExceptionDuringRun
 
 from tests.coveragetest import CoverageTest, OK, ERR
 
+# TODO: change bare asserts to unittest asserts.
+# TODO: base these tests on new cmdline, not old.
 
 class CmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
@@ -565,8 +567,7 @@ class NewCmdLineTest(CmdLineTest):
             .stop()
             .save()
             """)
-        self.cmd_executes("run --source=quux,hi.there,/home/bar foo.py",
-            """\
+        self.cmd_executes("run --source=quux,hi.there,/home/bar foo.py", """\
             .coverage(source=["quux", "hi.there", "/home/bar"])
             .erase()
             .start()
@@ -574,6 +575,19 @@ class NewCmdLineTest(CmdLineTest):
             .stop()
             .save()
             """)
+        self.cmd_executes("run --concurrency=gevent foo.py", """\
+            .coverage(concurrency='gevent')
+            .erase()
+            .start()
+            .run_python_file('foo.py', ['foo.py'])
+            .stop()
+            .save()
+            """)
+
+    def test_bad_concurrency(self):
+        self.command_line("run --concurrency=nothing", ret=ERR)
+        out = self.stdout()
+        self.assertIn("option --concurrency: invalid choice: 'nothing'", out)
 
     def test_run_debug(self):
         self.cmd_executes("run --debug=opt1 foo.py", """\

@@ -144,6 +144,7 @@ class ConfigFileTest(CoverageTest):
         cover_pylib = TRUE
         parallel = on
         include = a/   ,    b/
+        concurrency = thread
         plugins =
             plugins.a_plugin
             plugins.another
@@ -210,6 +211,7 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.branch)
         self.assertTrue(cov.config.cover_pylib)
         self.assertTrue(cov.config.parallel)
+        self.assertEqual(cov.config.concurrency, "thread")
 
         self.assertEqual(cov.get_exclude_list(),
             ["if 0:", r"pragma:?\s+no cover", "another_tab"]
@@ -274,7 +276,7 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.omit, None)
         self.assertEqual(cov.config.branch, False)
 
-    def test_one(self):
+    def test_non_ascii(self):
         self.make_file(".coveragerc", """\
             [html]
             title = tabblo & «ταБЬℓσ» # numbers

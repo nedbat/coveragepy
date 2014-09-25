@@ -68,7 +68,9 @@ class Collector(object):
         `warn` is a warning function, taking a single string message argument,
         to be used if a warning needs to be issued.
 
-        TODO: `concurrency`
+        `concurrency` is a string indicating the concurrency library in use.
+        Valid values are "greenlet", "eventlet", "gevent", or "thread" (the
+        default).
 
         """
         self.should_trace = should_trace

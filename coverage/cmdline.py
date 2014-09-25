@@ -19,9 +19,12 @@ class Opts(object):
         '', '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage."
         )
+    CONCURRENCY_CHOICES = ["thread", "gevent", "greenlet", "eventlet"]
     concurrency = optparse.make_option(
         '', '--concurrency', action='store', metavar="LIB",
-        help="Properly measure code using a concurrency library."
+        choices=CONCURRENCY_CHOICES,
+        help="Properly measure code using a concurrency library. "
+            "Valid values are: %s." % ", ".join(CONCURRENCY_CHOICES)
         )
     debug = optparse.make_option(
         '', '--debug', action='store', metavar="OPTS",

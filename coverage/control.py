@@ -86,8 +86,8 @@ class Coverage(object):
 
         `concurrency` is a string indicating the concurrency library being used
         in the measured code.  Without this, coverage.py will get incorrect
-        results.  Valid strings are "greenlet", "eventlet", or "gevent", which
-        are all equivalent. TODO: really?
+        results.  Valid strings are "greenlet", "eventlet", "gevent", or
+        "thread" (the default).
 
         `plugins` TODO.
 
