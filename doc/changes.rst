@@ -37,13 +37,14 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _changes_40:
 
-Version 4.0 --- pre-release
----------------------------
+Version 4.0 pre-release --- 27 September 2014
+---------------------------------------------
 
 - Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
   PyPy 2.2.
 
-- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_. Huge
+- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_. 
+  The ``concurrency`` setting specifies the concurrency library in use.  Huge
   thanks to Peter Portante for initial implementation, and to Joe Jevnik for
   the final insight that completed the work.
 

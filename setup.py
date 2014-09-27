@@ -12,6 +12,9 @@ Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
 tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_, with a
 mirrored repo on `Github <https://github.com/nedbat/coveragepy>`_.
 
+New in 4.0 alpha: ``--concurrency``, dropped support for older Pythons,
+setup.cfg support.
+
 New in 3.7: ``--debug``, and 12 bugs closed.
 
 New in 3.6: ``--fail-under``, and >20 bugs closed.

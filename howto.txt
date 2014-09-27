@@ -7,6 +7,7 @@
     - Pythons 2.6, 2.7, 3.2, 3.3, 3.4
 - Version number in coverage/version.py
     - 3.1a1, 3.1b1, 3.1c1, 3.1
+- Copyright date in coverage/__init__.py
 - Update CHANGES.txt, including release date.
 - Update docstring in setup.py, including "New in x.y:"
 - Update docs
@@ -17,7 +18,7 @@
     - Don't forget the man page: doc/python-coverage.1.txt
     - Generate new sample_html to get the latest, incl footer version number:
         python setup.py develop
-        cd C:\ned\cog\trunk
+        cd ~/cog/trunk
         rm -rf htmlcov
         coverage run --branch --source=cogapp -m cogapp.test_cogapp CogTestsInMemory
         coverage html
