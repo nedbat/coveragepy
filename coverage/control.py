@@ -550,10 +550,9 @@ class Coverage(object):
             # `save()` at the last minute so that the pid will be correct even
             # if the process forks.
             extra = ""
-            if _TEST_NAME_FILE:
-                f = open(_TEST_NAME_FILE)
-                test_name = f.read()
-                f.close()
+            if _TEST_NAME_FILE:                             # pragma: debugging
+                with open(_TEST_NAME_FILE) as f:
+                    test_name = f.read()
                 extra = "." + test_name
             data_suffix = "%s%s.%s.%06d" % (
                 socket.gethostname(), extra, os.getpid(),

@@ -37,10 +37,11 @@ class CoverageTest(
     def setUp(self):
         super(CoverageTest, self).setUp()
 
-        if _TEST_NAME_FILE:
-            f = open(_TEST_NAME_FILE, "w")
-            f.write("%s_%s" % (self.__class__.__name__, self._testMethodName))
-            f.close()
+        if _TEST_NAME_FILE:                                 # pragma: debugging
+            with open(_TEST_NAME_FILE, "w") as f:
+                f.write("%s_%s" % (
+                    self.__class__.__name__, self._testMethodName,
+                ))
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
