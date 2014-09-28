@@ -559,7 +559,7 @@ class PydocTest(CoverageTest):
         self.assert_pydoc_ok("coverage", coverage)
 
     def test_pydoc_coverage_coverage(self):
-        self.assert_pydoc_ok("coverage.coverage", coverage.coverage)
+        self.assert_pydoc_ok("coverage.Coverage", coverage.Coverage)
 
 
 class FailUnderTest(CoverageTest):
