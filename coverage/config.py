@@ -173,15 +173,6 @@ class CoverageConfig(object):
         # Options for plugins
         self.plugin_options = {}
 
-    def from_environment(self, env_var):
-        """Read configuration from the `env_var` environment variable."""
-        # Timidity: for nose users, read an environment variable.  This is a
-        # cheap hack, since the rest of the command line arguments aren't
-        # recognized, but it solves some users' problems.
-        env = os.environ.get(env_var, '')
-        if env:
-            self.timid = ('--timid' in env)
-
     MUST_BE_LIST = ["omit", "include", "debug", "plugins"]
 
     def from_args(self, **kwargs):

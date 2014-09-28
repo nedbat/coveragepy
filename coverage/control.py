@@ -118,7 +118,6 @@ class Coverage(object):
                 self.config.from_file("setup.cfg", section_prefix="coverage:")
 
         # 3: from environment variables:
-        self.config.from_environment('COVERAGE_OPTIONS')
         env_data_file = os.environ.get('COVERAGE_FILE')
         if env_data_file:
             self.config.data_file = env_data_file

@@ -113,9 +113,7 @@ code as well as your own, add the ``-L`` flag.
 If your coverage results seem to be overlooking code that you know has been
 executed, try running coverage again with the ``--timid`` flag.  This uses a
 simpler but slower trace method.  Projects that use DecoratorTools, including
-TurboGears, will need to use ``--timid`` to get correct results.  This option
-can also be enabled by setting the environment variable COVERAGE_OPTIONS to
-``--timid``.
+TurboGears, will need to use ``--timid`` to get correct results.
 
 If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate

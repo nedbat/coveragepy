@@ -3,6 +3,13 @@ Change history for Coverage.py
 ------------------------------
 
 
+4.0dev
+------
+
+- The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
+  a hack for ``--timid`` before configuration files were available.
+
+
 4.0a1 --- 27 September 2014
 ---------------------------
 
