@@ -413,7 +413,7 @@ class ByteParser(object):
             for _, l in bp._bytes_lines():
                 yield l
 
-    def _block_stack_repr(self, block_stack):
+    def _block_stack_repr(self, block_stack):               # pragma: debugging
         """Get a string version of `block_stack`, for debugging."""
         blocks = ", ".join(
             "(%s, %r)" % (dis.opname[b[0]], b[1]) for b in block_stack
@@ -552,7 +552,7 @@ class ByteParser(object):
         #self.validate_chunks(chunks)
         return chunks
 
-    def validate_chunks(self, chunks):
+    def validate_chunks(self, chunks):                      # pragma: debugging
         """Validate the rule that chunks have a single entrance."""
         # starts is the entrances to the chunks
         starts = set(ch.byte for ch in chunks)
