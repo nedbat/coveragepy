@@ -24,7 +24,7 @@ except ImportError:
     CTracer = None
 
 try:
-    import __pypy__
+    import __pypy__                             # pylint: disable=import-error
 except ImportError:
     __pypy__ = None
 
@@ -142,6 +142,20 @@ class Collector(object):
         # to trace execution in a file. A dict of filename to (filename or
         # None).
         if __pypy__ is not None:
+            # Alex Gaynor said:
+            # should_trace_cache is a strictly growing key: once a key is in
+            # it, it never changes.  Further, the keys used to access it are
+            # generally constant, given sufficient context. That is to say, at
+            # any given point _trace() is called, pypy is able to know the key.
+            # This is because the key is determined by the physical source code
+            # line, and that's invariant with the call site.
+            #
+            # This property of a dict with immutable keys, combined with
+            # call-site-constant keys is a match for PyPy's module dict,
+            # which is optimized for such workloads.
+            #
+            # This gives a 20% benefit on the workload described at
+            # https://bitbucket.org/pypy/pypy/issue/1871/10x-slower-than-cpython-under-coverage
             self.should_trace_cache = __pypy__.newdict("module")
         else:
             self.should_trace_cache = {}
