@@ -3,7 +3,7 @@ Change history for Coverage.py
 ------------------------------
 
 
-4.0dev
+Latest
 ------
 
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
@@ -13,8 +13,8 @@ Change history for Coverage.py
   Gaynor.
 
 
-4.0a1 --- 27 September 2014
----------------------------
+Version 4.0a1 --- 27 September 2014
+-----------------------------------
 
 - Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
   PyPy 2.2.
@@ -66,8 +66,8 @@ Change history for Coverage.py
 .. _issue 305: https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module
 
 
-3.7.1 --- 13 December 2013
---------------------------
+Version 3.7.1 --- 13 December 2013
+----------------------------------
 
 - Improved the speed of HTML report generation by about 20%.
 
@@ -75,8 +75,8 @@ Change history for Coverage.py
   so that it will actually find OS-installed static files.
 
 
-3.7 --- 6 October 2013
-----------------------
+Version 3.7 --- 6 October 2013
+------------------------------
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
   options indicating the type of internal activity to log to stderr.
