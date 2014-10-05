@@ -8,8 +8,7 @@ from coverage.backward import StringIO, import_local_file
 from coverage.backward import importlib     # pylint: disable=unused-import
 from coverage.control import _TEST_NAME_FILE
 from coverage.test_helpers import (
-    ModuleAwareMixin, SysPathAwareMixin, EnvironmentAwareMixin,
-    StdStreamCapturingMixin, TempDirMixin,
+    EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
 )
 
 from tests.backtest import run_command
@@ -19,8 +18,6 @@ from tests.backtest import run_command
 OK, ERR = 0, 1
 
 class CoverageTest(
-    ModuleAwareMixin,
-    SysPathAwareMixin,
     EnvironmentAwareMixin,
     StdStreamCapturingMixin,
     TempDirMixin,

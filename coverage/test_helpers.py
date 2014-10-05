@@ -132,8 +132,13 @@ class StdStreamCapturingMixin(TestCase):
         return self.captured_stderr.getvalue()
 
 
-class TempDirMixin(TestCase):
-    """A test case mixin that creates a temp directory and files in it."""
+class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
+    """A test case mixin that creates a temp directory and files in it.
+
+    Includes SysPathAwareMixin and ModuleAwareMixin, because making and using
+    temp dirs like this will also need that kind of isolation.
+
+    """
 
     # Our own setting: most of these tests run in their own temp directory.
     run_in_temp_dir = True
