@@ -148,12 +148,8 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
 
         if self.run_in_temp_dir:
             # Create a temporary directory.
-            noise = str(random.random())[2:]
-            self.temp_root = os.path.join(tempfile.gettempdir(), 'test_cover')
-            self.temp_dir = os.path.join(self.temp_root, noise)
-            os.makedirs(self.temp_dir)
-            self.old_dir = os.getcwd()
-            os.chdir(self.temp_dir)
+            self.temp_dir = self.make_temp_dir("test_cover")
+            self.chdir(self.temp_dir)
 
             # Modules should be importable from this temp directory.  We don't
             # use '' because we make lots of different temp directories and
@@ -166,15 +162,24 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
         class_behavior.test_method_made_any_files = False
         class_behavior.temp_dir = self.run_in_temp_dir
 
-        self.addCleanup(self.cleanup_temp_dir)
+        self.addCleanup(self.check_behavior)
 
-    def cleanup_temp_dir(self):
-        """Clean up the temp directories we made."""
+    def make_temp_dir(self, slug="test_cover"):
+        """Make a temp directory that is cleaned up when the test is done."""
+        name = "%s_%08d" % (slug, random.randint(0, 99999999))
+        temp_dir = os.path.join(tempfile.gettempdir(), name)
+        os.makedirs(temp_dir)
+        self.addCleanup(shutil.rmtree, temp_dir)
+        return temp_dir
 
-        if self.run_in_temp_dir:
-            # Get rid of the temporary directory.
-            os.chdir(self.old_dir)
-            shutil.rmtree(self.temp_root)
+    def chdir(self, new_dir):
+        """Change directory, and change back when the test is done."""
+        old_dir = os.getcwd()
+        os.chdir(new_dir)
+        self.addCleanup(os.chdir, old_dir)
+
+    def check_behavior(self):
+        """Check that we did the right things."""
 
         class_behavior = self.class_behavior()
         if class_behavior.test_method_made_any_files:
