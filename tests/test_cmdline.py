@@ -8,7 +8,6 @@ from coverage.misc import ExceptionDuringRun
 
 from tests.coveragetest import CoverageTest, OK, ERR
 
-# TODO: base these tests on new cmdline, not old.
 
 class BaseCmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
