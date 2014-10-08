@@ -62,12 +62,6 @@ class Opts(object):
         help="Show line numbers of statements in each module that weren't "
                 "executed."
         )
-    old_omit = optparse.make_option(
-        '-o', '--omit', action='store',
-        metavar="PAT1,PAT2,...",
-        help="Omit files whose paths match one of these patterns. "
-                "Accepts shell-style wildcards, which must be quoted."
-        )
     omit = optparse.make_option(
         '', '--omit', action='store',
         metavar="PAT1,PAT2,...",
@@ -178,41 +172,16 @@ class CoverageOptionParser(optparse.OptionParser, object):
         raise self.OptionParserError
 
 
-class ClassicOptionParser(CoverageOptionParser):
-    """Command-line parser for coverage.py classic arguments."""
+class GlobalOptionParser(CoverageOptionParser):
+    """Command-line parser for coverage.py global option arguments."""
 
     def __init__(self):
-        super(ClassicOptionParser, self).__init__()
-
-        self.add_action('-a', '--annotate', 'annotate')
-        self.add_action('-b', '--html', 'html')
-        self.add_action('-c', '--combine', 'combine')
-        self.add_action('-e', '--erase', 'erase')
-        self.add_action('-r', '--report', 'report')
-        self.add_action('-x', '--execute', 'execute')
+        super(GlobalOptionParser, self).__init__()
 
         self.add_options([
-            Opts.directory,
             Opts.help,
-            Opts.ignore_errors,
-            Opts.pylib,
-            Opts.show_missing,
-            Opts.old_omit,
-            Opts.parallel_mode,
-            Opts.timid,
             Opts.version,
         ])
-
-    def add_action(self, dash, dashdash, action_code):
-        """Add a specialized option that is the action to execute."""
-        option = self.add_option(dash, dashdash, action='callback',
-            callback=self._append_action
-            )
-        option.action_code = action_code
-
-    def _append_action(self, option, opt_unused, value_unused, parser):
-        """Callback for an option that adds to the `actions` list."""
-        parser.values.actions.append(option.action_code)
 
 
 class CmdOptionParser(CoverageOptionParser):
@@ -373,7 +342,7 @@ class CoverageScript(object):
         self.run_python_file = _run_python_file or run_python_file
         self.run_python_module = _run_python_module or run_python_module
         self.help_fn = _help_fn or self.help
-        self.classic = False
+        self.global_option = False
 
         self.coverage = None
 
@@ -390,11 +359,11 @@ class CoverageScript(object):
             self.help_fn(topic='minimum_help')
             return OK
 
-        # The command syntax we parse depends on the first argument.  Classic
-        # syntax always starts with an option.
-        self.classic = argv[0].startswith('-')
-        if self.classic:
-            parser = ClassicOptionParser()
+        # The command syntax we parse depends on the first argument.  Global
+        # switch syntax always starts with an option.
+        self.global_option = argv[0].startswith('-')
+        if self.global_option:
+            parser = GlobalOptionParser()
         else:
             parser = CMDS.get(argv[0])
             if not parser:
@@ -511,7 +480,7 @@ class CoverageScript(object):
         """
         # Handle help.
         if options.help:
-            if self.classic:
+            if self.global_option:
                 self.help_fn(topic='help')
             else:
                 self.help_fn(parser=parser)
@@ -659,53 +628,6 @@ def unglob_args(args):
 
 HELP_TOPICS = {
 # -------------------------
-'classic':
-r"""Coverage.py version %(__version__)s
-Measure, collect, and report on code coverage in Python programs.
-
-Usage:
-
-coverage -x [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]
-    Execute the module, passing the given command-line arguments, collecting
-    coverage data.  With the -p option, include the machine name and process
-    id in the .coverage file name.  With -L, measure coverage even inside the
-    Python installed library, which isn't done by default.  With --timid, use a
-    simpler but slower trace method.
-
-coverage -e
-    Erase collected coverage data.
-
-coverage -c
-    Combine data from multiple coverage files (as created by -p option above)
-    and store it into a single file representing the union of the coverage.
-
-coverage -r [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
-    Report on the statement coverage for the given files.  With the -m
-    option, show line numbers of the statements that weren't executed.
-
-coverage -b -d DIR [-i] [-o DIR,...] [FILE1 FILE2 ...]
-    Create an HTML report of the coverage of the given files.  Each file gets
-    its own page, with the file listing decorated to show executed, excluded,
-    and missed lines.
-
-coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
-    Make annotated copies of the given files, marking statements that
-    are executed with > and statements that are missed with !.
-
--d DIR
-    Write output files for -b or -a to this directory.
-
--i  Ignore errors while reporting or annotating.
-
--o DIR,...
-    Omit reporting or annotating files when their filename path starts with
-    a directory listed in the omit list.
-    e.g. coverage -i -r -o c:\python25,lib\enthought\traits
-
-Coverage data is saved in the file .coverage by default.  Set the
-COVERAGE_FILE environment variable to save it somewhere else.
-""",
-# -------------------------
 'help': """\
 Coverage.py, version %(__version__)s
 Measure, collect, and report on code coverage in Python programs.
@@ -723,7 +645,6 @@ Commands:
     xml         Create an XML report of coverage results.
 
 Use "coverage help <command>" for detailed help on any command.
-Use "coverage help classic" for help on older command syntax.
 For more information, see %(__url__)s
 """,
 # -------------------------

@@ -10,7 +10,7 @@ from tests.coveragetest import CoverageTest, OK, ERR
 
 # TODO: base these tests on new cmdline, not old.
 
-class CmdLineTest(CoverageTest):
+class BaseCmdLineTest(CoverageTest):
     """Tests of execution paths through the command line interpreter."""
 
     run_in_temp_dir = False
@@ -123,282 +123,13 @@ class CmdLineTest(CoverageTest):
                 )
 
 
-class CmdLineTestTest(CmdLineTest):
-    """Tests that our CmdLineTest helpers work."""
+class BaseCmdLineTestTest(BaseCmdLineTest):
+    """Tests that our BaseCmdLineTest helpers work."""
     def test_assert_same_method_calls(self):
         # All the other tests here use self.cmd_executes_same in successful
         # ways, so here we just check that it fails.
         with self.assertRaises(AssertionError):
             self.cmd_executes_same("run", "debug")
-
-
-class ClassicCmdLineTest(CmdLineTest):
-    """Tests of the classic coverage.py command line."""
-
-    def test_erase(self):
-        # coverage -e
-        self.cmd_executes("-e", """\
-            .coverage()
-            .erase()
-            """)
-        self.cmd_executes_same("-e", "--erase")
-
-    def test_execute(self):
-        # coverage -x [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]
-
-        # -x calls coverage.load first.
-        self.cmd_executes("-x foo.py", """\
-            .coverage()
-            .load()
-            .start()
-            .run_python_file('foo.py', ['foo.py'])
-            .stop()
-            .save()
-            """)
-        # -e -x calls coverage.erase first.
-        self.cmd_executes("-e -x foo.py", """\
-            .coverage()
-            .erase()
-            .start()
-            .run_python_file('foo.py', ['foo.py'])
-            .stop()
-            .save()
-            """)
-        # --timid sets a flag, and program arguments get passed through.
-        self.cmd_executes("-x --timid foo.py abc 123", """\
-            .coverage(timid=True)
-            .load()
-            .start()
-            .run_python_file('foo.py', ['foo.py', 'abc', '123'])
-            .stop()
-            .save()
-            """)
-        # -L sets a flag, and flags for the program don't confuse us.
-        self.cmd_executes("-x -p -L foo.py -a -b", """\
-            .coverage(cover_pylib=True, data_suffix=True)
-            .load()
-            .start()
-            .run_python_file('foo.py', ['foo.py', '-a', '-b'])
-            .stop()
-            .save()
-            """)
-
-        # Check that long forms of flags do the same thing as short forms.
-        self.cmd_executes_same("-x f.py", "--execute f.py")
-        self.cmd_executes_same("-e -x f.py", "--erase --execute f.py")
-        self.cmd_executes_same("-x -p f.py", "-x --parallel-mode f.py")
-        self.cmd_executes_same("-x -L f.py", "-x --pylib f.py")
-
-    def test_combine(self):
-        # coverage -c
-        self.cmd_executes("-c", """\
-            .coverage()
-            .load()
-            .combine()
-            .save()
-            """)
-        self.cmd_executes_same("-c", "--combine")
-
-    def test_report(self):
-        # coverage -r [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
-        self.cmd_executes("-r", """\
-            .coverage()
-            .load()
-            .report(show_missing=None)
-            """)
-        self.cmd_executes("-r -i", """\
-            .coverage()
-            .load()
-            .report(ignore_errors=True)
-            """)
-        self.cmd_executes("-r -m", """\
-            .coverage()
-            .load()
-            .report(show_missing=True)
-            """)
-        self.cmd_executes("-r -o fooey", """\
-            .coverage(omit=["fooey"])
-            .load()
-            .report(omit=["fooey"])
-            """)
-        self.cmd_executes("-r -o fooey,booey", """\
-            .coverage(omit=["fooey", "booey"])
-            .load()
-            .report(omit=["fooey", "booey"])
-            """)
-        self.cmd_executes("-r mod1", """\
-            .coverage()
-            .load()
-            .report(morfs=["mod1"])
-            """)
-        self.cmd_executes("-r mod1 mod2 mod3", """\
-            .coverage()
-            .load()
-            .report(morfs=["mod1", "mod2", "mod3"])
-            """)
-
-        self.cmd_executes_same("-r", "--report")
-        self.cmd_executes_same("-r -i", "-r --ignore-errors")
-        self.cmd_executes_same("-r -m", "-r --show-missing")
-        self.cmd_executes_same("-r -o f", "-r --omit=f")
-        self.cmd_executes_same("-r -o f", "-r --omit f")
-        self.cmd_executes_same("-r -o f,b", "-r --omit=f,b")
-        self.cmd_executes_same("-r -o f,b", "-r --omit f,b")
-        self.cmd_executes_same("-r -of", "-r --omit=f")
-        self.cmd_executes_same("-r -of,b", "-r --omit=f,b")
-
-    def test_annotate(self):
-        # coverage -a [-d DIR] [-i] [-o DIR,...] [FILE1 FILE2 ...]
-        self.cmd_executes("-a", """\
-            .coverage()
-            .load()
-            .annotate()
-            """)
-        self.cmd_executes("-a -d dir1", """\
-            .coverage()
-            .load()
-            .annotate(directory="dir1")
-            """)
-        self.cmd_executes("-a -i", """\
-            .coverage()
-            .load()
-            .annotate(ignore_errors=True)
-            """)
-        self.cmd_executes("-a -o fooey", """\
-            .coverage(omit=["fooey"])
-            .load()
-            .annotate(omit=["fooey"])
-            """)
-        self.cmd_executes("-a -o fooey,booey", """\
-            .coverage(omit=["fooey", "booey"])
-            .load()
-            .annotate(omit=["fooey", "booey"])
-            """)
-        self.cmd_executes("-a mod1", """\
-            .coverage()
-            .load()
-            .annotate(morfs=["mod1"])
-            """)
-        self.cmd_executes("-a mod1 mod2 mod3", """\
-            .coverage()
-            .load()
-            .annotate(morfs=["mod1", "mod2", "mod3"])
-            """)
-
-        self.cmd_executes_same("-a", "--annotate")
-        self.cmd_executes_same("-a -d d1", "-a --directory=d1")
-        self.cmd_executes_same("-a -i", "-a --ignore-errors")
-        self.cmd_executes_same("-a -o f", "-a --omit=f")
-        self.cmd_executes_same("-a -o f", "-a --omit f")
-        self.cmd_executes_same("-a -o f,b", "-a --omit=f,b")
-        self.cmd_executes_same("-a -o f,b", "-a --omit f,b")
-        self.cmd_executes_same("-a -of", "-a --omit=f")
-        self.cmd_executes_same("-a -of,b", "-a --omit=f,b")
-
-    def test_html_report(self):
-        # coverage -b -d DIR [-i] [-o DIR,...] [FILE1 FILE2 ...]
-        self.cmd_executes("-b", """\
-            .coverage()
-            .load()
-            .html_report()
-            """)
-        self.cmd_executes("-b -d dir1", """\
-            .coverage()
-            .load()
-            .html_report(directory="dir1")
-            """)
-        self.cmd_executes("-b -i", """\
-            .coverage()
-            .load()
-            .html_report(ignore_errors=True)
-            """)
-        self.cmd_executes("-b -o fooey", """\
-            .coverage(omit=["fooey"])
-            .load()
-            .html_report(omit=["fooey"])
-            """)
-        self.cmd_executes("-b -o fooey,booey", """\
-            .coverage(omit=["fooey", "booey"])
-            .load()
-            .html_report(omit=["fooey", "booey"])
-            """)
-        self.cmd_executes("-b mod1", """\
-            .coverage()
-            .load()
-            .html_report(morfs=["mod1"])
-            """)
-        self.cmd_executes("-b mod1 mod2 mod3", """\
-            .coverage()
-            .load()
-            .html_report(morfs=["mod1", "mod2", "mod3"])
-            """)
-
-        self.cmd_executes_same("-b", "--html")
-        self.cmd_executes_same("-b -d d1", "-b --directory=d1")
-        self.cmd_executes_same("-b -i", "-b --ignore-errors")
-        self.cmd_executes_same("-b -o f", "-b --omit=f")
-        self.cmd_executes_same("-b -o f,b", "-b --omit=f,b")
-        self.cmd_executes_same("-b -of", "-b --omit=f")
-        self.cmd_executes_same("-b -of,b", "-b --omit=f,b")
-
-    def test_help(self):
-        # coverage -h
-        self.cmd_help("-h", topic="help", ret=OK)
-        self.cmd_help("--help", topic="help", ret=OK)
-
-    def test_version(self):
-        # coverage --version
-        self.cmd_help("--version", topic="version", ret=OK)
-
-    ## Error cases
-
-    def test_argless_actions(self):
-        self.cmd_help("-e foo bar", "Unexpected arguments: foo bar")
-        self.cmd_help("-c baz quux", "Unexpected arguments: baz quux")
-
-    def test_need_action(self):
-        self.cmd_help("-p", "You must specify at least one of "
-                                                "-e, -x, -c, -r, -a, or -b.")
-
-    def test_bad_action_combinations(self):
-        self.cmd_help('-e -a',
-            "You can't specify the 'erase' and 'annotate' "
-                "options at the same time."
-            )
-        self.cmd_help('-e -r',
-            "You can't specify the 'erase' and 'report' "
-                "options at the same time."
-            )
-        self.cmd_help('-e -b',
-            "You can't specify the 'erase' and 'html' "
-                "options at the same time."
-            )
-        self.cmd_help('-e -c',
-            "You can't specify the 'erase' and 'combine' "
-                "options at the same time."
-            )
-        self.cmd_help('-x -a',
-            "You can't specify the 'execute' and 'annotate' "
-                "options at the same time."
-            )
-        self.cmd_help('-x -r',
-            "You can't specify the 'execute' and 'report' "
-                "options at the same time."
-            )
-        self.cmd_help('-x -b',
-            "You can't specify the 'execute' and 'html' "
-                "options at the same time."
-            )
-        self.cmd_help('-x -c',
-            "You can't specify the 'execute' and 'combine' "
-                "options at the same time."
-            )
-
-    def test_nothing_to_do(self):
-        self.cmd_help("-x", "Nothing to do.")
-
-    def test_unknown_option(self):
-        self.cmd_help("-z", "no such option: -z")
 
 
 class FakeCoverageForDebugData(object):
@@ -428,7 +159,7 @@ class FakeCoverageForDebugData(object):
         return self._summary
 
 
-class NewCmdLineTest(CmdLineTest):
+class CmdLineTest(BaseCmdLineTest):
     """Tests of the coverage.py command line."""
 
     def test_annotate(self):
@@ -520,7 +251,16 @@ class NewCmdLineTest(CmdLineTest):
             .erase()
             """)
 
-    def test_help(self):
+    def test_version(self):
+        # coverage --version
+        self.cmd_help("--version", topic="version", ret=OK)
+
+    def test_help_option(self):
+        # coverage -h
+        self.cmd_help("-h", topic="help", ret=OK)
+        self.cmd_help("--help", topic="help", ret=OK)
+
+    def test_help_command(self):
         self.cmd_executes("help", ".help_fn(topic='help')")
 
     def test_cmd_help(self):
@@ -806,7 +546,7 @@ class NewCmdLineTest(CmdLineTest):
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
 
 
-class CmdLineStdoutTest(CmdLineTest):
+class CmdLineStdoutTest(BaseCmdLineTest):
     """Test the command line with real stdout output."""
 
     def test_minimum_help(self):

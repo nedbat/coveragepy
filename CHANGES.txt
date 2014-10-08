@@ -6,6 +6,9 @@ Change history for Coverage.py
 Latest
 ------
 
+- The original command line switches (`-x` to run a program, etc) are no
+  longer supported.
+
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
   a hack for ``--timid`` before configuration files were available.
 
