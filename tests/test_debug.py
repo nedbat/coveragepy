@@ -47,7 +47,8 @@ class DebugTraceTest(CoverageTest):
             """)
 
         debug_out = StringIO()
-        cov = coverage.coverage(debug=debug, debug_file=debug_out)
+        cov = coverage.coverage(debug=debug)
+        cov._debug_file = debug_out
         self.start_import_stop(cov, "f1")
 
         out_lines = debug_out.getvalue().splitlines()

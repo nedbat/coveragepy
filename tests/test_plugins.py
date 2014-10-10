@@ -101,7 +101,9 @@ class PluginTest(CoverageTest):
             """)
 
         self.assert_doesnt_exist("evidence.out")
-        _ = coverage.Coverage(plugins=["my_plugin"])
+        cov = coverage.Coverage(plugins=["my_plugin"])
+        cov.start()
+        cov.stop()
 
         with open("evidence.out") as f:
             self.assertEqual(f.read(), "we are here!")
@@ -111,6 +113,7 @@ class PluginTest(CoverageTest):
         with self.assertRaises(ImportError):
             cov = coverage.Coverage(plugins=["does_not_exist_woijwoicweo"])
             cov.start()
+        cov.stop()
 
     def test_bad_plugin_isnt_hidden(self):
         # Prove that a plugin with an error in it will raise the error.
@@ -118,7 +121,9 @@ class PluginTest(CoverageTest):
             1/0
             """)
         with self.assertRaises(ZeroDivisionError):
-            _ = coverage.Coverage(plugins=["plugin_over_zero"])
+            cov = coverage.Coverage(plugins=["plugin_over_zero"])
+            cov.start()
+        cov.stop()
 
     def test_importing_myself(self):
         if sys.platform == 'win32':
