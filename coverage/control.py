@@ -33,7 +33,7 @@ class Coverage(object):
 
     To use::
 
-        from coverage import coverage
+        from coverage import Coverage
 
         cov = Coverage()
         cov.start()
