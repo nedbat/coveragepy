@@ -45,7 +45,7 @@ class Coverage(object):
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
                 source=None, omit=None, include=None, debug=None,
-                concurrency=None, plugins=None):
+                concurrency=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -88,8 +88,6 @@ class Coverage(object):
         results.  Valid strings are "greenlet", "eventlet", "gevent", or
         "thread" (the default).
 
-        `plugins` TODO.
-
         """
         # Build our configuration from a number of sources:
         # 1: defaults:
@@ -121,7 +119,7 @@ class Coverage(object):
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
             source=source, omit=omit, include=include, debug=debug,
-            concurrency=concurrency, plugins=plugins,
+            concurrency=concurrency,
             )
 
         self._debug_file = None

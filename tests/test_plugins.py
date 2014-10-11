@@ -101,7 +101,8 @@ class PluginTest(CoverageTest):
             """)
 
         self.assert_doesnt_exist("evidence.out")
-        cov = coverage.Coverage(plugins=["my_plugin"])
+        cov = coverage.Coverage()
+        cov.config["run:plugins"] = ["my_plugin"]
         cov.start()
         cov.stop()
 
@@ -111,7 +112,8 @@ class PluginTest(CoverageTest):
     def test_missing_plugin_raises_import_error(self):
         # Prove that a missing plugin will raise an ImportError.
         with self.assertRaises(ImportError):
-            cov = coverage.Coverage(plugins=["does_not_exist_woijwoicweo"])
+            cov = coverage.Coverage()
+            cov.config["run:plugins"] = ["does_not_exist_woijwoicweo"]
             cov.start()
         cov.stop()
 
@@ -121,7 +123,8 @@ class PluginTest(CoverageTest):
             1/0
             """)
         with self.assertRaises(ZeroDivisionError):
-            cov = coverage.Coverage(plugins=["plugin_over_zero"])
+            cov = coverage.Coverage()
+            cov.config["run:plugins"] = ["plugin_over_zero"]
             cov.start()
         cov.stop()
 
@@ -139,7 +142,8 @@ class PluginTest(CoverageTest):
             d = 4
             """)
 
-        cov = coverage.Coverage(plugins=["tests.test_plugins"])
+        cov = coverage.Coverage()
+        cov.config["run:plugins"] = ["tests.test_plugins"]
 
         # Import the python file, executing it.
         self.start_import_stop(cov, "simple")

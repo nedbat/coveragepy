@@ -12,6 +12,9 @@ Latest
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
   a hack for ``--timid`` before configuration files were available.
 
+- You can now programmatically adjust the configuration of coverage by setting
+  items on `Coverage.config` after construcion.
+
 - Made some PyPy-specific tweaks to improve speed under PyPy.  Thanks, Alex
   Gaynor.
 

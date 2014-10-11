@@ -266,3 +266,18 @@ class CoverageConfig(object):
     def get_plugin_options(self, plugin):
         """Get a dictionary of options for the plugin named `plugin`."""
         return self.plugin_options.get(plugin, {})
+
+    # TODO: docs for this.
+    def __setitem__(self, names, value):
+        for option_spec in self.CONFIG_FILE_OPTIONS:
+            attr, where = option_spec[:2]
+            if where == names:
+                setattr(self, attr, value)
+                return
+
+    # TODO: docs for this.
+    def __getitem__(self, names):
+        for option_spec in self.CONFIG_FILE_OPTIONS:
+            attr, where = option_spec[:2]
+            if where == names:
+                return getattr(self, attr)

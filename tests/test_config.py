@@ -123,6 +123,19 @@ class ConfigTest(CoverageTest):
             ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
             )
 
+    def test_tweaks_after_constructor(self):
+        # Arguments to the constructor are applied to the configuation.
+        cov = coverage.coverage(timid=True, data_file="fooey.dat")
+        cov.config["run:timid"] = False
+
+        self.assertFalse(cov.config.timid)
+        self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.data_file, "fooey.dat")
+
+        self.assertFalse(cov.config["run:timid"])
+        self.assertFalse(cov.config["run:branch"])
+        self.assertEqual(cov.config["run:data_file"], "fooey.dat")
+
 
 class ConfigFileTest(CoverageTest):
     """Tests of the config file settings in particular."""
