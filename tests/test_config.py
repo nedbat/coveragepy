@@ -136,6 +136,32 @@ class ConfigTest(CoverageTest):
         self.assertFalse(cov.config["run:branch"])
         self.assertEqual(cov.config["run:data_file"], "fooey.dat")
 
+    def test_tweak_error_checking(self):
+        # Trying to set an unknown config value raises an error.
+        cov = coverage.coverage()
+        with self.assertRaises(CoverageException):
+            cov.config["run:xyzzy"] = 12
+        with self.assertRaises(CoverageException):
+            cov.config["xyzzy:foo"] = 12
+        with self.assertRaises(CoverageException):
+            _ = cov.config["run:xyzzy"]
+        with self.assertRaises(CoverageException):
+            _ = cov.config["xyzzy:foo"]
+
+    def test_tweak_plugin_options(self):
+        # Plugin options have a more flexible syntax.
+        cov = coverage.coverage()
+        cov.config["run:plugins"] = ["fooey.plugin", "xyzzy.coverage.plugin"]
+        cov.config["fooey.plugin:xyzzy"] = 17
+        cov.config["xyzzy.coverage.plugin:plugh"] = ["a", "b"]
+        with self.assertRaises(CoverageException):
+            cov.config["no_such.plugin:foo"] = 23
+
+        self.assertEqual(cov.config["fooey.plugin:xyzzy"], 17)
+        self.assertEqual(cov.config["xyzzy.coverage.plugin:plugh"], ["a", "b"])
+        with self.assertRaises(CoverageException):
+            _ = cov.config["no_such.plugin:foo"]
+
 
 class ConfigFileTest(CoverageTest):
     """Tests of the config file settings in particular."""
