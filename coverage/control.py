@@ -245,7 +245,7 @@ class Coverage(object):
                 if m is not None and hasattr(m, "__file__"):
                     self.pylib_dirs.add(self._canonical_dir(m))
             if _structseq and not hasattr(_structseq, '__file__'):
-                # Pypy 2.4 has no __file__ in the builtin modules, but the code
+                # PyPy 2.4 has no __file__ in the builtin modules, but the code
                 # objects still have the filenames.  So dig into one to find
                 # the path to exclude.
                 structseq_file = _structseq.structseq_new.func_code.co_filename
