@@ -1,6 +1,6 @@
 """Core control stuff for Coverage."""
 
-import atexit, os, platform, random, socket, sys
+import atexit, inspect, os, platform, random, socket, sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
@@ -12,6 +12,7 @@ from coverage.debug import DebugControl
 from coverage.plugin import CoveragePlugin, Plugins, overrides
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
+from coverage.files import ModuleMatcher
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone
@@ -140,7 +141,7 @@ class Coverage(object):
 
         # Other instance attributes, set later.
         self.omit = self.include = self.source = None
-        self.source_pkgs = self.file_locator = None
+        self.not_imported = self.source_pkgs = self.file_locator = None
         self.data = self.collector = None
         self.plugins = self.file_tracers = None
         self.pylib_dirs = self.cover_dir = None
@@ -198,6 +199,7 @@ class Coverage(object):
                 self.source.append(self.file_locator.canonical_filename(src))
             else:
                 self.source_pkgs.append(src)
+        self.not_imported = list(self.source_pkgs)
 
         self.omit = prep_patterns(self.config.omit)
         self.include = prep_patterns(self.config.include)
@@ -269,6 +271,7 @@ class Coverage(object):
         # Create the matchers we need for _should_trace
         if self.source or self.source_pkgs:
             self.source_match = TreeMatcher(self.source)
+            self.source_pkgs_match = ModuleMatcher(self.source_pkgs)
         else:
             if self.cover_dir:
                 self.cover_match = TreeMatcher([self.cover_dir])
@@ -303,6 +306,34 @@ class Coverage(object):
                 filename = filename[:-9] + ".py"
         return filename
 
+    def _name_for_module(self, module_namespace, filename):
+        """
+        For configurability's sake, we allow __main__ modules to be matched by their importable name.
+
+        If loaded via runpy (aka -m), we can usually recover the "original" full dotted module name,
+        otherwise, we resort to interpreting the filename to get the module's name.
+        In the case that the module name can't be deteremined, None is returned.
+        """
+        # TODO: unit-test
+        dunder_name = module_namespace.get('__name__', None)
+
+        if isinstance(dunder_name, str) and dunder_name != '__main__':
+            # this is the usual case: an imported module
+            return dunder_name
+
+        loader = module_namespace.get('__loader__', None)
+        if hasattr(loader, 'fullname') and isinstance(loader.fullname, str):
+            # module loaded via runpy -m
+            return loader.fullname
+
+        # script as first argument to python cli
+        inspectedname = inspect.getmodulename(filename)
+        if inspectedname is not None:
+            return inspectedname
+        else:
+            return dunder_name
+
+
     def _should_trace_with_reason(self, filename, frame):
         """Decide whether to trace execution in `filename`, with a reason.
 
@@ -318,8 +349,6 @@ class Coverage(object):
             disp.reason = reason
             return disp
 
-        self._check_for_packages()
-
         # Compiled Python files have two filenames: frame.f_code.co_filename is
         # the filename at the time the .pyc was compiled.  The second name is
         # __file__, which is where the .pyc was actually loaded from.  Since
@@ -333,6 +362,8 @@ class Coverage(object):
         if not filename:
             # Empty string is pretty useless
             return nope(disp, "empty string isn't a filename")
+
+        modulename = self._name_for_module(frame.f_globals, filename)
 
         if filename.startswith('memory:'):
             return nope(disp, "memory isn't traceable")
@@ -373,7 +404,9 @@ class Coverage(object):
                         (plugin, disp.original_filename)
                     )
                 if disp.check_filters:
-                    reason = self._check_include_omit_etc(disp.source_filename)
+                    reason = self._check_include_omit_etc(
+                            disp.source_filename, modulename,
+                    )
                     if reason:
                         nope(disp, reason)
 
@@ -381,7 +414,7 @@ class Coverage(object):
 
         return nope(disp, "no plugin found")  # TODO: a test that causes this.
 
-    def _check_include_omit_etc(self, filename):
+    def _check_include_omit_etc(self, filename, modulename):
         """Check a filename against the include, omit, etc, rules.
 
         Returns a string or None.  String means, don't trace, and is the reason
@@ -393,6 +426,12 @@ class Coverage(object):
         # any canned exclusions. If they didn't, then we have to exclude the
         # stdlib and coverage.py directories.
         if self.source_match:
+            match = self.source_pkgs_match.match(modulename)
+            if match:
+                if modulename in self.not_imported:
+                    self.not_imported.remove(modulename)
+                return None  # There's no reason to skip this file.
+
             if not self.source_match.match(filename):
                 return "falls outside the --source trees"
         elif self.include_match:
@@ -447,46 +486,6 @@ class Coverage(object):
         """Use `msg` as a warning."""
         self._warnings.append(msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
-
-    def _check_for_packages(self):
-        """Update the source_match matcher with latest imported packages."""
-        # Our self.source_pkgs attribute is a list of package names we want to
-        # measure.  Each time through here, we see if we've imported any of
-        # them yet.  If so, we add its file to source_match, and we don't have
-        # to look for that package any more.
-        if self.source_pkgs:
-            found = []
-            for pkg in self.source_pkgs:
-                try:
-                    mod = sys.modules[pkg]
-                except KeyError:
-                    continue
-
-                found.append(pkg)
-
-                try:
-                    pkg_file = mod.__file__
-                except AttributeError:
-                    pkg_file = None
-                else:
-                    d, f = os.path.split(pkg_file)
-                    if f.startswith('__init__'):
-                        # This is actually a package, return the directory.
-                        pkg_file = d
-                    else:
-                        pkg_file = self._source_for_file(pkg_file)
-                    pkg_file = self.file_locator.canonical_filename(pkg_file)
-                    if not os.path.exists(pkg_file):
-                        pkg_file = None
-
-                if pkg_file:
-                    self.source.append(pkg_file)
-                    self.source_match.add(pkg_file)
-                else:
-                    self._warn("Module %s has no Python source." % pkg)
-
-            for pkg in found:
-                self.source_pkgs.remove(pkg)
 
     def use_cache(self, usecache):
         """Control the use of a data file (incorrectly called a cache).
@@ -652,11 +651,21 @@ class Coverage(object):
         self.data.add_plugin_data(self.collector.get_plugin_data())
         self.collector.reset()
 
-        # If there are still entries in the source_pkgs list, then we never
+        # If there are still entries in the not_imported list, then we never
         # encountered those packages.
         if self._warn_unimported_source:
-            for pkg in self.source_pkgs:
-                self._warn("Module %s was never imported." % pkg)
+            for pkg in self.not_imported:
+                if pkg not in sys.modules:
+                    self._warn("Module %s was never imported." % pkg)
+                elif not hasattr(sys.modules[pkg], '__file__'):
+                    self._warn("Module %s has no Python source." % pkg)
+                else:
+                    raise AssertionError('''\
+Unexpected third case:
+    name: %s
+    object: %r
+    __file__: %s''' % (pkg, sys.modules[pkg], sys.modules[pkg].__file__)
+                    )
 
         # Find out if we got any data.
         summary = self.data.summary()

@@ -173,6 +173,50 @@ class TreeMatcher(object):
         return False
 
 
+class ModuleMatcher(object):
+    """A matcher for files in a tree."""
+    def __init__(self, module_names, main_module=None):
+        self.modules = list(module_names)
+        self.main_module = main_module
+        self.not_imported = list(module_names)
+
+    def __repr__(self):
+        if self.main_module:
+            main_module = ', main_module=%r' % self.main_module
+        else:
+            main_module = ''
+        return "<ModuleMatcher %r%s>" % (self.modules, main_module)
+
+    def info(self):
+        """A list of strings for displaying when dumping state."""
+        return ['main_module=%r' % self.main_module] + self.modules
+
+    def add(self, module):
+        """Add another directory to the list we match for."""
+        self.modules.append(module)
+
+    def match(self, module_name):
+        """Does `module_name` indicate a module in one of our packages?
+
+        On success, returns the matched module name, which can be different in
+        the case of __main__.
+        """
+        if not module_name:
+            return False
+        elif module_name == '__main__':
+            module_name = self.main_module or module_name
+
+        for m in self.modules:
+            if module_name.startswith(m):
+                if module_name == m:
+                    return module_name
+                if module_name[len(m)] == '.':
+                    # This is a module in the package
+                    return module_name
+
+        return False
+
+
 class FnmatchMatcher(object):
     """A matcher for files by filename pattern."""
     def __init__(self, pats):

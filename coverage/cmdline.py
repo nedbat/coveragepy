@@ -519,9 +519,10 @@ class CoverageScript(object):
 
         # Set the first path element properly.
         old_path0 = sys.path[0]
+        main_module = args[0] if options.module else None
 
         # Run the script.
-        self.coverage.start()
+        self.coverage.start(main_module=main_module)
         code_ran = True
         try:
             if options.module:

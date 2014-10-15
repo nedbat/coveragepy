@@ -331,6 +331,55 @@ class ProcessTest(CoverageTest):
         out_py = self.run_command("python -m tests.try_execfile")
         self.assertMultiLineEqual(out_cov, out_py)
 
+    def test_coverage_run_dashm_equal_to_doubledashsource(self):
+        """regression test for #328
+
+        When imported by -m, a module's __name__ is __main__, but we need the
+        --source machinery to know and respect the original name.
+        """
+        # These -m commands assume the coverage tree is on the path.
+        out_cov = self.run_command(
+            "coverage run --source tests.try_execfile -m tests.try_execfile"
+        )
+        out_py = self.run_command("python -m tests.try_execfile")
+        self.assertMultiLineEqual(out_cov, out_py)
+
+    def test_coverage_run_dashm_superset_of_doubledashsource(self):
+        """Edge case: --source foo -m foo.bar"""
+        # These -m commands assume the coverage tree is on the path.
+        out_cov = self.run_command(
+            "coverage run --source tests -m tests.try_execfile"
+        )
+        out_py = self.run_command("python -m tests.try_execfile")
+        self.assertMultiLineEqual(out_cov, out_py)
+
+        st, out = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+        self.assertEqual(self.line_count(out), 6, out)
+
+    def test_coverage_run_script_imports_doubledashsource(self):
+        self.make_file("myscript", """\
+            import sys
+            sys.dont_write_bytecode = True
+
+            def main():
+                import tests.try_execfile
+
+            if __name__ == '__main__':
+                main()
+            """)
+
+        # These -m commands assume the coverage tree is on the path.
+        out_cov = self.run_command(
+            "coverage run --source tests myscript"
+        )
+        out_py = self.run_command("python myscript")
+        self.assertMultiLineEqual(out_cov, out_py)
+
+        st, out = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+        self.assertEqual(self.line_count(out), 6, out)
+
     def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
         # https://bitbucket.org/ned/coveragepy/issue/242
         tryfile = os.path.join(here, "try_execfile.py")

@@ -129,7 +129,7 @@ I try to keep the coverage.py as clean as possible.  I use pylint to alert me
 to possible problems::
 
     $ make lint
-    pylint --rcfile=.pylintrc coverage setup.py tests
+    pylint coverage setup.py tests
     python -m tabnanny coverage setup.py tests
     python igor.py check_eol
 

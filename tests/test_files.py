@@ -2,7 +2,9 @@
 
 import os, os.path
 
-from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
+from coverage.files import (
+    FileLocator, TreeMatcher, FnmatchMatcher, ModuleMatcher
+)
 from coverage.files import PathAliases, find_python_files, abs_file
 from coverage.misc import CoverageException
 
@@ -79,6 +81,64 @@ class MatcherTest(CoverageTest):
         self.assertEqual(tm.info(), trees)
         for filepath, matches in matches_to_try:
             self.assertMatches(tm, filepath, matches)
+
+    def test_module_matcher(self):
+        matches_to_try = [
+            ('test', True),
+            ('test', True),
+            ('trash', False),
+            ('testing', False),
+            ('test.x', True),
+            ('test.x.y.z', True),
+            ('py', False),
+            ('py.t', False),
+            ('py.test', True),
+            ('py.testing', False),
+            ('py.test.buz', True),
+            ('py.test.buz.baz', True),
+            ('__main__', False),
+            ('mymain', True),
+            ('yourmain', False),
+        ]
+        modules = ['test', 'py.test', 'mymain']
+        for mm in (
+            ModuleMatcher(modules),
+            ModuleMatcher(modules, main_module=None),
+            ModuleMatcher(modules, main_module='yourmain'),
+        ):
+            self.assertEqual(
+                mm.info(),
+                ['main_module=%r' % mm.main_module] + modules
+            )
+            for modulename, matches in matches_to_try:
+                self.assertEqual(
+                    mm.match(modulename),
+                    modulename if matches else False,
+                    modulename,
+                )
+
+    def test_module_matcher_dunder_main(self):
+        matches_to_try = [
+            ('__main__', True),
+            ('mymain', True),
+            ('yourmain', False),
+        ]
+        modules = ['test', 'py.test', 'mymain']
+        mm = ModuleMatcher(modules, main_module='mymain')
+        self.assertEqual(mm.info(), ["main_module='mymain'"] + modules)
+        for modulename, matches in matches_to_try:
+            if not matches:
+                expected = False
+            elif modulename == '__main__':
+                expected = mm.main_module
+            else:
+                expected = modulename
+
+            self.assertEqual(
+                mm.match(modulename),
+                expected,
+                modulename,
+            )
 
     def test_fnmatch_matcher(self):
         matches_to_try = [
