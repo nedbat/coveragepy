@@ -505,7 +505,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
         if (MyText_Check(tracename)) {
             PyObject * file_data = PyDict_GetItem(self->data, tracename);
-            PyObject * disp_plugin = NULL;
+            PyObject * disp_file_tracer = NULL;
             PyObject * disp_plugin_name = NULL;
 
             if (file_data == NULL) {
@@ -527,16 +527,16 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
                 if (self->plugin_data != NULL) {
                     /* If the disposition mentions a plugin, record that. */
-                    disp_plugin = PyObject_GetAttrString(disposition, "plugin");
-                    if (disp_plugin == NULL) {
+                    disp_file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
+                    if (disp_file_tracer == NULL) {
                         STATS( self->stats.errors++; )
                         Py_DECREF(tracename);
                         Py_DECREF(disposition);
                         return RET_ERROR;
                     }
-                    if (disp_plugin != Py_None) {
-                        disp_plugin_name = PyObject_GetAttrString(disp_plugin, "__name__");
-                        Py_DECREF(disp_plugin);
+                    if (disp_file_tracer != Py_None) {
+                        disp_plugin_name = PyObject_GetAttrString(disp_file_tracer, "plugin_name");
+                        Py_DECREF(disp_file_tracer);
                         if (disp_plugin_name == NULL) {
                             STATS( self->stats.errors++; )
                             Py_DECREF(tracename);

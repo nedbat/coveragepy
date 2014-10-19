@@ -11,9 +11,8 @@ class Analysis(object):
 
     def __init__(self, cov, code_unit):
         self.coverage = cov
-        self.code_unit = code_unit
 
-        self.filename = self.code_unit.filename
+        self.filename = code_unit.filename
         self.parser = code_unit.get_parser(
             exclude=self.coverage._exclude_regex('exclude')
             )

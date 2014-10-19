@@ -10,6 +10,8 @@ from coverage.codeunit import CodeUnit
 from coverage.parser import CodeParser
 from coverage.plugin import Plugins, overrides
 
+import coverage.plugin
+
 from tests.coveragetest import CoverageTest
 
 
@@ -156,24 +158,32 @@ class PluginTest(CoverageTest):
 
 
 class Plugin(coverage.CoveragePlugin):
-    def trace_judge(self, disp):
-        if "xyz.py" in disp.original_filename:
-            disp.trace = True
-            disp.source_filename = os.path.join(
-                "/src",
-                os.path.basename(
-                    disp.original_filename.replace("xyz.py", "ABC.zz")
-                )
-            )
+    def file_tracer(self, filename):
+        if "xyz.py" in filename:
+            file_tracer = FileTracer(filename)
+            return file_tracer
+
+    def file_reporter(self, filename):
+        return FileReporter(filename)
+
+
+class FileTracer(coverage.plugin.FileTracer):
+    def __init__(self, filename):
+        self._filename = filename
+        self._source_filename = os.path.join(
+            "/src",
+            os.path.basename(filename.replace("xyz.py", "ABC.zz"))
+        )
+
+    def source_filename(self):
+        return self._source_filename
 
     def line_number_range(self, frame):
         lineno = frame.f_lineno
         return lineno*100+5, lineno*100+7
 
-    def code_unit_class(self, filename):
-        return PluginCodeUnit
 
-class PluginCodeUnit(CodeUnit):
+class FileReporter(coverage.plugin.FileReporter):
     def get_parser(self, exclude=None):
         return PluginParser()
 

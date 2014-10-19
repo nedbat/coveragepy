@@ -142,7 +142,7 @@ class Coverage(object):
         self.omit = self.include = self.source = None
         self.source_pkgs = self.file_locator = None
         self.data = self.collector = None
-        self.plugins = self.trace_judges = None
+        self.plugins = self.file_tracers = None
         self.pylib_dirs = self.cover_dir = None
         self.data_suffix = self.run_suffix = None
         self._exclude_re = None
@@ -177,11 +177,11 @@ class Coverage(object):
         # Load plugins
         self.plugins = Plugins.load_plugins(self.config.plugins, self.config)
 
-        self.trace_judges = []
+        self.file_tracers = []
         for plugin in self.plugins:
-            if plugin_implements(plugin, "trace_judge"):
-                self.trace_judges.append(plugin)
-        self.trace_judges.append(None)      # The Python case.
+            if plugin_implements(plugin, "file_tracer"):
+                self.file_tracers.append(plugin)
+        self.file_tracers.append(None)      # The Python case.
 
         # _exclude_re is a dict mapping exclusion list names to compiled
         # regexes.
@@ -325,15 +325,27 @@ class Coverage(object):
         disp.canonical_filename = canonical
 
         # Try the plugins, see if they have an opinion about the file.
-        for plugin in self.trace_judges:
+        for plugin in self.file_tracers:
             if plugin:
-                plugin.trace_judge(disp)
+                #plugin.trace_judge(disp)
+                file_tracer = plugin.file_tracer(canonical)
+                if file_tracer is not None:
+                    file_tracer.plugin_name = plugin.plugin_name
+                    disp.trace = True
+                    disp.file_tracer = file_tracer
+                    disp.source_filename = self.file_locator.canonical_filename(file_tracer.source_filename())
             else:
                 disp.trace = True
                 disp.source_filename = canonical
+                file_tracer = None
             if disp.trace:
-                disp.plugin = plugin
-
+                if file_tracer:
+                    disp.file_tracer = file_tracer
+                if disp.source_filename is None:
+                    raise CoverageException(
+                        "Plugin %r didn't set source_filename for %r" %
+                        (plugin, disp.original_filename)
+                    )
                 if disp.check_filters:
                     reason = self._check_include_omit_etc(disp.source_filename)
                     if reason:
@@ -886,7 +898,7 @@ class FileDisposition(object):
         self.check_filters = True
         self.trace = False
         self.reason = ""
-        self.plugin = None
+        self.file_tracer = None
 
     def debug_message(self):
         """Produce a debugging message explaining the outcome."""
