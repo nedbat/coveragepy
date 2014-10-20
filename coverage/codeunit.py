@@ -32,24 +32,16 @@ def code_unit_factory(morfs, file_locator, get_plugin=None):
         if isinstance(morf, string_class) and get_plugin:
             plugin = get_plugin(morf)
         if plugin:
-            klass = plugin.code_unit_class(morf)
-            #klass = DjangoTracer # NOT REALLY! TODO
-            # Hacked-in Mako support. Define COVERAGE_MAKO_PATH as a fragment of
-            # the path that indicates the Python file is actually a compiled Mako
-            # template. THIS IS TEMPORARY!
-            #MAKO_PATH = os.environ.get('COVERAGE_MAKO_PATH')
-            #if MAKO_PATH and isinstance(morf, string_class) and MAKO_PATH in morf:
-            #    # Super hack! Do mako both ways!
-            #    if 0:
-            #        cu = PythonCodeUnit(morf, file_locator)
-            #        cu.name += '_fako'
-            #        code_units.append(cu)
-            #    klass = MakoCodeUnit
-            #elif isinstance(morf, string_class) and morf.endswith(".html"):
-            #    klass = DjangoCodeUnit
+            file_reporter = plugin.file_reporter(morf)
+            if file_reporter is None:
+                raise CoverageException(
+                    "Plugin %r did not provide a file reporter for %r." % (
+                        plugin.plugin_name, morf
+                    )
+                )
         else:
-            klass = PythonCodeUnit
-        code_units.append(klass(morf, file_locator))
+            file_reporter = PythonCodeUnit(morf, file_locator)
+        code_units.append(file_reporter)
 
     return code_units
 

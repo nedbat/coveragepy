@@ -2,28 +2,33 @@
 
 import sys
 
+from coverage.misc import CoverageException
+
 
 class CoveragePlugin(object):
     """Base class for coverage.py plugins."""
     def __init__(self, options):
         self.options = options
 
-    def trace_judge(self, disposition):
-        """Decide whether to trace this file with this plugin.
-
-        Set disposition.trace to True if this plugin should trace this file.
-        May also set other attributes in `disposition`.
-
-        """
+    def file_tracer(self, filename):
+        """Return a FileTracer object for this file."""
         return None
 
-    def source_file_name(self, filename):
-        """Return the source name for a given Python filename.
+    def file_reporter(self, filename):
+        """Return the FileReporter class to use for filename.
 
-        Can return None if tracing shouldn't continue.
+        This will only be invoked if `filename` returns non-None from
+        `file_tracer`.  It's an error to return None.
 
         """
-        return filename
+        raise Exception("Plugin %r needs to implement file_reporter" % self.plugin_name)
+
+
+class FileTracer(object):
+    """Support needed for files during the tracing phase."""
+
+    def source_filename(self):
+        return "xyzzy"
 
     def dynamic_source_file_name(self):
         """Returns a callable that can return a source name for a frame.
@@ -38,9 +43,16 @@ class CoveragePlugin(object):
         """
         return None
 
-    def code_unit_class(self, morf):
-        """Return the CodeUnit class to use for a module or filename."""
-        return None
+    def line_number_range(self, frame):
+        """Given a call frame, return the range of source line numbers."""
+        lineno = frame.f_lineno
+        return lineno, lineno
+
+
+class FileReporter(object):
+    """Support needed for files during the reporting phase."""
+    def __init__(self, filename):
+        self.filename = filename
 
 
 class Plugins(object):
@@ -67,7 +79,7 @@ class Plugins(object):
             if plugin_class:
                 options = config.get_plugin_options(module)
                 plugin = plugin_class(options)
-                plugin.__name__ = module
+                plugin.plugin_name = module
                 plugins.order.append(plugin)
                 plugins.names[module] = plugin
 

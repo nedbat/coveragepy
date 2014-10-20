@@ -123,6 +123,45 @@ class ConfigTest(CoverageTest):
             ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
             )
 
+    def test_tweaks_after_constructor(self):
+        # Arguments to the constructor are applied to the configuation.
+        cov = coverage.coverage(timid=True, data_file="fooey.dat")
+        cov.config["run:timid"] = False
+
+        self.assertFalse(cov.config.timid)
+        self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.data_file, "fooey.dat")
+
+        self.assertFalse(cov.config["run:timid"])
+        self.assertFalse(cov.config["run:branch"])
+        self.assertEqual(cov.config["run:data_file"], "fooey.dat")
+
+    def test_tweak_error_checking(self):
+        # Trying to set an unknown config value raises an error.
+        cov = coverage.coverage()
+        with self.assertRaises(CoverageException):
+            cov.config["run:xyzzy"] = 12
+        with self.assertRaises(CoverageException):
+            cov.config["xyzzy:foo"] = 12
+        with self.assertRaises(CoverageException):
+            _ = cov.config["run:xyzzy"]
+        with self.assertRaises(CoverageException):
+            _ = cov.config["xyzzy:foo"]
+
+    def test_tweak_plugin_options(self):
+        # Plugin options have a more flexible syntax.
+        cov = coverage.coverage()
+        cov.config["run:plugins"] = ["fooey.plugin", "xyzzy.coverage.plugin"]
+        cov.config["fooey.plugin:xyzzy"] = 17
+        cov.config["xyzzy.coverage.plugin:plugh"] = ["a", "b"]
+        with self.assertRaises(CoverageException):
+            cov.config["no_such.plugin:foo"] = 23
+
+        self.assertEqual(cov.config["fooey.plugin:xyzzy"], 17)
+        self.assertEqual(cov.config["xyzzy.coverage.plugin:plugh"], ["a", "b"])
+        with self.assertRaises(CoverageException):
+            _ = cov.config["no_such.plugin:foo"]
+
 
 class ConfigFileTest(CoverageTest):
     """Tests of the config file settings in particular."""
@@ -144,6 +183,7 @@ class ConfigFileTest(CoverageTest):
         cover_pylib = TRUE
         parallel = on
         include = a/   ,    b/
+        concurrency = thread
         plugins =
             plugins.a_plugin
             plugins.another
@@ -210,6 +250,7 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.branch)
         self.assertTrue(cov.config.cover_pylib)
         self.assertTrue(cov.config.parallel)
+        self.assertEqual(cov.config.concurrency, "thread")
 
         self.assertEqual(cov.get_exclude_list(),
             ["if 0:", r"pragma:?\s+no cover", "another_tab"]
@@ -274,7 +315,7 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.omit, None)
         self.assertEqual(cov.config.branch, False)
 
-    def test_one(self):
+    def test_non_ascii(self):
         self.make_file(".coveragerc", """\
             [html]
             title = tabblo & «ταБЬℓσ» # numbers

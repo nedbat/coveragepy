@@ -33,7 +33,7 @@ class Coverage(object):
 
     To use::
 
-        from coverage import coverage
+        from coverage import Coverage
 
         cov = Coverage()
         cov.start()
@@ -45,7 +45,7 @@ class Coverage(object):
     def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
                 auto_data=False, timid=None, branch=None, config_file=True,
                 source=None, omit=None, include=None, debug=None,
-                debug_file=None, coroutine=None, plugins=None):
+                concurrency=None):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -81,22 +81,14 @@ class Coverage(object):
         will also accept a single string argument.
 
         `debug` is a list of strings indicating what debugging information is
-        desired. `debug_file` is the file to write debug messages to,
-        defaulting to stderr.
+        desired.
 
-        `coroutine` is a string indicating the coroutining library being used
+        `concurrency` is a string indicating the concurrency library being used
         in the measured code.  Without this, coverage.py will get incorrect
-        results.  Valid strings are "greenlet", "eventlet", or "gevent", which
-        are all equivalent. TODO: really?
-
-        `plugins` TODO.
+        results.  Valid strings are "greenlet", "eventlet", "gevent", or
+        "thread" (the default).
 
         """
-        from coverage import __version__
-
-        # A record of all the warnings that have been issued.
-        self._warnings = []
-
         # Build our configuration from a number of sources:
         # 1: defaults:
         self.config = CoverageConfig()
@@ -118,7 +110,6 @@ class Coverage(object):
                 self.config.from_file("setup.cfg", section_prefix="coverage:")
 
         # 3: from environment variables:
-        self.config.from_environment('COVERAGE_OPTIONS')
         env_data_file = os.environ.get('COVERAGE_FILE')
         if env_data_file:
             self.config.data_file = env_data_file
@@ -128,22 +119,69 @@ class Coverage(object):
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
             source=source, omit=omit, include=include, debug=debug,
-            coroutine=coroutine, plugins=plugins,
+            concurrency=concurrency,
             )
 
+        self._debug_file = None
+        self._auto_data = auto_data
+        self._data_suffix = data_suffix
+
+        # The matchers for _should_trace.
+        self.source_match = None
+        self.pylib_match = self.cover_match = None
+        self.include_match = self.omit_match = None
+
+        # Is it ok for no data to be collected?
+        self._warn_no_data = True
+        self._warn_unimported_source = True
+
+        # A record of all the warnings that have been issued.
+        self._warnings = []
+
+        # Other instance attributes, set later.
+        self.omit = self.include = self.source = None
+        self.source_pkgs = self.file_locator = None
+        self.data = self.collector = None
+        self.plugins = self.file_tracers = None
+        self.pylib_dirs = self.cover_dir = None
+        self.data_suffix = self.run_suffix = None
+        self._exclude_re = None
+        self.debug = None
+
+        # State machine variables:
+        # Have we initialized everything?
+        self._inited = False
+        # Have we started collecting and not stopped it?
+        self._started = False
+        # Have we measured some data and not harvested it?
+        self._measured = False
+
+    def _init(self):
+        """Set all the initial state.
+
+        This is called by the public methods to initialize state. This lets us
+        construct a Coverage object, then tweak its state before this function
+        is called.
+
+        """
+        from coverage import __version__
+
+        if self._inited:
+            return
+
         # Create and configure the debugging controller.
-        self.debug = DebugControl(self.config.debug, debug_file or sys.stderr)
+        if self._debug_file is None:
+            self._debug_file = sys.stderr
+        self.debug = DebugControl(self.config.debug, self._debug_file)
 
         # Load plugins
         self.plugins = Plugins.load_plugins(self.config.plugins, self.config)
 
-        self.trace_judges = []
+        self.file_tracers = []
         for plugin in self.plugins:
-            if plugin_implements(plugin, "trace_judge"):
-                self.trace_judges.append(plugin)
-        self.trace_judges.append(None)      # The Python case.
-
-        self.auto_data = auto_data
+            if plugin_implements(plugin, "file_tracer"):
+                self.file_tracers.append(plugin)
+        self.file_tracers.append(None)      # The Python case.
 
         # _exclude_re is a dict mapping exclusion list names to compiled
         # regexes.
@@ -170,21 +208,21 @@ class Coverage(object):
             timid=self.config.timid,
             branch=self.config.branch,
             warn=self._warn,
-            coroutine=self.config.coroutine,
+            concurrency=self.config.concurrency,
             )
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
         # collecting data, not when combining data.  So we save it as
         # `self.run_suffix` now, and promote it to `self.data_suffix` if we
         # find that we are collecting data later.
-        if data_suffix or self.config.parallel:
-            if not isinstance(data_suffix, string_class):
+        if self._data_suffix or self.config.parallel:
+            if not isinstance(self._data_suffix, string_class):
                 # if data_suffix=True, use .machinename.pid.random
-                data_suffix = True
+                self._data_suffix = True
         else:
-            data_suffix = None
+            self._data_suffix = None
         self.data_suffix = None
-        self.run_suffix = data_suffix
+        self.run_suffix = self._data_suffix
 
         # Create the data file.  We do this at construction time so that the
         # data file will be written into the directory where the process
@@ -206,30 +244,23 @@ class Coverage(object):
             for m in (atexit, os, platform, random, socket, _structseq):
                 if m is not None and hasattr(m, "__file__"):
                     self.pylib_dirs.add(self._canonical_dir(m))
+            if _structseq and not hasattr(_structseq, '__file__'):
+                # PyPy 2.4 has no __file__ in the builtin modules, but the code
+                # objects still have the filenames.  So dig into one to find
+                # the path to exclude.
+                structseq_file = _structseq.structseq_new.func_code.co_filename
+                self.pylib_dirs.add(self._canonical_dir(structseq_file))
 
         # To avoid tracing the coverage code itself, we skip anything located
         # where we are.
         self.cover_dir = self._canonical_dir(__file__)
 
-        # The matchers for _should_trace.
-        self.source_match = None
-        self.pylib_match = self.cover_match = None
-        self.include_match = self.omit_match = None
-
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
 
-        # Is it ok for no data to be collected?
-        self._warn_no_data = True
-        self._warn_unimported_source = True
-
-        # State machine variables:
-        # Have we started collecting and not stopped it?
-        self._started = False
-        # Have we measured some data and not harvested it?
-        self._measured = False
-
         atexit.register(self._atexit)
+
+        self._inited = True
 
     def _canonical_dir(self, morf):
         """Return the canonical directory of the module or file `morf`."""
@@ -294,15 +325,27 @@ class Coverage(object):
         disp.canonical_filename = canonical
 
         # Try the plugins, see if they have an opinion about the file.
-        for plugin in self.trace_judges:
+        for plugin in self.file_tracers:
             if plugin:
-                plugin.trace_judge(disp)
+                #plugin.trace_judge(disp)
+                file_tracer = plugin.file_tracer(canonical)
+                if file_tracer is not None:
+                    file_tracer.plugin_name = plugin.plugin_name
+                    disp.trace = True
+                    disp.file_tracer = file_tracer
+                    disp.source_filename = self.file_locator.canonical_filename(file_tracer.source_filename())
             else:
                 disp.trace = True
                 disp.source_filename = canonical
+                file_tracer = None
             if disp.trace:
-                disp.plugin = plugin
-
+                if file_tracer:
+                    disp.file_tracer = file_tracer
+                if disp.source_filename is None:
+                    raise CoverageException(
+                        "Plugin %r didn't set source_filename for %r" %
+                        (plugin, disp.original_filename)
+                    )
                 if disp.check_filters:
                     reason = self._check_include_omit_etc(disp.source_filename)
                     if reason:
@@ -425,10 +468,12 @@ class Coverage(object):
         `usecache` is true or false, whether to read and write data on disk.
 
         """
+        self._init()
         self.data.usefile(usecache)
 
     def load(self):
         """Load previously-collected coverage data from the data file."""
+        self._init()
         self.collector.reset()
         self.data.read()
 
@@ -442,11 +487,12 @@ class Coverage(object):
         process might not shut down cleanly.
 
         """
+        self._init()
         if self.run_suffix:
             # Calling start() means we're running code, so use the run_suffix
             # as the data_suffix when we eventually save the data.
             self.data_suffix = self.run_suffix
-        if self.auto_data:
+        if self._auto_data:
             self.load()
 
         # Create the matchers we need for _should_trace
@@ -478,14 +524,15 @@ class Coverage(object):
 
     def stop(self):
         """Stop measuring code coverage."""
+        if self._started:
+            self.collector.stop()
         self._started = False
-        self.collector.stop()
 
     def _atexit(self):
         """Clean up on process shutdown."""
         if self._started:
             self.stop()
-        if self.auto_data:
+        if self._auto_data:
             self.save()
 
     def erase(self):
@@ -495,11 +542,13 @@ class Coverage(object):
         discarding the data file.
 
         """
+        self._init()
         self.collector.reset()
         self.data.erase()
 
     def clear_exclude(self, which='exclude'):
         """Clear the exclude list."""
+        self._init()
         setattr(self.config, which + "_list", [])
         self._exclude_regex_stale()
 
@@ -518,6 +567,7 @@ class Coverage(object):
         is marked for special treatment during reporting.
 
         """
+        self._init()
         excl_list = getattr(self.config, which + "_list")
         excl_list.append(regex)
         self._exclude_regex_stale()
@@ -540,10 +590,12 @@ class Coverage(object):
         that are available, and their meaning.
 
         """
+        self._init()
         return getattr(self.config, which + "_list")
 
     def save(self):
         """Save the collected coverage data to the data file."""
+        self._init()
         data_suffix = self.data_suffix
         if data_suffix is True:
             # If data_suffix was a simple true value, then make a suffix with
@@ -551,10 +603,9 @@ class Coverage(object):
             # `save()` at the last minute so that the pid will be correct even
             # if the process forks.
             extra = ""
-            if _TEST_NAME_FILE:
-                f = open(_TEST_NAME_FILE)
-                test_name = f.read()
-                f.close()
+            if _TEST_NAME_FILE:                             # pragma: debugging
+                with open(_TEST_NAME_FILE) as f:
+                    test_name = f.read()
                 extra = "." + test_name
             data_suffix = "%s%s.%s.%06d" % (
                 socket.gethostname(), extra, os.getpid(),
@@ -572,6 +623,7 @@ class Coverage(object):
         current measurements.
 
         """
+        self._init()
         aliases = None
         if self.config.paths:
             aliases = PathAliases(self.file_locator)
@@ -587,6 +639,7 @@ class Coverage(object):
         Also warn about various problems collecting data.
 
         """
+        self._init()
         if not self._measured:
             return
 
@@ -644,6 +697,7 @@ class Coverage(object):
         coverage data.
 
         """
+        self._init()
         analysis = self._analyze(morf)
         return (
             analysis.filename,
@@ -794,6 +848,7 @@ class Coverage(object):
 
         import coverage as covmod
 
+        self._init()
         try:
             implementation = platform.python_implementation()
         except AttributeError:
@@ -843,7 +898,7 @@ class FileDisposition(object):
         self.check_filters = True
         self.trace = False
         self.reason = ""
-        self.plugin = None
+        self.file_tracer = None
 
     def debug_message(self):
         """Produce a debugging message explaining the outcome."""

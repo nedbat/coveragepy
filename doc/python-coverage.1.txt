@@ -8,7 +8,7 @@ measure code coverage of Python program execution
 
 :Author: Ned Batchelder <ned@nedbatchelder.com>
 :Author: |author|
-:Date: 2013-10-10
+:Date: 2014-09-27
 :Copyright: BSD license, attribution and disclaimer required.
 :Manual section: 1
 :Manual group: Coverage
@@ -76,8 +76,8 @@ GLOBAL OPTIONS
     Usually needs quoting on the command line.
 
 **--include** `PATTERN` [ , ... ]
-    Include files only when their filename path matches one of these
-    PATTERNs. Usually needs quoting on the command line.
+    Include only files whose paths match one of these
+    PATTERNs. Accepts shell-style wildcards, which must be quoted.
 
 
 COMMAND REFERENCE
@@ -159,6 +159,10 @@ COMMAND REFERENCE
 
     \--branch
         Measure branch coverage in addition to statement coverage.
+
+    \--concurrency `LIB`
+        Properly measure code using a concurrency library. Valid values are:
+        thread, gevent, greenlet, eventlet.
 
     \--debug `DEBUGOPT`,...
         Debug options `DEBUGOPT`, separated by commas.

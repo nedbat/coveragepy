@@ -37,24 +37,4 @@ else:
     # also show the Python function.
     contains("out/showtraceout.txt", "regular PyTracer")
 
-# Try the environment variable.
-old_opts = os.environ.get('COVERAGE_OPTIONS')
-os.environ['COVERAGE_OPTIONS'] = '--timid'
-
-run("""
-    coverage run showtrace.py regular
-    coverage run --timid showtrace.py timid
-    """, rundir="out", outfile="showtraceout.txt")
-
-contains("out/showtraceout.txt",
-    "none None",
-    "timid PyTracer",
-    "regular PyTracer",
-    )
-
-if old_opts:
-    os.environ['COVERAGE_OPTIONS'] = old_opts
-else:
-    del os.environ['COVERAGE_OPTIONS']
-
 clean("out")

@@ -70,10 +70,9 @@ class FarmTestCase(object):
         """Execute the test from the run.py file.
 
         """
-        if _TEST_NAME_FILE:
-            f = open(_TEST_NAME_FILE, "w")
-            f.write(self.description.replace("/", "_"))
-            f.close()
+        if _TEST_NAME_FILE:                                 # pragma: debugging
+            with open(_TEST_NAME_FILE, "w") as f:
+                f.write(self.description.replace("/", "_"))
 
         cwd = self.cd(self.dir)
 

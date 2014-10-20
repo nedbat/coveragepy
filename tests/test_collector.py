@@ -37,9 +37,8 @@ class CollectorTest(CoverageTest):
 
         # Trace one file, but not the other, and get the debug output.
         debug_out = StringIO()
-        cov = coverage.coverage(
-            include=["f1.py"], debug=['trace'], debug_file=debug_out
-            )
+        cov = coverage.coverage(include=["f1.py"], debug=['trace'])
+        cov._debug_file = debug_out
 
         # Import the python file, executing it.
         self.start_import_stop(cov, "f2")

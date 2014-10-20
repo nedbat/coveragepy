@@ -2,13 +2,33 @@
 Change history for Coverage.py
 ------------------------------
 
-4.0
----
+
+Latest
+------
+
+- Officially support PyPy 2.3 and 2.4.
+
+- The original command line switches (`-x` to run a program, etc) are no
+  longer supported.
+
+- The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
+  a hack for ``--timid`` before configuration files were available.
+
+- You can now programmatically adjust the configuration of coverage by setting
+  items on `Coverage.config` after construcion.
+
+- Made some PyPy-specific tweaks to improve speed under PyPy.  Thanks, Alex
+  Gaynor.
+
+
+Version 4.0a1 --- 27 September 2014
+-----------------------------------
 
 - Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
   PyPy 2.2.
 
-- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_. Huge
+- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_.
+  The ``concurrency`` setting specifies the concurrency library in use.  Huge
   thanks to Peter Portante for initial implementation, and to Joe Jevnik for
   the final insight that completed the work.
 
@@ -17,7 +37,7 @@ Change history for Coverage.py
   ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
 
 - The ``report`` command can now show missing branches when reporting on branch
-  coverage.  Thanks, Steve Leonard. Closes `issue 230`.
+  coverage.  Thanks, Steve Leonard. Closes `issue 230`_.
 
 - The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
   Stan Hu.
@@ -54,8 +74,8 @@ Change history for Coverage.py
 .. _issue 305: https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module
 
 
-3.7.1 -- 13 December 2013
--------------------------
+Version 3.7.1 --- 13 December 2013
+----------------------------------
 
 - Improved the speed of HTML report generation by about 20%.
 
@@ -63,8 +83,8 @@ Change history for Coverage.py
   so that it will actually find OS-installed static files.
 
 
-3.7 --- 6 October 2013
-----------------------
+Version 3.7 --- 6 October 2013
+------------------------------
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
   options indicating the type of internal activity to log to stderr.

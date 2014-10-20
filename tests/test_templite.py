@@ -31,8 +31,10 @@ class TempliteTest(CoverageTest):
         an exception and never get to the result comparison.
         """
         actual = Templite(text).render(ctx or {})
-        if result:
-            self.assertEqual(actual, result)
+        # If result is None, then an exception should have prevented us getting
+        # to here.
+        assert result is not None
+        self.assertEqual(actual, result)
 
     def assertSynErr(self, msg):
         """Assert that a `TempliteSyntaxError` will happen.

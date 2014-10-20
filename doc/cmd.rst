@@ -17,6 +17,7 @@ Coverage command line usage
 :history: 20120807T211600, Clarified the combine rules.
 :history: 20121003T074600, Fixed an option reference, https://bitbucket.org/ned/coveragepy/issue/200/documentation-mentions-output-xml-instead
 :history: 20121117T091000, Added command aliases.
+:history: 20140924T193000, Added --concurrency
 
 .. highlight:: console
 
@@ -95,6 +96,16 @@ but before the program invocation::
     $ coverage run --source=dir1,dir2 my_program.py arg1 arg2
     $ coverage run --source=dir1,dir2 -m packagename.modulename arg1 arg2
 
+Coverage can measure multi-threaded programs by default. If you are using
+more exotic concurrency, with the `greenlet`_, `eventlet`_, or `gevent`_
+libraries, then coverage will get very confused.  Use the ``--concurrency``
+switch to properly measure programs using these libraries.  Give it a value of
+``greenlet``, ``eventlet``, or ``gevent``.
+
+.. _greenlet: http://greenlet.readthedocs.org/en/latest/
+.. _gevent: http://www.gevent.org/
+.. _eventlet: http://eventlet.net/
+
 By default, coverage does not measure code installed with the Python
 interpreter, for example, the standard library. If you want to measure that
 code as well as your own, add the ``-L`` flag.
@@ -102,9 +113,7 @@ code as well as your own, add the ``-L`` flag.
 If your coverage results seem to be overlooking code that you know has been
 executed, try running coverage again with the ``--timid`` flag.  This uses a
 simpler but slower trace method.  Projects that use DecoratorTools, including
-TurboGears, will need to use ``--timid`` to get correct results.  This option
-can also be enabled by setting the environment variable COVERAGE_OPTIONS to
-``--timid``.
+TurboGears, will need to use ``--timid`` to get correct results.
 
 If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate
@@ -265,6 +274,19 @@ The ``-m`` flag also shows the line numbers of missing statements::
     my_other_module              56      6    89%   17-23
     -------------------------------------------------------
     TOTAL                        91     12    87%
+
+If you are using branch coverage, then branch statistics will be reported in
+the Branch and BrMiss columns, the Missing column will detail the missed
+branches::
+
+    $ coverage report -m
+    Name                      Stmts   Miss Branch BrMiss  Cover   Missing
+    ---------------------------------------------------------------------
+    my_program                   20      4     10      2    80%   33-35, 36->38, 39
+    my_module                    15      2      3      0    86%   8, 12
+    my_other_module              56      6      5      1    89%   17-23, 40->45
+    ---------------------------------------------------------------------
+    TOTAL                        91     12     18      3    87%
 
 You can restrict the report to only certain files by naming them on the
 command line::

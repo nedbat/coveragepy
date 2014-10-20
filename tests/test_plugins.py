@@ -1,11 +1,16 @@
 """Tests for plugins."""
 
 import os.path
+import sys
+
+from nose.plugins.skip import SkipTest
 
 import coverage
 from coverage.codeunit import CodeUnit
 from coverage.parser import CodeParser
 from coverage.plugin import Plugins, overrides
+
+import coverage.plugin
 
 from tests.coveragetest import CoverageTest
 
@@ -98,7 +103,10 @@ class PluginTest(CoverageTest):
             """)
 
         self.assert_doesnt_exist("evidence.out")
-        _ = coverage.Coverage(plugins=["my_plugin"])
+        cov = coverage.Coverage()
+        cov.config["run:plugins"] = ["my_plugin"]
+        cov.start()
+        cov.stop()
 
         with open("evidence.out") as f:
             self.assertEqual(f.read(), "we are here!")
@@ -106,8 +114,10 @@ class PluginTest(CoverageTest):
     def test_missing_plugin_raises_import_error(self):
         # Prove that a missing plugin will raise an ImportError.
         with self.assertRaises(ImportError):
-            cov = coverage.Coverage(plugins=["does_not_exist_woijwoicweo"])
+            cov = coverage.Coverage()
+            cov.config["run:plugins"] = ["does_not_exist_woijwoicweo"]
             cov.start()
+        cov.stop()
 
     def test_bad_plugin_isnt_hidden(self):
         # Prove that a plugin with an error in it will raise the error.
@@ -115,9 +125,15 @@ class PluginTest(CoverageTest):
             1/0
             """)
         with self.assertRaises(ZeroDivisionError):
-            _ = coverage.Coverage(plugins=["plugin_over_zero"])
+            cov = coverage.Coverage()
+            cov.config["run:plugins"] = ["plugin_over_zero"]
+            cov.start()
+        cov.stop()
 
     def test_importing_myself(self):
+        if sys.platform == 'win32':
+            raise SkipTest("Plugin stuff is jank on windows.. fixing soon...")
+
         self.make_file("simple.py", """\
             import try_xyz
             a = 1
@@ -128,7 +144,8 @@ class PluginTest(CoverageTest):
             d = 4
             """)
 
-        cov = coverage.Coverage(plugins=["tests.test_plugins"])
+        cov = coverage.Coverage()
+        cov.config["run:plugins"] = ["tests.test_plugins"]
 
         # Import the python file, executing it.
         self.start_import_stop(cov, "simple")
@@ -141,24 +158,32 @@ class PluginTest(CoverageTest):
 
 
 class Plugin(coverage.CoveragePlugin):
-    def trace_judge(self, disp):
-        if "xyz.py" in disp.original_filename:
-            disp.trace = True
-            disp.source_filename = os.path.join(
-                "/src",
-                os.path.basename(
-                    disp.original_filename.replace("xyz.py", "ABC.zz")
-                )
-            )
+    def file_tracer(self, filename):
+        if "xyz.py" in filename:
+            file_tracer = FileTracer(filename)
+            return file_tracer
+
+    def file_reporter(self, filename):
+        return FileReporter(filename)
+
+
+class FileTracer(coverage.plugin.FileTracer):
+    def __init__(self, filename):
+        self._filename = filename
+        self._source_filename = os.path.join(
+            "/src",
+            os.path.basename(filename.replace("xyz.py", "ABC.zz"))
+        )
+
+    def source_filename(self):
+        return self._source_filename
 
     def line_number_range(self, frame):
         lineno = frame.f_lineno
         return lineno*100+5, lineno*100+7
 
-    def code_unit_class(self, filename):
-        return PluginCodeUnit
 
-class PluginCodeUnit(CodeUnit):
+class FileReporter(coverage.plugin.FileReporter):
     def get_parser(self, exclude=None):
         return PluginParser()
 

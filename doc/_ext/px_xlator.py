@@ -1,4 +1,5 @@
 from docutils import nodes
+from sphinx import addnodes
 from sphinx.writers.html import SmartyPantsHTMLTranslator
 from sphinx.builders.html import StandaloneHTMLBuilder
 import os
@@ -10,7 +11,7 @@ def setup(app):
 BaseHtmlXlator = SmartyPantsHTMLTranslator
 class PxTranslator(BaseHtmlXlator):
     """Adjust the HTML translator into a .px translator.
-    
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -45,11 +46,11 @@ class PxTranslator(BaseHtmlXlator):
                 when, what = hist.split(',', 1)
                 self.body.append("<what when='%s'>%s</what>\n" % (when, self.encode(what.strip())))
             self.body.append("</history>\n")
-            
+
         if "b" in self.builder.config.release:
             self.body.append("""
                 <box>
-                These docs are for a beta release, %s. 
+                These docs are for a beta release, %s.
                 For the latest released version, see <a href='/code/coverage'>coverage.py</a>.
                 </box>
                 """ % self.builder.config.release)
@@ -76,8 +77,15 @@ class PxTranslator(BaseHtmlXlator):
         raise nodes.SkipNode
 
     def visit_desc_parameterlist(self, node):
+        # I'm overriding this method so that the base class doesn't write out
+        # <big>(</big>, but I also have to handle the logic from the base class,
+        # so most of this is just copied from sphinx/writers/html.py...
         self.body.append('(')
         self.first_param = 1
+        self.optional_param_level = 0
+        # How many required parameters are left.
+        self.required_params_left = sum([isinstance(c, addnodes.desc_parameter)
+                                         for c in node.children])
         self.param_separator = node.child_text_separator
     def depart_desc_parameterlist(self, node):
         self.body.append(')')
@@ -91,10 +99,10 @@ class PxBuilder(StandaloneHTMLBuilder):
         self.config.html_translator_class = "px_xlator.PxTranslator"
 
         super(PxBuilder, self).init()
-        
+
         self.out_suffix = '.px'
         self.link_suffix = '.html'
-        
+
         if "b" in self.config.release:
             self.px_uri = "/code/coverage/beta/"
         else:

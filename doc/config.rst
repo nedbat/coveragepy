@@ -10,6 +10,7 @@ Configuration files
 :history: 20110604T184400, updated for 3.5.
 :history: 20110827T212700, updated for 3.5.1
 :history: 20130926T222300, updated for 3.6.1
+:history: 20140925T064700, updated for 4.0a1
 
 
 Coverage.py options can be specified in a configuration file.  This makes it
@@ -25,6 +26,14 @@ directory coverage.py is being run in.  Most of the settings in the
 configuration file are tied to your source code and how it should be measured,
 so it should be stored with your source, and checked into source control,
 rather than put in your home directory.
+
+A different name for the configuration file can be specified with the
+``--rcfile=FILE`` command line option.
+
+Coverage.py will read settings from a ``setup.cfg`` file if no other
+configuration file is used.  In this case, the section names have "coverage:"
+prefixed, so the ``[run]`` options described below will be found in the
+``[coverage:run]`` section of ``setup.cfg``.
 
 
 Syntax
@@ -89,6 +98,15 @@ to more than one command.
 
 ``cover_pylib`` (boolean, default False): whether to measure the Python
 standard library.
+
+``concurrency`` (string, default "thread"): the name of the concurrency
+library in use by the product code.  If your program uses `gevent`_,
+`greenlet`_, or `eventlet`_, you must name that library in this option, or
+coverage will produce very wrong results.
+
+.. _greenlet: http://greenlet.readthedocs.org/en/latest/
+.. _gevent: http://www.gevent.org/
+.. _eventlet: http://eventlet.net/
 
 ``data_file`` (string, default ".coverage"): the name of the data file to use
 for storing or reporting coverage.

@@ -81,7 +81,7 @@ typedef struct {
     /* Python objects manipulated directly by the Collector class. */
     PyObject * should_trace;
     PyObject * warn;
-    PyObject * coroutine_id_func;
+    PyObject * concur_id_func;
     PyObject * data;
     PyObject * plugin_data;
     PyObject * should_trace_cache;
@@ -104,8 +104,8 @@ typedef struct {
         (None).
     */
 
-    DataStack data_stack;       /* Used if we aren't doing coroutines. */
-    PyObject * data_stack_index;     /* Used if we are doing coroutines. */
+    DataStack data_stack;       /* Used if we aren't doing concurrency. */
+    PyObject * data_stack_index;     /* Used if we are doing concurrency. */
     DataStack * data_stacks;
     int data_stacks_alloc;
     int data_stacks_used;
@@ -191,7 +191,7 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 
     self->should_trace = NULL;
     self->warn = NULL;
-    self->coroutine_id_func = NULL;
+    self->concur_id_func = NULL;
     self->data = NULL;
     self->plugin_data = NULL;
     self->should_trace_cache = NULL;
@@ -234,7 +234,7 @@ CTracer_dealloc(CTracer *self)
 
     Py_XDECREF(self->should_trace);
     Py_XDECREF(self->warn);
-    Py_XDECREF(self->coroutine_id_func);
+    Py_XDECREF(self->concur_id_func);
     Py_XDECREF(self->data);
     Py_XDECREF(self->plugin_data);
     Py_XDECREF(self->should_trace_cache);
@@ -327,18 +327,18 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
 static int
 CTracer_set_pdata_stack(CTracer *self)
 {
-    if (self->coroutine_id_func != Py_None) {
+    if (self->concur_id_func != Py_None) {
         PyObject * co_obj = NULL;
         PyObject * stack_index = NULL;
         long the_index = 0;
 
-        co_obj = PyObject_CallObject(self->coroutine_id_func, NULL);
+        co_obj = PyObject_CallObject(self->concur_id_func, NULL);
         if (co_obj == NULL) {
             return RET_ERROR;
         }
         stack_index = PyDict_GetItem(self->data_stack_index, co_obj);
         if (stack_index == NULL) {
-            /* A new coroutine object.  Make a new data stack. */
+            /* A new concurrency object.  Make a new data stack. */
             the_index = self->data_stacks_used;
             stack_index = MyInt_FromLong(the_index);
             if (PyDict_SetItem(self->data_stack_index, co_obj, stack_index) < 0) {
@@ -505,7 +505,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
         if (MyText_Check(tracename)) {
             PyObject * file_data = PyDict_GetItem(self->data, tracename);
-            PyObject * disp_plugin = NULL;
+            PyObject * disp_file_tracer = NULL;
             PyObject * disp_plugin_name = NULL;
 
             if (file_data == NULL) {
@@ -527,16 +527,16 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
                 if (self->plugin_data != NULL) {
                     /* If the disposition mentions a plugin, record that. */
-                    disp_plugin = PyObject_GetAttrString(disposition, "plugin");
-                    if (disp_plugin == NULL) {
+                    disp_file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
+                    if (disp_file_tracer == NULL) {
                         STATS( self->stats.errors++; )
                         Py_DECREF(tracename);
                         Py_DECREF(disposition);
                         return RET_ERROR;
                     }
-                    if (disp_plugin != Py_None) {
-                        disp_plugin_name = PyObject_GetAttrString(disp_plugin, "__name__");
-                        Py_DECREF(disp_plugin);
+                    if (disp_file_tracer != Py_None) {
+                        disp_plugin_name = PyObject_GetAttrString(disp_file_tracer, "plugin_name");
+                        Py_DECREF(disp_file_tracer);
                         if (disp_plugin_name == NULL) {
                             STATS( self->stats.errors++; )
                             Py_DECREF(tracename);
@@ -781,8 +781,8 @@ CTracer_members[] = {
     { "warn",               T_OBJECT, offsetof(CTracer, warn), 0,
             PyDoc_STR("Function for issuing warnings.") },
 
-    { "coroutine_id_func",  T_OBJECT, offsetof(CTracer, coroutine_id_func), 0,
-            PyDoc_STR("Function for determining coroutine context") },
+    { "concur_id_func",     T_OBJECT, offsetof(CTracer, concur_id_func), 0,
+            PyDoc_STR("Function for determining concurrency context") },
 
     { "data",               T_OBJECT, offsetof(CTracer, data), 0,
             PyDoc_STR("The raw dictionary of trace data.") },

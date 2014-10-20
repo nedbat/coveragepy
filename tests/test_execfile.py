@@ -91,9 +91,9 @@ class RunPycFileTest(CoverageTest):
         os.remove("compiled.py")
 
         # Find the .pyc file!
-        for there, _, files in os.walk("."):
+        for there, _, files in os.walk("."):            # pragma: part covered
             for f in files:
-                if f.endswith(".pyc"):
+                if f.endswith(".pyc"):                  # pragma: part covered
                     return os.path.join(there, f)
 
     def test_running_pyc(self):

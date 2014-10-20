@@ -2,6 +2,8 @@
 
 import os, re, sys
 from coverage.backward import string_class, iitems
+from coverage.misc import CoverageException
+
 
 # In py3, # ConfigParser was renamed to the more-standard configparser
 try:
@@ -140,7 +142,7 @@ class CoverageConfig(object):
 
         # Defaults for [run]
         self.branch = False
-        self.coroutine = None
+        self.concurrency = None
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.parallel = False
@@ -172,15 +174,6 @@ class CoverageConfig(object):
 
         # Options for plugins
         self.plugin_options = {}
-
-    def from_environment(self, env_var):
-        """Read configuration from the `env_var` environment variable."""
-        # Timidity: for nose users, read an environment variable.  This is a
-        # cheap hack, since the rest of the command line arguments aren't
-        # recognized, but it solves some users' problems.
-        env = os.environ.get(env_var, '')
-        if env:
-            self.timid = ('--timid' in env)
 
     MUST_BE_LIST = ["omit", "include", "debug", "plugins"]
 
@@ -235,7 +228,7 @@ class CoverageConfig(object):
 
         # [run]
         ('branch', 'run:branch', 'boolean'),
-        ('coroutine', 'run:coroutine'),
+        ('concurrency', 'run:concurrency'),
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
@@ -275,3 +268,37 @@ class CoverageConfig(object):
     def get_plugin_options(self, plugin):
         """Get a dictionary of options for the plugin named `plugin`."""
         return self.plugin_options.get(plugin, {})
+
+    # TODO: docs for this.
+    def __setitem__(self, option_name, value):
+        # Check all the hard-coded options.
+        for option_spec in self.CONFIG_FILE_OPTIONS:
+            attr, where = option_spec[:2]
+            if where == option_name:
+                setattr(self, attr, value)
+                return
+
+        # See if it's a plugin option.
+        plugin_name, _, key = option_name.partition(":")
+        if key and plugin_name in self.plugins:
+            self.plugin_options.setdefault(plugin_name, {})[key] = value
+            return
+
+        # If we get here, we didn't find the option.
+        raise CoverageException("No such option: %r" % option_name)
+
+    # TODO: docs for this.
+    def __getitem__(self, option_name):
+        # Check all the hard-coded options.
+        for option_spec in self.CONFIG_FILE_OPTIONS:
+            attr, where = option_spec[:2]
+            if where == option_name:
+                return getattr(self, attr)
+
+        # See if it's a plugin option.
+        plugin_name, _, key = option_name.partition(":")
+        if key and plugin_name in self.plugins:
+            return self.plugin_options.get(plugin_name, {}).get(key)
+
+        # If we get here, we didn't find the option.
+        raise CoverageException("No such option: %r" % option_name)

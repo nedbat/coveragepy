@@ -1,4 +1,4 @@
-"""Tests for coroutining."""
+"""Tests for concurrency libraries."""
 
 import os, os.path, sys, threading
 
@@ -36,8 +36,8 @@ def line_count(s):
     return sum(1 for l in s.splitlines() if code_line(l))
 
 
-class CoroutineTest(CoverageTest):
-    """Tests of the coroutine support in coverage.py."""
+class ConcurrencyTest(CoverageTest):
+    """Tests of the concurrency support in coverage.py."""
 
     LIMIT = 1000
 
@@ -103,7 +103,7 @@ class CoroutineTest(CoverageTest):
         import gevent.queue as queue
         """ + COMMON
 
-    # Uncomplicated code that doesn't use any of the coroutining stuff, to test
+    # Uncomplicated code that doesn't use any of the concurrency stuff, to test
     # the simple case under each of the regimes.
     SIMPLE = """\
         total = 0
@@ -112,32 +112,32 @@ class CoroutineTest(CoverageTest):
         print(total)
         """.format(LIMIT=LIMIT)
 
-    def try_some_code(self, code, coroutine, the_module, expected_out=None):
-        """Run some coroutine testing code and see that it was all covered.
+    def try_some_code(self, code, concurrency, the_module, expected_out=None):
+        """Run some concurrency testing code and see that it was all covered.
 
-        `code` is the Python code to execute.  `coroutine` is the name of the
-        coroutine regime to test it under.  `the_module` is the imported module
-        that must be available for this to work at all. `expected_out` is the
-        text we expect the code to produce.
+        `code` is the Python code to execute.  `concurrency` is the name of
+        the concurrency regime to test it under.  `the_module` is the imported
+        module that must be available for this to work at all. `expected_out`
+        is the text we expect the code to produce.
 
         """
 
         self.make_file("try_it.py", code)
 
-        cmd = "coverage run --coroutine=%s try_it.py" % coroutine
+        cmd = "coverage run --concurrency=%s try_it.py" % concurrency
         out = self.run_command(cmd)
 
         if not the_module:
             # We don't even have the underlying module installed, we expect
             # coverage to alert us to this fact.
             expected_out = (
-                "Couldn't trace with coroutine=%s, "
-                "the module isn't installed.\n" % coroutine
+                "Couldn't trace with concurrency=%s, "
+                "the module isn't installed.\n" % concurrency
             )
             self.assertEqual(out, expected_out)
-        elif C_TRACER or coroutine == "thread":
+        elif C_TRACER or concurrency == "thread":
             # We can fully measure the code if we are using the C tracer, which
-            # can support all the coroutining, or if we are using threads.
+            # can support all the concurrency, or if we are using threads.
             if expected_out is None:
                 expected_out = "%d\n" % (sum(range(self.LIMIT)))
             self.assertEqual(out, expected_out)
@@ -157,8 +157,8 @@ class CoroutineTest(CoverageTest):
             self.assertEqual(data.summary()['try_it.py'], lines)
         else:
             expected_out = (
-                "Can't support coroutine=%s with PyTracer, "
-                "only threads are supported\n" % coroutine
+                "Can't support concurrency=%s with PyTracer, "
+                "only threads are supported\n" % concurrency
             )
             self.assertEqual(out, expected_out)
 

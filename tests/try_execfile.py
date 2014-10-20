@@ -12,18 +12,13 @@ def my_function(a):
 
 FN_VAL = my_function("fooey")
 
-try:
-    pkg = __package__
-except NameError:
-    pkg = "*No __package__*"
-
 globals_to_check = {
     '__name__': __name__,
     '__file__': __file__,
     '__doc__': __doc__,
     '__builtins__.has_open': hasattr(__builtins__, 'open'),
     '__builtins__.dir': dir(__builtins__),
-    '__package__': pkg,
+    '__package__': __package__,
     'DATA': DATA,
     'FN_VAL': FN_VAL,
     '__main__.DATA': getattr(__main__, "DATA", "nothing"),

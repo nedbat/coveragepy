@@ -20,29 +20,36 @@ Installation
 :history: 20130105T174400, updated for 3.6.
 :history: 20131005T210600, updated for 3.7.
 :history: 20131212T213500, updated for 3.7.1.
+:history: 20140927T102700, updated for 4.0a1.
 
 
 .. highlight:: console
+
 .. _coverage_pypi: http://pypi.python.org/pypi/coverage
 .. _setuptools: http://pypi.python.org/pypi/setuptools
 .. _Distribute: http://packages.python.org/distribute/
 
 
-Installing coverage.py is done in the usual ways. You must have `setuptools`_
-or `Distribute`_ installed already, and then you:
+Installing coverage.py is done in the usual ways. The simplest way is with
+pip::
+
+    $ pip install coverage
+
+.. ifconfig:: prerelease
+
+    To install a pre-release version, you will need to specify ``--pre``::
+
+        $ pip install --pre coverage
+
+
+The alternate old-school technique is:
+
+#.  Install (or already have installed) `setuptools`_ or `Distribute`_.
 
 #.  Download the appropriate kit from the
     `coverage page on the Python Package Index`__.
 
 #.  Run ``python setup.py install``.
-
-or, use::
-
-    $ pip install coverage
-
-or even::
-
-    $ easy_install coverage
 
 .. __: coverage_pypi_
 
@@ -75,9 +82,9 @@ If all went well, you should be able to open a command prompt, and see coverage
 installed properly::
 
     $ coverage --version
-    Coverage.py, version 3.7.1.  http://nedbatchelder.com/code/coverage
+    Coverage.py, version 4.0a1.  http://nedbatchelder.com/code/coverage
 
 You can also invoke coverage as a module::
 
     $ python -m coverage --version
-    Coverage.py, version 3.7.1.  http://nedbatchelder.com/code/coverage
+    Coverage.py, version 4.0a1.  http://nedbatchelder.com/code/coverage
