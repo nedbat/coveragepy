@@ -8,6 +8,7 @@
         <link rel='stylesheet' href='{{ extra_css }}' type='text/css'>
     {% endif %}
     <script type='text/javascript' src='jquery.min.js'></script>
+    <script type='text/javascript' src='jquery.debounce.min.js'></script>
     <script type='text/javascript' src='jquery.tablesorter.min.js'></script>
     <script type='text/javascript' src='jquery.hotkeys.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
@@ -22,12 +23,18 @@
         <h1>{{ title|escape }}:
             <span class='pc_cov'>{{totals.pc_covered_str}}%</span>
         </h1>
-        <img id='keyboard_icon' src='keybd_closed.png'>
+
+        <img id='keyboard_icon' src='keybd_closed.png' />
+
+        <form id="filter_container">
+            <label for="filter">Filter</label>
+            <input id="filter" type="text" value="" />
+        </form>
     </div>
 </div>
 
 <div class='help_panel'>
-    <img id='panel_icon' src='keybd_open.png'>
+    <img id='panel_icon' src='keybd_open.png' />
     <p class='legend'>Hot-keys on this page</p>
     <div>
     <p class='keyhelp'>
@@ -90,6 +97,10 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <p id="no_rows">
+        No items found using the specified filter.
+    </p>
 </div>
 
 <div id='footer'>

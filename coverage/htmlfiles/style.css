@@ -31,6 +31,14 @@ p {
 table {
     border-collapse: collapse;
     }
+table tr.hidden {
+    display: none !important;
+    }
+
+p#no_rows {
+    display: none;
+    font-size: 1.2em;
+    }
 
 a.nav {
     text-decoration: none;
@@ -80,6 +88,16 @@ a.nav:hover {
 
 h1 {
     font-size: 1.25em;
+    display: inline-block;
+}
+
+form#filter_container {
+    display: inline-block;
+    float: right;
+    margin: 0 3em 0 0;
+}
+form#filter_container input {
+    width: 24em;
 }
 
 h2.stats {
@@ -130,6 +148,7 @@ h2.stats {
 /* Help panel */
 #keyboard_icon {
     float: right;
+    margin: 5px;
     cursor: pointer;
 }
 
@@ -288,9 +307,11 @@ td.text {
     text-decoration: underline;
     color: #000;
     }
-#index tr.total {
+#index tr.total,
+#index tr.total_dynamic {
     }
-#index tr.total td {
+#index tr.total td,
+#index tr.total_dynamic td {
     font-weight: bold;
     border-top: 1px solid #ccc;
     border-bottom: none;
