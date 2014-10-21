@@ -119,7 +119,7 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'x\n')
         report = self.report_from_command("coverage report")
 
-        # Name       Stmts   Miss Branch BrMiss  Cover
+        # Name       Stmts   Miss Branch BrPart  Cover
         # --------------------------------------------
         # mybranch       5      0      2      1    85%
 
@@ -172,7 +172,7 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'x\ny\n')
         report = self.report_from_command("coverage report --show-missing")
 
-        # Name        Stmts   Miss Branch BrMiss  Cover   Missing
+        # Name        Stmts   Miss Branch BrPart  Cover   Missing
         # -------------------------------------------------------
         # mybranch        7      0      4      2    82%   2->4, 4->6
 
@@ -202,12 +202,12 @@ class SummaryTest(CoverageTest):
         report = self.report_from_command("coverage report --show-missing")
 
         # pylint: disable=C0301
-        # Name        Stmts   Miss Branch BrMiss  Cover   Missing
+        # Name        Stmts   Miss Branch BrPart  Cover   Missing
         # -------------------------------------------------------
         # main            1      0      0      0   100%
-        # mybranch       10      2      8      5    61%   7-8, 2->4, 4->6
+        # mybranch       10      2      8      3    61%   7-8, 2->4, 4->6, 6->7
         # -------------------------------------------------------
-        # TOTAL          11      2      8      5    63%
+        # TOTAL          11      2      8      3    63%
 
         self.assertEqual(self.line_count(report), 6)
         squeezed = self.squeezed_lines(report)
@@ -217,11 +217,11 @@ class SummaryTest(CoverageTest):
         )
         self.assertEqual(
             squeezed[3],
-            "mybranch 10 2 8 5 61% 7-8, 2->4, 4->6"
+            "mybranch 10 2 8 3 61% 7-8, 2->4, 4->6, 6->7"
         )
         self.assertEqual(
             squeezed[5],
-            "TOTAL 11 2 8 5 63%"
+            "TOTAL 11 2 8 3 63%"
         )
 
     def test_dotpy_not_python(self):
@@ -301,7 +301,7 @@ class SummaryTest(CoverageTest):
         import main     # pragma: nested # pylint: disable=F0401,W0612
         cov.stop()      # pragma: nested
         report = self.get_report(cov).splitlines()
-        self.assertIn("mybranch 5 5 2 2 0%", report)
+        self.assertIn("mybranch 5 5 2 0 0%", report)
 
     def run_TheCode_and_report_it(self):
         """A helper for the next few tests."""

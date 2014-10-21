@@ -86,7 +86,8 @@ class Analysis(object):
         """ The missing branch arcs, formatted nicely.
 
         Returns a string like "1->2, 1->3, 16->20". Omits any mention of
-        missing lines, so if line 17 is missing, then 16->17 won't be included.
+        branches from missing lines, so if line 17 is missing, then 17->18
+        won't be included.
 
         """
         arcs = self.missing_branch_arcs()
@@ -95,7 +96,7 @@ class Analysis(object):
         pairs = []
         for line, exits in line_exits:
             for ex in sorted(exits):
-                if line not in missing and ex not in missing:
+                if line not in missing:
                     pairs.append('%d->%d' % (line, ex))
         return ', '.join(pairs)
 
