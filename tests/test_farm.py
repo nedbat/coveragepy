@@ -4,6 +4,7 @@ import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
 from nose.plugins.skip import SkipTest
 
 from tests.backtest import run_command, execfile      # pylint: disable=W0622
+from tests.coveragetest import CoverageTest
 
 from coverage.control import _TEST_NAME_FILE
 
@@ -48,6 +49,7 @@ class FarmTestCase(object):
         self.dir, self.runpy = os.path.split(runpy)
         self.clean_only = clean_only
         self.dont_clean = dont_clean
+        self.ok = True
 
     def cd(self, newdir):
         """Change the current directory, and return the old one."""
@@ -92,6 +94,9 @@ class FarmTestCase(object):
         old_mods = dict(sys.modules)
         try:
             execfile(self.runpy, glo)
+        except Exception:
+            self.ok = False
+            raise
         finally:
             self.cd(cwd)
             # Remove any new modules imported during the test run. This lets us
@@ -129,8 +134,9 @@ class FarmTestCase(object):
 
     def tearDown(self):
         """Test tear down, run by nose after __call__."""
-        # Make sure no matter what, the test is cleaned up.
-        if not self.dont_clean:         # pragma: part covered
+        # Make sure the test is cleaned up, unless we never want to, or if the
+        # test failed.
+        if not self.dont_clean and self.ok:         # pragma: part covered
             self.clean_only = True
             self()
 
@@ -360,9 +366,9 @@ def main():     # pragma: not covered
 
     Commands:
 
-    run testcase    - Run a single test case.
-    out testcase    - Run a test case, but don't clean up, to see the output.
-    clean           - Clean all the output for all tests.
+    run testcase ...    - Run specific test case(s)
+    out testcase ...    - Run test cases, but don't clean up, to see the output.
+    clean               - Clean all the output for all tests.
 
     """
     op = 'help'
@@ -373,12 +379,14 @@ def main():     # pragma: not covered
 
     if op == 'run':
         # Run the test for real.
-        case = FarmTestCase(sys.argv[2])
-        case.run_fully()
+        for test_case in sys.argv[2:]:
+            case = FarmTestCase(test_case)
+            case.run_fully()
     elif op == 'out':
         # Run the test, but don't clean up, so we can examine the output.
-        case = FarmTestCase(sys.argv[2], dont_clean=True)
-        case.run_fully()
+        for test_case in sys.argv[2:]:
+            case = FarmTestCase(test_case, dont_clean=True)
+            case.run_fully()
     elif op == 'clean':
         # Run all the tests, but just clean.
         for test in test_farm(clean_only=True):
