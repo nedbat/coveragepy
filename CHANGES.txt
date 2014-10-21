@@ -14,6 +14,10 @@ Latest
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
   a hack for ``--timid`` before configuration files were available.
 
+- The HTML report now has filtering.  Type text into the Filter box on the
+  index page, and only modules with that text in the name will be shown.
+  Thanks, Danny Allen.
+
 - You can now programmatically adjust the configuration of coverage by setting
   items on `Coverage.config` after construcion.
 

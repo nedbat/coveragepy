@@ -5,6 +5,7 @@ Other contributions have been made by:
 
 Marc Abramowitz
 Chris Adams
+Danny Allen
 Geoff Bache
 Julian Berman
 Titus Brown
