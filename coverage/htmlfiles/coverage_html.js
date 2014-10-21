@@ -41,12 +41,6 @@ coverage.wire_up_filter = function () {
     var table = $("table.index");
     var table_rows = table.find("tbody tr");
     var table_row_names = table_rows.find("td.name a");
-    var table_cells = {
-        2: table_rows.find('td:nth-child(2)'),
-        3: table_rows.find('td:nth-child(3)'),
-        4: table_rows.find('td:nth-child(4)'),
-        5: table_rows.find('td:nth-child(5)')
-    };
     var no_rows = $("#no_rows");
 
     // Create a duplicate table footer that we can modify with dynamic summed values.
@@ -86,7 +80,6 @@ coverage.wire_up_filter = function () {
                 if ($(this).text().indexOf(filter_value) === -1) {
                     // hide
                     hide = hide.add(element);
-
                 }
                 else {
                     // show
@@ -104,7 +97,6 @@ coverage.wire_up_filter = function () {
                     // Show placeholder, hide table.
                     no_rows.show();
                     table.hide();
-
                 }
                 else {
                     // Hide placeholder, show table.
@@ -116,31 +108,35 @@ coverage.wire_up_filter = function () {
             // Manage dynamic header:
             if (hide.length > 0) {
                 // Calculate new dynamic sum values based on visible rows.
-                for (var column in table_cells) {
+                for (var column = 2; column < 20; column++) {
                     // Calculate summed value.
-                    var tmp = 0;
-                    $.each(table_cells[column].filter(':visible'), function () {
-                        tmp += parseInt(this.innerHTML, 10);
+                    var cells = table_rows.find('td:nth-child(' + column + ')');
+                    if (!cells.length) {
+                        // No more columns...!
+                        break;
+                    }
+
+                    var sum = 0;
+                    $.each(cells.filter(':visible'), function () {
+                        sum += parseInt(this.innerHTML, 10);
                     });
 
                     // Get footer cell element.
                     var footer_cell = table_dynamic_footer.find('td:nth-child(' + column + ')');
 
                     // Set value into dynamic footer cell element.
-                    if (column === '5') {
-                        // Value of 5th "coverage" column is expressed as a percentage
-                        footer_cell.text(parseInt((tmp / show.length), 10) + '%');
-
-                    } else {
-                        footer_cell.text(tmp);
+                    if (cells[0].innerHTML.indexOf('%') > -1) {
+                        // Value of "coverage" column is expressed as a percentage
+                        footer_cell.text(parseInt((sum / show.length), 10) + '%');
+                    }
+                    else {
+                        footer_cell.text(sum);
                     }
                 }
-
 
                 // Hide standard footer, show dynamic footer.
                 table_footer.addClass("hidden");
                 table_dynamic_footer.removeClass("hidden");
-
             }
             else {
                 // Show standard footer, hide dynamic footer.
