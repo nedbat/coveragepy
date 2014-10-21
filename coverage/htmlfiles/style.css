@@ -61,11 +61,11 @@ a.nav:hover {
     font-family: "courier new", monospace;
     }
 
-#indexfile #footer {
+.indexfile #footer {
     margin: 1em 3em;
     }
 
-#pyfile #footer {
+.pyfile #footer {
     margin: 1em 1em;
     }
 
@@ -160,11 +160,11 @@ h2.stats {
     display: none;
 }
 
-#indexfile .help_panel {
+.indexfile .help_panel {
     width: 20em; height: 4em;
 }
 
-#pyfile .help_panel {
+.pyfile .help_panel {
     width: 16em; height: 8em;
 }
 
