@@ -116,9 +116,17 @@ coverage.wire_up_filter = function () {
                         break;
                     }
 
-                    var sum = 0;
+                    var sum = 0, numer = 0, denom = 0;
                     $.each(cells.filter(':visible'), function () {
-                        sum += parseInt(this.innerHTML, 10);
+                        var ratio = $(this).data("ratio");
+                        if (ratio) {
+                            var splitted = ratio.split(" ");
+                            numer += parseInt(splitted[0], 10);
+                            denom += parseInt(splitted[1], 10);
+                        }
+                        else {
+                            sum += parseInt(this.innerHTML, 10);
+                        }
                     });
 
                     // Get footer cell element.
@@ -126,8 +134,15 @@ coverage.wire_up_filter = function () {
 
                     // Set value into dynamic footer cell element.
                     if (cells[0].innerHTML.indexOf('%') > -1) {
-                        // Value of "coverage" column is expressed as a percentage
-                        footer_cell.text(parseInt((sum / show.length), 10) + '%');
+                        // Percentage columns use the numerator and denominator,
+                        // and adapt to the number of decimal places.
+                        var match = /\.([0-9]+)/.exec(cells[0].innerHTML);
+                        var places = 0;
+                        if (match) {
+                            places = match[1].length;
+                        }
+                        var pct = numer * 100 / denom;
+                        footer_cell.text(pct.toFixed(places) + '%');
                     }
                     else {
                         footer_cell.text(sum);

@@ -204,8 +204,8 @@ class Numbers(object):
     def pc_covered(self):
         """Returns a single percentage value for coverage."""
         if self.n_statements > 0:
-            pc_cov = (100.0 * (self.n_executed + self.n_executed_branches) /
-                        (self.n_statements + self.n_branches))
+            numerator, denominator = self.ratio_covered
+            pc_cov = (100.0 * numerator) / denominator
         else:
             pc_cov = 100.0
         return pc_cov
@@ -235,6 +235,13 @@ class Numbers(object):
         if cls._precision > 0:
             width += 1 + cls._precision
         return width
+
+    @property
+    def ratio_covered(self):
+        """Return a numerator and denominator for the coverage ratio."""
+        numerator = self.n_executed + self.n_executed_branches
+        denominator = self.n_statements + self.n_branches
+        return numerator, denominator
 
     def __add__(self, other):
         nums = Numbers()

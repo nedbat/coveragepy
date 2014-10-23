@@ -19,7 +19,8 @@ contains("html_a/a.html",
     )
 contains("html_a/index.html",
     "<a href='a.html'>a</a>",
-    "<span class='pc_cov'>67%</span>"
+    "<span class='pc_cov'>67%</span>",
+    "<td class='right' data-ratio='2 3'>67%</td>",
     )
 
 clean("html_a")

@@ -4,7 +4,6 @@ import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
 from nose.plugins.skip import SkipTest
 
 from tests.backtest import run_command, execfile      # pylint: disable=W0622
-from tests.coveragetest import CoverageTest
 
 from coverage.control import _TEST_NAME_FILE
 
@@ -367,7 +366,7 @@ def main():     # pragma: not covered
     Commands:
 
     run testcase ...    - Run specific test case(s)
-    out testcase ...    - Run test cases, but don't clean up, to see the output.
+    out testcase ...    - Run test cases, but don't clean up, leaving output.
     clean               - Clean all the output for all tests.
 
     """

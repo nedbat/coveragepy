@@ -67,6 +67,7 @@ class HtmlReporter(Reporter):
         self.directory = None
         self.template_globals = {
             'escape': escape,
+            'pair': pair,
             'title': self.config.html_title,
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
@@ -379,3 +380,7 @@ def spaceless(html):
     """
     html = re.sub(r">\s+<p ", ">\n<p ", html)
     return html
+
+def pair(ratio):
+    """Format a pair of numbers so JavaScript can read them in an attribute."""
+    return "%s %s" % ratio
