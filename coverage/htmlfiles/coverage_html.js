@@ -319,12 +319,13 @@ coverage.to_next_chunk = function () {
 
     // Find the start of the next colored chunk.
     var probe = c.sel_end;
+    var color, probe_line;
     while (true) {
-        var probe_line = c.line_elt(probe);
+        probe_line = c.line_elt(probe);
         if (probe_line.length === 0) {
             return;
         }
-        var color = probe_line.css("background-color");
+        color = probe_line.css("background-color");
         if (!c.is_transparent(color)) {
             break;
         }
