@@ -1,6 +1,6 @@
 /* CSS styles for Coverage. */
 /* Page-wide styles */
-html, body, h1, h2, h3, p, td, th {
+html, body, h1, h2, h3, p, table, td, th {
     margin: 0;
     padding: 0;
     border: 0;
@@ -31,6 +31,9 @@ p {
 table {
     border-collapse: collapse;
     }
+td {
+    vertical-align: top;
+}
 table tr.hidden {
     display: none !important;
     }

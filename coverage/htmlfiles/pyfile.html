@@ -1,4 +1,4 @@
-<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
@@ -14,7 +14,7 @@
     <script type='text/javascript' src='jquery.hotkeys.js'></script>
     <script type='text/javascript' src='jquery.isonscreen.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
-    <script type='text/javascript' charset='utf-8'>
+    <script type='text/javascript'>
         jQuery(document).ready(coverage.pyfile_ready);
     </script>
 </head>
@@ -26,7 +26,7 @@
             <span class='pc_cov'>{{nums.pc_covered_str}}%</span>
         </h1>
 
-        <img id='keyboard_icon' src='keybd_closed.png' />
+        <img id='keyboard_icon' src='keybd_closed.png' alt='Show keyboard shortcuts' />
 
         <h2 class='stats'>
             {{nums.n_statements}} statements &nbsp;
@@ -42,7 +42,7 @@
 </div>
 
 <div class='help_panel'>
-    <img id='panel_icon' src='keybd_open.png' />
+    <img id='panel_icon' src='keybd_open.png' alt='Hide keyboard shortcuts' />
     <p class='legend'>Hot-keys on this page</p>
     <div>
     <p class='keyhelp'>
@@ -65,14 +65,14 @@
 </div>
 
 <div id='source'>
-    <table cellspacing='0' cellpadding='0'>
+    <table>
         <tr>
-            <td class='linenos' valign='top'>
+            <td class='linenos'>
                 {% for line in lines %}
                     <p id='n{{line.number}}' class='{{line.class}}'><a href='#n{{line.number}}'>{{line.number}}</a></p>
                 {% endfor %}
             </td>
-            <td class='text' valign='top'>
+            <td class='text'>
                 {% for line in lines %}
                     <p id='t{{line.number}}' class='{{line.class}}'>{% if line.annotate %}<span class='annotate' title='{{line.annotate_title}}'>{{line.annotate}}</span>{% endif %}{{line.html}}<span class='strut'>&nbsp;</span></p>
                 {% endfor %}
