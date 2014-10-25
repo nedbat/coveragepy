@@ -91,13 +91,13 @@ h1 {
     display: inline-block;
 }
 
-form#filter_container {
+#filter_container {
     display: inline-block;
     float: right;
-    margin: 0 3em 0 0;
+    margin: 0 2em 0 0;
 }
-form#filter_container input {
-    width: 24em;
+#filter_container input {
+    width: 10em;
 }
 
 h2.stats {
