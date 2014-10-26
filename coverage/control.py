@@ -248,7 +248,11 @@ class Coverage(object):
                 # PyPy 2.4 has no __file__ in the builtin modules, but the code
                 # objects still have the filenames.  So dig into one to find
                 # the path to exclude.
-                structseq_file = _structseq.structseq_new.func_code.co_filename
+                structseq_new = _structseq.structseq_new
+                try:
+                    structseq_file = structseq_new.func_code.co_filename
+                except AttributeError:
+                    structseq_file = structseq_new.__code__.co_filename
                 self.pylib_dirs.add(self._canonical_dir(structseq_file))
 
         # To avoid tracing the coverage code itself, we skip anything located
