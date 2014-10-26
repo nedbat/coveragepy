@@ -18,6 +18,8 @@ Latest
   index page, and only modules with that text in the name will be shown.
   Thanks, Danny Allen.
 
+- The ``--debug`` switch can now be used on any command.
+
 - You can now programmatically adjust the configuration of coverage by setting
   items on `Coverage.config` after construcion.
 

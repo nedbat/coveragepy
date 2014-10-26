@@ -262,6 +262,29 @@ class Coverage(object):
 
         self._inited = True
 
+        # Create the matchers we need for _should_trace
+        if self.source or self.source_pkgs:
+            self.source_match = TreeMatcher(self.source)
+        else:
+            if self.cover_dir:
+                self.cover_match = TreeMatcher([self.cover_dir])
+            if self.pylib_dirs:
+                self.pylib_match = TreeMatcher(self.pylib_dirs)
+        if self.include:
+            self.include_match = FnmatchMatcher(self.include)
+        if self.omit:
+            self.omit_match = FnmatchMatcher(self.omit)
+
+        # The user may want to debug things, show info if desired.
+        if self.debug.should('config'):
+            self.debug.write("Configuration values:")
+            config_info = sorted(self.config.__dict__.items())
+            self.debug.write_formatted_info(config_info)
+
+        if self.debug.should('sys'):
+            self.debug.write("Debugging info:")
+            self.debug.write_formatted_info(self.sysinfo())
+
     def _canonical_dir(self, morf):
         """Return the canonical directory of the module or file `morf`."""
         morf_filename = PythonCodeUnit(morf, self.file_locator).filename
@@ -494,29 +517,6 @@ class Coverage(object):
             self.data_suffix = self.run_suffix
         if self._auto_data:
             self.load()
-
-        # Create the matchers we need for _should_trace
-        if self.source or self.source_pkgs:
-            self.source_match = TreeMatcher(self.source)
-        else:
-            if self.cover_dir:
-                self.cover_match = TreeMatcher([self.cover_dir])
-            if self.pylib_dirs:
-                self.pylib_match = TreeMatcher(self.pylib_dirs)
-        if self.include:
-            self.include_match = FnmatchMatcher(self.include)
-        if self.omit:
-            self.omit_match = FnmatchMatcher(self.omit)
-
-        # The user may want to debug things, show info if desired.
-        if self.debug.should('config'):
-            self.debug.write("Configuration values:")
-            config_info = sorted(self.config.__dict__.items())
-            self.debug.write_formatted_info(config_info)
-
-        if self.debug.should('sys'):
-            self.debug.write("Debugging info:")
-            self.debug.write_formatted_info(self.sysinfo())
 
         self.collector.start()
         self._started = True

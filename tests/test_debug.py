@@ -108,7 +108,11 @@ class DebugTraceTest(CoverageTest):
             """.split()
         for label in labels:
             label_pat = r"^\s*%s: " % label
-            self.assertEqual(len(lines_matching(out_lines, label_pat)), 1)
+            self.assertEqual(
+                len(lines_matching(out_lines, label_pat)),
+                1,
+                msg="Incorrect lines for %r" % label,
+            )
 
 
 def lines_matching(lines, pat):

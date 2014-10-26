@@ -1,6 +1,6 @@
 """Command-line support for Coverage."""
 
-import glob, optparse, os, sys, time, traceback
+import glob, optparse, os, sys, traceback
 
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
@@ -218,8 +218,9 @@ class CmdOptionParser(CoverageOptionParser):
         return (other == "<CmdOptionParser:%s>" % self.cmd)
 
 GLOBAL_ARGS = [
-    Opts.rcfile,
+    Opts.debug,
     Opts.help,
+    Opts.rcfile,
     ]
 
 CMDS = {
@@ -293,7 +294,6 @@ CMDS = {
             Opts.append,
             Opts.branch,
             Opts.concurrency,
-            Opts.debug,
             Opts.pylib,
             Opts.parallel_mode,
             Opts.module,
@@ -577,12 +577,13 @@ class CoverageScript(object):
             return ERR
         for info in args:
             if info == 'sys':
+                sysinfo = self.coverage.sysinfo()
                 print("-- sys ----------------------------------------")
-                for line in info_formatter(self.coverage.sysinfo()):
+                for line in info_formatter(sysinfo):
                     print(" %s" % line)
             elif info == 'data':
-                print("-- data ---------------------------------------")
                 self.coverage.load()
+                print("-- data ---------------------------------------")
                 print("path: %s" % self.coverage.data.filename)
                 print("has_arcs: %r" % self.coverage.data.has_arcs())
                 summary = self.coverage.data.summary(fullpath=True)
@@ -667,11 +668,7 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
     try:
-        start = time.clock()
         status = CoverageScript().command_line(argv)
-        end = time.clock()
-        if 0:
-            print("time: %.3fs" % (end - start))
     except ExceptionDuringRun as err:
         # An exception was caught while running the product code.  The
         # sys.exc_info() return tuple is packed into an ExceptionDuringRun
