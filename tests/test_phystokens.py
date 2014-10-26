@@ -40,7 +40,9 @@ class PhysTokensTest(CoverageTest):
 
     def check_file_tokenization(self, fname):
         """Use the contents of `fname` for `check_tokenization`."""
-        self.check_tokenization(open(fname).read())
+        with open(fname) as f:
+            source = f.read()
+        self.check_tokenization(source)
 
     def test_simple(self):
         self.assertEqual(list(source_token_lines(SIMPLE)),

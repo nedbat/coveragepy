@@ -319,7 +319,8 @@ class ProcessTest(CoverageTest):
 
     def test_coverage_run_is_like_python(self):
         tryfile = os.path.join(here, "try_execfile.py")
-        self.make_file("run_me.py", open(tryfile).read())
+        with open(tryfile) as f:
+            self.make_file("run_me.py", f.read())
         out_cov = self.run_command("coverage run run_me.py")
         out_py = self.run_command("python run_me.py")
         self.assertMultiLineEqual(out_cov, out_py)
@@ -334,7 +335,8 @@ class ProcessTest(CoverageTest):
         # https://bitbucket.org/ned/coveragepy/issue/242
         tryfile = os.path.join(here, "try_execfile.py")
         self.make_file("sub/__init__.py", "")
-        self.make_file("sub/run_me.py", open(tryfile).read())
+        with open(tryfile) as f:
+            self.make_file("sub/run_me.py", f.read())
         out_cov = self.run_command("coverage run -m sub.run_me")
         out_py = self.run_command("python -m sub.run_me")
         self.assertMultiLineEqual(out_cov, out_py)
@@ -651,9 +653,8 @@ class ProcessStartupTest(CoverageTest):
             """)
         # sub.py will write a few lines.
         self.make_file("sub.py", """\
-            f = open("out.txt", "w")
-            f.write("Hello, world!\\n")
-            f.close()
+            with open("out.txt", "w") as f:
+                f.write("Hello, world!\\n")
             """)
         self.make_file("coverage.ini", """\
             [run]
@@ -662,10 +663,11 @@ class ProcessStartupTest(CoverageTest):
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
         import main             # pylint: disable=F0401,W0612
 
-        self.assertEqual(open("out.txt").read(), "Hello, world!\n")
+        with open("out.txt") as f:
+            self.assertEqual(f.read(), "Hello, world!\n")
 
         # Read the data from .coverage
         self.assert_exists(".mycovdata")
         data = coverage.CoverageData()
         data.read_file(".mycovdata")
-        self.assertEqual(data.summary()['sub.py'], 3)
+        self.assertEqual(data.summary()['sub.py'], 2)

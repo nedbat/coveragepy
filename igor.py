@@ -168,18 +168,19 @@ def do_check_eol():
         checked.add(fname)
 
         line = None
-        for n, line in enumerate(open(fname, "rb"), start=1):
-            if crlf:
-                if "\r" in line:
-                    print("%s@%d: CR found" % (fname, n))
-                    return
-            if trail_white:
-                line = line[:-1]
-                if not crlf:
-                    line = line.rstrip('\r')
-                if line.rstrip() != line:
-                    print("%s@%d: trailing whitespace found" % (fname, n))
-                    return
+        with open(fname, "rb") as f:
+            for n, line in enumerate(f, start=1):
+                if crlf:
+                    if "\r" in line:
+                        print("%s@%d: CR found" % (fname, n))
+                        return
+                if trail_white:
+                    line = line[:-1]
+                    if not crlf:
+                        line = line.rstrip('\r')
+                    if line.rstrip() != line:
+                        print("%s@%d: trailing whitespace found" % (fname, n))
+                        return
 
         if line is not None and not line.strip():
             print("%s: final blank line" % (fname,))

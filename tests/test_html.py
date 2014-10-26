@@ -81,7 +81,8 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         # In this case, helper1 changes because its source is different.
         self.create_initial_files()
         self.run_coverage()
-        index1 = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index1 = f.read()
         self.remove_html_files()
 
         # Now change a file and do it again
@@ -98,7 +99,8 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/helper1.html")
         self.assert_doesnt_exist("htmlcov/main_file.html")
         self.assert_doesnt_exist("htmlcov/helper2.html")
-        index2 = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index2 = f.read()
         self.assertMultiLineEqual(index1, index2)
 
     def test_html_delta_from_coverage_change(self):
@@ -129,7 +131,8 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         # changed.
         self.create_initial_files()
         self.run_coverage(covargs=dict(omit=[]))
-        index1 = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index1 = f.read()
         self.remove_html_files()
 
         self.run_coverage(covargs=dict(omit=['xyzzy*']))
@@ -139,7 +142,8 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/helper1.html")
         self.assert_exists("htmlcov/main_file.html")
         self.assert_exists("htmlcov/helper2.html")
-        index2 = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index2 = f.read()
         self.assertMultiLineEqual(index1, index2)
 
     def test_html_delta_from_coverage_version_change(self):
@@ -148,7 +152,8 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         # changed.
         self.create_initial_files()
         self.run_coverage()
-        index1 = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index1 = f.read()
         self.remove_html_files()
 
         # "Upgrade" coverage.py!
@@ -161,7 +166,8 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/helper1.html")
         self.assert_exists("htmlcov/main_file.html")
         self.assert_exists("htmlcov/helper2.html")
-        index2 = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index2 = f.read()
         fixed_index2 = index2.replace("XYZZY", self.real_coverage_version)
         self.assertMultiLineEqual(index1, fixed_index2)
 
@@ -172,7 +178,8 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
     def test_default_title(self):
         self.create_initial_files()
         self.run_coverage()
-        index = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index = f.read()
         self.assertIn("<title>Coverage report</title>", index)
         self.assertIn("<h1>Coverage report:", index)
 
@@ -180,7 +187,8 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
         self.create_initial_files()
         self.make_file(".coveragerc", "[html]\ntitle = Metrics & stuff!\n")
         self.run_coverage()
-        index = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index = f.read()
         self.assertIn("<title>Metrics &amp; stuff!</title>", index)
         self.assertIn("<h1>Metrics &amp; stuff!:", index)
 
@@ -190,7 +198,8 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
             "[html]\ntitle = «ταБЬℓσ» numbers"
             )
         self.run_coverage()
-        index = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index = f.read()
         self.assertIn(
             "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
             " numbers", index
@@ -204,7 +213,8 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
         self.create_initial_files()
         self.make_file(".coveragerc", "[html]\ntitle = Good title\n")
         self.run_coverage(htmlargs=dict(title="«ταБЬℓσ» & stüff!"))
-        index = open("htmlcov/index.html").read()
+        with open("htmlcov/index.html") as f:
+            index = f.read()
         self.assertIn(
             "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
             " &amp; st&#252;ff!</title>", index
@@ -339,7 +349,8 @@ class HtmlStaticFileTest(CoverageTest):
         self.start_import_stop(cov, "main")
         cov.html_report()
 
-        jquery = open("htmlcov/jquery.min.js").read()
+        with open("htmlcov/jquery.min.js") as f:
+            jquery = f.read()
         self.assertEqual(jquery, "Not Really JQuery!")
 
     def test_copying_static_files_from_system_in_dir(self):
@@ -361,7 +372,8 @@ class HtmlStaticFileTest(CoverageTest):
 
         for fpath in INSTALLED:
             the_file = os.path.basename(fpath)
-            contents = open(os.path.join("htmlcov", the_file)).read()
+            with open(os.path.join("htmlcov", the_file)) as f:
+                contents = f.read()
             self.assertEqual(contents, "Not real.")
 
     def test_cant_find_static_files(self):
