@@ -120,7 +120,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             add_help_option=False, *args, **kwargs
             )
         self.set_defaults(
-            actions=[],
+            action=None,
             branch=None,
             concurrency=None,
             debug=None,
@@ -188,29 +188,28 @@ class CmdOptionParser(CoverageOptionParser):
     """Parse one of the new-style commands for coverage.py."""
 
     def __init__(self, action, options=None, defaults=None, usage=None,
-                cmd=None, description=None
+                description=None
                 ):
         """Create an OptionParser for a coverage command.
 
-        `action` is the slug to put into `options.actions`.
+        `action` is the slug to put into `options.action`.
         `options` is a list of Option's for the command.
         `defaults` is a dict of default value for options.
         `usage` is the usage string to display in help.
-        `cmd` is the command name, if different than `action`.
         `description` is the description of the command, for the help text.
 
         """
         if usage:
             usage = "%prog " + usage
         super(CmdOptionParser, self).__init__(
-            prog="coverage %s" % (cmd or action),
+            prog="coverage %s" % action,
             usage=usage,
             description=description,
         )
-        self.set_defaults(actions=[action], **(defaults or {}))
+        self.set_defaults(action=action, **(defaults or {}))
         if options:
             self.add_options(options)
-        self.cmd = cmd or action
+        self.cmd = action
 
     def __eq__(self, other):
         # A convenience equality, so that I can put strings in unit test
@@ -289,7 +288,7 @@ CMDS = {
         description = "Report coverage statistics on modules."
         ),
 
-    'run': CmdOptionParser("execute",
+    'run': CmdOptionParser("run",
         [
             Opts.append,
             Opts.branch,
@@ -303,7 +302,6 @@ CMDS = {
             Opts.include,
             ] + GLOBAL_ARGS,
         defaults = {'erase_first': True},
-        cmd = "run",
         usage = "[options] <pyfile> [program options]",
         description = "Run a Python program, measuring code execution."
         ),
@@ -316,7 +314,6 @@ CMDS = {
             Opts.include,
             Opts.output_xml,
             ] + GLOBAL_ARGS,
-        cmd = "xml",
         usage = "[options] [modules]",
         description = "Generate an XML report of coverage results."
         ),
@@ -404,18 +401,18 @@ class CoverageScript(object):
             concurrency = options.concurrency,
             )
 
-        if 'debug' in options.actions:
+        if options.action == "debug":
             return self.do_debug(args)
 
-        if 'erase' in options.actions or options.erase_first:
+        if options.action == "erase" or options.erase_first:
             self.coverage.erase()
         else:
             self.coverage.load()
 
-        if 'execute' in options.actions:
-            self.do_execute(options, args)
+        if options.action == "run":
+            self.do_run(options, args)
 
-        if 'combine' in options.actions:
+        if options.action == "combine":
             self.coverage.combine()
             self.coverage.save()
 
@@ -427,17 +424,17 @@ class CoverageScript(object):
             include = include,
             )
 
-        if 'report' in options.actions:
+        if options.action == "report":
             total = self.coverage.report(
                 show_missing=options.show_missing, **report_args)
-        if 'annotate' in options.actions:
+        if options.action == "annotate":
             self.coverage.annotate(
                 directory=options.directory, **report_args)
-        if 'html' in options.actions:
+        if options.action == "html":
             total = self.coverage.html_report(
                 directory=options.directory, title=options.title,
                 **report_args)
-        if 'xml' in options.actions:
+        if options.action == "xml":
             outfile = options.outfile
             total = self.coverage.xml_report(outfile=outfile, **report_args)
 
@@ -486,7 +483,7 @@ class CoverageScript(object):
                 self.help_fn(parser=parser)
             return True
 
-        if "help" in options.actions:
+        if options.action == "help":
             if args:
                 for a in args:
                     parser = CMDS.get(a)
@@ -511,37 +508,13 @@ class CoverageScript(object):
         Returns True if everything is ok, or False if not.
 
         """
-        for i in ['erase', 'execute']:
-            for j in ['annotate', 'html', 'report', 'combine']:
-                if (i in options.actions) and (j in options.actions):
-                    self.help_fn("You can't specify the '%s' and '%s' "
-                              "options at the same time." % (i, j))
-                    return False
-
-        if not options.actions:
-            self.help_fn(
-                "You must specify at least one of -e, -x, -c, -r, -a, or -b."
-                )
-            return False
-        args_allowed = (
-            'execute' in options.actions or
-            'annotate' in options.actions or
-            'html' in options.actions or
-            'debug' in options.actions or
-            'report' in options.actions or
-            'xml' in options.actions
-            )
-        if not args_allowed and args:
-            self.help_fn("Unexpected arguments: %s" % " ".join(args))
-            return False
-
-        if 'execute' in options.actions and not args:
+        if options.action == "run" and not args:
             self.help_fn("Nothing to do.")
             return False
 
         return True
 
-    def do_execute(self, options, args):
+    def do_run(self, options, args):
         """Implementation of 'coverage run'."""
 
         # Set the first path element properly.
