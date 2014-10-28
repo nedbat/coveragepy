@@ -6,7 +6,7 @@ Change history for Coverage.py
 Latest
 ------
 
-- Officially support PyPy 2.3 and 2.4.
+- Officially support PyPy 2.3 and 2.4, and PyPy3 2.3 and 2.4.
 
 - The original command line switches (`-x` to run a program, etc) are no
   longer supported.

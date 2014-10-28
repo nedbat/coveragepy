@@ -138,6 +138,13 @@ def run_python_file(filename, args, package=None):
             # so that the coverage.py code doesn't appear in the final printed
             # traceback.
             typ, err, tb = sys.exc_info()
+
+            # PyPy3 weirdness.  If I don't access __context__, then somehow it
+            # is non-None when the exception is reported at the upper layer,
+            # and a nested exception is shown to the user.  This getattr fixes
+            # it somehow? https://bitbucket.org/pypy/pypy/issue/1903
+            getattr(err, '__context__', None)
+
             raise ExceptionDuringRun(typ, err, tb.tb_next)
     finally:
         # Restore the old __main__
