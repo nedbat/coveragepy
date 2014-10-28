@@ -31,10 +31,10 @@ Key:
 - Change data file to json
 - Create data api
 - New ast-based branch coverage?
-- gevent, etc.
-- Remove the old command-line syntax
-    - A pain, b/c of the structure of the tests.
-    - BTW: make an easier way to write those tests.
++ gevent, etc.
++ Remove the old command-line syntax
+    + A pain, b/c of the structure of the tests.
+    + BTW: make an easier way to write those tests.
 
 
 

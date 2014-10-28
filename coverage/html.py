@@ -1,9 +1,9 @@
 """HTML reporting for Coverage."""
 
-import os, re, shutil, sys
+import json, os, re, shutil, sys
 
 import coverage
-from coverage.backward import pickle
+from coverage.backward import iitems
 from coverage.misc import CoverageException, Hasher
 from coverage.report import Reporter
 from coverage.results import Numbers
@@ -98,7 +98,7 @@ class HtmlReporter(Reporter):
         # Check that this run used the same settings as the last run.
         m = Hasher()
         m.update(self.config)
-        these_settings = m.digest()
+        these_settings = m.hexdigest()
         if self.status.settings_hash() != these_settings:
             self.status.reset()
             self.status.set_settings_hash(these_settings)
@@ -146,7 +146,7 @@ class HtmlReporter(Reporter):
         m = Hasher()
         m.update(source)
         self.coverage.data.add_to_hash(cu.filename, m)
-        return m.digest()
+        return m.hexdigest()
 
     def html_file(self, cu, analysis):
         """Generate an HTML file for one source file."""
@@ -286,8 +286,35 @@ class HtmlReporter(Reporter):
 class HtmlStatus(object):
     """The status information we keep to support incremental reporting."""
 
-    STATUS_FILE = "status.dat"
+    STATUS_FILE = "status.json"
     STATUS_FORMAT = 1
+
+    #  The data looks like:
+    #
+    #  {
+    #      'format': 1,
+    #      'settings': '\x87\x9cc8\x80\xe5\x97\xb16\xfcv\xa2\x8d\x8a\xbb\xcf',
+    #      'version': '4.0a1',
+    #      'files': {
+    #          'cogapp___init__': {
+    #              'hash': '\x99*\x0e\\\x10\x11O\x06WG/gJ\x83\xdd\x99',
+    #              'index': {
+    #                  'html_filename': 'cogapp___init__.html',
+    #                  'name': 'cogapp/__init__',
+    #                  'nums': <coverage.results.Numbers object at 0x10ab7ed0>,
+    #              }
+    #          },
+    #          ...
+    #          'cogapp_whiteutils': {
+    #              'hash': 'o\xfd\x0e+s2="\xb2\x1c\xd6\xa1\xee\x85\x85\xda',
+    #              'index': {
+    #                  'html_filename': 'cogapp_whiteutils.html',
+    #                  'name': 'cogapp/whiteutils',
+    #                  'nums': <coverage.results.Numbers object at 0x10ab7d90>,
+    #              }
+    #          },
+    #      },
+    #  }
 
     def __init__(self):
         self.reset()
@@ -302,8 +329,8 @@ class HtmlStatus(object):
         usable = False
         try:
             status_file = os.path.join(directory, self.STATUS_FILE)
-            with open(status_file, "rb") as fstatus:
-                status = pickle.load(fstatus)
+            with open(status_file, "r") as fstatus:
+                status = json.load(fstatus)
         except (IOError, ValueError):
             usable = False
         else:
@@ -314,7 +341,10 @@ class HtmlStatus(object):
                 usable = False
 
         if usable:
-            self.files = status['files']
+            self.files = {}
+            for filename, fileinfo in iitems(status['files']):
+                fileinfo['index']['nums'] = Numbers(*fileinfo['index']['nums'])
+                self.files[filename] = fileinfo
             self.settings = status['settings']
         else:
             self.reset()
@@ -322,14 +352,19 @@ class HtmlStatus(object):
     def write(self, directory):
         """Write the current status to `directory`."""
         status_file = os.path.join(directory, self.STATUS_FILE)
+        files = {}
+        for filename, fileinfo in iitems(self.files):
+            fileinfo['index']['nums'] = fileinfo['index']['nums'].init_args()
+            files[filename] = fileinfo
+
         status = {
             'format': self.STATUS_FORMAT,
             'version': coverage.__version__,
             'settings': self.settings,
-            'files': self.files,
+            'files': files,
             }
-        with open(status_file, "wb") as fout:
-            pickle.dump(status, fout)
+        with open(status_file, "w") as fout:
+            json.dump(status, fout)
 
     def settings_hash(self):
         """Get the hash of the coverage.py settings."""

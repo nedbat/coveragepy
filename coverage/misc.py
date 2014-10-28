@@ -130,9 +130,9 @@ class Hasher(object):
                 self.update(k)
                 self.update(a)
 
-    def digest(self):
-        """Retrieve the digest of the hash."""
-        return self.md5.digest()
+    def hexdigest(self):
+        """Retrieve the hex digest of the hash."""
+        return self.md5.hexdigest()
 
 
 class CoverageException(Exception):

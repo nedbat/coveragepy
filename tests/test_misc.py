@@ -18,15 +18,15 @@ class HasherTest(CoverageTest):
         h2.update("Goodbye!")
         h3 = Hasher()
         h3.update("Hello, world!")
-        self.assertNotEqual(h1.digest(), h2.digest())
-        self.assertEqual(h1.digest(), h3.digest())
+        self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
+        self.assertEqual(h1.hexdigest(), h3.hexdigest())
 
     def test_dict_hashing(self):
         h1 = Hasher()
         h1.update({'a': 17, 'b': 23})
         h2 = Hasher()
         h2.update({'b': 23, 'a': 17})
-        self.assertEqual(h1.digest(), h2.digest())
+        self.assertEqual(h1.hexdigest(), h2.hexdigest())
 
 
 class RemoveFileTest(CoverageTest):

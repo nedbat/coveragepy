@@ -182,6 +182,13 @@ class Numbers(object):
         self.n_partial_branches = n_partial_branches
         self.n_missing_branches = n_missing_branches
 
+    def init_args(self):
+        """Return a list for __init__(*args) to recreate this object."""
+        return [
+            self.n_files, self.n_statements, self.n_excluded, self.n_missing,
+            self.n_branches, self.n_partial_branches, self.n_missing_branches,
+        ]
+
     @classmethod
     def set_precision(cls, precision):
         """Set the number of decimal places used to report percentages."""
