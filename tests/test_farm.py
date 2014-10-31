@@ -256,10 +256,10 @@ class FarmTestCase(object):
                 if (big - little) / float(little) > size_within/100.0:
                     # print "%d %d" % (big, little)
                     # print "Left: ---\n%s\n-----\n%s" % (left, right)
-                    wrong_size.append(f)
+                    wrong_size.append("%s (%s,%s)" % (f, size_l, size_r))
             assert not wrong_size, (
                 "File sizes differ between %s and %s: %s" % (
-                    dir1, dir2, wrong_size
+                    dir1, dir2, ", ".join(wrong_size)
                 ))
         else:
             # filecmp only compares in binary mode, but we want text mode.  So
