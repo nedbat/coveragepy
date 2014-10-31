@@ -1,6 +1,6 @@
 /* CSS styles for Coverage. */
 /* Page-wide styles */
-html, body, h1, h2, h3, p, td, th {
+html, body, h1, h2, h3, p, table, td, th {
     margin: 0;
     padding: 0;
     border: 0;
@@ -31,6 +31,9 @@ p {
 table {
     border-collapse: collapse;
     }
+td {
+    vertical-align: top;
+}
 table tr.hidden {
     display: none !important;
     }
@@ -61,11 +64,11 @@ a.nav:hover {
     font-family: "courier new", monospace;
     }
 
-#indexfile #footer {
+.indexfile #footer {
     margin: 1em 3em;
     }
 
-#pyfile #footer {
+.pyfile #footer {
     margin: 1em 1em;
     }
 
@@ -91,13 +94,13 @@ h1 {
     display: inline-block;
 }
 
-form#filter_container {
+#filter_container {
     display: inline-block;
     float: right;
-    margin: 0 3em 0 0;
+    margin: 0 2em 0 0;
 }
-form#filter_container input {
-    width: 24em;
+#filter_container input {
+    width: 10em;
 }
 
 h2.stats {
@@ -160,11 +163,11 @@ h2.stats {
     display: none;
 }
 
-#indexfile .help_panel {
+.indexfile .help_panel {
     width: 20em; height: 4em;
 }
 
-#pyfile .help_panel {
+.pyfile .help_panel {
     width: 16em; height: 8em;
 }
 

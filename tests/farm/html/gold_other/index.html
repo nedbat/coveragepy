@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
@@ -10,11 +10,11 @@
     <script type='text/javascript' src='jquery.tablesorter.min.js'></script>
     <script type='text/javascript' src='jquery.hotkeys.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
-    <script type='text/javascript' charset='utf-8'>
+    <script type='text/javascript'>
         jQuery(document).ready(coverage.index_ready);
     </script>
 </head>
-<body id='indexfile'>
+<body class='indexfile'>
 
 <div id='header'>
     <div class='content'>
@@ -22,17 +22,16 @@
             <span class='pc_cov'>80%</span>
         </h1>
 
-        <img id='keyboard_icon' src='keybd_closed.png' />
+        <img id='keyboard_icon' src='keybd_closed.png' alt='Show keyboard shortcuts' />
 
         <form id="filter_container">
-            <label for="filter">Filter</label>
-            <input id="filter" type="text" value="" />
+            <input id="filter" type="text" value="" placeholder="filter..." />
         </form>
     </div>
 </div>
 
 <div class='help_panel'>
-    <img id='panel_icon' src='keybd_open.png' />
+    <img id='panel_icon' src='keybd_open.png' alt='Hide keyboard shortcuts' />
     <p class='legend'>Hot-keys on this page</p>
     <div>
     <p class='keyhelp'>
@@ -67,7 +66,7 @@
                 <td>1</td>
                 <td>0</td>
                 
-                <td class='right'>80%</td>
+                <td class='right' data-ratio='4 5'>80%</td>
             </tr>
         </tfoot>
         <tbody>
@@ -78,7 +77,7 @@
                 <td>0</td>
                 <td>0</td>
                 
-                <td class='right'>100%</td>
+                <td class='right' data-ratio='1 1'>100%</td>
             </tr>
             
             <tr class='file'>
@@ -87,7 +86,7 @@
                 <td>1</td>
                 <td>0</td>
                 
-                <td class='right'>75%</td>
+                <td class='right' data-ratio='3 4'>75%</td>
             </tr>
             
         </tbody>

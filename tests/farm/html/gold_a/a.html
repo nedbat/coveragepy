@@ -1,4 +1,4 @@
-<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
@@ -7,34 +7,38 @@
     <meta http-equiv='X-UA-Compatible' content='IE=emulateIE7' />
     <title>Coverage for a: 67%</title>
     <link rel='stylesheet' href='style.css' type='text/css'>
+    
     <script type='text/javascript' src='jquery.min.js'></script>
     <script type='text/javascript' src='jquery.hotkeys.js'></script>
     <script type='text/javascript' src='jquery.isonscreen.js'></script>
     <script type='text/javascript' src='coverage_html.js'></script>
-    <script type='text/javascript' charset='utf-8'>
+    <script type='text/javascript'>
         jQuery(document).ready(coverage.pyfile_ready);
     </script>
 </head>
-<body id='pyfile'>
+<body class='pyfile'>
 
 <div id='header'>
     <div class='content'>
         <h1>Coverage for <b>a</b> :
             <span class='pc_cov'>67%</span>
         </h1>
-        <img id='keyboard_icon' src='keybd_closed.png'>
+
+        <img id='keyboard_icon' src='keybd_closed.png' alt='Show keyboard shortcuts' />
+
         <h2 class='stats'>
-            3 statements
-            <span class='run hide_run shortkey_r' onclick='coverage.toggle_lines(this, "run")'>2 run</span>
-            <span class='mis shortkey_m' onclick='coverage.toggle_lines(this, "mis")'>1 missing</span>
-            <span class='exc shortkey_x' onclick='coverage.toggle_lines(this, "exc")'>0 excluded</span>
+            3 statements &nbsp;
+            <span class='run hide_run shortkey_r button_toggle_run'>2 run</span>
+            <span class='mis shortkey_m button_toggle_mis'>1 missing</span>
+            <span class='exc shortkey_x button_toggle_exc'>0 excluded</span>
+
             
         </h2>
     </div>
 </div>
 
 <div class='help_panel'>
-    <img id='panel_icon' src='keybd_open.png'>
+    <img id='panel_icon' src='keybd_open.png' alt='Hide keyboard shortcuts' />
 <p class='legend'>Hot-keys on this page</p>
     <div>
 <p class='keyhelp'>
@@ -57,9 +61,9 @@
 </div>
 
 <div id='source'>
-    <table cellspacing='0' cellpadding='0'>
+    <table>
         <tr>
-            <td class='linenos' valign='top'>
+            <td class='linenos'>
 <p id='n1' class='pln'><a href='#n1'>1</a></p>
 <p id='n2' class='pln'><a href='#n2'>2</a></p>
 <p id='n3' class='stm run hide_run'><a href='#n3'>3</a></p>
@@ -69,7 +73,7 @@
 <p id='n7' class='stm mis'><a href='#n7'>7</a></p>
                 
             </td>
-            <td class='text' valign='top'>
+            <td class='text'>
 <p id='t1' class='pln'><span class='com'># A test file for HTML reporting by coverage.</span><span class='strut'>&nbsp;</span></p>
 <p id='t2' class='pln'><span class='strut'>&nbsp;</span></p>
 <p id='t3' class='stm run hide_run'><span class='key'>if</span> <span class='num'>1</span> <span class='op'>&lt;</span> <span class='num'>2</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
@@ -86,7 +90,7 @@
 <div id='footer'>
     <div class='content'>
         <p>
-            <a class='nav' href='index.html'>&#xab; index</a> &nbsp; &nbsp; <a class='nav' href='http://nedbatchelder.com/code/coverage/3.5a1'>coverage.py v3.5a1</a>
+            <a class='nav' href='index.html'>&#xab; index</a> &nbsp; &nbsp; <a class='nav' href='http://nedbatchelder.com/code/coverage/4.0a1'>coverage.py v4.0a1</a>
         </p>
     </div>
 </div>
