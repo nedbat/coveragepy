@@ -11,7 +11,27 @@ class CoveragePlugin(object):
         self.options = options
 
     def file_tracer(self, filename):
-        """Return a FileTracer object for this file."""
+        """Return a FileTracer object for this file.
+
+        Every source file is offered to the plugin to give it a chance to take
+        responsibility for tracing the file.  If your plugin can handle the
+        file, then return a `FileTracer` object.  Otherwise return None.
+
+        There is no way to register your plugin for particular files.  This
+        method is how your plugin applies itself to files.  Be prepared for
+        `filename` to refer to all kinds of files that have nothing to do with
+        your plugin.
+
+        Arguments:
+            filename (str): The path to the file being considered.  This is the
+                absolute real path to the file.  If you are comparing to other
+                paths, be sure to take this into account.
+
+        Returns:
+            FileTracer: the `FileTracer` object to use to trace this file, or
+                None if this plugin cannot trace this file.
+
+        """
         return None
 
     def file_reporter(self, filename):
@@ -44,7 +64,26 @@ class FileTracer(object):
         return None
 
     def line_number_range(self, frame):
-        """Given a call frame, return the range of source line numbers."""
+        """Given a call frame, return the range of source line numbers.
+
+        The call frame is examined, and the source line number in the original
+        file is returned.  The return value is a pair of numbers, the starting
+        line number and the ending line number, both inclusive.  For example,
+        returning (5, 7) means that lines 5, 6, and 7 should be considered
+        executed.
+
+        This function might decide that the frame doesn't indicate any lines
+        from the source file were executed.  Return (-1, -1) in this case to
+        tell coverage.py that no lines should be recorded for this frame.
+
+        Arguments:
+            frame: the call frame to examine.
+
+        Returns:
+            (int, int): a pair of line numbers, the start and end lines
+                executed in the source, inclusive.
+
+        """
         lineno = frame.f_lineno
         return lineno, lineno
 
