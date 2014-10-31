@@ -258,12 +258,12 @@ class FarmTestCase(object):
                     # print "%d %d" % (big, little)
                     # print "Left: ---\n%s\n-----\n%s" % (left, right)
                     wrong_size.append("%s (%s,%s)" % (f, size_l, size_r))
-            assert not wrong_size, (
-                "File sizes differ between %s and %s: %s" % (
+            if wrong_size:
+                print("File sizes differ between %s and %s: %s" % (
                     dir1, dir2, ", ".join(wrong_size)
                 ))
 
-            # We'll show the diff if the files differed enough in size.
+            # We'll show the diff iff the files differed enough in size.
             show_diff = bool(wrong_size)
 
         if show_diff:
