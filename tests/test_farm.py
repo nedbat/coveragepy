@@ -241,6 +241,7 @@ class FarmTestCase(object):
         diff_files = self.fnmatch_list(dc.diff_files, file_pattern)
         left_only = self.fnmatch_list(dc.left_only, file_pattern)
         right_only = self.fnmatch_list(dc.right_only, file_pattern)
+        show_diff = True
 
         if size_within:
             # The files were already compared, use the diff_files list as a
@@ -261,7 +262,11 @@ class FarmTestCase(object):
                 "File sizes differ between %s and %s: %s" % (
                     dir1, dir2, ", ".join(wrong_size)
                 ))
-        else:
+
+            # We'll show the diff if the files differed enough in size.
+            show_diff = bool(wrong_size)
+
+        if show_diff:
             # filecmp only compares in binary mode, but we want text mode.  So
             # look through the list of different files, and compare them
             # ourselves.
