@@ -1,7 +1,7 @@
 def html_it():
     """Run coverage and make an HTML report for main."""
     import coverage
-    cov = coverage.coverage()
+    cov = coverage.coverage(include=["./*"])
     cov.start()
     import main         # pragma: nested
     cov.stop()          # pragma: nested
