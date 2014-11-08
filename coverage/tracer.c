@@ -177,6 +177,8 @@ DataStack_grow(CTracer *self, DataStack *pdata_stack)
 static int
 CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 {
+    PyObject * weakref = NULL;
+
 #if COLLECT_STATS
     self->stats.calls = 0;
     self->stats.lines = 0;
@@ -203,7 +205,14 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     if (DataStack_init(self, &self->data_stack)) {
         return RET_ERROR;
     }
-    self->data_stack_index = PyDict_New();
+
+    weakref = PyImport_ImportModule("weakref");
+    if (weakref == NULL) {
+        return RET_ERROR;
+    }
+    self->data_stack_index = PyObject_CallMethod(weakref, "WeakKeyDictionary", NULL);
+    Py_XDECREF(weakref);
+
     if (self->data_stack_index == NULL) {
         STATS( self->stats.errors++; )
         return RET_ERROR;
@@ -336,12 +345,15 @@ CTracer_set_pdata_stack(CTracer *self)
         if (co_obj == NULL) {
             return RET_ERROR;
         }
-        stack_index = PyDict_GetItem(self->data_stack_index, co_obj);
+        stack_index = PyObject_GetItem(self->data_stack_index, co_obj);
         if (stack_index == NULL) {
+            /* PyObject_GetItem sets an exception if it didn't find the thing. */
+            PyErr_Clear();
+
             /* A new concurrency object.  Make a new data stack. */
             the_index = self->data_stacks_used;
             stack_index = MyInt_FromLong(the_index);
-            if (PyDict_SetItem(self->data_stack_index, co_obj, stack_index) < 0) {
+            if (PyObject_SetItem(self->data_stack_index, co_obj, stack_index) < 0) {
                 STATS( self->stats.errors++; )
                 Py_XDECREF(co_obj);
                 Py_XDECREF(stack_index);

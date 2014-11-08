@@ -201,6 +201,24 @@ class ConcurrencyTest(CoverageTest):
     def test_greenlet_simple_code(self):
         self.try_some_code(self.SIMPLE, "greenlet", greenlet)
 
+    def test_bug_330(self):
+        BUG_330 = """\
+            from weakref import WeakKeyDictionary
+            import eventlet
+
+            def do():
+                eventlet.sleep(.01)
+
+            gts = WeakKeyDictionary()
+            for _ in range(100):
+                gts[eventlet.spawn(do)] = True
+                eventlet.sleep(.005)
+
+            eventlet.sleep(.1)
+            print len(gts)
+            """
+        self.try_some_code(BUG_330, "eventlet", eventlet, "0\n")
+
 
 def print_simple_annotation(code, linenos):
     """Print the lines in `code` with X for each line number in `linenos`."""
