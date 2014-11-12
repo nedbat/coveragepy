@@ -152,8 +152,3 @@ def overrides(obj, method_name, base_class):
         base_func = base_func.im_func
 
     return klass_func is not base_func
-
-
-def plugin_implements(obj, method_name):
-    """Does the plugin `obj` implement `method_name`?"""
-    return overrides(obj, method_name, CoveragePlugin)

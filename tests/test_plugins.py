@@ -1,13 +1,10 @@
 """Tests for plugins."""
 
-import os.path
 import sys
 
 from nose.plugins.skip import SkipTest
 
 import coverage
-from coverage.codeunit import CodeUnit
-from coverage.parser import CodeParser
 from coverage.plugin import Plugins, overrides
 
 import coverage.plugin
@@ -32,7 +29,7 @@ class FakeConfig(object):
             return {}
 
 
-class PluginUnitTest(CoverageTest):
+class LoadPluginsTest(CoverageTest):
     """Test Plugins.load_plugins directly."""
 
     def test_importing_and_configuring(self):
@@ -78,11 +75,21 @@ class PluginUnitTest(CoverageTest):
         self.assertEqual(plugins[1].options, {})
         self.assertEqual(config.asked_for, ['plugin1', 'plugin2'])
 
+        # The order matters...
+        config = FakeConfig("plugin1", {'a':'second'})
+        plugins = list(Plugins.load_plugins(["plugin2", "plugin1"], config))
+
+        self.assertEqual(len(plugins), 2)
+        self.assertEqual(plugins[0].options, {})
+        self.assertEqual(plugins[1].this_is, "me")
+        self.assertEqual(plugins[1].options, {'a':'second'})
+
     def test_cant_import(self):
         with self.assertRaises(ImportError):
             _ = Plugins.load_plugins(["plugin_not_there"], None)
 
     def test_ok_to_not_define_plugin(self):
+        # TODO: should this actually be an error or warning?
         self.make_file("plugin2.py", """\
             from coverage import CoveragePlugin
 
@@ -145,7 +152,7 @@ class PluginTest(CoverageTest):
             """)
 
         cov = coverage.Coverage()
-        cov.config["run:plugins"] = ["tests.test_plugins"]
+        cov.config["run:plugins"] = ["tests.plugin1"]
 
         # Import the python file, executing it.
         self.start_import_stop(cov, "simple")
@@ -155,41 +162,6 @@ class PluginTest(CoverageTest):
         self.assertEqual(missing, [])
         _, statements, _, _ = cov.analysis("/src/try_ABC.zz")
         self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
-
-
-class Plugin(coverage.CoveragePlugin):
-    def file_tracer(self, filename):
-        if "xyz.py" in filename:
-            file_tracer = FileTracer(filename)
-            return file_tracer
-
-    def file_reporter(self, filename):
-        return FileReporter(filename)
-
-
-class FileTracer(coverage.plugin.FileTracer):
-    def __init__(self, filename):
-        self._filename = filename
-        self._source_filename = os.path.join(
-            "/src",
-            os.path.basename(filename.replace("xyz.py", "ABC.zz"))
-        )
-
-    def source_filename(self):
-        return self._source_filename
-
-    def line_number_range(self, frame):
-        lineno = frame.f_lineno
-        return lineno*100+5, lineno*100+7
-
-
-class FileReporter(coverage.plugin.FileReporter):
-    def get_parser(self, exclude=None):
-        return PluginParser()
-
-class PluginParser(CodeParser):
-    def parse_source(self):
-        return set([105, 106, 107, 205, 206, 207]), set([])
 
 
 class OverridesTest(CoverageTest):
