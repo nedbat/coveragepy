@@ -33,9 +33,6 @@ class BaseCmdLineTest(CoverageTest):
         ignore_errors=None, include=None, omit=None, morfs=[],
         show_missing=None,
     )
-    defaults.start(
-        main_module=None,
-    )
     defaults.xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
     )
@@ -475,7 +472,7 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_executes("run -m mymodule", """\
             .coverage()
             .erase()
-            .start(main_module='mymodule')
+            .start()
             .run_python_module('mymodule', ['mymodule'])
             .stop()
             .save()
@@ -483,7 +480,7 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_executes("run -m mymodule -qq arg1 arg2", """\
             .coverage()
             .erase()
-            .start(main_module='mymodule')
+            .start()
             .run_python_module('mymodule', ['mymodule', '-qq', 'arg1', 'arg2'])
             .stop()
             .save()
@@ -491,7 +488,7 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_executes("run --branch -m mymodule", """\
             .coverage(branch=True)
             .erase()
-            .start(main_module='mymodule')
+            .start()
             .run_python_module('mymodule', ['mymodule'])
             .stop()
             .save()

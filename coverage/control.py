@@ -141,7 +141,7 @@ class Coverage(object):
 
         # Other instance attributes, set later.
         self.omit = self.include = self.source = None
-        self.not_imported = self.source_pkgs = self.file_locator = None
+        self.source_pkgs = self.file_locator = None
         self.data = self.collector = None
         self.plugins = self.file_tracers = None
         self.pylib_dirs = self.cover_dir = None
@@ -426,8 +426,7 @@ class Coverage(object):
         # any canned exclusions. If they didn't, then we have to exclude the
         # stdlib and coverage.py directories.
         if self.source_match:
-            match = self.source_pkgs_match.match(modulename)
-            if match:
+            if self.source_pkgs_match.match(modulename):
                 if modulename in self.not_imported:
                     self.not_imported.remove(modulename)
                 return None  # There's no reason to skip this file.

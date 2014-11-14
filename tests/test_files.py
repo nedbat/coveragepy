@@ -101,42 +101,15 @@ class MatcherTest(CoverageTest):
             ('yourmain', False),
         ]
         modules = ['test', 'py.test', 'mymain']
-        for mm in (
-            ModuleMatcher(modules),
-            ModuleMatcher(modules, main_module=None),
-            ModuleMatcher(modules, main_module='yourmain'),
-        ):
-            self.assertEqual(
-                mm.info(),
-                ['main_module=%r' % mm.main_module] + modules
-            )
-            for modulename, matches in matches_to_try:
-                self.assertEqual(
-                    mm.match(modulename),
-                    modulename if matches else False,
-                    modulename,
-                )
-
-    def test_module_matcher_dunder_main(self):
-        matches_to_try = [
-            ('__main__', True),
-            ('mymain', True),
-            ('yourmain', False),
-        ]
-        modules = ['test', 'py.test', 'mymain']
-        mm = ModuleMatcher(modules, main_module='mymain')
-        self.assertEqual(mm.info(), ["main_module='mymain'"] + modules)
+        mm = ModuleMatcher(modules)
+        self.assertEqual(
+            mm.info(),
+            modules
+        )
         for modulename, matches in matches_to_try:
-            if not matches:
-                expected = False
-            elif modulename == '__main__':
-                expected = mm.main_module
-            else:
-                expected = modulename
-
             self.assertEqual(
                 mm.match(modulename),
-                expected,
+                matches,
                 modulename,
             )
 
