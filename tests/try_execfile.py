@@ -68,4 +68,4 @@ globals_to_check = {
     'path': cleaned_sys_path,
 }
 
-print(json.dumps(globals_to_check))
+print(json.dumps(globals_to_check, indent=4, sort_keys=True))
