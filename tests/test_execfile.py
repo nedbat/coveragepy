@@ -1,6 +1,6 @@
 """Tests for coverage.execfile"""
 
-import compileall, os, re, sys
+import compileall, json, os, re, sys
 
 from coverage.backward import binary_bytes
 from coverage.execfile import run_python_file, run_python_module
@@ -16,7 +16,7 @@ class RunFileTest(CoverageTest):
     def test_run_python_file(self):
         tryfile = os.path.join(here, "try_execfile.py")
         run_python_file(tryfile, [tryfile, "arg1", "arg2"])
-        mod_globs = eval(self.stdout())             # pylint: disable=eval-used
+        mod_globs = json.loads(self.stdout())
 
         # The file should think it is __main__
         self.assertEqual(mod_globs['__name__'], "__main__")
@@ -26,7 +26,7 @@ class RunFileTest(CoverageTest):
         self.assertEqual(dunder_file, "try_execfile.py")
 
         # It should have its correct module data.
-        self.assertEqual(mod_globs['__doc__'],
+        self.assertEqual(mod_globs['__doc__'].splitlines()[0],
                             "Test file for run_python_file.")
         self.assertEqual(mod_globs['DATA'], "xyzzy")
         self.assertEqual(mod_globs['FN_VAL'], "my_fn('fooey')")
