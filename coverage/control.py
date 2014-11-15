@@ -661,7 +661,10 @@ class Coverage(object):
             for pkg in self.not_imported:
                 if pkg not in sys.modules:
                     self._warn("Module %s was never imported." % pkg)
-                elif not hasattr(sys.modules[pkg], '__file__'):
+                elif not (
+                    hasattr(sys.modules[pkg], '__file__') and
+                    os.path.exists(sys.modules[pkg].__file__)
+                ):
                     self._warn("Module %s has no Python source." % pkg)
                 else:
                     raise AssertionError('''\
