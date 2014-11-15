@@ -662,11 +662,10 @@ class FailUnderTest(CoverageTest):
         self.assertEqual(st, 2)
 
 
-class ProcessStartupTest(CoverageTest):
-    """Test that we can measure coverage in subprocesses."""
-
+class ProcessCoverageMixin(object):
+    """Set up a .pth file that causes all subprocesses to be coverage'd"""
     def setUp(self):
-        super(ProcessStartupTest, self).setUp()
+        super(ProcessCoverageMixin, self).setUp()
         # Find a place to put a .pth file.
         pth_contents = "import coverage; coverage.process_startup()\n"
         for d in sys.path:                          # pragma: part covered
@@ -684,9 +683,13 @@ class ProcessStartupTest(CoverageTest):
             raise Exception("Couldn't find a place for the .pth file")
 
     def tearDown(self):
-        super(ProcessStartupTest, self).tearDown()
+        super(ProcessCoverageMixin, self).tearDown()
         # Clean up the .pth file we made.
         os.remove(self.pth_path)
+
+
+class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
+    """Test that we can measure coverage in subprocesses."""
 
     def test_subprocess_with_pth_files(self):           # pragma: not covered
         if os.environ.get('COVERAGE_COVERAGE', ''):
@@ -720,3 +723,92 @@ class ProcessStartupTest(CoverageTest):
         data = coverage.CoverageData()
         data.read_file(".mycovdata")
         self.assertEqual(data.summary()['sub.py'], 2)
+
+
+class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
+    """Show that we can configure {[run]source} during process-level coverage.
+
+    There are two interesting variables:
+    1) -m versus a simple script argument (eg `python myscript`)
+    2) filtering for the top-level (main.py) or second-level (sub.py) module
+    3) whether the files are in a package or not
+
+    ... for a total of eight tests.
+    """
+    def assert_pth_and_source_work_together(self, dashm, package, source):
+        def fullname(modname):
+            if package and dashm:
+                return '.'.join((package, modname))
+            else:
+                return modname
+
+        def path(basename):
+            return os.path.join(package, basename)
+
+        if os.environ.get('COVERAGE_COVERAGE', ''):
+            raise SkipTest(
+                "Can't test subprocess pth file suppport during metacoverage"
+                )
+        # Main will run sub.py
+        self.make_file(path("main.py"), """\
+            import %s
+            if True: pass
+            """ % fullname('sub'))
+        if package:
+            self.make_file(path("__init__.py"), '')
+        # sub.py will write a few lines.
+        self.make_file(path("sub.py"), """\
+            with open("out.txt", "w") as f:
+                f.write("Hello, world!\\n")
+            """)
+        self.make_file("coverage.ini", """\
+            [run]
+            source = %s
+            """ % fullname(source)
+        )
+
+        self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
+
+        if dashm:
+            cmd = (sys.executable, dashm, fullname('main'))
+        else:
+            cmd = (sys.executable, path('main.py'))
+
+        from subprocess import Popen
+        Popen(cmd).wait()
+
+        with open("out.txt") as f:
+            self.assertEqual(f.read(), "Hello, world!\n")
+
+        # Read the data from .coverage
+        self.assert_exists(".coverage")
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        summary = data.summary()
+        print(summary)
+        self.assertEqual(summary[source + '.py'], 2)
+        self.assertEqual(len(summary), 1)
+
+    def test_dashm_main(self):
+        self.assert_pth_and_source_work_together('-m', '', 'main')
+
+    def test_script_main(self):
+        self.assert_pth_and_source_work_together('', '', 'main')
+
+    def test_dashm_sub(self):
+        self.assert_pth_and_source_work_together('-m', '', 'sub')
+
+    def test_script_sub(self):
+        self.assert_pth_and_source_work_together('', '', 'sub')
+
+    def test_dashm_pkg_main(self):
+        self.assert_pth_and_source_work_together('-m', 'pkg', 'main')
+
+    def test_script_pkg_main(self):
+        self.assert_pth_and_source_work_together('', 'pkg', 'main')
+
+    def test_dashm_pkg_sub(self):
+        self.assert_pth_and_source_work_together('-m', 'pkg', 'sub')
+
+    def test_script_pkg_sub(self):
+        self.assert_pth_and_source_work_together('', 'pkg', 'sub')

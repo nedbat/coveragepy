@@ -322,13 +322,17 @@ class Coverage(object):
 
         loader = module_namespace.get('__loader__', None)
         for attrname in ('fullname', 'name'): # attribute renamed in py3.2
+            if hasattr(loader, attrname):
+                fullname = getattr(loader, attrname)
+            else:
+                continue
+
             if (
-                hasattr(loader, 'fullname') and
-                isinstance(loader.fullname, str) and
-                loader.fullname != '__main__'
+                isinstance(fullname, str) and
+                fullname != '__main__'
             ):
                 # module loaded via runpy -m
-                return loader.fullname
+                return fullname
 
         # script as first argument to python cli
         inspectedname = inspect.getmodulename(filename)
