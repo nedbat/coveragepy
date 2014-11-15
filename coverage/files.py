@@ -174,10 +174,9 @@ class TreeMatcher(object):
 
 
 class ModuleMatcher(object):
-    """A matcher for files in a tree."""
+    """A matcher for modules in a tree."""
     def __init__(self, module_names):
         self.modules = list(module_names)
-        self.not_imported = list(module_names)
 
     def __repr__(self):
         return "<ModuleMatcher %r>" % (self.modules)

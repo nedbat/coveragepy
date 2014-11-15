@@ -199,7 +199,6 @@ class Coverage(object):
                 self.source.append(self.file_locator.canonical_filename(src))
             else:
                 self.source_pkgs.append(src)
-        self.not_imported = list(self.source_pkgs)
 
         self.omit = prep_patterns(self.config.omit)
         self.include = prep_patterns(self.config.include)
@@ -432,8 +431,8 @@ class Coverage(object):
         # stdlib and coverage.py directories.
         if self.source_match:
             if self.source_pkgs_match.match(modulename):
-                if modulename in self.not_imported:
-                    self.not_imported.remove(modulename)
+                if modulename in self.source_pkgs:
+                    self.source_pkgs.remove(modulename)
                 return None  # There's no reason to skip this file.
 
             if not self.source_match.match(filename):
@@ -655,10 +654,10 @@ class Coverage(object):
         self.data.add_plugin_data(self.collector.get_plugin_data())
         self.collector.reset()
 
-        # If there are still entries in the not_imported list, then we never
+        # If there are still entries in the source_pkgs list, then we never
         # encountered those packages.
         if self._warn_unimported_source:
-            for pkg in self.not_imported:
+            for pkg in self.source_pkgs:
                 if pkg not in sys.modules:
                     self._warn("Module %s was never imported." % pkg)
                 elif not (
