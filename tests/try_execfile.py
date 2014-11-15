@@ -54,14 +54,17 @@ def my_function(a):
 
 FN_VAL = my_function("fooey")
 
+loader = globals().get('__loader__')
+fullname = getattr(loader, 'fullname', None) or getattr(loader, 'name', None)
+
 globals_to_check = {
     '__name__': __name__,
     '__file__': __file__,
     '__doc__': __doc__,
     '__builtins__.has_open': hasattr(__builtins__, 'open'),
     '__builtins__.dir': dir(__builtins__),
-    '__loader__ exists': '__loader__' in globals(),
-    '__loader__.fullname': getattr(globals().get('__loader__', None), 'fullname', None),
+    '__loader__ exists': loader is not None,
+    '__loader__.fullname': fullname,
     '__package__': __package__,
     'DATA': DATA,
     'FN_VAL': FN_VAL,
