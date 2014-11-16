@@ -295,6 +295,8 @@ class ConfigFileTest(CoverageTest):
         self.assert_config_settings_are_correct(cov)
 
     def test_config_file_settings_in_setupcfg(self):
+        # Configuration will be read from setup.cfg from sections prefixed with
+        # "coverage:"
         nested = self.LOTSA_SETTINGS.format(section="coverage:")
         self.make_file("setup.cfg", nested + "\n" + self.SETUP_CFG)
         cov = coverage.coverage()
@@ -306,12 +308,22 @@ class ConfigFileTest(CoverageTest):
             include = foo
             """)
         self.make_file("setup.cfg", """\
-            [run]
+            [coverage:run]
             omit = bar
             branch = true
             """)
         cov = coverage.coverage()
         self.assertEqual(cov.config.include, ["foo"])
+        self.assertEqual(cov.config.omit, None)
+        self.assertEqual(cov.config.branch, False)
+
+    def test_setupcfg_only_if_prefixed(self):
+        self.make_file("setup.cfg", """\
+            [run]
+            omit = bar
+            branch = true
+            """)
+        cov = coverage.coverage()
         self.assertEqual(cov.config.omit, None)
         self.assertEqual(cov.config.branch, False)
 
