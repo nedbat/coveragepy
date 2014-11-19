@@ -62,6 +62,10 @@ class Opts(object):
         help="Show line numbers of statements in each module that weren't "
                 "executed."
         )
+    skip_covered = optparse.make_option(
+        '-s', '--skip-covered', action='store_true',
+        help="Skip files with 100% coverage."
+        )
     omit = optparse.make_option(
         '', '--omit', action='store',
         metavar="PAT1,PAT2,...",
@@ -135,6 +139,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             pylib=None,
             rcfile=True,
             show_missing=None,
+            skip_covered=None,
             source=None,
             timid=None,
             title=None,
@@ -283,6 +288,7 @@ CMDS = {
             Opts.omit,
             Opts.include,
             Opts.show_missing,
+            Opts.skip_covered
             ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Report coverage statistics on modules."
@@ -426,7 +432,8 @@ class CoverageScript(object):
 
         if options.action == "report":
             total = self.coverage.report(
-                show_missing=options.show_missing, **report_args)
+                show_missing=options.show_missing,
+                skip_covered=options.skip_covered, **report_args)
         if options.action == "annotate":
             self.coverage.annotate(
                 directory=options.directory, **report_args)

@@ -732,7 +732,7 @@ class Coverage(object):
 
     def report(self, morfs=None, show_missing=True, ignore_errors=None,
                 file=None,                          # pylint: disable=W0622
-                omit=None, include=None
+                omit=None, include=None, skip_covered=False
                 ):
         """Write a summary report to `file`.
 
@@ -743,13 +743,15 @@ class Coverage(object):
         match those patterns will be included in the report. Modules matching
         `omit` will not be included in the report.
 
+        `skip_covered` if True report won't print files with 100% coverage.
+
         Returns a float, the total percentage covered.
 
         """
         self._harvest_data()
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
-            show_missing=show_missing,
+            show_missing=show_missing, skip_covered=skip_covered
             )
         reporter = SummaryReporter(self, self.config)
         return reporter.report(morfs, outfile=file)

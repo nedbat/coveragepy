@@ -31,7 +31,7 @@ class BaseCmdLineTest(CoverageTest):
     )
     defaults.report(
         ignore_errors=None, include=None, omit=None, morfs=[],
-        show_missing=None,
+        show_missing=None, skip_covered=None
     )
     defaults.xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
@@ -346,6 +346,11 @@ class CmdLineTest(BaseCmdLineTest):
             .coverage()
             .load()
             .report(morfs=["mod1", "mod2", "mod3"])
+            """)
+        self.cmd_executes("report -s", """\
+            .coverage()
+            .load()
+            .report(skip_covered=True)
             """)
 
     def test_run(self):

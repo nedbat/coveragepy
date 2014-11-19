@@ -191,6 +191,8 @@ example "87%".  A value of 2 will display percentages like "87.32%".
 ``show_missing`` (boolean, default False): when running a summary report, show
 missing lines.  See :ref:`cmd_summary` for more information.
 
+``skip_covered`` (boolean, default False): when running a cli summary report,
+skip 100% covered files. See :ref:`cmd_summary` for more information.
 
 .. _config_html:
 

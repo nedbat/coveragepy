@@ -224,6 +224,66 @@ class SummaryTest(CoverageTest):
             "TOTAL 11 2 8 3 63%"
         )
 
+    def test_report_skip_covered_no_branches(self):
+        self.make_file("main.py", """
+            import not_covered
+
+            def normal():
+                print("z")
+            normal()
+        """)
+        self.make_file("not_covered.py", """
+            def not_covered():
+                print("n")
+        """)
+        out = self.run_command("coverage run main.py")
+        self.assertEqual(out, "z\n")
+        report = self.report_from_command("coverage report --skip-covered")
+
+        # pylint: disable=C0301
+        # Name          Stmts   Miss  Cover
+        # ---------------------------------
+        # not_covered       2      1    50%
+
+        self.assertEqual(self.line_count(report), 3, report)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(
+            squeezed[2],
+            "not_covered 2 1 50%"
+        )
+
+    def test_report_skip_covered_branches(self):
+        self.make_file("main.py", """
+            import not_covered
+
+            def normal(z):
+                if z:
+                    print("z")
+            normal(True)
+            normal(False)
+        """)
+        self.make_file("not_covered.py", """
+            def not_covered(n):
+                if n:
+                    print("n")
+            not_covered(True)
+        """)
+        out = self.run_command("coverage run --branch main.py")
+        self.assertEqual(out, "n\nz\n")
+        report = self.report_from_command("coverage report --skip-covered")
+
+        # pylint: disable=C0301
+        # Name          Stmts   Miss Branch BrPart  Cover
+        # -----------------------------------------------
+        # not_covered       4      0      2      1    83%
+
+        self.assertEqual(self.line_count(report), 3, report)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(
+            squeezed[2],
+            "not_covered 4 0 2 1 83%"
+        )
+
     def test_dotpy_not_python(self):
         # We run a .py file, and when reporting, we can't parse it as Python.
         # We should get an error message in the report.
