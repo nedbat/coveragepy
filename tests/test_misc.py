@@ -2,9 +2,10 @@
 
 import sys
 
-from coverage.misc import Hasher, file_be_gone
+from coverage.misc import Hasher, file_be_gone, overrides
 from coverage import __version__, __url__
 from tests.coveragetest import CoverageTest
+
 
 class HasherTest(CoverageTest):
     """Test our wrapper of md5 hashing."""
@@ -79,3 +80,53 @@ class SetupPyTest(CoverageTest):
         self.assertGreater(len(long_description), 7)
         self.assertNotEqual(long_description[0].strip(), "")
         self.assertNotEqual(long_description[-1].strip(), "")
+
+
+class OverridesTest(CoverageTest):
+    """Test plugins.py:overrides."""
+
+    run_in_temp_dir = False
+
+    def test_overrides(self):
+        class SomeBase(object):
+            """Base class, two base methods."""
+            def method1(self):
+                pass
+
+            def method2(self):
+                pass
+
+        class Derived1(SomeBase):
+            """Simple single inheritance."""
+            def method1(self):
+                pass
+
+        self.assertTrue(overrides(Derived1(), "method1", SomeBase))
+        self.assertFalse(overrides(Derived1(), "method2", SomeBase))
+
+        class FurtherDerived1(Derived1):
+            """Derive again from Derived1, inherit its method1."""
+            pass
+
+        self.assertTrue(overrides(FurtherDerived1(), "method1", SomeBase))
+        self.assertFalse(overrides(FurtherDerived1(), "method2", SomeBase))
+
+        class FurtherDerived2(Derived1):
+            """Override the overridden method."""
+            def method1(self):
+                pass
+
+        self.assertTrue(overrides(FurtherDerived2(), "method1", SomeBase))
+        self.assertFalse(overrides(FurtherDerived2(), "method2", SomeBase))
+
+        class Mixin(object):
+            """A mixin that overrides method1."""
+            def method1(self):
+                pass
+
+        class Derived2(Mixin, SomeBase):
+            """A class that gets the method from the mixin."""
+            pass
+
+        self.assertTrue(overrides(Derived2(), "method1", SomeBase))
+        self.assertFalse(overrides(Derived2(), "method2", SomeBase))

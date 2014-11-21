@@ -129,26 +129,3 @@ class Plugins(object):
 
     def get(self, module):
         return self.names[module]
-
-
-def overrides(obj, method_name, base_class):
-    """Does `obj` override the `method_name` it got from `base_class`?
-
-    Determine if `obj` implements the method called `method_name`, which it
-    inherited from `base_class`.
-
-    Returns a boolean.
-
-    """
-    klass = obj.__class__
-    klass_func = getattr(klass, method_name)
-    base_func = getattr(base_class, method_name)
-
-    # Python 2/3 compatibility: Python 2 returns an instancemethod object, the
-    # function is the .im_func attribute.  Python 3 returns a plain function
-    # object already.
-    if sys.version_info < (3, 0):
-        klass_func = klass_func.im_func
-        base_func = base_func.im_func
-
-    return klass_func is not base_func

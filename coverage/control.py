@@ -9,12 +9,12 @@ from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.debug import DebugControl
-from coverage.plugin import CoveragePlugin, Plugins, overrides
+from coverage.plugin import CoveragePlugin, Plugins
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
-from coverage.misc import file_be_gone
+from coverage.misc import file_be_gone, overrides
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter

@@ -5,7 +5,7 @@ import sys
 from nose.plugins.skip import SkipTest
 
 import coverage
-from coverage.plugin import Plugins, overrides
+from coverage.plugin import Plugins
 
 import coverage.plugin
 
@@ -162,53 +162,3 @@ class PluginTest(CoverageTest):
         self.assertEqual(missing, [])
         _, statements, _, _ = cov.analysis("/src/try_ABC.zz")
         self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
-
-
-class OverridesTest(CoverageTest):
-    """Test plugins.py:overrides."""
-
-    run_in_temp_dir = False
-
-    def test_overrides(self):
-        class SomeBase(object):
-            """Base class, two base methods."""
-            def method1(self):
-                pass
-
-            def method2(self):
-                pass
-
-        class Derived1(SomeBase):
-            """Simple single inheritance."""
-            def method1(self):
-                pass
-
-        self.assertTrue(overrides(Derived1(), "method1", SomeBase))
-        self.assertFalse(overrides(Derived1(), "method2", SomeBase))
-
-        class FurtherDerived1(Derived1):
-            """Derive again from Derived1, inherit its method1."""
-            pass
-
-        self.assertTrue(overrides(FurtherDerived1(), "method1", SomeBase))
-        self.assertFalse(overrides(FurtherDerived1(), "method2", SomeBase))
-
-        class FurtherDerived2(Derived1):
-            """Override the overridden method."""
-            def method1(self):
-                pass
-
-        self.assertTrue(overrides(FurtherDerived2(), "method1", SomeBase))
-        self.assertFalse(overrides(FurtherDerived2(), "method2", SomeBase))
-
-        class Mixin(object):
-            """A mixin that overrides method1."""
-            def method1(self):
-                pass
-
-        class Derived2(Mixin, SomeBase):
-            """A class that gets the method from the mixin."""
-            pass
-
-        self.assertTrue(overrides(Derived2(), "method1", SomeBase))
-        self.assertFalse(overrides(Derived2(), "method2", SomeBase))
