@@ -253,11 +253,10 @@ class PathAliases(object):
             pattern = abs_file(pattern)
         pattern += pattern_sep
 
-        # Make a regex from the pattern.  fnmatch always adds a \Z or $ to
+        # Make a regex from the pattern.  fnmatch always adds a \Z to
         # match the whole string, which we don't want.
         regex_pat = fnmatch.translate(pattern).replace(r'\Z(', '(')
-        if regex_pat.endswith("$"):
-            regex_pat = regex_pat[:-1]
+
         # We want */a/b.py to match on Windows too, so change slash to match
         # either separator.
         regex_pat = regex_pat.replace(r"\/", r"[\\/]")
