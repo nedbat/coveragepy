@@ -63,7 +63,7 @@ class Opts(object):
                 "executed."
         )
     skip_covered = optparse.make_option(
-        '-s', '--skip-covered', action='store_true',
+        '--skip-covered', action='store_true',
         help="Skip files with 100% coverage."
         )
     omit = optparse.make_option(

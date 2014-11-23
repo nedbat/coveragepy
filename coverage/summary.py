@@ -54,9 +54,17 @@ class SummaryReporter(Reporter):
             try:
                 analysis = self.coverage._analyze(cu)
                 nums = analysis.numbers
-                if self.config.skip_covered and nums.n_missing == 0 and \
-                        (not self.branches or nums.n_partial_branches == 0):
-                    continue
+
+                if self.config.skip_covered:
+                    # Don't report on 100% files.
+                    no_missing_lines = (nums.n_missing == 0)
+                    if self.branches:
+                        no_missing_branches = (nums.n_partial_branches == 0)
+                    else:
+                        no_missing_branches = True
+                    if no_missing_lines and no_missing_branches:
+                        continue
+
                 args = (cu.name, nums.n_statements, nums.n_missing)
                 if self.branches:
                     args += (nums.n_branches, nums.n_partial_branches)

@@ -347,7 +347,7 @@ class CmdLineTest(BaseCmdLineTest):
             .load()
             .report(morfs=["mod1", "mod2", "mod3"])
             """)
-        self.cmd_executes("report -s", """\
+        self.cmd_executes("report --skip-covered", """\
             .coverage()
             .load()
             .report(skip_covered=True)

@@ -26,6 +26,7 @@ Christian Heimes
 Roger Hu
 Stan Hu
 Devin Jeanpierre
+Krystian Kichewko
 Ross Lawley
 Steve Leonard
 Edward Loper

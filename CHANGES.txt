@@ -11,6 +11,10 @@ Latest
 - The original command line switches (`-x` to run a program, etc) are no
   longer supported.
 
+- A new option: `coverage report --skip-covered` will reduce the number of
+  files reported by skipping files with 100% coverage.  Thanks, Krystian
+  Kichewko.
+
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
   a hack for ``--timid`` before configuration files were available.
 

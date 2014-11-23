@@ -239,17 +239,13 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, "z\n")
         report = self.report_from_command("coverage report --skip-covered")
 
-        # pylint: disable=C0301
         # Name          Stmts   Miss  Cover
         # ---------------------------------
         # not_covered       2      1    50%
 
         self.assertEqual(self.line_count(report), 3, report)
         squeezed = self.squeezed_lines(report)
-        self.assertEqual(
-            squeezed[2],
-            "not_covered 2 1 50%"
-        )
+        self.assertEqual(squeezed[2], "not_covered 2 1 50%")
 
     def test_report_skip_covered_branches(self):
         self.make_file("main.py", """
@@ -271,17 +267,51 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, "n\nz\n")
         report = self.report_from_command("coverage report --skip-covered")
 
-        # pylint: disable=C0301
         # Name          Stmts   Miss Branch BrPart  Cover
         # -----------------------------------------------
         # not_covered       4      0      2      1    83%
 
         self.assertEqual(self.line_count(report), 3, report)
         squeezed = self.squeezed_lines(report)
-        self.assertEqual(
-            squeezed[2],
-            "not_covered 4 0 2 1 83%"
-        )
+        self.assertEqual(squeezed[2], "not_covered 4 0 2 1 83%")
+
+    def test_report_skip_covered_branches_with_totals(self):
+        self.make_file("main.py", """
+            import not_covered
+            import also_not_run
+
+            def normal(z):
+                if z:
+                    print("z")
+            normal(True)
+            normal(False)
+        """)
+        self.make_file("not_covered.py", """
+            def not_covered(n):
+                if n:
+                    print("n")
+            not_covered(True)
+        """)
+        self.make_file("also_not_run.py", """
+            def does_not_appear_in_this_film(ni):
+                print("Ni!")
+            """)
+        out = self.run_command("coverage run --branch main.py")
+        self.assertEqual(out, "n\nz\n")
+        report = self.report_from_command("coverage report --skip-covered")
+
+        # Name          Stmts   Miss Branch BrPart  Cover
+        # -----------------------------------------------
+        # also_not_run      2      1      0      0    50%
+        # not_covered       4      0      2      1    83%
+        # -----------------------------------------------
+        # TOTAL             6      1      2      1    75%
+
+        self.assertEqual(self.line_count(report), 6, report)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(squeezed[2], "also_not_run 2 1 0 0 50%")
+        self.assertEqual(squeezed[3], "not_covered 4 0 2 1 83%")
+        self.assertEqual(squeezed[5], "TOTAL 6 1 2 1 75%")
 
     def test_dotpy_not_python(self):
         # We run a .py file, and when reporting, we can't parse it as Python.
