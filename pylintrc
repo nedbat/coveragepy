@@ -20,10 +20,10 @@ profile=no
 
 # Add <file or directory> to the black list. It should be a base name, not a
 # path. You may set this option multiple times.
-ignore=CVS
+ignore=
 
 # Pickle collected data for later comparisons.
-persistent=yes
+persistent=no
 
 # Set the cache size for astng objects.
 cache-size=500
@@ -50,7 +50,9 @@ load-plugins=
 #disable-msg-cat=
 
 # Enable the message(s) with the given id(s).
-#enable-msg=
+enable=
+#   I0021: Useless suppression
+    I0021
 
 # Disable the message(s) with the given id(s).
 disable= 
@@ -74,6 +76,8 @@ disable=
 #   C0103:256:coverage.morf_filename: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
 #   W0212: 86:Reporter.report_files: Access to a protected member _analyze of a client class     
     C0103,W0212
+
+msg-template={path}, {line}: {msg} ({symbol}, {msg_id})
 
 [REPORTS]
 

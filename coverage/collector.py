@@ -7,7 +7,7 @@ from coverage.pytracer import PyTracer
 
 try:
     # Use the C extension code when we can, for speed.
-    from coverage.tracer import CTracer         # pylint: disable=F0401,E0611
+    from coverage.tracer import CTracer         # pylint: disable=E0611
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
     if os.getenv('COVERAGE_TEST_TRACER') == 'c':
@@ -24,7 +24,7 @@ except ImportError:
     CTracer = None
 
 try:
-    import __pypy__                             # pylint: disable=import-error
+    import __pypy__
 except ImportError:
     __pypy__ = None
 

@@ -2,8 +2,6 @@
 
 # This file does lots of tricky stuff, so disable a bunch of lintisms.
 # pylint: disable=redefined-builtin
-# pylint: disable=import-error
-# pylint: disable=no-member
 # pylint: disable=unused-import
 # pylint: disable=no-name-in-module
 
@@ -50,7 +48,7 @@ else:
 if sys.version_info >= (3, 0):
     # Python 3.2 provides `tokenize.open`, the best way to open source files.
     import tokenize
-    open_python_source = tokenize.open     # pylint: disable=E1101
+    open_python_source = tokenize.open
 else:
     def open_python_source(fname):
         """Open a source file the best way."""

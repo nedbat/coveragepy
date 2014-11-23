@@ -7,7 +7,7 @@ from coverage.misc import CoverageException
 
 # In py3, # ConfigParser was renamed to the more-standard configparser
 try:
-    import configparser                             # pylint: disable=F0401
+    import configparser
 except ImportError:
     import ConfigParser as configparser
 

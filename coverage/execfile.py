@@ -14,7 +14,6 @@ if importlib_util_find_spec:
         Returns the file path of the module, and the name of the enclosing
         package.
         """
-        # pylint: disable=no-member
         try:
             spec = importlib_util_find_spec(modulename)
         except ImportError as err:

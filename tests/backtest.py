@@ -20,7 +20,7 @@ def run_command(cmd):
             stderr=subprocess.STDOUT
             )
     output, _ = proc.communicate()
-    status = proc.returncode        # pylint: disable=E1101
+    status = proc.returncode
 
     # Get the output, and canonicalize it to strings with newlines.
     if not isinstance(output, str):

@@ -3,7 +3,7 @@
 # Use unittest2 if it's available, otherwise unittest.  This gives us
 # backported features for 2.6.
 try:
-    import unittest2 as unittest            # pylint: disable=F0401
+    import unittest2 as unittest
 except ImportError:
     import unittest
 

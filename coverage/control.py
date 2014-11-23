@@ -23,7 +23,7 @@ from coverage.xmlreport import XmlReporter
 # Pypy has some unusual stuff in the "stdlib".  Consider those locations
 # when deciding where the stdlib is.
 try:
-    import _structseq       # pylint: disable=F0401
+    import _structseq
 except ImportError:
     _structseq = None
 

@@ -10,17 +10,17 @@ from tests.coveragetest import CoverageTest
 # These libraries aren't always available, we'll skip tests if they aren't.
 
 try:
-    import eventlet         # pylint: disable=import-error
+    import eventlet
 except ImportError:
     eventlet = None
 
 try:
-    import gevent           # pylint: disable=import-error
+    import gevent
 except ImportError:
     gevent = None
 
 try:
-    import greenlet         # pylint: disable=import-error
+    import greenlet
 except ImportError:
     greenlet = None
 

@@ -201,7 +201,6 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'x\ny\n')
         report = self.report_from_command("coverage report --show-missing")
 
-        # pylint: disable=C0301
         # Name        Stmts   Miss Branch BrPart  Cover   Missing
         # -------------------------------------------------------
         # main            1      0      0      0   100%

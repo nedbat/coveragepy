@@ -4,9 +4,7 @@ import re
 from coverage.templite import Templite, TempliteSyntaxError
 from tests.coveragetest import CoverageTest
 
-# pylint: disable=W0612,E1101
-# Disable W0612 (Unused variable) and
-# E1101 (Instance of 'foo' has no 'bar' member)
+# pylint: disable=unused-variable
 
 class AnyOldObject(object):
     """Simple testing object.
