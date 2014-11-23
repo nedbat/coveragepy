@@ -314,6 +314,7 @@ class Coverage(object):
         """
         disp = FileDisposition(filename)
         def nope(disp, reason):
+            """Simple helper to make it easy to return NO."""
             disp.trace = False
             disp.reason = reason
             return disp

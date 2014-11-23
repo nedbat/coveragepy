@@ -158,7 +158,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
         """Used to stop the optparse error handler ending the process."""
         pass
 
-    def parse_args(self, args=None, options=None):
+    def parse_args_ok(self, args=None, options=None):
         """Call optparse.parse_args, but return a triple:
 
         (ok, options, args)
@@ -375,7 +375,7 @@ class CoverageScript(object):
             argv = argv[1:]
 
         parser.help_fn = self.help_fn
-        ok, options, args = parser.parse_args(argv)
+        ok, options, args = parser.parse_args_ok(argv)
         if not ok:
             return ERR
 

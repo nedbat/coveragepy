@@ -216,7 +216,7 @@ class PythonParser(CodeParser):
         try:
             self._raw_parse()
         except (tokenize.TokenError, IndentationError) as tokerr:
-            msg, lineno = tokerr.args
+            msg, lineno = tokerr.args   # pylint: disable=unpacking-non-sequence
             raise NotPython(
                 "Couldn't parse '%s' as Python source: '%s' at %s" %
                     (self.filename, msg, lineno)

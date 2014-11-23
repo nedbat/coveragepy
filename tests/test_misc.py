@@ -88,8 +88,8 @@ class OverridesTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_overrides(self):
+        # pylint: disable=missing-docstring
         class SomeBase(object):
-            """Base class, two base methods."""
             def method1(self):
                 pass
 
@@ -97,7 +97,6 @@ class OverridesTest(CoverageTest):
                 pass
 
         class Derived1(SomeBase):
-            """Simple single inheritance."""
             def method1(self):
                 pass
 
