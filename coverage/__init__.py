@@ -34,9 +34,9 @@ def _singleton_method(name):
     called.
 
     """
-    # Disable pylint msg W0612, because a bunch of variables look unused, but
+    # Disable pylint message, because a bunch of variables look unused, but
     # they're accessed via locals().
-    # pylint: disable=W0612
+    # pylint: disable=unused-variable
 
     def wrapper(*args, **kwargs):
         """Singleton wrapper around a coverage method."""

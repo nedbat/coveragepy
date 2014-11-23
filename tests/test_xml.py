@@ -80,7 +80,7 @@ class XmlReportTest(CoverageTest):
 
     def test_filename_format_including_module(self):
         cov = self.run_doit()
-        import sub.doit                         # pylint: disable=F0401
+        import sub.doit                         # pylint: disable=import-error
         cov.xml_report([sub.doit], outfile="-")
         xml = self.stdout()
         doit_line = re_line(xml, "class.*doit")

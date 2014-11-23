@@ -7,7 +7,7 @@ from coverage.files import FileLocator
 
 from tests.coveragetest import CoverageTest
 
-# pylint: disable=F0401
+# pylint: disable=import-error
 # Unable to import 'aa' (No module named aa)
 
 class CodeUnitTest(CoverageTest):

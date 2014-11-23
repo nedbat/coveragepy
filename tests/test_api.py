@@ -448,7 +448,7 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         """
         cov = coverage.coverage(**kwargs)
         cov.start()
-        import usepkgs  # pragma: nested   # pylint: disable=F0401,W0612
+        import usepkgs  # pragma: nested   # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
         cov._harvest_data() # private! sshhh...
         summary = cov.data.summary()
@@ -487,7 +487,7 @@ class ReportIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
         """Try coverage.report()."""
         cov = coverage.coverage()
         cov.start()
-        import usepkgs  # pragma: nested   # pylint: disable=F0401,W0612
+        import usepkgs  # pragma: nested   # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
         report = StringIO()
         cov.report(file=report, **kwargs)
@@ -506,7 +506,7 @@ class XmlIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
         """Try coverage.xml_report()."""
         cov = coverage.coverage()
         cov.start()
-        import usepkgs  # pragma: nested   # pylint: disable=F0401,W0612
+        import usepkgs  # pragma: nested   # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
         cov.xml_report(outfile="-", **kwargs)
         return self.stdout()

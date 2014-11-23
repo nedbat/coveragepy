@@ -3,7 +3,8 @@
 import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
 from nose.plugins.skip import SkipTest
 
-from tests.backtest import run_command, execfile      # pylint: disable=W0622
+from tests.backtest import run_command
+from tests.backtest import execfile         # pylint: disable=redefined-builtin
 
 from coverage.control import _TEST_NAME_FILE
 

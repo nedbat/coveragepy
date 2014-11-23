@@ -77,7 +77,7 @@ disable=
 #   W0212: 86:Reporter.report_files: Access to a protected member _analyze of a client class     
     C0103,W0212
 
-msg-template={path}, {line}: {msg} ({symbol}, {msg_id})
+msg-template={path}:{line}: {msg} ({symbol})
 
 [REPORTS]
 

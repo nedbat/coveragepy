@@ -731,7 +731,7 @@ class Coverage(object):
         return Analysis(self, it)
 
     def report(self, morfs=None, show_missing=True, ignore_errors=None,
-                file=None,                          # pylint: disable=W0622
+                file=None,                  # pylint: disable=redefined-builtin
                 omit=None, include=None
                 ):
         """Write a summary report to `file`.

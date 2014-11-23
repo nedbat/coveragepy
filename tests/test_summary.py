@@ -231,7 +231,7 @@ class SummaryTest(CoverageTest):
         self.make_file("mycode.py", "This isn't python at all!")
         report = self.report_from_command("coverage report mycode.py")
 
-        # pylint: disable=C0301
+        # pylint: disable=line-too-long
         # Name     Stmts   Miss  Cover
         # ----------------------------
         # mycode   NotPython: Couldn't parse '/tmp/test_cover/63354509363/mycode.py' as Python source: 'invalid syntax' at line 1
@@ -297,7 +297,7 @@ class SummaryTest(CoverageTest):
             """)
         cov = coverage.coverage(branch=True, source=["."])
         cov.start()
-        import main     # pragma: nested # pylint: disable=F0401,W0612
+        import main     # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
         report = self.get_report(cov).splitlines()
         self.assertIn("mybranch 5 5 2 0 0%", report)
@@ -306,7 +306,7 @@ class SummaryTest(CoverageTest):
         """A helper for the next few tests."""
         cov = coverage.coverage()
         cov.start()
-        import TheCode  # pragma: nested # pylint: disable=F0401,W0612
+        import TheCode  # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
         return self.get_report(cov)
 
@@ -339,7 +339,7 @@ class SummaryTest(CoverageTest):
                 """)
             cov = coverage.coverage()
             cov.start()
-            import start    # pragma: nested # pylint: disable=F0401,W0612
+            import start    # pragma: nested # pylint: disable=import-error,unused-variable
             cov.stop()      # pragma: nested
 
             report = self.get_report(cov)
@@ -369,7 +369,7 @@ class SummaryTest2(CoverageTest):
         # statements, not one statement.
         cov = coverage.coverage()
         cov.start()
-        import usepkgs  # pragma: nested # pylint: disable=F0401,W0612
+        import usepkgs  # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
 
         repout = StringIO()

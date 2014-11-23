@@ -99,7 +99,7 @@ def run_tests_with_coverage(tracer, *nose_args):
                 if getattr(mod, '__file__', "??").startswith(covdir):
                     covmods[name] = mod
                     del sys.modules[name]
-        import coverage     # don't warn about re-import: pylint: disable=W0404
+        import coverage     # don't warn about re-import: pylint: disable=reimported
         sys.modules.update(covmods)
 
         # Run nosetests, with the arguments from our command line.
@@ -140,7 +140,7 @@ def do_zip_mods():
 def do_install_egg():
     """Install the egg1 egg for tests."""
     # I am pretty certain there are easier ways to install eggs...
-    # pylint: disable=F0401,E0611
+    # pylint: disable=import-error,no-name-in-module
     import distutils.core
     cur_dir = os.getcwd()
     os.chdir("tests/eggsrc")

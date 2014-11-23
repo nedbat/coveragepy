@@ -3,7 +3,7 @@
 import collections, dis, re, token, tokenize
 
 from coverage.backward import StringIO
-from coverage.backward import range    # pylint: disable=W0622
+from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints, open_python_source
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import nice_pair, expensive, join_regex
