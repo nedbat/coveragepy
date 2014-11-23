@@ -54,6 +54,9 @@ class SummaryReporter(Reporter):
             try:
                 analysis = self.coverage._analyze(cu)
                 nums = analysis.numbers
+                if self.config.skip_covered and nums.n_missing == 0 and \
+                        (not self.branches or nums.n_partial_branches == 0):
+                    continue
                 args = (cu.name, nums.n_statements, nums.n_missing)
                 if self.branches:
                     args += (nums.n_branches, nums.n_partial_branches)

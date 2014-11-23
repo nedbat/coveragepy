@@ -160,6 +160,7 @@ class CoverageConfig(object):
         self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
         self.precision = 0
         self.show_missing = False
+        self.skip_covered = False
 
         # Defaults for [html]
         self.html_dir = "htmlcov"
@@ -248,6 +249,7 @@ class CoverageConfig(object):
         ('partial_always_list', 'report:partial_branches_always', 'linelist'),
         ('precision', 'report:precision', 'int'),
         ('show_missing', 'report:show_missing', 'boolean'),
+        ('skip_covered', 'report:skip_covered', 'boolean'),
 
         # [html]
         ('html_dir', 'html:directory'),
