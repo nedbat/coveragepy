@@ -80,8 +80,6 @@ class SummaryReporter(Reporter):
                     args += (missing_fmtd,)
                 outfile.write(fmt_coverage % args)
                 total += nums
-            except KeyboardInterrupt:                   # pragma: not covered
-                raise
             except Exception:
                 report_it = not self.config.ignore_errors
                 if report_it:
