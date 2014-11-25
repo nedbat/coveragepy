@@ -129,6 +129,7 @@ class Coverage(object):
 
         # The matchers for _should_trace.
         self.source_match = None
+        self.source_pkgs_match = None
         self.pylib_match = self.cover_match = None
         self.include_match = self.omit_match = None
 
@@ -305,36 +306,36 @@ class Coverage(object):
                 filename = filename[:-9] + ".py"
         return filename
 
-    def _name_for_module(self, module_namespace, filename):
-        """
-        For configurability's sake, we allow __main__ modules to be matched by their importable name.
+    def _name_for_module(self, module_globals, filename):
+        """Get the name of the module for a set of globals and filename.
 
-        If loaded via runpy (aka -m), we can usually recover the "original" full dotted module name,
-        otherwise, we resort to interpreting the filename to get the module's name.
-        In the case that the module name can't be deteremined, None is returned.
+        For configurability's sake, we allow __main__ modules to be matched by
+        their importable name.
+
+        If loaded via runpy (aka -m), we can usually recover the "original" full
+        dotted module name, otherwise, we resort to interpreting the filename to
+        get the module's name.  In the case that the module name can't be
+        deteremined, None is returned.
+
         """
-        # TODO: unit-test
-        dunder_name = module_namespace.get('__name__', None)
+        dunder_name = module_globals.get('__name__', None)
 
         if isinstance(dunder_name, str) and dunder_name != '__main__':
-            # this is the usual case: an imported module
+            # This is the usual case: an imported module.
             return dunder_name
 
-        loader = module_namespace.get('__loader__', None)
+        loader = module_globals.get('__loader__', None)
         for attrname in ('fullname', 'name'): # attribute renamed in py3.2
             if hasattr(loader, attrname):
                 fullname = getattr(loader, attrname)
             else:
                 continue
 
-            if (
-                isinstance(fullname, str) and
-                fullname != '__main__'
-            ):
-                # module loaded via runpy -m
+            if isinstance(fullname, str) and fullname != '__main__':
+                # Module loaded via: runpy -m
                 return fullname
 
-        # script as first argument to python cli
+        # Script as first argument to Python CLI.
         inspectedname = inspect.getmodulename(filename)
         if inspectedname is not None:
             return inspectedname
@@ -675,12 +676,12 @@ class Coverage(object):
                 ):
                     self._warn("Module %s has no Python source." % pkg)
                 else:
-                    raise AssertionError('''\
-Unexpected third case:
-    name: %s
-    object: %r
-    __file__: %s''' % (pkg, sys.modules[pkg], sys.modules[pkg].__file__)
-                    )
+                    raise AssertionError(
+                        "Unexpected third case: name = %s, "
+                        "object = %r, "
+                        "__file__ = %s" % (
+                        pkg, sys.modules[pkg], sys.modules[pkg].__file__
+                    ))
 
         # Find out if we got any data.
         summary = self.data.summary()

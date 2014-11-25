@@ -16,6 +16,7 @@ David Christian
 Marcus Cobden
 Matthew Desmarais
 Danek Duvall
+Buck Evan
 Ben Finney
 Martin Fuzzey
 Alex Gaynor

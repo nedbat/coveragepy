@@ -85,7 +85,6 @@ class MatcherTest(CoverageTest):
     def test_module_matcher(self):
         matches_to_try = [
             ('test', True),
-            ('test', True),
             ('trash', False),
             ('testing', False),
             ('test.x', True),

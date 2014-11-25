@@ -27,8 +27,13 @@ Latest
 - You can now programmatically adjust the configuration of coverage by setting
   items on `Coverage.config` after construcion.
 
+- A module run with ``-m`` can be used as the argument to ``--source``, fixing
+  `issue 328`_.  Thanks, Buck Evan.
+
 - Made some PyPy-specific tweaks to improve speed under PyPy.  Thanks, Alex
   Gaynor.
+
+.. _issue 328: https://bitbucket.org/ned/coveragepy/issue/328/misbehavior-in-run-source
 
 
 Version 4.0a1 --- 27 September 2014

@@ -358,9 +358,13 @@ class ProcessTest(CoverageTest):
         self.assertEqual(self.line_count(out), 6, out)
 
     def test_coverage_run_script_imports_doubledashsource(self):
+        # This file imports try_execfile, which compiles it to .pyc, so the
+        # first run will have __file__ == "try_execfile.py" and the second will
+        # have __file__ == "try_execfile.pyc", which throws off the comparison.
+        # Setting dont_write_bytecode True stops the compilation to .pyc and
+        # keeps the test working.
         self.make_file("myscript", """\
-            import sys
-            sys.dont_write_bytecode = True
+            import sys; sys.dont_write_bytecode = True
 
             def main():
                 import tests.try_execfile
@@ -728,13 +732,15 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
 class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
     """Show that we can configure {[run]source} during process-level coverage.
 
-    There are two interesting variables:
+    There are three interesting variables:
     1) -m versus a simple script argument (eg `python myscript`)
     2) filtering for the top-level (main.py) or second-level (sub.py) module
     3) whether the files are in a package or not
 
     ... for a total of eight tests.
+
     """
+
     def assert_pth_and_source_work_together(self, dashm, package, source):
         def fullname(modname):
             if package and dashm:
@@ -749,23 +755,23 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
             raise SkipTest(
                 "Can't test subprocess pth file suppport during metacoverage"
                 )
-        # Main will run sub.py
+
+        # Main will run sub.py.
         self.make_file(path("main.py"), """\
             import %s
             if True: pass
             """ % fullname('sub'))
         if package:
-            self.make_file(path("__init__.py"), '')
+            self.make_file(path("__init__.py"), "")
         # sub.py will write a few lines.
         self.make_file(path("sub.py"), """\
             with open("out.txt", "w") as f:
-                f.write("Hello, world!\\n")
+                f.write("Hello, world!")
             """)
         self.make_file("coverage.ini", """\
             [run]
             source = %s
-            """ % fullname(source)
-        )
+            """ % fullname(source))
 
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
 
@@ -774,11 +780,12 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         else:
             cmd = (sys.executable, path('main.py'))
 
+        # TODO: can we use run_command here instead of Popen?
         from subprocess import Popen
         Popen(cmd).wait()
 
         with open("out.txt") as f:
-            self.assertEqual(f.read(), "Hello, world!\n")
+            self.assertEqual(f.read(), "Hello, world!")
 
         # Read the data from .coverage
         self.assert_exists(".coverage")
