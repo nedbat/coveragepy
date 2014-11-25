@@ -905,6 +905,8 @@ class Coverage(object):
             ]
         if self.source_match:
             info.append(('source_match', self.source_match.info()))
+        if self.source_pkgs_match:
+            info.append(('source_pkgs_match', self.source_pkgs_match.info()))
         if self.include_match:
             info.append(('include_match', self.include_match.info()))
         if self.omit_match:

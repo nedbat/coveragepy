@@ -156,10 +156,6 @@ class TreeMatcher(object):
         """A list of strings for displaying when dumping state."""
         return self.dirs
 
-    def add(self, directory):
-        """Add another directory to the list we match for."""
-        self.dirs.append(directory)
-
     def match(self, fpath):
         """Does `fpath` indicate a file in one of our trees?"""
         for d in self.dirs:
@@ -185,13 +181,8 @@ class ModuleMatcher(object):
         """A list of strings for displaying when dumping state."""
         return self.modules
 
-    def add(self, module):
-        """Add another directory to the list we match for."""
-        self.modules.append(module)
-
     def match(self, module_name):
-        """Does `module_name` indicate a module in one of our packages?
-        """
+        """Does `module_name` indicate a module in one of our packages?"""
         if not module_name:
             return False
 
