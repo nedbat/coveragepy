@@ -8,6 +8,12 @@ from tests.coveragetest import CoverageTest
 
 here = os.path.dirname(__file__)
 
+# Determine what kind of tests we are running, because some of these tests don't
+# work in certain situations.
+C_TRACER = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
+METACOV = os.getenv('COVERAGE_COVERAGE', '') != ''
+
+
 class ProcessTest(CoverageTest):
     """Tests of the per-process behavior of coverage.py."""
 
@@ -365,12 +371,7 @@ class ProcessTest(CoverageTest):
         # keeps the test working.
         self.make_file("myscript", """\
             import sys; sys.dont_write_bytecode = True
-
-            def main():
-                import tests.try_execfile
-
-            if __name__ == '__main__':
-                main()
+            import tests.try_execfile
             """)
 
         # These -m commands assume the coverage tree is on the path.
@@ -528,11 +529,8 @@ class ProcessTest(CoverageTest):
         self.assertIn("Trace function changed", out)
 
     if sys.version_info >= (3, 0):   # This only works on 3.x for now.
-        # It only works with the C tracer,
-        c_tracer = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
-        # and if we aren't measuring ourselves.
-        metacov = os.getenv('COVERAGE_COVERAGE', '') != ''
-        if c_tracer and not metacov:        # pragma: not covered
+        # It only works with the C tracer, and if we aren't measuring ourselves.
+        if C_TRACER and not METACOV:        # pragma: not covered
             def test_fullcoverage(self):
                 # fullcoverage is a trick to get stdlib modules measured from
                 # the very beginning of the process. Here we import os and
@@ -696,7 +694,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
     """Test that we can measure coverage in subprocesses."""
 
     def test_subprocess_with_pth_files(self):           # pragma: not covered
-        if os.environ.get('COVERAGE_COVERAGE', ''):
+        if METACOV:
             raise SkipTest(
                 "Can't test subprocess pth file suppport during metacoverage"
                 )
@@ -741,7 +739,14 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
     """
 
-    def assert_pth_and_source_work_together(self, dashm, package, source):
+    def assert_pth_and_source_work_together(
+        self, dashm, package, source
+    ):                                                  # pragma: not covered
+        if METACOV:
+            raise SkipTest(
+                "Can't test subprocess pth file suppport during metacoverage"
+                )
+
         def fullname(modname):
             if package and dashm:
                 return '.'.join((package, modname))
@@ -750,11 +755,6 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
         def path(basename):
             return os.path.join(package, basename)
-
-        if os.environ.get('COVERAGE_COVERAGE', ''):
-            raise SkipTest(
-                "Can't test subprocess pth file suppport during metacoverage"
-                )
 
         # Main will run sub.py.
         self.make_file(path("main.py"), """\
