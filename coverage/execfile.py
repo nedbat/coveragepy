@@ -7,6 +7,21 @@ from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
 from coverage.misc import ExceptionDuringRun, NoCode, NoSource
 
 
+if sys.version_info >= (3, 3):
+    DEFAULT_FULLNAME = '__main__'
+else:
+    DEFAULT_FULLNAME = None
+
+
+class DummyLoader(object):
+    """A shim for the pep302 __loader__, emulating pkgutil.ImpLoader.
+
+    Currently only implements the .fullname attribute
+    """
+    def __init__(self, fullname, *args):
+        self.fullname = fullname
+
+
 if importlib_util_find_spec:
     def find_module(modulename):
         """Find the module named `modulename`.
@@ -91,10 +106,10 @@ def run_python_module(modulename, args):
 
     pathname = os.path.abspath(pathname)
     args[0] = pathname
-    run_python_file(pathname, args, package=packagename)
+    run_python_file(pathname, args, package=packagename, modulename=modulename)
 
 
-def run_python_file(filename, args, package=None):
+def run_python_file(filename, args, package=None, modulename=DEFAULT_FULLNAME):
     """Run a python file as if it were the main program on the command line.
 
     `filename` is the path to the file to execute, it need not be a .py file.
@@ -110,6 +125,9 @@ def run_python_file(filename, args, package=None):
     main_mod.__file__ = filename
     if package:
         main_mod.__package__ = package
+    if modulename:
+        main_mod.__loader__ = DummyLoader(modulename)
+
     main_mod.__builtins__ = BUILTINS
 
     # Set sys.argv properly.
