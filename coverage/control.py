@@ -903,18 +903,20 @@ class Coverage(object):
                 )),
             ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
             ]
-        if self.source_match:
-            info.append(('source_match', self.source_match.info()))
-        if self.source_pkgs_match:
-            info.append(('source_pkgs_match', self.source_pkgs_match.info()))
-        if self.include_match:
-            info.append(('include_match', self.include_match.info()))
-        if self.omit_match:
-            info.append(('omit_match', self.omit_match.info()))
-        if self.cover_match:
-            info.append(('cover_match', self.cover_match.info()))
-        if self.pylib_match:
-            info.append(('pylib_match', self.pylib_match.info()))
+
+        matcher_names = [
+            'source_match', 'source_pkgs_match',
+            'include_match', 'omit_match',
+            'cover_match', 'pylib_match',
+            ]
+
+        for matcher_name in matcher_names:
+            matcher = getattr(self, matcher_name)
+            if matcher:
+                matcher_info = matcher.info()
+            else:
+                matcher_info = '-none-'
+            info.append((matcher_name, matcher_info))
 
         return info
 
