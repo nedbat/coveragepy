@@ -137,7 +137,11 @@ class PluginTest(CoverageTest):
             cov.start()
         cov.stop()
 
-    def test_importing_myself(self):
+
+class FileTracerTest(CoverageTest):
+    """Tests of plugins that implement file_tracer."""
+
+    def test_plugin1(self):
         if sys.platform == 'win32':
             raise SkipTest("Plugin stuff is jank on windows.. fixing soon...")
 
@@ -156,6 +160,37 @@ class PluginTest(CoverageTest):
 
         # Import the python file, executing it.
         self.start_import_stop(cov, "simple")
+
+        _, statements, missing, _ = cov.analysis("simple.py")
+        self.assertEqual(statements, [1,2,3])
+        self.assertEqual(missing, [])
+        _, statements, _, _ = cov.analysis("/src/try_ABC.zz")
+        self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
+
+    def test_plugin2(self):
+        self.make_file("render.py", """\
+            def render(filename, linenum):
+                fiddle_around = 1   # vamp until ready
+                return "[{0} @ {1}]".format(filename, linenum)
+            """)
+        self.make_file("caller.py", """\
+            from render import render
+
+            assert render("foo.html", 17) == "[foo.html @ 17]"
+            assert render("bar.html", 23) == "[bar.html @ 23]"
+            """)
+
+        cov = coverage.Coverage()
+        cov.config["run:plugins"] = ["tests.plugin2"]
+        cov.config["run:debug"] = ["trace"]
+
+        self.start_import_stop(cov, "caller")
+
+        print(self.stderr())
+        cov._harvest_data()
+        print(cov.data.line_data())
+
+        return # TODO: finish this test
 
         _, statements, missing, _ = cov.analysis("simple.py")
         self.assertEqual(statements, [1,2,3])

@@ -36,6 +36,14 @@ Key:
     + A pain, b/c of the structure of the tests.
     + BTW: make an easier way to write those tests.
 
+- Documentation
+    - Plugins!
+        Once per process
+        Once per file
+            - create a file tracer
+            - call its has_dynamic_source_file()
+        Once per call
+        Once per line
 
 
 * --source stuff:

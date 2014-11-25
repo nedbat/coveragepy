@@ -1,4 +1,4 @@
-"""Plugins for test_plugins.py to import."""
+"""A plugin for test_plugins.py to import."""
 
 import os.path
 
@@ -12,8 +12,7 @@ class Plugin(coverage.CoveragePlugin):
     def file_tracer(self, filename):
         """Trace only files named xyz.py"""
         if "xyz.py" in filename:
-            file_tracer = FileTracer(filename)
-            return file_tracer
+            return FileTracer(filename)
 
     def file_reporter(self, filename):
         return FileReporter(filename)

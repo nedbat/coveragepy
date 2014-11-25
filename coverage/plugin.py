@@ -41,22 +41,58 @@ class CoveragePlugin(object):
         `file_tracer`.  It's an error to return None.
 
         """
-        raise Exception("Plugin %r needs to implement file_reporter" % self.plugin_name)
+        raise NotImplementedError("Plugin %r needs to implement file_reporter" % self.plugin_name)
 
 
 class FileTracer(object):
-    """Support needed for files during the tracing phase."""
+    """Support needed for files during the tracing phase.
+
+    You may construct this object from CoveragePlugin.file_tracer any way you
+    like.  A natural choice would be to pass the filename given to file_tracer.
+
+    """
 
     def source_filename(self):
-        return "xyzzy"
+        """The source filename for this file.
 
-    def dynamic_source_file_name(self):
-        """Returns a callable that can return a source name for a frame.
+        This may be any filename you like.  A key responsibility of a plugin is
+        to own the mapping from Python execution back to whatever source
+        filename was originally the source of the code.
 
-        The callable should take a filename and a frame, and return either a
-        filename or None:
+        Returns:
+            The filename to credit with this execution.
 
-            def dynamic_source_filename_func(filename, frame)
+        """
+        return None
+
+    def has_dynamic_source_filename(self):
+        """Does this FileTracer have dynamic source filenames?
+
+        FileTracers can provide dynamically determined filenames by implementing
+        dynamic_source_filename.  Invoking that function is expensive. To
+        determine whether it should invoke it, coverage.py uses the result of
+        this function to know if it needs to bother invoking
+        dynamic_source_filename.
+
+        Returns:
+            A boolean, true if `dynamic_source_filename` should be called to
+            get dynamic source filenames.
+
+        """
+        return False
+
+    def dynamic_source_filename(self, filename, frame):
+        """Returns a dynamically computed source filename.
+
+        Some plugins need to compute the source filename dynamically for each
+        frame.
+
+        This function will not be invoked if `has_dynamic_source_filename`
+        returns False.
+
+        Returns:
+            The source filename for this frame, or None if this frame shouldn't
+            be measured.
 
         Can return None if dynamic filenames aren't needed.
 

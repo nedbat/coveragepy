@@ -28,6 +28,7 @@ class PyTracer(object):
         self.arcs = False
         self.should_trace = None
         self.should_trace_cache = None
+        self.check_include = None
         self.warn = None
         self.plugin_data = None
         # The threading module to use, if any.
@@ -83,13 +84,11 @@ class PyTracer(object):
             self.cur_file_dict = None
             if disp.trace:
                 tracename = disp.source_filename
-                if disp.file_tracer:
-                    dyn_func = disp.file_tracer.dynamic_source_file_name()
-                    if dyn_func:
-                        tracename = dyn_func(tracename, frame)
-                        if tracename:
-                            if not self.check_include(tracename):
-                                tracename = None
+                if disp.file_tracer and disp.has_dynamic_filename:
+                    tracename = disp.file_tracer.dynamic_source_filename(tracename, frame)
+                    if tracename:
+                        if not self.check_include(tracename):
+                            tracename = None
             else:
                 tracename = None
             if tracename:

@@ -186,6 +186,8 @@ class Collector(object):
             tracer.plugin_data = self.plugin_data
         if hasattr(tracer, 'threading'):
             tracer.threading = self.threading
+        if hasattr(tracer, 'check_include'):
+            tracer.check_include = self.check_include
 
         fn = tracer.start()
         self.tracers.append(tracer)

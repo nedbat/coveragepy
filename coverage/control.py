@@ -360,7 +360,10 @@ class Coverage(object):
                     file_tracer.plugin_name = plugin.plugin_name
                     disp.trace = True
                     disp.file_tracer = file_tracer
-                    disp.source_filename = self.file_locator.canonical_filename(file_tracer.source_filename())
+                    if file_tracer.has_dynamic_source_filename():
+                        disp.has_dynamic_filename = True
+                    else:
+                        disp.source_filename = self.file_locator.canonical_filename(file_tracer.source_filename())
             else:
                 disp.trace = True
                 disp.source_filename = canonical
@@ -368,15 +371,16 @@ class Coverage(object):
             if disp.trace:
                 if file_tracer:
                     disp.file_tracer = file_tracer
-                if disp.source_filename is None:
-                    raise CoverageException(
-                        "Plugin %r didn't set source_filename for %r" %
-                        (plugin, disp.original_filename)
-                    )
-                if disp.check_filters:
-                    reason = self._check_include_omit_etc(disp.source_filename)
-                    if reason:
-                        nope(disp, reason)
+                if not disp.has_dynamic_filename:
+                    if disp.source_filename is None:
+                        raise CoverageException(
+                            "Plugin %r didn't set source_filename for %r" %
+                            (plugin, disp.original_filename)
+                        )
+                    if disp.check_filters:
+                        reason = self._check_include_omit_etc(disp.source_filename)
+                        if reason:
+                            nope(disp, reason)
 
                 return disp
 
@@ -903,6 +907,7 @@ class FileDisposition(object):
         self.trace = False
         self.reason = ""
         self.file_tracer = None
+        self.has_dynamic_filename = False
 
     def debug_message(self):
         """Produce a debugging message explaining the outcome."""
