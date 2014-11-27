@@ -15,6 +15,9 @@ Latest
   files reported by skipping files with 100% coverage.  Thanks, Krystian
   Kichewko.
 
+- You can now specify the ``--fail-under`` option in the ``.coveragerc`` file
+  as the ``[report] fail_under`` options.  This closes `issue 314`_.
+
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
   a hack for ``--timid`` before configuration files were available.
 
@@ -44,6 +47,7 @@ Latest
 - Made some PyPy-specific tweaks to improve speed under PyPy.  Thanks, Alex
   Gaynor.
 
+.. _issue 314: https://bitbucket.org/ned/coveragepy/issue/314/fail_under-param-not-working-in-coveragerc
 .. _issue 328: https://bitbucket.org/ned/coveragepy/issue/328/misbehavior-in-run-source
 .. _issue 334: https://bitbucket.org/ned/coveragepy/issue/334/pragma-not-recognized-if-tab-character
 .. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ

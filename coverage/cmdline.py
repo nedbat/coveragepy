@@ -430,6 +430,7 @@ class CoverageScript(object):
             include = include,
             )
 
+        total = None
         if options.action == "report":
             total = self.coverage.report(
                 show_missing=options.show_missing,
@@ -445,21 +446,28 @@ class CoverageScript(object):
             outfile = options.outfile
             total = self.coverage.xml_report(outfile=outfile, **report_args)
 
-        if options.fail_under is not None:
-            # Total needs to be rounded, but be careful of 0 and 100.
-            if 0 < total < 1:
-                total = 1
-            elif 99 < total < 100:
-                total = 99
-            else:
-                total = round(total)
+        if total is not None:
+            # Apply the command line fail-under options, and then use the config
+            # value, so we can get fail_under from the config file.
+            if options.fail_under is not None:
+                self.coverage.config["report:fail_under"] = options.fail_under
 
-            if total >= options.fail_under:
-                return OK
-            else:
-                return FAIL_UNDER
-        else:
-            return OK
+            if self.coverage.config["report:fail_under"]:
+
+                # Total needs to be rounded, but be careful of 0 and 100.
+                if 0 < total < 1:
+                    total = 1
+                elif 99 < total < 100:
+                    total = 99
+                else:
+                    total = round(total)
+
+                if total >= self.coverage.config["report:fail_under"]:
+                    return OK
+                else:
+                    return FAIL_UNDER
+
+        return OK
 
     def help(self, error=None, topic=None, parser=None):
         """Display an error message, or the named topic."""

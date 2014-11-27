@@ -4,6 +4,7 @@ import pprint, re, shlex, sys, textwrap
 import mock
 import coverage
 import coverage.cmdline
+from coverage.config import CoverageConfig
 from coverage.misc import ExceptionDuringRun
 
 from tests.coveragetest import CoverageTest, OK, ERR
@@ -45,6 +46,7 @@ class BaseCmdLineTest(CoverageTest):
         # We'll invoke .coverage as the constructor, and then keep using the
         # same object as the resulting coverage object.
         mk.coverage.return_value = mk
+        mk.config = CoverageConfig()
         return mk
 
     def mock_command_line(self, args):

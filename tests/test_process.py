@@ -663,6 +663,15 @@ class FailUnderTest(CoverageTest):
         st, _ = self.run_command_status("coverage xml --fail-under=44")
         self.assertEqual(st, 2)
 
+    def test_fail_under_in_config(self):
+        self.make_file(".coveragerc", "[report]\nfail_under = 43\n")
+        st, _ = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+
+        self.make_file(".coveragerc", "[report]\nfail_under = 44\n")
+        st, _ = self.run_command_status("coverage report")
+        self.assertEqual(st, 2)
+
 
 def possible_pth_dirs():
     """Produce a sequence of directories for trying to write .pth files."""
