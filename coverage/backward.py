@@ -76,7 +76,7 @@ if sys.version_info >= (3, 0):
 
     def bytes_to_ints(bytes_value):
         """Turn a bytes object into a sequence of ints."""
-        # In Py3, iterating bytes gives ints.
+        # In Python 3, iterating bytes gives ints.
         return bytes_value
 
 else:
@@ -103,10 +103,10 @@ else:
 
 
 try:
-    # In Py 2.x, the builtins were in __builtin__
+    # In Python 2.x, the builtins were in __builtin__
     BUILTINS = sys.modules['__builtin__']
 except KeyError:
-    # In Py 3.x, they're in builtins
+    # In Python 3.x, they're in builtins
     BUILTINS = sys.modules['builtins']
 
 

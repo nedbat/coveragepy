@@ -334,5 +334,31 @@ ignore-docstrings=yes
 #
 
 spelling-dict=en_US
-# pylint doesn't strip the words, so they have to all be jammed on one line in order to be recognized... :(
-spelling-ignore-words=activestate,API,args,argv,bitbucket,BOM,boolean,BTW,builtin,builtins,bytecode,bytecodes,canonicalize,canonicalized,canonicalizes,codecs,config,configparser,configurability,configurability's,cov,coveragerc,covhtml,css,dict,dict's,dicts,dirname,django,docstring,docstrings,doctest,DOM,encodings,endfor,endif,eventlet,expr,filename,filenames,fname,fnmatch,fpath,fullcoverage,getattr,gevent,gevent's,GitHub,globals,greenlet,HTML,http,importlib,instancemethod,int,ints,iterable,iterables,jython,kwargs,matcher,matchers,merchantability,mixin,modulename,morf,morfs,multi,multi-line,namespace,namespaces,nano,nbsp,ned,nedbatchelder,nullary,num,OK,opcode,opcodes,optparse,os,outfile,parsable,parsers,pragma,pre,programmability,py,py's,pyc,pypy,pyw,rcfile,regex,regexes,renderer,settrace,sitecustomize,stackoverflow,stderr,stdlib,stdout,str,sys,templite,TODO,tokenization,tokenize,tokenized,tokenizer,tokenizes,tokenizing,traceback,tuple,tuples,txt,unittest,URL,UTF,utf,virtualenv,whitespace,wikipedia,wildcard,wildcards,XML,xrange
+# pylint doesn't strip the words, so insert a dummy x at the beginning to make
+# the other words work properly.
+# https://bitbucket.org/logilab/pylint/issue/398/spelling-words-need-to-be-stripped-or-the
+spelling-ignore-words=
+    x,activestate,API,args,argv,
+    x,bitbucket,BOM,boolean,BTW,builtin,builtins,bytecode,bytecodes,
+    x,canonicalize,canonicalized,canonicalizes,cmdline,codecs,colorsys,config,configparser,
+    x,configurability,configurability's,cov,coveragepy,coveragerc,covhtml,css,
+    x,dict,dict's,dicts,dirname,django,docstring,docstrings,doctest,DOM,
+    x,encodings,endfor,endif,eventlet,exe,execfile,executable's,expr,
+    x,filename,filenames,fname,fnmatch,fpath,fullcoverage,
+    x,getattr,gevent,gevent's,github,globals,greenlet,
+    x,HTML,http,https,
+    x,importlib,instancemethod,int,ints,iterable,iterables,
+    x,jython,
+    x,kwargs,
+    x,matcher,matchers,merchantability,mixin,modulename,morf,morfs,multi,
+    x,namespace,namespaces,nano,nbsp,ned,nedbat,nedbatchelder,nosetests,nullary,num,
+    x,OK,opcode,opcodes,optparse,os,outfile,
+    x,parsable,parsers,pragma,pre,programmability,py,py's,pyc,pyexpat,pypy,PYTHONPATH,pyw,
+    x,rcfile,regex,regexes,renderer,
+    x,settrace,setuptools,sitecustomize,stackoverflow,stderr,stdlib,stdout,str,sys,
+    x,templite,timestamp,TODO,tokenization,tokenize,tokenized,tokenizer,tokenizes,
+    x,tokenizing,traceback,tuple,tuples,txt,
+    x,ubuntu,undecodable,unexecuted,unittest,unparsable,unsubscriptable,untokenizable,URL,UTF,utf,
+    x,virtualenv,
+    x,whitespace,wikipedia,wildcard,wildcards,
+    x,XML,xrange,

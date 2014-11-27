@@ -91,7 +91,7 @@ class ConfigTest(CoverageTest):
         self.assertEqual(cov.config.data_file, "fromarg.dat")
 
     def test_parse_errors(self):
-        # Im-parseable values raise CoverageException, with details.
+        # Im-parsable values raise CoverageException, with details.
         bad_configs_and_msgs = [
             ("[run]\ntimid = maybe?\n", r"maybe[?]"),
             ("timid = 1\n", r"timid = 1"),

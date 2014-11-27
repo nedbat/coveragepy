@@ -132,8 +132,8 @@ class Collector(object):
 
     def reset(self):
         """Clear collected data, and prepare to collect more."""
-        # A dictionary mapping filenames to dicts with linenumber keys,
-        # or mapping filenames to dicts with linenumber pairs as keys.
+        # A dictionary mapping filenames to dicts with line number keys,
+        # or mapping filenames to dicts with line number pairs as keys.
         self.data = {}
 
         self.plugin_data = {}

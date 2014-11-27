@@ -752,12 +752,14 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
 class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
     """Show that we can configure {[run]source} during process-level coverage.
 
-    There are three interesting variables:
-    1) -m versus a simple script argument (eg `python myscript`)
-    2) filtering for the top-level (main.py) or second-level (sub.py) module
-    3) whether the files are in a package or not
+    There are three interesting variables, for a total of eight tests:
 
-    ... for a total of eight tests.
+        1. -m versus a simple script argument (for example, `python myscript`),
+
+        2. filtering for the top-level (main.py) or second-level (sub.py)
+           module, and
+
+        3. whether the files are in a package or not.
 
     """
 

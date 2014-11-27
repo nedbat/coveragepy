@@ -695,7 +695,7 @@ class Coverage(object):
 
                 if self.omit_match and self.omit_match.match(py_file):
                     # Turns out this file was omitted, so don't pull it back
-                    # in as un-executed.
+                    # in as unexecuted.
                     continue
 
                 self.data.touch_file(py_file)
