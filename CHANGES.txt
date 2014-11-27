@@ -38,10 +38,14 @@ Latest
 - A module run with ``-m`` can be used as the argument to ``--source``, fixing
   `issue 328`_.  Thanks, Buck Evan.
 
+- The regex for matching exclusion pragmas has been fixed to allow more kinds
+  of whitespace, fixing `issue 334`_.
+
 - Made some PyPy-specific tweaks to improve speed under PyPy.  Thanks, Alex
   Gaynor.
 
 .. _issue 328: https://bitbucket.org/ned/coveragepy/issue/328/misbehavior-in-run-source
+.. _issue 334: https://bitbucket.org/ned/coveragepy/issue/334/pragma-not-recognized-if-tab-character
 .. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ
 .. _issue 343: https://bitbucket.org/ned/coveragepy/issue/343/an-explicitly-named-non-existent-config
 

@@ -587,9 +587,11 @@ class ExcludeTest(CoverageTest):
             if c:   # pragma NOBRANCH
                 d = 6
             e = 7
+            if e:#\tpragma:\tno branch
+                f = 9
             """,
-            [1,2,3,4,5,6,7],
-            arcz=".1 12 23 24 34 45 56 57 67 7.", arcz_missing="")
+            [1,2,3,4,5,6,7,8,9],
+            arcz=".1 12 23 24 34 45 56 57 67 78 89 9. 8.", arcz_missing="")
 
     def test_custom_pragmas(self):
         self.check_coverage("""\

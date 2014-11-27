@@ -108,14 +108,14 @@ class HandyConfigParser(configparser.RawConfigParser):
         return list(filter(None, value_list.split('\n')))
 
 
-# The default line exclusion regexes
+# The default line exclusion regexes.
 DEFAULT_EXCLUDE = [
-    '(?i)# *pragma[: ]*no *cover',
+    r'(?i)#\s*pragma[:\s]?\s*no\s*cover',
     ]
 
 # The default partial branch regexes, to be modified by the user.
 DEFAULT_PARTIAL = [
-    '(?i)# *pragma[: ]*no *branch',
+    r'(?i)#\s*pragma[:\s]?\s*no\s*branch',
     ]
 
 # The default partial branch regexes, based on Python semantics.

@@ -1113,8 +1113,10 @@ class ExcludeTest(CoverageTest):
             c = 3
             d = 4   #pragma NOCOVER
             e = 5
+            f = 6#\tpragma:\tno cover
+            g = 7
             """,
-            [1,3,5]
+            [1,3,5,7]
             )
 
     def test_simple(self):
