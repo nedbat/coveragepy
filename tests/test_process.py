@@ -664,23 +664,36 @@ class FailUnderTest(CoverageTest):
         self.assertEqual(st, 2)
 
 
+def possible_pth_dirs():
+    """Produce a sequence of directories for trying to write .pth files."""
+    # First look through sys.path, and we find a .pth file, then it's a good
+    # place to put ours.
+    for d in sys.path:
+        g = glob.glob(os.path.join(d, "*.pth"))
+        if g:
+            yield d
+
+    # If we're still looking, then try the Python library directory.
+    # https://bitbucket.org/ned/coveragepy/issue/339/pth-test-malfunctions
+    import distutils.sysconfig
+    yield distutils.sysconfig.get_python_lib()
+
+
 class ProcessCoverageMixin(object):
     """Set up a .pth file that causes all sub-processes to be coverage'd"""
     def setUp(self):
         super(ProcessCoverageMixin, self).setUp()
         # Find a place to put a .pth file.
         pth_contents = "import coverage; coverage.process_startup()\n"
-        for d in sys.path:                          # pragma: part covered
-            g = glob.glob(os.path.join(d, "*.pth"))
-            if g:
-                pth_path = os.path.join(d, "subcover.pth")
-                with open(pth_path, "w") as pth:
-                    try:
-                        pth.write(pth_contents)
-                        self.pth_path = pth_path
-                        break
-                    except (IOError, OSError):          # pragma: not covered
-                        pass
+        for pth_dir in possible_pth_dirs():             # pragma: part covered
+            pth_path = os.path.join(pth_dir, "subcover.pth")
+            with open(pth_path, "w") as pth:
+                try:
+                    pth.write(pth_contents)
+                    self.pth_path = pth_path
+                    break
+                except (IOError, OSError):              # pragma: not covered
+                    pass
         else:                                           # pragma: not covered
             raise Exception("Couldn't find a place for the .pth file")
 
