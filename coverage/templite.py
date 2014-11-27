@@ -61,7 +61,7 @@ class Templite(object):
 
     Supported constructs are extended variable access::
 
-        {{var.modifer.modifier|filter|filter}}
+        {{var.modifier.modifier|filter|filter}}
 
     loops::
 
@@ -241,7 +241,7 @@ class Templite(object):
         return self._render_function(render_context, self._do_dots)
 
     def _do_dots(self, value, *dots):
-        """Evaluate dotted expressions at runtime."""
+        """Evaluate dotted expressions at run-time."""
         for dot in dots:
             try:
                 value = getattr(value, dot)

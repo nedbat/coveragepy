@@ -1,16 +1,16 @@
 .. _subprocess:
 
-======================
-Measuring subprocesses
-======================
+=======================
+Measuring sub-processes
+=======================
 
 :history: 20100224T201800, new for 3.3.
 :history: 20100725T211700, updated for 3.4.
 
 
-Complex test suites may spawn subprocesses to run tests, either to run them in
-parallel, or because subprocess behavior is an important part of the system
-under test. Measuring coverage in those subprocesses can be tricky because you
+Complex test suites may spawn sub-processes to run tests, either to run them in
+parallel, or because sub-process behavior is an important part of the system
+under test. Measuring coverage in those sub-processes can be tricky because you
 have to modify the code spawning the process to invoke coverage.py.
 
 There's an easier way to do it: coverage.py includes a function,
@@ -23,13 +23,13 @@ When using this technique, be sure to set the parallel option to true so that
 multiple coverage.py runs will each write their data to a distinct file.
 
 
-Configuring Python for subprocess coverage
-------------------------------------------
+Configuring Python for sub-process coverage
+-------------------------------------------
 
-Measuring coverage in subprocesses is a little tricky.  When you spawn a
-subprocess, you are invoking Python to run your program.  Usually, to get
+Measuring coverage in sub-processes is a little tricky.  When you spawn a
+sub-process, you are invoking Python to run your program.  Usually, to get
 coverage measurement, you have to use coverage.py to run your program.  Your
-subprocess won't be using coverage.py, so we have to convince Python to use
+sub-process won't be using coverage.py, so we have to convince Python to use
 coverage even when not explicitly invokved.
 
 To do that, we'll configure Python to run a little coverage.py code when it
@@ -41,8 +41,8 @@ To arrange all this, you have to do two things: set a value for the
 invoke :func:`coverage.process_startup` when Python processes start.
 
 How you set ``COVERAGE_PROCESS_START`` depends on the details of how you create
-subprocesses.  As long as the environment variable is visible in your
-subprocess, it will work.
+sub-processes.  As long as the environment variable is visible in your
+sub-process, it will work.
 
 You can configure your Python installation to invoke the ``process_startup``
 function in two ways:

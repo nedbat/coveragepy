@@ -327,8 +327,8 @@ Version 3.5.3 --- 29 September 2012
   `issue 197`_, thanks Marius Gedminas.
 
 - When specifying a directory as the source= option, the directory itself no
-  longer needs to have a ``__init__.py`` file, though its subdirectories do, to
-  be considered as source files.
+  longer needs to have a ``__init__.py`` file, though its sub-directories do,
+  to be considered as source files.
 
 - Files encoded as UTF-8 with a BOM are now properly handled, fixing
   `issue 179`_.  Thanks, Pablo Carballo.

@@ -5,7 +5,7 @@ from coverage.backward import string_class, iitems
 from coverage.misc import CoverageException
 
 
-# In py3, # ConfigParser was renamed to the more-standard configparser
+# In py3, ConfigParser was renamed to the more-standard configparser
 try:
     import configparser
 except ImportError:

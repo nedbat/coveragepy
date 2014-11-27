@@ -120,10 +120,10 @@ def same_python_executable(e1, e2):
     e2 = os.path.basename(e2)
 
     if e1 == "python" or e2 == "python" or e1 == e2:
-        # python and python2.3: ok
-        # python2.3 and python: ok
-        # python and python: ok
-        # python2.3 and python2.3: ok
+        # Python and Python2.3: OK
+        # Python2.3 and Python: OK
+        # Python and Python: OK
+        # Python2.3 and Python2.3: OK
         return True
 
     return False                                        # pragma: only failure

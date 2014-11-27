@@ -31,6 +31,9 @@ lint:
 	python -m tabnanny $(LINTABLE)
 	python igor.py check_eol
 
+spell:
+	-pylint --disable=all --enable=spelling $(LINTABLE)
+
 pep8:
 	pep8 --filename=*.py --ignore=E401,E301 --repeat coverage
 

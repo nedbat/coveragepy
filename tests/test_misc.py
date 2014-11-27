@@ -34,11 +34,11 @@ class RemoveFileTest(CoverageTest):
     """Tests of misc.file_be_gone."""
 
     def test_remove_nonexistent_file(self):
-        # it's ok to try to remove a file that doesn't exist.
+        # It's OK to try to remove a file that doesn't exist.
         file_be_gone("not_here.txt")
 
     def test_remove_actual_file(self):
-        # it really does remove a file that does exist.
+        # It really does remove a file that does exist.
         self.make_file("here.txt", "We are here, we are here, we are here!")
         file_be_gone("here.txt")
         self.assert_doesnt_exist("here.txt")

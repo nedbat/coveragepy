@@ -1,7 +1,7 @@
 """Implementations of unittest features from the future."""
 
 # Use unittest2 if it's available, otherwise unittest.  This gives us
-# backported features for 2.6.
+# back-ported features for 2.6.
 try:
     import unittest2 as unittest
 except ImportError:
@@ -9,7 +9,7 @@ except ImportError:
 
 
 def unittest_has(method):
-    """Does `unitttest.TestCase` have `method` defined?"""
+    """Does `unittest.TestCase` have `method` defined?"""
     return hasattr(unittest.TestCase, method)
 
 

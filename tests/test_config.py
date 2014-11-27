@@ -20,7 +20,7 @@ class ConfigTest(CoverageTest):
         self.assertEqual(cov.config.data_file, ".coverage")
 
     def test_arguments(self):
-        # Arguments to the constructor are applied to the configuation.
+        # Arguments to the constructor are applied to the configuration.
         cov = coverage.coverage(timid=True, data_file="fooey.dat")
         self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
@@ -129,7 +129,7 @@ class ConfigTest(CoverageTest):
             )
 
     def test_tweaks_after_constructor(self):
-        # Arguments to the constructor are applied to the configuation.
+        # Arguments to the constructor are applied to the configuration.
         cov = coverage.coverage(timid=True, data_file="fooey.dat")
         cov.config["run:timid"] = False
 

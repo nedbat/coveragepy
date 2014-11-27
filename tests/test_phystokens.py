@@ -21,7 +21,7 @@ HERE = os.path.split(__file__)[0]
 
 
 class PhysTokensTest(CoverageTest):
-    """Tests for Coverage.py's improver tokenizer."""
+    """Tests for Coverage.py's improved tokenizer."""
 
     run_in_temp_dir = False
 

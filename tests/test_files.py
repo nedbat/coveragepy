@@ -41,7 +41,7 @@ class FileLocatorTest(CoverageTest):
         # https://bitbucket.org/ned/coveragepy/issue/194
         # Build a path that has two pieces matching the absolute path prefix.
         # Technically, this test doesn't do that on Windows, but drive
-        # letters make that impractical to acheive.
+        # letters make that impractical to achieve.
         fl = FileLocator()
         d = abs_file(os.curdir)
         trick = os.path.splitdrive(d)[1].lstrip(os.path.sep)

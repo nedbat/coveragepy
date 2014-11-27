@@ -281,8 +281,8 @@ Version 3.5.3 --- 29 September 2012
   `issue 197`_, thanks Marius Gedminas.
 
 - When specifying a directory as the source= option, the directory itself no
-  longer needs to have a ``__init__.py`` file, though its subdirectories do, to
-  be considered as source files.
+  longer needs to have a ``__init__.py`` file, though its sub-directories do,
+  to be considered as source files.
 
 - Files encoded as UTF-8 with a BOM are now properly handled, fixing
   `issue 179`_.  Thanks, Pablo Carballo.
@@ -701,7 +701,7 @@ Version 3.0 --- 13 June 2009
 
 - The minimum supported Python version is 2.3.
 
-- When using the object api (that is, constructing a coverage() object), data
+- When using the object API (that is, constructing a coverage() object), data
   is no longer saved automatically on process exit.  You can re-enable it with
   the ``auto_data=True`` parameter on the coverage() constructor.
   The module-level interface still uses automatic saving.

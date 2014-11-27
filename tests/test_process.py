@@ -665,7 +665,7 @@ class FailUnderTest(CoverageTest):
 
 
 class ProcessCoverageMixin(object):
-    """Set up a .pth file that causes all subprocesses to be coverage'd"""
+    """Set up a .pth file that causes all sub-processes to be coverage'd"""
     def setUp(self):
         super(ProcessCoverageMixin, self).setUp()
         # Find a place to put a .pth file.
@@ -691,12 +691,12 @@ class ProcessCoverageMixin(object):
 
 
 class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
-    """Test that we can measure coverage in subprocesses."""
+    """Test that we can measure coverage in sub-processes."""
 
     def test_subprocess_with_pth_files(self):           # pragma: not covered
         if METACOV:
             raise SkipTest(
-                "Can't test subprocess pth file suppport during metacoverage"
+                "Can't test sub-process pth file suppport during metacoverage"
                 )
 
         # Main will run sub.py
@@ -744,7 +744,7 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
     ):                                                  # pragma: not covered
         if METACOV:
             raise SkipTest(
-                "Can't test subprocess pth file suppport during metacoverage"
+                "Can't test sub-process pth file suppport during metacoverage"
                 )
 
         def fullname(modname):

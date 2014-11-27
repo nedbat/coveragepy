@@ -10,7 +10,7 @@ Coverage.py runs on CPython 2.6, 2.7, 3.2, 3.3, or 3.4, and PyPy 2.2.
 
 Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
 tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_, with a
-mirrored repo on `Github <https://github.com/nedbat/coveragepy>`_.
+mirrored repo on `GitHub <https://github.com/nedbat/coveragepy>`_.
 
 New in 4.0 alpha: ``--concurrency``, dropped support for older Pythons,
 setup.cfg support.

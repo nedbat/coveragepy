@@ -10,7 +10,7 @@ import subprocess
 # This isn't really a backward compatibility thing, should be moved into a
 # helpers file or something.
 def run_command(cmd):
-    """Run a command in a subprocess.
+    """Run a command in a sub-process.
 
     Returns the exit status code and the combined stdout and stderr.
 

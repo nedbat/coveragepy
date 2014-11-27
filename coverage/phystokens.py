@@ -42,7 +42,7 @@ def phys_tokens(toks):
                     inject_backslash = False
                 elif ttype == token.STRING:
                     if "\n" in ttext and ttext.split('\n', 1)[0][-1] == '\\':
-                        # It's a multiline string and the first line ends with
+                        # It's a multi-line string and the first line ends with
                         # a backslash, so we don't need to inject another.
                         inject_backslash = False
                 if inject_backslash:
@@ -136,10 +136,10 @@ def source_encoding(source):
         return orig_enc
 
     # From detect_encode():
-    # It detects the encoding from the presence of a utf-8 bom or an encoding
-    # cookie as specified in pep-0263.  If both a bom and a cookie are present,
+    # It detects the encoding from the presence of a UTF-8 BOM or an encoding
+    # cookie as specified in PEP-0263.  If both a BOM and a cookie are present,
     # but disagree, a SyntaxError will be raised.  If the encoding cookie is an
-    # invalid charset, raise a SyntaxError.  Note that if a utf-8 bom is found,
+    # invalid charset, raise a SyntaxError.  Note that if a UTF-8 BOM is found,
     # 'utf-8-sig' is returned.
 
     # If no encoding is specified, then the default will be returned.
@@ -169,14 +169,14 @@ def source_encoding(source):
         try:
             codec = codecs.lookup(encoding)
         except LookupError:
-            # This behaviour mimics the Python interpreter
+            # This behavior mimics the Python interpreter
             raise SyntaxError("unknown encoding: " + encoding)
 
         if bom_found:
             # codecs in 2.3 were raw tuples of functions, assume the best.
             codec_name = getattr(codec, 'name', encoding)
             if codec_name != 'utf-8':
-                # This behaviour mimics the Python interpreter
+                # This behavior mimics the Python interpreter
                 raise SyntaxError('encoding problem: utf-8')
             encoding += '-sig'
         return encoding

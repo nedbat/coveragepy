@@ -512,7 +512,7 @@ class CoverageScript(object):
     def args_ok(self, options, args):
         """Check for conflicts and problems in the options.
 
-        Returns True if everything is ok, or False if not.
+        Returns True if everything is OK, or False if not.
 
         """
         if options.action == "run" and not args:

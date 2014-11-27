@@ -274,7 +274,7 @@ class CoverageTest(
         self.assertEqual(ret_actual, ret)
 
     def run_command(self, cmd):
-        """Run the command-line `cmd` in a subprocess, and print its output.
+        """Run the command-line `cmd` in a sub-process, and print its output.
 
         Use this when you need to test the process behavior of coverage.
 
@@ -283,7 +283,7 @@ class CoverageTest(
         Returns the process' stdout text.
 
         """
-        # Running Python subprocesses can be tricky.  Use the real name of our
+        # Running Python sub-processes can be tricky.  Use the real name of our
         # own executable.  So "python foo.py" might get executed as
         # "python3.3 foo.py".  This is important because Python 3.x doesn't
         # install as "python", so you might get a Python 2 executable instead
@@ -295,7 +295,7 @@ class CoverageTest(
         return output
 
     def run_command_status(self, cmd):
-        """Run the command-line `cmd` in a subprocess, and print its output.
+        """Run the command-line `cmd` in a sub-process, and print its output.
 
         Use this when you need to test the process behavior of coverage.
 

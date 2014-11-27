@@ -244,14 +244,14 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         cov.html_report(ignore_errors=True)
         self.assert_exists("htmlcov/index.html")
-        # this would be better as a glob, if the html layout changes:
+        # This would be better as a glob, if the HTML layout changes:
         self.assert_doesnt_exist("htmlcov/innocuous.html")
 
     def test_dothtml_not_python(self):
         # We run a .html file, and when reporting, we can't parse it as
         # Python.  Since it wasn't .py, no error is reported.
 
-        # Run an "html" file
+        # Run an "HTML" file
         self.make_file("innocuous.html", "a = 3")
         self.run_command("coverage run innocuous.html")
         # Before reporting, change it to be an HTML file.

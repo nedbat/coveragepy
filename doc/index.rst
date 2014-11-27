@@ -139,7 +139,7 @@ coverage.py or get help using it on the `Testing In Python`_ mailing list.
 
 Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
 Bitbucket also hosts the `code repository`_. There is a `mirrored repo`_ on
-Github.
+GitHub.
 
 .. _Bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
 .. _code repository: http://bitbucket.org/ned/coveragepy

@@ -1,4 +1,4 @@
-"""Run tests in the farm subdirectory.  Designed for nose."""
+"""Run tests in the farm sub-directory.  Designed for nose."""
 
 import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
 from nose.plugins.skip import SkipTest

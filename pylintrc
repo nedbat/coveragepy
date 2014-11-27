@@ -56,6 +56,7 @@ enable=
 
 # Disable the message(s) with the given id(s).
 disable= 
+    spelling,
 # Messages that are just silly:
 #   I0011:106: Locally disabling E1101
 #   W0122: 30:run_python_file: Use of the exec statement
@@ -327,3 +328,11 @@ ignore-comments=yes
 
 # Ignore docstrings when computing similarities.
 ignore-docstrings=yes
+
+#
+# SPELLING
+#
+
+spelling-dict=en_US
+# pylint doesn't strip the words, so they have to all be jammed on one line in order to be recognized... :(
+spelling-ignore-words=activestate,API,args,argv,bitbucket,BOM,boolean,BTW,builtin,builtins,bytecode,bytecodes,canonicalize,canonicalized,canonicalizes,codecs,config,configparser,configurability,configurability's,cov,coveragerc,covhtml,css,dict,dict's,dicts,dirname,django,docstring,docstrings,doctest,DOM,encodings,endfor,endif,eventlet,expr,filename,filenames,fname,fnmatch,fpath,fullcoverage,getattr,gevent,gevent's,GitHub,globals,greenlet,HTML,http,importlib,instancemethod,int,ints,iterable,iterables,jython,kwargs,matcher,matchers,merchantability,mixin,modulename,morf,morfs,multi,multi-line,namespace,namespaces,nano,nbsp,ned,nedbatchelder,nullary,num,OK,opcode,opcodes,optparse,os,outfile,parsable,parsers,pragma,pre,programmability,py,py's,pyc,pypy,pyw,rcfile,regex,regexes,renderer,settrace,sitecustomize,stackoverflow,stderr,stdlib,stdout,str,sys,templite,TODO,tokenization,tokenize,tokenized,tokenizer,tokenizes,tokenizing,traceback,tuple,tuples,txt,unittest,URL,UTF,utf,virtualenv,whitespace,wikipedia,wildcard,wildcards,XML,xrange

@@ -26,7 +26,7 @@ def data_filename(fname, pkgdir=""):
     is returned.
 
     Each directory in `STATIC_PATH` is searched as-is, and also, if `pkgdir`
-    is provided, at that subdirectory.
+    is provided, at that sub-directory.
 
     """
     for static_dir in STATIC_PATH:
@@ -289,6 +289,7 @@ class HtmlStatus(object):
     STATUS_FILE = "status.json"
     STATUS_FORMAT = 1
 
+    #                               pylint: disable=wrong-spelling-in-comment
     #  The data looks like:
     #
     #  {

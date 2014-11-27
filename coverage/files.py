@@ -322,7 +322,7 @@ def find_python_files(dirname):
     To be importable, the files have to be in a directory with a __init__.py,
     except for `dirname` itself, which isn't required to have one.  The
     assumption is that `dirname` was specified directly, so the user knows
-    best, but subdirectories are checked for a __init__.py to be sure we only
+    best, but sub-directories are checked for a __init__.py to be sure we only
     find the importable files.
 
     """

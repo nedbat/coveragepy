@@ -18,7 +18,7 @@ coverage = Coverage
 
 # Module-level functions.  The original API to this module was based on
 # functions defined directly in the module, with a singleton of the Coverage()
-# class.  That design hampered programmability, so the current api uses
+# class.  That design hampered programmability, so the current API uses
 # explicitly-created Coverage objects.  But for backward compatibility, here we
 # define the top-level functions to create the singleton when they are first
 # called.

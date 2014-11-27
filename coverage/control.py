@@ -315,7 +315,7 @@ class Coverage(object):
         If loaded via runpy (aka -m), we can usually recover the "original" full
         dotted module name, otherwise, we resort to interpreting the filename to
         get the module's name.  In the case that the module name can't be
-        deteremined, None is returned.
+        determined, None is returned.
 
         """
         dunder_name = module_globals.get('__name__', None)
@@ -335,7 +335,7 @@ class Coverage(object):
                 # Module loaded via: runpy -m
                 return fullname
 
-        # Script as first argument to Python CLI.
+        # Script as first argument to Python command line.
         inspectedname = inspect.getmodulename(filename)
         if inspectedname is not None:
             return inspectedname
@@ -695,7 +695,7 @@ class Coverage(object):
 
                 if self.omit_match and self.omit_match.match(py_file):
                     # Turns out this file was omitted, so don't pull it back
-                    # in as unexecuted.
+                    # in as un-executed.
                     continue
 
                 self.data.touch_file(py_file)
@@ -943,7 +943,7 @@ class FileDisposition(object):
 
 
 def process_startup():
-    """Call this at Python startup to perhaps measure coverage.
+    """Call this at Python start-up to perhaps measure coverage.
 
     If the environment variable COVERAGE_PROCESS_START is defined, coverage
     measurement is started.  The value of the variable is the config file
@@ -970,5 +970,5 @@ def process_startup():
         cov._warn_unimported_source = False
 
 
-# A hack for debugging testing in subprocesses.
+# A hack for debugging testing in sub-processes.
 _TEST_NAME_FILE = "" #"/tmp/covtest.txt"

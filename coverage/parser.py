@@ -237,7 +237,7 @@ class PythonParser(CodeParser):
         """Get information about the arcs available in the code.
 
         Returns a sorted list of line number pairs.  Line numbers have been
-        normalized to the first line of multiline statements.
+        normalized to the first line of multi-line statements.
 
         """
         all_arcs = []
