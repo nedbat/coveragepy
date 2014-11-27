@@ -22,6 +22,11 @@ Latest
   index page, and only modules with that text in the name will be shown.
   Thanks, Danny Allen.
 
+- The textual report and the HTML report used to report partial branches
+  differently for no good reason.  Now the text report's "missing branches"
+  column is a "partial branches" column so that both reports show the same
+  numbers.  This closes `issue 342`_.
+
 - The ``--debug`` switch can now be used on any command.
 
 - You can now programmatically adjust the configuration of coverage by setting
@@ -34,6 +39,7 @@ Latest
   Gaynor.
 
 .. _issue 328: https://bitbucket.org/ned/coveragepy/issue/328/misbehavior-in-run-source
+.. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ
 
 
 Version 4.0a1 --- 27 September 2014
