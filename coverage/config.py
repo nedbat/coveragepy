@@ -197,14 +197,24 @@ class CoverageConfig(object):
         self.attempted_config_files.append(filename)
 
         cp = HandyConfigParser(section_prefix)
-        files_read = cp.read(filename)
+        try:
+            files_read = cp.read(filename)
+        except configparser.Error as err:
+            raise CoverageException(
+                "Couldn't read config file %s: %s" % (filename, err)
+                )
         if not files_read:
             return False
 
         self.config_files.extend(files_read)
 
-        for option_spec in self.CONFIG_FILE_OPTIONS:
-            self._set_attr_from_config_option(cp, *option_spec)
+        try:
+            for option_spec in self.CONFIG_FILE_OPTIONS:
+                self._set_attr_from_config_option(cp, *option_spec)
+        except ValueError as err:
+            raise CoverageException(
+                "Couldn't read config file %s: %s" % (filename, err)
+                )
 
         # [paths] is special
         if cp.has_section('paths'):

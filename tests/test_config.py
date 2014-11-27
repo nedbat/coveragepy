@@ -91,13 +91,18 @@ class ConfigTest(CoverageTest):
         self.assertEqual(cov.config.data_file, "fromarg.dat")
 
     def test_parse_errors(self):
-        # Im-parseable values raise CoverageException
-        self.make_file(".coveragerc", """\
-            [run]
-            timid = maybe?
-            """)
-        with self.assertRaises(CoverageException):
-            coverage.coverage()
+        # Im-parseable values raise CoverageException, with details.
+        bad_configs_and_msgs = [
+            ("[run]\ntimid = maybe?\n", r"maybe[?]"),
+            ("timid = 1\n", r"timid = 1"),
+            ("[run\n", r"\[run"),
+            ]
+
+        for bad_config, msg in bad_configs_and_msgs:
+            print("Trying %r" % bad_config)
+            self.make_file(".coveragerc", bad_config)
+            with self.assertRaisesRegex(CoverageException, msg):
+                coverage.coverage()
 
     def test_environment_vars_in_config(self):
         # Config files can have $envvars in them.
@@ -339,3 +344,15 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.html_title,
             "tabblo & «ταБЬℓσ» # numbers"
             )
+
+    def test_unreadable_config(self):
+        # If a config file is explicitly specified, then it is an error for it
+        # to not be readable.
+        bad_files = [
+            "nosuchfile.txt",
+            ".",
+            ]
+        for bad_file in bad_files:
+            msg = "Couldn't read %r as a config file" % bad_file
+            with self.assertRaisesRegex(CoverageException, msg):
+                coverage.coverage(config_file=bad_file)

@@ -94,20 +94,20 @@ class Coverage(object):
         # 1: defaults:
         self.config = CoverageConfig()
 
-        # 2: from the .coveragerc or setup.cfg file:
+        # 2: from the rcfile, .coveragerc or setup.cfg file:
         if config_file:
-            did_read_rc = should_read_setupcfg = False
-            if config_file is True:
+            did_read_rc = False
+            specified_file = (config_file is not True)
+            if not specified_file:
                 config_file = ".coveragerc"
-                should_read_setupcfg = True
-            try:
-                did_read_rc = self.config.from_file(config_file)
-            except ValueError as err:
-                raise CoverageException(
-                    "Couldn't read config file %s: %s" % (config_file, err)
-                    )
 
-            if not did_read_rc and should_read_setupcfg:
+            did_read_rc = self.config.from_file(config_file)
+
+            if not did_read_rc:
+                if specified_file:
+                    raise CoverageException(
+                        "Couldn't read %r as a config file" % config_file
+                        )
                 self.config.from_file("setup.cfg", section_prefix="coverage:")
 
         # 3: from environment variables:

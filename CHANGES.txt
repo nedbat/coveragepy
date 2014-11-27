@@ -27,6 +27,9 @@ Latest
   column is a "partial branches" column so that both reports show the same
   numbers.  This closes `issue 342`_.
 
+- If you specify a ``--rcfile`` that cannot be read, you will get an error
+  message.  Fixes `issue 343`_.
+
 - The ``--debug`` switch can now be used on any command.
 
 - You can now programmatically adjust the configuration of coverage by setting
@@ -40,6 +43,7 @@ Latest
 
 .. _issue 328: https://bitbucket.org/ned/coveragepy/issue/328/misbehavior-in-run-source
 .. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ
+.. _issue 343: https://bitbucket.org/ned/coveragepy/issue/343/an-explicitly-named-non-existent-config
 
 
 Version 4.0a1 --- 27 September 2014
