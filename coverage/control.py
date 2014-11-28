@@ -205,8 +205,8 @@ class Coverage(object):
         self.include = prep_patterns(self.config.include)
 
         self.collector = Collector(
-            should_trace=self._verbose_should_trace,
-            check_include=self._verbose_check_include_omit_etc,
+            should_trace=self._should_trace,
+            check_include=self._check_include_omit_etc,
             timid=self.config.timid,
             branch=self.config.branch,
             warn=self._warn,
@@ -342,8 +342,7 @@ class Coverage(object):
         else:
             return dunder_name
 
-
-    def _should_trace(self, filename, frame):
+    def _should_trace_internal(self, filename, frame):
         """Decide whether to trace execution in `filename`, with a reason.
 
         This function is called from the trace function.  As each new file name
@@ -416,7 +415,7 @@ class Coverage(object):
                             (plugin, disp.original_filename)
                         )
                     if disp.check_filters:
-                        reason = self._check_include_omit_etc(
+                        reason = self._check_include_omit_etc_internal(
                                     disp.source_filename, frame,
                                     )
                         if reason:
@@ -426,7 +425,7 @@ class Coverage(object):
 
         return nope(disp, "no plugin found")  # TODO: a test that causes this.
 
-    def _check_include_omit_etc(self, filename, frame):
+    def _check_include_omit_etc_internal(self, filename, frame):
         """Check a filename against the include, omit, etc, rules.
 
         Returns a string or None.  String means, don't trace, and is the reason
@@ -468,24 +467,24 @@ class Coverage(object):
         # No reason found to skip this file.
         return None
 
-    def _verbose_should_trace(self, filename, frame):
+    def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.
 
-        Calls `_should_trace`, and returns the FileDisposition.
+        Calls `_should_trace_internal`, and returns the FileDisposition.
 
         """
-        disp = self._should_trace(filename, frame)
+        disp = self._should_trace_internal(filename, frame)
         if self.debug.should('trace'):
             self.debug.write(disp.debug_message())
         return disp
 
-    def _verbose_check_include_omit_etc(self, filename, frame):
+    def _check_include_omit_etc(self, filename, frame):
         """Check a filename against the include/omit/etc, rules, verbosely.
 
         Returns a boolean: True if the file should be traced, False if not.
 
         """
-        reason = self._check_include_omit_etc(filename, frame)
+        reason = self._check_include_omit_etc_internal(filename, frame)
         if self.debug.should('trace'):
             if not reason:
                 msg = "Tracing %r" % (filename,)
