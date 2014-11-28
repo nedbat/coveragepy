@@ -2,8 +2,6 @@
 
 import sys
 
-from coverage.misc import CoverageException
-
 
 class CoveragePlugin(object):
     """Base class for coverage.py plugins."""
@@ -41,7 +39,9 @@ class CoveragePlugin(object):
         `file_tracer`.  It's an error to return None.
 
         """
-        raise NotImplementedError("Plugin %r needs to implement file_reporter" % self.plugin_name)
+        raise NotImplementedError(
+            "Plugin %r needs to implement file_reporter" % self.plugin_name
+            )
 
 
 class FileTracer(object):

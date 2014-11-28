@@ -19,8 +19,10 @@ class Plugin(coverage.CoveragePlugin):
 
 
 class FileTracer(coverage.plugin.FileTracer):
+    """A FileTracer emulating a simple static plugin."""
+
     def __init__(self, filename):
-        """xyz.py was actually sourced from ABC.zz"""
+        """Claim that xyz.py was actually sourced from ABC.zz"""
         self._filename = filename
         self._source_filename = os.path.join(
             "/src",
@@ -37,9 +39,11 @@ class FileTracer(coverage.plugin.FileTracer):
 
 
 class FileReporter(coverage.plugin.FileReporter):
+    """Dead-simple FileReporter."""
     def get_parser(self, exclude=None):
         return PluginParser()
 
 class PluginParser(CodeParser):
+    """CodeParser hard-coded for a test in test_plugins.py."""
     def parse_source(self):
         return set([105, 106, 107, 205, 206, 207]), set([])

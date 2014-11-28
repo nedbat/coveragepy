@@ -1,6 +1,6 @@
 """Tests for plugins."""
 
-import sys
+import os, sys
 
 from nose.plugins.skip import SkipTest
 
@@ -10,6 +10,9 @@ from coverage.plugin import Plugins
 import coverage.plugin
 
 from tests.coveragetest import CoverageTest
+
+# Are we running with the C tracer or not?
+C_TRACER = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
 
 
 class FakeConfig(object):
@@ -138,62 +141,73 @@ class PluginTest(CoverageTest):
         cov.stop()
 
 
-class FileTracerTest(CoverageTest):
-    """Tests of plugins that implement file_tracer."""
+if not C_TRACER:
+    class FileTracerTest(CoverageTest):
+        """Tests of plugins that implement file_tracer."""
 
-    def test_plugin1(self):
-        if sys.platform == 'win32':
-            raise SkipTest("Plugin stuff is jank on windows.. fixing soon...")
+        def test_plugin1(self):
+            if sys.platform == 'win32':
+                raise SkipTest("Plugin stuff is jank on windows.. fixing soon...")
 
-        self.make_file("simple.py", """\
-            import try_xyz
-            a = 1
-            b = 2
-            """)
-        self.make_file("try_xyz.py", """\
-            c = 3
-            d = 4
-            """)
+            self.make_file("simple.py", """\
+                import try_xyz
+                a = 1
+                b = 2
+                """)
+            self.make_file("try_xyz.py", """\
+                c = 3
+                d = 4
+                """)
 
-        cov = coverage.Coverage()
-        cov.config["run:plugins"] = ["tests.plugin1"]
+            cov = coverage.Coverage()
+            cov.config["run:plugins"] = ["tests.plugin1"]
 
-        # Import the python file, executing it.
-        self.start_import_stop(cov, "simple")
+            # Import the python file, executing it.
+            self.start_import_stop(cov, "simple")
 
-        _, statements, missing, _ = cov.analysis("simple.py")
-        self.assertEqual(statements, [1,2,3])
-        self.assertEqual(missing, [])
-        _, statements, _, _ = cov.analysis("/src/try_ABC.zz")
-        self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
+            _, statements, missing, _ = cov.analysis("simple.py")
+            self.assertEqual(statements, [1,2,3])
+            self.assertEqual(missing, [])
+            _, statements, _, _ = cov.analysis("/src/try_ABC.zz")
+            self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
 
-    def test_plugin2(self):
-        self.make_file("render.py", """\
-            def render(filename, linenum):
-                fiddle_around = 1   # vamp until ready
-                return "[{0} @ {1}]".format(filename, linenum)
-            """)
-        self.make_file("caller.py", """\
-            from render import render
+        def test_plugin2(self):
+            # plugin2 emulates a dynamic tracing plugin: the caller's locals
+            # are examined to determine the source file and line number.
+            # The plugin is in tests/plugin2.py.
+            self.make_file("render.py", """\
+                def render(filename, linenum):
+                    # This function emulates a template renderer. The plugin
+                    # will examine the `filename` and `linenum` locals to
+                    # determine the source file and line number.
+                    fiddle_around = 1   # not used, just chaff.
+                    return "[{0} @ {1}]".format(filename, linenum)
 
-            assert render("foo.html", 17) == "[foo.html @ 17]"
-            assert render("bar.html", 23) == "[bar.html @ 23]"
-            """)
+                def helper(x):
+                    # This function is here just to show that not all code in
+                    # this file will be part of the dynamic tracing.
+                    return x+1
+                """)
+            self.make_file("caller.py", """\
+                from render import helper, render
 
-        cov = coverage.Coverage()
-        cov.config["run:plugins"] = ["tests.plugin2"]
-        cov.config["run:debug"] = ["trace"]
+                assert render("foo_7.html", 4) == "[foo_7.html @ 4]"
+                assert helper(42) == 43
+                assert render("bar_4.html", 2) == "[bar_4.html @ 2]"
+                assert helper(76) == 77
+                """)
 
-        self.start_import_stop(cov, "caller")
+            cov = coverage.Coverage()
+            cov.config["run:plugins"] = ["tests.plugin2"]
 
-        print(self.stderr())
-        cov._harvest_data()
-        print(cov.data.line_data())
+            self.start_import_stop(cov, "caller")
 
-        return # TODO: finish this test
-
-        _, statements, missing, _ = cov.analysis("simple.py")
-        self.assertEqual(statements, [1,2,3])
-        self.assertEqual(missing, [])
-        _, statements, _, _ = cov.analysis("/src/try_ABC.zz")
-        self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
+            # The way plugin2 works, a file named foo_7.html will be claimed to
+            # have 7 lines in it.  If render() was called with line number 4,
+            # then the plugin will claim that lines 4 and 5 were executed.
+            _, statements, missing, _ = cov.analysis("foo_7.html")
+            self.assertEqual(statements, [1,2,3,4,5,6,7])
+            self.assertEqual(missing, [1,2,3,6,7])
+            _, statements, missing, _ = cov.analysis("bar_4.html")
+            self.assertEqual(statements, [1,2,3,4])
+            self.assertEqual(missing, [1,4])
