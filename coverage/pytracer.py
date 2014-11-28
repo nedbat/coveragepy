@@ -103,12 +103,12 @@ class PyTracer(object):
             self.last_line = -1
         elif event == 'line':
             # Record an executed line.
-            if self.file_tracer:
-                lineno_from, lineno_to = self.file_tracer.line_number_range(frame)
-            else:
-                lineno_from, lineno_to = frame.f_lineno, frame.f_lineno
-            if lineno_from != -1:
-                if self.cur_file_dict is not None:
+            if self.cur_file_dict is not None:
+                if self.file_tracer:
+                    lineno_from, lineno_to = self.file_tracer.line_number_range(frame)
+                else:
+                    lineno_from, lineno_to = frame.f_lineno, frame.f_lineno
+                if lineno_from != -1:
                     if self.arcs:
                         self.cur_file_dict[
                             (self.last_line, lineno_from)
