@@ -205,8 +205,8 @@ class Coverage(object):
         self.include = prep_patterns(self.config.include)
 
         self.collector = Collector(
-            should_trace=self._should_trace,
-            check_include=self._tracing_check_include_omit_etc,
+            should_trace=self._verbose_should_trace,
+            check_include=self._verbose_check_include_omit_etc,
             timid=self.config.timid,
             branch=self.config.branch,
             warn=self._warn,
@@ -343,7 +343,7 @@ class Coverage(object):
             return dunder_name
 
 
-    def _should_trace_with_reason(self, filename, frame):
+    def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`, with a reason.
 
         This function is called from the trace function.  As each new file name
@@ -370,7 +370,7 @@ class Coverage(object):
             filename = self._source_for_file(dunder_file)
 
         if not filename:
-            # Empty string is pretty useless
+            # Empty string is pretty useless.
             return nope(disp, "empty string isn't a filename")
 
         if filename.startswith('memory:'):
@@ -468,18 +468,18 @@ class Coverage(object):
         # No reason found to skip this file.
         return None
 
-    def _should_trace(self, filename, frame):
+    def _verbose_should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.
 
-        Calls `_should_trace_with_reason`, and returns the FileDisposition.
+        Calls `_should_trace`, and returns the FileDisposition.
 
         """
-        disp = self._should_trace_with_reason(filename, frame)
+        disp = self._should_trace(filename, frame)
         if self.debug.should('trace'):
             self.debug.write(disp.debug_message())
         return disp
 
-    def _tracing_check_include_omit_etc(self, filename, frame):
+    def _verbose_check_include_omit_etc(self, filename, frame):
         """Check a filename against the include/omit/etc, rules, verbosely.
 
         Returns a boolean: True if the file should be traced, False if not.
