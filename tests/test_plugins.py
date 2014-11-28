@@ -160,6 +160,7 @@ if not C_TRACER:
                 """)
 
             cov = coverage.Coverage()
+            snoop_on_callbacks(cov)
             cov.config["run:plugins"] = ["tests.plugin1"]
 
             # Import the python file, executing it.
@@ -192,12 +193,16 @@ if not C_TRACER:
                 from render import helper, render
 
                 assert render("foo_7.html", 4) == "[foo_7.html @ 4]"
+                # Render foo_7.html again to trigger the callback snoopers.
+                render("foo_7.html", 4)
+
                 assert helper(42) == 43
                 assert render("bar_4.html", 2) == "[bar_4.html @ 2]"
                 assert helper(76) == 77
                 """)
 
             cov = coverage.Coverage()
+            snoop_on_callbacks(cov)
             cov.config["run:plugins"] = ["tests.plugin2"]
 
             self.start_import_stop(cov, "caller")
@@ -211,3 +216,21 @@ if not C_TRACER:
             _, statements, missing, _ = cov.analysis("bar_4.html")
             self.assertEqual(statements, [1,2,3,4])
             self.assertEqual(missing, [1,4])
+
+
+def snoop_on_callbacks(cov):
+    cov_should_trace = cov._should_trace
+    should_trace_filenames = set()
+    def snoop_should_trace(filename, frame):
+        assert filename not in should_trace_filenames
+        should_trace_filenames.add(filename)
+        return cov_should_trace(filename, frame)
+    cov._should_trace = snoop_should_trace
+
+    cov_check_include = cov._check_include_omit_etc
+    check_include_filenames = set()
+    def snoop_check_include_filenames(filename, frame):
+        assert filename not in check_include_filenames
+        check_include_filenames.add(filename)
+        return cov_check_include(filename, frame)
+    cov._check_include_omit_etc = snoop_check_include_filenames

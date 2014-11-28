@@ -936,6 +936,8 @@ class FileDisposition(object):
         """Produce a debugging message explaining the outcome."""
         if self.trace:
             msg = "Tracing %r" % (self.original_filename,)
+            if self.file_tracer:
+                msg += ": will be traced by %r" % self.file_tracer
         else:
             msg = "Not tracing %r: %s" % (self.original_filename, self.reason)
         return msg

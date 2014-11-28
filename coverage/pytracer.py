@@ -87,7 +87,11 @@ class PyTracer(object):
                 if disp.file_tracer and disp.has_dynamic_filename:
                     tracename = disp.file_tracer.dynamic_source_filename(tracename, frame)
                     if tracename:
-                        if not self.check_include(tracename, frame):
+                        included = self.should_trace_cache.get(tracename)
+                        if included is None:
+                            included = self.check_include(tracename, frame)
+                            self.should_trace_cache[tracename] = included
+                        if not included:
                             tracename = None
             else:
                 tracename = None
