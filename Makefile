@@ -19,7 +19,7 @@ clean:
 	-rm -f tests/zipmods.zip
 	-rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
-	-rm -rf doc/_build
+	-rm -rf doc/_build doc/_spell
 
 sterile: clean
 	-rm -rf .tox*
@@ -89,6 +89,9 @@ dochtml:
 	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
 	@echo
 	@echo "Build finished. The HTML pages are in doc/_build/html."
+
+docspell:
+	$(SPHINXBUILD) -b spelling $(SPHINXOPTS) doc/_spell
 
 publish: px
 	rm -f $(WEBHOME)/*.px

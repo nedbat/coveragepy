@@ -24,7 +24,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "_ext"))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.ifconfig', 'px_xlator']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.todo',
+    'sphinx.ext.ifconfig',
+    'sphinxcontrib.spelling',
+    'px_xlator',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -167,6 +173,10 @@ html_show_sourcelink = False
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'coveragepydoc'
 
+# -- Spelling ---
+
+spelling_word_list_filename = 'dict.txt'
+spelling_show_suggestions = False
 
 # -- Options for LaTeX output --------------------------------------------------
 
