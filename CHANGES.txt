@@ -47,7 +47,7 @@ Latest
 - Made some PyPy-specific tweaks to improve speed under PyPy.  Thanks, Alex
   Gaynor.
 
-- In some cases, with a file with a missing final newline, coverage would
+- In some cases, with a source file missing a final newline, coverage would
   count statements incorrectly.  This is now fixed, closing `issue 293`_.
 
 .. _issue 293: https://bitbucket.org/ned/coveragepy/issue/293/number-of-statement-detection-wrong-if-no
