@@ -1,5 +1,7 @@
 nose
 mock
+pyenchant
 pylint
 sphinx
+sphinxcontrib-spelling
 tox
