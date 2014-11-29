@@ -99,7 +99,7 @@ class ParserFileTest(CoverageTest):
     def parse_file(self, filename):
         """Parse `text` as source, and return the `PythonParser` used."""
         parser = PythonParser(filename=filename, exclude="nocover")
-        parser.parse_source()
+        self.statements, self.excluded = parser.parse_source()
         return parser
 
     def test_line_endings(self):
@@ -128,4 +128,32 @@ class ParserFileTest(CoverageTest):
             coverage = "\xe7\xf6v\xear\xe3g\xe9"
             """)
         parser = self.parse_file("encoded.py")
-        parser.exit_counts()        # TODO: This value should be tested!
+        self.assertEqual(parser.exit_counts(), {1: 1})
+
+    def test_missing_line_ending(self):
+        # Test that the set of statements is the same even if a final
+        # multi-line statement has no final newline.
+        # https://bitbucket.org/ned/coveragepy/issue/293
+
+        self.make_file("normal.py", """\
+            out, err = subprocess.Popen(
+                [sys.executable, '-c', 'pass'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE).communicate()
+            """)
+
+        self.parse_file("normal.py")
+        self.assertEqual(self.statements, set([1]))
+
+        self.make_file("abrupt.py", """\
+            out, err = subprocess.Popen(
+                [sys.executable, '-c', 'pass'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE).communicate()""")   # no final newline.
+
+        # Double-check that some test helper wasn't being helpful.
+        with open("abrupt.py") as f:
+            self.assertEqual(f.read()[-1], ")")
+
+        self.parse_file("abrupt.py")
+        self.assertEqual(self.statements, set([1]))

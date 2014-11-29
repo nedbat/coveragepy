@@ -49,9 +49,13 @@ class PythonParser(CodeParser):
                     "No source for code: '%s': %s" % (self.filename, err)
                     )
 
-        # Scrap the BOM if it exists.
-        if self.text and ord(self.text[0]) == 0xfeff:
-            self.text = self.text[1:]
+        if self.text:
+            # Scrap the BOM if it exists.
+            if ord(self.text[0]) == 0xfeff:
+                self.text = self.text[1:]
+            # Python source should always have a final newline.
+            if self.text[-1] != "\n":
+                self.text += "\n"
 
         self.exclude = exclude
 
@@ -346,9 +350,7 @@ class ByteParser(object):
             self.text = text
 
             try:
-                # Python 2.3 and 2.4 don't like partial last lines, so be sure
-                # the text ends nicely for them.
-                self.code = compile(text + '\n', filename, "exec")
+                self.code = compile(text, filename, "exec")
             except SyntaxError as synerr:
                 raise NotPython(
                     "Couldn't parse '%s' as Python source: '%s' at line %d" %
