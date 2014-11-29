@@ -12,5 +12,5 @@ ignore =
     sample_html sample_html_beta
     *.so *.pyd
     *.gz *.zip
-    _build
+    _build _spell
     *.egg *.egg-info

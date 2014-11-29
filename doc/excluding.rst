@@ -46,7 +46,7 @@ from the list of missing code.
 Branch coverage
 ---------------
 
-When measuring :ref:`branch coverage <branch>`, a condtional will not be
+When measuring :ref:`branch coverage <branch>`, a conditional will not be
 counted as a branch if one of its choices is excluded::
 
     def only_one_choice(x):

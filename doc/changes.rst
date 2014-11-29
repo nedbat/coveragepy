@@ -177,7 +177,7 @@ Docs:
 - Docstrings for the legacy singleton methods are more helpful.  Thanks Marius
   Gedminas.  Closes `issue 205`_.
 
-- The pydoc tool can now show docmentation for the class `coverage.coverage`.
+- The pydoc tool can now show documentation for the class `coverage.coverage`.
   Closes `issue 206`_.
 
 - Added some info to the TODO file, closing `issue 227`_.
@@ -332,7 +332,7 @@ Version 3.5.2 --- 4 May 2012
   pragmatic fix for `issue 82`_.
 
 - The ``-m`` switch on ``coverage report``, which includes missing line numbers
-  in the summary report, can now be specifed as ``show_missing`` in the
+  in the summary report, can now be specified as ``show_missing`` in the
   config file.  Closes `issue 173`_.
 
 - When running a module with ``coverage run -m <modulename>``, certain details
@@ -374,7 +374,7 @@ Version 3.5.1 --- 23 September 2011
 
 - An explicit include directive to measure files in the Python installation
   wouldn't work because of the standard library exclusion.  Now the include
-  directive takes precendence, and the files will be measured.  Fixes
+  directive takes precedence, and the files will be measured.  Fixes
   `issue 138`_.
 
 - The HTML report now handles Unicode characters in Python source files

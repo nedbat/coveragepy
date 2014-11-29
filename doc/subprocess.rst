@@ -30,7 +30,7 @@ Measuring coverage in sub-processes is a little tricky.  When you spawn a
 sub-process, you are invoking Python to run your program.  Usually, to get
 coverage measurement, you have to use coverage.py to run your program.  Your
 sub-process won't be using coverage.py, so we have to convince Python to use
-coverage even when not explicitly invokved.
+coverage even when not explicitly invoked.
 
 To do that, we'll configure Python to run a little coverage.py code when it
 starts.  That code will look for an environment variable that tells it to start
@@ -69,5 +69,5 @@ write it.
 
 Note that if you use one of these techniques, you must undo them if you
 uninstall coverage.py, since you will be trying to import it during Python
-startup.  Be sure to remove the change when you uninstall coverage.py, or use a
-more defensive approach to importing it.
+start-up.  Be sure to remove the change when you uninstall coverage.py, or use
+a more defensive approach to importing it.

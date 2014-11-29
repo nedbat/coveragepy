@@ -73,7 +73,7 @@ __ http://ivory.idyll.org/blog
 Excluding code
 --------------
 
-If you have :ref:`excluded code <excluding>`, a condtional will not be counted
+If you have :ref:`excluded code <excluding>`, a conditional will not be counted
 as a branch if one of its choices is excluded::
 
     def only_one_choice(x):

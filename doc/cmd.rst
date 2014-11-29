@@ -210,7 +210,7 @@ If you are collecting and renaming your own data files, you'll need to name
 them properly for **combine** to find them.   It looks for files named after
 the data file (defaulting to ".coverage", overridable with COVERAGE_FILE), with
 a dotted suffix.  All such files in the current directory will be combined.
-Here are some examples of combinable data files::
+Here are some examples of data files that can be combined::
 
     .coverage.machine1
     .coverage.20120807T212300
