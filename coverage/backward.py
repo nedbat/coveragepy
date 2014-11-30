@@ -1,6 +1,6 @@
 """Add things to old Pythons so I can pretend they are newer."""
 
-# This file does lots of tricky stuff, so disable a bunch of lintisms.
+# This file does lots of tricky stuff, so disable a bunch of pylint warnings.
 # pylint: disable=redefined-builtin
 # pylint: disable=unused-import
 # pylint: disable=no-name-in-module
