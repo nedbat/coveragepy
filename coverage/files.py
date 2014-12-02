@@ -209,7 +209,7 @@ class FnmatchMatcher(object):
         if sys.platform == 'win32':
             # Windows is also case-insensitive.  BTW: the regex docs say that
             # flags like (?i) have to be at the beginning, but fnmatch puts
-            # them at the end, and have two there seems to work fine.
+            # them at the end, and having two there seems to work fine.
             fnpats = (p + "(?i)" for p in fnpats)
         self.re = re.compile(join_regex(fnpats))
 
