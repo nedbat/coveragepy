@@ -3,6 +3,7 @@
 # Coincidentally named the same as http://code.activestate.com/recipes/496702/
 
 import re
+import sys
 
 
 class TempliteSyntaxError(ValueError):
@@ -116,7 +117,10 @@ class Templite(object):
         code.add_line("result = []")
         code.add_line("append_result = result.append")
         code.add_line("extend_result = result.extend")
-        code.add_line("to_str = str")
+        if sys.version_info < (3, 0):
+            code.add_line("to_str = unicode")
+        else:
+            code.add_line("to_str = str")
 
         buffered = []
         def flush_output():

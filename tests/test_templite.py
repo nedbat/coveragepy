@@ -1,7 +1,11 @@
+# -*- coding: utf8 -*-
 """Tests for coverage.templite."""
 
 import re
+
+from coverage.backward import unicode_literal
 from coverage.templite import Templite, TempliteSyntaxError
+
 from tests.coveragetest import CoverageTest
 
 # pylint: disable=unused-variable
@@ -231,6 +235,13 @@ class TempliteTest(CoverageTest):
             {'nums': [0,1,2], 'abc': ['a', 'b', 'c']},
             "@a0b0c0a1b1c1a2b2c2!"
             )
+
+    def test_non_ascii(self):
+        self.try_render(
+            unicode_literal("{{where}} ollǝɥ"),
+            { 'where': unicode_literal('ǝɹǝɥʇ') },
+            unicode_literal("ǝɹǝɥʇ ollǝɥ")
+        )
 
     def test_exception_during_evaluation(self):
         # TypeError: Couldn't evaluate {{ foo.bar.baz }}:

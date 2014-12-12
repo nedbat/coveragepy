@@ -1,9 +1,11 @@
 """File wrangling."""
 
-from coverage.backward import to_string
-from coverage.misc import CoverageException, join_regex
 import fnmatch, os, os.path, re, sys
 import ntpath, posixpath
+
+from coverage.backward import to_string, open_python_source
+from coverage.misc import CoverageException, join_regex
+
 
 class FileLocator(object):
     """Understand how filenames work."""
@@ -47,29 +49,48 @@ class FileLocator(object):
             self.canonical_filename_cache[filename] = cf
         return self.canonical_filename_cache[filename]
 
-    def get_zip_data(self, filename):
-        """Get data from `filename` if it is a zip file path.
 
-        Returns the string data read from the zip file, or None if no zip file
-        could be found or `filename` isn't in it.  The data returned will be
-        an empty string if the file is empty.
+def get_python_source(filename):
+    """Return the source code, as a string."""
+    if os.path.exists(filename):
+        # A regular text file: open it.
+        with open_python_source(filename) as f:
+            return f.read()
 
-        """
-        import zipimport
-        markers = ['.zip'+os.sep, '.egg'+os.sep]
-        for marker in markers:
-            if marker in filename:
-                parts = filename.split(marker)
-                try:
-                    zi = zipimport.zipimporter(parts[0]+marker[:-1])
-                except zipimport.ZipImportError:
-                    continue
-                try:
-                    data = zi.get_data(parts[1])
-                except IOError:
-                    continue
-                return to_string(data)
-        return None
+    # Maybe it's in a zip file?
+    source = get_zip_data(filename)
+    if source is not None:
+        return source
+
+    # Couldn't find source.
+    raise CoverageException(
+        "No source for code: '%s'." % filename
+        )
+
+
+def get_zip_data(filename):
+    """Get data from `filename` if it is a zip file path.
+
+    Returns the string data read from the zip file, or None if no zip file
+    could be found or `filename` isn't in it.  The data returned will be
+    an empty string if the file is empty.
+
+    """
+    import zipimport
+    markers = ['.zip'+os.sep, '.egg'+os.sep]
+    for marker in markers:
+        if marker in filename:
+            parts = filename.split(marker)
+            try:
+                zi = zipimport.zipimporter(parts[0]+marker[:-1])
+            except zipimport.ZipImportError:
+                continue
+            try:
+                data = zi.get_data(parts[1])
+            except IOError:
+                continue
+            return to_string(data)
+    return None
 
 
 if sys.platform == 'win32':

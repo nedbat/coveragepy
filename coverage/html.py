@@ -1,5 +1,7 @@
 """HTML reporting for Coverage."""
 
+from __future__ import unicode_literals
+
 import json, os, re, shutil, sys
 
 import coverage
@@ -65,10 +67,13 @@ class HtmlReporter(Reporter):
     def __init__(self, cov, config):
         super(HtmlReporter, self).__init__(cov, config)
         self.directory = None
+        title = self.config.html_title
+        if sys.version_info < (3, 0):
+            title = title.decode("utf8")
         self.template_globals = {
             'escape': escape,
             'pair': pair,
-            'title': self.config.html_title,
+            'title': title,
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
             }
@@ -154,7 +159,7 @@ class HtmlReporter(Reporter):
 
         # Find out if the file on disk is already correct.
         flat_rootname = cu.flat_rootname()
-        this_hash = self.file_hash(source, cu)
+        this_hash = self.file_hash(source.encode('utf-8'), cu)
         that_hash = self.status.file_hash(flat_rootname)
         if this_hash == that_hash:
             # Nothing has changed to require the file to be reported again.
@@ -162,15 +167,6 @@ class HtmlReporter(Reporter):
             return
 
         self.status.set_file_hash(flat_rootname, this_hash)
-
-        # If need be, determine the encoding of the source file. We use it
-        # later to properly write the HTML.
-        if sys.version_info < (3, 0):
-            encoding = cu.source_encoding()
-            # Some UTF8 files have the dreaded UTF8 BOM. If so, junk it.
-            if encoding.startswith("utf-8") and source[:3] == "\xef\xbb\xbf":
-                source = source[3:]
-                encoding = "utf-8"
 
         # Get the numbers for this file.
         nums = analysis.numbers
@@ -239,11 +235,6 @@ class HtmlReporter(Reporter):
             'cu': cu, 'nums': nums, 'lines': lines,
         }))
 
-        if sys.version_info < (3, 0):
-            # In theory, all the characters in the source can be decoded, but
-            # strange things happen, so use 'replace' to keep errors at bay.
-            html = html.decode(encoding, 'replace')
-
         html_filename = flat_rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)
         self.write_html(html_path, html)
@@ -272,8 +263,6 @@ class HtmlReporter(Reporter):
             'totals': self.totals,
         })
 
-        if sys.version_info < (3, 0):
-            html = html.decode("utf-8")
         self.write_html(
             os.path.join(self.directory, "index.html"),
             html

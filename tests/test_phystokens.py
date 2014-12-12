@@ -1,5 +1,7 @@
 """Tests for Coverage.py's improved tokenizer."""
 
+#from __future__ import unicode_literals
+
 import os, re, sys
 from tests.coveragetest import CoverageTest
 from coverage.phystokens import source_token_lines, source_encoding

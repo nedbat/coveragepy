@@ -22,6 +22,13 @@ class HasherTest(CoverageTest):
         self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
         self.assertEqual(h1.hexdigest(), h3.hexdigest())
 
+    def test_bytes_hashing(self):
+        h1 = Hasher()
+        h1.update(b"Hello, world!")
+        h2 = Hasher()
+        h2.update(b"Goodbye!")
+        self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
+
     def test_dict_hashing(self):
         h1 = Hasher()
         h1.update({'a': 17, 'b': 23})

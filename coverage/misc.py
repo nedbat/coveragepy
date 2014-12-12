@@ -109,6 +109,8 @@ class Hasher(object):
         self.md5.update(to_bytes(str(type(v))))
         if isinstance(v, string_class):
             self.md5.update(to_bytes(v))
+        elif isinstance(v, bytes):
+            self.md5.update(v)
         elif v is None:
             pass
         elif isinstance(v, (int, float)):

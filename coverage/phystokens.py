@@ -1,6 +1,7 @@
 """Better tokenizing for coverage.py."""
 
 import codecs, keyword, re, sys, token, tokenize
+
 from coverage.parser import generate_tokens
 
 
@@ -75,6 +76,7 @@ def source_token_lines(source):
     is indistinguishable from a final line with a newline.
 
     """
+
     ws_tokens = set([token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL])
     line = []
     col = 0
@@ -107,6 +109,7 @@ def source_token_lines(source):
 
     if line:
         yield line
+
 
 def source_encoding(source):
     """Determine the encoding for `source` (a string), according to PEP 263.

@@ -1,10 +1,12 @@
 """Code unit (module) handling for Coverage."""
 
 import os
+import sys
 
-from coverage.backward import open_python_source, string_class
+from coverage.backward import string_class, unicode_class
+from coverage.files import get_python_source, get_zip_data
 from coverage.misc import CoverageException, NoSource
-from coverage.parser import CodeParser, PythonParser
+from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 
 
@@ -85,7 +87,7 @@ class CodeUnit(object):
         self._source = None
 
     def __repr__(self):
-        return "<CodeUnit name=%r filename=%r>" % (self.name, self.filename)
+        return "<{self.__class__.__name__} name={self.name!r} filename={self.filename!r}>".format(self=self)
 
     def _adjust_filename(self, f):
         # TODO: This shouldn't be in the base class, right?
@@ -124,29 +126,12 @@ class CodeUnit(object):
             return root.replace('\\', '_').replace('/', '_').replace('.', '_')
 
     def source(self):
-        if self._source is None:
-            self._source = self.get_source()
-        return self._source
-
-    def get_source(self):
-        """Return the source code, as a string."""
-        if os.path.exists(self.filename):
-            # A regular text file: open it.
-            with open_python_source(self.filename) as f:
-                return f.read()
-
-        # Maybe it's in a zip file?
-        source = self.file_locator.get_zip_data(self.filename)
-        if source is not None:
-            return source
-
-        # Couldn't find source.
-        raise CoverageException(
-            "No source for code '%s'." % self.filename
-            )
+        """Return the source for the code, a Unicode string."""
+        return unicode_class("???")
 
     def source_token_lines(self):
         """Return the 'tokenized' text for the code."""
+        # A generic implementation, each line is one "txt" token.
         for line in self.source().splitlines():
             yield [('txt', line)]
 
@@ -173,6 +158,14 @@ class PythonCodeUnit(CodeUnit):
         elif fname.endswith('$py.class'): # Jython
             fname = fname[:-9] + ".py"
         return fname
+
+    def source(self):
+        if self._source is None:
+            self._source = get_python_source(self.filename)
+            if sys.version_info < (3, 0):
+                encoding = source_encoding(self._source)
+                self._source = self._source.decode(encoding, "replace")
+        return self._source
 
     def get_parser(self, exclude=None):
         actual_filename, source = self._find_source(self.filename)
@@ -213,7 +206,7 @@ class PythonCodeUnit(CodeUnit):
             try_filename = base + try_ext
             if os.path.exists(try_filename):
                 return try_filename, None
-            source = self.file_locator.get_zip_data(try_filename)
+            source = get_zip_data(try_filename)
             if source:
                 return try_filename, source
         raise NoSource("No source for code: '%s'" % filename)
@@ -240,6 +233,3 @@ class PythonCodeUnit(CodeUnit):
 
     def source_token_lines(self):
         return source_token_lines(self.source())
-
-    def source_encoding(self):
-        return source_encoding(self.source())

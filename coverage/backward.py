@@ -20,6 +20,12 @@ try:
 except NameError:
     string_class = str
 
+# What's a Unicode string called?
+try:
+    unicode_class = unicode
+except NameError:
+    unicode_class = str
+
 # Where do pickles come from?
 try:
     import cPickle as pickle
@@ -66,6 +72,11 @@ if sys.version_info >= (3, 0):
         """Convert bytes `b` to a string."""
         return b.decode('utf8')
 
+    def unicode_literal(s):
+        """Make a plain string literal into unicode."""
+        # In Python 3, string literals already are unicode.
+        return s
+
     def binary_bytes(byte_values):
         """Produce a byte string with the ints from `byte_values`."""
         return bytes(byte_values)
@@ -87,6 +98,11 @@ else:
     def to_string(b):
         """Convert bytes `b` to a string (no-op in 2.x)."""
         return b
+
+    def unicode_literal(s):
+        """Make a plain string literal into unicode."""
+        # In Python 2, s is a byte string.
+        return s.decode('utf8')
 
     def binary_bytes(byte_values):
         """Produce a byte string with the ints from `byte_values`."""
@@ -117,13 +133,14 @@ try:
 except ImportError:
     importlib = None
 
-# we only want to use importlib if it has everything we need.
+# We only want to use importlib if it has everything we need.
 try:
     importlib_util_find_spec = importlib.util.find_spec
 except Exception:
     import imp
     importlib_util_find_spec = None
 
+# What is the .pyc magic number for this version of Python?
 try:
     PYC_MAGIC_NUMBER = importlib.util.MAGIC_NUMBER
 except AttributeError:
