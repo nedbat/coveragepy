@@ -78,7 +78,7 @@ class CoverageTestTest(CoverageTest):
             self.assert_starts_with("xyz\nabc", "a")
 
     def test_sub_python_is_this_python(self):
-        # Try it with a python command.
+        # Try it with a Python command.
         os.environ['COV_FOOBAR'] = 'XYZZY'
         self.make_file("showme.py", """\
             import os, sys

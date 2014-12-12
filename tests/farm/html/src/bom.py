@@ -1,4 +1,4 @@
-﻿# A python source file in utf-8, with BOM
+﻿# A Python source file in utf-8, with BOM.
 math = "3×4 = 12, ÷2 = 6±0"
 
 import sys

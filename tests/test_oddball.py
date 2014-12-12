@@ -210,7 +210,7 @@ class PyexpatTest(CoverageTest):
         cov = coverage.coverage()
         cov.erase()
 
-        # Import the python file, executing it.
+        # Import the Python file, executing it.
         self.start_import_stop(cov, "outer")
 
         _, statements, missing, _ = cov.analysis("trydom.py")
@@ -320,8 +320,8 @@ class ExceptionTest(CoverageTest):
             lines = cov.data.line_data()
             clean_lines = {}
             for f, llist in lines.items():
-                # f is a path to a python module, so we drop the '.py' to get
-                # a callname
+                # f is a path to a Python module, so we drop the '.py' to get
+                # a callname.
                 basename = os.path.basename(f)
                 assert basename.endswith(".py")
                 if basename[:-3] in callnames:

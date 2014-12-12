@@ -163,7 +163,7 @@ if not C_TRACER:
             snoop_on_callbacks(cov)
             cov.config["run:plugins"] = ["tests.plugin1"]
 
-            # Import the python file, executing it.
+            # Import the Python file, executing it.
             self.start_import_stop(cov, "simple")
 
             _, statements, missing, _ = cov.analysis("simple.py")

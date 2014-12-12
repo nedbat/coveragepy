@@ -40,7 +40,7 @@ class CollectorTest(CoverageTest):
         cov = coverage.coverage(include=["f1.py"], debug=['trace'])
         cov._debug_file = debug_out
 
-        # Import the python file, executing it.
+        # Import the Python file, executing it.
         self.start_import_stop(cov, "f2")
 
         # Grab all the filenames mentioned in debug output, there should be no

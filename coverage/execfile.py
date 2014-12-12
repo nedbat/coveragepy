@@ -89,7 +89,7 @@ else:
 
 
 def run_python_module(modulename, args):
-    """Run a python module, as though with ``python -m name args...``.
+    """Run a Python module, as though with ``python -m name args...``.
 
     `modulename` is the name of the module, possibly a dot-separated name.
     `args` is the argument array to present as sys.argv, including the first
@@ -104,7 +104,7 @@ def run_python_module(modulename, args):
 
 
 def run_python_file(filename, args, package=None, modulename=None):
-    """Run a python file as if it were the main program on the command line.
+    """Run a Python file as if it were the main program on the command line.
 
     `filename` is the path to the file to execute, it need not be a .py file.
     `args` is the argument array to present as sys.argv, including the first

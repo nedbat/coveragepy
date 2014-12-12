@@ -31,7 +31,7 @@ class SingletonApiTest(CoverageTest):
             f = 7
             """)
 
-        # Import the python file, executing it.
+        # Import the Python file, executing it.
         self.start_import_stop(coverage, modname)
 
     def test_simple(self):
@@ -45,7 +45,7 @@ class SingletonApiTest(CoverageTest):
             d = 5
             """)
 
-        # Import the python file, executing it.
+        # Import the Python file, executing it.
         self.start_import_stop(coverage, "mycode")
 
         _, statements, missing, missingtext = coverage.analysis("mycode.py")
@@ -117,7 +117,7 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        # Import the python file, executing it.
+        # Import the Python file, executing it.
         self.start_import_stop(cov, "mycode")
 
         _, statements, missing, _ = cov.analysis("not_run.py")
@@ -135,7 +135,7 @@ class ApiTest(CoverageTest):
             fooey = 17
             """)
 
-        # Import the python file, executing it.
+        # Import the Python file, executing it.
         cov = coverage.coverage()
         self.start_import_stop(cov, "mymain")
 
@@ -149,7 +149,7 @@ class ApiTest(CoverageTest):
         filename, _, _, _ = cov.analysis(sys.modules["mymod"])
         self.assertEqual(os.path.basename(filename), "mymod.py")
 
-        # Import the python file, executing it again, once it's been compiled
+        # Import the Python file, executing it again, once it's been compiled
         # already.
         cov = coverage.coverage()
         self.start_import_stop(cov, "mymain")
@@ -531,7 +531,7 @@ class AnalysisTest(CoverageTest):
             fun2(3)
             """)
 
-        # Import the python file, executing it.
+        # Import the Python file, executing it.
         self.start_import_stop(cov, "missing")
 
         nums = cov._analyze("missing.py").numbers

@@ -6,7 +6,7 @@ ignore =
     build
     htmlcov
     .tox* 
-    .coverage*
+    .coverage* .metacov
     mock.py
     *.min.js
     sample_html sample_html_beta

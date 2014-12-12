@@ -77,7 +77,7 @@ class CoverageTest(
         """
         cov.start()
         try:                                    # pragma: nested
-            # Import the python file, executing it.
+            # Import the Python file, executing it.
             mod = self.import_local_file(modname)
         finally:                                # pragma: nested
             # Stop Coverage.
