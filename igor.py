@@ -42,6 +42,7 @@ def do_remove_extension():
             except OSError:
                 pass
 
+
 def run_tests(tracer, *nose_args):
     """The actual running of tests."""
     import nose.core
@@ -63,6 +64,7 @@ def run_tests(tracer, *nose_args):
     os.environ["COVERAGE_TEST_TRACER"] = tracer
     nose_args = ["nosetests"] + list(nose_args)
     nose.core.main(argv=nose_args)
+
 
 def run_tests_with_coverage(tracer, *nose_args):
     """Run tests, but with coverage."""
@@ -105,7 +107,7 @@ def run_tests_with_coverage(tracer, *nose_args):
                 if getattr(mod, '__file__', "??").startswith(covdir):
                     covmods[name] = mod
                     del sys.modules[name]
-        import coverage     # don't warn about re-import: pylint: disable=reimported
+        import coverage                         # pylint: disable=reimported
         sys.modules.update(covmods)
 
         # Run nosetests, with the arguments from our command line.
@@ -120,6 +122,7 @@ def run_tests_with_coverage(tracer, *nose_args):
 
     cov.save()
 
+
 def do_combine_html():
     """Combine data from a meta-coverage run, and make the HTML report."""
     import coverage
@@ -130,12 +133,14 @@ def do_combine_html():
     cov.save()
     cov.html_report()
 
+
 def do_test_with_tracer(tracer, *noseargs):
     """Run nosetests with a particular tracer."""
     if os.environ.get("COVERAGE_COVERAGE", ""):
         return run_tests_with_coverage(tracer, *noseargs)
     else:
         return run_tests(tracer, *noseargs)
+
 
 def do_zip_mods():
     """Build the zipmods.zip file."""
@@ -166,6 +171,7 @@ def do_zip_mods():
 
     zf.close()
 
+
 def do_install_egg():
     """Install the egg1 egg for tests."""
     # I am pretty certain there are easier ways to install eggs...
@@ -179,6 +185,7 @@ def do_install_egg():
         "setup.py", ["--quiet", "easy_install", "--no-deps", "--zip-ok", egg]
         )
     os.chdir(cur_dir)
+
 
 def do_check_eol():
     """Check files for incorrect newlines and trailing whitespace."""

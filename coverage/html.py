@@ -278,7 +278,7 @@ class HtmlStatus(object):
     STATUS_FILE = "status.json"
     STATUS_FORMAT = 1
 
-    #                               pylint: disable=wrong-spelling-in-comment
+    #           pylint: disable=wrong-spelling-in-comment,useless-suppression
     #  The data looks like:
     #
     #  {
