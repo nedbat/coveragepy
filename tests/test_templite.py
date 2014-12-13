@@ -3,7 +3,6 @@
 
 import re
 
-from coverage.backward import unicode_literal
 from coverage.templite import Templite, TempliteSyntaxError
 
 from tests.coveragetest import CoverageTest
@@ -238,9 +237,9 @@ class TempliteTest(CoverageTest):
 
     def test_non_ascii(self):
         self.try_render(
-            unicode_literal("{{where}} ollǝɥ"),
-            { 'where': unicode_literal('ǝɹǝɥʇ') },
-            unicode_literal("ǝɹǝɥʇ ollǝɥ")
+            u"{{where}} ollǝɥ",
+            { 'where': u'ǝɹǝɥʇ' },
+            u"ǝɹǝɥʇ ollǝɥ"
         )
 
     def test_exception_during_evaluation(self):

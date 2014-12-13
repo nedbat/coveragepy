@@ -72,11 +72,6 @@ if sys.version_info >= (3, 0):
         """Convert bytes `b` to a string."""
         return b.decode('utf8')
 
-    def unicode_literal(s):
-        """Make a plain string literal into unicode."""
-        # In Python 3, string literals already are unicode.
-        return s
-
     def binary_bytes(byte_values):
         """Produce a byte string with the ints from `byte_values`."""
         return bytes(byte_values)
@@ -98,11 +93,6 @@ else:
     def to_string(b):
         """Convert bytes `b` to a string (no-op in 2.x)."""
         return b
-
-    def unicode_literal(s):
-        """Make a plain string literal into unicode."""
-        # In Python 2, s is a byte string.
-        return s.decode('utf8')
 
     def binary_bytes(byte_values):
         """Produce a byte string with the ints from `byte_values`."""
