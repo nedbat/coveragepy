@@ -1,6 +1,7 @@
 """Tests for coverage.codeunit"""
 
-import os, sys
+import os
+import sys
 
 from coverage.codeunit import code_unit_factory
 from coverage.files import FileLocator
@@ -9,6 +10,7 @@ from tests.coveragetest import CoverageTest
 
 # pylint: disable=import-error
 # Unable to import 'aa' (No module named aa)
+
 
 class CodeUnitTest(CoverageTest):
     """Tests for coverage.codeunit"""
@@ -50,7 +52,10 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(b2cu[0].source(), "# bfile.py\n")
 
     def test_modules(self):
-        import aa, aa.bb, aa.bb.cc
+        import aa
+        import aa.bb
+        import aa.bb.cc
+
         cu = code_unit_factory([aa, aa.bb, aa.bb.cc], FileLocator())
         self.assertEqual(cu[0].name, "aa")
         self.assertEqual(cu[1].name, "aa.bb")
@@ -63,9 +68,14 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(cu[2].source(), "")  # yes, empty
 
     def test_module_files(self):
-        import aa.afile, aa.bb.bfile, aa.bb.cc.cfile
-        cu = code_unit_factory([aa.afile, aa.bb.bfile, aa.bb.cc.cfile],
-                                                                FileLocator())
+        import aa.afile
+        import aa.bb.bfile
+        import aa.bb.cc.cfile
+
+        cu = code_unit_factory(
+            [aa.afile, aa.bb.bfile, aa.bb.cc.cfile],
+            FileLocator()
+        )
         self.assertEqual(cu[0].name, "aa.afile")
         self.assertEqual(cu[1].name, "aa.bb.bfile")
         self.assertEqual(cu[2].name, "aa.bb.cc.cfile")
@@ -90,7 +100,9 @@ class CodeUnitTest(CoverageTest):
     def test_egg(self):
         # Test that we can get files out of eggs, and read their source files.
         # The egg1 module is installed by an action in igor.py.
-        import egg1, egg1.egg1
+        import egg1
+        import egg1.egg1
+
         # Verify that we really imported from an egg.  If we did, then the
         # __file__ won't be an actual file, because one of the "directories"
         # in the path is actually the .egg zip file.
@@ -98,6 +110,4 @@ class CodeUnitTest(CoverageTest):
 
         cu = code_unit_factory([egg1, egg1.egg1], FileLocator())
         self.assertEqual(cu[0].source(), "")
-        self.assertEqual(cu[1].source().split("\n")[0],
-                "# My egg file!"
-                )
+        self.assertEqual(cu[1].source().split("\n")[0], "# My egg file!")
