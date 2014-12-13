@@ -5,8 +5,10 @@ args
 argv
 bitbucket
 BOM
+bom
 boolean
 BTW
+btw
 builtin
 builtins
 bytecode
@@ -29,6 +31,7 @@ covhtml
 CPython
 css
 CTracer
+dedent
 dict
 dict's
 dicts
@@ -37,6 +40,7 @@ django
 docstring
 docstrings
 doctest
+DOCTYPE
 DOM
 encodings
 endfor
@@ -78,9 +82,12 @@ matchers
 merchantability
 mixin
 modulename
+monkeypatch
+monkeypatching
 morf
 morfs
 multi
+mumbo
 namespace
 namespaces
 nano
@@ -112,6 +119,7 @@ pyc
 pyexpat
 pylint
 pypy
+pythonpath
 PYTHONPATH
 pyw
 rcfile
@@ -147,6 +155,7 @@ txt
 ubuntu
 undecodable
 unexecuted
+unicode
 unittest
 unparsable
 unsubscriptable
@@ -162,3 +171,4 @@ wildcards
 xml
 XML
 xrange
+xyzzy
