@@ -1,3 +1,4 @@
+# coding: utf8
 """Helper for building, testing, and linting coverage.py.
 
 To get portability, all these operations are written in Python here instead
@@ -12,6 +13,7 @@ import os
 import platform
 import socket
 import sys
+import textwrap
 import warnings
 import zipfile
 
@@ -138,7 +140,30 @@ def do_test_with_tracer(tracer, *noseargs):
 def do_zip_mods():
     """Build the zipmods.zip file."""
     zf = zipfile.ZipFile("tests/zipmods.zip", "w")
+
+    # Take one file from disk.
     zf.write("tests/covmodzip1.py", "covmodzip1.py")
+
+    # The others will be various encodings.
+    source = textwrap.dedent(u"""\
+        # coding: {encoding}
+        text = u"{text}"
+        ords = {ords}
+        assert [ord(c) for c in text] == ords
+        print(u"All OK with {encoding}")
+        """)
+    details = [
+        (u'utf8', u'ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ'),
+        (u'gb2312', u'你好，世界'),
+        (u'hebrew', u'שלום, עולם'),
+        (u'shift_jis', u'こんにちは世界'),
+    ]
+    for encoding, text in details:
+        filename = 'encoded_{0}.py'.format(encoding)
+        ords = [ord(c) for c in text]
+        source_text = source.format(encoding=encoding, text=text, ords=ords)
+        zf.writestr(filename, source_text.encode(encoding))
+
     zf.close()
 
 def do_install_egg():

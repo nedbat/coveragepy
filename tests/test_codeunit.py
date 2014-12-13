@@ -109,5 +109,5 @@ class CodeUnitTest(CoverageTest):
         self.assert_doesnt_exist(egg1.__file__)
 
         cu = code_unit_factory([egg1, egg1.egg1], FileLocator())
-        self.assertEqual(cu[0].source(), "")
-        self.assertEqual(cu[1].source().split("\n")[0], "# My egg file!")
+        self.assertEqual(cu[0].source(), u"")
+        self.assertEqual(cu[1].source().split("\n")[0], u"# My egg file!")

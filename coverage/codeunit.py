@@ -4,7 +4,7 @@ import os
 import sys
 
 from coverage.backward import string_class, unicode_class
-from coverage.files import get_python_source, get_zip_data
+from coverage.files import get_python_source, get_zip_bytes
 from coverage.misc import CoverageException, NoSource
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
@@ -165,6 +165,7 @@ class PythonCodeUnit(CodeUnit):
             if sys.version_info < (3, 0):
                 encoding = source_encoding(self._source)
                 self._source = self._source.decode(encoding, "replace")
+            assert isinstance(self._source, unicode_class)
         return self._source
 
     def get_parser(self, exclude=None):
@@ -206,7 +207,7 @@ class PythonCodeUnit(CodeUnit):
             try_filename = base + try_ext
             if os.path.exists(try_filename):
                 return try_filename, None
-            source = get_zip_data(try_filename)
+            source = get_zip_bytes(try_filename)
             if source:
                 return try_filename, source
         raise NoSource("No source for code: '%s'" % filename)

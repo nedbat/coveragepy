@@ -3,7 +3,7 @@
 import fnmatch, os, os.path, re, sys
 import ntpath, posixpath
 
-from coverage.backward import to_string, open_python_source
+from coverage.backward import open_python_source
 from coverage.misc import CoverageException, join_regex
 
 
@@ -58,7 +58,7 @@ def get_python_source(filename):
             return f.read()
 
     # Maybe it's in a zip file?
-    source = get_zip_data(filename)
+    source = get_zip_bytes(filename)
     if source is not None:
         return source
 
@@ -68,10 +68,10 @@ def get_python_source(filename):
         )
 
 
-def get_zip_data(filename):
+def get_zip_bytes(filename):
     """Get data from `filename` if it is a zip file path.
 
-    Returns the string data read from the zip file, or None if no zip file
+    Returns the bytestring data read from the zip file, or None if no zip file
     could be found or `filename` isn't in it.  The data returned will be
     an empty string if the file is empty.
 
@@ -89,7 +89,8 @@ def get_zip_data(filename):
                 data = zi.get_data(parts[1])
             except IOError:
                 continue
-            return to_string(data)
+            assert isinstance(data, bytes)
+            return data
     return None
 
 
