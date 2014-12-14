@@ -1,6 +1,10 @@
 """Code parsing for Coverage."""
 
-import collections, dis, re, token, tokenize
+import collections
+import dis
+import re
+import token
+import tokenize
 
 from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints
@@ -8,6 +12,7 @@ from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.files import get_python_source
 from coverage.misc import nice_pair, expensive, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
+from coverage.phystokens import generate_tokens
 
 
 class CodeParser(object):
@@ -286,6 +291,7 @@ class PythonParser(CodeParser):
 def _opcode(name):
     """Return the opcode by name from the dis module."""
     return dis.opmap[name]
+
 
 def _opcode_set(*names):
     """Return a set of opcodes by the names in `names`."""
@@ -671,36 +677,3 @@ class Chunk(object):
         return "<%d+%d @%d%s %r>" % (
             self.byte, self.length, self.line, bang, list(self.exits)
             )
-
-
-class CachedTokenizer(object):
-    """A one-element cache around tokenize.generate_tokens.
-
-    When reporting, coverage.py tokenizes files twice, once to find the
-    structure of the file, and once to syntax-color it.  Tokenizing is
-    expensive, and easily cached.
-
-    This is a one-element cache so that our twice-in-a-row tokenizing doesn't
-    actually tokenize twice.
-
-    """
-    def __init__(self):
-        self.last_text = None
-        self.last_tokens = None
-
-    def generate_tokens(self, text):
-        """A stand-in for `tokenize.generate_tokens`."""
-        # Check the type first so we don't compare bytes to unicode and get
-        # warnings.
-        if type(text) != type(self.last_text) or text != self.last_text:
-            self.last_text = text
-            line_iter = iter(text.splitlines(True))
-            try:
-                readline = line_iter.next
-            except AttributeError:
-                readline = line_iter.__next__
-            self.last_tokens = list(tokenize.generate_tokens(readline))
-        return self.last_tokens
-
-# Create our generate_tokens cache as a callable replacement function.
-generate_tokens = CachedTokenizer().generate_tokens

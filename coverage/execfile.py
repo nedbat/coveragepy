@@ -1,10 +1,14 @@
 """Execute files of Python code."""
 
-import marshal, os, sys, types
+import marshal
+import os
+import sys
+import types
 
-from coverage.backward import open_python_source, BUILTINS
+from coverage.backward import BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
 from coverage.misc import ExceptionDuringRun, NoCode, NoSource
+from coverage.phystokens import open_python_source
 
 
 class DummyLoader(object):
@@ -116,7 +120,6 @@ def run_python_file(filename, args, package=None, modulename=None):
     """
     if modulename is None and sys.version_info >= (3, 3):
         modulename = '__main__'
-
 
     # Create a module to serve as __main__
     old_main_mod = sys.modules['__main__']

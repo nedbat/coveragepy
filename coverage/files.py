@@ -1,10 +1,15 @@
 """File wrangling."""
 
-import fnmatch, os, os.path, re, sys
-import ntpath, posixpath
+import fnmatch
+import os
+import os.path
+import re
+import sys
+import ntpath
+import posixpath
 
-from coverage.backward import open_python_source
 from coverage.misc import CoverageException, join_regex
+from coverage.phystokens import open_python_source
 
 
 class FileLocator(object):

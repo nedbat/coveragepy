@@ -5,7 +5,9 @@
 # pylint: disable=unused-import
 # pylint: disable=no-name-in-module
 
-import os, re, sys
+import os
+import re
+import sys
 
 # Pythons 2 and 3 differ on where to get StringIO.
 try:
@@ -49,17 +51,6 @@ else:
     def iitems(d):
         """Produce the items from dict `d`."""
         return d.iteritems()
-
-# Reading Python source and interpreting the coding comment is a big deal.
-if sys.version_info >= (3, 0):
-    # Python 3.2 provides `tokenize.open`, the best way to open source files.
-    import tokenize
-    open_python_source = tokenize.open
-else:
-    def open_python_source(fname):
-        """Open a source file the best way."""
-        return open(fname, "rU")
-
 
 # Python 3.x is picky about bytes and strings, so provide methods to
 # get them right, and make them no-ops in 2.x
@@ -118,7 +109,8 @@ except KeyError:
 
 # imp was deprecated in Python 3.3
 try:
-    import importlib, importlib.util
+    import importlib
+    import importlib.util
     imp = None
 except ImportError:
     importlib = None

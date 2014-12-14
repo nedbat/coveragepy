@@ -1,8 +1,11 @@
 """Better tokenizing for coverage.py."""
 
-import codecs, keyword, re, sys, token, tokenize
-
-from coverage.parser import generate_tokens
+import codecs
+import keyword
+import re
+import sys
+import token
+import tokenize
 
 
 def phys_tokens(toks):
@@ -111,6 +114,39 @@ def source_token_lines(source):
         yield line
 
 
+class CachedTokenizer(object):
+    """A one-element cache around tokenize.generate_tokens.
+
+    When reporting, coverage.py tokenizes files twice, once to find the
+    structure of the file, and once to syntax-color it.  Tokenizing is
+    expensive, and easily cached.
+
+    This is a one-element cache so that our twice-in-a-row tokenizing doesn't
+    actually tokenize twice.
+
+    """
+    def __init__(self):
+        self.last_text = None
+        self.last_tokens = None
+
+    def generate_tokens(self, text):
+        """A stand-in for `tokenize.generate_tokens`."""
+        # Check the type first so we don't compare bytes to unicode and get
+        # warnings.
+        if type(text) != type(self.last_text) or text != self.last_text:
+            self.last_text = text
+            line_iter = iter(text.splitlines(True))
+            try:
+                readline = line_iter.next
+            except AttributeError:
+                readline = line_iter.__next__
+            self.last_tokens = list(tokenize.generate_tokens(readline))
+        return self.last_tokens
+
+# Create our generate_tokens cache as a callable replacement function.
+generate_tokens = CachedTokenizer().generate_tokens
+
+
 def source_encoding(source):
     """Determine the encoding for `source` (a string), according to PEP 263.
 
@@ -205,3 +241,14 @@ def source_encoding(source):
         return encoding
 
     return default
+
+
+# Reading Python source and interpreting the coding comment is a big deal.
+if sys.version_info >= (3, 0):
+    # Python 3.2 provides `tokenize.open`, the best way to open source files.
+    import tokenize
+    open_python_source = tokenize.open
+else:
+    def open_python_source(fname):
+        """Open a source file the best way."""
+        return open(fname, "rU")
