@@ -153,16 +153,16 @@ def source_encoding(source):
     Returns a string, the name of the encoding.
 
     """
-    # Note: this function should never be called on Python 3, since py3 has
-    # built-in tools to do this.
-    assert sys.version_info < (3, 0)
+    if sys.version_info >= (3, 0):
+        readline = iter(source.splitlines(True)).__next__
+        return tokenize.detect_encoding(readline)[0]
+
+    # Do this so the detect_encode code we copied will work.
+    readline = iter(source.splitlines(True)).next
 
     # This is mostly code adapted from Py3.2's tokenize module.
 
     cookie_re = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)")
-
-    # Do this so the detect_encode code we copied will work.
-    readline = iter(source.splitlines(True)).next
 
     def _get_normal_name(orig_enc):
         """Imitates get_normal_name in tokenizer.c."""
@@ -246,9 +246,12 @@ def source_encoding(source):
 # Reading Python source and interpreting the coding comment is a big deal.
 if sys.version_info >= (3, 0):
     # Python 3.2 provides `tokenize.open`, the best way to open source files.
-    import tokenize
-    open_python_source = tokenize.open
+    def read_python_source(filename):
+        # Returns unicode on Py3, bytes on Py2
+        with tokenize.open(filename) as f:
+            return f.read()
 else:
-    def open_python_source(fname):
-        """Open a source file the best way."""
-        return open(fname, "rU")
+    def read_python_source(filename):
+        # Returns unicode on Py3, bytes on Py2
+        with open(filename, "rU") as f:
+            return f.read()

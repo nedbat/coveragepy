@@ -9,6 +9,7 @@ from optparse import OptionParser
 import disgen
 
 from coverage.misc import CoverageException
+from coverage.files import get_python_source
 from coverage.parser import ByteParser, PythonParser
 
 opcode_counts = collections.Counter()
@@ -70,7 +71,8 @@ class ParserMain(object):
         """Process just one file."""
 
         try:
-            bp = ByteParser(filename=filename)
+            text = get_python_source(filename)
+            bp = ByteParser(text, filename=filename)
         except Exception as err:
             print("%s" % (err,))
             return

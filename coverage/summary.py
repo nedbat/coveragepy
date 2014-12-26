@@ -4,7 +4,7 @@ import sys
 
 from coverage.report import Reporter
 from coverage.results import Numbers
-from coverage.misc import NotPython
+from coverage.misc import CoverageException, NotPython
 
 
 class SummaryReporter(Reporter):

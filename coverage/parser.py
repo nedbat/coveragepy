@@ -54,6 +54,7 @@ class PythonParser(CodeParser):
                     )
 
         if self.text:
+            assert isinstance(self.text, str)
             # Scrap the BOM if it exists.
             if ord(self.text[0]) == 0xfeff:
                 self.text = self.text[1:]
@@ -90,8 +91,7 @@ class PythonParser(CodeParser):
     def byte_parser(self):
         """Create a ByteParser on demand."""
         if not self._byte_parser:
-            self._byte_parser = \
-                            ByteParser(text=self.text, filename=self.filename)
+            self._byte_parser = ByteParser(self.text, filename=self.filename)
         return self._byte_parser
 
     def lines_matching(self, *regexes):
@@ -343,16 +343,11 @@ OP_RETURN_VALUE = _opcode('RETURN_VALUE')
 class ByteParser(object):
     """Parse byte codes to understand the structure of code."""
 
-    def __init__(self, code=None, text=None, filename=None):
+    def __init__(self, text, code=None, filename=None):
+        self.text = text
         if code:
             self.code = code
-            self.text = text
         else:
-            if not text:
-                assert filename, "If no code or text, need a filename"
-                text = get_python_source(filename)
-            self.text = text
-
             try:
                 self.code = compile(text, filename, "exec")
             except SyntaxError as synerr:
@@ -378,7 +373,7 @@ class ByteParser(object):
 
         """
         children = CodeObjects(self.code)
-        return (ByteParser(code=c, text=self.text) for c in children)
+        return (ByteParser(self.text, code=c) for c in children)
 
     def _bytes_lines(self):
         """Map byte offsets to line numbers in `code`.

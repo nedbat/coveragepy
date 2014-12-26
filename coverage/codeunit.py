@@ -169,6 +169,8 @@ class PythonCodeUnit(CodeUnit):
         return self._source
 
     def get_parser(self, exclude=None):
+        return PythonParser(filename=self.filename, exclude=exclude)
+        # TODO: REMOVE THIS USELESS CODE!
         actual_filename, source = self._find_source(self.filename)
         return PythonParser(
             text=source, filename=actual_filename, exclude=exclude,

@@ -8,8 +8,8 @@ import sys
 import ntpath
 import posixpath
 
-from coverage.misc import CoverageException, join_regex
-from coverage.phystokens import open_python_source
+from coverage.misc import CoverageException, NoSource, join_regex
+from coverage.phystokens import read_python_source, source_encoding
 
 
 class FileLocator(object):
@@ -56,19 +56,20 @@ class FileLocator(object):
 
 
 def get_python_source(filename):
-    """Return the source code, as a string."""
+    """Return the source code, as a str."""
     if os.path.exists(filename):
         # A regular text file: open it.
-        with open_python_source(filename) as f:
-            return f.read()
+        return read_python_source(filename)
 
     # Maybe it's in a zip file?
     source = get_zip_bytes(filename)
     if source is not None:
+        if sys.version_info >= (3, 0):
+            source = source.decode(source_encoding(source))
         return source
 
     # Couldn't find source.
-    raise CoverageException(
+    raise NoSource(
         "No source for code: '%s'." % filename
         )
 
