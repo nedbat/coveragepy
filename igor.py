@@ -1,4 +1,4 @@
-# coding: utf8
+# coding: utf-8
 """Helper for building, testing, and linting coverage.py.
 
 To get portability, all these operations are written in Python here instead
