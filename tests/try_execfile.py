@@ -32,7 +32,12 @@ def same_file(p1, p2):
         return False
     if not os.path.exists(p2):
         return False
-    return os.path.samefile(p1, p2)
+    if hasattr(os.path, "samefile"):
+        return os.path.samefile(p1, p2)
+    else:
+        norm1 = os.path.normcase(os.path.normpath(p1))
+        norm2 = os.path.normcase(os.path.normpath(p2))
+        return norm1 == norm2
 
 def without_same_files(filenames):
     """Return the list `filenames` with duplicates (by same_file) removed."""

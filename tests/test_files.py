@@ -262,6 +262,7 @@ class GetZipBytesTest(CoverageTest):
         sys.path.append(zip_file)       # So we can import the files.
         for encoding in ["utf8", "gb2312", "hebrew", "shift_jis"]:
             filename = zip_file + "/encoded_" + encoding + ".py"
+            filename = filename.replace("/", os.sep)
             zip_data = get_zip_bytes(filename)
             zip_text = zip_data.decode(encoding)
             self.assertIn('All OK', zip_text)
