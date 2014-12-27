@@ -170,49 +170,6 @@ class PythonCodeUnit(CodeUnit):
 
     def get_parser(self, exclude=None):
         return PythonParser(filename=self.filename, exclude=exclude)
-        # TODO: REMOVE THIS USELESS CODE!
-        actual_filename, source = self._find_source(self.filename)
-        return PythonParser(
-            text=source, filename=actual_filename, exclude=exclude,
-        )
-
-    def _find_source(self, filename):
-        """Find the source for `filename`.
-
-        Returns two values: the actual filename, and the source.
-
-        The source returned depends on which of these cases holds:
-
-            * The filename seems to be a non-source file: returns None
-
-            * The filename is a source file, and actually exists: returns None.
-
-            * The filename is a source file, and is in a zip file or egg:
-              returns the source.
-
-            * The filename is a source file, but couldn't be found: raises
-              `NoSource`.
-
-        """
-        source = None
-
-        base, ext = os.path.splitext(filename)
-        TRY_EXTS = {
-            '.py':  ['.py', '.pyw'],
-            '.pyw': ['.pyw'],
-        }
-        try_exts = TRY_EXTS.get(ext)
-        if not try_exts:
-            return filename, None
-
-        for try_ext in try_exts:
-            try_filename = base + try_ext
-            if os.path.exists(try_filename):
-                return try_filename, None
-            source = get_zip_bytes(try_filename)
-            if source:
-                return try_filename, source
-        raise NoSource("No source for code: '%s'" % filename)
 
     def should_be_python(self):
         """Does it seem like this file should contain Python?

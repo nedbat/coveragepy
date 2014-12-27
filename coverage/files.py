@@ -57,16 +57,24 @@ class FileLocator(object):
 
 def get_python_source(filename):
     """Return the source code, as a str."""
-    if os.path.exists(filename):
-        # A regular text file: open it.
-        return read_python_source(filename)
+    base, ext = os.path.splitext(filename)
+    if ext == ".py" and sys.platform == "win32":
+        exts = [".py", ".pyw"]
+    else:
+        exts = [ext]
 
-    # Maybe it's in a zip file?
-    source = get_zip_bytes(filename)
-    if source is not None:
-        if sys.version_info >= (3, 0):
-            source = source.decode(source_encoding(source))
-        return source
+    for ext in exts:
+        try_filename = base + ext
+        if os.path.exists(try_filename):
+            # A regular text file: open it.
+            return read_python_source(try_filename)
+
+        # Maybe it's in a zip file?
+        source = get_zip_bytes(try_filename)
+        if source is not None:
+            if sys.version_info >= (3, 0):
+                source = source.decode(source_encoding(source))
+            return source
 
     # Couldn't find source.
     raise NoSource(
