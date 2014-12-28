@@ -180,7 +180,7 @@ def make_code_from_py(filename):
     try:
         source = get_python_source(filename)
     except (IOError, NoSource):
-        raise NoSource("No file to run: %r" % filename)
+        raise NoSource("No file to run: '%s'" % filename)
 
     code = compile(source, filename, "exec")
     return code

@@ -95,7 +95,7 @@ def get_python_source(filename):
             break
     else:
         # Couldn't find source.
-        raise NoSource("No source for code: %r." % filename)
+        raise NoSource("No source for code: '%s'." % filename)
 
     # Python code should always end with a line with a newline.
     if source and source[-1] != '\n':

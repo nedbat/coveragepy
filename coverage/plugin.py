@@ -68,10 +68,10 @@ class FileTracer(object):
     def has_dynamic_source_filename(self):
         """Does this FileTracer have dynamic source filenames?
 
-        FileTracers can provide dynamically determined filenames by implementing
-        dynamic_source_filename.  Invoking that function is expensive. To
-        determine whether it should invoke it, coverage.py uses the result of
-        this function to know if it needs to bother invoking
+        FileTracers can provide dynamically determined filenames by
+        implementing dynamic_source_filename.  Invoking that function is
+        expensive. To determine whether it should invoke it, coverage.py uses
+        the result of this function to know if it needs to bother invoking
         dynamic_source_filename.
 
         Returns:
