@@ -92,7 +92,7 @@ Version 4.0a1 --- 27 September 2014
   `issue 285`_.  Thanks Chris Rose.
 
 - HTML reports no longer raise UnicodeDecodeError if a Python file has
-  undecodable characters, fixing `issue 303`_.
+  undecodable characters, fixing `issue 303`_ and `issue 331`_.
 
 - The annotate command will now annotate all files, not just ones relative to
   the current directory, fixing `issue 57`_.
@@ -112,6 +112,7 @@ Version 4.0a1 --- 27 September 2014
 .. _issue 303: https://bitbucket.org/ned/coveragepy/issue/303/unicodedecodeerror
 .. _issue 304: https://bitbucket.org/ned/coveragepy/issue/304/attempt-to-get-configuration-from-setupcfg
 .. _issue 305: https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module
+.. _issue 331: https://bitbucket.org/ned/coveragepy/issue/331/failure-of-encoding-detection-on-python2
 
 
 Version 3.7.1 --- 13 December 2013
