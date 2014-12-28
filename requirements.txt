@@ -3,5 +3,6 @@ mock
 pyenchant
 pylint
 sphinx
+sphinxcontrib-napoleon
 sphinxcontrib-spelling
 tox
