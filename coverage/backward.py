@@ -52,6 +52,18 @@ else:
         """Produce the items from dict `d`."""
         return d.iteritems()
 
+# Getting the `next` function from an iterator is different in 2 and 3.
+try:
+    iter([]).next
+except AttributeError:
+    def iternext(seq):
+        """Get the `next` function for iterating over `seq`."""
+        return iter(seq).__next__
+else:
+    def iternext(seq):
+        """Get the `next` function for iterating over `seq`."""
+        return iter(seq).next
+
 # Python 3.x is picky about bytes and strings, so provide methods to
 # get them right, and make them no-ops in 2.x
 if sys.version_info >= (3, 0):

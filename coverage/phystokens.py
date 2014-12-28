@@ -7,6 +7,8 @@ import sys
 import token
 import tokenize
 
+from coverage.backward import iternext
+
 
 def phys_tokens(toks):
     """Return all physical tokens, even line continuations.
@@ -135,11 +137,7 @@ class CachedTokenizer(object):
         # warnings.
         if type(text) != type(self.last_text) or text != self.last_text:
             self.last_text = text
-            line_iter = iter(text.splitlines(True))
-            try:
-                readline = line_iter.next
-            except AttributeError:
-                readline = line_iter.__next__
+            readline = iternext(text.splitlines(True))
             self.last_tokens = list(tokenize.generate_tokens(readline))
         return self.last_tokens
 
@@ -160,7 +158,7 @@ def _source_encoding_py2(source):
     assert isinstance(source, bytes)
 
     # Do this so the detect_encode code we copied will work.
-    readline = iter(source.splitlines(True)).next
+    readline = iternext(source.splitlines(True))
 
     # This is mostly code adapted from Py3.2's tokenize module.
 
@@ -256,7 +254,7 @@ def _source_encoding_py3(source):
 
     """
     assert isinstance(source, bytes)
-    readline = iter(source.splitlines(True)).__next__
+    readline = iternext(source.splitlines(True))
     return tokenize.detect_encoding(readline)[0]
 
 
