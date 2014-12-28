@@ -262,19 +262,3 @@ if sys.version_info >= (3, 0):
     source_encoding = _source_encoding_py3
 else:
     source_encoding = _source_encoding_py2
-
-
-def read_python_source(filename):
-    """Read the Python source text from `filename`.
-
-    Returns unicode on Python 3, bytes on Python 2.
-
-    """
-    # Python 3.2 provides `tokenize.open`, the best way to open source files.
-    if sys.version_info >= (3, 2):
-        f = tokenize.open(filename)
-    else:
-        f = open(filename, "rU")
-
-    with f:
-        return f.read()

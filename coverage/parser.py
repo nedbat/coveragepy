@@ -56,11 +56,10 @@ class PythonParser(CodeParser):
         if self.text:
             assert isinstance(self.text, str)
             # Scrap the BOM if it exists.
-            if ord(self.text[0]) == 0xfeff:
-                self.text = self.text[1:]
-            # Python source should always have a final newline.
-            if self.text[-1] != "\n":
-                self.text += "\n"
+            # (Used to do this, but no longer.  Not sure what bad will happen
+            # if we don't do it.)
+            #   if ord(self.text[0]) == 0xfeff:
+            #       self.text = self.text[1:]
 
         self.exclude = exclude
 
@@ -352,9 +351,10 @@ class ByteParser(object):
                 self.code = compile(text, filename, "exec")
             except SyntaxError as synerr:
                 raise NotPython(
-                    "Couldn't parse '%s' as Python source: '%s' at line %d" %
-                        (filename, synerr.msg, synerr.lineno)
+                    "Couldn't parse %r as Python source: '%s' at line %d" % (
+                        filename, synerr.msg, synerr.lineno
                     )
+                )
 
         # Alternative Python implementations don't always provide all the
         # attributes on code objects that we need to do the analysis.

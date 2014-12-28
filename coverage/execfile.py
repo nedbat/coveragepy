@@ -7,8 +7,8 @@ import types
 
 from coverage.backward import BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
+from coverage.files import get_python_source
 from coverage.misc import ExceptionDuringRun, NoCode, NoSource
-from coverage.phystokens import read_python_source
 
 
 class DummyLoader(object):
@@ -178,16 +178,11 @@ def make_code_from_py(filename):
     """Get source from `filename` and make a code object of it."""
     # Open the source file.
     try:
-        source = read_python_source(filename)
-    except IOError:
+        source = get_python_source(filename)
+    except (IOError, NoSource):
         raise NoSource("No file to run: %r" % filename)
 
-    # We have the source.  `compile` still needs the last line to be clean,
-    # so make sure it is, then compile a code object from it.
-    if not source or source[-1] != '\n':
-        source += '\n'
     code = compile(source, filename, "exec")
-
     return code
 
 

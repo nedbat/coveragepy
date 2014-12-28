@@ -1,15 +1,16 @@
 """File wrangling."""
 
 import fnmatch
+import ntpath
 import os
 import os.path
+import posixpath
 import re
 import sys
-import ntpath
-import posixpath
+import tokenize
 
 from coverage.misc import CoverageException, NoSource, join_regex
-from coverage.phystokens import read_python_source, source_encoding
+from coverage.phystokens import source_encoding
 
 
 class FileLocator(object):
@@ -55,6 +56,22 @@ class FileLocator(object):
         return self.canonical_filename_cache[filename]
 
 
+def read_python_source(filename):
+    """Read the Python source text from `filename`.
+
+    Returns a str: unicode on Python 3, bytes on Python 2.
+
+    """
+    # Python 3.2 provides `tokenize.open`, the best way to open source files.
+    if sys.version_info >= (3, 2):
+        f = tokenize.open(filename)
+    else:
+        f = open(filename, "rU")
+
+    with f:
+        return f.read()
+
+
 def get_python_source(filename):
     """Return the source code, as a str."""
     base, ext = os.path.splitext(filename)
@@ -67,17 +84,24 @@ def get_python_source(filename):
         try_filename = base + ext
         if os.path.exists(try_filename):
             # A regular text file: open it.
-            return read_python_source(try_filename)
+            source = read_python_source(try_filename)
+            break
 
         # Maybe it's in a zip file?
         source = get_zip_bytes(try_filename)
         if source is not None:
             if sys.version_info >= (3, 0):
                 source = source.decode(source_encoding(source))
-            return source
+            break
+    else:
+        # Couldn't find source.
+        raise NoSource("No source for code: %r." % filename)
 
-    # Couldn't find source.
-    raise NoSource("No source for code: %r." % filename)
+    # Python code should always end with a line with a newline.
+    if source and source[-1] != '\n':
+        source += '\n'
+
+    return source
 
 
 def get_zip_bytes(filename):
