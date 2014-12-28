@@ -148,11 +148,17 @@ generate_tokens = CachedTokenizer().generate_tokens
 
 
 def _source_encoding_py2(source):
-    """Determine the encoding for `source` (a string), according to PEP 263.
+    """Determine the encoding for `source`, according to PEP 263.
 
-    Returns a string, the name of the encoding.
+    Arguments:
+        source (byte string): the text of the program.
+
+    Returns:
+        string: the name of the encoding.
 
     """
+    assert isinstance(source, bytes)
+
     # Do this so the detect_encode code we copied will work.
     readline = iter(source.splitlines(True)).next
 
@@ -240,11 +246,16 @@ def _source_encoding_py2(source):
 
 
 def _source_encoding_py3(source):
-    """Determine the encoding for `source` (a string), according to PEP 263.
+    """Determine the encoding for `source`, according to PEP 263.
 
-    Returns a string, the name of the encoding.
+    Arguments:
+        source (byte string): the text of the program.
+
+    Returns:
+        string: the name of the encoding.
 
     """
+    assert isinstance(source, bytes)
     readline = iter(source.splitlines(True)).__next__
     return tokenize.detect_encoding(readline)[0]
 
