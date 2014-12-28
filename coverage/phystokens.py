@@ -147,16 +147,12 @@ class CachedTokenizer(object):
 generate_tokens = CachedTokenizer().generate_tokens
 
 
-def source_encoding(source):
+def _source_encoding_py2(source):
     """Determine the encoding for `source` (a string), according to PEP 263.
 
     Returns a string, the name of the encoding.
 
     """
-    if sys.version_info >= (3, 0):
-        readline = iter(source.splitlines(True)).__next__
-        return tokenize.detect_encoding(readline)[0]
-
     # Do this so the detect_encode code we copied will work.
     readline = iter(source.splitlines(True)).next
 
@@ -243,15 +239,33 @@ def source_encoding(source):
     return default
 
 
-# Reading Python source and interpreting the coding comment is a big deal.
+def _source_encoding_py3(source):
+    """Determine the encoding for `source` (a string), according to PEP 263.
+
+    Returns a string, the name of the encoding.
+
+    """
+    readline = iter(source.splitlines(True)).__next__
+    return tokenize.detect_encoding(readline)[0]
+
+
 if sys.version_info >= (3, 0):
-    # Python 3.2 provides `tokenize.open`, the best way to open source files.
-    def read_python_source(filename):
-        # Returns unicode on Py3, bytes on Py2
-        with tokenize.open(filename) as f:
-            return f.read()
+    source_encoding = _source_encoding_py3
 else:
-    def read_python_source(filename):
-        # Returns unicode on Py3, bytes on Py2
-        with open(filename, "rU") as f:
-            return f.read()
+    source_encoding = _source_encoding_py2
+
+
+def read_python_source(filename):
+    """Read the Python source text from `filename`.
+
+    Returns unicode on Python 3, bytes on Python 2.
+
+    """
+    # Python 3.2 provides `tokenize.open`, the best way to open source files.
+    if sys.version_info >= (3, 2):
+        f = tokenize.open(filename)
+    else:
+        f = open(filename, "rU")
+
+    with f:
+        return f.read()

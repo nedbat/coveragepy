@@ -4,8 +4,8 @@ import os
 import sys
 
 from coverage.backward import string_class, unicode_class
-from coverage.files import get_python_source, get_zip_bytes
-from coverage.misc import CoverageException, NoSource
+from coverage.files import get_python_source
+from coverage.misc import CoverageException
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 
@@ -84,8 +84,6 @@ class CodeUnit(object):
         self.name = n
         self.modname = modname
 
-        self._source = None
-
     def __repr__(self):
         return "<{self.__class__.__name__} name={self.name!r} filename={self.filename!r}>".format(self=self)
 
@@ -150,6 +148,10 @@ class CodeUnit(object):
 
 class PythonCodeUnit(CodeUnit):
     """Represents a Python file."""
+
+    def __init__(self, morf, file_locator):
+        super(PythonCodeUnit, self).__init__(morf, file_locator)
+        self._source = None
 
     def _adjust_filename(self, fname):
         # .pyc files should always refer to a .py instead.

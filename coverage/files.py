@@ -77,9 +77,7 @@ def get_python_source(filename):
             return source
 
     # Couldn't find source.
-    raise NoSource(
-        "No source for code: '%s'." % filename
-        )
+    raise NoSource("No source for code: %r." % filename)
 
 
 def get_zip_bytes(filename):
