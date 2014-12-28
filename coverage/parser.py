@@ -351,7 +351,7 @@ class ByteParser(object):
                 self.code = compile(text, filename, "exec")
             except SyntaxError as synerr:
                 raise NotPython(
-                    "Couldn't parse %r as Python source: '%s' at line %d" % (
+                    "Couldn't parse '%s' as Python source: '%s' at line %d" % (
                         filename, synerr.msg, synerr.lineno
                     )
                 )

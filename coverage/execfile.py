@@ -191,7 +191,7 @@ def make_code_from_pyc(filename):
     try:
         fpyc = open(filename, "rb")
     except IOError:
-        raise NoCode("No file to run: %r" % filename)
+        raise NoCode("No file to run: '%s'" % filename)
 
     with fpyc:
         # First four bytes are a version-specific magic number.  It has to

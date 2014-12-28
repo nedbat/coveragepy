@@ -106,7 +106,7 @@ class Coverage(object):
             if not did_read_rc:
                 if specified_file:
                     raise CoverageException(
-                        "Couldn't read %r as a config file" % config_file
+                        "Couldn't read '%s' as a config file" % config_file
                         )
                 self.config.from_file("setup.cfg", section_prefix="coverage:")
 
