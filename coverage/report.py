@@ -2,7 +2,6 @@
 
 import os
 
-from coverage.codeunit import code_units_factory
 from coverage.files import prep_patterns, FnmatchMatcher
 from coverage.misc import CoverageException, NoSource, NotPython
 
@@ -33,10 +32,7 @@ class Reporter(object):
         `morfs` is a list of modules or filenames.
 
         """
-        morfs = morfs or self.coverage.data.measured_files()
-        file_locator = self.coverage.file_locator
-        get_plugin = self.coverage.data.plugin_data().get
-        self.code_units = code_units_factory(morfs, file_locator, get_plugin)
+        self.code_units = self.coverage._get_file_reporters(morfs)
 
         if self.config.include:
             patterns = prep_patterns(self.config.include)

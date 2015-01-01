@@ -10,7 +10,7 @@ import sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
-from coverage.codeunit import code_unit_factory, CodeUnit, PythonCodeUnit
+from coverage.codeunit import CodeUnit, PythonCodeUnit
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
@@ -750,19 +750,58 @@ class Coverage(object):
         Returns an `Analysis` object.
 
         """
-        def get_plugin(filename):
-            """For code_unit_factory to use to find the plugin for a file."""
-            plugin = None
-            plugin_name = self.data.plugin_data().get(filename)
-            if plugin_name:
-                plugin = self.plugins.get(plugin_name)
-            return plugin
-
         self._harvest_data()
         if not isinstance(it, CodeUnit):
-            it = code_unit_factory(it, self.file_locator, get_plugin)
+            it = self._get_file_reporter(it)
 
         return Analysis(self, it)
+
+    def _get_file_reporter(self, morf):
+        """Get a FileReporter for a module or filename."""
+        plugin = None
+
+        if isinstance(morf, string_class):
+            plugin_name = self.data.plugin_data().get(morf)
+            if plugin_name:
+                plugin = self.plugins.get(plugin_name)
+
+        if plugin:
+            file_reporter = plugin.file_reporter(morf)
+            if file_reporter is None:
+                raise CoverageException(
+                    "Plugin %r did not provide a file reporter for %r." % (
+                        plugin.plugin_name, morf
+                    )
+                )
+        else:
+            file_reporter = PythonCodeUnit(morf, self.file_locator)
+
+        return file_reporter
+
+    def _get_file_reporters(self, morfs=None):
+        """Get a list of FileReporters for a list of modules or filenames.
+
+        For each module or filename in `morfs`, find a FileReporter.  Return
+        the list of FileReporters.
+
+        If `morfs` is a single module or filename, this returns a list of one
+        FileReporter.  If `morfs` is empty or None, then the list of all files
+        measured is used to find the FileReporters.
+
+        """
+        if not morfs:
+            morfs = self.data.measured_files()
+
+        # Be sure we have a list.
+        if not isinstance(morfs, (list, tuple)):
+            morfs = [morfs]
+
+        file_reporters = []
+        for morf in morfs:
+            file_reporter = self._get_file_reporter(morf)
+            file_reporters.append(file_reporter)
+
+        return file_reporters
 
     def report(
         self, morfs=None, show_missing=True, ignore_errors=None,

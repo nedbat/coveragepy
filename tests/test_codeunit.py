@@ -3,7 +3,7 @@
 import os
 import sys
 
-from coverage.codeunit import CodeUnit, PythonCodeUnit, code_units_factory
+from coverage.codeunit import CodeUnit, PythonCodeUnit
 
 from tests.coveragetest import CoverageTest
 
@@ -55,32 +55,36 @@ class CodeUnitTest(CoverageTest):
         import aa.bb
         import aa.bb.cc
 
-        cu = code_units_factory([aa, aa.bb, aa.bb.cc])
-        self.assertEqual(cu[0].name, "aa")
-        self.assertEqual(cu[1].name, "aa.bb")
-        self.assertEqual(cu[2].name, "aa.bb.cc")
-        self.assertEqual(cu[0].flat_rootname(), "aa")
-        self.assertEqual(cu[1].flat_rootname(), "aa_bb")
-        self.assertEqual(cu[2].flat_rootname(), "aa_bb_cc")
-        self.assertEqual(cu[0].source(), "# aa\n")
-        self.assertEqual(cu[1].source(), "# bb\n")
-        self.assertEqual(cu[2].source(), "")  # yes, empty
+        acu = PythonCodeUnit(aa)
+        bcu = PythonCodeUnit(aa.bb)
+        ccu = PythonCodeUnit(aa.bb.cc)
+        self.assertEqual(acu.name, "aa")
+        self.assertEqual(bcu.name, "aa.bb")
+        self.assertEqual(ccu.name, "aa.bb.cc")
+        self.assertEqual(acu.flat_rootname(), "aa")
+        self.assertEqual(bcu.flat_rootname(), "aa_bb")
+        self.assertEqual(ccu.flat_rootname(), "aa_bb_cc")
+        self.assertEqual(acu.source(), "# aa\n")
+        self.assertEqual(bcu.source(), "# bb\n")
+        self.assertEqual(ccu.source(), "")  # yes, empty
 
     def test_module_files(self):
         import aa.afile
         import aa.bb.bfile
         import aa.bb.cc.cfile
 
-        cu = code_units_factory([aa.afile, aa.bb.bfile, aa.bb.cc.cfile])
-        self.assertEqual(cu[0].name, "aa.afile")
-        self.assertEqual(cu[1].name, "aa.bb.bfile")
-        self.assertEqual(cu[2].name, "aa.bb.cc.cfile")
-        self.assertEqual(cu[0].flat_rootname(), "aa_afile")
-        self.assertEqual(cu[1].flat_rootname(), "aa_bb_bfile")
-        self.assertEqual(cu[2].flat_rootname(), "aa_bb_cc_cfile")
-        self.assertEqual(cu[0].source(), "# afile.py\n")
-        self.assertEqual(cu[1].source(), "# bfile.py\n")
-        self.assertEqual(cu[2].source(), "# cfile.py\n")
+        acu = PythonCodeUnit(aa.afile)
+        bcu = PythonCodeUnit(aa.bb.bfile)
+        ccu = PythonCodeUnit(aa.bb.cc.cfile)
+        self.assertEqual(acu.name, "aa.afile")
+        self.assertEqual(bcu.name, "aa.bb.bfile")
+        self.assertEqual(ccu.name, "aa.bb.cc.cfile")
+        self.assertEqual(acu.flat_rootname(), "aa_afile")
+        self.assertEqual(bcu.flat_rootname(), "aa_bb_bfile")
+        self.assertEqual(ccu.flat_rootname(), "aa_bb_cc_cfile")
+        self.assertEqual(acu.source(), "# afile.py\n")
+        self.assertEqual(bcu.source(), "# bfile.py\n")
+        self.assertEqual(ccu.source(), "# cfile.py\n")
 
     def test_comparison(self):
         acu = CodeUnit("aa/afile.py")
@@ -104,6 +108,7 @@ class CodeUnitTest(CoverageTest):
         # in the path is actually the .egg zip file.
         self.assert_doesnt_exist(egg1.__file__)
 
-        cu = code_units_factory([egg1, egg1.egg1])
-        self.assertEqual(cu[0].source(), u"")
-        self.assertEqual(cu[1].source().split("\n")[0], u"# My egg file!")
+        ecu = PythonCodeUnit(egg1)
+        eecu = PythonCodeUnit(egg1.egg1)
+        self.assertEqual(ecu.source(), u"")
+        self.assertEqual(eecu.source().split("\n")[0], u"# My egg file!")
