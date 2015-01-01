@@ -4,13 +4,13 @@ import os
 import sys
 
 from coverage.backward import string_class, unicode_class
-from coverage.files import get_python_source
+from coverage.files import get_python_source, FileLocator
 from coverage.misc import CoverageException
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 
 
-def code_units_factory(morfs, file_locator, get_plugin=None):
+def code_units_factory(morfs, file_locator=None, get_plugin=None):
     """Construct a list of CodeUnits from modules or filenames.
 
     `morfs` is a module or filename, or a list of the same.
@@ -36,7 +36,7 @@ def code_units_factory(morfs, file_locator, get_plugin=None):
     return code_units
 
 
-def code_unit_factory(morf, file_locator, get_plugin=None):
+def code_unit_factory(morf, file_locator=None, get_plugin=None):
     """Construct a CodeUnit from a module or filename.
 
     `morfs` is a module or a filename.
@@ -80,8 +80,8 @@ class CodeUnit(object):
 
     """
 
-    def __init__(self, morf, file_locator):
-        self.file_locator = file_locator
+    def __init__(self, morf, file_locator=None):
+        self.file_locator = file_locator or FileLocator()
 
         if hasattr(morf, '__file__'):
             f = morf.__file__
@@ -106,7 +106,11 @@ class CodeUnit(object):
         self.modname = modname
 
     def __repr__(self):
-        return "<{self.__class__.__name__} name={self.name!r} filename={self.filename!r}>".format(self=self)
+        return (
+            "<{self.__class__.__name__}"
+            " name={self.name!r}"
+            " filename={self.filename!r}>".format(self=self)
+        )
 
     def _adjust_filename(self, f):
         # TODO: This shouldn't be in the base class, right?
@@ -175,7 +179,7 @@ class CodeUnit(object):
 class PythonCodeUnit(CodeUnit):
     """Represents a Python file."""
 
-    def __init__(self, morf, file_locator):
+    def __init__(self, morf, file_locator=None):
         super(PythonCodeUnit, self).__init__(morf, file_locator)
         self._source = None
 
