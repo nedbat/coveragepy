@@ -1,11 +1,12 @@
 """Tests for plugins."""
 
-import os, sys
+import os
+import sys
 
 from nose.plugins.skip import SkipTest
 
 import coverage
-from coverage.plugin import Plugins
+from coverage.control import Plugins
 
 import coverage.plugin
 
@@ -221,6 +222,7 @@ if not C_TRACER:
 def snoop_on_callbacks(cov):
     cov_should_trace = cov._should_trace
     should_trace_filenames = set()
+
     def snoop_should_trace(filename, frame):
         assert filename not in should_trace_filenames
         should_trace_filenames.add(filename)
@@ -229,6 +231,7 @@ def snoop_on_callbacks(cov):
 
     cov_check_include = cov._check_include_omit_etc
     check_include_filenames = set()
+
     def snoop_check_include_filenames(filename, frame):
         assert filename not in check_include_filenames
         check_include_filenames.add(filename)
