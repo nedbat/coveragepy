@@ -1,7 +1,5 @@
 """Plugin management for coverage.py"""
 
-import sys
-
 
 class CoveragePlugin(object):
     """Base class for coverage.py plugins."""

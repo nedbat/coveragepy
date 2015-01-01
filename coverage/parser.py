@@ -9,7 +9,6 @@ import tokenize
 from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints
 from coverage.bytecode import ByteCodes, CodeObjects
-from coverage.files import get_python_source
 from coverage.misc import nice_pair, expensive, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
 from coverage.phystokens import generate_tokens
@@ -46,6 +45,7 @@ class PythonParser(CodeParser):
         self.filename = filename or "<code>"
         self.text = text
         if not self.text:
+            from coverage.python import get_python_source
             try:
                 self.text = get_python_source(self.filename)
             except IOError as err:

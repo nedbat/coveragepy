@@ -7,10 +7,8 @@ import os.path
 import posixpath
 import re
 import sys
-import tokenize
 
-from coverage.misc import CoverageException, NoSource, join_regex
-from coverage.phystokens import source_encoding
+from coverage.misc import CoverageException, join_regex
 
 
 class FileLocator(object):
@@ -54,80 +52,6 @@ class FileLocator(object):
             cf = abs_file(filename)
             self.canonical_filename_cache[filename] = cf
         return self.canonical_filename_cache[filename]
-
-
-def read_python_source(filename):
-    """Read the Python source text from `filename`.
-
-    Returns a str: unicode on Python 3, bytes on Python 2.
-
-    """
-    # Python 3.2 provides `tokenize.open`, the best way to open source files.
-    if sys.version_info >= (3, 2):
-        f = tokenize.open(filename)
-    else:
-        f = open(filename, "rU")
-
-    with f:
-        return f.read()
-
-
-def get_python_source(filename):
-    """Return the source code, as a str."""
-    base, ext = os.path.splitext(filename)
-    if ext == ".py" and sys.platform == "win32":
-        exts = [".py", ".pyw"]
-    else:
-        exts = [ext]
-
-    for ext in exts:
-        try_filename = base + ext
-        if os.path.exists(try_filename):
-            # A regular text file: open it.
-            source = read_python_source(try_filename)
-            break
-
-        # Maybe it's in a zip file?
-        source = get_zip_bytes(try_filename)
-        if source is not None:
-            if sys.version_info >= (3, 0):
-                source = source.decode(source_encoding(source))
-            break
-    else:
-        # Couldn't find source.
-        raise NoSource("No source for code: '%s'." % filename)
-
-    # Python code should always end with a line with a newline.
-    if source and source[-1] != '\n':
-        source += '\n'
-
-    return source
-
-
-def get_zip_bytes(filename):
-    """Get data from `filename` if it is a zip file path.
-
-    Returns the bytestring data read from the zip file, or None if no zip file
-    could be found or `filename` isn't in it.  The data returned will be
-    an empty string if the file is empty.
-
-    """
-    import zipimport
-    markers = ['.zip'+os.sep, '.egg'+os.sep]
-    for marker in markers:
-        if marker in filename:
-            parts = filename.split(marker)
-            try:
-                zi = zipimport.zipimporter(parts[0]+marker[:-1])
-            except zipimport.ZipImportError:
-                continue
-            try:
-                data = zi.get_data(parts[1])
-            except IOError:
-                continue
-            assert isinstance(data, bytes)
-            return data
-    return None
 
 
 if sys.platform == 'win32':

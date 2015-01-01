@@ -3,7 +3,8 @@
 import os
 import sys
 
-from coverage.codeunit import CodeUnit, PythonCodeUnit
+from coverage.codeunit import CodeUnit
+from coverage.python import PythonCodeUnit
 
 from tests.coveragetest import CoverageTest
 

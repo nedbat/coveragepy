@@ -1,12 +1,9 @@
 """Code unit (module) handling for Coverage."""
 
 import os
-import sys
 
 from coverage.backward import unicode_class
-from coverage.files import get_python_source, FileLocator
-from coverage.parser import PythonParser
-from coverage.phystokens import source_token_lines, source_encoding
+from coverage.files import FileLocator
 
 
 class CodeUnit(object):
@@ -114,54 +111,3 @@ class CodeUnit(object):
 
     def get_parser(self, exclude=None):
         raise NotImplementedError
-
-
-class PythonCodeUnit(CodeUnit):
-    """Represents a Python file."""
-
-    def __init__(self, morf, file_locator=None):
-        super(PythonCodeUnit, self).__init__(morf, file_locator)
-        self._source = None
-
-    def _adjust_filename(self, fname):
-        # .pyc files should always refer to a .py instead.
-        if fname.endswith(('.pyc', '.pyo')):
-            fname = fname[:-1]
-        elif fname.endswith('$py.class'):   # Jython
-            fname = fname[:-9] + ".py"
-        return fname
-
-    def source(self):
-        if self._source is None:
-            self._source = get_python_source(self.filename)
-            if sys.version_info < (3, 0):
-                encoding = source_encoding(self._source)
-                self._source = self._source.decode(encoding, "replace")
-            assert isinstance(self._source, unicode_class)
-        return self._source
-
-    def get_parser(self, exclude=None):
-        return PythonParser(filename=self.filename, exclude=exclude)
-
-    def should_be_python(self):
-        """Does it seem like this file should contain Python?
-
-        This is used to decide if a file reported as part of the execution of
-        a program was really likely to have contained Python in the first
-        place.
-
-        """
-        # Get the file extension.
-        _, ext = os.path.splitext(self.filename)
-
-        # Anything named *.py* should be Python.
-        if ext.startswith('.py'):
-            return True
-        # A file with no extension should be Python.
-        if not ext:
-            return True
-        # Everything else is probably not Python.
-        return False
-
-    def source_token_lines(self):
-        return source_token_lines(self.source())
