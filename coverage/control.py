@@ -1,6 +1,12 @@
 """Core control stuff for Coverage."""
 
-import atexit, inspect, os, platform, random, socket, sys
+import atexit
+import inspect
+import os
+import platform
+import random
+import socket
+import sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
@@ -43,10 +49,12 @@ class Coverage(object):
         cov.html_report(directory='covhtml')
 
     """
-    def __init__(self, data_file=None, data_suffix=None, cover_pylib=None,
-                auto_data=False, timid=None, branch=None, config_file=True,
-                source=None, omit=None, include=None, debug=None,
-                concurrency=None):
+    def __init__(
+        self, data_file=None, data_suffix=None, cover_pylib=None,
+        auto_data=False, timid=None, branch=None, config_file=True,
+        source=None, omit=None, include=None, debug=None,
+        concurrency=None,
+    ):
         """
         `data_file` is the base name of the data file to use, defaulting to
         ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
@@ -302,7 +310,7 @@ class Coverage(object):
         if not filename.endswith(".py"):
             if filename[-4:-1] == ".py":
                 filename = filename[:-1]
-            elif filename.endswith("$py.class"): # jython
+            elif filename.endswith("$py.class"):    # jython
                 filename = filename[:-9] + ".py"
         return filename
 
@@ -312,10 +320,10 @@ class Coverage(object):
         For configurability's sake, we allow __main__ modules to be matched by
         their importable name.
 
-        If loaded via runpy (aka -m), we can usually recover the "original" full
-        dotted module name, otherwise, we resort to interpreting the filename to
-        get the module's name.  In the case that the module name can't be
-        determined, None is returned.
+        If loaded via runpy (aka -m), we can usually recover the "original"
+        full dotted module name, otherwise, we resort to interpreting the
+        filename to get the module's name.  In the case that the module name
+        can't be determined, None is returned.
 
         """
         dunder_name = module_globals.get('__name__', None)
@@ -325,7 +333,7 @@ class Coverage(object):
             return dunder_name
 
         loader = module_globals.get('__loader__', None)
-        for attrname in ('fullname', 'name'): # attribute renamed in py3.2
+        for attrname in ('fullname', 'name'):   # attribute renamed in py3.2
             if hasattr(loader, attrname):
                 fullname = getattr(loader, attrname)
             else:
@@ -352,6 +360,7 @@ class Coverage(object):
 
         """
         disp = FileDisposition(filename)
+
         def nope(disp, reason):
             """Simple helper to make it easy to return NO."""
             disp.trace = False
@@ -416,8 +425,8 @@ class Coverage(object):
                         )
                     if disp.check_filters:
                         reason = self._check_include_omit_etc_internal(
-                                    disp.source_filename, frame,
-                                    )
+                            disp.source_filename, frame,
+                        )
                         if reason:
                             nope(disp, reason)
 
@@ -679,8 +688,9 @@ class Coverage(object):
                         "Unexpected third case: name = %s, "
                         "object = %r, "
                         "__file__ = %s" % (
-                        pkg, sys.modules[pkg], sys.modules[pkg].__file__
-                    ))
+                            pkg, sys.modules[pkg], sys.modules[pkg].__file__
+                        )
+                    )
 
         # Find out if we got any data.
         summary = self.data.summary()
@@ -754,10 +764,11 @@ class Coverage(object):
 
         return Analysis(self, it)
 
-    def report(self, morfs=None, show_missing=True, ignore_errors=None,
-                file=None,                  # pylint: disable=redefined-builtin
-                omit=None, include=None, skip_covered=False,
-                ):
+    def report(
+        self, morfs=None, show_missing=True, ignore_errors=None,
+        file=None,                  # pylint: disable=redefined-builtin
+        omit=None, include=None, skip_covered=False,
+    ):
         """Write a summary report to `file`.
 
         Each module in `morfs` is listed, with counts of statements, executed
@@ -778,8 +789,10 @@ class Coverage(object):
         reporter = SummaryReporter(self, self.config)
         return reporter.report(morfs, outfile=file)
 
-    def annotate(self, morfs=None, directory=None, ignore_errors=None,
-                    omit=None, include=None):
+    def annotate(
+        self, morfs=None, directory=None, ignore_errors=None,
+        omit=None, include=None,
+    ):
         """Annotate a list of modules.
 
         Each module in `morfs` is annotated.  The source is written to a new
@@ -824,8 +837,10 @@ class Coverage(object):
         reporter = HtmlReporter(self, self.config)
         return reporter.report(morfs)
 
-    def xml_report(self, morfs=None, outfile=None, ignore_errors=None,
-                    omit=None, include=None):
+    def xml_report(
+        self, morfs=None, outfile=None, ignore_errors=None,
+        omit=None, include=None,
+    ):
         """Generate an XML report of coverage results.
 
         The report is compatible with Cobertura reports.
@@ -897,9 +912,10 @@ class Coverage(object):
             ('cwd', os.getcwd()),
             ('path', sys.path),
             ('environment', sorted(
-                ("%s = %s" % (k, v)) for k, v in iitems(os.environ)
-                    if k.startswith(("COV", "PY"))
-                )),
+                ("%s = %s" % (k, v))
+                for k, v in iitems(os.environ)
+                if k.startswith(("COV", "PY"))
+            )),
             ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
             ]
 
@@ -972,4 +988,4 @@ def process_startup():
 
 
 # A hack for debugging testing in sub-processes.
-_TEST_NAME_FILE = "" #"/tmp/covtest.txt"
+_TEST_NAME_FILE = ""    # "/tmp/covtest.txt"
