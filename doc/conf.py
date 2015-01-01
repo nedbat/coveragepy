@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'coverage.py'
-copyright = u'2009\N{EN DASH}2014, Ned Batchelder'
+copyright = u'2009\N{EN DASH}2015, Ned Batchelder'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
