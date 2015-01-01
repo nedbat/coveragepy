@@ -46,12 +46,12 @@ class LoadPluginsTest(CoverageTest):
                     self.this_is = "me"
             """)
 
-        config = FakeConfig("plugin1", {'a':'hello'})
+        config = FakeConfig("plugin1", {'a': 'hello'})
         plugins = list(Plugins.load_plugins(["plugin1"], config))
 
         self.assertEqual(len(plugins), 1)
         self.assertEqual(plugins[0].this_is, "me")
-        self.assertEqual(plugins[0].options, {'a':'hello'})
+        self.assertEqual(plugins[0].options, {'a': 'hello'})
         self.assertEqual(config.asked_for, ['plugin1'])
 
     def test_importing_and_configuring_more_than_one(self):
@@ -70,23 +70,23 @@ class LoadPluginsTest(CoverageTest):
                 pass
             """)
 
-        config = FakeConfig("plugin1", {'a':'hello'})
+        config = FakeConfig("plugin1", {'a': 'hello'})
         plugins = list(Plugins.load_plugins(["plugin1", "plugin2"], config))
 
         self.assertEqual(len(plugins), 2)
         self.assertEqual(plugins[0].this_is, "me")
-        self.assertEqual(plugins[0].options, {'a':'hello'})
+        self.assertEqual(plugins[0].options, {'a': 'hello'})
         self.assertEqual(plugins[1].options, {})
         self.assertEqual(config.asked_for, ['plugin1', 'plugin2'])
 
         # The order matters...
-        config = FakeConfig("plugin1", {'a':'second'})
+        config = FakeConfig("plugin1", {'a': 'second'})
         plugins = list(Plugins.load_plugins(["plugin2", "plugin1"], config))
 
         self.assertEqual(len(plugins), 2)
         self.assertEqual(plugins[0].options, {})
         self.assertEqual(plugins[1].this_is, "me")
-        self.assertEqual(plugins[1].options, {'a':'second'})
+        self.assertEqual(plugins[1].options, {'a': 'second'})
 
     def test_cant_import(self):
         with self.assertRaises(ImportError):
@@ -168,7 +168,7 @@ if not C_TRACER:
             self.start_import_stop(cov, "simple")
 
             _, statements, missing, _ = cov.analysis("simple.py")
-            self.assertEqual(statements, [1,2,3])
+            self.assertEqual(statements, [1, 2, 3])
             self.assertEqual(missing, [])
             _, statements, _, _ = cov.analysis("/src/try_ABC.zz")
             self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
@@ -212,11 +212,11 @@ if not C_TRACER:
             # have 7 lines in it.  If render() was called with line number 4,
             # then the plugin will claim that lines 4 and 5 were executed.
             _, statements, missing, _ = cov.analysis("foo_7.html")
-            self.assertEqual(statements, [1,2,3,4,5,6,7])
-            self.assertEqual(missing, [1,2,3,6,7])
+            self.assertEqual(statements, [1, 2, 3, 4, 5, 6, 7])
+            self.assertEqual(missing, [1, 2, 3, 6, 7])
             _, statements, missing, _ = cov.analysis("bar_4.html")
-            self.assertEqual(statements, [1,2,3,4])
-            self.assertEqual(missing, [1,4])
+            self.assertEqual(statements, [1, 2, 3, 4])
+            self.assertEqual(missing, [1, 4])
 
 
 def snoop_on_callbacks(cov):
