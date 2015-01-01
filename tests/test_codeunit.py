@@ -3,7 +3,7 @@
 import os
 import sys
 
-from coverage.codeunit import code_unit_factory
+from coverage.codeunit import code_unit_factory, code_units_factory
 from coverage.files import FileLocator
 
 from tests.coveragetest import CoverageTest
@@ -27,36 +27,36 @@ class CodeUnitTest(CoverageTest):
         acu = code_unit_factory("aa/afile.py", FileLocator())
         bcu = code_unit_factory("aa/bb/bfile.py", FileLocator())
         ccu = code_unit_factory("aa/bb/cc/cfile.py", FileLocator())
-        self.assertEqual(acu[0].name, "aa/afile")
-        self.assertEqual(bcu[0].name, "aa/bb/bfile")
-        self.assertEqual(ccu[0].name, "aa/bb/cc/cfile")
-        self.assertEqual(acu[0].flat_rootname(), "aa_afile")
-        self.assertEqual(bcu[0].flat_rootname(), "aa_bb_bfile")
-        self.assertEqual(ccu[0].flat_rootname(), "aa_bb_cc_cfile")
-        self.assertEqual(acu[0].source(), "# afile.py\n")
-        self.assertEqual(bcu[0].source(), "# bfile.py\n")
-        self.assertEqual(ccu[0].source(), "# cfile.py\n")
+        self.assertEqual(acu.name, "aa/afile")
+        self.assertEqual(bcu.name, "aa/bb/bfile")
+        self.assertEqual(ccu.name, "aa/bb/cc/cfile")
+        self.assertEqual(acu.flat_rootname(), "aa_afile")
+        self.assertEqual(bcu.flat_rootname(), "aa_bb_bfile")
+        self.assertEqual(ccu.flat_rootname(), "aa_bb_cc_cfile")
+        self.assertEqual(acu.source(), "# afile.py\n")
+        self.assertEqual(bcu.source(), "# bfile.py\n")
+        self.assertEqual(ccu.source(), "# cfile.py\n")
 
     def test_odd_filenames(self):
         acu = code_unit_factory("aa/afile.odd.py", FileLocator())
         bcu = code_unit_factory("aa/bb/bfile.odd.py", FileLocator())
         b2cu = code_unit_factory("aa/bb.odd/bfile.py", FileLocator())
-        self.assertEqual(acu[0].name, "aa/afile.odd")
-        self.assertEqual(bcu[0].name, "aa/bb/bfile.odd")
-        self.assertEqual(b2cu[0].name, "aa/bb.odd/bfile")
-        self.assertEqual(acu[0].flat_rootname(), "aa_afile_odd")
-        self.assertEqual(bcu[0].flat_rootname(), "aa_bb_bfile_odd")
-        self.assertEqual(b2cu[0].flat_rootname(), "aa_bb_odd_bfile")
-        self.assertEqual(acu[0].source(), "# afile.odd.py\n")
-        self.assertEqual(bcu[0].source(), "# bfile.odd.py\n")
-        self.assertEqual(b2cu[0].source(), "# bfile.py\n")
+        self.assertEqual(acu.name, "aa/afile.odd")
+        self.assertEqual(bcu.name, "aa/bb/bfile.odd")
+        self.assertEqual(b2cu.name, "aa/bb.odd/bfile")
+        self.assertEqual(acu.flat_rootname(), "aa_afile_odd")
+        self.assertEqual(bcu.flat_rootname(), "aa_bb_bfile_odd")
+        self.assertEqual(b2cu.flat_rootname(), "aa_bb_odd_bfile")
+        self.assertEqual(acu.source(), "# afile.odd.py\n")
+        self.assertEqual(bcu.source(), "# bfile.odd.py\n")
+        self.assertEqual(b2cu.source(), "# bfile.py\n")
 
     def test_modules(self):
         import aa
         import aa.bb
         import aa.bb.cc
 
-        cu = code_unit_factory([aa, aa.bb, aa.bb.cc], FileLocator())
+        cu = code_units_factory([aa, aa.bb, aa.bb.cc], FileLocator())
         self.assertEqual(cu[0].name, "aa")
         self.assertEqual(cu[1].name, "aa.bb")
         self.assertEqual(cu[2].name, "aa.bb.cc")
@@ -72,7 +72,7 @@ class CodeUnitTest(CoverageTest):
         import aa.bb.bfile
         import aa.bb.cc.cfile
 
-        cu = code_unit_factory(
+        cu = code_units_factory(
             [aa.afile, aa.bb.bfile, aa.bb.cc.cfile],
             FileLocator()
         )
@@ -87,10 +87,10 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(cu[2].source(), "# cfile.py\n")
 
     def test_comparison(self):
-        acu = code_unit_factory("aa/afile.py", FileLocator())[0]
-        acu2 = code_unit_factory("aa/afile.py", FileLocator())[0]
-        zcu = code_unit_factory("aa/zfile.py", FileLocator())[0]
-        bcu = code_unit_factory("aa/bb/bfile.py", FileLocator())[0]
+        acu = code_unit_factory("aa/afile.py", FileLocator())
+        acu2 = code_unit_factory("aa/afile.py", FileLocator())
+        zcu = code_unit_factory("aa/zfile.py", FileLocator())
+        bcu = code_unit_factory("aa/bb/bfile.py", FileLocator())
         assert acu == acu2 and acu <= acu2 and acu >= acu2
         assert acu < zcu and acu <= zcu and acu != zcu
         assert zcu > acu and zcu >= acu and zcu != acu
@@ -108,6 +108,6 @@ class CodeUnitTest(CoverageTest):
         # in the path is actually the .egg zip file.
         self.assert_doesnt_exist(egg1.__file__)
 
-        cu = code_unit_factory([egg1, egg1.egg1], FileLocator())
+        cu = code_units_factory([egg1, egg1.egg1], FileLocator())
         self.assertEqual(cu[0].source(), u"")
         self.assertEqual(cu[1].source().split("\n")[0], u"# My egg file!")

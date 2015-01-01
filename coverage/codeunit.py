@@ -10,10 +10,10 @@ from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 
 
-def code_unit_factory(morfs, file_locator, get_plugin=None):
-    """Construct a list of CodeUnits from polymorphic inputs.
+def code_units_factory(morfs, file_locator, get_plugin=None):
+    """Construct a list of CodeUnits from modules or filenames.
 
-    `morfs` is a module or a filename, or a list of same.
+    `morfs` is a module or filename, or a list of the same.
 
     `file_locator` is a FileLocator that can help resolve filenames.
 
@@ -30,22 +30,43 @@ def code_unit_factory(morfs, file_locator, get_plugin=None):
 
     code_units = []
     for morf in morfs:
-        plugin = None
-        if isinstance(morf, string_class) and get_plugin:
-            plugin = get_plugin(morf)
-        if plugin:
-            file_reporter = plugin.file_reporter(morf)
-            if file_reporter is None:
-                raise CoverageException(
-                    "Plugin %r did not provide a file reporter for %r." % (
-                        plugin.plugin_name, morf
-                    )
-                )
-        else:
-            file_reporter = PythonCodeUnit(morf, file_locator)
+        file_reporter = code_unit_factory(morf, file_locator, get_plugin)
         code_units.append(file_reporter)
 
     return code_units
+
+
+def code_unit_factory(morf, file_locator, get_plugin=None):
+    """Construct a CodeUnit from a module or filename.
+
+    `morfs` is a module or a filename.
+
+    `file_locator` is a FileLocator that can help resolve filenames.
+
+    `get_plugin` is a function taking a filename, and returning a plugin
+    responsible for the file.  It can also return None if there is no plugin
+    claiming the file.
+
+    Returns a CodeUnit object.
+
+    """
+    plugin = None
+
+    if isinstance(morf, string_class) and get_plugin:
+        plugin = get_plugin(morf)
+
+    if plugin:
+        file_reporter = plugin.file_reporter(morf)
+        if file_reporter is None:
+            raise CoverageException(
+                "Plugin %r did not provide a file reporter for %r." % (
+                    plugin.plugin_name, morf
+                )
+            )
+    else:
+        file_reporter = PythonCodeUnit(morf, file_locator)
+
+    return file_reporter
 
 
 class CodeUnit(object):
@@ -96,14 +117,19 @@ class CodeUnit(object):
 
     def __lt__(self, other):
         return self.name < other.name
+
     def __le__(self, other):
         return self.name <= other.name
+
     def __eq__(self, other):
         return self.name == other.name
+
     def __ne__(self, other):
         return self.name != other.name
+
     def __gt__(self, other):
         return self.name > other.name
+
     def __ge__(self, other):
         return self.name >= other.name
 
@@ -157,7 +183,7 @@ class PythonCodeUnit(CodeUnit):
         # .pyc files should always refer to a .py instead.
         if fname.endswith(('.pyc', '.pyo')):
             fname = fname[:-1]
-        elif fname.endswith('$py.class'): # Jython
+        elif fname.endswith('$py.class'):   # Jython
             fname = fname[:-9] + ".py"
         return fname
 

@@ -760,7 +760,7 @@ class Coverage(object):
 
         self._harvest_data()
         if not isinstance(it, CodeUnit):
-            it = code_unit_factory(it, self.file_locator, get_plugin)[0]
+            it = code_unit_factory(it, self.file_locator, get_plugin)
 
         return Analysis(self, it)
 
