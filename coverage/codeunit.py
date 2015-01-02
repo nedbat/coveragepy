@@ -108,6 +108,3 @@ class CodeUnit(object):
         place.
         """
         return False
-
-    def get_parser(self, exclude=None):
-        raise NotImplementedError

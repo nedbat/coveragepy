@@ -3,7 +3,6 @@
 import os.path
 
 import coverage
-from coverage.parser import CodeParser
 
 
 class Plugin(coverage.CoveragePlugin):
@@ -40,10 +39,8 @@ class FileTracer(coverage.plugin.FileTracer):
 
 class FileReporter(coverage.plugin.FileReporter):
     """Dead-simple FileReporter."""
-    def get_parser(self, exclude=None):
-        return PluginParser()
+    def statements(self):
+        return set([105, 106, 107, 205, 206, 207])
 
-class PluginParser(CodeParser):
-    """CodeParser hard-coded for a test in test_plugins.py."""
-    def parse_source(self):
-        return set([105, 106, 107, 205, 206, 207]), set([])
+    def excluded_statements(self):
+        return set([])

@@ -303,7 +303,7 @@ class Coverage(object):
 
     def _canonical_dir(self, morf):
         """Return the canonical directory of the module or file `morf`."""
-        morf_filename = PythonCodeUnit(morf, self.file_locator).filename
+        morf_filename = PythonCodeUnit(morf, self).filename
         return os.path.split(morf_filename)[0]
 
     def _source_for_file(self, filename):
@@ -775,7 +775,7 @@ class Coverage(object):
                     )
                 )
         else:
-            file_reporter = PythonCodeUnit(morf, self.file_locator)
+            file_reporter = PythonCodeUnit(morf, self)
 
         return file_reporter
 

@@ -7,7 +7,7 @@ import zipimport
 
 from coverage.backward import unicode_class
 from coverage.codeunit import CodeUnit
-from coverage.misc import NoSource
+from coverage.misc import NoSource, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 
@@ -88,9 +88,54 @@ def get_zip_bytes(filename):
 class PythonCodeUnit(CodeUnit):
     """Represents a Python file."""
 
-    def __init__(self, morf, file_locator=None):
+    def __init__(self, morf, coverage=None):
+        self.coverage = coverage
+        file_locator = coverage.file_locator if coverage else None
         super(PythonCodeUnit, self).__init__(morf, file_locator)
         self._source = None
+        self._parser = None
+        self._statements = None
+        self._excluded = None
+
+    @property
+    def parser(self):
+        if self._parser is None:
+            self._parser = PythonParser(
+                filename=self.filename,
+                exclude=self.coverage._exclude_regex('exclude'),
+            )
+        return self._parser
+
+    def statements(self):
+        """Return the line numbers of statements in the file."""
+        if self._statements is None:
+            self._statements, self._excluded = self.parser.parse_source()
+        return self._statements
+
+    def excluded_statements(self):
+        """Return the line numbers of statements in the file."""
+        if self._excluded is None:
+            self._statements, self._excluded = self.parser.parse_source()
+        return self._excluded
+
+    def translate_lines(self, lines):
+        return self.parser.translate_lines(lines)
+
+    def translate_arcs(self, arcs):
+        return self.parser.translate_arcs(arcs)
+
+    def no_branch_lines(self):
+        no_branch = self.parser.lines_matching(
+            join_regex(self.coverage.config.partial_list),
+            join_regex(self.coverage.config.partial_always_list)
+            )
+        return no_branch
+
+    def arcs(self):
+        return self.parser.arcs()
+
+    def exit_counts(self):
+        return self.parser.exit_counts()
 
     def _adjust_filename(self, fname):
         # .pyc files should always refer to a .py instead.
@@ -108,9 +153,6 @@ class PythonCodeUnit(CodeUnit):
                 self._source = self._source.decode(encoding, "replace")
             assert isinstance(self._source, unicode_class)
         return self._source
-
-    def get_parser(self, exclude=None):
-        return PythonParser(filename=self.filename, exclude=exclude)
 
     def should_be_python(self):
         """Does it seem like this file should contain Python?

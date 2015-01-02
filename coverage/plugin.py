@@ -1,6 +1,24 @@
 """Plugin management for coverage.py"""
 
 
+# TODO: abc?
+def _needs_to_implement(that, func_name):
+    """Helper to raise NotImplementedError in interface stubs."""
+    if hasattr(that, "plugin_name"):
+        thing = "Plugin"
+        name = that.plugin_name
+    else:
+        thing = "Class"
+        klass = that.__class__
+        name = "{klass.__module__}.{klass.__name__}".format(klass=klass)
+
+    raise NotImplementedError(
+        "{thing} {name!r} needs to implement {func_name}()".format(
+            thing=thing, name=name, func_name=func_name
+            )
+        )
+
+
 class CoveragePlugin(object):
     """Base class for coverage.py plugins."""
     def __init__(self, options):
@@ -37,9 +55,7 @@ class CoveragePlugin(object):
         `file_tracer`.  It's an error to return None.
 
         """
-        raise NotImplementedError(
-            "Plugin %r needs to implement file_reporter" % self.plugin_name
-            )
+        _needs_to_implement(self, "file_reporter")
 
 
 class FileTracer(object):
@@ -61,7 +77,7 @@ class FileTracer(object):
             The filename to credit with this execution.
 
         """
-        return None
+        _needs_to_implement(self, "source_filename")
 
     def has_dynamic_source_filename(self):
         """Does this FileTracer have dynamic source filenames?
@@ -126,3 +142,21 @@ class FileReporter(object):
     """Support needed for files during the reporting phase."""
     def __init__(self, filename):
         self.filename = filename
+
+    def statements(self):
+        _needs_to_implement(self, "statements")
+
+    def excluded_statements(self):
+        return set([])
+
+    def translate_lines(self, lines):
+        return set(lines)
+
+    def translate_arcs(self, arcs):
+        return arcs
+
+    def exit_counts(self):
+        return {}
+
+    def arcs(self):
+        return []

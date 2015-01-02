@@ -3,7 +3,7 @@
 import collections
 
 from coverage.backward import iitems
-from coverage.misc import format_lines, join_regex
+from coverage.misc import format_lines
 
 
 class Analysis(object):
@@ -11,23 +11,18 @@ class Analysis(object):
 
     def __init__(self, cov, code_unit):
         self.coverage = cov
-
-        self.filename = code_unit.filename
-        self.parser = code_unit.get_parser(
-            exclude=self.coverage._exclude_regex('exclude')
-            )
-        self.statements, self.excluded = self.parser.parse_source()
+        self.file_reporter = code_unit
+        self.filename = self.file_reporter.filename
+        self.statements = self.file_reporter.statements()
+        self.excluded = self.file_reporter.excluded_statements()
 
         # Identify missing statements.
         executed = self.coverage.data.executed_lines(self.filename)
-        executed = self.parser.translate_lines(executed)
+        executed = self.file_reporter.translate_lines(executed)
         self.missing = self.statements - executed
 
         if self.coverage.data.has_arcs():
-            self.no_branch = self.parser.lines_matching(
-                join_regex(self.coverage.config.partial_list),
-                join_regex(self.coverage.config.partial_always_list)
-                )
+            self.no_branch = self.file_reporter.no_branch_lines()
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
             n_partial_branches = sum(
@@ -62,13 +57,12 @@ class Analysis(object):
 
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
-        arcs = self.parser.arcs()
-        return arcs
+        return self.file_reporter.arcs()
 
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
         executed = self.coverage.data.executed_arcs(self.filename)
-        executed = self.parser.translate_arcs(executed)
+        executed = self.file_reporter.translate_arcs(executed)
         return sorted(executed)
 
     def arcs_missing(self):
@@ -116,12 +110,12 @@ class Analysis(object):
 
     def branch_lines(self):
         """Returns a list of line numbers that have more than one exit."""
-        exit_counts = self.parser.exit_counts()
+        exit_counts = self.file_reporter.exit_counts()
         return [l1 for l1,count in iitems(exit_counts) if count > 1]
 
     def total_branches(self):
         """How many total branches are there?"""
-        exit_counts = self.parser.exit_counts()
+        exit_counts = self.file_reporter.exit_counts()
         return sum(count for count in exit_counts.values() if count > 1)
 
     def missing_branch_arcs(self):
@@ -145,7 +139,7 @@ class Analysis(object):
         (total_exits, taken_exits).
         """
 
-        exit_counts = self.parser.exit_counts()
+        exit_counts = self.file_reporter.exit_counts()
         missing_arcs = self.missing_branch_arcs()
         stats = {}
         for lnum in self.branch_lines():
