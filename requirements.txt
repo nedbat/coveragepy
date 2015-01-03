@@ -5,4 +5,4 @@ pylint
 sphinx
 sphinxcontrib-napoleon
 sphinxcontrib-spelling
-tox
+tox >= 1.8
