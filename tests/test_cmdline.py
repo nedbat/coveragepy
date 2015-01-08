@@ -135,8 +135,9 @@ class BaseCmdLineTestTest(BaseCmdLineTest):
 
 class FakeCoverageForDebugData(object):
     """Just enough of a fake coverage package for the 'debug data' tests."""
-    def __init__(self, summary):
+    def __init__(self, summary, plugin_data=None):
         self._summary = summary
+        self._plugin_data = plugin_data or {}
         self.filename = "FILENAME"
         self.data = self
 
@@ -158,6 +159,9 @@ class FakeCoverageForDebugData(object):
     def summary(self, fullpath):            # pylint: disable=unused-argument
         """Fake coverage().data.summary()"""
         return self._summary
+
+    def plugin_data(self):
+        return self._plugin_data
 
 
 class CmdLineTest(BaseCmdLineTest):
@@ -215,9 +219,14 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
 
     def test_debug_data(self):
-        fake = FakeCoverageForDebugData({
-            'file1.py': 17, 'file2.py': 23,
-            })
+        fake = FakeCoverageForDebugData(
+            summary={
+                'file1.py': 17, 'file2.py': 23,
+            },
+            plugin_data={
+                'file1.py': 'a_plugin',
+            },
+        )
         self.command_line("debug data", _covpkg=fake)
         self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
             -- data ---------------------------------------
@@ -225,12 +234,12 @@ class CmdLineTest(BaseCmdLineTest):
             has_arcs: False
 
             2 files:
-            file1.py: 17 lines
+            file1.py: 17 lines [a_plugin]
             file2.py: 23 lines
             """))
 
     def test_debug_data_with_no_data(self):
-        fake = FakeCoverageForDebugData({})
+        fake = FakeCoverageForDebugData(summary={})
         self.command_line("debug data", _covpkg=fake)
         self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
             -- data ---------------------------------------
