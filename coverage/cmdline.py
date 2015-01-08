@@ -576,10 +576,15 @@ class CoverageScript(object):
                 print("has_arcs: %r" % self.coverage.data.has_arcs())
                 summary = self.coverage.data.summary(fullpath=True)
                 if summary:
+                    plugins = self.coverage.data.plugin_data()
                     filenames = sorted(summary.keys())
                     print("\n%d files:" % len(filenames))
                     for f in filenames:
-                        print("%s: %d lines" % (f, summary[f]))
+                        line = "%s: %d lines" % (f, summary[f])
+                        plugin = plugins.get(f)
+                        if plugin:
+                            line += " [%s]" % plugin
+                        print(line)
                 else:
                     print("No data collected")
             else:

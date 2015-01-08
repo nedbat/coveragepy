@@ -69,7 +69,7 @@ class CoverageData(object):
         #
         self.arcs = {}
 
-        # A map from canonical source file name to an plugin module name:
+        # A map from canonical source file name to a plugin module name:
         #
         #   {
         #       'filename1.py': 'django.coverage',
@@ -84,9 +84,9 @@ class CoverageData(object):
     def read(self):
         """Read coverage data from the coverage data file (if it exists)."""
         if self.use_file:
-            self.lines, self.arcs = self._read_file(self.filename)
+            self.lines, self.arcs, self.plugins = self._read_file(self.filename)
         else:
-            self.lines, self.arcs = {}, {}
+            self.lines, self.arcs, self.plugins = {}, {}, {}
 
     def write(self, suffix=None):
         """Write the collected coverage data to a file.
@@ -110,6 +110,7 @@ class CoverageData(object):
                 file_be_gone(self.filename)
         self.lines = {}
         self.arcs = {}
+        self.plugins = {}
 
     def line_data(self):
         """Return the map from filenames to lists of line numbers executed."""
@@ -140,6 +141,8 @@ class CoverageData(object):
         if self.collector:
             data['collector'] = self.collector
 
+        data['plugins'] = self.plugins
+
         if self.debug and self.debug.should('dataio'):
             self.debug.write("Writing data to %r" % (filename,))
 
@@ -149,7 +152,7 @@ class CoverageData(object):
 
     def read_file(self, filename):
         """Read the coverage data from `filename`."""
-        self.lines, self.arcs = self._read_file(filename)
+        self.lines, self.arcs, self.plugins = self._read_file(filename)
 
     def raw_data(self, filename):
         """Return the raw pickled data from `filename`."""
@@ -162,12 +165,13 @@ class CoverageData(object):
     def _read_file(self, filename):
         """Return the stored coverage data from the given file.
 
-        Returns two values, suitable for assigning to `self.lines` and
-        `self.arcs`.
+        Returns three values, suitable for assigning to `self.lines`,
+        `self.arcs`, and `self.plugins`.
 
         """
         lines = {}
         arcs = {}
+        plugins = {}
         try:
             data = self.raw_data(filename)
             if isinstance(data, dict):
@@ -181,9 +185,10 @@ class CoverageData(object):
                     (f, dict.fromkeys(arcpairs, None))
                         for f, arcpairs in iitems(data.get('arcs', {}))
                     ])
+                plugins = data.get('plugins', {})
         except Exception:
             pass
-        return lines, arcs
+        return lines, arcs, plugins
 
     def combine_parallel_data(self, aliases=None):
         """Combine a number of data files together.
@@ -201,13 +206,14 @@ class CoverageData(object):
         for f in os.listdir(data_dir or '.'):
             if f.startswith(localdot):
                 full_path = os.path.join(data_dir, f)
-                new_lines, new_arcs = self._read_file(full_path)
+                new_lines, new_arcs, new_plugins = self._read_file(full_path)
                 for filename, file_data in iitems(new_lines):
                     filename = aliases.map(filename)
                     self.lines.setdefault(filename, {}).update(file_data)
                 for filename, file_data in iitems(new_arcs):
                     filename = aliases.map(filename)
                     self.arcs.setdefault(filename, {}).update(file_data)
+                self.plugins.update(new_plugins)
                 if f != local:
                     os.remove(full_path)
 
