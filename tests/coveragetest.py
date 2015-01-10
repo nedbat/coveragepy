@@ -5,7 +5,6 @@ import glob, os, random, re, shlex, shutil, sys
 import coverage
 from coverage.backunittest import TestCase
 from coverage.backward import StringIO, import_local_file
-from coverage.backward import importlib     # pylint: disable=unused-import
 from coverage.control import _TEST_NAME_FILE
 from coverage.test_helpers import (
     EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,

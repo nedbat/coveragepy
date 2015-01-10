@@ -5,16 +5,13 @@
 # pylint: disable=unused-import
 # pylint: disable=no-name-in-module
 
-import os
-import re
 import sys
 
 # Pythons 2 and 3 differ on where to get StringIO.
 try:
     from cStringIO import StringIO
-    BytesIO = StringIO
 except ImportError:
-    from io import StringIO, BytesIO
+    from io import StringIO
 
 # What's a string called?
 try:

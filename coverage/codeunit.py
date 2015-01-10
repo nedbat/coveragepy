@@ -2,7 +2,6 @@
 
 import os
 
-from coverage.backward import unicode_class
 from coverage.files import FileLocator
 from coverage.plugin import FileReporter
 
