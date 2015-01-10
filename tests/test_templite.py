@@ -3,7 +3,7 @@
 
 import re
 
-from coverage.templite import Templite, TempliteSyntaxError
+from coverage.templite import Templite, TempliteSyntaxError, TempliteValueError
 
 from tests.coveragetest import CoverageTest
 
@@ -244,8 +244,8 @@ class TempliteTest(CoverageTest):
 
     def test_exception_during_evaluation(self):
         # TypeError: Couldn't evaluate {{ foo.bar.baz }}:
-        # 'NoneType' object is unsubscriptable
-        with self.assertRaises(TypeError):
+        msg = "Couldn't evaluate None.bar"
+        with self.assertRaisesRegex(TempliteValueError, msg):
             self.try_render(
                 "Hey {{foo.bar.baz}} there", {'foo': None}, "Hey ??? there"
             )

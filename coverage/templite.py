@@ -11,6 +11,11 @@ class TempliteSyntaxError(ValueError):
     pass
 
 
+class TempliteValueError(ValueError):
+    """Raised when an expression won't evaluate in a template."""
+    pass
+
+
 class CodeBuilder(object):
     """Build source code conveniently."""
 
@@ -250,7 +255,12 @@ class Templite(object):
             try:
                 value = getattr(value, dot)
             except AttributeError:
-                value = value[dot]
+                try:
+                    value = value[dot]
+                except (TypeError, KeyError):
+                    raise TempliteValueError(
+                        "Couldn't evaluate %r.%s" % (value, dot)
+                    )
             if callable(value):
                 value = value()
         return value
