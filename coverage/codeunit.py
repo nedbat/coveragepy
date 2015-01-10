@@ -4,9 +4,10 @@ import os
 
 from coverage.backward import unicode_class
 from coverage.files import FileLocator
+from coverage.plugin import FileReporter
 
 
-class CodeUnit(object):
+class CodeUnit(FileReporter):
     """Code unit: a filename or module.
 
     Instance attributes:
@@ -42,37 +43,9 @@ class CodeUnit(object):
         self.name = n
         self.modname = modname
 
-    def __repr__(self):
-        return (
-            "<{self.__class__.__name__}"
-            " name={self.name!r}"
-            " filename={self.filename!r}>".format(self=self)
-        )
-
     def _adjust_filename(self, f):
         # TODO: This shouldn't be in the base class, right?
         return f
-
-    # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
-    # of them defined.
-
-    def __lt__(self, other):
-        return self.name < other.name
-
-    def __le__(self, other):
-        return self.name <= other.name
-
-    def __eq__(self, other):
-        return self.name == other.name
-
-    def __ne__(self, other):
-        return self.name != other.name
-
-    def __gt__(self, other):
-        return self.name > other.name
-
-    def __ge__(self, other):
-        return self.name >= other.name
 
     def flat_rootname(self):
         """A base for a flat filename to correspond to this code unit.
@@ -89,22 +62,3 @@ class CodeUnit(object):
         else:
             root = os.path.splitdrive(self.name)[1]
             return root.replace('\\', '_').replace('/', '_').replace('.', '_')
-
-    def source(self):
-        """Return the source for the code, a Unicode string."""
-        return unicode_class("???")
-
-    def source_token_lines(self):
-        """Return the 'tokenized' text for the code."""
-        # A generic implementation, each line is one "txt" token.
-        for line in self.source().splitlines():
-            yield [('txt', line)]
-
-    def should_be_python(self):
-        """Does it seem like this file should contain Python?
-
-        This is used to decide if a file reported as part of the execution of
-        a program was really likely to have contained Python in the first
-        place.
-        """
-        return False

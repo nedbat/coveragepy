@@ -229,11 +229,12 @@ class HtmlReporter(Reporter):
             })
 
         # Write the HTML page for this file.
-        html = spaceless(self.source_tmpl.render({
+        template_values = {
             'c_exc': c_exc, 'c_mis': c_mis, 'c_par': c_par, 'c_run': c_run,
             'arcs': self.arcs, 'extra_css': self.extra_css,
             'cu': cu, 'nums': nums, 'lines': lines,
-        }))
+        }
+        html = spaceless(self.source_tmpl.render(template_values))
 
         html_filename = flat_rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)

@@ -143,6 +143,33 @@ class FileReporter(object):
     def __init__(self, filename):
         self.filename = filename
 
+    def __repr__(self):
+        return (
+            "<{self.__class__.__name__}"
+            " filename={self.filename!r}>".format(self=self)
+        )
+
+    # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
+    # of them defined.
+
+    def __lt__(self, other):
+        return self.filename < other.filename
+
+    def __le__(self, other):
+        return self.filename <= other.filename
+
+    def __eq__(self, other):
+        return self.filename == other.filename
+
+    def __ne__(self, other):
+        return self.filename != other.filename
+
+    def __gt__(self, other):
+        return self.filename > other.filename
+
+    def __ge__(self, other):
+        return self.filename >= other.filename
+
     def statements(self):
         _needs_to_implement(self, "statements")
 
@@ -160,3 +187,28 @@ class FileReporter(object):
 
     def arcs(self):
         return []
+
+    def source(self):
+        """Return the source for the code, a Unicode string."""
+        # A generic implementation: read the text of self.filename
+        with open(self.filename) as f:
+            return f.read()
+
+    def source_token_lines(self):
+        """Return the 'tokenized' text for the code."""
+        # A generic implementation, each line is one "txt" token.
+        for line in self.source().splitlines():
+            yield [('txt', line)]
+
+    def should_be_python(self):
+        """Does it seem like this file should contain Python?
+
+        This is used to decide if a file reported as part of the execution of
+        a program was really likely to have contained Python in the first
+        place.
+        """
+        return False
+
+    def flat_rootname(self):
+        # TODO: a better generic implementation?
+        return self.filename.replace('\\', '_').replace('/', '_').replace('.', '_')

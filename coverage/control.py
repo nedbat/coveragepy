@@ -10,7 +10,6 @@ import sys
 
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
-from coverage.codeunit import CodeUnit
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
@@ -22,6 +21,7 @@ from coverage.files import ModuleMatcher
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone, overrides
+from coverage.plugin import FileReporter
 from coverage.python import PythonCodeUnit
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
@@ -752,7 +752,7 @@ class Coverage(object):
 
         """
         self._harvest_data()
-        if not isinstance(it, CodeUnit):
+        if not isinstance(it, FileReporter):
             it = self._get_file_reporter(it)
 
         return Analysis(self, it)
