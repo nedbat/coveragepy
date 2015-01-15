@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Latest
-------
+Version 4.0a2 --- 14 January 2014
+---------------------------------
 
 - Officially support PyPy 2.4, and PyPy3 2.4.  Drop support for
   CPython 3.2 and older versions of PyPy.  The code won't work on CPython 3.2.
