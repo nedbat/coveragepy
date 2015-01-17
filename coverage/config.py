@@ -95,17 +95,30 @@ class HandyConfigParser(configparser.RawConfigParser):
                     values.append(value)
         return values
 
-    def getlinelist(self, section, option):
-        """Read a list of full-line strings.
+    def getregexlist(self, section, option):
+        """Read a list of full-line regexes.
 
         The value of `section` and `option` is treated as a newline-separated
-        list of strings.  Each value is stripped of whitespace.
+        list of regexes.  Each value is stripped of whitespace.
 
         Returns the list of strings.
 
         """
-        value_list = self.get(section, option)
-        return list(filter(None, value_list.split('\n')))
+        line_list = self.get(section, option)
+        value_list = []
+        for value in line_list.splitlines():
+            value = value.strip()
+            try:
+                re.compile(value)
+            except re.error as e:
+                raise CoverageException(
+                    "Invalid [%s].%s value %r: %s" % (
+                        section, option, value, e
+                        )
+                    )
+            if value:
+                value_list.append(value)
+        return value_list
 
 
 # The default line exclusion regexes.
@@ -252,13 +265,13 @@ class CoverageConfig(object):
         ('timid', 'run:timid', 'boolean'),
 
         # [report]
-        ('exclude_list', 'report:exclude_lines', 'linelist'),
+        ('exclude_list', 'report:exclude_lines', 'regexlist'),
         ('fail_under', 'report:fail_under', 'int'),
         ('ignore_errors', 'report:ignore_errors', 'boolean'),
         ('include', 'report:include', 'list'),
         ('omit', 'report:omit', 'list'),
-        ('partial_list', 'report:partial_branches', 'linelist'),
-        ('partial_always_list', 'report:partial_branches_always', 'linelist'),
+        ('partial_list', 'report:partial_branches', 'regexlist'),
+        ('partial_always_list', 'report:partial_branches_always', 'regexlist'),
         ('precision', 'report:precision', 'int'),
         ('show_missing', 'report:show_missing', 'boolean'),
         ('skip_covered', 'report:skip_covered', 'boolean'),

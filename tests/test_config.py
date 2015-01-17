@@ -96,6 +96,16 @@ class ConfigTest(CoverageTest):
             ("[run]\ntimid = maybe?\n", r"maybe[?]"),
             ("timid = 1\n", r"timid = 1"),
             ("[run\n", r"\[run"),
+            ("[report]\nexclude_lines = foo(\n",
+                r"Invalid \[report\].exclude_lines value 'foo\(': "
+                    r"unbalanced parenthesis"),
+            ("[report]\npartial_branches = foo[\n",
+                r"Invalid \[report\].partial_branches value 'foo\[': "
+                    r"unexpected end of regular expression"),
+            ("[report]\npartial_branches_always = foo***\n",
+                r"Invalid \[report\].partial_branches_always value "
+                    r"'foo\*\*\*': "
+                    r"multiple repeat"),
             ]
 
         for bad_config, msg in bad_configs_and_msgs:

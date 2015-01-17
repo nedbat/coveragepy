@@ -9,7 +9,11 @@ Latest
 - Empty files are now reported as 100% covered in the XML report, not 0%
   covered, as reported in `issue 345`_.
 
+- Regexes in the configuration file are now compiled as soon as they are read,
+  to provide error messages earlier.  `issue 349`_.
+
 .. _issue 345: https://bitbucket.org/ned/coveragepy/issue/345/xml-reports-line-rate-0-for-empty-files
+.. _issue 349: https://bitbucket.org/ned/coveragepy/issue/349/bad-regex-in-config-should-get-an-earlier
 
 
 Version 4.0a2 --- 14 January 2014
