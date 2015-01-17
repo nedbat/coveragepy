@@ -96,7 +96,14 @@ class XmlReportTest(CoverageTest):
         xml = self.stdout()
         empty_line = re_line(xml, "class.*empty")
         self.assertIn('filename="empty.py"', empty_line)
-        self.assertIn('line-rate="0"', empty_line)
+        self.assertIn('line-rate="1"', empty_line)
+
+    def test_empty_file_is_100_not_0(self):
+        cov = self.run_doit()
+        cov.xml_report(outfile="-")
+        xml = self.stdout()
+        init_line = re_line(xml, 'filename="sub/__init__.py"')
+        self.assertIn('line-rate="1"', init_line)
 
 
 def re_line(text, pat):

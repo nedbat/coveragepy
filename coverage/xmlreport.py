@@ -8,7 +8,10 @@ from coverage.report import Reporter
 
 def rate(hit, num):
     """Return the fraction of `hit`/`num`, as a string."""
-    return "%.4g" % (float(hit) / (num or 1.0))
+    if num == 0:
+        return "1"
+    else:
+        return "%.4g" % (float(hit) / num)
 
 
 class XmlReporter(Reporter):
@@ -80,7 +83,11 @@ class XmlReporter(Reporter):
                 xclasses.appendChild(class_elts[class_name])
             xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
             xpackage.setAttribute("line-rate", rate(lhits, lnum))
-            xpackage.setAttribute("branch-rate", rate(bhits, bnum))
+            if self.arcs:
+                branch_rate = rate(bhits, bnum)
+            else:
+                branch_rate = "0"
+            xpackage.setAttribute("branch-rate", branch_rate)
             xpackage.setAttribute("complexity", "0")
 
             lnum_tot += lnum
@@ -89,7 +96,11 @@ class XmlReporter(Reporter):
             bhits_tot += bhits
 
         xcoverage.setAttribute("line-rate", rate(lhits_tot, lnum_tot))
-        xcoverage.setAttribute("branch-rate", rate(bhits_tot, bnum_tot))
+        if self.arcs:
+            branch_rate = rate(bhits_tot, bnum_tot)
+        else:
+            branch_rate = "0"
+        xcoverage.setAttribute("branch-rate", branch_rate)
 
         # Use the DOM to write the output file.
         outfile.write(self.xml_out.toprettyxml())
@@ -158,7 +169,11 @@ class XmlReporter(Reporter):
 
         # Finalize the statistics that are collected in the XML DOM.
         xclass.setAttribute("line-rate", rate(class_hits, class_lines))
-        xclass.setAttribute("branch-rate", rate(class_br_hits, class_branches))
+        if self.arcs:
+            branch_rate = rate(class_br_hits, class_branches)
+        else:
+            branch_rate = "0"
+        xclass.setAttribute("branch-rate", branch_rate)
         package[0][className] = xclass
         package[1] += class_hits
         package[2] += class_lines
