@@ -435,8 +435,8 @@ class SummaryTest(CoverageTest):
             report = self.get_report(cov)
             self.assertNotIn("NoSource", report)
             report = report.splitlines()
-            self.assertIn("start 2 0 100%", report)
-            self.assertIn("mod 1 0 100%", report)
+            self.assertIn("start.pyw 2 0 100%", report)
+            self.assertIn("mod.pyw 1 0 100%", report)
 
 
 class SummaryTest2(CoverageTest):

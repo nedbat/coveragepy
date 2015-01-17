@@ -12,6 +12,11 @@ from tests.coveragetest import CoverageTest
 # Unable to import 'aa' (No module named aa)
 
 
+def native(filename):
+    """Make `filename` into a native form."""
+    return filename.replace("/", os.sep)
+
+
 class CodeUnitTest(CoverageTest):
     """Tests for coverage.codeunit"""
 
@@ -59,9 +64,9 @@ class CodeUnitTest(CoverageTest):
         acu = PythonCodeUnit(aa)
         bcu = PythonCodeUnit(aa.bb)
         ccu = PythonCodeUnit(aa.bb.cc)
-        self.assertEqual(acu.name, "aa.py")
-        self.assertEqual(bcu.name, "aa/bb.py")
-        self.assertEqual(ccu.name, "aa/bb/cc.py")
+        self.assertEqual(acu.name, native("aa.py"))
+        self.assertEqual(bcu.name, native("aa/bb.py"))
+        self.assertEqual(ccu.name, native("aa/bb/cc.py"))
         self.assertEqual(acu.flat_rootname(), "aa_py")
         self.assertEqual(bcu.flat_rootname(), "aa_bb_py")
         self.assertEqual(ccu.flat_rootname(), "aa_bb_cc_py")
@@ -77,9 +82,9 @@ class CodeUnitTest(CoverageTest):
         acu = PythonCodeUnit(aa.afile)
         bcu = PythonCodeUnit(aa.bb.bfile)
         ccu = PythonCodeUnit(aa.bb.cc.cfile)
-        self.assertEqual(acu.name, "aa/afile.py")
-        self.assertEqual(bcu.name, "aa/bb/bfile.py")
-        self.assertEqual(ccu.name, "aa/bb/cc/cfile.py")
+        self.assertEqual(acu.name, native("aa/afile.py"))
+        self.assertEqual(bcu.name, native("aa/bb/bfile.py"))
+        self.assertEqual(ccu.name, native("aa/bb/cc/cfile.py"))
         self.assertEqual(acu.flat_rootname(), "aa_afile_py")
         self.assertEqual(bcu.flat_rootname(), "aa_bb_bfile_py")
         self.assertEqual(ccu.flat_rootname(), "aa_bb_cc_cfile_py")

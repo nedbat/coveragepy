@@ -308,11 +308,18 @@ class Coverage(object):
 
     def _source_for_file(self, filename):
         """Return the source file for `filename`."""
-        if not filename.endswith(".py"):
-            if filename[-4:-1] == ".py":
-                filename = filename[:-1]
-            elif filename.endswith("$py.class"):    # jython
-                filename = filename[:-9] + ".py"
+        if filename.endswith(".py"):
+            return filename
+        elif filename.endswith((".pyc", ".pyo")):
+            try_filename = filename[:-1]
+            if os.path.exists(try_filename):
+                return try_filename
+            if sys.platform == "win32":
+                try_filename += "w"
+                if os.path.exists(try_filename):
+                    return try_filename
+        elif filename.endswith("$py.class"):    # Jython
+            filename = filename[:-9] + ".py"
         return filename
 
     def _name_for_module(self, module_globals, filename):
