@@ -328,6 +328,7 @@ class HtmlTest(CoverageTest):
         with self.assertRaisesRegex(NoSource, msg):
             cov.html_report()
 
+
 class HtmlStaticFileTest(CoverageTest):
     """Tests of the static file copying for the HTML report."""
 
