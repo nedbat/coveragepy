@@ -170,9 +170,9 @@ class ProcessTest(CoverageTest):
         # Reporting should still work even with the .rc file
         out = self.run_command("coverage report")
         self.assertMultiLineEqual(out, textwrap.dedent("""\
-            Name     Stmts   Miss  Cover
-            ----------------------------
-            b_or_c       7      0   100%
+            Name        Stmts   Miss  Cover
+            -------------------------------
+            b_or_c.py       7      0   100%
             """))
 
     def test_combine_with_aliases(self):
@@ -636,7 +636,7 @@ class FailUnderTest(CoverageTest):
         self.assertEqual(st, 0)
         self.assertEqual(
             self.last_line_squeezed(out),
-            "forty_two_plus 7 4 43%"
+            "forty_two_plus.py 7 4 43%"
         )
 
     def test_report(self):

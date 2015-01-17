@@ -53,7 +53,9 @@ class AnnotateReporter(Reporter):
 
         if self.directory:
             dest_file = os.path.join(self.directory, cu.flat_rootname())
-            dest_file += ".py,cover"
+            if dest_file.endswith("_py"):
+                dest_file = dest_file[:-3] + ".py"
+            dest_file += ",cover"
         else:
             dest_file = cu.filename + ",cover"
 

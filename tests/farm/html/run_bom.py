@@ -14,7 +14,7 @@ runfunc(html_it, rundir="src")
 # HTML files will change often.  Check that the sizes are reasonable,
 #   and check that certain key strings are in the output.
 compare("gold_bom", "html_bom", size_within=10, file_pattern="*.html")
-contains("html_bom/bom.html",
+contains("html_bom/bom_py.html",
     "<span class='str'>&quot;3&#215;4 = 12, &#247;2 = 6&#177;0&quot;</span>",
     )
 

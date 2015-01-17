@@ -14,7 +14,7 @@ runfunc(html_it, rundir="src")
 # HTML files will change often.  Check that the sizes are reasonable,
 #   and check that certain key strings are in the output.
 compare("gold_partial", "html_partial", size_within=10, file_pattern="*.html")
-contains("html_partial/partial.html",
+contains("html_partial/partial_py.html",
     "<p id='t5' class='stm run hide_run'>",
     "<p id='t8' class='stm run hide_run'>",
     "<p id='t11' class='stm run hide_run'>",
@@ -22,7 +22,7 @@ contains("html_partial/partial.html",
     "<p id='t14' class='pln'>",
     )
 contains("html_partial/index.html",
-    "<a href='partial.html'>partial</a>",
+    "<a href='partial_py.html'>partial.py</a>",
     )
 contains("html_partial/index.html",
     "<span class='pc_cov'>100%</span>"

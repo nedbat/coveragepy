@@ -57,9 +57,9 @@ class SingletonApiTest(CoverageTest):
         self.do_report_work("mycode2")
         coverage.report(["mycode2.py"])
         self.assertEqual(self.stdout(), textwrap.dedent("""\
-            Name      Stmts   Miss  Cover   Missing
-            ---------------------------------------
-            mycode2       7      3    57%   4-6
+            Name         Stmts   Miss  Cover   Missing
+            ------------------------------------------
+            mycode2.py       7      3    57%   4-6
             """))
 
     def test_report_file(self):
@@ -69,9 +69,9 @@ class SingletonApiTest(CoverageTest):
         coverage.report(["mycode3.py"], file=fout)
         self.assertEqual(self.stdout(), "")
         self.assertEqual(fout.getvalue(), textwrap.dedent("""\
-            Name      Stmts   Miss  Cover   Missing
-            ---------------------------------------
-            mycode3       7      3    57%   4-6
+            Name         Stmts   Miss  Cover   Missing
+            ------------------------------------------
+            mycode3.py       7      3    57%   4-6
             """))
 
     def test_report_default(self):
@@ -79,7 +79,7 @@ class SingletonApiTest(CoverageTest):
         self.do_report_work("mycode4")
         coverage.report()
         rpt = re.sub(r"\s+", " ", self.stdout())
-        self.assertIn("mycode4 7 3 57% 4-6", rpt)
+        self.assertIn("mycode4.py 7 3 57% 4-6", rpt)
 
 
 class ApiTest(CoverageTest):
@@ -571,9 +571,9 @@ class PluginTest(CoverageTest):
         cov.save()
         cov.report(["no_biggie.py"])
         self.assertEqual(self.stdout(), textwrap.dedent("""\
-            Name        Stmts   Miss  Cover   Missing
-            -----------------------------------------
-            no_biggie       4      1    75%   4
+            Name           Stmts   Miss  Cover   Missing
+            --------------------------------------------
+            no_biggie.py       4      1    75%   4
             """))
 
     def test_nose_plugin(self):

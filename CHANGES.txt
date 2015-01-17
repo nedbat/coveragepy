@@ -6,11 +6,15 @@ Change history for Coverage.py
 Latest
 ------
 
+- Reports now use file names with extensions.  Previously, a report would
+  describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
+  for better support of non-Python files.
+
 - Empty files are now reported as 100% covered in the XML report, not 0%
-  covered, as reported in `issue 345`_.
+  covered (`issue 345`_).
 
 - Regexes in the configuration file are now compiled as soon as they are read,
-  to provide error messages earlier.  `issue 349`_.
+  to provide error messages earlier (`issue 349`_).
 
 .. _issue 345: https://bitbucket.org/ned/coveragepy/issue/345/xml-reports-line-rate-0-for-empty-files
 .. _issue 349: https://bitbucket.org/ned/coveragepy/issue/349/bad-regex-in-config-should-get-an-earlier

@@ -12,15 +12,15 @@ runfunc(html_it, rundir="src", addtopath="../othersrc")
 # Different platforms will name the "other" file differently. Rename it
 import os, glob
 
-for p in glob.glob("html_other/*_other.html"):
-    os.rename(p, "html_other/blah_blah_other.html")
+for p in glob.glob("html_other/*_other_py.html"):
+    os.rename(p, "html_other/blah_blah_other_py.html")
 
 # HTML files will change often.  Check that the sizes are reasonable,
 #   and check that certain key strings are in the output.
 compare("gold_other", "html_other", size_within=10, file_pattern="*.html")
 contains("html_other/index.html",
-    "<a href='here.html'>here</a>",
-    "other.html'>", "other</a>",
+    "<a href='here_py.html'>here.py</a>",
+    "other_py.html'>", "other.py</a>",
     )
 
 clean("html_other")

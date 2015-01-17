@@ -26,18 +26,18 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'done\n')
         report = self.report_from_command("coverage report")
 
-        # Name                                              Stmts   Miss  Cover
-        # ---------------------------------------------------------------------
-        # c:/ned/coverage/trunk/tests/modules/covmod1           2      0   100%
-        # c:/ned/coverage/trunk/tests/zipmods.zip/covmodzip1    2      0   100%
-        # mycode                                                4      0   100%
-        # ---------------------------------------------------------------------
-        # TOTAL                                                 8      0   100%
+        # Name                                                 Stmts   Miss  Cover
+        # ------------------------------------------------------------------------
+        # c:/ned/coverage/trunk/tests/modules/covmod1.py           2      0   100%
+        # c:/ned/coverage/trunk/tests/zipmods.zip/covmodzip1.py    2      0   100%
+        # mycode.py                                                4      0   100%
+        # ------------------------------------------------------------------------
+        # TOTAL                                                    8      0   100%
 
         self.assertNotIn("/coverage/__init__/", report)
-        self.assertIn("/tests/modules/covmod1 ", report)
-        self.assertIn("/tests/zipmods.zip/covmodzip1 ", report)
-        self.assertIn("mycode ", report)
+        self.assertIn("/tests/modules/covmod1.py ", report)
+        self.assertIn("/tests/zipmods.zip/covmodzip1.py ", report)
+        self.assertIn("mycode.py ", report)
         self.assertEqual(self.last_line_squeezed(report), "TOTAL 8 0 100%")
 
     def test_report_just_one(self):
@@ -45,32 +45,32 @@ class SummaryTest(CoverageTest):
         self.run_command("coverage run mycode.py")
         report = self.report_from_command("coverage report mycode.py")
 
-        # Name     Stmts   Miss  Cover
-        # ----------------------------
-        # mycode       4      0   100%
+        # Name        Stmts   Miss  Cover
+        # -------------------------------
+        # mycode.py       4      0   100%
 
         self.assertEqual(self.line_count(report), 3)
         self.assertNotIn("/coverage/", report)
-        self.assertNotIn("/tests/modules/covmod1 ", report)
-        self.assertNotIn("/tests/zipmods.zip/covmodzip1 ", report)
-        self.assertIn("mycode ", report)
-        self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
+        self.assertNotIn("/tests/modules/covmod1.py ", report)
+        self.assertNotIn("/tests/zipmods.zip/covmodzip1.py ", report)
+        self.assertIn("mycode.py ", report)
+        self.assertEqual(self.last_line_squeezed(report), "mycode.py 4 0 100%")
 
     def test_report_wildcard(self):
         # Try reporting using wildcards to get the modules.
         self.run_command("coverage run mycode.py")
         report = self.report_from_command("coverage report my*.py")
 
-        # Name     Stmts   Miss  Cover
-        # ----------------------------
-        # mycode       4      0   100%
+        # Name        Stmts   Miss  Cover
+        # -------------------------------
+        # mycode.py       4      0   100%
 
         self.assertEqual(self.line_count(report), 3)
         self.assertNotIn("/coverage/", report)
-        self.assertNotIn("/tests/modules/covmod1 ", report)
-        self.assertNotIn("/tests/zipmods.zip/covmodzip1 ", report)
-        self.assertIn("mycode ", report)
-        self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
+        self.assertNotIn("/tests/modules/covmod1.py ", report)
+        self.assertNotIn("/tests/zipmods.zip/covmodzip1.py ", report)
+        self.assertIn("mycode.py ", report)
+        self.assertEqual(self.last_line_squeezed(report), "mycode.py 4 0 100%")
 
     def test_report_omitting(self):
         # Try reporting while omitting some modules
@@ -80,32 +80,32 @@ class SummaryTest(CoverageTest):
                     "coverage report --omit '%s/*'" % prefix
                     )
 
-        # Name     Stmts   Miss  Cover
-        # ----------------------------
-        # mycode       4      0   100%
+        # Name        Stmts   Miss  Cover
+        # -------------------------------
+        # mycode.py       4      0   100%
 
         self.assertEqual(self.line_count(report), 3)
         self.assertNotIn("/coverage/", report)
-        self.assertNotIn("/tests/modules/covmod1 ", report)
-        self.assertNotIn("/tests/zipmods.zip/covmodzip1 ", report)
-        self.assertIn("mycode ", report)
-        self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
+        self.assertNotIn("/tests/modules/covmod1.py ", report)
+        self.assertNotIn("/tests/zipmods.zip/covmodzip1.py ", report)
+        self.assertIn("mycode.py ", report)
+        self.assertEqual(self.last_line_squeezed(report), "mycode.py 4 0 100%")
 
     def test_report_including(self):
         # Try reporting while including some modules
         self.run_command("coverage run mycode.py")
         report = self.report_from_command("coverage report --include=mycode*")
 
-        # Name     Stmts   Miss  Cover
-        # ----------------------------
-        # mycode       4      0   100%
+        # Name        Stmts   Miss  Cover
+        # -------------------------------
+        # mycode.py       4      0   100%
 
         self.assertEqual(self.line_count(report), 3)
         self.assertNotIn("/coverage/", report)
-        self.assertNotIn("/tests/modules/covmod1 ", report)
-        self.assertNotIn("/tests/zipmods.zip/covmodzip1 ", report)
-        self.assertIn("mycode ", report)
-        self.assertEqual(self.last_line_squeezed(report), "mycode 4 0 100%")
+        self.assertNotIn("/tests/modules/covmod1.py ", report)
+        self.assertNotIn("/tests/zipmods.zip/covmodzip1.py ", report)
+        self.assertIn("mycode.py ", report)
+        self.assertEqual(self.last_line_squeezed(report), "mycode.py 4 0 100%")
 
     def test_report_branches(self):
         self.make_file("mybranch.py", """\
@@ -119,14 +119,14 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'x\n')
         report = self.report_from_command("coverage report")
 
-        # Name       Stmts   Miss Branch BrPart  Cover
-        # --------------------------------------------
-        # mybranch       5      0      2      1    85%
+        # Name          Stmts   Miss Branch BrPart  Cover
+        # -----------------------------------------------
+        # mybranch.py       5      0      2      1    85%
 
         self.assertEqual(self.line_count(report), 3)
-        self.assertIn("mybranch ", report)
+        self.assertIn("mybranch.py ", report)
         self.assertEqual(self.last_line_squeezed(report),
-                                                        "mybranch 5 0 2 1 86%")
+                                "mybranch.py 5 0 2 1 86%")
 
     def test_report_show_missing(self):
         self.make_file("mymissing.py", """\
@@ -149,14 +149,14 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'y\nz\n')
         report = self.report_from_command("coverage report --show-missing")
 
-        # Name        Stmts   Miss  Cover   Missing
-        # -----------------------------------------
-        # mymissing      14      3    79%   3-4, 10
+        # Name           Stmts   Miss  Cover   Missing
+        # --------------------------------------------
+        # mymissing.py      14      3    79%   3-4, 10
 
         self.assertEqual(self.line_count(report), 3)
-        self.assertIn("mymissing ", report)
+        self.assertIn("mymissing.py ", report)
         self.assertEqual(self.last_line_squeezed(report),
-                         "mymissing 14 3 79% 3-4, 10")
+                         "mymissing.py 14 3 79% 3-4, 10")
 
     def test_report_show_missing_branches(self):
         self.make_file("mybranch.py", """\
@@ -172,14 +172,14 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'x\ny\n')
         report = self.report_from_command("coverage report --show-missing")
 
-        # Name        Stmts   Miss Branch BrPart  Cover   Missing
-        # -------------------------------------------------------
-        # mybranch        7      0      4      2    82%   2->4, 4->6
+        # Name           Stmts   Miss Branch BrPart  Cover   Missing
+        # ----------------------------------------------------------
+        # mybranch.py        7      0      4      2    82%   2->4, 4->6
 
         self.assertEqual(self.line_count(report), 3)
-        self.assertIn("mybranch ", report)
+        self.assertIn("mybranch.py ", report)
         self.assertEqual(self.last_line_squeezed(report),
-                         "mybranch 7 0 4 2 82% 2->4, 4->6")
+                         "mybranch.py 7 0 4 2 82% 2->4, 4->6")
 
     def test_report_show_missing_branches_and_lines(self):
         self.make_file("main.py", """\
@@ -201,22 +201,22 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'x\ny\n')
         report = self.report_from_command("coverage report --show-missing")
 
-        # Name        Stmts   Miss Branch BrPart  Cover   Missing
-        # -------------------------------------------------------
-        # main            1      0      0      0   100%
-        # mybranch       10      2      8      3    61%   7-8, 2->4, 4->6, 6->7
-        # -------------------------------------------------------
-        # TOTAL          11      2      8      3    63%
+        # Name           Stmts   Miss Branch BrPart  Cover   Missing
+        # ----------------------------------------------------------
+        # main.py            1      0      0      0   100%
+        # mybranch.py       10      2      8      3    61%   7-8, 2->4, 4->6, 6->7
+        # ----------------------------------------------------------
+        # TOTAL             11      2      8      3    63%
 
         self.assertEqual(self.line_count(report), 6)
         squeezed = self.squeezed_lines(report)
         self.assertEqual(
             squeezed[2],
-            "main 1 0 0 0 100%"
+            "main.py 1 0 0 0 100%"
         )
         self.assertEqual(
             squeezed[3],
-            "mybranch 10 2 8 3 61% 7-8, 2->4, 4->6, 6->7"
+            "mybranch.py 10 2 8 3 61% 7-8, 2->4, 4->6, 6->7"
         )
         self.assertEqual(
             squeezed[5],
@@ -239,13 +239,13 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, "z\n")
         report = self.report_from_command("coverage report --skip-covered")
 
-        # Name          Stmts   Miss  Cover
-        # ---------------------------------
-        # not_covered       2      1    50%
+        # Name             Stmts   Miss  Cover
+        # ------------------------------------
+        # not_covered.py       2      1    50%
 
         self.assertEqual(self.line_count(report), 3, report)
         squeezed = self.squeezed_lines(report)
-        self.assertEqual(squeezed[2], "not_covered 2 1 50%")
+        self.assertEqual(squeezed[2], "not_covered.py 2 1 50%")
 
     def test_report_skip_covered_branches(self):
         self.make_file("main.py", """
@@ -267,13 +267,13 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, "n\nz\n")
         report = self.report_from_command("coverage report --skip-covered")
 
-        # Name          Stmts   Miss Branch BrPart  Cover
-        # -----------------------------------------------
-        # not_covered       4      0      2      1    83%
+        # Name             Stmts   Miss Branch BrPart  Cover
+        # --------------------------------------------------
+        # not_covered.py       4      0      2      1    83%
 
         self.assertEqual(self.line_count(report), 3, report)
         squeezed = self.squeezed_lines(report)
-        self.assertEqual(squeezed[2], "not_covered 4 0 2 1 83%")
+        self.assertEqual(squeezed[2], "not_covered.py 4 0 2 1 83%")
 
     def test_report_skip_covered_branches_with_totals(self):
         self.make_file("main.py", """
@@ -300,17 +300,17 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, "n\nz\n")
         report = self.report_from_command("coverage report --skip-covered")
 
-        # Name          Stmts   Miss Branch BrPart  Cover
-        # -----------------------------------------------
-        # also_not_run      2      1      0      0    50%
-        # not_covered       4      0      2      1    83%
-        # -----------------------------------------------
-        # TOTAL             6      1      2      1    75%
+        # Name             Stmts   Miss Branch BrPart  Cover
+        # --------------------------------------------------
+        # also_not_run.py      2      1      0      0    50%
+        # not_covered.py       4      0      2      1    83%
+        # --------------------------------------------------
+        # TOTAL                6      1      2      1    75%
 
         self.assertEqual(self.line_count(report), 6, report)
         squeezed = self.squeezed_lines(report)
-        self.assertEqual(squeezed[2], "also_not_run 2 1 0 0 50%")
-        self.assertEqual(squeezed[3], "not_covered 4 0 2 1 83%")
+        self.assertEqual(squeezed[2], "also_not_run.py 2 1 0 0 50%")
+        self.assertEqual(squeezed[3], "not_covered.py 4 0 2 1 83%")
         self.assertEqual(squeezed[5], "TOTAL 6 1 2 1 75%")
 
     def test_dotpy_not_python(self):
@@ -332,7 +332,7 @@ class SummaryTest(CoverageTest):
         # The actual error message varies version to version
         last = re.sub(r": '.*' at", ": 'error' at", last)
         self.assertEqual(last,
-            "mycode NotPython: "
+            "mycode.py NotPython: "
             "Couldn't parse 'mycode.py' as Python source: "
             "'error' at line 1"
             )
@@ -390,7 +390,7 @@ class SummaryTest(CoverageTest):
         import main     # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
         report = self.get_report(cov).splitlines()
-        self.assertIn("mybranch 5 5 2 0 0%", report)
+        self.assertIn("mybranch.py 5 5 2 0 0%", report)
 
     def run_TheCode_and_report_it(self):
         """A helper for the next few tests."""
@@ -467,8 +467,8 @@ class SummaryTest2(CoverageTest):
 
         report = repout.getvalue().replace('\\', '/')
         report = re.sub(r"\s+", " ", report)
-        self.assertIn("tests/modules/pkg1/__init__ 1 0 100%", report)
-        self.assertIn("tests/modules/pkg2/__init__ 0 0 100%", report)
+        self.assertIn("tests/modules/pkg1/__init__.py 1 0 100%", report)
+        self.assertIn("tests/modules/pkg2/__init__.py 0 0 100%", report)
 
 
 class ReportingReturnValueTest(CoverageTest):

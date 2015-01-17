@@ -12,7 +12,7 @@ runfunc(html_it, rundir="src")
 # Editors like to change things, make sure our source file still has tabs.
 contains("src/tabbed.py", "\tif x:\t\t\t\t\t# look nice")
 
-contains("html_tabbed/tabbed.html",
+contains("html_tabbed/tabbed_py.html",
     ">&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> "
     "<span class='nam'>x</span><span class='op'>:</span>"
     "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "
@@ -20,5 +20,5 @@ contains("html_tabbed/tabbed.html",
     "<span class='com'># look nice</span>"
     )
 
-doesnt_contain("html_tabbed/tabbed.html", "\t")
+doesnt_contain("html_tabbed/tabbed_py.html", "\t")
 clean("html_tabbed")

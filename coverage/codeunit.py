@@ -28,19 +28,18 @@ class CodeUnit(FileReporter):
         self.filename = self.file_locator.canonical_filename(f)
 
         if hasattr(morf, '__name__'):
-            n = modname = morf.__name__
+            n = morf.__name__
+            n = n.replace(".", os.sep) + ".py"
             self.relative = True
         else:
-            n = os.path.splitext(morf)[0]
+            n = f #os.path.splitext(f)[0]
             rel = self.file_locator.relative_filename(n)
             if os.path.isabs(n):
                 self.relative = (rel != n)
             else:
                 self.relative = True
             n = rel
-            modname = None
         self.name = n
-        self.modname = modname
 
     def _adjust_filename(self, f):
         # TODO: This shouldn't be in the base class, right?
@@ -56,8 +55,5 @@ class CodeUnit(FileReporter):
         For example, the file a/b/c.py will return 'a_b_c'
 
         """
-        if self.modname:
-            return self.modname.replace('.', '_')
-        else:
-            root = os.path.splitdrive(self.name)[1]
-            return root.replace('\\', '_').replace('/', '_').replace('.', '_')
+        root = os.path.splitdrive(self.name)[1]
+        return root.replace('\\', '_').replace('/', '_').replace('.', '_')
