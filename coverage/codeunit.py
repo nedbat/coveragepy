@@ -21,25 +21,23 @@ class CodeUnit(FileReporter):
         self.file_locator = file_locator or FileLocator()
 
         if hasattr(morf, '__file__'):
-            f = morf.__file__
+            filename = morf.__file__
         else:
-            f = morf
-        f = self._adjust_filename(f)
-        self.filename = self.file_locator.canonical_filename(f)
+            filename = morf
+        filename = self._adjust_filename(filename)
+        self.filename = self.file_locator.canonical_filename(filename)
 
         if hasattr(morf, '__name__'):
-            n = morf.__name__
-            n = n.replace(".", os.sep) + ".py"
+            name = morf.__name__
+            name = name.replace(".", os.sep) + ".py"
             self.relative = True
         else:
-            n = f #os.path.splitext(f)[0]
-            rel = self.file_locator.relative_filename(n)
-            if os.path.isabs(n):
-                self.relative = (rel != n)
+            name = self.file_locator.relative_filename(filename)
+            if os.path.isabs(filename):
+                self.relative = (name != filename)
             else:
                 self.relative = True
-            n = rel
-        self.name = n
+        self.name = name
 
     def _adjust_filename(self, f):
         # TODO: This shouldn't be in the base class, right?
@@ -52,7 +50,7 @@ class CodeUnit(FileReporter):
         the same directory, but need to differentiate same-named files from
         different directories.
 
-        For example, the file a/b/c.py will return 'a_b_c'
+        For example, the file a/b/c.py will return 'a_b_c_py'
 
         """
         root = os.path.splitdrive(self.name)[1]

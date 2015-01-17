@@ -10,6 +10,9 @@ Latest
   describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
   for better support of non-Python files.
 
+- When looking for the source for a frame, check if the file exists. On
+  Windows, .pyw files are no longer recorded as .py files.
+
 - Empty files are now reported as 100% covered in the XML report, not 0%
   covered (`issue 345`_).
 
