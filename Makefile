@@ -80,17 +80,20 @@ SPHINXBUILD = sphinx-build
 SPHINXOPTS = -a -E doc
 WEBHOME = ~/web/stellated/pages/code/coverage
 
-px:
+docreqs:
+	pip install -r doc/requirements.txt
+
+px: docreqs
 	$(SPHINXBUILD) -b px $(SPHINXOPTS) doc/_build/px
 	rm doc/_build/px/search.px
 	python doc/_ext/px_cleaner.py doc/_build/px/*.px
 
-dochtml:
+dochtml: docreqs
 	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
 	@echo
 	@echo "Build finished. The HTML pages are in doc/_build/html."
 
-docspell:
+docspell: docreqs
 	$(SPHINXBUILD) -b spelling $(SPHINXOPTS) doc/_spell
 
 publish: px

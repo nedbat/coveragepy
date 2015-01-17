@@ -1,0 +1,5 @@
+# PyPI requirements for building documentation for coverage.py
+pyenchant
+sphinx
+sphinxcontrib-napoleon
+sphinxcontrib-spelling
