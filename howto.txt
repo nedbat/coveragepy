@@ -4,7 +4,7 @@
     - Windows
     - Ubuntu
     - Mac
-    - Pythons 2.6, 2.7, 3.2, 3.3, 3.4
+    - Pythons 2.6, 2.7, 3.3, 3.4
 - Version number in coverage/version.py
     - 3.1a1, 3.1b1, 3.1c1, 3.1
 - Copyright date in coverage/__init__.py
