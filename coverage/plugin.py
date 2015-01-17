@@ -145,8 +145,8 @@ class FileReporter(object):
 
     def __repr__(self):
         return (
-            "<{self.__class__.__name__}"
-            " filename={self.filename!r}>".format(self=self)
+            "<{this.__class__.__name__}"
+            " filename={this.filename!r}>".format(this=self)
         )
 
     # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
