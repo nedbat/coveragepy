@@ -1,7 +1,8 @@
 """Tests for Coverage.py's arc measurement."""
 
-import sys
 from tests.coveragetest import CoverageTest
+
+from coverage import env
 
 
 class SimpleArcTest(CoverageTest):
@@ -247,7 +248,7 @@ class LoopArcTest(CoverageTest):
             )
         # With "while True", 2.x thinks it's computation, 3.x thinks it's
         # constant.
-        if sys.version_info >= (3, 0):
+        if env.PY3:
             arcz = ".1 12 23 34 45 36 63 57 7."
         else:
             arcz = ".1 12 23 27 34 45 36 62 57 7."
@@ -306,7 +307,7 @@ class LoopArcTest(CoverageTest):
             )
 
     def test_confusing_for_loop_bug_175(self):
-        if sys.version_info >= (3, 0):
+        if env.PY3:
             # Py3 counts the list comp as a separate code object.
             arcz = ".1 .2 2-2 12 23 34 45 53 3."
         else:
@@ -319,7 +320,7 @@ class LoopArcTest(CoverageTest):
                 y = tup[1]
             """,
             arcz=arcz, arcz_missing="", arcz_unpredicted="")
-        if sys.version_info >= (3, 0):
+        if env.PY3:
             arcz = ".1 12 .2 2-2 23 34 42 2."
         else:
             arcz = ".1 12 23 34 42 2."
@@ -504,7 +505,7 @@ class ExceptionArcTest(CoverageTest):
 
     # Run this test only on Py2 for now.  I hope to fix it on Py3
     # eventually...
-    if sys.version_info < (3, 0):
+    if env.PY2:
         # "except Exception as e" is crucial here.
         def test_bug_212(self):
             self.check_coverage("""\

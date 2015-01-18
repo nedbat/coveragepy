@@ -2,6 +2,7 @@
 
 import os, sys
 
+from coverage import env
 from coverage.misc import CoverageException
 from coverage.pytracer import PyTracer
 
@@ -11,22 +12,17 @@ try:
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
     if os.getenv('COVERAGE_TEST_TRACER') == 'c':
-        # During testing, we use the COVERAGE_TEST_TRACER env var to indicate
-        # that we've fiddled with the environment to test this fallback code.
-        # If we thought we had a C tracer, but couldn't import it, then exit
-        # quickly and clearly instead of dribbling confusing errors. I'm using
-        # sys.exit here instead of an exception because an exception here
-        # causes all sorts of other noise in unittest.
+        # During testing, we use the COVERAGE_TEST_TRACER environment variable
+        # to indicate that we've fiddled with the environment to test this
+        # fallback code.  If we thought we had a C tracer, but couldn't import
+        # it, then exit quickly and clearly instead of dribbling confusing
+        # errors. I'm using sys.exit here instead of an exception because an
+        # exception here causes all sorts of other noise in unittest.
         sys.stderr.write(
             "*** COVERAGE_TEST_TRACER is 'c' but can't import CTracer!\n"
             )
         sys.exit(1)
     CTracer = None
-
-try:
-    import __pypy__
-except ImportError:
-    __pypy__ = None
 
 
 class Collector(object):
@@ -141,7 +137,8 @@ class Collector(object):
         # A cache of the results from should_trace, the decision about whether
         # to trace execution in a file. A dict of filename to (filename or
         # None).
-        if __pypy__ is not None:
+        if env.PYPY:
+            import __pypy__                     # pylint: disable=import-error
             # Alex Gaynor said:
             # should_trace_cache is a strictly growing key: once a key is in
             # it, it never changes.  Further, the keys used to access it are

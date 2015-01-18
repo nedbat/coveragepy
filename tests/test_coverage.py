@@ -1,9 +1,10 @@
 """Tests for Coverage."""
 # http://nedbatchelder.com/code/coverage
 
-import sys
 import coverage
+from coverage import env
 from coverage.misc import CoverageException
+
 from tests.coveragetest import CoverageTest
 
 
@@ -305,7 +306,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,6,9], "")
 
-    if sys.version_info < (3, 0):   # Print statement is gone in Py3k.
+    if env.PY2:         # Print statement is gone in Py3k.
         def test_print(self):
             self.check_coverage("""\
                 print "hello, world!"

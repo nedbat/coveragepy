@@ -1,8 +1,9 @@
 """OS information for testing."""
 
-import sys
+from coverage import env
 
-if sys.platform == 'win32':
+
+if env.WINDOWS:
     # Windows implementation
     def process_ram():
         """How much RAM is this process using? (Windows)"""
@@ -34,7 +35,7 @@ if sys.platform == 'win32':
             return 0
         return mem_struct.PrivateUsage
 
-elif sys.platform == 'linux2':
+elif env.LINUX:
     # Linux implementation
     import os
 

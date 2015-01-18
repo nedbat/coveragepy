@@ -1,8 +1,11 @@
 """Tests for concurrency libraries."""
 
-import os, os.path, sys, threading
+import os
+import os.path
+import threading
 
 import coverage
+from coverage import env
 
 from tests.coveragetest import CoverageTest
 
@@ -23,9 +26,6 @@ try:
     import greenlet
 except ImportError:
     greenlet = None
-
-# Are we running with the C tracer or not?
-C_TRACER = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
 
 
 def line_count(s):
@@ -78,7 +78,7 @@ class ConcurrencyTest(CoverageTest):
         """.format(LIMIT=LIMIT)
 
     # Import the things to use threads.
-    if sys.version_info < (3, 0):
+    if env.PY2:
         THREAD = """\
         import threading
         import Queue as queue
@@ -135,7 +135,7 @@ class ConcurrencyTest(CoverageTest):
                 "the module isn't installed.\n" % concurrency
             )
             self.assertEqual(out, expected_out)
-        elif C_TRACER or concurrency == "thread":
+        elif env.C_TRACER or concurrency == "thread":
             # We can fully measure the code if we are using the C tracer, which
             # can support all the concurrency, or if we are using threads.
             if expected_out is None:

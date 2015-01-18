@@ -9,6 +9,7 @@ import sys
 from nose.plugins.skip import SkipTest
 
 import coverage
+from coverage import env
 from coverage.backward import StringIO
 
 from tests.coveragetest import CoverageTest
@@ -423,7 +424,7 @@ class SummaryTest(CoverageTest):
         self.assertIn("TheCode", report)
         self.assertNotIn("thecode", report)
 
-    if sys.platform == 'win32':
+    if env.WINDOWS:
         def test_pyw_files(self):
             # https://bitbucket.org/ned/coveragepy/issue/261
             self.make_file("start.pyw", """\
@@ -463,7 +464,7 @@ class SummaryTest(CoverageTest):
 
     def test_missing_py_file_during_run(self):
         # PyPy2 doesn't run bare .pyc files.
-        if '__pypy__' in sys.builtin_module_names and sys.version_info < (3,):
+        if env.PYPY and env.PY2:
             raise SkipTest("PyPy2 doesn't run bare .pyc files")
 
         # Create two Python files.

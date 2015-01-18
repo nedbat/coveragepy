@@ -4,8 +4,8 @@ import errno
 import hashlib
 import inspect
 import os
-import sys
 
+from coverage import env
 from coverage.backward import string_class, to_bytes
 
 
@@ -154,7 +154,7 @@ def overrides(obj, method_name, base_class):
     # Python 2/3 compatibility: Python 2 returns an instancemethod object, the
     # function is the .im_func attribute.  Python 3 returns a plain function
     # object already.
-    if sys.version_info < (3, 0):
+    if env.PY2:
         klass_func = klass_func.im_func
         base_func = base_func.im_func
 

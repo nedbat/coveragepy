@@ -3,10 +3,10 @@
 import codecs
 import keyword
 import re
-import sys
 import token
 import tokenize
 
+from coverage import env
 from coverage.backward import iternext
 
 
@@ -258,7 +258,7 @@ def _source_encoding_py3(source):
     return tokenize.detect_encoding(readline)[0]
 
 
-if sys.version_info >= (3, 0):
+if env.PY3:
     source_encoding = _source_encoding_py3
 else:
     source_encoding = _source_encoding_py2

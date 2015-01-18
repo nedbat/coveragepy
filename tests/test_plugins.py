@@ -1,19 +1,12 @@
 """Tests for plugins."""
 
-import os
-import sys
-
-from nose.plugins.skip import SkipTest
-
 import coverage
+from coverage import env
 from coverage.control import Plugins
 
 import coverage.plugin
 
 from tests.coveragetest import CoverageTest
-
-# Are we running with the C tracer or not?
-C_TRACER = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
 
 
 class FakeConfig(object):
@@ -142,14 +135,11 @@ class PluginTest(CoverageTest):
         cov.stop()
 
 
-if not C_TRACER:
+if not env.C_TRACER:
     class FileTracerTest(CoverageTest):
         """Tests of plugins that implement file_tracer."""
 
         def test_plugin1(self):
-            if sys.platform == 'win32':
-                raise SkipTest("Plugin stuff is jank on windows.. fixing soon...")
-
             self.make_file("simple.py", """\
                 import try_xyz
                 a = 1

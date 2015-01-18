@@ -3,7 +3,8 @@
 # Coincidentally named the same as http://code.activestate.com/recipes/496702/
 
 import re
-import sys
+
+from coverage import env
 
 
 class TempliteSyntaxError(ValueError):
@@ -122,7 +123,7 @@ class Templite(object):
         code.add_line("result = []")
         code.add_line("append_result = result.append")
         code.add_line("extend_result = result.extend")
-        if sys.version_info < (3, 0):
+        if env.PY2:
             code.add_line("to_str = unicode")
         else:
             code.add_line("to_str = str")

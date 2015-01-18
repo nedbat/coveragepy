@@ -7,6 +7,9 @@
 
 import sys
 
+from coverage import env
+
+
 # Pythons 2 and 3 differ on where to get StringIO.
 try:
     from cStringIO import StringIO
@@ -63,7 +66,7 @@ else:
 
 # Python 3.x is picky about bytes and strings, so provide methods to
 # get them right, and make them no-ops in 2.x
-if sys.version_info >= (3, 0):
+if env.PY3:
     def to_bytes(s):
         """Convert string `s` to bytes."""
         return s.encode('utf8')

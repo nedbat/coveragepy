@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """Tests that HTML generation is awesome."""
 
-import os.path, re, sys
+import os.path
+import re
+
 import coverage
+from coverage import env
 import coverage.html
 from coverage.misc import CoverageException, NotPython, NoSource
 
@@ -303,7 +306,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         cov.html_report()
 
         html_report = self.get_html_report_content("sub/not_ascii.py")
-        if sys.version_info < (3, 0):
+        if env.PY2:
             expected = "# Isn&#39;t this great?&#65533;!"
         else:
             expected = "# Isn&#39;t this great?&#203;!"

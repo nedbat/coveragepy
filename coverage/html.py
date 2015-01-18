@@ -2,9 +2,13 @@
 
 from __future__ import unicode_literals
 
-import json, os, re, shutil, sys
+import json
+import os
+import re
+import shutil
 
 import coverage
+from coverage import env
 from coverage.backward import iitems
 from coverage.misc import CoverageException, Hasher
 from coverage.report import Reporter
@@ -68,7 +72,7 @@ class HtmlReporter(Reporter):
         super(HtmlReporter, self).__init__(cov, config)
         self.directory = None
         title = self.config.html_title
-        if sys.version_info < (3, 0):
+        if env.PY2:
             title = title.decode("utf8")
         self.template_globals = {
             'escape': escape,

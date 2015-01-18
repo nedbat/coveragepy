@@ -2,12 +2,13 @@
 
 import os
 import re
-import sys
 
 from nose.plugins.skip import SkipTest
 
-from tests.coveragetest import CoverageTest
+from coverage import env
 from coverage.phystokens import source_token_lines, source_encoding
+
+from tests.coveragetest import CoverageTest
 
 
 SIMPLE = """\
@@ -87,7 +88,7 @@ class PhysTokensTest(CoverageTest):
 
 
 # The default encoding is different in Python 2 and Python 3.
-if sys.version_info >= (3, 0):
+if env.PY3:
     DEF_ENCODING = "utf-8"
 else:
     DEF_ENCODING = "ascii"
@@ -110,11 +111,10 @@ class SourceEncodingTest(CoverageTest):
         self.assertEqual(source_encoding(source), 'utf-8')
 
     def test_detect_source_encoding_not_in_comment(self):
-        if '__pypy__' in sys.builtin_module_names:
-            if sys.version_info > (3, 0):
-                # PyPy3 gets this case wrong. Not sure what I can do about it,
-                # so skip the test.
-                raise SkipTest
+        if env.PYPY and env.PY3:
+            # PyPy3 gets this case wrong. Not sure what I can do about it,
+            # so skip the test.
+            raise SkipTest
         # Should not detect anything here
         source = b'def parse(src, encoding=None):\n    pass'
         self.assertEqual(source_encoding(source), DEF_ENCODING)

@@ -1,7 +1,12 @@
 """Command-line support for Coverage."""
 
-import glob, optparse, os, sys, traceback
+import glob
+import optparse
+import os
+import sys
+import traceback
 
+from coverage import env
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
 from coverage.debug import info_formatter
@@ -597,7 +602,7 @@ def unshell_list(s):
     """Turn a command-line argument into a list."""
     if not s:
         return None
-    if sys.platform == 'win32':
+    if env.WINDOWS:
         # When running coverage as coverage.exe, some of the behavior
         # of the shell is emulated: wildcards are expanded into a list of
         # filenames.  So you have to single-quote patterns on the command
@@ -609,7 +614,7 @@ def unshell_list(s):
 
 def unglob_args(args):
     """Interpret shell wildcards for platforms that need it."""
-    if sys.platform == 'win32':
+    if env.WINDOWS:
         globbed = []
         for arg in args:
             if '?' in arg or '*' in arg:

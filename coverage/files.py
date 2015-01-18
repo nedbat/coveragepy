@@ -8,6 +8,7 @@ import posixpath
 import re
 import sys
 
+from coverage import env
 from coverage.misc import CoverageException, join_regex
 
 
@@ -54,7 +55,7 @@ class FileLocator(object):
         return self.canonical_filename_cache[filename]
 
 
-if sys.platform == 'win32':
+if env.WINDOWS:
 
     def actual_path(path):
         """Get the actual path of `path`, including the correct case."""
@@ -188,7 +189,7 @@ class FnmatchMatcher(object):
         # take care of that ourselves.
         fnpats = (fnmatch.translate(p) for p in pats)
         fnpats = (p.replace(r"\/", r"[\\/]") for p in fnpats)
-        if sys.platform == 'win32':
+        if env.WINDOWS:
             # Windows is also case-insensitive.  BTW: the regex docs say that
             # flags like (?i) have to be at the beginning, but fnmatch puts
             # them at the end, and having two there seems to work fine.

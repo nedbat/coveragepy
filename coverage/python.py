@@ -5,6 +5,7 @@ import sys
 import tokenize
 import zipimport
 
+from coverage import env
 from coverage.backward import unicode_class
 from coverage.codeunit import CodeUnit
 from coverage.misc import NoSource, join_regex
@@ -31,7 +32,7 @@ def read_python_source(filename):
 def get_python_source(filename):
     """Return the source code, as a str."""
     base, ext = os.path.splitext(filename)
-    if ext == ".py" and sys.platform == "win32":
+    if ext == ".py" and env.WINDOWS:
         exts = [".py", ".pyw"]
     else:
         exts = [ext]
@@ -46,7 +47,7 @@ def get_python_source(filename):
         # Maybe it's in a zip file?
         source = get_zip_bytes(try_filename)
         if source is not None:
-            if sys.version_info >= (3, 0):
+            if env.PY3:
                 source = source.decode(source_encoding(source))
             break
     else:
@@ -148,7 +149,7 @@ class PythonCodeUnit(CodeUnit):
     def source(self):
         if self._source is None:
             self._source = get_python_source(self.filename)
-            if sys.version_info < (3, 0):
+            if env.PY2:
                 encoding = source_encoding(self._source)
                 self._source = self._source.decode(encoding, "replace")
             assert isinstance(self._source, unicode_class)

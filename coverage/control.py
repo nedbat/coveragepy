@@ -8,6 +8,7 @@ import random
 import socket
 import sys
 
+from coverage import env
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
 from coverage.collector import Collector
@@ -323,7 +324,7 @@ class Coverage(object):
             if os.path.exists(py_filename):
                 # Found a .py file, use that.
                 return py_filename
-            if sys.platform == "win32":
+            if env.WINDOWS:
                 # On Windows, it could be a .pyw file.
                 pyw_filename = py_filename + "w"
                 if os.path.exists(pyw_filename):
