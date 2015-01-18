@@ -7,19 +7,33 @@ from coverage.files import PathAliases
 from tests.coveragetest import CoverageTest
 
 
-DATA_1 = { 'a.py': {1:None, 2:None}, 'b.py': {3:None} }
-SUMMARY_1 = { 'a.py':2, 'b.py':1 }
-MEASURED_FILES_1 = [ 'a.py', 'b.py' ]
-A_PY_LINES_1 = [1,2]
+DATA_1 = {
+    'a.py': {1: None, 2: None},
+    'b.py': {3: None},
+}
+SUMMARY_1 = {'a.py': 2, 'b.py': 1}
+MEASURED_FILES_1 = ['a.py', 'b.py']
+A_PY_LINES_1 = [1, 2]
 B_PY_LINES_1 = [3]
 
-DATA_2 = { 'a.py': {1:None, 5:None}, 'c.py': {17:None} }
-SUMMARY_1_2 = { 'a.py':3, 'b.py':1, 'c.py':1 }
-MEASURED_FILES_1_2 = [ 'a.py', 'b.py', 'c.py' ]
+DATA_2 = {
+    'a.py': {1: None, 5: None},
+    'c.py': {17: None},
+}
+SUMMARY_1_2 = {'a.py': 3, 'b.py': 1, 'c.py': 1}
+MEASURED_FILES_1_2 = ['a.py', 'b.py', 'c.py']
 
-ARC_DATA_3 = { 'x.py': {(1,2):None, (2,3):None}, 'y.py': {(17,23):None} }
-X_PY_ARCS_3 = [(1,2), (2,3)]
-Y_PY_ARCS_3 = [(17,23)]
+ARC_DATA_3 = {
+    'x.py': {
+        (1, 2): None,
+        (2, 3): None,
+    },
+    'y.py': {
+        (17, 23): None,
+    },
+}
+X_PY_ARCS_3 = [(1, 2), (2, 3)]
+Y_PY_ARCS_3 = [(17, 23)]
 
 
 class DataTest(CoverageTest):
@@ -119,15 +133,15 @@ class DataTest(CoverageTest):
     def test_combining_with_aliases(self):
         covdata1 = CoverageData()
         covdata1.add_line_data({
-            '/home/ned/proj/src/a.py': {1:None, 2:None},
-            '/home/ned/proj/src/sub/b.py': {3:None},
+            '/home/ned/proj/src/a.py': {1: None, 2: None},
+            '/home/ned/proj/src/sub/b.py': {3: None},
             })
         covdata1.write(suffix='1')
 
         covdata2 = CoverageData()
         covdata2.add_line_data({
-            r'c:\ned\test\a.py': {4:None, 5:None},
-            r'c:\ned\test\sub\b.py': {6:None},
+            r'c:\ned\test\a.py': {4: None, 5: None},
+            r'c:\ned\test\sub\b.py': {6: None},
             })
         covdata2.write(suffix='2')
 
@@ -137,6 +151,6 @@ class DataTest(CoverageTest):
         aliases.add(r"c:\ned\test", "./")
         covdata3.combine_parallel_data(aliases=aliases)
         self.assert_summary(
-            covdata3, { './a.py':4, './sub/b.py':2 }, fullpath=True
+            covdata3, {'./a.py': 4, './sub/b.py': 2}, fullpath=True
             )
-        self.assert_measured_files(covdata3, [ './a.py', './sub/b.py' ])
+        self.assert_measured_files(covdata3, ['./a.py', './sub/b.py'])
