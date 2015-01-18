@@ -1,6 +1,12 @@
 """Test text-based summary reporting for coverage.py"""
 
-import os, re, sys
+import glob
+import os
+import py_compile
+import re
+import sys
+
+from nose.plugins.skip import SkipTest
 
 import coverage
 from coverage.backward import StringIO
@@ -437,6 +443,55 @@ class SummaryTest(CoverageTest):
             report = report.splitlines()
             self.assertIn("start.pyw 2 0 100%", report)
             self.assertIn("mod.pyw 1 0 100%", report)
+
+    def test_tracing_pyc_file(self):
+        # Create two Python files.
+        self.make_file("mod.py", "a = 1\n")
+        self.make_file("main.py", "import mod\n")
+
+        # Make one into a .pyc.
+        py_compile.compile("mod.py")
+
+        # Run the program.
+        cov = coverage.coverage()
+        cov.start()
+        import main     # pragma: nested # pylint: disable=import-error,unused-variable
+        cov.stop()      # pragma: nested
+
+        report = self.get_report(cov).splitlines()
+        self.assertIn("mod.py 1 0 100%", report)
+
+    def test_missing_py_file_during_run(self):
+        # PyPy2 doesn't run bare .pyc files.
+        if '__pypy__' in sys.builtin_module_names and sys.version_info < (3,):
+            raise SkipTest("PyPy2 doesn't run bare .pyc files")
+
+        # Create two Python files.
+        self.make_file("mod.py", "a = 1\n")
+        self.make_file("main.py", "import mod\n")
+
+        # Make one into a .pyc, and remove the .py.
+        py_compile.compile("mod.py")
+        os.remove("mod.py")
+
+        # Python 3 puts the .pyc files in a __pycache__ directory, and will
+        # not import from there without source.  It will import a .pyc from
+        # the source location though.
+        if not os.path.exists("mod.pyc"):
+            pycs = glob.glob("__pycache__/mod.*.pyc")
+            self.assertEqual(len(pycs), 1)
+            os.rename(pycs[0], "mod.pyc")
+
+        # Run the program.
+        cov = coverage.coverage()
+        cov.start()
+        import main     # pragma: nested # pylint: disable=import-error,unused-variable
+        cov.stop()      # pragma: nested
+
+        # Put back the missing Python file.
+        self.make_file("mod.py", "a = 1\n")
+        report = self.get_report(cov).splitlines()
+        self.assertIn("mod.py 1 0 100%", report)
 
 
 class SummaryTest2(CoverageTest):
