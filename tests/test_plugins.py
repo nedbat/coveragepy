@@ -1,5 +1,7 @@
 """Tests for plugins."""
 
+import os.path
+
 import coverage
 from coverage import env
 from coverage.control import Plugins
@@ -160,7 +162,8 @@ if not env.C_TRACER:
             _, statements, missing, _ = cov.analysis("simple.py")
             self.assertEqual(statements, [1, 2, 3])
             self.assertEqual(missing, [])
-            _, statements, _, _ = cov.analysis("/src/try_ABC.zz")
+            zzfile = os.path.abspath(os.path.join("/src", "try_ABC.zz"))
+            _, statements, _, _ = cov.analysis(zzfile)
             self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
 
         def test_plugin2(self):
