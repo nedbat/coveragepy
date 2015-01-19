@@ -42,7 +42,7 @@ def format_lines(statements, lines):
     lines = sorted(lines)
     while i < len(statements) and j < len(lines):
         if statements[i] == lines[j]:
-            if start == None:
+            if start is None:
                 start = lines[j]
             end = lines[j]
             j += 1
@@ -59,7 +59,7 @@ def format_lines(statements, lines):
 def short_stack():                                          # pragma: debugging
     """Return a string summarizing the call stack."""
     stack = inspect.stack()[:0:-1]
-    return "\n".join("%30s : %s @%d" % (t[3],t[1],t[2]) for t in stack)
+    return "\n".join("%30s : %s @%d" % (t[3], t[1], t[2]) for t in stack)
 
 
 def expensive(fn):
@@ -69,6 +69,7 @@ def expensive(fn):
 
     """
     attr = "_cache_" + fn.__name__
+
     def _wrapped(self):
         """Inner fn that checks the cache."""
         if not hasattr(self, attr):
@@ -165,17 +166,21 @@ class CoverageException(Exception):
     """An exception specific to Coverage."""
     pass
 
+
 class NoSource(CoverageException):
     """We couldn't find the source for a module."""
     pass
+
 
 class NoCode(NoSource):
     """We couldn't find any code at all."""
     pass
 
+
 class NotPython(CoverageException):
     """A source file turned out not to be parsable Python."""
     pass
+
 
 class ExceptionDuringRun(CoverageException):
     """An exception happened while running customer code.

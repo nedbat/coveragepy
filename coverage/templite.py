@@ -129,6 +129,7 @@ class Templite(object):
             code.add_line("to_str = str")
 
         buffered = []
+
         def flush_output():
             """Force `buffered` to the code builder."""
             if len(buffered) == 1:
