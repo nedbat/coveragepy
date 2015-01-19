@@ -7,7 +7,7 @@
 		<source></source>
 	</sources>
 	<packages>
-		<package branch-rate="0" complexity="0" line-rate="0.6667" name="a">
+		<package branch-rate="0" complexity="0" line-rate="0.6667" name=".">
 			<classes>
 				<class branch-rate="0" complexity="0" filename="a.py" line-rate="0.6667" name="a.py">
 					<methods/>

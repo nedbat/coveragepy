@@ -10,6 +10,10 @@ Latest
   describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
   for better support of non-Python files, and also fixed `issue 69`_.
 
+- The XML report now reports each directory as a package again.  This was a bad
+  regression, I apologize.  This was reported in `issue 235`_, which is now
+  fixed.
+
 - When looking for the source for a frame, check if the file exists. On
   Windows, .pyw files are no longer recorded as .py files. Along the way, this
   fixed `issue 290`_.
@@ -21,6 +25,7 @@ Latest
   to provide error messages earlier (`issue 349`_).
 
 .. _issue 69: https://bitbucket.org/ned/coveragepy/issue/69/coverage-html-overwrite-files-that-doesnt
+.. _issue 235: https://bitbucket.org/ned/coveragepy/issue/235/package-name-is-missing-in-xml-report
 .. _issue 290: https://bitbucket.org/ned/coveragepy/issue/290/running-programmatically-with-pyw-files
 .. _issue 345: https://bitbucket.org/ned/coveragepy/issue/345/xml-reports-line-rate-0-for-empty-files
 .. _issue 349: https://bitbucket.org/ned/coveragepy/issue/349/bad-regex-in-config-should-get-an-earlier

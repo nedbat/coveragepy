@@ -1,10 +1,13 @@
 """XML reporting for coverage.py"""
 
-import os, sys, time
+import os
+import sys
+import time
 import xml.dom.minidom
 
 from coverage import __url__, __version__
 from coverage.report import Reporter
+
 
 def rate(hit, num):
     """Return the fraction of `hit`/`num`, as a string."""
@@ -118,7 +121,10 @@ class XmlReporter(Reporter):
 
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
-        package_name = cu.name.rpartition(".")[0]
+        filename = cu.file_locator.relative_filename(cu.filename)
+        filename = filename.replace("\\", "/")
+        dirname = os.path.dirname(filename) or "."
+        package_name = dirname.replace("/", ".")
         className = cu.name
 
         self.source_paths.add(cu.file_locator.relative_dir.rstrip('/'))
@@ -131,9 +137,8 @@ class XmlReporter(Reporter):
         xlines = self.xml_out.createElement("lines")
         xclass.appendChild(xlines)
 
-        xclass.setAttribute("name", className)
-        filename = cu.file_locator.relative_filename(cu.filename)
-        xclass.setAttribute("filename", filename.replace("\\", "/"))
+        xclass.setAttribute("name", os.path.relpath(filename, dirname))
+        xclass.setAttribute("filename", filename)
         xclass.setAttribute("complexity", "0")
 
         branch_stats = analysis.branch_stats()
@@ -151,7 +156,8 @@ class XmlReporter(Reporter):
                 if line in branch_stats:
                     total, taken = branch_stats[line]
                     xline.setAttribute("branch", "true")
-                    xline.setAttribute("condition-coverage",
+                    xline.setAttribute(
+                        "condition-coverage",
                         "%d%% (%d/%d)" % (100*taken/total, taken, total)
                         )
             xlines.appendChild(xline)
@@ -174,6 +180,7 @@ class XmlReporter(Reporter):
         else:
             branch_rate = "0"
         xclass.setAttribute("branch-rate", branch_rate)
+
         package[0][className] = xclass
         package[1] += class_hits
         package[2] += class_lines

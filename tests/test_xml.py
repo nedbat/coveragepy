@@ -2,6 +2,7 @@
 
 import os
 import re
+
 import coverage
 
 from tests.coveragetest import CoverageTest
@@ -23,6 +24,31 @@ class XmlTestHelpers(CoverageTest):
         cov = coverage.coverage()
         self.start_import_stop(cov, "main")
         return cov
+
+    def make_tree(self, width, depth, curdir="."):
+        """Make a tree of packages.
+
+        Makes `width` directories, named d0 .. d{width-1}. Each directory has
+        __init__.py, and `width` files, named f0.py .. f{width-1}.py.  Each
+        directory also has `width` subdirectories, in the same fashion, until
+        a depth of `depth` is reached.
+
+        """
+        if depth == 0:
+            return
+
+        def here(p):
+            """A path for `p` in our currently interesting directory."""
+            return os.path.join(curdir, p)
+
+        for i in range(width):
+            next_dir = here("d{0}".format(i))
+            self.make_tree(width, depth-1, next_dir)
+        if curdir != ".":
+            self.make_file(here("__init__.py"), "")
+            for i in range(width):
+                filename = here("f{0}.py".format(i))
+                self.make_file(filename, "# {0}\n".format(filename))
 
 
 class XmlReportTest(XmlTestHelpers, CoverageTest):
@@ -111,8 +137,51 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         self.assertIn('line-rate="1"', init_line)
 
 
+class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
+    """Tests about the package structure reported in the coverage.xml file."""
+
+    def test_packages(self):
+        self.make_tree(width=1, depth=3)
+        self.make_file("main.py", """\
+            from d0.d0 import f0
+            """)
+        cov = coverage.coverage(source=".")
+        self.start_import_stop(cov, "main")
+        cov.xml_report(outfile="-")
+        xml = self.stdout()
+        packages_and_classes = "".join(re_lines(xml, r"<package |<class "))
+        scrubs = r' branch-rate="0"| complexity="0"| line-rate="[\d.]+"'
+        self.assertMultiLineEqual(
+            clean(packages_and_classes, scrubs),
+            clean("""\
+                <package name=".">
+                    <class filename="main.py" name="main.py">
+                <package name="d0">
+                    <class filename="d0/__init__.py" name="__init__.py">
+                    <class filename="d0/f0.py" name="f0.py">
+                <package name="d0.d0">
+                    <class filename="d0/d0/__init__.py" name="__init__.py">
+                    <class filename="d0/d0/f0.py" name="f0.py">
+                """)
+            )
+
+
+def re_lines(text, pat):
+    """Return a list of lines that match `pat` in the string `text`."""
+    lines = [l for l in text.splitlines(True) if re.search(pat, l)]
+    return lines
+
+
 def re_line(text, pat):
     """Return the one line in `text` that matches regex `pat`."""
-    lines = [l for l in text.splitlines() if re.search(pat, l)]
+    lines = re_lines(text, pat)
     assert len(lines) == 1
     return lines[0]
+
+
+def clean(text, scrub=None):
+    """Remove any text matching `scrub`, and all leading whitespace."""
+    if scrub:
+        text = re.sub(scrub, "", text)
+    text = re.sub(r"(?m)^\s+", "", text)
+    return text
