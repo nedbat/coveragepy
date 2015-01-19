@@ -8,7 +8,7 @@ Latest
 
 - Reports now use file names with extensions.  Previously, a report would
   describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
-  for better support of non-Python files.
+  for better support of non-Python files, and also fixed `issue 69`_.
 
 - When looking for the source for a frame, check if the file exists. On
   Windows, .pyw files are no longer recorded as .py files. Along the way, this
@@ -20,6 +20,7 @@ Latest
 - Regexes in the configuration file are now compiled as soon as they are read,
   to provide error messages earlier (`issue 349`_).
 
+.. _issue 69: https://bitbucket.org/ned/coveragepy/issue/69/coverage-html-overwrite-files-that-doesnt
 .. _issue 290: https://bitbucket.org/ned/coveragepy/issue/290/running-programmatically-with-pyw-files
 .. _issue 345: https://bitbucket.org/ned/coveragepy/issue/345/xml-reports-line-rate-0-for-empty-files
 .. _issue 349: https://bitbucket.org/ned/coveragepy/issue/349/bad-regex-in-config-should-get-an-earlier

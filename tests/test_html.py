@@ -11,6 +11,7 @@ from coverage.misc import CoverageException, NotPython, NoSource
 
 from tests.coveragetest import CoverageTest
 
+
 class HtmlTestHelpers(CoverageTest):
     """Methods that help with HTML tests."""
 
@@ -330,6 +331,18 @@ class HtmlTest(CoverageTest):
         msg = "(?i)No source for code: '%s'" % re.escape(missing_file)
         with self.assertRaisesRegex(NoSource, msg):
             cov.html_report()
+
+    def test_extensionless_file_collides_with_extension(self):
+        # It used to be that "afile" and "afile.py" would both be reported to
+        # "afile.html".  Now they are not.
+        # https://bitbucket.org/ned/coveragepy/issue/69
+        self.make_file("afile", "import afile\n")
+        self.make_file("afile.py", "a = 1\n")
+        self.run_command("coverage run afile")
+        self.run_command("coverage html")
+        self.assert_exists("htmlcov/index.html")
+        self.assert_exists("htmlcov/afile.html")
+        self.assert_exists("htmlcov/afile_py.html")
 
 
 class HtmlStaticFileTest(CoverageTest):
