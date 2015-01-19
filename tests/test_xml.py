@@ -7,13 +7,26 @@ import coverage
 from tests.coveragetest import CoverageTest
 
 
-class XmlReportTest(CoverageTest):
-    """Tests of the XML reports from coverage.py."""
+class XmlTestHelpers(CoverageTest):
+    """Methods to use from XML tests."""
 
     def run_mycode(self):
         """Run mycode.py, so we can report on it."""
         self.make_file("mycode.py", "print('hello')\n")
         self.run_command("coverage run mycode.py")
+
+    def run_doit(self):
+        """Construct a simple sub-package."""
+        self.make_file("sub/__init__.py")
+        self.make_file("sub/doit.py", "print('doit!')")
+        self.make_file("main.py", "import sub.doit")
+        cov = coverage.coverage()
+        self.start_import_stop(cov, "main")
+        return cov
+
+
+class XmlReportTest(XmlTestHelpers, CoverageTest):
+    """Tests of the XML reports from coverage.py."""
 
     def test_default_file_placement(self):
         self.run_mycode()
@@ -55,15 +68,6 @@ class XmlReportTest(CoverageTest):
         cov.xml_report(ignore_errors=True)
         self.assert_exists("coverage.xml")
 
-    def run_doit(self):
-        """Construct a simple sub-package."""
-        self.make_file("sub/__init__.py")
-        self.make_file("sub/doit.py", "print('doit!')")
-        self.make_file("main.py", "import sub.doit")
-        cov = coverage.coverage()
-        self.start_import_stop(cov, "main")
-        return cov
-
     def test_filename_format_showing_everything(self):
         cov = self.run_doit()
         cov.xml_report(outfile="-")
@@ -99,6 +103,7 @@ class XmlReportTest(CoverageTest):
         self.assertIn('line-rate="1"', empty_line)
 
     def test_empty_file_is_100_not_0(self):
+        # https://bitbucket.org/ned/coveragepy/issue/345
         cov = self.run_doit()
         cov.xml_report(outfile="-")
         xml = self.stdout()
