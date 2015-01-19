@@ -2,6 +2,7 @@
 
 import glob
 import os
+import os.path
 import py_compile
 import re
 import sys
@@ -13,6 +14,9 @@ from coverage import env
 from coverage.backward import StringIO
 
 from tests.coveragetest import CoverageTest
+
+HERE = os.path.dirname(__file__)
+
 
 class SummaryTest(CoverageTest):
     """Tests of the text summary reporting for coverage.py."""
@@ -26,7 +30,7 @@ class SummaryTest(CoverageTest):
             print('done')
             """)
         # Parent class saves and restores sys.path, we can just modify it.
-        sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
+        sys.path.append(self.nice_file(HERE, 'modules'))
 
     def test_report(self):
         out = self.run_command("coverage run mycode.py")
@@ -81,10 +85,9 @@ class SummaryTest(CoverageTest):
 
     def test_report_omitting(self):
         # Try reporting while omitting some modules
-        prefix = os.path.split(__file__)[0]
         self.run_command("coverage run mycode.py")
         report = self.report_from_command(
-                    "coverage report --omit '%s/*'" % prefix
+                    "coverage report --omit '%s/*'" % HERE
                     )
 
         # Name        Stmts   Miss  Cover
@@ -506,9 +509,8 @@ class SummaryTest2(CoverageTest):
     def setUp(self):
         super(SummaryTest2, self).setUp()
         # Parent class saves and restores sys.path, we can just modify it.
-        this_dir = os.path.dirname(__file__)
-        sys.path.append(self.nice_file(this_dir, 'modules'))
-        sys.path.append(self.nice_file(this_dir, 'moremodules'))
+        sys.path.append(self.nice_file(HERE, 'modules'))
+        sys.path.append(self.nice_file(HERE, 'moremodules'))
 
     def test_empty_files(self):
         # Shows that empty files like __init__.py are listed as having zero

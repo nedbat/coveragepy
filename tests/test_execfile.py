@@ -1,6 +1,11 @@
 """Tests for coverage.execfile"""
 
-import compileall, json, os, re, sys
+import compileall
+import json
+import os
+import os.path
+import re
+import sys
 
 from coverage.backward import binary_bytes
 from coverage.execfile import run_python_file, run_python_module
@@ -8,13 +13,14 @@ from coverage.misc import NoCode, NoSource
 
 from tests.coveragetest import CoverageTest
 
-here = os.path.dirname(__file__)
+HERE = os.path.dirname(__file__)
+
 
 class RunFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
 
     def test_run_python_file(self):
-        tryfile = os.path.join(here, "try_execfile.py")
+        tryfile = os.path.join(HERE, "try_execfile.py")
         run_python_file(tryfile, [tryfile, "arg1", "arg2"])
         mod_globs = json.loads(self.stdout())
 

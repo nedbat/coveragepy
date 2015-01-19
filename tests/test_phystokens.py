@@ -1,6 +1,6 @@
 """Tests for Coverage.py's improved tokenizer."""
 
-import os
+import os.path
 import re
 
 from nose.plugins.skip import SkipTest
@@ -23,7 +23,7 @@ def hello():
 \tb="indented"
 """
 
-HERE = os.path.split(__file__)[0]
+HERE = os.path.dirname(__file__)
 
 
 class PhysTokensTest(CoverageTest):

@@ -2,6 +2,7 @@
 
 import glob
 import os
+import os.path
 import sys
 import textwrap
 
@@ -12,7 +13,7 @@ from coverage import env
 
 from tests.coveragetest import CoverageTest
 
-here = os.path.dirname(__file__)
+HERE = os.path.dirname(__file__)
 
 
 class ProcessTest(CoverageTest):
@@ -325,7 +326,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(status, 0)
 
     def test_coverage_run_is_like_python(self):
-        tryfile = os.path.join(here, "try_execfile.py")
+        tryfile = os.path.join(HERE, "try_execfile.py")
         with open(tryfile) as f:
             self.make_file("run_me.py", f.read())
         out_cov = self.run_command("coverage run run_me.py")
@@ -388,7 +389,7 @@ class ProcessTest(CoverageTest):
 
     def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
         # https://bitbucket.org/ned/coveragepy/issue/242
-        tryfile = os.path.join(here, "try_execfile.py")
+        tryfile = os.path.join(HERE, "try_execfile.py")
         self.make_file("sub/__init__.py", "")
         with open(tryfile) as f:
             self.make_file("sub/run_me.py", f.read())
