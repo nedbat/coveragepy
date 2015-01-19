@@ -11,7 +11,8 @@ Latest
   for better support of non-Python files.
 
 - When looking for the source for a frame, check if the file exists. On
-  Windows, .pyw files are no longer recorded as .py files.
+  Windows, .pyw files are no longer recorded as .py files. Along the way, this
+  fixed `issue 290`_.
 
 - Empty files are now reported as 100% covered in the XML report, not 0%
   covered (`issue 345`_).
@@ -19,6 +20,7 @@ Latest
 - Regexes in the configuration file are now compiled as soon as they are read,
   to provide error messages earlier (`issue 349`_).
 
+.. _issue 290: https://bitbucket.org/ned/coveragepy/issue/290/running-programmatically-with-pyw-files
 .. _issue 345: https://bitbucket.org/ned/coveragepy/issue/345/xml-reports-line-rate-0-for-empty-files
 .. _issue 349: https://bitbucket.org/ned/coveragepy/issue/349/bad-regex-in-config-should-get-an-earlier
 
