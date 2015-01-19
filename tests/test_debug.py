@@ -66,7 +66,7 @@ class DebugTraceTest(CoverageTest):
         # We should have a line like "Tracing 'f1.py'"
         self.assertIn("Tracing 'f1.py'", out_lines)
 
-        # We should lines like "Not tracing 'collector.py'..."
+        # We should have lines like "Not tracing 'collector.py'..."
         coverage_lines = lines_matching(
             out_lines,
             r"^Not tracing .*: is part of coverage.py$"
