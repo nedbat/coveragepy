@@ -233,6 +233,7 @@ class ConfigFileTest(CoverageTest):
         title = Title & nums # nums!
         [{section}xml]
         output=mycov.xml
+        package_depth          =                                17
 
         [{section}paths]
         source =
@@ -294,6 +295,7 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.html_title, "Title & nums # nums!")
 
         self.assertEqual(cov.config.xml_output, "mycov.xml")
+        self.assertEqual(cov.config.xml_package_depth, 17)
 
         self.assertEqual(cov.config.paths, {
             'source': ['.', '/home/ned/src/'],

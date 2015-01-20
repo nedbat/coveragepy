@@ -124,6 +124,8 @@ class XmlReporter(Reporter):
         filename = cu.file_locator.relative_filename(cu.filename)
         filename = filename.replace("\\", "/")
         dirname = os.path.dirname(filename) or "."
+        parts = dirname.split("/")
+        dirname = "/".join(parts[:self.config.xml_package_depth])
         package_name = dirname.replace("/", ".")
         className = cu.name
 

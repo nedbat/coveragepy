@@ -14,6 +14,11 @@ Latest
   regression, I apologize.  This was reported in `issue 235`_, which is now
   fixed.
 
+- A new configuration option for the XML report: ``[xml] package_depth``
+  controls which directories are identified as packages in the report.
+  Directories deeper than this depth are not reported as packages. 
+  Thanks, Lex Berezhny.
+
 - When looking for the source for a frame, check if the file exists. On
   Windows, .pyw files are no longer recorded as .py files. Along the way, this
   fixed `issue 290`_.

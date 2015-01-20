@@ -140,30 +140,88 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
 class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
     """Tests about the package structure reported in the coverage.xml file."""
 
-    def test_packages(self):
+    def package_and_class_tags(self, cov):
+        """Run an XML report on `cov`, and get the package and class tags."""
+        self.captured_stdout.truncate(0)
+        cov.xml_report(outfile="-")
+        packages_and_classes = re_lines(self.stdout(), r"<package |<class ")
+        scrubs = r' branch-rate="0"| complexity="0"| line-rate="[\d.]+"'
+        return clean("".join(packages_and_classes), scrubs)
+
+    def assert_package_and_class_tags(self, cov, result):
+        """Check the XML package and class tags from `cov` match `result`."""
+        self.assertMultiLineEqual(
+            self.package_and_class_tags(cov),
+            clean(result)
+            )
+
+    def test_package_names(self):
         self.make_tree(width=1, depth=3)
         self.make_file("main.py", """\
             from d0.d0 import f0
             """)
         cov = coverage.coverage(source=".")
         self.start_import_stop(cov, "main")
-        cov.xml_report(outfile="-")
-        xml = self.stdout()
-        packages_and_classes = "".join(re_lines(xml, r"<package |<class "))
-        scrubs = r' branch-rate="0"| complexity="0"| line-rate="[\d.]+"'
-        self.assertMultiLineEqual(
-            clean(packages_and_classes, scrubs),
-            clean("""\
-                <package name=".">
-                    <class filename="main.py" name="main.py">
-                <package name="d0">
-                    <class filename="d0/__init__.py" name="__init__.py">
-                    <class filename="d0/f0.py" name="f0.py">
-                <package name="d0.d0">
-                    <class filename="d0/d0/__init__.py" name="__init__.py">
-                    <class filename="d0/d0/f0.py" name="f0.py">
-                """)
-            )
+        self.assert_package_and_class_tags(cov, """\
+            <package name=".">
+               <class filename="main.py" name="main.py">
+            <package name="d0">
+               <class filename="d0/__init__.py" name="__init__.py">
+               <class filename="d0/f0.py" name="f0.py">
+            <package name="d0.d0">
+               <class filename="d0/d0/__init__.py" name="__init__.py">
+               <class filename="d0/d0/f0.py" name="f0.py">
+            """)
+
+    def test_package_depth(self):
+        self.make_tree(width=1, depth=4)
+        self.make_file("main.py", """\
+            from d0.d0 import f0
+            """)
+        cov = coverage.coverage(source=".")
+        self.start_import_stop(cov, "main")
+
+        cov.config["xml:package_depth"] = 1
+        self.assert_package_and_class_tags(cov, """\
+            <package name=".">
+               <class filename="main.py" name="main.py">
+            <package name="d0">
+               <class filename="d0/__init__.py" name="__init__.py">
+               <class filename="d0/d0/__init__.py" name="d0/__init__.py">
+               <class filename="d0/d0/d0/__init__.py" name="d0/d0/__init__.py">
+               <class filename="d0/d0/d0/f0.py" name="d0/d0/f0.py">
+               <class filename="d0/d0/f0.py" name="d0/f0.py">
+               <class filename="d0/f0.py" name="f0.py">
+            """)
+
+        cov.config["xml:package_depth"] = 2
+        self.assert_package_and_class_tags(cov, """\
+            <package name=".">
+               <class filename="main.py" name="main.py">
+            <package name="d0">
+               <class filename="d0/__init__.py" name="__init__.py">
+               <class filename="d0/f0.py" name="f0.py">
+            <package name="d0.d0">
+               <class filename="d0/d0/__init__.py" name="__init__.py">
+               <class filename="d0/d0/d0/__init__.py" name="d0/__init__.py">
+               <class filename="d0/d0/d0/f0.py" name="d0/f0.py">
+               <class filename="d0/d0/f0.py" name="f0.py">
+            """)
+
+        cov.config["xml:package_depth"] = 3
+        self.assert_package_and_class_tags(cov, """\
+            <package name=".">
+               <class filename="main.py" name="main.py">
+            <package name="d0">
+               <class filename="d0/__init__.py" name="__init__.py">
+               <class filename="d0/f0.py" name="f0.py">
+            <package name="d0.d0">
+               <class filename="d0/d0/__init__.py" name="__init__.py">
+               <class filename="d0/d0/f0.py" name="f0.py">
+            <package name="d0.d0.d0">
+               <class filename="d0/d0/d0/__init__.py" name="__init__.py">
+               <class filename="d0/d0/d0/f0.py" name="f0.py">
+            """)
 
 
 def re_lines(text, pat):
