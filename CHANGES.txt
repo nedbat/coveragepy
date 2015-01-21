@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Latest
-------
+Version 4.0a3 --- 20 January 2015
+---------------------------------
 
 - Reports now use file names with extensions.  Previously, a report would
   describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
@@ -17,6 +17,7 @@ Latest
 - A new configuration option for the XML report: ``[xml] package_depth``
   controls which directories are identified as packages in the report.
   Directories deeper than this depth are not reported as packages. 
+  The default is that all directories are reported as packages.
   Thanks, Lex Berezhny.
 
 - When looking for the source for a frame, check if the file exists. On
@@ -36,7 +37,7 @@ Latest
 .. _issue 349: https://bitbucket.org/ned/coveragepy/issue/349/bad-regex-in-config-should-get-an-earlier
 
 
-Version 4.0a2 --- 14 January 2014
+Version 4.0a2 --- 14 January 2015
 ---------------------------------
 
 - Officially support PyPy 2.4, and PyPy3 2.4.  Drop support for
