@@ -50,7 +50,8 @@ Version 4.0a2 --- 14 January 2015
 
 - A new option: `coverage report --skip-covered` will reduce the number of
   files reported by skipping files with 100% coverage.  Thanks, Krystian
-  Kichewko.
+  Kichewko.  This means that empty `__init__.py` files will be skipped, since
+  they are 100% covered, closing `issue 315`_.
 
 - You can now specify the ``--fail-under`` option in the ``.coveragerc`` file
   as the ``[report] fail_under`` options.  This closes `issue 314`_.
@@ -89,6 +90,7 @@ Version 4.0a2 --- 14 January 2015
 
 .. _issue 293: https://bitbucket.org/ned/coveragepy/issue/293/number-of-statement-detection-wrong-if-no
 .. _issue 314: https://bitbucket.org/ned/coveragepy/issue/314/fail_under-param-not-working-in-coveragerc
+.. _issue 315: https://bitbucket.org/ned/coveragepy/issue/315/option-to-omit-empty-files-eg-__init__py
 .. _issue 328: https://bitbucket.org/ned/coveragepy/issue/328/misbehavior-in-run-source
 .. _issue 334: https://bitbucket.org/ned/coveragepy/issue/334/pragma-not-recognized-if-tab-character
 .. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ
