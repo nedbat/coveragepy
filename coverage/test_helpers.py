@@ -189,10 +189,14 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
         """Create a file for testing.
 
         `filename` is the relative path to the file, including directories if
-        desired, which will be created if need be.  `text` is the content to
-        create in the file. If `newline` is provided, it is a string that will
-        be used as the line endings in the created file, otherwise the line
-        endings are as provided in `text`.
+        desired, which will be created if need be.
+
+        `text` is the content to create in the file, a native string (bytes in
+        Python 2, unicode in Python 3).
+
+        If `newline` is provided, it is a string that will be used as the line
+        endings in the created file, otherwise the line endings are as provided
+        in `text`.
 
         Returns `filename`.
 

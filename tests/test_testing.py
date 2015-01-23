@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 """Tests that our test infrastructure is really working!"""
 
-import os, sys
+import os
+import sys
+
 from coverage.backunittest import TestCase
 from coverage.backward import to_bytes
+
 from tests.coveragetest import TempDirMixin, CoverageTest
 
 
