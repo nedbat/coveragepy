@@ -32,6 +32,7 @@ coverage.py
 :history: 20131005T210000, Updated for 3.7
 :history: 20131212T213300, Updated for 3.7.1
 :history: 20140924T073000, Updated for 4.0a1
+:history: 20150124T023900, Updated for 4.0a4
 
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
@@ -166,6 +167,7 @@ More information
     branch
     subprocess
     api
+    plugin
     contributing
     trouble
     faq
