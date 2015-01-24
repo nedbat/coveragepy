@@ -300,10 +300,10 @@ class Coverage(object):
             wrote_any = True
 
         if self.debug.should('sys'):
-            self.debug.write_formatted_info("sys", self.sysinfo())
+            self.debug.write_formatted_info("sys", self.sys_info())
             for plugin in self.plugins:
                 header = "sys: " + plugin.plugin_name
-                info = plugin.sysinfo()
+                info = plugin.sys_info()
                 self.debug.write_formatted_info(header, info)
             wrote_any = True
 
@@ -957,7 +957,7 @@ class Coverage(object):
                 if delete_file:
                     file_be_gone(self.config.xml_output)
 
-    def sysinfo(self):
+    def sys_info(self):
         """Return a list of (key, value) pairs showing internal information."""
 
         import coverage as covmod

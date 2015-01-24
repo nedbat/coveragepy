@@ -570,9 +570,9 @@ class CoverageScript(object):
             return ERR
         for info in args:
             if info == 'sys':
-                sysinfo = self.coverage.sysinfo()
+                sys_info = self.coverage.sys_info()
                 print(info_header("sys"))
-                for line in info_formatter(sysinfo):
+                for line in info_formatter(sys_info):
                     print(" %s" % line)
             elif info == 'data':
                 self.coverage.load()

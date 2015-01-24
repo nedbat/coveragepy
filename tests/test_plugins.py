@@ -137,30 +137,30 @@ class PluginTest(CoverageTest):
             cov.start()
         cov.stop()
 
-    def test_plugin_sysinfo(self):
-        self.make_file("plugin_sysinfo.py", """\
+    def test_plugin_sys_info(self):
+        self.make_file("plugin_sys_info.py", """\
             import coverage
 
             class Plugin(coverage.CoveragePlugin):
-                def sysinfo(self):
+                def sys_info(self):
                     return [("hello", "world")]
             """)
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
-        cov.config["run:plugins"] = ["plugin_sysinfo"]
+        cov.config["run:plugins"] = ["plugin_sys_info"]
         cov.load()
 
         out_lines = debug_out.getvalue().splitlines()
         expected_end = [
-            "-- sys: plugin_sysinfo ---------------------------------------",
+            "-- sys: plugin_sys_info --------------------------------------",
             " hello: world",
             "-- end -------------------------------------------------------",
             ]
         self.assertEqual(expected_end, out_lines[-len(expected_end):])
 
-    def test_plugin_with_no_sysinfo(self):
-        self.make_file("plugin_no_sysinfo.py", """\
+    def test_plugin_with_no_sys_info(self):
+        self.make_file("plugin_no_sys_info.py", """\
             import coverage
 
             class Plugin(coverage.CoveragePlugin):
@@ -169,12 +169,12 @@ class PluginTest(CoverageTest):
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
-        cov.config["run:plugins"] = ["plugin_no_sysinfo"]
+        cov.config["run:plugins"] = ["plugin_no_sys_info"]
         cov.load()
 
         out_lines = debug_out.getvalue().splitlines()
         expected_end = [
-            "-- sys: plugin_no_sysinfo ------------------------------------",
+            "-- sys: plugin_no_sys_info -----------------------------------",
             "-- end -------------------------------------------------------",
             ]
         self.assertEqual(expected_end, out_lines[-len(expected_end):])

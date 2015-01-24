@@ -57,7 +57,7 @@ class CoveragePlugin(object):
         """
         _needs_to_implement(self, "file_reporter")
 
-    def sysinfo(self):
+    def sys_info(self):
         """Return a list of information useful for debugging.
 
         This method will be invoked for ``coverage run --debug=sys``.  Your
