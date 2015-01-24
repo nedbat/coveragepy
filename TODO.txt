@@ -10,7 +10,7 @@ Key:
 
 - What defaults should change?
     - --source = . ?
-    - --branch = True ?
+    x --branch = True ?
 
 - Remove 2.3, 2.4, 2.5 limitations
     + set, sorted, reversed, rpartition
@@ -28,7 +28,7 @@ Key:
     + we can use "except ExcClass as e:"
 
 - Clean up plugins
-- Make reports use filenames, not module names
++ Make reports use filenames, not module names
 - implement plugin support in CTracer
 - remove plugin support from PyTracer
 - documentation
