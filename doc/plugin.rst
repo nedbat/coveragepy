@@ -1,15 +1,13 @@
 .. _plugin:
 
-================
-Coverage Plugins
-================
+=======
+Plugins
+=======
 
 .. :history: 20150124T143000, new page.
 
 
-Plugins are cool.
-
-.. module:: coverage.plugin
+.. automodule:: coverage.plugin
 
 .. autoclass:: CoveragePlugin
     :members:

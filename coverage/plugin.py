@@ -1,4 +1,8 @@
-"""Plugin management for coverage.py"""
+"""
+Coverage.py's behavior can be extended by writing plugins.  These are Python
+classes installed separately, and then configured in your .coveragerc file.
+
+"""
 
 
 # TODO: abc?
@@ -25,11 +29,11 @@ class CoveragePlugin(object):
         self.options = options
 
     def file_tracer(self, filename):
-        """Return a FileTracer object for this file.
+        """Return a FileTracer object for a file.
 
         Every source file is offered to the plugin to give it a chance to take
         responsibility for tracing the file.  If your plugin can handle the
-        file, then return a `FileTracer` object.  Otherwise return None.
+        file, then return a :class:`FileTracer` object.  Otherwise return None.
 
         There is no way to register your plugin for particular files.  This
         method is how your plugin applies itself to files.  Be prepared for
@@ -42,8 +46,8 @@ class CoveragePlugin(object):
                 paths, be sure to take this into account.
 
         Returns:
-            FileTracer: the `FileTracer` object to use to trace this file, or
-                None if this plugin cannot trace this file.
+            FileTracer: the :class:`FileTracer` object to use to trace
+                `filename`, or None if this plugin cannot trace this file.
 
         """
         return None
@@ -72,8 +76,9 @@ class CoveragePlugin(object):
 class FileTracer(object):
     """Support needed for files during the tracing phase.
 
-    You may construct this object from CoveragePlugin.file_tracer any way you
-    like.  A natural choice would be to pass the filename given to file_tracer.
+    You may construct this object from :meth:`CoveragePlugin.file_tracer` any
+    way you like.  A natural choice would be to pass the filename given to
+    file_tracer.
 
     """
 
@@ -97,11 +102,11 @@ class FileTracer(object):
         implementing dynamic_source_filename.  Invoking that function is
         expensive. To determine whether it should invoke it, coverage.py uses
         the result of this function to know if it needs to bother invoking
-        dynamic_source_filename.
+        :meth:`dynamic_source_filename`.
 
         Returns:
-            A boolean, true if `dynamic_source_filename` should be called to
-            get dynamic source filenames.
+            boolean: True if :meth:`dynamic_source_filename` should be called
+            to get dynamic source filenames.
 
         """
         return False
@@ -112,7 +117,7 @@ class FileTracer(object):
         Some plugins need to compute the source filename dynamically for each
         frame.
 
-        This function will not be invoked if `has_dynamic_source_filename`
+        This function will not be invoked if :meth:`has_dynamic_source_filename`
         returns False.
 
         Returns:
@@ -141,7 +146,7 @@ class FileTracer(object):
             frame: the call frame to examine.
 
         Returns:
-            (int, int): a pair of line numbers, the start and end lines
+            int, int: a pair of line numbers, the start and end lines
                 executed in the source, inclusive.
 
         """
