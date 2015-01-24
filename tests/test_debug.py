@@ -31,6 +31,10 @@ class InfoFormatterTest(CoverageTest):
             '        nothing: -none-',
         ])
 
+    def test_info_formatter_with_generator(self):
+        lines = list(info_formatter(('info%d' % i, i) for i in range(3)))
+        self.assertEqual(lines, ['info0: 0', 'info1: 1', 'info2: 2'])
+
 
 class DebugTraceTest(CoverageTest):
     """Tests of debug output."""

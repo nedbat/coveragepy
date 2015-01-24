@@ -41,6 +41,7 @@ def info_formatter(info):
     nicely formatted, ready to print.
 
     """
+    info = list(info)
     label_len = max(len(l) for l, _d in info)
     for label, data in info:
         if data == []:
