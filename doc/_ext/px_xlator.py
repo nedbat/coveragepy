@@ -47,13 +47,18 @@ class PxTranslator(BaseHtmlXlator):
                 self.body.append("<what when='%s'>%s</what>\n" % (when, self.encode(what.strip())))
             self.body.append("</history>\n")
 
+        prerel = None
         if "b" in self.builder.config.release:
+            prerel = "a beta"
+        if "a" in self.builder.config.release:
+            prerel = "an ALPHA"
+        if prerel:
             self.body.append("""
                 <box>
-                These docs are for a beta release, %s.
+                These docs are for %s release, %s.
                 For the latest released version, see <a href='/code/coverage'>coverage.py</a>.
                 </box>
-                """ % self.builder.config.release)
+                """ % (prerel, self.builder.config.release))
 
     def visit_field(self, node):
         if node.children[0].astext() == 'history':
@@ -103,7 +108,7 @@ class PxBuilder(StandaloneHTMLBuilder):
         self.out_suffix = '.px'
         self.link_suffix = '.html'
 
-        if "b" in self.config.release:
+        if max(self.config.release).isalpha():
             self.px_uri = "/code/coverage/beta/"
         else:
             self.px_uri = "/code/coverage/"
