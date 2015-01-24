@@ -293,14 +293,18 @@ class Coverage(object):
             self.omit_match = FnmatchMatcher(self.omit)
 
         # The user may want to debug things, show info if desired.
+        wrote_any = False
         if self.debug.should('config'):
-            self.debug.write("Configuration values:")
             config_info = sorted(self.config.__dict__.items())
-            self.debug.write_formatted_info(config_info)
+            self.debug.write_formatted_info("config", config_info)
+            wrote_any = True
 
         if self.debug.should('sys'):
-            self.debug.write("Debugging info:")
-            self.debug.write_formatted_info(self.sysinfo())
+            self.debug.write_formatted_info("sys", self.sysinfo())
+            wrote_any = True
+
+        if wrote_any:
+            self.debug.write_formatted_info("end", ())
 
     def _canonical_dir(self, morf):
         """Return the canonical directory of the module or file `morf`."""

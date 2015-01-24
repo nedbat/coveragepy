@@ -28,10 +28,16 @@ class DebugControl(object):
         self.output.write(msg+"\n")
         self.output.flush()
 
-    def write_formatted_info(self, info):
+    def write_formatted_info(self, header, info):
         """Write a sequence of (label,data) pairs nicely."""
+        self.write(info_header(header))
         for line in info_formatter(info):
             self.write(" %s" % line)
+
+
+def info_header(label):
+    """Make a nice header string."""
+    return "--{0:-<60s}".format(" "+label+" ")
 
 
 def info_formatter(info):
@@ -42,6 +48,8 @@ def info_formatter(info):
 
     """
     info = list(info)
+    if not info:
+        return
     label_len = max(len(l) for l, _d in info)
     for label, data in info:
         if data == []:

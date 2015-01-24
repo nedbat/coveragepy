@@ -9,7 +9,7 @@ import traceback
 from coverage import env
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
-from coverage.debug import info_formatter
+from coverage.debug import info_formatter, info_header
 
 
 class Opts(object):
@@ -571,12 +571,12 @@ class CoverageScript(object):
         for info in args:
             if info == 'sys':
                 sysinfo = self.coverage.sysinfo()
-                print("-- sys ----------------------------------------")
+                print(info_header("sys"))
                 for line in info_formatter(sysinfo):
                     print(" %s" % line)
             elif info == 'data':
                 self.coverage.load()
-                print("-- data ---------------------------------------")
+                print(info_header("data"))
                 print("path: %s" % self.coverage.data.filename)
                 print("has_arcs: %r" % self.coverage.data.has_arcs())
                 summary = self.coverage.data.summary(fullpath=True)

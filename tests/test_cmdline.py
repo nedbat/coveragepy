@@ -229,7 +229,7 @@ class CmdLineTest(BaseCmdLineTest):
         )
         self.command_line("debug data", _covpkg=fake)
         self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
-            -- data ---------------------------------------
+            -- data ------------------------------------------------------
             path: FILENAME
             has_arcs: False
 
@@ -242,7 +242,7 @@ class CmdLineTest(BaseCmdLineTest):
         fake = FakeCoverageForDebugData(summary={})
         self.command_line("debug data", _covpkg=fake)
         self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
-            -- data ---------------------------------------
+            -- data ------------------------------------------------------
             path: FILENAME
             has_arcs: False
             No data collected

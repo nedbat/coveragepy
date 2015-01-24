@@ -5,7 +5,7 @@ import re
 
 import coverage
 from coverage.backward import StringIO
-from coverage.debug import info_formatter
+from coverage.debug import info_formatter, info_header
 from tests.coveragetest import CoverageTest
 
 
@@ -34,6 +34,16 @@ class InfoFormatterTest(CoverageTest):
     def test_info_formatter_with_generator(self):
         lines = list(info_formatter(('info%d' % i, i) for i in range(3)))
         self.assertEqual(lines, ['info0: 0', 'info1: 1', 'info2: 2'])
+
+    def test_info_header(self):
+        self.assertEqual(
+            info_header("x"),
+            "-- x ---------------------------------------------------------"
+        )
+        self.assertEqual(
+            info_header("hello there"),
+            "-- hello there -----------------------------------------------"
+        )
 
 
 class DebugTraceTest(CoverageTest):
