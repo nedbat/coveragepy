@@ -162,6 +162,24 @@ def overrides(obj, method_name, base_class):
     return klass_func is not base_func
 
 
+# TODO: abc?
+def _needs_to_implement(that, func_name):
+    """Helper to raise NotImplementedError in interface stubs."""
+    if hasattr(that, "plugin_name"):
+        thing = "Plugin"
+        name = that.plugin_name
+    else:
+        thing = "Class"
+        klass = that.__class__
+        name = "{klass.__module__}.{klass.__name__}".format(klass=klass)
+
+    raise NotImplementedError(
+        "{thing} {name!r} needs to implement {func_name}()".format(
+            thing=thing, name=name, func_name=func_name
+            )
+        )
+
+
 class CoverageException(Exception):
     """An exception specific to Coverage."""
     pass

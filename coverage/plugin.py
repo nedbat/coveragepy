@@ -1,26 +1,6 @@
-"""
-Coverage.py's behavior can be extended by writing plugins.  These are Python
-classes installed separately, and then configured in your .coveragerc file.
+"""Plugin interfaces for coverage.py"""
 
-"""
-
-
-# TODO: abc?
-def _needs_to_implement(that, func_name):
-    """Helper to raise NotImplementedError in interface stubs."""
-    if hasattr(that, "plugin_name"):
-        thing = "Plugin"
-        name = that.plugin_name
-    else:
-        thing = "Class"
-        klass = that.__class__
-        name = "{klass.__module__}.{klass.__name__}".format(klass=klass)
-
-    raise NotImplementedError(
-        "{thing} {name!r} needs to implement {func_name}()".format(
-            thing=thing, name=name, func_name=func_name
-            )
-        )
+from coverage.misc import _needs_to_implement
 
 
 class CoveragePlugin(object):
@@ -117,8 +97,8 @@ class FileTracer(object):
         Some plugins need to compute the source filename dynamically for each
         frame.
 
-        This function will not be invoked if :meth:`has_dynamic_source_filename`
-        returns False.
+        This function will not be invoked if
+        :meth:`has_dynamic_source_filename` returns False.
 
         Returns:
             The source filename for this frame, or None if this frame shouldn't
@@ -227,4 +207,9 @@ class FileReporter(object):
 
     def flat_rootname(self):
         # TODO: a better generic implementation?
-        return self.filename.replace('\\', '_').replace('/', '_').replace('.', '_')
+        return (
+            self.filename
+                .replace('\\', '_')
+                .replace('/', '_')
+                .replace('.', '_')
+            )
