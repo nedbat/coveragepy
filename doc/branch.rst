@@ -4,10 +4,10 @@
 Branch coverage measurement
 ===========================
 
-:history: 20091127T201300, new for version 3.2
-:history: 20100725T211700, updated for 3.4.
-:history: 20110604T181700, updated for 3.5.
-:history: 20111214T181800, Fix a bug that Guido pointed out.
+.. :history: 20091127T201300, new for version 3.2
+.. :history: 20100725T211700, updated for 3.4.
+.. :history: 20110604T181700, updated for 3.5.
+.. :history: 20111214T181800, Fix a bug that Guido pointed out.
 
 .. highlight:: python
    :linenothreshold: 5

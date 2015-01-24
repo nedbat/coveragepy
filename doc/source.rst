@@ -4,7 +4,7 @@
 Specifying source files
 =======================
 
-:history: 20100725T172000, new in 3.4
+.. :history: 20100725T172000, new in 3.4
 
 
 When coverage.py is running your program and measuring its execution, it needs

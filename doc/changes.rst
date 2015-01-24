@@ -4,30 +4,30 @@
 Major change history for coverage.py
 ====================================
 
-:history: 20090524T134300, brand new docs.
-:history: 20090613T164000, final touches for 3.0
-:history: 20090706T205000, changes for 3.0.1
-:history: 20091004T170700, changes for 3.1
-:history: 20091128T072200, changes for 3.2
-:history: 20091205T161525, 3.2 final
-:history: 20100221T151900, changes for 3.3
-:history: 20100306T181400, changes for 3.3.1
-:history: 20100725T211700, updated for 3.4.
-:history: 20100820T151500, updated for 3.4b1
-:history: 20100906T133800, updated for 3.4b2
-:history: 20100919T163400, updated for 3.4 release.
-:history: 20110604T214100, updated for 3.5b1
-:history: 20110629T082200, updated for 3.5
-:history: 20110923T081600, updated for 3.5.1
-:history: 20120429T162100, updated for 3.5.2b1
-:history: 20120503T233700, updated for 3.5.2
-:history: 20120929T093100, updated for 3.5.3
-:history: 20121129T060100, updated for 3.6b1.
-:history: 20121223T180600, updated for 3.6b2.
-:history: 20130105T173500, updated for 3.6
-:history: 20131005T205700, updated for 3.7
-:history: 20131212T213100, updated for 3.7.1
-:history: 20150124T134800, updated for 4.0a4
+.. :history: 20090524T134300, brand new docs.
+.. :history: 20090613T164000, final touches for 3.0
+.. :history: 20090706T205000, changes for 3.0.1
+.. :history: 20091004T170700, changes for 3.1
+.. :history: 20091128T072200, changes for 3.2
+.. :history: 20091205T161525, 3.2 final
+.. :history: 20100221T151900, changes for 3.3
+.. :history: 20100306T181400, changes for 3.3.1
+.. :history: 20100725T211700, updated for 3.4.
+.. :history: 20100820T151500, updated for 3.4b1
+.. :history: 20100906T133800, updated for 3.4b2
+.. :history: 20100919T163400, updated for 3.4 release.
+.. :history: 20110604T214100, updated for 3.5b1
+.. :history: 20110629T082200, updated for 3.5
+.. :history: 20110923T081600, updated for 3.5.1
+.. :history: 20120429T162100, updated for 3.5.2b1
+.. :history: 20120503T233700, updated for 3.5.2
+.. :history: 20120929T093100, updated for 3.5.3
+.. :history: 20121129T060100, updated for 3.6b1.
+.. :history: 20121223T180600, updated for 3.6b2.
+.. :history: 20130105T173500, updated for 3.6
+.. :history: 20131005T205700, updated for 3.7
+.. :history: 20131212T213100, updated for 3.7.1
+.. :history: 20150124T134800, updated for 4.0a4
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.

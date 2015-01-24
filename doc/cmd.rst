@@ -4,20 +4,20 @@
 Coverage command line usage
 ===========================
 
-:history: 20090524T134300, brand new docs.
-:history: 20090613T164000, final touches for 3.0
-:history: 20090913T084400, new command line syntax
-:history: 20091004T170700, changes for 3.1
-:history: 20091127T200700, changes for 3.2
-:history: 20100223T200600, changes for 3.3
-:history: 20100725T211700, updated for 3.4
-:history: 20110827T212500, updated for 3.5.1, combining aliases
-:history: 20120119T075600, Added some clarification from George Paci
-:history: 20120504T091800, Added info about execution warnings, and 3.5.2 stuff.
-:history: 20120807T211600, Clarified the combine rules.
-:history: 20121003T074600, Fixed an option reference, https://bitbucket.org/ned/coveragepy/issue/200/documentation-mentions-output-xml-instead
-:history: 20121117T091000, Added command aliases.
-:history: 20140924T193000, Added --concurrency
+.. :history: 20090524T134300, brand new docs.
+.. :history: 20090613T164000, final touches for 3.0
+.. :history: 20090913T084400, new command line syntax
+.. :history: 20091004T170700, changes for 3.1
+.. :history: 20091127T200700, changes for 3.2
+.. :history: 20100223T200600, changes for 3.3
+.. :history: 20100725T211700, updated for 3.4
+.. :history: 20110827T212500, updated for 3.5.1, combining aliases
+.. :history: 20120119T075600, Added some clarification from George Paci
+.. :history: 20120504T091800, Added info about execution warnings, and 3.5.2 stuff.
+.. :history: 20120807T211600, Clarified the combine rules.
+.. :history: 20121003T074600, Fixed an option reference, https://bitbucket.org/ned/coveragepy/issue/200/documentation-mentions-output-xml-instead
+.. :history: 20121117T091000, Added command aliases.
+.. :history: 20140924T193000, Added --concurrency
 
 .. highlight:: console
 

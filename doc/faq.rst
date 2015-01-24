@@ -4,11 +4,11 @@
 FAQ and other help
 ==================
 
-:history: 20090613T141800, brand new docs.
-:history: 20091005T073900, updated for 3.1.
-:history: 20091127T201500, updated for 3.2.
-:history: 20110605T175500, add the announcement mailing list.
-:history: 20121231T104700, Tweak the py3 text.
+.. :history: 20090613T141800, brand new docs.
+.. :history: 20091005T073900, updated for 3.1.
+.. :history: 20091127T201500, updated for 3.2.
+.. :history: 20110605T175500, add the announcement mailing list.
+.. :history: 20121231T104700, Tweak the py3 text.
 
 
 Frequently asked questions

@@ -4,10 +4,10 @@
 Excluding code from coverage
 ============================
 
-:history: 20090613T090500, brand new docs.
-:history: 20100224T200900, updated for 3.3.
-:history: 20100725T211700, updated for 3.4.
-:history: 20110604T184400, updated for 3.5.
+.. :history: 20090613T090500, brand new docs.
+.. :history: 20100224T200900, updated for 3.3.
+.. :history: 20100725T211700, updated for 3.4.
+.. :history: 20110604T184400, updated for 3.5.
 
 
 You may have code in your project that you know won't be executed, and you want

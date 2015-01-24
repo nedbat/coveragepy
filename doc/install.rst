@@ -4,23 +4,23 @@
 Installation
 ============
 
-:history: 20100725T225600, new for 3.4.
-:history: 20100820T151500, updated for 3.4b1.
-:history: 20100906T134800, updated for 3.4b2.
-:history: 20110604T213400, updated for 3.5b1.
-:history: 20110629T082400, updated for 3.5.
-:history: 20110923T081900, updated for 3.5.1.
-:history: 20120429T162500, updated for 3.5.2b1.
-:history: 20120503T234000, updated for 3.5.2.
-:history: 20120929T093600, updated for 3.5.3.
-:history: 20121117T095000, Now setuptools is a pre-req.
-:history: 20121128T203000, updated for 3.6b1.
-:history: 20121223T180800, updated for 3.6b2.
-:history: 20121229T112400, updated for 3.6b3.
-:history: 20130105T174400, updated for 3.6.
-:history: 20131005T210600, updated for 3.7.
-:history: 20131212T213500, updated for 3.7.1.
-:history: 20140927T102700, updated for 4.0a1.
+.. :history: 20100725T225600, new for 3.4.
+.. :history: 20100820T151500, updated for 3.4b1.
+.. :history: 20100906T134800, updated for 3.4b2.
+.. :history: 20110604T213400, updated for 3.5b1.
+.. :history: 20110629T082400, updated for 3.5.
+.. :history: 20110923T081900, updated for 3.5.1.
+.. :history: 20120429T162500, updated for 3.5.2b1.
+.. :history: 20120503T234000, updated for 3.5.2.
+.. :history: 20120929T093600, updated for 3.5.3.
+.. :history: 20121117T095000, Now setuptools is a pre-req.
+.. :history: 20121128T203000, updated for 3.6b1.
+.. :history: 20121223T180800, updated for 3.6b2.
+.. :history: 20121229T112400, updated for 3.6b3.
+.. :history: 20130105T174400, updated for 3.6.
+.. :history: 20131005T210600, updated for 3.7.
+.. :history: 20131212T213500, updated for 3.7.1.
+.. :history: 20140927T102700, updated for 4.0a1.
 
 
 .. highlight:: console

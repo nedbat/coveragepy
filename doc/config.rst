@@ -4,13 +4,13 @@
 Configuration files
 ===================
 
-:history: 20100223T201600, new for 3.3
-:history: 20100725T211700, updated for 3.4.
-:history: 20100824T092900, added ``precision``.
-:history: 20110604T184400, updated for 3.5.
-:history: 20110827T212700, updated for 3.5.1
-:history: 20130926T222300, updated for 3.6.1
-:history: 20140925T064700, updated for 4.0a1
+.. :history: 20100223T201600, new for 3.3
+.. :history: 20100725T211700, updated for 3.4.
+.. :history: 20100824T092900, added ``precision``.
+.. :history: 20110604T184400, updated for 3.5.
+.. :history: 20110827T212700, updated for 3.5.1
+.. :history: 20130926T222300, updated for 3.6.1
+.. :history: 20140925T064700, updated for 4.0a1
 
 
 Coverage.py options can be specified in a configuration file.  This makes it

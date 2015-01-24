@@ -4,7 +4,7 @@
 Contributing to coverage.py
 ===========================
 
-:history: 20121112T154100, brand new docs.
+.. :history: 20121112T154100, brand new docs.
 
 .. highlight:: console
 

@@ -4,7 +4,7 @@
 Things that cause trouble
 =========================
 
-:history: 20121231T085200, brand new docs.
+.. :history: 20121231T085200, brand new docs.
 
 Coverage works well, and I want it to properly measure any Python program, but
 there are some situations it can't cope with.  This page details some known

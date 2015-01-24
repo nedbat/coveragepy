@@ -4,7 +4,7 @@
 Coverage Plugins
 ================
 
-:history: 20150124T143000, new page.
+.. :history: 20150124T143000, new page.
 
 
 Plugins are cool.

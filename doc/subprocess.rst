@@ -4,8 +4,8 @@
 Measuring sub-processes
 =======================
 
-:history: 20100224T201800, new for 3.3.
-:history: 20100725T211700, updated for 3.4.
+.. :history: 20100224T201800, new for 3.3.
+.. :history: 20100725T211700, updated for 3.4.
 
 
 Complex test suites may spawn sub-processes to run tests, either to run them in
