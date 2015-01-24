@@ -108,7 +108,7 @@ html_theme = 'default'
 # documentation.
 #html_theme_options = {}
 
-html_style = "neds.css"
+#html_style = "neds.css"
 
 html_add_permalinks = False
 
