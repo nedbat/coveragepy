@@ -74,7 +74,7 @@ Version 4.0a2 --- 14 January 2015
 - The ``--debug`` switch can now be used on any command.
 
 - You can now programmatically adjust the configuration of coverage by setting
-  items on `Coverage.config` after construcion.
+  items on `Coverage.config` after construction.
 
 - A module run with ``-m`` can be used as the argument to ``--source``, fixing
   `issue 328`_.  Thanks, Buck Evan.

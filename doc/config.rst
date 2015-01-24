@@ -87,6 +87,8 @@ Here's a sample configuration file::
     directory = coverage_html_report
 
 
+.. _config_run:
+
 [run]
 -----
 
@@ -158,6 +160,8 @@ or relative file paths on the current machine.
 See :ref:`cmd_combining` for more information.
 
 
+.. _config_report:
+
 [report]
 --------
 
@@ -191,8 +195,9 @@ example "87%".  A value of 2 will display percentages like "87.32%".
 ``show_missing`` (boolean, default False): when running a summary report, show
 missing lines.  See :ref:`cmd_summary` for more information.
 
-``skip_covered`` (boolean, default False): when running a cli summary report,
+``skip_covered`` (boolean, default False): when running a summary report,
 skip 100% covered files. See :ref:`cmd_summary` for more information.
+
 
 .. _config_html:
 
@@ -212,6 +217,8 @@ overwrite as many of the rules as you like.
 ``title`` (string, default "Coverage report"): the title to use for the report.
 Note this is text, not HTML.
 
+
+.. _config_xml:
 
 [xml]
 -----

@@ -27,7 +27,7 @@ Major change history for coverage.py
 :history: 20130105T173500, updated for 3.6
 :history: 20131005T205700, updated for 3.7
 :history: 20131212T213100, updated for 3.7.1
-
+:history: 20150124T134800, updated for 4.0a4
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
@@ -37,27 +37,114 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _changes_40:
 
-Version 4.0 pre-release --- 27 September 2014
----------------------------------------------
+Version 4.0a4 pre-release --- ??? 2015
+--------------------------------------
 
-- Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
-  PyPy 2.2.
+Backward incompatibilities:
+
+- CPython versions supported are now Python 2.6, 2.7, 3.3, and 3.4.
+  PyPy2 2.4 and PyPy3 2.4 are also supported.
+
+- The original command line switches (`-x` to run a program, etc) are no
+  longer supported.
+
+- The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
+  a hack for ``--timid`` before configuration files were available.
+
+Major new features:
 
 - Gevent, eventlet, and greenlet are now supported, closing `issue 149`_.
   The ``concurrency`` setting specifies the concurrency library in use.  Huge
   thanks to Peter Portante for initial implementation, and to Joe Jevnik for
   the final insight that completed the work.
 
+- The HTML report now has filtering.  Type text into the Filter box on the
+  index page, and only modules with that text in the name will be shown.
+  Thanks, Danny Allen.
+
+New features:
+
 - Options are now also read from a setup.cfg file, if any.  Sections are
   prefixed with "coverage:", so the ``[run]`` options will be read from the
   ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
 
+- A new option: `coverage report --skip-covered` will reduce the number of
+  files reported by skipping files with 100% coverage.  Thanks, Krystian
+  Kichewko.  This means that empty `__init__.py` files will be skipped, since
+  they are 100% covered, closing `issue 315`_.
+
+- You can now specify the ``--fail-under`` option in the ``.coveragerc`` file
+  as the ``[report] fail_under`` options.  This closes `issue 314`_.
+
 - The ``report`` command can now show missing branches when reporting on branch
   coverage.  Thanks, Steve Leonard. Closes `issue 230`_.
 
+- A new configuration option for the XML report: ``[xml] package_depth``
+  controls which directories are identified as packages in the report.
+  Directories deeper than this depth are not reported as packages. 
+  The default is that all directories are reported as packages.
+  Thanks, Lex Berezhny.
+
+Improvements:
+
+- The ``--debug`` switch can now be used on any command.
+
+- The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
+  Stan Hu.
+
+- Reports now use file names with extensions.  Previously, a report would
+  describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
+  for better support of non-Python files, and also fixed `issue 69`_.
+
+- The XML report now reports each directory as a package again.  This was a bad
+  regression, I apologize.  This was reported in `issue 235`_, which is now
+  fixed.
+
+API changes:
+
+- The class defined in the coverage module is now called ``Coverage`` instead
+  of ``coverage``, though the old name still works, for backward compatibility.
+
+- You can now programmatically adjust the configuration of coverage by setting
+  items on `Coverage.config` after construction.
+
+Bug fixes:
+
+- The textual report and the HTML report used to report partial branches
+  differently for no good reason.  Now the text report's "missing branches"
+  column is a "partial branches" column so that both reports show the same
+  numbers.  This closes `issue 342`_.
+
+- The ``fail-under`` value is now rounded the same as reported results,
+  preventing paradoxical results, fixing `issue 284`_.
+
+- Empty files are now reported as 100% covered in the XML report, not 0%
+  covered (`issue 345`_).
+
+- The XML report will now create the output directory if need be, fixing
+  `issue 285`_.  Thanks Chris Rose.
+
+- HTML reports no longer raise UnicodeDecodeError if a Python file has
+  undecodable characters, fixing `issue 303`_ and `issue 331`_.
+
+- The annotate command will now annotate all files, not just ones relative to
+  the current directory, fixing `issue 57`_.
+
+.. _issue 57: https://bitbucket.org/ned/coveragepy/issue/57/annotate-command-fails-to-annotate-many
+.. _issue 69: https://bitbucket.org/ned/coveragepy/issue/69/coverage-html-overwrite-files-that-doesnt
+.. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
 .. _issue 149: https://bitbucket.org/ned/coveragepy/issue/149/coverage-gevent-looks-broken
 .. _issue 230: https://bitbucket.org/ned/coveragepy/issue/230/show-line-no-for-missing-branches-in
+.. _issue 235: https://bitbucket.org/ned/coveragepy/issue/235/package-name-is-missing-in-xml-report
+.. _issue 284: https://bitbucket.org/ned/coveragepy/issue/284/fail-under-should-show-more-precision
+.. _issue 285: https://bitbucket.org/ned/coveragepy/issue/285/xml-report-fails-if-output-file-directory
+.. _issue 303: https://bitbucket.org/ned/coveragepy/issue/303/unicodedecodeerror
 .. _issue 304: https://bitbucket.org/ned/coveragepy/issue/304/attempt-to-get-configuration-from-setupcfg
+.. _issue 314: https://bitbucket.org/ned/coveragepy/issue/314/fail_under-param-not-working-in-coveragerc
+.. _issue 315: https://bitbucket.org/ned/coveragepy/issue/315/option-to-omit-empty-files-eg-__init__py
+.. _issue 331: https://bitbucket.org/ned/coveragepy/issue/331/failure-of-encoding-detection-on-python2
+.. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ
+.. _issue 345: https://bitbucket.org/ned/coveragepy/issue/345/xml-reports-line-rate-0-for-empty-files
 
 
 .. _changes_371:
@@ -249,7 +336,6 @@ Fixes:
 .. _issue 60: https://bitbucket.org/ned/coveragepy/issue/60/incorrect-path-to-orphaned-pyc-files
 .. _issue 67: https://bitbucket.org/ned/coveragepy/issue/67/xml-report-filenames-may-be-generated
 .. _issue 80: https://bitbucket.org/ned/coveragepy/issue/80/is-there-a-duck-typing-way-to-know-we-cant
-.. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 89: https://bitbucket.org/ned/coveragepy/issue/89/on-windows-all-packages-are-reported-in
 .. _issue 97: https://bitbucket.org/ned/coveragepy/issue/97/allow-environment-variables-to-be
 .. _issue 100: https://bitbucket.org/ned/coveragepy/issue/100/source-directive-doesnt-work-for-packages
@@ -302,7 +388,6 @@ Version 3.5.3 --- 29 September 2012
 - Try to do a better job of the impossible task of detecting when we can't
   build the C extension, fixing `issue 183`_.
 
-.. _issue 82: https://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 .. _issue 147: https://bitbucket.org/ned/coveragepy/issue/147/massive-memory-usage-by-ctracer
 .. _issue 179: https://bitbucket.org/ned/coveragepy/issue/179/htmlreporter-fails-when-source-file-is
 .. _issue 183: https://bitbucket.org/ned/coveragepy/issue/183/install-fails-for-python-23
