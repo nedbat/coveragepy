@@ -4,6 +4,7 @@ import os.path
 
 import coverage
 from coverage import env
+from coverage.backward import StringIO
 from coverage.control import Plugins
 
 import coverage.plugin
@@ -135,6 +136,48 @@ class PluginTest(CoverageTest):
             cov.config["run:plugins"] = ["plugin_over_zero"]
             cov.start()
         cov.stop()
+
+    def test_plugin_sysinfo(self):
+        self.make_file("plugin_sysinfo.py", """\
+            import coverage
+
+            class Plugin(coverage.CoveragePlugin):
+                def sysinfo(self):
+                    return [("hello", "world")]
+            """)
+        debug_out = StringIO()
+        cov = coverage.Coverage(debug=["sys"])
+        cov._debug_file = debug_out
+        cov.config["run:plugins"] = ["plugin_sysinfo"]
+        cov.load()
+
+        out_lines = debug_out.getvalue().splitlines()
+        expected_end = [
+            "-- sys: plugin_sysinfo ---------------------------------------",
+            " hello: world",
+            "-- end -------------------------------------------------------",
+            ]
+        self.assertEqual(expected_end, out_lines[-len(expected_end):])
+
+    def test_plugin_with_no_sysinfo(self):
+        self.make_file("plugin_no_sysinfo.py", """\
+            import coverage
+
+            class Plugin(coverage.CoveragePlugin):
+                pass
+            """)
+        debug_out = StringIO()
+        cov = coverage.Coverage(debug=["sys"])
+        cov._debug_file = debug_out
+        cov.config["run:plugins"] = ["plugin_no_sysinfo"]
+        cov.load()
+
+        out_lines = debug_out.getvalue().splitlines()
+        expected_end = [
+            "-- sys: plugin_no_sysinfo ------------------------------------",
+            "-- end -------------------------------------------------------",
+            ]
+        self.assertEqual(expected_end, out_lines[-len(expected_end):])
 
 
 if not env.C_TRACER:

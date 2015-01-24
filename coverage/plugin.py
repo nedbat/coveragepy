@@ -57,6 +57,17 @@ class CoveragePlugin(object):
         """
         _needs_to_implement(self, "file_reporter")
 
+    def sysinfo(self):
+        """Return a list of information useful for debugging.
+
+        This method will be invoked for ``coverage run --debug=sys``.  Your
+        plugin can return any information to be displayed.
+
+        The return value is a list of pairs: (name, value).
+
+        """
+        return []
+
 
 class FileTracer(object):
     """Support needed for files during the tracing phase.

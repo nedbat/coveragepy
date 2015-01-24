@@ -301,6 +301,10 @@ class Coverage(object):
 
         if self.debug.should('sys'):
             self.debug.write_formatted_info("sys", self.sysinfo())
+            for plugin in self.plugins:
+                header = "sys: " + plugin.plugin_name
+                info = plugin.sysinfo()
+                self.debug.write_formatted_info(header, info)
             wrote_any = True
 
         if wrote_any:
