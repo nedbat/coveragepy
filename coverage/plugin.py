@@ -6,8 +6,33 @@ from coverage.misc import _needs_to_implement
 
 
 class CoveragePlugin(object):
-    """Base class for coverage.py plugins."""
+    """Base class for coverage.py plugins.
+
+    To write a coverage.py plugin, create a subclass of `CoveragePlugin`.
+    You can override methods here to participate in various aspects of
+    coverage.py's processing.
+
+    Currently the only plugin type is a file tracer, for implementing
+    measurement support for non-Python files.  File tracer plugins implement
+    the :meth:`file_tracer` method to claim files and the :meth:`file_reporter`
+    method to report on those files.
+
+    Any plugin can optionally implement :meth:`sys_info` to provide debugging
+    information about their operation.
+
+    """
+
     def __init__(self, options):
+        """
+        When the plugin is constructed, it will be passed a dictionary of
+        plugin-specific options read from the .coveragerc configuration file.
+        The base class stores these on the `self.options` attribute.
+
+        Arguments:
+            options (dict): The plugin-specific options read from the
+                .coveragerc configuration file.
+
+        """
         self.options = options
 
     def file_tracer(self, filename):
@@ -38,7 +63,7 @@ class CoveragePlugin(object):
         """Return the FileReporter class to use for filename.
 
         This will only be invoked if `filename` returns non-None from
-        `file_tracer`.  It's an error to return None.
+        :meth:`file_tracer`.  It's an error to return None.
 
         """
         _needs_to_implement(self, "file_reporter")
@@ -46,8 +71,8 @@ class CoveragePlugin(object):
     def sys_info(self):
         """Return a list of information useful for debugging.
 
-        This method will be invoked for ``coverage run --debug=sys``.  Your
-        plugin can return any information to be displayed.
+        This method will be invoked for ``--debug=sys``.  Your
+        plugin can return any information it wants to be displayed.
 
         The return value is a list of pairs: (name, value).
 
@@ -208,7 +233,7 @@ class FileReporter(object):
         return False
 
     def flat_rootname(self):
-        """A base for a flat filename to correspond to this code unit.
+        """A base for a flat filename to correspond to this file.
 
         Useful for writing files about the code where you want all the files in
         the same directory, but need to differentiate same-named files from

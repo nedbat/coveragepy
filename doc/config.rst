@@ -11,6 +11,7 @@ Configuration files
 .. :history: 20110827T212700, updated for 3.5.1
 .. :history: 20130926T222300, updated for 3.6.1
 .. :history: 20140925T064700, updated for 4.0a1
+.. :history: 20150124T173400, updated for 4.0a4
 
 
 Coverage.py options can be specified in a configuration file.  This makes it
@@ -125,6 +126,9 @@ of measurement or reporting.  See :ref:`source` for details.
 ``parallel`` (boolean, default False): append the machine name, process
 id and random number to the data file name to simplify collecting data from
 many processes.  See :ref:`cmd_combining` for more information.
+
+``plugins`` (multi-string): a list of plugin package names. See :ref:`plugins`
+for more information.
 
 ``source`` (multi-string): a list of packages or directories, the source to
 measure during execution.  See :ref:`source` for details.
