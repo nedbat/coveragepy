@@ -13,7 +13,6 @@ class CodeUnit(FileReporter):
 
     `name` is a human-readable name for this code unit.
     `filename` is the os path from which we can read the source.
-    `relative` is a boolean.
 
     """
 
@@ -30,13 +29,8 @@ class CodeUnit(FileReporter):
         if hasattr(morf, '__name__'):
             name = morf.__name__
             name = name.replace(".", os.sep) + ".py"
-            self.relative = True
         else:
             name = self.file_locator.relative_filename(filename)
-            if os.path.isabs(filename):
-                self.relative = (name != filename)
-            else:
-                self.relative = True
         self.name = name
 
     def _adjust_filename(self, f):
