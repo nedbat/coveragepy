@@ -32,6 +32,21 @@ class FakeConfig(object):
 class LoadPluginsTest(CoverageTest):
     """Test Plugins.load_plugins directly."""
 
+    def test_implicit_boolean(self):
+        self.make_file("plugin1.py", """\
+            from coverage import CoveragePlugin
+
+            class Plugin(CoveragePlugin):
+                pass
+            """)
+
+        config = FakeConfig("plugin1", {})
+        plugins = Plugins.load_plugins([], config)
+        self.assertFalse(plugins)
+
+        plugins = Plugins.load_plugins(["plugin1"], config)
+        self.assertTrue(plugins)
+
     def test_importing_and_configuring(self):
         self.make_file("plugin1.py", """\
             from coverage import CoveragePlugin
