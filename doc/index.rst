@@ -167,7 +167,7 @@ More information
     branch
     subprocess
     api
-    plugin
+    plugins
     contributing
     trouble
     faq
