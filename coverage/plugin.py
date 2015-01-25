@@ -1,5 +1,7 @@
 """Plugin interfaces for coverage.py"""
 
+import re
+
 from coverage.misc import _needs_to_implement
 
 
@@ -206,10 +208,14 @@ class FileReporter(object):
         return False
 
     def flat_rootname(self):
+        """A base for a flat filename to correspond to this code unit.
+
+        Useful for writing files about the code where you want all the files in
+        the same directory, but need to differentiate same-named files from
+        different directories.
+
+        For example, the file a/b/c.py will return 'a_b_c_py'
+
+        """
         # TODO: a better generic implementation?
-        return (
-            self.filename
-                .replace('\\', '_')
-                .replace('/', '_')
-                .replace('.', '_')
-            )
+        return re.sub(r"[\/.:]", "_", self.name)
