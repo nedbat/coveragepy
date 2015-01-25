@@ -28,6 +28,16 @@ example, let's say you want to use one called fred_plugin.
     plugins =
         fred_plugin
 
+#. If the plugin needs its own configuration, you can add those settings in
+   the .coveragerc file in a section named for the plugin::
+
+    [fred_plugin]
+    option1 = True
+    option2 = abc.foo
+
+   Check the documentation for the plugin to see if it takes any options, and
+   what they are.
+
 #. Run your tests as you usually would.  NOTE: You will see a warning when
    coverage starts::
 

@@ -42,10 +42,10 @@ class CoveragePlugin(object):
         responsibility for tracing the file.  If your plugin can handle the
         file, then return a :class:`FileTracer` object.  Otherwise return None.
 
-        There is no way to register your plugin for particular files.  This
-        method is how your plugin applies itself to files.  Be prepared for
-        `filename` to refer to all kinds of files that have nothing to do with
-        your plugin.
+        There is no way to register your plugin for particular files.  Instead,
+        this method is invoked for all files, and can decide whether it can
+        trace the file or not.  Be prepared for `filename` to refer to all kinds
+        of files that have nothing to do with your plugin.
 
         Arguments:
             filename (str): The path to the file being considered.  This is the
@@ -85,7 +85,7 @@ class FileTracer(object):
 
     You may construct this object from :meth:`CoveragePlugin.file_tracer` any
     way you like.  A natural choice would be to pass the filename given to
-    file_tracer.
+    `file_tracer`.
 
     """
 
@@ -107,13 +107,13 @@ class FileTracer(object):
 
         FileTracers can provide dynamically determined filenames by
         implementing dynamic_source_filename.  Invoking that function is
-        expensive. To determine whether it should invoke it, coverage.py uses
+        expensive. To determine whether to invoke it, coverage.py uses
         the result of this function to know if it needs to bother invoking
         :meth:`dynamic_source_filename`.
 
         Returns:
             boolean: True if :meth:`dynamic_source_filename` should be called
-            to get dynamic source filenames.
+                to get dynamic source filenames.
 
         """
         return False
@@ -129,15 +129,13 @@ class FileTracer(object):
 
         Returns:
             The source filename for this frame, or None if this frame shouldn't
-            be measured.
-
-        Can return None if dynamic filenames aren't needed.
+                be measured.
 
         """
         return None
 
     def line_number_range(self, frame):
-        """Given a call frame, return the range of source line numbers.
+        """Return the range of source line numbers for a given a call frame.
 
         The call frame is examined, and the source line number in the original
         file is returned.  The return value is a pair of numbers, the starting
