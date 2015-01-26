@@ -3,6 +3,16 @@ Change history for Coverage.py
 ------------------------------
 
 
+Version 4.0a4 --- 25 January 2015
+---------------------------------
+
+- Plugins can now provide sys_info for debugging output.
+
+- Started plugins documentation.
+
+- Prepared to move the docs to readthedocs.org.
+
+
 Version 4.0a3 --- 20 January 2015
 ---------------------------------
 
@@ -44,6 +54,8 @@ Version 4.0a2 --- 14 January 2015
   CPython 3.2 and older versions of PyPy.  The code won't work on CPython 3.2.
   It will probably still work on older versions of PyPy, but I'm not testing
   against them.
+
+- Plugins!
 
 - The original command line switches (`-x` to run a program, etc) are no
   longer supported.

@@ -82,9 +82,9 @@ If all went well, you should be able to open a command prompt, and see coverage
 installed properly::
 
     $ coverage --version
-    Coverage.py, version 4.0a1.  http://nedbatchelder.com/code/coverage
+    Coverage.py, version 4.0a4.  http://nedbatchelder.com/code/coverage
 
 You can also invoke coverage as a module::
 
     $ python -m coverage --version
-    Coverage.py, version 4.0a1.  http://nedbatchelder.com/code/coverage
+    Coverage.py, version 4.0a4.  http://nedbatchelder.com/code/coverage

@@ -37,8 +37,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _changes_40:
 
-Version 4.0a4 pre-release --- ??? 2015
---------------------------------------
+Version 4.0a4 pre-release --- 25 January 2015
+---------------------------------------------
 
 Backward incompatibilities:
 

@@ -17,10 +17,11 @@
     - Version --version output in doc/install.rst
     - Don't forget the man page: doc/python-coverage.1.txt
     - Generate new sample_html to get the latest, incl footer version number:
-        python setup.py develop
+        pip install -e .
         cd ~/cog/trunk
         rm -rf htmlcov
-        coverage run --branch --source=cogapp -m cogapp.test_cogapp CogTestsInMemory
+        TODO: this isn't right with the new cog
+            coverage run --branch --source=cogapp -m cogapp.test_cogapp CogTestsInMemory
         coverage html
         - IF BETA:
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/

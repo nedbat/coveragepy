@@ -50,7 +50,7 @@ not.
 
 .. ifconfig:: prerelease
 
-    The latest version is coverage.py 4.0a4, released 27 September 2014.
+    The latest version is coverage.py 4.0a4, released 25 January 2015.
     It is supported on Python versions 2.6 through 3.4, PyPy 2.2 through 2.4,
     and PyPy3 2.3 and 2.4.
     **This is a pre-release build.  The usual warnings about possible bugs apply.**
@@ -105,8 +105,8 @@ Getting started is easy:
         `report like this one`_.
 
 .. _coverage page on the Python Package Index: http://pypi.python.org/pypi/coverage
-.. _report like this: /code/coverage/sample_html/index.html
-.. _report like this one: /code/coverage/sample_html_beta/index.html
+.. _report like this: http://nedbatchelder.com/code/coverage/sample_html/index.html
+.. _report like this one: http://nedbatchelder.com/code/coverage/sample_html_beta/index.html
 
 
 Using coverage.py
