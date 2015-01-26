@@ -644,7 +644,7 @@ Commands:
     xml         Create an XML report of coverage results.
 
 Use "coverage help <command>" for detailed help on any command.
-For more information, see %(__url__)s
+For full documentation, see %(__url__)s
 """,
 # -------------------------
 'minimum_help': """\
@@ -652,7 +652,8 @@ Code coverage for Python.  Use 'coverage help' for help.
 """,
 # -------------------------
 'version': """\
-Coverage.py, version %(__version__)s.  %(__url__)s
+Coverage.py, version %(__version__)s.
+Documentation at %(__url__)s
 """,
 }
 

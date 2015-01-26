@@ -52,6 +52,7 @@
 - Update nedbatchelder.com
     - Edit webfaction.htaccess to make sure the proper versions are mapped to /beta
     - Blog post?
+- Update readthedocs
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
     # Note: don't delete old version numbers: it marks changes on the tickets
