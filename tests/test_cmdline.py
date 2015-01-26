@@ -579,7 +579,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
     def test_help(self):
         self.command_line("help")
         out = self.stdout()
-        self.assertIn("nedbatchelder.com", out)
+        self.assertIn("readthedocs.org", out)
         self.assertGreater(out.count("\n"), 10)
 
     def test_cmd_help(self):

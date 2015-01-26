@@ -21,6 +21,6 @@ compare("gold_y_xml_branch", "xml_branch", scrubs=[
     (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
     (r' version="[-.\w]+"', ' version="VERSION"'),
     (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
-    (r'/code/coverage/?[-.\w]*', '/code/coverage/VER'),
+    (r'/coverage.readthedocs.org/?[-.\w/]*', '/coverage.readthedocs.org/VER'),
     ])
 clean("xml_branch")

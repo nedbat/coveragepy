@@ -21,6 +21,6 @@ compare("gold_x_xml", "xml_2", scrubs=[
     (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
     (r' version="[-.\w]+"', ' version="VERSION"'),
     (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
-    (r'/code/coverage/?[-.\w]*', '/code/coverage/VER'),
+    (r'/coverage.readthedocs.org/?[-.\w/]*', '/coverage.readthedocs.org/VER'),
     ])
 clean("xml_2")
