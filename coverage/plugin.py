@@ -1,5 +1,6 @@
 """Plugin interfaces for coverage.py"""
 
+import os
 import re
 
 from coverage.misc import _needs_to_implement
@@ -240,5 +241,5 @@ class FileReporter(object):
         For example, the file a/b/c.py will return 'a_b_c_py'
 
         """
-        # TODO: a better generic implementation?
-        return re.sub(r"[\/.:]", "_", self.name)
+        name = os.path.splitdrive(self.name)[1]
+        return re.sub(r"[\\/.:]", "_", name)

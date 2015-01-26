@@ -238,8 +238,14 @@ def re_line(text, pat):
 
 
 def clean(text, scrub=None):
-    """Remove any text matching `scrub`, and all leading whitespace."""
+    """Clean text to prepare it for comparison.
+
+    Remove text matching `scrub`, and leading whitespace. Convert backslashes
+    to forward slashes.
+
+    """
     if scrub:
         text = re.sub(scrub, "", text)
     text = re.sub(r"(?m)^\s+", "", text)
+    text = re.sub(r"\\", "/", text)
     return text
