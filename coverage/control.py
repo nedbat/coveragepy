@@ -722,12 +722,9 @@ class Coverage(object):
                 ):
                     self._warn("Module %s has no Python source." % pkg)
                 else:
-                    raise AssertionError(
-                        "Unexpected third case: name = %s, "
-                        "object = %r, "
-                        "__file__ = %s" % (
-                            pkg, sys.modules[pkg], sys.modules[pkg].__file__
-                        )
+                    self._warn(
+                        "Module %s was previously imported, "
+                        "but not measured." % pkg
                     )
 
         # Find out if we got any data.

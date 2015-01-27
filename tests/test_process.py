@@ -568,6 +568,31 @@ class ProcessTest(CoverageTest):
         out = self.run_command("python allok.py")
         self.assertEqual(out, "No warnings!\n")
 
+    def test_run_twice(self):
+        # https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
+        self.make_file("foo.py", """\
+            def foo():
+                pass
+            """)
+        self.make_file("run_twice.py", """\
+            import coverage
+
+            for _ in [1, 2]:
+                inst = coverage.Coverage(source=['foo'])
+                inst.load()
+                inst.start()
+                import foo
+                inst.stop()
+                inst.combine()
+                inst.save()
+            """)
+        out = self.run_command("python run_twice.py")
+        self.assertEqual(
+            out,
+            "Coverage.py warning: "
+            "Module foo was previously imported, but not measured.\n"
+        )
+
 
 class AliasedCommandTest(CoverageTest):
     """Tests of the version-specific command aliases."""

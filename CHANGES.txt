@@ -3,6 +3,15 @@ Change history for Coverage.py
 ------------------------------
 
 
+Latest
+------
+
+- A new warning is possible, if a desired file isn't measure because it was
+  imported before coverage was started (`issue 353`_).
+
+.. _issue 353: https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
+
+
 Version 4.0a4 --- 25 January 2015
 ---------------------------------
 
