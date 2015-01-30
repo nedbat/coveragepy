@@ -288,22 +288,30 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
 
-    def test_decode_error(self):
+    # TODO: enable this test, and then fix this:
+    # https://bitbucket.org/ned/coveragepy/issue/351/files-with-incorrect-encoding-are-ignored
+    def SKIP_THIS_decode_error(self):
         # imp.load_module won't load a file with an undecodable character
         # in a comment, though Python will run them.  So we'll change the
         # file after running.
         self.make_file("main.py", "import sub.not_ascii")
         self.make_file("sub/__init__.py")
         self.make_file("sub/not_ascii.py", """\
+            # coding: utf8
             a = 1  # Isn't this great?!
             """)
         cov = coverage.coverage()
         self.start_import_stop(cov, "main")
 
-        # Create the undecodable version of the file.
-        self.make_file("sub/not_ascii.py", """\
-            a = 1  # Isn't this great?\xcb!
-            """)
+        # Create the undecodable version of the file. make_file is too helpful,
+        # so get down and dirty with bytes.
+        with open("sub/not_ascii.py", "wb") as f:
+            f.write(b"# coding: utf8\na = 1  # Isn't this great?\xcb!\n")
+
+        with open("sub/not_ascii.py", "rb") as f:
+            undecodable = f.read()
+        self.assertIn(b"?\xcb!", undecodable)
+
         cov.html_report()
 
         html_report = self.get_html_report_content("sub/not_ascii.py")
