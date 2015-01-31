@@ -24,7 +24,9 @@ class Opts(object):
         '', '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage."
         )
-    CONCURRENCY_CHOICES = ["thread", "gevent", "greenlet", "eventlet"]
+    CONCURRENCY_CHOICES = [
+        "thread", "gevent", "greenlet", "eventlet", "multiprocessing",
+    ]
     concurrency = optparse.make_option(
         '', '--concurrency', action='store', metavar="LIB",
         choices=CONCURRENCY_CHOICES,

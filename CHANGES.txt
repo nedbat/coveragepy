@@ -6,9 +6,15 @@ Change history for Coverage.py
 Latest
 ------
 
-- A new warning is possible, if a desired file isn't measure because it was
+- Wildly experimental: support for measuring processes started by the
+  multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
+  either on the command line or in the .coveragerc file. Thanks, Eduardo
+  Schettino. (`issue 117`_).
+
+- A new warning is possible, if a desired file isn't measured because it was
   imported before coverage was started (`issue 353`_).
 
+.. _issue 117: https://bitbucket.org/ned/coveragepy/issue/117/enable-coverage-measurement-of-code-run-by
 .. _issue 353: https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
 
 

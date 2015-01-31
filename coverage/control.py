@@ -21,6 +21,7 @@ from coverage.files import ModuleMatcher
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone, overrides
+from coverage.monkey import patch_multiprocessing
 from coverage.plugin import CoveragePlugin, FileReporter
 from coverage.python import PythonCodeUnit
 from coverage.results import Analysis, Numbers
@@ -219,13 +220,18 @@ class Coverage(object):
         self.omit = prep_patterns(self.config.omit)
         self.include = prep_patterns(self.config.include)
 
+        concurrency = self.config.concurrency
+        if concurrency == "multiprocessing":
+            patch_multiprocessing()
+            concurrency = None
+
         self.collector = Collector(
             should_trace=self._should_trace,
             check_include=self._check_include_omit_etc,
             timid=self.config.timid,
             branch=self.config.branch,
             warn=self._warn,
-            concurrency=self.config.concurrency,
+            concurrency=concurrency,
             )
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
@@ -544,6 +550,8 @@ class Coverage(object):
     def _warn(self, msg):
         """Use `msg` as a warning."""
         self._warnings.append(msg)
+        if self.debug.should("pid"):
+            msg = "[%d] %s" % (os.getpid(), msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
 
     def use_cache(self, usecache):

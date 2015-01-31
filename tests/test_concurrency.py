@@ -220,6 +220,51 @@ class ConcurrencyTest(CoverageTest):
         self.try_some_code(BUG_330, "eventlet", eventlet, "0\n")
 
 
+class MultiprocessingTest(CoverageTest):
+    """Test support of the multiprocessing module."""
+
+    def test_multiprocessing(self):
+        self.make_file("multi.py", """\
+            import multiprocessing
+            import os
+            import time
+
+            def func(x):
+                # Need to pause, or the tasks go too quick, and some processes
+                # in the pool don't get any work, and then don't record data.
+                time.sleep(0.01)
+                if x % 2:
+                    return os.getpid(), x*x
+                else:
+                    return os.getpid(), x*x
+
+            if __name__ == "__main__":
+                pool = multiprocessing.Pool(3)
+                inputs = range(20)
+                outputs = pool.imap_unordered(func, inputs)
+                pids = set()
+                total = 0
+                for pid, sq in outputs:
+                    pids.add(pid)
+                    total += sq
+                print("%d pids, total = %d" % (len(pids), total))
+                pool.close()
+                pool.join()
+            """)
+
+        out = self.run_command(
+            "coverage run --concurrency=multiprocessing multi.py"
+        )
+        os.system("cp .cov* /tmp")
+        total = sum(x*x for x in range(20))
+        self.assertEqual(out.rstrip(), "3 pids, total = %d" % total)
+
+        self.run_command("coverage combine")
+        out = self.run_command("coverage report -m")
+        last_line = self.squeezed_lines(out)[-1]
+        self.assertEqual(last_line, "multi.py 20 0 100%")
+
+
 def print_simple_annotation(code, linenos):
     """Print the lines in `code` with X for each line number in `linenos`."""
     for lineno, line in enumerate(code.splitlines(), start=1):

@@ -44,6 +44,7 @@ Brandon Rhodes
 Adi Roiban
 Greg Rogers
 Chris Rose
+Eduardo Schettino
 George Song
 Anthony Sottile
 David Stanek
