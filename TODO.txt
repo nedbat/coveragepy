@@ -27,15 +27,22 @@ Key:
     - runpy ?
     + we can use "except ExcClass as e:"
 
-- Clean up plugins
+- Plugins
+    - Clean up
+    - implement plugin support in CTracer
+    - remove plugin support from PyTracer
+    - add services:
+        - filelocator
+        - warning
+    - docs
 + Make reports use filenames, not module names
-- implement plugin support in CTracer
-- remove plugin support from PyTracer
 - documentation
+    - test helpers
+    - cov.config["run:branch"] api
+    - "added in 4.0"
 + Remove code only run on <2.6
 - Change data file to json
 - Create data api
-- New ast-based branch coverage?
 + gevent, etc.
 + Remove the old command-line syntax
     + A pain, b/c of the structure of the tests.
