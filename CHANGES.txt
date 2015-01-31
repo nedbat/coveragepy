@@ -8,8 +8,8 @@ Latest
 
 - Wildly experimental: support for measuring processes started by the
   multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
-  either on the command line or in the .coveragerc file. Thanks, Eduardo
-  Schettino. (`issue 117`_).
+  either on the command line or in the .coveragerc file (`issue 117`_). Thanks,
+  Eduardo Schettino.  Currently, this does not work on Windows.
 
 - A new warning is possible, if a desired file isn't measured because it was
   imported before coverage was started (`issue 353`_).
