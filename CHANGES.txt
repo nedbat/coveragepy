@@ -14,7 +14,12 @@ Latest
 - A new warning is possible, if a desired file isn't measured because it was
   imported before coverage was started (`issue 353`_).
 
+- The `coverage.process_startup` function now will start coverage measurement
+  only once, no matter how many times it is called.  This fixes problems due
+  to unusual virtualenv configurations (`issue 340`_).
+
 .. _issue 117: https://bitbucket.org/ned/coveragepy/issue/117/enable-coverage-measurement-of-code-run-by
+.. _issue 340: https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy
 .. _issue 353: https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
 
 

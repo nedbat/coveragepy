@@ -23,8 +23,7 @@ dist
 htmlcov
 MANIFEST
 setuptools-*.egg
-.tox
-.tox_kits
+.tox*
 .noseids
 
 # Stuff in the test directory.

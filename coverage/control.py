@@ -1062,11 +1062,30 @@ def process_startup():
 
     """
     cps = os.environ.get("COVERAGE_PROCESS_START")
-    if cps:
-        cov = Coverage(config_file=cps, auto_data=True)
-        cov.start()
-        cov._warn_no_data = False
-        cov._warn_unimported_source = False
+    if not cps:
+        # No request for coverage, nothing to do.
+        return
+
+    # This function can be called more than once in a process. This happens
+    # because some virtualenv configurations make the same directory visible
+    # twice in sys.path.  This means that the .pth file will be found twice,
+    # and executed twice, executing this function twice.  We set a global
+    # flag (an attribute on this function) to indicate that coverage has
+    # already been started, so we can avoid doing it twice.
+    #
+    # https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy has more
+    # details.
+
+    if hasattr(process_startup, "done"):
+        # We've annotated this function before, so we must have already
+        # started coverage in this process.  Nothing to do.
+        return
+
+    process_startup.done = True
+    cov = Coverage(config_file=cps, auto_data=True)
+    cov.start()
+    cov._warn_no_data = False
+    cov._warn_unimported_source = False
 
 
 # A hack for debugging testing in sub-processes.
