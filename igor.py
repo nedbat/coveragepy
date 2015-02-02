@@ -191,8 +191,10 @@ def do_check_eol():
     """Check files for incorrect newlines and trailing whitespace."""
 
     ignore_dirs = [
-        '.svn', '.hg', '.tox', '.tox_kits', 'coverage.egg-info',
-        '_build', 'covtestegg1.egg-info',
+        '.svn', '.hg', '.git',
+        '.tox*',
+        '*.egg-info',
+        '_build',
         ]
     checked = set([])
 
@@ -230,8 +232,12 @@ def do_check_eol():
                     if fnmatch.fnmatch(fname, p):
                         check_file(fname, **kwargs)
                         break
-            for dir_name in ignore_dirs:
-                if dir_name in dirs:
+            for ignore_dir in ignore_dirs:
+                ignored = []
+                for dir_name in dirs:
+                    if fnmatch.fnmatch(dir_name, ignore_dir):
+                        ignored.append(dir_name)
+                for dir_name in ignored:
                     dirs.remove(dir_name)
 
     check_files("coverage", ["*.py", "*.c"])
