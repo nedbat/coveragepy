@@ -199,7 +199,6 @@ class Coverage(object):
         for plugin in self.plugins:
             if overrides(plugin, "file_tracer", CoveragePlugin):
                 self.file_tracers.append(plugin)
-        self.file_tracers.append(None)      # The Python case.
 
         # _exclude_re is a dict mapping exclusion list names to compiled
         # regexes.
@@ -444,39 +443,35 @@ class Coverage(object):
 
         # Try the plugins, see if they have an opinion about the file.
         for plugin in self.file_tracers:
-            if plugin:
-                file_tracer = plugin.file_tracer(canonical)
-                if file_tracer is not None:
-                    file_tracer.plugin_name = plugin.plugin_name
-                    disp.trace = True
-                    disp.file_tracer = file_tracer
-                    if file_tracer.has_dynamic_source_filename():
-                        disp.has_dynamic_filename = True
-                    else:
-                        disp.source_filename = self.file_locator.canonical_filename(file_tracer.source_filename())
-            else:
+            file_tracer = plugin.file_tracer(canonical)
+            if file_tracer is not None:
+                file_tracer.plugin_name = plugin.plugin_name
                 disp.trace = True
-                disp.source_filename = canonical
-                file_tracer = None
-            if disp.trace:
-                if file_tracer:
-                    disp.file_tracer = file_tracer
-                if not disp.has_dynamic_filename:
-                    if disp.source_filename is None:
-                        raise CoverageException(
-                            "Plugin %r didn't set source_filename for %r" %
-                            (plugin, disp.original_filename)
-                        )
-                    if disp.check_filters:
-                        reason = self._check_include_omit_etc_internal(
-                            disp.source_filename, frame,
-                        )
-                        if reason:
-                            nope(disp, reason)
+                disp.file_tracer = file_tracer
+                if file_tracer.has_dynamic_source_filename():
+                    disp.has_dynamic_filename = True
+                else:
+                    disp.source_filename = self.file_locator.canonical_filename(file_tracer.source_filename())
+                break
+        else:
+            # No plugin wanted it: it's Python.
+            disp.trace = True
+            disp.source_filename = canonical
+            file_tracer = None
 
-                return disp
+        if not disp.has_dynamic_filename:
+            if not disp.source_filename:
+                raise CoverageException(
+                    "Plugin %r didn't set source_filename for %r" %
+                    (plugin, disp.original_filename)
+                )
+            reason = self._check_include_omit_etc_internal(
+                disp.source_filename, frame,
+            )
+            if reason:
+                nope(disp, reason)
 
-        return nope(disp, "no plugin found")  # TODO: a test that causes this.
+        return disp
 
     def _check_include_omit_etc_internal(self, filename, frame):
         """Check a filename against the include, omit, etc, rules.
@@ -1024,7 +1019,6 @@ class FileDisposition(object):
         self.original_filename = original_filename
         self.canonical_filename = original_filename
         self.source_filename = None
-        self.check_filters = True
         self.trace = False
         self.reason = ""
         self.file_tracer = None
