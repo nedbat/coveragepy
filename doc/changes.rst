@@ -81,7 +81,7 @@ New features:
 
 - A new configuration option for the XML report: ``[xml] package_depth``
   controls which directories are identified as packages in the report.
-  Directories deeper than this depth are not reported as packages. 
+  Directories deeper than this depth are not reported as packages.
   The default is that all directories are reported as packages.
   Thanks, Lex Berezhny.
 
