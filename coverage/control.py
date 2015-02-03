@@ -442,6 +442,7 @@ class Coverage(object):
         disp.canonical_filename = canonical
 
         # Try the plugins, see if they have an opinion about the file.
+        plugin = None
         for plugin in self.file_tracers:
             file_tracer = plugin.file_tracer(canonical)
             if file_tracer is not None:
@@ -451,13 +452,15 @@ class Coverage(object):
                 if file_tracer.has_dynamic_source_filename():
                     disp.has_dynamic_filename = True
                 else:
-                    disp.source_filename = self.file_locator.canonical_filename(file_tracer.source_filename())
+                    disp.source_filename = \
+                        self.file_locator.canonical_filename(
+                            file_tracer.source_filename()
+                        )
                 break
         else:
             # No plugin wanted it: it's Python.
             disp.trace = True
             disp.source_filename = canonical
-            file_tracer = None
 
         if not disp.has_dynamic_filename:
             if not disp.source_filename:
@@ -1124,5 +1127,6 @@ class Plugins(object):
     def __iter__(self):
         return iter(self.order)
 
-    def get(self, module):
-        return self.names[module]
+    def get(self, plugin_name):
+        """Return a plugin by name."""
+        return self.names[plugin_name]

@@ -37,13 +37,13 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'done\n')
         report = self.report_from_command("coverage report")
 
-        # Name                                                 Stmts   Miss  Cover
-        # ------------------------------------------------------------------------
-        # c:/ned/coverage/trunk/tests/modules/covmod1.py           2      0   100%
-        # c:/ned/coverage/trunk/tests/zipmods.zip/covmodzip1.py    2      0   100%
-        # mycode.py                                                4      0   100%
-        # ------------------------------------------------------------------------
-        # TOTAL                                                    8      0   100%
+        # Name                                           Stmts   Miss  Cover
+        # ------------------------------------------------------------------
+        # c:/ned/coverage/tests/modules/covmod1.py           2      0   100%
+        # c:/ned/coverage/tests/zipmods.zip/covmodzip1.py    2      0   100%
+        # mycode.py                                          4      0   100%
+        # ------------------------------------------------------------------
+        # TOTAL                                              8      0   100%
 
         self.assertNotIn("/coverage/__init__/", report)
         self.assertIn("/tests/modules/covmod1.py ", report)
@@ -211,12 +211,12 @@ class SummaryTest(CoverageTest):
         self.assertEqual(out, 'x\ny\n')
         report = self.report_from_command("coverage report --show-missing")
 
-        # Name           Stmts   Miss Branch BrPart  Cover   Missing
-        # ----------------------------------------------------------
-        # main.py            1      0      0      0   100%
-        # mybranch.py       10      2      8      3    61%   7-8, 2->4, 4->6, 6->7
-        # ----------------------------------------------------------
-        # TOTAL             11      2      8      3    63%
+        # Name        Stmts   Miss Branch BrPart  Cover   Missing
+        # -------------------------------------------------------
+        # main.py         1      0      0      0   100%
+        # mybranch.py    10      2      8      3    61%   7-8, 2->4, 4->6, 6->7
+        # -------------------------------------------------------
+        # TOTAL          11      2      8      3    63%
 
         self.assertEqual(self.line_count(report), 6)
         squeezed = self.squeezed_lines(report)
