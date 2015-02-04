@@ -1,8 +1,6 @@
 /* C-based Tracer for Coverage. */
 
 #include "Python.h"
-#include "compile.h"        /* in 2.3, this wasn't part of Python.h */
-#include "eval.h"           /* or this. */
 #include "structmember.h"
 #include "frameobject.h"
 
