@@ -396,7 +396,7 @@ CTracer_set_pdata_stack(CTracer *self)
 static int
 CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
 {
-    int ret = RET_OK;
+    int ret = RET_ERROR;
     PyObject * filename = NULL;
     PyObject * tracename = NULL;
     PyObject * disposition = NULL;
@@ -436,12 +436,12 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
             */
             STATS( self->stats.missed_returns++; )
             if (CTracer_set_pdata_stack(self)) {
-                return RET_ERROR;
+                goto error;
             }
             if (self->pdata_stack->depth >= 0) {
                 if (self->tracing_arcs && self->cur_entry.file_data) {
                     if (CTracer_record_pair(self, self->cur_entry.last_line, -self->last_exc_firstlineno) < 0) {
-                        return RET_ERROR;
+                        goto error;
                     }
                 }
                 SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "missedreturn");
@@ -458,10 +458,10 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
         STATS( self->stats.calls++; )
         /* Grow the stack. */
         if (CTracer_set_pdata_stack(self)) {
-            return RET_ERROR;
+            goto error;
         }
         if (DataStack_grow(self, self->pdata_stack)) {
-            return RET_ERROR;
+            goto error;
         }
 
         /* Push the current state on the stack. */
@@ -480,11 +480,11 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
             if (disposition == NULL) {
                 /* An error occurred inside should_trace. */
                 STATS( self->stats.errors++; )
-                return RET_ERROR;
+                goto error;
             }
             if (PyDict_SetItem(self->should_trace_cache, filename, disposition) < 0) {
                 STATS( self->stats.errors++; )
-                return RET_ERROR;
+                goto error;
             }
         }
         else {
@@ -494,8 +494,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
         disp_trace = PyObject_GetAttrString(disposition, "trace");
         if (disp_trace == NULL) {
             STATS( self->stats.errors++; )
-            Py_DECREF(disposition);
-            return RET_ERROR;
+            goto error;
         }
 
         tracename = Py_None;
@@ -506,12 +505,9 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
             tracename = PyObject_GetAttrString(disposition, "source_filename");
             if (tracename == NULL) {
                 STATS( self->stats.errors++; )
-                Py_DECREF(disposition);
-                Py_DECREF(disp_trace);
-                return RET_ERROR;
+                goto error;
             }
         }
-        Py_DECREF(disp_trace);
 
         if (MyText_Check(tracename)) {
             PyObject * file_data = PyDict_GetItem(self->data, tracename);
@@ -522,17 +518,13 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                 file_data = PyDict_New();
                 if (file_data == NULL) {
                     STATS( self->stats.errors++; )
-                    Py_DECREF(tracename);
-                    Py_DECREF(disposition);
-                    return RET_ERROR;
+                    goto error;
                 }
                 ret = PyDict_SetItem(self->data, tracename, file_data);
                 Py_DECREF(file_data);
                 if (ret < 0) {
                     STATS( self->stats.errors++; )
-                    Py_DECREF(tracename);
-                    Py_DECREF(disposition);
-                    return RET_ERROR;
+                    goto error;
                 }
 
                 if (self->plugin_data != NULL) {
@@ -540,25 +532,19 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                     disp_file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
                     if (disp_file_tracer == NULL) {
                         STATS( self->stats.errors++; )
-                        Py_DECREF(tracename);
-                        Py_DECREF(disposition);
-                        return RET_ERROR;
+                        goto error;
                     }
                     if (disp_file_tracer != Py_None) {
                         disp_plugin_name = PyObject_GetAttrString(disp_file_tracer, "plugin_name");
                         Py_DECREF(disp_file_tracer);
                         if (disp_plugin_name == NULL) {
                             STATS( self->stats.errors++; )
-                            Py_DECREF(tracename);
-                            Py_DECREF(disposition);
-                            return RET_ERROR;
+                            goto error;
                         }
                         ret = PyDict_SetItem(self->plugin_data, tracename, disp_plugin_name);
                         Py_DECREF(disp_plugin_name);
                         if (ret < 0) {
-                            Py_DECREF(tracename);
-                            Py_DECREF(disposition);
-                            return RET_ERROR;
+                            goto error;
                         }
                     }
                 }
@@ -574,9 +560,6 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
             SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "skipped");
         }
 
-        Py_DECREF(tracename);
-        Py_DECREF(disposition);
-
         self->cur_entry.last_line = -1;
         break;
 
@@ -584,13 +567,13 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
         STATS( self->stats.returns++; )
         /* A near-copy of this code is above in the missing-return handler. */
         if (CTracer_set_pdata_stack(self)) {
-            return RET_ERROR;
+            goto error;
         }
         if (self->pdata_stack->depth >= 0) {
             if (self->tracing_arcs && self->cur_entry.file_data) {
                 int first = frame->f_code->co_firstlineno;
                 if (CTracer_record_pair(self, self->cur_entry.last_line, -first) < 0) {
-                    return RET_ERROR;
+                    goto error;
                 }
             }
 
@@ -609,7 +592,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                 if (self->tracing_arcs) {
                     /* Tracing arcs: key is (last_line,this_line). */
                     if (CTracer_record_pair(self, self->cur_entry.last_line, frame->f_lineno) < 0) {
-                        return RET_ERROR;
+                        goto error;
                     }
                 }
                 else {
@@ -617,13 +600,13 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                     PyObject * this_line = MyInt_FromLong(frame->f_lineno);
                     if (this_line == NULL) {
                         STATS( self->stats.errors++; )
-                        return RET_ERROR;
+                        goto error;
                     }
                     ret = PyDict_SetItem(self->cur_entry.file_data, this_line, Py_None);
                     Py_DECREF(this_line);
                     if (ret < 0) {
                         STATS( self->stats.errors++; )
-                        return RET_ERROR;
+                        goto error;
                     }
                 }
             }
@@ -656,7 +639,14 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
         break;
     }
 
-    return RET_OK;
+    ret = RET_OK;
+
+error:
+
+    Py_XDECREF(tracename);
+    Py_XDECREF(disposition);
+
+    return ret;
 }
 
 /*
