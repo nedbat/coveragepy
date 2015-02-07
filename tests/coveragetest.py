@@ -10,6 +10,8 @@ from coverage.test_helpers import (
     EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
 )
 
+from nose.plugins.skip import SkipTest
+
 from tests.backtest import run_command
 
 
@@ -38,6 +40,10 @@ class CoverageTest(
                 f.write("%s_%s" % (
                     self.__class__.__name__, self._testMethodName,
                 ))
+
+    def skip(self, reason):
+        self.class_behavior().skipped += 1
+        raise SkipTest(reason)
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.

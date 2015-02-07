@@ -9,7 +9,6 @@ from coverage.control import Plugins
 
 import coverage.plugin
 
-from nose.plugins.skip import SkipTest
 from tests.coveragetest import CoverageTest
 
 
@@ -202,7 +201,7 @@ class FileTracerTest(CoverageTest):
     def setUp(self):
         super(FileTracerTest, self).setUp()
         if env.C_TRACER:
-            raise SkipTest("Need Python tracer for plugin tests")
+            self.skip("Need Python tracer for plugin tests")
 
     def test_plugin1(self):
         self.make_file("simple.py", """\

@@ -231,6 +231,7 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
         """A value object to store per-class."""
         def __init__(self):
             self.tests = 0
+            self.skipped = 0
             self.temp_dir = True
             self.tests_making_files = 0
             self.test_method_made_any_files = False
@@ -242,7 +243,9 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
     def report_on_class_behavior(cls):
         """Called at process exit to report on class behavior."""
         for test_class, behavior in cls.class_behaviors.items():
-            if behavior.temp_dir and behavior.tests_making_files == 0:
+            if behavior.tests == behavior.skipped:
+                bad = ""
+            elif behavior.temp_dir and behavior.tests_making_files == 0:
                 bad = "Inefficient"
             elif not behavior.temp_dir and behavior.tests_making_files > 0:
                 bad = "Unsafe"

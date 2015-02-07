@@ -503,29 +503,30 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 35 56 61 17 7.",
             arcz_missing="", arcz_unpredicted="")
 
-    # Run this test only on Py2 for now.  I hope to fix it on Py3
-    # eventually...
-    if env.PY2:
-        # "except Exception as e" is crucial here.
-        def test_bug_212(self):
-            self.check_coverage("""\
-                def b(exc):
-                    try:
-                        while 1:
-                            raise Exception(exc)    # 4
-                    except Exception as e:
-                        if exc != 'expected':
-                            raise
-                        q = 8
-
-                b('expected')
+    # "except Exception as e" is crucial here.
+    def test_bug_212(self):
+        # Run this test only on Py2 for now.  I hope to fix it on Py3
+        # eventually...
+        if env.PY3:
+            self.skip("This doesn't work on Python 3")
+        self.check_coverage("""\
+            def b(exc):
                 try:
-                    b('unexpected')     # C
-                except:
-                    pass
-                """,
-                arcz=".1 .2 1A 23 34 56 67 68 8. AB BC C. DE E.",
-                arcz_missing="C.", arcz_unpredicted="45 7. CD")
+                    while 1:
+                        raise Exception(exc)    # 4
+                except Exception as e:
+                    if exc != 'expected':
+                        raise
+                    q = 8
+
+            b('expected')
+            try:
+                b('unexpected')     # C
+            except:
+                pass
+            """,
+            arcz=".1 .2 1A 23 34 56 67 68 8. AB BC C. DE E.",
+            arcz_missing="C.", arcz_unpredicted="45 7. CD")
 
     def test_except_finally(self):
         self.check_coverage("""\

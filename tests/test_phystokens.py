@@ -3,8 +3,6 @@
 import os.path
 import re
 
-from nose.plugins.skip import SkipTest
-
 from coverage import env
 from coverage.phystokens import source_token_lines, source_encoding
 
@@ -114,7 +112,7 @@ class SourceEncodingTest(CoverageTest):
         if env.PYPY and env.PY3:
             # PyPy3 gets this case wrong. Not sure what I can do about it,
             # so skip the test.
-            raise SkipTest
+            self.skip("PyPy3 is wrong about non-comment encoding. Skip it.")
         # Should not detect anything here
         source = b'def parse(src, encoding=None):\n    pass'
         self.assertEqual(source_encoding(source), DEF_ENCODING)

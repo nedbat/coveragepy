@@ -4,8 +4,6 @@ import os
 import os.path
 import threading
 
-from nose.plugins.skip import SkipTest
-
 import coverage
 from coverage import env
 
@@ -230,7 +228,7 @@ class MultiprocessingTest(CoverageTest):
         # Currently, this doesn't work on Windows, something about pickling
         # the monkey-patched Process class?
         if env.WINDOWS:
-            raise SkipTest
+            self.skip("Multiprocessing support doesn't work on Windows")
 
     def test_multiprocessing(self):
         self.make_file("multi.py", """\

@@ -306,19 +306,21 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,6,9], "")
 
-    if env.PY2:         # Print statement is gone in Py3k.
-        def test_print(self):
-            self.check_coverage("""\
-                print "hello, world!"
-                print ("hey: %d" %
-                    17)
-                print "goodbye"
-                print "hello, world!",
-                print ("hey: %d" %
-                    17),
-                print "goodbye",
-                """,
-                [1,2,4,5,6,8], "")
+    def test_print(self):
+        if env.PY3:         # Print statement is gone in Py3k.
+            self.skip("No more print statement in Python 3.")
+
+        self.check_coverage("""\
+            print "hello, world!"
+            print ("hey: %d" %
+                17)
+            print "goodbye"
+            print "hello, world!",
+            print ("hey: %d" %
+                17),
+            print "goodbye",
+            """,
+            [1,2,4,5,6,8], "")
 
     def test_raise(self):
         self.check_coverage("""\

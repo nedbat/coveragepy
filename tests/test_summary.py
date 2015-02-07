@@ -7,8 +7,6 @@ import py_compile
 import re
 import sys
 
-from nose.plugins.skip import SkipTest
-
 import coverage
 from coverage import env
 from coverage.backward import StringIO
@@ -427,26 +425,28 @@ class SummaryTest(CoverageTest):
         self.assertIn("TheCode", report)
         self.assertNotIn("thecode", report)
 
-    if env.WINDOWS:
-        def test_pyw_files(self):
-            # https://bitbucket.org/ned/coveragepy/issue/261
-            self.make_file("start.pyw", """\
-                import mod
-                print("In start.pyw")
-                """)
-            self.make_file("mod.pyw", """\
-                print("In mod.pyw")
-                """)
-            cov = coverage.coverage()
-            cov.start()
-            import start    # pragma: nested # pylint: disable=import-error,unused-variable
-            cov.stop()      # pragma: nested
+    def test_pyw_files(self):
+        if not env.WINDOWS:
+            self.skip(".pyw files are only on Windows.")
 
-            report = self.get_report(cov)
-            self.assertNotIn("NoSource", report)
-            report = report.splitlines()
-            self.assertIn("start.pyw 2 0 100%", report)
-            self.assertIn("mod.pyw 1 0 100%", report)
+        # https://bitbucket.org/ned/coveragepy/issue/261
+        self.make_file("start.pyw", """\
+            import mod
+            print("In start.pyw")
+            """)
+        self.make_file("mod.pyw", """\
+            print("In mod.pyw")
+            """)
+        cov = coverage.coverage()
+        cov.start()
+        import start    # pragma: nested # pylint: disable=import-error,unused-variable
+        cov.stop()      # pragma: nested
+
+        report = self.get_report(cov)
+        self.assertNotIn("NoSource", report)
+        report = report.splitlines()
+        self.assertIn("start.pyw 2 0 100%", report)
+        self.assertIn("mod.pyw 1 0 100%", report)
 
     def test_tracing_pyc_file(self):
         # Create two Python files.
@@ -468,7 +468,7 @@ class SummaryTest(CoverageTest):
     def test_missing_py_file_during_run(self):
         # PyPy2 doesn't run bare .pyc files.
         if env.PYPY and env.PY2:
-            raise SkipTest("PyPy2 doesn't run bare .pyc files")
+            self.skip("PyPy2 doesn't run bare .pyc files")
 
         # Create two Python files.
         self.make_file("mod.py", "a = 1\n")

@@ -6,8 +6,6 @@ import os.path
 import sys
 import textwrap
 
-from nose.plugins.skip import SkipTest
-
 import coverage
 from coverage import env
 
@@ -397,56 +395,59 @@ class ProcessTest(CoverageTest):
         out_py = self.run_command("python -m sub.run_me")
         self.assertMultiLineEqual(out_cov, out_py)
 
-    if sys.version_info >= (2, 7):
-        # Coverage isn't bug-for-bug compatible in the behavior of -m for
-        # Pythons < 2.7
-        def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
-            # https://bitbucket.org/ned/coveragepy/issue/207
-            self.make_file("package/__init__.py", "print('init')")
-            self.make_file("package/__main__.py", "print('main')")
-            out_cov = self.run_command("coverage run -m package")
-            out_py = self.run_command("python -m package")
-            self.assertMultiLineEqual(out_cov, out_py)
+    def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
+        if sys.version_info < (2, 7):
+            # Coverage isn't bug-for-bug compatible in the behavior of -m for
+            # Pythons < 2.7
+            self.skip("-m doesn't work the same < Python 2.7")
+        # https://bitbucket.org/ned/coveragepy/issue/207
+        self.make_file("package/__init__.py", "print('init')")
+        self.make_file("package/__main__.py", "print('main')")
+        out_cov = self.run_command("coverage run -m package")
+        out_py = self.run_command("python -m package")
+        self.assertMultiLineEqual(out_cov, out_py)
 
-    if hasattr(os, 'fork'):
-        def test_fork(self):
-            self.make_file("fork.py", """\
-                import os
+    def test_fork(self):
+        if not hasattr(os, 'fork'):
+            self.skip("Can't test os.fork since it doesn't exist.")
 
-                def child():
-                    print('Child!')
+        self.make_file("fork.py", """\
+            import os
 
-                def main():
-                    ret = os.fork()
+            def child():
+                print('Child!')
 
-                    if ret == 0:
-                        child()
-                    else:
-                        os.waitpid(ret, 0)
+            def main():
+                ret = os.fork()
 
-                main()
-                """)
+                if ret == 0:
+                    child()
+                else:
+                    os.waitpid(ret, 0)
 
-            out = self.run_command("coverage run -p fork.py")
-            self.assertEqual(out, 'Child!\n')
-            self.assert_doesnt_exist(".coverage")
+            main()
+            """)
 
-            # After running the forking program, there should be two
-            # .coverage.machine.123 files.
-            self.assertEqual(self.number_of_data_files(), 2)
+        out = self.run_command("coverage run -p fork.py")
+        self.assertEqual(out, 'Child!\n')
+        self.assert_doesnt_exist(".coverage")
 
-            # Combine the parallel coverage data files into .coverage .
-            self.run_command("coverage combine")
-            self.assert_exists(".coverage")
+        # After running the forking program, there should be two
+        # .coverage.machine.123 files.
+        self.assertEqual(self.number_of_data_files(), 2)
 
-            # After combining, there should be only the .coverage file.
-            self.assertEqual(self.number_of_data_files(), 1)
+        # Combine the parallel coverage data files into .coverage .
+        self.run_command("coverage combine")
+        self.assert_exists(".coverage")
 
-            # Read the coverage file and see that b_or_c.py has all 7 lines
-            # executed.
-            data = coverage.CoverageData()
-            data.read_file(".coverage")
-            self.assertEqual(data.summary()['fork.py'], 9)
+        # After combining, there should be only the .coverage file.
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.summary()['fork.py'], 9)
 
     def test_warnings(self):
         self.make_file("hello.py", """\
@@ -530,31 +531,34 @@ class ProcessTest(CoverageTest):
 
         self.assertIn("Trace function changed", out)
 
-    if env.PY3:         # This only works on 3.x for now.
+    def test_fullcoverage(self):                        # pragma: not covered
+        if env.PY2:             # This doesn't work on Python 2.
+            self.skip("fullcoverage doesn't work on Python 2.")
         # It only works with the C tracer, and if we aren't measuring ourselves.
-        if env.C_TRACER and not env.METACOV:            # pragma: not covered
-            def test_fullcoverage(self):
-                # fullcoverage is a trick to get stdlib modules measured from
-                # the very beginning of the process. Here we import os and
-                # then check how many lines are measured.
-                self.make_file("getenv.py", """\
-                    import os
-                    print("FOOEY == %s" % os.getenv("FOOEY"))
-                    """)
+        if not env.C_TRACER or env.METACOV:
+            self.skip("fullcoverage only works with the C tracer.")
 
-                fullcov = os.path.join(
-                    os.path.dirname(coverage.__file__), "fullcoverage"
-                    )
-                self.set_environ("FOOEY", "BOO")
-                self.set_environ("PYTHONPATH", fullcov)
-                out = self.run_command("python -m coverage run -L getenv.py")
-                self.assertEqual(out, "FOOEY == BOO\n")
-                data = coverage.CoverageData()
-                data.read_file(".coverage")
-                # The actual number of executed lines in os.py when it's
-                # imported is 120 or so.  Just running os.getenv executes
-                # about 5.
-                self.assertGreater(data.summary()['os.py'], 50)
+        # fullcoverage is a trick to get stdlib modules measured from
+        # the very beginning of the process. Here we import os and
+        # then check how many lines are measured.
+        self.make_file("getenv.py", """\
+            import os
+            print("FOOEY == %s" % os.getenv("FOOEY"))
+            """)
+
+        fullcov = os.path.join(
+            os.path.dirname(coverage.__file__), "fullcoverage"
+            )
+        self.set_environ("FOOEY", "BOO")
+        self.set_environ("PYTHONPATH", fullcov)
+        out = self.run_command("python -m coverage run -L getenv.py")
+        self.assertEqual(out, "FOOEY == BOO\n")
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        # The actual number of executed lines in os.py when it's
+        # imported is 120 or so.  Just running os.getenv executes
+        # about 5.
+        self.assertGreater(data.summary()['os.py'], 50)
 
     def test_deprecation_warnings(self):
         # Test that coverage doesn't trigger deprecation warnings.
@@ -745,7 +749,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
 
     def test_subprocess_with_pth_files(self):           # pragma: not covered
         if env.METACOV:
-            raise SkipTest(
+            self.skip(
                 "Can't test sub-process pth file suppport during metacoverage"
                 )
 
@@ -795,7 +799,7 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         self, dashm, package, source
     ):                                                  # pragma: not covered
         if env.METACOV:
-            raise SkipTest(
+            self.skip(
                 "Can't test sub-process pth file suppport during metacoverage"
                 )
 
