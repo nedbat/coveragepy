@@ -125,7 +125,7 @@ class CoverageTest(
             arcs.append((asgn*self._arcz_map[a], bsgn*self._arcz_map[b]))
         return sorted(arcs)
 
-    def assertEqualArcs(self, a1, a2, msg=None):
+    def assert_equal_args(self, a1, a2, msg=None):
         """Assert that the arc lists `a1` and `a2` are equal."""
         # Make them into multi-line strings so we can see what's going wrong.
         s1 = "\n".join(repr(a) for a in a1) + "\n"
@@ -208,18 +208,18 @@ class CoverageTest(
                         )
 
         if arcs is not None:
-            self.assertEqualArcs(
+            self.assert_equal_args(
                 analysis.arc_possibilities(), arcs, "Possible arcs differ"
                 )
 
             if arcs_missing is not None:
-                self.assertEqualArcs(
+                self.assert_equal_args(
                     analysis.arcs_missing(), arcs_missing,
                     "Missing arcs differ"
                     )
 
             if arcs_unpredicted is not None:
-                self.assertEqualArcs(
+                self.assert_equal_args(
                     analysis.arcs_unpredicted(), arcs_unpredicted,
                     "Unpredicted arcs differ"
                     )
