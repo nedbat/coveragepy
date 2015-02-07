@@ -9,6 +9,7 @@ from coverage.control import Plugins
 
 import coverage.plugin
 
+from nose.plugins.skip import SkipTest
 from tests.coveragetest import CoverageTest
 
 
@@ -195,96 +196,103 @@ class PluginTest(CoverageTest):
         self.assertEqual(expected_end, out_lines[-len(expected_end):])
 
 
-if not env.C_TRACER:
-    class FileTracerTest(CoverageTest):
-        """Tests of plugins that implement file_tracer."""
+class FileTracerTest(CoverageTest):
+    """Tests of plugins that implement file_tracer."""
 
-        def test_plugin1(self):
-            self.make_file("simple.py", """\
-                import try_xyz
-                a = 1
-                b = 2
-                """)
-            self.make_file("try_xyz.py", """\
-                c = 3
-                d = 4
-                """)
+    def setUp(self):
+        super(FileTracerTest, self).setUp()
+        if env.C_TRACER:
+            raise SkipTest("Need Python tracer for plugin tests")
 
-            cov = coverage.Coverage()
-            snoop_on_callbacks(cov)
-            cov.config["run:plugins"] = ["tests.plugin1"]
+    def test_plugin1(self):
+        self.make_file("simple.py", """\
+            import try_xyz
+            a = 1
+            b = 2
+            """)
+        self.make_file("try_xyz.py", """\
+            c = 3
+            d = 4
+            """)
 
-            # Import the Python file, executing it.
-            self.start_import_stop(cov, "simple")
+        cov = coverage.Coverage()
+        should_trace_hook = CheckUnique.hook(cov, '_should_trace')
+        check_include_hook = CheckUnique.hook(cov, '_check_include_omit_etc')
+        cov.config["run:plugins"] = ["tests.plugin1"]
 
-            _, statements, missing, _ = cov.analysis("simple.py")
-            self.assertEqual(statements, [1, 2, 3])
-            self.assertEqual(missing, [])
-            zzfile = os.path.abspath(os.path.join("/src", "try_ABC.zz"))
-            _, statements, _, _ = cov.analysis(zzfile)
-            self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
+        # Import the Python file, executing it.
+        self.start_import_stop(cov, "simple")
 
-        def test_plugin2(self):
-            # plugin2 emulates a dynamic tracing plugin: the caller's locals
-            # are examined to determine the source file and line number.
-            # The plugin is in tests/plugin2.py.
-            self.make_file("render.py", """\
-                def render(filename, linenum):
-                    # This function emulates a template renderer. The plugin
-                    # will examine the `filename` and `linenum` locals to
-                    # determine the source file and line number.
-                    fiddle_around = 1   # not used, just chaff.
-                    return "[{0} @ {1}]".format(filename, linenum)
+        _, statements, missing, _ = cov.analysis("simple.py")
+        self.assertEqual(statements, [1, 2, 3])
+        self.assertEqual(missing, [])
+        zzfile = os.path.abspath(os.path.join("/src", "try_ABC.zz"))
+        _, statements, _, _ = cov.analysis(zzfile)
+        self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
 
-                def helper(x):
-                    # This function is here just to show that not all code in
-                    # this file will be part of the dynamic tracing.
-                    return x+1
-                """)
-            self.make_file("caller.py", """\
-                from render import helper, render
+    def test_plugin2(self):
+        # plugin2 emulates a dynamic tracing plugin: the caller's locals
+        # are examined to determine the source file and line number.
+        # The plugin is in tests/plugin2.py.
+        self.make_file("render.py", """\
+            def render(filename, linenum):
+                # This function emulates a template renderer. The plugin
+                # will examine the `filename` and `linenum` locals to
+                # determine the source file and line number.
+                fiddle_around = 1   # not used, just chaff.
+                return "[{0} @ {1}]".format(filename, linenum)
 
-                assert render("foo_7.html", 4) == "[foo_7.html @ 4]"
-                # Render foo_7.html again to trigger the callback snoopers.
-                render("foo_7.html", 4)
+            def helper(x):
+                # This function is here just to show that not all code in
+                # this file will be part of the dynamic tracing.
+                return x+1
+            """)
+        self.make_file("caller.py", """\
+            from render import helper, render
 
-                assert helper(42) == 43
-                assert render("bar_4.html", 2) == "[bar_4.html @ 2]"
-                assert helper(76) == 77
-                """)
+            assert render("foo_7.html", 4) == "[foo_7.html @ 4]"
+            # Render foo_7.html again to trigger the callback snoopers.
+            render("foo_7.html", 4)
 
-            cov = coverage.Coverage()
-            snoop_on_callbacks(cov)
-            cov.config["run:plugins"] = ["tests.plugin2"]
+            assert helper(42) == 43
+            assert render("bar_4.html", 2) == "[bar_4.html @ 2]"
+            assert helper(76) == 77
+            """)
 
-            self.start_import_stop(cov, "caller")
+        cov = coverage.Coverage()
+        should_trace_hook = CheckUnique.hook(cov, '_should_trace')
+        check_include_hook = CheckUnique.hook(cov, '_check_include_omit_etc')
+        cov.config["run:plugins"] = ["tests.plugin2"]
 
-            # The way plugin2 works, a file named foo_7.html will be claimed to
-            # have 7 lines in it.  If render() was called with line number 4,
-            # then the plugin will claim that lines 4 and 5 were executed.
-            _, statements, missing, _ = cov.analysis("foo_7.html")
-            self.assertEqual(statements, [1, 2, 3, 4, 5, 6, 7])
-            self.assertEqual(missing, [1, 2, 3, 6, 7])
-            _, statements, missing, _ = cov.analysis("bar_4.html")
-            self.assertEqual(statements, [1, 2, 3, 4])
-            self.assertEqual(missing, [1, 4])
+        self.start_import_stop(cov, "caller")
+
+        # The way plugin2 works, a file named foo_7.html will be claimed to
+        # have 7 lines in it.  If render() was called with line number 4,
+        # then the plugin will claim that lines 4 and 5 were executed.
+        _, statements, missing, _ = cov.analysis("foo_7.html")
+        self.assertEqual(statements, [1, 2, 3, 4, 5, 6, 7])
+        self.assertEqual(missing, [1, 2, 3, 6, 7])
+        _, statements, missing, _ = cov.analysis("bar_4.html")
+        self.assertEqual(statements, [1, 2, 3, 4])
+        self.assertEqual(missing, [1, 4])
 
 
-def snoop_on_callbacks(cov):
-    cov_should_trace = cov._should_trace
-    should_trace_filenames = set()
+class CheckUnique(object):
+    """Asserts the uniqueness of filenames passed to a function."""
+    def __init__(self, wrapped):
+        self.filenames = set()
+        self.wrapped = wrapped
 
-    def snoop_should_trace(filename, frame):
-        assert filename not in should_trace_filenames
-        should_trace_filenames.add(filename)
-        return cov_should_trace(filename, frame)
-    cov._should_trace = snoop_should_trace
+    @classmethod
+    def hook(cls, cov, method_name):
+        """Replace a method with our checking wrapper."""
+        method = getattr(cov, method_name)
+        hook = cls(method)
+        setattr(cov, method_name, hook.wrapper)
+        return hook
 
-    cov_check_include = cov._check_include_omit_etc
-    check_include_filenames = set()
-
-    def snoop_check_include_filenames(filename, frame):
-        assert filename not in check_include_filenames
-        check_include_filenames.add(filename)
-        return cov_check_include(filename, frame)
-    cov._check_include_omit_etc = snoop_check_include_filenames
+    def wrapper(self, filename, *args, **kwargs):
+        """The replacement method.  Check that we don't have dupes."""
+        assert filename not in self.filenames
+        self.filenames.add(filename)
+        return self.wrapped(filename, *args, **kwargs)
