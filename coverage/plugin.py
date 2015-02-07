@@ -204,6 +204,9 @@ class FileReporter(object):
     def translate_arcs(self, arcs):
         return arcs
 
+    def no_branch_lines(self):
+        return set()
+
     def exit_counts(self):
         return {}
 
