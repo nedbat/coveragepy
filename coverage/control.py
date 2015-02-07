@@ -200,7 +200,7 @@ class Coverage(object):
             if overrides(plugin, "file_tracer", CoveragePlugin):
                 self.file_tracers.append(plugin)
 
-        # _exclude_re is a dict mapping exclusion list names to compiled
+        # _exclude_re is a dict that maps exclusion list names to compiled
         # regexes.
         self._exclude_re = {}
         self._exclude_regex_stale()
