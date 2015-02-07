@@ -226,11 +226,11 @@ class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
 
     def setUp(self):
+        super(MultiprocessingTest, self).setUp()
         # Currently, this doesn't work on Windows, something about pickling
         # the monkey-patched Process class?
         if env.WINDOWS:
             raise SkipTest
-        super(MultiprocessingTest, self).setUp()
 
     def test_multiprocessing(self):
         self.make_file("multi.py", """\
