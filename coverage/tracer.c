@@ -174,6 +174,7 @@ DataStack_grow(CTracer *self, DataStack *pdata_stack)
 static int
 CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 {
+    int ret = RET_ERROR;
     PyObject * weakref = NULL;
 
 #if COLLECT_STATS
@@ -200,20 +201,20 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     self->tracing_arcs = 0;
 
     if (DataStack_init(self, &self->data_stack)) {
-        return RET_ERROR;
+        goto error;
     }
 
     weakref = PyImport_ImportModule("weakref");
     if (weakref == NULL) {
         STATS( self->stats.errors++; )
-        return RET_ERROR;
+        goto error;
     }
     self->data_stack_index = PyObject_CallMethod(weakref, "WeakKeyDictionary", NULL);
     Py_XDECREF(weakref);
 
     if (self->data_stack_index == NULL) {
         STATS( self->stats.errors++; )
-        return RET_ERROR;
+        goto error;
     }
 
     self->data_stacks = NULL;
@@ -227,7 +228,14 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 
     self->last_exc_back = NULL;
 
-    return RET_OK;
+    ret = RET_OK;
+    goto ok;
+
+error:
+    STATS( self->stats.errors++; )
+
+ok:
+    return ret;
 }
 
 static void
@@ -313,18 +321,23 @@ static const char * what_sym[] = {"CALL", "EXC ", "LINE", "RET "};
 static int
 CTracer_record_pair(CTracer *self, int l1, int l2)
 {
-    int ret = RET_OK;
+    int ret = RET_ERROR;
 
     PyObject * t = Py_BuildValue("(ii)", l1, l2);
     if (t != NULL) {
         if (PyDict_SetItem(self->cur_entry.file_data, t, Py_None) < 0) {
-            ret = RET_ERROR;
+            goto error;
         }
         Py_DECREF(t);
     }
     else {
-        ret = RET_ERROR;
+        goto error;
     }
+
+    ret = RET_OK;
+
+error:
+
     return ret;
 }
 
@@ -332,14 +345,16 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
 static int
 CTracer_set_pdata_stack(CTracer *self)
 {
+    int ret = RET_ERROR;
+    PyObject * co_obj = NULL;
+    PyObject * stack_index = NULL;
+
     if (self->concur_id_func != Py_None) {
-        PyObject * co_obj = NULL;
-        PyObject * stack_index = NULL;
         long the_index = 0;
 
         co_obj = PyObject_CallObject(self->concur_id_func, NULL);
         if (co_obj == NULL) {
-            return RET_ERROR;
+            goto error;
         }
         stack_index = PyObject_GetItem(self->data_stack_index, co_obj);
         if (stack_index == NULL) {
@@ -350,9 +365,7 @@ CTracer_set_pdata_stack(CTracer *self)
             the_index = self->data_stacks_used;
             stack_index = MyInt_FromLong(the_index);
             if (PyObject_SetItem(self->data_stack_index, co_obj, stack_index) < 0) {
-                Py_XDECREF(co_obj);
-                Py_XDECREF(stack_index);
-                return RET_ERROR;
+                goto error;
             }
             self->data_stacks_used++;
             if (self->data_stacks_used >= self->data_stacks_alloc) {
@@ -360,9 +373,7 @@ CTracer_set_pdata_stack(CTracer *self)
                 DataStack * bigger_stacks = PyMem_Realloc(self->data_stacks, bigger * sizeof(DataStack));
                 if (bigger_stacks == NULL) {
                     PyErr_NoMemory();
-                    Py_XDECREF(co_obj);
-                    Py_XDECREF(stack_index);
-                    return RET_ERROR;
+                    goto error;
                 }
                 self->data_stacks = bigger_stacks;
                 self->data_stacks_alloc = bigger;
@@ -375,15 +386,19 @@ CTracer_set_pdata_stack(CTracer *self)
         }
 
         self->pdata_stack = &self->data_stacks[the_index];
-
-        Py_XDECREF(co_obj);
-        Py_XDECREF(stack_index);
     }
     else {
         self->pdata_stack = &self->data_stack;
     }
 
-    return RET_OK;
+    ret = RET_OK;
+
+error:
+
+    Py_XDECREF(co_obj);
+    Py_XDECREF(stack_index);
+
+    return ret;
 }
 
 /*
