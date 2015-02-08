@@ -10,6 +10,7 @@ from coverage.control import Plugins
 import coverage.plugin
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import CheckUniqueFilenames
 
 
 class FakeConfig(object):
@@ -215,8 +216,8 @@ class FileTracerTest(CoverageTest):
             """)
 
         cov = coverage.Coverage()
-        should_trace_hook = CheckUnique.hook(cov, '_should_trace')
-        check_include_hook = CheckUnique.hook(cov, '_check_include_omit_etc')
+        should_trace_hook = CheckUniqueFilenames.hook(cov, '_should_trace')
+        check_include_hook = CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
         cov.config["run:plugins"] = ["tests.plugin1"]
 
         # Import the Python file, executing it.
@@ -250,7 +251,7 @@ class FileTracerTest(CoverageTest):
             from render import helper, render
 
             assert render("foo_7.html", 4) == "[foo_7.html @ 4]"
-            # Render foo_7.html again to trigger the callback snoopers.
+            # Render foo_7.html again to try the CheckUniqueFilenames asserts.
             render("foo_7.html", 4)
 
             assert helper(42) == 43
@@ -259,8 +260,8 @@ class FileTracerTest(CoverageTest):
             """)
 
         cov = coverage.Coverage()
-        should_trace_hook = CheckUnique.hook(cov, '_should_trace')
-        check_include_hook = CheckUnique.hook(cov, '_check_include_omit_etc')
+        should_trace_hook = CheckUniqueFilenames.hook(cov, '_should_trace')
+        check_include_hook = CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
         cov.config["run:plugins"] = ["tests.plugin2"]
 
         self.start_import_stop(cov, "caller")
@@ -274,24 +275,3 @@ class FileTracerTest(CoverageTest):
         _, statements, missing, _ = cov.analysis("bar_4.html")
         self.assertEqual(statements, [1, 2, 3, 4])
         self.assertEqual(missing, [1, 4])
-
-
-class CheckUnique(object):
-    """Asserts the uniqueness of filenames passed to a function."""
-    def __init__(self, wrapped):
-        self.filenames = set()
-        self.wrapped = wrapped
-
-    @classmethod
-    def hook(cls, cov, method_name):
-        """Replace a method with our checking wrapper."""
-        method = getattr(cov, method_name)
-        hook = cls(method)
-        setattr(cov, method_name, hook.wrapper)
-        return hook
-
-    def wrapper(self, filename, *args, **kwargs):
-        """The replacement method.  Check that we don't have dupes."""
-        assert filename not in self.filenames
-        self.filenames.add(filename)
-        return self.wrapped(filename, *args, **kwargs)

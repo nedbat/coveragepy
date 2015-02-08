@@ -117,6 +117,7 @@ class StdStreamCapturingMixin(TestCase):
         self.old_stdout = sys.stdout
         self.captured_stdout = StringIO()
         sys.stdout = Tee(sys.stdout, self.captured_stdout)
+
         self.old_stderr = sys.stderr
         self.captured_stderr = StringIO()
         sys.stderr = self.captured_stderr
