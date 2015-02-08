@@ -6,6 +6,7 @@ import coverage
 from coverage import env
 from coverage.backward import StringIO
 from coverage.control import Plugins
+from coverage.misc import CoverageException
 
 import coverage.plugin
 
@@ -104,15 +105,14 @@ class LoadPluginsTest(CoverageTest):
         with self.assertRaises(ImportError):
             _ = Plugins.load_plugins(["plugin_not_there"], None)
 
-    def test_ok_to_not_define_plugin(self):
-        # TODO: should this actually be an error or warning?
-        self.make_file("plugin2.py", """\
+    def test_plugin_must_define_plugin_class(self):
+        self.make_file("no_plugin.py", """\
             from coverage import CoveragePlugin
-
             Nothing = 0
             """)
-        plugins = list(Plugins.load_plugins(["plugin2"], None))
-        self.assertEqual(plugins, [])
+        msg_pat = "Plugin module 'no_plugin' didn't define a Plugin class"
+        with self.assertRaisesRegex(CoverageException, msg_pat):
+            plugins = list(Plugins.load_plugins(["no_plugin"], None))
 
 
 class PluginTest(CoverageTest):
@@ -121,6 +121,9 @@ class PluginTest(CoverageTest):
     def test_plugin_imported(self):
         # Prove that a plugin will be imported.
         self.make_file("my_plugin.py", """\
+            from coverage import CoveragePlugin
+            class Plugin(CoveragePlugin):
+                pass
             with open("evidence.out", "w") as f:
                 f.write("we are here!")
             """)

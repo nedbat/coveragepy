@@ -1126,6 +1126,10 @@ class Plugins(object):
                 plugin.plugin_name = module
                 plugins.order.append(plugin)
                 plugins.names[module] = plugin
+            else:
+                raise CoverageException(
+                    "Plugin module %r didn't define a Plugin class" % module
+                    )
 
         return plugins
 
