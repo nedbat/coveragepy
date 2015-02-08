@@ -8,6 +8,8 @@ Latest
 
 - Plugin support is now implemented in the C tracer and the Python tracer.
 
+- Added 3.5.0a1 to the list of supported versions.
+
 - Wildly experimental: support for measuring processes started by the
   multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
   either on the command line or in the .coveragerc file (`issue 117`_). Thanks,
