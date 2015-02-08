@@ -216,8 +216,8 @@ class FileTracerTest(CoverageTest):
             """)
 
         cov = coverage.Coverage()
-        should_trace_hook = CheckUniqueFilenames.hook(cov, '_should_trace')
-        check_include_hook = CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
+        CheckUniqueFilenames.hook(cov, '_should_trace')
+        CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
         cov.config["run:plugins"] = ["tests.plugin1"]
 
         # Import the Python file, executing it.
@@ -263,8 +263,8 @@ class FileTracerTest(CoverageTest):
             """)
 
         cov = coverage.Coverage(omit=["*quux*"])
-        should_trace_hook = CheckUniqueFilenames.hook(cov, '_should_trace')
-        check_include_hook = CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
+        CheckUniqueFilenames.hook(cov, '_should_trace')
+        CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
         cov.config["run:plugins"] = ["tests.plugin2"]
 
         self.start_import_stop(cov, "caller")
