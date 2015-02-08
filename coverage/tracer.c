@@ -17,10 +17,6 @@
 
 /* Py 2.x and 3.x compatibility */
 
-#ifndef Py_TYPE
-#define Py_TYPE(o)    (((PyObject*)(o))->ob_type)
-#endif
-
 #if PY_MAJOR_VERSION >= 3
 
 #define MyText_Type         PyUnicode_Type
