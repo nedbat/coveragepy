@@ -189,12 +189,6 @@ class Coverage(object):
         # Load plugins
         self.plugins = Plugins.load_plugins(self.config.plugins, self.config)
 
-        # TEMPORARY, because the plugin support is implemented in PyTracer.
-        # This will be removed when that support is moved into CTracer.
-        if self.plugins:
-            self._warn("Setting timid=True to support plugins.")
-            self.config.timid = True
-
         self.file_tracers = []
         for plugin in self.plugins:
             if overrides(plugin, "file_tracer", CoveragePlugin):

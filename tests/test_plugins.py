@@ -3,7 +3,6 @@
 import os.path
 
 import coverage
-from coverage import env
 from coverage.backward import StringIO
 from coverage.control import Plugins
 from coverage.misc import CoverageException
@@ -201,11 +200,6 @@ class PluginTest(CoverageTest):
 
 class FileTracerTest(CoverageTest):
     """Tests of plugins that implement file_tracer."""
-
-    def setUp(self):
-        super(FileTracerTest, self).setUp()
-        if env.C_TRACER:
-            self.skip("Need Python tracer for plugin tests")
 
     def test_plugin1(self):
         self.make_file("simple.py", """\

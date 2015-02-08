@@ -6,6 +6,8 @@ Change history for Coverage.py
 Latest
 ------
 
+- Plugin support is now implemented in the C tracer and the Python tracer.
+
 - Wildly experimental: support for measuring processes started by the
   multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
   either on the command line or in the .coveragerc file (`issue 117`_). Thanks,

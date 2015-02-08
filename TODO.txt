@@ -29,11 +29,13 @@ Key:
 
 - Plugins
     - Clean up
-    - implement plugin support in CTracer
+    + implement plugin support in CTracer
     - remove plugin support from PyTracer
     - add services:
         - filelocator
         - warning
+    - dynamic_source_filename: return should be a canonical path
+        - update the omit test to use "quux*" instead of "*quux*"
     - docs
 + Make reports use filenames, not module names
 - documentation

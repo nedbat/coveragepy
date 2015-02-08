@@ -27,8 +27,8 @@
 #define MyText_Check(o)     PyUnicode_Check(o)
 #define MyText_AS_BYTES(o)  PyUnicode_AsASCIIString(o)
 #define MyText_AS_STRING(o) PyBytes_AS_STRING(o)
-#define MyInt_FromLong(l)   PyLong_FromLong(l)
-#define MyInt_AsLong(o)     PyLong_AsLong(o)
+#define MyInt_FromInt(i)    PyLong_FromLong((long)i)
+#define MyInt_AsInt(o)      (int)PyLong_AsLong(o)
 
 #define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
 
@@ -38,8 +38,8 @@
 #define MyText_Check(o)     PyString_Check(o)
 #define MyText_AS_BYTES(o)  (Py_INCREF(o), o)
 #define MyText_AS_STRING(o) PyString_AS_STRING(o)
-#define MyInt_FromLong(l)   PyInt_FromLong(l)
-#define MyInt_AsLong(o)     PyInt_AsLong(o)
+#define MyInt_FromInt(i)    PyInt_FromLong((long)i)
+#define MyInt_AsInt(o)      (int)PyInt_AsLong(o)
 
 #define MyType_HEAD_INIT    PyObject_HEAD_INIT(NULL)  0,
 
@@ -54,8 +54,11 @@
     frame.
 */
 typedef struct {
-    /* The current file_data dictionary.  Borrowed. */
+    /* The current file_data dictionary.  Borrowed, owned by self->data. */
     PyObject * file_data;
+
+    /* The FileTracer handling this frame, or None if it's Python. */
+    PyObject * file_tracer;
 
     /* The line number of the last line recorded, for tracing arcs.
         -1 means there was no previous line, as when entering a code object.
@@ -78,6 +81,7 @@ typedef struct {
 
     /* Python objects manipulated directly by the Collector class. */
     PyObject * should_trace;
+    PyObject * check_include;
     PyObject * warn;
     PyObject * concur_id_func;
     PyObject * data;
@@ -102,12 +106,12 @@ typedef struct {
         (None).
     */
 
-    DataStack data_stack;       /* Used if we aren't doing concurrency. */
-    PyObject * data_stack_index;     /* Used if we are doing concurrency. */
+    DataStack data_stack;           /* Used if we aren't doing concurrency. */
+
+    PyObject * data_stack_index;    /* Used if we are doing concurrency. */
     DataStack * data_stacks;
     int data_stacks_alloc;
     int data_stacks_used;
-
     DataStack * pdata_stack;
 
     /* The current file's data stack entry, copied from the stack. */
@@ -190,6 +194,7 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 #endif /* COLLECT_STATS */
 
     self->should_trace = NULL;
+    self->check_include = NULL;
     self->warn = NULL;
     self->concur_id_func = NULL;
     self->data = NULL;
@@ -248,6 +253,7 @@ CTracer_dealloc(CTracer *self)
     }
 
     Py_XDECREF(self->should_trace);
+    Py_XDECREF(self->check_include);
     Py_XDECREF(self->warn);
     Py_XDECREF(self->concur_id_func);
     Py_XDECREF(self->data);
@@ -350,7 +356,7 @@ CTracer_set_pdata_stack(CTracer *self)
     PyObject * stack_index = NULL;
 
     if (self->concur_id_func != Py_None) {
-        long the_index = 0;
+        int the_index = 0;
 
         co_obj = PyObject_CallObject(self->concur_id_func, NULL);
         if (co_obj == NULL) {
@@ -363,7 +369,7 @@ CTracer_set_pdata_stack(CTracer *self)
 
             /* A new concurrency object.  Make a new data stack. */
             the_index = self->data_stacks_used;
-            stack_index = MyInt_FromLong(the_index);
+            stack_index = MyInt_FromInt(the_index);
             if (PyObject_SetItem(self->data_stack_index, co_obj, stack_index) < 0) {
                 goto error;
             }
@@ -382,7 +388,7 @@ CTracer_set_pdata_stack(CTracer *self)
         }
         else {
             Py_INCREF(stack_index);
-            the_index = MyInt_AsLong(stack_index);
+            the_index = MyInt_AsInt(stack_index);
         }
 
         self->pdata_stack = &self->data_stacks[the_index];
@@ -408,10 +414,17 @@ static int
 CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unused)
 {
     int ret = RET_ERROR;
-    PyObject * filename = NULL;
+
+    /* Owned references that we clean up at the very end of the function. */
     PyObject * tracename = NULL;
     PyObject * disposition = NULL;
     PyObject * disp_trace = NULL;
+    PyObject * disp_file_tracer = NULL;
+    PyObject * has_dynamic_filename = NULL;
+
+    /* Borrowed references. */
+    PyObject * filename = NULL;
+
     #if WHAT_LOG || TRACE_LOG
     PyObject * ascii = NULL;
     #endif
@@ -485,9 +498,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
             STATS( self->stats.new_files++; )
             /* We've never considered this file before. */
             /* Ask should_trace about it. */
-            PyObject * args = Py_BuildValue("(OO)", filename, frame);
-            disposition = PyObject_Call(self->should_trace, args, NULL);
-            Py_DECREF(args);
+            disposition = PyObject_CallFunctionObjArgs(self->should_trace, filename, frame, NULL);
             if (disposition == NULL) {
                 /* An error occurred inside should_trace. */
                 goto error;
@@ -505,20 +516,58 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
             goto error;
         }
 
-        tracename = Py_None;
-        Py_INCREF(tracename);
-
         if (disp_trace == Py_True) {
             /* If tracename is a string, then we're supposed to trace. */
             tracename = PyObject_GetAttrString(disposition, "source_filename");
             if (tracename == NULL) {
                 goto error;
             }
+            disp_file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
+            if (disp_file_tracer == NULL) {
+                goto error;
+            }
+            has_dynamic_filename = PyObject_GetAttrString(disposition, "has_dynamic_filename");
+            if (has_dynamic_filename == NULL) {
+                goto error;
+            }
+            if (has_dynamic_filename == Py_True) {
+                PyObject * next_tracename = NULL;
+                next_tracename = PyObject_CallMethod(
+                    disp_file_tracer, "dynamic_source_filename",
+                    "OO", tracename, frame
+                    );
+                Py_DECREF(tracename);
+                tracename = next_tracename;
+
+                if (tracename != Py_None) {
+                    /* Check the dynamic source filename against the include rules. */
+                    PyObject * included = NULL;
+                    included = PyDict_GetItem(self->should_trace_cache, tracename);
+                    if (included == NULL) {
+                        STATS( self->stats.new_files++; )
+                        included = PyObject_CallFunctionObjArgs(self->check_include, tracename, frame, NULL);
+                        if (included == NULL) {
+                            goto error;
+                        }
+                        if (PyDict_SetItem(self->should_trace_cache, tracename, included) < 0) {
+                            goto error;
+                        }
+                    }
+                    if (included != Py_True) {
+                        Py_DECREF(tracename);
+                        tracename = Py_None;
+                        Py_INCREF(tracename);
+                    }
+                }
+            }
+        }
+        else {
+            tracename = Py_None;
+            Py_INCREF(tracename);
         }
 
         if (MyText_Check(tracename)) {
             PyObject * file_data = PyDict_GetItem(self->data, tracename);
-            PyObject * disp_file_tracer = NULL;
             PyObject * disp_plugin_name = NULL;
 
             if (file_data == NULL) {
@@ -532,27 +581,23 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                     goto error;
                 }
 
-                if (self->plugin_data != NULL) {
-                    /* If the disposition mentions a plugin, record that. */
-                    disp_file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
-                    if (disp_file_tracer == NULL) {
+                /* If the disposition mentions a plugin, record that. */
+                if (disp_file_tracer != Py_None) {
+                    disp_plugin_name = PyObject_GetAttrString(disp_file_tracer, "plugin_name");
+                    if (disp_plugin_name == NULL) {
                         goto error;
                     }
-                    if (disp_file_tracer != Py_None) {
-                        disp_plugin_name = PyObject_GetAttrString(disp_file_tracer, "plugin_name");
-                        Py_DECREF(disp_file_tracer);
-                        if (disp_plugin_name == NULL) {
-                            goto error;
-                        }
-                        ret = PyDict_SetItem(self->plugin_data, tracename, disp_plugin_name);
-                        Py_DECREF(disp_plugin_name);
-                        if (ret < 0) {
-                            goto error;
-                        }
+                    ret = PyDict_SetItem(self->plugin_data, tracename, disp_plugin_name);
+                    Py_DECREF(disp_plugin_name);
+                    if (ret < 0) {
+                        goto error;
                     }
                 }
             }
+
             self->cur_entry.file_data = file_data;
+            self->cur_entry.file_tracer = disp_file_tracer;
+
             /* Make the frame right in case settrace(gettrace()) happens. */
             Py_INCREF(self);
             frame->f_trace = (PyObject*)self;
@@ -560,6 +605,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
         }
         else {
             self->cur_entry.file_data = NULL;
+            self->cur_entry.file_tracer = Py_None;
             SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "skipped");
         }
 
@@ -591,27 +637,48 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
         if (self->pdata_stack->depth >= 0) {
             SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "line");
             if (self->cur_entry.file_data) {
+                int lineno_from, lineno_to;
+
                 /* We're tracing in this frame: record something. */
-                if (self->tracing_arcs) {
-                    /* Tracing arcs: key is (last_line,this_line). */
-                    if (CTracer_record_pair(self, self->cur_entry.last_line, frame->f_lineno) < 0) {
-                        goto error;
-                    }
+                if (self->cur_entry.file_tracer != Py_None) {
+                    PyObject * from_to = NULL;
+                    from_to = PyObject_CallMethod(self->cur_entry.file_tracer, "line_number_range", "O", frame);
+                    /* TODO: error check bad returns. */
+                    lineno_from = MyInt_AsInt(PyTuple_GetItem(from_to, 0));
+                    lineno_to = MyInt_AsInt(PyTuple_GetItem(from_to, 1));
+                    Py_DECREF(from_to);
                 }
                 else {
-                    /* Tracing lines: key is simply this_line. */
-                    PyObject * this_line = MyInt_FromLong(frame->f_lineno);
-                    if (this_line == NULL) {
-                        goto error;
+                    lineno_from = lineno_to = frame->f_lineno;
+                }
+
+                if (lineno_from != -1) {
+                    if (self->tracing_arcs) {
+                        /* Tracing arcs: key is (last_line,this_line). */
+                        /* TODO: this needs to deal with lineno_to also. */
+                        if (CTracer_record_pair(self, self->cur_entry.last_line, lineno_from) < 0) {
+                            goto error;
+                        }
                     }
-                    ret = PyDict_SetItem(self->cur_entry.file_data, this_line, Py_None);
-                    Py_DECREF(this_line);
-                    if (ret < 0) {
-                        goto error;
+                    else {
+                        /* Tracing lines: key is simply this_line. */
+                        while (lineno_from <= lineno_to) {
+                            PyObject * this_line = MyInt_FromInt(lineno_from);
+                            if (this_line == NULL) {
+                                goto error;
+                            }
+                            ret = PyDict_SetItem(self->cur_entry.file_data, this_line, Py_None);
+                            Py_DECREF(this_line);
+                            if (ret < 0) {
+                                goto error;
+                            }
+                            lineno_from++;
+                        }
                     }
                 }
+
+                self->cur_entry.last_line = lineno_to;
             }
-            self->cur_entry.last_line = frame->f_lineno;
         }
         break;
 
@@ -649,6 +716,9 @@ error:
 ok:
     Py_XDECREF(tracename);
     Py_XDECREF(disposition);
+    Py_XDECREF(disp_trace);
+    Py_XDECREF(disp_file_tracer);
+    Py_XDECREF(has_dynamic_filename);
 
     return ret;
 }
@@ -781,6 +851,9 @@ static PyMemberDef
 CTracer_members[] = {
     { "should_trace",       T_OBJECT, offsetof(CTracer, should_trace), 0,
             PyDoc_STR("Function indicating whether to trace a file.") },
+
+    { "check_include",      T_OBJECT, offsetof(CTracer, check_include), 0,
+            PyDoc_STR("Function indicating whether to include a file.") },
 
     { "warn",               T_OBJECT, offsetof(CTracer, warn), 0,
             PyDoc_STR("Function for issuing warnings.") },
