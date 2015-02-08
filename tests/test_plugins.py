@@ -112,7 +112,7 @@ class LoadPluginsTest(CoverageTest):
             """)
         msg_pat = "Plugin module 'no_plugin' didn't define a Plugin class"
         with self.assertRaisesRegex(CoverageException, msg_pat):
-            plugins = list(Plugins.load_plugins(["no_plugin"], None))
+            list(Plugins.load_plugins(["no_plugin"], None))
 
 
 class PluginTest(CoverageTest):
