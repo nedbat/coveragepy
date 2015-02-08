@@ -257,9 +257,12 @@ class FileTracerTest(CoverageTest):
             assert helper(42) == 43
             assert render("bar_4.html", 2) == "[bar_4.html @ 2]"
             assert helper(76) == 77
+
+            # quux_5.html will be omitted from the results.
+            assert render("quux_5.html", 3) == "[quux_5.html @ 3]"
             """)
 
-        cov = coverage.Coverage()
+        cov = coverage.Coverage(omit=["*quux*"])
         should_trace_hook = CheckUniqueFilenames.hook(cov, '_should_trace')
         check_include_hook = CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
         cov.config["run:plugins"] = ["tests.plugin2"]
@@ -272,6 +275,11 @@ class FileTracerTest(CoverageTest):
         _, statements, missing, _ = cov.analysis("foo_7.html")
         self.assertEqual(statements, [1, 2, 3, 4, 5, 6, 7])
         self.assertEqual(missing, [1, 2, 3, 6, 7])
+        self.assertIn("foo_7.html", cov.data.summary())
+
         _, statements, missing, _ = cov.analysis("bar_4.html")
         self.assertEqual(statements, [1, 2, 3, 4])
         self.assertEqual(missing, [1, 4])
+        self.assertIn("bar_4.html", cov.data.summary())
+
+        self.assertNotIn("quux_5.html", cov.data.summary())
