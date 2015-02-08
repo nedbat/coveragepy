@@ -27,6 +27,11 @@ class Tee(object):
         for f in self._files:
             f.write(data)
 
+    def flush(self):
+        """Flush the data on all the files."""
+        for f in self._files:
+            f.flush()
+
     if 0:
         # Use this if you need to use a debugger, though it makes some tests
         # fail, I'm not sure why...

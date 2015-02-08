@@ -17,6 +17,11 @@ class DebugControl(object):
         self.options = options
         self.output = output
 
+    def __repr__(self):
+        return "<DebugControl options=%r output=%r>" % (
+            self.options, self.output
+            )
+
     def should(self, option):
         """Decide whether to output debug information in category `option`."""
         return (option in self.options or option in FORCED_DEBUG)

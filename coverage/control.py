@@ -1027,6 +1027,16 @@ class FileDisposition(object):
         self.file_tracer = None
         self.has_dynamic_filename = False
 
+    def __repr__(self):
+        ret = "FileDisposition %r" % (self.original_filename,)
+        if self.trace:
+            ret += " trace"
+        else:
+            ret += " notrace=%r" % (self.reason,)
+        if self.file_tracer:
+            ret += " file_tracer=%r" % (self.file_tracer,)
+        return "<" + ret + ">"
+
     def debug_message(self):
         """Produce a debugging message explaining the outcome."""
         if self.trace:
