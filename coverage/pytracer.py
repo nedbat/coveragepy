@@ -28,13 +28,10 @@ class PyTracer(object):
         self.arcs = False
         self.should_trace = None
         self.should_trace_cache = None
-        self.check_include = None
         self.warn = None
-        self.plugin_data = None
         # The threading module to use, if any.
         self.threading = None
 
-        self.file_tracer = []
         self.cur_file_dict = []
         self.last_line = [0]
 
@@ -63,72 +60,43 @@ class PyTracer(object):
                 if self.arcs and self.cur_file_dict:
                     pair = (self.last_line, -self.last_exc_firstlineno)
                     self.cur_file_dict[pair] = None
-                self.file_tracer, self.cur_file_dict, self.last_line = (
-                    self.data_stack.pop()
-                )
+                self.cur_file_dict, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
 
         if event == 'call':
             # Entering a new function context.  Decide if we should trace
             # in this file.
-            self.data_stack.append(
-                (self.file_tracer, self.cur_file_dict, self.last_line)
-            )
+            self.data_stack.append((self.cur_file_dict, self.last_line))
             filename = frame.f_code.co_filename
             disp = self.should_trace_cache.get(filename)
             if disp is None:
                 disp = self.should_trace(filename, frame)
                 self.should_trace_cache[filename] = disp
 
-            self.file_tracer = None
             self.cur_file_dict = None
             if disp.trace:
                 tracename = disp.source_filename
-                if disp.file_tracer and disp.has_dynamic_filename:
-                    tracename = disp.file_tracer.dynamic_source_filename(tracename, frame)
-                    if tracename:
-                        included = self.should_trace_cache.get(tracename)
-                        if included is None:
-                            included = self.check_include(tracename, frame)
-                            self.should_trace_cache[tracename] = included
-                        if not included:
-                            tracename = None
-            else:
-                tracename = None
-            if tracename:
                 if tracename not in self.data:
                     self.data[tracename] = {}
-                    if disp.file_tracer:
-                        self.plugin_data[tracename] = disp.file_tracer.plugin_name
                 self.cur_file_dict = self.data[tracename]
-                self.file_tracer = disp.file_tracer
             # Set the last_line to -1 because the next arc will be entering a
             # code block, indicated by (-1, n).
             self.last_line = -1
         elif event == 'line':
             # Record an executed line.
             if self.cur_file_dict is not None:
-                if self.file_tracer:
-                    lineno_from, lineno_to = self.file_tracer.line_number_range(frame)
+                lineno = frame.f_lineno
+                if self.arcs:
+                    self.cur_file_dict[(self.last_line, lineno)] = None
                 else:
-                    lineno_from, lineno_to = frame.f_lineno, frame.f_lineno
-                if lineno_from != -1:
-                    if self.arcs:
-                        self.cur_file_dict[
-                            (self.last_line, lineno_from)
-                        ] = None
-                    else:
-                        for lineno in range(lineno_from, lineno_to+1):
-                            self.cur_file_dict[lineno] = None
-                self.last_line = lineno_to
+                    self.cur_file_dict[lineno] = None
+                self.last_line = lineno
         elif event == 'return':
             if self.arcs and self.cur_file_dict:
                 first = frame.f_code.co_firstlineno
                 self.cur_file_dict[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
-            self.file_tracer, self.cur_file_dict, self.last_line = (
-                self.data_stack.pop()
-            )
+            self.cur_file_dict, self.last_line = self.data_stack.pop()
         elif event == 'exception':
             self.last_exc_back = frame.f_back
             self.last_exc_firstlineno = frame.f_code.co_firstlineno

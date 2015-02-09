@@ -30,7 +30,7 @@ Key:
 - Plugins
     - Clean up
     + implement plugin support in CTracer
-    - remove plugin support from PyTracer
+    + remove plugin support from PyTracer
     - add services:
         - filelocator
         - warning

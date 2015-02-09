@@ -3,6 +3,7 @@
 import os.path
 
 import coverage
+from coverage import env
 from coverage.backward import StringIO
 from coverage.control import Plugins
 from coverage.misc import CoverageException
@@ -198,8 +199,34 @@ class PluginTest(CoverageTest):
         self.assertEqual(expected_end, out_lines[-len(expected_end):])
 
 
+class PluginWarningOnPyTracer(CoverageTest):
+    """Test that we get a controlled exception with plugins on PyTracer."""
+    def setUp(self):
+        super(PluginWarningOnPyTracer, self).setUp()
+        if env.C_TRACER:
+            self.skip("This test is only about PyTracer.")
+
+    def test_exception_if_plugins_on_pytracer(self):
+        self.make_file("simple.py", """a = 1""")
+
+        cov = coverage.Coverage()
+        cov.config["run:plugins"] = ["tests.plugin1"]
+
+        msg = (
+            r"Plugin file tracers \(tests.plugin1\) "
+            r"aren't supported with PyTracer"
+            )
+        with self.assertRaisesRegex(CoverageException, msg):
+            self.start_import_stop(cov, "simple")
+
+
 class FileTracerTest(CoverageTest):
     """Tests of plugins that implement file_tracer."""
+
+    def setUp(self):
+        super(FileTracerTest, self).setUp()
+        if not env.C_TRACER:
+            self.skip("Plugins are only supported with the C tracer.")
 
     def test_plugin1(self):
         self.make_file("simple.py", """\

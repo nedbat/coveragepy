@@ -227,6 +227,15 @@ class Coverage(object):
             concurrency=concurrency,
             )
 
+        # Early warning if we aren't going to be able to support plugins.
+        if self.file_tracers and not self.collector.supports_plugins:
+            raise CoverageException(
+                "Plugin file tracers (%s) aren't supported with %s" % (
+                    ", ".join(ft.plugin_name for ft in self.file_tracers),
+                    self.collector.tracer_name(),
+                    )
+                )
+
         # Suffixes are a bit tricky.  We want to use the data suffix only when
         # collecting data, not when combining data.  So we save it as
         # `self.run_suffix` now, and promote it to `self.data_suffix` if we

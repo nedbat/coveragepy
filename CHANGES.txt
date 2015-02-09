@@ -6,7 +6,8 @@ Change history for Coverage.py
 Latest
 ------
 
-- Plugin support is now implemented in the C tracer and the Python tracer.
+- Plugin support is now implemented in the C tracer instead of the Python
+  tracer.
 
 - Added 3.5.0a1 to the list of supported versions.
 
