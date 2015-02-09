@@ -1,6 +1,8 @@
 """Oddball cases for testing coverage.py"""
 
-import os, sys
+import os
+import sys
+
 import coverage
 
 from tests.coveragetest import CoverageTest

@@ -1,6 +1,12 @@
 """Base test case class for coverage testing."""
 
-import glob, os, random, re, shlex, shutil, sys
+import glob
+import os
+import random
+import re
+import shlex
+import shutil
+import sys
 
 import coverage
 from coverage.backunittest import TestCase

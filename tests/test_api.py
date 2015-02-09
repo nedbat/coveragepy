@@ -1,6 +1,10 @@
 """Tests for Coverage's API."""
 
-import fnmatch, os, re, sys, textwrap
+import fnmatch
+import os
+import re
+import sys
+import textwrap
 
 import coverage
 from coverage.backward import StringIO

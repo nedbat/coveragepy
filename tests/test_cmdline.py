@@ -1,7 +1,13 @@
 """Test cmdline.py for coverage."""
 
-import pprint, re, shlex, sys, textwrap
+import pprint
+import re
+import shlex
+import sys
+import textwrap
+
 import mock
+
 import coverage
 import coverage.cmdline
 from coverage.config import CoverageConfig
