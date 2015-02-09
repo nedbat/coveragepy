@@ -985,6 +985,9 @@ class Coverage(object):
             ('cover_dir', self.cover_dir),
             ('pylib_dirs', self.pylib_dirs),
             ('tracer', self.collector.tracer_name()),
+            ('file_tracers', [
+                ft.plugin_name for ft in self.file_tracers
+            ]),
             ('config_files', self.config.attempted_config_files),
             ('configs_read', self.config.config_files),
             ('data_path', self.data.filename),
