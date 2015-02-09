@@ -42,6 +42,7 @@ class CoverageTest(
                 ))
 
     def skip(self, reason):
+        """Skip this test, and give a reason."""
         self.class_behavior().skipped += 1
         raise SkipTest(reason)
 

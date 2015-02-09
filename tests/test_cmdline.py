@@ -161,6 +161,7 @@ class FakeCoverageForDebugData(object):
         return self._summary
 
     def plugin_data(self):
+        """Fake coverage().data.plugin_data()"""
         return self._plugin_data
 
 

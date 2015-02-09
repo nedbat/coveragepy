@@ -54,7 +54,7 @@ class PyTracer(object):
         if self.stopped:
             return
 
-        if self.last_exc_back:            # TODO: bring this up to speed
+        if self.last_exc_back:
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
                 if self.arcs and self.cur_file_dict:

@@ -27,6 +27,7 @@ def patch_multiprocessing():
     original_bootstrap = klass._bootstrap
 
     class ProcessWithCoverage(klass):
+        """A replacement for multiprocess.Process that starts coverage."""
         def _bootstrap(self):
             from coverage import Coverage
             cov = Coverage(data_suffix=True)
