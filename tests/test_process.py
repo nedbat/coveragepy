@@ -738,8 +738,9 @@ class ProcessCoverageMixin(object):
         else:                                           # pragma: not covered
             raise Exception("Couldn't find a place for the .pth file")
 
-    def tearDown(self):
-        super(ProcessCoverageMixin, self).tearDown()
+        self.addCleanup(self.remove_pth_path)
+
+    def remove_pth_path(self):
         # Clean up the .pth file we made.
         os.remove(self.pth_path)
 

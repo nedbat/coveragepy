@@ -371,14 +371,12 @@ class UsingModulesMixin(object):
     def setUp(self):
         super(UsingModulesMixin, self).setUp()
         # Parent class saves and restores sys.path, we can just modify it.
-        self.old_dir = os.getcwd()
+        old_dir = os.getcwd()
         os.chdir(self.nice_file(os.path.dirname(__file__), 'modules'))
+        self.addCleanup(os.chdir, old_dir)
+
         sys.path.append(".")
         sys.path.append("../moremodules")
-
-    def tearDown(self):
-        os.chdir(self.old_dir)
-        super(UsingModulesMixin, self).tearDown()
 
 
 class OmitIncludeTestsMixin(UsingModulesMixin):

@@ -45,7 +45,7 @@ class ModuleAwareMixin(TestCase):
     def setUp(self):
         super(ModuleAwareMixin, self).setUp()
 
-        # Record sys.modules here so we can restore it in tearDown.
+        # Record sys.modules here so we can restore it in cleanup_modules.
         self.old_modules = dict(sys.modules)
         self.addCleanup(self.cleanup_modules)
 
@@ -88,7 +88,7 @@ class EnvironmentAwareMixin(TestCase):
         """Set an environment variable `name` to be `value`.
 
         The environment variable is set, and record is kept that it was set,
-        so that `tearDown` can restore its original value.
+        so that `cleanup_environ` can restore its original value.
 
         """
         if name not in self.environ_undos:

@@ -63,10 +63,10 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         # At least one of our tests monkey-patches the version of coverage,
         # so grab it here to restore it later.
         self.real_coverage_version = coverage.__version__
+        self.addCleanup(self.restore_coverage_version)
 
-    def tearDown(self):
+    def restore_coverage_version(self):
         coverage.__version__ = self.real_coverage_version
-        super(HtmlDeltaTest, self).tearDown()
 
     def test_html_created(self):
         # Test basic HTML generation: files should be created.
@@ -359,10 +359,10 @@ class HtmlStaticFileTest(CoverageTest):
     def setUp(self):
         super(HtmlStaticFileTest, self).setUp()
         self.original_path = list(coverage.html.STATIC_PATH)
+        self.addCleanup(self.restore_static_path)
 
-    def tearDown(self):
+    def restore_static_path(self):
         coverage.html.STATIC_PATH = self.original_path
-        super(HtmlStaticFileTest, self).tearDown()
 
     def test_copying_static_files_from_system(self):
         # Make a new place for static files.

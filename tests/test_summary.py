@@ -501,8 +501,8 @@ class SummaryTest(CoverageTest):
 class SummaryTest2(CoverageTest):
     """Another bunch of summary tests."""
     # This class exists because tests naturally clump into classes based on the
-    # needs of their setUp and tearDown, rather than the product features they
-    # are testing.  There's probably a better way to organize these.
+    # needs of their setUp, rather than the product features they are testing.
+    # There's probably a better way to organize these.
 
     run_in_temp_dir = False
 

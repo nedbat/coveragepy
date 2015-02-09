@@ -75,7 +75,7 @@ class SetupPyTest(CoverageTest):
 
     def test_more_metadata(self):
         # Let's be sure we pick up our own setup.py
-        # CoverageTest.tearDown restores the original sys.path.
+        # CoverageTest restores the original sys.path for us.
         sys.path.insert(0, '')
         from setup import setup_args
 
