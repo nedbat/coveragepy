@@ -541,9 +541,9 @@ class Coverage(object):
         reason = self._check_include_omit_etc_internal(filename, frame)
         if self.debug.should('trace'):
             if not reason:
-                msg = "Tracing %r" % (filename,)
+                msg = "Including %r" % (filename,)
             else:
-                msg = "Not tracing %r: %s" % (filename, reason)
+                msg = "Not including %r: %s" % (filename, reason)
             self.debug.write(msg)
 
         return not reason

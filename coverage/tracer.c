@@ -20,7 +20,6 @@
 #if PY_MAJOR_VERSION >= 3
 
 #define MyText_Type         PyUnicode_Type
-#define MyText_Check(o)     PyUnicode_Check(o)
 #define MyText_AS_BYTES(o)  PyUnicode_AsASCIIString(o)
 #define MyText_AS_STRING(o) PyBytes_AS_STRING(o)
 #define MyInt_FromInt(i)    PyLong_FromLong((long)i)
@@ -31,7 +30,6 @@
 #else
 
 #define MyText_Type         PyString_Type
-#define MyText_Check(o)     PyString_Check(o)
 #define MyText_AS_BYTES(o)  (Py_INCREF(o), o)
 #define MyText_AS_STRING(o) PyString_AS_STRING(o)
 #define MyInt_FromInt(i)    PyInt_FromLong((long)i)
@@ -562,7 +560,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
             Py_INCREF(tracename);
         }
 
-        if (MyText_Check(tracename)) {
+        if (tracename != Py_None) {
             PyObject * file_data = PyDict_GetItem(self->data, tracename);
             PyObject * disp_plugin_name = NULL;
 

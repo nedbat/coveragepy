@@ -284,6 +284,10 @@ class FileTracerTest(CoverageTest):
 
             # quux_5.html will be omitted from the results.
             assert render("quux_5.html", 3) == "[quux_5.html @ 3]"
+
+            # In Python 2, either kind of string should be OK.
+            if type("") == type(b""):
+                assert render(u"unicode_3.html", 2) == "[unicode_3.html @ 2]"
             """)
 
         cov = coverage.Coverage(omit=["*quux*"])
@@ -307,3 +311,9 @@ class FileTracerTest(CoverageTest):
         self.assertIn("bar_4.html", cov.data.summary())
 
         self.assertNotIn("quux_5.html", cov.data.summary())
+
+        if env.PY2:
+            _, statements, missing, _ = cov.analysis("unicode_3.html")
+            self.assertEqual(statements, [1, 2, 3])
+            self.assertEqual(missing, [1])
+            self.assertIn("unicode_3.html", cov.data.summary())
