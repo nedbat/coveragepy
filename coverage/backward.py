@@ -71,10 +71,6 @@ if env.PY3:
         """Convert string `s` to bytes."""
         return s.encode('utf8')
 
-    def to_string(b):
-        """Convert bytes `b` to a string."""
-        return b.decode('utf8')
-
     def binary_bytes(byte_values):
         """Produce a byte string with the ints from `byte_values`."""
         return bytes(byte_values)
@@ -92,10 +88,6 @@ else:
     def to_bytes(s):
         """Convert string `s` to bytes (no-op in 2.x)."""
         return s
-
-    def to_string(b):
-        """Convert bytes `b` to a string (no-op in 2.x)."""
-        return b
 
     def binary_bytes(byte_values):
         """Produce a byte string with the ints from `byte_values`."""
