@@ -61,7 +61,6 @@ def run_tests(tracer, *nose_args):
         return
 
     print_banner(label)
-    os.environ["COVERAGE_TEST_TRACER"] = tracer
     nose_args = ["nosetests"] + list(nose_args)
     nose.core.main(argv=nose_args)
 
@@ -136,6 +135,7 @@ def do_combine_html():
 
 def do_test_with_tracer(tracer, *noseargs):
     """Run nosetests with a particular tracer."""
+    os.environ["COVERAGE_TEST_TRACER"] = tracer
     if os.environ.get("COVERAGE_COVERAGE", ""):
         return run_tests_with_coverage(tracer, *noseargs)
     else:

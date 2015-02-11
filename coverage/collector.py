@@ -247,7 +247,11 @@ class Collector(object):
     def stop(self):
         """Stop collecting trace information."""
         assert self._collectors
-        assert self._collectors[-1] is self
+        assert self._collectors[-1] is self, (
+            "Expected current collector to be %r, but it's %r" % (
+                self, self._collectors[-1],
+            )
+        )
 
         self.pause()
         self.tracers = []
