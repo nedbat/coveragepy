@@ -7,9 +7,9 @@ Latest
 ------
 
 - Plugin support is now implemented in the C tracer instead of the Python
-  tracer.
+  tracer. This greatly improves the speed of tracing projects using plugins.
 
-- Added 3.5.0a1 to the list of supported versions.
+- Added 3.5.0a1 to the list of supported CPython versions.
 
 - If the `config_file` argument to the Coverage constructor is specified as
   ".coveragerc", it is treated as if it were True.  This means setup.cfg is
