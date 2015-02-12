@@ -78,10 +78,19 @@ class Coverage(object):
         If `branch` is true, then branch coverage will be measured in addition
         to the usual statement coverage.
 
-        `config_file` determines what config file to read.  If it is a string,
-        it is the name of the config file to read.  If it is True, then a
-        standard file is read (".coveragerc").  If it is False, then no file is
-        read.
+        `config_file` determines what configuration file to read:
+
+            * If it is ".coveragerc", it is interpreted as if it were True,
+              for backward compatibility.
+
+            * If it is a string, it is the name of the file to read.  If the
+              file can't be read, it is an error.
+
+            * If it is True, then a few standard files names are tried
+              (".coveragerc", "setup.cfg").  It is not an error for these files
+              to not be found.
+
+            * If it is False, then no configuration file is read.
 
         `source` is a list of file paths or package names.  Only code located
         in the trees indicated by the file paths or package names will be
@@ -107,6 +116,10 @@ class Coverage(object):
         # 2: from the rcfile, .coveragerc or setup.cfg file:
         if config_file:
             did_read_rc = False
+            # Some API users were specifying ".coveragerc" to mean the same as
+            # True, so make it so.
+            if config_file == ".coveragerc":
+                config_file = True
             specified_file = (config_file is not True)
             if not specified_file:
                 config_file = ".coveragerc"

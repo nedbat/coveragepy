@@ -11,6 +11,10 @@ Latest
 
 - Added 3.5.0a1 to the list of supported versions.
 
+- If the `config_file` argument to the Coverage constructor is specified as
+  ".coveragerc", it is treated as if it were True.  This means setup.cfg is
+  also examined, and a missing file is not considered an error (`issue 357`_).
+
 - Wildly experimental: support for measuring processes started by the
   multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
   either on the command line or in the .coveragerc file (`issue 117`_). Thanks,
@@ -26,6 +30,7 @@ Latest
 .. _issue 117: https://bitbucket.org/ned/coveragepy/issue/117/enable-coverage-measurement-of-code-run-by
 .. _issue 340: https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy
 .. _issue 353: https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
+.. _issue 357: https://bitbucket.org/ned/coveragepy/issue/357/behavior-changed-when-coveragerc-is
 
 
 Version 4.0a4 --- 25 January 2015

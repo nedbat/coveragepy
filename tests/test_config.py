@@ -322,6 +322,15 @@ class ConfigFileTest(CoverageTest):
         cov = coverage.coverage()
         self.assert_config_settings_are_correct(cov)
 
+    def test_config_file_settings_in_setupcfg_if_coveragerc_specified(self):
+        # Configuration will be read from setup.cfg from sections prefixed with
+        # "coverage:", even if the API said to read from a (non-existent)
+        # .coveragerc file.
+        nested = self.LOTSA_SETTINGS.format(section="coverage:")
+        self.make_file("setup.cfg", nested + "\n" + self.SETUP_CFG)
+        cov = coverage.coverage(config_file=".coveragerc")
+        self.assert_config_settings_are_correct(cov)
+
     def test_setupcfg_only_if_not_coveragerc(self):
         self.make_file(".coveragerc", """\
             [run]
@@ -369,3 +378,9 @@ class ConfigFileTest(CoverageTest):
             msg = "Couldn't read %r as a config file" % bad_file
             with self.assertRaisesRegex(CoverageException, msg):
                 coverage.coverage(config_file=bad_file)
+
+    def test_nocoveragerc_file_when_specified(self):
+        cov = coverage.coverage(config_file=".coveragerc")
+        self.assertFalse(cov.config.timid)
+        self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.data_file, ".coverage")
