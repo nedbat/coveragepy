@@ -635,6 +635,7 @@ class CmdMainTest(CoverageTest):
         self.addCleanup(self.restore_coverage_script)
 
     def restore_coverage_script(self):
+        """A cleanup"""
         coverage.cmdline.CoverageScript = self.old_CoverageScript
 
     def test_normal(self):

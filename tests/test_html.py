@@ -66,6 +66,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.addCleanup(self.restore_coverage_version)
 
     def restore_coverage_version(self):
+        """A cleanup."""
         coverage.__version__ = self.real_coverage_version
 
     def test_html_created(self):
@@ -362,6 +363,7 @@ class HtmlStaticFileTest(CoverageTest):
         self.addCleanup(self.restore_static_path)
 
     def restore_static_path(self):
+        """A cleanup."""
         coverage.html.STATIC_PATH = self.original_path
 
     def test_copying_static_files_from_system(self):
