@@ -27,10 +27,14 @@ Latest
   only once, no matter how many times it is called.  This fixes problems due
   to unusual virtualenv configurations (`issue 340`_).
 
+- Coverage.py now always adds the current directory to sys.path, so that
+  plugins can import files in the current directory (`issue 358`_).
+
 .. _issue 117: https://bitbucket.org/ned/coveragepy/issue/117/enable-coverage-measurement-of-code-run-by
 .. _issue 340: https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy
 .. _issue 353: https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
 .. _issue 357: https://bitbucket.org/ned/coveragepy/issue/357/behavior-changed-when-coveragerc-is
+.. _issue 358: https://bitbucket.org/ned/coveragepy/issue/358/all-coverage-commands-should-adjust
 
 
 Version 4.0a4 --- 25 January 2015

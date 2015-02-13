@@ -394,6 +394,10 @@ class CoverageScript(object):
         if not self.args_ok(options, args):
             return ERR
 
+        # We need to be able to import from the current directory, because
+        # plugins may try to, for example, to read Django settings.
+        sys.path[0] = ''
+
         # Listify the list options.
         source = unshell_list(options.source)
         omit = unshell_list(options.omit)

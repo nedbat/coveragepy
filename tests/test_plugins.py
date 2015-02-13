@@ -198,6 +198,25 @@ class PluginTest(CoverageTest):
             ]
         self.assertEqual(expected_end, out_lines[-len(expected_end):])
 
+    def test_local_files_are_importable(self):
+        self.make_file("importing_plugin.py", """\
+            from coverage import CoveragePlugin
+            import local_module
+            class Plugin(CoveragePlugin):
+                pass
+            """)
+        self.make_file("local_module.py", "CONST = 1")
+        self.make_file(".coveragerc", """\
+            [run]
+            plugins = importing_plugin
+            """)
+        self.make_file("main_file.py", "print('MAIN')")
+
+        out = self.run_command("coverage run main_file.py")
+        self.assertEqual(out, "MAIN\n")
+        out = self.run_command("coverage html")
+        self.assertEqual(out, "")
+
 
 class PluginWarningOnPyTracer(CoverageTest):
     """Test that we get a controlled exception with plugins on PyTracer."""
