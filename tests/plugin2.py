@@ -2,6 +2,8 @@
 
 import coverage
 
+# pylint: disable=missing-docstring
+
 
 class Plugin(coverage.CoveragePlugin):
     def file_tracer(self, filename):
@@ -29,9 +31,6 @@ class RenderFileTracer(coverage.plugin.FileTracer):
 
 
 class FileReporter(coverage.plugin.FileReporter):
-    def __init__(self, filename):
-        self.filename = filename
-
     def statements(self):
         # Goofy test arrangement: claim that the file has as many lines as the
         # number in its name.

@@ -36,7 +36,7 @@ class CoveragePlugin(object):
         """
         self.options = options
 
-    def file_tracer(self, filename):
+    def file_tracer(self, filename):        # pylint: disable=unused-argument
         """Return a FileTracer object for a file.
 
         Every source file is offered to the plugin to give it a chance to take
@@ -60,7 +60,7 @@ class CoveragePlugin(object):
         """
         return None
 
-    def file_reporter(self, filename):
+    def file_reporter(self, filename):      # pylint: disable=unused-argument
         """Return the FileReporter class to use for filename.
 
         This will only be invoked if `filename` returns non-None from
@@ -119,7 +119,7 @@ class FileTracer(object):
         """
         return False
 
-    def dynamic_source_filename(self, filename, frame):
+    def dynamic_source_filename(self, filename, frame):     # pylint: disable=unused-argument
         """Returns a dynamically computed source filename.
 
         Some plugins need to compute the source filename dynamically for each
@@ -163,12 +163,14 @@ class FileTracer(object):
 class FileReporter(object):
     """Support needed for files during the reporting phase."""
     def __init__(self, filename):
+        # TODO: document that this init happens.
         self.filename = filename
 
     def __repr__(self):
         return (
-            "<{this.__class__.__name__}"
-            " filename={this.filename!r}>".format(this=self)
+            # pylint: disable=redundant-keyword-arg
+            "<{self.__class__.__name__}"
+            " filename={self.filename!r}>".format(self=self)
         )
 
     # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
