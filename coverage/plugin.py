@@ -45,8 +45,8 @@ class CoveragePlugin(object):
 
         There is no way to register your plugin for particular files.  Instead,
         this method is invoked for all files, and can decide whether it can
-        trace the file or not.  Be prepared for `filename` to refer to all kinds
-        of files that have nothing to do with your plugin.
+        trace the file or not.  Be prepared for `filename` to refer to all
+        kinds of files that have nothing to do with your plugin.
 
         Arguments:
             filename (str): The path to the file being considered.  This is the
