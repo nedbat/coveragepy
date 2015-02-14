@@ -10,7 +10,7 @@ import sys
 
 import coverage
 from coverage.backunittest import TestCase
-from coverage.backward import StringIO, import_local_file
+from coverage.backward import StringIO, import_local_file, string_class
 from coverage.control import _TEST_NAME_FILE
 from coverage.test_helpers import (
     EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
@@ -18,11 +18,12 @@ from coverage.test_helpers import (
 
 from nose.plugins.skip import SkipTest
 
-from tests.backtest import run_command
+from tests.helpers import run_command
 
 
 # Status returns for the command line.
 OK, ERR = 0, 1
+
 
 class CoverageTest(
     EnvironmentAwareMixin,
@@ -125,15 +126,15 @@ class CoverageTest(
         for pair in arcz.split():
             asgn = bsgn = 1
             if len(pair) == 2:
-                a,b = pair
+                a, b = pair
             else:
                 assert len(pair) == 3
                 if pair[0] == '-':
-                    _,a,b = pair
+                    _, a, b = pair
                     asgn = -1
                 else:
                     assert pair[1] == '-'
-                    a,_,b = pair
+                    a, _, b = pair
                     bsgn = -1
             arcs.append((asgn*self._arcz_map[a], bsgn*self._arcz_map[b]))
         return sorted(arcs)
@@ -145,9 +146,11 @@ class CoverageTest(
         s2 = "\n".join(repr(a) for a in a2) + "\n"
         self.assertMultiLineEqual(s1, s2, msg)
 
-    def check_coverage(self, text, lines=None, missing="", report="",
-            excludes=None, partials="",
-            arcz=None, arcz_missing="", arcz_unpredicted=""):
+    def check_coverage(
+        self, text, lines=None, missing="", report="",
+        excludes=None, partials="",
+        arcz=None, arcz_missing="", arcz_unpredicted=""
+    ):
         """Check the coverage measurement of `text`.
 
         The source `text` is run and measured.  `lines` are the line numbers
@@ -192,7 +195,7 @@ class CoverageTest(
         analysis = cov._analyze(mod)
         statements = sorted(analysis.statements)
         if lines is not None:
-            if type(lines[0]) == type(1):
+            if isinstance(lines[0], int):
                 # lines is just a list of numbers, it must match the statements
                 # found in the code.
                 self.assertEqual(statements, lines)
@@ -208,7 +211,7 @@ class CoverageTest(
                         )
 
             missing_formatted = analysis.missing_formatted()
-            if type(missing) == type(""):
+            if isinstance(missing, string_class):
                 self.assertEqual(missing_formatted, missing)
             else:
                 for missing_list in missing:

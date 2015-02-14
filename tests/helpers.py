@@ -1,5 +1,31 @@
 """Helpers for coverage.py tests."""
 
+import subprocess
+
+
+# This isn't really a backward compatibility thing, should be moved into a
+# helpers file or something.
+def run_command(cmd):
+    """Run a command in a sub-process.
+
+    Returns the exit status code and the combined stdout and stderr.
+
+    """
+    proc = subprocess.Popen(
+        cmd, shell=True,
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT
+        )
+    output, _ = proc.communicate()
+    status = proc.returncode
+
+    # Get the output, and canonicalize it to strings with newlines.
+    if not isinstance(output, str):
+        output = output.decode('utf-8')
+    output = output.replace('\r', '')
+
+    return status, output
+
 
 class CheckUniqueFilenames(object):
     """Asserts the uniqueness of filenames passed to a function."""

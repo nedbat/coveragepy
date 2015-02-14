@@ -1,9 +1,17 @@
 """Run tests in the farm sub-directory.  Designed for nose."""
 
-import difflib, filecmp, fnmatch, glob, os, re, shutil, sys
+import difflib
+import filecmp
+import fnmatch
+import glob
+import os
+import re
+import shutil
+import sys
+
 from nose.plugins.skip import SkipTest
 
-from tests.backtest import run_command
+from tests.helpers import run_command
 from tests.backtest import execfile         # pylint: disable=redefined-builtin
 
 from coverage.control import _TEST_NAME_FILE
@@ -199,9 +207,10 @@ class FarmTestCase(object):
             self.cd(cwd)
             self.restorepath(oldpath)
 
-    def compare(self, dir1, dir2, file_pattern=None, size_within=0,
-            left_extra=False, right_extra=False, scrubs=None
-            ):
+    def compare(
+        self, dir1, dir2, file_pattern=None, size_within=0,
+        left_extra=False, right_extra=False, scrubs=None
+    ):
         """Compare files matching `file_pattern` in `dir1` and `dir2`.
 
         `dir2` is interpreted as a prefix, with Python version numbers appended
