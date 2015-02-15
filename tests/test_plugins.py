@@ -247,6 +247,10 @@ class FileTracerTest(CoverageTest):
         if not env.C_TRACER:
             self.skip("Plugins are only supported with the C tracer.")
 
+
+class GoodPluginTest(FileTracerTest):
+    """Tests of plugin happy paths."""
+
     def test_plugin1(self):
         self.make_file("simple.py", """\
             import try_xyz
@@ -336,3 +340,108 @@ class FileTracerTest(CoverageTest):
             self.assertEqual(statements, [1, 2, 3])
             self.assertEqual(missing, [1])
             self.assertIn("unicode_3.html", cov.data.summary())
+
+
+class BadPluginTest(FileTracerTest):
+    """Test error handling around plugins."""
+
+    def run_bad_plugin(self, plugin_name, our_error=True):
+        """Run a file, and see that the plugin failed."""
+        self.make_file("simple.py", """\
+            import other
+            a = 2
+            b = 3
+            """)
+        self.make_file("other.py", """\
+            x = 1
+            y = 2
+            """)
+
+        cov = coverage.Coverage()
+        cov.config["run:plugins"] = [plugin_name]
+        self.start_import_stop(cov, "simple")
+
+        stderr = self.stderr()
+        print(stderr)           # for diagnosing test failures.
+
+        if our_error:
+            errors = stderr.count("# Oh noes!")
+            # The exception we're causing should only appear once.
+            self.assertEqual(errors, 1)
+
+        # There should be a warning explaining what's happening, but only one.
+        msg = "Disabling plugin '%s' due to an exception:" % plugin_name
+        tracebacks = stderr.count(msg)
+        self.assertEqual(tracebacks, 1)
+
+    def test_file_tracer_fails(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    17/0 # Oh noes!
+            """)
+        self.run_bad_plugin("bad_plugin")
+
+    def test_file_tracer_returns_wrong(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    return 3.14159
+            """)
+        self.run_bad_plugin("bad_plugin", our_error=False)
+
+    def test_has_dynamic_source_filename_fails(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    return BadFileTracer()
+
+            class BadFileTracer(coverage.plugin.FileTracer):
+                def has_dynamic_source_filename(self):
+                    23/0 # Oh noes!
+            """)
+        self.run_bad_plugin("bad_plugin")
+
+    def test_source_filename_fails(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    return BadFileTracer()
+
+            class BadFileTracer(coverage.plugin.FileTracer):
+                def source_filename(self):
+                    42/0 # Oh noes!
+            """)
+        self.run_bad_plugin("bad_plugin")
+
+    def test_source_filename_returns_wrong(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    return BadFileTracer()
+
+            class BadFileTracer(coverage.plugin.FileTracer):
+                def source_filename(self):
+                    return 17.3
+            """)
+        self.run_bad_plugin("bad_plugin", our_error=False)
+
+    def xxx_dynamic_source_filename_fails(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    return BadFileTracer()
+
+            class BadFileTracer(coverage.plugin.FileTracer):
+                def has_dynamic_source_filename(self):
+                    return True
+                def dynamic_source_filename(self, filename, frame):
+                    101/0
+            """)
+        self.run_bad_plugin("bad_plugin")

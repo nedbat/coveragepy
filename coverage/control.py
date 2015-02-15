@@ -7,6 +7,7 @@ import platform
 import random
 import socket
 import sys
+import traceback
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
@@ -244,7 +245,9 @@ class Coverage(object):
         if self.file_tracers and not self.collector.supports_plugins:
             raise CoverageException(
                 "Plugin file tracers (%s) aren't supported with %s" % (
-                    ", ".join(ft.plugin_name for ft in self.file_tracers),
+                    ", ".join(
+                        ft._coverage_plugin_name for ft in self.file_tracers
+                        ),
                     self.collector.tracer_name(),
                     )
                 )
@@ -328,7 +331,7 @@ class Coverage(object):
         if self.debug.should('sys'):
             self.debug.write_formatted_info("sys", self.sys_info())
             for plugin in self.plugins:
-                header = "sys: " + plugin.plugin_name
+                header = "sys: " + plugin._coverage_plugin_name
                 info = plugin.sys_info()
                 self.debug.write_formatted_info(header, info)
             wrote_any = True
@@ -460,19 +463,33 @@ class Coverage(object):
         # Try the plugins, see if they have an opinion about the file.
         plugin = None
         for plugin in self.file_tracers:
-            file_tracer = plugin.file_tracer(canonical)
-            if file_tracer is not None:
-                file_tracer.plugin_name = plugin.plugin_name
-                disp.trace = True
-                disp.file_tracer = file_tracer
-                if file_tracer.has_dynamic_source_filename():
-                    disp.has_dynamic_filename = True
-                else:
-                    disp.source_filename = \
-                        self.file_locator.canonical_filename(
-                            file_tracer.source_filename()
-                        )
-                break
+            if not plugin._coverage_enabled:
+                continue
+
+            try:
+                file_tracer = plugin.file_tracer(canonical)
+                if file_tracer is not None:
+                    file_tracer._coverage_plugin_name = \
+                        plugin._coverage_plugin_name
+                    disp.trace = True
+                    disp.file_tracer = file_tracer
+                    if file_tracer.has_dynamic_source_filename():
+                        disp.has_dynamic_filename = True
+                    else:
+                        disp.source_filename = \
+                            self.file_locator.canonical_filename(
+                                file_tracer.source_filename()
+                            )
+                    break
+            except Exception as e:
+                self._warn(
+                    "Disabling plugin %r due to an exception:" % (
+                        plugin._coverage_plugin_name
+                    )
+                )
+                traceback.print_exc()
+                plugin._coverage_enabled = False
+                continue
         else:
             # No plugin wanted it: it's Python.
             disp.trace = True
@@ -827,7 +844,7 @@ class Coverage(object):
             if file_reporter is None:
                 raise CoverageException(
                     "Plugin %r did not provide a file reporter for %r." % (
-                        plugin.plugin_name, morf
+                        plugin._coverage_plugin_name, morf
                     )
                 )
         else:
@@ -999,7 +1016,7 @@ class Coverage(object):
             ('pylib_dirs', self.pylib_dirs),
             ('tracer', self.collector.tracer_name()),
             ('file_tracers', [
-                ft.plugin_name for ft in self.file_tracers
+                ft._coverage_plugin_name for ft in self.file_tracers
             ]),
             ('config_files', self.config.attempted_config_files),
             ('configs_read', self.config.config_files),
@@ -1142,7 +1159,8 @@ class Plugins(object):
             if plugin_class:
                 options = config.get_plugin_options(module)
                 plugin = plugin_class(options)
-                plugin.plugin_name = module
+                plugin._coverage_plugin_name = module
+                plugin._coverage_enabled = True
                 plugins.order.append(plugin)
                 plugins.names[module] = plugin
             else:

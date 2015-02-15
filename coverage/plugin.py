@@ -5,6 +5,8 @@ import re
 
 from coverage.misc import _needs_to_implement
 
+# TODO: document that the plugin objects may be decorated with attributes with
+# named "_coverage_*".
 
 class CoveragePlugin(object):
     """Base class for coverage.py plugins.

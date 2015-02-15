@@ -530,6 +530,9 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
                     disp_file_tracer, "dynamic_source_filename",
                     "OO", tracename, frame
                     );
+                if (next_tracename == NULL) {
+                    goto error;
+                }
                 Py_DECREF(tracename);
                 tracename = next_tracename;
 
@@ -577,7 +580,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
                 /* If the disposition mentions a plugin, record that. */
                 if (disp_file_tracer != Py_None) {
-                    disp_plugin_name = PyObject_GetAttrString(disp_file_tracer, "plugin_name");
+                    disp_plugin_name = PyObject_GetAttrString(disp_file_tracer, "_coverage_plugin_name");
                     if (disp_plugin_name == NULL) {
                         goto error;
                     }
@@ -702,12 +705,13 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     }
 
     ret = RET_OK;
-    goto ok;
+    goto cleanup;
 
 error:
     STATS( self->stats.errors++; )
 
-ok:
+cleanup:
+
     Py_XDECREF(tracename);
     Py_XDECREF(disposition);
     Py_XDECREF(disp_trace);

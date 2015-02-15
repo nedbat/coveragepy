@@ -165,9 +165,9 @@ def overrides(obj, method_name, base_class):
 # TODO: abc?
 def _needs_to_implement(that, func_name):
     """Helper to raise NotImplementedError in interface stubs."""
-    if hasattr(that, "plugin_name"):
+    if hasattr(that, "_coverage_plugin_name"):
         thing = "Plugin"
-        name = that.plugin_name
+        name = that._coverage_plugin_name
     else:
         thing = "Class"
         klass = that.__class__
