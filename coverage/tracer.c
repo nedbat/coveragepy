@@ -625,6 +625,9 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
             if (self->cur_entry.file_tracer != Py_None) {
                 PyObject * from_to = NULL;
                 from_to = PyObject_CallMethod(self->cur_entry.file_tracer, "line_number_range", "O", frame);
+                if (from_to == NULL) {
+                    goto error;
+                }
                 /* TODO: error check bad returns. */
                 lineno_from = MyInt_AsInt(PyTuple_GetItem(from_to, 0));
                 lineno_to = MyInt_AsInt(PyTuple_GetItem(from_to, 1));
