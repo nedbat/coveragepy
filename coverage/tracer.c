@@ -323,20 +323,21 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
 {
     int ret = RET_ERROR;
 
-    PyObject * t = Py_BuildValue("(ii)", l1, l2);
-    if (t != NULL) {
-        if (PyDict_SetItem(self->cur_entry.file_data, t, Py_None) < 0) {
-            goto error;
-        }
-        Py_DECREF(t);
+    PyObject * t = NULL;
+
+    t = Py_BuildValue("(ii)", l1, l2);
+    if (t == NULL) {
+        goto error;
     }
-    else {
+
+    if (PyDict_SetItem(self->cur_entry.file_data, t, Py_None) < 0) {
         goto error;
     }
 
     ret = RET_OK;
 
 error:
+    Py_XDECREF(t);
 
     return ret;
 }
@@ -381,7 +382,6 @@ CTracer_set_pdata_stack(CTracer *self)
             DataStack_init(self, &self->data_stacks[the_index]);
         }
         else {
-            Py_INCREF(stack_index);
             the_index = MyInt_AsInt(stack_index);
         }
 
