@@ -575,6 +575,27 @@ class MiscArcTest(CoverageTest):
             """,
             arcz=".1 19 9.")
 
+    def test_pathologically_long_code_object(self):
+        # https://bitbucket.org/ned/coveragepy/issue/359
+        # The structure of this file is such that an EXTENDED_ARG byte code is
+        # needed to encode the jump at the end.  We weren't interpreting those
+        # opcodes.
+        code = """\
+            data = [
+            """ + "".join("""\
+                [{i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}],
+            """.format(i=i) for i in range(2000)
+            ) + """\
+            ]
+
+            if __name__ == "__main__":
+                print(len(data))
+            """
+        self.check_coverage(
+            code,
+            arcs=[(-1, 1), (1, 2004), (2004, -2), (2004, 2005), (2005, -2)],
+            )
+
 
 class ExcludeTest(CoverageTest):
     """Tests of exclusions to indicate known partial branches."""

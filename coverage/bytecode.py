@@ -1,8 +1,10 @@
 """Bytecode manipulation for coverage.py"""
 
-import opcode, types
+import opcode
+import types
 
 from coverage.backward import byte_to_int
+
 
 class ByteCode(object):
     """A single bytecode."""
@@ -26,6 +28,9 @@ class ByteCode(object):
 class ByteCodes(object):
     """Iterator over byte codes in `code`.
 
+    This handles the logic of EXTENDED_ARG byte codes internally.  Those byte
+    codes are not returned by this iterator.
+
     Returns `ByteCode` objects.
 
     """
@@ -37,6 +42,7 @@ class ByteCodes(object):
 
     def __iter__(self):
         offset = 0
+        ext_arg = 0
         while offset < len(self.code):
             bc = ByteCode()
             bc.op = self[offset]
@@ -44,7 +50,7 @@ class ByteCodes(object):
 
             next_offset = offset+1
             if bc.op >= opcode.HAVE_ARGUMENT:
-                bc.arg = self[offset+1] + 256*self[offset+2]
+                bc.arg = ext_arg + self[offset+1] + 256*self[offset+2]
                 next_offset += 2
 
                 label = -1
@@ -55,7 +61,11 @@ class ByteCodes(object):
                 bc.jump_to = label
 
             bc.next_offset = offset = next_offset
-            yield bc
+            if bc.op == opcode.EXTENDED_ARG:
+                ext_arg = bc.arg * 256*256
+            else:
+                ext_arg = 0
+                yield bc
 
 
 class CodeObjects(object):

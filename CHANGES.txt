@@ -3,6 +3,15 @@ Change history for Coverage.py
 ------------------------------
 
 
+Latest
+------
+
+- Branch coverage couldn't properly handle certain extremely long files. This
+  is now fixed (`issue 359`_).
+
+.. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
+
+
 Version 4.0a5 --- 16 February 2015
 ----------------------------------
 

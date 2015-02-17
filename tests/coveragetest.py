@@ -149,7 +149,8 @@ class CoverageTest(
     def check_coverage(
         self, text, lines=None, missing="", report="",
         excludes=None, partials="",
-        arcz=None, arcz_missing="", arcz_unpredicted=""
+        arcz=None, arcz_missing=None, arcz_unpredicted=None,
+        arcs=None, arcs_missing=None, arcs_unpredicted=None,
     ):
         """Check the coverage measurement of `text`.
 
@@ -172,11 +173,12 @@ class CoverageTest(
 
         self.make_file(modname+".py", text)
 
-        arcs = arcs_missing = arcs_unpredicted = None
-        if arcz is not None:
+        if arcs is None and arcz is not None:
             arcs = self.arcz_to_arcs(arcz)
-            arcs_missing = self.arcz_to_arcs(arcz_missing or "")
-            arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted or "")
+        if arcs_missing is None and arcz_missing is not None:
+            arcs_missing = self.arcz_to_arcs(arcz_missing)
+        if arcs_unpredicted is None and arcz_unpredicted is not None:
+            arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted)
 
         # Start up Coverage.
         cov = coverage.coverage(branch=(arcs_missing is not None))
