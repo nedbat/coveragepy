@@ -95,7 +95,7 @@ installed properly:
 
         $ coverage --version
         Coverage.py, version |release|.
-        Documentation at https://coverage.readthedocs.org/en/coverage-|release|
+        Documentation at https://coverage.readthedocs.org/en/|release|
 
 You can also invoke coverage as a module:
 
@@ -113,4 +113,4 @@ You can also invoke coverage as a module:
 
         $ python -m coverage --version
         Coverage.py, version |release|.
-        Documentation at https://coverage.readthedocs.org/en/coverage-|release|
+        Documentation at https://coverage.readthedocs.org/en/|release|
