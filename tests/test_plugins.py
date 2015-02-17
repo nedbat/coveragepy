@@ -431,6 +431,8 @@ class BadPluginTest(FileTracerTest):
             """)
         self.run_bad_plugin("bad_plugin", our_error=False)
 
+    # This test currently crashes the C tracer function.  I'm working on
+    # figuring out why....
     def xxx_dynamic_source_filename_fails(self):
         self.make_file("bad_plugin.py", """\
             import coverage.plugin

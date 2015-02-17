@@ -3,13 +3,14 @@ Change history for Coverage.py
 ------------------------------
 
 
-Latest
-------
+Version 4.0a5 --- 16 February 2015
+----------------------------------
 
 - Plugin support is now implemented in the C tracer instead of the Python
   tracer. This greatly improves the speed of tracing projects using plugins.
 
-- Added 3.5.0a1 to the list of supported CPython versions.
+- Coverage.py now always adds the current directory to sys.path, so that
+  plugins can import files in the current directory (`issue 358`_).
 
 - If the `config_file` argument to the Coverage constructor is specified as
   ".coveragerc", it is treated as if it were True.  This means setup.cfg is
@@ -27,8 +28,7 @@ Latest
   only once, no matter how many times it is called.  This fixes problems due
   to unusual virtualenv configurations (`issue 340`_).
 
-- Coverage.py now always adds the current directory to sys.path, so that
-  plugins can import files in the current directory (`issue 358`_).
+- Added 3.5.0a1 to the list of supported CPython versions.
 
 .. _issue 117: https://bitbucket.org/ned/coveragepy/issue/117/enable-coverage-measurement-of-code-run-by
 .. _issue 340: https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy

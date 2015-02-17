@@ -37,12 +37,12 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _changes_40:
 
-Version 4.0a4 pre-release --- 25 January 2015
----------------------------------------------
+Version 4.0a5 pre-release --- 16 February 2015
+----------------------------------------------
 
 Backward incompatibilities:
 
-- CPython versions supported are now Python 2.6, 2.7, 3.3, and 3.4.
+- CPython versions supported are now Python 2.6, 2.7, 3.3, 3.4 and 3.5a1.
   PyPy2 2.4 and PyPy3 2.4 are also supported.
 
 - The original command line switches (`-x` to run a program, etc) are no
@@ -61,6 +61,15 @@ Major new features:
 - The HTML report now has filtering.  Type text into the Filter box on the
   index page, and only modules with that text in the name will be shown.
   Thanks, Danny Allen.
+
+- Plugins: third parties can write plugins to add file support for non-Python
+  files, such as web application templating engines, or languages that compile
+  down to Python.
+
+- Wildly experimental: support for measuring processes started by the
+  multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
+  either on the command line or in the .coveragerc file (`issue 117`_). Thanks,
+  Eduardo Schettino.  Currently, this does not work on Windows.
 
 New features:
 
@@ -87,6 +96,9 @@ New features:
 
 Improvements:
 
+- Coverage.py now always adds the current directory to sys.path, so that
+  plugins can import files in the current directory (`issue 358`_).
+
 - The ``--debug`` switch can now be used on any command.
 
 - The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
@@ -100,6 +112,13 @@ Improvements:
   regression, I apologize.  This was reported in `issue 235`_, which is now
   fixed.
 
+- A new warning is possible, if a desired file isn't measured because it was
+  imported before coverage was started (`issue 353`_).
+
+- The `coverage.process_startup` function now will start coverage measurement
+  only once, no matter how many times it is called.  This fixes problems due
+  to unusual virtualenv configurations (`issue 340`_).
+
 API changes:
 
 - The class defined in the coverage module is now called ``Coverage`` instead
@@ -107,6 +126,10 @@ API changes:
 
 - You can now programmatically adjust the configuration of coverage by setting
   items on `Coverage.config` after construction.
+
+- If the `config_file` argument to the Coverage constructor is specified as
+  ".coveragerc", it is treated as if it were True.  This means setup.cfg is
+  also examined, and a missing file is not considered an error (`issue 357`_).
 
 Bug fixes:
 
@@ -133,6 +156,7 @@ Bug fixes:
 .. _issue 57: https://bitbucket.org/ned/coveragepy/issue/57/annotate-command-fails-to-annotate-many
 .. _issue 69: https://bitbucket.org/ned/coveragepy/issue/69/coverage-html-overwrite-files-that-doesnt
 .. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
+.. _issue 117: https://bitbucket.org/ned/coveragepy/issue/117/enable-coverage-measurement-of-code-run-by
 .. _issue 149: https://bitbucket.org/ned/coveragepy/issue/149/coverage-gevent-looks-broken
 .. _issue 230: https://bitbucket.org/ned/coveragepy/issue/230/show-line-no-for-missing-branches-in
 .. _issue 235: https://bitbucket.org/ned/coveragepy/issue/235/package-name-is-missing-in-xml-report
@@ -143,8 +167,12 @@ Bug fixes:
 .. _issue 314: https://bitbucket.org/ned/coveragepy/issue/314/fail_under-param-not-working-in-coveragerc
 .. _issue 315: https://bitbucket.org/ned/coveragepy/issue/315/option-to-omit-empty-files-eg-__init__py
 .. _issue 331: https://bitbucket.org/ned/coveragepy/issue/331/failure-of-encoding-detection-on-python2
+.. _issue 340: https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy
 .. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ
 .. _issue 345: https://bitbucket.org/ned/coveragepy/issue/345/xml-reports-line-rate-0-for-empty-files
+.. _issue 353: https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
+.. _issue 357: https://bitbucket.org/ned/coveragepy/issue/357/behavior-changed-when-coveragerc-is
+.. _issue 358: https://bitbucket.org/ned/coveragepy/issue/358/all-coverage-commands-should-adjust
 
 
 .. _changes_371:

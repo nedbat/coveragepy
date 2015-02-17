@@ -79,12 +79,38 @@ Checking the installation
 -------------------------
 
 If all went well, you should be able to open a command prompt, and see coverage
-installed properly::
+installed properly:
 
-    $ coverage --version
-    Coverage.py, version 4.0a4.  http://nedbatchelder.com/code/coverage
+.. ifconfig:: not prerelease
 
-You can also invoke coverage as a module::
+    .. parsed-literal::
 
-    $ python -m coverage --version
-    Coverage.py, version 4.0a4.  http://nedbatchelder.com/code/coverage
+        $ coverage --version
+        Coverage.py, version |release|.
+        Documentation at https://coverage.readthedocs.org
+
+.. ifconfig:: prerelease
+
+    .. parsed-literal::
+
+        $ coverage --version
+        Coverage.py, version |release|.
+        Documentation at https://coverage.readthedocs.org/en/coverage-|release|
+
+You can also invoke coverage as a module:
+
+.. ifconfig:: not prerelease
+
+    .. parsed-literal::
+
+        $ python -m coverage --version
+        Coverage.py, version |release|.
+        Documentation at https://coverage.readthedocs.org
+
+.. ifconfig:: prerelease
+
+    .. parsed-literal::
+
+        $ python -m coverage --version
+        Coverage.py, version |release|.
+        Documentation at https://coverage.readthedocs.org/en/coverage-|release|
