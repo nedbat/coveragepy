@@ -481,7 +481,7 @@ class Coverage(object):
                                 file_tracer.source_filename()
                             )
                     break
-            except Exception as e:
+            except Exception:
                 self._warn(
                     "Disabling plugin %r due to an exception:" % (
                         plugin._coverage_plugin_name
