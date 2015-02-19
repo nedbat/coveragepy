@@ -58,6 +58,9 @@ kit:
 kit_upload:
 	$(SDIST_CMD) upload
 
+kit_local:
+	cp -v dist/* `awk -F "=" '/find-links/ {print $$2}' ~/.pip/pip.conf`
+
 pypi:
 	python setup.py register
 
