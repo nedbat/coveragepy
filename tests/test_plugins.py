@@ -277,7 +277,7 @@ class GoodPluginTest(FileTracerTest):
         _, statements, _, _ = cov.analysis(zzfile)
         self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
 
-    def test_plugin2(self):
+    def make_render_and_caller(self):
         # plugin2 emulates a dynamic tracing plugin: the caller's locals
         # are examined to determine the source file and line number.
         # The plugin is in tests/plugin2.py.
@@ -295,6 +295,7 @@ class GoodPluginTest(FileTracerTest):
                 return x+1
             """)
         self.make_file("caller.py", """\
+            import sys
             from render import helper, render
 
             assert render("foo_7.html", 4) == "[foo_7.html @ 4]"
@@ -309,9 +310,12 @@ class GoodPluginTest(FileTracerTest):
             assert render("quux_5.html", 3) == "[quux_5.html @ 3]"
 
             # In Python 2, either kind of string should be OK.
-            if type("") == type(b""):
+            if sys.version_info[0] == 2:
                 assert render(u"unicode_3.html", 2) == "[unicode_3.html @ 2]"
             """)
+
+    def test_plugin2(self):
+        self.make_render_and_caller()
 
         cov = coverage.Coverage(omit=["*quux*"])
         CheckUniqueFilenames.hook(cov, '_should_trace')
@@ -340,6 +344,27 @@ class GoodPluginTest(FileTracerTest):
             self.assertEqual(statements, [1, 2, 3])
             self.assertEqual(missing, [1])
             self.assertIn("unicode_3.html", cov.data.summary())
+
+    def test_plugin2_with_branch(self):
+        self.make_render_and_caller()
+
+        cov = coverage.Coverage(branch=True, omit=["*quux*"])
+        CheckUniqueFilenames.hook(cov, '_should_trace')
+        CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
+        cov.config["run:plugins"] = ["tests.plugin2"]
+
+        self.start_import_stop(cov, "caller")
+
+        # The way plugin2 works, a file named foo_7.html will be claimed to
+        # have 7 lines in it.  If render() was called with line number 4,
+        # then the plugin will claim that lines 4 and 5 were executed.
+        analysis = cov._analyze("foo_7.html")
+        self.assertEqual(analysis.statements, set([1, 2, 3, 4, 5, 6, 7]))
+        # Plugins don't do branch coverage yet.
+        self.assertEqual(analysis.has_arcs(), True)
+        self.assertEqual(analysis.arc_possibilities(), [])
+
+        self.assertEqual(analysis.missing, set([1, 2, 3, 6, 7]))
 
 
 class BadPluginTest(FileTracerTest):

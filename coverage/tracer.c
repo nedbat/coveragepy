@@ -638,31 +638,30 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
             }
 
             if (lineno_from != -1) {
-                if (self->tracing_arcs) {
-                    /* Tracing arcs: key is (last_line,this_line). */
-                    /* TODO: this needs to deal with lineno_to also. */
-                    if (CTracer_record_pair(self, self->cur_entry.last_line, lineno_from) < 0) {
-                        goto error;
+                for (; lineno_from <= lineno_to; lineno_from++) {
+                    if (self->tracing_arcs) {
+                        /* Tracing arcs: key is (last_line,this_line). */
+                        if (CTracer_record_pair(self, self->cur_entry.last_line, lineno_from) < 0) {
+                            goto error;
+                        }
                     }
-                }
-                else {
-                    /* Tracing lines: key is simply this_line. */
-                    while (lineno_from <= lineno_to) {
+                    else {
+                        /* Tracing lines: key is simply this_line. */
                         PyObject * this_line = MyInt_FromInt(lineno_from);
                         if (this_line == NULL) {
                             goto error;
                         }
+
                         ret = PyDict_SetItem(self->cur_entry.file_data, this_line, Py_None);
                         Py_DECREF(this_line);
                         if (ret < 0) {
                             goto error;
                         }
-                        lineno_from++;
                     }
+
+                    self->cur_entry.last_line = lineno_from;
                 }
             }
-
-            self->cur_entry.last_line = lineno_to;
         }
     }
 
