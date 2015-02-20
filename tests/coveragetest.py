@@ -166,6 +166,8 @@ class CoverageTest(
         `arcs_unpredicted` are the arcs executed in the code, but not deducible
         from the code.
 
+        Returns the Coverage object, in case you want to poke at it some more.
+
         """
         # We write the code into a file so that we can import it.
         # Coverage wants to deal with things as modules with file names.
@@ -247,6 +249,8 @@ class CoverageTest(
             cov.report(mod, file=frep)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
             self.assertEqual(report, rep)
+
+        return cov
 
     def nice_file(self, *fparts):
         """Canonicalize the filename composed of the parts in `fparts`."""

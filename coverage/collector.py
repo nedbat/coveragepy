@@ -291,10 +291,14 @@ class Collector(object):
         """
         if self.branch:
             # If we were measuring branches, then we have to re-build the dict
-            # to show line data.
+            # to show line data.  We'll use the first lines of all the arcs,
+            # if they are actual lines. We don't need the second lines, because
+            # the second lines will also be first lines, sometimes to exits.
             line_data = {}
             for f, arcs in self.data.items():
-                line_data[f] = dict((l1, None) for l1, _ in arcs.keys() if l1)
+                line_data[f] = dict(
+                    (l1, None) for l1, _ in arcs.keys() if l1 > 0
+                )
             return line_data
         else:
             return self.data

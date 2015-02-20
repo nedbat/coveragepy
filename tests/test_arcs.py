@@ -1,7 +1,10 @@
 """Tests for Coverage.py's arc measurement."""
 
+import os.path
+
 from tests.coveragetest import CoverageTest
 
+import coverage
 from coverage import env
 
 
@@ -627,3 +630,24 @@ class ExcludeTest(CoverageTest):
             [1,2,3,4,5],
             partials=["only some"],
             arcz=".1 12 23 34 45 25 5.", arcz_missing="")
+
+
+class LineDataTest(CoverageTest):
+    """Tests that line_data gives us what we expect."""
+
+    def test_branch(self):
+        cov = coverage.Coverage(branch=True)
+
+        self.make_file("fun1.py", """\
+            def fun1(x):
+                if x == 1:
+                    return
+
+            fun1(3)
+            """)
+
+        self.start_import_stop(cov, "fun1")
+
+        cov._harvest_data()
+        fun1_lines = cov.data.line_data()[os.path.abspath("fun1.py")]
+        self.assertEqual(fun1_lines, [1, 2, 5])
