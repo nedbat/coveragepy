@@ -8,6 +8,7 @@ import coverage
 from tests.coveragetest import CoverageTest
 from tests import osinfo
 
+
 class ThreadingTest(CoverageTest):
     """Tests of the threading support."""
 
@@ -29,7 +30,7 @@ class ThreadingTest(CoverageTest):
             fromMainThread()
             other.join()
             """,
-            [1,3,4,6,7,9,10,12,13,14,15], "10")
+            [1, 3, 4, 6, 7, 9, 10, 12, 13, 14, 15], "10")
 
     def test_thread_run(self):
         self.check_coverage("""\
@@ -48,7 +49,7 @@ class ThreadingTest(CoverageTest):
             thd.start()
             thd.join()
             """,
-            [1,3,4,5,6,7,9,10,12,13,14], "")
+            [1, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14], "")
 
 
 class RecursionTest(CoverageTest):
@@ -66,7 +67,7 @@ class RecursionTest(CoverageTest):
             recur(495)  # We can get at least this many stack frames.
             i = 8       # and this line will be traced
             """,
-            [1,2,3,5,7,8], "")
+            [1, 2, 3, 5, 7, 8], "")
 
     def test_long_recursion(self):
         # We can't finish a very deep recursion, but we don't crash.
@@ -80,7 +81,7 @@ class RecursionTest(CoverageTest):
 
                 recur(100000)  # This is definitely too many frames.
                 """,
-                [1,2,3,5,7], ""
+                [1, 2, 3, 5, 7], ""
                 )
 
     def test_long_recursion_recovery(self):
@@ -112,10 +113,10 @@ class RecursionTest(CoverageTest):
         pytrace = (cov.collector.tracer_name() == "PyTracer")
         expected_missing = [3]
         if pytrace:
-            expected_missing += [9,10,11]
+            expected_missing += [9, 10, 11]
 
         _, statements, missing, _ = cov.analysis("recur.py")
-        self.assertEqual(statements, [1,2,3,5,7,8,9,10,11])
+        self.assertEqual(statements, [1, 2, 3, 5, 7, 8, 9, 10, 11])
         self.assertEqual(missing, expected_missing)
 
         # Get a warning about the stackoverflow effect on the tracing function.
@@ -179,7 +180,6 @@ class MemoryLeakTest(CoverageTest):
             self.fail("RAM grew by %d" % (ram_growth))
 
 
-
 class PyexpatTest(CoverageTest):
     """Pyexpat screws up tracing. Make sure we've counter-defended properly."""
 
@@ -216,11 +216,11 @@ class PyexpatTest(CoverageTest):
         self.start_import_stop(cov, "outer")
 
         _, statements, missing, _ = cov.analysis("trydom.py")
-        self.assertEqual(statements, [1,3,8,9,10,11,13])
+        self.assertEqual(statements, [1, 3, 8, 9, 10, 11, 13])
         self.assertEqual(missing, [])
 
         _, statements, missing, _ = cov.analysis("outer.py")
-        self.assertEqual(statements, [101,102])
+        self.assertEqual(statements, [101, 102])
         self.assertEqual(missing, [])
 
 
@@ -281,26 +281,26 @@ class ExceptionTest(CoverageTest):
         # combinations of catching exceptions and letting them fly.
         runs = [
             ("doit fly oops", {
-                'doit.py': [302,303,304,305],
-                'fly.py': [102,103],
-                'oops.py': [2,3],
+                'doit.py': [302, 303, 304, 305],
+                'fly.py': [102, 103],
+                'oops.py': [2, 3],
                 }),
             ("doit catch oops", {
-                'doit.py': [302,303],
-                'catch.py': [202,203,204,206,207],
-                'oops.py': [2,3],
+                'doit.py': [302, 303],
+                'catch.py': [202, 203, 204, 206, 207],
+                'oops.py': [2, 3],
                 }),
             ("doit fly catch oops", {
-                'doit.py': [302,303],
-                'fly.py': [102,103,104],
-                'catch.py': [202,203,204,206,207],
-                'oops.py': [2,3],
+                'doit.py': [302, 303],
+                'fly.py': [102, 103, 104],
+                'catch.py': [202, 203, 204, 206, 207],
+                'oops.py': [2, 3],
                 }),
             ("doit catch fly oops", {
-                'doit.py': [302,303],
-                'catch.py': [202,203,204,206,207],
-                'fly.py': [102,103],
-                'oops.py': [2,3],
+                'doit.py': [302, 303],
+                'catch.py': [202, 203, 204, 206, 207],
+                'fly.py': [102, 103],
+                'oops.py': [2, 3],
                 }),
             ]
 
@@ -318,7 +318,7 @@ class ExceptionTest(CoverageTest):
 
             # Clean the line data and compare to expected results.
             # The filenames are absolute, so keep just the base.
-            cov._harvest_data() # private! sshhh...
+            cov._harvest_data()     # private! sshhh...
             lines = cov.data.line_data()
             clean_lines = {}
             for f, llist in lines.items():
@@ -366,7 +366,7 @@ class DoctestTest(CoverageTest):
             import doctest, sys
             doctest.testmod(sys.modules[__name__])  # we're not __main__ :(
             ''',
-            [1,11,12,14,16,17], "")
+            [1, 11, 12, 14, 16, 17], "")
 
 
 class GettraceTest(CoverageTest):
@@ -382,7 +382,7 @@ class GettraceTest(CoverageTest):
             sys.settrace(sys.gettrace())
             a = bar(8)
             ''',
-            [1,2,3,4,5,6,7,8], "")
+            [1, 2, 3, 4, 5, 6, 7, 8], "")
 
     def test_multi_layers(self):
         self.check_coverage('''\
@@ -399,4 +399,4 @@ class GettraceTest(CoverageTest):
             level1()
             f = 12
             ''',
-            [1,2,3,4,5,6,7,8,9,10,11,12], "")
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "")
