@@ -230,13 +230,17 @@ class PluginWarningOnPyTracer(CoverageTest):
 
         cov = coverage.Coverage()
         cov.config["run:plugins"] = ["tests.plugin1"]
+        warnings = []
+        def capture_warning(msg):
+            warnings.append(msg)
+        cov._warn = capture_warning
 
         msg = (
-            r"Plugin file tracers \(tests.plugin1\) "
+            r"Plugin file tracers (tests.plugin1) "
             r"aren't supported with PyTracer"
             )
-        with self.assertRaisesRegex(CoverageException, msg):
-            self.start_import_stop(cov, "simple")
+        self.start_import_stop(cov, "simple")
+        self.assertIn(msg, warnings)
 
 
 class FileTracerTest(CoverageTest):
