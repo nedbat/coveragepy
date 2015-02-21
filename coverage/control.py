@@ -243,7 +243,7 @@ class Coverage(object):
 
         # Early warning if we aren't going to be able to support plugins.
         if self.file_tracers and not self.collector.supports_plugins:
-            raise CoverageException(
+            self._warn(
                 "Plugin file tracers (%s) aren't supported with %s" % (
                     ", ".join(
                         ft._coverage_plugin_name for ft in self.file_tracers
@@ -251,6 +251,8 @@ class Coverage(object):
                     self.collector.tracer_name(),
                     )
                 )
+            for plugin in self.file_tracers:
+                plugin._coverage_enabled = False
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
         # collecting data, not when combining data.  So we save it as
@@ -1009,15 +1011,20 @@ class Coverage(object):
         except AttributeError:
             implementation = "unknown"
 
+        file_tracers = []
+        for ft in self.file_tracers:
+            ft_name = ft._coverage_plugin_name
+            if not ft._coverage_enabled:
+                ft_name += " (disabled)"
+            file_tracers.append(ft_name)
+
         info = [
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
             ('cover_dir', self.cover_dir),
             ('pylib_dirs', self.pylib_dirs),
             ('tracer', self.collector.tracer_name()),
-            ('file_tracers', [
-                ft._coverage_plugin_name for ft in self.file_tracers
-            ]),
+            ('file_tracers', file_tracers),
             ('config_files', self.config.attempted_config_files),
             ('configs_read', self.config.config_files),
             ('data_path', self.data.filename),
