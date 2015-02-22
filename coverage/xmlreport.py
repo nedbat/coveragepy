@@ -117,18 +117,18 @@ class XmlReporter(Reporter):
             pct = 100.0 * (lhits_tot + bhits_tot) / denom
         return pct
 
-    def xml_file(self, cu, analysis):
+    def xml_file(self, fr, analysis):
         """Add to the XML report for a single file."""
 
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
-        filename = self.file_locator.relative_filename(cu.filename)
+        filename = self.file_locator.relative_filename(fr.filename)
         filename = filename.replace("\\", "/")
         dirname = os.path.dirname(filename) or "."
         parts = dirname.split("/")
         dirname = "/".join(parts[:self.config.xml_package_depth])
         package_name = dirname.replace("/", ".")
-        className = cu.name
+        className = fr.name
 
         self.source_paths.add(self.file_locator.relative_dir.rstrip('/'))
         package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])

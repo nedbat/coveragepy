@@ -41,10 +41,10 @@ class AnnotateReporter(Reporter):
         """
         self.report_files(self.annotate_file, morfs, directory)
 
-    def annotate_file(self, cu, analysis):
+    def annotate_file(self, fr, analysis):
         """Annotate a single file.
 
-        `cu` is the CodeUnit for the file to annotate.
+        `fr` is the FileReporter for the file to annotate.
 
         """
         statements = sorted(analysis.statements)
@@ -52,18 +52,18 @@ class AnnotateReporter(Reporter):
         excluded = sorted(analysis.excluded)
 
         if self.directory:
-            dest_file = os.path.join(self.directory, cu.flat_rootname())
+            dest_file = os.path.join(self.directory, fr.flat_rootname())
             if dest_file.endswith("_py"):
                 dest_file = dest_file[:-3] + ".py"
             dest_file += ",cover"
         else:
-            dest_file = cu.filename + ",cover"
+            dest_file = fr.filename + ",cover"
 
         with open(dest_file, 'w') as dest:
             i = 0
             j = 0
             covered = True
-            source = cu.source()
+            source = fr.source()
             for lineno, line in enumerate(source.splitlines(True), start=1):
                 while i < len(statements) and statements[i] < lineno:
                     i += 1

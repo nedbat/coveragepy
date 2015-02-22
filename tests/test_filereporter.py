@@ -1,4 +1,4 @@
-"""Tests for coverage.codeunit"""
+"""Tests for FileReporters"""
 
 import os
 import sys

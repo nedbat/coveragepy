@@ -18,7 +18,7 @@ CoverageData.add_line_data( { filename: { lineno: None, .. }, ... } )
 CoverageData.measured_files():
     returns [filename, ...]
     called by:
-        Reporter.find_code_units()
+        Reporter.find_file_reporters()
         tests
 
 CoverageData.executed_lines():

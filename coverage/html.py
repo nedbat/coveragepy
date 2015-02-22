@@ -150,20 +150,20 @@ class HtmlReporter(Reporter):
         with open(fname, "wb") as fout:
             fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
-    def file_hash(self, source, cu):
+    def file_hash(self, source, fr):
         """Compute a hash that changes if the file needs to be re-reported."""
         m = Hasher()
         m.update(source)
-        self.coverage.data.add_to_hash(cu.filename, m)
+        self.coverage.data.add_to_hash(fr.filename, m)
         return m.hexdigest()
 
-    def html_file(self, cu, analysis):
+    def html_file(self, fr, analysis):
         """Generate an HTML file for one source file."""
-        source = cu.source()
+        source = fr.source()
 
         # Find out if the file on disk is already correct.
-        flat_rootname = cu.flat_rootname()
-        this_hash = self.file_hash(source.encode('utf-8'), cu)
+        flat_rootname = fr.flat_rootname()
+        this_hash = self.file_hash(source.encode('utf-8'), fr)
         that_hash = self.status.file_hash(flat_rootname)
         if this_hash == that_hash:
             # Nothing has changed to require the file to be reported again.
@@ -186,7 +186,7 @@ class HtmlReporter(Reporter):
 
         lines = []
 
-        for lineno, line in enumerate(cu.source_token_lines(), start=1):
+        for lineno, line in enumerate(fr.source_token_lines(), start=1):
             # Figure out how to mark this line.
             line_class = []
             annotate_html = ""
@@ -236,7 +236,7 @@ class HtmlReporter(Reporter):
         template_values = {
             'c_exc': c_exc, 'c_mis': c_mis, 'c_par': c_par, 'c_run': c_run,
             'arcs': self.arcs, 'extra_css': self.extra_css,
-            'cu': cu, 'nums': nums, 'lines': lines,
+            'fr': fr, 'nums': nums, 'lines': lines,
         }
         html = spaceless(self.source_tmpl.render(template_values))
 
@@ -248,7 +248,7 @@ class HtmlReporter(Reporter):
         index_info = {
             'nums': nums,
             'html_filename': html_filename,
-            'name': cu.name,
+            'name': fr.name,
             }
         self.files.append(index_info)
         self.status.set_index_info(flat_rootname, index_info)

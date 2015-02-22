@@ -7,11 +7,11 @@ from coverage.misc import format_lines
 
 
 class Analysis(object):
-    """The results of analyzing a code unit."""
+    """The results of analyzing a FileReporter."""
 
-    def __init__(self, cov, code_unit):
+    def __init__(self, cov, file_reporters):
         self.coverage = cov
-        self.file_reporter = code_unit
+        self.file_reporter = file_reporters
         self.filename = self.file_reporter.filename
         self.statements = self.file_reporter.statements()
         self.excluded = self.file_reporter.excluded_statements()
