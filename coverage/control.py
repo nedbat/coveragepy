@@ -989,7 +989,7 @@ class Coverage(object):
                 outfile = open(self.config.xml_output, "w")
                 file_to_close = outfile
         try:
-            reporter = XmlReporter(self, self.config)
+            reporter = XmlReporter(self, self.config, self.file_locator)
             return reporter.report(morfs, outfile=outfile)
         except CoverageException:
             delete_file = True

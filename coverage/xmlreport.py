@@ -20,9 +20,10 @@ def rate(hit, num):
 class XmlReporter(Reporter):
     """A reporter for writing Cobertura-style XML coverage results."""
 
-    def __init__(self, coverage, config):
+    def __init__(self, coverage, config, file_locator):
         super(XmlReporter, self).__init__(coverage, config)
 
+        self.file_locator = file_locator
         self.source_paths = set()
         self.packages = {}
         self.xml_out = None
@@ -121,7 +122,7 @@ class XmlReporter(Reporter):
 
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
-        filename = cu.file_locator.relative_filename(cu.filename)
+        filename = self.file_locator.relative_filename(cu.filename)
         filename = filename.replace("\\", "/")
         dirname = os.path.dirname(filename) or "."
         parts = dirname.split("/")
@@ -129,7 +130,7 @@ class XmlReporter(Reporter):
         package_name = dirname.replace("/", ".")
         className = cu.name
 
-        self.source_paths.add(cu.file_locator.relative_dir.rstrip('/'))
+        self.source_paths.add(self.file_locator.relative_dir.rstrip('/'))
         package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])
 
         xclass = self.xml_out.createElement("class")

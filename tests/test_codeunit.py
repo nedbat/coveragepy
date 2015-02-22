@@ -3,7 +3,7 @@
 import os
 import sys
 
-from coverage.codeunit import CodeUnit
+from coverage.plugin import FileReporter
 from coverage.python import PythonCodeUnit
 
 from tests.coveragetest import CoverageTest
@@ -93,10 +93,10 @@ class CodeUnitTest(CoverageTest):
         self.assertEqual(ccu.source(), "# cfile.py\n")
 
     def test_comparison(self):
-        acu = CodeUnit("aa/afile.py")
-        acu2 = CodeUnit("aa/afile.py")
-        zcu = CodeUnit("aa/zfile.py")
-        bcu = CodeUnit("aa/bb/bfile.py")
+        acu = FileReporter("aa/afile.py")
+        acu2 = FileReporter("aa/afile.py")
+        zcu = FileReporter("aa/zfile.py")
+        bcu = FileReporter("aa/bb/bfile.py")
         assert acu == acu2 and acu <= acu2 and acu >= acu2
         assert acu < zcu and acu <= zcu and acu != zcu
         assert zcu > acu and zcu >= acu and zcu != acu

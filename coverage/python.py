@@ -7,10 +7,11 @@ import zipimport
 
 from coverage import env
 from coverage.backward import unicode_class
-from coverage.codeunit import CodeUnit
+from coverage.files import FileLocator
 from coverage.misc import NoSource, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
+from coverage.plugin import FileReporter
 
 
 def read_python_source(filename):
@@ -86,13 +87,33 @@ def get_zip_bytes(filename):
     return None
 
 
-class PythonCodeUnit(CodeUnit):
-    """Represents a Python file."""
+class PythonCodeUnit(FileReporter):
+    """Report support for a Python file."""
 
     def __init__(self, morf, coverage=None):
         self.coverage = coverage
-        file_locator = coverage.file_locator if coverage else None
-        super(PythonCodeUnit, self).__init__(morf, file_locator)
+        file_locator = coverage.file_locator if coverage else FileLocator()
+
+        if hasattr(morf, '__file__'):
+            filename = morf.__file__
+        else:
+            filename = morf
+
+        # .pyc files should always refer to a .py instead.
+        if filename.endswith(('.pyc', '.pyo')):
+            filename = filename[:-1]
+        elif filename.endswith('$py.class'):   # Jython
+            filename = filename[:-9] + ".py"
+
+        super(PythonCodeUnit, self).__init__(file_locator.canonical_filename(filename))
+
+        if hasattr(morf, '__name__'):
+            name = morf.__name__
+            name = name.replace(".", os.sep) + ".py"
+        else:
+            name = file_locator.relative_filename(filename)
+        self.name = name
+
         self._source = None
         self._parser = None
         self._statements = None
@@ -137,14 +158,6 @@ class PythonCodeUnit(CodeUnit):
 
     def exit_counts(self):
         return self.parser.exit_counts()
-
-    def _adjust_filename(self, fname):
-        # .pyc files should always refer to a .py instead.
-        if fname.endswith(('.pyc', '.pyo')):
-            fname = fname[:-1]
-        elif fname.endswith('$py.class'):   # Jython
-            fname = fname[:-9] + ".py"
-        return fname
 
     def source(self):
         if self._source is None:
