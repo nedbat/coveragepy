@@ -239,7 +239,7 @@ class MultiprocessingTest(CoverageTest):
             def func(x):
                 # Need to pause, or the tasks go too quick, and some processes
                 # in the pool don't get any work, and then don't record data.
-                time.sleep(0.01)
+                time.sleep(0.02)
                 # Use different lines in different subprocesses.
                 if x % 2:
                     y = x*x
@@ -249,7 +249,7 @@ class MultiprocessingTest(CoverageTest):
 
             if __name__ == "__main__":
                 pool = multiprocessing.Pool(3)
-                inputs = range(20)
+                inputs = range(30)
                 outputs = pool.imap_unordered(func, inputs)
                 pids = set()
                 total = 0
@@ -264,8 +264,7 @@ class MultiprocessingTest(CoverageTest):
         out = self.run_command(
             "coverage run --concurrency=multiprocessing multi.py"
         )
-        os.system("cp .cov* /tmp")
-        total = sum(x*x if x%2 else x*x*x for x in range(20))
+        total = sum(x*x if x%2 else x*x*x for x in range(30))
         self.assertEqual(out.rstrip(), "3 pids, total = %d" % total)
 
         self.run_command("coverage combine")
