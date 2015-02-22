@@ -87,7 +87,7 @@ def get_zip_bytes(filename):
     return None
 
 
-class PythonCodeUnit(FileReporter):
+class PythonFileReporter(FileReporter):
     """Report support for a Python file."""
 
     def __init__(self, morf, coverage=None):
@@ -105,7 +105,9 @@ class PythonCodeUnit(FileReporter):
         elif filename.endswith('$py.class'):   # Jython
             filename = filename[:-9] + ".py"
 
-        super(PythonCodeUnit, self).__init__(file_locator.canonical_filename(filename))
+        super(PythonFileReporter, self).__init__(
+            file_locator.canonical_filename(filename)
+        )
 
         if hasattr(morf, '__name__'):
             name = morf.__name__

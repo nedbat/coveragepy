@@ -24,7 +24,7 @@ from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone, overrides
 from coverage.monkey import patch_multiprocessing
 from coverage.plugin import CoveragePlugin, FileReporter
-from coverage.python import PythonCodeUnit
+from coverage.python import PythonFileReporter
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
@@ -343,7 +343,7 @@ class Coverage(object):
 
     def _canonical_dir(self, morf):
         """Return the canonical directory of the module or file `morf`."""
-        morf_filename = PythonCodeUnit(morf, self).filename
+        morf_filename = PythonFileReporter(morf, self).filename
         return os.path.split(morf_filename)[0]
 
     def _source_for_file(self, filename):
@@ -850,7 +850,7 @@ class Coverage(object):
                     )
                 )
         else:
-            file_reporter = PythonCodeUnit(morf, self)
+            file_reporter = PythonFileReporter(morf, self)
 
         return file_reporter
 
