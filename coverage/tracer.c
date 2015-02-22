@@ -451,6 +451,7 @@ static int
 CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 {
     int ret = RET_ERROR;
+    int ret2;
 
     /* Owned references that we clean up at the very end of the function. */
     PyObject * tracename = NULL;
@@ -562,9 +563,9 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
             if (file_data == NULL) {
                 goto error;
             }
-            ret = PyDict_SetItem(self->data, tracename, file_data);
+            ret2 = PyDict_SetItem(self->data, tracename, file_data);
             Py_DECREF(file_data);
-            if (ret < 0) {
+            if (ret2 < 0) {
                 goto error;
             }
 
@@ -574,9 +575,9 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
                 if (disp_plugin_name == NULL) {
                     goto error;
                 }
-                ret = PyDict_SetItem(self->plugin_data, tracename, disp_plugin_name);
+                ret2 = PyDict_SetItem(self->plugin_data, tracename, disp_plugin_name);
                 Py_DECREF(disp_plugin_name);
-                if (ret < 0) {
+                if (ret2 < 0) {
                     goto error;
                 }
             }
@@ -1071,3 +1072,16 @@ inittracer(void)
 }
 
 #endif /* Py3k */
+
+/*
+ * TODO, from Yhg1s
+ * You aren't checking the return value on line 367 (can fail on MemoryError.)
+ *             stack_index = MyInt_FromInt(the_index);
+ * Also 385 -- *_AsInt(...) can fail if the object isn't int-able. It'll return -1 and set an exception (you have to check PyErr_Occurred() to distinguish a -1 result from an error.)
+ * On line 480-482, you need to check PyErr_Occurred() as well. PyDict_GetItem returns NULL both on KeyError (with no exception set) and if an actual exception occurred.
+ * You're also a little inconsistent about your checking of return values. Sometimes you just use the boolean value, sometimes you explicitly check for < 0.
+ * You can use Py_RETURN_NONE instead of 'return Py_BuildValue("")' by the way.
+ * Oh, I see you doing the same thing I saw colleagues doing, setting tp_new to PyType_GenericNew after the fact. You don't need to do that. (You're setting the TPFLAGS_BASETYPE flag, so the slot should be inherited.)
+ * You should be checking the return value of PyModule_AddObject, at least in the Python 3 version.
+ *     (another function that's extremely unlikely to fail, but still.)
+ */
