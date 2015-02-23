@@ -316,8 +316,17 @@ class GoodPluginTest(FileTracerTest):
 
             # In Python 2, either kind of string should be OK.
             if sys.version_info[0] == 2:
-                assert render(u"unicode_3.html", 2) == "[unicode_3.html @ 2]"
+                assert render(u"uni_3.html", 2) == "[uni_3.html @ 2]"
             """)
+
+        # will try to read the actual source files, so make some
+        # source files.
+        def lines(n):
+            """Make a string with n lines of text."""
+            return "".join("line %d\n" % i for i in range(n))
+
+        self.make_file("bar_4.html", lines(4))
+        self.make_file("foo_7.html", lines(7))
 
     def test_plugin2(self):
         self.make_render_and_caller()
@@ -345,10 +354,10 @@ class GoodPluginTest(FileTracerTest):
         self.assertNotIn("quux_5.html", cov.data.summary())
 
         if env.PY2:
-            _, statements, missing, _ = cov.analysis("unicode_3.html")
+            _, statements, missing, _ = cov.analysis("uni_3.html")
             self.assertEqual(statements, [1, 2, 3])
             self.assertEqual(missing, [1])
-            self.assertIn("unicode_3.html", cov.data.summary())
+            self.assertIn("uni_3.html", cov.data.summary())
 
     def test_plugin2_with_branch(self):
         self.make_render_and_caller()
@@ -370,6 +379,63 @@ class GoodPluginTest(FileTracerTest):
         self.assertEqual(analysis.arc_possibilities(), [])
 
         self.assertEqual(analysis.missing, set([1, 2, 3, 6, 7]))
+
+    def test_plugin2_with_text_report(self):
+        self.make_render_and_caller()
+
+        cov = coverage.Coverage(branch=True, omit=["*quux*"])
+        cov.config["run:plugins"] = ["tests.plugin2"]
+
+        self.start_import_stop(cov, "caller")
+
+        repout = StringIO()
+        total = cov.report(file=repout, include=["*.html"], omit=["uni*.html"])
+        report = repout.getvalue().splitlines()
+        expected = [
+            'Name         Stmts   Miss Branch BrPart  Cover   Missing',
+            '--------------------------------------------------------',
+            'bar_4.html       4      2      0      0    50%   1, 4',
+            'foo_7.html       7      5      0      0    29%   1-3, 6-7',
+            '--------------------------------------------------------',
+            'TOTAL           11      7      0      0    36%   ',
+            ]
+        self.assertEqual(report, expected)
+        self.assertAlmostEqual(total, 36.36, places=2)
+
+    def test_plugin2_with_html_report(self):
+        self.make_render_and_caller()
+
+        cov = coverage.Coverage(branch=True, omit=["*quux*"])
+        cov.config["run:plugins"] = ["tests.plugin2"]
+
+        self.start_import_stop(cov, "caller")
+
+        total = cov.html_report(include=["*.html"], omit=["uni*.html"])
+        self.assertAlmostEqual(total, 36.36, places=2)
+
+        self.assert_exists("htmlcov/index.html")
+        self.assert_exists("htmlcov/bar_4_html.html")
+        self.assert_exists("htmlcov/foo_7_html.html")
+
+    def test_plugin2_with_xml_report(self):
+        self.make_render_and_caller()
+
+        cov = coverage.Coverage(branch=True, omit=["*quux*"])
+        cov.config["run:plugins"] = ["tests.plugin2"]
+
+        self.start_import_stop(cov, "caller")
+
+        total = cov.xml_report(include=["*.html"], omit=["uni*.html"])
+        self.assertAlmostEqual(total, 36.36, places=2)
+
+        with open("coverage.xml") as fxml:
+            xml = fxml.read()
+
+        for snip in [
+            'filename="bar_4.html" line-rate="0.5" name="bar_4.html"',
+            'filename="foo_7.html" line-rate="0.2857" name="foo_7.html"',
+            ]:
+            self.assertIn(snip, xml)
 
 
 class BadPluginTest(FileTracerTest):

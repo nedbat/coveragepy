@@ -18,7 +18,7 @@ from coverage.data import CoverageData
 from coverage.debug import DebugControl
 from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
-from coverage.files import ModuleMatcher
+from coverage.files import ModuleMatcher, abs_file
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone, overrides
@@ -837,12 +837,13 @@ class Coverage(object):
         plugin = None
 
         if isinstance(morf, string_class):
-            plugin_name = self.data.plugin_data().get(morf)
+            abs_morf = abs_file(morf)
+            plugin_name = self.data.plugin_data().get(abs_morf)
             if plugin_name:
                 plugin = self.plugins.get(plugin_name)
 
         if plugin:
-            file_reporter = plugin.file_reporter(morf)
+            file_reporter = plugin.file_reporter(abs_morf)
             if file_reporter is None:
                 raise CoverageException(
                     "Plugin %r did not provide a file reporter for %r." % (
@@ -851,6 +852,13 @@ class Coverage(object):
                 )
         else:
             file_reporter = PythonFileReporter(morf, self)
+
+        # The FileReporter can have a name attribute, but if it doesn't, we'll
+        # supply it as the relative path to self.filename.
+        if not hasattr(file_reporter, "name"):
+            file_reporter.name = self.file_locator.relative_filename(
+                file_reporter.filename
+            )
 
         return file_reporter
 
@@ -889,9 +897,9 @@ class Coverage(object):
         Each module in `morfs` is listed, with counts of statements, executed
         statements, missing statements, and a list of lines missed.
 
-        `include` is a list of filename patterns.  Modules whose filenames
-        match those patterns will be included in the report. Modules matching
-        `omit` will not be included in the report.
+        `include` is a list of filename patterns.  Files that match will be
+        included in the report. Files matching `omit` will not be included in
+        the report.
 
         Returns a float, the total percentage covered.
 

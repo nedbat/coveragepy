@@ -1,5 +1,7 @@
 """A plugin for test_plugins.py to import."""
 
+import os.path
+
 import coverage
 
 # pylint: disable=missing-docstring
@@ -23,16 +25,16 @@ class RenderFileTracer(coverage.plugin.FileTracer):
     def dynamic_source_filename(self, filename, frame):
         if frame.f_code.co_name != "render":
             return None
-        return frame.f_locals['filename']
+        return os.path.abspath(frame.f_locals['filename'])
 
     def line_number_range(self, frame):
         lineno = frame.f_locals['linenum']
-        return lineno,lineno+1
+        return lineno, lineno+1
 
 
 class FileReporter(coverage.plugin.FileReporter):
     def statements(self):
         # Goofy test arrangement: claim that the file has as many lines as the
         # number in its name.
-        num = self.filename.split(".")[0].split("_")[1]
+        num = os.path.basename(self.filename).split(".")[0].split("_")[1]
         return set(range(1, int(num)+1))
