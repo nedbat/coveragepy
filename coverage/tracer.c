@@ -179,57 +179,24 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     int ret = RET_ERROR;
     PyObject * weakref = NULL;
 
-#if COLLECT_STATS
-    self->stats.calls = 0;
-    self->stats.lines = 0;
-    self->stats.returns = 0;
-    self->stats.exceptions = 0;
-    self->stats.others = 0;
-    self->stats.new_files = 0;
-    self->stats.missed_returns = 0;
-    self->stats.stack_reallocs = 0;
-    self->stats.errors = 0;
-#endif /* COLLECT_STATS */
-
-    self->should_trace = NULL;
-    self->check_include = NULL;
-    self->warn = NULL;
-    self->concur_id_func = NULL;
-    self->data = NULL;
-    self->plugin_data = NULL;
-    self->should_trace_cache = NULL;
-    self->arcs = NULL;
-
-    self->started = 0;
-    self->tracing_arcs = 0;
-
-    if (DataStack_init(self, &self->data_stack)) {
+    if (DataStack_init(self, &self->data_stack) < 0) {
         goto error;
     }
 
     weakref = PyImport_ImportModule("weakref");
     if (weakref == NULL) {
-        STATS( self->stats.errors++; )
         goto error;
     }
     self->data_stack_index = PyObject_CallMethod(weakref, "WeakKeyDictionary", NULL);
     Py_XDECREF(weakref);
 
     if (self->data_stack_index == NULL) {
-        STATS( self->stats.errors++; )
         goto error;
     }
 
-    self->data_stacks = NULL;
-    self->data_stacks_alloc = 0;
-    self->data_stacks_used = 0;
-
     self->pdata_stack = &self->data_stack;
 
-    self->cur_entry.file_data = NULL;
     self->cur_entry.last_line = -1;
-
-    self->last_exc_back = NULL;
 
     ret = RET_OK;
     goto ok;
@@ -427,7 +394,7 @@ CTracer_check_missing_return(CTracer *self, PyFrameObject *frame)
                we'll need to keep more of the missed frame's state.
             */
             STATS( self->stats.missed_returns++; )
-            if (CTracer_set_pdata_stack(self)) {
+            if (CTracer_set_pdata_stack(self) < 0) {
                 goto error;
             }
             if (self->pdata_stack->depth >= 0) {
@@ -472,10 +439,10 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
     STATS( self->stats.calls++; )
     /* Grow the stack. */
-    if (CTracer_set_pdata_stack(self)) {
+    if (CTracer_set_pdata_stack(self) < 0) {
         goto error;
     }
-    if (DataStack_grow(self, self->pdata_stack)) {
+    if (DataStack_grow(self, self->pdata_stack) < 0) {
         goto error;
     }
 
@@ -724,7 +691,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
 
     STATS( self->stats.returns++; )
     /* A near-copy of this code is above in the missing-return handler. */
-    if (CTracer_set_pdata_stack(self)) {
+    if (CTracer_set_pdata_stack(self) < 0) {
         goto error;
     }
     if (self->pdata_stack->depth >= 0) {
@@ -800,31 +767,31 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     #endif
 
     /* See below for details on missing-return detection. */
-    if (CTracer_check_missing_return(self, frame)) {
+    if (CTracer_check_missing_return(self, frame) < 0) {
         goto error;
     }
 
     switch (what) {
     case PyTrace_CALL:
-        if (CTracer_handle_call(self, frame)) {
+        if (CTracer_handle_call(self, frame) < 0) {
             goto error;
         }
         break;
 
     case PyTrace_RETURN:
-        if (CTracer_handle_return(self, frame)) {
+        if (CTracer_handle_return(self, frame) < 0) {
             goto error;
         }
         break;
 
     case PyTrace_LINE:
-        if (CTracer_handle_line(self, frame)) {
+        if (CTracer_handle_line(self, frame) < 0) {
             goto error;
         }
         break;
 
     case PyTrace_EXCEPTION:
-        if (CTracer_handle_exception(self, frame)) {
+        if (CTracer_handle_exception(self, frame) < 0) {
             goto error;
         }
         break;
@@ -944,7 +911,7 @@ CTracer_stop(CTracer *self, PyObject *args_unused)
         self->started = 0;
     }
 
-    return Py_BuildValue("");
+    Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -965,7 +932,7 @@ CTracer_get_stats(CTracer *self)
         "errors", self->stats.errors
         );
 #else
-    return Py_BuildValue("");
+    Py_RETURN_NONE;
 #endif /* COLLECT_STATS */
 }
 
@@ -1123,9 +1090,9 @@ inittracer(void)
  *             stack_index = MyInt_FromInt(the_index);
  * Also 385 -- *_AsInt(...) can fail if the object isn't int-able. It'll return -1 and set an exception (you have to check PyErr_Occurred() to distinguish a -1 result from an error.)
  * On line 480-482, you need to check PyErr_Occurred() as well. PyDict_GetItem returns NULL both on KeyError (with no exception set) and if an actual exception occurred.
- * You're also a little inconsistent about your checking of return values. Sometimes you just use the boolean value, sometimes you explicitly check for < 0.
- * You can use Py_RETURN_NONE instead of 'return Py_BuildValue("")' by the way.
- * Oh, I see you doing the same thing I saw colleagues doing, setting tp_new to PyType_GenericNew after the fact. You don't need to do that. (You're setting the TPFLAGS_BASETYPE flag, so the slot should be inherited.)
  * You should be checking the return value of PyModule_AddObject, at least in the Python 3 version.
  *     (another function that's extremely unlikely to fail, but still.)
+ *
+ * This seems not to be true:
+ * Oh, I see you doing the same thing I saw colleagues doing, setting tp_new to PyType_GenericNew after the fact. You don't need to do that. (You're setting the TPFLAGS_BASETYPE flag, so the slot should be inherited.)
  */
