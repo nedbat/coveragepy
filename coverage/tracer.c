@@ -21,7 +21,9 @@
 
 #define MyText_Type         PyUnicode_Type
 #define MyText_AS_BYTES(o)  PyUnicode_AsASCIIString(o)
-#define MyText_AS_STRING(o) PyBytes_AS_STRING(o)
+#define MyBytes_AS_STRING(o) PyBytes_AS_STRING(o)
+#define MyText_AsString(o)  PyUnicode_AsUTF8(o)
+#define MyText_FromFormat   PyUnicode_FromFormat
 #define MyInt_FromInt(i)    PyLong_FromLong((long)i)
 #define MyInt_AsInt(o)      (int)PyLong_AsLong(o)
 
@@ -31,7 +33,9 @@
 
 #define MyText_Type         PyString_Type
 #define MyText_AS_BYTES(o)  (Py_INCREF(o), o)
-#define MyText_AS_STRING(o) PyString_AS_STRING(o)
+#define MyBytes_AS_STRING(o) PyString_AS_STRING(o)
+#define MyText_AsString(o)  PyString_AsString(o)
+#define MyText_FromFormat   PyUnicode_FromFormat
 #define MyInt_FromInt(i)    PyInt_FromLong((long)i)
 #define MyInt_AsInt(o)      (int)PyInt_AsLong(o)
 
@@ -298,7 +302,7 @@ showlog(int depth, int lineno, PyObject * filename, const char * msg)
         }
         if (filename) {
             PyObject *ascii = MyText_AS_BYTES(filename);
-            printf(" %s", MyText_AS_STRING(ascii));
+            printf(" %s", MyBytes_AS_STRING(ascii));
             Py_DECREF(ascii);
         }
         if (msg) {
@@ -457,7 +461,9 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     PyObject * tracename = NULL;
     PyObject * disposition = NULL;
     PyObject * disp_trace = NULL;
-    PyObject * disp_file_tracer = NULL;
+    PyObject * file_tracer = NULL;
+    PyObject * plugin = NULL;
+    PyObject * plugin_name = NULL;
     PyObject * has_dynamic_filename = NULL;
 
     /* Borrowed references. */
@@ -507,9 +513,19 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         if (tracename == NULL) {
             goto error;
         }
-        disp_file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
-        if (disp_file_tracer == NULL) {
+        file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
+        if (file_tracer == NULL) {
             goto error;
+        }
+        if (file_tracer != Py_None) {
+            plugin = PyObject_GetAttrString(file_tracer, "_coverage_plugin");
+            if (plugin == NULL) {
+                goto error;
+            }
+            plugin_name = PyObject_GetAttrString(plugin, "_coverage_plugin_name");
+            if (plugin_name == NULL) {
+                goto error;
+            }
         }
         has_dynamic_filename = PyObject_GetAttrString(disposition, "has_dynamic_filename");
         if (has_dynamic_filename == NULL) {
@@ -518,11 +534,42 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         if (has_dynamic_filename == Py_True) {
             PyObject * next_tracename = NULL;
             next_tracename = PyObject_CallMethod(
-                disp_file_tracer, "dynamic_source_filename",
+                file_tracer, "dynamic_source_filename",
                 "OO", tracename, frame
                 );
             if (next_tracename == NULL) {
-                goto error;
+                /* An exception from the function. Alert the user with a
+                 * warning and a traceback.
+                 */
+                PyObject * ignored = NULL;
+                PyObject * msg = NULL;
+
+                msg = MyText_FromFormat(
+                    "Disabling plugin '%s' due to an exception:",
+                    MyText_AsString(plugin_name)
+                    );
+                if (msg == NULL) {
+                    goto error;
+                }
+                ignored = PyObject_CallFunctionObjArgs(self->warn, msg, NULL);
+                if (ignored == NULL) {
+                    goto error;
+                }
+                Py_DECREF(msg);
+                Py_DECREF(ignored);
+
+                PyErr_Print();
+
+                /* Disable the plugin for future files, and stop tracing this file. */
+                if (PyObject_SetAttrString(plugin, "_coverage_enabled", Py_False) < 0) {
+                    goto error;
+                }
+                if (PyObject_SetAttrString(disposition, "trace", Py_False) < 0) {
+                    goto error;
+                }
+
+                /* Because we handled the error, goto ok. */
+                goto ok;
             }
             Py_DECREF(tracename);
             tracename = next_tracename;
@@ -556,7 +603,6 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
     if (tracename != Py_None) {
         PyObject * file_data = PyDict_GetItem(self->data, tracename);
-        PyObject * disp_plugin_name = NULL;
 
         if (file_data == NULL) {
             file_data = PyDict_New();
@@ -570,13 +616,8 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
             }
 
             /* If the disposition mentions a plugin, record that. */
-            if (disp_file_tracer != Py_None) {
-                disp_plugin_name = PyObject_GetAttrString(disp_file_tracer, "_coverage_plugin_name");
-                if (disp_plugin_name == NULL) {
-                    goto error;
-                }
-                ret2 = PyDict_SetItem(self->plugin_data, tracename, disp_plugin_name);
-                Py_DECREF(disp_plugin_name);
+            if (file_tracer != Py_None) {
+                ret2 = PyDict_SetItem(self->plugin_data, tracename, plugin_name);
                 if (ret2 < 0) {
                     goto error;
                 }
@@ -584,7 +625,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         }
 
         self->cur_entry.file_data = file_data;
-        self->cur_entry.file_tracer = disp_file_tracer;
+        self->cur_entry.file_tracer = file_tracer;
 
         /* Make the frame right in case settrace(gettrace()) happens. */
         Py_INCREF(self);
@@ -599,13 +640,16 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
     self->cur_entry.last_line = -1;
 
+ok:
     ret = RET_OK;
 
 error:
     Py_XDECREF(tracename);
     Py_XDECREF(disposition);
     Py_XDECREF(disp_trace);
-    Py_XDECREF(disp_file_tracer);
+    Py_XDECREF(file_tracer);
+    Py_XDECREF(plugin);
+    Py_XDECREF(plugin_name);
     Py_XDECREF(has_dynamic_filename);
 
     return ret;
@@ -742,14 +786,14 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     #if WHAT_LOG
     if (what <= sizeof(what_sym)/sizeof(const char *)) {
         ascii = MyText_AS_BYTES(frame->f_code->co_filename);
-        printf("trace: %s @ %s %d\n", what_sym[what], MyText_AS_STRING(ascii), frame->f_lineno);
+        printf("trace: %s @ %s %d\n", what_sym[what], MyBytes_AS_STRING(ascii), frame->f_lineno);
         Py_DECREF(ascii);
     }
     #endif
 
     #if TRACE_LOG
     ascii = MyText_AS_BYTES(frame->f_code->co_filename);
-    if (strstr(MyText_AS_STRING(ascii), start_file) && frame->f_lineno == start_line) {
+    if (strstr(MyBytes_AS_STRING(ascii), start_file) && frame->f_lineno == start_line) {
         logging = 1;
     }
     Py_DECREF(ascii);
@@ -853,7 +897,7 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
        for the C function. */
     for (what = 0; what_names[what]; what++) {
         PyObject *ascii = MyText_AS_BYTES(what_str);
-        int should_break = !strcmp(MyText_AS_STRING(ascii), what_names[what]);
+        int should_break = !strcmp(MyBytes_AS_STRING(ascii), what_names[what]);
         Py_DECREF(ascii);
         if (should_break) {
             break;

@@ -168,7 +168,7 @@ class Coverage(object):
         self.omit = self.include = self.source = None
         self.source_pkgs = self.file_locator = None
         self.data = self.collector = None
-        self.plugins = self.file_tracers = None
+        self.plugins = self.file_tracing_plugins = None
         self.pylib_dirs = self.cover_dir = None
         self.data_suffix = self.run_suffix = None
         self._exclude_re = None
@@ -203,10 +203,10 @@ class Coverage(object):
         # Load plugins
         self.plugins = Plugins.load_plugins(self.config.plugins, self.config)
 
-        self.file_tracers = []
+        self.file_tracing_plugins = []
         for plugin in self.plugins:
             if overrides(plugin, "file_tracer", CoveragePlugin):
-                self.file_tracers.append(plugin)
+                self.file_tracing_plugins.append(plugin)
 
         # _exclude_re is a dict that maps exclusion list names to compiled
         # regexes.
@@ -242,16 +242,17 @@ class Coverage(object):
             )
 
         # Early warning if we aren't going to be able to support plugins.
-        if self.file_tracers and not self.collector.supports_plugins:
+        if self.file_tracing_plugins and not self.collector.supports_plugins:
             self._warn(
                 "Plugin file tracers (%s) aren't supported with %s" % (
                     ", ".join(
-                        ft._coverage_plugin_name for ft in self.file_tracers
+                        plugin._coverage_plugin_name
+                            for plugin in self.file_tracing_plugins
                         ),
                     self.collector.tracer_name(),
                     )
                 )
-            for plugin in self.file_tracers:
+            for plugin in self.file_tracing_plugins:
                 plugin._coverage_enabled = False
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
@@ -464,15 +465,14 @@ class Coverage(object):
 
         # Try the plugins, see if they have an opinion about the file.
         plugin = None
-        for plugin in self.file_tracers:
+        for plugin in self.file_tracing_plugins:
             if not plugin._coverage_enabled:
                 continue
 
             try:
                 file_tracer = plugin.file_tracer(canonical)
                 if file_tracer is not None:
-                    file_tracer._coverage_plugin_name = \
-                        plugin._coverage_plugin_name
+                    file_tracer._coverage_plugin = plugin
                     disp.trace = True
                     disp.file_tracer = file_tracer
                     if file_tracer.has_dynamic_source_filename():
@@ -1019,12 +1019,12 @@ class Coverage(object):
         except AttributeError:
             implementation = "unknown"
 
-        file_tracers = []
-        for ft in self.file_tracers:
+        ft_plugins = []
+        for ft in self.file_tracing_plugins:
             ft_name = ft._coverage_plugin_name
             if not ft._coverage_enabled:
                 ft_name += " (disabled)"
-            file_tracers.append(ft_name)
+            ft_plugins.append(ft_name)
 
         info = [
             ('version', covmod.__version__),
@@ -1032,7 +1032,7 @@ class Coverage(object):
             ('cover_dir', self.cover_dir),
             ('pylib_dirs', self.pylib_dirs),
             ('tracer', self.collector.tracer_name()),
-            ('file_tracers', file_tracers),
+            ('file_tracing_plugins', ft_plugins),
             ('config_files', self.config.attempted_config_files),
             ('configs_read', self.config.config_files),
             ('data_path', self.data.filename),
