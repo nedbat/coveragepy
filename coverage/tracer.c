@@ -27,7 +27,7 @@
 #define MyInt_FromInt(i)    PyLong_FromLong((long)i)
 #define MyInt_AsInt(o)      (int)PyLong_AsLong(o)
 
-#define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
+#define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(&PyType_Type, 0)
 
 #else
 
@@ -39,7 +39,7 @@
 #define MyInt_FromInt(i)    PyInt_FromLong((long)i)
 #define MyInt_AsInt(o)      (int)PyInt_AsLong(o)
 
-#define MyType_HEAD_INIT    PyObject_HEAD_INIT(NULL)  0,
+#define MyType_HEAD_INIT    PyObject_HEAD_INIT(&PyType_Type)  0,
 
 #endif /* Py3k */
 
@@ -1018,7 +1018,7 @@ CTracerType = {
     0,                         /* tp_dictoffset */
     (initproc)CTracer_init,    /* tp_init */
     0,                         /* tp_alloc */
-    0,                         /* tp_new */
+    PyType_GenericNew,         /* tp_new */
 };
 
 /* Module definition */
@@ -1049,14 +1049,17 @@ PyInit_tracer(void)
         return NULL;
     }
 
-    CTracerType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&CTracerType) < 0) {
         Py_DECREF(mod);
         return NULL;
     }
 
     Py_INCREF(&CTracerType);
-    PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType);
+    if (PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType) < 0) {
+        Py_DECREF(mod);
+        Py_DECREF(&CTracerType);
+        return NULL;
+    }
 
     return mod;
 }
@@ -1073,7 +1076,6 @@ inittracer(void)
         return;
     }
 
-    CTracerType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&CTracerType) < 0) {
         return;
     }
@@ -1090,9 +1092,4 @@ inittracer(void)
  *             stack_index = MyInt_FromInt(the_index);
  * Also 385 -- *_AsInt(...) can fail if the object isn't int-able. It'll return -1 and set an exception (you have to check PyErr_Occurred() to distinguish a -1 result from an error.)
  * On line 480-482, you need to check PyErr_Occurred() as well. PyDict_GetItem returns NULL both on KeyError (with no exception set) and if an actual exception occurred.
- * You should be checking the return value of PyModule_AddObject, at least in the Python 3 version.
- *     (another function that's extremely unlikely to fail, but still.)
- *
- * This seems not to be true:
- * Oh, I see you doing the same thing I saw colleagues doing, setting tp_new to PyType_GenericNew after the fact. You don't need to do that. (You're setting the TPFLAGS_BASETYPE flag, so the slot should be inherited.)
  */
