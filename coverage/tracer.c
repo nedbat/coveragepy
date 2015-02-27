@@ -27,7 +27,7 @@
 #define MyInt_FromInt(i)    PyLong_FromLong((long)i)
 #define MyInt_AsInt(o)      (int)PyLong_AsLong(o)
 
-#define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(&PyType_Type, 0)
+#define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
 
 #else
 
@@ -39,7 +39,7 @@
 #define MyInt_FromInt(i)    PyInt_FromLong((long)i)
 #define MyInt_AsInt(o)      (int)PyInt_AsLong(o)
 
-#define MyType_HEAD_INIT    PyObject_HEAD_INIT(&PyType_Type)  0,
+#define MyType_HEAD_INIT    PyObject_HEAD_INIT(NULL)  0,
 
 #endif /* Py3k */
 
@@ -1018,7 +1018,7 @@ CTracerType = {
     0,                         /* tp_dictoffset */
     (initproc)CTracer_init,    /* tp_init */
     0,                         /* tp_alloc */
-    PyType_GenericNew,         /* tp_new */
+    0,                         /* tp_new */
 };
 
 /* Module definition */
@@ -1049,6 +1049,7 @@ PyInit_tracer(void)
         return NULL;
     }
 
+    CTracerType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&CTracerType) < 0) {
         Py_DECREF(mod);
         return NULL;
@@ -1076,6 +1077,7 @@ inittracer(void)
         return;
     }
 
+    CTracerType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&CTracerType) < 0) {
         return;
     }
