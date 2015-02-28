@@ -173,6 +173,8 @@ DataStack_grow(CTracer *self, DataStack *pdata_stack)
 }
 
 
+static void CTracer_disable_plugin(CTracer *self, PyObject * disposition);
+
 static int
 CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 {
@@ -508,33 +510,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
                 /* An exception from the function. Alert the user with a
                  * warning and a traceback.
                  */
-                PyObject * ignored = NULL;
-                PyObject * msg = NULL;
-
-                msg = MyText_FromFormat(
-                    "Disabling plugin '%s' due to an exception:",
-                    MyText_AsString(plugin_name)
-                    );
-                if (msg == NULL) {
-                    goto error;
-                }
-                ignored = PyObject_CallFunctionObjArgs(self->warn, msg, NULL);
-                if (ignored == NULL) {
-                    goto error;
-                }
-                Py_DECREF(msg);
-                Py_DECREF(ignored);
-
-                PyErr_Print();
-
-                /* Disable the plugin for future files, and stop tracing this file. */
-                if (PyObject_SetAttrString(plugin, "_coverage_enabled", Py_False) < 0) {
-                    goto error;
-                }
-                if (PyObject_SetAttrString(disposition, "trace", Py_False) < 0) {
-                    goto error;
-                }
-
+                CTracer_disable_plugin(self, disposition);
                 /* Because we handled the error, goto ok. */
                 goto ok;
             }
@@ -621,6 +597,72 @@ error:
 
     return ret;
 }
+
+
+static void
+CTracer_disable_plugin(CTracer *self, PyObject * disposition)
+{
+    PyObject * file_tracer = NULL;
+    PyObject * plugin = NULL;
+    PyObject * plugin_name = NULL;
+    PyObject * msg = NULL;
+    PyObject * ignored = NULL;
+
+    file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
+    if (file_tracer == NULL) {
+        goto error;
+    }
+    if (file_tracer == Py_None) {
+        /* This shouldn't happen... */
+        goto ok;
+    }
+    plugin = PyObject_GetAttrString(file_tracer, "_coverage_plugin");
+    if (plugin == NULL) {
+        goto error;
+    }
+    plugin_name = PyObject_GetAttrString(plugin, "_coverage_plugin_name");
+    if (plugin_name == NULL) {
+        goto error;
+    }
+    msg = MyText_FromFormat(
+        "Disabling plugin '%s' due to an exception:",
+        MyText_AsString(plugin_name)
+        );
+    if (msg == NULL) {
+        goto error;
+    }
+    ignored = PyObject_CallFunctionObjArgs(self->warn, msg, NULL);
+    if (ignored == NULL) {
+        goto error;
+    }
+
+    PyErr_Print();
+
+    /* Disable the plugin for future files, and stop tracing this file. */
+    if (PyObject_SetAttrString(plugin, "_coverage_enabled", Py_False) < 0) {
+        goto error;
+    }
+    if (PyObject_SetAttrString(disposition, "trace", Py_False) < 0) {
+        goto error;
+    }
+
+    goto ok;
+
+error:
+    /* This function doesn't return a status, so if an error happens, print it,
+     * but don't interrupt the flow. */
+    /* PySys_WriteStderr is nicer, but is not in the public API. */
+    fprintf(stderr, "Error occurred while disabling plugin:\n");
+    PyErr_Print();
+
+ok:
+    Py_XDECREF(file_tracer);
+    Py_XDECREF(plugin);
+    Py_XDECREF(plugin_name);
+    Py_XDECREF(msg);
+    Py_XDECREF(ignored);
+}
+
 
 static int
 CTracer_handle_line(CTracer *self, PyFrameObject *frame)
