@@ -703,6 +703,7 @@ CTracer_unpack_pair(CTracer *self, PyObject *pair, int *p_one, int *p_two)
     int ret = RET_ERROR;
     int the_int;
     PyObject * pyint = NULL;
+    int index;
 
     if (!PyTuple_Check(pair) || PyTuple_Size(pair) != 2) {
         PyErr_SetString(
@@ -712,7 +713,7 @@ CTracer_unpack_pair(CTracer *self, PyObject *pair, int *p_one, int *p_two)
         goto error;
     }
 
-    for (int index = 0; index < 2; index++) {
+    for (index = 0; index < 2; index++) {
         pyint = PyTuple_GetItem(pair, index);
         if (pyint == NULL) {
             goto error;
