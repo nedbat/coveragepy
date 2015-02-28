@@ -47,13 +47,16 @@
 #define RET_OK      0
 #define RET_ERROR   -1
 
-/* An entry on the data stack.  For each call frame, we need to record the
-    dictionary to capture data, and the last line number executed in that
-    frame.
-*/
+/* An entry on the data stack.  For each call frame, we need to record all
+ * the information needed for CTracer_handle_line to operate as quickly as
+ * possible.
+ */
 typedef struct {
     /* The current file_data dictionary.  Borrowed, owned by self->data. */
     PyObject * file_data;
+
+    /* The disposition object for this frame. */
+    PyObject * disposition;
 
     /* The FileTracer handling this frame, or None if it's Python. */
     PyObject * file_tracer;
@@ -581,6 +584,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "skipped");
     }
 
+    self->cur_entry.disposition = disposition;
     self->cur_entry.last_line = -1;
 
 ok:
@@ -665,9 +669,43 @@ ok:
 
 
 static int
+CTracer_unpack_pair(CTracer *self, PyObject *pair, int *p_one, int *p_two)
+{
+    int ret = RET_ERROR;
+    int the_int;
+    PyObject * pyint = NULL;
+
+    if (!PyTuple_Check(pair) || PyTuple_Size(pair) != 2) {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "line_number_range must return 2-tuple"
+            );
+        goto error;
+    }
+
+    for (int index = 0; index < 2; index++) {
+        pyint = PyTuple_GetItem(pair, index);
+        if (pyint == NULL) {
+            goto error;
+        }
+        the_int = MyInt_AsInt(pyint);
+        if (the_int == -1 && PyErr_Occurred()) {
+            goto error;
+        }
+        *(index == 0 ? p_one : p_two) = the_int;
+    }
+
+    ret = RET_OK;
+
+error:
+    return ret;
+}
+
+static int
 CTracer_handle_line(CTracer *self, PyFrameObject *frame)
 {
     int ret = RET_ERROR;
+    int ret2;
 
     STATS( self->stats.lines++; )
     if (self->pdata_stack->depth >= 0) {
@@ -682,10 +720,12 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
                 if (from_to == NULL) {
                     goto error;
                 }
-                /* TODO: error check bad returns. */
-                lineno_from = MyInt_AsInt(PyTuple_GetItem(from_to, 0));
-                lineno_to = MyInt_AsInt(PyTuple_GetItem(from_to, 1));
+                ret2 = CTracer_unpack_pair(self, from_to, &lineno_from, &lineno_to);
                 Py_DECREF(from_to);
+                if (ret2 < 0) {
+                    CTracer_disable_plugin(self, self->cur_entry.disposition);
+                    goto ok;
+                }
             }
             else {
                 lineno_from = lineno_to = frame->f_lineno;
@@ -706,9 +746,9 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
                             goto error;
                         }
 
-                        ret = PyDict_SetItem(self->cur_entry.file_data, this_line, Py_None);
+                        ret2 = PyDict_SetItem(self->cur_entry.file_data, this_line, Py_None);
                         Py_DECREF(this_line);
-                        if (ret < 0) {
+                        if (ret2 < 0) {
                             goto error;
                         }
                     }
@@ -719,6 +759,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
         }
     }
 
+ok:
     ret = RET_OK;
 
 error:

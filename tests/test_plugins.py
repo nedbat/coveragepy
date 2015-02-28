@@ -557,3 +557,54 @@ class BadPluginTest(FileTracerTest):
                     101/0 # Oh noes!
             """)
         self.run_bad_plugin("bad_plugin")
+
+    def test_line_number_range_returns_non_tuple(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    if filename.endswith("other.py"):
+                        return BadFileTracer()
+
+            class BadFileTracer(coverage.plugin.FileTracer):
+                def source_filename(self):
+                    return "something.foo"
+
+                def line_number_range(self, frame):
+                    return 42.23
+            """)
+        self.run_bad_plugin("bad_plugin", our_error=False)
+
+    def test_line_number_range_returns_triple(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    if filename.endswith("other.py"):
+                        return BadFileTracer()
+
+            class BadFileTracer(coverage.plugin.FileTracer):
+                def source_filename(self):
+                    return "something.foo"
+
+                def line_number_range(self, frame):
+                    return (1, 2, 3)
+            """)
+        self.run_bad_plugin("bad_plugin", our_error=False)
+
+    def test_line_number_range_returns_pair_of_strings(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    if filename.endswith("other.py"):
+                        return BadFileTracer()
+
+            class BadFileTracer(coverage.plugin.FileTracer):
+                def source_filename(self):
+                    return "something.foo"
+
+                def line_number_range(self, frame):
+                    return ("5", "7")
+            """)
+        self.run_bad_plugin("bad_plugin", our_error=False)
