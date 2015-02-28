@@ -9,7 +9,12 @@ Latest
 - Branch coverage couldn't properly handle certain extremely long files. This
   is now fixed (`issue 359`_).
 
+- HTML reports were truncated at formfeed characters.  This is now fixed
+  (`issue 360`_).  It's always fun when the problem is due to a `bug in the
+  Python standard library <http://bugs.python.org/issue19035>`_.
+
 .. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
+.. _issue 360: https://bitbucket.org/ned/coveragepy/issue/360/html-reports-get-confused-by-l-in-the-code
 
 
 Version 4.0a5 --- 16 February 2015

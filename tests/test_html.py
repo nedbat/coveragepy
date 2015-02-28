@@ -322,6 +322,16 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
             expected = "# Isn&#39;t this great?&#203;!"
         self.assertIn(expected, html_report)
 
+    def test_formfeeds(self):
+        # https://bitbucket.org/ned/coveragepy/issue/360/html-reports-get-confused-by-l-in-the-code
+        self.make_file("formfeed.py", "line_one = 1\n\f\nline_two = 2\n")
+        cov = coverage.coverage()
+        self.start_import_stop(cov, "formfeed")
+        cov.html_report()
+
+        formfeed_html = self.get_html_report_content("formfeed.py")
+        self.assertIn("line_two", formfeed_html)
+
 
 class HtmlTest(CoverageTest):
     """Moar HTML tests."""

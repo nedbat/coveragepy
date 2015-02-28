@@ -85,8 +85,11 @@ def source_token_lines(source):
     ws_tokens = set([token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL])
     line = []
     col = 0
-    source = source.expandtabs(8).replace('\r\n', '\n')
+
+    # The \f is because of http://bugs.python.org/issue19035
+    source = source.expandtabs(8).replace('\r\n', '\n').replace('\f', ' ')
     tokgen = generate_tokens(source)
+
     for ttype, ttext, (_, scol), (_, ecol), _ in phys_tokens(tokgen):
         mark_start = True
         for part in re.split('(\n)', ttext):
