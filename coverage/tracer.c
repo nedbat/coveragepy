@@ -47,6 +47,21 @@
 #define RET_OK      0
 #define RET_ERROR   -1
 
+/* Python C API helpers. */
+
+static int
+pyint_as_int(PyObject * pyint, int *pint)
+{
+    int the_int = MyInt_AsInt(pyint);
+    if (the_int == -1 && PyErr_Occurred()) {
+        return RET_ERROR;
+    }
+
+    *pint = the_int;
+    return RET_OK;
+}
+
+
 /* An entry on the data stack.  For each call frame, we need to record all
  * the information needed for CTracer_handle_line to operate as quickly as
  * possible.
@@ -341,6 +356,9 @@ CTracer_set_pdata_stack(CTracer *self)
             /* A new concurrency object.  Make a new data stack. */
             the_index = self->data_stacks_used;
             stack_index = MyInt_FromInt(the_index);
+            if (stack_index == NULL) {
+                goto error;
+            }
             if (PyObject_SetItem(self->data_stack_index, co_obj, stack_index) < 0) {
                 goto error;
             }
@@ -358,7 +376,9 @@ CTracer_set_pdata_stack(CTracer *self)
             DataStack_init(self, &self->data_stacks[the_index]);
         }
         else {
-            the_index = MyInt_AsInt(stack_index);
+            if (pyint_as_int(stack_index, &the_index) < 0) {
+                goto error;
+            }
         }
 
         self->pdata_stack = &self->data_stacks[the_index];
@@ -458,6 +478,9 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     filename = frame->f_code->co_filename;
     disposition = PyDict_GetItem(self->should_trace_cache, filename);
     if (disposition == NULL) {
+        if (PyErr_Occurred()) {
+            goto error;
+        }
         STATS( self->stats.new_files++; )
         /* We've never considered this file before. */
         /* Ask should_trace about it. */
@@ -525,6 +548,9 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
                 PyObject * included = NULL;
                 included = PyDict_GetItem(self->should_trace_cache, tracename);
                 if (included == NULL) {
+                    if (PyErr_Occurred()) {
+                        goto error;
+                    }
                     STATS( self->stats.new_files++; )
                     included = PyObject_CallFunctionObjArgs(self->check_include, tracename, frame, NULL);
                     if (included == NULL) {
@@ -551,6 +577,9 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         PyObject * file_data = PyDict_GetItem(self->data, tracename);
 
         if (file_data == NULL) {
+            if (PyErr_Occurred()) {
+                goto error;
+            }
             file_data = PyDict_New();
             if (file_data == NULL) {
                 goto error;
@@ -688,8 +717,7 @@ CTracer_unpack_pair(CTracer *self, PyObject *pair, int *p_one, int *p_two)
         if (pyint == NULL) {
             goto error;
         }
-        the_int = MyInt_AsInt(pyint);
-        if (the_int == -1 && PyErr_Occurred()) {
+        if (pyint_as_int(pyint, &the_int) < 0) {
             goto error;
         }
         *(index == 0 ? p_one : p_two) = the_int;
@@ -1170,11 +1198,3 @@ inittracer(void)
 }
 
 #endif /* Py3k */
-
-/*
- * TODO, from Yhg1s
- * You aren't checking the return value on line 367 (can fail on MemoryError.)
- *             stack_index = MyInt_FromInt(the_index);
- * Also 385 -- *_AsInt(...) can fail if the object isn't int-able. It'll return -1 and set an exception (you have to check PyErr_Occurred() to distinguish a -1 result from an error.)
- * On line 480-482, you need to check PyErr_Occurred() as well. PyDict_GetItem returns NULL both on KeyError (with no exception set) and if an actual exception occurred.
- */
