@@ -25,7 +25,7 @@ class RenderFileTracer(coverage.plugin.FileTracer):
     def dynamic_source_filename(self, filename, frame):
         if frame.f_code.co_name != "render":
             return None
-        return os.path.abspath(frame.f_locals['filename'])
+        return frame.f_locals['filename']
 
     def line_number_range(self, frame):
         lineno = frame.f_locals['linenum']

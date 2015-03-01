@@ -3,7 +3,7 @@
 import os
 
 from coverage.backward import iitems, pickle
-from coverage.files import PathAliases
+from coverage.files import PathAliases, abs_file
 from coverage.misc import file_be_gone
 
 
@@ -224,7 +224,7 @@ class CoverageData(object):
 
         """
         for filename, linenos in iitems(line_data):
-            self.lines.setdefault(filename, {}).update(linenos)
+            self.lines.setdefault(abs_file(filename), {}).update(linenos)
 
     def add_arc_data(self, arc_data):
         """Add measured arc data.
@@ -233,14 +233,15 @@ class CoverageData(object):
 
         """
         for filename, arcs in iitems(arc_data):
-            self.arcs.setdefault(filename, {}).update(arcs)
+            self.arcs.setdefault(abs_file(filename), {}).update(arcs)
 
     def add_plugin_data(self, plugin_data):
-        self.plugins.update(plugin_data)
+        for filename, plugin_name in iitems(plugin_data):
+            self.plugins[abs_file(filename)] = plugin_name
 
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""
-        self.lines.setdefault(filename, {})
+        self.lines.setdefault(abs_file(filename), {})
 
     def measured_files(self):
         """A list of all files that had been measured."""
