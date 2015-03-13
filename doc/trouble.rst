@@ -34,10 +34,6 @@ coverage.py from working properly:
   program that calls execv will not be fully measured.  A patch for coverage.py
   is in `issue 43`_.
 
-* `multiprocessing`_ launches processes to provide parallelism.  These
-  processes don't get measured by coverage.py.  Some possible fixes are
-  discussed or linked to in `issue 117`_.
-
 * `thread`_, in the Python standard library, is the low-level threading
   interface.  Threads created with this module will not be traced.  Use the
   higher-level `threading`_ module instead.
@@ -48,12 +44,10 @@ coverage.py from working properly:
   measured properly.
 
 .. _execv: http://docs.python.org/library/os#os.execl
-.. _multiprocessing: http://docs.python.org/library/multiprocessing.html
 .. _sys.settrace: http://docs.python.org/library/sys.html#sys.settrace
 .. _thread: http://docs.python.org/library/thread.html
 .. _threading: http://docs.python.org/library/threading.html
 .. _issue 43: https://bitbucket.org/ned/coveragepy/issue/43/coverage-measurement-fails-on-code
-.. _issue 117: https://bitbucket.org/ned/coveragepy/issue/117/enable-coverage-measurement-of-code-run-by
 
 
 Things that require --timid
