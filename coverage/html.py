@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+import datetime
 import json
 import os
 import re
@@ -261,11 +262,14 @@ class HtmlReporter(Reporter):
 
         self.totals = sum(f['nums'] for f in self.files)
 
+        time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+
         html = index_tmpl.render({
             'arcs': self.arcs,
             'extra_css': self.extra_css,
             'files': self.files,
             'totals': self.totals,
+            'time_stamp': time_stamp,
         })
 
         self.write_html(
