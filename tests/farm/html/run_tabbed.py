@@ -13,11 +13,11 @@ runfunc(html_it, rundir="src")
 contains("src/tabbed.py", "\tif x:\t\t\t\t\t# look nice")
 
 contains("html_tabbed/tabbed_py.html",
-    ">&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> "
-    "<span class='nam'>x</span><span class='op'>:</span>"
-    "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "
-    "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; "
-    "<span class='com'># look nice</span>"
+    '>&nbsp; &nbsp; &nbsp; &nbsp; <span class="key">if</span> '
+    '<span class="nam">x</span><span class="op">:</span>'
+    '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '
+    '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; '
+    '<span class="com"># look nice</span>'
     )
 
 doesnt_contain("html_tabbed/tabbed_py.html", "\t")
