@@ -360,7 +360,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         with open("htmlcov/index.html") as f:
             index = f.read()
         time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-        self.assertIn("<p>Created on {}</p>".format(time_stamp), index)
+        self.assertIn("<p>Created on {time_stamp}</p>".format(time_stamp=time_stamp), index)
 
 
 class HtmlStaticFileTest(CoverageTest):
