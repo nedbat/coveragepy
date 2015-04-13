@@ -221,7 +221,7 @@ class HtmlReporter(Reporter):
                 else:
                     tok_html = escape(tok_text) or '&nbsp;'
                     html.append(
-                        "<span class='%s'>%s</span>" % (tok_type, tok_html)
+                        '<span class="%s">%s</span>' % (tok_type, tok_html)
                         )
 
             lines.append({
