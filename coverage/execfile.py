@@ -137,6 +137,16 @@ def run_python_file(filename, args, package=None, modulename=None):
     old_argv = sys.argv
     sys.argv = args
 
+    if os.path.isdir(filename):
+        # in directory we should look for __main__ module
+        for ext in [".py", ".pyc", ".pyo"]:
+            try_filename = os.path.join(filename, "__main__" + ext)
+            if os.path.exists(try_filename):
+                filename = try_filename
+                break
+        else:
+            raise NoSource("Can't find '__main__' module in '%s'" % filename)
+
     try:
         # Make a code object somehow.
         if filename.endswith((".pyc", ".pyo")):
