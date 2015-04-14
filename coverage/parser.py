@@ -308,7 +308,7 @@ OPS_CODE_END = _opcode_set('RETURN_VALUE')
 # Opcodes that unconditionally end the code chunk.
 OPS_CHUNK_END = _opcode_set(
     'JUMP_ABSOLUTE', 'JUMP_FORWARD', 'RETURN_VALUE', 'RAISE_VARARGS',
-    'BREAK_LOOP', 'CONTINUE_LOOP',
+    'BREAK_LOOP', 'CONTINUE_LOOP', 'YIELD_VALUE',
     )
 
 # Opcodes that unconditionally begin a new code chunk.  By starting new chunks
