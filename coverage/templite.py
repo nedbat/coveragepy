@@ -201,7 +201,7 @@ class Templite(object):
         for var_name in self.all_vars - self.loop_vars:
             vars_code.add_line("c_%s = context[%r]" % (var_name, var_name))
 
-        code.add_line("return ''.join(result)")
+        code.add_line('return "".join(result)')
         code.dedent()
         self._render_function = code.get_globals()['render_function']
 

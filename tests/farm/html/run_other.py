@@ -19,8 +19,8 @@ for p in glob.glob("html_other/*_other_py.html"):
 #   and check that certain key strings are in the output.
 compare("gold_other", "html_other", size_within=10, file_pattern="*.html")
 contains("html_other/index.html",
-    "<a href='here_py.html'>here.py</a>",
-    "other_py.html'>", "other.py</a>",
+    '<a href="here_py.html">here.py</a>',
+    'other_py.html">', 'other.py</a>',
     )
 
 clean("html_other")
