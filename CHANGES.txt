@@ -13,8 +13,14 @@ Latest
   (`issue 360`_).  It's always fun when the problem is due to a `bug in the
   Python standard library <http://bugs.python.org/issue19035>`_.
 
+- HTML reports now begrudgingly use double-quotes rather than single quotes,
+  because there are "software engineers" out there writing tools that read HTML
+  and somehow have no idea that single quotes exist.  Fixes `issue 361`_.
+  Thanks, Jon Chappell.
+
 .. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
 .. _issue 360: https://bitbucket.org/ned/coveragepy/issue/360/html-reports-get-confused-by-l-in-the-code
+.. _issue 361: https://bitbucket.org/ned/coveragepy/issue/361/use-double-quotes-in-html-output-to
 
 
 Version 4.0a5 --- 16 February 2015
