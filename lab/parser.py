@@ -116,7 +116,7 @@ class ParserMain(object):
                         m2 = 'C'
                     if lineno in cp.excluded:
                         m3 = 'x'
-                    a = arc_chars.get(lineno, '').ljust(arc_width)
+                    a = arc_chars[lineno].ljust(arc_width)
                     print("%4d %s%s%s%s%s %s" %
                                 (lineno, m0, m1, m2, m3, a, ltext)
                         )
@@ -162,12 +162,12 @@ class ParserMain(object):
         dictionary mapping line numbers to ascii strings to draw for that line.
 
         """
-        arc_chars = {}
+        arc_chars = collections.defaultdict(str)
         for lfrom, lto in sorted(arcs):
             if lfrom < 0:
-                arc_chars[lto] = arc_chars.get(lto, '') + 'v'
+                arc_chars[lto] += 'v'
             elif lto < 0:
-                arc_chars[lfrom] = arc_chars.get(lfrom, '') + '^'
+                arc_chars[lfrom] += '^'
             else:
                 if lfrom == lto - 1:
                     # Don't show obvious arcs.
@@ -176,7 +176,7 @@ class ParserMain(object):
                     l1, l2 = lfrom, lto
                 else:
                     l1, l2 = lto, lfrom
-                w = max([len(arc_chars.get(l, '')) for l in range(l1, l2+1)])
+                w = max(len(arc_chars[l]) for l in range(l1, l2+1))
                 for l in range(l1, l2+1):
                     if l == lfrom:
                         ch = '<'
@@ -184,11 +184,11 @@ class ParserMain(object):
                         ch = '>'
                     else:
                         ch = '|'
-                    arc_chars[l] = arc_chars.get(l, '').ljust(w) + ch
+                    arc_chars[l] = arc_chars[l].ljust(w) + ch
                 arc_width = 0
 
         if arc_chars:
-            arc_width = max([len(a) for a in arc_chars.values()])
+            arc_width = max(len(a) for a in arc_chars.values())
         else:
             arc_width = 0
 
