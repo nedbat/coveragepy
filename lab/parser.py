@@ -9,8 +9,8 @@ from optparse import OptionParser
 import disgen
 
 from coverage.misc import CoverageException
-from coverage.files import get_python_source
 from coverage.parser import ByteParser, PythonParser
+from coverage.python import get_python_source
 
 opcode_counts = collections.Counter()
 
@@ -82,7 +82,7 @@ class ParserMain(object):
             self.disassemble(bp, histogram=options.histogram)
 
         arcs = bp._all_arcs()
-        if options.chunks and not options.dis:
+        if options.chunks:# and not options.dis:
             chunks = bp._all_chunks()
             if options.recursive:
                 print("%6d: %s" % (len(chunks), filename))
