@@ -42,6 +42,7 @@ Marcus Cobden
 Mark van der Wal
 Martin Fuzzey
 Matthew Desmarais
+Mickie Betz
 Noel O'Boyle
 Pablo Carballo
 Patrick Mezard

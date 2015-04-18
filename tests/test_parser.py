@@ -35,8 +35,9 @@ class PythonParserTest(CoverageTest):
             })
 
     def test_generator_exit_counts(self):
+        # Generators' yield lines should only have one exit count.
+        # https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
         parser = self.parse_source("""\
-            # generators yield lines should only have one exit count
             def gen(input):
                 for n in inp:
                     yield (i * 2 for i in range(n))
@@ -44,7 +45,7 @@ class PythonParserTest(CoverageTest):
             list(gen([1,2,3]))
             """)
         self.assertEqual(parser.exit_counts(), {
-           2:1, 3:2, 4:1, 6:1
+           1:1, 2:2, 3:1, 5:1
         })
 
     def test_try_except(self):
