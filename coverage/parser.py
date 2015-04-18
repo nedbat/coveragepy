@@ -430,9 +430,10 @@ class ByteParser(object):
         Returns a list of `Chunk` objects.
 
         """
-        # The list of chunks so far, and the one we're working on.
-        chunks = []
-        chunk = None
+        # The list of chunks so far, and the one we're working on.  We always
+        # start with an entrance to the code object.
+        chunk = Chunk(0, -1, True)
+        chunks = [chunk]
 
         # A dict mapping byte offsets of line starts to the line numbers.
         bytes_lines_map = dict(self._bytes_lines())
@@ -460,7 +461,7 @@ class ByteParser(object):
 
         # Walk the byte codes building chunks.
         for bc in bytecodes:
-            # Maybe have to start a new chunk
+            # Maybe have to start a new chunk.
             start_new_chunk = False
             first_chunk = False
             if bc.offset in bytes_lines_map:
@@ -483,7 +484,7 @@ class ByteParser(object):
                 chunk = Chunk(bc.offset, chunk_lineno, first_chunk)
                 chunks.append(chunk)
 
-            # Look at the opcode
+            # Look at the opcode.
             if bc.jump_to >= 0 and bc.op not in OPS_NO_JUMP:
                 if ignore_branch:
                     # Someone earlier wanted us to ignore this branch.
@@ -573,9 +574,6 @@ class ByteParser(object):
         # A map from byte offsets to chunks jumped into.
         byte_chunks = dict((c.byte, c) for c in chunks)
 
-        # There's always an entrance at the first chunk.
-        yield (-1, byte_chunks[0].line)
-
         # Traverse from the first chunk in each line, and yield arcs where
         # the trace function will be invoked.
         for chunk in chunks:
@@ -586,7 +584,7 @@ class ByteParser(object):
             chunks_to_consider = [chunk]
             while chunks_to_consider:
                 # Get the chunk we're considering, and make sure we don't
-                # consider it again
+                # consider it again.
                 this_chunk = chunks_to_consider.pop()
                 chunks_considered.add(this_chunk)
 
