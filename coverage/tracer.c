@@ -815,7 +815,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
     if (self->pdata_stack->depth >= 0) {
         if (self->tracing_arcs && self->cur_entry.file_data) {
             /* Need to distinguish between RETURN_VALUE and YIELD_VALUE. */
-            int bytecode = MyText_AS_STRING(frame->f_code->co_code)[frame->f_lasti];
+            int bytecode = MyText_AsString(frame->f_code->co_code)[frame->f_lasti];
             if (bytecode != YIELD_VALUE) {
                 int first = frame->f_code->co_firstlineno;
                 if (CTracer_record_pair(self, self->cur_entry.last_line, -first) < 0) {
