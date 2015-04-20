@@ -1,6 +1,14 @@
 """Raw data collector for Coverage."""
 
+import dis
 import sys
+
+from coverage import env
+
+# We need the YIELD_VALUE opcode below, in a comparison-friendly form.
+YIELD_VALUE = dis.opmap['YIELD_VALUE']
+if env.PY2:
+    YIELD_VALUE = chr(YIELD_VALUE)
 
 
 class PyTracer(object):
@@ -79,9 +87,11 @@ class PyTracer(object):
                 if tracename not in self.data:
                     self.data[tracename] = {}
                 self.cur_file_dict = self.data[tracename]
-            # Set the last_line to -1 because the next arc will be entering a
-            # code block, indicated by (-1, n).
-            self.last_line = -1
+            # The call event is really a "start frame" event, and happens for
+            # function calls and re-entering generators.  The f_lasti field is
+            # -1 for calls, and a real offset for generators.  Use -1 as the
+            # line number for calls, and the real line number for generators.
+            self.last_line = -1 if (frame.f_lasti < 0) else frame.f_lineno
         elif event == 'line':
             # Record an executed line.
             if self.cur_file_dict is not None:
@@ -93,8 +103,12 @@ class PyTracer(object):
                 self.last_line = lineno
         elif event == 'return':
             if self.arcs and self.cur_file_dict:
-                first = frame.f_code.co_firstlineno
-                self.cur_file_dict[(self.last_line, -first)] = None
+                # Record an arc leaving the function, but beware that a
+                # "return" event might just mean yielding from a generator.
+                bytecode = frame.f_code.co_code[frame.f_lasti]
+                if bytecode != YIELD_VALUE:
+                    first = frame.f_code.co_firstlineno
+                    self.cur_file_dict[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
             self.cur_file_dict, self.last_line = self.data_stack.pop()
         elif event == 'exception':

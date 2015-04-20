@@ -460,7 +460,7 @@ class ByteParser(object):
 
         # Walk the byte codes building chunks.
         for bc in bytecodes:
-            # Maybe have to start a new chunk
+            # Maybe have to start a new chunk.
             start_new_chunk = False
             first_chunk = False
             if bc.offset in bytes_lines_map:
@@ -481,9 +481,13 @@ class ByteParser(object):
                 if chunk:
                     chunk.exits.add(bc.offset)
                 chunk = Chunk(bc.offset, chunk_lineno, first_chunk)
+                if not chunks:
+                    # The very first chunk of a code object is always an
+                    # entrance.
+                    chunk.entrance = True
                 chunks.append(chunk)
 
-            # Look at the opcode
+            # Look at the opcode.
             if bc.jump_to >= 0 and bc.op not in OPS_NO_JUMP:
                 if ignore_branch:
                     # Someone earlier wanted us to ignore this branch.
@@ -570,15 +574,15 @@ class ByteParser(object):
         """
         chunks = self._split_into_chunks()
 
-        # A map from byte offsets to chunks jumped into.
+        # A map from byte offsets to the chunk starting at that offset.
         byte_chunks = dict((c.byte, c) for c in chunks)
-
-        # There's always an entrance at the first chunk.
-        yield (-1, byte_chunks[0].line)
 
         # Traverse from the first chunk in each line, and yield arcs where
         # the trace function will be invoked.
         for chunk in chunks:
+            if chunk.entrance:
+                yield (-1, chunk.line)
+
             if not chunk.first:
                 continue
 
@@ -586,7 +590,7 @@ class ByteParser(object):
             chunks_to_consider = [chunk]
             while chunks_to_consider:
                 # Get the chunk we're considering, and make sure we don't
-                # consider it again
+                # consider it again.
                 this_chunk = chunks_to_consider.pop()
                 chunks_considered.add(this_chunk)
 
@@ -649,6 +653,8 @@ class Chunk(object):
 
     .. _basic block: http://en.wikipedia.org/wiki/Basic_block
 
+    `byte` is the offset to the bytecode starting this chunk.
+
     `line` is the source line number containing this chunk.
 
     `first` is true if this is the first chunk in the source line.
@@ -656,19 +662,24 @@ class Chunk(object):
     An exit < 0 means the chunk can leave the code (return).  The exit is
     the negative of the starting line number of the code block.
 
+    The `entrance` attribute is a boolean indicating whether the code object
+    can be entered at this chunk.
+
     """
     def __init__(self, byte, line, first):
         self.byte = byte
         self.line = line
         self.first = first
         self.length = 0
+        self.entrance = False
         self.exits = set()
 
     def __repr__(self):
-        if self.first:
-            bang = "!"
-        else:
-            bang = ""
-        return "<%d+%d @%d%s %r>" % (
-            self.byte, self.length, self.line, bang, list(self.exits)
+        return "<%d+%d @%d%s%s %r>" % (
+            self.byte,
+            self.length,
+            self.line,
+            "!" if self.first else "",
+            "v" if self.entrance else "",
+            list(self.exits),
             )

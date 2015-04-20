@@ -3,6 +3,7 @@
 #include "Python.h"
 #include "structmember.h"
 #include "frameobject.h"
+#include "opcode.h"
 
 /* Compile-time debugging helpers */
 #undef WHAT_LOG         /* Define to log the WHAT params in the trace function. */
@@ -613,8 +614,16 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "skipped");
     }
 
+<<<<<<< local
     self->cur_entry.disposition = disposition;
     self->cur_entry.last_line = -1;
+=======
+    /* A call event is really a "start frame" event, and can happen for
+     * re-entering a generator also.  f_lasti is -1 for a true call, and a
+     * real byte offset for a generator re-entry.
+     */
+    self->cur_entry.last_line = (frame->f_lasti < 0) ? -1 : frame->f_lineno;
+>>>>>>> other
 
 ok:
     ret = RET_OK;
@@ -808,9 +817,13 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
     }
     if (self->pdata_stack->depth >= 0) {
         if (self->tracing_arcs && self->cur_entry.file_data) {
-            int first = frame->f_code->co_firstlineno;
-            if (CTracer_record_pair(self, self->cur_entry.last_line, -first) < 0) {
-                goto error;
+            /* Need to distinguish between RETURN_VALUE and YIELD_VALUE. */
+            int bytecode = MyText_AS_STRING(frame->f_code->co_code)[frame->f_lasti];
+            if (bytecode != YIELD_VALUE) {
+                int first = frame->f_code->co_firstlineno;
+                if (CTracer_record_pair(self, self->cur_entry.last_line, -first) < 0) {
+                    goto error;
+                }
             }
         }
 
