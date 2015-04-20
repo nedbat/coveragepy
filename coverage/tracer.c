@@ -614,16 +614,13 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "skipped");
     }
 
-<<<<<<< local
     self->cur_entry.disposition = disposition;
-    self->cur_entry.last_line = -1;
-=======
+
     /* A call event is really a "start frame" event, and can happen for
      * re-entering a generator also.  f_lasti is -1 for a true call, and a
      * real byte offset for a generator re-entry.
      */
     self->cur_entry.last_line = (frame->f_lasti < 0) ? -1 : frame->f_lineno;
->>>>>>> other
 
 ok:
     ret = RET_OK;
