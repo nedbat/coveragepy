@@ -9,6 +9,10 @@ Latest
 - Branch coverage couldn't properly handle certain extremely long files. This
   is now fixed (`issue 359`_).
 
+- Branch coverage didn't understand yield statements properly.  Mickie Betz
+  persisted in pursuing this despite Ned's pessimism.  Fixes `issue 308`_ and
+  `issue 324`_.
+
 - HTML reports were truncated at formfeed characters.  This is now fixed
   (`issue 360`_).  It's always fun when the problem is due to a `bug in the
   Python standard library <http://bugs.python.org/issue19035>`_.
@@ -18,6 +22,8 @@ Latest
   and somehow have no idea that single quotes exist.  Fixes `issue 361`_.
   Thanks, Jon Chappell.
 
+.. _issue 308: https://bitbucket.org/ned/coveragepy/issue/308/yield-lambda-branch-coverage
+.. _issue 324: https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
 .. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
 .. _issue 360: https://bitbucket.org/ned/coveragepy/issue/360/html-reports-get-confused-by-l-in-the-code
 .. _issue 361: https://bitbucket.org/ned/coveragepy/issue/361/use-double-quotes-in-html-output-to
