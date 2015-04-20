@@ -646,6 +646,27 @@ class YieldTest(CoverageTest):
             arcz_missing=".3 3-3",
             arcz_unpredicted="")
 
+    def test_coroutines(self):
+        self.check_coverage("""\
+            def double_inputs():
+                while [1]:      # avoid compiler differences
+                    x = yield
+                    x *= 2
+                    yield x
+
+            gen = double_inputs()
+            next(gen)
+            print(gen.send(10))
+            next(gen)
+            print(gen.send(6))
+            """,
+            arcz=
+                ".1 17 78 89 9A AB B. "
+                ".2 23 34 45 52 2.",
+            arcz_missing="2.",
+            arcz_unpredicted="")
+        self.assertEqual(self.stdout(), "20\n12\n")
+
 
 class MiscArcTest(CoverageTest):
     """Miscellaneous arc-measuring tests."""
