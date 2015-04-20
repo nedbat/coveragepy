@@ -558,6 +558,93 @@ class ExceptionArcTest(CoverageTest):
             arcz_missing="67 7B", arcz_unpredicted="68")
 
 
+class YieldTest(CoverageTest):
+    """Arc tests for generators."""
+
+    def test_yield_in_loop(self):
+        self.check_coverage("""\
+            def gen(inp):
+                for n in inp:
+                    yield n
+
+            list(gen([1,2,3]))
+            """,
+            arcz=".1 .2 23 2. 32 15 5.",
+            arcz_missing="",
+            arcz_unpredicted="")
+
+    def test_padded_yield_in_loop(self):
+        self.check_coverage("""\
+            def gen(inp):
+                i = 2
+                for n in inp:
+                    i = 4
+                    yield n
+                    i = 6
+                i = 7
+
+            list(gen([1,2,3]))
+            """,
+            arcz=".1 19 9.  .2 23 34 45 56 63 37 7.",
+            arcz_missing="",
+            arcz_unpredicted="")
+
+    def test_bug_308(self):
+        self.check_coverage("""\
+            def run():
+                for i in range(10):
+                    yield lambda: i
+
+            for f in run():
+                print(f())
+            """,
+            arcz=".1 15 56 65 5.  .2 23 32 2.  .3 3-3",
+            arcz_missing="",
+            arcz_unpredicted="")
+
+        self.check_coverage("""\
+            def run():
+                yield lambda: 100
+                for i in range(10):
+                    yield lambda: i
+
+            for f in run():
+                print(f())
+            """,
+            arcz=".1 16 67 76 6.  .2 23 34 43 3.   2-2  .4 4-4",
+            arcz_missing="",
+            arcz_unpredicted="")
+
+        self.check_coverage("""\
+            def run():
+                yield lambda: 100  # no branch miss
+
+            for f in run():
+                print(f())
+            """,
+            arcz=".1 14 45 54 4.  .2 2.  2-2",
+            arcz_missing="",
+            arcz_unpredicted="")
+
+    def test_bug_324(self):
+        # This code is tricky: the list() call pulls all the values from gen(),
+        # but each of them is a generator itself that is never iterated.  As a
+        # result, the generator expression on line 3 is never entered or run.
+        self.check_coverage("""\
+            def gen(inp):
+                for n in inp:
+                    yield (i * 2 for i in range(n))
+
+            list(gen([1,2,3]))
+            """,
+            arcz=
+                ".1 15 5. "     # The module level
+                ".2 23 32 2. "  # The gen() function
+                ".3 3-3",       # The generator expression
+            arcz_missing=".3 3-3",
+            arcz_unpredicted="")
+
+
 class MiscArcTest(CoverageTest):
     """Miscellaneous arc-measuring tests."""
 

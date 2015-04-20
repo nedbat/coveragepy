@@ -308,7 +308,7 @@ OPS_CODE_END = _opcode_set('RETURN_VALUE')
 # Opcodes that unconditionally end the code chunk.
 OPS_CHUNK_END = _opcode_set(
     'JUMP_ABSOLUTE', 'JUMP_FORWARD', 'RETURN_VALUE', 'RAISE_VARARGS',
-    'BREAK_LOOP', 'CONTINUE_LOOP', 'YIELD_VALUE',
+    'BREAK_LOOP', 'CONTINUE_LOOP',
     )
 
 # Opcodes that unconditionally begin a new code chunk.  By starting new chunks
@@ -430,10 +430,9 @@ class ByteParser(object):
         Returns a list of `Chunk` objects.
 
         """
-        # The list of chunks so far, and the one we're working on.  We always
-        # start with an entrance to the code object.
-        chunk = Chunk(0, -1, True)
-        chunks = [chunk]
+        # The list of chunks so far, and the one we're working on.
+        chunks = []
+        chunk = None
 
         # A dict mapping byte offsets of line starts to the line numbers.
         bytes_lines_map = dict(self._bytes_lines())
@@ -482,6 +481,10 @@ class ByteParser(object):
                 if chunk:
                     chunk.exits.add(bc.offset)
                 chunk = Chunk(bc.offset, chunk_lineno, first_chunk)
+                if not chunks:
+                    # The very first chunk of a code object is always an
+                    # entrance.
+                    chunk.entrance = True
                 chunks.append(chunk)
 
             # Look at the opcode.
@@ -571,12 +574,15 @@ class ByteParser(object):
         """
         chunks = self._split_into_chunks()
 
-        # A map from byte offsets to chunks jumped into.
+        # A map from byte offsets to the chunk starting at that offset.
         byte_chunks = dict((c.byte, c) for c in chunks)
 
         # Traverse from the first chunk in each line, and yield arcs where
         # the trace function will be invoked.
         for chunk in chunks:
+            if chunk.entrance:
+                yield (-1, chunk.line)
+
             if not chunk.first:
                 continue
 
@@ -647,6 +653,8 @@ class Chunk(object):
 
     .. _basic block: http://en.wikipedia.org/wiki/Basic_block
 
+    `byte` is the offset to the bytecode starting this chunk.
+
     `line` is the source line number containing this chunk.
 
     `first` is true if this is the first chunk in the source line.
@@ -654,19 +662,24 @@ class Chunk(object):
     An exit < 0 means the chunk can leave the code (return).  The exit is
     the negative of the starting line number of the code block.
 
+    The `entrance` attribute is a boolean indicating whether the code object
+    can be entered at this chunk.
+
     """
     def __init__(self, byte, line, first):
         self.byte = byte
         self.line = line
         self.first = first
         self.length = 0
+        self.entrance = False
         self.exits = set()
 
     def __repr__(self):
-        if self.first:
-            bang = "!"
-        else:
-            bang = ""
-        return "<%d+%d @%d%s %r>" % (
-            self.byte, self.length, self.line, bang, list(self.exits)
+        return "<%d+%d @%d%s%s %r>" % (
+            self.byte,
+            self.length,
+            self.line,
+            "!" if self.first else "",
+            "v" if self.entrance else "",
+            list(self.exits),
             )

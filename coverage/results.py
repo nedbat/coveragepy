@@ -101,10 +101,13 @@ class Analysis(object):
         # Exclude arcs here which connect a line to itself.  They can occur
         # in executed data in some cases.  This is where they can cause
         # trouble, and here is where it's the least burden to remove them.
+        # Also, generators can somehow cause arcs from "enter" to "exit", so
+        # make sure we have at least one positive value.
         unpredicted = (
             e for e in executed
                 if e not in possible
                     and e[0] != e[1]
+                    and (e[0] > 0 or e[1] > 0)
         )
         return sorted(unpredicted)
 
