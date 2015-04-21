@@ -214,10 +214,10 @@ class CmdLineTest(BaseCmdLineTest):
 
     def test_combine(self):
         # coverage combine
-        self.cmd_executes("combine", """\
+        self.cmd_executes("combine datadir1", """\
             .coverage()
             .load()
-            .combine()
+            .combine(["datadir1"])
             .save()
             """)
 

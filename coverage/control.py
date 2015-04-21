@@ -717,7 +717,7 @@ class Coverage(object):
         self._harvest_data()
         self.data.write(suffix=data_suffix)
 
-    def combine(self):
+    def combine(self, data_dirs=None):
         """Combine together a number of similarly-named coverage data files.
 
         All coverage data files whose name starts with `data_file` (from the
@@ -733,7 +733,7 @@ class Coverage(object):
                 result = paths[0]
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
-        self.data.combine_parallel_data(aliases=aliases)
+        self.data.combine_parallel_data(aliases=aliases, data_dirs=data_dirs)
 
     def _harvest_data(self):
         """Get the collected data and reset the collector.
