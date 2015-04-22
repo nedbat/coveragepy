@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests that HTML generation is awesome."""
 
+import datetime
 import os.path
 import re
 
@@ -333,7 +334,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.assertIn("line_two", formfeed_html)
 
 
-class HtmlTest(CoverageTest):
+class HtmlTest(HtmlTestHelpers, CoverageTest):
     """Moar HTML tests."""
 
     def test_missing_source_file_incorrect_message(self):
@@ -362,6 +363,14 @@ class HtmlTest(CoverageTest):
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/afile.html")
         self.assert_exists("htmlcov/afile_py.html")
+
+    def test_has_date_stamp_in_index(self):
+        self.create_initial_files()
+        self.run_coverage()
+        with open("htmlcov/index.html") as f:
+            index = f.read()
+        time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+        self.assertIn("<p>Created on {time_stamp}</p>".format(time_stamp=time_stamp), index)
 
 
 class HtmlStaticFileTest(CoverageTest):
