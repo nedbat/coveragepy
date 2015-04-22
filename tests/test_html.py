@@ -387,12 +387,14 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assertTrue(m, "Didn't find a timestamp!")
         timestamp = datetime.datetime(*map(int, m.groups()))
         age = datetime.datetime.now() - timestamp
+        # Python2.6 doesn't have total_seconds :(
+        self.assertEqual(age.days, 0)
         # The timestamp only records the minute, so the delta could be from
         # 12:00 to 12:01:59, or two minutes.
         self.assertLessEqual(
-            abs(age.total_seconds()),
+            abs(age.seconds),
             120,
-            "Timestamp is wrong: {}".format(timestamp)
+            "Timestamp is wrong: {0}".format(timestamp)
         )
 
 
