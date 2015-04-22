@@ -724,6 +724,10 @@ class Coverage(object):
         coverage() constructor) will be read, and combined together into the
         current measurements.
 
+        `data_dirs` is a list of directories from which data files should be
+        combined. If no list is passed, then the data files from the current
+        directory will be combined.
+
         """
         self._init()
         aliases = None
