@@ -17,11 +17,15 @@ Latest
   (`issue 360`_).  It's always fun when the problem is due to a `bug in the
   Python standard library <http://bugs.python.org/issue19035>`_.
 
+- HTML reports now include a timestamp in the footer, closing `issue 299`_.
+  Thanks, Conrad Ho.
+
 - HTML reports now begrudgingly use double-quotes rather than single quotes,
   because there are "software engineers" out there writing tools that read HTML
   and somehow have no idea that single quotes exist.  Fixes `issue 361`_.
   Thanks, Jon Chappell.
 
+.. _issue 299: https://bitbucket.org/ned/coveragepy/issue/299/inserted-created-on-yyyy-mm-dd-hh-mm-in
 .. _issue 308: https://bitbucket.org/ned/coveragepy/issue/308/yield-lambda-branch-coverage
 .. _issue 324: https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
 .. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error

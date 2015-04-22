@@ -23,7 +23,6 @@
         <h1>{{ title|escape }}:
             <span class="pc_cov">{{totals.pc_covered_str}}%</span>
         </h1>
-        <p>Created on {{ time_stamp }}</p>
 
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
 
@@ -106,7 +105,8 @@
 <div id="footer">
     <div class="content">
         <p>
-            <a class="nav" href="{{__url__}}">coverage.py v{{__version__}}</a>
+            <a class="nav" href="{{__url__}}">coverage.py v{{__version__}}</a>,
+            created at {{ time_stamp }}
         </p>
     </div>
 </div>

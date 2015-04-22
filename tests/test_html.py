@@ -367,10 +367,15 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
     def test_has_date_stamp_in_index(self):
         self.create_initial_files()
         self.run_coverage()
+        # Note: in theory this test could fail if the HTML files are created
+        # at 1:23:59.999 and this timestamp is grabbed at 1:24:00.000.
+        footer = "created at {time_stamp}".format(
+            time_stamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+            )
         with open("htmlcov/index.html") as f:
-            index = f.read()
-        time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-        self.assertIn("<p>Created on {time_stamp}</p>".format(time_stamp=time_stamp), index)
+            self.assertIn(footer, f.read())
+        with open("htmlcov/main_file_py.html") as f:
+            self.assertIn(footer, f.read())
 
 
 class HtmlStaticFileTest(CoverageTest):

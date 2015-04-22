@@ -93,6 +93,7 @@ class HtmlReporter(Reporter):
         self.status = HtmlStatus()
         self.extra_css = None
         self.totals = Numbers()
+        self.time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 
     def report(self, morfs):
         """Generate an HTML report for `morfs`.
@@ -238,6 +239,7 @@ class HtmlReporter(Reporter):
             'c_exc': c_exc, 'c_mis': c_mis, 'c_par': c_par, 'c_run': c_run,
             'arcs': self.arcs, 'extra_css': self.extra_css,
             'fr': fr, 'nums': nums, 'lines': lines,
+            'time_stamp': self.time_stamp,
         }
         html = spaceless(self.source_tmpl.render(template_values))
 
@@ -262,14 +264,12 @@ class HtmlReporter(Reporter):
 
         self.totals = sum(f['nums'] for f in self.files)
 
-        time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-
         html = index_tmpl.render({
             'arcs': self.arcs,
             'extra_css': self.extra_css,
             'files': self.files,
             'totals': self.totals,
-            'time_stamp': time_stamp,
+            'time_stamp': self.time_stamp,
         })
 
         self.write_html(
