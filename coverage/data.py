@@ -223,9 +223,7 @@ class CoverageData(object):
                 filename = aliases.map(filename)
                 self.arcs.setdefault(filename, {}).update(file_data)
             self.plugins.update(new_plugins)
-
-            if os.path.basename(f) != local:
-                os.remove(f)
+            os.remove(f)
 
     def add_line_data(self, line_data):
         """Add executed line data.
