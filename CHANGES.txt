@@ -6,6 +6,11 @@ Change history for Coverage.py
 Latest
 ------
 
+- The ``coverage combine`` command now accepts any number of directories as
+  arguments, and will combine all the data files from those directories.  This
+  means you don't have to copy the files to one directory before combining.
+  Thanks, Christine Lytwynec.  Finishes `issue 354`_.
+
 - Branch coverage couldn't properly handle certain extremely long files. This
   is now fixed (`issue 359`_).
 
@@ -28,6 +33,7 @@ Latest
 .. _issue 299: https://bitbucket.org/ned/coveragepy/issue/299/inserted-created-on-yyyy-mm-dd-hh-mm-in
 .. _issue 308: https://bitbucket.org/ned/coveragepy/issue/308/yield-lambda-branch-coverage
 .. _issue 324: https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
+.. _issue 354: https://bitbucket.org/ned/coveragepy/issue/354/coverage-combine-should-take-a-list-of
 .. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
 .. _issue 360: https://bitbucket.org/ned/coveragepy/issue/360/html-reports-get-confused-by-l-in-the-code
 .. _issue 361: https://bitbucket.org/ned/coveragepy/issue/361/use-double-quotes-in-html-output-to
