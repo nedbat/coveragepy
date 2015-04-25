@@ -257,6 +257,7 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
     def report_on_class_behavior(cls):
         """Called at process exit to report on class behavior."""
         for test_class, behavior in cls.class_behaviors.items():
+            bad = ""
             if behavior.tests <= behavior.skipped:
                 bad = ""
             elif behavior.temp_dir and behavior.tests_making_files == 0:
@@ -264,8 +265,6 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
                     bad = "Inefficient"
             elif not behavior.temp_dir and behavior.tests_making_files > 0:
                 bad = "Unsafe"
-            else:
-                bad = ""
 
             if bad:
                 if behavior.temp_dir:
