@@ -147,7 +147,14 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
     """
 
     # Our own setting: most of these tests run in their own temp directory.
+    # Set this to False in your subclass if you don't want a temp directory
+    # created.
     run_in_temp_dir = True
+
+    # Set this if you aren't creating any files with make_file, but still want
+    # the temp directory.  This will stop the test behavior checker from
+    # complaining.
+    no_files_in_temp_dir = False
 
     def setUp(self):
         super(TempDirMixin, self).setUp()
@@ -165,8 +172,8 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
 
         class_behavior = self.class_behavior()
         class_behavior.tests += 1
-        class_behavior.test_method_made_any_files = False
         class_behavior.temp_dir = self.run_in_temp_dir
+        class_behavior.no_files_ok = self.no_files_in_temp_dir
 
         self.addCleanup(self.check_behavior)
 
@@ -239,6 +246,7 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
             self.tests = 0
             self.skipped = 0
             self.temp_dir = True
+            self.no_files_ok = False
             self.tests_making_files = 0
             self.test_method_made_any_files = False
 
@@ -252,7 +260,8 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
             if behavior.tests <= behavior.skipped:
                 bad = ""
             elif behavior.temp_dir and behavior.tests_making_files == 0:
-                bad = "Inefficient"
+                if not behavior.no_files_ok:
+                    bad = "Inefficient"
             elif not behavior.temp_dir and behavior.tests_making_files > 0:
                 bad = "Unsafe"
             else:

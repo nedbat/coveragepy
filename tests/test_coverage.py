@@ -1672,17 +1672,13 @@ class ReportingTest(CoverageTest):
 
     # We don't make any temp files, but we need an empty directory to run the
     # tests in.
-    run_in_temp_dir = True
+    no_files_in_temp_dir = True
 
     def test_no_data_to_report_on_annotate(self):
         # Reporting with no data produces a nice message and no output dir.
         with self.assertRaisesRegex(CoverageException, "No data to report."):
             self.command_line("annotate -d ann")
         self.assert_doesnt_exist("ann")
-
-        # CoverageTest will yell at us for using a temp directory with no files
-        # made. Instead of adding a way to shut it up, just make a file.
-        self.make_file("touch.txt", "")
 
     def test_no_data_to_report_on_html(self):
         # Reporting with no data produces a nice message and no output dir.

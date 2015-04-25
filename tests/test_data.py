@@ -165,6 +165,8 @@ class DataTest(DataTestHelpers, CoverageTest):
 class DataTestInTempDir(DataTestHelpers, CoverageTest):
     """Test cases for coverage.data."""
 
+    no_files_in_temp_dir = True
+
     def test_combining_from_different_directories(self):
         covdata1 = CoverageData()
         covdata1.add_line_data(DATA_1)
