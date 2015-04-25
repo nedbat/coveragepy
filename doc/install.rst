@@ -63,6 +63,10 @@ with::
 
     $ sudo apt-get install python-dev
 
+or for Python 3.x::
+
+    $ sudo apt-get install python3-dev
+
 
 Installing on Windows
 ---------------------
