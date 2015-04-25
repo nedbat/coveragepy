@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests that our test infrastructure is really working!"""
 
+import datetime
 import os
 import sys
 
@@ -79,6 +80,27 @@ class CoverageTestTest(CoverageTest):
             self.assert_starts_with("xyz", "a")
         with self.assertRaises(AssertionError):
             self.assert_starts_with("xyz\nabc", "a")
+
+    def test_assert_recent_datetime(self):
+        def now_delta(seconds):
+            """Make a datetime `seconds` seconds from now."""
+            return datetime.datetime.now() + datetime.timedelta(seconds=seconds)
+
+        # Default delta is 10 seconds.
+        self.assert_recent_datetime(now_delta(0))
+        self.assert_recent_datetime(now_delta(-9))
+        with self.assertRaises(AssertionError):
+            self.assert_recent_datetime(now_delta(-11))
+        with self.assertRaises(AssertionError):
+            self.assert_recent_datetime(now_delta(1))
+
+        # Delta is settable.
+        self.assert_recent_datetime(now_delta(0), seconds=120)
+        self.assert_recent_datetime(now_delta(-100), seconds=120)
+        with self.assertRaises(AssertionError):
+            self.assert_recent_datetime(now_delta(-1000), seconds=120)
+        with self.assertRaises(AssertionError):
+            self.assert_recent_datetime(now_delta(1), seconds=120)
 
     def test_sub_python_is_this_python(self):
         # Try it with a Python command.

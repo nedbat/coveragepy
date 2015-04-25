@@ -1,5 +1,6 @@
 """Base test case class for coverage testing."""
 
+import datetime
 import glob
 import os
 import random
@@ -277,6 +278,14 @@ class CoverageTest(
         """Assert that `s` starts with `prefix`."""
         if not s.startswith(prefix):
             self.fail(msg or ("%r doesn't start with %r" % (s, prefix)))
+
+    def assert_recent_datetime(self, dt, seconds=10, msg=None):
+        """Assert that `dt` marks a time at most `seconds` seconds ago."""
+        age = datetime.datetime.now() - dt
+        # Python2.6 doesn't have total_seconds :(
+        self.assertEqual(age.days, 0, msg)
+        self.assertGreaterEqual(age.seconds, 0, msg)
+        self.assertLessEqual(age.seconds, seconds, msg)
 
     def command_line(self, args, ret=OK, _covpkg=None):
         """Run `args` through the command line.
