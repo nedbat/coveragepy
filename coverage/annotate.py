@@ -2,6 +2,7 @@
 
 import os, re
 
+from coverage import env
 from coverage.report import Reporter
 
 class AnnotateReporter(Reporter):
@@ -89,4 +90,8 @@ class AnnotateReporter(Reporter):
                     dest.write('> ')
                 else:
                     dest.write('! ')
+
+                if env.PY2:
+                    line = line.encode('utf-8')
+
                 dest.write(line)
