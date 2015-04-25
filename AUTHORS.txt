@@ -39,6 +39,7 @@ Jon Chappell
 Joseph Tate
 Julian Berman
 Krystian Kichewko
+Leonardo Pistone
 Lex Berezhny
 Marc Abramowitz
 Marcus Cobden

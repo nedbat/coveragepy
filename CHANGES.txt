@@ -30,6 +30,9 @@ Latest
   and somehow have no idea that single quotes exist.  Fixes `issue 361`_.
   Thanks, Jon Chappell.
 
+- The ``coverage annotate`` command now handles non-ASCII characters properly,
+  closing `issue 363`_.  Thanks, Leonardo Pistone.
+
 .. _issue 299: https://bitbucket.org/ned/coveragepy/issue/299/inserted-created-on-yyyy-mm-dd-hh-mm-in
 .. _issue 308: https://bitbucket.org/ned/coveragepy/issue/308/yield-lambda-branch-coverage
 .. _issue 324: https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
@@ -37,6 +40,7 @@ Latest
 .. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
 .. _issue 360: https://bitbucket.org/ned/coveragepy/issue/360/html-reports-get-confused-by-l-in-the-code
 .. _issue 361: https://bitbucket.org/ned/coveragepy/issue/361/use-double-quotes-in-html-output-to
+.. _issue 363: https://bitbucket.org/ned/coveragepy/issue/363/annotate-command-hits-unicode-happy-fun
 
 
 Version 4.0a5 --- 16 February 2015
