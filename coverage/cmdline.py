@@ -249,10 +249,13 @@ CMDS = {
         ),
 
     'combine': CmdOptionParser("combine", GLOBAL_ARGS,
-        usage = " ",
+        usage = "<dir1> <dir2> ... <dirN>",
         description = "Combine data from multiple coverage files collected "
             "with 'run -p'.  The combined results are written to a single "
-            "file representing the union of the data."
+            "file representing the union of the data. The positional "
+            "arguments are directories from which the data files should be "
+            "combined. By default, only data files in the current directory "
+            "are combined."
         ),
 
     'debug': CmdOptionParser("debug", GLOBAL_ARGS,
@@ -430,7 +433,8 @@ class CoverageScript(object):
             self.do_run(options, args)
 
         if options.action == "combine":
-            self.coverage.combine()
+            data_dirs = argv if argv else None
+            self.coverage.combine(data_dirs)
             self.coverage.save()
 
         # Remaining actions are reporting, with some common options.

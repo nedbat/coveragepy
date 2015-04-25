@@ -213,11 +213,18 @@ class CmdLineTest(BaseCmdLineTest):
             """)
 
     def test_combine(self):
-        # coverage combine
+        # coverage combine with args
+        self.cmd_executes("combine datadir1", """\
+            .coverage()
+            .load()
+            .combine(["datadir1"])
+            .save()
+            """)
+        # coverage combine without args
         self.cmd_executes("combine", """\
             .coverage()
             .load()
-            .combine()
+            .combine(None)
             .save()
             """)
 

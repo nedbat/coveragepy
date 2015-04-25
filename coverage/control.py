@@ -717,12 +717,16 @@ class Coverage(object):
         self._harvest_data()
         self.data.write(suffix=data_suffix)
 
-    def combine(self):
+    def combine(self, data_dirs=None):
         """Combine together a number of similarly-named coverage data files.
 
         All coverage data files whose name starts with `data_file` (from the
         coverage() constructor) will be read, and combined together into the
         current measurements.
+
+        `data_dirs` is a list of directories from which data files should be
+        combined. If no list is passed, then the data files from the current
+        directory will be combined.
 
         """
         self._init()
@@ -733,7 +737,7 @@ class Coverage(object):
                 result = paths[0]
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
-        self.data.combine_parallel_data(aliases=aliases)
+        self.data.combine_parallel_data(aliases=aliases, data_dirs=data_dirs)
 
     def _harvest_data(self):
         """Get the collected data and reset the collector.
