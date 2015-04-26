@@ -174,6 +174,12 @@ Version 4.0a2 --- 14 January 2015
 - In some cases, with a source file missing a final newline, coverage would
   count statements incorrectly.  This is now fixed, closing `issue 293`_.
 
+- The status.dat file that HTML reports use to avoid re-creating files that
+  haven't changed is now a JSON file instead of a pickle file.  This obviates
+  `issue 287`_ and `issue 237`_.
+
+.. _issue 237: https://bitbucket.org/ned/coveragepy/issue/237/htmlcov-with-corrupt-statusdat
+.. _issue 287: https://bitbucket.org/ned/coveragepy/issue/287/htmlpy-doesnt-specify-pickle-protocol
 .. _issue 293: https://bitbucket.org/ned/coveragepy/issue/293/number-of-statement-detection-wrong-if-no
 .. _issue 314: https://bitbucket.org/ned/coveragepy/issue/314/fail_under-param-not-working-in-coveragerc
 .. _issue 315: https://bitbucket.org/ned/coveragepy/issue/315/option-to-omit-empty-files-eg-__init__py
