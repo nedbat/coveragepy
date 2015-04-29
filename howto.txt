@@ -40,6 +40,7 @@
 - Update PyPi:
     - $ make pypi
     - upload the kits:
+        - SWITCH TO TWINE: https://pypi.python.org/pypi/twine
         - $ make kit_upload
         - $ tox -c tox_winkits.ini upload
         # note: this seems to try to upload each file twice, so you'll have a
