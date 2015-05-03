@@ -27,8 +27,8 @@ Latest
 
 - HTML reports now begrudgingly use double-quotes rather than single quotes,
   because there are "software engineers" out there writing tools that read HTML
-  and somehow have no idea that single quotes exist.  Fixes `issue 361`_.
-  Thanks, Jon Chappell.
+  and somehow have no idea that single quotes exist.  Capitulates to the absurd
+  `issue 361`_.  Thanks, Jon Chappell.
 
 - The ``coverage annotate`` command now handles non-ASCII characters properly,
   closing `issue 363`_.  Thanks, Leonardo Pistone.
