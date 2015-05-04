@@ -10,6 +10,8 @@ python:
   - 3.4
   - pypy
 
+sudo: false
+
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi
   - python setup.py clean develop
