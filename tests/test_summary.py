@@ -21,16 +21,20 @@ class SummaryTest(CoverageTest):
 
     def setUp(self):
         super(SummaryTest, self).setUp()
+        # Parent class saves and restores sys.path, we can just modify it.
+        sys.path.append(self.nice_file(HERE, 'modules'))
+
+    def make_mycode(self):
+        """Make the mycode.py file when needed."""
         self.make_file("mycode.py", """\
             import covmod1
             import covmodzip1
             a = 1
             print('done')
             """)
-        # Parent class saves and restores sys.path, we can just modify it.
-        sys.path.append(self.nice_file(HERE, 'modules'))
 
     def test_report(self):
+        self.make_mycode()
         out = self.run_command("coverage run mycode.py")
         self.assertEqual(out, 'done\n')
         report = self.report_from_command("coverage report")
@@ -51,6 +55,7 @@ class SummaryTest(CoverageTest):
 
     def test_report_just_one(self):
         # Try reporting just one module
+        self.make_mycode()
         self.run_command("coverage run mycode.py")
         report = self.report_from_command("coverage report mycode.py")
 
@@ -67,6 +72,7 @@ class SummaryTest(CoverageTest):
 
     def test_report_wildcard(self):
         # Try reporting using wildcards to get the modules.
+        self.make_mycode()
         self.run_command("coverage run mycode.py")
         report = self.report_from_command("coverage report my*.py")
 
@@ -83,6 +89,7 @@ class SummaryTest(CoverageTest):
 
     def test_report_omitting(self):
         # Try reporting while omitting some modules
+        self.make_mycode()
         self.run_command("coverage run mycode.py")
         report = self.report_from_command(
                     "coverage report --omit '%s/*'" % HERE
@@ -101,6 +108,7 @@ class SummaryTest(CoverageTest):
 
     def test_report_including(self):
         # Try reporting while including some modules
+        self.make_mycode()
         self.run_command("coverage run mycode.py")
         report = self.report_from_command("coverage report --include=mycode*")
 
@@ -325,6 +333,7 @@ class SummaryTest(CoverageTest):
         # We run a .py file, and when reporting, we can't parse it as Python.
         # We should get an error message in the report.
 
+        self.make_mycode()
         self.run_command("coverage run mycode.py")
         self.make_file("mycode.py", "This isn't python at all!")
         report = self.report_from_command("coverage report mycode.py")
@@ -348,6 +357,7 @@ class SummaryTest(CoverageTest):
     def test_dotpy_not_python_ignored(self):
         # We run a .py file, and when reporting, we can't parse it as Python,
         # but we've said to ignore errors, so there's no error reported.
+        self.make_mycode()
         self.run_command("coverage run mycode.py")
         self.make_file("mycode.py", "This isn't python at all!")
         report = self.report_from_command("coverage report -i mycode.py")
