@@ -56,7 +56,7 @@ class Opts(object):
     include = optparse.make_option(
         '', '--include', action='store',
         metavar="PAT1,PAT2,...",
-        help="Include only files whose paths match one of these patterns."
+        help="Include only files whose paths match one of these patterns. "
                 "Accepts shell-style wildcards, which must be quoted."
         )
     pylib = optparse.make_option(
