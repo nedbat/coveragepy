@@ -6,7 +6,32 @@ import inspect
 import os
 
 from coverage import env
-from coverage.backward import string_class, to_bytes
+from coverage.backward import string_class, to_bytes, unicode_class
+
+
+# Use PyContracts for assertion testing on parameters and returns, but only if
+# we are running our own test suite.
+contract = None
+
+if env.TESTING:
+    try:
+        from contracts import contract
+    except ImportError:
+        pass
+    else:
+        from contracts import new_contract
+
+        # Define contract words that PyContract doesn't have.
+        new_contract('bytes', lambda v: isinstance(v, bytes))
+        if env.PY3:
+            new_contract('unicode', lambda v: isinstance(v, unicode_class))
+
+if not contract:
+    # We aren't using real PyContracts, so just define a no-op decorator as a
+    # stunt double.
+    def contract(**unused):             # pylint: disable=function-redefined
+        """Dummy no-op implementation of `contract`."""
+        return lambda func: func
 
 
 def nice_pair(pair):

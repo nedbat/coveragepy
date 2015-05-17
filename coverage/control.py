@@ -169,7 +169,7 @@ class Coverage(object):
         self.source_pkgs = self.file_locator = None
         self.data = self.collector = None
         self.plugins = self.file_tracing_plugins = None
-        self.pylib_dirs = self.cover_dir = None
+        self.pylib_dirs = self.cover_dirs = None
         self.data_suffix = self.run_suffix = None
         self._exclude_re = None
         self.debug = None
@@ -301,7 +301,12 @@ class Coverage(object):
 
         # To avoid tracing the coverage code itself, we skip anything located
         # where we are.
-        self.cover_dir = self._canonical_dir(__file__)
+        self.cover_dirs = [self._canonical_dir(__file__)]
+        if env.TESTING:
+            # When testing, we use PyContracts, which should be considered
+            # part of coverage.
+            import contracts
+            self.cover_dirs.append(self._canonical_dir(contracts))
 
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
@@ -315,8 +320,8 @@ class Coverage(object):
             self.source_match = TreeMatcher(self.source)
             self.source_pkgs_match = ModuleMatcher(self.source_pkgs)
         else:
-            if self.cover_dir:
-                self.cover_match = TreeMatcher([self.cover_dir])
+            if self.cover_dirs:
+                self.cover_match = TreeMatcher(self.cover_dirs)
             if self.pylib_dirs:
                 self.pylib_match = TreeMatcher(self.pylib_dirs)
         if self.include:
@@ -1033,7 +1038,7 @@ class Coverage(object):
         info = [
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
-            ('cover_dir', self.cover_dir),
+            ('cover_dirs', self.cover_dirs),
             ('pylib_dirs', self.pylib_dirs),
             ('tracer', self.collector.tracer_name()),
             ('file_tracing_plugins', ft_plugins),

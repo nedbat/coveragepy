@@ -1,5 +1,6 @@
 # PyPI requirements for running tests for coverage.py
 nose
 mock
+PyContracts
 pylint
 tox >= 1.9
