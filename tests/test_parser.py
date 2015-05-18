@@ -142,7 +142,11 @@ class ParserFileTest(CoverageTest):
             fname = fname + ".py"
             self.make_file(fname, text, newline=newline)
             parser = self.parse_file(fname)
-            self.assertEqual(parser.exit_counts(), counts)
+            self.assertEqual(
+                parser.exit_counts(),
+                counts,
+                "Wrong for %r" % fname
+            )
 
     def test_encoding(self):
         self.make_file("encoded.py", """\

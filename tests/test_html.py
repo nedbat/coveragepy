@@ -6,7 +6,6 @@ import os.path
 import re
 
 import coverage
-from coverage import env
 import coverage.html
 from coverage.misc import CoverageException, NotPython, NoSource
 
@@ -297,9 +296,8 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
 
-    # TODO: enable this test, and then fix this:
-    # https://bitbucket.org/ned/coveragepy/issue/351/files-with-incorrect-encoding-are-ignored
-    def SKIP_THIS_decode_error(self):
+    def test_decode_error(self):
+        # https://bitbucket.org/ned/coveragepy/issue/351/files-with-incorrect-encoding-are-ignored
         # imp.load_module won't load a file with an undecodable character
         # in a comment, though Python will run them.  So we'll change the
         # file after running.
@@ -324,10 +322,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         cov.html_report()
 
         html_report = self.get_html_report_content("sub/not_ascii.py")
-        if env.PY2:
-            expected = "# Isn&#39;t this great?&#65533;!"
-        else:
-            expected = "# Isn&#39;t this great?&#203;!"
+        expected = "# Isn&#39;t this great?&#65533;!"
         self.assertIn(expected, html_report)
 
     def test_formfeeds(self):

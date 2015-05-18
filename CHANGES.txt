@@ -22,6 +22,9 @@ Latest
   (`issue 360`_).  It's always fun when the problem is due to a `bug in the
   Python standard library <http://bugs.python.org/issue19035>`_.
 
+- Files with incorrect encoding declaration comments are no longer ignored by
+  the reporting commands, fixing `issue 351`_.
+
 - HTML reports now include a timestamp in the footer, closing `issue 299`_.
   Thanks, Conrad Ho.
 
@@ -36,6 +39,7 @@ Latest
 .. _issue 299: https://bitbucket.org/ned/coveragepy/issue/299/inserted-created-on-yyyy-mm-dd-hh-mm-in
 .. _issue 308: https://bitbucket.org/ned/coveragepy/issue/308/yield-lambda-branch-coverage
 .. _issue 324: https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
+.. _issue 351: https://bitbucket.org/ned/coveragepy/issue/351/files-with-incorrect-encoding-are-ignored
 .. _issue 354: https://bitbucket.org/ned/coveragepy/issue/354/coverage-combine-should-take-a-list-of
 .. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
 .. _issue 360: https://bitbucket.org/ned/coveragepy/issue/360/html-reports-get-confused-by-l-in-the-code

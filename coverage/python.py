@@ -1,8 +1,6 @@
 """Python source expertise for coverage.py"""
 
 import os.path
-import sys
-import tokenize
 import zipimport
 
 from coverage import env
@@ -14,21 +12,15 @@ from coverage.phystokens import source_token_lines, source_encoding
 from coverage.plugin import FileReporter
 
 
-@contract(returns='str')
+@contract(returns='bytes')
 def read_python_source(filename):
     """Read the Python source text from `filename`.
 
-    Returns a str: unicode on Python 3, bytes on Python 2.
+    Returns bytes.
 
     """
-    # Python 3.2 provides `tokenize.open`, the best way to open source files.
-    if sys.version_info >= (3, 2):
-        f = tokenize.open(filename)
-    else:
-        f = open(filename, "rU")
-
-    with f:
-        return f.read()
+    with open(filename, "rb") as f:
+        return f.read().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
 
 @contract(returns='unicode')
@@ -50,15 +42,12 @@ def get_python_source(filename):
         # Maybe it's in a zip file?
         source = get_zip_bytes(try_filename)
         if source is not None:
-            if env.PY3:
-                source = source.decode(source_encoding(source), "replace")
             break
     else:
         # Couldn't find source.
         raise NoSource("No source for code: '%s'." % filename)
 
-    if env.PY2:
-        source = source.decode(source_encoding(source), "replace")
+    source = source.decode(source_encoding(source), "replace")
 
     # Python code should always end with a line with a newline.
     if source and source[-1] != '\n':

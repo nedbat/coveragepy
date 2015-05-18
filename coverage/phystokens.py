@@ -283,7 +283,7 @@ def compile_unicode(source, filename, mode):
     try:
         code = compile(source, filename, mode)
     except SyntaxError as synerr:
-        if synerr.args[0] != "encoding declaration in Unicode string":
+        if "coding declaration in unicode string" not in synerr.args[0].lower():
             raise
         source = neuter_encoding_declaration(source)
         code = compile(source, filename, mode)
