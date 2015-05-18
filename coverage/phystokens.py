@@ -8,6 +8,7 @@ import tokenize
 
 from coverage import env
 from coverage.backward import iternext
+from coverage.misc import contract
 
 
 def phys_tokens(toks):
@@ -148,6 +149,8 @@ class CachedTokenizer(object):
 generate_tokens = CachedTokenizer().generate_tokens
 
 
+COOKIE_RE = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)", flags=re.MULTILINE)
+
 def _source_encoding_py2(source):
     """Determine the encoding for `source`, according to PEP 263.
 
@@ -164,8 +167,6 @@ def _source_encoding_py2(source):
     readline = iternext(source.splitlines(True))
 
     # This is mostly code adapted from Py3.2's tokenize module.
-
-    cookie_re = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)")
 
     def _get_normal_name(orig_enc):
         """Imitates get_normal_name in tokenizer.c."""
@@ -204,7 +205,7 @@ def _source_encoding_py2(source):
         except UnicodeDecodeError:
             return None
 
-        matches = cookie_re.findall(line_string)
+        matches = COOKIE_RE.findall(line_string)
         if not matches:
             return None
         encoding = _get_normal_name(matches[0])
@@ -265,3 +266,38 @@ if env.PY3:
     source_encoding = _source_encoding_py3
 else:
     source_encoding = _source_encoding_py2
+
+
+@contract(source='unicode')
+def compile_unicode(source, filename, mode):
+    """Just like the `compile` builtin, but works on any Unicode string.
+
+    Python 2's compile() builtin has a stupid restriction: if the source string
+    is Unicode, then it may not have a encoding declaration in it.  Why not?
+    Who knows!
+
+    This function catches that exception, neuters the coding declaration, and
+    compiles it anyway.
+
+    """
+    try:
+        code = compile(source, filename, mode)
+    except SyntaxError as synerr:
+        if synerr.args[0] != "encoding declaration in Unicode string":
+            raise
+        source = neuter_encoding_declaration(source)
+        code = compile(source, filename, mode)
+
+    return code
+
+
+@contract(source='unicode', returns='unicode')
+def neuter_encoding_declaration(source):
+    """Return `source`, with any encoding declaration neutered.
+
+    This function will only ever be called on `source` that has an encoding
+    declaration, so some edge cases can be ignored.
+
+    """
+    source = COOKIE_RE.sub("# (deleted declaration)", source)
+    return source

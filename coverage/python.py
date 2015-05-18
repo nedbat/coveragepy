@@ -8,12 +8,13 @@ import zipimport
 from coverage import env
 from coverage.backward import unicode_class
 from coverage.files import FileLocator
-from coverage.misc import NoSource, join_regex
+from coverage.misc import contract, NoSource, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.plugin import FileReporter
 
 
+@contract(returns='str')
 def read_python_source(filename):
     """Read the Python source text from `filename`.
 
@@ -30,8 +31,9 @@ def read_python_source(filename):
         return f.read()
 
 
+@contract(returns='unicode')
 def get_python_source(filename):
-    """Return the source code, as a str."""
+    """Return the source code, as unicode."""
     base, ext = os.path.splitext(filename)
     if ext == ".py" and env.WINDOWS:
         exts = [".py", ".pyw"]
@@ -49,11 +51,14 @@ def get_python_source(filename):
         source = get_zip_bytes(try_filename)
         if source is not None:
             if env.PY3:
-                source = source.decode(source_encoding(source))
+                source = source.decode(source_encoding(source), "replace")
             break
     else:
         # Couldn't find source.
         raise NoSource("No source for code: '%s'." % filename)
+
+    if env.PY2:
+        source = source.decode(source_encoding(source), "replace")
 
     # Python code should always end with a line with a newline.
     if source and source[-1] != '\n':
@@ -62,6 +67,7 @@ def get_python_source(filename):
     return source
 
 
+@contract(returns='bytes|None')
 def get_zip_bytes(filename):
     """Get data from `filename` if it is a zip file path.
 
@@ -161,12 +167,10 @@ class PythonFileReporter(FileReporter):
     def exit_counts(self):
         return self.parser.exit_counts()
 
+    @contract(returns='unicode')
     def source(self):
         if self._source is None:
             self._source = get_python_source(self.filename)
-            if env.PY2:
-                encoding = source_encoding(self._source)
-                self._source = self._source.decode(encoding, "replace")
             assert isinstance(self._source, unicode_class)
         return self._source
 

@@ -5,6 +5,7 @@ import re
 
 from coverage import env
 from coverage.phystokens import source_token_lines, source_encoding
+from coverage.phystokens import neuter_encoding_declaration
 
 from tests.coveragetest import CoverageTest
 
@@ -92,21 +93,27 @@ else:
     DEF_ENCODING = "ascii"
 
 
+ENCODING_DECLARATION_SOURCES = [
+    # Various forms from http://www.python.org/dev/peps/pep-0263/
+    b"# coding=cp850\n\n",
+    b"#!/usr/bin/python\n# -*- coding: cp850 -*-\n",
+    b"#!/usr/bin/python\n# vim: set fileencoding=cp850:\n",
+    b"# This Python file uses this encoding: cp850\n",
+    b"# This file uses a different encoding:\n# coding: cp850\n",
+]
+
 class SourceEncodingTest(CoverageTest):
     """Tests of source_encoding() for detecting encodings."""
 
     run_in_temp_dir = False
 
     def test_detect_source_encoding(self):
-        # Various forms from http://www.python.org/dev/peps/pep-0263/
-        source = b"# coding=cp850\n\n"
-        self.assertEqual(source_encoding(source), 'cp850')
-        source = b"#!/usr/bin/python\n# -*- coding: utf-8 -*-\n"
-        self.assertEqual(source_encoding(source), 'utf-8')
-        source = b"#!/usr/bin/python\n# vim: set fileencoding=utf8 :\n"
-        self.assertEqual(source_encoding(source), 'utf8')
-        source = b"# This Python file uses this encoding: utf-8\n"
-        self.assertEqual(source_encoding(source), 'utf-8')
+        for source in ENCODING_DECLARATION_SOURCES:
+            self.assertEqual(
+                source_encoding(source),
+                'cp850',
+                "Wrong encoding in %r" % source
+            )
 
     def test_detect_source_encoding_not_in_comment(self):
         if env.PYPY and env.PY3:
@@ -140,3 +147,19 @@ class SourceEncodingTest(CoverageTest):
         source = b"\xEF\xBB\xBF# coding: cp850\n"
         with self.assertRaises(SyntaxError):
             source_encoding(source)
+
+
+class NeuterEncodingDeclarationTest(CoverageTest):
+    """Tests of phystokens.neuter_encoding_declaration()."""
+
+    run_in_temp_dir = False
+
+    def test_neuter_encoding_declaration(self):
+        for source in ENCODING_DECLARATION_SOURCES:
+            neutered = neuter_encoding_declaration(source.decode("ascii"))
+            neutered = neutered.encode("ascii")
+            self.assertEqual(
+                source_encoding(neutered),
+                DEF_ENCODING,
+                "Wrong encoding in %r" % neutered
+            )

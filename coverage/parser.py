@@ -9,9 +9,9 @@ import tokenize
 from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints
 from coverage.bytecode import ByteCodes, CodeObjects
-from coverage.misc import nice_pair, expensive, join_regex
+from coverage.misc import contract, nice_pair, expensive, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
-from coverage.phystokens import generate_tokens
+from coverage.phystokens import compile_unicode, generate_tokens
 
 
 class CodeParser(object):
@@ -34,6 +34,7 @@ class CodeParser(object):
 class PythonParser(CodeParser):
     """Parse code to find executable lines, excluded lines, etc."""
 
+    @contract(text='unicode|None')
     def __init__(self, text=None, filename=None, exclude=None):
         """
         Source can be provided as `text`, the text itself, or `filename`, from
@@ -52,14 +53,6 @@ class PythonParser(CodeParser):
                 raise NoSource(
                     "No source for code: '%s': %s" % (self.filename, err)
                     )
-
-        if self.text:
-            assert isinstance(self.text, str)
-            # Scrap the BOM if it exists.
-            # (Used to do this, but no longer.  Not sure what bad will happen
-            # if we don't do it.)
-            #   if ord(self.text[0]) == 0xfeff:
-            #       self.text = self.text[1:]
 
         self.exclude = exclude
 
@@ -342,13 +335,14 @@ OP_RETURN_VALUE = _opcode('RETURN_VALUE')
 class ByteParser(object):
     """Parse byte codes to understand the structure of code."""
 
+    @contract(text='unicode')
     def __init__(self, text, code=None, filename=None):
         self.text = text
         if code:
             self.code = code
         else:
             try:
-                self.code = compile(text, filename, "exec")
+                self.code = compile_unicode(text, filename, "exec")
             except SyntaxError as synerr:
                 raise NotPython(
                     "Couldn't parse '%s' as Python source: '%s' at line %d" % (
