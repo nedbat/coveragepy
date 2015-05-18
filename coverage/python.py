@@ -77,7 +77,6 @@ def get_zip_bytes(filename):
                 data = zi.get_data(parts[1])
             except IOError:
                 continue
-            assert isinstance(data, bytes)
             return data
     return None
 
@@ -160,7 +159,6 @@ class PythonFileReporter(FileReporter):
     def source(self):
         if self._source is None:
             self._source = get_python_source(self.filename)
-            assert isinstance(self._source, unicode_class)
         return self._source
 
     def should_be_python(self):

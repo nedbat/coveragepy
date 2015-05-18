@@ -151,6 +151,7 @@ generate_tokens = CachedTokenizer().generate_tokens
 
 COOKIE_RE = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)", flags=re.MULTILINE)
 
+@contract(source='bytes')
 def _source_encoding_py2(source):
     """Determine the encoding for `source`, according to PEP 263.
 
@@ -247,6 +248,7 @@ def _source_encoding_py2(source):
     return default
 
 
+@contract(source='bytes')
 def _source_encoding_py3(source):
     """Determine the encoding for `source`, according to PEP 263.
 
@@ -257,7 +259,6 @@ def _source_encoding_py3(source):
         string: the name of the encoding.
 
     """
-    assert isinstance(source, bytes)
     readline = iternext(source.splitlines(True))
     return tokenize.detect_encoding(readline)[0]
 
