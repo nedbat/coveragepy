@@ -12,11 +12,10 @@ python:
 
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi
+  - pip install PyContracts
   - python setup.py clean develop
 
 before_script:
-  - pwd
-  - ls -l
   - coverage debug sys
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then export COVERAGE_NO_EXTENSION=1; fi
 
