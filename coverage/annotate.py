@@ -1,6 +1,8 @@
 """Source file annotation for Coverage."""
 
-import os, re
+import io
+import os
+import re
 
 from coverage import env
 from coverage.report import Reporter
@@ -60,7 +62,7 @@ class AnnotateReporter(Reporter):
         else:
             dest_file = fr.filename + ",cover"
 
-        with open(dest_file, 'w') as dest:
+        with io.open(dest_file, 'w', encoding='utf8') as dest:
             i = 0
             j = 0
             covered = True
@@ -73,25 +75,22 @@ class AnnotateReporter(Reporter):
                 if i < len(statements) and statements[i] == lineno:
                     covered = j >= len(missing) or missing[j] > lineno
                 if self.blank_re.match(line):
-                    dest.write('  ')
+                    dest.write(u'  ')
                 elif self.else_re.match(line):
                     # Special logic for lines containing only 'else:'.
                     if i >= len(statements) and j >= len(missing):
-                        dest.write('! ')
+                        dest.write(u'! ')
                     elif i >= len(statements) or j >= len(missing):
-                        dest.write('> ')
+                        dest.write(u'> ')
                     elif statements[i] == missing[j]:
-                        dest.write('! ')
+                        dest.write(u'! ')
                     else:
-                        dest.write('> ')
+                        dest.write(u'> ')
                 elif lineno in excluded:
-                    dest.write('- ')
+                    dest.write(u'- ')
                 elif covered:
-                    dest.write('> ')
+                    dest.write(u'> ')
                 else:
-                    dest.write('! ')
-
-                if env.PY2:
-                    line = line.encode('utf-8')
+                    dest.write(u'! ')
 
                 dest.write(line)
