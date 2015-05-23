@@ -14,19 +14,15 @@ from coverage.backward import string_class, to_bytes, unicode_class
 contract = None
 
 if env.TESTING:
-    try:
-        from contracts import contract
-    except ImportError:
-        pass
-    else:
-        from contracts import new_contract
+    from contracts import contract
+    from contracts import new_contract
 
-        # Define contract words that PyContract doesn't have.
-        new_contract('bytes', lambda v: isinstance(v, bytes))
-        if env.PY3:
-            new_contract('unicode', lambda v: isinstance(v, unicode_class))
+    # Define contract words that PyContract doesn't have.
+    new_contract('bytes', lambda v: isinstance(v, bytes))
+    if env.PY3:
+        new_contract('unicode', lambda v: isinstance(v, unicode_class))
 
-if not contract:
+else:
     # We aren't using real PyContracts, so just define a no-op decorator as a
     # stunt double.
     def contract(**unused):             # pylint: disable=function-redefined
