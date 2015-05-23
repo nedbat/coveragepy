@@ -11,10 +11,8 @@ from coverage.backward import string_class, to_bytes, unicode_class
 
 # Use PyContracts for assertion testing on parameters and returns, but only if
 # we are running our own test suite.
-contract = None
-
 if env.TESTING:
-    from contracts import contract
+    from contracts import contract              # pylint: disable=unused-import
     from contracts import new_contract
 
     # Define contract words that PyContract doesn't have.
@@ -25,7 +23,7 @@ if env.TESTING:
 else:
     # We aren't using real PyContracts, so just define a no-op decorator as a
     # stunt double.
-    def contract(**unused):             # pylint: disable=function-redefined
+    def contract(**unused):
         """Dummy no-op implementation of `contract`."""
         return lambda func: func
 

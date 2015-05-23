@@ -4,7 +4,6 @@ import io
 import os
 import re
 
-from coverage import env
 from coverage.report import Reporter
 
 class AnnotateReporter(Reporter):

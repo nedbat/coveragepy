@@ -4,7 +4,6 @@ import os.path
 import zipimport
 
 from coverage import env
-from coverage.backward import unicode_class
 from coverage.files import FileLocator
 from coverage.misc import contract, NoSource, join_regex
 from coverage.parser import PythonParser
