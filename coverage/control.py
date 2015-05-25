@@ -754,10 +754,13 @@ class Coverage(object):
         if not self._measured:
             return
 
+        def abs_file_dict(d):
+            return dict((abs_file(k), v) for k,v in iitems(d))
+
         # TODO: seems like this parallel structure is getting kinda old...
-        self.data.add_line_data(self.collector.get_line_data())
-        self.data.add_arc_data(self.collector.get_arc_data())
-        self.data.add_plugin_data(self.collector.get_plugin_data())
+        self.data.add_line_data(abs_file_dict(self.collector.get_line_data()))
+        self.data.add_arc_data(abs_file_dict(self.collector.get_arc_data()))
+        self.data.add_plugin_data(abs_file_dict(self.collector.get_plugin_data()))
         self.collector.reset()
 
         # If there are still entries in the source_pkgs list, then we never

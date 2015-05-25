@@ -244,6 +244,10 @@ class CoverageData(object):
             self.arcs.setdefault(filename, {}).update(arcs)
 
     def add_plugin_data(self, plugin_data):
+        """Add per-file plugin information.
+
+        `plugin_data` is { filename: plugin_name, ... }
+        """
         self.plugins.update(plugin_data)
 
     def touch_file(self, filename):
