@@ -51,7 +51,10 @@ def run_tests(tracer, *nose_args):
         skipper = os.environ.get("COVERAGE_NO_PYTRACER")
     else:
         label = "with C tracer"
-        skipper = os.environ.get("COVERAGE_NO_EXTENSION")
+        skipper = (
+            os.environ.get("COVERAGE_NO_EXTENSION") or
+            os.environ.get("COVERAGE_NO_CTRACER")
+        )
 
     if skipper:
         msg = "Skipping tests " + label
