@@ -755,6 +755,7 @@ class Coverage(object):
             return
 
         def abs_file_dict(d):
+            """Return a dict like d, but with keys modified by `abs_file`."""
             return dict((abs_file(k), v) for k,v in iitems(d))
 
         # TODO: seems like this parallel structure is getting kinda old...
