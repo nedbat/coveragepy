@@ -1,7 +1,5 @@
 """HTML reporting for Coverage."""
 
-from __future__ import unicode_literals
-
 import datetime
 import json
 import os
