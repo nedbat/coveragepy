@@ -43,4 +43,4 @@ def patch_multiprocessing():
     else:
         multiprocessing.Process = ProcessWithCoverage
 
-    setattr(multiprocessing, MARKER, 1)
+    setattr(multiprocessing, MARKER, True)
