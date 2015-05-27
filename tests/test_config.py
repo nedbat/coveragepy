@@ -99,10 +99,10 @@ class ConfigTest(CoverageTest):
             ("[run\n", r"\[run"),
             ("[report]\nexclude_lines = foo(\n",
                 r"Invalid \[report\].exclude_lines value 'foo\(': "
-                    r"unbalanced parenthesis"),
+                    r"(unbalanced parenthesis|missing \))"),
             ("[report]\npartial_branches = foo[\n",
                 r"Invalid \[report\].partial_branches value 'foo\[': "
-                    r"unexpected end of regular expression"),
+                    r"(unexpected end of regular expression|unterminated character set)"),
             ("[report]\npartial_branches_always = foo***\n",
                 r"Invalid \[report\].partial_branches_always value "
                     r"'foo\*\*\*': "
