@@ -2,7 +2,6 @@
 
 import fnmatch
 import os
-import re
 import sys
 import textwrap
 
@@ -10,80 +9,6 @@ import coverage
 from coverage.backward import StringIO
 
 from tests.coveragetest import CoverageTest
-
-
-class SingletonApiTest(CoverageTest):
-    """Tests of the old-fashioned singleton API."""
-
-    def setUp(self):
-        super(SingletonApiTest, self).setUp()
-        # These tests use the singleton module interface.  Prevent it from
-        # writing .coverage files at exit.
-        coverage.use_cache(0)
-
-    def do_report_work(self, modname):
-        """Create a module named `modname`, then measure it."""
-        coverage.erase()
-
-        self.make_file(modname+".py", """\
-            a = 1
-            b = 2
-            if b == 3:
-                c = 4
-                d = 5
-                e = 6
-            f = 7
-            """)
-
-        # Import the Python file, executing it.
-        self.start_import_stop(coverage, modname)
-
-    def test_simple(self):
-        coverage.erase()
-
-        self.make_file("mycode.py", """\
-            a = 1
-            b = 2
-            if b == 3:
-                c = 4
-            d = 5
-            """)
-
-        # Import the Python file, executing it.
-        self.start_import_stop(coverage, "mycode")
-
-        _, statements, missing, missingtext = coverage.analysis("mycode.py")
-        self.assertEqual(statements, [1,2,3,4,5])
-        self.assertEqual(missing, [4])
-        self.assertEqual(missingtext, "4")
-
-    def test_report(self):
-        self.do_report_work("mycode2")
-        coverage.report(["mycode2.py"])
-        self.assertEqual(self.stdout(), textwrap.dedent("""\
-            Name         Stmts   Miss  Cover   Missing
-            ------------------------------------------
-            mycode2.py       7      3    57%   4-6
-            """))
-
-    def test_report_file(self):
-        # The file= argument of coverage.report makes the report go there.
-        self.do_report_work("mycode3")
-        fout = StringIO()
-        coverage.report(["mycode3.py"], file=fout)
-        self.assertEqual(self.stdout(), "")
-        self.assertEqual(fout.getvalue(), textwrap.dedent("""\
-            Name         Stmts   Miss  Cover   Missing
-            ------------------------------------------
-            mycode3.py       7      3    57%   4-6
-            """))
-
-    def test_report_default(self):
-        # Calling report() with no morfs will report on whatever was executed.
-        self.do_report_work("mycode4")
-        coverage.report()
-        rpt = re.sub(r"\s+", " ", self.stdout())
-        self.assertIn("mycode4.py 7 3 57% 4-6", rpt)
 
 
 class ApiTest(CoverageTest):

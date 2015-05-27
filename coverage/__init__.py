@@ -16,67 +16,6 @@ from coverage.plugin import CoveragePlugin
 # Backward compatibility.
 coverage = Coverage
 
-# Module-level functions.  The original API to this module was based on
-# functions defined directly in the module, with a singleton of the Coverage()
-# class.  That design hampered programmability, so the current API uses
-# explicitly-created Coverage objects.  But for backward compatibility, here we
-# define the top-level functions to create the singleton when they are first
-# called.
-
-# Singleton object for use with module-level functions.  The singleton is
-# created as needed when one of the module-level functions is called.
-_the_coverage = None
-
-def _singleton_method(name):
-    """Return a function to the `name` method on a singleton `Coverage` object.
-
-    The singleton object is created the first time one of these functions is
-    called.
-
-    """
-    # Disable pylint message, because a bunch of variables look unused, but
-    # they're accessed via locals().
-    # pylint: disable=unused-variable
-
-    def wrapper(*args, **kwargs):
-        """Singleton wrapper around a coverage method."""
-        global _the_coverage
-        if not _the_coverage:
-            _the_coverage = Coverage(auto_data=True)
-        return getattr(_the_coverage, name)(*args, **kwargs)
-
-    import inspect
-    meth = getattr(Coverage, name)
-    args, varargs, kw, defaults = inspect.getargspec(meth)
-    argspec = inspect.formatargspec(args[1:], varargs, kw, defaults)
-    docstring = meth.__doc__
-    wrapper.__doc__ = ("""\
-        A first-use-singleton wrapper around Coverage.%(name)s.
-
-        This wrapper is provided for backward compatibility with legacy code.
-        New code should use Coverage.%(name)s directly.
-
-        %(name)s%(argspec)s:
-
-        %(docstring)s
-        """ % locals()
-        )
-
-    return wrapper
-
-
-# Define the module-level functions.
-use_cache = _singleton_method('use_cache')
-start =     _singleton_method('start')
-stop =      _singleton_method('stop')
-erase =     _singleton_method('erase')
-exclude =   _singleton_method('exclude')
-analysis =  _singleton_method('analysis')
-analysis2 = _singleton_method('analysis2')
-report =    _singleton_method('report')
-annotate =  _singleton_method('annotate')
-
-
 # On Windows, we encode and decode deep enough that something goes wrong and
 # the encodings.utf_8 module is loaded and then unloaded, I don't know why.
 # Adding a reference here prevents it from being unloaded.  Yuk.

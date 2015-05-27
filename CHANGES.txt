@@ -6,6 +6,10 @@ Change history for Coverage.py
 Latest
 ------
 
+- The original module-level function interface to coverage is no longer
+  supported.  You must now create a ``coverage.Coverage`` object, and use
+  methods on it.
+
 - The ``coverage combine`` command now accepts any number of directories as
   arguments, and will combine all the data files from those directories.  This
   means you don't have to copy the files to one directory before combining.
