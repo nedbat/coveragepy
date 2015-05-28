@@ -672,6 +672,11 @@ class MiscArcTest(CoverageTest):
     """Miscellaneous arc-measuring tests."""
 
     def test_dict_literal(self):
+        if env.PYVERSION < (3, 5):
+            arcz = ".1 19 9."
+        else:
+            # Python 3.5 changed how dict literals are constructed.
+            arcz = ".1 19 9-2"
         self.check_coverage("""\
             d = {
                 'a': 2,
@@ -683,7 +688,7 @@ class MiscArcTest(CoverageTest):
                 }
             assert d
             """,
-            arcz=".1 19 9.")
+            arcz=arcz)
 
     def test_pathologically_long_code_object(self):
         # https://bitbucket.org/ned/coveragepy/issue/359

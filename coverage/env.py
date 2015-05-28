@@ -11,8 +11,9 @@ LINUX = sys.platform == "linux2"
 PYPY = '__pypy__' in sys.builtin_module_names
 
 # Python versions.
-PY2 = sys.version_info < (3, 0)
-PY3 = sys.version_info >= (3, 0)
+PYVERSION = sys.version_info
+PY2 = PYVERSION < (3, 0)
+PY3 = PYVERSION >= (3, 0)
 
 # Coverage.py specifics.
 
