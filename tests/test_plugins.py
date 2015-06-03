@@ -481,7 +481,11 @@ class BadPluginTest(FileTracerTest):
             self.assertEqual(errors, 1)
 
         # There should be a warning explaining what's happening, but only one.
-        msg = "Disabling plugin %r due to an exception:" % plugin_name
+        # The message can be in two forms:
+        #   Disabling plugin '...' due to previous exception
+        # or:
+        #   Disabling plugin '...' due to an excepton:
+        msg = "Disabling plugin %r due to " % plugin_name
         warnings = stderr.count(msg)
         self.assertEqual(warnings, 1)
 

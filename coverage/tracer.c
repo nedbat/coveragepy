@@ -647,6 +647,8 @@ CTracer_disable_plugin(CTracer *self, PyObject * disposition)
     PyObject * msg = NULL;
     PyObject * ignored = NULL;
 
+    PyErr_Print();
+
     file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
     if (file_tracer == NULL) {
         goto error;
@@ -664,7 +666,7 @@ CTracer_disable_plugin(CTracer *self, PyObject * disposition)
         goto error;
     }
     msg = MyText_FromFormat(
-        "Disabling plugin '%s' due to an exception:",
+        "Disabling plugin '%s' due to previous exception",
         MyText_AsString(plugin_name)
         );
     if (msg == NULL) {
@@ -674,8 +676,6 @@ CTracer_disable_plugin(CTracer *self, PyObject * disposition)
     if (ignored == NULL) {
         goto error;
     }
-
-    PyErr_Print();
 
     /* Disable the plugin for future files, and stop tracing this file. */
     if (PyObject_SetAttrString(plugin, "_coverage_enabled", Py_False) < 0) {
