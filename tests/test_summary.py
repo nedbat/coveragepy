@@ -27,6 +27,16 @@ class SummaryTest(CoverageTest):
     def make_mycode(self):
         """Make the mycode.py file when needed."""
         self.make_file("mycode.py", """\
+            import sys
+            if 'site' in sys.modules:
+                site_path = sys.modules['site'].__file__
+                if site_path.endswith("c"):
+                    site_path = site_path[:-1]
+                print('*** %s ************' % site_path)
+                print(open(site_path).read())
+                print('*** <end> ************')
+            else:
+                print("*** SITE NOT IMPORTED!?")
             import covmod1
             import covmodzip1
             a = 1
