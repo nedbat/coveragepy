@@ -304,9 +304,11 @@ class Coverage(object):
         self.cover_dirs = [self._canonical_dir(__file__)]
         if env.TESTING:
             # When testing, we use PyContracts, which should be considered
-            # part of coverage.
-            import contracts
-            self.cover_dirs.append(self._canonical_dir(contracts))
+            # part of coverage, and it uses six. Exclude those directories just
+            # as we exclude ourselves.
+            import contracts, six
+            for mod in [contracts, six]:
+                self.cover_dirs.append(self._canonical_dir(mod))
 
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
