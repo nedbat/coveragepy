@@ -20,7 +20,6 @@ before_script:
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then export COVERAGE_NO_EXTENSION=1; fi
 
 script:
-  - python -vv -c "print(1723)"
   - python igor.py zip_mods install_egg
   - python igor.py test_with_tracer c
   - python igor.py remove_extension
