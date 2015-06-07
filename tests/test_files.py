@@ -2,6 +2,7 @@
 
 import os
 import os.path
+from unittest import TestCase
 
 from coverage.files import (
     FileLocator, TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
@@ -14,7 +15,7 @@ from tests.coveragetest import CoverageTest
 
 
 if env.WINDOWS:
-    class IncompleteWindowsTest(CoverageTest):
+    class IncompleteWindowsTest(TestCase):
         def test_actual_path(self):
             self.assertEquals(actual_path(r'c:\Windows'), actual_path(r'C:\wINDOWS'))
 
