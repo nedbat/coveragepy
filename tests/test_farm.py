@@ -228,8 +228,8 @@ class FarmTestCase(object):
         without triggering an assertion.  `right_extra` means the right
         directory can.
 
-        `scrubs` is a list of pairs, regex find and replace patterns to use to
-        scrub the files of unimportant differences.
+        `scrubs` is a list of pairs, regexes to find and literal strings to
+        replace them with to scrub the files of unimportant differences.
 
         An assertion will be raised if the directories fail one of their
         matches.
@@ -309,7 +309,7 @@ class FarmTestCase(object):
 
         """
         for rgx_find, rgx_replace in scrubs:
-            strdata = re.sub(rgx_find, rgx_replace, strdata)
+            strdata = re.sub(rgx_find, re.escape(rgx_replace), strdata)
         return strdata
 
     def contains(self, filename, *strlist):
