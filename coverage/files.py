@@ -64,6 +64,7 @@ if env.WINDOWS:
 
         head, tail = os.path.split(path)
         if not tail:
+            # This means head is the drive spec: normalize it.
             actpath = head.upper()
         elif not head:
             actpath = tail

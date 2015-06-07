@@ -13,14 +13,6 @@ from coverage import env
 from tests.coveragetest import CoverageTest
 
 
-if env.WINDOWS:
-    class IncompleteWindowsTest(CoverageTest):
-        run_in_temp_dir = False
-
-        def test_actual_path(self):
-            self.assertEquals(actual_path(r'c:\Windows'), actual_path(r'C:\wINDOWS'))
-
-
 class FileLocatorTest(CoverageTest):
     """Tests of `FileLocator`."""
 
@@ -257,3 +249,17 @@ class FindPythonFilesTest(CoverageTest):
             "sub/ssub/__init__.py", "sub/ssub/s.py",
             "sub/windows.pyw",
             ])
+
+
+class WindowsFileTest(CoverageTest):
+    """Windows-specific tests of file name handling."""
+
+    run_in_temp_dir = False
+
+    def setUp(self):
+        if not env.WINDOWS:
+            self.skip("Only need to run Windows tests on Windows.")
+        super(WindowsFileTest, self).setUp()
+
+    def test_actual_path(self):
+        self.assertEquals(actual_path(r'c:\Windows'), actual_path(r'C:\wINDOWS'))
