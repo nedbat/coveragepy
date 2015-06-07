@@ -64,7 +64,7 @@ if env.WINDOWS:
 
         head, tail = os.path.split(path)
         if not tail:
-            actpath = head
+            actpath = head.upper()
         elif not head:
             actpath = tail
         else:
