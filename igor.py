@@ -6,6 +6,7 @@ of in shell scripts, batch files, or Makefiles.
 
 """
 
+import contextlib
 import fnmatch
 import glob
 import inspect
@@ -18,7 +19,16 @@ import warnings
 import zipfile
 
 
+# We want to see all warnings while we are running tests.  But we also need to
+# disable warnings for some of the more complex setting up of tests.
 warnings.simplefilter("default")
+
+@contextlib.contextmanager
+def ignore_warnings():
+    """Context manager to ignore warning within the with statement."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        yield
 
 
 # Functions named do_* are executable from the command line: do_blah is run
@@ -45,7 +55,9 @@ def do_remove_extension():
 
 def run_tests(tracer, *nose_args):
     """The actual running of tests."""
-    import nose.core
+    with ignore_warnings():
+        import nose.core
+
     if tracer == "py":
         label = "with Python tracer"
         skipper = os.environ.get("COVERAGE_NO_PYTRACER")
@@ -180,14 +192,15 @@ def do_install_egg():
     """Install the egg1 egg for tests."""
     # I am pretty certain there are easier ways to install eggs...
     # pylint: disable=import-error,no-name-in-module
-    import distutils.core
     cur_dir = os.getcwd()
     os.chdir("tests/eggsrc")
-    distutils.core.run_setup("setup.py", ["--quiet", "bdist_egg"])
-    egg = glob.glob("dist/*.egg")[0]
-    distutils.core.run_setup(
-        "setup.py", ["--quiet", "easy_install", "--no-deps", "--zip-ok", egg]
-        )
+    with ignore_warnings():
+        import distutils.core
+        distutils.core.run_setup("setup.py", ["--quiet", "bdist_egg"])
+        egg = glob.glob("dist/*.egg")[0]
+        distutils.core.run_setup(
+            "setup.py", ["--quiet", "easy_install", "--no-deps", "--zip-ok", egg]
+            )
     os.chdir(cur_dir)
 
 
@@ -285,6 +298,19 @@ def do_help():
             print("%-20s%s" % (name[3:], value.__doc__))
 
 
+def analyze_args(callble):
+    """What kind of args does `callble` expect?
+
+    Returns:
+        star, num_pos:
+            star(boolean): Does `callble` accept *args?
+            num_args(int): How many positional arguments does `callble` have?
+    """
+    with ignore_warnings():
+        argspec = inspect.getargspec(callble)
+    return bool(argspec[1]), len(argspec[0])
+
+
 def main(args):
     """Main command-line execution for igor.
 
@@ -298,20 +324,20 @@ def main(args):
         if handler is None:
             print("*** No handler for %r" % verb)
             return 1
-        argspec = inspect.getargspec(handler)
-        if argspec[1]:
+        star, num_args = analyze_args(handler)
+        if star:
             # Handler has *args, give it all the rest of the command line.
             handler_args = args
             args = []
         else:
             # Handler has specific arguments, give it only what it needs.
-            num_args = len(argspec[0])
             handler_args = args[:num_args]
             args = args[num_args:]
         ret = handler(*handler_args)
         # If a handler returns a failure-like value, stop.
         if ret:
             return ret
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
