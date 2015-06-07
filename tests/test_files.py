@@ -5,11 +5,18 @@ import os.path
 
 from coverage.files import (
     FileLocator, TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
-    find_python_files, abs_file
+    find_python_files, abs_file, actual_path
 )
 from coverage.misc import CoverageException
+from coverage import env
 
 from tests.coveragetest import CoverageTest
+
+
+if env.WINDOWS:
+    class IncompleteWindowsTest(CoverageTest):
+        def test_actual_path(self):
+            self.assertEquals(actual_path(r'c:\Windows'), actual_path(r'C:\wINDOWS'))
 
 
 class FileLocatorTest(CoverageTest):
