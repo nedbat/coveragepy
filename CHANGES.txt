@@ -6,7 +6,7 @@ Change history for Coverage.py
 Latest
 ------
 
-- Python 3.5b2 is supported.
+- Python 3.5b2 and PyPy 2.6.0 are supported.
 
 - The original module-level function interface to coverage is no longer
   supported.  You must now create a ``coverage.Coverage`` object, and use
