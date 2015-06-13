@@ -12,55 +12,66 @@ from coverage import env
 from coverage.misc import CoverageException, join_regex
 
 
-class FileLocator(object):
-    """Understand how filenames work."""
+RELATIVE_DIR = None
+CANONICAL_FILENAME_CACHE = {}
 
-    def __init__(self):
-        # The absolute path to our current directory.
-        self.relative_dir = os.path.normcase(abs_file(os.curdir) + os.sep)
 
-        # Cache of results of calling the canonical_filename() method, to
-        # avoid duplicating work.
-        self.canonical_filename_cache = {}
+def set_relative_directory():
+    """Set the directory that `relative_filename` will be relative to."""
+    global RELATIVE_DIR, CANONICAL_FILENAME_CACHE
 
-    def relative_filename(self, filename):
-        """Return the relative form of `filename`.
+    # The absolute path to our current directory.
+    RELATIVE_DIR = os.path.normcase(abs_file(os.curdir) + os.sep)
 
-        The filename will be relative to the current directory when the
-        `FileLocator` was constructed.
+    # Cache of results of calling the canonical_filename() method, to
+    # avoid duplicating work.
+    CANONICAL_FILENAME_CACHE = {}
 
-        """
-        fnorm = os.path.normcase(filename)
-        if fnorm.startswith(self.relative_dir):
-            filename = filename[len(self.relative_dir):]
-        return filename
+def relative_directory():
+    """Return the directory that `relative_filename` is relative to."""
+    return RELATIVE_DIR
 
-    def canonical_filename(self, filename):
-        """Return a canonical filename for `filename`.
+def relative_filename(filename):
+    """Return the relative form of `filename`.
 
-        An absolute path with no redundant components and normalized case.
+    The filename will be relative to the current directory when the
+    `set_relative_directory` was called.
 
-        """
-        if filename not in self.canonical_filename_cache:
-            if not os.path.isabs(filename):
-                for path in [os.curdir] + sys.path:
-                    if path is None:
-                        continue
-                    f = os.path.join(path, filename)
-                    if os.path.exists(f):
-                        filename = f
-                        break
-            cf = abs_file(filename)
-            self.canonical_filename_cache[filename] = cf
-        return self.canonical_filename_cache[filename]
+    """
+    fnorm = os.path.normcase(filename)
+    if fnorm.startswith(RELATIVE_DIR):
+        filename = filename[len(RELATIVE_DIR):]
+    return filename
+
+def canonical_filename(filename):
+    """Return a canonical filename for `filename`.
+
+    An absolute path with no redundant components and normalized case.
+
+    """
+    if filename not in CANONICAL_FILENAME_CACHE:
+        if not os.path.isabs(filename):
+            for path in [os.curdir] + sys.path:
+                if path is None:
+                    continue
+                f = os.path.join(path, filename)
+                if os.path.exists(f):
+                    filename = f
+                    break
+        cf = abs_file(filename)
+        CANONICAL_FILENAME_CACHE[filename] = cf
+    return CANONICAL_FILENAME_CACHE[filename]
 
 
 if env.WINDOWS:
 
+    _ACTUAL_PATH_CACHE = {}
+    _ACTUAL_PATH_LIST_CACHE = {}
+
     def actual_path(path):
         """Get the actual path of `path`, including the correct case."""
-        if path in actual_path.cache:
-            return actual_path.cache[path]
+        if path in _ACTUAL_PATH_CACHE:
+            return _ACTUAL_PATH_CACHE[path]
 
         head, tail = os.path.split(path)
         if not tail:
@@ -70,25 +81,22 @@ if env.WINDOWS:
             actpath = tail
         else:
             head = actual_path(head)
-            if head in actual_path.list_cache:
-                files = actual_path.list_cache[head]
+            if head in  _ACTUAL_PATH_LIST_CACHE:
+                files = _ACTUAL_PATH_LIST_CACHE[head]
             else:
                 try:
                     files = os.listdir(head)
                 except OSError:
                     files = []
-                actual_path.list_cache[head] = files
+                _ACTUAL_PATH_LIST_CACHE[head] = files
             normtail = os.path.normcase(tail)
             for f in files:
                 if os.path.normcase(f) == normtail:
                     tail = f
                     break
             actpath = os.path.join(head, tail)
-        actual_path.cache[path] = actpath
+        _ACTUAL_PATH_CACHE[path] = actpath
         return actpath
-
-    actual_path.cache = {}
-    actual_path.list_cache = {}
 
 else:
     def actual_path(filename):

@@ -3,8 +3,9 @@
 import os
 import os.path
 
+from coverage import files
 from coverage.files import (
-    FileLocator, TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
+    TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
     find_python_files, abs_file, actual_path
 )
 from coverage.misc import CoverageException
@@ -13,8 +14,8 @@ from coverage import env
 from tests.coveragetest import CoverageTest
 
 
-class FileLocatorTest(CoverageTest):
-    """Tests of `FileLocator`."""
+class FilesTest(CoverageTest):
+    """Tests of coverage.files."""
 
     def abs_path(self, p):
         """Return the absolute path for `p`."""
@@ -22,11 +23,11 @@ class FileLocatorTest(CoverageTest):
 
     def test_simple(self):
         self.make_file("hello.py")
-        fl = FileLocator()
-        self.assertEqual(fl.relative_filename("hello.py"), "hello.py")
+        files.set_relative_directory()
+        self.assertEqual(files.relative_filename("hello.py"), "hello.py")
         a = self.abs_path("hello.py")
         self.assertNotEqual(a, "hello.py")
-        self.assertEqual(fl.relative_filename(a), "hello.py")
+        self.assertEqual(files.relative_filename(a), "hello.py")
 
     def test_peer_directories(self):
         self.make_file("sub/proj1/file1.py")
@@ -35,20 +36,20 @@ class FileLocatorTest(CoverageTest):
         a2 = self.abs_path("sub/proj2/file2.py")
         d = os.path.normpath("sub/proj1")
         os.chdir(d)
-        fl = FileLocator()
-        self.assertEqual(fl.relative_filename(a1), "file1.py")
-        self.assertEqual(fl.relative_filename(a2), a2)
+        files.set_relative_directory()
+        self.assertEqual(files.relative_filename(a1), "file1.py")
+        self.assertEqual(files.relative_filename(a2), a2)
 
     def test_filepath_contains_absolute_prefix_twice(self):
         # https://bitbucket.org/ned/coveragepy/issue/194
         # Build a path that has two pieces matching the absolute path prefix.
         # Technically, this test doesn't do that on Windows, but drive
         # letters make that impractical to achieve.
-        fl = FileLocator()
+        files.set_relative_directory()
         d = abs_file(os.curdir)
         trick = os.path.splitdrive(d)[1].lstrip(os.path.sep)
         rel = os.path.join('sub', trick, 'file1.py')
-        self.assertEqual(fl.relative_filename(abs_file(rel)), rel)
+        self.assertEqual(files.relative_filename(abs_file(rel)), rel)
 
 
 class MatcherTest(CoverageTest):
@@ -56,11 +57,11 @@ class MatcherTest(CoverageTest):
 
     def setUp(self):
         super(MatcherTest, self).setUp()
-        self.fl = FileLocator()
+        files.set_relative_directory()
 
     def assertMatches(self, matcher, filepath, matches):
         """The `matcher` should agree with `matches` about `filepath`."""
-        canonical = self.fl.canonical_filename(filepath)
+        canonical = files.canonical_filename(filepath)
         self.assertEqual(
             matcher.match(canonical), matches,
             "File %s should have matched as %s" % (filepath, matches)
@@ -74,10 +75,9 @@ class MatcherTest(CoverageTest):
             (self.make_file("sub3/file4.py"), True),
             (self.make_file("sub3/file5.c"), False),
         ]
-        fl = FileLocator()
         trees = [
-            fl.canonical_filename("sub"),
-            fl.canonical_filename("sub3/file4.py"),
+            files.canonical_filename("sub"),
+            files.canonical_filename("sub3/file4.py"),
             ]
         tm = TreeMatcher(trees)
         self.assertEqual(tm.info(), trees)

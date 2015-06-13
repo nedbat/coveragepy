@@ -3,8 +3,7 @@
 import os.path
 import zipimport
 
-from coverage import env
-from coverage.files import FileLocator
+from coverage import env, files
 from coverage.misc import contract, NoSource, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
@@ -85,7 +84,6 @@ class PythonFileReporter(FileReporter):
 
     def __init__(self, morf, coverage=None):
         self.coverage = coverage
-        file_locator = coverage.file_locator if coverage else FileLocator()
 
         if hasattr(morf, '__file__'):
             filename = morf.__file__
@@ -98,15 +96,13 @@ class PythonFileReporter(FileReporter):
         elif filename.endswith('$py.class'):   # Jython
             filename = filename[:-9] + ".py"
 
-        super(PythonFileReporter, self).__init__(
-            file_locator.canonical_filename(filename)
-        )
+        super(PythonFileReporter, self).__init__(files.canonical_filename(filename))
 
         if hasattr(morf, '__name__'):
             name = morf.__name__
             name = name.replace(".", os.sep) + ".py"
         else:
-            name = file_locator.relative_filename(filename)
+            name = files.relative_filename(filename)
         self.name = name
 
         self._source = None

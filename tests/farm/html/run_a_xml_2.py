@@ -2,14 +2,14 @@ source_path = None
 
 def html_it():
     """Run coverage and make an XML report for a."""
-    import coverage
+    import coverage, coverage.files
     cov = coverage.coverage(config_file="run_a_xml_2.ini")
     cov.start()
     import a            # pragma: nested
     cov.stop()          # pragma: nested
     cov.xml_report(a)
     global source_path
-    source_path = cov.file_locator.relative_dir.rstrip('/')
+    source_path = coverage.files.relative_directory().rstrip('/')
 
 import os
 if not os.path.exists("xml_2"):

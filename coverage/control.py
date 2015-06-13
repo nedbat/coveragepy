@@ -9,14 +9,14 @@ import socket
 import sys
 import traceback
 
-from coverage import env
+from coverage import env, files
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.debug import DebugControl
-from coverage.files import FileLocator, TreeMatcher, FnmatchMatcher
+from coverage.files import TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.files import ModuleMatcher, abs_file
 from coverage.html import HtmlReporter
@@ -167,7 +167,7 @@ class Coverage(object):
 
         # Other instance attributes, set later.
         self.omit = self.include = self.source = None
-        self.source_pkgs = self.file_locator = None
+        self.source_pkgs = None
         self.data = self.collector = None
         self.plugins = self.file_tracing_plugins = None
         self.pylib_dirs = self.cover_dirs = None
@@ -214,14 +214,14 @@ class Coverage(object):
         self._exclude_re = {}
         self._exclude_regex_stale()
 
-        self.file_locator = FileLocator()
+        files.set_relative_directory()
 
         # The source argument can be directories or package names.
         self.source = []
         self.source_pkgs = []
         for src in self.config.source or []:
             if os.path.exists(src):
-                self.source.append(self.file_locator.canonical_filename(src))
+                self.source.append(files.canonical_filename(src))
             else:
                 self.source_pkgs.append(src)
 
@@ -468,7 +468,7 @@ class Coverage(object):
         if filename.endswith("$py.class"):
             filename = filename[:-9] + ".py"
 
-        canonical = self.file_locator.canonical_filename(filename)
+        canonical = files.canonical_filename(filename)
         disp.canonical_filename = canonical
 
         # Try the plugins, see if they have an opinion about the file.
@@ -486,10 +486,9 @@ class Coverage(object):
                     if file_tracer.has_dynamic_source_filename():
                         disp.has_dynamic_filename = True
                     else:
-                        disp.source_filename = \
-                            self.file_locator.canonical_filename(
-                                file_tracer.source_filename()
-                            )
+                        disp.source_filename = files.canonical_filename(
+                            file_tracer.source_filename()
+                        )
                     break
             except Exception:
                 self._warn(
@@ -740,7 +739,7 @@ class Coverage(object):
         self._init()
         aliases = None
         if self.config.paths:
-            aliases = PathAliases(self.file_locator)
+            aliases = PathAliases()
             for paths in self.config.paths.values():
                 result = paths[0]
                 for pattern in paths[1:]:
@@ -792,7 +791,7 @@ class Coverage(object):
         # Find files that were never executed at all.
         for src in self.source:
             for py_file in find_python_files(src):
-                py_file = self.file_locator.canonical_filename(py_file)
+                py_file = files.canonical_filename(py_file)
 
                 if self.omit_match and self.omit_match.match(py_file):
                     # Turns out this file was omitted, so don't pull it back
@@ -872,9 +871,7 @@ class Coverage(object):
         # The FileReporter can have a name attribute, but if it doesn't, we'll
         # supply it as the relative path to self.filename.
         if not hasattr(file_reporter, "name"):
-            file_reporter.name = self.file_locator.relative_filename(
-                file_reporter.filename
-            )
+            file_reporter.name = files.relative_filename(file_reporter.filename)
 
         return file_reporter
 
@@ -1013,7 +1010,7 @@ class Coverage(object):
                 outfile = open(self.config.xml_output, "w")
                 file_to_close = outfile
         try:
-            reporter = XmlReporter(self, self.config, self.file_locator)
+            reporter = XmlReporter(self, self.config)
             return reporter.report(morfs, outfile=outfile)
         except CoverageException:
             delete_file = True
