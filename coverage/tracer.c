@@ -498,9 +498,16 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         Py_INCREF(disposition);
     }
 
-    disp_trace = PyObject_GetAttrString(disposition, "trace");
-    if (disp_trace == NULL) {
-        goto error;
+    if (disposition == Py_None) {
+        /* A later check_include returned false, so don't trace it. */
+        disp_trace = Py_False;
+        Py_INCREF(Py_False);
+    }
+    else {
+        disp_trace = PyObject_GetAttrString(disposition, "trace");
+        if (disp_trace == NULL) {
+            goto error;
+        }
     }
 
     if (disp_trace == Py_True) {
@@ -547,21 +554,28 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
             if (tracename != Py_None) {
                 /* Check the dynamic source filename against the include rules. */
                 PyObject * included = NULL;
+                int should_include;
                 included = PyDict_GetItem(self->should_trace_cache, tracename);
                 if (included == NULL) {
+                    PyObject * should_include_bool;
                     if (PyErr_Occurred()) {
                         goto error;
                     }
                     STATS( self->stats.new_files++; )
-                    included = PyObject_CallFunctionObjArgs(self->check_include, tracename, frame, NULL);
-                    if (included == NULL) {
+                    should_include_bool = PyObject_CallFunctionObjArgs(self->check_include, tracename, frame, NULL);
+                    if (should_include_bool == NULL) {
                         goto error;
                     }
-                    if (PyDict_SetItem(self->should_trace_cache, tracename, included) < 0) {
+                    should_include = (should_include_bool == Py_True);
+                    Py_DECREF(should_include_bool);
+                    if (PyDict_SetItem(self->should_trace_cache, tracename, should_include ? disposition : Py_None) < 0) {
                         goto error;
                     }
                 }
-                if (included != Py_True) {
+                else {
+                    should_include = (included != Py_None);
+                }
+                if (!should_include) {
                     Py_DECREF(tracename);
                     tracename = Py_None;
                     Py_INCREF(tracename);

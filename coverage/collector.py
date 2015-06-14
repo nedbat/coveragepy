@@ -52,8 +52,7 @@ class Collector(object):
         """Create a collector.
 
         `should_trace` is a function, taking a filename, and returning a
-        canonicalized filename, or None depending on whether the file should
-        be traced or not.
+        `coverage.FileDisposition object`.
 
         TODO: `check_include`
 
