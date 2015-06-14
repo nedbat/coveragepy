@@ -3,7 +3,9 @@
 import os
 import re
 
+from coverage import files
 from coverage.misc import _needs_to_implement
+
 
 # TODO: document that the plugin objects may be decorated with attributes with
 # named "_coverage_*".
@@ -25,7 +27,7 @@ class CoveragePlugin(object):
 
     """
 
-    def __init__(self, options):
+    def __init__(self, options=None):
         """
         When the plugin is constructed, it will be passed a dictionary of
         plugin-specific options read from the .coveragerc configuration file.
@@ -36,7 +38,7 @@ class CoveragePlugin(object):
                 .coveragerc configuration file.
 
         """
-        self.options = options
+        self.options = options or {}
 
     def file_tracer(self, filename):        # pylint: disable=unused-argument
         """Return a FileTracer object for a file.
@@ -175,6 +177,9 @@ class FileReporter(object):
             " filename={self.filename!r}>".format(self=self)
         )
 
+    def relative_filename(self):
+        return files.relative_filename(self.filename)
+
     # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
     # of them defined.
 
@@ -247,6 +252,8 @@ class FileReporter(object):
 
         For example, the file a/b/c.py will return 'a_b_c_py'
 
+        You should not need to override this method.
+
         """
-        name = os.path.splitdrive(self.name)[1]
+        name = os.path.splitdrive(self.relative_filename())[1]
         return re.sub(r"[\\/.:]", "_", name)

@@ -103,12 +103,15 @@ class PythonFileReporter(FileReporter):
             name = name.replace(".", os.sep) + ".py"
         else:
             name = files.relative_filename(filename)
-        self.name = name
+        self.relname = name
 
         self._source = None
         self._parser = None
         self._statements = None
         self._excluded = None
+
+    def relative_filename(self):
+        return self.relname
 
     @property
     def parser(self):

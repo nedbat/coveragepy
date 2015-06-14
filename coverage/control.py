@@ -202,7 +202,7 @@ class Coverage(object):
         self.debug = DebugControl(self.config.debug, self._debug_file)
 
         # Load plugins
-        self.plugins = Plugins.load_plugins(self.config.plugins, self.config)
+        self.plugins = Plugins.load_plugins(self.config.plugins, self.config, self.debug)
 
         self.file_tracing_plugins = []
         for plugin in self.plugins:
