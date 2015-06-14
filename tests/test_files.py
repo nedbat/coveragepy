@@ -147,34 +147,44 @@ class PathAliasesTest(CoverageTest):
 
     run_in_temp_dir = False
 
+    def assert_mapped(self, aliases, inp, out):
+        """Assert that `inp` mapped through `aliases` produces `out`.
+
+        `out` is canonicalized first, since aliases always produce
+        canonicalized paths.
+
+        """
+        self.assertEqual(aliases.map(inp), files.canonical_filename(out))
+
     def test_noop(self):
         aliases = PathAliases()
-        self.assertEqual(aliases.map('/ned/home/a.py'), '/ned/home/a.py')
+        self.assert_mapped(aliases, '/ned/home/a.py', '/ned/home/a.py')
 
     def test_nomatch(self):
         aliases = PathAliases()
         aliases.add('/home/*/src', './mysrc')
-        self.assertEqual(aliases.map('/home/foo/a.py'), '/home/foo/a.py')
+        self.assert_mapped(aliases, '/home/foo/a.py', '/home/foo/a.py')
 
     def test_wildcard(self):
         aliases = PathAliases()
         aliases.add('/ned/home/*/src', './mysrc')
-        self.assertEqual(aliases.map('/ned/home/foo/src/a.py'), './mysrc/a.py')
+        self.assert_mapped(aliases, '/ned/home/foo/src/a.py', './mysrc/a.py')
+
         aliases = PathAliases()
         aliases.add('/ned/home/*/src/', './mysrc')
-        self.assertEqual(aliases.map('/ned/home/foo/src/a.py'), './mysrc/a.py')
+        self.assert_mapped(aliases, '/ned/home/foo/src/a.py', './mysrc/a.py')
 
     def test_no_accidental_match(self):
         aliases = PathAliases()
         aliases.add('/home/*/src', './mysrc')
-        self.assertEqual(aliases.map('/home/foo/srcetc'), '/home/foo/srcetc')
+        self.assert_mapped(aliases, '/home/foo/srcetc', '/home/foo/srcetc')
 
     def test_multiple_patterns(self):
         aliases = PathAliases()
         aliases.add('/home/*/src', './mysrc')
         aliases.add('/lib/*/libsrc', './mylib')
-        self.assertEqual(aliases.map('/home/foo/src/a.py'), './mysrc/a.py')
-        self.assertEqual(aliases.map('/lib/foo/libsrc/a.py'), './mylib/a.py')
+        self.assert_mapped(aliases, '/home/foo/src/a.py', './mysrc/a.py')
+        self.assert_mapped(aliases, '/lib/foo/libsrc/a.py', './mylib/a.py')
 
     def test_cant_have_wildcard_at_end(self):
         aliases = PathAliases()
@@ -190,28 +200,26 @@ class PathAliasesTest(CoverageTest):
         aliases = PathAliases()
         aliases.add(r'c:\Zoo\boo', 'src/')
         aliases.add('/home/ned$', 'src/')
-        self.assertEqual(aliases.map(r'c:\Zoo\boo\foo.py'), 'src/foo.py')
-        self.assertEqual(aliases.map(r'/home/ned$/foo.py'), 'src/foo.py')
+        self.assert_mapped(aliases, r'c:\Zoo\boo\foo.py', 'src/foo.py')
+        self.assert_mapped(aliases, r'/home/ned$/foo.py', 'src/foo.py')
 
     def test_paths_are_os_corrected(self):
         aliases = PathAliases()
         aliases.add('/home/ned/*/src', './mysrc')
         aliases.add(r'c:\ned\src', './mysrc')
-        mapped = aliases.map(r'C:\Ned\src\sub\a.py')
-        self.assertEqual(mapped, './mysrc/sub/a.py')
+        self.assert_mapped(aliases, r'C:\Ned\src\sub\a.py', './mysrc/sub/a.py')
 
         aliases = PathAliases()
         aliases.add('/home/ned/*/src', r'.\mysrc')
         aliases.add(r'c:\ned\src', r'.\mysrc')
-        mapped = aliases.map(r'/home/ned/foo/src/sub/a.py')
-        self.assertEqual(mapped, r'.\mysrc\sub\a.py')
+        self.assert_mapped(aliases, r'/home/ned/foo/src/sub/a.py', r'.\mysrc\sub\a.py')
 
     def test_leading_wildcard(self):
         aliases = PathAliases()
         aliases.add('*/d1', './mysrc1')
         aliases.add('*/d2', './mysrc2')
-        self.assertEqual(aliases.map('/foo/bar/d1/x.py'), './mysrc1/x.py')
-        self.assertEqual(aliases.map('/foo/bar/d2/y.py'), './mysrc2/y.py')
+        self.assert_mapped(aliases, '/foo/bar/d1/x.py', './mysrc1/x.py')
+        self.assert_mapped(aliases, '/foo/bar/d2/y.py', './mysrc2/y.py')
 
 
 class RelativePathAliasesTest(CoverageTest):

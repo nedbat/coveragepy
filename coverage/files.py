@@ -237,12 +237,9 @@ class PathAliases(object):
     A `PathAliases` object tracks a list of pattern/result pairs, and can
     map a path through those aliases to produce a unified path.
 
-    `locator` is a FileLocator that is used to canonicalize the results.
-
     """
-    def __init__(self, locator=None):
+    def __init__(self):
         self.aliases = []
-        self.locator = locator
 
     def add(self, pattern, result):
         """Add the `pattern`/`result` pair to the list of aliases.
@@ -295,6 +292,9 @@ class PathAliases(object):
         The separator style in the result is made to match that of the result
         in the alias.
 
+        Returns:
+            The mapped path.  This is always a canonical filename.
+
         """
         for regex, result, pattern_sep, result_sep in self.aliases:
             m = regex.match(path)
@@ -302,8 +302,7 @@ class PathAliases(object):
                 new = path.replace(m.group(0), result)
                 if pattern_sep != result_sep:
                     new = new.replace(pattern_sep, result_sep)
-                if self.locator:
-                    new = self.locator.canonical_filename(new)
+                new = canonical_filename(new)
                 return new
         return path
 

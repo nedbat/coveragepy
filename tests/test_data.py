@@ -4,7 +4,7 @@ import os
 
 from coverage.backward import pickle
 from coverage.data import CoverageData
-from coverage.files import PathAliases
+from coverage.files import PathAliases, canonical_filename
 
 from tests.coveragetest import CoverageTest
 
@@ -156,10 +156,14 @@ class DataTest(DataTestHelpers, CoverageTest):
         aliases.add("/home/ned/proj/src/", "./")
         aliases.add(r"c:\ned\test", "./")
         covdata3.combine_parallel_data(aliases=aliases)
+
+        apy = canonical_filename('./a.py')
+        sub_bpy = canonical_filename('./sub/b.py')
+
         self.assert_summary(
-            covdata3, {'./a.py': 4, './sub/b.py': 2}, fullpath=True
+            covdata3, { apy: 4, sub_bpy: 2, }, fullpath=True
             )
-        self.assert_measured_files(covdata3, ['./a.py', './sub/b.py'])
+        self.assert_measured_files(covdata3, [apy,sub_bpy])
 
 
 class DataTestInTempDir(DataTestHelpers, CoverageTest):
