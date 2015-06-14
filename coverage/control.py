@@ -139,6 +139,9 @@ class Coverage(object):
         env_data_file = os.environ.get('COVERAGE_FILE')
         if env_data_file:
             self.config.data_file = env_data_file
+        debugs = os.environ.get('COVERAGE_DEBUG')
+        if debugs:
+            self.config.debug.extend(debugs.split(","))
 
         # 4: from constructor arguments:
         self.config.from_args(

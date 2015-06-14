@@ -119,12 +119,12 @@ class DebugFileTracerWrapper(FileTracer):
 
     def dynamic_source_filename(self, filename, frame):
         dyn = self.tracer.dynamic_source_filename(filename, frame)
-        self.debug.write("dynamic_source_filename(%r, frame) --> %r" % (filename, dyn))
+        self.debug.write("dynamic_source_filename(%r) --> %r" % (filename, dyn))
         return dyn
 
     def line_number_range(self, frame):
         pair = self.tracer.line_number_range(frame)
-        self.debug.write("line_number_range(frame) --> %r" % (pair,))
+        self.debug.write("line_number_range() --> %r" % (pair,))
         return pair
 
 

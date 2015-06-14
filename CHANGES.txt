@@ -24,6 +24,9 @@ Latest
   persisted in pursuing this despite Ned's pessimism.  Fixes `issue 308`_ and
   `issue 324`_.
 
+- The COVERAGE_DEBUG environment variable can be used to set the `[run]debug`
+  configuration option to control what internal operations are logged.
+
 - HTML reports were truncated at formfeed characters.  This is now fixed
   (`issue 360`_).  It's always fun when the problem is due to a `bug in the
   Python standard library <http://bugs.python.org/issue19035>`_.
