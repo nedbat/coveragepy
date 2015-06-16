@@ -293,7 +293,9 @@ class PathAliases(object):
         in the alias.
 
         Returns:
-            The mapped path.  This is always a canonical filename.
+            The mapped path.  If a mapping has happened, this is a
+                canonical path.  If no mapping has happened, it is the
+                original value of `path` unchanged.
 
         """
         for regex, result, pattern_sep, result_sep in self.aliases:

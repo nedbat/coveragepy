@@ -156,14 +156,18 @@ class PathAliasesTest(CoverageTest):
         """
         self.assertEqual(aliases.map(inp), files.canonical_filename(out))
 
+    def assert_not_mapped(self, aliases, inp):
+        """Assert that `inp` mapped through `aliases` is unchanged."""
+        self.assertEqual(aliases.map(inp), inp)
+
     def test_noop(self):
         aliases = PathAliases()
-        self.assert_mapped(aliases, '/ned/home/a.py', '/ned/home/a.py')
+        self.assert_not_mapped(aliases, '/ned/home/a.py')
 
     def test_nomatch(self):
         aliases = PathAliases()
         aliases.add('/home/*/src', './mysrc')
-        self.assert_mapped(aliases, '/home/foo/a.py', '/home/foo/a.py')
+        self.assert_not_mapped(aliases, '/home/foo/a.py')
 
     def test_wildcard(self):
         aliases = PathAliases()
@@ -177,7 +181,7 @@ class PathAliasesTest(CoverageTest):
     def test_no_accidental_match(self):
         aliases = PathAliases()
         aliases.add('/home/*/src', './mysrc')
-        self.assert_mapped(aliases, '/home/foo/srcetc', '/home/foo/srcetc')
+        self.assert_not_mapped(aliases, '/home/foo/srcetc')
 
     def test_multiple_patterns(self):
         aliases = PathAliases()
