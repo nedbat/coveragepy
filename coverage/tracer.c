@@ -22,6 +22,7 @@
 
 #define MyText_Type         PyUnicode_Type
 #define MyText_AS_BYTES(o)  PyUnicode_AsASCIIString(o)
+#define MyBytes_GET_SIZE(o) PyBytes_GET_SIZE(o)
 #define MyBytes_AS_STRING(o) PyBytes_AS_STRING(o)
 #define MyText_AsString(o)  PyUnicode_AsUTF8(o)
 #define MyText_FromFormat   PyUnicode_FromFormat
@@ -34,6 +35,7 @@
 
 #define MyText_Type         PyString_Type
 #define MyText_AS_BYTES(o)  (Py_INCREF(o), o)
+#define MyBytes_GET_SIZE(o) PyString_GET_SIZE(o)
 #define MyBytes_AS_STRING(o) PyString_AS_STRING(o)
 #define MyText_AsString(o)  PyString_AsString(o)
 #define MyText_FromFormat   PyUnicode_FromFormat
@@ -828,8 +830,18 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
     }
     if (self->pdata_stack->depth >= 0) {
         if (self->tracing_arcs && self->cur_entry.file_data) {
-            /* Need to distinguish between RETURN_VALUE and YIELD_VALUE. */
-            int bytecode = MyBytes_AS_STRING(frame->f_code->co_code)[frame->f_lasti];
+            /* Need to distinguish between RETURN_VALUE and YIELD_VALUE. Read
+             * the current bytecode to see what it is.  In unusual circumstances
+             * (Cython code), co_code can be the empty string, so range-check
+             * f_lasti before reading the byte.
+             */
+            int bytecode = RETURN_VALUE;
+            PyObject * pCode = frame->f_code->co_code;
+            int lasti = frame->f_lasti;
+
+            if (lasti < MyBytes_GET_SIZE(pCode)) {
+                bytecode = MyBytes_AS_STRING(pCode)[lasti];
+            }
             if (bytecode != YIELD_VALUE) {
                 int first = frame->f_code->co_firstlineno;
                 if (CTracer_record_pair(self, self->cur_entry.last_line, -first) < 0) {

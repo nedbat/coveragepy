@@ -45,8 +45,8 @@ Latest
 - The ``coverage annotate`` command now handles non-ASCII characters properly,
   closing `issue 363`_.  Thanks, Leonardo Pistone.
 
-- Plugin support had some bugs fixed, closing `issue 374`_.  Thanks, Stefan
-  Behnel.
+- Plugin support had some bugs fixed, closing `issue 374`_ and `issue 375`_.
+  Thanks, Stefan Behnel.
 
 .. _issue 299: https://bitbucket.org/ned/coveragepy/issue/299/inserted-created-on-yyyy-mm-dd-hh-mm-in
 .. _issue 308: https://bitbucket.org/ned/coveragepy/issue/308/yield-lambda-branch-coverage
@@ -58,6 +58,7 @@ Latest
 .. _issue 361: https://bitbucket.org/ned/coveragepy/issue/361/use-double-quotes-in-html-output-to
 .. _issue 363: https://bitbucket.org/ned/coveragepy/issue/363/annotate-command-hits-unicode-happy-fun
 .. _issue 374: https://bitbucket.org/ned/coveragepy/issue/374/c-tracer-lookups-fail-in
+.. _issue 375: https://bitbucket.org/ned/coveragepy/issue/375/ctracer_handle_return-reads-byte-code
 
 
 Version 4.0a5 --- 16 February 2015
