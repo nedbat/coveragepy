@@ -67,6 +67,7 @@ def phys_tokens(toks):
         last_lineno = elineno
 
 
+@contract(source='unicode')
 def source_token_lines(source):
     """Generate a series of lines, one for each line in `source`.
 
@@ -135,11 +136,10 @@ class CachedTokenizer(object):
         self.last_text = None
         self.last_tokens = None
 
+    @contract(text='unicode')
     def generate_tokens(self, text):
         """A stand-in for `tokenize.generate_tokens`."""
-        # Check the type first so we don't compare bytes to unicode and get
-        # warnings.
-        if type(text) != type(self.last_text) or text != self.last_text:
+        if text != self.last_text:
             self.last_text = text
             readline = iternext(text.splitlines(True))
             self.last_tokens = list(tokenize.generate_tokens(readline))

@@ -6,17 +6,18 @@ import re
 from coverage import env
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.phystokens import neuter_encoding_declaration
+from coverage.python import get_python_source
 
 from tests.coveragetest import CoverageTest
 
 
-SIMPLE = """\
+SIMPLE = u"""\
 # yay!
 def foo():
   say('two = %d' % 2)
 """
 
-MIXED_WS = """\
+MIXED_WS = u"""\
 def hello():
         a="Hello world!"
 \tb="indented"
@@ -45,9 +46,7 @@ class PhysTokensTest(CoverageTest):
 
     def check_file_tokenization(self, fname):
         """Use the contents of `fname` for `check_tokenization`."""
-        with open(fname) as f:
-            source = f.read()
-        self.check_tokenization(source)
+        self.check_tokenization(get_python_source(fname))
 
     def test_simple(self):
         self.assertEqual(list(source_token_lines(SIMPLE)),

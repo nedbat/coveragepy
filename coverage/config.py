@@ -16,7 +16,6 @@ class HandyConfigParser(configparser.RawConfigParser):
     """Our specialization of ConfigParser."""
 
     def __init__(self, section_prefix):
-        # pylint: disable=super-init-not-called
         configparser.RawConfigParser.__init__(self)
         self.section_prefix = section_prefix
 
