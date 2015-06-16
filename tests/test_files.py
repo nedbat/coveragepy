@@ -225,12 +225,6 @@ class PathAliasesTest(CoverageTest):
         self.assert_mapped(aliases, '/foo/bar/d1/x.py', './mysrc1/x.py')
         self.assert_mapped(aliases, '/foo/bar/d2/y.py', './mysrc2/y.py')
 
-
-class RelativePathAliasesTest(CoverageTest):
-    """Tests for coverage/files.py:PathAliases, with relative files."""
-
-    run_in_temp_dir = False
-
     def test_dot(self):
         for d in ('.', '..', '../other', '~'):
             aliases = PathAliases()
@@ -240,7 +234,7 @@ class RelativePathAliasesTest(CoverageTest):
             the_file = os.path.abspath(os.path.realpath(the_file))
 
             assert '~' not in the_file  # to be sure the test is pure.
-            self.assertEqual(aliases.map(the_file), '/the/source/a.py')
+            self.assert_mapped(aliases, the_file, '/the/source/a.py')
 
 
 class FindPythonFilesTest(CoverageTest):
