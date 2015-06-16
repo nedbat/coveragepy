@@ -135,9 +135,14 @@ class Collector(object):
 
         self.plugin_data = {}
 
-        # A cache of the results from should_trace, the decision about whether
-        # to trace execution in a file. A dict of filename to (filename or
-        # None).
+        # The .should_trace_cache attribute is a cache from filenames to
+        # coverage.FileDisposition objects, or None.  When a file is first
+        # considered for tracing, a FileDisposition is obtained from
+        # Coverage.should_trace.  Its .trace attribute indicates whether the
+        # file should be traced or not.  If it should be, a plugin with dynamic
+        # filenames can decide not to trace it based on the dynamic filename
+        # being excluded by the inclusion rules, in which case the
+        # FileDisposition will be replaced by None in the cache.
         if env.PYPY:
             import __pypy__                     # pylint: disable=import-error
             # Alex Gaynor said:
