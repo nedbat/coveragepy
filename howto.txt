@@ -19,8 +19,8 @@
         pip install -e .
         cd ~/cog/trunk
         rm -rf htmlcov
-        TODO: this isn't right with the new cog
-            coverage run --branch --source=cogapp -m cogapp.test_cogapp CogTestsInMemory
+        coverage run --branch --source=cogapp -m nose cogapp/test_cogapp.py:CogTestsInMemory
+        coverage combine
         coverage html
         - IF BETA:
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
