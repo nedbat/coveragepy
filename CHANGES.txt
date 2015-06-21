@@ -3,8 +3,8 @@ Change history for Coverage.py
 ------------------------------
 
 
-Latest
-------
+Version 4.0a6 --- 21 June 2015
+------------------------------
 
 - Python 3.5b2 and PyPy 2.6.0 are supported.
 

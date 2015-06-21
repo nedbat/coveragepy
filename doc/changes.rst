@@ -37,19 +37,23 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _changes_40:
 
-Version 4.0a5 pre-release --- 16 February 2015
-----------------------------------------------
+Version 4.0a6 pre-release --- 21 June 2015
+------------------------------------------
 
 Backward incompatibilities:
 
-- CPython versions supported are now Python 2.6, 2.7, 3.3, 3.4 and 3.5a1.
-  PyPy2 2.4 and PyPy3 2.4 are also supported.
+- CPython versions supported are now Python 2.6, 2.7, 3.3, 3.4 and 3.5b2.
+  PyPy2 2.4, 2.6, and PyPy3 2.4 are also supported.
 
 - The original command line switches (`-x` to run a program, etc) are no
   longer supported.
 
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
   a hack for ``--timid`` before configuration files were available.
+
+- The original module-level function interface to coverage is no longer
+  supported.  You must now create a ``coverage.Coverage`` object, and use
+  methods on it.
 
 Major new features:
 
@@ -64,7 +68,8 @@ Major new features:
 
 - Plugins: third parties can write plugins to add file support for non-Python
   files, such as web application templating engines, or languages that compile
-  down to Python.
+  down to Python.  A plugin for measuring Django template coverage is
+  available: `django_coverage_plugin`_
 
 - Wildly experimental: support for measuring processes started by the
   multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
@@ -88,11 +93,19 @@ New features:
 - The ``report`` command can now show missing branches when reporting on branch
   coverage.  Thanks, Steve Leonard. Closes `issue 230`_.
 
+- The ``coverage combine`` command now accepts any number of directories as
+  arguments, and will combine all the data files from those directories.  This
+  means you don't have to copy the files to one directory before combining.
+  Thanks, Christine Lytwynec.  Finishes `issue 354`_.
+
 - A new configuration option for the XML report: ``[xml] package_depth``
   controls which directories are identified as packages in the report.
   Directories deeper than this depth are not reported as packages.
   The default is that all directories are reported as packages.
   Thanks, Lex Berezhny.
+
+- The COVERAGE_DEBUG environment variable can be used to set the `[run]debug`
+  configuration option to control what internal operations are logged.
 
 Improvements:
 
@@ -141,6 +154,16 @@ Bug fixes:
 - The ``fail-under`` value is now rounded the same as reported results,
   preventing paradoxical results, fixing `issue 284`_.
 
+- Branch coverage couldn't properly handle certain extremely long files. This
+  is now fixed (`issue 359`_).
+
+- Branch coverage didn't understand yield statements properly.  Mickie Betz
+  persisted in pursuing this despite Ned's pessimism.  Fixes `issue 308`_ and
+  `issue 324`_.
+
+- Files with incorrect encoding declaration comments are no longer ignored by
+  the reporting commands, fixing `issue 351`_.
+
 - Empty files are now reported as 100% covered in the XML report, not 0%
   covered (`issue 345`_).
 
@@ -153,6 +176,7 @@ Bug fixes:
 - The annotate command will now annotate all files, not just ones relative to
   the current directory, fixing `issue 57`_.
 
+.. _django_coverage_plugin: https://pypi.python.org/pypi/django_coverage_plugin
 .. _issue 57: https://bitbucket.org/ned/coveragepy/issue/57/annotate-command-fails-to-annotate-many
 .. _issue 69: https://bitbucket.org/ned/coveragepy/issue/69/coverage-html-overwrite-files-that-doesnt
 .. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
@@ -164,15 +188,20 @@ Bug fixes:
 .. _issue 285: https://bitbucket.org/ned/coveragepy/issue/285/xml-report-fails-if-output-file-directory
 .. _issue 303: https://bitbucket.org/ned/coveragepy/issue/303/unicodedecodeerror
 .. _issue 304: https://bitbucket.org/ned/coveragepy/issue/304/attempt-to-get-configuration-from-setupcfg
+.. _issue 308: https://bitbucket.org/ned/coveragepy/issue/308/yield-lambda-branch-coverage
 .. _issue 314: https://bitbucket.org/ned/coveragepy/issue/314/fail_under-param-not-working-in-coveragerc
 .. _issue 315: https://bitbucket.org/ned/coveragepy/issue/315/option-to-omit-empty-files-eg-__init__py
+.. _issue 324: https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
 .. _issue 331: https://bitbucket.org/ned/coveragepy/issue/331/failure-of-encoding-detection-on-python2
 .. _issue 340: https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy
 .. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ
 .. _issue 345: https://bitbucket.org/ned/coveragepy/issue/345/xml-reports-line-rate-0-for-empty-files
+.. _issue 351: https://bitbucket.org/ned/coveragepy/issue/351/files-with-incorrect-encoding-are-ignored
 .. _issue 353: https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
+.. _issue 354: https://bitbucket.org/ned/coveragepy/issue/354/coverage-combine-should-take-a-list-of
 .. _issue 357: https://bitbucket.org/ned/coveragepy/issue/357/behavior-changed-when-coveragerc-is
 .. _issue 358: https://bitbucket.org/ned/coveragepy/issue/358/all-coverage-commands-should-adjust
+.. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
 
 
 .. _changes_371:
