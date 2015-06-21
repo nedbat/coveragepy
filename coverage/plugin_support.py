@@ -1,5 +1,6 @@
 """Support for plugins."""
 
+import os.path
 import sys
 
 from coverage.misc import CoverageException
@@ -67,9 +68,14 @@ class LabelledDebug(object):
         """Add a label to the writer, and return a new `LabelledDebug`."""
         return LabelledDebug(label, self.debug, self.labels)
 
+    def message_prefix(self):
+        """The prefix to use on messages, combining the labels."""
+        prefixes = self.labels + ['']
+        return ":\n".join("  "*i+label for i, label in enumerate(prefixes))
+
     def write(self, message):
         """Write `message`, but with the labels prepended."""
-        self.debug.write("%s: %s" % (", ".join(self.labels), message))
+        self.debug.write("%s%s" % (self.message_prefix(), message))
 
 
 class DebugPluginWrapper(CoveragePlugin):
@@ -107,6 +113,13 @@ class DebugFileTracerWrapper(FileTracer):
         self.tracer = tracer
         self.debug = debug
 
+    def _show_frame(self, frame):
+        """A short string identifying a frame, for debug messages."""
+        return "%s@%d" % (
+            os.path.basename(frame.f_code.co_filename),
+            frame.f_lineno,
+            )
+
     def source_filename(self):
         sfilename = self.tracer.source_filename()
         self.debug.write("source_filename() --> %r" % (sfilename,))
@@ -119,12 +132,14 @@ class DebugFileTracerWrapper(FileTracer):
 
     def dynamic_source_filename(self, filename, frame):
         dyn = self.tracer.dynamic_source_filename(filename, frame)
-        self.debug.write("dynamic_source_filename(%r) --> %r" % (filename, dyn))
+        self.debug.write("dynamic_source_filename(%r, %s) --> %r" % (
+            filename, self._show_frame(frame), dyn,
+        ))
         return dyn
 
     def line_number_range(self, frame):
         pair = self.tracer.line_number_range(frame)
-        self.debug.write("line_number_range() --> %r" % (pair,))
+        self.debug.write("line_number_range(%s) --> %r" % (self._show_frame(frame), pair))
         return pair
 
 
