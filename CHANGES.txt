@@ -45,6 +45,9 @@ Version 4.0a6 --- 21 June 2015
 - The ``coverage annotate`` command now handles non-ASCII characters properly,
   closing `issue 363`_.  Thanks, Leonardo Pistone.
 
+- Drive letters on Windows were not normalized correctly, now they are. Thanks,
+  Ionel Cristian Mărieș.
+
 - Plugin support had some bugs fixed, closing `issue 374`_ and `issue 375`_.
   Thanks, Stefan Behnel.
 
