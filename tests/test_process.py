@@ -760,7 +760,7 @@ def possible_pth_dirs():
 
     # If we're still looking, then try the Python library directory.
     # https://bitbucket.org/ned/coveragepy/issue/339/pth-test-malfunctions
-    import distutils.sysconfig
+    import distutils.sysconfig                  # pylint: disable=import-error
     yield distutils.sysconfig.get_python_lib()
 
 
@@ -840,18 +840,33 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
     def assert_pth_and_source_work_together(
         self, dashm, package, source
     ):                                                  # pragma: not covered
+        """Run the test for a particular combination of factors.
+
+        Arguments:
+            dashm (str): Either "" (run the program as a file) or "-m" (run the
+                program as a module).
+
+            package (str): Either "" (put the source at the top level) or a
+                package name to use to hold the source.
+
+            source (str): Either "main" or "sub", which file to use as the
+                ``--source`` argument.
+
+        """
         if env.METACOV:
             self.skip(
                 "Can't test sub-process pth file suppport during metacoverage"
                 )
 
         def fullname(modname):
+            """What is the full module name for `modname` for this test?"""
             if package and dashm:
                 return '.'.join((package, modname))
             else:
                 return modname
 
         def path(basename):
+            """Where should `basename` be created for this test?"""
             return os.path.join(package, basename)
 
         # Main will run sub.py.
@@ -874,13 +889,11 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
 
         if dashm:
-            cmd = (sys.executable, dashm, fullname('main'))
+            cmd = "python -m %s" % fullname('main')
         else:
-            cmd = (sys.executable, path('main.py'))
+            cmd = "python %s" % path('main.py')
 
-        # TODO: can we use run_command here instead of Popen?
-        from subprocess import Popen
-        Popen(cmd).wait()
+        self.run_command(cmd)
 
         with open("out.txt") as f:
             self.assertEqual(f.read(), "Hello, world!")
