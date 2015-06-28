@@ -3,6 +3,14 @@ Change history for Coverage.py
 ------------------------------
 
 
+Latest
+------
+
+- All the reporting functions now behave the same if no data had been
+  collected, exiting with a status code of 1.  Fixed ``fail_under`` to be
+  applied even when the report is empty.  Thanks, Ionel Cristian Mărieș.
+
+
 Version 4.0a6 --- 21 June 2015
 ------------------------------
 

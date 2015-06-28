@@ -705,6 +705,7 @@ class FailUnderTest(CoverageTest):
 
 
 class FailUnderNoFilesTest(CoverageTest):
+    """Test that nothing to report results in an error exit status."""
     def setUp(self):
         super(FailUnderNoFilesTest, self).setUp()
         self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
@@ -726,6 +727,7 @@ class FailUnderNoFilesTest(CoverageTest):
 
 
 class FailUnderEmptyFilesTest(CoverageTest):
+    """Test that empty files produce the proper fail_under exit status."""
     def setUp(self):
         super(FailUnderEmptyFilesTest, self).setUp()
 
