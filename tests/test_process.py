@@ -703,17 +703,15 @@ class FailUnderTest(CoverageTest):
         st, _ = self.run_command_status("coverage report")
         self.assertEqual(st, 2)
 
-class FailUnderNoDataTest(CoverageTest):
-    def setUp(self):
-        super(FailUnderNoDataTest, self).setUp()
 
+class FailUnderNoFilesTest(CoverageTest):
+    def setUp(self):
+        super(FailUnderNoFilesTest, self).setUp()
         self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
-        if os.path.exists('.coverage'):
-            os.remove('.coverage')
 
     def test_report(self):
         st, _ = self.run_command_status("coverage report")
-        self.assertEqual(st, 2)
+        self.assertEqual(st, 1)
 
     def test_xml(self):
         st, _ = self.run_command_status("coverage xml")
@@ -722,6 +720,28 @@ class FailUnderNoDataTest(CoverageTest):
     def test_html(self):
         st, _ = self.run_command_status("coverage html")
         self.assertEqual(st, 1)
+
+
+class FailUnderEmptyFilesTest(CoverageTest):
+    def setUp(self):
+        super(FailUnderEmptyFilesTest, self).setUp()
+
+        self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
+        self.make_file("empty.py", "")
+        st, _ = self.run_command_status("coverage run empty.py")
+        self.assertEqual(st, 0)
+
+    def test_report(self):
+        st, _ = self.run_command_status("coverage report")
+        self.assertEqual(st, 2)
+
+    def test_xml(self):
+        st, _ = self.run_command_status("coverage xml")
+        self.assertEqual(st, 2)
+
+    def test_html(self):
+        st, _ = self.run_command_status("coverage html")
+        self.assertEqual(st, 2)
 
 
 def possible_pth_dirs():
