@@ -211,7 +211,7 @@ class Numbers(object):
             numerator, denominator = self.ratio_covered
             pc_cov = (100.0 * numerator) / denominator
         else:
-            pc_cov = 0.0
+            pc_cov = 100.0
         return pc_cov
 
     @property

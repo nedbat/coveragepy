@@ -99,4 +99,4 @@ class SummaryReporter(Reporter):
                 args += ("",)
             outfile.write(fmt_coverage % args)
 
-        return total.pc_covered
+        return total.n_statements and total.pc_covered
