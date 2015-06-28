@@ -7,6 +7,7 @@ import textwrap
 
 import coverage
 from coverage.backward import StringIO
+from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
 
@@ -245,7 +246,7 @@ class ApiTest(CoverageTest):
         # Used to be you'd get an exception reporting on nothing...
         cov = coverage.coverage()
         cov.erase()
-        cov.report()
+        self.assertRaises(CoverageException, cov.report)
 
     def test_start_stop_start_stop(self):
         self.make_file("code1.py", """\

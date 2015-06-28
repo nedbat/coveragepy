@@ -342,8 +342,9 @@ class SummaryTest(CoverageTest):
         # Name     Stmts   Miss  Cover
         # ----------------------------
         # mycode   NotPython: Couldn't parse '/tmp/test_cover/63354509363/mycode.py' as Python source: 'invalid syntax' at line 1
+        # No data to report.
 
-        last = self.last_line_squeezed(report)
+        last = self.squeezed_lines(report)[-2]
         # The actual file name varies run to run.
         last = re.sub(r"parse '.*mycode.py", "parse 'mycode.py", last)
         # The actual error message varies version to version
@@ -365,7 +366,8 @@ class SummaryTest(CoverageTest):
         # Name     Stmts   Miss  Cover
         # ----------------------------
 
-        self.assertEqual(self.line_count(report), 2)
+        self.assertEqual(self.line_count(report), 3)
+        self.assertIn('No data to report.', report)
 
     def test_dothtml_not_python(self):
         # We run a .html file, and when reporting, we can't parse it as
@@ -380,8 +382,10 @@ class SummaryTest(CoverageTest):
 
         # Name     Stmts   Miss  Cover
         # ----------------------------
+        # No data to report.
 
-        self.assertEqual(self.line_count(report), 2)
+        self.assertEqual(self.line_count(report), 3)
+        self.assertIn('No data to report.', report)
 
     def get_report(self, cov):
         """Get the report from `cov`, and canonicalize it."""
