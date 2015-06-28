@@ -243,7 +243,7 @@ class ApiTest(CoverageTest):
         self.assertFiles(["datatest4.py", ".coveragerc", "mydata.dat"])
 
     def test_empty_reporting(self):
-        # Used to be you'd get an exception reporting on nothing...
+        # empty summary reports raise exception, just like the xml report
         cov = coverage.coverage()
         cov.erase()
         self.assertRaises(CoverageException, cov.report)
