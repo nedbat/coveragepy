@@ -703,6 +703,15 @@ class FailUnderTest(CoverageTest):
         st, _ = self.run_command_status("coverage report")
         self.assertEqual(st, 2)
 
+class FailUnderNoDataTest(CoverageTest):
+    def test_fail_under_in_config_no_data(self):
+        self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
+        if os.path.exists('.coverage'):
+            os.remove('.coverage')
+        st, _ = self.run_command_status("coverage report")
+        print _
+        self.assertEqual(st, 2)
+
 
 def possible_pth_dirs():
     """Produce a sequence of directories for trying to write .pth files."""
