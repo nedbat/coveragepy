@@ -704,13 +704,24 @@ class FailUnderTest(CoverageTest):
         self.assertEqual(st, 2)
 
 class FailUnderNoDataTest(CoverageTest):
-    def test_fail_under_in_config_no_data(self):
+    def setUp(self):
+        super(FailUnderNoDataTest, self).setUp()
+
         self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
         if os.path.exists('.coverage'):
             os.remove('.coverage')
+
+    def test_report(self):
         st, _ = self.run_command_status("coverage report")
-        print _
         self.assertEqual(st, 2)
+
+    def test_xml(self):
+        st, _ = self.run_command_status("coverage xml")
+        self.assertEqual(st, 1)
+
+    def test_html(self):
+        st, _ = self.run_command_status("coverage html")
+        self.assertEqual(st, 1)
 
 
 def possible_pth_dirs():
