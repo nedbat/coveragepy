@@ -710,15 +710,18 @@ class FailUnderNoFilesTest(CoverageTest):
         self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
 
     def test_report(self):
-        st, _ = self.run_command_status("coverage report")
+        st, out = self.run_command_status("coverage report")
+        self.assertIn('No data to report.', out)
         self.assertEqual(st, 1)
 
     def test_xml(self):
-        st, _ = self.run_command_status("coverage xml")
+        st, out = self.run_command_status("coverage xml")
+        self.assertIn('No data to report.', out)
         self.assertEqual(st, 1)
 
     def test_html(self):
-        st, _ = self.run_command_status("coverage html")
+        st, out = self.run_command_status("coverage html")
+        self.assertIn('No data to report.', out)
         self.assertEqual(st, 1)
 
 
