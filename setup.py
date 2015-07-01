@@ -8,7 +8,7 @@ library to determine which lines are executable, and which have been executed.
 
 Coverage.py runs on CPython 2.6, 2.7, 3.3, 3.4 or 3.5, PyPy 2.4, and PyPy3 2.4.
 
-Documentation is at `nedbatchelder.com <%s>`_.  Code repository and issue
+Documentation is on `Read the Docs <{docurl}>`_.  Code repository and issue
 tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_, with a
 mirrored repo on `GitHub <https://github.com/nedbat/coveragepy>`_.
 
@@ -61,7 +61,7 @@ cov_ver_py = os.path.join(os.path.split(__file__)[0], "coverage/version.py")
 with open(cov_ver_py) as version_file:
     exec(compile(version_file.read(), cov_ver_py, 'exec'))
 
-doclines = (doc % __url__).splitlines()
+doclines = (doc.format(docurl=__url__)).splitlines()
 classifier_list = classifiers.splitlines()
 
 if 'a' in __version__:
