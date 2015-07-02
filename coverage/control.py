@@ -435,6 +435,7 @@ class Coverage(object):
         Returns a FileDisposition object.
 
         """
+        original_filename = filename
         disp = FileDisposition(filename)
 
         def nope(disp, reason):
@@ -452,6 +453,10 @@ class Coverage(object):
         dunder_file = frame.f_globals.get('__file__')
         if dunder_file:
             filename = self._source_for_file(dunder_file)
+            if os.path.basename(original_filename) != os.path.basename(filename):
+                # Files shouldn't be renamed when moved. This happens when
+                # exec'ing code, not sure why yet.
+                self._warn("File was renamed?: %r became %r" % (original_filename, filename))
 
         if not filename:
             # Empty string is pretty useless.
