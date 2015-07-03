@@ -6,7 +6,7 @@ import sys
 
 # An attribute that will be set on modules to indicate that they have been
 # monkey-patched.
-MARKER = "_coverage$patched"
+PATCHED_MARKER = "_coverage$patched"
 
 
 def patch_multiprocessing():
@@ -16,7 +16,7 @@ def patch_multiprocessing():
     This is wildly experimental!
 
     """
-    if hasattr(multiprocessing, MARKER):
+    if hasattr(multiprocessing, PATCHED_MARKER):
         return
 
     if sys.version_info >= (3, 4):
@@ -29,6 +29,7 @@ def patch_multiprocessing():
     class ProcessWithCoverage(klass):
         """A replacement for multiprocess.Process that starts coverage."""
         def _bootstrap(self):
+            """Wrapper around _bootstrap to start coverage."""
             from coverage import Coverage
             cov = Coverage(data_suffix=True)
             cov.start()
@@ -43,4 +44,4 @@ def patch_multiprocessing():
     else:
         multiprocessing.Process = ProcessWithCoverage
 
-    setattr(multiprocessing, MARKER, True)
+    setattr(multiprocessing, PATCHED_MARKER, True)
