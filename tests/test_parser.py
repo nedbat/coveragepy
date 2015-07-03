@@ -119,6 +119,7 @@ class ParserFileTest(CoverageTest):
 
     def parse_file(self, filename):
         """Parse `text` as source, and return the `PythonParser` used."""
+        # pylint: disable=attribute-defined-outside-init
         parser = PythonParser(filename=filename, exclude="nocover")
         self.statements, self.excluded = parser.parse_source()
         return parser

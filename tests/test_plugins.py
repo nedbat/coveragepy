@@ -220,12 +220,10 @@ class PluginTest(CoverageTest):
 
 class PluginWarningOnPyTracer(CoverageTest):
     """Test that we get a controlled exception with plugins on PyTracer."""
-    def setUp(self):
-        super(PluginWarningOnPyTracer, self).setUp()
+    def test_exception_if_plugins_on_pytracer(self):
         if env.C_TRACER:
             self.skip("This test is only about PyTracer.")
 
-    def test_exception_if_plugins_on_pytracer(self):
         self.make_file("simple.py", """a = 1""")
 
         cov = coverage.Coverage()
@@ -233,6 +231,7 @@ class PluginWarningOnPyTracer(CoverageTest):
 
         warnings = []
         def capture_warning(msg):
+            """A fake implementation of Coverage._warn, to capture warnings."""
             warnings.append(msg)
         cov._warn = capture_warning
 
@@ -283,6 +282,7 @@ class GoodPluginTest(FileTracerTest):
         self.assertEqual(statements, [105, 106, 107, 205, 206, 207])
 
     def make_render_and_caller(self):
+        """Make the render.py and caller.py files we need."""
         # plugin2 emulates a dynamic tracing plugin: the caller's locals
         # are examined to determine the source file and line number.
         # The plugin is in tests/plugin2.py.

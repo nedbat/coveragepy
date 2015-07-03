@@ -37,6 +37,8 @@ class Plugins(object):
                 debug.write("Loaded plugin %r: %r" % (module, plugin))
                 labelled = LabelledDebug("plugin %r" % (module,), debug)
                 plugin = DebugPluginWrapper(plugin, labelled)
+
+            # pylint: disable=attribute-defined-outside-init
             plugin._coverage_plugin_name = module
             plugin._coverage_enabled = True
             plugins.order.append(plugin)

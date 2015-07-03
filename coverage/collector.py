@@ -84,13 +84,13 @@ class Collector(object):
 
         try:
             if concurrency == "greenlet":
-                import greenlet                 # pylint: disable=import-error
+                import greenlet                 # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = greenlet.getcurrent
             elif concurrency == "eventlet":
-                import eventlet.greenthread     # pylint: disable=import-error
+                import eventlet.greenthread     # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = eventlet.greenthread.getcurrent
             elif concurrency == "gevent":
-                import gevent                   # pylint: disable=import-error
+                import gevent                   # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = gevent.getcurrent
             elif concurrency == "thread" or not concurrency:
                 # It's important to import threading only if we need it.  If
