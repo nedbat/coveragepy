@@ -24,8 +24,6 @@ class CoverageData(object):
 
         * plugins: a dict mapping filenames to plugin names:
             { 'file1': "django.coverage", ... }
-            # TODO: how to handle the difference between a plugin module
-            # name, and the class in the module?
 
     """
 
@@ -126,6 +124,7 @@ class CoverageData(object):
             )
 
     def plugin_data(self):
+        """Return the map from filenames to plugin names."""
         return self.plugins
 
     def write_file(self, filename):

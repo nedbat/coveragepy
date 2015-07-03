@@ -171,11 +171,7 @@ class FileReporter(object):
         self.filename = filename
 
     def __repr__(self):
-        return (
-            # pylint: disable=redundant-keyword-arg
-            "<{self.__class__.__name__}"
-            " filename={self.filename!r}>".format(self=self)
-        )
+        return "<{0.__class__.__name__} filename={0.filename!r}>".format(self)
 
     def relative_filename(self):
         return files.relative_filename(self.filename)

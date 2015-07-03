@@ -129,10 +129,12 @@ class Collector(object):
 
     def reset(self):
         """Clear collected data, and prepare to collect more."""
-        # A dictionary mapping filenames to dicts with line number keys,
-        # or mapping filenames to dicts with line number pairs as keys.
+        # A dictionary mapping filenames to dicts with line number keys (if not
+        # branch coverage), or mapping filenames to dicts with line number
+        # pairs as keys (if branch coverage).
         self.data = {}
 
+        # A dictionary mapping filenames to plugin names that will handle them.
         self.plugin_data = {}
 
         # The .should_trace_cache attribute is a cache from filenames to
@@ -322,4 +324,10 @@ class Collector(object):
             return {}
 
     def get_plugin_data(self):
+        """Return the mapping of source files to plugins.
+
+        Returns:
+            dict: { filename: plugin_name, ... }
+
+        """
         return self.plugin_data
