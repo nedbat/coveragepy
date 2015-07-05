@@ -41,6 +41,6 @@ class FileReporter(coverage.plugin.FileReporter):
         return set(range(1, int(num)+1))
 
 
-def coverage_init(reg, options):
+def coverage_init(reg, options):        # pylint: disable=unused-argument
     """Called by coverage to initialize the plugins here."""
     reg.add_file_tracer(Plugin())
