@@ -10,6 +10,9 @@ Latest
   collected, exiting with a status code of 1.  Fixed ``fail_under`` to be
   applied even when the report is empty.  Thanks, Ionel Cristian Mărieș.
 
+- Plugins are now initialized differently.  Instead of looking for a class
+  called ``Plugin``, coverage looks for a function called ``coverage_init``.
+
 
 Version 4.0a6 --- 21 June 2015
 ------------------------------

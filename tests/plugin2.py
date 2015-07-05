@@ -4,10 +4,9 @@ import os.path
 
 import coverage
 
-# pylint: disable=missing-docstring
-
 
 class Plugin(coverage.CoveragePlugin):
+    """A plugin for testing."""
     def file_tracer(self, filename):
         if "render.py" in filename:
             return RenderFileTracer()
@@ -34,8 +33,14 @@ class RenderFileTracer(coverage.plugin.FileTracer):
 
 
 class FileReporter(coverage.plugin.FileReporter):
+    """A goofy file reporter."""
     def statements(self):
         # Goofy test arrangement: claim that the file has as many lines as the
         # number in its name.
         num = os.path.basename(self.filename).split(".")[0].split("_")[1]
         return set(range(1, int(num)+1))
+
+
+def coverage_init(reg, options):
+    """Called by coverage to initialize the plugins here."""
+    reg.add_file_tracer(Plugin(options))

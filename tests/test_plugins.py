@@ -40,6 +40,9 @@ class LoadPluginsTest(CoverageTest):
 
             class Plugin(CoveragePlugin):
                 pass
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
 
         config = FakeConfig("plugin1", {})
@@ -57,6 +60,9 @@ class LoadPluginsTest(CoverageTest):
                 def __init__(self, options):
                     super(Plugin, self).__init__(options)
                     self.this_is = "me"
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
 
         config = FakeConfig("plugin1", {'a': 'hello'})
@@ -75,12 +81,18 @@ class LoadPluginsTest(CoverageTest):
                 def __init__(self, options):
                     super(Plugin, self).__init__(options)
                     self.this_is = "me"
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
         self.make_file("plugin2.py", """\
             from coverage import CoveragePlugin
 
             class Plugin(CoveragePlugin):
                 pass
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
 
         config = FakeConfig("plugin1", {'a': 'hello'})
@@ -105,12 +117,12 @@ class LoadPluginsTest(CoverageTest):
         with self.assertRaises(ImportError):
             _ = Plugins.load_plugins(["plugin_not_there"], None)
 
-    def test_plugin_must_define_plugin_class(self):
+    def test_plugin_must_define_coverage_init(self):
         self.make_file("no_plugin.py", """\
             from coverage import CoveragePlugin
             Nothing = 0
             """)
-        msg_pat = "Plugin module 'no_plugin' didn't define a Plugin class"
+        msg_pat = "Plugin module 'no_plugin' didn't define a coverage_init function"
         with self.assertRaisesRegex(CoverageException, msg_pat):
             list(Plugins.load_plugins(["no_plugin"], None))
 
@@ -124,6 +136,8 @@ class PluginTest(CoverageTest):
             from coverage import CoveragePlugin
             class Plugin(CoveragePlugin):
                 pass
+            def coverage_init(reg, options):
+                reg.add_noop(Plugin(options))
             with open("evidence.out", "w") as f:
                 f.write("we are here!")
             """)
@@ -163,6 +177,9 @@ class PluginTest(CoverageTest):
             class Plugin(coverage.CoveragePlugin):
                 def sys_info(self):
                     return [("hello", "world")]
+
+            def coverage_init(reg, options):
+                reg.add_noop(Plugin(options))
             """)
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
@@ -172,7 +189,7 @@ class PluginTest(CoverageTest):
 
         out_lines = debug_out.getvalue().splitlines()
         expected_end = [
-            "-- sys: plugin_sys_info --------------------------------------",
+            "-- sys: plugin_sys_info.Plugin -------------------------------",
             " hello: world",
             "-- end -------------------------------------------------------",
             ]
@@ -184,6 +201,9 @@ class PluginTest(CoverageTest):
 
             class Plugin(coverage.CoveragePlugin):
                 pass
+
+            def coverage_init(reg, options):
+                reg.add_noop(Plugin(options))
             """)
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
@@ -193,7 +213,7 @@ class PluginTest(CoverageTest):
 
         out_lines = debug_out.getvalue().splitlines()
         expected_end = [
-            "-- sys: plugin_no_sys_info -----------------------------------",
+            "-- sys: plugin_no_sys_info.Plugin ----------------------------",
             "-- end -------------------------------------------------------",
             ]
         self.assertEqual(expected_end, out_lines[-len(expected_end):])
@@ -202,8 +222,10 @@ class PluginTest(CoverageTest):
         self.make_file("importing_plugin.py", """\
             from coverage import CoveragePlugin
             import local_module
-            class Plugin(CoveragePlugin):
+            class MyPlugin(CoveragePlugin):
                 pass
+            def coverage_init(reg, options):
+                reg.add_noop(MyPlugin(options))
             """)
         self.make_file("local_module.py", "CONST = 1")
         self.make_file(".coveragerc", """\
@@ -237,8 +259,7 @@ class PluginWarningOnPyTracer(CoverageTest):
 
         self.start_import_stop(cov, "simple")
         self.assertIn(
-            "Plugin file tracers (tests.plugin1) "
-            "aren't supported with PyTracer",
+            "Plugin file tracers (tests.plugin1.Plugin) aren't supported with PyTracer",
             warnings
         )
 
@@ -441,7 +462,7 @@ class GoodPluginTest(FileTracerTest):
 class BadPluginTest(FileTracerTest):
     """Test error handling around plugins."""
 
-    def run_bad_plugin(self, plugin_name, our_error=True):
+    def run_bad_plugin(self, module_name, plugin_name, our_error=True):
         """Run a file, and see that the plugin failed.
 
         `plugin_name` is the name of the plugin to use.
@@ -469,7 +490,7 @@ class BadPluginTest(FileTracerTest):
             """)
 
         cov = coverage.Coverage()
-        cov.config["run:plugins"] = [plugin_name]
+        cov.config["run:plugins"] = [module_name]
         self.start_import_stop(cov, "simple")
 
         stderr = self.stderr()
@@ -485,7 +506,7 @@ class BadPluginTest(FileTracerTest):
         #   Disabling plugin '...' due to previous exception
         # or:
         #   Disabling plugin '...' due to an excepton:
-        msg = "Disabling plugin %r due to " % plugin_name
+        msg = "Disabling plugin '%s.%s' due to " % (module_name, plugin_name)
         warnings = stderr.count(msg)
         self.assertEqual(warnings, 1)
 
@@ -495,8 +516,11 @@ class BadPluginTest(FileTracerTest):
             class Plugin(coverage.plugin.CoveragePlugin):
                 def file_tracer(self, filename):
                     17/0 # Oh noes!
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
-        self.run_bad_plugin("bad_plugin")
+        self.run_bad_plugin("bad_plugin", "Plugin")
 
     def test_file_tracer_returns_wrong(self):
         self.make_file("bad_plugin.py", """\
@@ -504,8 +528,11 @@ class BadPluginTest(FileTracerTest):
             class Plugin(coverage.plugin.CoveragePlugin):
                 def file_tracer(self, filename):
                     return 3.14159
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
-        self.run_bad_plugin("bad_plugin", our_error=False)
+        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
     def test_has_dynamic_source_filename_fails(self):
         self.make_file("bad_plugin.py", """\
@@ -517,8 +544,11 @@ class BadPluginTest(FileTracerTest):
             class BadFileTracer(coverage.plugin.FileTracer):
                 def has_dynamic_source_filename(self):
                     23/0 # Oh noes!
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
-        self.run_bad_plugin("bad_plugin")
+        self.run_bad_plugin("bad_plugin", "Plugin")
 
     def test_source_filename_fails(self):
         self.make_file("bad_plugin.py", """\
@@ -530,8 +560,11 @@ class BadPluginTest(FileTracerTest):
             class BadFileTracer(coverage.plugin.FileTracer):
                 def source_filename(self):
                     42/0 # Oh noes!
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
-        self.run_bad_plugin("bad_plugin")
+        self.run_bad_plugin("bad_plugin", "Plugin")
 
     def test_source_filename_returns_wrong(self):
         self.make_file("bad_plugin.py", """\
@@ -543,8 +576,11 @@ class BadPluginTest(FileTracerTest):
             class BadFileTracer(coverage.plugin.FileTracer):
                 def source_filename(self):
                     return 17.3
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
-        self.run_bad_plugin("bad_plugin", our_error=False)
+        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
     def test_dynamic_source_filename_fails(self):
         self.make_file("bad_plugin.py", """\
@@ -559,8 +595,11 @@ class BadPluginTest(FileTracerTest):
                     return True
                 def dynamic_source_filename(self, filename, frame):
                     101/0 # Oh noes!
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
-        self.run_bad_plugin("bad_plugin")
+        self.run_bad_plugin("bad_plugin", "Plugin")
 
     def test_line_number_range_returns_non_tuple(self):
         self.make_file("bad_plugin.py", """\
@@ -576,8 +615,11 @@ class BadPluginTest(FileTracerTest):
 
                 def line_number_range(self, frame):
                     return 42.23
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
-        self.run_bad_plugin("bad_plugin", our_error=False)
+        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
     def test_line_number_range_returns_triple(self):
         self.make_file("bad_plugin.py", """\
@@ -593,8 +635,11 @@ class BadPluginTest(FileTracerTest):
 
                 def line_number_range(self, frame):
                     return (1, 2, 3)
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
-        self.run_bad_plugin("bad_plugin", our_error=False)
+        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
     def test_line_number_range_returns_pair_of_strings(self):
         self.make_file("bad_plugin.py", """\
@@ -610,5 +655,8 @@ class BadPluginTest(FileTracerTest):
 
                 def line_number_range(self, frame):
                     return ("5", "7")
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin(options))
             """)
-        self.run_bad_plugin("bad_plugin", our_error=False)
+        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)

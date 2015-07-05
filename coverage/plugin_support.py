@@ -13,6 +13,10 @@ class Plugins(object):
     def __init__(self):
         self.order = []
         self.names = {}
+        self.file_tracers = []
+
+        self.current_module = None
+        self.debug = None
 
     @classmethod
     def load_plugins(cls, modules, config, debug=None):
@@ -22,29 +26,67 @@ class Plugins(object):
 
         """
         plugins = cls()
+        plugins.debug = debug
 
         for module in modules:
+            plugins.current_module = module
             __import__(module)
             mod = sys.modules[module]
 
-            plugin_class = getattr(mod, "Plugin", None)
-            if not plugin_class:
-                raise CoverageException("Plugin module %r didn't define a Plugin class" % module)
+            coverage_init = getattr(mod, "coverage_init", None)
+            if not coverage_init:
+                raise CoverageException(
+                    "Plugin module %r didn't define a coverage_init function" % module
+                )
 
             options = config.get_plugin_options(module)
-            plugin = plugin_class(options)
-            if debug and debug.should('plugin'):
-                debug.write("Loaded plugin %r: %r" % (module, plugin))
-                labelled = LabelledDebug("plugin %r" % (module,), debug)
-                plugin = DebugPluginWrapper(plugin, labelled)
+            coverage_init(plugins, options)
 
-            # pylint: disable=attribute-defined-outside-init
-            plugin._coverage_plugin_name = module
-            plugin._coverage_enabled = True
-            plugins.order.append(plugin)
-            plugins.names[module] = plugin
-
+        plugins.current_module = None
         return plugins
+
+    def add_file_tracer(self, plugin):
+        """Add a file tracer plugin.
+
+        ``plugin`` must implement the :meth:`CoveragePlugin.file_tracer` method.
+
+        """
+        self._add_plugin(plugin, self.file_tracers)
+
+    def add_noop(self, plugin):
+        """Add a plugin that does nothing.
+
+        This is only useful for testing the plugin support.
+
+        """
+        self._add_plugin(plugin, None)
+
+    def _add_plugin(self, plugin, specialized):
+        """Add a plugin object.
+
+        Arguments:
+            plugin (CoveragePlugin): the plugin to add.
+
+            specialized (list): the list of plugins to add this to.
+
+        Returns:
+            plugin: may be a different object than passed in.
+
+        """
+        plugin_name = "%s.%s" % (self.current_module, plugin.__class__.__name__)
+        if self.debug and self.debug.should('plugin'):
+            self.debug.write("Loaded plugin %r: %r" % (self.current_module, plugin))
+            labelled = LabelledDebug("plugin %r" % (self.current_module,), self.debug)
+            plugin = DebugPluginWrapper(plugin, labelled)
+
+        # pylint: disable=attribute-defined-outside-init
+        plugin._coverage_plugin_name = plugin_name
+        plugin._coverage_enabled = True
+        self.order.append(plugin)
+        self.names[plugin_name] = plugin
+        if specialized is not None:
+            specialized.append(plugin)
+        return plugin
 
     def __nonzero__(self):
         return bool(self.order)

@@ -44,3 +44,8 @@ class FileReporter(coverage.plugin.FileReporter):
 
     def excluded_statements(self):
         return set([])
+
+
+def coverage_init(reg, options):
+    """Called by coverage to initialize the plugins here."""
+    reg.add_file_tracer(Plugin(options))
