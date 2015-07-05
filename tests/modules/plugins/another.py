@@ -6,4 +6,4 @@ class Plugin(CoveragePlugin):
     pass
 
 def coverage_init(reg, options):
-    reg.add_file_tracer(Plugin(options))
+    reg.add_file_tracer(Plugin())

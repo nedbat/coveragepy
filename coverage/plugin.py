@@ -27,19 +27,6 @@ class CoveragePlugin(object):
 
     """
 
-    def __init__(self, options=None):
-        """
-        When the plugin is constructed, it will be passed a dictionary of
-        plugin-specific options read from the .coveragerc configuration file.
-        The base class stores these on the `self.options` attribute.
-
-        Arguments:
-            options (dict): The plugin-specific options read from the
-                .coveragerc configuration file.
-
-        """
-        self.options = options or {}
-
     def file_tracer(self, filename):        # pylint: disable=unused-argument
         """Return a FileTracer object for a file.
 

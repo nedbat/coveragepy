@@ -42,7 +42,7 @@ class LoadPluginsTest(CoverageTest):
                 pass
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
 
         config = FakeConfig("plugin1", {})
@@ -58,7 +58,7 @@ class LoadPluginsTest(CoverageTest):
 
             class Plugin(CoveragePlugin):
                 def __init__(self, options):
-                    super(Plugin, self).__init__(options)
+                    self.options = options
                     self.this_is = "me"
 
             def coverage_init(reg, options):
@@ -79,7 +79,7 @@ class LoadPluginsTest(CoverageTest):
 
             class Plugin(CoveragePlugin):
                 def __init__(self, options):
-                    super(Plugin, self).__init__(options)
+                    self.options = options
                     self.this_is = "me"
 
             def coverage_init(reg, options):
@@ -89,7 +89,8 @@ class LoadPluginsTest(CoverageTest):
             from coverage import CoveragePlugin
 
             class Plugin(CoveragePlugin):
-                pass
+                def __init__(self, options):
+                    self.options = options
 
             def coverage_init(reg, options):
                 reg.add_file_tracer(Plugin(options))
@@ -137,7 +138,7 @@ class PluginTest(CoverageTest):
             class Plugin(CoveragePlugin):
                 pass
             def coverage_init(reg, options):
-                reg.add_noop(Plugin(options))
+                reg.add_noop(Plugin())
             with open("evidence.out", "w") as f:
                 f.write("we are here!")
             """)
@@ -179,7 +180,7 @@ class PluginTest(CoverageTest):
                     return [("hello", "world")]
 
             def coverage_init(reg, options):
-                reg.add_noop(Plugin(options))
+                reg.add_noop(Plugin())
             """)
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
@@ -203,7 +204,7 @@ class PluginTest(CoverageTest):
                 pass
 
             def coverage_init(reg, options):
-                reg.add_noop(Plugin(options))
+                reg.add_noop(Plugin())
             """)
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
@@ -225,7 +226,7 @@ class PluginTest(CoverageTest):
             class MyPlugin(CoveragePlugin):
                 pass
             def coverage_init(reg, options):
-                reg.add_noop(MyPlugin(options))
+                reg.add_noop(MyPlugin())
             """)
         self.make_file("local_module.py", "CONST = 1")
         self.make_file(".coveragerc", """\
@@ -518,7 +519,7 @@ class BadPluginTest(FileTracerTest):
                     17/0 # Oh noes!
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
@@ -530,7 +531,7 @@ class BadPluginTest(FileTracerTest):
                     return 3.14159
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
@@ -546,7 +547,7 @@ class BadPluginTest(FileTracerTest):
                     23/0 # Oh noes!
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
@@ -562,7 +563,7 @@ class BadPluginTest(FileTracerTest):
                     42/0 # Oh noes!
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
@@ -578,7 +579,7 @@ class BadPluginTest(FileTracerTest):
                     return 17.3
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
@@ -597,7 +598,7 @@ class BadPluginTest(FileTracerTest):
                     101/0 # Oh noes!
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
@@ -617,7 +618,7 @@ class BadPluginTest(FileTracerTest):
                     return 42.23
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
@@ -637,7 +638,7 @@ class BadPluginTest(FileTracerTest):
                     return (1, 2, 3)
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
@@ -657,6 +658,6 @@ class BadPluginTest(FileTracerTest):
                     return ("5", "7")
 
             def coverage_init(reg, options):
-                reg.add_file_tracer(Plugin(options))
+                reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)

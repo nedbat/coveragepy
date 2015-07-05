@@ -48,4 +48,4 @@ class FileReporter(coverage.plugin.FileReporter):
 
 def coverage_init(reg, options):
     """Called by coverage to initialize the plugins here."""
-    reg.add_file_tracer(Plugin(options))
+    reg.add_file_tracer(Plugin())
