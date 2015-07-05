@@ -23,7 +23,7 @@ class SummaryReporter(Reporter):
         self.find_file_reporters(morfs)
 
         # Prepare the formatting strings
-        max_name = max([len(fr.name) for fr in self.file_reporters] + [5])
+        max_name = max([len(fr.relative_filename()) for fr in self.file_reporters] + [5])
         fmt_name = "%%- %ds  " % max_name
         fmt_err = "%s   %s: %s\n"
         header = (fmt_name % "Name") + " Stmts   Miss"
@@ -65,7 +65,7 @@ class SummaryReporter(Reporter):
                     if no_missing_lines and no_missing_branches:
                         continue
 
-                args = (fr.name, nums.n_statements, nums.n_missing)
+                args = (fr.relative_filename(), nums.n_statements, nums.n_missing)
                 if self.branches:
                     args += (nums.n_branches, nums.n_partial_branches)
                 args += (nums.pc_covered_str,)
@@ -87,7 +87,7 @@ class SummaryReporter(Reporter):
                     if typ is NotPython and not fr.should_be_python():
                         report_it = False
                 if report_it:
-                    outfile.write(fmt_err % (fr.name, typ.__name__, msg))
+                    outfile.write(fmt_err % (fr.relative_filename(), typ.__name__, msg))
 
         if total.n_files > 1:
             outfile.write(rule)

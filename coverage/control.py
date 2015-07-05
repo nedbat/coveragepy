@@ -877,11 +877,6 @@ class Coverage(object):
         else:
             file_reporter = PythonFileReporter(morf, self)
 
-        # The FileReporter can have a name attribute, but if it doesn't, we'll
-        # supply it as the relative path to self.filename.
-        if not hasattr(file_reporter, "name"):
-            file_reporter.name = files.relative_filename(file_reporter.filename)
-
         return file_reporter
 
     def _get_file_reporters(self, morfs=None):

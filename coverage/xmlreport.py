@@ -127,7 +127,7 @@ class XmlReporter(Reporter):
         parts = dirname.split("/")
         dirname = "/".join(parts[:self.config.xml_package_depth])
         package_name = dirname.replace("/", ".")
-        className = fr.name
+        className = fr.relative_filename()
 
         self.source_paths.add(files.relative_directory().rstrip('/'))
         package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])

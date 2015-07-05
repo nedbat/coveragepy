@@ -248,7 +248,7 @@ class HtmlReporter(Reporter):
         index_info = {
             'nums': nums,
             'html_filename': html_filename,
-            'name': fr.name,
+            'relative_filename': fr.relative_filename(),
             }
         self.files.append(index_info)
         self.status.set_index_info(flat_rootname, index_info)
