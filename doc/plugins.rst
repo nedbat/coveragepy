@@ -38,14 +38,7 @@ example, let's say you want to use one called fred_plugin.
    Check the documentation for the plugin to see if it takes any options, and
    what they are.
 
-#. Run your tests as you usually would.  NOTE: You will see a warning when
-   coverage starts::
-
-    Coverage.py warning: Setting timid=True to support plugins.
-
-   This means that coverage will run slower than it usually would.  This
-   limitation is part of the initial alpha release, it will be gone in the
-   final version.
+#. Run your tests as you usually would.
 
 
 Plugin API
