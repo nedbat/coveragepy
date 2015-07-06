@@ -471,6 +471,9 @@ class BadPluginTest(FileTracerTest):
         `our_error` is True if the error reported to the user will be an
         explicit error in our test code, marked with an # Oh noes! comment.
 
+        The plugin will be disabled, and we check that a warning is output
+        explaining why.
+
         """
         self.make_file("simple.py", """\
             import other, another
@@ -510,6 +513,16 @@ class BadPluginTest(FileTracerTest):
         msg = "Disabling plugin '%s.%s' due to " % (module_name, plugin_name)
         warnings = stderr.count(msg)
         self.assertEqual(warnings, 1)
+
+    def test_file_tracer_has_no_file_tracer_method(self):
+        self.make_file("bad_plugin.py", """\
+            class Plugin(object):
+                pass
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin())
+            """)
+        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
     def test_file_tracer_fails(self):
         self.make_file("bad_plugin.py", """\
