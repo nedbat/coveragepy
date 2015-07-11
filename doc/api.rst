@@ -30,14 +30,21 @@ available in the command line interface. For example, a simple use would be::
     cov.html_report()
 
 
-The coverage module
--------------------
+The Coverage class
+------------------
 
 .. module:: coverage
 
 .. autoclass:: Coverage
     :members:
     :exclude-members: use_cache
+
+
+The CoverageData class
+----------------------
+
+.. autoclass:: CoverageData
+    :members:
 
 
 Starting coverage automatically

@@ -16,13 +16,16 @@ class CoverageData(object):
         * collector: a string identifying the collecting software
 
         * lines: a dict mapping filenames to sorted lists of line numbers
-          executed:
-            { 'file1': [17,23,45],  'file2': [1,2,3], ... }
+          executed::
 
-        * arcs: a dict mapping filenames to sorted lists of line number pairs:
+            { 'file1': [17,23,45], 'file2': [1,2,3], ... }
+
+        * arcs: a dict mapping filenames to sorted lists of line number pairs::
+
             { 'file1': [(17,23), (17,25), (25,26)], ... }
 
-        * plugins: a dict mapping filenames to plugin names:
+        * plugins: a dict mapping filenames to plugin names::
+
             { 'file1': "django.coverage", ... }
 
     """
