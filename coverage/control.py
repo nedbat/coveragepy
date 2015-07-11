@@ -449,10 +449,12 @@ class Coverage(object):
         if dunder_file:
             filename = self._source_for_file(dunder_file)
             if original_filename and not original_filename.startswith('<'):
-                if os.path.basename(original_filename) != os.path.basename(filename):
+                orig = os.path.basename(original_filename)
+                if orig != os.path.basename(filename):
                     # Files shouldn't be renamed when moved. This happens when
-                    # exec'ing code, not sure why yet.
-                    self._warn("File was renamed?: %r became %r" % (original_filename, filename))
+                    # exec'ing code.  If it seems like something is wrong with
+                    # the frame's filename, then just use the original.
+                    filename = original_filename
 
         if not filename:
             # Empty string is pretty useless.

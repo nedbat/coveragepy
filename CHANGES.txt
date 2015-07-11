@@ -13,8 +13,12 @@ Latest
 - Plugins are now initialized differently.  Instead of looking for a class
   called ``Plugin``, coverage looks for a function called ``coverage_init``.
 
+- Code that was executed with `exec` would be mis-attributed to the file that
+  called it.  This is now fixed, closing `issue 380`_.
 
-.. 40 issues closed in 4.0 so far
+.. 41 issues closed in 4.0 so far
+
+.. _issue 380: https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from
 
 
 Version 4.0a6 --- 21 June 2015

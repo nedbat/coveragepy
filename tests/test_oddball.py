@@ -400,3 +400,34 @@ class GettraceTest(CoverageTest):
             f = 12
             ''',
             [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "")
+
+
+class ExecTest(CoverageTest):
+    """Tests of exec."""
+    def test_correct_filename(self):
+        # https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from
+        # Bug was that exec'd files would have their lines attributed to the
+        # calling file.  Make two files, both with ~30 lines, but no lines in
+        # common.  Line 30 in to_exec.py will be recorded as line 30 in main.py.
+        self.make_file("to_exec.py", """\
+            \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+            print("var is {}".format(var))          # line 31
+            """)
+        self.make_file("main.py", """\
+            namespace = {'var': 17}
+            with open("to_exec.py") as to_exec_py:
+                code = compile(to_exec_py.read(), 'to_exec.py', 'exec')
+                exec(code, globals(), namespace)
+            \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+            print("done")                           # line 35
+            """)
+
+        cov = coverage.coverage()
+        self.start_import_stop(cov, "main")
+
+        _, statements, missing, _ = cov.analysis("main.py")
+        self.assertEqual(statements, [1, 2, 3, 4, 35])
+        self.assertEqual(missing, [])
+        _, statements, missing, _ = cov.analysis("to_exec.py")
+        self.assertEqual(statements, [31])
+        self.assertEqual(missing, [])

@@ -1,5 +1,6 @@
 """Control of and utilities for debugging."""
 
+import inspect
 import os
 
 
@@ -66,3 +67,25 @@ def info_formatter(info):
                 prefix = ""
         else:
             yield "%*s: %s" % (label_len, label, data)
+
+
+def short_stack():                                          # pragma: debugging
+    """Return a string summarizing the call stack.
+
+    The string is multi-line, with one line per stack frame. Each line shows
+    the function name, the file name, and the line number:
+
+        ...
+        start_import_stop : /Users/ned/coverage/trunk/tests/coveragetest.py @95
+        import_local_file : /Users/ned/coverage/trunk/tests/coveragetest.py @81
+        import_local_file : /Users/ned/coverage/trunk/coverage/backward.py @159
+        ...
+
+    """
+    stack = inspect.stack()[:0:-1]
+    return "\n".join("%30s : %s @%d" % (t[3], t[1], t[2]) for t in stack)
+
+
+def dump_stack_frames():                                    # pragma: debugging
+    """Print a summary of the stack to stdout."""
+    print(short_stack())
