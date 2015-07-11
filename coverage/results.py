@@ -9,19 +9,19 @@ from coverage.misc import format_lines
 class Analysis(object):
     """The results of analyzing a FileReporter."""
 
-    def __init__(self, cov, file_reporters):
-        self.coverage = cov
+    def __init__(self, data, file_reporters):
+        self.data = data
         self.file_reporter = file_reporters
         self.filename = self.file_reporter.filename
         self.statements = self.file_reporter.statements()
         self.excluded = self.file_reporter.excluded_statements()
 
         # Identify missing statements.
-        executed = self.coverage.data.executed_lines(self.filename)
+        executed = self.data.executed_lines(self.filename)
         executed = self.file_reporter.translate_lines(executed)
         self.missing = self.statements - executed
 
-        if self.coverage.data.has_arcs():
+        if self.data.has_arcs():
             self.no_branch = self.file_reporter.no_branch_lines()
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
@@ -53,7 +53,7 @@ class Analysis(object):
 
     def has_arcs(self):
         """Were arcs measured in this result?"""
-        return self.coverage.data.has_arcs()
+        return self.data.has_arcs()
 
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
@@ -61,7 +61,7 @@ class Analysis(object):
 
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
-        executed = self.coverage.data.executed_arcs(self.filename)
+        executed = self.data.executed_arcs(self.filename)
         executed = self.file_reporter.translate_arcs(executed)
         return sorted(executed)
 

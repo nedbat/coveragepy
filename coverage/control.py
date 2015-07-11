@@ -848,7 +848,7 @@ class Coverage(object):
         if not isinstance(it, FileReporter):
             it = self._get_file_reporter(it)
 
-        return Analysis(self, it)
+        return Analysis(self.data, it)
 
     def _get_file_reporter(self, morf):
         """Get a FileReporter for a module or filename."""
