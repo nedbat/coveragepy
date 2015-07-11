@@ -27,23 +27,15 @@ class CoverageData(object):
 
     """
 
-    def __init__(self, basename=None, collector=None, debug=None):
+    def __init__(self, collector=None, debug=None):
         """Create a CoverageData.
-
-        `basename` is the name of the file to use for storing data.
 
         `collector` is a string describing the coverage measurement software.
 
-        `debug` is a `DebugControl` object for writing debug messages.
 
         """
         self.collector = collector or 'unknown'
         self.debug = debug
-
-        # Construct the filename that will be used for data file storage, if we
-        # ever do any file storage.
-        self.filename = basename or ".coverage"
-        self.filename = os.path.abspath(self.filename)
 
         # A map from canonical Python source file name to a dictionary in
         # which there's an entry for each line number that has been
@@ -74,28 +66,8 @@ class CoverageData(object):
         #       }
         self.plugins = {}
 
-    def read(self):
-        """Read coverage data from the coverage data file (if it exists)."""
-        self.lines, self.arcs, self.plugins = self._read_file(self.filename)
-
-    def write(self, suffix=None):
-        """Write the collected coverage data to a file.
-
-        `suffix` is a suffix to append to the base file name. This can be used
-        for multiple or parallel execution, so that many coverage data files
-        can exist simultaneously.  A dot will be used to join the base name and
-        the suffix.
-
-        """
-        filename = self.filename
-        if suffix:
-            filename += "." + suffix
-        self.write_file(filename)
-
     def erase(self):
-        """Erase the data, both in this object, and from its file storage."""
-        if self.filename:
-            file_be_gone(self.filename)
+        """Erase the data in this object."""
         self.lines = {}
         self.arcs = {}
         self.plugins = {}
@@ -116,102 +88,66 @@ class CoverageData(object):
         """Return the map from filenames to plugin names."""
         return self.plugins
 
-    def write_file(self, filename):
-        """Write the coverage data to `filename`."""
-
-        # Create the file data.
-        data = {}
-
-        data['lines'] = self.line_data()
-        arcs = self.arc_data()
-        if arcs:
-            data['arcs'] = arcs
-
-        if self.collector:
-            data['collector'] = self.collector
-
-        data['plugins'] = self.plugins
-
-        if self.debug and self.debug.should('dataio'):
-            self.debug.write("Writing data to %r" % (filename,))
-
-        # Write the pickle to the file.
-        with open(filename, 'wb') as fdata:
-            pickle.dump(data, fdata, 2)
-
-    def read_file(self, filename):
-        """Read the coverage data from `filename`."""
-        self.lines, self.arcs, self.plugins = self._read_file(filename)
-
-    def _raw_data(self, filename):
-        """Return the raw pickled data from `filename`."""
-        if self.debug and self.debug.should('dataio'):
-            self.debug.write("Reading data from %r" % (filename,))
-        with open(filename, 'rb') as fdata:
-            data = pickle.load(fdata)
-        return data
-
-    def _read_file(self, filename):
+    def read(self, file_obj):
         """Return the stored coverage data from the given file.
 
         Returns three values, suitable for assigning to `self.lines`,
         `self.arcs`, and `self.plugins`.
 
         """
-        lines = {}
-        arcs = {}
-        plugins = {}
+        self.lines = {}
+        self.arcs = {}
+        self.plugins = {}
         try:
-            data = self._raw_data(filename)
+            data = pickle.load(file_obj)
             if isinstance(data, dict):
                 # Unpack the 'lines' item.
-                lines = dict([
+                self.lines = dict([
                     (f, dict.fromkeys(linenos, None))
                         for f, linenos in iitems(data.get('lines', {}))
                     ])
                 # Unpack the 'arcs' item.
-                arcs = dict([
+                self.arcs = dict([
                     (f, dict.fromkeys(arcpairs, None))
                         for f, arcpairs in iitems(data.get('arcs', {}))
                     ])
-                plugins = data.get('plugins', {})
+                self.plugins = data.get('plugins', {})
         except Exception:
+            # TODO: this used to handle file-doesnt-exist problems.  Do we still need it?
             pass
-        return lines, arcs, plugins
 
-    def combine_parallel_data(self, aliases=None, data_dirs=None):
-        """Combine a number of data files together.
+    def read_file(self, filename):
+        """Read the coverage data from `filename`."""
+        if self.debug and self.debug.should('dataio'):
+            self.debug.write("Reading data from %r" % (filename,))
+        with open(filename, "rb") as f:
+            self.read(f)
 
-        Treat `self.filename` as a file prefix, and combine the data from all
-        of the data files starting with that prefix plus a dot.
+    def write(self, file_obj):
+        """Write the coverage data to `file_obj`."""
 
-        If `aliases` is provided, it's a `PathAliases` object that is used to
-        re-map paths to match the local machine's.
+        # Create the file data.
+        file_data = {}
 
-        If `data_dirs` is provided, then it combines the data files from each
-        directory into a single file.
+        file_data['lines'] = self.line_data()
+        arcs = self.arc_data()
+        if arcs:
+            file_data['arcs'] = arcs
 
-        """
-        aliases = aliases or PathAliases()
-        data_dir, local = os.path.split(self.filename)
-        localdot = local + '.*'
+        if self.collector:
+            file_data['collector'] = self.collector
 
-        data_dirs = data_dirs or [data_dir]
-        files_to_combine = []
-        for d in data_dirs:
-            pattern = os.path.join(os.path.abspath(d), localdot)
-            files_to_combine.extend(glob.glob(pattern))
+        file_data['plugins'] = self.plugins
 
-        for f in files_to_combine:
-            new_lines, new_arcs, new_plugins = self._read_file(f)
-            for filename, file_data in iitems(new_lines):
-                filename = aliases.map(filename)
-                self.lines.setdefault(filename, {}).update(file_data)
-            for filename, file_data in iitems(new_arcs):
-                filename = aliases.map(filename)
-                self.arcs.setdefault(filename, {}).update(file_data)
-            self.plugins.update(new_plugins)
-            os.remove(f)
+        # Write the pickle to the file.
+        pickle.dump(file_data, file_obj, 2)
+
+    def write_file(self, filename):
+        """Write the coverage data to `filename`."""
+        if self.debug and self.debug.should('dataio'):
+            self.debug.write("Writing data to %r" % (filename,))
+        with open(filename, 'wb') as fdata:
+            self.write(fdata)
 
     def add_line_data(self, line_data):
         """Add executed line data.
@@ -237,6 +173,21 @@ class CoverageData(object):
         `plugin_data` is { filename: plugin_name, ... }
         """
         self.plugins.update(plugin_data)
+
+    def update(self, other_data, aliases=None):
+        """
+        If `aliases` is provided, it's a `PathAliases` object that is used to
+        re-map paths to match the local machine's.
+
+        """
+        aliases = aliases or PathAliases()
+        for filename, file_data in iitems(other_data.lines):
+            filename = aliases.map(filename)
+            self.lines.setdefault(filename, {}).update(file_data)
+        for filename, file_data in iitems(other_data.arcs):
+            filename = aliases.map(filename)
+            self.arcs.setdefault(filename, {}).update(file_data)
+        self.plugins.update(other_data.plugins)
 
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""
@@ -284,6 +235,75 @@ class CoverageData(object):
     def has_arcs(self):
         """Does this data have arcs?"""
         return bool(self.arcs)
+
+
+class CoverageDataFiles(object):
+    """Manage the use of coverage data files."""
+
+    def __init__(self, basename=None, debug=None):
+        """
+        `basename` is the name of the file to use for storing data.
+
+        `debug` is a `DebugControl` object for writing debug messages.
+
+        """
+        # Construct the filename that will be used for data file storage, if we
+        # ever do any file storage.
+        self.filename = basename or ".coverage"
+        self.filename = os.path.abspath(self.filename)
+
+        self.debug = debug
+
+    def erase(self):
+        """Erase the data from the file storage."""
+        file_be_gone(self.filename)
+
+    def read(self, data):
+        """Read the coverage data."""
+        if os.path.exists(self.filename):
+            data.read_file(self.filename)
+
+    def write(self, data, suffix=None):
+        """Write the collected coverage data to a file.
+
+        `suffix` is a suffix to append to the base file name. This can be used
+        for multiple or parallel execution, so that many coverage data files
+        can exist simultaneously.  A dot will be used to join the base name and
+        the suffix.
+
+        """
+        filename = self.filename
+        if suffix:
+            filename += "." + suffix
+        data.write_file(filename)
+
+    def combine_parallel_data(self, data, aliases=None, data_dirs=None):
+        """Combine a number of data files together.
+
+        Treat `self.filename` as a file prefix, and combine the data from all
+        of the data files starting with that prefix plus a dot.
+
+        If `aliases` is provided, it's a `PathAliases` object that is used to
+        re-map paths to match the local machine's.
+
+        If `data_dirs` is provided, then it combines the data files from each
+        directory into a single file.
+
+        """
+        data_dir, local = os.path.split(self.filename)
+        localdot = local + '.*'
+
+        data_dirs = data_dirs or [data_dir]
+        files_to_combine = []
+        for d in data_dirs:
+            pattern = os.path.join(os.path.abspath(d), localdot)
+            files_to_combine.extend(glob.glob(pattern))
+
+        for f in files_to_combine:
+            new_data = CoverageData()
+            new_data.read_file(f)
+            data.update(new_data, aliases=aliases)
+            os.remove(f)
 
 
 if __name__ == '__main__':

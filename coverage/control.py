@@ -14,7 +14,7 @@ from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
 from coverage.collector import Collector
 from coverage.config import CoverageConfig
-from coverage.data import CoverageData
+from coverage.data import CoverageData, CoverageDataFiles
 from coverage.debug import DebugControl
 from coverage.files import TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
@@ -171,7 +171,7 @@ class Coverage(object):
         # Other instance attributes, set later.
         self.omit = self.include = self.source = None
         self.source_pkgs = None
-        self.data = self.collector = None
+        self.data = self.data_files = self.collector = None
         self.plugins = None
         self.pylib_dirs = self.cover_dirs = None
         self.data_suffix = self.run_suffix = None
@@ -271,8 +271,10 @@ class Coverage(object):
         # data file will be written into the directory where the process
         # started rather than wherever the process eventually chdir'd to.
         self.data = CoverageData(
-            basename=self.config.data_file,
             collector="coverage v%s" % __version__,
+            )
+        self.data_files = CoverageDataFiles(
+            basename=self.config.data_file,
             debug=self.debug,
             )
 
@@ -610,7 +612,7 @@ class Coverage(object):
         """Load previously-collected coverage data from the data file."""
         self._init()
         self.collector.reset()
-        self.data.read()
+        self.data_files.read(self.data)
 
     def start(self):
         """Start measuring code coverage.
@@ -657,6 +659,7 @@ class Coverage(object):
         self._init()
         self.collector.reset()
         self.data.erase()
+        self.data_files.erase()
 
     def clear_exclude(self, which='exclude'):
         """Clear the exclude list."""
@@ -725,7 +728,7 @@ class Coverage(object):
                 )
 
         self._harvest_data()
-        self.data.write(suffix=data_suffix)
+        self.data_files.write(self.data, suffix=data_suffix)
 
     def combine(self, data_dirs=None):
         """Combine together a number of similarly-named coverage data files.
@@ -747,7 +750,7 @@ class Coverage(object):
                 result = paths[0]
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
-        self.data.combine_parallel_data(aliases=aliases, data_dirs=data_dirs)
+        self.data_files.combine_parallel_data(self.data, aliases=aliases, data_dirs=data_dirs)
 
     def _harvest_data(self):
         """Get the collected data and reset the collector.
@@ -1046,7 +1049,7 @@ class Coverage(object):
             ('plugins.file_tracers', ft_plugins),
             ('config_files', self.config.attempted_config_files),
             ('configs_read', self.config.config_files),
-            ('data_path', self.data.filename),
+            ('data_path', self.data_files.filename),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('implementation', implementation),

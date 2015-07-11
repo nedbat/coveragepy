@@ -1,9 +1,10 @@
 """Tests for coverage.data"""
 
 import os
+import os.path
 
 from coverage.backward import pickle
-from coverage.data import CoverageData
+from coverage.data import CoverageData, CoverageDataFiles
 from coverage.files import PathAliases, canonical_filename
 
 from tests.coveragetest import CoverageTest
@@ -56,8 +57,12 @@ class DataTest(DataTestHelpers, CoverageTest):
     run_in_temp_dir = False
 
     def test_reading_empty(self):
+        # Make sure there is no .coverage data file here.
+        if os.path.exists(".coverage"):
+            os.remove(".coverage")
+        covdatafiles = CoverageDataFiles()
         covdata = CoverageData()
-        covdata.read()
+        covdatafiles.read(covdata)
         self.assert_summary(covdata, {})
 
     def test_adding_data(self):
@@ -73,44 +78,49 @@ class DataTest(DataTestHelpers, CoverageTest):
         self.assert_measured_files(covdata, MEASURED_FILES_1 + ['x.py'])
 
     def test_writing_and_reading(self):
+        covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
         covdata1.add_line_data(DATA_1)
-        covdata1.write()
+        covdatafiles.write(covdata1)
 
         covdata2 = CoverageData()
-        covdata2.read()
+        covdatafiles.read(covdata2)
         self.assert_summary(covdata2, SUMMARY_1)
 
     def test_combining(self):
+        covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
         covdata1.add_line_data(DATA_1)
-        covdata1.write(suffix='1')
+        covdatafiles.write(covdata1, suffix='1')
 
         covdata2 = CoverageData()
         covdata2.add_line_data(DATA_2)
-        covdata2.write(suffix='2')
+        covdatafiles.write(covdata2, suffix='2')
 
         covdata3 = CoverageData()
-        covdata3.combine_parallel_data()
+        covdatafiles.combine_parallel_data(covdata3)
         self.assert_summary(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
 
     def test_erasing(self):
+        covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
         covdata1.add_line_data(DATA_1)
-        covdata1.write()
+        covdatafiles.write(covdata1)
         covdata1.erase()
         self.assert_summary(covdata1, {})
+        covdatafiles.erase()
 
         covdata2 = CoverageData()
-        covdata2.read()
+        covdatafiles.read(covdata2)
         self.assert_summary(covdata2, {})
 
     def test_file_format(self):
         # Write with CoverageData, then read the pickle explicitly.
+        covdatafiles = CoverageDataFiles()
         covdata = CoverageData()
         covdata.add_line_data(DATA_1)
-        covdata.write()
+        covdatafiles.write(covdata)
 
         with open(".coverage", 'rb') as fdata:
             data = pickle.load(fdata)
@@ -124,9 +134,10 @@ class DataTest(DataTestHelpers, CoverageTest):
 
     def test_file_format_with_arcs(self):
         # Write with CoverageData, then read the pickle explicitly.
+        covdatafiles = CoverageDataFiles()
         covdata = CoverageData()
         covdata.add_arc_data(ARC_DATA_3)
-        covdata.write()
+        covdatafiles.write(covdata)
 
         with open(".coverage", 'rb') as fdata:
             data = pickle.load(fdata)
@@ -137,25 +148,26 @@ class DataTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(arcs['y.py'], Y_PY_ARCS_3)
 
     def test_combining_with_aliases(self):
+        covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
         covdata1.add_line_data({
             '/home/ned/proj/src/a.py': {1: None, 2: None},
             '/home/ned/proj/src/sub/b.py': {3: None},
             })
-        covdata1.write(suffix='1')
+        covdatafiles.write(covdata1, suffix='1')
 
         covdata2 = CoverageData()
         covdata2.add_line_data({
             r'c:\ned\test\a.py': {4: None, 5: None},
             r'c:\ned\test\sub\b.py': {6: None},
             })
-        covdata2.write(suffix='2')
+        covdatafiles.write(covdata2, suffix='2')
 
         covdata3 = CoverageData()
         aliases = PathAliases()
         aliases.add("/home/ned/proj/src/", "./")
         aliases.add(r"c:\ned\test", "./")
-        covdata3.combine_parallel_data(aliases=aliases)
+        covdatafiles.combine_parallel_data(covdata3, aliases=aliases)
 
         apy = canonical_filename('./a.py')
         sub_bpy = canonical_filename('./sub/b.py')
@@ -182,8 +194,9 @@ class DataTestInTempDir(DataTestHelpers, CoverageTest):
         os.makedirs('cov2')
         covdata2.write_file('cov2/.coverage.2')
 
+        covdatafiles = CoverageDataFiles()
         covdata3 = CoverageData()
-        covdata3.combine_parallel_data(data_dirs=[
+        covdatafiles.combine_parallel_data(covdata3, data_dirs=[
             'cov1/',
             'cov2/',
             ])
