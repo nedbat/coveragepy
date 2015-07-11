@@ -154,7 +154,7 @@ class CoverageData(object):
         """Read the coverage data from `filename`."""
         self.lines, self.arcs, self.plugins = self._read_file(filename)
 
-    def raw_data(self, filename):
+    def _raw_data(self, filename):
         """Return the raw pickled data from `filename`."""
         if self.debug and self.debug.should('dataio'):
             self.debug.write("Reading data from %r" % (filename,))
@@ -173,7 +173,7 @@ class CoverageData(object):
         arcs = {}
         plugins = {}
         try:
-            data = self.raw_data(filename)
+            data = self._raw_data(filename)
             if isinstance(data, dict):
                 # Unpack the 'lines' item.
                 lines = dict([
@@ -305,4 +305,4 @@ if __name__ == '__main__':
         fname = sys.argv[1]
     else:
         fname = covdata.filename
-    pprint.pprint(covdata.raw_data(fname))
+    pprint.pprint(covdata._raw_data(fname))
