@@ -408,10 +408,11 @@ class ExecTest(CoverageTest):
         # https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from
         # Bug was that exec'd files would have their lines attributed to the
         # calling file.  Make two files, both with ~30 lines, but no lines in
-        # common.  Line 30 in to_exec.py will be recorded as line 30 in main.py.
+        # common.  Line 30 in to_exec.py was recorded as line 30 in main.py,
+        # but now it's fixed. :)
         self.make_file("to_exec.py", """\
             \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
-            print("var is {}".format(var))          # line 31
+            print("var is {0}".format(var))         # line 31
             """)
         self.make_file("main.py", """\
             namespace = {'var': 17}
