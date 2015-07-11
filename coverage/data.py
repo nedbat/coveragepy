@@ -40,8 +40,6 @@ class CoverageData(object):
         self.collector = collector or 'unknown'
         self.debug = debug
 
-        self.use_file = True
-
         # Construct the filename that will be used for data file storage, if we
         # ever do any file storage.
         self.filename = basename or ".coverage"
@@ -76,16 +74,9 @@ class CoverageData(object):
         #       }
         self.plugins = {}
 
-    def usefile(self, use_file=True):
-        """Set whether or not to use a disk file for data."""
-        self.use_file = use_file
-
     def read(self):
         """Read coverage data from the coverage data file (if it exists)."""
-        if self.use_file:
-            self.lines, self.arcs, self.plugins = self._read_file(self.filename)
-        else:
-            self.lines, self.arcs, self.plugins = {}, {}, {}
+        self.lines, self.arcs, self.plugins = self._read_file(self.filename)
 
     def write(self, suffix=None):
         """Write the collected coverage data to a file.
@@ -96,17 +87,15 @@ class CoverageData(object):
         the suffix.
 
         """
-        if self.use_file:
-            filename = self.filename
-            if suffix:
-                filename += "." + suffix
-            self.write_file(filename)
+        filename = self.filename
+        if suffix:
+            filename += "." + suffix
+        self.write_file(filename)
 
     def erase(self):
         """Erase the data, both in this object, and from its file storage."""
-        if self.use_file:
-            if self.filename:
-                file_be_gone(self.filename)
+        if self.filename:
+            file_be_gone(self.filename)
         self.lines = {}
         self.arcs = {}
         self.plugins = {}

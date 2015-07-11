@@ -601,13 +601,10 @@ class Coverage(object):
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
 
     def use_cache(self, usecache):
-        """Control the use of a data file (incorrectly called a cache).
-
-        `usecache` is true or false, whether to read and write data on disk.
-
-        """
+        """Obsolete method."""
         self._init()
-        self.data.usefile(usecache)
+        if not usecache:
+            self._warn("use_cache(False) is no longer supported.")
 
     def load(self):
         """Load previously-collected coverage data from the data file."""

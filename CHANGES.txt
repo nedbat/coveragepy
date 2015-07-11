@@ -16,6 +16,8 @@ Latest
 - Code that was executed with `exec` would be mis-attributed to the file that
   called it.  This is now fixed, closing `issue 380`_.
 
+- The ``use_cache`` method is no longer supported.
+
 .. 41 issues closed in 4.0 so far
 
 .. _issue 380: https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from

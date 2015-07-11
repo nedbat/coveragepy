@@ -37,6 +37,7 @@ The coverage module
 
 .. autoclass:: Coverage
     :members:
+    :exclude-members: use_cache
 
 
 Starting coverage automatically
