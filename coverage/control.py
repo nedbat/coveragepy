@@ -273,10 +273,7 @@ class Coverage(object):
         self.data = CoverageData(
             collector="coverage v%s" % __version__,
             )
-        self.data_files = CoverageDataFiles(
-            basename=self.config.data_file,
-            debug=self.debug,
-            )
+        self.data_files = CoverageDataFiles(basename=self.config.data_file)
 
         # The dirs for files considered "installed with the interpreter".
         self.pylib_dirs = set()

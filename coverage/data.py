@@ -32,6 +32,7 @@ class CoverageData(object):
 
         `collector` is a string describing the coverage measurement software.
 
+        `debug` is a `DebugControl` object for writing debug messages.
 
         """
         self.collector = collector or 'unknown'
@@ -240,19 +241,14 @@ class CoverageData(object):
 class CoverageDataFiles(object):
     """Manage the use of coverage data files."""
 
-    def __init__(self, basename=None, debug=None):
-        """
+    def __init__(self, basename=None):
+        """Create a CoverageDataFiles to manage data files.
+
         `basename` is the name of the file to use for storing data.
 
-        `debug` is a `DebugControl` object for writing debug messages.
-
         """
-        # Construct the filename that will be used for data file storage, if we
-        # ever do any file storage.
-        self.filename = basename or ".coverage"
-        self.filename = os.path.abspath(self.filename)
-
-        self.debug = debug
+        # Construct the filename that will be used for data storage.
+        self.filename = os.path.abspath(basename or ".coverage")
 
     def erase(self):
         """Erase the data from the file storage."""
