@@ -38,7 +38,7 @@ class CoverageData(object):
         `debug` is a `DebugControl` object for writing debug messages.
 
         """
-        self.collector = collector or 'unknown'
+        self.collector = collector
         self.debug = debug
 
         # A map from canonical Python source file name to a dictionary in
@@ -76,21 +76,22 @@ class CoverageData(object):
         self.arcs = {}
         self.plugins = {}
 
-    def line_data(self):
-        """Return the map from filenames to lists of line numbers executed."""
-        return dict(
-            (f, sorted(lmap.keys())) for f, lmap in iitems(self.lines)
-            )
+    def line_data(self, filename):
+        """Get the list of lines executed for a file."""
+        return list(self.lines.get(filename, {}).keys())
 
-    def arc_data(self):
-        """Return the map from filenames to lists of line number pairs."""
-        return dict(
-            (f, sorted(amap.keys())) for f, amap in iitems(self.arcs)
-            )
+    def plugin_name(self, filename):
+        """Get the plugin name for a file.
 
-    def plugin_data(self):
-        """Return the map from filenames to plugin names."""
-        return self.plugins
+        Arguments:
+            filename: the name of the file you're interested in.
+
+        Returns:
+            str: the name of the plugin that handles this file.  Can be None
+                if no plugin was involved.
+
+        """
+        return self.plugins.get(filename)
 
     def read(self, file_obj):
         """Return the stored coverage data from the given file.
@@ -133,10 +134,10 @@ class CoverageData(object):
         # Create the file data.
         file_data = {}
 
-        file_data['lines'] = self.line_data()
-        arcs = self.arc_data()
-        if arcs:
-            file_data['arcs'] = arcs
+        file_data['lines'] = dict((f, list(lmap.keys())) for f, lmap in iitems(self.lines))
+
+        if self.arcs:
+            file_data['arcs'] = dict((f, list(amap.keys())) for f, amap in iitems(self.arcs))
 
         if self.collector:
             file_data['collector'] = self.collector

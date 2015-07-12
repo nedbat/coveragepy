@@ -860,7 +860,7 @@ class Coverage(object):
 
         if isinstance(morf, string_class):
             abs_morf = abs_file(morf)
-            plugin_name = self.data.plugin_data().get(abs_morf)
+            plugin_name = self.data.plugin_name(abs_morf)
             if plugin_name:
                 plugin = self.plugins.get(plugin_name)
 

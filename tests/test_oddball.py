@@ -1,9 +1,9 @@
 """Oddball cases for testing coverage.py"""
 
-import os
 import sys
 
 import coverage
+from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
 from tests import osinfo
@@ -307,7 +307,8 @@ class ExceptionTest(CoverageTest):
         for callnames, lines_expected in runs:
 
             # Make the list of functions we'll call for this test.
-            calls = [getattr(sys.modules[cn], cn) for cn in callnames.split()]
+            callnames = callnames.split()
+            calls = [getattr(sys.modules[cn], cn) for cn in callnames]
 
             cov = coverage.coverage()
             cov.start()
@@ -318,16 +319,13 @@ class ExceptionTest(CoverageTest):
 
             # Clean the line data and compare to expected results.
             # The filenames are absolute, so keep just the base.
-            data = cov.get_data()
-            lines = data.line_data()
             clean_lines = {}
-            for f, llist in lines.items():
-                # f is a path to a Python module, so we drop the '.py' to get
-                # a callname.
-                basename = os.path.basename(f)
-                assert basename.endswith(".py")
-                if basename[:-3] in callnames:
-                    clean_lines[basename] = llist
+            data = cov.get_data()
+            for callname in callnames:
+                filename = callname + ".py"
+                lines = data.line_data(abs_file(filename))
+                clean_lines[filename] = sorted(lines)
+
             self.assertEqual(clean_lines, lines_expected)
 
 

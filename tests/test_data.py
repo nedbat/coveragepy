@@ -107,10 +107,11 @@ class DataTest(DataTestHelpers, CoverageTest):
         covdata1 = CoverageData()
         covdata1.add_line_data(DATA_1)
         covdatafiles.write(covdata1)
+
         covdata1.erase()
         self.assert_summary(covdata1, {})
-        covdatafiles.erase()
 
+        covdatafiles.erase()
         covdata2 = CoverageData()
         covdatafiles.read(covdata2)
         self.assert_summary(covdata2, {})

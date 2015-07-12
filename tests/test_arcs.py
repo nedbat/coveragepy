@@ -761,5 +761,5 @@ class LineDataTest(CoverageTest):
         self.start_import_stop(cov, "fun1")
 
         data = cov.get_data()
-        fun1_lines = data.line_data()[abs_file("fun1.py")]
+        fun1_lines = data.line_data(abs_file("fun1.py"))
         self.assertEqual(fun1_lines, [1, 2, 5])
