@@ -378,8 +378,8 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         cov.start()
         import usepkgs  # pragma: nested   # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
-        cov._harvest_data() # private! sshhh...
-        summary = cov.data.summary()
+        data = cov.get_data()
+        summary = data.summary()
         for k, v in list(summary.items()):
             assert k.endswith(".py")
             summary[k[:-3]] = v

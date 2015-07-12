@@ -724,7 +724,7 @@ class Coverage(object):
                 random.randint(0, 999999)
                 )
 
-        self._harvest_data()
+        self.get_data()
         self.data_files.write(self.data, suffix=data_suffix)
 
     def combine(self, data_dirs=None):
@@ -749,10 +749,13 @@ class Coverage(object):
                     aliases.add(pattern, result)
         self.data_files.combine_parallel_data(self.data, aliases=aliases, data_dirs=data_dirs)
 
-    def _harvest_data(self):
+    def get_data(self):
         """Get the collected data and reset the collector.
 
         Also warn about various problems collecting data.
+
+        Returns:
+            :class:`CoverageData`: the collected coverage data.
 
         """
         self._init()
@@ -804,6 +807,7 @@ class Coverage(object):
                 self.data.touch_file(py_file)
 
         self._measured = False
+        return self.data
 
     # Backward compatibility with version 1.
     def analysis(self, morf):
@@ -844,7 +848,7 @@ class Coverage(object):
         Returns an `Analysis` object.
 
         """
-        self._harvest_data()
+        self.get_data()
         if not isinstance(it, FileReporter):
             it = self._get_file_reporter(it)
 
@@ -915,7 +919,7 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
-        self._harvest_data()
+        self.get_data()
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
             show_missing=show_missing, skip_covered=skip_covered,
@@ -937,7 +941,7 @@ class Coverage(object):
         See `coverage.report()` for other arguments.
 
         """
-        self._harvest_data()
+        self.get_data()
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include
             )
@@ -963,7 +967,7 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
-        self._harvest_data()
+        self.get_data()
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
@@ -987,7 +991,7 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
-        self._harvest_data()
+        self.get_data()
         self.config.from_args(
             ignore_errors=ignore_errors, omit=omit, include=include,
             xml_output=outfile,

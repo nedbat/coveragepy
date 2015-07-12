@@ -318,8 +318,8 @@ class ExceptionTest(CoverageTest):
 
             # Clean the line data and compare to expected results.
             # The filenames are absolute, so keep just the base.
-            cov._harvest_data()     # private! sshhh...
-            lines = cov.data.line_data()
+            data = cov.get_data()
+            lines = data.line_data()
             clean_lines = {}
             for f, llist in lines.items():
                 # f is a path to a Python module, so we drop the '.py' to get
