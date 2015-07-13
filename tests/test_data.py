@@ -28,19 +28,27 @@ MEASURED_FILES_1_2 = ['a.py', 'b.py', 'c.py']
 
 ARC_DATA_3 = {
     'x.py': {
+        (-1, 1): None,
         (1, 2): None,
         (2, 3): None,
+        (3, -1): None,
     },
     'y.py': {
+        (-1, 17): None,
         (17, 23): None,
+        (23, -1): None,
     },
 }
-X_PY_ARCS_3 = [(1, 2), (2, 3)]
-Y_PY_ARCS_3 = [(17, 23)]
+X_PY_ARCS_3 = [(-1, 1), (1, 2), (2, 3), (3, -1)]
+Y_PY_ARCS_3 = [(-1, 17), (17, 23), (23, -1)]
 
 
 class DataTestHelpers(CoverageTest):
     """Test helpers for data tests."""
+
+    def setUp(self):
+        self.data_files = CoverageDataFiles()
+        super(DataTestHelpers, self).setUp()
 
     def assert_summary(self, covdata, summary, fullpath=False):
         """Check that the summary of `covdata` is `summary`."""
@@ -60,9 +68,8 @@ class DataTest(DataTestHelpers, CoverageTest):
         # Make sure there is no .coverage data file here.
         if os.path.exists(".coverage"):
             os.remove(".coverage")
-        covdatafiles = CoverageDataFiles()
         covdata = CoverageData()
-        covdatafiles.read(covdata)
+        self.data_files.read(covdata)
         self.assert_summary(covdata, {})
 
     def test_adding_data(self):
@@ -78,50 +85,46 @@ class DataTest(DataTestHelpers, CoverageTest):
         self.assert_measured_files(covdata, MEASURED_FILES_1 + ['x.py'])
 
     def test_writing_and_reading(self):
-        covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
         covdata1.add_lines(DATA_1)
-        covdatafiles.write(covdata1)
+        self.data_files.write(covdata1)
 
         covdata2 = CoverageData()
-        covdatafiles.read(covdata2)
+        self.data_files.read(covdata2)
         self.assert_summary(covdata2, SUMMARY_1)
 
     def test_combining(self):
-        covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
         covdata1.add_lines(DATA_1)
-        covdatafiles.write(covdata1, suffix='1')
+        self.data_files.write(covdata1, suffix='1')
 
         covdata2 = CoverageData()
         covdata2.add_lines(DATA_2)
-        covdatafiles.write(covdata2, suffix='2')
+        self.data_files.write(covdata2, suffix='2')
 
         covdata3 = CoverageData()
-        covdatafiles.combine_parallel_data(covdata3)
+        self.data_files.combine_parallel_data(covdata3)
         self.assert_summary(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
 
     def test_erasing(self):
-        covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
         covdata1.add_lines(DATA_1)
-        covdatafiles.write(covdata1)
+        self.data_files.write(covdata1)
 
         covdata1.erase()
         self.assert_summary(covdata1, {})
 
-        covdatafiles.erase()
+        self.data_files.erase()
         covdata2 = CoverageData()
-        covdatafiles.read(covdata2)
+        self.data_files.read(covdata2)
         self.assert_summary(covdata2, {})
 
     def test_file_format(self):
         # Write with CoverageData, then read the pickle explicitly.
-        covdatafiles = CoverageDataFiles()
         covdata = CoverageData()
         covdata.add_lines(DATA_1)
-        covdatafiles.write(covdata)
+        self.data_files.write(covdata)
 
         with open(".coverage", 'rb') as fdata:
             data = pickle.load(fdata)
@@ -135,10 +138,9 @@ class DataTest(DataTestHelpers, CoverageTest):
 
     def test_file_format_with_arcs(self):
         # Write with CoverageData, then read the pickle explicitly.
-        covdatafiles = CoverageDataFiles()
         covdata = CoverageData()
         covdata.add_arcs(ARC_DATA_3)
-        covdatafiles.write(covdata)
+        self.data_files.write(covdata)
 
         with open(".coverage", 'rb') as fdata:
             data = pickle.load(fdata)
@@ -149,26 +151,25 @@ class DataTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(arcs['y.py'], Y_PY_ARCS_3)
 
     def test_combining_with_aliases(self):
-        covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
         covdata1.add_lines({
             '/home/ned/proj/src/a.py': {1: None, 2: None},
             '/home/ned/proj/src/sub/b.py': {3: None},
             })
-        covdatafiles.write(covdata1, suffix='1')
+        self.data_files.write(covdata1, suffix='1')
 
         covdata2 = CoverageData()
         covdata2.add_lines({
             r'c:\ned\test\a.py': {4: None, 5: None},
             r'c:\ned\test\sub\b.py': {6: None},
             })
-        covdatafiles.write(covdata2, suffix='2')
+        self.data_files.write(covdata2, suffix='2')
 
         covdata3 = CoverageData()
         aliases = PathAliases()
         aliases.add("/home/ned/proj/src/", "./")
         aliases.add(r"c:\ned\test", "./")
-        covdatafiles.combine_parallel_data(covdata3, aliases=aliases)
+        self.data_files.combine_parallel_data(covdata3, aliases=aliases)
 
         apy = canonical_filename('./a.py')
         sub_bpy = canonical_filename('./sub/b.py')
@@ -195,9 +196,8 @@ class DataTestInTempDir(DataTestHelpers, CoverageTest):
         os.makedirs('cov2')
         covdata2.write_file('cov2/.coverage.2')
 
-        covdatafiles = CoverageDataFiles()
         covdata3 = CoverageData()
-        covdatafiles.combine_parallel_data(covdata3, data_dirs=[
+        self.data_files.combine_parallel_data(covdata3, data_dirs=[
             'cov1/',
             'cov2/',
             ])
