@@ -17,7 +17,7 @@ class Analysis(object):
         self.excluded = self.file_reporter.excluded_statements()
 
         # Identify missing statements.
-        executed = self.data.executed_lines(self.filename)
+        executed = self.data.line_data(self.filename)
         executed = self.file_reporter.translate_lines(executed)
         self.missing = self.statements - executed
 
@@ -61,7 +61,7 @@ class Analysis(object):
 
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
-        executed = self.data.executed_arcs(self.filename)
+        executed = self.data.arc_data(self.filename)
         executed = self.file_reporter.translate_arcs(executed)
         return sorted(executed)
 

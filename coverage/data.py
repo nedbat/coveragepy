@@ -38,8 +38,8 @@ class CoverageData(object):
         `debug` is a `DebugControl` object for writing debug messages.
 
         """
-        self.collector = collector
-        self.debug = debug
+        self._collector = collector
+        self._debug = debug
 
         # A map from canonical Python source file name to a dictionary in
         # which there's an entry for each line number that has been
@@ -50,7 +50,7 @@ class CoverageData(object):
         #       ...
         #       }
         #
-        self.lines = {}
+        self._lines = {}
 
         # A map from canonical Python source file name to a dictionary with an
         # entry for each pair of line numbers forming an arc:
@@ -60,7 +60,7 @@ class CoverageData(object):
         #       ...
         #       }
         #
-        self.arcs = {}
+        self._arcs = {}
 
         # A map from canonical source file name to a plugin module name:
         #
@@ -68,17 +68,22 @@ class CoverageData(object):
         #       'filename1.py': 'django.coverage',
         #       ...
         #       }
-        self.plugins = {}
+        #
+        self._plugins = {}
 
     def erase(self):
         """Erase the data in this object."""
-        self.lines = {}
-        self.arcs = {}
-        self.plugins = {}
+        self._lines = {}
+        self._arcs = {}
+        self._plugins = {}
 
     def line_data(self, filename):
         """Get the list of lines executed for a file."""
-        return list(self.lines.get(filename, {}).keys())
+        return list((self._lines.get(filename) or {}).keys())
+
+    def arc_data(self, filename):
+        """Get the list of arcs executed for a file."""
+        return list((self._arcs.get(filename) or {}).keys())
 
     def plugin_name(self, filename):
         """Get the plugin name for a file.
@@ -91,40 +96,36 @@ class CoverageData(object):
                 if no plugin was involved.
 
         """
-        return self.plugins.get(filename)
+        return self._plugins.get(filename)
 
     def read(self, file_obj):
-        """Return the stored coverage data from the given file.
+        """Read the coverage data from the given file object.
 
-        Returns three values, suitable for assigning to `self.lines`,
-        `self.arcs`, and `self.plugins`.
+        Should only be used on an empty CoverageData object.
 
         """
-        self.lines = {}
-        self.arcs = {}
-        self.plugins = {}
         try:
             data = pickle.load(file_obj)
             if isinstance(data, dict):
                 # Unpack the 'lines' item.
-                self.lines = dict([
+                self._lines = dict([
                     (f, dict.fromkeys(linenos, None))
                         for f, linenos in iitems(data.get('lines', {}))
                     ])
                 # Unpack the 'arcs' item.
-                self.arcs = dict([
+                self._arcs = dict([
                     (f, dict.fromkeys(arcpairs, None))
                         for f, arcpairs in iitems(data.get('arcs', {}))
                     ])
-                self.plugins = data.get('plugins', {})
+                self._plugins = data.get('plugins', {})
         except Exception:
             # TODO: this used to handle file-doesnt-exist problems.  Do we still need it?
             pass
 
     def read_file(self, filename):
         """Read the coverage data from `filename`."""
-        if self.debug and self.debug.should('dataio'):
-            self.debug.write("Reading data from %r" % (filename,))
+        if self._debug and self._debug.should('dataio'):
+            self._debug.write("Reading data from %r" % (filename,))
         with open(filename, "rb") as f:
             self.read(f)
 
@@ -134,50 +135,51 @@ class CoverageData(object):
         # Create the file data.
         file_data = {}
 
-        file_data['lines'] = dict((f, list(lmap.keys())) for f, lmap in iitems(self.lines))
+        file_data['lines'] = dict((f, list(lmap.keys())) for f, lmap in iitems(self._lines))
 
-        if self.arcs:
-            file_data['arcs'] = dict((f, list(amap.keys())) for f, amap in iitems(self.arcs))
+        if self._arcs:
+            file_data['arcs'] = dict((f, list(amap.keys())) for f, amap in iitems(self._arcs))
 
-        if self.collector:
-            file_data['collector'] = self.collector
+        if self._collector:
+            file_data['collector'] = self._collector
 
-        file_data['plugins'] = self.plugins
+        file_data['plugins'] = self._plugins
 
         # Write the pickle to the file.
         pickle.dump(file_data, file_obj, 2)
 
     def write_file(self, filename):
         """Write the coverage data to `filename`."""
-        if self.debug and self.debug.should('dataio'):
-            self.debug.write("Writing data to %r" % (filename,))
+        if self._debug and self._debug.should('dataio'):
+            self._debug.write("Writing data to %r" % (filename,))
         with open(filename, 'wb') as fdata:
             self.write(fdata)
 
-    def add_line_data(self, line_data):
+    def add_lines(self, line_data):
         """Add executed line data.
 
         `line_data` is { filename: { lineno: None, ... }, ...}
 
         """
         for filename, linenos in iitems(line_data):
-            self.lines.setdefault(filename, {}).update(linenos)
+            self._lines.setdefault(filename, {}).update(linenos)
 
-    def add_arc_data(self, arc_data):
+    def add_arcs(self, arc_data):
         """Add measured arc data.
 
         `arc_data` is { filename: { (l1,l2): None, ... }, ...}
 
         """
         for filename, arcs in iitems(arc_data):
-            self.arcs.setdefault(filename, {}).update(arcs)
+            self._arcs.setdefault(filename, {}).update(arcs)
 
-    def add_plugin_data(self, plugin_data):
+    def add_plugins(self, plugin_data):
         """Add per-file plugin information.
 
         `plugin_data` is { filename: plugin_name, ... }
+
         """
-        self.plugins.update(plugin_data)
+        self._plugins.update(plugin_data)
 
     def update(self, other_data, aliases=None):
         """
@@ -186,39 +188,26 @@ class CoverageData(object):
 
         """
         aliases = aliases or PathAliases()
-        for filename, file_data in iitems(other_data.lines):
+        for filename, file_data in iitems(other_data._lines):
             filename = aliases.map(filename)
-            self.lines.setdefault(filename, {}).update(file_data)
-        for filename, file_data in iitems(other_data.arcs):
+            self._lines.setdefault(filename, {}).update(file_data)
+        for filename, file_data in iitems(other_data._arcs):
             filename = aliases.map(filename)
-            self.arcs.setdefault(filename, {}).update(file_data)
-        self.plugins.update(other_data.plugins)
+            self._arcs.setdefault(filename, {}).update(file_data)
+        self._plugins.update(other_data._plugins)
 
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""
-        self.lines.setdefault(filename, {})
+        self._lines.setdefault(filename, {})
 
     def measured_files(self):
         """A list of all files that had been measured."""
-        return list(self.lines.keys())
-
-    def executed_lines(self, filename):
-        """A map containing all the line numbers executed in `filename`.
-
-        If `filename` hasn't been collected at all (because it wasn't executed)
-        then return an empty map.
-
-        """
-        return self.lines.get(filename) or {}
-
-    def executed_arcs(self, filename):
-        """A map containing all the arcs executed in `filename`."""
-        return self.arcs.get(filename) or {}
+        return list(self._lines.keys())
 
     def add_to_hash(self, filename, hasher):
         """Contribute `filename`'s data to the Md5Hash `hasher`."""
-        hasher.update(self.executed_lines(filename))
-        hasher.update(self.executed_arcs(filename))
+        hasher.update(self.line_data(filename))
+        hasher.update(self.arc_data(filename))
 
     def summary(self, fullpath=False):
         """Return a dict summarizing the coverage data.
@@ -233,13 +222,13 @@ class CoverageData(object):
             filename_fn = lambda f: f
         else:
             filename_fn = os.path.basename
-        for filename, lines in iitems(self.lines):
+        for filename, lines in iitems(self._lines):
             summ[filename_fn(filename)] = len(lines)
         return summ
 
     def has_arcs(self):
         """Does this data have arcs?"""
-        return bool(self.arcs)
+        return bool(self._arcs)
 
 
 class CoverageDataFiles(object):

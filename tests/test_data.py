@@ -67,20 +67,20 @@ class DataTest(DataTestHelpers, CoverageTest):
 
     def test_adding_data(self):
         covdata = CoverageData()
-        covdata.add_line_data(DATA_1)
+        covdata.add_lines(DATA_1)
         self.assert_summary(covdata, SUMMARY_1)
         self.assert_measured_files(covdata, MEASURED_FILES_1)
 
     def test_touch_file(self):
         covdata = CoverageData()
-        covdata.add_line_data(DATA_1)
+        covdata.add_lines(DATA_1)
         covdata.touch_file('x.py')
         self.assert_measured_files(covdata, MEASURED_FILES_1 + ['x.py'])
 
     def test_writing_and_reading(self):
         covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
-        covdata1.add_line_data(DATA_1)
+        covdata1.add_lines(DATA_1)
         covdatafiles.write(covdata1)
 
         covdata2 = CoverageData()
@@ -90,11 +90,11 @@ class DataTest(DataTestHelpers, CoverageTest):
     def test_combining(self):
         covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
-        covdata1.add_line_data(DATA_1)
+        covdata1.add_lines(DATA_1)
         covdatafiles.write(covdata1, suffix='1')
 
         covdata2 = CoverageData()
-        covdata2.add_line_data(DATA_2)
+        covdata2.add_lines(DATA_2)
         covdatafiles.write(covdata2, suffix='2')
 
         covdata3 = CoverageData()
@@ -105,7 +105,7 @@ class DataTest(DataTestHelpers, CoverageTest):
     def test_erasing(self):
         covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
-        covdata1.add_line_data(DATA_1)
+        covdata1.add_lines(DATA_1)
         covdatafiles.write(covdata1)
 
         covdata1.erase()
@@ -120,7 +120,7 @@ class DataTest(DataTestHelpers, CoverageTest):
         # Write with CoverageData, then read the pickle explicitly.
         covdatafiles = CoverageDataFiles()
         covdata = CoverageData()
-        covdata.add_line_data(DATA_1)
+        covdata.add_lines(DATA_1)
         covdatafiles.write(covdata)
 
         with open(".coverage", 'rb') as fdata:
@@ -137,7 +137,7 @@ class DataTest(DataTestHelpers, CoverageTest):
         # Write with CoverageData, then read the pickle explicitly.
         covdatafiles = CoverageDataFiles()
         covdata = CoverageData()
-        covdata.add_arc_data(ARC_DATA_3)
+        covdata.add_arcs(ARC_DATA_3)
         covdatafiles.write(covdata)
 
         with open(".coverage", 'rb') as fdata:
@@ -151,14 +151,14 @@ class DataTest(DataTestHelpers, CoverageTest):
     def test_combining_with_aliases(self):
         covdatafiles = CoverageDataFiles()
         covdata1 = CoverageData()
-        covdata1.add_line_data({
+        covdata1.add_lines({
             '/home/ned/proj/src/a.py': {1: None, 2: None},
             '/home/ned/proj/src/sub/b.py': {3: None},
             })
         covdatafiles.write(covdata1, suffix='1')
 
         covdata2 = CoverageData()
-        covdata2.add_line_data({
+        covdata2.add_lines({
             r'c:\ned\test\a.py': {4: None, 5: None},
             r'c:\ned\test\sub\b.py': {6: None},
             })
@@ -186,12 +186,12 @@ class DataTestInTempDir(DataTestHelpers, CoverageTest):
 
     def test_combining_from_different_directories(self):
         covdata1 = CoverageData()
-        covdata1.add_line_data(DATA_1)
+        covdata1.add_lines(DATA_1)
         os.makedirs('cov1')
         covdata1.write_file('cov1/.coverage.1')
 
         covdata2 = CoverageData()
-        covdata2.add_line_data(DATA_2)
+        covdata2.add_lines(DATA_2)
         os.makedirs('cov2')
         covdata2.write_file('cov2/.coverage.2')
 
