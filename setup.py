@@ -47,7 +47,7 @@ Topic :: Software Development :: Testing
 import os, sys
 
 from setuptools import setup
-from distutils.core import Extension                # pylint: disable=no-name-in-module,import-error
+from distutils.core import Extension                # pylint: disable=no-name-in-module, import-error
 from distutils.command.build_ext import build_ext   # pylint: disable=no-name-in-module, import-error
 from distutils import errors                        # pylint: disable=no-name-in-module
 
