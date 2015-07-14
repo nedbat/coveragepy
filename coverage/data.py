@@ -77,11 +77,11 @@ class CoverageData(object):
         self._arcs = {}
         self._plugins = {}
 
-    def line_data(self, filename):
+    def lines(self, filename):
         """Get the list of lines executed for a file."""
         return list((self._lines.get(filename) or {}).keys())
 
-    def arc_data(self, filename):
+    def arcs(self, filename):
         """Get the list of arcs executed for a file."""
         return list((self._arcs.get(filename) or {}).keys())
 
@@ -182,7 +182,8 @@ class CoverageData(object):
         self._plugins.update(plugin_data)
 
     def update(self, other_data, aliases=None):
-        """
+        """Update this data with data from another `CoverageData`.
+
         If `aliases` is provided, it's a `PathAliases` object that is used to
         re-map paths to match the local machine's.
 
@@ -206,8 +207,8 @@ class CoverageData(object):
 
     def add_to_hash(self, filename, hasher):
         """Contribute `filename`'s data to the Md5Hash `hasher`."""
-        hasher.update(self.line_data(filename))
-        hasher.update(self.arc_data(filename))
+        hasher.update(self.lines(filename))
+        hasher.update(self.arcs(filename))
 
     def summary(self, fullpath=False):
         """Return a dict summarizing the coverage data.

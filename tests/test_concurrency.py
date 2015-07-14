@@ -149,7 +149,7 @@ class ConcurrencyTest(CoverageTest):
 
             # If the test fails, it's helpful to see this info:
             fname = os.path.abspath("try_it.py")
-            linenos = data.line_data(fname)
+            linenos = data.lines(fname)
             print("{0}: {1}".format(len(linenos), linenos))
             print_simple_annotation(code, linenos)
 

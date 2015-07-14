@@ -323,7 +323,7 @@ class ExceptionTest(CoverageTest):
             data = cov.get_data()
             for callname in callnames:
                 filename = callname + ".py"
-                lines = data.line_data(abs_file(filename))
+                lines = data.lines(abs_file(filename))
                 clean_lines[filename] = sorted(lines)
 
             self.assertEqual(clean_lines, lines_expected)
