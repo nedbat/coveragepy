@@ -83,7 +83,7 @@ class ProcessTest(CoverageTest):
         # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.summary()['b_or_c.py'], 7)
+        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
     def test_combine_parallel_data_in_two_steps(self):
         self.make_file("b_or_c.py", """\
@@ -123,7 +123,7 @@ class ProcessTest(CoverageTest):
         # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.summary()['b_or_c.py'], 7)
+        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
     def test_combine_with_rc(self):
         self.make_file("b_or_c.py", """\
@@ -165,7 +165,7 @@ class ProcessTest(CoverageTest):
         # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.summary()['b_or_c.py'], 7)
+        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
         # Reporting should still work even with the .rc file
         out = self.run_command("coverage report")
@@ -219,7 +219,7 @@ class ProcessTest(CoverageTest):
         # files have been combined together.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        summary = data.summary(fullpath=True)
+        summary = data.line_counts(fullpath=True)
         self.assertEqual(len(summary), 1)
         actual = os.path.normcase(os.path.abspath(list(summary.keys())[0]))
         expected = os.path.normcase(os.path.abspath('src/x.py'))
@@ -447,7 +447,7 @@ class ProcessTest(CoverageTest):
         # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.summary()['fork.py'], 9)
+        self.assertEqual(data.line_counts()['fork.py'], 9)
 
     def test_warnings(self):
         self.make_file("hello.py", """\
@@ -558,7 +558,7 @@ class ProcessTest(CoverageTest):
         # The actual number of executed lines in os.py when it's
         # imported is 120 or so.  Just running os.getenv executes
         # about 5.
-        self.assertGreater(data.summary()['os.py'], 50)
+        self.assertGreater(data.line_counts()['os.py'], 50)
 
     def test_deprecation_warnings(self):
         # Test that coverage doesn't trigger deprecation warnings.
@@ -820,7 +820,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         self.assert_exists(".mycovdata")
         data = coverage.CoverageData()
         data.read_file(".mycovdata")
-        self.assertEqual(data.summary()['sub.py'], 2)
+        self.assertEqual(data.line_counts()['sub.py'], 2)
 
 
 class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
@@ -902,7 +902,7 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         self.assert_exists(".coverage")
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        summary = data.summary()
+        summary = data.line_counts()
         print(summary)
         self.assertEqual(summary[source + '.py'], 2)
         self.assertEqual(len(summary), 1)

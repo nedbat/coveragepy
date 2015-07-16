@@ -213,12 +213,17 @@ class CoverageData(object):
         hasher.update(self.lines(filename))
         hasher.update(self.arcs(filename))
 
-    def summary(self, fullpath=False):
-        """Return a dict summarizing the coverage data.
+    def line_counts(self, fullpath=False):
+        """Return a dict summarizing the line coverage data.
 
         Keys are based on the filenames, and values are the number of executed
         lines.  If `fullpath` is true, then the keys are the full pathnames of
         the files, otherwise they are the basenames of the files.
+
+        This is used for testing, not for actual use in the product.
+
+        Returns:
+            dict mapping filenames to counts of lines.
 
         """
         summ = {}

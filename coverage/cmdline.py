@@ -589,7 +589,7 @@ class CoverageScript(object):
                 print(info_header("data"))
                 print("path: %s" % self.coverage.data.filename)
                 print("has_arcs: %r" % self.coverage.data.has_arcs())
-                summary = self.coverage.data.summary(fullpath=True)
+                summary = self.coverage.data.line_counts(fullpath=True)
                 if summary:
                     plugins = self.coverage.data.plugin_data()
                     filenames = sorted(summary.keys())

@@ -50,9 +50,9 @@ class DataTestHelpers(CoverageTest):
         self.data_files = CoverageDataFiles()
         super(DataTestHelpers, self).setUp()
 
-    def assert_summary(self, covdata, summary, fullpath=False):
-        """Check that the summary of `covdata` is `summary`."""
-        self.assertEqual(covdata.summary(fullpath), summary)
+    def assert_line_counts(self, covdata, line_counts, fullpath=False):
+        """Check that the line_counts of `covdata` is `line_counts`."""
+        self.assertEqual(covdata.line_counts(fullpath), line_counts)
 
     def assert_measured_files(self, covdata, measured):
         """Check that `covdata`'s measured files are `measured`."""
@@ -84,12 +84,12 @@ class DataTest(DataTestHelpers, CoverageTest):
             os.remove(".coverage")
         covdata = CoverageData()
         self.data_files.read(covdata)
-        self.assert_summary(covdata, {})
+        self.assert_line_counts(covdata, {})
 
     def test_adding_data(self):
         covdata = CoverageData()
         covdata.add_lines(DATA_1)
-        self.assert_summary(covdata, SUMMARY_1)
+        self.assert_line_counts(covdata, SUMMARY_1)
         self.assert_measured_files(covdata, MEASURED_FILES_1)
 
     def test_touch_file(self):
@@ -105,7 +105,7 @@ class DataTest(DataTestHelpers, CoverageTest):
 
         covdata2 = CoverageData()
         self.data_files.read(covdata2)
-        self.assert_summary(covdata2, SUMMARY_1)
+        self.assert_line_counts(covdata2, SUMMARY_1)
 
     def test_combining(self):
         covdata1 = CoverageData()
@@ -118,7 +118,7 @@ class DataTest(DataTestHelpers, CoverageTest):
 
         covdata3 = CoverageData()
         self.data_files.combine_parallel_data(covdata3)
-        self.assert_summary(covdata3, SUMMARY_1_2)
+        self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
 
     def test_erasing(self):
@@ -127,12 +127,12 @@ class DataTest(DataTestHelpers, CoverageTest):
         self.data_files.write(covdata1)
 
         covdata1.erase()
-        self.assert_summary(covdata1, {})
+        self.assert_line_counts(covdata1, {})
 
         self.data_files.erase()
         covdata2 = CoverageData()
         self.data_files.read(covdata2)
-        self.assert_summary(covdata2, {})
+        self.assert_line_counts(covdata2, {})
 
     def test_file_format(self):
         # Write with CoverageData, then read the pickle explicitly.
@@ -188,7 +188,7 @@ class DataTest(DataTestHelpers, CoverageTest):
         apy = canonical_filename('./a.py')
         sub_bpy = canonical_filename('./sub/b.py')
 
-        self.assert_summary(covdata3, {apy: 4, sub_bpy: 2}, fullpath=True)
+        self.assert_line_counts(covdata3, {apy: 4, sub_bpy: 2}, fullpath=True)
         self.assert_measured_files(covdata3, [apy, sub_bpy])
 
 
@@ -214,5 +214,5 @@ class DataTestInTempDir(DataTestHelpers, CoverageTest):
             'cov2/',
         ])
 
-        self.assert_summary(covdata3, SUMMARY_1_2)
+        self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)

@@ -154,7 +154,7 @@ class ConcurrencyTest(CoverageTest):
             print_simple_annotation(code, linenos)
 
             lines = line_count(code)
-            self.assertEqual(data.summary()['try_it.py'], lines)
+            self.assertEqual(data.line_counts()['try_it.py'], lines)
         else:
             expected_out = (
                 "Can't support concurrency=%s with PyTracer, "
