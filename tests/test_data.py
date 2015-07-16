@@ -46,10 +46,6 @@ Y_PY_ARCS_3 = [(-1, 17), (17, 23), (23, -1)]
 class DataTestHelpers(CoverageTest):
     """Test helpers for data tests."""
 
-    def setUp(self):
-        self.data_files = CoverageDataFiles()
-        super(DataTestHelpers, self).setUp()
-
     def assert_line_counts(self, covdata, line_counts, fullpath=False):
         """Check that the line_counts of `covdata` is `line_counts`."""
         self.assertEqual(covdata.line_counts(fullpath), line_counts)
@@ -60,7 +56,7 @@ class DataTestHelpers(CoverageTest):
 
 
 class DataTest(DataTestHelpers, CoverageTest):
-    """Test cases for coverage.data."""
+    """Test cases for CoverageData."""
 
     run_in_temp_dir = False
 
@@ -78,14 +74,6 @@ class DataTest(DataTestHelpers, CoverageTest):
         covdata.add_arcs(ARC_DATA_3)
         self.assertTrue(covdata)
 
-    def test_reading_empty(self):
-        # Make sure there is no .coverage data file here.
-        if os.path.exists(".coverage"):
-            os.remove(".coverage")
-        covdata = CoverageData()
-        self.data_files.read(covdata)
-        self.assert_line_counts(covdata, {})
-
     def test_adding_data(self):
         covdata = CoverageData()
         covdata.add_lines(DATA_1)
@@ -97,6 +85,24 @@ class DataTest(DataTestHelpers, CoverageTest):
         covdata.add_lines(DATA_1)
         covdata.touch_file('x.py')
         self.assert_measured_files(covdata, MEASURED_FILES_1 + ['x.py'])
+
+
+class DataFilesTest(DataTestHelpers, CoverageTest):
+    """Tests of CoverageDataFiles."""
+
+    no_files_in_temp_dir = True
+
+    def setUp(self):
+        super(DataFilesTest, self).setUp()
+        self.data_files = CoverageDataFiles()
+
+    def test_reading_empty(self):
+        # Make sure there is no .coverage data file here.
+        if os.path.exists(".coverage"):
+            os.remove(".coverage")
+        covdata = CoverageData()
+        self.data_files.read(covdata)
+        self.assert_line_counts(covdata, {})
 
     def test_writing_and_reading(self):
         covdata1 = CoverageData()
@@ -190,12 +196,6 @@ class DataTest(DataTestHelpers, CoverageTest):
 
         self.assert_line_counts(covdata3, {apy: 4, sub_bpy: 2}, fullpath=True)
         self.assert_measured_files(covdata3, [apy, sub_bpy])
-
-
-class DataTestInTempDir(DataTestHelpers, CoverageTest):
-    """Test cases for coverage.data."""
-
-    no_files_in_temp_dir = True
 
     def test_combining_from_different_directories(self):
         covdata1 = CoverageData()
