@@ -35,7 +35,7 @@ spell:
 	-pylint --disable=all --enable=spelling $(LINTABLE)
 
 pep8:
-	pep8 --filename=*.py --ignore=E401,E301 --repeat coverage
+	pep8 --filename=*.py --ignore=E401,E301 --repeat $(LINTABLE)
 
 test:
 	tox -e py27 $(ARGS)

@@ -113,13 +113,13 @@ class CoverageData(object):
                 # Unpack the 'lines' item.
                 self._lines = dict([
                     (f, dict.fromkeys(linenos, None))
-                        for f, linenos in iitems(data.get('lines', {}))
-                    ])
+                    for f, linenos in iitems(data.get('lines', {}))
+                ])
                 # Unpack the 'arcs' item.
                 self._arcs = dict([
                     (f, dict.fromkeys(arcpairs, None))
-                        for f, arcpairs in iitems(data.get('arcs', {}))
-                    ])
+                    for f, arcpairs in iitems(data.get('arcs', {}))
+                ])
                 self._plugins = data.get('plugins', {})
         except Exception:
             # TODO: this used to handle file-doesnt-exist problems.  Do we still need it?
@@ -279,7 +279,7 @@ class CoverageDataFiles(object):
             suffix = "%s%s.%s.%06d" % (
                 socket.gethostname(), extra, os.getpid(),
                 random.randint(0, 999999)
-                )
+            )
 
         if suffix:
             filename += "." + suffix

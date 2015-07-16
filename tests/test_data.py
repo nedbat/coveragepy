@@ -155,14 +155,14 @@ class DataTest(DataTestHelpers, CoverageTest):
         covdata1.add_lines({
             '/home/ned/proj/src/a.py': {1: None, 2: None},
             '/home/ned/proj/src/sub/b.py': {3: None},
-            })
+        })
         self.data_files.write(covdata1, suffix='1')
 
         covdata2 = CoverageData()
         covdata2.add_lines({
             r'c:\ned\test\a.py': {4: None, 5: None},
             r'c:\ned\test\sub\b.py': {6: None},
-            })
+        })
         self.data_files.write(covdata2, suffix='2')
 
         covdata3 = CoverageData()
@@ -174,8 +174,8 @@ class DataTest(DataTestHelpers, CoverageTest):
         apy = canonical_filename('./a.py')
         sub_bpy = canonical_filename('./sub/b.py')
 
-        self.assert_summary(covdata3, { apy: 4, sub_bpy: 2 }, fullpath=True)
-        self.assert_measured_files(covdata3, [apy,sub_bpy])
+        self.assert_summary(covdata3, {apy: 4, sub_bpy: 2}, fullpath=True)
+        self.assert_measured_files(covdata3, [apy, sub_bpy])
 
 
 class DataTestInTempDir(DataTestHelpers, CoverageTest):
@@ -198,7 +198,7 @@ class DataTestInTempDir(DataTestHelpers, CoverageTest):
         self.data_files.combine_parallel_data(covdata3, data_dirs=[
             'cov1/',
             'cov2/',
-            ])
+        ])
 
         self.assert_summary(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
