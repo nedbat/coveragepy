@@ -9,6 +9,9 @@ import os
 # This is a list of forced debugging options.
 FORCED_DEBUG = []
 
+# A hack for debugging testing in sub-processes.
+_TEST_NAME_FILE = ""    # "/tmp/covtest.txt"
+
 
 class DebugControl(object):
     """Control and output for debugging."""

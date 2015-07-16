@@ -14,7 +14,7 @@ from nose.plugins.skip import SkipTest
 from tests.helpers import run_command
 from tests.backtest import execfile         # pylint: disable=redefined-builtin
 
-from coverage.control import _TEST_NAME_FILE
+from coverage.debug import _TEST_NAME_FILE
 
 
 def test_farm(clean_only=False):

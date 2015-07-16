@@ -4,8 +4,6 @@ import atexit
 import inspect
 import os
 import platform
-import random
-import socket
 import sys
 import traceback
 
@@ -283,7 +281,7 @@ class Coverage(object):
             # environments (virtualenv, for example), these modules may be
             # spread across a few locations. Look at all the candidate modules
             # we've imported, and take all the different ones.
-            for m in (atexit, os, platform, random, socket, _structseq):
+            for m in (atexit, inspect, os, platform, _structseq, traceback):
                 if m is not None and hasattr(m, "__file__"):
                     self.pylib_dirs.add(self._canonical_dir(m))
             if _structseq and not hasattr(_structseq, '__file__'):
@@ -708,24 +706,8 @@ class Coverage(object):
     def save(self):
         """Save the collected coverage data to the data file."""
         self._init()
-        data_suffix = self.data_suffix
-        if data_suffix is True:
-            # If data_suffix was a simple true value, then make a suffix with
-            # plenty of distinguishing information.  We do this here in
-            # `save()` at the last minute so that the pid will be correct even
-            # if the process forks.
-            extra = ""
-            if _TEST_NAME_FILE:                             # pragma: debugging
-                with open(_TEST_NAME_FILE) as f:
-                    test_name = f.read()
-                extra = "." + test_name
-            data_suffix = "%s%s.%s.%06d" % (
-                socket.gethostname(), extra, os.getpid(),
-                random.randint(0, 999999)
-                )
-
         self.get_data()
-        self.data_files.write(self.data, suffix=data_suffix)
+        self.data_files.write(self.data, suffix=self.data_suffix)
 
     def combine(self, data_dirs=None):
         """Combine together a number of similarly-named coverage data files.
@@ -1159,7 +1141,3 @@ def process_startup():
     cov.start()
     cov._warn_no_data = False
     cov._warn_unimported_source = False
-
-
-# A hack for debugging testing in sub-processes.
-_TEST_NAME_FILE = ""    # "/tmp/covtest.txt"

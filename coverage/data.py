@@ -2,8 +2,11 @@
 
 import glob
 import os
+import random
+import socket
 
 from coverage.backward import iitems, pickle
+from coverage.debug import _TEST_NAME_FILE
 from coverage.files import PathAliases
 from coverage.misc import file_be_gone
 
@@ -263,6 +266,21 @@ class CoverageDataFiles(object):
 
         """
         filename = self.filename
+        if suffix is True:
+            # If data_suffix was a simple true value, then make a suffix with
+            # plenty of distinguishing information.  We do this here in
+            # `save()` at the last minute so that the pid will be correct even
+            # if the process forks.
+            extra = ""
+            if _TEST_NAME_FILE:                             # pragma: debugging
+                with open(_TEST_NAME_FILE) as f:
+                    test_name = f.read()
+                extra = "." + test_name
+            suffix = "%s%s.%s.%06d" % (
+                socket.gethostname(), extra, os.getpid(),
+                random.randint(0, 999999)
+                )
+
         if suffix:
             filename += "." + suffix
         data.write_file(filename)

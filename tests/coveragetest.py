@@ -12,7 +12,7 @@ import sys
 import coverage
 from coverage.backunittest import TestCase
 from coverage.backward import StringIO, import_local_file, string_class
-from coverage.control import _TEST_NAME_FILE
+from coverage.debug import _TEST_NAME_FILE
 from coverage.test_helpers import (
     EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
 )

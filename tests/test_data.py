@@ -174,9 +174,7 @@ class DataTest(DataTestHelpers, CoverageTest):
         apy = canonical_filename('./a.py')
         sub_bpy = canonical_filename('./sub/b.py')
 
-        self.assert_summary(
-            covdata3, { apy: 4, sub_bpy: 2, }, fullpath=True
-            )
+        self.assert_summary(covdata3, { apy: 4, sub_bpy: 2 }, fullpath=True)
         self.assert_measured_files(covdata3, [apy,sub_bpy])
 
 
