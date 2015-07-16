@@ -48,15 +48,17 @@ metahtml:
 
 # Kitting
 
-# For kitting on Windows:
-# SDIST_CMD = python setup.py sdist --keep-temp --formats=gztar fixtar --owner=ned --group=coverage --clean
-SDIST_CMD = python setup.py sdist --formats=gztar
-
 kit:
-	$(SDIST_CMD)
+	python setup.py sdist --formats=gztar,zip
+
+wheel:
+	tox -c tox_wheels.ini
 
 kit_upload:
-	$(SDIST_CMD) upload
+	twine upload dist/*
+
+winkit:
+	tox -c tox_winkits.ini
 
 kit_local:
 	cp -v dist/* `awk -F "=" '/find-links/ {print $$2}' ~/.pip/pip.conf`

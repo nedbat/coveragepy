@@ -4,3 +4,6 @@ mock
 PyContracts
 pylint
 tox >= 1.9
+
+# and for kitting...
+twine
