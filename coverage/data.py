@@ -322,14 +322,3 @@ class CoverageDataFiles(object):
             new_data.read_file(f)
             data.update(new_data, aliases=aliases)
             os.remove(f)
-
-
-if __name__ == '__main__':
-    # Ad-hoc: show the raw data in a data file.
-    import pprint, sys
-    covdata = CoverageData()
-    if sys.argv[1:]:
-        fname = sys.argv[1]
-    else:
-        fname = covdata.filename
-    pprint.pprint(covdata._raw_data(fname))
