@@ -230,6 +230,11 @@ class CoverageData(object):
             summ[filename_fn(filename)] = len(lines)
         return summ
 
+    def __nonzero__(self):
+        return bool(self._lines) or bool(self._arcs)
+
+    __bool__ = __nonzero__
+
     def has_arcs(self):
         """Does this data have arcs?"""
         return bool(self._arcs)

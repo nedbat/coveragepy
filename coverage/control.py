@@ -772,8 +772,7 @@ class Coverage(object):
                     )
 
         # Find out if we got any data.
-        summary = self.data.summary()
-        if not summary and self._warn_no_data:
+        if not self.data and self._warn_no_data:
             self._warn("No data was collected.")
 
         # Find files that were never executed at all.

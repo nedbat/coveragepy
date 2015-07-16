@@ -64,6 +64,20 @@ class DataTest(DataTestHelpers, CoverageTest):
 
     run_in_temp_dir = False
 
+    def test_empty_data_is_false(self):
+        covdata = CoverageData()
+        self.assertFalse(covdata)
+
+    def test_line_data_is_true(self):
+        covdata = CoverageData()
+        covdata.add_lines(DATA_1)
+        self.assertTrue(covdata)
+
+    def test_arc_data_is_true(self):
+        covdata = CoverageData()
+        covdata.add_arcs(ARC_DATA_3)
+        self.assertTrue(covdata)
+
     def test_reading_empty(self):
         # Make sure there is no .coverage data file here.
         if os.path.exists(".coverage"):
