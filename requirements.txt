@@ -2,8 +2,11 @@
 nose
 mock
 PyContracts
-pylint
 tox >= 1.9
+
+# and for linting...
+pyenchant
+pylint
 
 # and for kitting...
 twine
