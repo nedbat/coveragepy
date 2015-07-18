@@ -12,7 +12,7 @@ import sys
 import coverage
 from coverage.backunittest import TestCase
 from coverage.backward import StringIO, import_local_file, string_class
-from coverage.debug import _TEST_NAME_FILE
+from coverage.debug import _TEST_NAME_FILE, DebugControl
 from coverage.test_helpers import (
     EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
 )
@@ -373,3 +373,13 @@ class CoverageTest(
     def last_line_squeezed(self, report):
         """Return the last line of `report` with the spaces squeezed down."""
         return self.squeezed_lines(report)[-1]
+
+
+class DebugControlString(DebugControl):
+    """A `DebugControl` that writes to a StringIO, for testing."""
+    def __init__(self, options):
+        super(DebugControlString, self).__init__(options, StringIO())
+
+    def get_output(self):
+        """Get the output text from the `DebugControl`."""
+        return self.output.getvalue()

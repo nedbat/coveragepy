@@ -7,7 +7,7 @@ from coverage.backward import pickle
 from coverage.data import CoverageData, CoverageDataFiles
 from coverage.files import PathAliases, canonical_filename
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, DebugControlString
 
 
 DATA_1 = {
@@ -127,6 +127,38 @@ class DataFilesTest(DataTestHelpers, CoverageTest):
         covdata2 = CoverageData()
         self.data_files.read(covdata2)
         self.assert_line_counts(covdata2, SUMMARY_1)
+
+    def test_debug_output_with_debug_option(self):
+        # With debug option dataio, we get debug output about reading and
+        # writing files.
+        debug = DebugControlString(options=["dataio"])
+        covdata1 = CoverageData(debug=debug)
+        covdata1.add_lines(DATA_1)
+        self.data_files.write(covdata1)
+
+        covdata2 = CoverageData(debug=debug)
+        self.data_files.read(covdata2)
+        self.assert_line_counts(covdata2, SUMMARY_1)
+
+        self.assertRegex(
+            debug.get_output(),
+            r"^Writing data to '.*\.coverage'\n"
+            r"Reading data from '.*\.coverage'\n$"
+        )
+
+    def test_debug_output_without_debug_option(self):
+        # With a debug object, but not the dataio option, we don't get debug
+        # output.
+        debug = DebugControlString(options=[])
+        covdata1 = CoverageData(debug=debug)
+        covdata1.add_lines(DATA_1)
+        self.data_files.write(covdata1)
+
+        covdata2 = CoverageData(debug=debug)
+        self.data_files.read(covdata2)
+        self.assert_line_counts(covdata2, SUMMARY_1)
+
+        self.assertEqual(debug.get_output(), "")
 
     def test_combining(self):
         covdata1 = CoverageData()
