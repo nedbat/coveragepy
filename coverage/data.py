@@ -8,7 +8,7 @@ import socket
 from coverage.backward import iitems, pickle
 from coverage.debug import _TEST_NAME_FILE
 from coverage.files import PathAliases
-from coverage.misc import file_be_gone
+from coverage.misc import CoverageException, file_be_gone
 
 
 class CoverageData(object):
@@ -18,18 +18,23 @@ class CoverageData(object):
 
         * collector: a string identifying the collecting software
 
-        * lines: a dict mapping filenames to sorted lists of line numbers
+        * lines: a dict mapping filenames to lists of line numbers
           executed::
 
             { 'file1': [17,23,45], 'file2': [1,2,3], ... }
 
-        * arcs: a dict mapping filenames to sorted lists of line number pairs::
+        * arcs: a dict mapping filenames to lists of line number pairs::
 
             { 'file1': [(17,23), (17,25), (25,26)], ... }
 
         * plugins: a dict mapping filenames to plugin names::
 
             { 'file1': "django.coverage", ... }
+
+    Only one of `lines` or `arcs` will be present: with branch coverage, data
+    is stored as arcs. Without branch coverage, it is stored as lines.  The
+    line data is easily recovered from the arcs: it is all the first elements
+    of the pairs that are greater than zero.
 
     """
 
@@ -82,7 +87,12 @@ class CoverageData(object):
 
     def lines(self, filename):
         """Get the list of lines executed for a file."""
-        return list((self._lines.get(filename) or {}).keys())
+        if self._arcs:
+            arcs = self._arcs.get(filename) or {}
+            return [s for s, __ in arcs if s > 0]
+        else:
+            lines = self._lines.get(filename) or {}
+            return list(lines)
 
     def arcs(self, filename):
         """Get the list of arcs executed for a file."""
@@ -107,30 +117,29 @@ class CoverageData(object):
         Should only be used on an empty CoverageData object.
 
         """
-        try:
-            data = pickle.load(file_obj)
-            if isinstance(data, dict):
-                # Unpack the 'lines' item.
-                self._lines = dict([
-                    (f, dict.fromkeys(linenos, None))
-                    for f, linenos in iitems(data.get('lines', {}))
-                ])
-                # Unpack the 'arcs' item.
-                self._arcs = dict([
-                    (f, dict.fromkeys(arcpairs, None))
-                    for f, arcpairs in iitems(data.get('arcs', {}))
-                ])
-                self._plugins = data.get('plugins', {})
-        except Exception:
-            # TODO: this used to handle file-doesnt-exist problems.  Do we still need it?
-            pass
+        data = pickle.load(file_obj)
+
+        # Unpack the 'lines' item.
+        self._lines = dict([
+            (f, dict.fromkeys(linenos, None))
+            for f, linenos in iitems(data.get('lines', {}))
+        ])
+        # Unpack the 'arcs' item.
+        self._arcs = dict([
+            (f, dict.fromkeys(arcpairs, None))
+            for f, arcpairs in iitems(data.get('arcs', {}))
+        ])
+        self._plugins = data.get('plugins', {})
 
     def read_file(self, filename):
         """Read the coverage data from `filename`."""
         if self._debug and self._debug.should('dataio'):
             self._debug.write("Reading data from %r" % (filename,))
-        with open(filename, "rb") as f:
-            self.read(f)
+        try:
+            with open(filename, "rb") as f:
+                self.read(f)
+        except Exception as exc:
+            raise CoverageException("Couldn't read data from '%s': %s" % (filename, exc))
 
     def write(self, file_obj):
         """Write the coverage data to `file_obj`."""
@@ -202,11 +211,11 @@ class CoverageData(object):
 
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""
-        self._lines.setdefault(filename, {})
+        (self._arcs or self._lines).setdefault(filename, {})
 
     def measured_files(self):
         """A list of all files that had been measured."""
-        return list(self._lines.keys())
+        return list(self._arcs or self._lines)
 
     def add_to_hash(self, filename, hasher):
         """Contribute `filename`'s data to the Md5Hash `hasher`."""
@@ -231,8 +240,8 @@ class CoverageData(object):
             filename_fn = lambda f: f
         else:
             filename_fn = os.path.basename
-        for filename, lines in iitems(self._lines):
-            summ[filename_fn(filename)] = len(lines)
+        for filename in self.measured_files():
+            summ[filename_fn(filename)] = len(self.lines(filename))
         return summ
 
     def __nonzero__(self):

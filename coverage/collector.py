@@ -3,6 +3,8 @@
 import os, sys
 
 from coverage import env
+from coverage.backward import iitems
+from coverage.files import abs_file
 from coverage.misc import CoverageException
 from coverage.pytracer import PyTracer
 
@@ -20,7 +22,7 @@ except ImportError:
         # exception here causes all sorts of other noise in unittest.
         sys.stderr.write(
             "*** COVERAGE_TEST_TRACER is 'c' but can't import CTracer!\n"
-            )
+        )
         sys.exit(1)
     CTracer = None
 
@@ -46,7 +48,8 @@ class Collector(object):
     # the top, and resumed when they become the top again.
     _collectors = []
 
-    def __init__(self,
+    def __init__(
+        self,
         should_trace, check_include, timid, branch, warn, concurrency,
     ):
         """Create a collector.
@@ -289,45 +292,20 @@ class Collector(object):
         else:
             self._start_tracer()
 
-    def get_line_data(self):
-        """Return the line data collected.
+    def save_data(self, covdata):
+        """Save the collected data to a `CoverageData`.
 
-        Data is { filename: { lineno: None, ...}, ...}
+        Also resets the collector.
 
         """
+        def abs_file_dict(d):
+            """Return a dict like d, but with keys modified by `abs_file`."""
+            return dict((abs_file(k), v) for k, v in iitems(d))
+
         if self.branch:
-            # If we were measuring branches, then we have to re-build the dict
-            # to show line data.  We'll use the first lines of all the arcs,
-            # if they are actual lines. We don't need the second lines, because
-            # the second lines will also be first lines, sometimes to exits.
-            line_data = {}
-            for f, arcs in self.data.items():
-                line_data[f] = dict(
-                    (l1, None) for l1, _ in arcs.keys() if l1 > 0
-                )
-            return line_data
+            covdata.add_arcs(abs_file_dict(self.data))
         else:
-            return self.data
+            covdata.add_lines(abs_file_dict(self.data))
+        covdata.add_plugins(abs_file_dict(self.plugin_data))
 
-    def get_arc_data(self):
-        """Return the arc data collected.
-
-        Data is { filename: { (l1, l2): None, ...}, ...}
-
-        Note that no data is collected or returned if the Collector wasn't
-        created with `branch` true.
-
-        """
-        if self.branch:
-            return self.data
-        else:
-            return {}
-
-    def get_plugin_data(self):
-        """Return the mapping of source files to plugins.
-
-        Returns:
-            dict: { filename: plugin_name, ... }
-
-        """
-        return self.plugin_data
+        self.reset()

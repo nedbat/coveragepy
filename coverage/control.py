@@ -744,15 +744,7 @@ class Coverage(object):
         if not self._measured:
             return
 
-        def abs_file_dict(d):
-            """Return a dict like d, but with keys modified by `abs_file`."""
-            return dict((abs_file(k), v) for k,v in iitems(d))
-
-        # TODO: seems like this parallel structure is getting kinda old...
-        self.data.add_lines(abs_file_dict(self.collector.get_line_data()))
-        self.data.add_arcs(abs_file_dict(self.collector.get_arc_data()))
-        self.data.add_plugins(abs_file_dict(self.collector.get_plugin_data()))
-        self.collector.reset()
+        self.collector.save_data(self.data)
 
         # If there are still entries in the source_pkgs list, then we never
         # encountered those packages.

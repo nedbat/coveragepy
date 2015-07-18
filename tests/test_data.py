@@ -41,6 +41,9 @@ ARC_DATA_3 = {
 }
 X_PY_ARCS_3 = [(-1, 1), (1, 2), (2, 3), (3, -1)]
 Y_PY_ARCS_3 = [(-1, 17), (17, 23), (23, -1)]
+SUMMARY_3 = {'x.py': 3, 'y.py': 2}
+MEASURED_FILES_3 = ['x.py', 'y.py']
+X_PY_LINES_3 = [1, 2, 3]
 
 
 class DataTestHelpers(CoverageTest):
@@ -74,11 +77,20 @@ class DataTest(DataTestHelpers, CoverageTest):
         covdata.add_arcs(ARC_DATA_3)
         self.assertTrue(covdata)
 
-    def test_adding_data(self):
+    def test_adding_lines(self):
         covdata = CoverageData()
         covdata.add_lines(DATA_1)
         self.assert_line_counts(covdata, SUMMARY_1)
         self.assert_measured_files(covdata, MEASURED_FILES_1)
+        self.assertCountEqual(covdata.lines("a.py"), A_PY_LINES_1)
+
+    def test_adding_arcs(self):
+        covdata = CoverageData()
+        covdata.add_arcs(ARC_DATA_3)
+        self.assert_line_counts(covdata, SUMMARY_3)
+        self.assert_measured_files(covdata, MEASURED_FILES_3)
+        self.assertCountEqual(covdata.lines("x.py"), X_PY_LINES_3)
+        self.assertCountEqual(covdata.arcs("x.py"), X_PY_ARCS_3)
 
     def test_touch_file(self):
         covdata = CoverageData()
@@ -97,9 +109,6 @@ class DataFilesTest(DataTestHelpers, CoverageTest):
         self.data_files = CoverageDataFiles()
 
     def test_reading_empty(self):
-        # Make sure there is no .coverage data file here.
-        if os.path.exists(".coverage"):
-            os.remove(".coverage")
         covdata = CoverageData()
         self.data_files.read(covdata)
         self.assert_line_counts(covdata, {})
