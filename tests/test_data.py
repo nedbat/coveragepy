@@ -98,6 +98,12 @@ class DataTest(DataTestHelpers, CoverageTest):
         covdata.touch_file('x.py')
         self.assert_measured_files(covdata, MEASURED_FILES_1 + ['x.py'])
 
+    def test_plugin_name(self):
+        covdata = CoverageData()
+        covdata.add_plugins({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})
+        self.assertEqual(covdata.plugin_name("p1.foo"), "p1.plugin")
+        self.assertIsNone(covdata.plugin_name("p3.not_here"))
+
 
 class DataFilesTest(DataTestHelpers, CoverageTest):
     """Tests of CoverageDataFiles."""
@@ -163,7 +169,7 @@ class DataFilesTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(lines['a.py'], A_PY_LINES_1)
         self.assertCountEqual(lines['b.py'], B_PY_LINES_1)
         # If not measuring branches, there's no arcs entry.
-        self.assertEqual(data.get('arcs', 'not there'), 'not there')
+        self.assertNotIn('arcs', data)
 
     def test_file_format_with_arcs(self):
         # Write with CoverageData, then read the pickle explicitly.
@@ -176,6 +182,7 @@ class DataFilesTest(DataTestHelpers, CoverageTest):
 
         self.assertNotIn('lines', data)
         arcs = data['arcs']
+        self.assertCountEqual(arcs.keys(), MEASURED_FILES_3)
         self.assertCountEqual(arcs['x.py'], X_PY_ARCS_3)
         self.assertCountEqual(arcs['y.py'], Y_PY_ARCS_3)
 
