@@ -174,7 +174,7 @@ class DataFilesTest(DataTestHelpers, CoverageTest):
         with open(".coverage", 'rb') as fdata:
             data = pickle.load(fdata)
 
-        self.assertCountEqual(data['lines'].keys(), [])
+        self.assertNotIn('lines', data)
         arcs = data['arcs']
         self.assertCountEqual(arcs['x.py'], X_PY_ARCS_3)
         self.assertCountEqual(arcs['y.py'], Y_PY_ARCS_3)

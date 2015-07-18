@@ -147,10 +147,10 @@ class CoverageData(object):
         # Create the file data.
         file_data = {}
 
-        file_data['lines'] = dict((f, list(lmap.keys())) for f, lmap in iitems(self._lines))
-
         if self._arcs:
             file_data['arcs'] = dict((f, list(amap.keys())) for f, amap in iitems(self._arcs))
+        else:
+            file_data['lines'] = dict((f, list(lmap.keys())) for f, lmap in iitems(self._lines))
 
         if self._collector:
             file_data['collector'] = self._collector
