@@ -6,6 +6,7 @@ import os.path
 from coverage.backward import pickle
 from coverage.data import CoverageData, CoverageDataFiles
 from coverage.files import PathAliases, canonical_filename
+from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest, DebugControlString
 
@@ -58,7 +59,7 @@ class DataTestHelpers(CoverageTest):
         self.assertCountEqual(covdata.measured_files(), measured)
 
 
-class DataTest(DataTestHelpers, CoverageTest):
+class CoverageDataTest(DataTestHelpers, CoverageTest):
     """Test cases for CoverageData."""
 
     run_in_temp_dir = False
@@ -105,16 +106,61 @@ class DataTest(DataTestHelpers, CoverageTest):
         self.assertIsNone(covdata.plugin_name("p3.not_here"))
 
 
-class DataFilesTest(DataTestHelpers, CoverageTest):
+class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
+    """Tests of CoverageData that need a temp dir to make files."""
+
+    def test_read_write_lines(self):
+        covdata1 = CoverageData(collector="coverage tests")
+        covdata1.add_lines(DATA_1)
+        covdata1.write_file("lines.dat")
+
+        covdata2 = CoverageData()
+        covdata2.read_file("lines.dat")
+        self.assert_line_counts(covdata2, SUMMARY_1)
+        self.assert_measured_files(covdata2, MEASURED_FILES_1)
+        self.assertCountEqual(covdata2.lines("a.py"), A_PY_LINES_1)
+
+    def test_read_write_arcs(self):
+        covdata1 = CoverageData(collector="coverage tests")
+        covdata1.add_arcs(ARC_DATA_3)
+        covdata1.write_file("arcs.dat")
+
+        covdata2 = CoverageData()
+        covdata2.read_file("arcs.dat")
+        self.assert_line_counts(covdata2, SUMMARY_3)
+        self.assert_measured_files(covdata2, MEASURED_FILES_3)
+        self.assertCountEqual(covdata2.lines("x.py"), X_PY_LINES_3)
+        self.assertCountEqual(covdata2.arcs("x.py"), X_PY_ARCS_3)
+
+    def test_read_errors(self):
+        covdata = CoverageData()
+
+        self.make_file("xyzzy.dat", "xyzzy")
+        with self.assertRaises(CoverageException):
+            covdata.read_file("xyzzy.dat")
+
+        self.make_file("empty.dat", "")
+        with self.assertRaises(CoverageException):
+            covdata.read_file("empty.dat")
+
+        with self.assertRaises(CoverageException):
+            covdata.read_file("nonexistent.dat")
+
+        # and after all that, no data should be in our CoverageData.
+        self.assertFalse(covdata)
+
+
+class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
     """Tests of CoverageDataFiles."""
 
     no_files_in_temp_dir = True
 
     def setUp(self):
-        super(DataFilesTest, self).setUp()
+        super(CoverageDataFilesTest, self).setUp()
         self.data_files = CoverageDataFiles()
 
-    def test_reading_empty(self):
+    def test_reading_missing(self):
+        self.assert_doesnt_exist(".coverage")
         covdata = CoverageData()
         self.data_files.read(covdata)
         self.assert_line_counts(covdata, {})
