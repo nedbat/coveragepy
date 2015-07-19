@@ -11,7 +11,7 @@ from coverage.misc import CoverageException
 from tests.coveragetest import CoverageTest, DebugControlString
 
 
-DATA_1 = {
+LINES_1 = {
     'a.py': {1: None, 2: None},
     'b.py': {3: None},
 }
@@ -20,14 +20,14 @@ MEASURED_FILES_1 = ['a.py', 'b.py']
 A_PY_LINES_1 = [1, 2]
 B_PY_LINES_1 = [3]
 
-DATA_2 = {
+LINES_2 = {
     'a.py': {1: None, 5: None},
     'c.py': {17: None},
 }
 SUMMARY_1_2 = {'a.py': 3, 'b.py': 1, 'c.py': 1}
 MEASURED_FILES_1_2 = ['a.py', 'b.py', 'c.py']
 
-ARC_DATA_3 = {
+ARCS_3 = {
     'x.py': {
         (-1, 1): None,
         (1, 2): None,
@@ -47,7 +47,7 @@ MEASURED_FILES_3 = ['x.py', 'y.py']
 X_PY_LINES_3 = [1, 2, 3]
 Y_PY_LINES_3 = [17, 23]
 
-ARC_DATA_4 = {
+ARCS_4 = {
     'x.py': {
         (-1, 2): None,
         (2, 5): None,
@@ -85,24 +85,24 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
     def test_line_data_is_true(self):
         covdata = CoverageData()
-        covdata.add_lines(DATA_1)
+        covdata.add_lines(LINES_1)
         self.assertTrue(covdata)
 
     def test_arc_data_is_true(self):
         covdata = CoverageData()
-        covdata.add_arcs(ARC_DATA_3)
+        covdata.add_arcs(ARCS_3)
         self.assertTrue(covdata)
 
     def test_adding_lines(self):
         covdata = CoverageData()
-        covdata.add_lines(DATA_1)
+        covdata.add_lines(LINES_1)
         self.assert_line_counts(covdata, SUMMARY_1)
         self.assert_measured_files(covdata, MEASURED_FILES_1)
         self.assertCountEqual(covdata.lines("a.py"), A_PY_LINES_1)
 
     def test_adding_arcs(self):
         covdata = CoverageData()
-        covdata.add_arcs(ARC_DATA_3)
+        covdata.add_arcs(ARCS_3)
         self.assert_line_counts(covdata, SUMMARY_3)
         self.assert_measured_files(covdata, MEASURED_FILES_3)
         self.assertCountEqual(covdata.lines("x.py"), X_PY_LINES_3)
@@ -112,25 +112,25 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
     def test_cant_add_arcs_to_lines(self):
         covdata = CoverageData()
-        covdata.add_lines(DATA_1)
+        covdata.add_lines(LINES_1)
         with self.assertRaises(CoverageException):
-            covdata.add_arcs(ARC_DATA_3)
+            covdata.add_arcs(ARCS_3)
 
     def test_cant_add_lines_to_arcs(self):
         covdata = CoverageData()
-        covdata.add_arcs(ARC_DATA_3)
+        covdata.add_arcs(ARCS_3)
         with self.assertRaises(CoverageException):
-            covdata.add_lines(DATA_1)
+            covdata.add_lines(LINES_1)
 
     def test_touch_file_with_lines(self):
         covdata = CoverageData()
-        covdata.add_lines(DATA_1)
+        covdata.add_lines(LINES_1)
         covdata.touch_file('zzz.py')
         self.assert_measured_files(covdata, MEASURED_FILES_1 + ['zzz.py'])
 
     def test_touch_file_with_arcs(self):
         covdata = CoverageData()
-        covdata.add_arcs(ARC_DATA_3)
+        covdata.add_arcs(ARCS_3)
         covdata.touch_file('zzz.py')
         self.assert_measured_files(covdata, MEASURED_FILES_3 + ['zzz.py'])
 
@@ -142,10 +142,10 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
     def test_update_lines(self):
         covdata1 = CoverageData()
-        covdata1.add_lines(DATA_1)
+        covdata1.add_lines(LINES_1)
 
         covdata2 = CoverageData()
-        covdata2.add_lines(DATA_2)
+        covdata2.add_lines(LINES_2)
 
         covdata3 = CoverageData()
         covdata3.update(covdata1)
@@ -156,10 +156,10 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
     def test_update_arcs(self):
         covdata1 = CoverageData()
-        covdata1.add_arcs(ARC_DATA_3)
+        covdata1.add_arcs(ARCS_3)
 
         covdata2 = CoverageData()
-        covdata2.add_arcs(ARC_DATA_4)
+        covdata2.add_arcs(ARCS_4)
 
         covdata3 = CoverageData()
         covdata3.update(covdata1)
@@ -170,10 +170,10 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
     def test_update_cant_mix_lines_and_arcs(self):
         covdata1 = CoverageData()
-        covdata1.add_lines(DATA_1)
+        covdata1.add_lines(LINES_1)
 
         covdata2 = CoverageData()
-        covdata2.add_arcs(ARC_DATA_3)
+        covdata2.add_arcs(ARCS_3)
 
         with self.assertRaises(CoverageException):
             covdata1.update(covdata2)
@@ -187,7 +187,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
 
     def test_read_write_lines(self):
         covdata1 = CoverageData(collector="coverage tests")
-        covdata1.add_lines(DATA_1)
+        covdata1.add_lines(LINES_1)
         covdata1.write_file("lines.dat")
 
         covdata2 = CoverageData()
@@ -198,7 +198,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
 
     def test_read_write_arcs(self):
         covdata1 = CoverageData(collector="coverage tests")
-        covdata1.add_arcs(ARC_DATA_3)
+        covdata1.add_arcs(ARCS_3)
         covdata1.write_file("arcs.dat")
 
         covdata2 = CoverageData()
@@ -245,7 +245,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
     def test_writing_and_reading(self):
         covdata1 = CoverageData()
-        covdata1.add_lines(DATA_1)
+        covdata1.add_lines(LINES_1)
         self.data_files.write(covdata1)
 
         covdata2 = CoverageData()
@@ -257,7 +257,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         # writing files.
         debug = DebugControlString(options=["dataio"])
         covdata1 = CoverageData(debug=debug)
-        covdata1.add_lines(DATA_1)
+        covdata1.add_lines(LINES_1)
         self.data_files.write(covdata1)
 
         covdata2 = CoverageData(debug=debug)
@@ -275,7 +275,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         # output.
         debug = DebugControlString(options=[])
         covdata1 = CoverageData(debug=debug)
-        covdata1.add_lines(DATA_1)
+        covdata1.add_lines(LINES_1)
         self.data_files.write(covdata1)
 
         covdata2 = CoverageData(debug=debug)
@@ -289,13 +289,13 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_doesnt_exist(".coverage.2")
 
         covdata1 = CoverageData()
-        covdata1.add_lines(DATA_1)
+        covdata1.add_lines(LINES_1)
         self.data_files.write(covdata1, suffix='1')
         self.assert_exists(".coverage.1")
         self.assert_doesnt_exist(".coverage.2")
 
         covdata2 = CoverageData()
-        covdata2.add_lines(DATA_2)
+        covdata2.add_lines(LINES_2)
         self.data_files.write(covdata2, suffix='2')
         self.assert_exists(".coverage.2")
 
@@ -308,7 +308,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
     def test_erasing(self):
         covdata1 = CoverageData()
-        covdata1.add_lines(DATA_1)
+        covdata1.add_lines(LINES_1)
         self.data_files.write(covdata1)
 
         covdata1.erase()
@@ -322,7 +322,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
     def test_file_format(self):
         # Write with CoverageData, then read the pickle explicitly.
         covdata = CoverageData()
-        covdata.add_lines(DATA_1)
+        covdata.add_lines(LINES_1)
         self.data_files.write(covdata)
 
         with open(".coverage", 'rb') as fdata:
@@ -338,7 +338,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
     def test_file_format_with_arcs(self):
         # Write with CoverageData, then read the pickle explicitly.
         covdata = CoverageData()
-        covdata.add_arcs(ARC_DATA_3)
+        covdata.add_arcs(ARCS_3)
         self.data_files.write(covdata)
 
         with open(".coverage", 'rb') as fdata:
@@ -379,12 +379,12 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
     def test_combining_from_different_directories(self):
         covdata1 = CoverageData()
-        covdata1.add_lines(DATA_1)
+        covdata1.add_lines(LINES_1)
         os.makedirs('cov1')
         covdata1.write_file('cov1/.coverage.1')
 
         covdata2 = CoverageData()
-        covdata2.add_lines(DATA_2)
+        covdata2.add_lines(LINES_2)
         os.makedirs('cov2')
         covdata2.write_file('cov2/.coverage.2')
 
