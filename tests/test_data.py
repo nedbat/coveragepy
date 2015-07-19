@@ -181,6 +181,32 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         with self.assertRaises(CoverageException):
             covdata2.update(covdata1)
 
+    def test_update_plugins(self):
+        covdata1 = CoverageData()
+        covdata1.add_lines({
+            "p1.html": dict.fromkeys([1, 2, 3, 4]),
+            "p2.html": dict.fromkeys([5, 6, 7]),
+            "main.py": dict.fromkeys([10, 11, 12]),
+        })
+        covdata1.add_plugins({"p1.html": "html.plugin", "p2.html": "html.plugin2"})
+
+        covdata2 = CoverageData()
+        covdata2.add_lines({
+            "p1.html": dict.fromkeys([3, 4, 5, 6]),
+            "p2.html": dict.fromkeys([7, 8, 9]),
+            "p3.foo": dict.fromkeys([1000, 1001]),
+            "main.py": dict.fromkeys([10, 11, 12]),
+        })
+        covdata2.add_plugins({"p1.html": "html.plugin", "p3.foo": "foo_plugin"})
+
+        covdata3 = CoverageData()
+        covdata3.update(covdata1)
+        covdata3.update(covdata2)
+        self.assertEqual(covdata3.plugin_name("p1.html"), "html.plugin")
+        self.assertEqual(covdata3.plugin_name("p2.html"), "html.plugin2")
+        self.assertEqual(covdata3.plugin_name("p3.foo"), "foo_plugin")
+        self.assertIsNone(covdata3.plugin_name("main.py"))
+
 
 class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
     """Tests of CoverageData that need a temp dir to make files."""
@@ -355,13 +381,17 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata1.add_lines({
             '/home/ned/proj/src/a.py': {1: None, 2: None},
             '/home/ned/proj/src/sub/b.py': {3: None},
+            '/home/ned/proj/src/template.html': {10: None},
+        })
+        covdata1.add_plugins({
+            '/home/ned/proj/src/template.html': 'html.plugin',
         })
         self.data_files.write(covdata1, suffix='1')
 
         covdata2 = CoverageData()
         covdata2.add_lines({
             r'c:\ned\test\a.py': {4: None, 5: None},
-            r'c:\ned\test\sub\b.py': {6: None},
+            r'c:\ned\test\sub\b.py': {3: None, 6: None},
         })
         self.data_files.write(covdata2, suffix='2')
 
@@ -373,9 +403,11 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
         apy = canonical_filename('./a.py')
         sub_bpy = canonical_filename('./sub/b.py')
+        template_html = canonical_filename('./template.html')
 
-        self.assert_line_counts(covdata3, {apy: 4, sub_bpy: 2}, fullpath=True)
-        self.assert_measured_files(covdata3, [apy, sub_bpy])
+        self.assert_line_counts(covdata3, {apy: 4, sub_bpy: 2, template_html: 1}, fullpath=True)
+        self.assert_measured_files(covdata3, [apy, sub_bpy, template_html])
+        self.assertEqual(covdata3.plugin_name(template_html), 'html.plugin')
 
     def test_combining_from_different_directories(self):
         covdata1 = CoverageData()
