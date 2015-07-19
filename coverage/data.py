@@ -206,8 +206,9 @@ class CoverageData(object):
         re-map paths to match the local machine's.
 
         """
-        if ((self.has_lines() and other_data.has_arcs()) or
-            (self.has_arcs() and other_data.has_lines())):
+        if self.has_lines() and other_data.has_arcs():
+            raise CoverageException("Can't combine arc data with line data")
+        if self.has_arcs() and other_data.has_lines():
             raise CoverageException("Can't combine line data with arc data")
 
         aliases = aliases or PathAliases()

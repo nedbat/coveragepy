@@ -47,6 +47,20 @@ MEASURED_FILES_3 = ['x.py', 'y.py']
 X_PY_LINES_3 = [1, 2, 3]
 Y_PY_LINES_3 = [17, 23]
 
+ARC_DATA_4 = {
+    'x.py': {
+        (-1, 2): None,
+        (2, 5): None,
+        (5, -1): None,
+    },
+    'z.py': {
+        (-1, 1000): None,
+        (1000, -1): None,
+    },
+}
+SUMMARY_3_4 = {'x.py': 5, 'y.py': 2, 'z.py': 1}
+MEASURED_FILES_3_4 = ['x.py', 'y.py', 'z.py']
+
 
 class DataTestHelpers(CoverageTest):
     """Test helpers for data tests."""
@@ -126,7 +140,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata.plugin_name("p1.foo"), "p1.plugin")
         self.assertIsNone(covdata.plugin_name("p3.not_here"))
 
-    def test_update(self):
+    def test_update_lines(self):
         covdata1 = CoverageData()
         covdata1.add_lines(DATA_1)
 
@@ -140,6 +154,20 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
 
+    def test_update_arcs(self):
+        covdata1 = CoverageData()
+        covdata1.add_arcs(ARC_DATA_3)
+
+        covdata2 = CoverageData()
+        covdata2.add_arcs(ARC_DATA_4)
+
+        covdata3 = CoverageData()
+        covdata3.update(covdata1)
+        covdata3.update(covdata2)
+
+        self.assert_line_counts(covdata3, SUMMARY_3_4)
+        self.assert_measured_files(covdata3, MEASURED_FILES_3_4)
+
     def test_update_cant_mix_lines_and_arcs(self):
         covdata1 = CoverageData()
         covdata1.add_lines(DATA_1)
@@ -149,6 +177,9 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
         with self.assertRaises(CoverageException):
             covdata1.update(covdata2)
+
+        with self.assertRaises(CoverageException):
+            covdata2.update(covdata1)
 
 
 class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
