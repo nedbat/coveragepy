@@ -173,6 +173,9 @@ class CoverageData(object):
         `line_data` is { filename: { lineno: None, ... }, ...}
 
         """
+        if self.has_arcs():
+            raise CoverageException("Can't add lines to existing arc data")
+
         for filename, linenos in iitems(line_data):
             self._lines.setdefault(filename, {}).update(linenos)
 
@@ -182,6 +185,9 @@ class CoverageData(object):
         `arc_data` is { filename: { (l1,l2): None, ... }, ...}
 
         """
+        if self.has_lines():
+            raise CoverageException("Can't add arcs to existing line data")
+
         for filename, arcs in iitems(arc_data):
             self._arcs.setdefault(filename, {}).update(arcs)
 
@@ -200,14 +206,36 @@ class CoverageData(object):
         re-map paths to match the local machine's.
 
         """
+        if ((self.has_lines() and other_data.has_arcs()) or
+            (self.has_arcs() and other_data.has_lines())):
+            raise CoverageException("Can't combine line data with arc data")
+
         aliases = aliases or PathAliases()
+
+        # _lines: merge dicts.
         for filename, file_data in iitems(other_data._lines):
             filename = aliases.map(filename)
             self._lines.setdefault(filename, {}).update(file_data)
+
+        # _arcs: merge dicts.
         for filename, file_data in iitems(other_data._arcs):
             filename = aliases.map(filename)
             self._arcs.setdefault(filename, {}).update(file_data)
-        self._plugins.update(other_data._plugins)
+
+        # _plugins: only have a string, so they have to agree.
+        for filename, plugin_name in iitems(other_data._plugins):
+            filename = aliases.map(filename)
+            this_plugin = self._plugins.get(filename)
+            # TODO: plugin=None could mean no filename recorded, or it could
+            # mean, handled by Python.  Need to distinguish those cases.
+            if this_plugin is None:
+                self._plugins[filename] = plugin_name
+            elif this_plugin != plugin_name:
+                raise CoverageException(
+                    "Conflicting plugin name for '%s': %s vs %s" % (
+                        filename, this_plugin, plugin_name,
+                    )
+                )
 
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""
@@ -246,6 +274,10 @@ class CoverageData(object):
         return bool(self._lines) or bool(self._arcs)
 
     __bool__ = __nonzero__
+
+    def has_lines(self):
+        """Does this data have lines?"""
+        return bool(self._lines)
 
     def has_arcs(self):
         """Does this data have arcs?"""

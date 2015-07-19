@@ -45,6 +45,7 @@ Y_PY_ARCS_3 = [(-1, 17), (17, 23), (23, -1)]
 SUMMARY_3 = {'x.py': 3, 'y.py': 2}
 MEASURED_FILES_3 = ['x.py', 'y.py']
 X_PY_LINES_3 = [1, 2, 3]
+Y_PY_LINES_3 = [17, 23]
 
 
 class DataTestHelpers(CoverageTest):
@@ -92,18 +93,62 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assert_measured_files(covdata, MEASURED_FILES_3)
         self.assertCountEqual(covdata.lines("x.py"), X_PY_LINES_3)
         self.assertCountEqual(covdata.arcs("x.py"), X_PY_ARCS_3)
+        self.assertCountEqual(covdata.lines("y.py"), Y_PY_LINES_3)
+        self.assertCountEqual(covdata.arcs("y.py"), Y_PY_ARCS_3)
 
-    def test_touch_file(self):
+    def test_cant_add_arcs_to_lines(self):
         covdata = CoverageData()
         covdata.add_lines(DATA_1)
-        covdata.touch_file('x.py')
-        self.assert_measured_files(covdata, MEASURED_FILES_1 + ['x.py'])
+        with self.assertRaises(CoverageException):
+            covdata.add_arcs(ARC_DATA_3)
+
+    def test_cant_add_lines_to_arcs(self):
+        covdata = CoverageData()
+        covdata.add_arcs(ARC_DATA_3)
+        with self.assertRaises(CoverageException):
+            covdata.add_lines(DATA_1)
+
+    def test_touch_file_with_lines(self):
+        covdata = CoverageData()
+        covdata.add_lines(DATA_1)
+        covdata.touch_file('zzz.py')
+        self.assert_measured_files(covdata, MEASURED_FILES_1 + ['zzz.py'])
+
+    def test_touch_file_with_arcs(self):
+        covdata = CoverageData()
+        covdata.add_arcs(ARC_DATA_3)
+        covdata.touch_file('zzz.py')
+        self.assert_measured_files(covdata, MEASURED_FILES_3 + ['zzz.py'])
 
     def test_plugin_name(self):
         covdata = CoverageData()
         covdata.add_plugins({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})
         self.assertEqual(covdata.plugin_name("p1.foo"), "p1.plugin")
         self.assertIsNone(covdata.plugin_name("p3.not_here"))
+
+    def test_update(self):
+        covdata1 = CoverageData()
+        covdata1.add_lines(DATA_1)
+
+        covdata2 = CoverageData()
+        covdata2.add_lines(DATA_2)
+
+        covdata3 = CoverageData()
+        covdata3.update(covdata1)
+        covdata3.update(covdata2)
+
+        self.assert_line_counts(covdata3, SUMMARY_1_2)
+        self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
+
+    def test_update_cant_mix_lines_and_arcs(self):
+        covdata1 = CoverageData()
+        covdata1.add_lines(DATA_1)
+
+        covdata2 = CoverageData()
+        covdata2.add_arcs(ARC_DATA_3)
+
+        with self.assertRaises(CoverageException):
+            covdata1.update(covdata2)
 
 
 class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
@@ -131,6 +176,8 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         self.assert_measured_files(covdata2, MEASURED_FILES_3)
         self.assertCountEqual(covdata2.lines("x.py"), X_PY_LINES_3)
         self.assertCountEqual(covdata2.arcs("x.py"), X_PY_ARCS_3)
+        self.assertCountEqual(covdata2.lines("y.py"), Y_PY_LINES_3)
+        self.assertCountEqual(covdata2.arcs("y.py"), Y_PY_ARCS_3)
 
     def test_read_errors(self):
         covdata = CoverageData()
@@ -207,18 +254,26 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertEqual(debug.get_output(), "")
 
     def test_combining(self):
+        self.assert_doesnt_exist(".coverage.1")
+        self.assert_doesnt_exist(".coverage.2")
+
         covdata1 = CoverageData()
         covdata1.add_lines(DATA_1)
         self.data_files.write(covdata1, suffix='1')
+        self.assert_exists(".coverage.1")
+        self.assert_doesnt_exist(".coverage.2")
 
         covdata2 = CoverageData()
         covdata2.add_lines(DATA_2)
         self.data_files.write(covdata2, suffix='2')
+        self.assert_exists(".coverage.2")
 
         covdata3 = CoverageData()
         self.data_files.combine_parallel_data(covdata3)
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
+        self.assert_doesnt_exist(".coverage.1")
+        self.assert_doesnt_exist(".coverage.2")
 
     def test_erasing(self):
         covdata1 = CoverageData()
@@ -303,10 +358,9 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata2.write_file('cov2/.coverage.2')
 
         covdata3 = CoverageData()
-        self.data_files.combine_parallel_data(covdata3, data_dirs=[
-            'cov1/',
-            'cov2/',
-        ])
+        self.data_files.combine_parallel_data(covdata3, data_dirs=['cov1/', 'cov2/'])
 
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
+        self.assert_doesnt_exist("cov1/.coverage.1")
+        self.assert_doesnt_exist("cov2/.coverage.2")
