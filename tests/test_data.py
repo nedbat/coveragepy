@@ -134,6 +134,22 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.touch_file('zzz.py')
         self.assert_measured_files(covdata, MEASURED_FILES_3 + ['zzz.py'])
 
+    def test_no_lines_vs_unmeasured_file(self):
+        covdata = CoverageData()
+        covdata.add_lines(LINES_1)
+        covdata.touch_file('zzz.py')
+        self.assertEqual(covdata.lines('zzz.py'), [])
+        self.assertIsNone(covdata.lines('no_such_file.py'))
+
+    def test_no_arcs_vs_unmeasured_file(self):
+        covdata = CoverageData()
+        covdata.add_arcs(ARCS_3)
+        covdata.touch_file('zzz.py')
+        self.assertEqual(covdata.lines('zzz.py'), [])
+        self.assertIsNone(covdata.lines('no_such_file.py'))
+        self.assertEqual(covdata.arcs('zzz.py'), [])
+        self.assertIsNone(covdata.arcs('no_such_file.py'))
+
     def test_plugin_name(self):
         covdata = CoverageData()
         covdata.add_plugins({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})

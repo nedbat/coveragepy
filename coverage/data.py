@@ -86,17 +86,30 @@ class CoverageData(object):
         self._plugins = {}
 
     def lines(self, filename):
-        """Get the list of lines executed for a file."""
+        """Get the list of lines executed for a file.
+
+        If the file was not measured, returns None.  A file might be measured,
+        and have no lines executed, in which case an empty list is returned.
+
+        """
         if self._arcs:
-            arcs = self._arcs.get(filename) or {}
-            return [s for s, __ in arcs if s > 0]
+            if filename in self._arcs:
+                return [s for s, __ in self._arcs[filename] if s > 0]
         else:
-            lines = self._lines.get(filename) or {}
-            return list(lines)
+            if filename in self._lines:
+                return list(self._lines[filename])
+        return None
 
     def arcs(self, filename):
-        """Get the list of arcs executed for a file."""
-        return list((self._arcs.get(filename) or {}).keys())
+        """Get the list of arcs executed for a file.
+
+        If the file was not measured, returns None.  A file might be measured,
+        and have no arcs executed, in which case an empty list is returned.
+
+        """
+        if filename in self._arcs:
+            return list((self._arcs[filename]).keys())
+        return None
 
     def plugin_name(self, filename):
         """Get the plugin name for a file.
