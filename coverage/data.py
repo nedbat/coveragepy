@@ -229,8 +229,6 @@ class CoverageData(object):
         lines.  If `fullpath` is true, then the keys are the full pathnames of
         the files, otherwise they are the basenames of the files.
 
-        This is used for testing, not for actual use in the product.
-
         Returns:
             dict mapping filenames to counts of lines.
 

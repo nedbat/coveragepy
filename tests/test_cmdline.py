@@ -11,6 +11,7 @@ import mock
 import coverage
 import coverage.cmdline
 from coverage.config import CoverageConfig
+from coverage.data import CoverageData, CoverageDataFiles
 from coverage.misc import ExceptionDuringRun
 
 from tests.coveragetest import CoverageTest, OK, ERR
@@ -139,38 +140,6 @@ class BaseCmdLineTestTest(BaseCmdLineTest):
             self.cmd_executes_same("run", "debug")
 
 
-class FakeCoverageForDebugData(object):
-    """Just enough of a fake coverage package for the 'debug data' tests."""
-    def __init__(self, line_counts, plugin_data=None):
-        self._line_counts = line_counts
-        self._plugin_data = plugin_data or {}
-        self.filename = "FILENAME"
-        self.data = self
-
-    # package members
-    def coverage(self, *unused_args, **unused_kwargs):
-        """The coverage class in the package."""
-        return self
-
-    # coverage methods
-    def load(self):
-        """Fake coverage().load()"""
-        pass
-
-    # data methods
-    def has_arcs(self):
-        """Fake coverage().data.has_arcs()"""
-        return False
-
-    def line_counts(self, fullpath):        # pylint: disable=unused-argument
-        """Fake coverage().data.line_counts()"""
-        return self._line_counts
-
-    def plugin_data(self):
-        """Fake coverage().data.plugin_data()"""
-        return self._plugin_data
-
-
 class CmdLineTest(BaseCmdLineTest):
     """Tests of the coverage.py command line."""
 
@@ -231,36 +200,6 @@ class CmdLineTest(BaseCmdLineTest):
     def test_debug(self):
         self.cmd_help("debug", "What information would you like: data, sys?")
         self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
-
-    def test_debug_data(self):
-        fake = FakeCoverageForDebugData(
-            line_counts={
-                'file1.py': 17, 'file2.py': 23,
-            },
-            plugin_data={
-                'file1.py': 'a_plugin',
-            },
-        )
-        self.command_line("debug data", _covpkg=fake)
-        self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
-            -- data ------------------------------------------------------
-            path: FILENAME
-            has_arcs: False
-
-            2 files:
-            file1.py: 17 lines [a_plugin]
-            file2.py: 23 lines
-            """))
-
-    def test_debug_data_with_no_data(self):
-        fake = FakeCoverageForDebugData(line_counts={})
-        self.command_line("debug data", _covpkg=fake)
-        self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
-            -- data ------------------------------------------------------
-            path: FILENAME
-            has_arcs: False
-            No data collected
-            """))
 
     def test_debug_sys(self):
         self.command_line("debug sys")
@@ -573,6 +512,44 @@ class CmdLineTest(BaseCmdLineTest):
 
     def test_bad_command(self):
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
+
+
+class CmdLineWithFilesTest(BaseCmdLineTest):
+    """Test the command line in ways that need temp files."""
+
+    run_in_temp_dir = True
+    no_files_in_temp_dir = True
+
+    def test_debug_data(self):
+        data = CoverageData()
+        data.add_lines({
+            "file1.py": dict.fromkeys(range(1, 18)),
+            "file2.py": dict.fromkeys(range(1, 24)),
+        })
+        data.add_plugins({"file1.py": "a_plugin"})
+        data_files = CoverageDataFiles()
+        data_files.write(data)
+
+        self.command_line("debug data")
+        self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
+            -- data ------------------------------------------------------
+            path: FILENAME
+            has_arcs: False
+
+            2 files:
+            file1.py: 17 lines [a_plugin]
+            file2.py: 23 lines
+            """).replace("FILENAME", data_files.filename))
+
+    def test_debug_data_with_no_data(self):
+        data_files = CoverageDataFiles()
+        self.command_line("debug data")
+        self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
+            -- data ------------------------------------------------------
+            path: FILENAME
+            has_arcs: False
+            No data collected
+            """).replace("FILENAME", data_files.filename))
 
 
 class CmdLineStdoutTest(BaseCmdLineTest):
