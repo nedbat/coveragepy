@@ -116,13 +116,13 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
     def test_cant_add_arcs_to_lines(self):
         covdata = CoverageData()
         covdata.add_lines(LINES_1)
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "Can't add arcs to existing line data"):
             covdata.add_arcs(ARCS_3)
 
     def test_cant_add_lines_to_arcs(self):
         covdata = CoverageData()
         covdata.add_arcs(ARCS_3)
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "Can't add lines to existing arc data"):
             covdata.add_lines(LINES_1)
 
     def test_touch_file_with_lines(self):
@@ -219,10 +219,10 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata2 = CoverageData()
         covdata2.add_arcs(ARCS_3)
 
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "Can't combine arc data with line data"):
             covdata1.update(covdata2)
 
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "Can't combine line data with arc data"):
             covdata2.update(covdata1)
 
     def test_update_plugins(self):
@@ -267,10 +267,12 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata2.add_plugins({"p1.html": "html.other_plugin"})
 
-        with self.assertRaises(CoverageException):
+        msg = "Conflicting plugin name for 'p1.html': 'html.plugin' vs 'html.other_plugin'"
+        with self.assertRaisesRegex(CoverageException, msg):
             covdata1.update(covdata2)
 
-        with self.assertRaises(CoverageException):
+        msg = "Conflicting plugin name for 'p1.html': 'html.other_plugin' vs 'html.plugin'"
+        with self.assertRaisesRegex(CoverageException, msg):
             covdata2.update(covdata1)
 
     def test_update_plugin_vs_no_plugin(self):
@@ -281,10 +283,12 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata2 = CoverageData()
         covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
 
-        with self.assertRaises(CoverageException):
+        msg = "Conflicting plugin name for 'p1.html': 'html.plugin' vs ''"
+        with self.assertRaisesRegex(CoverageException, msg):
             covdata1.update(covdata2)
 
-        with self.assertRaises(CoverageException):
+        msg = "Conflicting plugin name for 'p1.html': '' vs 'html.plugin'"
+        with self.assertRaisesRegex(CoverageException, msg):
             covdata2.update(covdata1)
 
     def test_add_to_hash_with_lines(self):
@@ -340,15 +344,16 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
     def test_read_errors(self):
         covdata = CoverageData()
 
+        msg = r"Couldn't read data from '{}': \S+"
         self.make_file("xyzzy.dat", "xyzzy")
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, msg.format("xyzzy.dat")):
             covdata.read_file("xyzzy.dat")
 
         self.make_file("empty.dat", "")
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, msg.format("empty.dat")):
             covdata.read_file("empty.dat")
 
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, msg.format("nonexistent.dat")):
             covdata.read_file("nonexistent.dat")
 
         # and after all that, no data should be in our CoverageData.

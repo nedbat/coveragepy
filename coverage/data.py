@@ -158,7 +158,11 @@ class CoverageData(object):
             with open(filename, "rb") as f:
                 self.read(f)
         except Exception as exc:
-            raise CoverageException("Couldn't read data from '%s': %s" % (filename, exc))
+            raise CoverageException(
+                "Couldn't read data from '%s': %s: %s" % (
+                    filename, exc.__class__.__name__, exc,
+                )
+            )
 
     def write(self, file_obj):
         """Write the coverage data to `file_obj`."""
