@@ -216,7 +216,20 @@ class CoverageData(object):
         `plugin_data` is { filename: plugin_name, ... }
 
         """
-        self._plugins.update(plugin_data)
+        existing_files = self._arcs or self._lines
+        for filename, plugin_name in iitems(plugin_data):
+            if filename not in existing_files:
+                raise CoverageException(
+                    "Can't add plugin data for unmeasured file '%s'" % (filename,)
+                )
+            existing_plugin = self._plugins.get(filename)
+            if existing_plugin is not None and plugin_name != existing_plugin:
+                raise CoverageException(
+                    "Conflicting plugin name for '%s': %r vs %r" % (
+                        filename, existing_plugin, plugin_name,
+                    )
+                )
+            self._plugins[filename] = plugin_name
 
     def update(self, other_data, aliases=None):
         """Update this data with data from another `CoverageData`.

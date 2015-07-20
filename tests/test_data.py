@@ -165,6 +165,25 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata.plugin_name("main.py"), "")
         self.assertIsNone(covdata.plugin_name("p3.not_here"))
 
+    def test_cant_plugin_unmeasured_files(self):
+        covdata = CoverageData()
+        msg = "Can't add plugin data for unmeasured file 'p1.foo'"
+        with self.assertRaisesRegex(CoverageException, msg):
+            covdata.add_plugins({"p1.foo": "p1.plugin"})
+
+        covdata.add_lines({"p2.html": dict.fromkeys([10, 11, 12])})
+        with self.assertRaisesRegex(CoverageException, msg):
+            covdata.add_plugins({"p1.foo": "p1.plugin"})
+
+    def test_cant_change_plugin_name(self):
+        covdata = CoverageData()
+        covdata.add_lines({"p1.foo": dict.fromkeys([1, 2, 3])})
+        covdata.add_plugins({"p1.foo": "p1.plugin"})
+
+        msg = "Conflicting plugin name for 'p1.foo': 'p1.plugin' vs 'p1.plugin.foo'"
+        with self.assertRaisesRegex(CoverageException, msg):
+            covdata.add_plugins({"p1.foo": "p1.plugin.foo"})
+
     def test_update_lines(self):
         covdata1 = CoverageData()
         covdata1.add_lines(LINES_1)
@@ -250,6 +269,9 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
         with self.assertRaises(CoverageException):
             covdata1.update(covdata2)
+
+        with self.assertRaises(CoverageException):
+            covdata2.update(covdata1)
 
     def test_update_plugin_vs_no_plugin(self):
         covdata1 = CoverageData()
