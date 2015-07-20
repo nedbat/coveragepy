@@ -344,7 +344,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
     def test_read_errors(self):
         covdata = CoverageData()
 
-        msg = r"Couldn't read data from '{}': \S+"
+        msg = r"Couldn't read data from '{0}': \S+"
         self.make_file("xyzzy.dat", "xyzzy")
         with self.assertRaisesRegex(CoverageException, msg.format("xyzzy.dat")):
             covdata.read_file("xyzzy.dat")
