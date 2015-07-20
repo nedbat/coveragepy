@@ -8,6 +8,10 @@ import xml.dom.minidom
 from coverage import __url__, __version__, files
 from coverage.report import Reporter
 
+DTD_URL = ('https://raw.githubusercontent.com/cobertura/web/'
+           'f0366e5e2cf18f111cbd61fc34ef720a6584ba02'
+           '/htdocs/xml/coverage-03.dtd')
+
 
 def rate(hit, num):
     """Return the fraction of `hit`/`num`, as a string."""
@@ -43,7 +47,7 @@ class XmlReporter(Reporter):
         impl = xml.dom.minidom.getDOMImplementation()
         docType = impl.createDocumentType(
             "coverage", None,
-            "http://cobertura.sourceforge.net/xml/coverage-03.dtd"
+            DTD_URL
             )
         self.xml_out = impl.createDocument(None, "coverage", docType)
 
