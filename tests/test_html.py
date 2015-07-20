@@ -53,21 +53,19 @@ class HtmlTestHelpers(CoverageTest):
         with open(filename) as f:
             return f.read()
 
-    def get_html_index_content(self, scrub_time_stamp=True):
+    def get_html_index_content(self):
         """Return the content of index.html.
 
-        If `scrub_time_stamp` is true, then replace the timestamp with a
-        placeholder so that clocks don't matter.
+        Timestamps are replaced with a placeholder so that clocks don't matter.
 
         """
         with open("htmlcov/index.html") as f:
             index = f.read()
-        if scrub_time_stamp:
-            index = re.sub(
-                r"created at \d{4}-\d{2}-\d{2} \d{2}:\d{2}",
-                r"created at YYYY-MM-DD HH:MM",
-                index,
-            )
+        index = re.sub(
+            r"created at \d{4}-\d{2}-\d{2} \d{2}:\d{2}",
+            r"created at YYYY-MM-DD HH:MM",
+            index,
+        )
         return index
 
 
