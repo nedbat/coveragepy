@@ -101,7 +101,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'default'
+html_theme = 'classic'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -110,7 +110,7 @@ html_theme = 'default'
 
 #html_style = "neds.css"
 
-html_add_permalinks = False
+#html_add_permalinks = ""
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = ['_templates']
@@ -179,42 +179,10 @@ htmlhelp_basename = 'coveragepydoc'
 spelling_word_list_filename = 'dict.txt'
 spelling_show_suggestions = False
 
-# -- Options for LaTeX output --------------------------------------------------
-
-# The paper size ('letter' or 'a4').
-#latex_paper_size = 'letter'
-
-# The font size ('10pt', '11pt' or '12pt').
-#latex_font_size = '10pt'
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title, author, documentclass [howto/manual]).
-latex_documents = [
-  ('index', 'coveragepy.tex', u'coverage.py Documentation',
-   u'Ned Batchelder', 'manual'),
-]
-
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-#latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-#latex_use_parts = False
-
-# Additional stuff for the LaTeX preamble.
-#latex_preamble = ''
-
-# Documents to append as an appendix to all manuals.
-#latex_appendices = []
-
-# If false, no module index is generated.
-#latex_use_modindex = True
-
 
 # When auto-doc'ing a class, write the class' docstring and the __init__ docstring
 # into the class docs.
-autoclass_content = "both"
+autoclass_content = "class"
 
 
 

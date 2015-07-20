@@ -270,6 +270,7 @@ class Coverage(object):
         # started rather than wherever the process eventually chdir'd to.
         self.data = CoverageData(
             collector="coverage v%s" % __version__,
+            debug=self.debug,
             )
         self.data_files = CoverageDataFiles(basename=self.config.data_file)
 

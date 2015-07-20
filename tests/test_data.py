@@ -102,6 +102,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assert_line_counts(covdata, SUMMARY_1)
         self.assert_measured_files(covdata, MEASURED_FILES_1)
         self.assertCountEqual(covdata.lines("a.py"), A_PY_LINES_1)
+        self.assertFalse(covdata.has_arcs())
 
     def test_adding_arcs(self):
         covdata = CoverageData()
@@ -112,6 +113,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(covdata.arcs("x.py"), X_PY_ARCS_3)
         self.assertCountEqual(covdata.lines("y.py"), Y_PY_LINES_3)
         self.assertCountEqual(covdata.arcs("y.py"), Y_PY_ARCS_3)
+        self.assertTrue(covdata.has_arcs())
 
     def test_cant_add_arcs_to_lines(self):
         covdata = CoverageData()

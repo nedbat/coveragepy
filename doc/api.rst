@@ -38,6 +38,7 @@ The Coverage class
 .. autoclass:: Coverage
     :members:
     :exclude-members: use_cache
+    :special-members: __init__
 
 
 The CoverageData class
@@ -45,6 +46,7 @@ The CoverageData class
 
 .. autoclass:: CoverageData
     :members:
+    :special-members: __init__
 
 
 Starting coverage automatically

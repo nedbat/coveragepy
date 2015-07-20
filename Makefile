@@ -88,17 +88,17 @@ WEBHOME = ~/web/stellated/pages/code/coverage
 docreqs:
 	pip install -r doc/requirements.txt
 
-px: docreqs
+px:
 	$(SPHINXBUILD) -b px $(SPHINXOPTS) doc/_build/px
 	rm doc/_build/px/search.px
 	python doc/_ext/px_cleaner.py doc/_build/px/*.px
 
-dochtml: docreqs
+dochtml:
 	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
 	@echo
 	@echo "Build finished. The HTML pages are in doc/_build/html."
 
-docspell: docreqs
+docspell:
 	$(SPHINXBUILD) -b spelling $(SPHINXOPTS) doc/_spell
 
 publish: px

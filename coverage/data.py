@@ -14,34 +14,80 @@ from coverage.misc import CoverageException, file_be_gone
 class CoverageData(object):
     """Manages collected coverage data, including file storage.
 
-    The data file format is a pickled dict, with these keys:
+    This class is the public supported API to coverage.py's data.
 
-        * collector: a string identifying the collecting software
+    .. note::
 
-        * lines: a dict mapping filenames to lists of line numbers
-          executed::
+        The file format is not documented or guaranteed.  It will change in
+        the future, in possibly complicated ways.  Use this API to avoid
+        disruption.
 
-            { 'file1': [17,23,45], 'file2': [1,2,3], ... }
+    There are three kinds of data that can be collected:
 
-        * arcs: a dict mapping filenames to lists of line number pairs::
+    * **lines**: the line numbers of source lines that were executed.
+      These are always available.
 
-            { 'file1': [(17,23), (17,25), (25,26)], ... }
+    * **arcs**: pairs of source and destination line numbers for transitions
+      between source lines.  These are only available if branch coverage was
+      used.
 
-        * plugins: a dict mapping filenames to plugin names::
+    * **plugin names**: the module names of the plugin that handled each file
+      in the data.
 
-            { 'file1': "django.coverage", ... }
 
-    Only one of `lines` or `arcs` will be present: with branch coverage, data
-    is stored as arcs. Without branch coverage, it is stored as lines.  The
-    line data is easily recovered from the arcs: it is all the first elements
-    of the pairs that are greater than zero.
+    To read a coverage.py data file, use :meth:`read_file`, or :meth:`read` if
+    you have an already-opened file.  You can then access the line, arc, or
+    plugin data with :meth:`lines`, :meth:`arcs`, or :meth:`plugin_name`.
+
+    The :meth:`has_arcs` method indicates whether arc data is available.  You
+    can get a list of the files in the data with :meth:`measured_files`.
+    A summary of the line data is available from :meth:`line_counts`.  As with
+    most Python containers, you can determine if there is any data at all by
+    using this object as a boolean value.
+
+
+    Most data files will be created by coverage.py itself, but you can use
+    methods here to create data files if you like.  The :meth:`add_lines`,
+    :meth:`add_arcs`, and :meth:`add_plugins` methods add data, in ways that
+    are convenient for coverage.py.  To add a file without any measured data,
+    use :meth:`touch_file`.
+
+    You write to a named file with :meth:`write_file`, or to an already opened
+    file with :meth:`write`.
+
+    You can clear the data in memory with :meth:`erase`.  Two data collections
+    can be combined by using :meth:`update` on one `CoverageData`, passing it
+    the other.
 
     """
+
+    # The data file format is a pickled dict, with these keys:
+    #
+    #     * collector: a string identifying the collecting software
+    #
+    #     * lines: a dict mapping filenames to lists of line numbers
+    #       executed::
+    #
+    #         { 'file1': [17,23,45], 'file2': [1,2,3], ... }
+    #
+    #     * arcs: a dict mapping filenames to lists of line number pairs::
+    #
+    #         { 'file1': [(17,23), (17,25), (25,26)], ... }
+    #
+    #     * plugins: a dict mapping filenames to plugin names::
+    #
+    #         { 'file1': "django.coverage", ... }
+    #
+    # Only one of `lines` or `arcs` will be present: with branch coverage, data
+    # is stored as arcs. Without branch coverage, it is stored as lines.  The
+    # line data is easily recovered from the arcs: it is all the first elements
+    # of the pairs that are greater than zero.
 
     def __init__(self, collector=None, debug=None):
         """Create a CoverageData.
 
-        `collector` is a string describing the coverage measurement software.
+        `collector` is a string describing the coverage measurement software,
+        for example, `"coverage.py v3.14"`.
 
         `debug` is a `DebugControl` object for writing debug messages.
 
@@ -79,11 +125,20 @@ class CoverageData(object):
         #
         self._plugins = {}
 
-    def erase(self):
-        """Erase the data in this object."""
-        self._lines = {}
-        self._arcs = {}
-        self._plugins = {}
+    ##
+    ## Reading data
+    ##
+
+    def has_arcs(self):
+        """Does this data have arcs?
+
+        Arc data is only available if branch coverage was used during
+        collection.
+
+        Returns a boolean.
+
+        """
+        return self._has_arcs()
 
     def lines(self, filename):
         """Get the list of lines executed for a file.
@@ -130,6 +185,35 @@ class CoverageData(object):
             return self._plugins.get(filename, "")
         return None
 
+    def measured_files(self):
+        """A list of all files that had been measured."""
+        return list(self._arcs or self._lines)
+
+    def line_counts(self, fullpath=False):
+        """Return a dict summarizing the line coverage data.
+
+        Keys are based on the filenames, and values are the number of executed
+        lines.  If `fullpath` is true, then the keys are the full pathnames of
+        the files, otherwise they are the basenames of the files.
+
+        Returns:
+            dict mapping filenames to counts of lines.
+
+        """
+        summ = {}
+        if fullpath:
+            filename_fn = lambda f: f
+        else:
+            filename_fn = os.path.basename
+        for filename in self.measured_files():
+            summ[filename_fn(filename)] = len(self.lines(filename))
+        return summ
+
+    def __nonzero__(self):
+        return bool(self._lines) or bool(self._arcs)
+
+    __bool__ = __nonzero__
+
     def read(self, file_obj):
         """Read the coverage data from the given file object.
 
@@ -151,7 +235,7 @@ class CoverageData(object):
         self._plugins = data.get('plugins', {})
 
     def read_file(self, filename):
-        """Read the coverage data from `filename`."""
+        """Read the coverage data from `filename` into this object."""
         if self._debug and self._debug.should('dataio'):
             self._debug.write("Reading data from %r" % (filename,))
         try:
@@ -163,6 +247,59 @@ class CoverageData(object):
                     filename, exc.__class__.__name__, exc,
                 )
             )
+
+    ##
+    ## Writing data
+    ##
+
+    def add_lines(self, line_data):
+        """Add executed line data.
+
+        `line_data` is { filename: { lineno: None, ... }, ...}
+
+        """
+        if self._has_arcs():
+            raise CoverageException("Can't add lines to existing arc data")
+
+        for filename, linenos in iitems(line_data):
+            self._lines.setdefault(filename, {}).update(linenos)
+
+    def add_arcs(self, arc_data):
+        """Add measured arc data.
+
+        `arc_data` is { filename: { (l1,l2): None, ... }, ...}
+
+        """
+        if self._has_lines():
+            raise CoverageException("Can't add arcs to existing line data")
+
+        for filename, arcs in iitems(arc_data):
+            self._arcs.setdefault(filename, {}).update(arcs)
+
+    def add_plugins(self, plugin_data):
+        """Add per-file plugin information.
+
+        `plugin_data` is { filename: plugin_name, ... }
+
+        """
+        existing_files = self._arcs or self._lines
+        for filename, plugin_name in iitems(plugin_data):
+            if filename not in existing_files:
+                raise CoverageException(
+                    "Can't add plugin data for unmeasured file '%s'" % (filename,)
+                )
+            existing_plugin = self._plugins.get(filename)
+            if existing_plugin is not None and plugin_name != existing_plugin:
+                raise CoverageException(
+                    "Conflicting plugin name for '%s': %r vs %r" % (
+                        filename, existing_plugin, plugin_name,
+                    )
+                )
+            self._plugins[filename] = plugin_name
+
+    def touch_file(self, filename):
+        """Ensure that `filename` appears in the data, empty if needed."""
+        (self._arcs or self._lines).setdefault(filename, {})
 
     def write(self, file_obj):
         """Write the coverage data to `file_obj`."""
@@ -190,50 +327,11 @@ class CoverageData(object):
         with open(filename, 'wb') as fdata:
             self.write(fdata)
 
-    def add_lines(self, line_data):
-        """Add executed line data.
-
-        `line_data` is { filename: { lineno: None, ... }, ...}
-
-        """
-        if self.has_arcs():
-            raise CoverageException("Can't add lines to existing arc data")
-
-        for filename, linenos in iitems(line_data):
-            self._lines.setdefault(filename, {}).update(linenos)
-
-    def add_arcs(self, arc_data):
-        """Add measured arc data.
-
-        `arc_data` is { filename: { (l1,l2): None, ... }, ...}
-
-        """
-        if self.has_lines():
-            raise CoverageException("Can't add arcs to existing line data")
-
-        for filename, arcs in iitems(arc_data):
-            self._arcs.setdefault(filename, {}).update(arcs)
-
-    def add_plugins(self, plugin_data):
-        """Add per-file plugin information.
-
-        `plugin_data` is { filename: plugin_name, ... }
-
-        """
-        existing_files = self._arcs or self._lines
-        for filename, plugin_name in iitems(plugin_data):
-            if filename not in existing_files:
-                raise CoverageException(
-                    "Can't add plugin data for unmeasured file '%s'" % (filename,)
-                )
-            existing_plugin = self._plugins.get(filename)
-            if existing_plugin is not None and plugin_name != existing_plugin:
-                raise CoverageException(
-                    "Conflicting plugin name for '%s': %r vs %r" % (
-                        filename, existing_plugin, plugin_name,
-                    )
-                )
-            self._plugins[filename] = plugin_name
+    def erase(self):
+        """Erase the data in this object."""
+        self._lines = {}
+        self._arcs = {}
+        self._plugins = {}
 
     def update(self, other_data, aliases=None):
         """Update this data with data from another `CoverageData`.
@@ -242,9 +340,9 @@ class CoverageData(object):
         re-map paths to match the local machine's.
 
         """
-        if self.has_lines() and other_data.has_arcs():
+        if self._has_lines() and other_data._has_arcs():
             raise CoverageException("Can't combine arc data with line data")
-        if self.has_arcs() and other_data.has_lines():
+        if self._has_arcs() and other_data._has_lines():
             raise CoverageException("Can't combine line data with arc data")
 
         aliases = aliases or PathAliases()
@@ -275,13 +373,9 @@ class CoverageData(object):
             filename = aliases.map(filename)
             self._arcs.setdefault(filename, {}).update(file_data)
 
-    def touch_file(self, filename):
-        """Ensure that `filename` appears in the data, empty if needed."""
-        (self._arcs or self._lines).setdefault(filename, {})
-
-    def measured_files(self):
-        """A list of all files that had been measured."""
-        return list(self._arcs or self._lines)
+    ##
+    ## Miscellaneous
+    ##
 
     def add_to_hash(self, filename, hasher):
         """Contribute `filename`'s data to the `hasher`.
@@ -298,37 +392,16 @@ class CoverageData(object):
             hasher.update(sorted(self.lines(filename)))
         hasher.update(self.plugin_name(filename))
 
-    def line_counts(self, fullpath=False):
-        """Return a dict summarizing the line coverage data.
+    ##
+    ## Internal
+    ##
 
-        Keys are based on the filenames, and values are the number of executed
-        lines.  If `fullpath` is true, then the keys are the full pathnames of
-        the files, otherwise they are the basenames of the files.
-
-        Returns:
-            dict mapping filenames to counts of lines.
-
-        """
-        summ = {}
-        if fullpath:
-            filename_fn = lambda f: f
-        else:
-            filename_fn = os.path.basename
-        for filename in self.measured_files():
-            summ[filename_fn(filename)] = len(self.lines(filename))
-        return summ
-
-    def __nonzero__(self):
-        return bool(self._lines) or bool(self._arcs)
-
-    __bool__ = __nonzero__
-
-    def has_lines(self):
-        """Does this data have lines?"""
+    def _has_lines(self):
+        """Do we have data in self._lines?"""
         return bool(self._lines)
 
-    def has_arcs(self):
-        """Does this data have arcs?"""
+    def _has_arcs(self):
+        """Do we have data in self._arcs?"""
         return bool(self._arcs)
 
 
