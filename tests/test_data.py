@@ -4,6 +4,8 @@ import glob
 import os
 import os.path
 
+import mock
+
 from coverage.backward import pickle
 from coverage.data import CoverageData, CoverageDataFiles
 from coverage.files import PathAliases, canonical_filename
@@ -262,6 +264,27 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
         with self.assertRaises(CoverageException):
             covdata2.update(covdata1)
+
+    def test_add_to_hash_with_lines(self):
+        covdata = CoverageData()
+        covdata.add_lines(LINES_1)
+        hasher = mock.Mock()
+        covdata.add_to_hash("a.py", hasher)
+        self.assertEqual(hasher.method_calls, [
+            mock.call.update([1, 2]),   # lines
+            mock.call.update(""),       # plugin name
+        ])
+
+    def test_add_to_hash_with_arcs(self):
+        covdata = CoverageData()
+        covdata.add_arcs(ARCS_3)
+        covdata.add_plugins({"y.py": "hologram_plugin"})
+        hasher = mock.Mock()
+        covdata.add_to_hash("y.py", hasher)
+        self.assertEqual(hasher.method_calls, [
+            mock.call.update([(-1, 17), (17, 23), (23, -1)]),   # arcs
+            mock.call.update("hologram_plugin"),                # plugin name
+        ])
 
 
 class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):

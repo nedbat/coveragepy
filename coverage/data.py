@@ -267,9 +267,19 @@ class CoverageData(object):
         return list(self._arcs or self._lines)
 
     def add_to_hash(self, filename, hasher):
-        """Contribute `filename`'s data to the Md5Hash `hasher`."""
-        hasher.update(self.lines(filename))
-        hasher.update(self.arcs(filename))
+        """Contribute `filename`'s data to the `hasher`.
+
+        Arguments:
+            filename (str): the filename we're interested in.
+            hasher (:class:`coverage.misc.Hasher`): the Hasher to update with
+                the file's data.
+
+        """
+        if self._arcs:
+            hasher.update(sorted(self.arcs(filename)))
+        else:
+            hasher.update(sorted(self.lines(filename)))
+        hasher.update(self.plugin_name(filename))
 
     def line_counts(self, fullpath=False):
         """Return a dict summarizing the line coverage data.
