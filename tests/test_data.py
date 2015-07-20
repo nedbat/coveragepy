@@ -485,6 +485,18 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(arcs['x.py'], X_PY_ARCS_3)
         self.assertCountEqual(arcs['y.py'], Y_PY_ARCS_3)
 
+    def test_writing_to_other_file(self):
+        data_files = CoverageDataFiles(".otherfile")
+        covdata = CoverageData()
+        covdata.add_lines(LINES_1)
+        data_files.write(covdata)
+        self.assert_doesnt_exist(".coverage")
+        self.assert_exists(".otherfile")
+
+        data_files.write(covdata, suffix="extra")
+        self.assert_exists(".otherfile.extra")
+        self.assert_doesnt_exist(".coverage")
+
     def test_combining_with_aliases(self):
         covdata1 = CoverageData()
         covdata1.add_lines({
