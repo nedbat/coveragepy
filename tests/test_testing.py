@@ -66,7 +66,10 @@ class CoverageTestTest(CoverageTest):
     def test_arcz_to_arcs(self):
         self.assertEqual(self.arcz_to_arcs(".1 12 2."), [(-1, 1), (1, 2), (2, -1)])
         self.assertEqual(self.arcz_to_arcs("-11 12 2-5"), [(-1, 1), (1, 2), (2, -5)])
-        self.assertEqual(self.arcz_to_arcs("-QA CB IT Z-A"), [(-26, 10), (12, 11), (18, 29), (35, -10)])
+        self.assertEqual(
+            self.arcz_to_arcs("-QA CB IT Z-A"),
+            [(-26, 10), (12, 11), (18, 29), (35, -10)]
+        )
 
     def test_file_exists(self):
         self.make_file("whoville.txt", "We are here!")
