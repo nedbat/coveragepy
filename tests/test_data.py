@@ -1,5 +1,6 @@
 """Tests for coverage.data"""
 
+import glob
 import os
 import os.path
 
@@ -364,6 +365,36 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_line_counts(covdata2, SUMMARY_1)
 
         self.assertEqual(debug.get_output(), "")
+
+    def test_explicit_suffix(self):
+        self.assert_doesnt_exist(".coverage.SUFFIX")
+        covdata = CoverageData()
+        covdata.add_lines(LINES_1)
+        self.data_files.write(covdata, suffix='SUFFIX')
+        self.assert_exists(".coverage.SUFFIX")
+        self.assert_doesnt_exist(".coverage")
+
+    def test_true_suffix(self):
+        self.assertEqual(glob.glob(".coverage.*"), [])
+
+        # suffix=True will make a randomly named data file.
+        covdata1 = CoverageData()
+        covdata1.add_lines(LINES_1)
+        self.data_files.write(covdata1, suffix=True)
+        self.assert_doesnt_exist(".coverage")
+        data_files1 = glob.glob(".coverage.*")
+        self.assertEqual(len(data_files1), 1)
+
+        # Another suffix=True will choose a different name.
+        covdata2 = CoverageData()
+        covdata2.add_lines(LINES_1)
+        self.data_files.write(covdata2, suffix=True)
+        self.assert_doesnt_exist(".coverage")
+        data_files2 = glob.glob(".coverage.*")
+        self.assertEqual(len(data_files2), 2)
+
+        # In addition to being different, the suffixes have the pid in them.
+        self.assertTrue(all(str(os.getpid()) in fn for fn in data_files2))
 
     def test_combining(self):
         self.assert_doesnt_exist(".coverage.1")
