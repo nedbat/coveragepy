@@ -118,11 +118,17 @@ class CoverageData(object):
             filename: the name of the file you're interested in.
 
         Returns:
-            str: the name of the plugin that handles this file.  Can be None
-                if no plugin was involved.
+            str: the name of the plugin that handles this file.  If the file
+                was measured, but didn't use a plugin, then "" is returned.
+                If the file was not measured, then None is returned.
 
         """
-        return self._plugins.get(filename)
+        # Because the vast majority of files involve no plugin, we don't store
+        # them explicitly in self._plugins.  Check the measured data instead
+        # to see if it was a known file with no plugin.
+        if filename in (self._arcs or self._lines):
+            return self._plugins.get(filename, "")
+        return None
 
     def read(self, file_obj):
         """Read the coverage data from the given file object.
@@ -226,6 +232,22 @@ class CoverageData(object):
 
         aliases = aliases or PathAliases()
 
+        # _plugins: only have a string, so they have to agree.
+        # Have to do these first, so that our examination of self._arcs and
+        # self._lines won't be confused by data updated from other_data.
+        for filename in other_data.measured_files():
+            other_plugin = other_data.plugin_name(filename)
+            filename = aliases.map(filename)
+            this_plugin = self.plugin_name(filename)
+            if this_plugin is None:
+                self._plugins[filename] = other_plugin
+            elif this_plugin != other_plugin:
+                raise CoverageException(
+                    "Conflicting plugin name for '%s': %r vs %r" % (
+                        filename, this_plugin, other_plugin,
+                    )
+                )
+
         # _lines: merge dicts.
         for filename, file_data in iitems(other_data._lines):
             filename = aliases.map(filename)
@@ -235,21 +257,6 @@ class CoverageData(object):
         for filename, file_data in iitems(other_data._arcs):
             filename = aliases.map(filename)
             self._arcs.setdefault(filename, {}).update(file_data)
-
-        # _plugins: only have a string, so they have to agree.
-        for filename, plugin_name in iitems(other_data._plugins):
-            filename = aliases.map(filename)
-            this_plugin = self._plugins.get(filename)
-            # TODO: plugin=None could mean no filename recorded, or it could
-            # mean, handled by Python.  Need to distinguish those cases.
-            if this_plugin is None:
-                self._plugins[filename] = plugin_name
-            elif this_plugin != plugin_name:
-                raise CoverageException(
-                    "Conflicting plugin name for '%s': %s vs %s" % (
-                        filename, this_plugin, plugin_name,
-                    )
-                )
 
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""

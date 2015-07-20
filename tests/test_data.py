@@ -152,8 +152,14 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
     def test_plugin_name(self):
         covdata = CoverageData()
+        covdata.add_lines({
+            "p1.foo": dict.fromkeys([1, 2, 3]),
+            "p2.html": dict.fromkeys([10, 11, 12]),
+            "main.py": dict.fromkeys([20]),
+        })
         covdata.add_plugins({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})
         self.assertEqual(covdata.plugin_name("p1.foo"), "p1.plugin")
+        self.assertEqual(covdata.plugin_name("main.py"), "")
         self.assertIsNone(covdata.plugin_name("p3.not_here"))
 
     def test_update_lines(self):
@@ -204,7 +210,10 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             "p2.html": dict.fromkeys([5, 6, 7]),
             "main.py": dict.fromkeys([10, 11, 12]),
         })
-        covdata1.add_plugins({"p1.html": "html.plugin", "p2.html": "html.plugin2"})
+        covdata1.add_plugins({
+            "p1.html": "html.plugin",
+            "p2.html": "html.plugin2",
+        })
 
         covdata2 = CoverageData()
         covdata2.add_lines({
@@ -213,7 +222,11 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             "p3.foo": dict.fromkeys([1000, 1001]),
             "main.py": dict.fromkeys([10, 11, 12]),
         })
-        covdata2.add_plugins({"p1.html": "html.plugin", "p3.foo": "foo_plugin"})
+        covdata2.add_plugins({
+            "p1.html": "html.plugin",
+            "p2.html": "html.plugin2",
+            "p3.foo": "foo_plugin",
+        })
 
         covdata3 = CoverageData()
         covdata3.update(covdata1)
@@ -221,7 +234,33 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata3.plugin_name("p1.html"), "html.plugin")
         self.assertEqual(covdata3.plugin_name("p2.html"), "html.plugin2")
         self.assertEqual(covdata3.plugin_name("p3.foo"), "foo_plugin")
-        self.assertIsNone(covdata3.plugin_name("main.py"))
+        self.assertEqual(covdata3.plugin_name("main.py"), "")
+
+    def test_update_conflicting_plugins(self):
+        covdata1 = CoverageData()
+        covdata1.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
+        covdata1.add_plugins({"p1.html": "html.plugin"})
+
+        covdata2 = CoverageData()
+        covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
+        covdata2.add_plugins({"p1.html": "html.other_plugin"})
+
+        with self.assertRaises(CoverageException):
+            covdata1.update(covdata2)
+
+    def test_update_plugin_vs_no_plugin(self):
+        covdata1 = CoverageData()
+        covdata1.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
+        covdata1.add_plugins({"p1.html": "html.plugin"})
+
+        covdata2 = CoverageData()
+        covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
+
+        with self.assertRaises(CoverageException):
+            covdata1.update(covdata2)
+
+        with self.assertRaises(CoverageException):
+            covdata2.update(covdata1)
 
 
 class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
