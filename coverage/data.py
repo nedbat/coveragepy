@@ -63,8 +63,6 @@ class CoverageData(object):
 
     # The data file format is a pickled dict, with these keys:
     #
-    #     * collector: a string identifying the collecting software
-    #
     #     * lines: a dict mapping filenames to lists of line numbers
     #       executed::
     #
@@ -83,16 +81,12 @@ class CoverageData(object):
     # line data is easily recovered from the arcs: it is all the first elements
     # of the pairs that are greater than zero.
 
-    def __init__(self, collector=None, debug=None):
+    def __init__(self, debug=None):
         """Create a CoverageData.
-
-        `collector` is a string describing the coverage measurement software,
-        for example, `"coverage.py v3.14"`.
 
         `debug` is a `DebugControl` object for writing debug messages.
 
         """
-        self._collector = collector
         self._debug = debug
 
         # A map from canonical Python source file name to a dictionary in
@@ -311,9 +305,6 @@ class CoverageData(object):
             file_data['arcs'] = dict((f, list(amap.keys())) for f, amap in iitems(self._arcs))
         else:
             file_data['lines'] = dict((f, list(lmap.keys())) for f, lmap in iitems(self._lines))
-
-        if self._collector:
-            file_data['collector'] = self._collector
 
         file_data['plugins'] = self._plugins
 

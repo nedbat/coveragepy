@@ -319,7 +319,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
     """Tests of CoverageData that need a temp dir to make files."""
 
     def test_read_write_lines(self):
-        covdata1 = CoverageData(collector="coverage tests")
+        covdata1 = CoverageData()
         covdata1.add_lines(LINES_1)
         covdata1.write_file("lines.dat")
 
@@ -330,7 +330,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         self.assertCountEqual(covdata2.lines("a.py"), A_PY_LINES_1)
 
     def test_read_write_arcs(self):
-        covdata1 = CoverageData(collector="coverage tests")
+        covdata1 = CoverageData()
         covdata1.add_arcs(ARCS_3)
         covdata1.write_file("arcs.dat")
 

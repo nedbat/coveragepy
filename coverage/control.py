@@ -268,10 +268,7 @@ class Coverage(object):
         # Create the data file.  We do this at construction time so that the
         # data file will be written into the directory where the process
         # started rather than wherever the process eventually chdir'd to.
-        self.data = CoverageData(
-            collector="coverage v%s" % __version__,
-            debug=self.debug,
-            )
+        self.data = CoverageData(debug=self.debug)
         self.data_files = CoverageDataFiles(basename=self.config.data_file)
 
         # The dirs for files considered "installed with the interpreter".
