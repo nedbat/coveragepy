@@ -59,6 +59,7 @@ Sigve Tjora
 Stan Hu
 Stefan Behnel
 Steve Leonard
+Steve Peak
 Ted Wexler
 Titus Brown
 Zooko Wilcox-O'Hearn

@@ -147,6 +147,7 @@ class XmlReporter(Reporter):
         xclass.setAttribute("complexity", "0")
 
         branch_stats = analysis.branch_stats()
+        missing_branch_arcs = analysis.missing_branch_arcs()
 
         # For each statement, create an XML 'line' element.
         for line in sorted(analysis.statements):
@@ -165,6 +166,9 @@ class XmlReporter(Reporter):
                         "condition-coverage",
                         "%d%% (%d/%d)" % (100*taken/total, taken, total)
                         )
+                if line in missing_branch_arcs:
+                    annlines = ["exit" if b < 0 else str(b) for b in missing_branch_arcs[line]]
+                    xline.setAttribute("missing-branches", ",".join(annlines))
             xlines.appendChild(xline)
 
         class_lines = len(analysis.statements)
