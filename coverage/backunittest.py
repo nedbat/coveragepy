@@ -22,10 +22,13 @@ class TestCase(unittest.TestCase):
     """
     # pylint: disable=missing-docstring
 
-    if not unittest_has('assertCountEqual'):
-        def assertCountEqual(self, s1, s2):
-            """Assert these have the same elements, regardless of order."""
-            self.assertEqual(set(s1), set(s2))
+    # Many Pythons have this method defined.  But PyPy3 has a bug with it
+    # somehow (https://bitbucket.org/pypy/pypy/issues/2092), so always use our
+    # own implementation that works everywhere, at least for the ways we're
+    # calling it.
+    def assertCountEqual(self, s1, s2):
+        """Assert these have the same elements, regardless of order."""
+        self.assertEqual(sorted(s1), sorted(s2))
 
     if not unittest_has('assertRaisesRegex'):
         def assertRaisesRegex(self, *args, **kwargs):

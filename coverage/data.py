@@ -1,11 +1,12 @@
 """Coverage data for Coverage."""
 
 import glob
+import json
 import os
 import random
 import socket
 
-from coverage.backward import iitems, pickle
+from coverage.backward import iitems
 from coverage.debug import _TEST_NAME_FILE
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
@@ -47,8 +48,8 @@ class CoverageData(object):
 
 
     Most data files will be created by coverage.py itself, but you can use
-    methods here to create data files if you like.  The :meth:`add_lines`,
-    :meth:`add_arcs`, and :meth:`add_plugins` methods add data, in ways that
+    methods here to create data files if you like.  The :meth:`set_lines`,
+    :meth:`set_arcs`, and :meth:`set_plugins` methods add data, in ways that
     are convenient for coverage.py.  To add a file without any measured data,
     use :meth:`touch_file`.
 
@@ -61,7 +62,7 @@ class CoverageData(object):
 
     """
 
-    # The data file format is a pickled dict, with these keys:
+    # The data file format is JSON, with these keys:
     #
     #     * lines: a dict mapping filenames to lists of line numbers
     #       executed::
@@ -70,7 +71,7 @@ class CoverageData(object):
     #
     #     * arcs: a dict mapping filenames to lists of line number pairs::
     #
-    #         { 'file1': [(17,23), (17,25), (25,26)], ... }
+    #         { 'file1': [[17,23], [17,25], [25,26]], ... }
     #
     #     * plugins: a dict mapping filenames to plugin names::
     #
@@ -93,29 +94,20 @@ class CoverageData(object):
         # which there's an entry for each line number that has been
         # executed:
         #
-        #   {
-        #       'filename1.py': { 12: None, 47: None, ... },
-        #       ...
-        #       }
+        #   { 'filename1.py': [12, 47, 1001], ... }
         #
         self._lines = {}
 
         # A map from canonical Python source file name to a dictionary with an
         # entry for each pair of line numbers forming an arc:
         #
-        #   {
-        #       'filename1.py': { (12,14): None, (47,48): None, ... },
-        #       ...
-        #       }
+        #   { 'filename1.py': [(12,14), (47,48), ... ], ... }
         #
         self._arcs = {}
 
         # A map from canonical source file name to a plugin module name:
         #
-        #   {
-        #       'filename1.py': 'django.coverage',
-        #       ...
-        #       }
+        #   { 'filename1.py': 'django.coverage', ... }
         #
         self._plugins = {}
 
@@ -146,7 +138,7 @@ class CoverageData(object):
                 return [s for s, __ in self._arcs[filename] if s > 0]
         else:
             if filename in self._lines:
-                return list(self._lines[filename])
+                return self._lines[filename]
         return None
 
     def arcs(self, filename):
@@ -157,7 +149,7 @@ class CoverageData(object):
 
         """
         if filename in self._arcs:
-            return list((self._arcs[filename]).keys())
+            return self._arcs[filename]
         return None
 
     def plugin_name(self, filename):
@@ -214,18 +206,13 @@ class CoverageData(object):
         Should only be used on an empty CoverageData object.
 
         """
-        data = pickle.load(file_obj)
+        data = json.load(file_obj)
 
-        # Unpack the 'lines' item.
-        self._lines = dict([
-            (f, dict.fromkeys(linenos, None))
-            for f, linenos in iitems(data.get('lines', {}))
-        ])
-        # Unpack the 'arcs' item.
-        self._arcs = dict([
-            (f, dict.fromkeys(arcpairs, None))
-            for f, arcpairs in iitems(data.get('arcs', {}))
-        ])
+        self._lines = data.get('lines', {})
+        self._arcs = dict(
+            (fname, [tuple(pair) for pair in arcs])
+            for fname, arcs in iitems(data.get('arcs', {}))
+        )
         self._plugins = data.get('plugins', {})
 
     def read_file(self, filename):
@@ -233,7 +220,7 @@ class CoverageData(object):
         if self._debug and self._debug.should('dataio'):
             self._debug.write("Reading data from %r" % (filename,))
         try:
-            with open(filename, "rb") as f:
+            with open(filename, "r") as f:
                 self.read(f)
         except Exception as exc:
             raise CoverageException(
@@ -246,31 +233,39 @@ class CoverageData(object):
     ## Writing data
     ##
 
-    def add_lines(self, line_data):
+    def set_lines(self, line_data):
         """Add executed line data.
 
-        `line_data` is { filename: { lineno: None, ... }, ...}
+        `line_data` is a dictionary mapping filenames to dictionaries::
+
+            { filename: { lineno: None, ... }, ...}
+
+        Do not call this more than once, it will not update data, it only sets
+        data.
 
         """
         if self._has_arcs():
             raise CoverageException("Can't add lines to existing arc data")
 
         for filename, linenos in iitems(line_data):
-            self._lines.setdefault(filename, {}).update(linenos)
+            self._lines[filename] = list(linenos)
 
-    def add_arcs(self, arc_data):
+    def set_arcs(self, arc_data):
         """Add measured arc data.
 
         `arc_data` is { filename: { (l1,l2): None, ... }, ...}
+
+        Do not call this more than once, it will not update data, it only sets
+        data.
 
         """
         if self._has_lines():
             raise CoverageException("Can't add arcs to existing line data")
 
         for filename, arcs in iitems(arc_data):
-            self._arcs.setdefault(filename, {}).update(arcs)
+            self._arcs[filename] = list(arcs)
 
-    def add_plugins(self, plugin_data):
+    def set_plugins(self, plugin_data):
         """Add per-file plugin information.
 
         `plugin_data` is { filename: plugin_name, ... }
@@ -293,7 +288,7 @@ class CoverageData(object):
 
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""
-        (self._arcs or self._lines).setdefault(filename, {})
+        (self._arcs or self._lines).setdefault(filename, [])
 
     def write(self, file_obj):
         """Write the coverage data to `file_obj`."""
@@ -302,20 +297,20 @@ class CoverageData(object):
         file_data = {}
 
         if self._arcs:
-            file_data['arcs'] = dict((f, list(amap.keys())) for f, amap in iitems(self._arcs))
+            file_data['arcs'] = self._arcs
         else:
-            file_data['lines'] = dict((f, list(lmap.keys())) for f, lmap in iitems(self._lines))
+            file_data['lines'] = self._lines
 
         file_data['plugins'] = self._plugins
 
-        # Write the pickle to the file.
-        pickle.dump(file_data, file_obj, 2)
+        # Write the data to the file.
+        json.dump(file_data, file_obj)
 
     def write_file(self, filename):
         """Write the coverage data to `filename`."""
         if self._debug and self._debug.should('dataio'):
             self._debug.write("Writing data to %r" % (filename,))
-        with open(filename, 'wb') as fdata:
+        with open(filename, 'w') as fdata:
             self.write(fdata)
 
     def erase(self):
@@ -355,14 +350,22 @@ class CoverageData(object):
                 )
 
         # _lines: merge dicts.
-        for filename, file_data in iitems(other_data._lines):
+        for filename, file_lines in iitems(other_data._lines):
             filename = aliases.map(filename)
-            self._lines.setdefault(filename, {}).update(file_data)
+            if filename in self._lines:
+                lines = set(self._lines[filename])
+                lines.update(file_lines)
+                file_lines = list(lines)
+            self._lines[filename] = file_lines
 
         # _arcs: merge dicts.
-        for filename, file_data in iitems(other_data._arcs):
+        for filename, file_arcs in iitems(other_data._arcs):
             filename = aliases.map(filename)
-            self._arcs.setdefault(filename, {}).update(file_data)
+            if filename in self._arcs:
+                arcs = set(self._arcs[filename])
+                arcs.update(file_arcs)
+                file_arcs = list(arcs)
+            self._arcs[filename] = file_arcs
 
     ##
     ## Miscellaneous

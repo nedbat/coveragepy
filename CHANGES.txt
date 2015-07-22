@@ -6,6 +6,10 @@ Change history for Coverage.py
 Latest
 ------
 
+- The data storage has been completely revamped.  The data file is now JSON
+  instead of a pickle, closing `issue 236`_.  The `CoverageData` class is now
+  a public supported API to the data file.
+
 - All the reporting functions now behave the same if no data had been
   collected, exiting with a status code of 1.  Fixed ``fail_under`` to be
   applied even when the report is empty.  Thanks, Ionel Cristian Mărieș.
@@ -22,9 +26,10 @@ Latest
   ``Coverage.get_data``, and returns the ``CoverageData`` containing the
   collected data.
 
-.. 41 issues closed in 4.0 so far
-
+.. _issue 236: https://bitbucket.org/ned/coveragepy/issues/236/pickles-are-bad-and-you-should-feel-bad
 .. _issue 380: https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from
+
+.. 41 issues closed in 4.0 below here
 
 
 Version 4.0a6 --- 21 June 2015

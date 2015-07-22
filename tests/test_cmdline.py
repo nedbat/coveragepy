@@ -522,11 +522,11 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
 
     def test_debug_data(self):
         data = CoverageData()
-        data.add_lines({
+        data.set_lines({
             "file1.py": dict.fromkeys(range(1, 18)),
             "file2.py": dict.fromkeys(range(1, 24)),
         })
-        data.add_plugins({"file1.py": "a_plugin"})
+        data.set_plugins({"file1.py": "a_plugin"})
         data_files = CoverageDataFiles()
         data_files.write(data)
 
