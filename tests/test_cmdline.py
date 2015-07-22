@@ -547,7 +547,6 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
         self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
             -- data ------------------------------------------------------
             path: FILENAME
-            has_arcs: False
             No data collected
             """).replace("FILENAME", data_files.filename))
 
