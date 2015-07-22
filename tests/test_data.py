@@ -498,6 +498,8 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(lines['b.py'], B_PY_LINES_1)
         # If not measuring branches, there's no arcs entry.
         self.assertNotIn('arcs', data)
+        # If no plugins were involved, there's no plugins entry.
+        self.assertNotIn('plugins', data)
 
     def test_file_format_with_arcs(self):
         # Write with CoverageData, then read the JSON explicitly.
@@ -513,6 +515,8 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(arcs.keys(), MEASURED_FILES_3)
         self.assertCountEqual(arcs['x.py'], map(list, X_PY_ARCS_3))
         self.assertCountEqual(arcs['y.py'], map(list, Y_PY_ARCS_3))
+        # If no plugins were involved, there's no plugins entry.
+        self.assertNotIn('plugins', data)
 
     def test_writing_to_other_file(self):
         data_files = CoverageDataFiles(".otherfile")

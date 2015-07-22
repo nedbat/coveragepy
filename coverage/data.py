@@ -301,7 +301,8 @@ class CoverageData(object):
         else:
             file_data['lines'] = self._lines
 
-        file_data['plugins'] = self._plugins
+        if self._plugins:
+            file_data['plugins'] = self._plugins
 
         # Write the data to the file.
         json.dump(file_data, file_obj)
