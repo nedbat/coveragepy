@@ -10,6 +10,10 @@ Latest
   instead of a pickle, closing `issue 236`_.  The `CoverageData` class is now
   a public supported API to the data file.
 
+- The XML report now includes a ``missing-branches`` attribute.  Thanks, Steve
+  Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
+  references the DTD.
+
 - All the reporting functions now behave the same if no data had been
   collected, exiting with a status code of 1.  Fixed ``fail_under`` to be
   applied even when the report is empty.  Thanks, Ionel Cristian Mărieș.
