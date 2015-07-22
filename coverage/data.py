@@ -200,13 +200,21 @@ class CoverageData(object):
 
     __bool__ = __nonzero__
 
+    def _open_for_reading(self, filename):
+        """Open a file appropriately for reading data."""
+        return open(filename, "r")
+
+    def _read_raw_data(self, file_obj):
+        """Read the raw data from a file object."""
+        return json.load(file_obj)
+
     def read(self, file_obj):
         """Read the coverage data from the given file object.
 
         Should only be used on an empty CoverageData object.
 
         """
-        data = json.load(file_obj)
+        data = self._read_raw_data(file_obj)
 
         self._lines = data.get('lines', {})
         self._arcs = dict(
@@ -220,7 +228,7 @@ class CoverageData(object):
         if self._debug and self._debug.should('dataio'):
             self._debug.write("Reading data from %r" % (filename,))
         try:
-            with open(filename, "r") as f:
+            with self._open_for_reading(filename) as f:
                 self.read(f)
         except Exception as exc:
             raise CoverageException(
@@ -228,6 +236,11 @@ class CoverageData(object):
                     filename, exc.__class__.__name__, exc,
                 )
             )
+
+    def _read_raw_data_file(self, filename):
+        """Read the raw data from a file, for debugging."""
+        with self._open_for_reading(filename) as f:
+            return self._read_raw_data(f)
 
     ##
     ## Writing data

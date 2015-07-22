@@ -8,7 +8,7 @@ import traceback
 
 from coverage import env
 from coverage.execfile import run_python_file, run_python_module
-from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
+from coverage.misc import CoverageException, ExceptionDuringRun, NoSource, pretty_data
 from coverage.debug import info_formatter, info_header
 
 
@@ -589,9 +589,9 @@ class CoverageScript(object):
                 data = self.coverage.data
                 print(info_header("data"))
                 print("path: %s" % self.coverage.data_files.filename)
-                print("has_arcs: %r" % data.has_arcs())
-                summary = data.line_counts(fullpath=True)
-                if summary:
+                if data:
+                    print("has_arcs: %r" % data.has_arcs())
+                    summary = data.line_counts(fullpath=True)
                     filenames = sorted(summary.keys())
                     print("\n%d files:" % len(filenames))
                     for f in filenames:
@@ -600,6 +600,13 @@ class CoverageScript(object):
                         if plugin:
                             line += " [%s]" % plugin
                         print(line)
+                else:
+                    print("No data collected")
+            elif info == 'rawdata':
+                self.coverage.load()
+                if self.coverage.data:
+                    data = self.coverage.data._read_raw_data_file(self.coverage.config.data_file)
+                    print(pretty_data(data))
                 else:
                     print("No data collected")
             else:
