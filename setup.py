@@ -75,9 +75,9 @@ classifier_list.append("Development Status :: " + devstat)
 # Install a script as "coverage", and as "coverage[23]", and as
 # "coverage-2.7" (or whatever).
 scripts = [
-    'coverage = coverage:main',
-    'coverage%d = coverage:main' % sys.version_info[:1],
-    'coverage-%d.%d = coverage:main' % sys.version_info[:2],
+    'coverage = coverage.cmdline:main',
+    'coverage%d = coverage.cmdline:main' % sys.version_info[:1],
+    'coverage-%d.%d = coverage.cmdline:main' % sys.version_info[:2],
     ]
 
 # Create the keyword arguments for setup()

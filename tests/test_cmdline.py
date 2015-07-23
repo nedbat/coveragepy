@@ -63,7 +63,7 @@ class BaseCmdLineTest(CoverageTest):
 
         """
         m = self.model_object()
-        ret = coverage.CoverageScript(
+        ret = coverage.cmdline.CoverageScript(
             _covpkg=m, _run_python_file=m.run_python_file,
             _run_python_module=m.run_python_module, _help_fn=m.help_fn
             ).command_line(shlex.split(args))

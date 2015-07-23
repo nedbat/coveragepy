@@ -12,6 +12,7 @@ import sys
 import coverage
 from coverage.backunittest import TestCase
 from coverage.backward import StringIO, import_local_file, string_class
+from coverage.cmdline import CoverageScript
 from coverage.debug import _TEST_NAME_FILE, DebugControl
 from coverage.test_helpers import (
     EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
@@ -299,7 +300,7 @@ class CoverageTest(
         Returns None.
 
         """
-        script = coverage.CoverageScript(_covpkg=_covpkg)
+        script = CoverageScript(_covpkg=_covpkg)
         ret_actual = script.command_line(shlex.split(args))
         self.assertEqual(ret_actual, ret)
 
