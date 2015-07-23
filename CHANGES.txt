@@ -6,9 +6,9 @@ Change history for Coverage.py
 Latest
 ------
 
-- The data storage has been completely revamped.  The data file is now JSON
-  instead of a pickle, closing `issue 236`_.  The `CoverageData` class is now
-  a public supported API to the data file.
+- The data storage has been completely revamped.  The data file is now
+  almost-JSON instead of a pickle, closing `issue 236`_.  The `CoverageData`
+  class is now a public supported API to the data file.
 
 - The XML report now includes a ``missing-branches`` attribute.  Thanks, Steve
   Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
