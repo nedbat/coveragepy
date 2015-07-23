@@ -360,6 +360,10 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         with self.assertRaisesRegex(CoverageException, msg.format("nonexistent.dat")):
             covdata.read_file("nonexistent.dat")
 
+        self.make_file("misleading.dat", CoverageData.GO_AWAY + " this isn't JSON")
+        with self.assertRaisesRegex(CoverageException, msg.format("misleading.dat")):
+            covdata.read_file("misleading.dat")
+
         # After all that, no data should be in our CoverageData.
         self.assertFalse(covdata)
 
@@ -530,14 +534,20 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.data_files.read(covdata2)
         self.assert_line_counts(covdata2, {})
 
+    def read_json_data_file(self, fname):
+        """Read a JSON data file for testing the JSON directly."""
+        with open(fname, 'r') as fdata:
+            go_away = fdata.read(len(CoverageData.GO_AWAY))
+            self.assertEqual(go_away, CoverageData.GO_AWAY)
+            return json.load(fdata)
+
     def test_file_format(self):
         # Write with CoverageData, then read the JSON explicitly.
         covdata = CoverageData()
         covdata.set_lines(LINES_1)
         self.data_files.write(covdata)
 
-        with open(".coverage", 'r') as fdata:
-            data = json.load(fdata)
+        data = self.read_json_data_file(".coverage")
 
         lines = data['lines']
         self.assertCountEqual(lines.keys(), MEASURED_FILES_1)
@@ -554,8 +564,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata.set_arcs(ARCS_3)
         self.data_files.write(covdata)
 
-        with open(".coverage", 'r') as fdata:
-            data = json.load(fdata)
+        data = self.read_json_data_file(".coverage")
 
         self.assertNotIn('lines', data)
         arcs = data['arcs']
