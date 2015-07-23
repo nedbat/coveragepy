@@ -6,7 +6,8 @@ import os
 import random
 import socket
 
-from coverage.backward import iitems
+from coverage import env
+from coverage.backward import iitems, string_class
 from coverage.debug import _TEST_NAME_FILE
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
@@ -225,6 +226,8 @@ class CoverageData(object):
         )
         self._plugins = data.get('plugins', {})
 
+        self._validate()
+
     def read_file(self, filename):
         """Read the coverage data from `filename` into this object."""
         if self._debug and self._debug.should('dataio'):
@@ -266,6 +269,8 @@ class CoverageData(object):
         for filename, linenos in iitems(line_data):
             self._lines[filename] = list(linenos)
 
+        self._validate()
+
     def set_arcs(self, arc_data):
         """Add measured arc data.
 
@@ -280,6 +285,8 @@ class CoverageData(object):
 
         for filename, arcs in iitems(arc_data):
             self._arcs[filename] = list(arcs)
+
+        self._validate()
 
     def set_plugins(self, plugin_data):
         """Add per-file plugin information.
@@ -302,9 +309,12 @@ class CoverageData(object):
                 )
             self._plugins[filename] = plugin_name
 
+        self._validate()
+
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""
         (self._arcs or self._lines).setdefault(filename, [])
+        self._validate()
 
     def write(self, file_obj):
         """Write the coverage data to `file_obj`."""
@@ -335,6 +345,7 @@ class CoverageData(object):
         self._lines = {}
         self._arcs = {}
         self._plugins = {}
+        self._validate()
 
     def update(self, other_data, aliases=None):
         """Update this data with data from another `CoverageData`.
@@ -358,7 +369,8 @@ class CoverageData(object):
             filename = aliases.map(filename)
             this_plugin = self.plugin_name(filename)
             if this_plugin is None:
-                self._plugins[filename] = other_plugin
+                if other_plugin:
+                    self._plugins[filename] = other_plugin
             elif this_plugin != other_plugin:
                 raise CoverageException(
                     "Conflicting plugin name for '%s': %r vs %r" % (
@@ -384,9 +396,44 @@ class CoverageData(object):
                 file_arcs = list(arcs)
             self._arcs[filename] = file_arcs
 
+        self._validate()
+
     ##
     ## Miscellaneous
     ##
+
+    def _validate(self):
+        """If we are in paranoid mode, validate that everything is right."""
+        if env.TESTING:
+            self._validate_invariants()
+
+    def _validate_invariants(self):
+        """Validate internal invariants."""
+        # Only one of _lines or _arcs should exist.
+        assert not(self._has_lines() and self._has_arcs()), (
+            "Shouldn't have both _lines and _arcs"
+        )
+
+        # _lines should be a dict of lists of ints.
+        for fname, lines in iitems(self._lines):
+            assert isinstance(fname, string_class), "Key in _lines shouldn't be %r" % (fname,)
+            assert all(isinstance(x, int) for x in lines), (
+                "_lines[%r] shouldn't be %r" % (fname, lines)
+            )
+
+        # _arcs should be a dict of lists of pairs of ints.
+        for fname, arcs in iitems(self._arcs):
+            assert isinstance(fname, string_class), "Key in _arcs shouldn't be %r" % (fname,)
+            assert all(isinstance(x, int) and isinstance(y, int) for x, y in arcs), (
+                "_arcs[%r] shouldn't be %r" % (fname, arcs)
+            )
+
+        # _plugins should have only non-empty strings as values.
+        for fname, plugin in iitems(self._plugins):
+            assert isinstance(fname, string_class), "Key in _plugins shouldn't be %r" % (fname,)
+            assert plugin and isinstance(plugin, string_class), (
+                "_plugins[%r] shoudn't be %r" % (fname, plugin)
+            )
 
     def add_to_hash(self, filename, hasher):
         """Contribute `filename`'s data to the `hasher`.
