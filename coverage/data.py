@@ -201,16 +201,6 @@ class CoverageData(object):
 
     __bool__ = __nonzero__
 
-    @classmethod
-    def _open_for_reading(cls, filename):
-        """Open a file appropriately for reading data."""
-        return open(filename, "r")
-
-    @classmethod
-    def _read_raw_data(cls, file_obj):
-        """Read the raw data from a file object."""
-        return json.load(file_obj)
-
     def read(self, file_obj):
         """Read the coverage data from the given file object.
 
@@ -241,6 +231,16 @@ class CoverageData(object):
                     filename, exc.__class__.__name__, exc,
                 )
             )
+
+    @classmethod
+    def _open_for_reading(cls, filename):
+        """Open a file appropriately for reading data."""
+        return open(filename, "r")
+
+    @classmethod
+    def _read_raw_data(cls, file_obj):
+        """Read the raw data from a file object."""
+        return json.load(file_obj)
 
     @classmethod
     def _read_raw_data_file(cls, filename):
