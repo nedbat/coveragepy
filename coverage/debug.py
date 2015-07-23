@@ -106,4 +106,6 @@ def pretty_data(data):
     out = json.dumps(data, indent=4, sort_keys=True)
     # But pairs of numbers shouldn't be split across lines...
     out = re.sub(r"\[\s+(-?\d+),\s+(-?\d+)\s+]", r"[\1, \2]", out)
+    # Trailing spaces mess with tests, get rid of them.
+    out = re.sub(r"(?m)\s+$", "", out)
     return out

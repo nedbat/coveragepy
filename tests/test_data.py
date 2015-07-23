@@ -4,10 +4,11 @@ import glob
 import json
 import os
 import os.path
+import textwrap
 
 import mock
 
-from coverage.data import CoverageData, CoverageDataFiles
+from coverage.data import CoverageData, CoverageDataFiles, debug_main
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
 
@@ -358,8 +359,59 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         with self.assertRaisesRegex(CoverageException, msg.format("nonexistent.dat")):
             covdata.read_file("nonexistent.dat")
 
-        # and after all that, no data should be in our CoverageData.
+        # After all that, no data should be in our CoverageData.
         self.assertFalse(covdata)
+
+    def test_debug_main(self):
+        covdata1 = CoverageData()
+        covdata1.set_lines(LINES_1)
+        covdata1.write_file(".coverage")
+        debug_main([])
+
+        covdata2 = CoverageData()
+        covdata2.set_arcs(ARCS_3)
+        covdata2.set_plugins({"y.py": "magic_plugin"})
+        covdata2.write_file("arcs.dat")
+
+        covdata3 = CoverageData()
+        covdata3.write_file("empty.dat")
+        debug_main(["arcs.dat", "empty.dat"])
+
+        self.assertEqual(self.stdout(), textwrap.dedent("""\
+            --- .coverage ------------------------------
+            {
+                "lines": {
+                    "a.py": [1, 2],
+                    "b.py": [
+                        3
+                    ]
+                }
+            }
+            --- arcs.dat ------------------------------
+            {
+                "arcs": {
+                    "x.py": [
+                        [1, 2],
+                        [-1, 1],
+                        [2, 3],
+                        [3, -1]
+                    ],
+                    "y.py": [
+                        [-1, 17],
+                        [23, -1],
+                        [17, 23]
+                    ]
+                },
+                "plugins": {
+                    "y.py": "magic_plugin"
+                }
+            }
+            --- empty.dat ------------------------------
+            {
+                "lines": {}
+            }
+            """)
+        )
 
 
 class CoverageDataFilesTest(DataTestHelpers, CoverageTest):

@@ -8,7 +8,7 @@ import socket
 
 from coverage import env
 from coverage.backward import iitems, string_class
-from coverage.debug import _TEST_NAME_FILE
+from coverage.debug import _TEST_NAME_FILE, pretty_data
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
 
@@ -542,7 +542,7 @@ class CoverageDataFiles(object):
             os.remove(f)
 
 
-def debug_main():
+def debug_main(args):
     """Dump the raw data from data files.
 
     Run this as::
@@ -550,22 +550,12 @@ def debug_main():
         $ python -m coverage.data [FILE]
 
     """
-    from coverage.debug import pretty_data
-    import sys
-
-    if len(sys.argv) > 1:
-        files = sys.argv[1:]
-    else:
-        files = [".coverage"]
-
-    for filename in files:
-        data = CoverageData._read_raw_data_file(filename)
+    for filename in (args or [".coverage"]):
         print("--- {0} ------------------------------".format(filename))
-        if data:
-            print(pretty_data(data))
-        else:
-            print("No data collected")
+        data = CoverageData._read_raw_data_file(filename)
+        print(pretty_data(data))
 
 
 if __name__ == '__main__':
-    debug_main()
+    import sys
+    debug_main(sys.argv[1:])
