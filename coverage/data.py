@@ -238,9 +238,13 @@ class CoverageData(object):
     def _open_for_reading(cls, filename):
         """Open a file appropriately for reading data."""
         f = open(filename, "r")
-        go_away = f.read(len(cls.GO_AWAY))
-        if go_away != cls.GO_AWAY:
-            raise CoverageException("Doesn't seem to be a coverage.py data file")
+        try:
+            go_away = f.read(len(cls.GO_AWAY))
+            if go_away != cls.GO_AWAY:
+                raise CoverageException("Doesn't seem to be a coverage.py data file")
+        except Exception:
+            f.close()
+            raise
         return f
 
     @classmethod
