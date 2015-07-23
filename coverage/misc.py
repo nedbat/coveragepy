@@ -15,12 +15,16 @@ if env.TESTING:
     from contracts import contract              # pylint: disable=unused-import
     from contracts import new_contract
 
-    # Define contract words that PyContract doesn't have.
-    new_contract('bytes', lambda v: isinstance(v, bytes))
-    if env.PY3:
-        new_contract('unicode', lambda v: isinstance(v, unicode_class))
-
-else:
+    try:
+        # Define contract words that PyContract doesn't have.
+        new_contract('bytes', lambda v: isinstance(v, bytes))
+        if env.PY3:
+            new_contract('unicode', lambda v: isinstance(v, unicode_class))
+    except ValueError:
+        # During meta-coverage, this module is imported twice, and PyContracts
+        # doesn't like redefining contracts. It's OK.
+        pass
+else:                                           # pragma: not covered
     # We aren't using real PyContracts, so just define a no-op decorator as a
     # stunt double.
     def contract(**unused):

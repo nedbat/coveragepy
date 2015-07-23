@@ -84,6 +84,9 @@ def run_tests(tracer, *nose_args):
 
 def run_tests_with_coverage(tracer, *nose_args):
     """Run tests, but with coverage."""
+    # Need to define this early enough that the first import of env.py sees it.
+    os.environ['COVERAGE_TESTING'] = "True"
+
     import coverage
 
     os.environ['COVERAGE_PROCESS_START'] = os.path.abspath('metacov.ini')
