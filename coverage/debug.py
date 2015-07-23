@@ -1,7 +1,9 @@
 """Control of and utilities for debugging."""
 
 import inspect
+import json
 import os
+import re
 
 
 # When debugging, it can be helpful to force some options, especially when
@@ -92,3 +94,16 @@ def short_stack():                                          # pragma: debugging
 def dump_stack_frames():                                    # pragma: debugging
     """Print a summary of the stack to stdout."""
     print(short_stack())
+
+
+def pretty_data(data):
+    """Format data as JSON, but as nicely as possible.
+
+    Returns a string.
+
+    """
+    # Start with a basic JSON dump.
+    out = json.dumps(data, indent=4, sort_keys=True)
+    # But pairs of numbers shouldn't be split across lines...
+    out = re.sub(r"\[\s+(-?\d+),\s+(-?\d+)\s+]", r"[\1, \2]", out)
+    return out

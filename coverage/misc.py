@@ -3,9 +3,7 @@
 import errno
 import hashlib
 import inspect
-import json
 import os
-import re
 
 from coverage import env
 from coverage.backward import string_class, to_bytes, unicode_class
@@ -170,19 +168,6 @@ def _needs_to_implement(that, func_name):
             thing=thing, name=name, func_name=func_name
             )
         )
-
-
-def pretty_data(data):
-    """Format data as JSON, but as nicely as possible.
-
-    Returns a string.
-
-    """
-    # Start with a basic JSON dump.
-    out = json.dumps(data, indent=4, sort_keys=True)
-    # But pairs of numbers shouldn't be split across lines...
-    out = re.sub(r"\[\s+(-?\d+),\s+(-?\d+)\s+]", r"[\1, \2]", out)
-    return out
 
 
 class CoverageException(Exception):

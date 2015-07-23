@@ -200,11 +200,13 @@ class CoverageData(object):
 
     __bool__ = __nonzero__
 
-    def _open_for_reading(self, filename):
+    @classmethod
+    def _open_for_reading(cls, filename):
         """Open a file appropriately for reading data."""
         return open(filename, "r")
 
-    def _read_raw_data(self, file_obj):
+    @classmethod
+    def _read_raw_data(cls, file_obj):
         """Read the raw data from a file object."""
         return json.load(file_obj)
 
@@ -237,10 +239,11 @@ class CoverageData(object):
                 )
             )
 
-    def _read_raw_data_file(self, filename):
+    @classmethod
+    def _read_raw_data_file(cls, filename):
         """Read the raw data from a file, for debugging."""
-        with self._open_for_reading(filename) as f:
-            return self._read_raw_data(f)
+        with cls._open_for_reading(filename) as f:
+            return cls._read_raw_data(f)
 
     ##
     ## Writing data
@@ -490,3 +493,32 @@ class CoverageDataFiles(object):
             new_data.read_file(f)
             data.update(new_data, aliases=aliases)
             os.remove(f)
+
+
+def debug_main():
+    """Dump the raw data from data files.
+
+    Run this as::
+
+        $ python -m coverage.data [FILE]
+
+    """
+    from coverage.debug import pretty_data
+    import sys
+
+    if len(sys.argv) > 1:
+        files = sys.argv[1:]
+    else:
+        files = [".coverage"]
+
+    for filename in files:
+        data = CoverageData._read_raw_data_file(filename)
+        print("--- {0} ------------------------------".format(filename))
+        if data:
+            print(pretty_data(data))
+        else:
+            print("No data collected")
+
+
+if __name__ == '__main__':
+    debug_main()
