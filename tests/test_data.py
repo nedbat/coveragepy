@@ -4,10 +4,11 @@ import glob
 import json
 import os
 import os.path
-import textwrap
+import re
 
 import mock
 
+from coverage.backward import iitems
 from coverage.data import CoverageData, CoverageDataFiles, debug_main
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
@@ -377,41 +378,35 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         covdata3.write_file("empty.dat")
         debug_main(["arcs.dat", "empty.dat"])
 
-        self.assertEqual(self.stdout(), textwrap.dedent("""\
-            --- .coverage ------------------------------
-            {
+        expected = {
+            ".coverage": {
                 "lines": {
                     "a.py": [1, 2],
-                    "b.py": [
-                        3
-                    ]
+                    "b.py": [3],
                 }
-            }
-            --- arcs.dat ------------------------------
-            {
+            },
+            "arcs.dat": {
                 "arcs": {
-                    "x.py": [
-                        [1, 2],
-                        [-1, 1],
-                        [2, 3],
-                        [3, -1]
-                    ],
-                    "y.py": [
-                        [-1, 17],
-                        [23, -1],
-                        [17, 23]
-                    ]
+                    "x.py": [[-1, 1], [1, 2], [2, 3], [3, -1]],
+                    "y.py": [[-1, 17], [17, 23], [23, -1]],
                 },
-                "plugins": {
-                    "y.py": "magic_plugin"
-                }
-            }
-            --- empty.dat ------------------------------
-            {
-                "lines": {}
-            }
-            """)
-        )
+                "plugins": {"y.py": "magic_plugin"}
+            },
+            "empty.dat": {"lines": {}},
+        }
+        pieces = re.split(r"(?m)-+ ([\w.]+) -+$", self.stdout())
+        for name, json_out in zip(pieces[1::2], pieces[2::2]):
+            json_got = json.loads(json_out)
+            canonicalize_json_data(json_got)
+            self.assertEqual(expected[name], json_got)
+
+
+def canonicalize_json_data(data):
+    """Make the JSON representation of our data canonical so it can be compared."""
+    for fname, lines in iitems(data.get('lines', {})):
+        data['lines'][fname] = sorted(lines)
+    for fname, arcs in iitems(data.get('arcs', {})):
+        data['arcs'][fname] = sorted(arcs)
 
 
 class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
