@@ -293,13 +293,13 @@ class Coverage(object):
                     structseq_file = structseq_new.__code__.co_filename
                 self.pylib_dirs.add(self._canonical_dir(structseq_file))
 
-        # To avoid tracing the coverage code itself, we skip anything located
-        # where we are.
+        # To avoid tracing the coverage.py code itself, we skip anything
+        # located where we are.
         self.cover_dirs = [self._canonical_dir(__file__)]
         if env.TESTING:
             # When testing, we use PyContracts, which should be considered
-            # part of coverage, and it uses six. Exclude those directories just
-            # as we exclude ourselves.
+            # part of coverage.py, and it uses six. Exclude those directories
+            # just as we exclude ourselves.
             import contracts, six
             for mod in [contracts, six]:
                 self.cover_dirs.append(self._canonical_dir(mod))
@@ -549,8 +549,8 @@ class Coverage(object):
             if self.pylib_match and self.pylib_match.match(filename):
                 return "is in the stdlib"
 
-            # We exclude the coverage code itself, since a little of it will be
-            # measured otherwise.
+            # We exclude the coverage.py code itself, since a little of it
+            # will be measured otherwise.
             if self.cover_match and self.cover_match.match(filename):
                 return "is part of coverage.py"
 
@@ -1114,7 +1114,7 @@ def process_startup():
     # because some virtualenv configurations make the same directory visible
     # twice in sys.path.  This means that the .pth file will be found twice,
     # and executed twice, executing this function twice.  We set a global
-    # flag (an attribute on this function) to indicate that coverage has
+    # flag (an attribute on this function) to indicate that coverage.py has
     # already been started, so we can avoid doing it twice.
     #
     # https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy has more
@@ -1122,7 +1122,7 @@ def process_startup():
 
     if hasattr(process_startup, "done"):
         # We've annotated this function before, so we must have already
-        # started coverage in this process.  Nothing to do.
+        # started coverage.py in this process.  Nothing to do.
         return
 
     process_startup.done = True

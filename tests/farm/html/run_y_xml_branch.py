@@ -1,7 +1,7 @@
 source_path = None
 
 def xml_it():
-    """Run coverage and make an XML report for y."""
+    """Run coverage.py and make an XML report for y."""
     import coverage, coverage.files
     cov = coverage.coverage(branch=True)
     cov.start()

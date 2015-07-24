@@ -1,4 +1,4 @@
-"""Command-line support for Coverage."""
+"""Command-line support for coverage.py."""
 
 import glob
 import optparse
@@ -119,7 +119,7 @@ class Opts(object):
 
 
 class CoverageOptionParser(optparse.OptionParser, object):
-    """Base OptionParser for coverage.
+    """Base OptionParser for coverage.py.
 
     Problems don't exit the program.
     Defaults are initialized for all options.
@@ -202,7 +202,7 @@ class CmdOptionParser(CoverageOptionParser):
     def __init__(self, action, options=None, defaults=None, usage=None,
                 description=None
                 ):
-        """Create an OptionParser for a coverage command.
+        """Create an OptionParser for a coverage.py command.
 
         `action` is the slug to put into `options.action`.
         `options` is a list of Option's for the command.
@@ -340,7 +340,7 @@ OK, ERR, FAIL_UNDER = 0, 1, 2
 
 
 class CoverageScript(object):
-    """The command-line interface to Coverage."""
+    """The command-line interface to coverage.py."""
 
     def __init__(self, _covpkg=None, _run_python_file=None,
                  _run_python_module=None, _help_fn=None):
@@ -360,7 +360,7 @@ class CoverageScript(object):
         self.coverage = None
 
     def command_line(self, argv):
-        """The bulk of the command line interface to Coverage.
+        """The bulk of the command line interface to coverage.py.
 
         `argv` is the argument list to process.
 
@@ -613,7 +613,7 @@ def unshell_list(s):
     if not s:
         return None
     if env.WINDOWS:
-        # When running coverage as coverage.exe, some of the behavior
+        # When running coverage.py as coverage.exe, some of the behavior
         # of the shell is emulated: wildcards are expanded into a list of
         # filenames.  So you have to single-quote patterns on the command
         # line, but (not) helpfully, the single quotes are included in the
@@ -669,7 +669,7 @@ Documentation at %(__url__)s
 
 
 def main(argv=None):
-    """The main entry point to Coverage.
+    """The main entry point to coverage.py.
 
     This is installed as the script entry point.
 

@@ -8,8 +8,8 @@ Things that cause trouble
 .. :history: 20150124T160800, remove obsolete stuff.
 
 
-Coverage works well, and I want it to properly measure any Python program, but
-there are some situations it can't cope with.  This page details some known
+Coverage.py works well, and I want it to properly measure any Python program,
+but there are some situations it can't cope with.  This page details some known
 problems, with possible courses of action, and links to coverage.py bug reports
 with more information.
 

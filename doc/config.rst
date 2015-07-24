@@ -15,7 +15,7 @@ Configuration files
 
 
 Coverage.py options can be specified in a configuration file.  This makes it
-easier to re-run coverage with consistent settings, and also allows for
+easier to re-run coverage.py with consistent settings, and also allows for
 specification of options that are otherwise only available in the
 :ref:`API <api>`.
 
@@ -105,7 +105,7 @@ standard library.
 ``concurrency`` (string, default "thread"): the name of the concurrency
 library in use by the product code.  If your program uses `gevent`_,
 `greenlet`_, or `eventlet`_, you must name that library in this option, or
-coverage will produce very wrong results.
+coverage.py will produce very wrong results.
 
 .. _greenlet: http://greenlet.readthedocs.org/en/latest/
 .. _gevent: http://www.gevent.org/

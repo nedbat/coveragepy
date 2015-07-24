@@ -19,7 +19,7 @@ Latest
   applied even when the report is empty.  Thanks, Ionel Cristian Mărieș.
 
 - Plugins are now initialized differently.  Instead of looking for a class
-  called ``Plugin``, coverage looks for a function called ``coverage_init``.
+  called ``Plugin``, coverage.py looks for a function called ``coverage_init``.
 
 - Code that was executed with `exec` would be mis-attributed to the file that
   called it.  This is now fixed, closing `issue 380`_.
@@ -30,7 +30,11 @@ Latest
   ``Coverage.get_data``, and returns the ``CoverageData`` containing the
   collected data.
 
+- The project is consistently referred to as "coverage.py" throughout the code
+  and the documentation, closing `issue 275`_.
+
 .. _issue 236: https://bitbucket.org/ned/coveragepy/issues/236/pickles-are-bad-and-you-should-feel-bad
+.. _issue 275: https://bitbucket.org/ned/coveragepy/issues/275/refer-consistently-to-project-as-coverage
 .. _issue 380: https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from
 
 .. 41 issues closed in 4.0 below here
@@ -41,7 +45,7 @@ Version 4.0a6 --- 21 June 2015
 
 - Python 3.5b2 and PyPy 2.6.0 are supported.
 
-- The original module-level function interface to coverage is no longer
+- The original module-level function interface to coverage.py is no longer
   supported.  You must now create a ``coverage.Coverage`` object, and use
   methods on it.
 
@@ -116,7 +120,7 @@ Version 4.0a5 --- 16 February 2015
   Eduardo Schettino.  Currently, this does not work on Windows.
 
 - A new warning is possible, if a desired file isn't measured because it was
-  imported before coverage was started (`issue 353`_).
+  imported before coverage.py was started (`issue 353`_).
 
 - The `coverage.process_startup` function now will start coverage measurement
   only once, no matter how many times it is called.  This fixes problems due
@@ -213,8 +217,8 @@ Version 4.0a2 --- 14 January 2015
 
 - The ``--debug`` switch can now be used on any command.
 
-- You can now programmatically adjust the configuration of coverage by setting
-  items on `Coverage.config` after construction.
+- You can now programmatically adjust the configuration of coverage.py by
+  setting items on `Coverage.config` after construction.
 
 - A module run with ``-m`` can be used as the argument to ``--source``, fixing
   `issue 328`_.  Thanks, Buck Evan.
@@ -225,7 +229,7 @@ Version 4.0a2 --- 14 January 2015
 - Made some PyPy-specific tweaks to improve speed under PyPy.  Thanks, Alex
   Gaynor.
 
-- In some cases, with a source file missing a final newline, coverage would
+- In some cases, with a source file missing a final newline, coverage.py would
   count statements incorrectly.  This is now fixed, closing `issue 293`_.
 
 - The status.dat file that HTML reports use to avoid re-creating files that
@@ -317,9 +321,9 @@ Version 3.7 --- 6 October 2013
 - Running code with ``coverage run -m`` now behaves more like Python does,
   setting sys.path properly, which fixes `issue 207`_ and `issue 242`_.
 
-- Coverage can now run .pyc files directly, closing `issue 264`_.
+- Coverage.py can now run .pyc files directly, closing `issue 264`_.
 
-- Coverage properly supports .pyw files, fixing `issue 261`_.
+- Coverage.py properly supports .pyw files, fixing `issue 261`_.
 
 - Omitting files within a tree specified with the ``source`` option would
   cause them to be incorrectly marked as unexecuted, as described in
@@ -335,9 +339,10 @@ Version 3.7 --- 6 October 2013
 - Trying to create an XML report with no files to report on, would cause a
   ZeroDivideError, but no longer does, fixing `issue 250`_.
 
-- When running a threaded program under the Python tracer, coverage no longer
-  issues a spurious warning about the trace function changing: "Trace function
-  changed, measurement is likely wrong: None."  This fixes `issue 164`_.
+- When running a threaded program under the Python tracer, coverage.py no
+  longer issues a spurious warning about the trace function changing: "Trace
+  function changed, measurement is likely wrong: None."  This fixes `issue
+  164`_.
 
 - Static files necessary for HTML reports are found in system-installed places,
   to ease OS-level packaging of coverage.py.  Closes `issue 259`_.
@@ -470,8 +475,9 @@ Version 3.6b1 --- 28 November 2012
 
 - Jython files now work with the ``--source`` option, fixing `issue 100`_.
 
-- Running coverage under a debugger is unlikely to work, but it shouldn't fail
-  with "TypeError: 'NoneType' object is not iterable".  Fixes `issue 201`_.
+- Running coverage.py under a debugger is unlikely to work, but it shouldn't
+  fail with "TypeError: 'NoneType' object is not iterable".  Fixes `issue
+  201`_.
 
 - On some Linux distributions, when installed with the OS package manager,
   coverage.py would report its own code as part of the results.  Now it won't,
@@ -553,7 +559,6 @@ Version 3.5.3 --- 29 September 2012
 .. _tox: http://tox.readthedocs.org/
 
 
-
 Version 3.5.2 --- 4 May 2012
 ----------------------------
 
@@ -615,10 +620,10 @@ Version 3.5.1 --- 23 September 2011
 Version 3.5.1b1 --- 28 August 2011
 ----------------------------------
 
-- When combining data files from parallel runs, you can now instruct coverage
-  about which directories are equivalent on different machines.  A ``[paths]``
-  section in the configuration file lists paths that are to be considered
-  equivalent.  Finishes `issue 17`_.
+- When combining data files from parallel runs, you can now instruct
+  coverage.py about which directories are equivalent on different machines.  A
+  ``[paths]`` section in the configuration file lists paths that are to be
+  considered equivalent.  Finishes `issue 17`_.
 
 - for-else constructs are understood better, and don't cause erroneous partial
   branch warnings.  Fixes `issue 122`_.
@@ -640,7 +645,7 @@ Version 3.5.1b1 --- 28 August 2011
 
 - In order to help the core developers measure the test coverage of the
   standard library, Brandon Rhodes devised an aggressive hack to trick Python
-  into running some coverage code before anything else in the process.
+  into running some coverage.py code before anything else in the process.
   See the coverage/fullcoverage directory if you are interested.
 
 .. _issue 17: http://bitbucket.org/ned/coveragepy/issue/17/support-combining-coverage-data-from
@@ -828,7 +833,7 @@ Version 3.4b1 --- 21 August 2010
   and parent processes.  Use ``coverage run -p`` to get two data files that can
   be combined with ``coverage combine``.  Fixes `issue 56`_.
 
-- Coverage is now runnable as a module: ``python -m coverage``.  Thanks,
+- Coverage.py is now runnable as a module: ``python -m coverage``.  Thanks,
   Brett Cannon.
 
 - When measuring code running in a virtualenv, most of the system library was
@@ -1049,8 +1054,8 @@ Version 3.0.1 --- 7 July 2009
   raised.  This is now fixed.
 
 - The coverage.py code itself will now not be measured by coverage.py, and no
-  coverage modules will be mentioned in the nose --with-cover plug-in.  Fixed
-  `issue 8`_.
+  coverage.py modules will be mentioned in the nose --with-cover plug-in.
+  Fixed `issue 8`_.
 
 - When running source files, coverage.py now opens them in universal newline
   mode just like Python does.  This lets it run Windows files on Mac, for
@@ -1129,10 +1134,10 @@ Version 3.0b1 --- 7 March 2009
 
 Major overhaul.
 
-- Coverage is now a package rather than a module.  Functionality has been split
-  into classes.
+- Coverage.py is now a package rather than a module.  Functionality has been
+  split into classes.
 
-- The trace function is implemented in C for speed.  Coverage runs are now
+- The trace function is implemented in C for speed.  Coverage.py runs are now
   much faster.  Thanks to David Christian for productive micro-sprints and
   other encouragement.
 
@@ -1144,7 +1149,7 @@ Major overhaul.
 
 - The singleton coverage object is only created if the module-level functions
   are used.  This maintains the old interface while allowing better
-  programmatic use of Coverage.
+  programmatic use of Coverage.py.
 
 - The minimum supported Python version is 2.3.
 
@@ -1242,7 +1247,7 @@ Version 2.5 --- 4 December 2005
 - Add a file argument to report so that reports can be captured to a different
   destination.
 
-- coverage.py can now measure itself.
+- Coverage.py can now measure itself.
 
 - Adapted Greg Rogers' patch for using relative file names, and sorting and
   omitting files to report on.

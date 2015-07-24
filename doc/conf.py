@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'coverage.py'
+project = u'Coverage.py'
 copyright = u'2009\N{EN DASH}2015, Ned Batchelder'
 
 # The version info for the project you're documenting, acts as replacement for

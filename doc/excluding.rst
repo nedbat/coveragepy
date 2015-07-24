@@ -1,8 +1,8 @@
 .. _excluding:
 
-============================
-Excluding code from coverage
-============================
+===============================
+Excluding code from coverage.py
+===============================
 
 .. :history: 20090613T090500, brand new docs.
 .. :history: 20100224T200900, updated for 3.3.
@@ -11,13 +11,13 @@ Excluding code from coverage
 
 
 You may have code in your project that you know won't be executed, and you want
-to tell coverage to ignore it.  For example, you may have debugging-only code
-that won't be executed during your unit tests. You can tell coverage to exclude
-this code during reporting so that it doesn't clutter your reports with noise
-about code that you don't need to hear about.
+to tell coverage.py to ignore it.  For example, you may have debugging-only
+code that won't be executed during your unit tests. You can tell coverage.py to
+exclude this code during reporting so that it doesn't clutter your reports with
+noise about code that you don't need to hear about.
 
-Coverage will look for comments marking clauses for exclusion.  In this code,
-the "if debug" clause is excluded from reporting::
+Coverage.py will look for comments marking clauses for exclusion.  In this
+code, the "if debug" clause is excluded from reporting::
 
     a = my_function1()
     if debug:   # pragma: no cover
@@ -39,7 +39,7 @@ function is not reported as missing::
             return "<MyObject>"
 
 Excluded code is executed as usual, and its execution is recorded in the
-coverage data as usual. When producing reports though, coverage excludes it
+coverage data as usual. When producing reports though, coverage.py excludes it
 from the list of missing code.
 
 
@@ -64,7 +64,7 @@ line, so it isn't considered a branch at all.
 Advanced exclusion
 ------------------
 
-Coverage identifies exclusions by matching lines against a list of regular
+Coverage.py identifies exclusions by matching lines against a list of regular
 expressions. Using :ref:`configuration files <config>` or the coverage
 :ref:`API <api>`, you can add to that list. This is useful if you have
 often-used constructs to exclude that can be matched with a regex. You can

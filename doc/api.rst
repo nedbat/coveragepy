@@ -49,8 +49,8 @@ The CoverageData class
     :special-members: __init__
 
 
-Starting coverage automatically
--------------------------------
+Starting coverage.py automatically
+----------------------------------
 
 This function is used to start coverage measurement automatically when Python
 starts.  See :ref:`subprocess` for details.

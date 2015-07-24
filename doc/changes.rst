@@ -51,7 +51,7 @@ Backward incompatibilities:
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
   a hack for ``--timid`` before configuration files were available.
 
-- The original module-level function interface to coverage is no longer
+- The original module-level function interface to coverage.py is no longer
   supported.  You must now create a ``coverage.Coverage`` object, and use
   methods on it.
 
@@ -126,7 +126,7 @@ Improvements:
   fixed.
 
 - A new warning is possible, if a desired file isn't measured because it was
-  imported before coverage was started (`issue 353`_).
+  imported before coverage.py was started (`issue 353`_).
 
 - The `coverage.process_startup` function now will start coverage measurement
   only once, no matter how many times it is called.  This fixes problems due
@@ -137,8 +137,8 @@ API changes:
 - The class defined in the coverage module is now called ``Coverage`` instead
   of ``coverage``, though the old name still works, for backward compatibility.
 
-- You can now programmatically adjust the configuration of coverage by setting
-  items on `Coverage.config` after construction.
+- You can now programmatically adjust the configuration of coverage.py by
+  setting items on `Coverage.config` after construction.
 
 - If the `config_file` argument to the Coverage constructor is specified as
   ".coveragerc", it is treated as if it were True.  This means setup.cfg is
@@ -229,9 +229,9 @@ Version 3.7 --- 6 October 2013
 - Running code with ``coverage run -m`` now behaves more like Python does,
   setting sys.path properly, which fixes `issue 207`_ and `issue 242`_.
 
-- Coverage can now run .pyc files directly, closing `issue 264`_.
+- Coverage.py can now run .pyc files directly, closing `issue 264`_.
 
-- Coverage properly supports .pyw files, fixing `issue 261`_.
+- Coverage.py properly supports .pyw files, fixing `issue 261`_.
 
 - Omitting files within a tree specified with the ``source`` option would
   cause them to be incorrectly marked as unexecuted, as described in
@@ -247,9 +247,10 @@ Version 3.7 --- 6 October 2013
 - Trying to create an XML report with no files to report on, would cause a
   ZeroDivideError, but no longer does, fixing `issue 250`_.
 
-- When running a threaded program under the Python tracer, coverage no longer
-  issues a spurious warning about the trace function changing: "Trace function
-  changed, measurement is likely wrong: None."  This fixes `issue 164`_.
+- When running a threaded program under the Python tracer, coverage.py no
+  longer issues a spurious warning about the trace function changing: "Trace
+  function changed, measurement is likely wrong: None."  This fixes
+  `issue 164`_.
 
 - Static files necessary for HTML reports are found in system-installed places,
   to ease OS-level packaging of coverage.py.  Closes `issue 259`_.
@@ -377,8 +378,9 @@ Fixes:
 
 - Jython files now work with the ``--source`` option, fixing `issue 100`_.
 
-- Running coverage under a debugger is unlikely to work, but it shouldn't fail
-  with "TypeError: 'NoneType' object is not iterable".  Fixes `issue 201`_.
+- Running coverage.py under a debugger is unlikely to work, but it shouldn't
+  fail with "TypeError: 'NoneType' object is not iterable".  Fixes
+  `issue 201`_.
 
 - On some Linux distributions, when installed with the OS package manager,
   coverage.py would report its own code as part of the results.  Now it won't,
@@ -500,10 +502,10 @@ Version 3.5.2 --- 4 May 2012
 Version 3.5.1 --- 23 September 2011
 -----------------------------------
 
-- When combining data files from parallel runs, you can now instruct coverage
-  about which directories are equivalent on different machines.  A ``[paths]``
-  section in the configuration file lists paths that are to be considered
-  equivalent.  Finishes `issue 17`_.
+- When combining data files from parallel runs, you can now instruct
+  coverage.py about which directories are equivalent on different machines.  A
+  ``[paths]`` section in the configuration file lists paths that are to be
+  considered equivalent.  Finishes `issue 17`_.
 
 - for-else constructs are understood better, and don't cause erroneous partial
   branch warnings.  Fixes `issue 122`_.
@@ -525,7 +527,7 @@ Version 3.5.1 --- 23 September 2011
 
 - In order to help the core developers measure the test coverage of the
   standard library, Brandon Rhodes devised an aggressive hack to trick Python
-  into running some coverage code before anything else in the process.
+  into running some coverage.py code before anything else in the process.
   See the coverage/fullcoverage directory if you are interested.
 
 .. _issue 17: http://bitbucket.org/ned/coveragepy/issue/17/support-combining-coverage-data-from
@@ -682,7 +684,7 @@ Execution and measurement:
 - When measuring code running in a virtualenv, most of the system library was
   being measured when it shouldn't have been.  This is now fixed.
 
-- Coverage can now be run as a module: ``python -m coverage``.  Thanks,
+- Coverage.py can now be run as a module: ``python -m coverage``.  Thanks,
   Brett Cannon.
 
 .. _issue 1:  http://bitbucket.org/ned/coveragepy/issue/1/empty-__init__py-files-are-reported-as-1-executable
@@ -760,7 +762,7 @@ Version 3.2 --- 5 December 2009
 
 - Added a ``--version`` option on the command line.
 
-- Program execution under coverage is a few percent faster.
+- Program execution under coverage.py is a few percent faster.
 
 - Some exceptions reported by the command line interface have been cleaned up
   so that tracebacks inside coverage.py aren't shown.  Fixes `issue 23`_.
@@ -821,7 +823,7 @@ Version 3.0.1 --- 7 July 2009
   raised.  This is now fixed.
 
 - The coverage.py code itself will now not be measured by coverage.py, and no
-  coverage modules will be mentioned in the nose ``--with-cover`` plugin.
+  coverage.py modules will be mentioned in the nose ``--with-cover`` plugin.
 
 - When running source files, coverage.py now opens them in universal newline
   mode just like Python does.  This lets it run Windows files on Mac, for
@@ -831,13 +833,13 @@ Version 3.0.1 --- 7 July 2009
 Version 3.0 --- 13 June 2009
 ----------------------------
 
-- Coverage is now a package rather than a module.  Functionality has been split
-  into classes.
+- Coverage.py is now a package rather than a module.  Functionality has been
+  split into classes.
 
 - HTML reports and annotation of source files: use the new ``-b`` (browser)
   switch.  Thanks to George Song for code, inspiration and guidance.
 
-- The trace function is implemented in C for speed.  Coverage runs are now
+- The trace function is implemented in C for speed.  Coverage.py runs are now
   much faster.  Thanks to David Christian for productive micro-sprints and
   other encouragement.
 

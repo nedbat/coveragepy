@@ -1,7 +1,7 @@
 source_path = None
 
 def html_it():
-    """Run coverage and make an XML report for a."""
+    """Run coverage.py and make an XML report for a."""
     import coverage, coverage.files
     cov = coverage.coverage(config_file="run_a_xml_2.ini")
     cov.start()

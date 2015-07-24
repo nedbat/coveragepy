@@ -105,9 +105,9 @@ def run_tests_with_coverage(tracer, *nose_args):
     suffix = "%s_%s_%s" % (version, tracer, socket.gethostname())
 
     cov = coverage.coverage(config_file="metacov.ini", data_suffix=suffix)
-    # Cheap trick: the coverage code itself is excluded from measurement, but
-    # if we clobber the cover_prefix in the coverage object, we can defeat the
-    # self-detection.
+    # Cheap trick: the coverage.py code itself is excluded from measurement,
+    # but if we clobber the cover_prefix in the coverage object, we can defeat
+    # the self-detection.
     cov.cover_prefix = "Please measure coverage.py!"
     cov._warn_unimported_source = False
     cov.erase()

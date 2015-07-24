@@ -1,8 +1,8 @@
 .. _cmd:
 
-===========================
-Coverage command line usage
-===========================
+==============================
+Coverage.py command line usage
+==============================
 
 .. :history: 20090524T134300, brand new docs.
 .. :history: 20090613T164000, final touches for 3.0
@@ -29,7 +29,7 @@ and a ``coverage-X.Y`` alias, depending on the version of Python you're using.
 For example, when installing on Python 2.7, you will be able to use
 ``coverage``, ``coverage2``, or ``coverage-2.7`` on the command line.
 
-Coverage has a number of commands which determine the action performed:
+Coverage.py has a number of commands which determine the action performed:
 
 * **run** -- Run a Python program and collect execution data.
 
@@ -96,9 +96,9 @@ but before the program invocation::
     $ coverage run --source=dir1,dir2 my_program.py arg1 arg2
     $ coverage run --source=dir1,dir2 -m packagename.modulename arg1 arg2
 
-Coverage can measure multi-threaded programs by default. If you are using
+Coverage.py can measure multi-threaded programs by default. If you are using
 more exotic concurrency, with the `greenlet`_, `eventlet`_, or `gevent`_
-libraries, then coverage will get very confused.  Use the ``--concurrency``
+libraries, then coverage.py will get very confused.  Use the ``--concurrency``
 switch to properly measure programs using these libraries.  Give it a value of
 ``greenlet``, ``eventlet``, or ``gevent``.
 
@@ -106,12 +106,12 @@ switch to properly measure programs using these libraries.  Give it a value of
 .. _gevent: http://www.gevent.org/
 .. _eventlet: http://eventlet.net/
 
-By default, coverage does not measure code installed with the Python
+By default, coverage.py does not measure code installed with the Python
 interpreter, for example, the standard library. If you want to measure that
 code as well as your own, add the ``-L`` flag.
 
 If your coverage results seem to be overlooking code that you know has been
-executed, try running coverage again with the ``--timid`` flag.  This uses a
+executed, try running coverage.py again with the ``--timid`` flag.  This uses a
 simpler but slower trace method.  Projects that use DecoratorTools, including
 TurboGears, will need to use ``--timid`` to get correct results.
 
@@ -149,7 +149,7 @@ could affect the measurement process.  The possible warnings include:
 
 .. _cmd_run_debug:
 
-The ``--debug`` option instructs coverage to log internal details of its
+The ``--debug`` option instructs coverage.py to log internal details of its
 operation, to help with diagnosing problems.  It takes a comma-separated list
 of options, each indicating a facet of operation to log to stderr:
 
@@ -172,8 +172,8 @@ of options, each indicating a facet of operation to log to stderr:
 Data file
 ---------
 
-Coverage collects execution data in a file called ".coverage".  If need be, you
-can set a new file name with the COVERAGE_FILE environment variable.
+Coverage.py collects execution data in a file called ".coverage".  If need be,
+you can set a new file name with the COVERAGE_FILE environment variable.
 
 By default,each run of your program starts with an empty data set. If you need
 to run your program multiple times to get complete data (for example, because
@@ -191,9 +191,9 @@ Combining data files
 --------------------
 
 If you need to collect coverage data from different machines or processes,
-coverage can combine multiple files into one for reporting. Use the ``-p`` flag
-during execution to append distinguishing information to the .coverage data
-file name.
+coverage.py can combine multiple files into one for reporting. Use the ``-p``
+flag during execution to append distinguishing information to the .coverage
+data file name.
 
 Once you have created a number of these files, you can copy them all to a
 single directory, and use the **combine** command to combine them into one
@@ -202,9 +202,9 @@ single directory, and use the **combine** command to combine them into one
     $ coverage combine
 
 If the different machines run your code from different places in their file
-systems, coverage won't know how to combine the data.  You can tell coverage
-how the different locations correlate with a ``[paths]`` section in your
-configuration file.  See :ref:`config_paths` for details.
+systems, coverage.py won't know how to combine the data.  You can tell
+coverage.py how the different locations correlate with a ``[paths]`` section in
+your configuration file.  See :ref:`config_paths` for details.
 
 If you are collecting and renaming your own data files, you'll need to name
 them properly for **combine** to find them.   It looks for files named after
@@ -222,7 +222,7 @@ Here are some examples of data files that can be combined::
 Reporting
 ---------
 
-Coverage provides a few styles of reporting, with the **report**, **html**,
+Coverage.py provides a few styles of reporting, with the **report**, **html**,
 **annotate**, and **xml** commands.  They share a number of common options.
 
 The command-line arguments are module or file names to report on, if you'd like
@@ -307,7 +307,7 @@ Other common reporting options are described above in :ref:`cmd_reporting`.
 HTML annotation
 ---------------
 
-Coverage can annotate your source code for which lines were executed
+Coverage.py can annotate your source code for which lines were executed
 and which were not.  The **html** command creates an HTML report similar to the
 **report** summary, but as an HTML file.  Each module name links to the source
 file decorated to show the status of each line.

@@ -1,4 +1,4 @@
-# A test file for HTML reporting by coverage.
+# A test file for HTML reporting by coverage.py.
 
 import other
 

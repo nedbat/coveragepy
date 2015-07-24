@@ -1,5 +1,5 @@
 ===========
-coverage.py
+Coverage.py
 ===========
 
 .. :history: 20090524T134300, brand new docs.
@@ -65,7 +65,7 @@ Quick start
 
 Getting started is easy:
 
-#.  Install coverage.py from the `coverage page on the Python Package Index`_,
+#.  Install coverage.py from the `coverage.py page on the Python Package Index`_,
     or by using "pip install coverage".  For a few more details, see
     :ref:`install`.
 
@@ -105,7 +105,7 @@ Getting started is easy:
         Then visit htmlcov/index.html in your browser, to see a
         `report like this one`_.
 
-.. _coverage page on the Python Package Index: http://pypi.python.org/pypi/coverage
+.. _coverage.py page on the Python Package Index: http://pypi.python.org/pypi/coverage
 .. _report like this: http://nedbatchelder.com/code/coverage/sample_html/index.html
 .. _report like this one: http://nedbatchelder.com/code/coverage/sample_html_beta/index.html
 
@@ -118,12 +118,12 @@ There are a few different ways to use coverage.py.  The simplest is the
 If you need more control over how your project is measured, you can use the
 :ref:`API <api>`.
 
-Some test runners provide coverage integration to make it easy to use coverage
-while running tests.  For example, `nose`_ has a `cover plug-in`_.
+Some test runners provide coverage integration to make it easy to use
+coverage.py while running tests.  For example, `nose`_ has a `cover plug-in`_.
 
-You can fine-tune coverage's view of your code by directing it to ignore parts
-that you know aren't interesting.  See :ref:`source` and :ref:`excluding` for
-details.
+You can fine-tune coverage.py's view of your code by directing it to ignore
+parts that you know aren't interesting.  See :ref:`source` and :ref:`excluding`
+for details.
 
 .. _nose:           http://somethingaboutorange.com/mrl/projects/nose
 .. _cover plug-in:  https://nose.readthedocs.org/en/latest/plugins/cover.html
@@ -173,7 +173,3 @@ More information
     trouble
     faq
     changes
-
-
-.. How it works
-.. .coverage file format

@@ -26,10 +26,10 @@ the :ref:`command line <cmd>` to create the reports you need from that data.
 
 **Q: Why do unexecutable lines show up as executed?**
 
-Usually this is because you've updated your code and run coverage on it again
-without erasing the old data.  Coverage records line numbers executed, so the
-old data may have recorded a line number which has since moved, causing
-coverage to claim a line has been executed which cannot be.
+Usually this is because you've updated your code and run coverage.py on it
+again without erasing the old data.  Coverage.py records line numbers executed,
+so the old data may have recorded a line number which has since moved, causing
+coverage.py to claim a line has been executed which cannot be.
 
 If you are using the ``-x`` command line action, it doesn't erase first by
 default.  Switch to the ``coverage run`` command, or use the ``-e`` switch to
@@ -39,18 +39,18 @@ erase all data before starting the next run.
 **Q: Why do the bodies of functions (or classes) show as executed, but the def
 lines do not?**
 
-This happens because coverage is started after the functions are defined.  The
-definition lines are executed without coverage measurement, then coverage is
-started, then the function is called.  This means the body is measured, but
-the definition of the function itself is not.
+This happens because coverage.py is started after the functions are defined.
+The definition lines are executed without coverage measurement, then
+coverage.py is started, then the function is called.  This means the body is
+measured, but the definition of the function itself is not.
 
-To fix this, start coverage earlier.  If you use the :ref:`command line <cmd>`
-to run your program with coverage, then your entire program will be monitored.
-If you are using the :ref:`API <api>`, you need to call coverage.start() before
-importing the modules that define your functions.
+To fix this, start coverage.py earlier.  If you use the :ref:`command line
+<cmd>` to run your program with coverage.py, then your entire program will be
+monitored.  If you are using the :ref:`API <api>`, you need to call
+coverage.start() before importing the modules that define your functions.
 
 
-**Q: Coverage is much slower than I remember, what's going on?**
+**Q: Coverage.py is much slower than I remember, what's going on?**
 
 Make sure you are using the C trace function.  Coverage.py provides two
 implementations of the trace function.  The C implementation runs much faster.

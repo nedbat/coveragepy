@@ -33,7 +33,7 @@ class HtmlTestHelpers(CoverageTest):
             """)
 
     def run_coverage(self, covargs=None, htmlargs=None):
-        """Run coverage on main_file.py, and create an HTML report."""
+        """Run coverage.py on main_file.py, and create an HTML report."""
         self.clean_local_file_imports()
         cov = coverage.coverage(**(covargs or {}))
         self.start_import_stop(cov, "main_file")
@@ -75,7 +75,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
     def setUp(self):
         super(HtmlDeltaTest, self).setUp()
 
-        # At least one of our tests monkey-patches the version of coverage,
+        # At least one of our tests monkey-patches the version of coverage.py,
         # so grab it here to restore it later.
         self.real_coverage_version = coverage.__version__
         self.addCleanup(self.restore_coverage_version)
@@ -145,8 +145,8 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
 
     def test_html_delta_from_settings_change(self):
         # HTML generation can create only the files that have changed.
-        # In this case, everything changes because the coverage settings have
-        # changed.
+        # In this case, everything changes because the coverage.py settings
+        # have changed.
         self.create_initial_files()
         self.run_coverage(covargs=dict(omit=[]))
         index1 = self.get_html_index_content()
@@ -164,7 +164,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
 
     def test_html_delta_from_coverage_version_change(self):
         # HTML generation can create only the files that have changed.
-        # In this case, everything changes because the coverage version has
+        # In this case, everything changes because the coverage.py version has
         # changed.
         self.create_initial_files()
         self.run_coverage()

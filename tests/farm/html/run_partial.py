@@ -1,7 +1,7 @@
 import sys
 
 def html_it():
-    """Run coverage and make an HTML report for partial."""
+    """Run coverage.py and make an HTML report for partial."""
     import coverage
     cov = coverage.coverage(branch=True)
     cov.start()

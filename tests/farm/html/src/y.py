@@ -1,4 +1,4 @@
-# A test file for XML reporting by coverage.
+# A test file for XML reporting by coverage.py.
 
 def choice(x):
     if x < 2:

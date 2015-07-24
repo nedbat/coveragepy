@@ -47,7 +47,7 @@ The alternate old-school technique is:
 #.  Install (or already have installed) `setuptools`_ or `Distribute`_.
 
 #.  Download the appropriate kit from the
-    `coverage page on the Python Package Index`__.
+    `coverage.py page on the Python Package Index`__.
 
 #.  Run ``python setup.py install``.
 
@@ -82,8 +82,8 @@ the C extension pre-compiled so there's no need to worry about compilers.
 Checking the installation
 -------------------------
 
-If all went well, you should be able to open a command prompt, and see coverage
-installed properly:
+If all went well, you should be able to open a command prompt, and see
+coverage.py installed properly:
 
 .. ifconfig:: not prerelease
 
@@ -101,7 +101,7 @@ installed properly:
         Coverage.py, version |release|.
         Documentation at https://coverage.readthedocs.org/en/|release|
 
-You can also invoke coverage as a module:
+You can also invoke coverage.py as a module:
 
 .. ifconfig:: not prerelease
 

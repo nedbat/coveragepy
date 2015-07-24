@@ -1424,7 +1424,7 @@ class ExcludeTest(CoverageTest):
             [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_if_pass(self):
-        # From a comment on the coverage page by Michael McNeil Forbes:
+        # From a comment on the coverage.py page by Michael McNeil Forbes:
         self.check_coverage("""\
             def f():
                 if False:    # pragma: no cover

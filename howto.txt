@@ -85,10 +85,10 @@
 
     $ make metacov
 
-    This will run coverage under its own measurement.  You can do this in
-    different environments (Linux vs. Windows, for example), then copy the
-    data files (.coverage.meta.*) to one machine for combination and
-    reporting.  To combine and report:
+    This will run coverage.py under its own measurement.  You can do this in
+    different environments (Linux vs. Windows, for example), then copy the data
+    files (.metacov.*) to one machine for combination and reporting.  To
+    combine and report:
 
     $ make metahtml
 

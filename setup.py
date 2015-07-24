@@ -1,4 +1,4 @@
-# setup.py for coverage.py
+# Distutils setup for coverage.py
 
 """Code coverage measurement for Python
 

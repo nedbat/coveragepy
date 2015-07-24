@@ -1,5 +1,5 @@
 def html_it():
-    """Run coverage and make an HTML report for unicode.py."""
+    """Run coverage.py and make an HTML report for unicode.py."""
     import coverage
     cov = coverage.coverage()
     cov.start()

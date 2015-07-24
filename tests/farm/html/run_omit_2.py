@@ -1,5 +1,5 @@
 def html_it():
-    """Run coverage and make an HTML report for main."""
+    """Run coverage.py and make an HTML report for main."""
     import coverage
     cov = coverage.coverage(include=["./*"])
     cov.start()

@@ -1,5 +1,5 @@
 def html_it():
-    """Run coverage and make an HTML report for main."""
+    """Run coverage.py and make an HTML report for main."""
     import coverage
     cov = coverage.coverage(config_file="omit5.ini", include=["./*"])
     cov.start()
