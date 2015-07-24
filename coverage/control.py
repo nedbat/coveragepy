@@ -1,4 +1,7 @@
-"""Core control stuff for Coverage."""
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
+"""Core control stuff for coverage.py."""
 
 import atexit
 import inspect

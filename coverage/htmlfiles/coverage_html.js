@@ -1,3 +1,6 @@
+// Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+// For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 // Coverage.py HTML report browser code.
 /*jslint browser: true, sloppy: true, vars: true, plusplus: true, maxerr: 50, indent: 4 */
 /*global coverage: true, document, window, $ */

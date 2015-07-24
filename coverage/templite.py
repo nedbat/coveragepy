@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 """A simple Python template renderer, for a nano-subset of Django syntax."""
 
 # Coincidentally named the same as http://code.activestate.com/recipes/496702/

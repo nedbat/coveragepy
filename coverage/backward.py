@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 """Add things to old Pythons so I can pretend they are newer."""
 
 # This file does lots of tricky stuff, so disable a bunch of pylint warnings.

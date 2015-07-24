@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 """Imposter encodings module that installs a coverage-style tracer.
 
 This is NOT the encodings module; it is an imposter that sets up tracing

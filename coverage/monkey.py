@@ -1,4 +1,7 @@
-"""Monkey-patching to make coverage work right in some cases."""
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
+"""Monkey-patching to make coverage.py work right in some cases."""
 
 import multiprocessing
 import multiprocessing.process

@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 # Here's some random Python so that test_tokenize_myself will have some
 # stressful stuff to try.  This file is .tok instead of .py so pylint won't
 # complain about it, check_eol won't look at it, etc.

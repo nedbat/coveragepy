@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 def html_it():
     """Run coverage.py with branches and make an HTML report for b."""
     import coverage
@@ -16,9 +19,9 @@ contains("html_b_branch/b_py.html",
     '<span class="key">if</span> <span class="nam">x</span> <span class="op">&lt;</span> <span class="num">2</span>',
     '&nbsp; &nbsp; <span class="nam">a</span> <span class="op">=</span> <span class="num">3</span>',
     '<span class="pc_cov">70%</span>',
-    '<span class="annotate" title="no jump to this line number">8</span>',
+    '<span class="annotate" title="no jump to this line number">11</span>',
     '<span class="annotate" title="no jump to this line number">exit</span>',
-    '<span class="annotate" title="no jumps to these line numbers">23&nbsp;&nbsp; 25</span>',
+    '<span class="annotate" title="no jumps to these line numbers">26&nbsp;&nbsp; 28</span>',
     )
 contains("html_b_branch/index.html",
     '<a href="b_py.html">b.py</a>',

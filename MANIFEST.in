@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 # MANIFEST.in file for coverage.py
 recursive-include coverage/htmlfiles *
 recursive-include coverage/fullcoverage *

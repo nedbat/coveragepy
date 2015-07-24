@@ -1,3 +1,6 @@
+.. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+.. For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 ------------------------------
 Change history for Coverage.py
 ------------------------------
@@ -7,7 +10,7 @@ Latest
 ------
 
 - Coverage.py is now licensed under the Apache 2.0 license.  See NOTICE.txt for
-  details.
+  details.  Closes `issue 313`_.
 
 - The data storage has been completely revamped.  The data file is now
   almost-JSON instead of a pickle, closing `issue 236`_.  The `CoverageData`
@@ -38,6 +41,7 @@ Latest
 
 .. _issue 236: https://bitbucket.org/ned/coveragepy/issues/236/pickles-are-bad-and-you-should-feel-bad
 .. _issue 275: https://bitbucket.org/ned/coveragepy/issues/275/refer-consistently-to-project-as-coverage
+.. _issue 313: https://bitbucket.org/ned/coveragepy/issues/313/add-license-file-containing-2-3-or-4
 .. _issue 380: https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from
 
 .. 41 issues closed in 4.0 below here

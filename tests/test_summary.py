@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 """Test text-based summary reporting for coverage.py"""
 
 import glob
@@ -42,16 +45,16 @@ class SummaryTest(CoverageTest):
         # Name                                           Stmts   Miss  Cover
         # ------------------------------------------------------------------
         # c:/ned/coverage/tests/modules/covmod1.py           2      0   100%
-        # c:/ned/coverage/tests/zipmods.zip/covmodzip1.py    2      0   100%
+        # c:/ned/coverage/tests/zipmods.zip/covmodzip1.py    3      0   100%
         # mycode.py                                          4      0   100%
         # ------------------------------------------------------------------
-        # TOTAL                                              8      0   100%
+        # TOTAL                                              9      0   100%
 
         self.assertNotIn("/coverage/__init__/", report)
         self.assertIn("/tests/modules/covmod1.py ", report)
         self.assertIn("/tests/zipmods.zip/covmodzip1.py ", report)
         self.assertIn("mycode.py ", report)
-        self.assertEqual(self.last_line_squeezed(report), "TOTAL 8 0 100%")
+        self.assertEqual(self.last_line_squeezed(report), "TOTAL 9 0 100%")
 
     def test_report_just_one(self):
         # Try reporting just one module

@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 """Tests for FileReporters"""
 
 import os
@@ -117,4 +120,4 @@ class FileReporterTest(CoverageTest):
         ecu = PythonFileReporter(egg1)
         eecu = PythonFileReporter(egg1.egg1)
         self.assertEqual(ecu.source(), u"")
-        self.assertEqual(eecu.source().split("\n")[0], u"# My egg file!")
+        self.assertIn(u"# My egg file!", eecu.source().splitlines())

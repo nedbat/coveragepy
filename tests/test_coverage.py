@@ -1,5 +1,7 @@
-"""Tests for Coverage."""
-# http://nedbatchelder.com/code/coverage
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
+"""Tests for coverage.py."""
 
 import coverage
 from coverage import env

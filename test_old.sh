@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
 # Steps to prepare and run coverage.py tests, for Pythons < 2.5
 # This should do the same steps as tox.ini
 easy_install nose==1.2.1 mock==0.6.0
