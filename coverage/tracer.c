@@ -107,7 +107,7 @@ typedef struct {
     PyObject * warn;
     PyObject * concur_id_func;
     PyObject * data;
-    PyObject * plugin_data;
+    PyObject * file_tracers;
     PyObject * should_trace_cache;
     PyObject * arcs;
 
@@ -248,7 +248,7 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->warn);
     Py_XDECREF(self->concur_id_func);
     Py_XDECREF(self->data);
-    Py_XDECREF(self->plugin_data);
+    Py_XDECREF(self->file_tracers);
     Py_XDECREF(self->should_trace_cache);
 
     DataStack_dealloc(self, &self->data_stack);
@@ -612,7 +612,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
             /* If the disposition mentions a plugin, record that. */
             if (file_tracer != Py_None) {
-                ret2 = PyDict_SetItem(self->plugin_data, tracename, plugin_name);
+                ret2 = PyDict_SetItem(self->file_tracers, tracename, plugin_name);
                 if (ret2 < 0) {
                     goto error;
                 }
@@ -1104,7 +1104,7 @@ CTracer_members[] = {
     { "data",               T_OBJECT, offsetof(CTracer, data), 0,
             PyDoc_STR("The raw dictionary of trace data.") },
 
-    { "plugin_data",        T_OBJECT, offsetof(CTracer, plugin_data), 0,
+    { "file_tracers",       T_OBJECT, offsetof(CTracer, file_tracers), 0,
             PyDoc_STR("Mapping from filename to plugin name.") },
 
     { "should_trace_cache", T_OBJECT, offsetof(CTracer, should_trace_cache), 0,

@@ -599,7 +599,7 @@ class CoverageScript(object):
                     print("\n%d files:" % len(filenames))
                     for f in filenames:
                         line = "%s: %d lines" % (f, summary[f])
-                        plugin = data.plugin_name(f)
+                        plugin = data.file_tracer(f)
                         if plugin:
                             line += " [%s]" % plugin
                         print(line)

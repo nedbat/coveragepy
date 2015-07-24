@@ -529,7 +529,7 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
             "file1.py": dict.fromkeys(range(1, 18)),
             "file2.py": dict.fromkeys(range(1, 24)),
         })
-        data.set_plugins({"file1.py": "a_plugin"})
+        data.set_file_tracers({"file1.py": "a_plugin"})
         data_files = CoverageDataFiles()
         data_files.write(data)
 

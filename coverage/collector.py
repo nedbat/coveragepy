@@ -140,8 +140,9 @@ class Collector(object):
         # pairs as keys (if branch coverage).
         self.data = {}
 
-        # A dictionary mapping filenames to plugin names that will handle them.
-        self.plugin_data = {}
+        # A dictionary mapping filenames to file tracer plugin names that will
+        # handle them.
+        self.file_tracers = {}
 
         # The .should_trace_cache attribute is a cache from filenames to
         # coverage.FileDisposition objects, or None.  When a file is first
@@ -193,8 +194,8 @@ class Collector(object):
                 )
             )
 
-        if hasattr(tracer, 'plugin_data'):
-            tracer.plugin_data = self.plugin_data
+        if hasattr(tracer, 'file_tracers'):
+            tracer.file_tracers = self.file_tracers
         if hasattr(tracer, 'threading'):
             tracer.threading = self.threading
         if hasattr(tracer, 'check_include'):
@@ -309,6 +310,6 @@ class Collector(object):
             covdata.set_arcs(abs_file_dict(self.data))
         else:
             covdata.set_lines(abs_file_dict(self.data))
-        covdata.set_plugins(abs_file_dict(self.plugin_data))
+        covdata.set_file_tracers(abs_file_dict(self.file_tracers))
 
         self.reset()

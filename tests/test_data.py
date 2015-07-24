@@ -167,29 +167,29 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             "p2.html": dict.fromkeys([10, 11, 12]),
             "main.py": dict.fromkeys([20]),
         })
-        covdata.set_plugins({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})
-        self.assertEqual(covdata.plugin_name("p1.foo"), "p1.plugin")
-        self.assertEqual(covdata.plugin_name("main.py"), "")
-        self.assertIsNone(covdata.plugin_name("p3.not_here"))
+        covdata.set_file_tracers({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})
+        self.assertEqual(covdata.file_tracer("p1.foo"), "p1.plugin")
+        self.assertEqual(covdata.file_tracer("main.py"), "")
+        self.assertIsNone(covdata.file_tracer("p3.not_here"))
 
     def test_cant_plugin_unmeasured_files(self):
         covdata = CoverageData()
         msg = "Can't add plugin data for unmeasured file 'p1.foo'"
         with self.assertRaisesRegex(CoverageException, msg):
-            covdata.set_plugins({"p1.foo": "p1.plugin"})
+            covdata.set_file_tracers({"p1.foo": "p1.plugin"})
 
         covdata.set_lines({"p2.html": dict.fromkeys([10, 11, 12])})
         with self.assertRaisesRegex(CoverageException, msg):
-            covdata.set_plugins({"p1.foo": "p1.plugin"})
+            covdata.set_file_tracers({"p1.foo": "p1.plugin"})
 
     def test_cant_change_plugin_name(self):
         covdata = CoverageData()
         covdata.set_lines({"p1.foo": dict.fromkeys([1, 2, 3])})
-        covdata.set_plugins({"p1.foo": "p1.plugin"})
+        covdata.set_file_tracers({"p1.foo": "p1.plugin"})
 
         msg = "Conflicting plugin name for 'p1.foo': 'p1.plugin' vs 'p1.plugin.foo'"
         with self.assertRaisesRegex(CoverageException, msg):
-            covdata.set_plugins({"p1.foo": "p1.plugin.foo"})
+            covdata.set_file_tracers({"p1.foo": "p1.plugin.foo"})
 
     def test_update_lines(self):
         covdata1 = CoverageData()
@@ -239,7 +239,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             "p2.html": dict.fromkeys([5, 6, 7]),
             "main.py": dict.fromkeys([10, 11, 12]),
         })
-        covdata1.set_plugins({
+        covdata1.set_file_tracers({
             "p1.html": "html.plugin",
             "p2.html": "html.plugin2",
         })
@@ -251,7 +251,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             "p3.foo": dict.fromkeys([1000, 1001]),
             "main.py": dict.fromkeys([10, 11, 12]),
         })
-        covdata2.set_plugins({
+        covdata2.set_file_tracers({
             "p1.html": "html.plugin",
             "p2.html": "html.plugin2",
             "p3.foo": "foo_plugin",
@@ -260,19 +260,19 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata3 = CoverageData()
         covdata3.update(covdata1)
         covdata3.update(covdata2)
-        self.assertEqual(covdata3.plugin_name("p1.html"), "html.plugin")
-        self.assertEqual(covdata3.plugin_name("p2.html"), "html.plugin2")
-        self.assertEqual(covdata3.plugin_name("p3.foo"), "foo_plugin")
-        self.assertEqual(covdata3.plugin_name("main.py"), "")
+        self.assertEqual(covdata3.file_tracer("p1.html"), "html.plugin")
+        self.assertEqual(covdata3.file_tracer("p2.html"), "html.plugin2")
+        self.assertEqual(covdata3.file_tracer("p3.foo"), "foo_plugin")
+        self.assertEqual(covdata3.file_tracer("main.py"), "")
 
     def test_update_conflicting_plugins(self):
         covdata1 = CoverageData()
         covdata1.set_lines({"p1.html": dict.fromkeys([1, 2, 3])})
-        covdata1.set_plugins({"p1.html": "html.plugin"})
+        covdata1.set_file_tracers({"p1.html": "html.plugin"})
 
         covdata2 = CoverageData()
         covdata2.set_lines({"p1.html": dict.fromkeys([1, 2, 3])})
-        covdata2.set_plugins({"p1.html": "html.other_plugin"})
+        covdata2.set_file_tracers({"p1.html": "html.other_plugin"})
 
         msg = "Conflicting plugin name for 'p1.html': 'html.plugin' vs 'html.other_plugin'"
         with self.assertRaisesRegex(CoverageException, msg):
@@ -285,7 +285,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
     def test_update_plugin_vs_no_plugin(self):
         covdata1 = CoverageData()
         covdata1.set_lines({"p1.html": dict.fromkeys([1, 2, 3])})
-        covdata1.set_plugins({"p1.html": "html.plugin"})
+        covdata1.set_file_tracers({"p1.html": "html.plugin"})
 
         covdata2 = CoverageData()
         covdata2.set_lines({"p1.html": dict.fromkeys([1, 2, 3])})
@@ -311,7 +311,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
     def test_add_to_hash_with_arcs(self):
         covdata = CoverageData()
         covdata.set_arcs(ARCS_3)
-        covdata.set_plugins({"y.py": "hologram_plugin"})
+        covdata.set_file_tracers({"y.py": "hologram_plugin"})
         hasher = mock.Mock()
         covdata.add_to_hash("y.py", hasher)
         self.assertEqual(hasher.method_calls, [
@@ -378,7 +378,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
 
         covdata2 = CoverageData()
         covdata2.set_arcs(ARCS_3)
-        covdata2.set_plugins({"y.py": "magic_plugin"})
+        covdata2.set_file_tracers({"y.py": "magic_plugin"})
         covdata2.write_file("arcs.dat")
 
         covdata3 = CoverageData()
@@ -397,7 +397,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
                     "x.py": [[-1, 1], [1, 2], [2, 3], [3, -1]],
                     "y.py": [[-1, 17], [17, 23], [23, -1]],
                 },
-                "plugins": {"y.py": "magic_plugin"}
+                "file_tracers": {"y.py": "magic_plugin"}
             },
             "empty.dat": {"lines": {}},
         }
@@ -558,8 +558,8 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(lines['b.py'], B_PY_LINES_1)
         # If not measuring branches, there's no arcs entry.
         self.assertNotIn('arcs', data)
-        # If no plugins were involved, there's no plugins entry.
-        self.assertNotIn('plugins', data)
+        # If no plugins were involved, there's no file_tracers entry.
+        self.assertNotIn('file_tracers', data)
 
     def test_file_format_with_arcs(self):
         # Write with CoverageData, then read the JSON explicitly.
@@ -574,8 +574,8 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(arcs.keys(), MEASURED_FILES_3)
         self.assertCountEqual(arcs['x.py'], map(list, X_PY_ARCS_3))
         self.assertCountEqual(arcs['y.py'], map(list, Y_PY_ARCS_3))
-        # If no plugins were involved, there's no plugins entry.
-        self.assertNotIn('plugins', data)
+        # If no plugins were involved, there's no file_tracers entry.
+        self.assertNotIn('file_tracers', data)
 
     def test_writing_to_other_file(self):
         data_files = CoverageDataFiles(".otherfile")
@@ -596,7 +596,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
             '/home/ned/proj/src/sub/b.py': {3: None},
             '/home/ned/proj/src/template.html': {10: None},
         })
-        covdata1.set_plugins({
+        covdata1.set_file_tracers({
             '/home/ned/proj/src/template.html': 'html.plugin',
         })
         self.data_files.write(covdata1, suffix='1')
@@ -620,7 +620,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
         self.assert_line_counts(covdata3, {apy: 4, sub_bpy: 2, template_html: 1}, fullpath=True)
         self.assert_measured_files(covdata3, [apy, sub_bpy, template_html])
-        self.assertEqual(covdata3.plugin_name(template_html), 'html.plugin')
+        self.assertEqual(covdata3.file_tracer(template_html), 'html.plugin')
 
     def test_combining_from_different_directories(self):
         covdata1 = CoverageData()

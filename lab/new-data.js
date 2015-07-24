@@ -1,15 +1,31 @@
 {
-    "collector": "coverage.py 4.0",
-    "config": {
-        "branch": true,
-        "source": ".",
+    "run" {
+        "collector": "coverage.py 4.0",
+        "config": {
+            "branch": true,
+            "source": ".",
+        },
+        "collected": "20150711T090600",
     },
-    "collected": "20150711T090600",
+
+    // As of now:
+    "lines": {
+        "a/b/c.py": [1, 2, 3, 4, 5],
+        "a/b/d.py": [4, 5, 6, 7, 8],
+    },
+    "arcs": {
+        "a/b/c.py: [[1, 2], [2, 3], [4, 5]],
+    },
+    "plugins: {
+        "a/b/c.py": "fooey.plugin",
+    },
+
+    // Maybe in the future?
     "files": {
         "a/b/c.py": {
             "lines": [1, 2, 3, 4, 5],
             "arcs": [
-                "1.2", "3.4", "5.-1"
+                [1, 2], [3, 4], [5, -1],
             ],
 
             "plugin": "django.coverage",

@@ -42,7 +42,7 @@ class CoverageData(object):
 
     To read a coverage.py data file, use :meth:`read_file`, or :meth:`read` if
     you have an already-opened file.  You can then access the line, arc, or
-    plugin data with :meth:`lines`, :meth:`arcs`, or :meth:`plugin_name`.
+    plugin data with :meth:`lines`, :meth:`arcs`, or :meth:`file_tracer`.
 
     The :meth:`has_arcs` method indicates whether arc data is available.  You
     can get a list of the files in the data with :meth:`measured_files`.
@@ -53,9 +53,9 @@ class CoverageData(object):
 
     Most data files will be created by coverage.py itself, but you can use
     methods here to create data files if you like.  The :meth:`set_lines`,
-    :meth:`set_arcs`, and :meth:`set_plugins` methods add data, in ways that
-    are convenient for coverage.py.  To add a file without any measured data,
-    use :meth:`touch_file`.
+    :meth:`set_arcs`, and :meth:`set_file_tracers` methods add data, in ways
+    that are convenient for coverage.py.  To add a file without any measured
+    data, use :meth:`touch_file`.
 
     You write to a named file with :meth:`write_file`, or to an already opened
     file with :meth:`write`.
@@ -77,7 +77,7 @@ class CoverageData(object):
     #
     #         { 'file1': [[17,23], [17,25], [25,26]], ... }
     #
-    #     * plugins: a dict mapping filenames to plugin names::
+    #     * file_tracers: a dict mapping filenames to plugin names::
     #
     #         { 'file1': "django.coverage", ... }
     #
@@ -113,7 +113,7 @@ class CoverageData(object):
         #
         #   { 'filename1.py': 'django.coverage', ... }
         #
-        self._plugins = {}
+        self._file_tracers = {}
 
     ##
     ## Reading data
@@ -156,8 +156,8 @@ class CoverageData(object):
             return self._arcs[filename]
         return None
 
-    def plugin_name(self, filename):
-        """Get the plugin name for a file.
+    def file_tracer(self, filename):
+        """Get the plugin name of the file tracer for a file.
 
         Arguments:
             filename: the name of the file you're interested in.
@@ -169,10 +169,10 @@ class CoverageData(object):
 
         """
         # Because the vast majority of files involve no plugin, we don't store
-        # them explicitly in self._plugins.  Check the measured data instead
+        # them explicitly in self._file_tracers.  Check the measured data instead
         # to see if it was a known file with no plugin.
         if filename in (self._arcs or self._lines):
-            return self._plugins.get(filename, "")
+            return self._file_tracers.get(filename, "")
         return None
 
     def measured_files(self):
@@ -217,7 +217,7 @@ class CoverageData(object):
             (fname, [tuple(pair) for pair in arcs])
             for fname, arcs in iitems(data.get('arcs', {}))
         )
-        self._plugins = data.get('plugins', {})
+        self._file_tracers = data.get('file_tracers', {})
 
         self._validate()
 
@@ -301,26 +301,26 @@ class CoverageData(object):
 
         self._validate()
 
-    def set_plugins(self, plugin_data):
+    def set_file_tracers(self, file_tracers):
         """Add per-file plugin information.
 
-        `plugin_data` is { filename: plugin_name, ... }
+        `file_tracers` is { filename: plugin_name, ... }
 
         """
         existing_files = self._arcs or self._lines
-        for filename, plugin_name in iitems(plugin_data):
+        for filename, plugin_name in iitems(file_tracers):
             if filename not in existing_files:
                 raise CoverageException(
                     "Can't add plugin data for unmeasured file '%s'" % (filename,)
                 )
-            existing_plugin = self._plugins.get(filename)
+            existing_plugin = self._file_tracers.get(filename)
             if existing_plugin is not None and plugin_name != existing_plugin:
                 raise CoverageException(
                     "Conflicting plugin name for '%s': %r vs %r" % (
                         filename, existing_plugin, plugin_name,
                     )
                 )
-            self._plugins[filename] = plugin_name
+            self._file_tracers[filename] = plugin_name
 
         self._validate()
 
@@ -340,8 +340,8 @@ class CoverageData(object):
         else:
             file_data['lines'] = self._lines
 
-        if self._plugins:
-            file_data['plugins'] = self._plugins
+        if self._file_tracers:
+            file_data['file_tracers'] = self._file_tracers
 
         # Write the data to the file.
         file_obj.write(self.GO_AWAY)
@@ -358,7 +358,7 @@ class CoverageData(object):
         """Erase the data in this object."""
         self._lines = {}
         self._arcs = {}
-        self._plugins = {}
+        self._file_tracers = {}
         self._validate()
 
     def update(self, other_data, aliases=None):
@@ -375,16 +375,16 @@ class CoverageData(object):
 
         aliases = aliases or PathAliases()
 
-        # _plugins: only have a string, so they have to agree.
+        # _file_tracers: only have a string, so they have to agree.
         # Have to do these first, so that our examination of self._arcs and
         # self._lines won't be confused by data updated from other_data.
         for filename in other_data.measured_files():
-            other_plugin = other_data.plugin_name(filename)
+            other_plugin = other_data.file_tracer(filename)
             filename = aliases.map(filename)
-            this_plugin = self.plugin_name(filename)
+            this_plugin = self.file_tracer(filename)
             if this_plugin is None:
                 if other_plugin:
-                    self._plugins[filename] = other_plugin
+                    self._file_tracers[filename] = other_plugin
             elif this_plugin != other_plugin:
                 raise CoverageException(
                     "Conflicting plugin name for '%s': %r vs %r" % (
@@ -442,11 +442,13 @@ class CoverageData(object):
                 "_arcs[%r] shouldn't be %r" % (fname, arcs)
             )
 
-        # _plugins should have only non-empty strings as values.
-        for fname, plugin in iitems(self._plugins):
-            assert isinstance(fname, string_class), "Key in _plugins shouldn't be %r" % (fname,)
+        # _file_tracers should have only non-empty strings as values.
+        for fname, plugin in iitems(self._file_tracers):
+            assert isinstance(fname, string_class), (
+                "Key in _file_tracers shouldn't be %r" % (fname,)
+            )
             assert plugin and isinstance(plugin, string_class), (
-                "_plugins[%r] shoudn't be %r" % (fname, plugin)
+                "_file_tracers[%r] shoudn't be %r" % (fname, plugin)
             )
 
     def add_to_hash(self, filename, hasher):
@@ -462,7 +464,7 @@ class CoverageData(object):
             hasher.update(sorted(self.arcs(filename)))
         else:
             hasher.update(sorted(self.lines(filename)))
-        hasher.update(self.plugin_name(filename))
+        hasher.update(self.file_tracer(filename))
 
     ##
     ## Internal
