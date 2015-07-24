@@ -35,7 +35,7 @@ New in 3.2: Branch coverage!
 classifiers = """\
 Environment :: Console
 Intended Audience :: Developers
-License :: OSI Approved :: BSD License
+License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Programming Language :: Python :: 2
 Programming Language :: Python :: 3
@@ -106,7 +106,7 @@ setup_args = dict(
     description = doclines[0],
     long_description = '\n'.join(doclines[2:]),
     keywords = 'code coverage testing',
-    license = 'BSD',
+    license = 'Apache 2.0',
     classifiers = classifier_list,
     url = __url__,
     )

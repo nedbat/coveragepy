@@ -6,6 +6,9 @@ Change history for Coverage.py
 Latest
 ------
 
+- Coverage.py is now licensed under the Apache 2.0 license.  See NOTICE.txt for
+  details.
+
 - The data storage has been completely revamped.  The data file is now
   almost-JSON instead of a pickle, closing `issue 236`_.  The `CoverageData`
   class is now a public supported API to the data file.
