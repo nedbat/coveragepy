@@ -1003,10 +1003,6 @@ class Coverage(object):
         import coverage as covmod
 
         self._init()
-        try:
-            implementation = platform.python_implementation()
-        except AttributeError:
-            implementation = "unknown"
 
         ft_plugins = []
         for ft in self.plugins.file_tracers:
@@ -1027,7 +1023,7 @@ class Coverage(object):
             ('data_path', self.data_files.filename),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
-            ('implementation', implementation),
+            ('implementation', platform.python_implementation()),
             ('executable', sys.executable),
             ('cwd', os.getcwd()),
             ('path', sys.path),
