@@ -19,7 +19,9 @@ from coverage.misc import CoverageException, file_be_gone
 class CoverageData(object):
     """Manages collected coverage data, including file storage.
 
-    This class is the public supported API to coverage.py's data.
+    This class is the public supported API to the data coverage.py collects
+    during program execution.  It includes information about what code was
+    executed.
 
     .. note::
 
@@ -81,6 +83,13 @@ class CoverageData(object):
     #
     #         { 'file1': "django.coverage", ... }
     #
+    #     * run: a dict of information about the coverage.py run::
+    #
+    #         { 'collector': 'coverage.py',
+    #           'collected': '20150724T162717',
+    #           ...
+    #           }
+    #
     # Only one of `lines` or `arcs` will be present: with branch coverage, data
     # is stored as arcs. Without branch coverage, it is stored as lines.  The
     # line data is easily recovered from the arcs: it is all the first elements
@@ -114,6 +123,9 @@ class CoverageData(object):
         #   { 'filename1.py': 'django.coverage', ... }
         #
         self._file_tracers = {}
+
+        # A dict of information about the coverage.py run.
+        self._run_info = {}
 
     ##
     ## Reading data
@@ -175,6 +187,10 @@ class CoverageData(object):
             return self._file_tracers.get(filename, "")
         return None
 
+    def run_info(self):
+        """Return the dict of run information."""
+        return self._run_info
+
     def measured_files(self):
         """A list of all files that had been measured."""
         return list(self._arcs or self._lines)
@@ -218,6 +234,7 @@ class CoverageData(object):
             for fname, arcs in iitems(data.get('arcs', {}))
         )
         self._file_tracers = data.get('file_tracers', {})
+        self._run_info = data.get('run', {})
 
         self._validate()
 
@@ -324,6 +341,17 @@ class CoverageData(object):
 
         self._validate()
 
+    def add_run_info(self, **kwargs):
+        """Add information about the run.
+
+        Keywords are arbitrary, and are stored in the run dictionary. Values
+        must be JSON serializable.  You may use this function more than once,
+        but repeated keywords overwrite each other.
+
+        """
+        self._run_info.update(kwargs)
+        self._validate()
+
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""
         (self._arcs or self._lines).setdefault(filename, [])
@@ -343,6 +371,9 @@ class CoverageData(object):
         if self._file_tracers:
             file_data['file_tracers'] = self._file_tracers
 
+        if self._run_info:
+            file_data['run'] = self._run_info
+
         # Write the data to the file.
         file_obj.write(self.GO_AWAY)
         json.dump(file_data, file_obj)
@@ -359,6 +390,7 @@ class CoverageData(object):
         self._lines = {}
         self._arcs = {}
         self._file_tracers = {}
+        self._run_info = {}
         self._validate()
 
     def update(self, other_data, aliases=None):

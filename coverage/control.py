@@ -4,6 +4,7 @@
 """Core control stuff for coverage.py."""
 
 import atexit
+import datetime
 import inspect
 import os
 import platform
@@ -195,8 +196,6 @@ class Coverage(object):
         is called.
 
         """
-        from coverage import __version__
-
         if self._inited:
             return
 
@@ -282,7 +281,7 @@ class Coverage(object):
             # environments (virtualenv, for example), these modules may be
             # spread across a few locations. Look at all the candidate modules
             # we've imported, and take all the different ones.
-            for m in (atexit, inspect, os, platform, _structseq, traceback):
+            for m in (atexit, datetime, inspect, os, platform, _structseq, traceback):
                 if m is not None and hasattr(m, "__file__"):
                     self.pylib_dirs.add(self._canonical_dir(m))
             if _structseq and not hasattr(_structseq, '__file__'):
@@ -779,6 +778,18 @@ class Coverage(object):
                     continue
 
                 self.data.touch_file(py_file)
+
+        # Add run information.
+        from coverage import __version__
+
+        self.data.add_run_info(
+            collector="coverage.py v%s" % __version__,
+            when=datetime.datetime.now().isoformat(),
+            command_line=sys.argv,
+            python=sys.version.replace('\n', ''),
+            platform=platform.platform(),
+            implementation=platform.python_implementation(),
+        )
 
         self._measured = False
         return self.data
