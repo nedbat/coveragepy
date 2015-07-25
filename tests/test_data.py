@@ -160,7 +160,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata.arcs('zzz.py'), [])
         self.assertIsNone(covdata.arcs('no_such_file.py'))
 
-    def test_plugin_name(self):
+    def test_file_tracer_name(self):
         covdata = CoverageData()
         covdata.set_lines({
             "p1.foo": dict.fromkeys([1, 2, 3]),
@@ -172,9 +172,9 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata.file_tracer("main.py"), "")
         self.assertIsNone(covdata.file_tracer("p3.not_here"))
 
-    def test_cant_plugin_unmeasured_files(self):
+    def test_cant_file_tracer_unmeasured_files(self):
         covdata = CoverageData()
-        msg = "Can't add plugin data for unmeasured file 'p1.foo'"
+        msg = "Can't add file tracer data for unmeasured file 'p1.foo'"
         with self.assertRaisesRegex(CoverageException, msg):
             covdata.set_file_tracers({"p1.foo": "p1.plugin"})
 
@@ -182,12 +182,12 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         with self.assertRaisesRegex(CoverageException, msg):
             covdata.set_file_tracers({"p1.foo": "p1.plugin"})
 
-    def test_cant_change_plugin_name(self):
+    def test_cant_change_file_tracer_name(self):
         covdata = CoverageData()
         covdata.set_lines({"p1.foo": dict.fromkeys([1, 2, 3])})
         covdata.set_file_tracers({"p1.foo": "p1.plugin"})
 
-        msg = "Conflicting plugin name for 'p1.foo': 'p1.plugin' vs 'p1.plugin.foo'"
+        msg = "Conflicting file tracer name for 'p1.foo': 'p1.plugin' vs 'p1.plugin.foo'"
         with self.assertRaisesRegex(CoverageException, msg):
             covdata.set_file_tracers({"p1.foo": "p1.plugin.foo"})
 
@@ -232,7 +232,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         with self.assertRaisesRegex(CoverageException, "Can't combine line data with arc data"):
             covdata2.update(covdata1)
 
-    def test_update_plugins(self):
+    def test_update_file_tracers(self):
         covdata1 = CoverageData()
         covdata1.set_lines({
             "p1.html": dict.fromkeys([1, 2, 3, 4]),
@@ -265,7 +265,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata3.file_tracer("p3.foo"), "foo_plugin")
         self.assertEqual(covdata3.file_tracer("main.py"), "")
 
-    def test_update_conflicting_plugins(self):
+    def test_update_conflicting_file_tracers(self):
         covdata1 = CoverageData()
         covdata1.set_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata1.set_file_tracers({"p1.html": "html.plugin"})
@@ -274,15 +274,15 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata2.set_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata2.set_file_tracers({"p1.html": "html.other_plugin"})
 
-        msg = "Conflicting plugin name for 'p1.html': 'html.plugin' vs 'html.other_plugin'"
+        msg = "Conflicting file tracer name for 'p1.html': 'html.plugin' vs 'html.other_plugin'"
         with self.assertRaisesRegex(CoverageException, msg):
             covdata1.update(covdata2)
 
-        msg = "Conflicting plugin name for 'p1.html': 'html.other_plugin' vs 'html.plugin'"
+        msg = "Conflicting file tracer name for 'p1.html': 'html.other_plugin' vs 'html.plugin'"
         with self.assertRaisesRegex(CoverageException, msg):
             covdata2.update(covdata1)
 
-    def test_update_plugin_vs_no_plugin(self):
+    def test_update_file_tracer_vs_no_file_tracer(self):
         covdata1 = CoverageData()
         covdata1.set_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata1.set_file_tracers({"p1.html": "html.plugin"})
@@ -290,11 +290,11 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata2 = CoverageData()
         covdata2.set_lines({"p1.html": dict.fromkeys([1, 2, 3])})
 
-        msg = "Conflicting plugin name for 'p1.html': 'html.plugin' vs ''"
+        msg = "Conflicting file tracer name for 'p1.html': 'html.plugin' vs ''"
         with self.assertRaisesRegex(CoverageException, msg):
             covdata1.update(covdata2)
 
-        msg = "Conflicting plugin name for 'p1.html': '' vs 'html.plugin'"
+        msg = "Conflicting file tracer name for 'p1.html': '' vs 'html.plugin'"
         with self.assertRaisesRegex(CoverageException, msg):
             covdata2.update(covdata1)
 
@@ -305,7 +305,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.add_to_hash("a.py", hasher)
         self.assertEqual(hasher.method_calls, [
             mock.call.update([1, 2]),   # lines
-            mock.call.update(""),       # plugin name
+            mock.call.update(""),       # file_tracer name
         ])
 
     def test_add_to_hash_with_arcs(self):
@@ -316,7 +316,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.add_to_hash("y.py", hasher)
         self.assertEqual(hasher.method_calls, [
             mock.call.update([(-1, 17), (17, 23), (23, -1)]),   # arcs
-            mock.call.update("hologram_plugin"),                # plugin name
+            mock.call.update("hologram_plugin"),                # file_tracer name
         ])
 
 
@@ -409,7 +409,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
 
 
 def canonicalize_json_data(data):
-    """Make the JSON representation of our data canonical so it can be compared."""
+    """Canonicalize our JSON data so it can be compared."""
     for fname, lines in iitems(data.get('lines', {})):
         data['lines'][fname] = sorted(lines)
     for fname, arcs in iitems(data.get('arcs', {})):
@@ -558,7 +558,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(lines['b.py'], B_PY_LINES_1)
         # If not measuring branches, there's no arcs entry.
         self.assertNotIn('arcs', data)
-        # If no plugins were involved, there's no file_tracers entry.
+        # If no file tracers were involved, there's no file_tracers entry.
         self.assertNotIn('file_tracers', data)
 
     def test_file_format_with_arcs(self):
@@ -574,7 +574,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertCountEqual(arcs.keys(), MEASURED_FILES_3)
         self.assertCountEqual(arcs['x.py'], map(list, X_PY_ARCS_3))
         self.assertCountEqual(arcs['y.py'], map(list, Y_PY_ARCS_3))
-        # If no plugins were involved, there's no file_tracers entry.
+        # If no file tracers were involved, there's no file_tracers entry.
         self.assertNotIn('file_tracers', data)
 
     def test_writing_to_other_file(self):

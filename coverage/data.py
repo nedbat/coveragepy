@@ -36,13 +36,13 @@ class CoverageData(object):
       between source lines.  These are only available if branch coverage was
       used.
 
-    * **plugin names**: the module names of the plugin that handled each file
-      in the data.
+    * **file tracer names**: the module names of the file tracer plugins that
+      handled each file in the data.
 
 
     To read a coverage.py data file, use :meth:`read_file`, or :meth:`read` if
     you have an already-opened file.  You can then access the line, arc, or
-    plugin data with :meth:`lines`, :meth:`arcs`, or :meth:`file_tracer`.
+    file tracer data with :meth:`lines`, :meth:`arcs`, or :meth:`file_tracer`.
 
     The :meth:`has_arcs` method indicates whether arc data is available.  You
     can get a list of the files in the data with :meth:`measured_files`.
@@ -311,12 +311,12 @@ class CoverageData(object):
         for filename, plugin_name in iitems(file_tracers):
             if filename not in existing_files:
                 raise CoverageException(
-                    "Can't add plugin data for unmeasured file '%s'" % (filename,)
+                    "Can't add file tracer data for unmeasured file '%s'" % (filename,)
                 )
             existing_plugin = self._file_tracers.get(filename)
             if existing_plugin is not None and plugin_name != existing_plugin:
                 raise CoverageException(
-                    "Conflicting plugin name for '%s': %r vs %r" % (
+                    "Conflicting file tracer name for '%s': %r vs %r" % (
                         filename, existing_plugin, plugin_name,
                     )
                 )
@@ -387,7 +387,7 @@ class CoverageData(object):
                     self._file_tracers[filename] = other_plugin
             elif this_plugin != other_plugin:
                 raise CoverageException(
-                    "Conflicting plugin name for '%s': %r vs %r" % (
+                    "Conflicting file tracer name for '%s': %r vs %r" % (
                         filename, this_plugin, other_plugin,
                     )
                 )
