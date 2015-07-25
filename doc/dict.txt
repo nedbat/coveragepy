@@ -1,5 +1,6 @@
 activestate
 api
+apache
 API
 args
 argv
@@ -130,6 +131,7 @@ settrace
 setuptools
 sitecustomize
 sortable
+src
 stackoverflow
 stderr
 stdlib
@@ -168,6 +170,7 @@ whitespace
 wikipedia
 wildcard
 wildcards
+www
 xml
 XML
 xrange
