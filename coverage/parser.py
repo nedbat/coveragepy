@@ -330,7 +330,7 @@ OPS_NO_JUMP = OPS_PUSH_BLOCK
 OP_BREAK_LOOP = _opcode('BREAK_LOOP')
 OP_END_FINALLY = _opcode('END_FINALLY')
 OP_COMPARE_OP = _opcode('COMPARE_OP')
-COMPARE_EXCEPTION = 10  # just have to get this const from the code.
+COMPARE_EXCEPTION = 10  # just have to get this constant from the code.
 OP_LOAD_CONST = _opcode('LOAD_CONST')
 OP_RETURN_VALUE = _opcode('RETURN_VALUE')
 

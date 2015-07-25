@@ -33,7 +33,7 @@ class XmlTestHelpers(CoverageTest):
 
         Makes `width` directories, named d0 .. d{width-1}. Each directory has
         __init__.py, and `width` files, named f0.py .. f{width-1}.py.  Each
-        directory also has `width` subdirectories, in the same fashion, until
+        directory also has `width` sub-directories, in the same fashion, until
         a depth of `depth` is reached.
 
         """

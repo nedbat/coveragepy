@@ -512,7 +512,7 @@ class BadPluginTest(FileTracerTest):
         # The message can be in two forms:
         #   Disabling plugin '...' due to previous exception
         # or:
-        #   Disabling plugin '...' due to an excepton:
+        #   Disabling plugin '...' due to an exception:
         msg = "Disabling plugin '%s.%s' due to " % (module_name, plugin_name)
         warnings = stderr.count(msg)
         self.assertEqual(warnings, 1)

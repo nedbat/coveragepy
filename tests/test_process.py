@@ -768,7 +768,7 @@ def possible_pth_dirs():
 
 
 class ProcessCoverageMixin(object):
-    """Set up a .pth file that causes all sub-processes to be coverage'd"""
+    """Set up a .pth file to coverage-measure all sub-processes."""
 
     def setUp(self):
         super(ProcessCoverageMixin, self).setUp()

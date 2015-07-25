@@ -4,6 +4,8 @@ apache
 API
 args
 argv
+basename
+basenames
 bitbucket
 BOM
 bom
@@ -14,6 +16,7 @@ builtin
 builtins
 bytecode
 bytecodes
+bytestring
 canonicalize
 canonicalized
 canonicalizes
@@ -32,6 +35,7 @@ covhtml
 CPython
 css
 CTracer
+datetime
 dedent
 dict
 dict's
@@ -53,6 +57,7 @@ executable's
 expr
 filename
 filenames
+filepath
 fname
 fnmatch
 fpath
@@ -74,8 +79,10 @@ importlib
 instancemethod
 int
 ints
+invariants
 iterable
 iterables
+json
 jython
 kwargs
 matcher
@@ -89,6 +96,7 @@ morf
 morfs
 multi
 mumbo
+mycode
 namespace
 namespaces
 nano
@@ -109,9 +117,12 @@ outfile
 overridable
 parsable
 parsers
+pathnames
 pragma
 pragmas
 pre
+prepended
+prepending
 programmability
 programmatically
 py

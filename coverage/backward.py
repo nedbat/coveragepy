@@ -152,7 +152,6 @@ def import_local_file(modname):
 
         with open(modfile, 'r') as f:
             # pylint: disable=undefined-loop-variable
-            # (Using possibly undefined loop variable 'suff')
             mod = imp.load_module(modname, f, modfile, suff)
 
     return mod

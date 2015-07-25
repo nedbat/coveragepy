@@ -356,16 +356,16 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
             cov.html_report()
 
     def test_extensionless_file_collides_with_extension(self):
-        # It used to be that "afile" and "afile.py" would both be reported to
-        # "afile.html".  Now they are not.
+        # It used to be that "program" and "program.py" would both be reported
+        # to "program.html".  Now they are not.
         # https://bitbucket.org/ned/coveragepy/issue/69
-        self.make_file("afile", "import afile\n")
-        self.make_file("afile.py", "a = 1\n")
-        self.run_command("coverage run afile")
+        self.make_file("program", "import program\n")
+        self.make_file("program.py", "a = 1\n")
+        self.run_command("coverage run program")
         self.run_command("coverage html")
         self.assert_exists("htmlcov/index.html")
-        self.assert_exists("htmlcov/afile.html")
-        self.assert_exists("htmlcov/afile_py.html")
+        self.assert_exists("htmlcov/program.html")
+        self.assert_exists("htmlcov/program_py.html")
 
     def test_has_date_stamp_in_files(self):
         self.create_initial_files()

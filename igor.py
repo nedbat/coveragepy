@@ -305,16 +305,16 @@ def do_help():
             print("%-20s%s" % (name[3:], value.__doc__))
 
 
-def analyze_args(callble):
-    """What kind of args does `callble` expect?
+def analyze_args(function):
+    """What kind of args does `function` expect?
 
     Returns:
         star, num_pos:
-            star(boolean): Does `callble` accept *args?
-            num_args(int): How many positional arguments does `callble` have?
+            star(boolean): Does `function` accept *args?
+            num_args(int): How many positional arguments does `function` have?
     """
     with ignore_warnings():
-        argspec = inspect.getargspec(callble)
+        argspec = inspect.getargspec(function)
     return bool(argspec[1]), len(argspec[0])
 
 
