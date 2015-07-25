@@ -148,6 +148,9 @@ class CoverageData(object):
         If the file was not measured, returns None.  A file might be measured,
         and have no lines executed, in which case an empty list is returned.
 
+        If the file was executed, returns a list of integers, the line numbers
+        executed in the file. The list is in no particular order.
+
         """
         if self._arcs:
             if filename in self._arcs:
@@ -162,6 +165,16 @@ class CoverageData(object):
 
         If the file was not measured, returns None.  A file might be measured,
         and have no arcs executed, in which case an empty list is returned.
+
+        If the file was executed, returns a list of 2-tuples of integers. Each
+        pair is a starting line number and an ending line number for a
+        transition from one line to another. The list is in no particular
+        order.
+
+        Negative numbers have special meaning.  If the starting line number is
+        -N, it represents an entry to the code object that starts at line N.
+        If the ending ling number is -N, it's an exit from the code object that
+        starts at line N.
 
         """
         if filename in self._arcs:
@@ -181,8 +194,8 @@ class CoverageData(object):
 
         """
         # Because the vast majority of files involve no plugin, we don't store
-        # them explicitly in self._file_tracers.  Check the measured data instead
-        # to see if it was a known file with no plugin.
+        # them explicitly in self._file_tracers.  Check the measured data
+        # instead to see if it was a known file with no plugin.
         if filename in (self._arcs or self._lines):
             return self._file_tracers.get(filename, "")
         return None
