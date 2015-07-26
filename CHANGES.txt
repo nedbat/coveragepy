@@ -16,6 +16,10 @@ Latest
   almost-JSON instead of a pickle, closing `issue 236`_.  The `CoverageData`
   class is now a public supported API to the data file.
 
+- A new configuration option, ``[run] note``, lets you set a note that will be
+  stored in the `runs` section of the data file.  You can use this to annotate
+  the data file with any information you like.
+
 - The XML report now includes a ``missing-branches`` attribute.  Thanks, Steve
   Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
   references the DTD.
@@ -68,7 +72,7 @@ Version 4.0a6 --- 21 June 2015
   persisted in pursuing this despite Ned's pessimism.  Fixes `issue 308`_ and
   `issue 324`_.
 
-- The COVERAGE_DEBUG environment variable can be used to set the `[run]debug`
+- The COVERAGE_DEBUG environment variable can be used to set the ``[run] debug``
   configuration option to control what internal operations are logged.
 
 - HTML reports were truncated at formfeed characters.  This is now fixed
@@ -438,7 +442,7 @@ Version 3.6b1 --- 28 November 2012
 - Configuration files now support substitution of environment variables, using
   syntax like ``${WORD}``.  Closes `issue 97`_.
 
-- Embarrassingly, the `[xml] output=` setting in the .coveragerc file simply
+- Embarrassingly, the ``[xml] output=`` setting in the .coveragerc file simply
   didn't work.  Now it does.
 
 - The XML report now consistently uses filenames for the filename attribute,
@@ -579,7 +583,7 @@ Version 3.5.2b1 --- 29 April 2012
   the page are color-coded to the source lines they affect.
 
 - Custom CSS can be applied to the HTML report by specifying a CSS file as
-  the extra_css configuration value in the [html] section.
+  the ``extra_css`` configuration value in the ``[html]`` section.
 
 - Source files with custom encodings declared in a comment at the top are now
   properly handled during reporting on Python 2.  Python 3 always handled them

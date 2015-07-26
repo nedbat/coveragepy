@@ -161,6 +161,7 @@ class CoverageConfig(object):
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.debug = []
+        self.note = None
         self.parallel = False
         self.plugins = []
         self.source = None
@@ -261,6 +262,7 @@ class CoverageConfig(object):
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
         ('include', 'run:include', 'list'),
+        ('note', 'run:note'),
         ('omit', 'run:omit', 'list'),
         ('parallel', 'run:parallel', 'boolean'),
         ('plugins', 'run:plugins', 'list'),

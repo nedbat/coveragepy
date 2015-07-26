@@ -1,3 +1,4 @@
+# coding: utf8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
@@ -10,7 +11,7 @@ import sys
 import textwrap
 
 import coverage
-from coverage import env
+from coverage import env, CoverageData
 
 from tests.coveragetest import CoverageTest
 
@@ -533,6 +534,21 @@ class ProcessTest(CoverageTest):
         self.assertIn("Goodbye\n", out)
 
         self.assertIn("Trace function changed", out)
+
+    def test_note(self):
+        self.make_file(".coveragerc", """\
+            [run]
+            data_file = mydata.dat
+            note = These are musical notes: ♫𝅗𝅥♩
+            """)
+        self.make_file("simple.py", """print('hello')""")
+        self.run_command("coverage run simple.py")
+
+        data = CoverageData()
+        data.read_file("mydata.dat")
+        infos = data.run_infos()
+        self.assertEqual(len(infos), 1)
+        self.assertEqual(infos[0]['note'], u"These are musical notes: ♫𝅗𝅥♩")
 
     def test_fullcoverage(self):                        # pragma: not covered
         if env.PY2:             # This doesn't work on Python 2.

@@ -301,7 +301,7 @@ CMDS = {
             Opts.include,
             Opts.omit,
             Opts.show_missing,
-            Opts.skip_covered
+            Opts.skip_covered,
             ] + GLOBAL_ARGS,
         usage = "[options] [modules]",
         description = "Report coverage statistics on modules."

@@ -788,6 +788,9 @@ class Coverage(object):
             ])
         )
 
+        if self.config.note:
+            self.data.add_run_info(note=self.config.note)
+
         self._measured = False
         return self.data
 
