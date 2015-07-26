@@ -260,15 +260,15 @@ class CoverageData(object):
                 )
             )
 
-    GO_AWAY = "!coverage.py: This is a private format, don't read it directly!"
+    _GO_AWAY = "!coverage.py: This is a private format, don't read it directly!"
 
     @classmethod
     def _open_for_reading(cls, filename):
         """Open a file appropriately for reading data."""
         f = open(filename, "r")
         try:
-            go_away = f.read(len(cls.GO_AWAY))
-            if go_away != cls.GO_AWAY:
+            go_away = f.read(len(cls._GO_AWAY))
+            if go_away != cls._GO_AWAY:
                 raise CoverageException("Doesn't seem to be a coverage.py data file")
         except Exception:
             f.close()
@@ -383,7 +383,7 @@ class CoverageData(object):
             file_data['run'] = self._run_info
 
         # Write the data to the file.
-        file_obj.write(self.GO_AWAY)
+        file_obj.write(self._GO_AWAY)
         json.dump(file_data, file_obj)
 
     def write_file(self, filename):

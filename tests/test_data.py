@@ -373,7 +373,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         with self.assertRaisesRegex(CoverageException, msg.format("nonexistent.dat")):
             covdata.read_file("nonexistent.dat")
 
-        self.make_file("misleading.dat", CoverageData.GO_AWAY + " this isn't JSON")
+        self.make_file("misleading.dat", CoverageData._GO_AWAY + " this isn't JSON")
         with self.assertRaisesRegex(CoverageException, msg.format("misleading.dat")):
             covdata.read_file("misleading.dat")
 
@@ -555,8 +555,8 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
     def read_json_data_file(self, fname):
         """Read a JSON data file for testing the JSON directly."""
         with open(fname, 'r') as fdata:
-            go_away = fdata.read(len(CoverageData.GO_AWAY))
-            self.assertEqual(go_away, CoverageData.GO_AWAY)
+            go_away = fdata.read(len(CoverageData._GO_AWAY))
+            self.assertEqual(go_away, CoverageData._GO_AWAY)
             return json.load(fdata)
 
     def test_file_format(self):
