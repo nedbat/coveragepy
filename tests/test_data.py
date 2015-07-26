@@ -151,6 +151,14 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata.lines('zzz.py'), [])
         self.assertIsNone(covdata.lines('no_such_file.py'))
 
+    def test_run_info(self):
+        covdata = CoverageData()
+        self.assertEqual(covdata.run_info(), {})
+        covdata.add_run_info(hello="there")
+        self.assertEqual(covdata.run_info(), {"hello": "there"})
+        covdata.add_run_info(count=17)
+        self.assertEqual(covdata.run_info(), {"hello": "there", "count": 17})
+
     def test_no_arcs_vs_unmeasured_file(self):
         covdata = CoverageData()
         covdata.set_arcs(ARCS_3)
@@ -333,6 +341,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         self.assert_line_counts(covdata2, SUMMARY_1)
         self.assert_measured_files(covdata2, MEASURED_FILES_1)
         self.assertCountEqual(covdata2.lines("a.py"), A_PY_LINES_1)
+        self.assertEqual(covdata2.run_info(), {})
 
     def test_read_write_arcs(self):
         covdata1 = CoverageData()
@@ -347,6 +356,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         self.assertCountEqual(covdata2.arcs("x.py"), X_PY_ARCS_3)
         self.assertCountEqual(covdata2.lines("y.py"), Y_PY_LINES_3)
         self.assertCountEqual(covdata2.arcs("y.py"), Y_PY_ARCS_3)
+        self.assertEqual(covdata2.run_info(), {})
 
     def test_read_errors(self):
         covdata = CoverageData()
@@ -379,6 +389,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         covdata2 = CoverageData()
         covdata2.set_arcs(ARCS_3)
         covdata2.set_file_tracers({"y.py": "magic_plugin"})
+        covdata2.add_run_info(version="v3.14", chunks=["z", "a"])
         covdata2.write_file("arcs.dat")
 
         covdata3 = CoverageData()
@@ -390,14 +401,18 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
                 "lines": {
                     "a.py": [1, 2],
                     "b.py": [3],
-                }
+                },
             },
             "arcs.dat": {
                 "arcs": {
                     "x.py": [[-1, 1], [1, 2], [2, 3], [3, -1]],
                     "y.py": [[-1, 17], [17, 23], [23, -1]],
                 },
-                "file_tracers": {"y.py": "magic_plugin"}
+                "file_tracers": {"y.py": "magic_plugin"},
+                "run": {
+                    "chunks": ["z", "a"],
+                    "version": "v3.14",
+                },
             },
             "empty.dat": {"lines": {}},
         }
