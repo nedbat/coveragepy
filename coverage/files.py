@@ -295,10 +295,9 @@ class PathAliases(object):
         The separator style in the result is made to match that of the result
         in the alias.
 
-        Returns:
-            The mapped path.  If a mapping has happened, this is a
-                canonical path.  If no mapping has happened, it is the
-                original value of `path` unchanged.
+        Returns the mapped path.  If a mapping has happened, this is a
+        canonical path.  If no mapping has happened, it is the original value
+        of `path` unchanged.
 
         """
         for regex, result, pattern_sep, result_sep in self.aliases:

@@ -736,8 +736,7 @@ class Coverage(object):
 
         Also warn about various problems collecting data.
 
-        Returns:
-            :class:`CoverageData`: the collected coverage data.
+        Returns a :class:`CoverageData`, the collected coverage data.
 
         """
         self._init()

@@ -42,14 +42,12 @@ class CoveragePlugin(object):
         trace the file or not.  Be prepared for `filename` to refer to all
         kinds of files that have nothing to do with your plugin.
 
-        Arguments:
-            filename (str): The path to the file being considered.  This is the
-                absolute real path to the file.  If you are comparing to other
-                paths, be sure to take this into account.
+        `filename` is a string, the path to the file being considered.  This is
+        the absolute real path to the file.  If you are comparing to other
+        paths, be sure to take this into account.
 
-        Returns:
-            FileTracer: the :class:`FileTracer` object to use to trace
-                `filename`, or None if this plugin cannot trace this file.
+        Returns a :class:`FileTracer` object to use to trace `filename`, or
+        None if this plugin cannot trace this file.
 
         """
         return None
@@ -91,8 +89,7 @@ class FileTracer(object):
         to own the mapping from Python execution back to whatever source
         filename was originally the source of the code.
 
-        Returns:
-            The filename to credit with this execution.
+        Returns the filename to credit with this execution.
 
         """
         _needs_to_implement(self, "source_filename")
@@ -102,13 +99,12 @@ class FileTracer(object):
 
         FileTracers can provide dynamically determined filenames by
         implementing dynamic_source_filename.  Invoking that function is
-        expensive. To determine whether to invoke it, coverage.py uses
-        the result of this function to know if it needs to bother invoking
+        expensive. To determine whether to invoke it, coverage.py uses the
+        result of this function to know if it needs to bother invoking
         :meth:`dynamic_source_filename`.
 
-        Returns:
-            boolean: True if :meth:`dynamic_source_filename` should be called
-                to get dynamic source filenames.
+        Returns true if :meth:`dynamic_source_filename` should be called to get
+        dynamic source filenames.
 
         """
         return False
@@ -122,9 +118,8 @@ class FileTracer(object):
         This function will not be invoked if
         :meth:`has_dynamic_source_filename` returns False.
 
-        Returns:
-            The source filename for this frame, or None if this frame shouldn't
-                be measured.
+        Returns the source filename for this frame, or None if this frame
+        shouldn't be measured.
 
         """
         return None
@@ -141,13 +136,6 @@ class FileTracer(object):
         This function might decide that the frame doesn't indicate any lines
         from the source file were executed.  Return (-1, -1) in this case to
         tell coverage.py that no lines should be recorded for this frame.
-
-        Arguments:
-            frame: the call frame to examine.
-
-        Returns:
-            int, int: a pair of line numbers, the start and end lines
-                executed in the source, inclusive.
 
         """
         lineno = frame.f_lineno

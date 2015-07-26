@@ -158,11 +158,9 @@ COOKIE_RE = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)", flags=re.MULTILINE)
 def _source_encoding_py2(source):
     """Determine the encoding for `source`, according to PEP 263.
 
-    Arguments:
-        source (byte string): the text of the program.
+    `source` is a byte string, the text of the program.
 
-    Returns:
-        string: the name of the encoding.
+    Returns a string, the name of the encoding.
 
     """
     assert isinstance(source, bytes)
@@ -255,11 +253,9 @@ def _source_encoding_py2(source):
 def _source_encoding_py3(source):
     """Determine the encoding for `source`, according to PEP 263.
 
-    Arguments:
-        source (byte string): the text of the program.
+    `source` is a byte string: the text of the program.
 
-    Returns:
-        string: the name of the encoding.
+    Returns a string, the name of the encoding.
 
     """
     readline = iternext(source.splitlines(True))

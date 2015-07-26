@@ -118,6 +118,7 @@ class PythonFileReporter(FileReporter):
 
     @property
     def parser(self):
+        """Lazily create a :class:`PythonParser`."""
         if self._parser is None:
             self._parser = PythonParser(
                 filename=self.filename,

@@ -51,7 +51,8 @@ class Plugins(object):
     def add_file_tracer(self, plugin):
         """Add a file tracer plugin.
 
-        ``plugin`` must implement the :meth:`CoveragePlugin.file_tracer` method.
+        `plugin` is an instance of a third-party plugin class.  It must
+        implement the :meth:`CoveragePlugin.file_tracer` method.
 
         """
         self._add_plugin(plugin, self.file_tracers)
@@ -67,13 +68,8 @@ class Plugins(object):
     def _add_plugin(self, plugin, specialized):
         """Add a plugin object.
 
-        Arguments:
-            plugin (CoveragePlugin): the plugin to add.
-
-            specialized (list): the list of plugins to add this to.
-
-        Returns:
-            plugin: may be a different object than passed in.
+        `plugin` is a :class:`CoveragePlugin` instance to add.  `specialized`
+        is a list to append the plugin to.
 
         """
         plugin_name = "%s.%s" % (self.current_module, plugin.__class__.__name__)
@@ -89,7 +85,6 @@ class Plugins(object):
         self.names[plugin_name] = plugin
         if specialized is not None:
             specialized.append(plugin)
-        return plugin
 
     def __nonzero__(self):
         return bool(self.order)

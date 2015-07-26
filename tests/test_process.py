@@ -845,15 +845,16 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
     ):                                                  # pragma: not covered
         """Run the test for a particular combination of factors.
 
-        Arguments:
-            dashm (str): Either "" (run the program as a file) or "-m" (run the
-                program as a module).
+        The arguments are all strings:
 
-            package (str): Either "" (put the source at the top level) or a
-                package name to use to hold the source.
+        * `dashm`: Either "" (run the program as a file) or "-m" (run the
+          program as a module).
 
-            source (str): Either "main" or "sub", which file to use as the
-                ``--source`` argument.
+        * `package`: Either "" (put the source at the top level) or a
+          package name to use to hold the source.
+
+        * `source`: Either "main" or "sub", which file to use as the
+          ``--source`` argument.
 
         """
         if env.METACOV:
