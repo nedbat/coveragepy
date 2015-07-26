@@ -29,7 +29,7 @@ class CoverageData(object):
         the future, in possibly complicated ways.  Use this API to avoid
         disruption.
 
-    There are three kinds of data that can be collected:
+    There are a number of kinds of data that can be collected:
 
     * **lines**: the line numbers of source lines that were executed.
       These are always available.
@@ -41,10 +41,14 @@ class CoverageData(object):
     * **file tracer names**: the module names of the file tracer plugins that
       handled each file in the data.
 
+    * **run information**: information about the program execution.  This is
+      written during "coverage run", and then accumulated during "coverage
+      combine".
 
     To read a coverage.py data file, use :meth:`read_file`, or :meth:`read` if
     you have an already-opened file.  You can then access the line, arc, or
     file tracer data with :meth:`lines`, :meth:`arcs`, or :meth:`file_tracer`.
+    Run information is available with :meth:`run_infos`.
 
     The :meth:`has_arcs` method indicates whether arc data is available.  You
     can get a list of the files in the data with :meth:`measured_files`.
@@ -56,8 +60,10 @@ class CoverageData(object):
     Most data files will be created by coverage.py itself, but you can use
     methods here to create data files if you like.  The :meth:`set_lines`,
     :meth:`set_arcs`, and :meth:`set_file_tracers` methods add data, in ways
-    that are convenient for coverage.py.  To add a file without any measured
-    data, use :meth:`touch_file`.
+    that are convenient for coverage.py.  The :meth:`add_run_info` method adds
+    key-value pairs to the run information.
+
+    To add a file without any measured data, use :meth:`touch_file`.
 
     You write to a named file with :meth:`write_file`, or to an already opened
     file with :meth:`write`.
@@ -73,22 +79,20 @@ class CoverageData(object):
     #     * lines: a dict mapping filenames to lists of line numbers
     #       executed::
     #
-    #         { 'file1': [17,23,45], 'file2': [1,2,3], ... }
+    #         { "file1": [17,23,45], "file2": [1,2,3], ... }
     #
     #     * arcs: a dict mapping filenames to lists of line number pairs::
     #
-    #         { 'file1': [[17,23], [17,25], [25,26]], ... }
+    #         { "file1": [[17,23], [17,25], [25,26]], ... }
     #
     #     * file_tracers: a dict mapping filenames to plugin names::
     #
-    #         { 'file1': "django.coverage", ... }
+    #         { "file1": "django.coverage", ... }
     #
-    #     * run: a dict of information about the coverage.py run::
+    #     * runs: a list of dicts of information about the coverage.py runs
+    #       contributing to the data::
     #
-    #         { 'collector': 'coverage.py',
-    #           'collected': '20150724T162717',
-    #           ...
-    #           }
+    #         [ { "briefsys": "CPython 2.7.10 Darwin" }, ... ]
     #
     # Only one of `lines` or `arcs` will be present: with branch coverage, data
     # is stored as arcs. Without branch coverage, it is stored as lines.  The
@@ -124,8 +128,8 @@ class CoverageData(object):
         #
         self._file_tracers = {}
 
-        # A dict of information about the coverage.py run.
-        self._run_info = {}
+        # A list of dicts of information about the coverage.py runs.
+        self._runs = []
 
     ##
     ## Reading data
@@ -196,9 +200,15 @@ class CoverageData(object):
             return self._file_tracers.get(filename, "")
         return None
 
-    def run_info(self):
-        """Return the dict of run information."""
-        return self._run_info
+    def run_infos(self):
+        """Return the list of dicts of run information.
+
+        For data collected during a single run, this will be a one-element
+        list.  If data has been combined, there will be one element for each
+        original data file.
+
+        """
+        return self._runs
 
     def measured_files(self):
         """A list of all files that had been measured."""
@@ -242,7 +252,7 @@ class CoverageData(object):
             for fname, arcs in iitems(data.get('arcs', {}))
         )
         self._file_tracers = data.get('file_tracers', {})
-        self._run_info = data.get('run', {})
+        self._runs = data.get('runs', [])
 
         self._validate()
 
@@ -357,7 +367,9 @@ class CoverageData(object):
         but repeated keywords overwrite each other.
 
         """
-        self._run_info.update(kwargs)
+        if not self._runs:
+            self._runs = [{}]
+        self._runs[0].update(kwargs)
         self._validate()
 
     def touch_file(self, filename):
@@ -379,8 +391,8 @@ class CoverageData(object):
         if self._file_tracers:
             file_data['file_tracers'] = self._file_tracers
 
-        if self._run_info:
-            file_data['run'] = self._run_info
+        if self._runs:
+            file_data['runs'] = self._runs
 
         # Write the data to the file.
         file_obj.write(self._GO_AWAY)
@@ -398,7 +410,7 @@ class CoverageData(object):
         self._lines = {}
         self._arcs = {}
         self._file_tracers = {}
-        self._run_info = {}
+        self._runs = []
         self._validate()
 
     def update(self, other_data, aliases=None):
@@ -431,6 +443,9 @@ class CoverageData(object):
                         filename, this_plugin, other_plugin,
                     )
                 )
+
+        # _runs: add the new runs to these runs.
+        self._runs.extend(other_data._runs)
 
         # _lines: merge dicts.
         for filename, file_lines in iitems(other_data._lines):
@@ -490,6 +505,12 @@ class CoverageData(object):
             assert plugin and isinstance(plugin, string_class), (
                 "_file_tracers[%r] shoudn't be %r" % (fname, plugin)
             )
+
+        # _runs should be a list of dicts.
+        for val in self._runs:
+            assert isinstance(val, dict)
+            for key in val:
+                assert isinstance(key, string_class), "Key in _runs shouldn't be %r" % (key,)
 
     def add_to_hash(self, filename, hasher):
         """Contribute `filename`'s data to the `hasher`.
