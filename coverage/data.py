@@ -184,13 +184,9 @@ class CoverageData(object):
     def file_tracer(self, filename):
         """Get the plugin name of the file tracer for a file.
 
-        Arguments:
-            filename: the name of the file you're interested in.
-
-        Returns:
-            str: the name of the plugin that handles this file.  If the file
-                was measured, but didn't use a plugin, then "" is returned.
-                If the file was not measured, then None is returned.
+        Returns the name of the plugin that handles this file.  If the file was
+        measured, but didn't use a plugin, then "" is returned.  If the file
+        was not measured, then None is returned.
 
         """
         # Because the vast majority of files involve no plugin, we don't store
@@ -215,8 +211,7 @@ class CoverageData(object):
         lines.  If `fullpath` is true, then the keys are the full pathnames of
         the files, otherwise they are the basenames of the files.
 
-        Returns:
-            dict mapping filenames to counts of lines.
+        Returns a dict mapping filenames to counts of lines.
 
         """
         summ = {}
@@ -499,10 +494,9 @@ class CoverageData(object):
     def add_to_hash(self, filename, hasher):
         """Contribute `filename`'s data to the `hasher`.
 
-        Arguments:
-            filename (str): the filename we're interested in.
-            hasher (:class:`coverage.misc.Hasher`): the Hasher to update with
-                the file's data.
+        `hasher` is a :class:`coverage.misc.Hasher` instance to be updated with
+        the file's data.  It should only get the results data, not the run
+        data.
 
         """
         if self._arcs:
