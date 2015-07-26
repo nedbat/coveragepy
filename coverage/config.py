@@ -160,11 +160,11 @@ class CoverageConfig(object):
         self.concurrency = None
         self.cover_pylib = False
         self.data_file = ".coverage"
-        self.parallel = False
-        self.timid = False
-        self.source = None
         self.debug = []
+        self.parallel = False
         self.plugins = []
+        self.source = None
+        self.timid = False
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
@@ -172,15 +172,15 @@ class CoverageConfig(object):
         self.ignore_errors = False
         self.include = None
         self.omit = None
-        self.partial_list = DEFAULT_PARTIAL[:]
         self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
+        self.partial_list = DEFAULT_PARTIAL[:]
         self.precision = 0
         self.show_missing = False
         self.skip_covered = False
 
         # Defaults for [html]
-        self.html_dir = "htmlcov"
         self.extra_css = None
+        self.html_dir = "htmlcov"
         self.html_title = "Coverage report"
 
         # Defaults for [xml]
@@ -260,10 +260,10 @@ class CoverageConfig(object):
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
-        ('plugins', 'run:plugins', 'list'),
         ('include', 'run:include', 'list'),
         ('omit', 'run:omit', 'list'),
         ('parallel', 'run:parallel', 'boolean'),
+        ('plugins', 'run:plugins', 'list'),
         ('source', 'run:source', 'list'),
         ('timid', 'run:timid', 'boolean'),
 
@@ -273,15 +273,15 @@ class CoverageConfig(object):
         ('ignore_errors', 'report:ignore_errors', 'boolean'),
         ('include', 'report:include', 'list'),
         ('omit', 'report:omit', 'list'),
-        ('partial_list', 'report:partial_branches', 'regexlist'),
         ('partial_always_list', 'report:partial_branches_always', 'regexlist'),
+        ('partial_list', 'report:partial_branches', 'regexlist'),
         ('precision', 'report:precision', 'int'),
         ('show_missing', 'report:show_missing', 'boolean'),
         ('skip_covered', 'report:skip_covered', 'boolean'),
 
         # [html]
-        ('html_dir', 'html:directory'),
         ('extra_css', 'html:extra_css'),
+        ('html_dir', 'html:directory'),
         ('html_title', 'html:title'),
 
         # [xml]
