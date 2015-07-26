@@ -781,7 +781,7 @@ class Coverage(object):
         from coverage import __version__
 
         self.data.add_run_info(
-            system=" ".join([
+            brief_sys=" ".join([
                 platform.python_implementation(),
                 platform.python_version(),
                 platform.system(),
