@@ -102,15 +102,15 @@ class ConfigTest(CoverageTest):
             ("[run\n", r"\[run"),
             ("[report]\nexclude_lines = foo(\n",
                 r"Invalid \[report\].exclude_lines value 'foo\(': "
-                    r"(unbalanced parenthesis|missing \))"),
+                r"(unbalanced parenthesis|missing \))"),
             ("[report]\npartial_branches = foo[\n",
                 r"Invalid \[report\].partial_branches value 'foo\[': "
-                    r"(unexpected end of regular expression|unterminated character set)"),
+                r"(unexpected end of regular expression|unterminated character set)"),
             ("[report]\npartial_branches_always = foo***\n",
                 r"Invalid \[report\].partial_branches_always value "
-                    r"'foo\*\*\*': "
-                    r"multiple repeat"),
-            ]
+                r"'foo\*\*\*': "
+                r"multiple repeat"),
+        ]
 
         for bad_config, msg in bad_configs_and_msgs:
             print("Trying %r" % bad_config)
@@ -138,9 +138,10 @@ class ConfigTest(CoverageTest):
         cov = coverage.coverage()
         self.assertEqual(cov.config.data_file, "hello-world.fooey")
         self.assertEqual(cov.config.branch, True)
-        self.assertEqual(cov.config.exclude_list,
+        self.assertEqual(
+            cov.config.exclude_list,
             ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
-            )
+        )
 
     def test_tweaks_after_constructor(self):
         # Arguments to the constructor are applied to the configuration.
@@ -273,25 +274,15 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.parallel)
         self.assertEqual(cov.config.concurrency, "thread")
 
-        self.assertEqual(cov.get_exclude_list(),
-            ["if 0:", r"pragma:?\s+no cover", "another_tab"]
-            )
+        self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])
         self.assertTrue(cov.config.ignore_errors)
         self.assertEqual(cov.config.include, ["a/", "b/"])
-        self.assertEqual(cov.config.omit,
-            ["one", "another", "some_more", "yet_more"]
-            )
+        self.assertEqual(cov.config.omit, ["one", "another", "some_more", "yet_more"])
         self.assertEqual(cov.config.precision, 3)
 
-        self.assertEqual(cov.config.partial_list,
-            [r"pragma:?\s+no branch"]
-            )
-        self.assertEqual(cov.config.partial_always_list,
-            ["if 0:", "while True:"]
-            )
-        self.assertEqual(cov.config.plugins,
-            ["plugins.a_plugin", "plugins.another"]
-            )
+        self.assertEqual(cov.config.partial_list, [r"pragma:?\s+no branch"])
+        self.assertEqual(cov.config.partial_always_list, ["if 0:", "while True:"])
+        self.assertEqual(cov.config.plugins, ["plugins.a_plugin", "plugins.another"])
         self.assertTrue(cov.config.show_missing)
         self.assertTrue(cov.config.skip_covered)
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
@@ -304,12 +295,12 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.paths, {
             'source': ['.', '/home/ned/src/'],
             'other': ['other', '/home/ned/other', 'c:\\Ned\\etc']
-            })
+        })
 
         self.assertEqual(cov.config.get_plugin_options("plugins.a_plugin"), {
             'hello': 'world',
             'names': 'Jane/John/Jenny',
-            })
+        })
         self.assertEqual(cov.config.get_plugin_options("plugins.another"), {})
 
     def test_config_file_settings(self):
@@ -366,9 +357,7 @@ class ConfigFileTest(CoverageTest):
             """)
         cov = coverage.coverage()
 
-        self.assertEqual(cov.config.html_title,
-            "tabblo & «ταБЬℓσ» # numbers"
-            )
+        self.assertEqual(cov.config.html_title, "tabblo & «ταБЬℓσ» # numbers")
 
     def test_unreadable_config(self):
         # If a config file is explicitly specified, then it is an error for it
@@ -376,7 +365,7 @@ class ConfigFileTest(CoverageTest):
         bad_files = [
             "nosuchfile.txt",
             ".",
-            ]
+        ]
         for bad_file in bad_files:
             msg = "Couldn't read %r as a config file" % bad_file
             with self.assertRaisesRegex(CoverageException, msg):
