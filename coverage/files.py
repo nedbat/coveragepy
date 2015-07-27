@@ -12,6 +12,7 @@ import re
 import sys
 
 from coverage import env
+from coverage.backward import unicode_class
 from coverage.misc import CoverageException, join_regex
 
 
@@ -73,6 +74,8 @@ if env.WINDOWS:
 
     def actual_path(path):
         """Get the actual path of `path`, including the correct case."""
+        if env.PY2 and isinstance(path, unicode_class):
+            path = path.encode(sys.getfilesystemencoding())
         if path in _ACTUAL_PATH_CACHE:
             return _ACTUAL_PATH_CACHE[path]
 
@@ -84,7 +87,7 @@ if env.WINDOWS:
             actpath = tail
         else:
             head = actual_path(head)
-            if head in  _ACTUAL_PATH_LIST_CACHE:
+            if head in _ACTUAL_PATH_LIST_CACHE:
                 files = _ACTUAL_PATH_LIST_CACHE[head]
             else:
                 try:
