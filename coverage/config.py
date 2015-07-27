@@ -117,12 +117,12 @@ class HandyConfigParser(configparser.RawConfigParser):
 # The default line exclusion regexes.
 DEFAULT_EXCLUDE = [
     r'(?i)#\s*pragma[:\s]?\s*no\s*cover',
-    ]
+]
 
 # The default partial branch regexes, to be modified by the user.
 DEFAULT_PARTIAL = [
     r'(?i)#\s*pragma[:\s]?\s*no\s*branch',
-    ]
+]
 
 # The default partial branch regexes, based on Python semantics.
 # These are any Python branching constructs that can't actually execute all
@@ -130,7 +130,7 @@ DEFAULT_PARTIAL = [
 DEFAULT_PARTIAL_ALWAYS = [
     'while (True|1|False|0):',
     'if (True|1|False|0):',
-    ]
+]
 
 
 class CoverageConfig(object):
@@ -276,13 +276,13 @@ class CoverageConfig(object):
         # [xml]
         ('xml_output', 'xml:output'),
         ('xml_package_depth', 'xml:package_depth', 'int'),
-        ]
+    ]
 
     def _set_attr_from_config_option(self, cp, attr, where, type_=''):
         """Set an attribute on self if it exists in the ConfigParser."""
         section, option = where.split(":")
         if cp.has_option(section, option):
-            method = getattr(cp, 'get'+type_)
+            method = getattr(cp, 'get' + type_)
             setattr(self, attr, method(section, option))
 
     def get_plugin_options(self, plugin):
