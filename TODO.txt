@@ -9,7 +9,7 @@ Key:
 * 4.0
 
 - What defaults should change?
-    - --source = . ?
+    x --source = . ?
     x --branch = True ?
 
 - Remove 2.3, 2.4, 2.5 limitations
@@ -43,8 +43,8 @@ Key:
     - cov.config["run:branch"] api
     - "added in 4.0"
 + Remove code only run on <2.6
-- Change data file to json
-- Create data api
++ Change data file to json
++ Create data api
 + gevent, etc.
 + Remove the old command-line syntax
     + A pain, b/c of the structure of the tests.
