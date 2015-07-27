@@ -94,9 +94,7 @@ class SummaryTest(CoverageTest):
         # Try reporting while omitting some modules
         self.make_mycode()
         self.run_command("coverage run mycode.py")
-        report = self.report_from_command(
-                    "coverage report --omit '%s/*'" % HERE
-                    )
+        report = self.report_from_command("coverage report --omit '%s/*'" % HERE)
 
         # Name        Stmts   Miss  Cover
         # -------------------------------

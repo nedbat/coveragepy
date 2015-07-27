@@ -6,8 +6,6 @@
 import subprocess
 
 
-# This isn't really a backward compatibility thing, should be moved into a
-# helpers file or something.
 def run_command(cmd):
     """Run a command in a sub-process.
 

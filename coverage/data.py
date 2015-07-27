@@ -74,6 +74,8 @@ class CoverageData(object):
 
     """
 
+    # TODO: case-sensitivity in file names in these methods.
+
     # The data file format is JSON, with these keys:
     #
     #     * lines: a dict mapping filenames to lists of line numbers
