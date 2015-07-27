@@ -3,8 +3,6 @@
 
 """Tests for concurrency libraries."""
 
-import os
-import os.path
 import threading
 
 import coverage
