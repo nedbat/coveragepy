@@ -19,6 +19,12 @@ try:
 except ImportError:
     from io import StringIO
 
+# In py3, ConfigParser was renamed to the more-standard configparser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
+
 # What's a string called?
 try:
     string_class = basestring

@@ -4,15 +4,8 @@
 """Config file for coverage.py"""
 
 import os, re, sys
-from coverage.backward import string_class, iitems
+from coverage.backward import configparser, iitems, string_class
 from coverage.misc import CoverageException
-
-
-# In py3, ConfigParser was renamed to the more-standard configparser
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
 
 
 class HandyConfigParser(configparser.RawConfigParser):
@@ -114,10 +107,8 @@ class HandyConfigParser(configparser.RawConfigParser):
                 re.compile(value)
             except re.error as e:
                 raise CoverageException(
-                    "Invalid [%s].%s value %r: %s" % (
-                        section, option, value, e
-                        )
-                    )
+                    "Invalid [%s].%s value %r: %s" % (section, option, value, e)
+                )
             if value:
                 value_list.append(value)
         return value_list
@@ -218,9 +209,7 @@ class CoverageConfig(object):
         try:
             files_read = cp.read(filename)
         except configparser.Error as err:
-            raise CoverageException(
-                "Couldn't read config file %s: %s" % (filename, err)
-                )
+            raise CoverageException("Couldn't read config file %s: %s" % (filename, err))
         if not files_read:
             return False
 
@@ -230,9 +219,7 @@ class CoverageConfig(object):
             for option_spec in self.CONFIG_FILE_OPTIONS:
                 self._set_attr_from_config_option(cp, *option_spec)
         except ValueError as err:
-            raise CoverageException(
-                "Couldn't read config file %s: %s" % (filename, err)
-                )
+            raise CoverageException("Couldn't read config file %s: %s" % (filename, err))
 
         # [paths] is special
         if cp.has_section('paths'):
