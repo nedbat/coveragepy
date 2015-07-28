@@ -20,6 +20,10 @@ Latest
   stored in the `runs` section of the data file.  You can use this to annotate
   the data file with any information you like.
 
+- Unrecognized configuration options will now print an error message and stop
+  coverage.py.  This should help prevent configuration mistakes from passing
+  silently.  Finishes `issue 386`_.
+
 - The XML report now includes a ``missing-branches`` attribute.  Thanks, Steve
   Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
   references the DTD.
@@ -47,6 +51,7 @@ Latest
 .. _issue 275: https://bitbucket.org/ned/coveragepy/issues/275/refer-consistently-to-project-as-coverage
 .. _issue 313: https://bitbucket.org/ned/coveragepy/issues/313/add-license-file-containing-2-3-or-4
 .. _issue 380: https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from
+.. _issue 386: https://bitbucket.org/ned/coveragepy/issues/386/error-on-unrecognised-configuration
 
 .. 41 issues closed in 4.0 below here
 

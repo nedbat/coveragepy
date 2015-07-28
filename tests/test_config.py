@@ -182,6 +182,33 @@ class ConfigTest(CoverageTest):
         with self.assertRaises(CoverageException):
             _ = cov.config["no_such.plugin:foo"]
 
+    def test_unknown_option(self):
+        self.make_file(".coveragerc", """\
+            [run]
+            xyzzy = 17
+            """)
+        msg = r"Unrecognized option '\[run\] xyzzy=' in config file .coveragerc"
+        with self.assertRaisesRegex(CoverageException, msg):
+            _ = coverage.Coverage()
+
+    def test_misplaced_option(self):
+        self.make_file(".coveragerc", """\
+            [report]
+            branch = True
+            """)
+        msg = r"Unrecognized option '\[report\] branch=' in config file .coveragerc"
+        with self.assertRaisesRegex(CoverageException, msg):
+            _ = coverage.Coverage()
+
+    def test_unknown_option_in_other_ini_file(self):
+        self.make_file("setup.cfg", """\
+            [coverage:run]
+            huh = what?
+            """)
+        msg = r"Unrecognized option '\[coverage:run\] huh=' in config file setup.cfg"
+        with self.assertRaisesRegex(CoverageException, msg):
+            _ = coverage.Coverage()
+
 
 class ConfigFileTest(CoverageTest):
     """Tests of the config file settings in particular."""

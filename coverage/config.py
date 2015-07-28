@@ -3,7 +3,11 @@
 
 """Config file for coverage.py"""
 
-import os, re, sys
+import collections
+import os
+import re
+import sys
+
 from coverage.backward import configparser, iitems, string_class
 from coverage.misc import CoverageException
 
@@ -220,6 +224,23 @@ class CoverageConfig(object):
                 self._set_attr_from_config_option(cp, *option_spec)
         except ValueError as err:
             raise CoverageException("Couldn't read config file %s: %s" % (filename, err))
+
+        # Check that there are no unrecognized options.
+        all_options = collections.defaultdict(set)
+        for option_spec in self.CONFIG_FILE_OPTIONS:
+            section, option = option_spec[1].split(":")
+            all_options[section].add(option)
+
+        for section, options in iitems(all_options):
+            if cp.has_section(section):
+                for unknown in set(cp.options(section)) - options:
+                    if section_prefix:
+                        section = section_prefix + section
+                    raise CoverageException(
+                        "Unrecognized option '[%s] %s=' in config file %s" % (
+                            section, unknown, filename
+                        )
+                    )
 
         # [paths] is special
         if cp.has_section('paths'):
