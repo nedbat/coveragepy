@@ -436,7 +436,7 @@ class CoverageScript(object):
             self.do_run(options, args)
 
         if options.action == "combine":
-            data_dirs = argv if argv else None
+            data_dirs = args or None
             self.coverage.combine(data_dirs)
             self.coverage.save()
 

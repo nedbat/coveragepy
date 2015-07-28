@@ -200,6 +200,21 @@ class CmdLineTest(BaseCmdLineTest):
             .save()
             """)
 
+    def test_combine_doesnt_confuse_options_with_args(self):
+        # https://bitbucket.org/ned/coveragepy/issues/385/coverage-combine-doesnt-work-with-rcfile
+        self.cmd_executes("combine --rcfile cov.ini", """\
+            .coverage(config_file='cov.ini')
+            .load()
+            .combine(None)
+            .save()
+            """)
+        self.cmd_executes("combine --rcfile cov.ini data1 data2/more", """\
+            .coverage(config_file='cov.ini')
+            .load()
+            .combine(["data1", "data2/more"])
+            .save()
+            """)
+
     def test_debug(self):
         self.cmd_help("debug", "What information would you like: data, sys?")
         self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
