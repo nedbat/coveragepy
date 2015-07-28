@@ -107,7 +107,7 @@ def run_tests_with_coverage(tracer, *nose_args):
     version = "%s%s" % sys.version_info[:2]
     suffix = "%s_%s_%s" % (version, tracer, socket.gethostname())
 
-    cov = coverage.coverage(config_file="metacov.ini", data_suffix=suffix)
+    cov = coverage.Coverage(config_file="metacov.ini", data_suffix=suffix)
     # Cheap trick: the coverage.py code itself is excluded from measurement,
     # but if we clobber the cover_prefix in the coverage object, we can defeat
     # the self-detection.
@@ -149,7 +149,7 @@ def do_combine_html():
     """Combine data from a meta-coverage run, and make the HTML report."""
     import coverage
     os.environ['COVERAGE_HOME'] = os.getcwd()
-    cov = coverage.coverage(config_file="metacov.ini")
+    cov = coverage.Coverage(config_file="metacov.ini")
     cov.load()
     cov.combine()
     cov.save()

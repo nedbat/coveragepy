@@ -6,7 +6,7 @@ source_path = None
 def html_it():
     """Run coverage.py and make an XML report for a."""
     import coverage, coverage.files
-    cov = coverage.coverage()
+    cov = coverage.Coverage()
     cov.start()
     import a            # pragma: nested
     cov.stop()          # pragma: nested

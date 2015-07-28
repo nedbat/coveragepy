@@ -4,7 +4,7 @@
 def html_it():
     """Run coverage.py and make an HTML report for tabbed."""
     import coverage
-    cov = coverage.coverage()
+    cov = coverage.Coverage()
     cov.start()
     import tabbed           # pragma: nested
     cov.stop()              # pragma: nested

@@ -4,7 +4,7 @@
 def html_it():
     """Run coverage.py with branches and make an HTML report for b."""
     import coverage
-    cov = coverage.coverage(branch=True)
+    cov = coverage.Coverage(branch=True)
     cov.start()
     import b            # pragma: nested
     cov.stop()          # pragma: nested

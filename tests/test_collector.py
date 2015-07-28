@@ -38,7 +38,7 @@ class CollectorTest(CoverageTest):
 
         # Trace one file, but not the other. CheckUniqueFilenames will assert
         # that _should_trace hasn't been called twice for the same file.
-        cov = coverage.coverage(include=["f1.py"])
+        cov = coverage.Coverage(include=["f1.py"])
         should_trace_hook = CheckUniqueFilenames.hook(cov, '_should_trace')
 
         # Import the Python file, executing it.

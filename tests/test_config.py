@@ -18,14 +18,14 @@ class ConfigTest(CoverageTest):
 
     def test_default_config(self):
         # Just constructing a coverage() object gets the right defaults.
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, ".coverage")
 
     def test_arguments(self):
         # Arguments to the constructor are applied to the configuration.
-        cov = coverage.coverage(timid=True, data_file="fooey.dat")
+        cov = coverage.Coverage(timid=True, data_file="fooey.dat")
         self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, "fooey.dat")
@@ -38,7 +38,7 @@ class ConfigTest(CoverageTest):
             timid =         True
             data_file =     .hello_kitty.data
             """)
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, ".hello_kitty.data")
@@ -51,7 +51,7 @@ class ConfigTest(CoverageTest):
             ; I wouldn't really use this as a data file...
             data_file = delete.me
             """)
-        cov = coverage.coverage(config_file="my_cov.ini")
+        cov = coverage.Coverage(config_file="my_cov.ini")
         self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, "delete.me")
@@ -63,7 +63,7 @@ class ConfigTest(CoverageTest):
             timid = True
             data_file = delete.me
             """)
-        cov = coverage.coverage(config_file=False)
+        cov = coverage.Coverage(config_file=False)
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, ".coverage")
@@ -75,7 +75,7 @@ class ConfigTest(CoverageTest):
             timid = True
             data_file = weirdo.file
             """)
-        cov = coverage.coverage(timid=False, data_file=".mycov")
+        cov = coverage.Coverage(timid=False, data_file=".mycov")
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, ".mycov")
@@ -88,10 +88,10 @@ class ConfigTest(CoverageTest):
             data_file = weirdo.file
             """)
         self.set_environ("COVERAGE_FILE", "fromenv.dat")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.assertEqual(cov.config.data_file, "fromenv.dat")
         # But the constructor arguments override the environment variable.
-        cov = coverage.coverage(data_file="fromarg.dat")
+        cov = coverage.Coverage(data_file="fromarg.dat")
         self.assertEqual(cov.config.data_file, "fromarg.dat")
 
     def test_parse_errors(self):
@@ -116,7 +116,7 @@ class ConfigTest(CoverageTest):
             print("Trying %r" % bad_config)
             self.make_file(".coveragerc", bad_config)
             with self.assertRaisesRegex(CoverageException, msg):
-                coverage.coverage()
+                coverage.Coverage()
 
     def test_environment_vars_in_config(self):
         # Config files can have $envvars in them.
@@ -135,7 +135,7 @@ class ConfigTest(CoverageTest):
         self.set_environ("DATA_FILE", "hello-world")
         self.set_environ("THING", "ZZZ")
         self.set_environ("OKAY", "yes")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.assertEqual(cov.config.data_file, "hello-world.fooey")
         self.assertEqual(cov.config.branch, True)
         self.assertEqual(
@@ -145,7 +145,7 @@ class ConfigTest(CoverageTest):
 
     def test_tweaks_after_constructor(self):
         # Arguments to the constructor are applied to the configuration.
-        cov = coverage.coverage(timid=True, data_file="fooey.dat")
+        cov = coverage.Coverage(timid=True, data_file="fooey.dat")
         cov.config["run:timid"] = False
 
         self.assertFalse(cov.config.timid)
@@ -158,7 +158,7 @@ class ConfigTest(CoverageTest):
 
     def test_tweak_error_checking(self):
         # Trying to set an unknown config value raises an error.
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         with self.assertRaises(CoverageException):
             cov.config["run:xyzzy"] = 12
         with self.assertRaises(CoverageException):
@@ -170,7 +170,7 @@ class ConfigTest(CoverageTest):
 
     def test_tweak_plugin_options(self):
         # Plugin options have a more flexible syntax.
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         cov.config["run:plugins"] = ["fooey.plugin", "xyzzy.coverage.plugin"]
         cov.config["fooey.plugin:xyzzy"] = 17
         cov.config["xyzzy.coverage.plugin:plugh"] = ["a", "b"]
@@ -332,7 +332,7 @@ class ConfigFileTest(CoverageTest):
 
     def test_config_file_settings(self):
         self.make_file(".coveragerc", self.LOTSA_SETTINGS.format(section=""))
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.assert_config_settings_are_correct(cov)
 
     def test_config_file_settings_in_setupcfg(self):
@@ -340,7 +340,7 @@ class ConfigFileTest(CoverageTest):
         # "coverage:"
         nested = self.LOTSA_SETTINGS.format(section="coverage:")
         self.make_file("setup.cfg", nested + "\n" + self.SETUP_CFG)
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.assert_config_settings_are_correct(cov)
 
     def test_config_file_settings_in_setupcfg_if_coveragerc_specified(self):
@@ -349,7 +349,7 @@ class ConfigFileTest(CoverageTest):
         # .coveragerc file.
         nested = self.LOTSA_SETTINGS.format(section="coverage:")
         self.make_file("setup.cfg", nested + "\n" + self.SETUP_CFG)
-        cov = coverage.coverage(config_file=".coveragerc")
+        cov = coverage.Coverage(config_file=".coveragerc")
         self.assert_config_settings_are_correct(cov)
 
     def test_setupcfg_only_if_not_coveragerc(self):
@@ -362,7 +362,7 @@ class ConfigFileTest(CoverageTest):
             omit = bar
             branch = true
             """)
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.assertEqual(cov.config.include, ["foo"])
         self.assertEqual(cov.config.omit, None)
         self.assertEqual(cov.config.branch, False)
@@ -373,7 +373,7 @@ class ConfigFileTest(CoverageTest):
             omit = bar
             branch = true
             """)
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.assertEqual(cov.config.omit, None)
         self.assertEqual(cov.config.branch, False)
 
@@ -382,7 +382,7 @@ class ConfigFileTest(CoverageTest):
             [html]
             title = tabblo & «ταБЬℓσ» # numbers
             """)
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
 
         self.assertEqual(cov.config.html_title, "tabblo & «ταБЬℓσ» # numbers")
 
@@ -396,10 +396,10 @@ class ConfigFileTest(CoverageTest):
         for bad_file in bad_files:
             msg = "Couldn't read %r as a config file" % bad_file
             with self.assertRaisesRegex(CoverageException, msg):
-                coverage.coverage(config_file=bad_file)
+                coverage.Coverage(config_file=bad_file)
 
     def test_nocoveragerc_file_when_specified(self):
-        cov = coverage.coverage(config_file=".coveragerc")
+        cov = coverage.Coverage(config_file=".coveragerc")
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, ".coverage")

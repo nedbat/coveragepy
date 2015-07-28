@@ -24,7 +24,7 @@ class XmlTestHelpers(CoverageTest):
         self.make_file("sub/__init__.py")
         self.make_file("sub/doit.py", "print('doit!')")
         self.make_file("main.py", "import sub.doit")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
         return cov
 
@@ -91,7 +91,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         # Written while investigating a bug, might as well keep it.
         # https://bitbucket.org/ned/coveragepy/issue/208
         self.make_file("innocuous.py", "a = 4")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "innocuous")
         os.remove("innocuous.py")
         cov.xml_report(ignore_errors=True)
@@ -123,7 +123,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         # Used to raise a zero division error:
         # https://bitbucket.org/ned/coveragepy/issue/250
         self.make_file("empty.py", "")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         empty = self.start_import_stop(cov, "empty")
         cov.xml_report([empty], outfile="-")
         xml = self.stdout()
@@ -163,7 +163,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         self.make_file("main.py", """\
             from d0.d0 import f0
             """)
-        cov = coverage.coverage(source=".")
+        cov = coverage.Coverage(source=".")
         self.start_import_stop(cov, "main")
         self.assert_package_and_class_tags(cov, """\
             <package name=".">
@@ -181,7 +181,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         self.make_file("main.py", """\
             from d0.d0 import f0
             """)
-        cov = coverage.coverage(source=".")
+        cov = coverage.Coverage(source=".")
         self.start_import_stop(cov, "main")
 
         cov.config["xml:package_depth"] = 1

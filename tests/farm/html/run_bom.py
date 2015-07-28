@@ -6,7 +6,7 @@ import sys
 def html_it():
     """Run coverage.py and make an HTML report for bom.py."""
     import coverage
-    cov = coverage.coverage()
+    cov = coverage.Coverage()
     cov.start()
     import bom          # pragma: nested
     cov.stop()          # pragma: nested

@@ -4,7 +4,7 @@
 def html_it():
     """Run coverage.py and make an HTML report for main."""
     import coverage
-    cov = coverage.coverage(config_file="omit5.ini", include=["./*"])
+    cov = coverage.Coverage(config_file="omit5.ini", include=["./*"])
     cov.start()
     import main         # pragma: nested
     cov.stop()          # pragma: nested

@@ -408,7 +408,7 @@ class SummaryTest(CoverageTest):
         self.make_file("main.py", """\
             print("y")
             """)
-        cov = coverage.coverage(branch=True, source=["."])
+        cov = coverage.Coverage(branch=True, source=["."])
         cov.start()
         import main     # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
@@ -417,7 +417,7 @@ class SummaryTest(CoverageTest):
 
     def run_TheCode_and_report_it(self):
         """A helper for the next few tests."""
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         cov.start()
         import TheCode  # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
@@ -452,7 +452,7 @@ class SummaryTest(CoverageTest):
         self.make_file("mod.pyw", """\
             print("In mod.pyw")
             """)
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         cov.start()
         import start    # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
@@ -472,7 +472,7 @@ class SummaryTest(CoverageTest):
         py_compile.compile("mod.py")
 
         # Run the program.
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         cov.start()
         import main     # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
@@ -502,7 +502,7 @@ class SummaryTest(CoverageTest):
             os.rename(pycs[0], "mod.pyc")
 
         # Run the program.
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         cov.start()
         import main     # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
@@ -530,7 +530,7 @@ class SummaryTest2(CoverageTest):
     def test_empty_files(self):
         # Shows that empty files like __init__.py are listed as having zero
         # statements, not one statement.
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         cov.start()
         import usepkgs  # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
@@ -559,7 +559,7 @@ class ReportingReturnValueTest(CoverageTest):
             g = 7
             """)
 
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "doit")
         return cov
 

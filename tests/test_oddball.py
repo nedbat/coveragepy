@@ -110,7 +110,7 @@ class RecursionTest(CoverageTest):
             i = 11
             """)
 
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "recur")
 
         pytrace = (cov.collector.tracer_name() == "PyTracer")
@@ -212,7 +212,7 @@ class PyexpatTest(CoverageTest):
 
         self.make_file("outer.py", "\n"*100 + "import trydom\na = 102\n")
 
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         cov.erase()
 
         # Import the Python file, executing it.
@@ -313,7 +313,7 @@ class ExceptionTest(CoverageTest):
             callnames = callnames.split()
             calls = [getattr(sys.modules[cn], cn) for cn in callnames]
 
-            cov = coverage.coverage()
+            cov = coverage.Coverage()
             cov.start()
             # Call our list of functions: invoke the first, with the rest as
             # an argument.
@@ -424,7 +424,7 @@ class ExecTest(CoverageTest):
             print("done")                           # line 35
             """)
 
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
 
         _, statements, missing, _ = cov.analysis("main.py")

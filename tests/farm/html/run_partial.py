@@ -6,7 +6,7 @@ import sys
 def html_it():
     """Run coverage.py and make an HTML report for partial."""
     import coverage
-    cov = coverage.coverage(branch=True)
+    cov = coverage.Coverage(branch=True)
     cov.start()
     import partial          # pragma: nested
     cov.stop()              # pragma: nested

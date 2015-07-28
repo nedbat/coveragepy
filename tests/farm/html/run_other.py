@@ -4,7 +4,7 @@
 def html_it():
     """Run coverage.py and make an HTML report for everything."""
     import coverage
-    cov = coverage.coverage(include=["./*", "../othersrc/*"])
+    cov = coverage.Coverage(include=["./*", "../othersrc/*"])
     cov.start()
     import here         # pragma: nested
     cov.stop()          # pragma: nested

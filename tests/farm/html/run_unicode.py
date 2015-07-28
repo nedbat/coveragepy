@@ -4,7 +4,7 @@
 def html_it():
     """Run coverage.py and make an HTML report for unicode.py."""
     import coverage
-    cov = coverage.coverage()
+    cov = coverage.Coverage()
     cov.start()
     import unicode          # pragma: nested
     cov.stop()              # pragma: nested

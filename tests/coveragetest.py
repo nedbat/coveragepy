@@ -175,7 +175,7 @@ class CoverageTest(
 
         """
         # We write the code into a file so that we can import it.
-        # Coverage wants to deal with things as modules with file names.
+        # Coverage.py wants to deal with things as modules with file names.
         modname = self.get_module_name()
 
         self.make_file(modname+".py", text)
@@ -187,8 +187,8 @@ class CoverageTest(
         if arcs_unpredicted is None and arcz_unpredicted is not None:
             arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted)
 
-        # Start up Coverage.
-        cov = coverage.coverage(branch=(arcs_missing is not None))
+        # Start up coverage.py.
+        cov = coverage.Coverage(branch=(arcs_missing is not None))
         cov.erase()
         for exc in excludes or []:
             cov.exclude(exc)

@@ -6,7 +6,7 @@ source_path = None
 def xml_it():
     """Run coverage.py and make an XML report for y."""
     import coverage, coverage.files
-    cov = coverage.coverage(branch=True)
+    cov = coverage.Coverage(branch=True)
     cov.start()
     import y            # pragma: nested
     cov.stop()          # pragma: nested

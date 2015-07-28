@@ -38,7 +38,7 @@ class HtmlTestHelpers(CoverageTest):
     def run_coverage(self, covargs=None, htmlargs=None):
         """Run coverage.py on main_file.py, and create an HTML report."""
         self.clean_local_file_imports()
-        cov = coverage.coverage(**(covargs or {}))
+        cov = coverage.Coverage(**(covargs or {}))
         self.start_import_stop(cov, "main_file")
         cov.html_report(**(htmlargs or {}))
 
@@ -243,7 +243,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
 
     def test_dotpy_not_python(self):
         self.make_file("innocuous.py", "a = 1")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "innocuous")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         msg = "Couldn't parse '.*innocuous.py' as Python source: .* at line 1"
@@ -252,7 +252,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
 
     def test_dotpy_not_python_ignored(self):
         self.make_file("innocuous.py", "a = 2")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "innocuous")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         cov.html_report(ignore_errors=True)
@@ -279,7 +279,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         source = "exec(compile('','','exec'), {'__file__': 'liar.html'})"
         self.make_file("liar.py", source)
         self.make_file("liar.html", "{# Whoops, not python code #}")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "liar")
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
@@ -292,7 +292,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.make_file("liar.py", source)
         # Tokenize will raise an IndentationError if it can't dedent.
         self.make_file("liar.html", "0\n  2\n 1\n")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "liar")
         cov.html_report()
         self.assert_exists("htmlcov/index.html")
@@ -308,7 +308,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
             # coding: utf8
             a = 1  # Isn't this great?!
             """)
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
 
         # Create the undecodable version of the file. make_file is too helpful,
@@ -329,7 +329,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
     def test_formfeeds(self):
         # https://bitbucket.org/ned/coveragepy/issue/360/html-reports-get-confused-by-l-in-the-code
         self.make_file("formfeed.py", "line_one = 1\n\f\nline_two = 2\n")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "formfeed")
         cov.html_report()
 
@@ -345,7 +345,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.make_file("thefile.py", "import sub.another\n")
         self.make_file("sub/__init__.py", "")
         self.make_file("sub/another.py", "print('another')\n")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, 'thefile')
         os.remove("sub/another.py")
 
@@ -409,7 +409,7 @@ class HtmlStaticFileTest(CoverageTest):
         coverage.html.STATIC_PATH.insert(0, "static_here")
 
         self.make_file("main.py", "print(17)")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
         cov.html_report()
 
@@ -430,7 +430,7 @@ class HtmlStaticFileTest(CoverageTest):
         coverage.html.STATIC_PATH.insert(0, "static_here")
 
         self.make_file("main.py", "print(17)")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
         cov.html_report()
 
@@ -445,7 +445,7 @@ class HtmlStaticFileTest(CoverageTest):
         coverage.html.STATIC_PATH = ["/xyzzy"]
 
         self.make_file("main.py", "print(17)")
-        cov = coverage.coverage()
+        cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
         msg = "Couldn't find static file u?'.*'"
         with self.assertRaisesRegex(CoverageException, msg):

@@ -1665,8 +1665,11 @@ class ModuleTest(CoverageTest):
 
     def test_not_singleton(self):
         # You *can* create another coverage object.
-        coverage.coverage()
-        coverage.coverage()
+        coverage.Coverage()
+        coverage.Coverage()
+
+    def test_old_name_and_new_name(self):
+        self.assertIs(coverage.coverage, coverage.Coverage)
 
 
 class ReportingTest(CoverageTest):
