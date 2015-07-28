@@ -601,15 +601,23 @@ class CoverageDataFiles(object):
         re-map paths to match the local machine's.
 
         If `data_dirs` is provided, then it combines the data files from each
-        directory into a single file.
+        directory into a single file.  If `data_dirs` is not provided, then the
+        directory portion of `self.filename` is used as the directory to search
+        for data files.
+
+        Every data file found and combined is then deleted from disk.
 
         """
+        # Because of the os.path.abspath in the constructor, data_dir will
+        # never be an empty string.
         data_dir, local = os.path.split(self.filename)
         localdot = local + '.*'
 
         data_dirs = data_dirs or [data_dir]
         files_to_combine = []
         for d in data_dirs:
+            if not os.path.isdir(d):
+                raise CoverageException("Couldn't combine from non-existent directory '%s'" % (d,))
             pattern = os.path.join(os.path.abspath(d), localdot)
             files_to_combine.extend(glob.glob(pattern))
 
