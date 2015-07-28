@@ -482,6 +482,10 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes_same("run -m mymodule", "run --module mymodule")
 
+    def test_run_nothing(self):
+        self.command_line("run", ret=ERR)
+        self.assertIn("Nothing to do", self.stdout())
+
     def test_xml(self):
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("xml", """\
