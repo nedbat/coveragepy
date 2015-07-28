@@ -401,7 +401,7 @@ class ProcessTest(CoverageTest):
 
     def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
         if sys.version_info < (2, 7):
-            # Coverage isn't bug-for-bug compatible in the behavior of -m for
+            # Coverage.py isn't bug-for-bug compatible in the behavior of -m for
             # Pythons < 2.7
             self.skip("-m doesn't work the same < Python 2.7")
         # https://bitbucket.org/ned/coveragepy/issue/207
@@ -612,8 +612,7 @@ class ProcessTest(CoverageTest):
         out = self.run_command("python run_twice.py")
         self.assertEqual(
             out,
-            "Coverage.py warning: "
-            "Module foo was previously imported, but not measured.\n"
+            "Coverage.py warning: Module foo was previously imported, but not measured.\n"
         )
 
 

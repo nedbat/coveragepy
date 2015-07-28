@@ -30,7 +30,7 @@ HERE = os.path.dirname(__file__)
 
 
 class PhysTokensTest(CoverageTest):
-    """Tests for Coverage.py's improved tokenizer."""
+    """Tests for coverage.py's improved tokenizer."""
 
     run_in_temp_dir = False
 

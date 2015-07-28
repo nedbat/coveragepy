@@ -36,7 +36,7 @@ class CoverageTest(
     TempDirMixin,
     TestCase
 ):
-    """A base class for Coverage test cases."""
+    """A base class for coverage.py test cases."""
 
     # Standard unittest setting: show me diffs even if they are very long.
     maxDiff = None
@@ -98,7 +98,7 @@ class CoverageTest(
             # Import the Python file, executing it.
             mod = self.import_local_file(modname)
         finally:                                # pragma: nested
-            # Stop Coverage.
+            # Stop coverage.py.
             cov.stop()
         return mod
 

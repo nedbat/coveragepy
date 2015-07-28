@@ -11,7 +11,7 @@ measure code coverage of Python program execution
 :Date: 2014-09-27
 :Copyright: Apache 2.0 license, attribution and disclaimer required.
 :Manual section: 1
-:Manual group: Coverage
+:Manual group: Coverage.py
 
 ..  |command| replace:: **python-coverage**
 
@@ -66,7 +66,7 @@ GLOBAL OPTIONS
 ==============
 
 **--help**, **-h**
-    Describe how to use Coverage, in general or a command.
+    Describe how to use coverage.py, in general or a command.
 
 **--rcfile** `RCFILE`
     Specify configuration file `RCFILE`. Defaults to ``.coveragerc``.
@@ -105,7 +105,7 @@ COMMAND REFERENCE
 
 **help** [ `command` ]
 
-    Describe how to use Coverage.
+    Describe how to use coverage.py.
 
 **help** **classic**
 

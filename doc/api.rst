@@ -3,9 +3,9 @@
 
 .. _api:
 
-============
-Coverage API
-============
+===============
+Coverage.py API
+===============
 
 .. :history: 20090524T134300, brand new docs.
 .. :history: 20090613T164000, final touches for 3.0

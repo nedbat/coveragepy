@@ -178,7 +178,7 @@ def _needs_to_implement(that, func_name):
 
 
 class CoverageException(Exception):
-    """An exception specific to Coverage."""
+    """An exception specific to coverage.py."""
     pass
 
 

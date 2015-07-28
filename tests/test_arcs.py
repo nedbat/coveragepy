@@ -11,7 +11,7 @@ from coverage.files import abs_file
 
 
 class SimpleArcTest(CoverageTest):
-    """Tests for Coverage.py's arc measurement."""
+    """Tests for coverage.py's arc measurement."""
 
     def test_simple_sequence(self):
         self.check_coverage("""\

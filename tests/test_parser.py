@@ -12,7 +12,7 @@ from coverage.parser import PythonParser
 
 
 class PythonParserTest(CoverageTest):
-    """Tests for Coverage.py's Python code parsing."""
+    """Tests for coverage.py's Python code parsing."""
 
     run_in_temp_dir = False
 
@@ -118,7 +118,7 @@ class PythonParserTest(CoverageTest):
 
 
 class ParserFileTest(CoverageTest):
-    """Tests for Coverage.py's code parsing from files."""
+    """Tests for coverage.py's code parsing from files."""
 
     def parse_file(self, filename):
         """Parse `text` as source, and return the `PythonParser` used."""

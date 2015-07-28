@@ -8,7 +8,7 @@ from tests.coveragetest import CoverageTest
 
 
 class NumbersTest(CoverageTest):
-    """Tests for Coverage.py's numeric measurement summaries."""
+    """Tests for coverage.py's numeric measurement summaries."""
 
     run_in_temp_dir = False
 
