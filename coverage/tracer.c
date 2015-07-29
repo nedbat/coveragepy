@@ -154,6 +154,7 @@ typedef struct {
         unsigned int missed_returns;
         unsigned int stack_reallocs;
         unsigned int errors;
+        unsigned int pycalls;
     } stats;
 #endif /* COLLECT_STATS */
 } CTracer;
@@ -213,6 +214,7 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     if (weakref == NULL) {
         goto error;
     }
+    STATS( self->stats.pycalls++; )
     self->data_stack_index = PyObject_CallMethod(weakref, "WeakKeyDictionary", NULL);
     Py_XDECREF(weakref);
 
@@ -350,6 +352,7 @@ CTracer_set_pdata_stack(CTracer *self)
     if (self->concur_id_func != Py_None) {
         int the_index = 0;
 
+        STATS( self->stats.pycalls++; )
         co_obj = PyObject_CallObject(self->concur_id_func, NULL);
         if (co_obj == NULL) {
             goto error;
@@ -488,8 +491,10 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
             goto error;
         }
         STATS( self->stats.new_files++; )
+
         /* We've never considered this file before. */
         /* Ask should_trace about it. */
+        STATS( self->stats.pycalls++; )
         disposition = PyObject_CallFunctionObjArgs(self->should_trace, filename, frame, NULL);
         if (disposition == NULL) {
             /* An error occurred inside should_trace. */
@@ -541,6 +546,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         }
         if (has_dynamic_filename == Py_True) {
             PyObject * next_tracename = NULL;
+            STATS( self->stats.pycalls++; )
             next_tracename = PyObject_CallMethod(
                 file_tracer, "dynamic_source_filename",
                 "OO", tracename, frame
@@ -567,6 +573,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
                         goto error;
                     }
                     STATS( self->stats.new_files++; )
+                    STATS( self->stats.pycalls++; )
                     should_include_bool = PyObject_CallFunctionObjArgs(self->check_include, tracename, frame, NULL);
                     if (should_include_bool == NULL) {
                         goto error;
@@ -691,6 +698,7 @@ CTracer_disable_plugin(CTracer *self, PyObject * disposition)
     if (msg == NULL) {
         goto error;
     }
+    STATS( self->stats.pycalls++; )
     ignored = PyObject_CallFunctionObjArgs(self->warn, msg, NULL);
     if (ignored == NULL) {
         goto error;
@@ -770,6 +778,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
             /* We're tracing in this frame: record something. */
             if (self->cur_entry.file_tracer != Py_None) {
                 PyObject * from_to = NULL;
+                STATS( self->stats.pycalls++; )
                 from_to = PyObject_CallMethod(self->cur_entry.file_tracer, "line_number_range", "O", frame);
                 if (from_to == NULL) {
                     goto error;
@@ -1070,7 +1079,7 @@ CTracer_get_stats(CTracer *self)
 {
 #if COLLECT_STATS
     return Py_BuildValue(
-        "{sI,sI,sI,sI,sI,sI,sI,sI,si,sI}",
+        "{sI,sI,sI,sI,sI,sI,sI,sI,si,sI,sI}",
         "calls", self->stats.calls,
         "lines", self->stats.lines,
         "returns", self->stats.returns,
@@ -1080,7 +1089,8 @@ CTracer_get_stats(CTracer *self)
         "missed_returns", self->stats.missed_returns,
         "stack_reallocs", self->stats.stack_reallocs,
         "stack_alloc", self->pdata_stack->alloc,
-        "errors", self->stats.errors
+        "errors", self->stats.errors,
+        "pycalls", self->stats.pycalls
         );
 #else
     Py_RETURN_NONE;
