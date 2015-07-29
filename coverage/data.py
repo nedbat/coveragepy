@@ -616,12 +616,21 @@ class CoverageDataFiles(object):
         data_dirs = data_dirs or [data_dir]
         files_to_combine = []
         for d in data_dirs:
-            if not os.path.isdir(d):
-                raise CoverageException("Couldn't combine from non-existent directory '%s'" % (d,))
-            pattern = os.path.join(os.path.abspath(d), localdot)
-            files_to_combine.extend(glob.glob(pattern))
+            if os.path.isfile(d):
+                files_to_combine.append(os.path.abspath(d))
+            elif os.path.isdir(d):
+                pattern = os.path.join(os.path.abspath(d), localdot)
+                files_to_combine.extend(glob.glob(pattern))
+            else:
+                files = glob.glob(d)
+                if not files:
+                    raise CoverageException("Couldn't combine from non-existing path '%s'" % (d,))
+                files_to_combine.extend(files)
+
 
         for f in files_to_combine:
+            if not os.path.isfile(f):
+                raise CoverageException("Couldn't combine from non-existing file '%s'" % (f,))
             new_data = CoverageData()
             new_data.read_file(f)
             data.update(new_data, aliases=aliases)

@@ -252,13 +252,13 @@ CMDS = {
         ),
 
     'combine': CmdOptionParser("combine", GLOBAL_ARGS,
-        usage = "<dir1> <dir2> ... <dirN>",
+        usage = "<path1> <path2> ... <pathN>",
         description = "Combine data from multiple coverage files collected "
             "with 'run -p'.  The combined results are written to a single "
             "file representing the union of the data. The positional "
-            "arguments are directories from which the data files should be "
-            "combined. By default, only data files in the current directory "
-            "are combined."
+            "arguments are files or directories or shell globs "
+            "representing the data files which should be combined. "
+            "By default, only data files in the current directory are combined."
         ),
 
     'debug': CmdOptionParser("debug", GLOBAL_ARGS,
