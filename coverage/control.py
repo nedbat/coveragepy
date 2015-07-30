@@ -778,8 +778,6 @@ class Coverage(object):
                 self.data.touch_file(py_file)
 
         # Add run information.
-        from coverage import __version__
-
         self.data.add_run_info(
             brief_sys=" ".join([
                 platform.python_implementation(),
