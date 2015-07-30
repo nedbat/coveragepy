@@ -686,6 +686,6 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
     def test_combining_from_nonexistent_directories(self):
         covdata = CoverageData()
-        msg = "Couldn't combine from non-existent directory 'xyzzy'"
+        msg = "Couldn't combine from non-existing path 'xyzzy'"
         with self.assertRaisesRegex(CoverageException, msg):
             self.data_files.combine_parallel_data(covdata, data_dirs=['xyzzy'])
