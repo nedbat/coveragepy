@@ -68,6 +68,7 @@ class ProcessTest(CoverageTest):
         out = self.run_command("coverage run -p b_or_c.py b")
         self.assertEqual(out, 'done\n')
         self.assert_doesnt_exist(".coverage")
+        self.assertEqual(self.number_of_data_files(), 1)
 
         out = self.run_command("coverage run -p b_or_c.py c")
         self.assertEqual(out, 'done\n')
@@ -111,7 +112,7 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
         self.assertEqual(self.number_of_data_files(), 1)
 
-        out = self.run_command("coverage run --append -p b_or_c.py c")
+        out = self.run_command("coverage run -p b_or_c.py c")
         self.assertEqual(out, 'done\n')
         self.assert_exists(".coverage")
         self.assertEqual(self.number_of_data_files(), 2)
@@ -121,6 +122,34 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
 
         # After combining, there should be only the .coverage file.
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+
+    def test_append_data(self):
+        self.make_file("b_or_c.py", """\
+            import sys
+            a = 1
+            if sys.argv[1] == 'b':
+                b = 1
+            else:
+                c = 1
+            d = 1
+            print('done')
+            """)
+
+        out = self.run_command("coverage run b_or_c.py b")
+        self.assertEqual(out, 'done\n')
+        self.assert_exists(".coverage")
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        out = self.run_command("coverage run --append b_or_c.py c")
+        self.assertEqual(out, 'done\n')
+        self.assert_exists(".coverage")
         self.assertEqual(self.number_of_data_files(), 1)
 
         # Read the coverage file and see that b_or_c.py has all 7 lines

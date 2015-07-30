@@ -721,6 +721,7 @@ class Coverage(object):
 
         """
         self._init()
+
         aliases = None
         if self.config.paths:
             aliases = PathAliases()
@@ -728,6 +729,7 @@ class Coverage(object):
                 result = paths[0]
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
+
         self.data_files.combine_parallel_data(self.data, aliases=aliases, data_dirs=data_dirs)
 
     def get_data(self):

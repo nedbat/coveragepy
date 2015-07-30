@@ -19,7 +19,7 @@ class Opts(object):
     """A namespace class for individual options we'll build parsers from."""
 
     append = optparse.make_option(
-        '-a', '--append', action='store_false', dest="erase_first",
+        '-a', '--append', action='store_true',
         help="Append coverage data to .coverage, otherwise it is started "
                 "clean with each run."
         )
@@ -135,11 +135,11 @@ class CoverageOptionParser(optparse.OptionParser, object):
             )
         self.set_defaults(
             action=None,
+            append=None,
             branch=None,
             concurrency=None,
             debug=None,
             directory=None,
-            erase_first=None,
             fail_under=None,
             help=None,
             ignore_errors=None,
@@ -320,7 +320,6 @@ CMDS = {
             Opts.source,
             Opts.timid,
             ] + GLOBAL_ARGS,
-        defaults = {'erase_first': True},
         usage = "[options] <pyfile> [program options]",
         description = "Run a Python program, measuring code execution."
         ),
@@ -427,18 +426,19 @@ class CoverageScript(object):
         if options.action == "debug":
             return self.do_debug(args)
 
-        if options.action == "erase" or options.erase_first:
+        elif options.action == "erase":
             self.coverage.erase()
-        else:
+            return OK
+
+        elif options.action == "run":
+            return self.do_run(options, args)
+
+        elif options.action == "combine":
             self.coverage.load()
-
-        if options.action == "run":
-            self.do_run(options, args)
-
-        if options.action == "combine":
             data_dirs = args or None
             self.coverage.combine(data_dirs)
             self.coverage.save()
+            return OK
 
         # Remaining actions are reporting, with some common options.
         report_args = dict(
@@ -448,19 +448,21 @@ class CoverageScript(object):
             include = include,
             )
 
+        self.coverage.load()
+
         total = None
         if options.action == "report":
             total = self.coverage.report(
                 show_missing=options.show_missing,
                 skip_covered=options.skip_covered, **report_args)
-        if options.action == "annotate":
+        elif options.action == "annotate":
             self.coverage.annotate(
                 directory=options.directory, **report_args)
-        if options.action == "html":
+        elif options.action == "html":
             total = self.coverage.html_report(
                 directory=options.directory, title=options.title,
                 **report_args)
-        if options.action == "xml":
+        elif options.action == "xml":
             outfile = options.outfile
             total = self.coverage.xml_report(outfile=outfile, **report_args)
 
@@ -550,6 +552,10 @@ class CoverageScript(object):
     def do_run(self, options, args):
         """Implementation of 'coverage run'."""
 
+        if not self.coverage.config.parallel:
+            if not options.append:
+                self.coverage.erase()
+
         # Set the first path element properly.
         old_path0 = sys.path[0]
 
@@ -570,10 +576,17 @@ class CoverageScript(object):
         finally:
             self.coverage.stop()
             if code_ran:
+                if options.append:
+                    from coverage.data import CoverageData
+                    old_data = CoverageData()
+                    old_data.read_file(self.coverage.config.data_file)
+                    self.coverage.data.update(old_data)
                 self.coverage.save()
 
             # Restore the old path
             sys.path[0] = old_path0
+
+        return OK
 
     def do_debug(self, args):
         """Implementation of 'coverage debug'."""
@@ -581,6 +594,7 @@ class CoverageScript(object):
         if not args:
             self.help_fn("What information would you like: data, sys?")
             return ERR
+
         for info in args:
             if info == 'sys':
                 sys_info = self.coverage.sys_info()
@@ -608,6 +622,7 @@ class CoverageScript(object):
             else:
                 self.help_fn("Don't know what you mean by %r" % info)
                 return ERR
+
         return OK
 
 
