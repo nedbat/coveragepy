@@ -256,9 +256,9 @@ CMDS = {
         description = "Combine data from multiple coverage files collected "
             "with 'run -p'.  The combined results are written to a single "
             "file representing the union of the data. The positional "
-            "arguments are files or directories or shell globs "
-            "representing the data files which should be combined. "
-            "By default, only data files in the current directory are combined."
+            "arguments are data files or directories containing data files. "
+            "If no paths are provided, data files in the default data file's "
+            "directory are combined."
         ),
 
     'debug': CmdOptionParser("debug", GLOBAL_ARGS,

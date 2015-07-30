@@ -676,7 +676,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata_xxx.write_file('.coverage.xxx')
 
         covdata3 = CoverageData()
-        self.data_files.combine_parallel_data(covdata3, data_dirs=['cov1', 'cov2'])
+        self.data_files.combine_parallel_data(covdata3, data_paths=['cov1', 'cov2'])
 
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
@@ -684,8 +684,35 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_doesnt_exist("cov2/.coverage.2")
         self.assert_exists(".coverage.xxx")
 
+    def test_combining_from_files(self):
+        covdata1 = CoverageData()
+        covdata1.set_lines(LINES_1)
+        os.makedirs('cov1')
+        covdata1.write_file('cov1/.coverage.1')
+
+        covdata2 = CoverageData()
+        covdata2.set_lines(LINES_2)
+        os.makedirs('cov2')
+        covdata2.write_file('cov2/.coverage.2')
+
+        # This data won't be included.
+        covdata_xxx = CoverageData()
+        covdata_xxx.set_arcs(ARCS_3)
+        covdata_xxx.write_file('.coverage.xxx')
+        covdata_xxx.write_file('cov2/.coverage.xxx')
+
+        covdata3 = CoverageData()
+        self.data_files.combine_parallel_data(covdata3, data_paths=['cov1', 'cov2/.coverage.2'])
+
+        self.assert_line_counts(covdata3, SUMMARY_1_2)
+        self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
+        self.assert_doesnt_exist("cov1/.coverage.1")
+        self.assert_doesnt_exist("cov2/.coverage.2")
+        self.assert_exists(".coverage.xxx")
+        self.assert_exists("cov2/.coverage.xxx")
+
     def test_combining_from_nonexistent_directories(self):
         covdata = CoverageData()
-        msg = "Couldn't combine from non-existing path 'xyzzy'"
+        msg = "Couldn't combine from non-existent path 'xyzzy'"
         with self.assertRaisesRegex(CoverageException, msg):
-            self.data_files.combine_parallel_data(covdata, data_dirs=['xyzzy'])
+            self.data_files.combine_parallel_data(covdata, data_paths=['xyzzy'])

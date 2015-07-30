@@ -591,7 +591,7 @@ class CoverageDataFiles(object):
             filename += "." + suffix
         data.write_file(filename)
 
-    def combine_parallel_data(self, data, aliases=None, data_dirs=None):
+    def combine_parallel_data(self, data, aliases=None, data_paths=None):
         """Combine a number of data files together.
 
         Treat `self.filename` as a file prefix, and combine the data from all
@@ -600,10 +600,12 @@ class CoverageDataFiles(object):
         If `aliases` is provided, it's a `PathAliases` object that is used to
         re-map paths to match the local machine's.
 
-        If `data_dirs` is provided, then it combines the data files from each
-        directory into a single file.  If `data_dirs` is not provided, then the
-        directory portion of `self.filename` is used as the directory to search
-        for data files.
+        If `data_paths` is provided, it is a list of directories or files to
+        combine.  Directories are searched for files that start with
+        `self.filename` plus dot as a prefix, and those files are combined.
+
+        If `data_dirs` is not provided, then the directory portion of
+        `self.filename` is used as the directory to search for data files.
 
         Every data file found and combined is then deleted from disk.
 
@@ -613,24 +615,18 @@ class CoverageDataFiles(object):
         data_dir, local = os.path.split(self.filename)
         localdot = local + '.*'
 
-        data_dirs = data_dirs or [data_dir]
+        data_paths = data_paths or [data_dir]
         files_to_combine = []
-        for d in data_dirs:
-            if os.path.isfile(d):
-                files_to_combine.append(os.path.abspath(d))
-            elif os.path.isdir(d):
-                pattern = os.path.join(os.path.abspath(d), localdot)
+        for p in data_paths:
+            if os.path.isfile(p):
+                files_to_combine.append(os.path.abspath(p))
+            elif os.path.isdir(p):
+                pattern = os.path.join(os.path.abspath(p), localdot)
                 files_to_combine.extend(glob.glob(pattern))
             else:
-                files = glob.glob(d)
-                if not files:
-                    raise CoverageException("Couldn't combine from non-existing path '%s'" % (d,))
-                files_to_combine.extend(files)
-
+                raise CoverageException("Couldn't combine from non-existent path '%s'" % (p,))
 
         for f in files_to_combine:
-            if not os.path.isfile(f):
-                raise CoverageException("Couldn't combine from non-existing file '%s'" % (f,))
             new_data = CoverageData()
             new_data.read_file(f)
             data.update(new_data, aliases=aliases)
