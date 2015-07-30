@@ -547,6 +547,10 @@ class CoverageScript(object):
             self.help_fn("Nothing to do.")
             return False
 
+        if options.append and options.parallel_mode:
+            self.help_fn("Can't append to data files in parallel mode.")
+            return False
+
         return True
 
     def do_run(self, options, args):
