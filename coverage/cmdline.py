@@ -577,10 +577,7 @@ class CoverageScript(object):
             self.coverage.stop()
             if code_ran:
                 if options.append:
-                    from coverage.data import CoverageData
-                    old_data = CoverageData()
-                    old_data.read_file(self.coverage.config.data_file)
-                    self.coverage.data.update(old_data)
+                    self.coverage.combine(data_paths=[self.coverage.config.data_file])
                 self.coverage.save()
 
             # Restore the old path

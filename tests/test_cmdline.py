@@ -350,10 +350,10 @@ class CmdLineTest(BaseCmdLineTest):
         # run -a calls coverage.load first without erasing.
         self.cmd_executes("run -a foo.py", """\
             .coverage()
-            .load()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
+            .combine(data_paths=['.coverage'])
             .save()
             """)
         # --timid sets a flag, and program arguments get passed through.
