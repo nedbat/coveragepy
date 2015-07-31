@@ -106,6 +106,7 @@ typedef struct {
 static PyObject *str_trace;
 static PyObject *str_source_filename;
 static PyObject *str_file_tracer;
+static PyObject *str__coverage_enabled;
 static PyObject *str__coverage_plugin;
 static PyObject *str__coverage_plugin_name;
 static PyObject *str_has_dynamic_filename;
@@ -126,6 +127,7 @@ intern_strings()
     INTERN_STRING(str_trace, "trace")
     INTERN_STRING(str_source_filename, "source_filename")
     INTERN_STRING(str_file_tracer, "file_tracer")
+    INTERN_STRING(str__coverage_enabled, "_coverage_enabled")
     INTERN_STRING(str__coverage_plugin, "_coverage_plugin")
     INTERN_STRING(str__coverage_plugin_name, "_coverage_plugin_name")
     INTERN_STRING(str_has_dynamic_filename, "has_dynamic_filename")
@@ -747,10 +749,10 @@ CTracer_disable_plugin(CTracer *self, PyObject * disposition)
     }
 
     /* Disable the plugin for future files, and stop tracing this file. */
-    if (PyObject_SetAttrString(plugin, "_coverage_enabled", Py_False) < 0) {
+    if (PyObject_SetAttr(plugin, str__coverage_enabled, Py_False) < 0) {
         goto error;
     }
-    if (PyObject_SetAttrString(disposition, "trace", Py_False) < 0) {
+    if (PyObject_SetAttr(disposition, str_trace, Py_False) < 0) {
         goto error;
     }
 
