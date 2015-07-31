@@ -143,6 +143,30 @@ class ProcessTest(CoverageTest):
         data.read_file(".coverage")
         self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
+    def test_append_data_with_different_file(self):
+        self.make_b_or_c_py()
+
+        self.make_file(".coveragerc", """\
+            [run]
+            data_file = .mycovdata
+            """)
+
+        out = self.run_command("coverage run b_or_c.py b")
+        self.assertEqual(out, 'done\n')
+        self.assert_doesnt_exist(".coverage")
+        self.assert_exists(".mycovdata")
+
+        out = self.run_command("coverage run --append b_or_c.py c")
+        self.assertEqual(out, 'done\n')
+        self.assert_doesnt_exist(".coverage")
+        self.assert_exists(".mycovdata")
+
+        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read_file(".mycovdata")
+        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+
     def test_combine_with_rc(self):
         self.make_b_or_c_py()
 
