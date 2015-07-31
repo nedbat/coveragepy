@@ -574,6 +574,16 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.data_files.read(covdata2)
         self.assert_line_counts(covdata2, {})
 
+    def test_erasing_parallel(self):
+        self.make_file("datafile.1")
+        self.make_file("datafile.2")
+        self.make_file(".coverage")
+        data_files = CoverageDataFiles("datafile")
+        data_files.erase(parallel=True)
+        self.assert_doesnt_exist("datafile.1")
+        self.assert_doesnt_exist("datafile.2")
+        self.assert_exists(".coverage")
+
     def read_json_data_file(self, fname):
         """Read a JSON data file for testing the JSON directly."""
         with open(fname, 'r') as fdata:

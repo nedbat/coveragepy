@@ -6,6 +6,7 @@
 import glob
 import json
 import os
+import os.path
 import random
 import socket
 
@@ -553,9 +554,20 @@ class CoverageDataFiles(object):
         # Construct the filename that will be used for data storage.
         self.filename = os.path.abspath(basename or ".coverage")
 
-    def erase(self):
-        """Erase the data from the file storage."""
+    def erase(self, parallel=False):
+        """Erase the data from the file storage.
+
+        If `parallel` is true, then also deletes data files created from the
+        basename by parallel-mode.
+
+        """
         file_be_gone(self.filename)
+        if parallel:
+            data_dir, local = os.path.split(self.filename)
+            localdot = local + '.*'
+            pattern = os.path.join(os.path.abspath(data_dir), localdot)
+            for filename in glob.glob(pattern):
+                file_be_gone(filename)
 
     def read(self, data):
         """Read the coverage data."""
@@ -630,7 +642,7 @@ class CoverageDataFiles(object):
             new_data = CoverageData()
             new_data.read_file(f)
             data.update(new_data, aliases=aliases)
-            os.remove(f)
+            file_be_gone(f)
 
 
 def debug_main(args):

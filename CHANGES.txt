@@ -24,6 +24,9 @@ Latest
   coverage.py.  This should help prevent configuration mistakes from passing
   silently.  Finishes `issue 386`_.
 
+- In parallel mode, ``coverage erase`` will now delete all of the data files,
+  fixing `issue 262`_.
+
 - The XML report now includes a ``missing-branches`` attribute.  Thanks, Steve
   Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
   references the DTD.
@@ -51,6 +54,7 @@ Latest
   but now works again, closing `issue 385`_.
 
 .. _issue 236: https://bitbucket.org/ned/coveragepy/issues/236/pickles-are-bad-and-you-should-feel-bad
+.. _issue 262: https://bitbucket.org/ned/coveragepy/issues/262/when-parallel-true-erase-should-erase-all
 .. _issue 275: https://bitbucket.org/ned/coveragepy/issues/275/refer-consistently-to-project-as-coverage
 .. _issue 313: https://bitbucket.org/ned/coveragepy/issues/313/add-license-file-containing-2-3-or-4
 .. _issue 380: https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from

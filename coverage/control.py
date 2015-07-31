@@ -653,7 +653,7 @@ class Coverage(object):
         self._init()
         self.collector.reset()
         self.data.erase()
-        self.data_files.erase()
+        self.data_files.erase(parallel=self.config.parallel)
 
     def clear_exclude(self, which='exclude'):
         """Clear the exclude list."""

@@ -259,6 +259,23 @@ class ProcessTest(CoverageTest):
         self.assertEqual(actual, expected)
         self.assertEqual(list(summary.values())[0], 6)
 
+    def test_erase_parallel(self):
+        self.make_file(".coveragerc", """\
+            [run]
+            data_file = data.dat
+            parallel = True
+            """)
+        self.make_file("data.dat")
+        self.make_file("data.dat.fooey")
+        self.make_file("data.dat.gooey")
+        self.make_file(".coverage")
+
+        self.run_command("coverage erase")
+        self.assert_doesnt_exist("data.dat")
+        self.assert_doesnt_exist("data.dat.fooey")
+        self.assert_doesnt_exist("data.dat.gooey")
+        self.assert_exists(".coverage")
+
     def test_missing_source_file(self):
         # Check what happens if the source is missing when reporting happens.
         self.make_file("fleeting.py", """\
