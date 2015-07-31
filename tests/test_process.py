@@ -53,7 +53,8 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
         self.assertEqual(out, 'done\n')
 
-    def test_combine_parallel_data(self):
+    def make_b_or_c_py(self):
+        """Create b_or_c.py, used in a few of these tests."""
         self.make_file("b_or_c.py", """\
             import sys
             a = 1
@@ -65,6 +66,8 @@ class ProcessTest(CoverageTest):
             print('done')
             """)
 
+    def test_combine_parallel_data(self):
+        self.make_b_or_c_py()
         out = self.run_command("coverage run -p b_or_c.py b")
         self.assertEqual(out, 'done\n')
         self.assert_doesnt_exist(".coverage")
@@ -91,16 +94,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
     def test_combine_parallel_data_in_two_steps(self):
-        self.make_file("b_or_c.py", """\
-            import sys
-            a = 1
-            if sys.argv[1] == 'b':
-                b = 1
-            else:
-                c = 1
-            d = 1
-            print('done')
-            """)
+        self.make_b_or_c_py()
 
         out = self.run_command("coverage run -p b_or_c.py b")
         self.assertEqual(out, 'done\n')
@@ -131,16 +125,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
     def test_append_data(self):
-        self.make_file("b_or_c.py", """\
-            import sys
-            a = 1
-            if sys.argv[1] == 'b':
-                b = 1
-            else:
-                c = 1
-            d = 1
-            print('done')
-            """)
+        self.make_b_or_c_py()
 
         out = self.run_command("coverage run b_or_c.py b")
         self.assertEqual(out, 'done\n')
@@ -159,16 +144,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
     def test_combine_with_rc(self):
-        self.make_file("b_or_c.py", """\
-            import sys
-            a = 1
-            if sys.argv[1] == 'b':
-                b = 1
-            else:
-                c = 1
-            d = 1
-            print('done')
-            """)
+        self.make_b_or_c_py()
 
         self.make_file(".coveragerc", """\
             [run]
