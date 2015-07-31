@@ -31,6 +31,8 @@
 #define MyText_FromFormat   PyUnicode_FromFormat
 #define MyInt_FromInt(i)    PyLong_FromLong((long)i)
 #define MyInt_AsInt(o)      (int)PyLong_AsLong(o)
+#define MyText_InternFromString(s) \
+                            PyUnicode_InternFromString(s)
 
 #define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
 
@@ -44,6 +46,8 @@
 #define MyText_FromFormat   PyUnicode_FromFormat
 #define MyInt_FromInt(i)    PyInt_FromLong((long)i)
 #define MyInt_AsInt(o)      (int)PyInt_AsLong(o)
+#define MyText_InternFromString(s) \
+                            PyString_InternFromString(s)
 
 #define MyType_HEAD_INIT    PyObject_HEAD_INIT(NULL)  0,
 
@@ -95,6 +99,38 @@ typedef struct {
     /* The file data at each level, or NULL if not recording. */
     DataStackEntry * stack;
 } DataStack;
+
+
+static PyObject *str_trace;
+static PyObject *str_source_filename;
+static PyObject *str_file_tracer;
+static PyObject *str__coverage_plugin;
+static PyObject *str__coverage_plugin_name;
+static PyObject *str_has_dynamic_filename;
+
+static int
+intern_strings()
+{
+    int ret = RET_ERROR;
+
+#define INTERN_STRING(v, s)                     \
+    v = MyText_InternFromString(s);             \
+    if (v == NULL) {                            \
+        goto error;                             \
+    }
+
+    INTERN_STRING(str_trace, "trace")
+    INTERN_STRING(str_source_filename, "source_filename")
+    INTERN_STRING(str_file_tracer, "file_tracer")
+    INTERN_STRING(str__coverage_plugin, "_coverage_plugin")
+    INTERN_STRING(str__coverage_plugin_name, "_coverage_plugin_name")
+    INTERN_STRING(str_has_dynamic_filename, "has_dynamic_filename")
+
+    ret = RET_OK;
+
+error:
+    return ret;
+}
 
 /* The CTracer type. */
 
@@ -514,7 +550,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         Py_INCREF(Py_False);
     }
     else {
-        disp_trace = PyObject_GetAttrString(disposition, "trace");
+        disp_trace = PyObject_GetAttr(disposition, str_trace);
         if (disp_trace == NULL) {
             goto error;
         }
@@ -522,25 +558,25 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
     if (disp_trace == Py_True) {
         /* If tracename is a string, then we're supposed to trace. */
-        tracename = PyObject_GetAttrString(disposition, "source_filename");
+        tracename = PyObject_GetAttr(disposition, str_source_filename);
         if (tracename == NULL) {
             goto error;
         }
-        file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
+        file_tracer = PyObject_GetAttr(disposition, str_file_tracer);
         if (file_tracer == NULL) {
             goto error;
         }
         if (file_tracer != Py_None) {
-            plugin = PyObject_GetAttrString(file_tracer, "_coverage_plugin");
+            plugin = PyObject_GetAttr(file_tracer, str__coverage_plugin);
             if (plugin == NULL) {
                 goto error;
             }
-            plugin_name = PyObject_GetAttrString(plugin, "_coverage_plugin_name");
+            plugin_name = PyObject_GetAttr(plugin, str__coverage_plugin_name);
             if (plugin_name == NULL) {
                 goto error;
             }
         }
-        has_dynamic_filename = PyObject_GetAttrString(disposition, "has_dynamic_filename");
+        has_dynamic_filename = PyObject_GetAttr(disposition, str_has_dynamic_filename);
         if (has_dynamic_filename == NULL) {
             goto error;
         }
@@ -675,7 +711,7 @@ CTracer_disable_plugin(CTracer *self, PyObject * disposition)
 
     PyErr_Print();
 
-    file_tracer = PyObject_GetAttrString(disposition, "file_tracer");
+    file_tracer = PyObject_GetAttr(disposition, str_file_tracer);
     if (file_tracer == NULL) {
         goto error;
     }
@@ -683,11 +719,11 @@ CTracer_disable_plugin(CTracer *self, PyObject * disposition)
         /* This shouldn't happen... */
         goto ok;
     }
-    plugin = PyObject_GetAttrString(file_tracer, "_coverage_plugin");
+    plugin = PyObject_GetAttr(file_tracer, str__coverage_plugin);
     if (plugin == NULL) {
         goto error;
     }
-    plugin_name = PyObject_GetAttrString(plugin, "_coverage_plugin_name");
+    plugin_name = PyObject_GetAttr(plugin, str__coverage_plugin_name);
     if (plugin_name == NULL) {
         goto error;
     }
@@ -1223,6 +1259,10 @@ PyInit_tracer(void)
         return NULL;
     }
 
+    if (intern_strings() < 0) {
+        return NULL;
+    }
+
     return mod;
 }
 
@@ -1245,6 +1285,10 @@ inittracer(void)
 
     Py_INCREF(&CTracerType);
     PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType);
+
+    if (intern_strings() < 0) {
+        return;
+    }
 }
 
 #endif /* Py3k */
