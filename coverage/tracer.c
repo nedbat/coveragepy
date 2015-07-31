@@ -101,12 +101,16 @@ typedef struct {
 } DataStack;
 
 
+/* Interned strings to speed GetAttr etc. */
+
 static PyObject *str_trace;
 static PyObject *str_source_filename;
 static PyObject *str_file_tracer;
 static PyObject *str__coverage_plugin;
 static PyObject *str__coverage_plugin_name;
 static PyObject *str_has_dynamic_filename;
+static PyObject *str_dynamic_source_filename;
+static PyObject *str_line_number_range;
 
 static int
 intern_strings()
@@ -125,6 +129,8 @@ intern_strings()
     INTERN_STRING(str__coverage_plugin, "_coverage_plugin")
     INTERN_STRING(str__coverage_plugin_name, "_coverage_plugin_name")
     INTERN_STRING(str_has_dynamic_filename, "has_dynamic_filename")
+    INTERN_STRING(str_dynamic_source_filename, "dynamic_source_filename")
+    INTERN_STRING(str_line_number_range, "line_number_range")
 
     ret = RET_OK;
 
@@ -583,9 +589,9 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         if (has_dynamic_filename == Py_True) {
             PyObject * next_tracename = NULL;
             STATS( self->stats.pycalls++; )
-            next_tracename = PyObject_CallMethod(
-                file_tracer, "dynamic_source_filename",
-                "OO", tracename, frame
+            next_tracename = PyObject_CallMethodObjArgs(
+                file_tracer, str_dynamic_source_filename,
+                tracename, frame, NULL
                 );
             if (next_tracename == NULL) {
                 /* An exception from the function. Alert the user with a
@@ -815,7 +821,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
             if (self->cur_entry.file_tracer != Py_None) {
                 PyObject * from_to = NULL;
                 STATS( self->stats.pycalls++; )
-                from_to = PyObject_CallMethod(self->cur_entry.file_tracer, "line_number_range", "O", frame);
+                from_to = PyObject_CallMethodObjArgs(self->cur_entry.file_tracer, str_line_number_range, frame, NULL);
                 if (from_to == NULL) {
                     goto error;
                 }
