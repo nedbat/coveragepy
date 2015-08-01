@@ -29,6 +29,7 @@ Latest
 
 - Coverage.py now accepts a directory name for ``coverage run`` and will run a
   ``__main__.py`` found there, just like Python will.  Fixes `issue 252`_.
+  Thanks, Dmitry Trofimov.
 
 - The XML report now includes a ``missing-branches`` attribute.  Thanks, Steve
   Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
