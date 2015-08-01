@@ -175,7 +175,12 @@ if '__pypy__' in sys.builtin_module_names:
 if compile_extension:
     setup_args.update(dict(
         ext_modules = [
-            Extension("coverage.tracer", sources=["coverage/tracer.c"])
+            Extension(
+                "coverage.tracer",
+                sources=[
+                    "coverage/ctracer/tracer.c",
+                ]
+            )
         ],
         cmdclass = {
             'build_ext': ve_build_ext,
