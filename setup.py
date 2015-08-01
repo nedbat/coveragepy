@@ -35,17 +35,6 @@ New in 3.2: Branch coverage!
 
 # This file is used unchanged under all versions of Python, 2.x and 3.x.
 
-classifiers = """\
-Environment :: Console
-Intended Audience :: Developers
-License :: OSI Approved :: Apache Software License
-Operating System :: OS Independent
-Programming Language :: Python :: 2
-Programming Language :: Python :: 3
-Topic :: Software Development :: Quality Assurance
-Topic :: Software Development :: Testing
-"""
-
 # Pull in the tools we need.
 import os, sys
 
@@ -56,6 +45,17 @@ from distutils import errors                        # pylint: disable=no-name-in
 
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid
 # importing the product code into setup.py.
+
+classifiers = """\
+Environment :: Console
+Intended Audience :: Developers
+License :: OSI Approved :: Apache Software License
+Operating System :: OS Independent
+Programming Language :: Python :: 2
+Programming Language :: Python :: 3
+Topic :: Software Development :: Quality Assurance
+Topic :: Software Development :: Testing
+"""
 
 doc = __doc__                   # __doc__ will be overwritten by version.py.
 __version__ = __url__ = ""      # Keep pylint happy.
@@ -81,7 +81,7 @@ scripts = [
     'coverage = coverage.cmdline:main',
     'coverage%d = coverage.cmdline:main' % sys.version_info[:1],
     'coverage-%d.%d = coverage.cmdline:main' % sys.version_info[:2],
-    ]
+]
 
 # Create the keyword arguments for setup()
 
@@ -91,13 +91,13 @@ setup_args = dict(
 
     packages = [
         'coverage',
-        ],
+    ],
 
     package_data = {
         'coverage': [
             'htmlfiles/*.*',
-            ]
-        },
+        ]
+    },
 
     entry_points = {'console_scripts': scripts},
 
@@ -112,7 +112,7 @@ setup_args = dict(
     license = 'Apache 2.0',
     classifiers = classifier_list,
     url = __url__,
-    )
+)
 
 # A replacement for the build_ext command which raises a single exception
 # if the build fails, so we can fallback nicely.
@@ -127,11 +127,13 @@ if sys.platform == 'win32':
     # find the compiler
     ext_errors += (IOError,)
 
+
 class BuildFailed(Exception):
     """Raise this to indicate the C extension wouldn't build."""
     def __init__(self):
         Exception.__init__(self)
-        self.cause = sys.exc_info()[1] # work around py 2/3 different syntax
+        self.cause = sys.exc_info()[1]      # work around py 2/3 different syntax
+
 
 class ve_build_ext(build_ext):
     """Build C extensions, but fail with a straightforward exception."""
@@ -153,7 +155,7 @@ class ve_build_ext(build_ext):
             raise BuildFailed()
         except ValueError as err:
             # this can happen on Windows 64 bit, see Python issue 7511
-            if "'path'" in str(err): # works with both py 2/3
+            if "'path'" in str(err):    # works with both py 2/3
                 raise BuildFailed()
             raise
 
@@ -174,18 +176,19 @@ if compile_extension:
     setup_args.update(dict(
         ext_modules = [
             Extension("coverage.tracer", sources=["coverage/tracer.c"])
-            ],
+        ],
         cmdclass = {
             'build_ext': ve_build_ext,
-            },
-        ))
+        },
+    ))
 
 # Py3.x-specific details.
 
 if sys.version_info >= (3, 0):
     setup_args.update(dict(
         use_2to3 = False,
-        ))
+    ))
+
 
 def main():
     """Actually invoke setup() with the arguments we built above."""
