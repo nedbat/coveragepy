@@ -178,6 +178,9 @@ if compile_extension:
             Extension(
                 "coverage.tracer",
                 sources=[
+                    "coverage/ctracer/datastack.c",
+                    "coverage/ctracer/filedisp.c",
+                    "coverage/ctracer/module.c",
                     "coverage/ctracer/tracer.c",
                 ]
             )

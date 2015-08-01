@@ -3,59 +3,10 @@
 
 /* C-based Tracer for coverage.py. */
 
-#include "Python.h"
-#include "structmember.h"
-#include "frameobject.h"
-#include "opcode.h"
-
-/* Compile-time debugging helpers */
-#undef WHAT_LOG         /* Define to log the WHAT params in the trace function. */
-#undef TRACE_LOG        /* Define to log our bookkeeping. */
-#undef COLLECT_STATS    /* Collect counters: stats are printed when tracer is stopped. */
-
-#if COLLECT_STATS
-#define STATS(x)        x
-#else
-#define STATS(x)
-#endif
-
-/* Py 2.x and 3.x compatibility */
-
-#if PY_MAJOR_VERSION >= 3
-
-#define MyText_Type         PyUnicode_Type
-#define MyText_AS_BYTES(o)  PyUnicode_AsASCIIString(o)
-#define MyBytes_GET_SIZE(o) PyBytes_GET_SIZE(o)
-#define MyBytes_AS_STRING(o) PyBytes_AS_STRING(o)
-#define MyText_AsString(o)  PyUnicode_AsUTF8(o)
-#define MyText_FromFormat   PyUnicode_FromFormat
-#define MyInt_FromInt(i)    PyLong_FromLong((long)i)
-#define MyInt_AsInt(o)      (int)PyLong_AsLong(o)
-#define MyText_InternFromString(s) \
-                            PyUnicode_InternFromString(s)
-
-#define MyType_HEAD_INIT    PyVarObject_HEAD_INIT(NULL, 0)
-
-#else
-
-#define MyText_Type         PyString_Type
-#define MyText_AS_BYTES(o)  (Py_INCREF(o), o)
-#define MyBytes_GET_SIZE(o) PyString_GET_SIZE(o)
-#define MyBytes_AS_STRING(o) PyString_AS_STRING(o)
-#define MyText_AsString(o)  PyString_AsString(o)
-#define MyText_FromFormat   PyUnicode_FromFormat
-#define MyInt_FromInt(i)    PyInt_FromLong((long)i)
-#define MyInt_AsInt(o)      (int)PyInt_AsLong(o)
-#define MyText_InternFromString(s) \
-                            PyString_InternFromString(s)
-
-#define MyType_HEAD_INIT    PyObject_HEAD_INIT(NULL)  0,
-
-#endif /* Py3k */
-
-/* The values returned to indicate ok or error. */
-#define RET_OK      0
-#define RET_ERROR   -1
+#include "util.h"
+#include "datastack.h"
+#include "filedisp.h"
+#include "tracer.h"
 
 /* Python C API helpers. */
 
@@ -72,129 +23,6 @@ pyint_as_int(PyObject * pyint, int *pint)
 }
 
 
-/* An entry on the data stack.  For each call frame, we need to record all
- * the information needed for CTracer_handle_line to operate as quickly as
- * possible.  All PyObject* here are borrowed references.
- */
-typedef struct DataStackEntry {
-    /* The current file_data dictionary.  Borrowed, owned by self->data. */
-    PyObject * file_data;
-
-    /* The disposition object for this frame. If collector.py and control.py
-     * are working properly, this will be an instance of CFileDisposition.
-     */
-    PyObject * disposition;
-
-    /* The FileTracer handling this frame, or None if it's Python. */
-    PyObject * file_tracer;
-
-    /* The line number of the last line recorded, for tracing arcs.
-        -1 means there was no previous line, as when entering a code object.
-    */
-    int last_line;
-} DataStackEntry;
-
-/* A data stack is a dynamically allocated vector of DataStackEntry's. */
-typedef struct DataStack {
-    int depth;      /* The index of the last-used entry in stack. */
-    int alloc;      /* number of entries allocated at stack. */
-    /* The file data at each level, or NULL if not recording. */
-    DataStackEntry * stack;
-} DataStack;
-
-
-typedef struct CFileDisposition {
-    PyObject_HEAD
-
-    PyObject * original_filename;
-    PyObject * canonical_filename;
-    PyObject * source_filename;
-    PyObject * trace;
-    PyObject * reason;
-    PyObject * file_tracer;
-    PyObject * has_dynamic_filename;
-} CFileDisposition;
-
-static void
-CFileDisposition_dealloc(CFileDisposition *self)
-{
-    Py_XDECREF(self->original_filename);
-    Py_XDECREF(self->canonical_filename);
-    Py_XDECREF(self->source_filename);
-    Py_XDECREF(self->trace);
-    Py_XDECREF(self->reason);
-    Py_XDECREF(self->file_tracer);
-    Py_XDECREF(self->has_dynamic_filename);
-}
-
-static PyMemberDef
-CFileDisposition_members[] = {
-    { "original_filename",      T_OBJECT, offsetof(CFileDisposition, original_filename), 0,
-            PyDoc_STR("") },
-
-    { "canonical_filename",     T_OBJECT, offsetof(CFileDisposition, canonical_filename), 0,
-            PyDoc_STR("") },
-
-    { "source_filename",        T_OBJECT, offsetof(CFileDisposition, source_filename), 0,
-            PyDoc_STR("") },
-
-    { "trace",                  T_OBJECT, offsetof(CFileDisposition, trace), 0,
-            PyDoc_STR("") },
-
-    { "reason",                 T_OBJECT, offsetof(CFileDisposition, reason), 0,
-            PyDoc_STR("") },
-
-    { "file_tracer",            T_OBJECT, offsetof(CFileDisposition, file_tracer), 0,
-            PyDoc_STR("") },
-
-    { "has_dynamic_filename",   T_OBJECT, offsetof(CFileDisposition, has_dynamic_filename), 0,
-            PyDoc_STR("") },
-
-    { NULL }
-};
-
-static PyTypeObject
-CFileDispositionType = {
-    MyType_HEAD_INIT
-    "coverage.CFileDispositionType",        /*tp_name*/
-    sizeof(CFileDisposition),  /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    (destructor)CFileDisposition_dealloc, /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
-    0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
-    0,                         /*tp_as_mapping*/
-    0,                         /*tp_hash */
-    0,                         /*tp_call*/
-    0,                         /*tp_str*/
-    0,                         /*tp_getattro*/
-    0,                         /*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
-    "CFileDisposition objects", /* tp_doc */
-    0,                         /* tp_traverse */
-    0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
-    0,                         /* tp_weaklistoffset */
-    0,                         /* tp_iter */
-    0,                         /* tp_iternext */
-    0,                         /* tp_methods */
-    CFileDisposition_members,  /* tp_members */
-    0,                         /* tp_getset */
-    0,                         /* tp_base */
-    0,                         /* tp_dict */
-    0,                         /* tp_descr_get */
-    0,                         /* tp_descr_set */
-    0,                         /* tp_dictoffset */
-    0,                         /* tp_init */
-    0,                         /* tp_alloc */
-    0,                         /* tp_new */
-};
-
 /* Interned strings to speed GetAttr etc. */
 
 static PyObject *str_trace;
@@ -205,8 +33,8 @@ static PyObject *str__coverage_plugin_name;
 static PyObject *str_dynamic_source_filename;
 static PyObject *str_line_number_range;
 
-static int
-intern_strings()
+int
+CTracer_intern_strings()
 {
     int ret = RET_ERROR;
 
@@ -230,108 +58,6 @@ error:
     return ret;
 }
 
-/* The CTracer type. */
-
-typedef struct CTracer {
-    PyObject_HEAD
-
-    /* Python objects manipulated directly by the Collector class. */
-    PyObject * should_trace;
-    PyObject * check_include;
-    PyObject * warn;
-    PyObject * concur_id_func;
-    PyObject * data;
-    PyObject * file_tracers;
-    PyObject * should_trace_cache;
-    PyObject * arcs;
-
-    /* Has the tracer been started? */
-    int started;
-    /* Are we tracing arcs, or just lines? */
-    int tracing_arcs;
-
-    /*
-        The data stack is a stack of dictionaries.  Each dictionary collects
-        data for a single source file.  The data stack parallels the call stack:
-        each call pushes the new frame's file data onto the data stack, and each
-        return pops file data off.
-
-        The file data is a dictionary whose form depends on the tracing options.
-        If tracing arcs, the keys are line number pairs.  If not tracing arcs,
-        the keys are line numbers.  In both cases, the value is irrelevant
-        (None).
-    */
-
-    DataStack data_stack;           /* Used if we aren't doing concurrency. */
-
-    PyObject * data_stack_index;    /* Used if we are doing concurrency. */
-    DataStack * data_stacks;
-    int data_stacks_alloc;
-    int data_stacks_used;
-    DataStack * pdata_stack;
-
-    /* The current file's data stack entry, copied from the stack. */
-    DataStackEntry cur_entry;
-
-    /* The parent frame for the last exception event, to fix missing returns. */
-    PyFrameObject * last_exc_back;
-    int last_exc_firstlineno;
-
-#if COLLECT_STATS
-    struct Stats {
-        unsigned int calls;
-        unsigned int lines;
-        unsigned int returns;
-        unsigned int exceptions;
-        unsigned int others;
-        unsigned int new_files;
-        unsigned int missed_returns;
-        unsigned int stack_reallocs;
-        unsigned int errors;
-        unsigned int pycalls;
-    } stats;
-#endif /* COLLECT_STATS */
-} CTracer;
-
-
-#define STACK_DELTA    100
-
-static int
-DataStack_init(CTracer *self, DataStack *pdata_stack)
-{
-    pdata_stack->depth = -1;
-    pdata_stack->stack = NULL;
-    pdata_stack->alloc = 0;
-    return RET_OK;
-}
-
-static void
-DataStack_dealloc(CTracer *self, DataStack *pdata_stack)
-{
-    PyMem_Free(pdata_stack->stack);
-}
-
-static int
-DataStack_grow(CTracer *self, DataStack *pdata_stack)
-{
-    pdata_stack->depth++;
-    if (pdata_stack->depth >= pdata_stack->alloc) {
-        STATS( self->stats.stack_reallocs++; )
-        /* We've outgrown our data_stack array: make it bigger. */
-        int bigger = pdata_stack->alloc + STACK_DELTA;
-        DataStackEntry * bigger_data_stack = PyMem_Realloc(pdata_stack->stack, bigger * sizeof(DataStackEntry));
-        if (bigger_data_stack == NULL) {
-            PyErr_NoMemory();
-            pdata_stack->depth--;
-            return RET_ERROR;
-        }
-        pdata_stack->stack = bigger_data_stack;
-        pdata_stack->alloc = bigger;
-    }
-    return RET_OK;
-}
-
-
 static void CTracer_disable_plugin(CTracer *self, PyObject * disposition);
 
 static int
@@ -340,7 +66,7 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     int ret = RET_ERROR;
     PyObject * weakref = NULL;
 
-    if (DataStack_init(self, &self->data_stack) < 0) {
+    if (DataStack_init(&self->stats, &self->data_stack) < 0) {
         goto error;
     }
 
@@ -387,10 +113,10 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->file_tracers);
     Py_XDECREF(self->should_trace_cache);
 
-    DataStack_dealloc(self, &self->data_stack);
+    DataStack_dealloc(&self->stats, &self->data_stack);
     if (self->data_stacks) {
         for (i = 0; i < self->data_stacks_used; i++) {
-            DataStack_dealloc(self, self->data_stacks + i);
+            DataStack_dealloc(&self->stats, self->data_stacks + i);
         }
         PyMem_Free(self->data_stacks);
     }
@@ -516,7 +242,7 @@ CTracer_set_pdata_stack(CTracer *self)
                 self->data_stacks = bigger_stacks;
                 self->data_stacks_alloc = bigger;
             }
-            DataStack_init(self, &self->data_stacks[the_index]);
+            DataStack_init(&self->stats, &self->data_stacks[the_index]);
         }
         else {
             if (pyint_as_int(stack_index, &the_index) < 0) {
@@ -613,7 +339,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     if (CTracer_set_pdata_stack(self) < 0) {
         goto error;
     }
-    if (DataStack_grow(self, self->pdata_stack) < 0) {
+    if (DataStack_grow(&self->stats, self->pdata_stack) < 0) {
         goto error;
     }
 
@@ -1270,7 +996,7 @@ CTracer_methods[] = {
     { NULL }
 };
 
-static PyTypeObject
+PyTypeObject
 CTracerType = {
     MyType_HEAD_INIT
     "coverage.CTracer",        /*tp_name*/
@@ -1311,105 +1037,3 @@ CTracerType = {
     0,                         /* tp_alloc */
     0,                         /* tp_new */
 };
-
-/* Module definition */
-
-#define MODULE_DOC PyDoc_STR("Fast coverage tracer.")
-
-#if PY_MAJOR_VERSION >= 3
-
-static PyModuleDef
-moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "coverage.tracer",
-    MODULE_DOC,
-    -1,
-    NULL,       /* methods */
-    NULL,
-    NULL,       /* traverse */
-    NULL,       /* clear */
-    NULL
-};
-
-
-PyObject *
-PyInit_tracer(void)
-{
-    PyObject * mod = PyModule_Create(&moduledef);
-    if (mod == NULL) {
-        return NULL;
-    }
-
-    if (intern_strings() < 0) {
-        return NULL;
-    }
-
-    /* Initialize CTracer */
-    CTracerType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&CTracerType) < 0) {
-        Py_DECREF(mod);
-        return NULL;
-    }
-
-    Py_INCREF(&CTracerType);
-    if (PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType) < 0) {
-        Py_DECREF(mod);
-        Py_DECREF(&CTracerType);
-        return NULL;
-    }
-
-    /* Initialize CFileDisposition */
-    CFileDispositionType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&CFileDispositionType) < 0) {
-        Py_DECREF(mod);
-        Py_DECREF(&CTracerType);
-        return NULL;
-    }
-
-    Py_INCREF(&CFileDispositionType);
-    if (PyModule_AddObject(mod, "CFileDisposition", (PyObject *)&CFileDispositionType) < 0) {
-        Py_DECREF(mod);
-        Py_DECREF(&CTracerType);
-        Py_DECREF(&CFileDispositionType);
-        return NULL;
-    }
-
-    return mod;
-}
-
-#else
-
-void
-inittracer(void)
-{
-    PyObject * mod;
-
-    mod = Py_InitModule3("coverage.tracer", NULL, MODULE_DOC);
-    if (mod == NULL) {
-        return;
-    }
-
-    if (intern_strings() < 0) {
-        return;
-    }
-
-    /* Initialize CTracer */
-    CTracerType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&CTracerType) < 0) {
-        return;
-    }
-
-    Py_INCREF(&CTracerType);
-    PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType);
-
-    /* Initialize CFileDisposition */
-    CFileDispositionType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&CFileDispositionType) < 0) {
-        return;
-    }
-
-    Py_INCREF(&CFileDispositionType);
-    PyModule_AddObject(mod, "CFileDisposition", (PyObject *)&CFileDispositionType);
-}
-
-#endif /* Py3k */
