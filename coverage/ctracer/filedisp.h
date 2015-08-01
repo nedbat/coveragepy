@@ -21,6 +21,6 @@ typedef struct CFileDisposition {
 
 void CFileDisposition_dealloc(CFileDisposition *self);
 
-PyTypeObject CFileDispositionType;
+extern PyTypeObject CFileDispositionType;
 
 #endif /* _COVERAGE_FILEDISP_H */

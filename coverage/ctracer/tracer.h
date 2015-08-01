@@ -63,6 +63,6 @@ typedef struct CTracer {
 
 int CTracer_intern_strings();
 
-PyTypeObject CTracerType;
+extern PyTypeObject CTracerType;
 
 #endif /* _COVERAGE_TRACER_H */
