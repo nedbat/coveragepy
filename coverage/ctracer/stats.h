@@ -13,8 +13,8 @@
 #endif
 
 typedef struct Stats {
+    unsigned int calls;     /* Need at least one member, but the rest only if needed. */
 #if COLLECT_STATS
-    unsigned int calls;
     unsigned int lines;
     unsigned int returns;
     unsigned int exceptions;
