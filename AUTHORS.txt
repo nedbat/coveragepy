@@ -26,6 +26,7 @@ David Christian
 David Stanek
 Detlev Offenbach
 Devin Jeanpierre
+Dmitry Trofimov
 Eduardo Schettino
 Edward Loper
 Geoff Bache

@@ -27,6 +27,9 @@ Latest
 - In parallel mode, ``coverage erase`` will now delete all of the data files,
   fixing `issue 262`_.
 
+- Coverage.py now accepts a directory name for ``coverage run`` and will run a
+  ``__main__.py`` found there, just like Python will.  Fixes `issue 252`_.
+
 - The XML report now includes a ``missing-branches`` attribute.  Thanks, Steve
   Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
   references the DTD.
@@ -60,6 +63,7 @@ Latest
   support, finishing up `issue 387`_.
 
 .. _issue 236: https://bitbucket.org/ned/coveragepy/issues/236/pickles-are-bad-and-you-should-feel-bad
+.. _issue 252: https://bitbucket.org/ned/coveragepy/issues/252/coverage-wont-run-a-program-with
 .. _issue 262: https://bitbucket.org/ned/coveragepy/issues/262/when-parallel-true-erase-should-erase-all
 .. _issue 275: https://bitbucket.org/ned/coveragepy/issues/275/refer-consistently-to-project-as-coverage
 .. _issue 313: https://bitbucket.org/ned/coveragepy/issues/313/add-license-file-containing-2-3-or-4

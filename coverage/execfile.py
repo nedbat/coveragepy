@@ -108,10 +108,10 @@ def run_python_module(modulename, args):
 
     pathname = os.path.abspath(pathname)
     args[0] = pathname
-    run_python_file(pathname, args, package=packagename, modulename=modulename)
+    run_python_file(pathname, args, package=packagename, modulename=modulename, path0="")
 
 
-def run_python_file(filename, args, package=None, modulename=None):
+def run_python_file(filename, args, package=None, modulename=None, path0=None):
     """Run a Python file as if it were the main program on the command line.
 
     `filename` is the path to the file to execute, it need not be a .py file.
@@ -120,6 +120,9 @@ def run_python_file(filename, args, package=None, modulename=None):
     enclosing package, if any.
 
     `modulename` is the name of the module the file was run as.
+
+    `path0` is the value to put into sys.path[0].  If it's None, then this
+    function will decide on a value.
 
     """
     if modulename is None and sys.version_info >= (3, 3):
@@ -142,7 +145,10 @@ def run_python_file(filename, args, package=None, modulename=None):
     sys.argv = args
 
     if os.path.isdir(filename):
-        # in directory we should look for __main__ module
+        # Running a directory means running the __main__.py file in that
+        # directory.
+        my_path0 = filename
+
         for ext in [".py", ".pyc", ".pyo"]:
             try_filename = os.path.join(filename, "__main__" + ext)
             if os.path.exists(try_filename):
@@ -150,6 +156,12 @@ def run_python_file(filename, args, package=None, modulename=None):
                 break
         else:
             raise NoSource("Can't find '__main__' module in '%s'" % filename)
+    else:
+        my_path0 = os.path.abspath(os.path.dirname(filename))
+
+    # Set sys.path correctly.
+    old_path0 = sys.path[0]
+    sys.path[0] = path0 if path0 is not None else my_path0
 
     try:
         # Make a code object somehow.
@@ -181,11 +193,10 @@ def run_python_file(filename, args, package=None, modulename=None):
 
             raise ExceptionDuringRun(typ, err, tb.tb_next)
     finally:
-        # Restore the old __main__
+        # Restore the old __main__, argv, and path.
         sys.modules['__main__'] = old_main_mod
-
-        # Restore the old argv and path
         sys.argv = old_argv
+        sys.path[0] = old_path0
 
 
 def make_code_from_py(filename):

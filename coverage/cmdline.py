@@ -5,7 +5,6 @@
 
 import glob
 import optparse
-import os
 import sys
 import traceback
 
@@ -560,19 +559,14 @@ class CoverageScript(object):
             if not options.append:
                 self.coverage.erase()
 
-        # Set the first path element properly.
-        old_path0 = sys.path[0]
-
         # Run the script.
         self.coverage.start()
         code_ran = True
         try:
             if options.module:
-                sys.path[0] = ''
                 self.run_python_module(args[0], args)
             else:
                 filename = args[0]
-                sys.path[0] = os.path.abspath(os.path.dirname(filename))
                 self.run_python_file(filename, args)
         except NoSource:
             code_ran = False
@@ -583,9 +577,6 @@ class CoverageScript(object):
                 if options.append:
                     self.coverage.combine(data_paths=[self.coverage.config.data_file])
                 self.coverage.save()
-
-            # Restore the old path
-            sys.path[0] = old_path0
 
         return OK
 

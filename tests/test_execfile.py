@@ -86,14 +86,17 @@ class RunFileTest(CoverageTest):
             run_python_file("xyzzy.py", [])
 
     def test_directory_with_main(self):
-        directory_with_main = os.path.join(HERE, "with_main")
-        run_python_file(directory_with_main, [directory_with_main])
-        self.assertEqual(self.stdout(), "1\n")
+        self.make_file("with_main/__main__.py", """\
+            print("I am __main__")
+            """)
+        run_python_file("with_main", ["with_main"])
+        self.assertEqual(self.stdout(), "I am __main__\n")
 
     def test_directory_without_main(self):
-        with self.assertRaises(NoSource):
-            directory_with_main = os.path.join(HERE, "with_main", "without")
-            run_python_file(directory_with_main, [directory_with_main])
+        self.make_file("without_main/__init__.py", "")
+        with self.assertRaisesRegex(NoSource, "Can't find '__main__' module in 'without_main'"):
+            run_python_file("without_main", ["without_main"])
+
 
 class RunPycFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
