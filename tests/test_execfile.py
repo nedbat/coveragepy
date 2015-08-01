@@ -85,6 +85,15 @@ class RunFileTest(CoverageTest):
         with self.assertRaises(NoSource):
             run_python_file("xyzzy.py", [])
 
+    def test_directory_with_main(self):
+        directory_with_main = os.path.join(HERE, "with_main")
+        run_python_file(directory_with_main, [directory_with_main])
+        self.assertEqual(self.stdout(), "1\n")
+
+    def test_directory_without_main(self):
+        with self.assertRaises(NoSource):
+            directory_with_main = os.path.join(HERE, "with_main", "without")
+            run_python_file(directory_with_main, [directory_with_main])
 
 class RunPycFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
