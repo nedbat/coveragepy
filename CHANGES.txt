@@ -38,6 +38,9 @@ Latest
 - Plugins are now initialized differently.  Instead of looking for a class
   called ``Plugin``, coverage.py looks for a function called ``coverage_init``.
 
+- A file-tracing plugin can now ask to have built-in Python reporting by
+  returning `"python"` from its `file_reporter()` method.
+
 - Code that was executed with `exec` would be mis-attributed to the file that
   called it.  This is now fixed, closing `issue 380`_.
 

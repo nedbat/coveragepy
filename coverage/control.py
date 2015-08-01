@@ -844,6 +844,7 @@ class Coverage(object):
     def _get_file_reporter(self, morf):
         """Get a FileReporter for a module or filename."""
         plugin = None
+        file_reporter = "python"
 
         if isinstance(morf, string_class):
             abs_morf = abs_file(morf)
@@ -859,7 +860,8 @@ class Coverage(object):
                         plugin._coverage_plugin_name, morf
                     )
                 )
-        else:
+
+        if file_reporter == "python":
             file_reporter = PythonFileReporter(morf, self)
 
         return file_reporter

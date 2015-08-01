@@ -157,17 +157,17 @@ class FileReporter(object):
     # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
     # of them defined.
 
+    def __eq__(self, other):
+        return isinstance(other, FileReporter) and self.filename == other.filename
+
+    def __ne__(self, other):
+        return not (self == other)
+
     def __lt__(self, other):
         return self.filename < other.filename
 
     def __le__(self, other):
         return self.filename <= other.filename
-
-    def __eq__(self, other):
-        return self.filename == other.filename
-
-    def __ne__(self, other):
-        return self.filename != other.filename
 
     def __gt__(self, other):
         return self.filename > other.filename

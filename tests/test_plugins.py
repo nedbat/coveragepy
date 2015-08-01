@@ -462,6 +462,57 @@ class GoodPluginTest(FileTracerTest):
             ]:
             self.assertIn(snip, xml)
 
+    def test_defer_to_python(self):
+        # A plugin that measures, but then wants built-in python reporting.
+        self.make_file("fairly_odd_plugin.py", """\
+            # A plugin that claims all the odd lines are executed, and none of
+            # the even lines, and then punts reporting off to the built-in
+            # Python reporting.
+            import coverage.plugin
+            class Plugin(coverage.CoveragePlugin):
+                def file_tracer(self, filename):
+                    return OddTracer(filename)
+                def file_reporter(self, filename):
+                    return "python"
+
+            class OddTracer(coverage.plugin.FileTracer):
+                def __init__(self, filename):
+                    self.filename = filename
+                def source_filename(self):
+                    return self.filename
+                def line_number_range(self, frame):
+                    lineno = frame.f_lineno
+                    if lineno % 2:
+                        return (lineno, lineno)
+                    else:
+                        return (-1, -1)
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin())
+            """)
+        self.make_file("unsuspecting.py", """\
+            a = 1
+            b = 2
+            c = 3
+            d = 4
+            e = 5
+            f = 6
+            """)
+        cov = coverage.Coverage(include=["unsuspecting.py"])
+        cov.config["run:plugins"] = ["fairly_odd_plugin"]
+        self.start_import_stop(cov, "unsuspecting")
+
+        repout = StringIO()
+        total = cov.report(file=repout)
+        report = repout.getvalue().splitlines()
+        expected = [
+            'Name              Stmts   Miss  Cover   Missing',
+            '-----------------------------------------------',
+            'unsuspecting.py       6      3    50%   2, 4, 6',
+            ]
+        self.assertEqual(report, expected)
+        self.assertEqual(total, 50)
+
 
 class BadPluginTest(FileTracerTest):
     """Test error handling around plugins."""
