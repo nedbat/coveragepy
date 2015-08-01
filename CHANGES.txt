@@ -53,6 +53,9 @@ Latest
 - Combining data files with an explicit configuration file was broken in 4.0a6,
   but now works again, closing `issue 385`_.
 
+- The speed is back to 3.7.1 levels, after having slowed down due to plugin
+  support, finishing up `issue 387`_.
+
 .. _issue 236: https://bitbucket.org/ned/coveragepy/issues/236/pickles-are-bad-and-you-should-feel-bad
 .. _issue 262: https://bitbucket.org/ned/coveragepy/issues/262/when-parallel-true-erase-should-erase-all
 .. _issue 275: https://bitbucket.org/ned/coveragepy/issues/275/refer-consistently-to-project-as-coverage
@@ -60,6 +63,7 @@ Latest
 .. _issue 380: https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from
 .. _issue 385: https://bitbucket.org/ned/coveragepy/issues/385/coverage-combine-doesnt-work-with-rcfile
 .. _issue 386: https://bitbucket.org/ned/coveragepy/issues/386/error-on-unrecognised-configuration
+.. _issue 387: https://bitbucket.org/ned/coveragepy/issues/387/performance-degradation-from-371-to-40
 
 .. 41 issues closed in 4.0 below here
 

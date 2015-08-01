@@ -74,13 +74,15 @@ pyint_as_int(PyObject * pyint, int *pint)
 
 /* An entry on the data stack.  For each call frame, we need to record all
  * the information needed for CTracer_handle_line to operate as quickly as
- * possible.
+ * possible.  All PyObject* here are borrowed references.
  */
 typedef struct DataStackEntry {
     /* The current file_data dictionary.  Borrowed, owned by self->data. */
     PyObject * file_data;
 
-    /* The disposition object for this frame. */
+    /* The disposition object for this frame. If collector.py and control.py
+     * are working properly, this will be an instance of CFileDisposition.
+     */
     PyObject * disposition;
 
     /* The FileTracer handling this frame, or None if it's Python. */
@@ -101,15 +103,105 @@ typedef struct DataStack {
 } DataStack;
 
 
+typedef struct CFileDisposition {
+    PyObject_HEAD
+
+    PyObject * original_filename;
+    PyObject * canonical_filename;
+    PyObject * source_filename;
+    PyObject * trace;
+    PyObject * reason;
+    PyObject * file_tracer;
+    PyObject * has_dynamic_filename;
+} CFileDisposition;
+
+static void
+CFileDisposition_dealloc(CFileDisposition *self)
+{
+    Py_XDECREF(self->original_filename);
+    Py_XDECREF(self->canonical_filename);
+    Py_XDECREF(self->source_filename);
+    Py_XDECREF(self->trace);
+    Py_XDECREF(self->reason);
+    Py_XDECREF(self->file_tracer);
+    Py_XDECREF(self->has_dynamic_filename);
+}
+
+static PyMemberDef
+CFileDisposition_members[] = {
+    { "original_filename",      T_OBJECT, offsetof(CFileDisposition, original_filename), 0,
+            PyDoc_STR("") },
+
+    { "canonical_filename",     T_OBJECT, offsetof(CFileDisposition, canonical_filename), 0,
+            PyDoc_STR("") },
+
+    { "source_filename",        T_OBJECT, offsetof(CFileDisposition, source_filename), 0,
+            PyDoc_STR("") },
+
+    { "trace",                  T_OBJECT, offsetof(CFileDisposition, trace), 0,
+            PyDoc_STR("") },
+
+    { "reason",                 T_OBJECT, offsetof(CFileDisposition, reason), 0,
+            PyDoc_STR("") },
+
+    { "file_tracer",            T_OBJECT, offsetof(CFileDisposition, file_tracer), 0,
+            PyDoc_STR("") },
+
+    { "has_dynamic_filename",   T_OBJECT, offsetof(CFileDisposition, has_dynamic_filename), 0,
+            PyDoc_STR("") },
+
+    { NULL }
+};
+
+static PyTypeObject
+CFileDispositionType = {
+    MyType_HEAD_INIT
+    "coverage.CFileDispositionType",        /*tp_name*/
+    sizeof(CFileDisposition),  /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)CFileDisposition_dealloc, /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    0,                         /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    "CFileDisposition objects", /* tp_doc */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
+    0,                         /* tp_methods */
+    CFileDisposition_members,  /* tp_members */
+    0,                         /* tp_getset */
+    0,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    0,                         /* tp_init */
+    0,                         /* tp_alloc */
+    0,                         /* tp_new */
+};
+
 /* Interned strings to speed GetAttr etc. */
 
 static PyObject *str_trace;
-static PyObject *str_source_filename;
 static PyObject *str_file_tracer;
 static PyObject *str__coverage_enabled;
 static PyObject *str__coverage_plugin;
 static PyObject *str__coverage_plugin_name;
-static PyObject *str_has_dynamic_filename;
 static PyObject *str_dynamic_source_filename;
 static PyObject *str_line_number_range;
 
@@ -125,12 +217,10 @@ intern_strings()
     }
 
     INTERN_STRING(str_trace, "trace")
-    INTERN_STRING(str_source_filename, "source_filename")
     INTERN_STRING(str_file_tracer, "file_tracer")
     INTERN_STRING(str__coverage_enabled, "_coverage_enabled")
     INTERN_STRING(str__coverage_plugin, "_coverage_plugin")
     INTERN_STRING(str__coverage_plugin_name, "_coverage_plugin_name")
-    INTERN_STRING(str_has_dynamic_filename, "has_dynamic_filename")
     INTERN_STRING(str_dynamic_source_filename, "dynamic_source_filename")
     INTERN_STRING(str_line_number_range, "line_number_range")
 
@@ -503,16 +593,19 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     int ret2;
 
     /* Owned references that we clean up at the very end of the function. */
-    PyObject * tracename = NULL;
     PyObject * disposition = NULL;
-    PyObject * disp_trace = NULL;
-    PyObject * file_tracer = NULL;
     PyObject * plugin = NULL;
     PyObject * plugin_name = NULL;
-    PyObject * has_dynamic_filename = NULL;
+    PyObject * next_tracename = NULL;
 
     /* Borrowed references. */
     PyObject * filename = NULL;
+    PyObject * disp_trace = NULL;
+    PyObject * tracename = NULL;
+    PyObject * file_tracer = NULL;
+    PyObject * has_dynamic_filename = NULL;
+
+    CFileDisposition * pdisp;
 
 
     STATS( self->stats.calls++; )
@@ -555,10 +648,11 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     if (disposition == Py_None) {
         /* A later check_include returned false, so don't trace it. */
         disp_trace = Py_False;
-        Py_INCREF(Py_False);
     }
     else {
-        disp_trace = PyObject_GetAttr(disposition, str_trace);
+        /* The object we got is a CFileDisposition, use it efficiently. */
+        pdisp = (CFileDisposition *) disposition;
+        disp_trace = pdisp->trace;
         if (disp_trace == NULL) {
             goto error;
         }
@@ -566,11 +660,11 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
     if (disp_trace == Py_True) {
         /* If tracename is a string, then we're supposed to trace. */
-        tracename = PyObject_GetAttr(disposition, str_source_filename);
+        tracename = pdisp->source_filename;
         if (tracename == NULL) {
             goto error;
         }
-        file_tracer = PyObject_GetAttr(disposition, str_file_tracer);
+        file_tracer = pdisp->file_tracer;
         if (file_tracer == NULL) {
             goto error;
         }
@@ -584,12 +678,11 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
                 goto error;
             }
         }
-        has_dynamic_filename = PyObject_GetAttr(disposition, str_has_dynamic_filename);
+        has_dynamic_filename = pdisp->has_dynamic_filename;
         if (has_dynamic_filename == NULL) {
             goto error;
         }
         if (has_dynamic_filename == Py_True) {
-            PyObject * next_tracename = NULL;
             STATS( self->stats.pycalls++; )
             next_tracename = PyObject_CallMethodObjArgs(
                 file_tracer, str_dynamic_source_filename,
@@ -603,7 +696,6 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
                 /* Because we handled the error, goto ok. */
                 goto ok;
             }
-            Py_DECREF(tracename);
             tracename = next_tracename;
 
             if (tracename != Py_None) {
@@ -632,16 +724,13 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
                     should_include = (included != Py_None);
                 }
                 if (!should_include) {
-                    Py_DECREF(tracename);
                     tracename = Py_None;
-                    Py_INCREF(tracename);
                 }
             }
         }
     }
     else {
         tracename = Py_None;
-        Py_INCREF(tracename);
     }
 
     if (tracename != Py_None) {
@@ -696,13 +785,10 @@ ok:
     ret = RET_OK;
 
 error:
-    Py_XDECREF(tracename);
+    Py_XDECREF(next_tracename);
     Py_XDECREF(disposition);
-    Py_XDECREF(disp_trace);
-    Py_XDECREF(file_tracer);
     Py_XDECREF(plugin);
     Py_XDECREF(plugin_name);
-    Py_XDECREF(has_dynamic_filename);
 
     return ret;
 }
@@ -1254,6 +1340,11 @@ PyInit_tracer(void)
         return NULL;
     }
 
+    if (intern_strings() < 0) {
+        return NULL;
+    }
+
+    /* Initialize CTracer */
     CTracerType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&CTracerType) < 0) {
         Py_DECREF(mod);
@@ -1267,7 +1358,19 @@ PyInit_tracer(void)
         return NULL;
     }
 
-    if (intern_strings() < 0) {
+    /* Initialize CFileDisposition */
+    CFileDispositionType.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&CFileDispositionType) < 0) {
+        Py_DECREF(mod);
+        Py_DECREF(&CTracerType);
+        return NULL;
+    }
+
+    Py_INCREF(&CFileDispositionType);
+    if (PyModule_AddObject(mod, "CFileDisposition", (PyObject *)&CFileDispositionType) < 0) {
+        Py_DECREF(mod);
+        Py_DECREF(&CTracerType);
+        Py_DECREF(&CFileDispositionType);
         return NULL;
     }
 
@@ -1286,6 +1389,11 @@ inittracer(void)
         return;
     }
 
+    if (intern_strings() < 0) {
+        return;
+    }
+
+    /* Initialize CTracer */
     CTracerType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&CTracerType) < 0) {
         return;
@@ -1294,9 +1402,14 @@ inittracer(void)
     Py_INCREF(&CTracerType);
     PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType);
 
-    if (intern_strings() < 0) {
+    /* Initialize CFileDisposition */
+    CFileDispositionType.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&CFileDispositionType) < 0) {
         return;
     }
+
+    Py_INCREF(&CFileDispositionType);
+    PyModule_AddObject(mod, "CFileDisposition", (PyObject *)&CFileDispositionType);
 }
 
 #endif /* Py3k */

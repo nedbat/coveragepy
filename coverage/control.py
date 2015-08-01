@@ -427,7 +427,7 @@ class Coverage(object):
 
         """
         original_filename = filename
-        disp = FileDisposition(filename)
+        disp = _disposition_init(self.collector.file_disposition_class, filename)
 
         def nope(disp, reason):
             """Simple helper to make it easy to return NO."""
@@ -570,7 +570,7 @@ class Coverage(object):
         """
         disp = self._should_trace_internal(filename, frame)
         if self.debug.should('trace'):
-            self.debug.write(disp.debug_message())
+            self.debug.write(_disposition_debug_msg(disp))
         return disp
 
     def _check_include_omit_etc(self, filename, frame):
@@ -1065,36 +1065,32 @@ class Coverage(object):
         return info
 
 
-class FileDisposition(object):
-    """A simple object for noting a number of details of files to trace."""
-    def __init__(self, original_filename):
-        self.original_filename = original_filename
-        self.canonical_filename = original_filename
-        self.source_filename = None
-        self.trace = False
-        self.reason = ""
-        self.file_tracer = None
-        self.has_dynamic_filename = False
+# FileDisposition "methods": FileDisposition is a pure value object, so it can
+# be implemented in either C or Python.  Acting on them is done with these
+# functions.
 
-    def __repr__(self):
-        ret = "FileDisposition %r" % (self.original_filename,)
-        if self.trace:
-            ret += " trace"
-        else:
-            ret += " notrace=%r" % (self.reason,)
-        if self.file_tracer:
-            ret += " file_tracer=%r" % (self.file_tracer,)
-        return "<" + ret + ">"
+def _disposition_init(cls, original_filename):
+    """Construct and initialize a new FileDisposition object."""
+    disp = cls()
+    disp.original_filename = original_filename
+    disp.canonical_filename = original_filename
+    disp.source_filename = None
+    disp.trace = False
+    disp.reason = ""
+    disp.file_tracer = None
+    disp.has_dynamic_filename = False
+    return disp
 
-    def debug_message(self):
-        """Produce a debugging message explaining the outcome."""
-        if self.trace:
-            msg = "Tracing %r" % (self.original_filename,)
-            if self.file_tracer:
-                msg += ": will be traced by %r" % self.file_tracer
-        else:
-            msg = "Not tracing %r: %s" % (self.original_filename, self.reason)
-        return msg
+
+def _disposition_debug_msg(disp):
+    """Make a nice debug message of what the FileDisposition is doing."""
+    if disp.trace:
+        msg = "Tracing %r" % (disp.original_filename,)
+        if disp.file_tracer:
+            msg += ": will be traced by %r" % disp.file_tracer
+    else:
+        msg = "Not tracing %r: %s" % (disp.original_filename, disp.reason)
+    return msg
 
 
 def process_startup():

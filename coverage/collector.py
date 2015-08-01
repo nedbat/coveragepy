@@ -13,7 +13,7 @@ from coverage.pytracer import PyTracer
 
 try:
     # Use the C extension code when we can, for speed.
-    from coverage.tracer import CTracer         # pylint: disable=no-name-in-module
+    from coverage.tracer import CTracer, CFileDisposition   # pylint: disable=no-name-in-module
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
     if os.getenv('COVERAGE_TEST_TRACER') == 'c':
@@ -28,6 +28,11 @@ except ImportError:
         )
         sys.exit(1)
     CTracer = None
+
+
+class FileDisposition(object):
+    """A simple value type for recording what to do with a file."""
+    pass
 
 
 class Collector(object):
@@ -124,7 +129,12 @@ class Collector(object):
             # trace function.
             self._trace_class = CTracer or PyTracer
 
-        self.supports_plugins = self._trace_class is CTracer
+        if self._trace_class is CTracer:
+            self.file_disposition_class = CFileDisposition
+            self.supports_plugins = True
+        else:
+            self.file_disposition_class = FileDisposition
+            self.supports_plugins = False
 
     def __repr__(self):
         return "<Collector at 0x%x>" % id(self)
