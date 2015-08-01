@@ -2,8 +2,9 @@
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
 # MANIFEST.in file for coverage.py
-recursive-include coverage/htmlfiles *
+recursive-include coverage/ctracer *
 recursive-include coverage/fullcoverage *
+recursive-include coverage/htmlfiles *
 
 include coverage.egg-info/*.*
 include setup.py
