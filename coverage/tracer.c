@@ -76,7 +76,7 @@ pyint_as_int(PyObject * pyint, int *pint)
  * the information needed for CTracer_handle_line to operate as quickly as
  * possible.
  */
-typedef struct {
+typedef struct DataStackEntry {
     /* The current file_data dictionary.  Borrowed, owned by self->data. */
     PyObject * file_data;
 
@@ -93,7 +93,7 @@ typedef struct {
 } DataStackEntry;
 
 /* A data stack is a dynamically allocated vector of DataStackEntry's. */
-typedef struct {
+typedef struct DataStack {
     int depth;      /* The index of the last-used entry in stack. */
     int alloc;      /* number of entries allocated at stack. */
     /* The file data at each level, or NULL if not recording. */
@@ -142,7 +142,7 @@ error:
 
 /* The CTracer type. */
 
-typedef struct {
+typedef struct CTracer {
     PyObject_HEAD
 
     /* Python objects manipulated directly by the Collector class. */
@@ -188,7 +188,7 @@ typedef struct {
     int last_exc_firstlineno;
 
 #if COLLECT_STATS
-    struct {
+    struct Stats {
         unsigned int calls;
         unsigned int lines;
         unsigned int returns;
