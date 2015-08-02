@@ -146,41 +146,41 @@ class ConfigTest(CoverageTest):
     def test_tweaks_after_constructor(self):
         # Arguments to the constructor are applied to the configuration.
         cov = coverage.Coverage(timid=True, data_file="fooey.dat")
-        cov.config["run:timid"] = False
+        cov.set_option("run:timid", False)
 
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, "fooey.dat")
 
-        self.assertFalse(cov.config["run:timid"])
-        self.assertFalse(cov.config["run:branch"])
-        self.assertEqual(cov.config["run:data_file"], "fooey.dat")
+        self.assertFalse(cov.get_option("run:timid"))
+        self.assertFalse(cov.get_option("run:branch"))
+        self.assertEqual(cov.get_option("run:data_file"), "fooey.dat")
 
     def test_tweak_error_checking(self):
         # Trying to set an unknown config value raises an error.
         cov = coverage.Coverage()
         with self.assertRaises(CoverageException):
-            cov.config["run:xyzzy"] = 12
+            cov.set_option("run:xyzzy", 12)
         with self.assertRaises(CoverageException):
-            cov.config["xyzzy:foo"] = 12
+            cov.set_option("xyzzy:foo", 12)
         with self.assertRaises(CoverageException):
-            _ = cov.config["run:xyzzy"]
+            _ = cov.get_option("run:xyzzy")
         with self.assertRaises(CoverageException):
-            _ = cov.config["xyzzy:foo"]
+            _ = cov.get_option("xyzzy:foo")
 
     def test_tweak_plugin_options(self):
         # Plugin options have a more flexible syntax.
         cov = coverage.Coverage()
-        cov.config["run:plugins"] = ["fooey.plugin", "xyzzy.coverage.plugin"]
-        cov.config["fooey.plugin:xyzzy"] = 17
-        cov.config["xyzzy.coverage.plugin:plugh"] = ["a", "b"]
+        cov.set_option("run:plugins", ["fooey.plugin", "xyzzy.coverage.plugin"])
+        cov.set_option("fooey.plugin:xyzzy", 17)
+        cov.set_option("xyzzy.coverage.plugin:plugh", ["a", "b"])
         with self.assertRaises(CoverageException):
-            cov.config["no_such.plugin:foo"] = 23
+            cov.set_option("no_such.plugin:foo", 23)
 
-        self.assertEqual(cov.config["fooey.plugin:xyzzy"], 17)
-        self.assertEqual(cov.config["xyzzy.coverage.plugin:plugh"], ["a", "b"])
+        self.assertEqual(cov.get_option("fooey.plugin:xyzzy"), 17)
+        self.assertEqual(cov.get_option("xyzzy.coverage.plugin:plugh"), ["a", "b"])
         with self.assertRaises(CoverageException):
-            _ = cov.config["no_such.plugin:foo"]
+            _ = cov.get_option("no_such.plugin:foo")
 
     def test_unknown_option(self):
         self.make_file(".coveragerc", """\

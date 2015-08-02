@@ -184,7 +184,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         cov = coverage.Coverage(source=".")
         self.start_import_stop(cov, "main")
 
-        cov.config["xml:package_depth"] = 1
+        cov.set_option("xml:package_depth", 1)
         self.assert_package_and_class_tags(cov, """\
             <package name=".">
                <class filename="main.py" name="main.py">
@@ -197,7 +197,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
                <class filename="d0/f0.py" name="f0.py">
             """)
 
-        cov.config["xml:package_depth"] = 2
+        cov.set_option("xml:package_depth", 2)
         self.assert_package_and_class_tags(cov, """\
             <package name=".">
                <class filename="main.py" name="main.py">
@@ -211,7 +211,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
                <class filename="d0/d0/f0.py" name="f0.py">
             """)
 
-        cov.config["xml:package_depth"] = 3
+        cov.set_option("xml:package_depth", 3)
         self.assert_package_and_class_tags(cov, """\
             <package name=".">
                <class filename="main.py" name="main.py">

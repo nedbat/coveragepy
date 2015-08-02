@@ -310,8 +310,17 @@ class CoverageConfig(object):
         """Get a dictionary of options for the plugin named `plugin`."""
         return self.plugin_options.get(plugin, {})
 
-    # TODO: docs for this.
-    def __setitem__(self, option_name, value):
+    def set_option(self, option_name, value):
+        """Set an option in the configuration.
+
+        `option_name` is a colon-separated string indicating the section and
+        option name.  For example, the ``branch`` option in the ``[run]``
+        section of the config file would be indicated with `"run:branch"`.
+
+        `value` is the new value for the option.
+
+        """
+
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:
             attr, where = option_spec[:2]
@@ -328,8 +337,17 @@ class CoverageConfig(object):
         # If we get here, we didn't find the option.
         raise CoverageException("No such option: %r" % option_name)
 
-    # TODO: docs for this.
-    def __getitem__(self, option_name):
+    def get_option(self, option_name):
+        """Get an option from the configuration.
+
+        `option_name` is a colon-separated string indicating the section and
+        option name.  For example, the ``branch`` option in the ``[run]``
+        section of the config file would be indicated with `"run:branch"`.
+
+        Returns the value of the option.
+
+        """
+
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:
             attr, where = option_spec[:2]

@@ -596,6 +596,41 @@ class Coverage(object):
             msg = "[%d] %s" % (os.getpid(), msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
 
+    def get_option(self, option_name):
+        """Get an option from the configuration.
+
+        `option_name` is a colon-separated string indicating the section and
+        option name.  For example, the ``branch`` option in the ``[run]``
+        section of the config file would be indicated with `"run:branch"`.
+
+        Returns the value of the option.
+
+        """
+        return self.config.get_option(option_name)
+
+    def set_option(self, option_name, value):
+        """Set an option in the configuration.
+
+        `option_name` is a colon-separated string indicating the section and
+        option name.  For example, the ``branch`` option in the ``[run]``
+        section of the config file would be indicated with `"run:branch"`.
+
+        `value` is the new value for the option.  This should be a Python
+        value where appropriate.  For example, use True for booleans, not the
+        string ``"True"``.
+
+        As an example, calling::
+
+            cov.set_option("run:branch", True)
+
+        has the same effect as this configuration file:
+
+            [run]
+            branch = True
+
+        """
+        self.config.set_option(option_name, value)
+
     def use_cache(self, usecache):
         """Obsolete method."""
         self._init()

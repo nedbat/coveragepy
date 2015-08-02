@@ -148,7 +148,7 @@ class PluginTest(CoverageTest):
 
         self.assert_doesnt_exist("evidence.out")
         cov = coverage.Coverage()
-        cov.config["run:plugins"] = ["my_plugin"]
+        cov.set_option("run:plugins", ["my_plugin"])
         cov.start()
         cov.stop()
 
@@ -159,7 +159,7 @@ class PluginTest(CoverageTest):
         # Prove that a missing plugin will raise an ImportError.
         with self.assertRaises(ImportError):
             cov = coverage.Coverage()
-            cov.config["run:plugins"] = ["does_not_exist_woijwoicweo"]
+            cov.set_option("run:plugins", ["does_not_exist_woijwoicweo"])
             cov.start()
         cov.stop()
 
@@ -170,7 +170,7 @@ class PluginTest(CoverageTest):
             """)
         with self.assertRaises(ZeroDivisionError):
             cov = coverage.Coverage()
-            cov.config["run:plugins"] = ["plugin_over_zero"]
+            cov.set_option("run:plugins", ["plugin_over_zero"])
             cov.start()
         cov.stop()
 
@@ -188,7 +188,7 @@ class PluginTest(CoverageTest):
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
-        cov.config["run:plugins"] = ["plugin_sys_info"]
+        cov.set_option("run:plugins", ["plugin_sys_info"])
         cov.load()
 
         out_lines = debug_out.getvalue().splitlines()
@@ -212,7 +212,7 @@ class PluginTest(CoverageTest):
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
-        cov.config["run:plugins"] = ["plugin_no_sys_info"]
+        cov.set_option("run:plugins", ["plugin_no_sys_info"])
         cov.load()
 
         out_lines = debug_out.getvalue().splitlines()
@@ -253,7 +253,7 @@ class PluginWarningOnPyTracer(CoverageTest):
         self.make_file("simple.py", """a = 1""")
 
         cov = coverage.Coverage()
-        cov.config["run:plugins"] = ["tests.plugin1"]
+        cov.set_option("run:plugins", ["tests.plugin1"])
 
         warnings = []
         def capture_warning(msg):
@@ -294,7 +294,7 @@ class GoodPluginTest(FileTracerTest):
         cov = coverage.Coverage()
         CheckUniqueFilenames.hook(cov, '_should_trace')
         CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
-        cov.config["run:plugins"] = ["tests.plugin1"]
+        cov.set_option("run:plugins", ["tests.plugin1"])
 
         # Import the Python file, executing it.
         self.start_import_stop(cov, "simple")
@@ -359,7 +359,7 @@ class GoodPluginTest(FileTracerTest):
         cov = coverage.Coverage(omit=["*quux*"])
         CheckUniqueFilenames.hook(cov, '_should_trace')
         CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
-        cov.config["run:plugins"] = ["tests.plugin2"]
+        cov.set_option("run:plugins", ["tests.plugin2"])
 
         self.start_import_stop(cov, "caller")
 
@@ -390,7 +390,7 @@ class GoodPluginTest(FileTracerTest):
         cov = coverage.Coverage(branch=True, omit=["*quux*"])
         CheckUniqueFilenames.hook(cov, '_should_trace')
         CheckUniqueFilenames.hook(cov, '_check_include_omit_etc')
-        cov.config["run:plugins"] = ["tests.plugin2"]
+        cov.set_option("run:plugins", ["tests.plugin2"])
 
         self.start_import_stop(cov, "caller")
 
@@ -409,7 +409,7 @@ class GoodPluginTest(FileTracerTest):
         self.make_render_and_caller()
 
         cov = coverage.Coverage(branch=True, omit=["*quux*"])
-        cov.config["run:plugins"] = ["tests.plugin2"]
+        cov.set_option("run:plugins", ["tests.plugin2"])
 
         self.start_import_stop(cov, "caller")
 
@@ -431,7 +431,7 @@ class GoodPluginTest(FileTracerTest):
         self.make_render_and_caller()
 
         cov = coverage.Coverage(branch=True, omit=["*quux*"])
-        cov.config["run:plugins"] = ["tests.plugin2"]
+        cov.set_option("run:plugins", ["tests.plugin2"])
 
         self.start_import_stop(cov, "caller")
 
@@ -446,7 +446,7 @@ class GoodPluginTest(FileTracerTest):
         self.make_render_and_caller()
 
         cov = coverage.Coverage(branch=True, omit=["*quux*"])
-        cov.config["run:plugins"] = ["tests.plugin2"]
+        cov.set_option("run:plugins", ["tests.plugin2"])
 
         self.start_import_stop(cov, "caller")
 
@@ -499,7 +499,7 @@ class GoodPluginTest(FileTracerTest):
             f = 6
             """)
         cov = coverage.Coverage(include=["unsuspecting.py"])
-        cov.config["run:plugins"] = ["fairly_odd_plugin"]
+        cov.set_option("run:plugins", ["fairly_odd_plugin"])
         self.start_import_stop(cov, "unsuspecting")
 
         repout = StringIO()
@@ -548,7 +548,7 @@ class BadPluginTest(FileTracerTest):
             """)
 
         cov = coverage.Coverage()
-        cov.config["run:plugins"] = [module_name]
+        cov.set_option("run:plugins", [module_name])
         self.start_import_stop(cov, "simple")
 
         stderr = self.stderr()

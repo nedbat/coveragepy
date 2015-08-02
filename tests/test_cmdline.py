@@ -56,7 +56,11 @@ class BaseCmdLineTest(CoverageTest):
         # We'll invoke .coverage as the constructor, and then keep using the
         # same object as the resulting coverage object.
         mk.coverage.return_value = mk
-        mk.config = CoverageConfig()
+
+        # The mock needs to get options, but shouldn't need to set them.
+        config = CoverageConfig()
+        mk.get_option = config.get_option
+
         return mk
 
     def mock_command_line(self, args):

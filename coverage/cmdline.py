@@ -469,9 +469,9 @@ class CoverageScript(object):
             # Apply the command line fail-under options, and then use the config
             # value, so we can get fail_under from the config file.
             if options.fail_under is not None:
-                self.coverage.config["report:fail_under"] = options.fail_under
+                self.coverage.set_option("report:fail_under", options.fail_under)
 
-            if self.coverage.config["report:fail_under"]:
+            if self.coverage.get_option("report:fail_under"):
 
                 # Total needs to be rounded, but be careful of 0 and 100.
                 if 0 < total < 1:
@@ -481,7 +481,7 @@ class CoverageScript(object):
                 else:
                     total = round(total)
 
-                if total >= self.coverage.config["report:fail_under"]:
+                if total >= self.coverage.get_option("report:fail_under"):
                     return OK
                 else:
                     return FAIL_UNDER
@@ -555,7 +555,7 @@ class CoverageScript(object):
     def do_run(self, options, args):
         """Implementation of 'coverage run'."""
 
-        if not self.coverage.config["run:parallel"]:
+        if not self.coverage.get_option("run:parallel"):
             if not options.append:
                 self.coverage.erase()
 
@@ -575,7 +575,8 @@ class CoverageScript(object):
             self.coverage.stop()
             if code_ran:
                 if options.append:
-                    self.coverage.combine(data_paths=[self.coverage.config["run:data_file"]])
+                    data_paths = [self.coverage.get_option("run:data_file")]
+                    self.coverage.combine(data_paths=data_paths)
                 self.coverage.save()
 
         return OK
