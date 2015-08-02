@@ -35,6 +35,9 @@ Version 4.0b1 --- 2 August 2015
   Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
   references the DTD.
 
+- Missing branches in the HTML report now have a bit more information in the
+  right-hand annotations.  Hopefully this will make their meaning clearer.
+
 - All the reporting functions now behave the same if no data had been
   collected, exiting with a status code of 1.  Fixed ``fail_under`` to be
   applied even when the report is empty.  Thanks, Ionel Cristian Mărieș.

@@ -201,21 +201,32 @@ class HtmlReporter(Reporter):
                 line_class.append(c_mis)
             elif self.arcs and lineno in missing_branch_arcs:
                 line_class.append(c_par)
-                annlines = []
+                shorts = []
+                longs = []
                 for b in missing_branch_arcs[lineno]:
                     if b < 0:
-                        annlines.append("exit")
+                        shorts.append("exit")
+                        longs.append("the function exit")
                     else:
-                        annlines.append(str(b))
-                annotate_html = "&nbsp;&nbsp; ".join(annlines)
-                if len(annlines) > 1:
-                    annotate_title = "no jumps to these line numbers"
-                elif len(annlines) == 1:
-                    annotate_title = "no jump to this line number"
+                        shorts.append(b)
+                        longs.append("line %d" % b)
+                # 202F is NARROW NO-BREAK SPACE.
+                # 219B is RIGHTWARDS ARROW WITH STROKE.
+                short_fmt = "%s&#x202F;&#x219B;&#x202F;%s"
+                annotate_html = ",&nbsp;&nbsp; ".join(short_fmt % (lineno, d) for d in shorts)
+                annotate_html += " [?]"
+
+                annotate_title = "Line %d was executed, but never jumped to " % lineno
+                if len(longs) == 1:
+                    annotate_title += longs[0]
+                elif len(long) == 2:
+                    annotate_title += longs[0] + " or " + longs[1]
+                else:
+                    annotate_title += ", ".join(longs[:-1]) + ", or " + longs[-1]
             elif lineno in analysis.statements:
                 line_class.append(c_run)
 
-            # Build the HTML for the line
+            # Build the HTML for the line.
             html = []
             for tok_type, tok_text in line:
                 if tok_type == "ws":
@@ -292,11 +303,11 @@ class HtmlStatus(object):
     #
     #  {
     #      'format': 1,
-    #      'settings': '\x87\x9cc8\x80\xe5\x97\xb16\xfcv\xa2\x8d\x8a\xbb\xcf',
+    #      'settings': '540ee119c15d52a68a53fe6f0897346d',
     #      'version': '4.0a1',
     #      'files': {
     #          'cogapp___init__': {
-    #              'hash': '\x99*\x0e\\\x10\x11O\x06WG/gJ\x83\xdd\x99',
+    #              'hash': 'e45581a5b48f879f301c0f30bf77a50c',
     #              'index': {
     #                  'html_filename': 'cogapp___init__.html',
     #                  'name': 'cogapp/__init__',
@@ -305,7 +316,7 @@ class HtmlStatus(object):
     #          },
     #          ...
     #          'cogapp_whiteutils': {
-    #              'hash': 'o\xfd\x0e+s2="\xb2\x1c\xd6\xa1\xee\x85\x85\xda',
+    #              'hash': '8504bb427fc488c4176809ded0277d51',
     #              'index': {
     #                  'html_filename': 'cogapp_whiteutils.html',
     #                  'name': 'cogapp/whiteutils',
