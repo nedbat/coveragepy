@@ -51,7 +51,11 @@ Version 4.0b1 --- 2 August 2015
 - Code that was executed with `exec` would be mis-attributed to the file that
   called it.  This is now fixed, closing `issue 380`_.
 
-- The ``use_cache`` method is no longer supported.
+- The ability to use item access on `Coverage.config` (introduced in 4.0a2) has
+  been changed to a more explicit `Coverage.get_option` and
+  `Coverage.set_option` API.
+
+- The ``Coverage.use_cache`` method is no longer supported.
 
 - The private method ``Coverage._harvest_data`` is now called
   ``Coverage.get_data``, and returns the ``CoverageData`` containing the
@@ -62,6 +66,8 @@ Version 4.0b1 --- 2 August 2015
 
 - Combining data files with an explicit configuration file was broken in 4.0a6,
   but now works again, closing `issue 385`_.
+
+- ``coverage combine`` now accepts files as well as directories.
 
 - The speed is back to 3.7.1 levels, after having slowed down due to plugin
   support, finishing up `issue 387`_.

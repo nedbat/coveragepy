@@ -15,22 +15,9 @@ Documentation is on `Read the Docs <{docurl}>`_.  Code repository and issue
 tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_, with a
 mirrored repo on `GitHub <https://github.com/nedbat/coveragepy>`_.
 
-New in 4.0 alpha: ``--concurrency``, dropped support for older Pythons,
-setup.cfg support, plugins for other file variants, --skip-covered, HTML
-filtering.
-
-New in 3.7: ``--debug``, and 12 bugs closed.
-
-New in 3.6: ``--fail-under``, and >20 bugs closed.
-
-New in 3.5: Branch coverage exclusions, keyboard shortcuts in HTML report.
-
-New in 3.4: Better control over source to measure, and unexecuted files
-can be reported.
-
-New in 3.3: .coveragerc files.
-
-New in 3.2: Branch coverage!
+New in 4.0 beta: ``--concurrency``, dropped support for older Pythons,
+setup.cfg support, plugins for other file variants, supported data API,
+--skip-covered, HTML filtering, and 49 issues closed.
 """
 
 # This file is used unchanged under all versions of Python, 2.x and 3.x.

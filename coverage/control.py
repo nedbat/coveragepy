@@ -613,7 +613,7 @@ class Coverage(object):
 
         `option_name` is a colon-separated string indicating the section and
         option name.  For example, the ``branch`` option in the ``[run]``
-        section of the config file would be indicated with `"run:branch"`.
+        section of the config file would be indicated with ``"run:branch"``.
 
         `value` is the new value for the option.  This should be a Python
         value where appropriate.  For example, use True for booleans, not the
