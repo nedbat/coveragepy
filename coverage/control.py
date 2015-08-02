@@ -623,7 +623,7 @@ class Coverage(object):
 
             cov.set_option("run:branch", True)
 
-        has the same effect as this configuration file:
+        has the same effect as this configuration file::
 
             [run]
             branch = True
