@@ -8,7 +8,7 @@ measure code coverage of Python program execution
 
 :Author: Ned Batchelder <ned@nedbatchelder.com>
 :Author: |author|
-:Date: 2014-09-27
+:Date: 2015-08-02
 :Copyright: Apache 2.0 license, attribution and disclaimer required.
 :Manual section: 1
 :Manual group: Coverage.py
