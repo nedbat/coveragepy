@@ -209,19 +209,17 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
 
     def test_non_ascii_title_set_in_config_file(self):
         self.create_initial_files()
-        self.make_file(".coveragerc",
-            "[html]\ntitle = «ταБЬℓσ» numbers"
-            )
+        self.make_file(".coveragerc", "[html]\ntitle = «ταБЬℓσ» numbers")
         self.run_coverage()
         index = self.get_html_index_content()
         self.assertIn(
             "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
             " numbers", index
-            )
+        )
         self.assertIn(
             "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
             " numbers", index
-            )
+        )
 
     def test_title_set_in_args(self):
         self.create_initial_files()
@@ -231,11 +229,11 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
         self.assertIn(
             "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
             " &amp; st&#252;ff!</title>", index
-            )
+        )
         self.assertIn(
             "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
             " &amp; st&#252;ff!:", index
-            )
+        )
 
 
 class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
@@ -388,7 +386,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
             timestamp,
             seconds=120,
             msg="Timestamp is wrong: {0}".format(timestamp),
-            )
+        )
 
 
 class HtmlStaticFileTest(CoverageTest):

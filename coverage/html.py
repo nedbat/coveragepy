@@ -27,6 +27,7 @@ STATIC_PATH = [
     os.path.join(os.path.dirname(__file__), "htmlfiles"),
 ]
 
+
 def data_filename(fname, pkgdir=""):
     """Return the path to a data file of ours.
 
@@ -59,16 +60,16 @@ class HtmlReporter(Reporter):
 
     # These files will be copied from the htmlfiles dir to the output dir.
     STATIC_FILES = [
-            ("style.css", ""),
-            ("jquery.min.js", "jquery"),
-            ("jquery.debounce.min.js", "jquery-debounce"),
-            ("jquery.hotkeys.js", "jquery-hotkeys"),
-            ("jquery.isonscreen.js", "jquery-isonscreen"),
-            ("jquery.tablesorter.min.js", "jquery-tablesorter"),
-            ("coverage_html.js", ""),
-            ("keybd_closed.png", ""),
-            ("keybd_open.png", ""),
-            ]
+        ("style.css", ""),
+        ("jquery.min.js", "jquery"),
+        ("jquery.debounce.min.js", "jquery-debounce"),
+        ("jquery.hotkeys.js", "jquery-hotkeys"),
+        ("jquery.isonscreen.js", "jquery-isonscreen"),
+        ("jquery.tablesorter.min.js", "jquery-tablesorter"),
+        ("coverage_html.js", ""),
+        ("keybd_closed.png", ""),
+        ("keybd_open.png", ""),
+    ]
 
     def __init__(self, cov, config):
         super(HtmlReporter, self).__init__(cov, config)
@@ -82,10 +83,10 @@ class HtmlReporter(Reporter):
             'title': title,
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
-            }
+        }
         self.source_tmpl = Templite(
             data("pyfile.html"), self.template_globals
-            )
+        )
 
         self.coverage = cov
 
@@ -138,14 +139,14 @@ class HtmlReporter(Reporter):
             shutil.copyfile(
                 data_filename(static, pkgdir),
                 os.path.join(self.directory, static)
-                )
+            )
 
         # The user may have extra CSS they want copied.
         if self.extra_css:
             shutil.copyfile(
                 self.config.extra_css,
                 os.path.join(self.directory, self.extra_css)
-                )
+            )
 
     def write_html(self, fname, html):
         """Write `html` to `fname`, properly encoded."""
@@ -235,7 +236,7 @@ class HtmlReporter(Reporter):
                     tok_html = escape(tok_text) or '&nbsp;'
                     html.append(
                         '<span class="%s">%s</span>' % (tok_type, tok_html)
-                        )
+                    )
 
             lines.append({
                 'html': ''.join(html),
@@ -263,15 +264,13 @@ class HtmlReporter(Reporter):
             'nums': nums,
             'html_filename': html_filename,
             'relative_filename': fr.relative_filename(),
-            }
+        }
         self.files.append(index_info)
         self.status.set_index_info(flat_rootname, index_info)
 
     def index_file(self):
         """Write the index.html file for this report."""
-        index_tmpl = Templite(
-            data("index.html"), self.template_globals
-            )
+        index_tmpl = Templite(data("index.html"), self.template_globals)
 
         self.totals = sum(f['nums'] for f in self.files)
 
@@ -283,10 +282,7 @@ class HtmlReporter(Reporter):
             'time_stamp': self.time_stamp,
         })
 
-        self.write_html(
-            os.path.join(self.directory, "index.html"),
-            html
-            )
+        self.write_html(os.path.join(self.directory, "index.html"), html)
 
         # Write the latest hashes for next time.
         self.status.write(self.directory)
@@ -372,7 +368,7 @@ class HtmlStatus(object):
             'version': coverage.__version__,
             'settings': self.settings,
             'files': files,
-            }
+        }
         with open(status_file, "w") as fout:
             json.dump(status, fout)
 
@@ -405,16 +401,18 @@ class HtmlStatus(object):
 
 def escape(t):
     """HTML-escape the text in `t`."""
-    return (t
-            # Convert HTML special chars into HTML entities.
-            .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            .replace("'", "&#39;").replace('"', "&quot;")
-            # Convert runs of spaces: "......" -> "&nbsp;.&nbsp;.&nbsp;."
-            .replace("  ", "&nbsp; ")
-            # To deal with odd-length runs, convert the final pair of spaces
-            # so that "....." -> "&nbsp;.&nbsp;&nbsp;."
-            .replace("  ", "&nbsp; ")
-        )
+    return (
+        t
+        # Convert HTML special chars into HTML entities.
+        .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        .replace("'", "&#39;").replace('"', "&quot;")
+        # Convert runs of spaces: "......" -> "&nbsp;.&nbsp;.&nbsp;."
+        .replace("  ", "&nbsp; ")
+        # To deal with odd-length runs, convert the final pair of spaces
+        # so that "....." -> "&nbsp;.&nbsp;&nbsp;."
+        .replace("  ", "&nbsp; ")
+    )
+
 
 def spaceless(html):
     """Squeeze out some annoying extra space from an HTML string.
@@ -425,6 +423,7 @@ def spaceless(html):
     """
     html = re.sub(r">\s+<p ", ">\n<p ", html)
     return html
+
 
 def pair(ratio):
     """Format a pair of numbers so JavaScript can read them in an attribute."""
