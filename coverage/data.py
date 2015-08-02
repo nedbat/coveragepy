@@ -48,6 +48,10 @@ class CoverageData(object):
       written during "coverage run", and then accumulated during "coverage
       combine".
 
+    Lines, arcs, and file tracer names are stored for each source file. File
+    names in this API are case-sensitive, even on platforms with
+    case-insensitive file systems.
+
     To read a coverage.py data file, use :meth:`.read_file`, or :meth:`.read`
     if you have an already-opened file.  You can then access the line, arc, or
     file tracer data with :meth:`.lines`, :meth:`.arcs`, or
@@ -77,8 +81,6 @@ class CoverageData(object):
     passing it the other.
 
     """
-
-    # TODO: case-sensitivity in file names in these methods.
 
     # The data file format is JSON, with these keys:
     #

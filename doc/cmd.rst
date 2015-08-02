@@ -183,7 +183,7 @@ Combining data files
 --------------------
 
 If you need to collect coverage data from different machines or processes,
-coverage.py can combine multiple files into one for reporting. 
+coverage.py can combine multiple files into one for reporting.
 
 Once you have created a number of these files, you can copy them all to a
 single directory, and use the **combine** command to combine them into one

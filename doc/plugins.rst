@@ -13,7 +13,7 @@ Plugins
 
 .. versionadded:: 4.0
 
-Coverage.py's behavior can be extended by writing plugins.  A plugin is a
+Coverage.py's behavior can be extended with third-party plugins.  A plugin is a
 separately installed Python class that you register in your .coveragerc.
 Plugins can be used to implement coverage measurement for non-Python files.
 
@@ -21,24 +21,26 @@ Using plugins
 -------------
 
 To use a coverage.py plugin, you install it, and configure it.  For this
-example, let's say you want to use one called fred_plugin.
+example, let's say there's a Python package called ``something`` that provides a
+coverage.py plugin called ``something.plugin``.
 
-#. Install the plugin as you would any other Python package::
+#. Install the plugin's package as you would any other Python package::
 
-    pip install fred_plugin
+    pip install something
 
 #. Configure coverage.py to use the plugin.  You do this by editing (or
    creating) your .coveragerc file, as described in :ref:`config`.  The
-   ``plugins`` setting indicates your plugin::
+   ``plugins`` setting indicates your plugin.  It's a list of importable module
+   names of plugins::
 
     [run]
     plugins =
-        fred_plugin
+        something.plugin
 
 #. If the plugin needs its own configuration, you can add those settings in
    the .coveragerc file in a section named for the plugin::
 
-    [fred_plugin]
+    [something.plugin]
     option1 = True
     option2 = abc.foo
 
