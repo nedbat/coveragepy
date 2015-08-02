@@ -6,15 +6,15 @@ Change history for Coverage.py
 ------------------------------
 
 
-Latest
-------
+Version 4.0b1 --- 2 August 2015
+-------------------------------
 
 - Coverage.py is now licensed under the Apache 2.0 license.  See NOTICE.txt for
   details.  Closes `issue 313`_.
 
 - The data storage has been completely revamped.  The data file is now
-  almost-JSON instead of a pickle, closing `issue 236`_.  The `CoverageData`
-  class is now a public supported API to the data file.
+  JSON-based instead of a pickle, closing `issue 236`_.  The `CoverageData`
+  class is now a public supported documented API to the data file.
 
 - A new configuration option, ``[run] note``, lets you set a note that will be
   stored in the `runs` section of the data file.  You can use this to annotate
@@ -73,7 +73,7 @@ Latest
 .. _issue 386: https://bitbucket.org/ned/coveragepy/issues/386/error-on-unrecognised-configuration
 .. _issue 387: https://bitbucket.org/ned/coveragepy/issues/387/performance-degradation-from-371-to-40
 
-.. 41 issues closed in 4.0 below here
+.. 40 issues closed in 4.0 below here
 
 
 Version 4.0a6 --- 21 June 2015
