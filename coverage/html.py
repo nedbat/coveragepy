@@ -219,7 +219,7 @@ class HtmlReporter(Reporter):
                 annotate_title = "Line %d was executed, but never jumped to " % lineno
                 if len(longs) == 1:
                     annotate_title += longs[0]
-                elif len(long) == 2:
+                elif len(longs) == 2:
                     annotate_title += longs[0] + " or " + longs[1]
                 else:
                     annotate_title += ", ".join(longs[:-1]) + ", or " + longs[-1]
