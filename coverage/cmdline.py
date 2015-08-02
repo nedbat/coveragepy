@@ -555,7 +555,7 @@ class CoverageScript(object):
     def do_run(self, options, args):
         """Implementation of 'coverage run'."""
 
-        if not self.coverage.config.parallel:
+        if not self.coverage.config["run:parallel"]:
             if not options.append:
                 self.coverage.erase()
 
@@ -575,7 +575,7 @@ class CoverageScript(object):
             self.coverage.stop()
             if code_ran:
                 if options.append:
-                    self.coverage.combine(data_paths=[self.coverage.config.data_file])
+                    self.coverage.combine(data_paths=[self.coverage.config["run:data_file"]])
                 self.coverage.save()
 
         return OK
