@@ -191,8 +191,8 @@ class Coverage(object):
         """Set all the initial state.
 
         This is called by the public methods to initialize state. This lets us
-        construct a Coverage object, then tweak its state before this function
-        is called.
+        construct a :class:`Coverage` object, then tweak its state before this
+        function is called.
 
         """
         if self._inited:
@@ -611,11 +611,12 @@ class Coverage(object):
     def start(self):
         """Start measuring code coverage.
 
-        Coverage measurement actually occurs in functions called after `start`
-        is invoked.  Statements in the same scope as `start` won't be measured.
+        Coverage measurement actually occurs in functions called after
+        :meth:`.start` is invoked.  Statements in the same scope as
+        :meth:`.start` won't be measured.
 
-        Once you invoke `start`, you must also call `stop` eventually, or your
-        process might not shut down cleanly.
+        Once you invoke :meth:`.start`, you must also call :meth:`.stop`
+        eventually, or your process might not shut down cleanly.
 
         """
         self._init()
@@ -695,8 +696,8 @@ class Coverage(object):
     def get_exclude_list(self, which='exclude'):
         """Return a list of excluded regex patterns.
 
-        `which` indicates which list is desired.  See `exclude` for the lists
-        that are available, and their meaning.
+        `which` indicates which list is desired.  See :meth:`.exclude` for the
+        lists that are available, and their meaning.
 
         """
         self._init()
@@ -739,7 +740,7 @@ class Coverage(object):
 
         Also warn about various problems collecting data.
 
-        Returns a :class:`CoverageData`, the collected coverage data.
+        Returns a :class:`coverage.CoverageData`, the collected coverage data.
 
         """
         self._init()
@@ -927,7 +928,7 @@ class Coverage(object):
         marker to indicate the coverage of the line.  Covered lines have ">",
         excluded lines have "-", and missing lines have "!".
 
-        See `coverage.report()` for other arguments.
+        See :meth:`.report` for other arguments.
 
         """
         self.get_data()
@@ -951,7 +952,7 @@ class Coverage(object):
         `title` is a text string (not HTML) to use as the title of the HTML
         report.
 
-        See `coverage.report()` for other arguments.
+        See :meth:`.report` for other arguments.
 
         Returns a float, the total percentage covered.
 
@@ -975,7 +976,7 @@ class Coverage(object):
         Each module in `morfs` is included in the report.  `outfile` is the
         path to write the file to, "-" will write to stdout.
 
-        See `coverage.report()` for other arguments.
+        See :meth:`.report` for other arguments.
 
         Returns a float, the total percentage covered.
 

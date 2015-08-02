@@ -15,10 +15,10 @@ Coverage.py API
 .. :history: 20140819T132600, change class name to Coverage
 
 
-The API to coverage.py is very simple, contained in a single module called
-`coverage`.  Most of the interface is in a single class, called
-`Coverage`.  Methods on the Coverage object correspond roughly to operations
-available in the command line interface. For example, a simple use would be::
+The API to coverage.py is very simple, contained in a module called `coverage`.
+Most of the interface is in the :class:`coverage.Coverage` class.  Methods on
+the Coverage object correspond roughly to operations available in the command
+line interface. For example, a simple use would be::
 
     import coverage
 
@@ -32,30 +32,11 @@ available in the command line interface. For example, a simple use would be::
 
     cov.html_report()
 
+The :class:`coverage.CoverageData` class provides access to coverage data
+stored in coverage.py data files.
 
-The Coverage class
-------------------
+.. toctree::
+    :maxdepth: 1
 
-.. module:: coverage
-
-.. autoclass:: Coverage
-    :members:
-    :exclude-members: use_cache
-    :special-members: __init__
-
-
-The CoverageData class
-----------------------
-
-.. autoclass:: CoverageData
-    :members:
-    :special-members: __init__
-
-
-Starting coverage.py automatically
-----------------------------------
-
-This function is used to start coverage measurement automatically when Python
-starts.  See :ref:`subprocess` for details.
-
-.. autofunction:: process_startup
+    api_coverage
+    api_coveragedata
