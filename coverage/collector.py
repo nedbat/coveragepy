@@ -65,7 +65,8 @@ class Collector(object):
         `should_trace` is a function, taking a filename, and returning a
         `coverage.FileDisposition object`.
 
-        TODO: `check_include`
+        `check_include` is a function taking a filename and a frame. It returns
+        a boolean: True if the file should be traced, False if not.
 
         If `timid` is true, then a slower simpler trace function will be
         used.  This is important for some environments where manipulation of
