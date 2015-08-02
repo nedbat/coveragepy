@@ -71,10 +71,11 @@ Backward incompatibilities:
 
 Major new features:
 
-- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_.
-  The ``concurrency`` setting specifies the concurrency library in use.  Huge
-  thanks to Peter Portante for initial implementation, and to Joe Jevnik for
-  the final insight that completed the work.
+- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_.  The
+  ``concurrency`` setting, or the ``--concurrency`` command line switch,
+  specifies the concurrency library in use.  Huge thanks to Peter Portante for
+  initial implementation, and to Joe Jevnik for the final insight that
+  completed the work.
 
 - The HTML report now has filtering.  Type text into the Filter box on the
   index page, and only modules with that text in the name will be shown.
