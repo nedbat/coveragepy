@@ -15,6 +15,7 @@ Configuration files
 .. :history: 20130926T222300, updated for 3.6.1
 .. :history: 20140925T064700, updated for 4.0a1
 .. :history: 20150124T173400, updated for 4.0a4
+.. :history: 20150802T174600, updated for 4.0b1
 
 
 Coverage.py options can be specified in a configuration file.  This makes it
@@ -105,14 +106,17 @@ to more than one command.
 ``cover_pylib`` (boolean, default False): whether to measure the Python
 standard library.
 
-``concurrency`` (string, default "thread"): the name of the concurrency
-library in use by the product code.  If your program uses `gevent`_,
-`greenlet`_, or `eventlet`_, you must name that library in this option, or
-coverage.py will produce very wrong results.
+``concurrency`` (string, default "thread"): the name of the concurrency library
+in use by the product code.  If your program uses `multiprocessing`_,
+`gevent`_, `greenlet`_, or `eventlet`_, you must name that library in this
+option, or coverage.py will produce very wrong results.
 
+.. _multiprocessing: https://docs.python.org/2/library/multiprocessing.html
 .. _greenlet: http://greenlet.readthedocs.org/en/latest/
 .. _gevent: http://www.gevent.org/
 .. _eventlet: http://eventlet.net/
+
+.. versionadded:: 4.0
 
 ``data_file`` (string, default ".coverage"): the name of the data file to use
 for storing or reporting coverage.
@@ -122,6 +126,10 @@ for storing or reporting coverage.
 
 ``include`` (multi-string): a list of filename patterns, the files to include
 in measurement or reporting.  See :ref:`source` for details.
+
+``note`` (string): an arbitrary string that will be written to the data file.
+You can use the :meth:`CoverageData.run_infos` method to retrieve this string
+from a data file.
 
 ``omit`` (multi-string): a list of filename patterns, the files to leave out
 of measurement or reporting.  See :ref:`source` for details.
@@ -180,6 +188,9 @@ reported as missing.  More details are in :ref:`excluding`.  If you use this
 option, you are replacing all the exclude regexes, so you'll need to also
 supply the "pragma: no cover" regex if you still want to use it.
 
+``fail_under`` (integer): a target coverage percentage. If the total coverage
+measurement is under this value, then exit with a status code of 2.
+
 ``ignore_errors`` (boolean, default False): ignore source code that can't be
 found.
 
@@ -202,8 +213,8 @@ example "87%".  A value of 2 will display percentages like "87.32%".
 ``show_missing`` (boolean, default False): when running a summary report, show
 missing lines.  See :ref:`cmd_summary` for more information.
 
-``skip_covered`` (boolean, default False): when running a summary report,
-skip 100% covered files. See :ref:`cmd_summary` for more information.
+``skip_covered`` (boolean, default False): Don't include files in the report
+that are 100% covered files. See :ref:`cmd_summary` for more information.
 
 
 .. _config_html:
@@ -234,3 +245,8 @@ Values particular to XML reporting.  The values in the ``[report]`` section
 also apply to XML output, where appropriate.
 
 ``output`` (string, default "coverage.xml"): where to write the XML report.
+
+``package_depth`` (integer, default 99): controls which directories are
+identified as packages in the report.  Directories deeper than this depth are
+not reported as packages.  The default is that all directories are reported as
+packages.

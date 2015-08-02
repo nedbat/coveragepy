@@ -111,6 +111,9 @@ class Coverage(object):
         results.  Valid strings are "greenlet", "eventlet", "gevent", or
         "thread" (the default).
 
+        .. versionadded:: 4.0
+            The `concurrency` parameter.
+
         """
         # Build our configuration from a number of sources:
         # 1: defaults:
@@ -592,7 +595,7 @@ class Coverage(object):
     def _warn(self, msg):
         """Use `msg` as a warning."""
         self._warnings.append(msg)
-        if self.debug.should("pid"):
+        if self.debug.should('pid'):
             msg = "[%d] %s" % (os.getpid(), msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
 
@@ -604,6 +607,8 @@ class Coverage(object):
         section of the config file would be indicated with `"run:branch"`.
 
         Returns the value of the option.
+
+        .. versionadded:: 4.0
 
         """
         return self.config.get_option(option_name)
@@ -627,6 +632,8 @@ class Coverage(object):
 
             [run]
             branch = True
+
+        .. versionadded:: 4.0
 
         """
         self.config.set_option(option_name, value)
@@ -756,6 +763,9 @@ class Coverage(object):
         directory indicated by the current data file (probably the current
         directory) will be combined.
 
+        .. versionadded:: 4.0
+            The `data_paths` parameter.
+
         """
         self._init()
         self.get_data()
@@ -777,6 +787,8 @@ class Coverage(object):
 
         Returns a :class:`coverage.CoverageData`, the collected coverage data.
 
+        .. versionadded:: 4.0
+
         """
         self._init()
         if not self._measured:
@@ -796,10 +808,7 @@ class Coverage(object):
                 ):
                     self._warn("Module %s has no Python source." % pkg)
                 else:
-                    self._warn(
-                        "Module %s was previously imported, "
-                        "but not measured." % pkg
-                    )
+                    self._warn("Module %s was previously imported, but not measured." % pkg)
 
         # Find out if we got any data.
         if not self.data and self._warn_no_data:

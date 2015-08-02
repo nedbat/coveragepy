@@ -31,6 +31,8 @@ Major change history for coverage.py
 .. :history: 20131005T205700, updated for 3.7
 .. :history: 20131212T213100, updated for 3.7.1
 .. :history: 20150124T134800, updated for 4.0a4
+.. :history: 20150902T174700, updated for 4.0b1
+
 
 These are the major changes for coverage.py.  For a more complete change
 history, see the `CHANGES.txt`_ file in the source tree.
@@ -46,7 +48,7 @@ Version 4.0b1 pre-release --- 2 August 2015
 
 Backward incompatibilities:
 
-- CPython versions supported are now Python 2.6, 2.7, 3.3, 3.4 and 3.5b2.
+- CPython versions supported are now Python 2.6, 2.7, 3.3, 3.4 and 3.5b4.
   PyPy2 2.4, 2.6, and PyPy3 2.4 are also supported.
 
 - The original command line switches (`-x` to run a program, etc) are no
@@ -102,10 +104,10 @@ New features:
   prefixed with "coverage:", so the ``[run]`` options will be read from the
   ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
 
-- A new option: `coverage report --skip-covered` will reduce the number of
-  files reported by skipping files with 100% coverage.  Thanks, Krystian
-  Kichewko.  This means that empty `__init__.py` files will be skipped, since
-  they are 100% covered, closing `issue 315`_.
+- A new option: `coverage report --skip-covered` (or ``[report] skip_covered``)
+  will reduce the number of files reported by skipping files with 100%
+  coverage.  Thanks, Krystian Kichewko.  This means that empty `__init__.py`
+  files will be skipped, since they are 100% covered, closing `issue 315`_.
 
 - You can now specify the ``--fail-under`` option in the ``.coveragerc`` file
   as the ``[report] fail_under`` options.  This closes `issue 314`_.

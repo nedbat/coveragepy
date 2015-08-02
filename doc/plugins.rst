@@ -8,6 +8,10 @@ Plugins
 =======
 
 .. :history: 20150124T143000, new page.
+.. :history: 20150802T174600, updated for 4.0b1
+
+
+.. versionadded:: 4.0
 
 Coverage.py's behavior can be extended by writing plugins.  A plugin is a
 separately installed Python class that you register in your .coveragerc.

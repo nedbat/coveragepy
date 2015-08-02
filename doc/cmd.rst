@@ -21,6 +21,7 @@ Coverage.py command line usage
 .. :history: 20121003T074600, Fixed an option reference, https://bitbucket.org/ned/coveragepy/issue/200/documentation-mentions-output-xml-instead
 .. :history: 20121117T091000, Added command aliases.
 .. :history: 20140924T193000, Added --concurrency
+.. :history: 20150802T174700, Updated for 4.0b1
 
 .. highlight:: console
 
@@ -100,11 +101,12 @@ but before the program invocation::
     $ coverage run --source=dir1,dir2 -m packagename.modulename arg1 arg2
 
 Coverage.py can measure multi-threaded programs by default. If you are using
-more exotic concurrency, with the `greenlet`_, `eventlet`_, or `gevent`_
-libraries, then coverage.py will get very confused.  Use the ``--concurrency``
-switch to properly measure programs using these libraries.  Give it a value of
-``greenlet``, ``eventlet``, or ``gevent``.
+more exotic concurrency, with the `multiprocessing`_, `greenlet`_, `eventlet`_,
+or `gevent`_ libraries, then coverage.py will get very confused.  Use the
+``--concurrency`` switch to properly measure programs using these libraries.
+Give it a value of ``greenlet``, ``eventlet``, or ``gevent``.
 
+.. _multiprocessing: https://docs.python.org/2/library/multiprocessing.html
 .. _greenlet: http://greenlet.readthedocs.org/en/latest/
 .. _gevent: http://www.gevent.org/
 .. _eventlet: http://eventlet.net/
@@ -150,24 +152,11 @@ could affect the measurement process.  The possible warnings include:
   This could be because you asked to measure only modules that never ran,
   or for other reasons.
 
-.. _cmd_run_debug:
+* "Module XXX was previously imported, but not measured."
 
-The ``--debug`` option instructs coverage.py to log internal details of its
-operation, to help with diagnosing problems.  It takes a comma-separated list
-of options, each indicating a facet of operation to log to stderr:
-
-* ``trace``: print every decision about whether to trace a file or not. For
-  files not being traced, the reason is also given.
-
-* ``config``: before starting, dump all the :ref:`configuration <config>`
-  values.
-
-* ``sys``: before starting, dump all the system and environment information,
-  as with :ref:`coverage debug sys <cmd_debug>`.
-
-* ``dataio``: log when reading or writing any data file.
-
-* ``pid``: annotate all debug output with the process id.
+  You asked coverage.py to measure module XXX, but it had already been imported
+  when coverage started.  This meant coverage.py couldn't monitor its
+  execution.
 
 
 .. _cmd_datafile:
@@ -194,9 +183,7 @@ Combining data files
 --------------------
 
 If you need to collect coverage data from different machines or processes,
-coverage.py can combine multiple files into one for reporting. Use the ``-p``
-flag during execution to append distinguishing information to the .coverage
-data file name.
+coverage.py can combine multiple files into one for reporting. 
 
 Once you have created a number of these files, you can copy them all to a
 single directory, and use the **combine** command to combine them into one
@@ -204,21 +191,35 @@ single directory, and use the **combine** command to combine them into one
 
     $ coverage combine
 
-If the different machines run your code from different places in their file
-systems, coverage.py won't know how to combine the data.  You can tell
-coverage.py how the different locations correlate with a ``[paths]`` section in
-your configuration file.  See :ref:`config_paths` for details.
+You can also name directories or files on the command line::
 
-If you are collecting and renaming your own data files, you'll need to name
-them properly for **combine** to find them.   It looks for files named after
-the data file (defaulting to ".coverage", overridable with COVERAGE_FILE), with
-a dotted suffix.  All such files in the current directory will be combined.
-Here are some examples of data files that can be combined::
+    $ combine combine data1.dat windows_data_files/
+
+Coverage.py will collect the data from those places and combine them.  The
+current directory isn't searched if you use command-line arguments.  If you
+also want data from the current directory, name it explicitly on the command
+line.
+
+When coverage.py looks in directories for data files to combine, even the
+current directory, it only reads files with certain names.  It looks for files
+named the same as the data file (defaulting to ".coverage"), with a dotted
+suffix.  Here are some examples of data files that can be combined::
 
     .coverage.machine1
     .coverage.20120807T212300
     .coverage.last_good_run.ok
 
+The ``run --parallel-mode`` switch automatically creates separate data files
+for each run which can be combined later.  The file names include the machine
+name, the process id, and a random number::
+
+    .coverage.Neds-MacBook-Pro.local.88335.316857
+    .coverage.Geometer.8044.799674
+
+If the different machines run your code from different places in their file
+systems, coverage.py won't know how to combine the data.  You can tell
+coverage.py how the different locations correlate with a ``[paths]`` section in
+your configuration file.  See :ref:`config_paths` for details.
 
 .. _cmd_reporting:
 
@@ -257,9 +258,9 @@ The simplest reporting is a textual summary produced with **report**::
     $ coverage report
     Name                      Stmts   Miss  Cover
     ---------------------------------------------
-    my_program                   20      4    80%
-    my_module                    15      2    86%
-    my_other_module              56      6    89%
+    my_program.py                20      4    80%
+    my_module.py                 15      2    86%
+    my_other_module.py           56      6    89%
     ---------------------------------------------
     TOTAL                        91     12    87%
 
@@ -272,9 +273,9 @@ The ``-m`` flag also shows the line numbers of missing statements::
     $ coverage report -m
     Name                      Stmts   Miss  Cover   Missing
     -------------------------------------------------------
-    my_program                   20      4    80%   33-35, 39
-    my_module                    15      2    86%   8, 12
-    my_other_module              56      6    89%   17-23
+    my_program.py                20      4    80%   33-35, 39
+    my_module.py                 15      2    86%   8, 12
+    my_other_module.py           56      6    89%   17-23
     -------------------------------------------------------
     TOTAL                        91     12    87%
 
@@ -285,9 +286,9 @@ detail the missed branches::
     $ coverage report -m
     Name                      Stmts   Miss Branch BrPart  Cover   Missing
     ---------------------------------------------------------------------
-    my_program                   20      4     10      2    80%   33-35, 36->38, 39
-    my_module                    15      2      3      0    86%   8, 12
-    my_other_module              56      6      5      1    89%   17-23, 40->45
+    my_program.py                20      4     10      2    80%   33-35, 36->38, 39
+    my_module.py                 15      2      3      0    86%   8, 12
+    my_other_module.py           56      6      5      1    89%   17-23, 40->45
     ---------------------------------------------------------------------
     TOTAL                        91     12     18      3    87%
 
@@ -297,10 +298,13 @@ command line::
     $ coverage report -m my_program.py my_other_module.py
     Name                      Stmts   Miss  Cover   Missing
     -------------------------------------------------------
-    my_program                   20      4    80%   33-35, 39
-    my_other_module              56      6    89%   17-23
+    my_program.py                20      4    80%   33-35, 39
+    my_other_module.py           56      6    89%   17-23
     -------------------------------------------------------
     TOTAL                        76     10    87%
+
+The ``--skip-covered`` switch will leave out any file with 100% coverage,
+letting you focus on the files that still need attention.
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
@@ -406,3 +410,29 @@ command can often help::
 
 Two types of information are available: ``sys`` to show system configuration,
 and ``data`` to show a summary of the collected coverage data.
+
+
+.. _cmd_run_debug:
+
+The ``--debug`` option is available on all commands.  It instructs coverage.py
+to log internal details of its operation, to help with diagnosing problems.  It
+takes a comma-separated list of options, each indicating a facet of operation
+to log to stderr:
+
+* ``trace``: print every decision about whether to trace a file or not. For
+  files not being traced, the reason is also given.
+
+* ``config``: before starting, dump all the :ref:`configuration <config>`
+  values.
+
+* ``sys``: before starting, dump all the system and environment information,
+  as with :ref:`coverage debug sys <cmd_debug>`.
+
+* ``dataio``: log when reading or writing any data file.
+
+* ``pid``: annotate all debug output with the process id.
+
+* ``plugin``: print information about plugin operations.
+
+Debug options can also be set with the ``COVERAGE_DEBUG`` environment variable,
+a comma-separated list of these options.

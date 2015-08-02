@@ -87,8 +87,8 @@ Getting started is easy:
         $ coverage report -m
         Name                      Stmts   Miss  Cover   Missing
         -------------------------------------------------------
-        my_program                   20      4    80%   33-35, 39
-        my_other_module              56      6    89%   17-23
+        my_program.py                20      4    80%   33-35, 39
+        my_other_module.py           56      6    89%   17-23
         -------------------------------------------------------
         TOTAL                        76     10    87%
 
