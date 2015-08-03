@@ -73,24 +73,20 @@ Backward incompatibilities:
 
 Major new features:
 
+- Plugins: third parties can write plugins to add file support for non-Python
+  files, such as web application templating engines, or languages that compile
+  down to Python.  A plugin for measuring Django template coverage is
+  available: `django_coverage_plugin`_
+
 - Gevent, eventlet, and greenlet are now supported, closing `issue 149`_.  The
   ``concurrency`` setting, or the ``--concurrency`` command line switch,
   specifies the concurrency library in use.  Huge thanks to Peter Portante for
   initial implementation, and to Joe Jevnik for the final insight that
   completed the work.
 
-- The HTML report now has filtering.  Type text into the Filter box on the
-  index page, and only modules with that text in the name will be shown.
-  Thanks, Danny Allen.
-
-- Plugins: third parties can write plugins to add file support for non-Python
-  files, such as web application templating engines, or languages that compile
-  down to Python.  A plugin for measuring Django template coverage is
-  available: `django_coverage_plugin`_
-
 - The data storage has been re-written, using JSON instead of pickle.  The
-  :class:`CoverageData` class is a supported API to the contents of the data
-  file.
+  :class:`CoverageData` class is a new supported API to the contents of the
+  data file.
 
 - Wildly experimental: support for measuring processes started by the
   multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
@@ -103,6 +99,10 @@ New features:
 - Options are now also read from a setup.cfg file, if any.  Sections are
   prefixed with "coverage:", so the ``[run]`` options will be read from the
   ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
+
+- The HTML report now has filtering.  Type text into the Filter box on the
+  index page, and only modules with that text in the name will be shown.
+  Thanks, Danny Allen.
 
 - A new option: `coverage report --skip-covered` (or ``[report] skip_covered``)
   will reduce the number of files reported by skipping files with 100%
@@ -184,7 +184,7 @@ API changes:
   of ``coverage``, though the old name still works, for backward compatibility.
 
 - You can now programmatically adjust the configuration of coverage.py by
-  `Coverage.set_option` after construction.
+  calling `Coverage.set_option` after construction.
 
 - If the `config_file` argument to the Coverage constructor is specified as
   ".coveragerc", it is treated as if it were True.  This means setup.cfg is
