@@ -10,6 +10,8 @@ The CoverageData class
 
 .. versionadded:: 4.0
 
-.. autoclass:: coverage.CoverageData
+.. automodule:: coverage
+
+.. autoclass:: CoverageData
     :members:
     :special-members: __init__

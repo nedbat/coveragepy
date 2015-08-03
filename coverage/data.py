@@ -52,32 +52,32 @@ class CoverageData(object):
     names in this API are case-sensitive, even on platforms with
     case-insensitive file systems.
 
-    To read a coverage.py data file, use :meth:`.read_file`, or :meth:`.read`
+    To read a coverage.py data file, use :meth:`read_file`, or :meth:`read`
     if you have an already-opened file.  You can then access the line, arc, or
-    file tracer data with :meth:`.lines`, :meth:`.arcs`, or
-    :meth:`.file_tracer`.  Run information is available with
-    :meth:`.run_infos`.
+    file tracer data with :meth:`lines`, :meth:`arcs`, or
+    :meth:`file_tracer`.  Run information is available with
+    :meth:`run_infos`.
 
-    The :meth:`.has_arcs` method indicates whether arc data is available.  You
-    can get a list of the files in the data with :meth:`.measured_files`.
-    A summary of the line data is available from :meth:`.line_counts`.  As with
+    The :meth:`has_arcs` method indicates whether arc data is available.  You
+    can get a list of the files in the data with :meth:`measured_files`.
+    A summary of the line data is available from :meth:`line_counts`.  As with
     most Python containers, you can determine if there is any data at all by
     using this object as a boolean value.
 
 
     Most data files will be created by coverage.py itself, but you can use
-    methods here to create data files if you like.  The :meth:`.set_lines`,
-    :meth:`.set_arcs`, and :meth:`.set_file_tracers` methods add data, in ways
-    that are convenient for coverage.py.  The :meth:`.add_run_info` method adds
+    methods here to create data files if you like.  The :meth:`set_lines`,
+    :meth:`set_arcs`, and :meth:`set_file_tracers` methods add data, in ways
+    that are convenient for coverage.py.  The :meth:`add_run_info` method adds
     key-value pairs to the run information.
 
-    To add a file without any measured data, use :meth:`.touch_file`.
+    To add a file without any measured data, use :meth:`touch_file`.
 
-    You write to a named file with :meth:`.write_file`, or to an already opened
-    file with :meth:`.write`.
+    You write to a named file with :meth:`write_file`, or to an already opened
+    file with :meth:`write`.
 
-    You can clear the data in memory with :meth:`.erase`.  Two data collections
-    can be combined by using :meth:`.update` on one :class:`CoverageData`,
+    You can clear the data in memory with :meth:`erase`.  Two data collections
+    can be combined by using :meth:`update` on one :class:`CoverageData`,
     passing it the other.
 
     """
@@ -621,7 +621,7 @@ class CoverageDataFiles(object):
         combine.  Directories are searched for files that start with
         `self.filename` plus dot as a prefix, and those files are combined.
 
-        If `data_dirs` is not provided, then the directory portion of
+        If `data_paths` is not provided, then the directory portion of
         `self.filename` is used as the directory to search for data files.
 
         Every data file found and combined is then deleted from disk.
