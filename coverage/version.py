@@ -4,7 +4,7 @@
 """The version and URL for coverage.py"""
 # This file is exec'ed in setup.py, don't import anything!
 
-__version__ = "4.0b1"                   # see detailed history in CHANGES.txt
+__version__ = "4.0b2"                   # see detailed history in CHANGES.txt
 
 __url__ = "https://coverage.readthedocs.org"
 if max(__version__).isalpha():
