@@ -53,7 +53,7 @@ coverage.py plugin called ``something.plugin``.
 Plugin API
 ----------
 
-.. module:: coverage.plugin
+.. module:: coverage
 
 .. autoclass:: CoveragePlugin
     :members:

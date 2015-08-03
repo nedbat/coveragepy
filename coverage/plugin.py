@@ -10,15 +10,12 @@ from coverage import files
 from coverage.misc import _needs_to_implement
 
 
-# TODO: document that the plugin objects may be decorated with attributes with
-# named "_coverage_*".
-
 class CoveragePlugin(object):
     """Base class for coverage.py plugins.
 
-    To write a coverage.py plugin, create a subclass of `CoveragePlugin`.
-    You can override methods here to participate in various aspects of
-    coverage.py's processing.
+    To write a coverage.py plugin, create a module with a subclass of
+    :class:`CoveragePlugin`.  You can override methods in your class to
+    participate in various aspects of coverage.py's processing.
 
     Currently the only plugin type is a file tracer, for implementing
     measurement support for non-Python files.  File tracer plugins implement
@@ -27,6 +24,19 @@ class CoveragePlugin(object):
 
     Any plugin can optionally implement :meth:`sys_info` to provide debugging
     information about their operation.
+
+    Coverage.py will store its own information on your plugin, with attributes
+    starting with "_coverage_".  Don't be startled.
+
+    To register your plugin, define a function called `coverage_init` in your
+    module::
+
+        def coverage_init(reg, options):
+            reg.add_file_tracer(MyPlugin())
+
+    The `reg.add_file_tracer` method takes an instance of your plugin.  If your
+    plugin takes options, the `options` argument is a dictionary of your
+    plugin's options from the .coveragerc file.
 
     """
 
