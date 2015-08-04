@@ -168,6 +168,20 @@ class ProcessTest(CoverageTest):
         data.read_file(".mycovdata")
         self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
+    def test_append_can_create_a_data_file(self):
+        self.make_b_or_c_py()
+
+        out = self.run_command("coverage run --append b_or_c.py b")
+        self.assertEqual(out, 'done\n')
+        self.assert_exists(".coverage")
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        # Read the coverage file and see that b_or_c.py has only 6 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.line_counts()['b_or_c.py'], 6)
+
     def test_combine_with_rc(self):
         self.make_b_or_c_py()
 
