@@ -58,7 +58,8 @@ def data(fname):
 class HtmlReporter(Reporter):
     """HTML reporting."""
 
-    # These files will be copied from the htmlfiles dir to the output dir.
+    # These files will be copied from the htmlfiles directory to the output
+    # directory.
     STATIC_FILES = [
         ("style.css", ""),
         ("jquery.min.js", "jquery"),

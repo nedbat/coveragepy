@@ -13,7 +13,7 @@ Coverage.py runs on CPython 2.6, 2.7, 3.3, 3.4 or 3.5, PyPy 2.4, and PyPy3 2.4.
 
 Documentation is on `Read the Docs <{docurl}>`_.  Code repository and issue
 tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_, with a
-mirrored repo on `GitHub <https://github.com/nedbat/coveragepy>`_.
+mirrored repository on `GitHub <https://github.com/nedbat/coveragepy>`_.
 
 New in 4.0 beta: ``--concurrency``, dropped support for older Pythons,
 setup.cfg support, plugins for other file variants, supported data API,
@@ -88,7 +88,7 @@ setup_args = dict(
 
     entry_points = {'console_scripts': scripts},
 
-    # We need to get HTML assets from our htmlfiles dir.
+    # We need to get HTML assets from our htmlfiles directory.
     zip_safe = False,
 
     author = 'Ned Batchelder and others',

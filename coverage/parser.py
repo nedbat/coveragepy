@@ -274,7 +274,7 @@ class PythonParser(CodeParser):
 
         # Class definitions have one extra exit, so remove one for each:
         for l in self.classdefs:
-            # Ensure key is there: classdefs can include excluded lines.
+            # Ensure key is there: class definitions can include excluded lines.
             if l in exit_counts:
                 exit_counts[l] -= 1
 

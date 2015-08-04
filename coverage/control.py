@@ -275,7 +275,7 @@ class Coverage(object):
         self.data = CoverageData(debug=self.debug)
         self.data_files = CoverageDataFiles(basename=self.config.data_file)
 
-        # The dirs for files considered "installed with the interpreter".
+        # The directories for files considered "installed with the interpreter".
         self.pylib_dirs = set()
         if not self.config.cover_pylib:
             # Look at where some standard modules are located. That's the

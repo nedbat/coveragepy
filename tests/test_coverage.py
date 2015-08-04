@@ -1675,18 +1675,20 @@ class ModuleTest(CoverageTest):
 class ReportingTest(CoverageTest):
     """Tests of some reporting behavior."""
 
-    # We don't make any temp files, but we need an empty directory to run the
-    # tests in.
+    # We don't make any temporary files, but we need an empty directory to run
+    # the tests in.
     no_files_in_temp_dir = True
 
     def test_no_data_to_report_on_annotate(self):
-        # Reporting with no data produces a nice message and no output dir.
+        # Reporting with no data produces a nice message and no output
+        # directory.
         with self.assertRaisesRegex(CoverageException, "No data to report."):
             self.command_line("annotate -d ann")
         self.assert_doesnt_exist("ann")
 
     def test_no_data_to_report_on_html(self):
-        # Reporting with no data produces a nice message and no output dir.
+        # Reporting with no data produces a nice message and no output
+        # directory.
         with self.assertRaisesRegex(CoverageException, "No data to report."):
             self.command_line("html -d htmlcov")
         self.assert_doesnt_exist("htmlcov")

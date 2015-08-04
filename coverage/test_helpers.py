@@ -145,7 +145,7 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
     """A test case mixin that creates a temp directory and files in it.
 
     Includes SysPathAwareMixin and ModuleAwareMixin, because making and using
-    temp dirs like this will also need that kind of isolation.
+    temp directories like this will also need that kind of isolation.
 
     """
 
@@ -238,7 +238,7 @@ class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
 
     # We run some tests in temporary directories, because they may need to make
     # files for the tests. But this is expensive, so we can change per-class
-    # whether a temp dir is used or not.  It's easy to forget to set that
+    # whether a temp directory is used or not.  It's easy to forget to set that
     # option properly, so we track information about what the tests did, and
     # then report at the end of the process on test classes that were set
     # wrong.

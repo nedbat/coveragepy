@@ -21,6 +21,7 @@ bytestring
 canonicalize
 canonicalized
 canonicalizes
+chdir'd
 cmdline
 Cobertura
 codecs
@@ -53,6 +54,8 @@ endfor
 endif
 eventlet
 exe
+exec'd
+exec'ing
 execfile
 executable's
 expr
@@ -61,6 +64,7 @@ filenames
 filepath
 fname
 fnmatch
+fooey
 fpath
 fullcoverage
 getattr
@@ -89,6 +93,8 @@ kwargs
 matcher
 matchers
 merchantability
+metadata
+meth
 mixin
 modulename
 monkeypatch
@@ -136,6 +142,7 @@ pythonpath
 PYTHONPATH
 pyw
 rcfile
+readme
 regex
 regexes
 renderer
@@ -179,6 +186,7 @@ untokenizable
 URL
 UTF
 utf
+versionadded
 virtualenv
 whitespace
 wikipedia

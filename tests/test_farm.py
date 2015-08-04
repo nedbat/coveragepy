@@ -346,7 +346,7 @@ class FarmTestCase(object):
     def doesnt_contain(self, filename, *strlist):
         """Check that the file contains none of a list of strings.
 
-        An assert will be raised if any of the strings in strlist appears in
+        An assert will be raised if any of the strings in `strlist` appears in
         `filename`.
 
         """

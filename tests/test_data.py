@@ -349,7 +349,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
 
 class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
-    """Tests of CoverageData that need a temp dir to make files."""
+    """Tests of CoverageData that need a temporary directory to make files."""
 
     def test_read_write_lines(self):
         covdata1 = CoverageData()
