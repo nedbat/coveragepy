@@ -76,13 +76,18 @@ start-up.  Be sure to remove the change when you uninstall coverage.py, or use
 a more defensive approach to importing it.
 
 
-Signal Handlers and atexit
+Signal handlers and atexit
 --------------------------
 
-To successfully write a coverage file, the Python (sub)-process under
-anaylsis must shut down cleanly and have a chance for ``coverage`` to
-run the ``atexit`` handler it registers.
+.. hmm, this isn't specifically about subprocesses, is there a better place
+    where we could talk about this?
 
-For example if you send SIGTERM to end the subprocess, but your
-subprocess has never registered any SIGTERM handler then a coverage
-file won't have a chance to get written by that subprocess.
+To successfully write a coverage data file, the Python sub-process under
+anaylsis must shut down cleanly and have a chance for coverage.py to run the
+``atexit`` handler it registers.
+
+For example if you send SIGTERM to end the sub-process, but your sub-process
+has never registered any SIGTERM handler, then a coverage file won't be
+written.  See the `atexit`_ docs for details of when the handler isn't run.
+
+.. _atexit: https://docs.python.org/2/library/atexit.html
