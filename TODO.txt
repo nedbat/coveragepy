@@ -43,8 +43,16 @@ Key:
     + cov.config["run:branch"] api (well, coverage.get_option etc)
     - "added in 4.0"
     - tweaks to theme?
+    - Plugins!
+        Once per process
+        Once per file
+            - create a file tracer
+            - call its has_dynamic_source_file()
+        Once per call
+        Once per line
 - build process
-    - don't publish to nedbat.com any more
+    - don't publish to nedbat.com any more (but still need the sample html reports)
+        - don't need .px tooling
     - all doc links should point to rtfd
 + Remove code only run on <2.6
 + Change data file to json
@@ -54,14 +62,9 @@ Key:
     + A pain, b/c of the structure of the tests.
     + BTW: make an easier way to write those tests.
 
-- Documentation
-    - Plugins!
-        Once per process
-        Once per file
-            - create a file tracer
-            - call its has_dynamic_source_file()
-        Once per call
-        Once per line
+- tests
+    - test the kit has the right contents
+    - test the kit installs the right stuff
 
 
 * --source stuff:
