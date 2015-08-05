@@ -74,3 +74,15 @@ Note that if you use one of these techniques, you must undo them if you
 uninstall coverage.py, since you will be trying to import it during Python
 start-up.  Be sure to remove the change when you uninstall coverage.py, or use
 a more defensive approach to importing it.
+
+
+Signal Handlers and atexit
+--------------------------
+
+To successfully write a coverage file, the Python (sub)-process under
+anaylsis must shut down cleanly and have a chance for ``coverage`` to
+run the ``atexit`` handler it registers.
+
+For example if you send SIGTERM to end the subprocess, but your
+subprocess has never registered any SIGTERM handler then a coverage
+file won't have a chance to get written by that subprocess.
