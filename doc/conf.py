@@ -108,12 +108,41 @@ pygments_style = 'sphinx'
 # Sphinx are currently 'default' and 'sphinxdoc'.
 #html_theme = 'default'
 
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+if 0:
+    if not on_rtd:  # only import and set the theme if we're building docs locally
+        import sphinx_rtd_theme
+        html_theme = 'sphinx_rtd_theme'
+        html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # otherwise, readthedocs.org uses their theme by default, so no need to specify it
+
+
+import alabaster
+html_theme = 'alabaster'
+html_theme_path = ['.', alabaster.get_path()]
+
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+html_theme_options = {
+    'description':
+        'A quick guide to Python for experienced programmers',
+    'show_related': True,
+    'github_button': False,
+    'show_powered_by': False,
+
+    'font_family':
+        'Georgia Pro, Georgia, '
+        'serif',
+    'head_font_family':
+        'Franklin Gothic Medium, Franklin Gothic, ITC Franklin Gothic, '
+        'Helvetica, Arial, '
+        'sans-serif',
+    'code_font_family':
+        'Consolas, '
+        'Menlo, '
+        'monospace',
+}
 
 
 
