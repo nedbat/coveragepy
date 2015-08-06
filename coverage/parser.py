@@ -17,24 +17,7 @@ from coverage.misc import CoverageException, NoSource, NotPython
 from coverage.phystokens import compile_unicode, generate_tokens
 
 
-class CodeParser(object):
-    """
-    Base class for any code parser.
-    """
-    def translate_lines(self, lines):
-        return set(lines)
-
-    def translate_arcs(self, arcs):
-        return arcs
-
-    def exit_counts(self):
-        return {}
-
-    def arcs(self):
-        return []
-
-
-class PythonParser(CodeParser):
+class PythonParser(object):
     """Parse code to find executable lines, excluded lines, etc."""
 
     @contract(text='unicode|None')
@@ -198,9 +181,11 @@ class PythonParser(CodeParser):
         return set(self.first_line(l) for l in lines)
 
     def translate_lines(self, lines):
+        """Implement `FileReporter.translate_lines`."""
         return self.first_lines(lines)
 
     def translate_arcs(self, arcs):
+        """Implement `FileReporter.translate_arcs`."""
         return [
             (self.first_line(a), self.first_line(b))
             for (a, b) in arcs

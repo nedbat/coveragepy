@@ -53,6 +53,7 @@ Key:
 - build process
     - don't publish to nedbat.com any more (but still need the sample html reports)
         - don't need .px tooling
+        - write a new nedbat.com/code/coverage page.
     - all doc links should point to rtfd
 + Remove code only run on <2.6
 + Change data file to json
