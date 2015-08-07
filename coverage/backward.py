@@ -37,6 +37,12 @@ try:
 except NameError:
     unicode_class = str
 
+# Where do pickles come from?
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 # range or xrange?
 try:
     range = xrange
