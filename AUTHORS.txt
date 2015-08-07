@@ -64,4 +64,5 @@ Steve Leonard
 Steve Peak
 Ted Wexler
 Titus Brown
+Yury Selivanov
 Zooko Wilcox-O'Hearn
