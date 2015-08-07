@@ -8,7 +8,7 @@
 The Coverage class
 ------------------
 
-.. automodule:: coverage
+.. module:: coverage
 
 .. autoclass:: Coverage
     :members:

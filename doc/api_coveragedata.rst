@@ -10,7 +10,7 @@ The CoverageData class
 
 .. versionadded:: 4.0
 
-.. automodule:: coverage
+.. module:: coverage
 
 .. autoclass:: CoverageData
     :members:
