@@ -24,7 +24,7 @@ typedef struct CTracer {
     PyObject * data;
     PyObject * file_tracers;
     PyObject * should_trace_cache;
-    PyObject * arcs;
+    PyObject * trace_arcs;
 
     /* Has the tracer been started? */
     int started;

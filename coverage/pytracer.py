@@ -36,7 +36,7 @@ class PyTracer(object):
     def __init__(self):
         # Attributes set from the collector:
         self.data = None
-        self.arcs = False
+        self.trace_arcs = False
         self.should_trace = None
         self.should_trace_cache = None
         self.warn = None
@@ -68,7 +68,7 @@ class PyTracer(object):
         if self.last_exc_back:
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
-                if self.arcs and self.cur_file_dict:
+                if self.trace_arcs and self.cur_file_dict:
                     pair = (self.last_line, -self.last_exc_firstlineno)
                     self.cur_file_dict[pair] = None
                 self.cur_file_dict, self.last_line = self.data_stack.pop()
@@ -99,13 +99,13 @@ class PyTracer(object):
             # Record an executed line.
             if self.cur_file_dict is not None:
                 lineno = frame.f_lineno
-                if self.arcs:
+                if self.trace_arcs:
                     self.cur_file_dict[(self.last_line, lineno)] = None
                 else:
                     self.cur_file_dict[lineno] = None
                 self.last_line = lineno
         elif event == 'return':
-            if self.arcs and self.cur_file_dict:
+            if self.trace_arcs and self.cur_file_dict:
                 # Record an arc leaving the function, but beware that a
                 # "return" event might just mean yielding from a generator.
                 bytecode = frame.f_code.co_code[frame.f_lasti]

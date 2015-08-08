@@ -92,7 +92,7 @@ class HtmlReporter(Reporter):
         self.coverage = cov
 
         self.files = []
-        self.arcs = self.coverage.data.has_arcs()
+        self.has_arcs = self.coverage.data.has_arcs()
         self.status = HtmlStatus()
         self.extra_css = None
         self.totals = Numbers()
@@ -179,7 +179,7 @@ class HtmlReporter(Reporter):
         # Get the numbers for this file.
         nums = analysis.numbers
 
-        if self.arcs:
+        if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
 
         # These classes determine which lines are highlighted by default.
@@ -201,7 +201,7 @@ class HtmlReporter(Reporter):
                 line_class.append(c_exc)
             elif lineno in analysis.missing:
                 line_class.append(c_mis)
-            elif self.arcs and lineno in missing_branch_arcs:
+            elif self.has_arcs and lineno in missing_branch_arcs:
                 line_class.append(c_par)
                 shorts = []
                 longs = []
@@ -250,7 +250,7 @@ class HtmlReporter(Reporter):
         # Write the HTML page for this file.
         template_values = {
             'c_exc': c_exc, 'c_mis': c_mis, 'c_par': c_par, 'c_run': c_run,
-            'arcs': self.arcs, 'extra_css': self.extra_css,
+            'has_arcs': self.has_arcs, 'extra_css': self.extra_css,
             'fr': fr, 'nums': nums, 'lines': lines,
             'time_stamp': self.time_stamp,
         }
@@ -276,7 +276,7 @@ class HtmlReporter(Reporter):
         self.totals = sum(f['nums'] for f in self.files)
 
         html = index_tmpl.render({
-            'arcs': self.arcs,
+            'has_arcs': self.has_arcs,
             'extra_css': self.extra_css,
             'files': self.files,
             'totals': self.totals,

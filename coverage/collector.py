@@ -190,7 +190,7 @@ class Collector(object):
         """Start a new Tracer object, and store it in self.tracers."""
         tracer = self._trace_class()
         tracer.data = self.data
-        tracer.arcs = self.branch
+        tracer.trace_arcs = self.branch
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
         tracer.warn = self.warn

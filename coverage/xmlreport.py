@@ -35,7 +35,7 @@ class XmlReporter(Reporter):
         self.source_paths = set()
         self.packages = {}
         self.xml_out = None
-        self.arcs = coverage.data.has_arcs()
+        self.has_arcs = coverage.data.has_arcs()
 
     def report(self, morfs, outfile=None):
         """Generate a Cobertura-compatible XML report for `morfs`.
@@ -92,7 +92,7 @@ class XmlReporter(Reporter):
                 xclasses.appendChild(class_elts[class_name])
             xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
             xpackage.setAttribute("line-rate", rate(lhits, lnum))
-            if self.arcs:
+            if self.has_arcs:
                 branch_rate = rate(bhits, bnum)
             else:
                 branch_rate = "0"
@@ -105,7 +105,7 @@ class XmlReporter(Reporter):
             bhits_tot += bhits
 
         xcoverage.setAttribute("line-rate", rate(lhits_tot, lnum_tot))
-        if self.arcs:
+        if self.has_arcs:
             branch_rate = rate(bhits_tot, bnum_tot)
         else:
             branch_rate = "0"
@@ -161,7 +161,7 @@ class XmlReporter(Reporter):
             # executed?  If so, that should be recorded here.
             xline.setAttribute("hits", str(int(line not in analysis.missing)))
 
-            if self.arcs:
+            if self.has_arcs:
                 if line in branch_stats:
                     total, taken = branch_stats[line]
                     xline.setAttribute("branch", "true")
@@ -177,7 +177,7 @@ class XmlReporter(Reporter):
         class_lines = len(analysis.statements)
         class_hits = class_lines - len(analysis.missing)
 
-        if self.arcs:
+        if self.has_arcs:
             class_branches = sum(t for t, k in branch_stats.values())
             missing_branches = sum(t - k for t, k in branch_stats.values())
             class_br_hits = class_branches - missing_branches
@@ -187,7 +187,7 @@ class XmlReporter(Reporter):
 
         # Finalize the statistics that are collected in the XML DOM.
         xclass.setAttribute("line-rate", rate(class_hits, class_lines))
-        if self.arcs:
+        if self.has_arcs:
             branch_rate = rate(class_br_hits, class_branches)
         else:
             branch_rate = "0"

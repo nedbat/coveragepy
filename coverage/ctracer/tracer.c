@@ -911,7 +911,7 @@ CTracer_start(CTracer *self, PyObject *args_unused)
 {
     PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
     self->started = 1;
-    self->tracing_arcs = self->arcs && PyObject_IsTrue(self->arcs);
+    self->tracing_arcs = self->trace_arcs && PyObject_IsTrue(self->trace_arcs);
     self->cur_entry.last_line = -1;
 
     /* start() returns a trace function usable with sys.settrace() */
@@ -976,7 +976,7 @@ CTracer_members[] = {
     { "should_trace_cache", T_OBJECT, offsetof(CTracer, should_trace_cache), 0,
             PyDoc_STR("Dictionary caching should_trace results.") },
 
-    { "arcs",               T_OBJECT, offsetof(CTracer, arcs), 0,
+    { "trace_arcs",         T_OBJECT, offsetof(CTracer, trace_arcs), 0,
             PyDoc_STR("Should we trace arcs, or just lines?") },
 
     { NULL }
