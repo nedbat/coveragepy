@@ -20,7 +20,7 @@ class Plugin(coverage.CoveragePlugin):
         return FileReporter(filename)
 
 
-class FileTracer(coverage.plugin.FileTracer):
+class FileTracer(coverage.FileTracer):
     """A FileTracer emulating a simple static plugin."""
 
     def __init__(self, filename):
@@ -40,7 +40,7 @@ class FileTracer(coverage.plugin.FileTracer):
         return lineno*100+5, lineno*100+7
 
 
-class FileReporter(coverage.plugin.FileReporter):
+class FileReporter(coverage.FileReporter):
     """Dead-simple FileReporter."""
     def statements(self):
         return set([105, 106, 107, 205, 206, 207])

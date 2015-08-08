@@ -18,7 +18,7 @@ class Plugin(coverage.CoveragePlugin):
         return FileReporter(filename)
 
 
-class RenderFileTracer(coverage.plugin.FileTracer):
+class RenderFileTracer(coverage.FileTracer):
     """A FileTracer using information from the caller."""
 
     def has_dynamic_source_filename(self):
@@ -35,7 +35,7 @@ class RenderFileTracer(coverage.plugin.FileTracer):
         return lineno, lineno+1
 
 
-class FileReporter(coverage.plugin.FileReporter):
+class FileReporter(coverage.FileReporter):
     """A goofy file reporter."""
     def statements(self):
         # Goofy test arrangement: claim that the file has as many lines as the
