@@ -38,7 +38,7 @@ class PythonParser(object):
             except IOError as err:
                 raise NoSource(
                     "No source for code: '%s': %s" % (self.filename, err)
-                    )
+                )
 
         self.exclude = exclude
 
@@ -112,7 +112,7 @@ class PythonParser(object):
                 print("%10s %5s %-20r %r" % (
                     tokenize.tok_name.get(toktype, toktype),
                     nice_pair((slineno, elineno)), ttext, ltext
-                    ))
+                ))
             if toktype == token.INDENT:
                 indent += 1
             elif toktype == token.DEDENT:
@@ -203,12 +203,16 @@ class PythonParser(object):
         """
         try:
             self._raw_parse()
-        except (tokenize.TokenError, IndentationError) as tokerr:
-            msg, lineno = tokerr.args   # pylint: disable=unpacking-non-sequence
+        except (tokenize.TokenError, IndentationError) as err:
+            if hasattr(err, "lineno"):
+                lineno = err.lineno         # IndentationError
+            else:
+                lineno = err.args[1][0]     # TokenError
             raise NotPython(
-                "Couldn't parse '%s' as Python source: '%s' at %s" %
-                    (self.filename, msg, lineno)
+                "Couldn't parse '%s' as Python source: '%s' at line %d" % (
+                    self.filename, err.args[0], lineno
                 )
+            )
 
         excluded_lines = self.first_lines(self.excluded)
         ignore = set()
@@ -290,7 +294,7 @@ OPS_CODE_END = _opcode_set('RETURN_VALUE')
 OPS_CHUNK_END = _opcode_set(
     'JUMP_ABSOLUTE', 'JUMP_FORWARD', 'RETURN_VALUE', 'RAISE_VARARGS',
     'BREAK_LOOP', 'CONTINUE_LOOP',
-    )
+)
 
 # Opcodes that unconditionally begin a new code chunk.  By starting new chunks
 # with unconditional jump instructions, we neatly deal with jumps to jumps
@@ -300,7 +304,7 @@ OPS_CHUNK_BEGIN = _opcode_set('JUMP_ABSOLUTE', 'JUMP_FORWARD')
 # Opcodes that push a block on the block stack.
 OPS_PUSH_BLOCK = _opcode_set(
     'SETUP_LOOP', 'SETUP_EXCEPT', 'SETUP_FINALLY', 'SETUP_WITH'
-    )
+)
 
 # Block types for exception handling.
 OPS_EXCEPT_BLOCKS = _opcode_set('SETUP_EXCEPT', 'SETUP_FINALLY')
@@ -343,10 +347,9 @@ class ByteParser(object):
         for attr in ['co_lnotab', 'co_firstlineno', 'co_consts', 'co_code']:
             if not hasattr(self.code, attr):
                 raise CoverageException(
-                    "This implementation of Python doesn't support code "
-                    "analysis.\n"
+                    "This implementation of Python doesn't support code analysis.\n"
                     "Run coverage.py under CPython for this command."
-                    )
+                )
 
     def child_parsers(self):
         """Iterate over all the code objects nested within this one.
@@ -664,4 +667,4 @@ class Chunk(object):
             "!" if self.first else "",
             "v" if self.entrance else "",
             list(self.exits),
-            )
+        )

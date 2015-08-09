@@ -12,9 +12,9 @@ from coverage.misc import format_lines
 class Analysis(object):
     """The results of analyzing a FileReporter."""
 
-    def __init__(self, data, file_reporters):
+    def __init__(self, data, file_reporter):
         self.data = data
-        self.file_reporter = file_reporters
+        self.file_reporter = file_reporter
         self.filename = self.file_reporter.filename
         self.statements = self.file_reporter.statements()
         self.excluded = self.file_reporter.excluded_statements()

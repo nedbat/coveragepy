@@ -8,6 +8,7 @@ import textwrap
 from tests.coveragetest import CoverageTest
 
 from coverage import env
+from coverage.misc import NotPython
 from coverage.parser import PythonParser
 
 
@@ -115,6 +116,25 @@ class PythonParserTest(CoverageTest):
             b = 6
             """)
         self.assertEqual(parser.exit_counts(), { 1:1, 2:1, 3:1, 6:1 })
+
+    def test_indentation_error(self):
+        msg = (
+            "Couldn't parse '<code>' as Python source: "
+            "'unindent does not match any outer indentation level' at line 3"
+        )
+        with self.assertRaisesRegex(NotPython, msg):
+            _ = self.parse_source("""\
+                0 spaces
+                  2
+                 1
+                """)
+
+    def test_token_error(self):
+        msg = "Couldn't parse '<code>' as Python source: 'EOF in multi-line string' at line 1"
+        with self.assertRaisesRegex(NotPython, msg):
+            _ = self.parse_source("""\
+                '''
+                """)
 
 
 class ParserFileTest(CoverageTest):
