@@ -3,9 +3,6 @@
 
 """Plugin interfaces for coverage.py"""
 
-import os
-import re
-
 from coverage import files
 from coverage.misc import _needs_to_implement
 
@@ -226,18 +223,3 @@ class FileReporter(object):
         place.
         """
         return False
-
-    def flat_rootname(self):
-        """A base for a flat filename to correspond to this file.
-
-        Useful for writing files about the code where you want all the files in
-        the same directory, but need to differentiate same-named files from
-        different directories.
-
-        For example, the file a/b/c.py will return 'a_b_c_py'
-
-        You should not need to override this method.
-
-        """
-        name = os.path.splitdrive(self.relative_filename())[1]
-        return re.sub(r"[\\/.:]", "_", name)

@@ -12,6 +12,7 @@ import shutil
 import coverage
 from coverage import env
 from coverage.backward import iitems
+from coverage.files import flat_rootname
 from coverage.misc import CoverageException, Hasher
 from coverage.report import Reporter
 from coverage.results import Numbers
@@ -166,15 +167,15 @@ class HtmlReporter(Reporter):
         source = fr.source()
 
         # Find out if the file on disk is already correct.
-        flat_rootname = fr.flat_rootname()
+        rootname = flat_rootname(fr.relative_filename())
         this_hash = self.file_hash(source.encode('utf-8'), fr)
-        that_hash = self.status.file_hash(flat_rootname)
+        that_hash = self.status.file_hash(rootname)
         if this_hash == that_hash:
             # Nothing has changed to require the file to be reported again.
-            self.files.append(self.status.index_info(flat_rootname))
+            self.files.append(self.status.index_info(rootname))
             return
 
-        self.status.set_file_hash(flat_rootname, this_hash)
+        self.status.set_file_hash(rootname, this_hash)
 
         # Get the numbers for this file.
         nums = analysis.numbers
@@ -256,7 +257,7 @@ class HtmlReporter(Reporter):
         }
         html = spaceless(self.source_tmpl.render(template_values))
 
-        html_filename = flat_rootname + ".html"
+        html_filename = rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)
         self.write_html(html_path, html)
 
@@ -267,7 +268,7 @@ class HtmlReporter(Reporter):
             'relative_filename': fr.relative_filename(),
         }
         self.files.append(index_info)
-        self.status.set_index_info(flat_rootname, index_info)
+        self.status.set_index_info(rootname, index_info)
 
     def index_file(self):
         """Write the index.html file for this report."""

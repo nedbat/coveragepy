@@ -9,7 +9,7 @@ import os.path
 from coverage import files
 from coverage.files import (
     TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
-    find_python_files, abs_file, actual_path
+    find_python_files, abs_file, actual_path, flat_rootname,
 )
 from coverage.misc import CoverageException
 from coverage import env
@@ -53,6 +53,10 @@ class FilesTest(CoverageTest):
         trick = os.path.splitdrive(d)[1].lstrip(os.path.sep)
         rel = os.path.join('sub', trick, 'file1.py')
         self.assertEqual(files.relative_filename(abs_file(rel)), rel)
+
+    def test_flat_rootname(self):
+        self.assertEqual(flat_rootname("a/b/c.py"), "a_b_c_py")
+        self.assertEqual(flat_rootname(r"c:\foo\bar.html"), "c__foo_bar_html")
 
 
 class MatcherTest(CoverageTest):

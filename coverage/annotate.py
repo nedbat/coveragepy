@@ -7,6 +7,7 @@ import io
 import os
 import re
 
+from coverage.files import flat_rootname
 from coverage.report import Reporter
 
 class AnnotateReporter(Reporter):
@@ -57,7 +58,7 @@ class AnnotateReporter(Reporter):
         excluded = sorted(analysis.excluded)
 
         if self.directory:
-            dest_file = os.path.join(self.directory, fr.flat_rootname())
+            dest_file = os.path.join(self.directory, flat_rootname(fr.relative_filename()))
             if dest_file.endswith("_py"):
                 dest_file = dest_file[:-3] + ".py"
             dest_file += ",cover"
