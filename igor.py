@@ -79,7 +79,8 @@ def run_tests(tracer, *nose_args):
         print(msg)
         return
 
-    os.environ['COVERAGE_TESTING'] = "True"
+    if 'COVERAGE_TESTING' not in os.environ:
+        os.environ['COVERAGE_TESTING'] = "True"
     print_banner(label)
     nose_args = ["nosetests"] + list(nose_args)
     nose.core.main(argv=nose_args)

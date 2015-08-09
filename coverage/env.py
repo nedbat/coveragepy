@@ -27,4 +27,6 @@ C_TRACER = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
 METACOV = os.getenv('COVERAGE_COVERAGE', '') != ''
 
 # Are we running our test suite?
-TESTING = os.getenv('COVERAGE_TESTING', '') != ''
+# Even when running tests, you can use COVERAGE_TESTING=0 to disable the
+# test-specific behavior like contracts.
+TESTING = os.getenv('COVERAGE_TESTING', '') == 'True'
