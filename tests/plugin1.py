@@ -42,11 +42,8 @@ class FileTracer(coverage.FileTracer):
 
 class FileReporter(coverage.FileReporter):
     """Dead-simple FileReporter."""
-    def statements(self):
+    def lines(self):
         return set([105, 106, 107, 205, 206, 207])
-
-    def excluded_statements(self):
-        return set([])
 
 
 def coverage_init(reg, options):        # pylint: disable=unused-argument

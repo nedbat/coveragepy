@@ -151,41 +151,35 @@ class FileTracer(object):
 
 class FileReporter(object):
     """Support needed for files during the reporting phase."""
+
     def __init__(self, filename):
-        # TODO: document that this init happens.
+        """Simple initialization of a `FileReporter`.
+
+        The `filename` argument is the path to the file being reported.  This
+        will be available as the `.filename` attribute on the object.  Other
+        method implementations on this base class rely on this attribute.
+
+        """
         self.filename = filename
 
     def __repr__(self):
         return "<{0.__class__.__name__} filename={0.filename!r}>".format(self)
 
     def relative_filename(self):
+        """Return the relative filename for this file.
+
+        This file path will be displayed in reports. You only need to supply
+        this method if you have an unusual syntax for file paths.  The default
+        implementation will supply the actual project-relative file path.
+
+        """
         return files.relative_filename(self.filename)
 
-    # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
-    # of them defined.
-
-    def __eq__(self, other):
-        return isinstance(other, FileReporter) and self.filename == other.filename
-
-    def __ne__(self, other):
-        return not (self == other)
-
-    def __lt__(self, other):
-        return self.filename < other.filename
-
-    def __le__(self, other):
-        return self.filename <= other.filename
-
-    def __gt__(self, other):
-        return self.filename > other.filename
-
-    def __ge__(self, other):
-        return self.filename >= other.filename
-
-    def statements(self):
+    def lines(self):
+        """Return a set of executable lines"""
         _needs_to_implement(self, "statements")
 
-    def excluded_statements(self):
+    def excluded_lines(self):
         return set([])
 
     def translate_lines(self, lines):
@@ -210,7 +204,31 @@ class FileReporter(object):
             return f.read()
 
     def source_token_lines(self):
-        """Return the 'tokenized' text for the code."""
+        """Return the 'tokenized' text for the code.
+
+       'str', 'nam', 'num', 'key', 'com', 'op'
+        """
         # A generic implementation, each line is one "txt" token.
         for line in self.source().splitlines():
             yield [('txt', line)]
+
+    # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
+    # of them defined.
+
+    def __eq__(self, other):
+        return isinstance(other, FileReporter) and self.filename == other.filename
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __lt__(self, other):
+        return self.filename < other.filename
+
+    def __le__(self, other):
+        return self.filename <= other.filename
+
+    def __gt__(self, other):
+        return self.filename > other.filename
+
+    def __ge__(self, other):
+        return self.filename >= other.filename

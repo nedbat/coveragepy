@@ -127,7 +127,7 @@ class XmlReporter(Reporter):
 
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
-        filename = files.relative_filename(fr.filename)
+        filename = fr.relative_filename()
         filename = filename.replace("\\", "/")
         dirname = os.path.dirname(filename) or "."
         parts = dirname.split("/")

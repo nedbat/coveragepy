@@ -37,7 +37,7 @@ class RenderFileTracer(coverage.FileTracer):
 
 class FileReporter(coverage.FileReporter):
     """A goofy file reporter."""
-    def statements(self):
+    def lines(self):
         # Goofy test arrangement: claim that the file has as many lines as the
         # number in its name.
         num = os.path.basename(self.filename).split(".")[0].split("_")[1]

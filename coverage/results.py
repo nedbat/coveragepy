@@ -16,8 +16,8 @@ class Analysis(object):
         self.data = data
         self.file_reporter = file_reporter
         self.filename = self.file_reporter.filename
-        self.statements = self.file_reporter.statements()
-        self.excluded = self.file_reporter.excluded_statements()
+        self.statements = self.file_reporter.lines()
+        self.excluded = self.file_reporter.excluded_lines()
 
         # Identify missing statements.
         executed = self.data.lines(self.filename) or []

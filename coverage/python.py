@@ -126,13 +126,13 @@ class PythonFileReporter(FileReporter):
             )
         return self._parser
 
-    def statements(self):
+    def lines(self):
         """Return the line numbers of statements in the file."""
         if self._statements is None:
             self._statements, self._excluded = self.parser.parse_source()
         return self._statements
 
-    def excluded_statements(self):
+    def excluded_lines(self):
         """Return the line numbers of statements in the file."""
         if self._excluded is None:
             self._statements, self._excluded = self.parser.parse_source()

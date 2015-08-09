@@ -198,14 +198,14 @@ class DebugFileReporterWrapper(FileReporter):
         self.debug.write("relative_filename() --> %r" % (ret,))
         return ret
 
-    def statements(self):
-        ret = self.reporter.statements()
-        self.debug.write("statements() --> %r" % (ret,))
+    def lines(self):
+        ret = self.reporter.lines()
+        self.debug.write("lines() --> %r" % (ret,))
         return ret
 
-    def excluded_statements(self):
-        ret = self.reporter.excluded_statements()
-        self.debug.write("excluded_statements() --> %r" % (ret,))
+    def excluded_lines(self):
+        ret = self.reporter.excluded_lines()
+        self.debug.write("excluded_lines() --> %r" % (ret,))
         return ret
 
     def translate_lines(self, lines):
