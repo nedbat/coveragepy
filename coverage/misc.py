@@ -83,19 +83,24 @@ def format_lines(statements, lines):
 
 
 def expensive(fn):
-    """A decorator to cache the result of an expensive operation.
+    """A decorator to indicate that a method shouldn't be called more than once.
 
-    Only applies to methods with no arguments.
+    Normally, this does nothing.  During testing, this raises an exception if
+    called more than once.
 
     """
-    attr = "_cache_" + fn.__name__
+    if env.TESTING:
+        attr = "_once_" + fn.__name__
 
-    def _wrapped(self):
-        """Inner function that checks the cache."""
-        if not hasattr(self, attr):
-            setattr(self, attr, fn(self))
-        return getattr(self, attr)
-    return _wrapped
+        def _wrapped(self):
+            """Inner function that checks the cache."""
+            if hasattr(self, attr):
+                raise Exception("Shouldn't have called %s more than once" % fn.__name__)
+            setattr(self, attr, True)
+            return fn(self)
+        return _wrapped
+    else:
+        return fn
 
 
 def bool_or_none(b):

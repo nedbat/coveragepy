@@ -62,8 +62,9 @@ class PythonParser(object):
         # The line numbers that start statements.
         self.statement_starts = set()
 
-        # Lazily-created ByteParser
+        # Lazily-created ByteParser and arc data.
         self._byte_parser = None
+        self._all_arcs = None
 
     @property
     def byte_parser(self):
@@ -232,13 +233,18 @@ class PythonParser(object):
         normalized to the first line of multi-line statements.
 
         """
-        all_arcs = []
-        for l1, l2 in self.byte_parser._all_arcs():
-            fl1 = self.first_line(l1)
-            fl2 = self.first_line(l2)
-            if fl1 != fl2:
-                all_arcs.append((fl1, fl2))
-        return all_arcs
+        return self.arcs_internal()
+
+    def arcs_internal(self):
+        """Internal worker to calculate the arcs."""
+        if self._all_arcs is None:
+            self._all_arcs = []
+            for l1, l2 in self.byte_parser._all_arcs():
+                fl1 = self.first_line(l1)
+                fl2 = self.first_line(l2)
+                if fl1 != fl2:
+                    self._all_arcs.append((fl1, fl2))
+        return self._all_arcs
 
     @expensive
     def exit_counts(self):
@@ -249,7 +255,7 @@ class PythonParser(object):
         """
         excluded_lines = self.first_lines(self.excluded)
         exit_counts = collections.defaultdict(int)
-        for l1, l2 in self.arcs():
+        for l1, l2 in self.arcs_internal():
             if l1 < 0:
                 # Don't ever report -1 as a line number
                 continue

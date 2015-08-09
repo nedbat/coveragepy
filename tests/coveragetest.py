@@ -108,9 +108,9 @@ class CoverageTest(
 
     # Map chars to numbers for arcz_to_arcs
     _arcz_map = {'.': -1}
-    _arcz_map.update(dict((c, ord(c)-ord('0')) for c in '123456789'))
+    _arcz_map.update(dict((c, ord(c) - ord('0')) for c in '123456789'))
     _arcz_map.update(dict(
-        (c, 10+ord(c)-ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        (c, 10 + ord(c) - ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     ))
 
     def arcz_to_arcs(self, arcz):
@@ -141,7 +141,7 @@ class CoverageTest(
                     assert pair[1] == '-'
                     a, _, b = pair
                     bsgn = -1
-            arcs.append((asgn*self._arcz_map[a], bsgn*self._arcz_map[b]))
+            arcs.append((asgn * self._arcz_map[a], bsgn * self._arcz_map[b]))
         return sorted(arcs)
 
     def assert_equal_args(self, a1, a2, msg=None):
@@ -178,7 +178,7 @@ class CoverageTest(
         # Coverage.py wants to deal with things as modules with file names.
         modname = self.get_module_name()
 
-        self.make_file(modname+".py", text)
+        self.make_file(modname + ".py", text)
 
         if arcs is None and arcz is not None:
             arcs = self.arcz_to_arcs(arcz)
@@ -186,9 +186,10 @@ class CoverageTest(
             arcs_missing = self.arcz_to_arcs(arcz_missing)
         if arcs_unpredicted is None and arcz_unpredicted is not None:
             arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted)
+        branch = any(x is not None for x in [arcs, arcs_missing, arcs_unpredicted])
 
         # Start up coverage.py.
-        cov = coverage.Coverage(branch=(arcs_missing is not None))
+        cov = coverage.Coverage(branch=branch)
         cov.erase()
         for exc in excludes or []:
             cov.exclude(exc)
@@ -215,9 +216,7 @@ class CoverageTest(
                     if statements == line_list:
                         break
                 else:
-                    self.fail(
-                        "None of the lines choices matched %r" % statements
-                        )
+                    self.fail("None of the lines choices matched %r" % statements)
 
             missing_formatted = analysis.missing_formatted()
             if isinstance(missing, string_class):
@@ -227,27 +226,22 @@ class CoverageTest(
                     if missing_formatted == missing_list:
                         break
                 else:
-                    self.fail(
-                        "None of the missing choices matched %r" %
-                        missing_formatted
-                        )
+                    self.fail("None of the missing choices matched %r" % missing_formatted)
 
         if arcs is not None:
-            self.assert_equal_args(
-                analysis.arc_possibilities(), arcs, "Possible arcs differ"
-                )
+            self.assert_equal_args(analysis.arc_possibilities(), arcs, "Possible arcs differ")
 
             if arcs_missing is not None:
                 self.assert_equal_args(
                     analysis.arcs_missing(), arcs_missing,
                     "Missing arcs differ"
-                    )
+                )
 
             if arcs_unpredicted is not None:
                 self.assert_equal_args(
                     analysis.arcs_unpredicted(), arcs_unpredicted,
                     "Unpredicted arcs differ"
-                    )
+                )
 
         if report:
             frep = StringIO()

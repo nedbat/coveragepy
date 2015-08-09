@@ -25,6 +25,8 @@ class Analysis(object):
         self.missing = self.statements - executed
 
         if self.data.has_arcs():
+            self._arc_possibilities = sorted(self.file_reporter.arcs())
+            self.exit_counts = self.file_reporter.exit_counts()
             self.no_branch = self.file_reporter.no_branch_lines()
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
@@ -33,8 +35,10 @@ class Analysis(object):
                 )
             n_missing_branches = sum(len(v) for k,v in iitems(mba))
         else:
-            n_branches = n_partial_branches = n_missing_branches = 0
+            self._arc_possibilities = []
+            self.exit_counts = {}
             self.no_branch = set()
+            n_branches = n_partial_branches = n_missing_branches = 0
 
         self.numbers = Numbers(
             n_files=1,
@@ -60,7 +64,7 @@ class Analysis(object):
 
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
-        return sorted(self.file_reporter.arcs())
+        return self._arc_possibilities
 
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
@@ -116,13 +120,11 @@ class Analysis(object):
 
     def branch_lines(self):
         """Returns a list of line numbers that have more than one exit."""
-        exit_counts = self.file_reporter.exit_counts()
-        return [l1 for l1,count in iitems(exit_counts) if count > 1]
+        return [l1 for l1,count in iitems(self.exit_counts) if count > 1]
 
     def total_branches(self):
         """How many total branches are there?"""
-        exit_counts = self.file_reporter.exit_counts()
-        return sum(count for count in exit_counts.values() if count > 1)
+        return sum(count for count in self.exit_counts.values() if count > 1)
 
     def missing_branch_arcs(self):
         """Return arcs that weren't executed from branch lines.
@@ -145,11 +147,10 @@ class Analysis(object):
         (total_exits, taken_exits).
         """
 
-        exit_counts = self.file_reporter.exit_counts()
         missing_arcs = self.missing_branch_arcs()
         stats = {}
         for lnum in self.branch_lines():
-            exits = exit_counts[lnum]
+            exits = self.exit_counts[lnum]
             try:
                 missing = len(missing_arcs[lnum])
             except KeyError:
