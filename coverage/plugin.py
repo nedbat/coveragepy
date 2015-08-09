@@ -214,12 +214,3 @@ class FileReporter(object):
         # A generic implementation, each line is one "txt" token.
         for line in self.source().splitlines():
             yield [('txt', line)]
-
-    def should_be_python(self):
-        """Does it seem like this file should contain Python?
-
-        This is used to decide if a file reported as part of the execution of
-        a program was really likely to have contained Python in the first
-        place.
-        """
-        return False

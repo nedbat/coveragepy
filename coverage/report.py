@@ -87,5 +87,7 @@ class Reporter(object):
             except NotPython:
                 # Only report errors for .py files, and only if we didn't
                 # explicitly suppress those errors.
+                # NotPython is only raised by PythonFileReporter, which has a
+                # should_be_python() method.
                 if fr.should_be_python() and not self.config.ignore_errors:
                     raise

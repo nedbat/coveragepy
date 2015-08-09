@@ -242,8 +242,3 @@ class DebugFileReporterWrapper(FileReporter):
         ret = list(self.reporter.source_token_lines())
         self.debug.write("source_token_lines() --> %d tokens" % (len(ret),))
         return ret
-
-    def should_be_python(self):
-        ret = self.reporter.should_be_python()
-        self.debug.write("should_be_python() --> %r" % (ret,))
-        return ret

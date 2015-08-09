@@ -87,6 +87,8 @@ class SummaryReporter(Reporter):
                 report_it = not self.config.ignore_errors
                 if report_it:
                     typ, msg = sys.exc_info()[:2]
+                    # NotPython is only raised by PythonFileReporter, which has a
+                    # should_be_python() method.
                     if typ is NotPython and not fr.should_be_python():
                         report_it = False
                 if report_it:
