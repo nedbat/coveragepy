@@ -224,7 +224,7 @@ class PythonParser(object):
     def arcs(self):
         """Get information about the arcs available in the code.
 
-        Returns a sorted list of line number pairs.  Line numbers have been
+        Returns a list of line number pairs.  Line numbers have been
         normalized to the first line of multi-line statements.
 
         """
@@ -234,7 +234,7 @@ class PythonParser(object):
             fl2 = self.first_line(l2)
             if fl1 != fl2:
                 all_arcs.append((fl1, fl2))
-        return sorted(all_arcs)
+        return all_arcs
 
     @expensive
     def exit_counts(self):

@@ -60,7 +60,7 @@ class Analysis(object):
 
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
-        return self.file_reporter.arcs()
+        return sorted(self.file_reporter.arcs())
 
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
