@@ -180,7 +180,7 @@ class FileReporter(object):
         _needs_to_implement(self, "statements")
 
     def excluded_lines(self):
-        return set([])
+        return set()
 
     def translate_lines(self, lines):
         return set(lines)

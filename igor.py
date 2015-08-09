@@ -221,7 +221,7 @@ def do_check_eol():
         '*.egg-info',
         '_build',
         ]
-    checked = set([])
+    checked = set()
 
     def check_file(fname, crlf=True, trail_white=True):
         """Check a single file for whitespace abuse."""
