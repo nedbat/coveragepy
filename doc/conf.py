@@ -206,4 +206,4 @@ prerelease = bool(max(release).isalpha())
 def setup(app):
     app.add_stylesheet('coverage.css')
     app.add_config_value('prerelease', False, 'env')
-    print "** Prerelease = %r" % prerelease
+    app.info("** Prerelease = %r" % prerelease)
