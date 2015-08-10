@@ -204,9 +204,27 @@ class FileReporter(object):
             return f.read()
 
     def source_token_lines(self):
-        """Return the 'tokenized' text for the code.
+        """Generate a series of tokenized lines, one for each line in `source`.
 
-       'str', 'nam', 'num', 'key', 'com', 'op'
+        These tokens are used for syntax-colored reports.
+
+        Each line is a list of pairs, each pair is a token::
+
+            [('key', 'def'), ('ws', ' '), ('nam', 'hello'), ('op', '('), ... ]
+
+        Each pair has a token class, and the token text.  The token classes are:
+
+        * `'com'`: a comment
+        * `'key'`: a keyword
+        * `'nam'`: a name, or identifier
+        * `'num'`: a number
+        * `'op'`: an operator
+        * `'str'`: a string literal
+        * `'txt'`: some other kind of text
+
+        If you concatenate all the token texts, and then join them with newlines,
+        you should have your original `source` back.
+
         """
         # A generic implementation, each line is one "txt" token.
         for line in self.source().splitlines():

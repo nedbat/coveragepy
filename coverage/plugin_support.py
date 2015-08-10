@@ -160,7 +160,7 @@ class DebugFileTracerWrapper(FileTracer):
         return "%s@%d" % (
             os.path.basename(frame.f_code.co_filename),
             frame.f_lineno,
-            )
+        )
 
     def source_filename(self):
         sfilename = self.tracer.source_filename()

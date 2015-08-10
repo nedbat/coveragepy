@@ -459,7 +459,7 @@ class GoodPluginTest(FileTracerTest):
         for snip in [
             'filename="bar_4.html" line-rate="0.5" name="bar_4.html"',
             'filename="foo_7.html" line-rate="0.2857" name="foo_7.html"',
-            ]:
+        ]:
             self.assertIn(snip, xml)
 
     def test_defer_to_python(self):
