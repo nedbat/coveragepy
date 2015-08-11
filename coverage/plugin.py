@@ -4,7 +4,7 @@
 """Plugin interfaces for coverage.py"""
 
 from coverage import files
-from coverage.misc import _needs_to_implement
+from coverage.misc import contract, _needs_to_implement
 
 
 class CoveragePlugin(object):
@@ -182,26 +182,27 @@ class FileReporter(object):
     def excluded_lines(self):
         return set()
 
+    def arcs(self):
+        return []
+
+    def no_branch_lines(self):
+        return set()
+
     def translate_lines(self, lines):
         return set(lines)
 
     def translate_arcs(self, arcs):
         return arcs
 
-    def no_branch_lines(self):
-        return set()
-
     def exit_counts(self):
         return {}
 
-    def arcs(self):
-        return []
-
+    @contract(returns='unicode')
     def source(self):
         """Return the source for the code, a Unicode string."""
         # A generic implementation: read the text of self.filename
-        with open(self.filename) as f:
-            return f.read()
+        with open(self.filename, "rb") as f:
+            return f.read().decode("utf8")
 
     def source_token_lines(self):
         """Generate a series of tokenized lines, one for each line in `source`.
