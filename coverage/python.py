@@ -7,7 +7,7 @@ import os.path
 import zipimport
 
 from coverage import env, files
-from coverage.misc import contract, NoSource, join_regex
+from coverage.misc import contract, expensive, NoSource, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.plugin import FileReporter
@@ -126,12 +126,14 @@ class PythonFileReporter(FileReporter):
             )
         return self._parser
 
+    @expensive
     def lines(self):
         """Return the line numbers of statements in the file."""
         if self._statements is None:
             self._statements, self._excluded = self.parser.parse_source()
         return self._statements
 
+    @expensive
     def excluded_lines(self):
         """Return the line numbers of statements in the file."""
         if self._excluded is None:
@@ -144,6 +146,7 @@ class PythonFileReporter(FileReporter):
     def translate_arcs(self, arcs):
         return self.parser.translate_arcs(arcs)
 
+    @expensive
     def no_branch_lines(self):
         no_branch = self.parser.lines_matching(
             join_regex(self.coverage.config.partial_list),
@@ -151,9 +154,11 @@ class PythonFileReporter(FileReporter):
             )
         return no_branch
 
+    @expensive
     def arcs(self):
         return self.parser.arcs()
 
+    @expensive
     def exit_counts(self):
         return self.parser.exit_counts()
 

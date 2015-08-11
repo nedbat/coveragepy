@@ -192,6 +192,7 @@ class PythonParser(object):
             for (a, b) in arcs
         ]
 
+    @expensive
     def parse_source(self):
         """Parse source text to find executable lines, excluded lines, etc.
 
@@ -225,7 +226,6 @@ class PythonParser(object):
 
         return lines, excluded_lines
 
-    @expensive
     def arcs(self):
         """Get information about the arcs available in the code.
 
@@ -233,10 +233,6 @@ class PythonParser(object):
         normalized to the first line of multi-line statements.
 
         """
-        return self.arcs_internal()
-
-    def arcs_internal(self):
-        """Internal worker to calculate the arcs."""
         if self._all_arcs is None:
             self._all_arcs = []
             for l1, l2 in self.byte_parser._all_arcs():
@@ -246,7 +242,6 @@ class PythonParser(object):
                     self._all_arcs.append((fl1, fl2))
         return self._all_arcs
 
-    @expensive
     def exit_counts(self):
         """Get a mapping from line numbers to count of exits from that line.
 
@@ -255,7 +250,7 @@ class PythonParser(object):
         """
         excluded_lines = self.first_lines(self.excluded)
         exit_counts = collections.defaultdict(int)
-        for l1, l2 in self.arcs_internal():
+        for l1, l2 in self.arcs():
             if l1 < 0:
                 # Don't ever report -1 as a line number
                 continue
