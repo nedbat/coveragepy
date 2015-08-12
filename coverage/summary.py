@@ -103,6 +103,6 @@ class SummaryReporter(Reporter):
             if self.config.show_missing:
                 args += ("",)
             outfile.write(fmt_coverage % args)
-        if not total.n_files:
+        if not total.n_files and not self.config.skip_covered:
             raise CoverageException("No data to report.")
         return total.n_statements and total.pc_covered
