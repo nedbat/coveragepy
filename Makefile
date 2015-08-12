@@ -65,6 +65,9 @@ winkit:
 
 kit_local:
 	cp -v dist/* `awk -F "=" '/find-links/ {print $$2}' ~/.pip/pip.conf`
+	# pip caches wheels of things it has installed. Clean them out so we
+	# don't go crazy trying to figure out why our new code isn't installing.
+	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
 pypi:
 	python setup.py register
