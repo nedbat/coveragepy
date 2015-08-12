@@ -177,7 +177,7 @@ class FileReporter(object):
 
     def lines(self):
         """Return a set of executable lines"""
-        _needs_to_implement(self, "statements")
+        _needs_to_implement(self, "lines")
 
     def excluded_lines(self):
         return set()
