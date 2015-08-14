@@ -65,10 +65,7 @@ class SummaryReporter(Reporter):
                 if self.config.skip_covered:
                     # Don't report on 100% files.
                     no_missing_lines = (nums.n_missing == 0)
-                    if self.branches:
-                        no_missing_branches = (nums.n_partial_branches == 0)
-                    else:
-                        no_missing_branches = True
+                    no_missing_branches = (nums.n_partial_branches == 0)
                     if no_missing_lines and no_missing_branches:
                         skipped_count += 1
                         continue

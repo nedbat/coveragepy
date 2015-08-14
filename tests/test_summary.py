@@ -142,8 +142,7 @@ class SummaryTest(CoverageTest):
 
         self.assertEqual(self.line_count(report), 3)
         self.assertIn("mybranch.py ", report)
-        self.assertEqual(self.last_line_squeezed(report),
-                                "mybranch.py 5 0 2 1 86%")
+        self.assertEqual(self.last_line_squeezed(report), "mybranch.py 5 0 2 1 86%")
 
     def test_report_show_missing(self):
         self.make_file("mymissing.py", """\
@@ -367,7 +366,7 @@ class SummaryTest(CoverageTest):
         # pylint: disable=line-too-long
         # Name     Stmts   Miss  Cover
         # ----------------------------
-        # mycode   NotPython: Couldn't parse '/tmp/test_cover/63354509363/mycode.py' as Python source: 'invalid syntax' at line 1
+        # mycode   NotPython: Couldn't parse '...' as Python source: 'invalid syntax' at line 1
         # No data to report.
 
         last = self.squeezed_lines(report)[-2]
@@ -375,11 +374,10 @@ class SummaryTest(CoverageTest):
         last = re.sub(r"parse '.*mycode.py", "parse 'mycode.py", last)
         # The actual error message varies version to version
         last = re.sub(r": '.*' at", ": 'error' at", last)
-        self.assertEqual(last,
-            "mycode.py NotPython: "
-            "Couldn't parse 'mycode.py' as Python source: "
-            "'error' at line 1"
-            )
+        self.assertEqual(
+            last,
+            "mycode.py NotPython: Couldn't parse 'mycode.py' as Python source: 'error' at line 1"
+        )
 
     def test_dotpy_not_python_ignored(self):
         # We run a .py file, and when reporting, we can't parse it as Python,

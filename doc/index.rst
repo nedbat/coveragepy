@@ -172,6 +172,7 @@ More information
     branch
     subprocess
     api
+    howitworks
     plugins
     contributing
     trouble
