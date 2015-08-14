@@ -342,10 +342,25 @@ class SummaryTest(CoverageTest):
         self.assertEqual(squeezed[7],
                          "1 file skipped because of 'skip covered' option.")
 
-    def test_report_skip_covered_no_data(self):
-        self.make_file("main.py", "")
+    def test_report_skip_covered_all_files_covered(self):
+        self.make_file("main.py", """
+            def foo():
+                pass
+            foo()
+        """)
         out = self.run_command("coverage run --branch main.py")
         self.assertEqual(out, "")
+        report = self.report_from_command("coverage report --skip-covered")
+        # Name      Stmts   Miss Branch BrPart  Cover
+        # -------------------------------------------
+        #
+        # 1 file skipped because of 'skip covered' option.
+        self.assertEqual(self.line_count(report), 4, report)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(squeezed[3],
+                         "1 file skipped because of 'skip covered' option.")
+
+    def test_report_skip_covered_no_data(self):
         report = self.report_from_command("coverage report --skip-covered")
         # Name      Stmts   Miss Branch BrPart  Cover
         # -------------------------------------------
