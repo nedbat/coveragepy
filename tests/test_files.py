@@ -56,7 +56,7 @@ class FilesTest(CoverageTest):
 
     def test_flat_rootname(self):
         self.assertEqual(flat_rootname("a/b/c.py"), "a_b_c_py")
-        self.assertEqual(flat_rootname(r"c:\foo\bar.html"), "c__foo_bar_html")
+        self.assertEqual(flat_rootname(r"c:\foo\bar.html"), "_foo_bar_html")
 
 
 class MatcherTest(CoverageTest):

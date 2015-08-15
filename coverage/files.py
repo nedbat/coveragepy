@@ -77,7 +77,7 @@ def flat_rootname(filename):
     For example, the file a/b/c.py will return 'a_b_c_py'
 
     """
-    name = os.path.splitdrive(filename)[1]
+    name = ntpath.splitdrive(filename)[1]
     return re.sub(r"[\\/.:]", "_", name)
 
 

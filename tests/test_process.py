@@ -890,9 +890,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
 
     def test_subprocess_with_pth_files(self):           # pragma: not covered
         if env.METACOV:
-            self.skip(
-                "Can't test sub-process pth file suppport during metacoverage"
-                )
+            self.skip("Can't test sub-process pth file suppport during metacoverage")
 
         # Main will run sub.py
         self.make_file("main.py", """\
@@ -954,9 +952,7 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
         """
         if env.METACOV:
-            self.skip(
-                "Can't test sub-process pth file suppport during metacoverage"
-                )
+            self.skip("Can't test sub-process pth file suppport during metacoverage")
 
         def fullname(modname):
             """What is the full module name for `modname` for this test?"""
