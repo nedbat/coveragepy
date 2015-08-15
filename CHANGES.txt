@@ -12,6 +12,11 @@ Latest
 - 4.0b1 broke --append creating new data files.  This is now fixed, closing
   `issue 392`_.
 
+- When using ``report --skip-covered``, a message will now be included in the
+  report output indicating how many files were skipped, and if all files are
+  skipped, coverage.py won't accidentally scold you for having no data to
+  report.  Thanks, Krystian Kichewko.
+
 - A new conversion utility has been added:  ``python -m coverage.pickle2json``
   will convert v3.x pickle data files to v4.x JSON data files.  Thanks,
   Alexander Todorov.  Closes `issue 395`_.

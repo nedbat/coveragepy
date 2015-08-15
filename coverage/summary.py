@@ -29,8 +29,7 @@ class SummaryReporter(Reporter):
         max_name = max([len(fr.relative_filename()) for fr in self.file_reporters] + [5])
         fmt_name = "%%- %ds  " % max_name
         fmt_err = "%s   %s: %s\n"
-        fmt_skip_covered = ("\n%s file%s skipped because of 'skip covered' "
-                            "option.\n")
+        fmt_skip_covered = "\n%s file%s skipped due to complete coverage.\n"
 
         header = (fmt_name % "Name") + " Stmts   Miss"
         fmt_coverage = fmt_name + "%6d %6d"
@@ -105,10 +104,11 @@ class SummaryReporter(Reporter):
             if self.config.show_missing:
                 args += ("",)
             outfile.write(fmt_coverage % args)
+
         if not total.n_files and not skipped_count:
             raise CoverageException("No data to report.")
+
         if self.config.skip_covered and skipped_count:
-            outfile.write(
-                fmt_skip_covered % (skipped_count,
-                                    's' if skipped_count > 1 else ''))
+            outfile.write(fmt_skip_covered % (skipped_count, 's' if skipped_count > 1 else ''))
+
         return total.n_statements and total.pc_covered
