@@ -22,8 +22,8 @@ class CoveragePlugin(object):
     Any plugin can optionally implement :meth:`sys_info` to provide debugging
     information about their operation.
 
-    Coverage.py will store its own information on your plugin, with attributes
-    starting with "_coverage_".  Don't be startled.
+    Coverage.py will store its own information on your plugin object, with
+    attributes starting with "_coverage_".  Don't be startled.
 
     To register your plugin, define a function called `coverage_init` in your
     module::
@@ -33,21 +33,37 @@ class CoveragePlugin(object):
 
     The `reg.add_file_tracer` method takes an instance of your plugin.  If your
     plugin takes options, the `options` argument is a dictionary of your
-    plugin's options from the .coveragerc file.
+    plugin's options from the coverage.py configuration file.  Use them as you
+    need to configure your object before registering it.
 
     """
 
     def file_tracer(self, filename):        # pylint: disable=unused-argument
-        """Return a FileTracer object for a file.
+        """Get a :class:`FileTracer` object for a file.
 
-        Every source file is offered to the plugin to give it a chance to take
-        responsibility for tracing the file.  If your plugin can handle the
-        file, then return a :class:`FileTracer` object.  Otherwise return None.
+        Every Python source file is offered to the plugin to give it a chance
+        to take responsibility for tracing the file.  If your plugin can handle
+        the file, then return a :class:`FileTracer` object.  Otherwise return
+        None.
 
         There is no way to register your plugin for particular files.  Instead,
-        this method is invoked for all files, and can decide whether it can
-        trace the file or not.  Be prepared for `filename` to refer to all
+        this method is invoked for all files, and the plugin decides whether it
+        can trace the file or not.  Be prepared for `filename` to refer to all
         kinds of files that have nothing to do with your plugin.
+
+        The filename will be a Python file being executed.  There are two broad
+        categories of behavior for a plugin, depending on the kind of files
+        your plugin supports:
+
+        * Static filenames: each of your original source files has been
+          converted into a distinct Python file.  Your plugin is invoked with
+          the Python file name, and it maps it back to its original source
+          file.
+
+        * Dynamic filenames: all of your source files are executed by the same
+          Python file.  In this case, your plugin implements
+          :meth:`FileTracer.dynamic_source_filename` to provide the actual
+          source file for each execution frame.
 
         `filename` is a string, the path to the file being considered.  This is
         the absolute real path to the file.  If you are comparing to other
@@ -60,7 +76,7 @@ class CoveragePlugin(object):
         return None
 
     def file_reporter(self, filename):      # pylint: disable=unused-argument
-        """Return the FileReporter class to use for filename.
+        """Get the :class:`FileReporter` class to use for filename.
 
         This will only be invoked if `filename` returns non-None from
         :meth:`file_tracer`.  It's an error to return None.
@@ -69,55 +85,63 @@ class CoveragePlugin(object):
         _needs_to_implement(self, "file_reporter")
 
     def sys_info(self):
-        """Return a list of information useful for debugging.
+        """Get a list of information useful for debugging.
 
         This method will be invoked for ``--debug=sys``.  Your
         plugin can return any information it wants to be displayed.
 
-        The return value is a list of pairs: (name, value).
+        Returns a list of pairs: `[(name, value), ...]`.
 
         """
         return []
 
 
 class FileTracer(object):
-    """Support needed for files during the tracing phase.
+    """Support needed for files during the execution phase.
 
     You may construct this object from :meth:`CoveragePlugin.file_tracer` any
     way you like.  A natural choice would be to pass the filename given to
     `file_tracer`.
+
+    See :ref:`howitworks` for details of the different coverage.py phases.
 
     """
 
     def source_filename(self):
         """The source filename for this file.
 
-        This may be any filename you like.  A key responsibility of a plugin is
-        to own the mapping from Python execution back to whatever source
-        filename was originally the source of the code.
+        This may be any file name you like.  A key responsibility of a plugin
+        is to own the mapping from Python execution back to whatever source
+        file name was originally the source of the code.
 
-        Returns the filename to credit with this execution.
+        See :meth:`CoveragePlugin.file_tracer` for details about static and
+        dynamic file names.
+
+        Returns the file name to credit with this execution.
 
         """
         _needs_to_implement(self, "source_filename")
 
     def has_dynamic_source_filename(self):
-        """Does this FileTracer have dynamic source filenames?
+        """Does this FileTracer have dynamic source file names?
 
-        FileTracers can provide dynamically determined filenames by
-        implementing dynamic_source_filename.  Invoking that function is
-        expensive. To determine whether to invoke it, coverage.py uses the
+        FileTracers can provide dynamically determined file names by
+        implementing :meth:`dynamic_source_filename`.  Invoking that function
+        is expensive. To determine whether to invoke it, coverage.py uses the
         result of this function to know if it needs to bother invoking
         :meth:`dynamic_source_filename`.
 
-        Returns true if :meth:`dynamic_source_filename` should be called to get
-        dynamic source filenames.
+        See :meth:`CoveragePlugin.file_tracer` for details about static and
+        dynamic file names.
+
+        Returns True if :meth:`dynamic_source_filename` should be called to get
+        dynamic source file names.
 
         """
         return False
 
     def dynamic_source_filename(self, filename, frame):     # pylint: disable=unused-argument
-        """Returns a dynamically computed source filename.
+        """Get a dynamically computed source filename.
 
         Some plugins need to compute the source filename dynamically for each
         frame.
@@ -132,7 +156,7 @@ class FileTracer(object):
         return None
 
     def line_number_range(self, frame):
-        """Return the range of source line numbers for a given a call frame.
+        """Get the range of source line numbers for a given a call frame.
 
         The call frame is examined, and the source line number in the original
         file is returned.  The return value is a pair of numbers, the starting
@@ -150,7 +174,11 @@ class FileTracer(object):
 
 
 class FileReporter(object):
-    """Support needed for files during the reporting phase."""
+    """Support needed for files during the analysis and reporting phases.
+
+    See :ref:`howitworks` for details of the different coverage.py phases.
+
+    """
 
     def __init__(self, filename):
         """Simple initialization of a `FileReporter`.
@@ -166,35 +194,111 @@ class FileReporter(object):
         return "<{0.__class__.__name__} filename={0.filename!r}>".format(self)
 
     def relative_filename(self):
-        """Return the relative filename for this file.
+        """Get the relative filename for this file.
 
-        This file path will be displayed in reports. You only need to supply
-        this method if you have an unusual syntax for file paths.  The default
-        implementation will supply the actual project-relative file path.
+        This file path will be displayed in reports.  The default
+        implementation will supply the actual project-relative file path.  You
+        only need to supply this method if you have an unusual syntax for file
+        paths.
 
         """
         return files.relative_filename(self.filename)
 
     def lines(self):
-        """Return a set of executable lines"""
+        """Get the executable lines in this file.
+
+        Your plugin must determine which lines in the file were possibly
+        executable.  This method returns a set of those line numbers.
+
+        Returns a set of line numbers.
+
+        """
         _needs_to_implement(self, "lines")
 
     def excluded_lines(self):
-        return set()
+        """Get the excluded executable lines in this file.
 
-    def arcs(self):
-        return []
+        Your plugin can use any method it likes to allow the user to exclude
+        executable lines from consideration.
 
-    def no_branch_lines(self):
+        Returns a set of line numbers.
+
+        The base implementation returns the empty set.
+
+        """
         return set()
 
     def translate_lines(self, lines):
+        """Translate recorded lines into reported lines.
+
+        Some file formats will want to report lines slightly differently than
+        they are recorded.  For example, Python records the last line of a
+        multi-line statement, but reports are nicer if they mention the first
+        line.
+
+        Your plugin can optionally define this method to perform these kinds of
+        adjustment.
+
+        `lines` is a sequence of integers, the recorded line numbers.
+
+        Returns a set of integers, the adjusted line numbers.
+
+        The base implementation returns the numbers unchanged.
+
+        """
         return set(lines)
 
+    def arcs(self):
+        """Get the executable arcs in this file.
+
+        To support branch coverage, your plugin needs to be able to indicate
+        possible execution paths, as a set of line number pairs.  Each pair is
+        a `(prev, next)` pair indicating that execution can transition from the
+        `prev` line number to the `next` line number.
+
+        Returns a set of pairs of line numbers.  The default implementation
+        returns an empty set.
+
+        """
+        return set()
+
+    def no_branch_lines(self):
+        """Get the lines excused from branch coverage in this file.
+
+        Your plugin can use any method it likes to allow the user to exclude
+        lines from consideration of branch coverage.
+
+        Returns a set of line numbers.
+
+        The base implementation returns the empty set.
+
+        """
+        return set()
+
     def translate_arcs(self, arcs):
+        """Translate recorded arcs into reported arcs.
+
+        Similar to :meth:`translate_lines`, but for arcs.  `arcs` is a set of
+        line number pairs.
+
+        Returns a set of line number pairs.
+
+        The default implementation returns `arcs` unchanged.
+
+        """
         return arcs
 
     def exit_counts(self):
+        """Get a count of exits from that each line.
+
+        To determine which lines are branches, coverage.py looks for lines that
+        have more than one exit.  This function creates a dict mapping each
+        executable line number to a count of how many exits it has.
+
+        TBH, this feels janky, and should be refactored.  Let me know if you
+        attempt to implement this...
+
+        """
         return {}
 
     @contract(returns='unicode')
@@ -208,7 +312,6 @@ class FileReporter(object):
         as a text file, or if you need other encoding support.
 
         """
-        # A generic implementation: read the text of self.filename
         with open(self.filename, "rb") as f:
             return f.read().decode("utf8")
 
@@ -221,7 +324,8 @@ class FileReporter(object):
 
             [('key', 'def'), ('ws', ' '), ('nam', 'hello'), ('op', '('), ... ]
 
-        Each pair has a token class, and the token text.  The token classes are:
+        Each pair has a token class, and the token text.  The token classes
+        are:
 
         * ``'com'``: a comment
         * ``'key'``: a keyword
@@ -234,7 +338,7 @@ class FileReporter(object):
         If you concatenate all the token texts, and then join them with
         newlines, you should have your original source back.
 
-        The base class implementation is simply to return each line tagged as
+        The default implementation simply returns each line tagged as
         ``'txt'``.
 
         """

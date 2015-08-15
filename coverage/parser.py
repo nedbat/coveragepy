@@ -229,21 +229,21 @@ class PythonParser(object):
     def arcs(self):
         """Get information about the arcs available in the code.
 
-        Returns a list of line number pairs.  Line numbers have been
-        normalized to the first line of multi-line statements.
+        Returns a set of line number pairs.  Line numbers have been normalized
+        to the first line of multi-line statements.
 
         """
         if self._all_arcs is None:
-            self._all_arcs = []
+            self._all_arcs = set()
             for l1, l2 in self.byte_parser._all_arcs():
                 fl1 = self.first_line(l1)
                 fl2 = self.first_line(l2)
                 if fl1 != fl2:
-                    self._all_arcs.append((fl1, fl2))
+                    self._all_arcs.add((fl1, fl2))
         return self._all_arcs
 
     def exit_counts(self):
-        """Get a mapping from line numbers to count of exits from that line.
+        """Get a count of exits from that each line.
 
         Excluded lines are excluded.
 
