@@ -12,7 +12,12 @@ Latest
 - 4.0b1 broke --append creating new data files.  This is now fixed, closing
   `issue 392`_.
 
+- A new conversion utility has been added:  ``python -m coverage.pickle2json``
+  will convert v3.x pickle data files to v4.x JSON data files.  Thanks,
+  Alexander Todorov.  Closes `issue 395`_.
+
 .. _issue 392: https://bitbucket.org/ned/coveragepy/issues/392/run-append-doesnt-create-coverage-file
+.. _issue 395: https://bitbucket.org/ned/coveragepy/issues/395/rfe-read-pickled-files-as-well-for
 
 
 Version 4.0b1 --- 2 August 2015

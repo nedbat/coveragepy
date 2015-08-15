@@ -8,13 +8,20 @@ from coverage.data import CoverageData
 from coverage.pickle2json import pickle2json
 
 from tests.coveragetest import CoverageTest
-from tests.test_data import *
+from tests.test_data import DataTestHelpers
+from tests.test_data import (
+    LINES_1, SUMMARY_1, MEASURED_FILES_1, A_PY_LINES_1, ARCS_3, SUMMARY_3,
+    MEASURED_FILES_3, X_PY_LINES_3, X_PY_ARCS_3, Y_PY_LINES_3, Y_PY_ARCS_3,
+)
+
 
 class Pickle2JsonTestInTempDir(DataTestHelpers, CoverageTest):
-    """ Tests pickle2json """
+    """Tests pickle2json.py."""
+
+    no_files_in_temp_dir = True
 
     def write_pickled_file(self, covdata, filename):
-        """ write coverage data as pickled `filename` """
+        """Write coverage data as pickled `filename`."""
         # Create the file data.
         file_data = {}
 
@@ -24,14 +31,11 @@ class Pickle2JsonTestInTempDir(DataTestHelpers, CoverageTest):
             file_data['lines'] = dict((f, list(lmap)) for f, lmap in iitems(covdata._lines))
 
         # Write the pickle to the file.
-        file_obj = open(filename, 'wb')
-        try:
+        with open(filename, 'wb') as file_obj:
             pickle.dump(file_data, file_obj, 2)
-        finally:
-            file_obj.close()
 
     def test_read_write_lines_pickle(self):
-        """ test the old pickle format """
+        # Test the old pickle format.
         covdata1 = CoverageData()
         covdata1.set_lines(LINES_1)
         self.write_pickled_file(covdata1, "lines.pkl")
@@ -46,7 +50,7 @@ class Pickle2JsonTestInTempDir(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata2.run_infos(), [])
 
     def test_read_write_arcs_pickle(self):
-        """ test the old pickle format """
+        # Test the old pickle format.
         covdata1 = CoverageData()
         covdata1.set_arcs(ARCS_3)
         self.write_pickled_file(covdata1, "arcs.pkl")
