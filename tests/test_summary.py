@@ -258,14 +258,16 @@ class SummaryTest(CoverageTest):
         # Name             Stmts   Miss  Cover
         # ------------------------------------
         # not_covered.py       2      1    50%
+        #
+        # 1 file skipped because of 'skip covered' option.
 
-        self.assertEqual(self.line_count(report), 3, report)
+        self.assertEqual(self.line_count(report), 5, report)
         squeezed = self.squeezed_lines(report)
         self.assertEqual(squeezed[2], "not_covered.py 2 1 50%")
 
     def test_report_skip_covered_branches(self):
         self.make_file("main.py", """
-            import not_covered
+            import not_covered, covered
 
             def normal(z):
                 if z:
@@ -279,6 +281,11 @@ class SummaryTest(CoverageTest):
                     print("n")
             not_covered(True)
         """)
+        self.make_file("covered.py", """
+            def foo():
+                pass
+            foo()
+        """)
         out = self.run_command("coverage run --branch main.py")
         self.assertEqual(out, "n\nz\n")
         report = self.report_from_command("coverage report --skip-covered")
@@ -286,8 +293,10 @@ class SummaryTest(CoverageTest):
         # Name             Stmts   Miss Branch BrPart  Cover
         # --------------------------------------------------
         # not_covered.py       4      0      2      1    83%
+        #
+        # 2 files skipped because of 'skip covered' option.
 
-        self.assertEqual(self.line_count(report), 3, report)
+        self.assertEqual(self.line_count(report), 5, report)
         squeezed = self.squeezed_lines(report)
         self.assertEqual(squeezed[2], "not_covered.py 4 0 2 1 83%")
 
@@ -322,12 +331,43 @@ class SummaryTest(CoverageTest):
         # not_covered.py       4      0      2      1    83%
         # --------------------------------------------------
         # TOTAL                6      1      2      1    75%
+        #
+        # 1 file skipped because of 'skip covered' option.
 
-        self.assertEqual(self.line_count(report), 6, report)
+        self.assertEqual(self.line_count(report), 8, report)
         squeezed = self.squeezed_lines(report)
         self.assertEqual(squeezed[2], "also_not_run.py 2 1 0 0 50%")
         self.assertEqual(squeezed[3], "not_covered.py 4 0 2 1 83%")
         self.assertEqual(squeezed[5], "TOTAL 6 1 2 1 75%")
+        self.assertEqual(squeezed[7],
+                         "1 file skipped because of 'skip covered' option.")
+
+    def test_report_skip_covered_all_files_covered(self):
+        self.make_file("main.py", """
+            def foo():
+                pass
+            foo()
+        """)
+        out = self.run_command("coverage run --branch main.py")
+        self.assertEqual(out, "")
+        report = self.report_from_command("coverage report --skip-covered")
+        # Name      Stmts   Miss Branch BrPart  Cover
+        # -------------------------------------------
+        #
+        # 1 file skipped because of 'skip covered' option.
+        self.assertEqual(self.line_count(report), 4, report)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(squeezed[3],
+                         "1 file skipped because of 'skip covered' option.")
+
+    def test_report_skip_covered_no_data(self):
+        report = self.report_from_command("coverage report --skip-covered")
+        # Name      Stmts   Miss Branch BrPart  Cover
+        # -------------------------------------------
+        # No data to report.
+        self.assertEqual(self.line_count(report), 3, report)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(squeezed[2], "No data to report.")
 
     def test_dotpy_not_python(self):
         # We run a .py file, and when reporting, we can't parse it as Python.

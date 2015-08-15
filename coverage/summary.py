@@ -29,6 +29,9 @@ class SummaryReporter(Reporter):
         max_name = max([len(fr.relative_filename()) for fr in self.file_reporters] + [5])
         fmt_name = "%%- %ds  " % max_name
         fmt_err = "%s   %s: %s\n"
+        fmt_skip_covered = ("\n%s file%s skipped because of 'skip covered' "
+                            "option.\n")
+
         header = (fmt_name % "Name") + " Stmts   Miss"
         fmt_coverage = fmt_name + "%6d %6d"
         if self.branches:
@@ -52,6 +55,7 @@ class SummaryReporter(Reporter):
         outfile.write(rule)
 
         total = Numbers()
+        skipped_count = 0
 
         for fr in self.file_reporters:
             try:
@@ -63,6 +67,7 @@ class SummaryReporter(Reporter):
                     no_missing_lines = (nums.n_missing == 0)
                     no_missing_branches = (nums.n_partial_branches == 0)
                     if no_missing_lines and no_missing_branches:
+                        skipped_count += 1
                         continue
 
                 args = (fr.relative_filename(), nums.n_statements, nums.n_missing)
@@ -100,6 +105,10 @@ class SummaryReporter(Reporter):
             if self.config.show_missing:
                 args += ("",)
             outfile.write(fmt_coverage % args)
-        if not total.n_files:
+        if not total.n_files and not skipped_count:
             raise CoverageException("No data to report.")
+        if self.config.skip_covered and skipped_count:
+            outfile.write(
+                fmt_skip_covered % (skipped_count,
+                                    's' if skipped_count > 1 else ''))
         return total.n_statements and total.pc_covered
