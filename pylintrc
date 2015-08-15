@@ -79,7 +79,8 @@ disable=
 # Messages that are noisy for now, eventually maybe we'll turn them on:
 #   C0103:256:coverage.morf_filename: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
 #   W0212: 86:Reporter.report_files: Access to a protected member _analyze of a client class     
-    C0103,W0212
+    C0103,W0212,
+    cyclic-import
 
 msg-template={path}:{line}: {msg} ({symbol})
 
