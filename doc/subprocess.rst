@@ -83,7 +83,7 @@ Signal handlers and atexit
     where we could talk about this?
 
 To successfully write a coverage data file, the Python sub-process under
-anaylsis must shut down cleanly and have a chance for coverage.py to run the
+analysis must shut down cleanly and have a chance for coverage.py to run the
 ``atexit`` handler it registers.
 
 For example if you send SIGTERM to end the sub-process, but your sub-process
