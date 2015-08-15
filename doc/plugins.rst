@@ -52,3 +52,19 @@ coverage.py plugin called ``something.plugin``.
    what they are.
 
 #. Run your tests with coverage.py as you usually would.
+
+
+Available plugins
+-----------------
+
+Some coverage.py plugins you might find useful:
+
+* `Django template coverage.py plugin`__: for measuring coverage in Django
+  templates.
+
+  .. __: https://pypi.python.org/pypi/django_coverage_plugin
+
+* `Mako template coverage plugin`__: for measuring coverage in Mako templates.
+  Doesn't work yet, probably needs some changes in Mako itself.
+
+  .. __: https://bitbucket.org/ned/coverage-mako-plugin
