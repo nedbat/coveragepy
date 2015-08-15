@@ -51,16 +51,16 @@ class CoveragePlugin(object):
         can trace the file or not.  Be prepared for `filename` to refer to all
         kinds of files that have nothing to do with your plugin.
 
-        The filename will be a Python file being executed.  There are two broad
-        categories of behavior for a plugin, depending on the kind of files
-        your plugin supports:
+        The file name will be a Python file being executed.  There are two
+        broad categories of behavior for a plugin, depending on the kind of
+        files your plugin supports:
 
-        * Static filenames: each of your original source files has been
+        * Static file names: each of your original source files has been
           converted into a distinct Python file.  Your plugin is invoked with
           the Python file name, and it maps it back to its original source
           file.
 
-        * Dynamic filenames: all of your source files are executed by the same
+        * Dynamic file names: all of your source files are executed by the same
           Python file.  In this case, your plugin implements
           :meth:`FileTracer.dynamic_source_filename` to provide the actual
           source file for each execution frame.
@@ -76,7 +76,7 @@ class CoveragePlugin(object):
         return None
 
     def file_reporter(self, filename):      # pylint: disable=unused-argument
-        """Get the :class:`FileReporter` class to use for filename.
+        """Get the :class:`FileReporter` class to use for a file.
 
         This will only be invoked if `filename` returns non-None from
         :meth:`file_tracer`.  It's an error to return None.
@@ -100,7 +100,7 @@ class FileTracer(object):
     """Support needed for files during the execution phase.
 
     You may construct this object from :meth:`CoveragePlugin.file_tracer` any
-    way you like.  A natural choice would be to pass the filename given to
+    way you like.  A natural choice would be to pass the file name given to
     `file_tracer`.
 
     See :ref:`howitworks` for details of the different coverage.py phases.
@@ -108,7 +108,7 @@ class FileTracer(object):
     """
 
     def source_filename(self):
-        """The source filename for this file.
+        """The source file name for this file.
 
         This may be any file name you like.  A key responsibility of a plugin
         is to own the mapping from Python execution back to whatever source
@@ -141,15 +141,15 @@ class FileTracer(object):
         return False
 
     def dynamic_source_filename(self, filename, frame):     # pylint: disable=unused-argument
-        """Get a dynamically computed source filename.
+        """Get a dynamically computed source file name.
 
-        Some plugins need to compute the source filename dynamically for each
+        Some plugins need to compute the source file name dynamically for each
         frame.
 
         This function will not be invoked if
         :meth:`has_dynamic_source_filename` returns False.
 
-        Returns the source filename for this frame, or None if this frame
+        Returns the source file name for this frame, or None if this frame
         shouldn't be measured.
 
         """
@@ -178,6 +178,9 @@ class FileReporter(object):
 
     See :ref:`howitworks` for details of the different coverage.py phases.
 
+    There are many methods here, but only :meth:`lines` is required, to provide
+    the set of executable lines in the file.
+
     """
 
     def __init__(self, filename):
@@ -194,7 +197,7 @@ class FileReporter(object):
         return "<{0.__class__.__name__} filename={0.filename!r}>".format(self)
 
     def relative_filename(self):
-        """Get the relative filename for this file.
+        """Get the relative file name for this file.
 
         This file path will be displayed in reports.  The default
         implementation will supply the actual project-relative file path.  You
@@ -295,8 +298,8 @@ class FileReporter(object):
         have more than one exit.  This function creates a dict mapping each
         executable line number to a count of how many exits it has.
 
-        TBH, this feels janky, and should be refactored.  Let me know if you
-        attempt to implement this...
+        To be honest, this feels wrong, and should be refactored.  Let me know
+        if you attempt to implement this...
 
         """
         return {}
