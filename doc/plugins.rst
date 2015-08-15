@@ -15,6 +15,9 @@ Coverage.py's behavior can be extended with third-party plugins.  A plugin is a
 separately installed Python class that you register in your .coveragerc.
 Plugins can be used to implement coverage measurement for non-Python files.
 
+Information about using plugins is on this page.  To write a plugin, see
+:ref:`api_plugin`.
+
 .. versionadded:: 4.0
 
 
@@ -49,21 +52,3 @@ coverage.py plugin called ``something.plugin``.
    what they are.
 
 #. Run your tests with coverage.py as you usually would.
-
-
-Plugin API
-----------
-
-.. module:: coverage
-
-.. autoclass:: CoveragePlugin
-    :members:
-    :member-order: bysource
-
-.. autoclass:: FileTracer
-    :members:
-    :member-order: bysource
-
-.. autoclass:: FileReporter
-    :members:
-    :member-order: bysource

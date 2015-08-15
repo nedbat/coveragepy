@@ -3,10 +3,10 @@
 
 .. _api_coveragedata:
 
-.. :history: 20150802T174800, new doc for 4.0b1
-
 The CoverageData class
 ----------------------
+
+.. :history: 20150802T174800, new doc for 4.0b1
 
 .. versionadded:: 4.0
 

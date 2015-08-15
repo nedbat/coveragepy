@@ -40,3 +40,4 @@ stored in coverage.py data files.
 
     api_coverage
     api_coveragedata
+    api_plugin

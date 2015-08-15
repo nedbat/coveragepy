@@ -82,7 +82,9 @@ class CoveragePlugin(object):
         """Get the :class:`FileReporter` class to use for a file.
 
         This will only be invoked if `filename` returns non-None from
-        :meth:`file_tracer`.  It's an error to return None.
+        :meth:`file_tracer`.  It's an error to return None from this method.
+
+        Returns a :class:`FileReporter` object to use to report on `filename`.
 
         """
         _needs_to_implement(self, "file_reporter")
@@ -105,6 +107,9 @@ class FileTracer(object):
     You may construct this object from :meth:`CoveragePlugin.file_tracer` any
     way you like.  A natural choice would be to pass the file name given to
     `file_tracer`.
+
+    `FileTracer` objects should only be created in the
+    :meth:`CoveragePlugin.file_tracer` method.
 
     See :ref:`howitworks` for details of the different coverage.py phases.
 
@@ -180,6 +185,9 @@ class FileReporter(object):
     """Support needed for files during the analysis and reporting phases.
 
     See :ref:`howitworks` for details of the different coverage.py phases.
+
+    `FileReporter` objects should only be created in the
+    :meth:`CoveragePlugin.file_reporter` method.
 
     There are many methods here, but only :meth:`lines` is required, to provide
     the set of executable lines in the file.
