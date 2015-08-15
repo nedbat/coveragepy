@@ -22,8 +22,8 @@ class CoveragePlugin(object):
     Any plugin can optionally implement :meth:`sys_info` to provide debugging
     information about their operation.
 
-    Coverage.py will store its own information on your plugin object, with
-    attributes starting with "_coverage_".  Don't be startled.
+    Coverage.py will store its own information on your plugin object, using
+    attributes whose names start with ``_coverage_``.  Don't be startled.
 
     To register your plugin, define a function called `coverage_init` in your
     module::

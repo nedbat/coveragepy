@@ -1,9 +1,9 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
-------------------------------
+==============================
 Change history for Coverage.py
-------------------------------
+==============================
 
 
 Latest
@@ -262,7 +262,7 @@ Version 4.0a2 --- 14 January 2015
   they are 100% covered, closing `issue 315`_.
 
 - You can now specify the ``--fail-under`` option in the ``.coveragerc`` file
-  as the ``[report] fail_under`` options.  This closes `issue 314`_.
+  as the ``[report] fail_under`` option.  This closes `issue 314`_.
 
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
   a hack for ``--timid`` before configuration files were available.
@@ -326,8 +326,8 @@ Version 4.0a1 --- 27 September 2014
   prefixed with "coverage:", so the ``[run]`` options will be read from the
   ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
 
-- The ``report`` command can now show missing branches when reporting on branch
-  coverage.  Thanks, Steve Leonard. Closes `issue 230`_.
+- The ``report -m`` command can now show missing branches when reporting on
+  branch coverage.  Thanks, Steve Leonard. Closes `issue 230`_.
 
 - The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
   Stan Hu.

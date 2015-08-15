@@ -39,6 +39,7 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
 
+.. module:: coverage
 
 .. _changes_40:
 
@@ -48,77 +49,84 @@ Version 4.0b1 pre-release --- 2 August 2015
 
 Backward incompatibilities:
 
-- CPython versions supported are now Python 2.6, 2.7, 3.3, 3.4 and 3.5b4.
-  PyPy2 2.4, 2.6, and PyPy3 2.4 are also supported.
+- Python versions supported are now:
+  
+  - CPython 2.6, 2.7, 3.3, 3.4 and 3.5b4
+  - PyPy2 2.4, 2.6
+  - PyPy3 2.4
 
-- The original command line switches (`-x` to run a program, etc) are no
+- The original command line switches (``-x`` to run a program, etc) are no
   longer supported.
 
 - The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
   a hack for ``--timid`` before configuration files were available.
 
 - The original module-level function interface to coverage.py is no longer
-  supported.  You must now create a ``coverage.Coverage`` object, and use
+  supported.  You must now create a :class:`coverage.Coverage` object, and use
   methods on it.
 
 - The ``Coverage.use_cache`` method is no longer supported.
 
 - The private method ``Coverage._harvest_data`` is now called
-  ``Coverage.get_data``, and returns the ``CoverageData`` containing the
-  collected data.
+  :meth:`Coverage.get_data`, and returns the :class:`CoverageData` containing
+  the collected data.
 
-- Coverage.py is now licensed under the Apache 2.0 license. See NOTICE.txt for
-  details.
+- Coverage.py is now licensed under the Apache 2.0 license. See `NOTICE.txt`_
+  for details.
+
+.. _NOTICE.txt: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
 
 Major new features:
 
 - Plugins: third parties can write plugins to add file support for non-Python
   files, such as web application templating engines, or languages that compile
-  down to Python.  A plugin for measuring Django template coverage is
-  available: `django_coverage_plugin`_
+  down to Python.  See :ref:`plugins` for how to use plugins, and
+  :ref:`api_plugin` for details of how to write them.  A plugin for measuring
+  Django template coverage is available: `django_coverage_plugin`_
 
-- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_.  The
-  ``concurrency`` setting, or the ``--concurrency`` command line switch,
-  specifies the concurrency library in use.  Huge thanks to Peter Portante for
-  initial implementation, and to Joe Jevnik for the final insight that
-  completed the work.
+- Gevent, eventlet, and greenlet are now supported.  The ``[run] concurrency``
+  setting, or the ``--concurrency`` command line switch, specifies the
+  concurrency library in use.  Huge thanks to Peter Portante for initial
+  implementation, and to Joe Jevnik for the final insight that completed the
+  work.
 
 - The data storage has been re-written, using JSON instead of pickle.  The
-  :class:`CoverageData` class is a new supported API to the contents of the
-  data file.
+  :class:`.CoverageData` class is a new supported API to the contents of the
+  data file.  Data files from older versions of coverage.py can be converted to
+  the new format with ``python -m coverage.pickle2json``.
 
 - Wildly experimental: support for measuring processes started by the
   multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
-  either on the command line or in the .coveragerc file (`issue 117`_). Thanks,
-  Eduardo Schettino.  Currently, this does not work on Windows.
+  either on the command line or in the .coveragerc file. Thanks, Eduardo
+  Schettino.  Currently, this does not work on Windows.
 
 
 New features:
 
 - Options are now also read from a setup.cfg file, if any.  Sections are
   prefixed with "coverage:", so the ``[run]`` options will be read from the
-  ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
+  ``[coverage:run]`` section of setup.cfg.
 
 - The HTML report now has filtering.  Type text into the Filter box on the
   index page, and only modules with that text in the name will be shown.
   Thanks, Danny Allen.
 
-- A new option: `coverage report --skip-covered` (or ``[report] skip_covered``)
+- A new option: ``coverage report --skip-covered`` (or ``[report] skip_covered``)
   will reduce the number of files reported by skipping files with 100%
-  coverage.  Thanks, Krystian Kichewko.  This means that empty `__init__.py`
-  files will be skipped, since they are 100% covered, closing `issue 315`_.
+  coverage.  Thanks, Krystian Kichewko.  This means that empty ``__init__.py``
+  files will be skipped, since they are 100% covered.
 
 - You can now specify the ``--fail-under`` option in the ``.coveragerc`` file
-  as the ``[report] fail_under`` options.  This closes `issue 314`_.
+  as the ``[report] fail_under`` option.
 
-- The ``report`` command can now show missing branches when reporting on branch
-  coverage.  Thanks, Steve Leonard. Closes `issue 230`_.
+- The ``report -m`` command now shows missing branches when reporting on branch
+  coverage.  Thanks, Steve Leonard.
 
 - The ``coverage combine`` command now accepts any number of directories or
   files as arguments, and will combine all the data from them.  This means you
   don't have to copy the files to one directory before combining.  Thanks,
-  Christine Lytwynec.  Finishes `issue 354`_.
+  Christine Lytwynec.
 
 - A new configuration option for the XML report: ``[xml] package_depth``
   controls which directories are identified as packages in the report.
@@ -127,8 +135,8 @@ New features:
   Thanks, Lex Berezhny.
 
 - A new configuration option, ``[run] note``, lets you set a note that will be
-  stored in the `runs` section of the data file.  You can use this to annotate
-  the data file with any information you like.
+  stored in the ``runs`` section of the data file.  You can use this to
+  annotate the data file with any information you like.
 
 - The COVERAGE_DEBUG environment variable can be used to set the ``[run] debug``
   configuration option to control what internal operations are logged.
@@ -137,45 +145,41 @@ New features:
 Improvements:
 
 - Coverage.py now always adds the current directory to sys.path, so that
-  plugins can import files in the current directory (`issue 358`_).
+  plugins can import files in the current directory.
 
 - Coverage.py now accepts a directory name for ``coverage run`` and will run a
-  ``__main__.py`` found there, just like Python will.  Fixes `issue 252`_.
-  Thanks, Dmitry Trofimov.
+  ``__main__.py`` found there, just like Python will.  Thanks, Dmitry Trofimov.
 
 - The ``--debug`` switch can now be used on any command.
 
 - Reports now use file names with extensions.  Previously, a report would
   describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
-  for better support of non-Python files, and also fixed `issue 69`_.
+  for better support of non-Python files.
 
 - Missing branches in the HTML report now have a bit more information in the
   right-hand annotations.  Hopefully this will make their meaning clearer.
 
-- The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
-  Stan Hu.
+- The XML report now contains a <source> element.  Thanks Stan Hu.
 
 - The XML report now includes a ``missing-branches`` attribute.  Thanks, Steve
   Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
   references the DTD.
 
 - The XML report now reports each directory as a package again.  This was a bad
-  regression, I apologize.  This was reported in `issue 235`_, which is now
-  fixed.
+  regression, I apologize.
 
-- In parallel mode, ``coverage erase`` will now delete all of the data files,
-  fixing `issue 262`_.
+- In parallel mode, ``coverage erase`` will now delete all of the data files.
 
 - A new warning is possible, if a desired file isn't measured because it was
-  imported before coverage.py was started (`issue 353`_).
+  imported before coverage.py was started.
 
-- The `coverage.process_startup` function now will start coverage measurement
-  only once, no matter how many times it is called.  This fixes problems due
-  to unusual virtualenv configurations (`issue 340`_).
+- The :func:`coverage.process_startup` function now will start coverage
+  measurement only once, no matter how many times it is called.  This fixes
+  problems due to unusual virtualenv configurations.
 
 - Unrecognized configuration options will now print an error message and stop
   coverage.py.  This should help prevent configuration mistakes from passing
-  silently.  Finishes `issue 386`_.
+  silently.
 
 
 API changes:
@@ -184,11 +188,12 @@ API changes:
   of ``coverage``, though the old name still works, for backward compatibility.
 
 - You can now programmatically adjust the configuration of coverage.py by
-  calling `Coverage.set_option` after construction.
+  calling :meth:`Coverage.set_option` after construction.
+  :meth:`Coverage.get_option` reads the configuration values.
 
 - If the `config_file` argument to the Coverage constructor is specified as
   ".coveragerc", it is treated as if it were True.  This means setup.cfg is
-  also examined, and a missing file is not considered an error (`issue 357`_).
+  also examined, and a missing file is not considered an error.
 
 
 Bug fixes:
@@ -202,57 +207,34 @@ Bug fixes:
   preventing paradoxical results, fixing `issue 284`_.
 
 - Branch coverage couldn't properly handle certain extremely long files. This
-  is now fixed (`issue 359`_).
+  is now fixed. (`issue 359`_).
 
 - Branch coverage didn't understand yield statements properly.  Mickie Betz
   persisted in pursuing this despite Ned's pessimism.  Fixes `issue 308`_ and
   `issue 324`_.
 
 - Files with incorrect encoding declaration comments are no longer ignored by
-  the reporting commands, fixing `issue 351`_.
+  the reporting commands.
 
 - Empty files are now reported as 100% covered in the XML report, not 0%
-  covered (`issue 345`_).
+  covered.
 
-- The XML report will now create the output directory if need be, fixing
-  `issue 285`_.  Thanks Chris Rose.
+- The XML report will now create the output directory if need be. Thanks Chris
+  Rose.
 
 - HTML reports no longer raise UnicodeDecodeError if a Python file has
-  undecodable characters, fixing `issue 303`_ and `issue 331`_.
+  undecodable characters.
 
 - The annotate command will now annotate all files, not just ones relative to
-  the current directory, fixing `issue 57`_.
+  the current directory.
 
 
 .. _django_coverage_plugin: https://pypi.python.org/pypi/django_coverage_plugin
-.. _issue 57: https://bitbucket.org/ned/coveragepy/issue/57/annotate-command-fails-to-annotate-many
-.. _issue 69: https://bitbucket.org/ned/coveragepy/issue/69/coverage-html-overwrite-files-that-doesnt
-.. _issue 94: https://bitbucket.org/ned/coveragepy/issue/94/coverage-xml-doesnt-produce-sources
-.. _issue 117: https://bitbucket.org/ned/coveragepy/issue/117/enable-coverage-measurement-of-code-run-by
-.. _issue 149: https://bitbucket.org/ned/coveragepy/issue/149/coverage-gevent-looks-broken
-.. _issue 230: https://bitbucket.org/ned/coveragepy/issue/230/show-line-no-for-missing-branches-in
-.. _issue 235: https://bitbucket.org/ned/coveragepy/issue/235/package-name-is-missing-in-xml-report
-.. _issue 252: https://bitbucket.org/ned/coveragepy/issues/252/coverage-wont-run-a-program-with
-.. _issue 262: https://bitbucket.org/ned/coveragepy/issues/262/when-parallel-true-erase-should-erase-all
 .. _issue 284: https://bitbucket.org/ned/coveragepy/issue/284/fail-under-should-show-more-precision
-.. _issue 285: https://bitbucket.org/ned/coveragepy/issue/285/xml-report-fails-if-output-file-directory
-.. _issue 303: https://bitbucket.org/ned/coveragepy/issue/303/unicodedecodeerror
-.. _issue 304: https://bitbucket.org/ned/coveragepy/issue/304/attempt-to-get-configuration-from-setupcfg
 .. _issue 308: https://bitbucket.org/ned/coveragepy/issue/308/yield-lambda-branch-coverage
-.. _issue 314: https://bitbucket.org/ned/coveragepy/issue/314/fail_under-param-not-working-in-coveragerc
-.. _issue 315: https://bitbucket.org/ned/coveragepy/issue/315/option-to-omit-empty-files-eg-__init__py
 .. _issue 324: https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
-.. _issue 331: https://bitbucket.org/ned/coveragepy/issue/331/failure-of-encoding-detection-on-python2
-.. _issue 340: https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy
 .. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ
-.. _issue 345: https://bitbucket.org/ned/coveragepy/issue/345/xml-reports-line-rate-0-for-empty-files
-.. _issue 351: https://bitbucket.org/ned/coveragepy/issue/351/files-with-incorrect-encoding-are-ignored
-.. _issue 353: https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
-.. _issue 354: https://bitbucket.org/ned/coveragepy/issue/354/coverage-combine-should-take-a-list-of
-.. _issue 357: https://bitbucket.org/ned/coveragepy/issue/357/behavior-changed-when-coveragerc-is
-.. _issue 358: https://bitbucket.org/ned/coveragepy/issue/358/all-coverage-commands-should-adjust
 .. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
-.. _issue 386: https://bitbucket.org/ned/coveragepy/issues/386/error-on-unrecognised-configuration
 
 
 .. _changes_371:
