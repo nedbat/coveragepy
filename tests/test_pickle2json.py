@@ -8,11 +8,7 @@ from coverage.data import CoverageData
 from coverage.pickle2json import pickle2json
 
 from tests.coveragetest import CoverageTest
-from tests.test_data import DataTestHelpers
-from tests.test_data import (
-    LINES_1, SUMMARY_1, MEASURED_FILES_1, A_PY_LINES_1, ARCS_3, SUMMARY_3,
-    MEASURED_FILES_3, X_PY_LINES_3, X_PY_ARCS_3, Y_PY_LINES_3, Y_PY_ARCS_3,
-)
+from tests.test_data import DataTestHelpers, LINES_1, ARCS_3
 
 
 class Pickle2JsonTestInTempDir(DataTestHelpers, CoverageTest):
@@ -44,10 +40,7 @@ class Pickle2JsonTestInTempDir(DataTestHelpers, CoverageTest):
 
         covdata2 = CoverageData()
         covdata2.read_file("lines.json")
-        self.assert_line_counts(covdata2, SUMMARY_1)
-        self.assert_measured_files(covdata2, MEASURED_FILES_1)
-        self.assertCountEqual(covdata2.lines("a.py"), A_PY_LINES_1)
-        self.assertEqual(covdata2.run_infos(), [])
+        self.assert_lines1_data(covdata2)
 
     def test_read_write_arcs_pickle(self):
         # Test the old pickle format.
@@ -59,10 +52,4 @@ class Pickle2JsonTestInTempDir(DataTestHelpers, CoverageTest):
 
         covdata2 = CoverageData()
         covdata2.read_file("arcs.json")
-        self.assert_line_counts(covdata2, SUMMARY_3)
-        self.assert_measured_files(covdata2, MEASURED_FILES_3)
-        self.assertCountEqual(covdata2.lines("x.py"), X_PY_LINES_3)
-        self.assertCountEqual(covdata2.arcs("x.py"), X_PY_ARCS_3)
-        self.assertCountEqual(covdata2.lines("y.py"), Y_PY_LINES_3)
-        self.assertCountEqual(covdata2.arcs("y.py"), Y_PY_ARCS_3)
-        self.assertEqual(covdata2.run_infos(), [])
+        self.assert_arcs3_data(covdata2)

@@ -81,6 +81,25 @@ class DataTestHelpers(CoverageTest):
         """Check that `covdata`'s measured files are `measured`."""
         self.assertCountEqual(covdata.measured_files(), measured)
 
+    def assert_lines1_data(self, covdata):
+        """Check that `covdata` has the data from LINES1."""
+        self.assert_line_counts(covdata, SUMMARY_1)
+        self.assert_measured_files(covdata, MEASURED_FILES_1)
+        self.assertCountEqual(covdata.lines("a.py"), A_PY_LINES_1)
+        self.assertEqual(covdata.run_infos(), [])
+        self.assertFalse(covdata.has_arcs())
+
+    def assert_arcs3_data(self, covdata):
+        """Check that `covdata` has the data from ARCS3."""
+        self.assert_line_counts(covdata, SUMMARY_3)
+        self.assert_measured_files(covdata, MEASURED_FILES_3)
+        self.assertCountEqual(covdata.lines("x.py"), X_PY_LINES_3)
+        self.assertCountEqual(covdata.arcs("x.py"), X_PY_ARCS_3)
+        self.assertCountEqual(covdata.lines("y.py"), Y_PY_LINES_3)
+        self.assertCountEqual(covdata.arcs("y.py"), Y_PY_ARCS_3)
+        self.assertTrue(covdata.has_arcs())
+        self.assertEqual(covdata.run_infos(), [])
+
 
 class CoverageDataTest(DataTestHelpers, CoverageTest):
     """Test cases for CoverageData."""
@@ -104,21 +123,11 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
     def test_adding_lines(self):
         covdata = CoverageData()
         covdata.set_lines(LINES_1)
-        self.assert_line_counts(covdata, SUMMARY_1)
-        self.assert_measured_files(covdata, MEASURED_FILES_1)
-        self.assertCountEqual(covdata.lines("a.py"), A_PY_LINES_1)
-        self.assertFalse(covdata.has_arcs())
 
     def test_adding_arcs(self):
         covdata = CoverageData()
         covdata.set_arcs(ARCS_3)
-        self.assert_line_counts(covdata, SUMMARY_3)
-        self.assert_measured_files(covdata, MEASURED_FILES_3)
-        self.assertCountEqual(covdata.lines("x.py"), X_PY_LINES_3)
-        self.assertCountEqual(covdata.arcs("x.py"), X_PY_ARCS_3)
-        self.assertCountEqual(covdata.lines("y.py"), Y_PY_LINES_3)
-        self.assertCountEqual(covdata.arcs("y.py"), Y_PY_ARCS_3)
-        self.assertTrue(covdata.has_arcs())
+        self.assert_arcs3_data(covdata)
 
     def test_cant_set_arcs_with_lines(self):
         covdata = CoverageData()
@@ -358,10 +367,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
 
         covdata2 = CoverageData()
         covdata2.read_file("lines.dat")
-        self.assert_line_counts(covdata2, SUMMARY_1)
-        self.assert_measured_files(covdata2, MEASURED_FILES_1)
-        self.assertCountEqual(covdata2.lines("a.py"), A_PY_LINES_1)
-        self.assertEqual(covdata2.run_infos(), [])
+        self.assert_lines1_data(covdata2)
 
     def test_read_write_arcs(self):
         covdata1 = CoverageData()
@@ -370,13 +376,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
 
         covdata2 = CoverageData()
         covdata2.read_file("arcs.dat")
-        self.assert_line_counts(covdata2, SUMMARY_3)
-        self.assert_measured_files(covdata2, MEASURED_FILES_3)
-        self.assertCountEqual(covdata2.lines("x.py"), X_PY_LINES_3)
-        self.assertCountEqual(covdata2.arcs("x.py"), X_PY_ARCS_3)
-        self.assertCountEqual(covdata2.lines("y.py"), Y_PY_LINES_3)
-        self.assertCountEqual(covdata2.arcs("y.py"), Y_PY_ARCS_3)
-        self.assertEqual(covdata2.run_infos(), [])
+        self.assert_arcs3_data(covdata2)
 
     def test_read_errors(self):
         covdata = CoverageData()
