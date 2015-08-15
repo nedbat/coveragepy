@@ -48,7 +48,7 @@ coverage.py plugin called ``something.plugin``.
    Check the documentation for the plugin to see if it takes any options, and
    what they are.
 
-#. Run your tests as you usually would.
+#. Run your tests with coverage.py as you usually would.
 
 
 Plugin API
@@ -58,9 +58,12 @@ Plugin API
 
 .. autoclass:: CoveragePlugin
     :members:
+    :member-order: bysource
 
 .. autoclass:: FileTracer
     :members:
+    :member-order: bysource
 
 .. autoclass:: FileReporter
     :members:
+    :member-order: bysource

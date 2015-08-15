@@ -31,10 +31,13 @@ class CoveragePlugin(object):
         def coverage_init(reg, options):
             reg.add_file_tracer(MyPlugin())
 
-    The `reg.add_file_tracer` method takes an instance of your plugin.  If your
-    plugin takes options, the `options` argument is a dictionary of your
-    plugin's options from the coverage.py configuration file.  Use them as you
-    need to configure your object before registering it.
+    You use the `reg` parameter passed to your `coverage_init` function to
+    register your plugin object.  It has one method, `add_file_tracer`, which
+    takes a newly created instance of your plugin.
+
+    If your plugin takes options, the `options` parameter is a dictionary of
+    your plugin's options from the coverage.py configuration file.  Use them
+    however you want to configure your object before registering it.
 
     """
 
@@ -207,6 +210,20 @@ class FileReporter(object):
         """
         return files.relative_filename(self.filename)
 
+    @contract(returns='unicode')
+    def source(self):
+        """Get the source for the file.
+
+        Returns a Unicode string.
+
+        The base implementation simply reads the `self.filename` file and
+        decodes it as UTF8.  Override this method if your file isn't readable
+        as a text file, or if you need other encoding support.
+
+        """
+        with open(self.filename, "rb") as f:
+            return f.read().decode("utf8")
+
     def lines(self):
         """Get the executable lines in this file.
 
@@ -303,20 +320,6 @@ class FileReporter(object):
 
         """
         return {}
-
-    @contract(returns='unicode')
-    def source(self):
-        """Get the source for the file.
-
-        Returns a Unicode string.
-
-        The base implementation simply reads the `self.filename` file and
-        decodes it as UTF8.  Override this method if your file isn't readable
-        as a text file, or if you need other encoding support.
-
-        """
-        with open(self.filename, "rb") as f:
-            return f.read().decode("utf8")
 
     def source_token_lines(self):
         """Generate a series of tokenized lines, one for each line in `source`.
