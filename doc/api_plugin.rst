@@ -3,9 +3,9 @@
 
 .. _api_plugin:
 
-==============
-The Plugin API
-==============
+==================
+The Plugin classes
+==================
 
 .. :history: 20150815T132400, new doc for 4.0b2
 
