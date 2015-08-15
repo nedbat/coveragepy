@@ -338,7 +338,6 @@ class SummaryTest(CoverageTest):
         self.make_file("mycode.py", "This isn't python at all!")
         report = self.report_from_command("coverage report mycode.py")
 
-        # pylint: disable=line-too-long
         # Name     Stmts   Miss  Cover
         # ----------------------------
         # mycode   NotPython: Couldn't parse '...' as Python source: 'invalid syntax' at line 1
