@@ -13,12 +13,14 @@ For advanced use of coverage.py, or just because you are curious, it helps to
 understand what's happening behind the scenes.  Coverage.py works in three
 phases:
 
-* **Execution**: your code is run, and monitored to see what lines were executed.
+* **Execution**: Coverage.py runs your code, and monitors it to see what lines
+  were executed.
 
-* **Analysis**: your code is examined to determine what lines could have run.
+* **Analysis**: Coverage.py examines your code to determine what lines could
+  have run.
 
-* **Reporting**: the results of execution and analysis are combined to produce
-  a coverage number and an indication of missing execution.
+* **Reporting**: Coverage.py combines the results of execution and analysis to
+  produce a coverage number and an indication of missing execution.
 
 The execution phase is handled by the ``coverage run`` command.  The analysis
 and reporting phases are handled by the reporting commands like ``coverage
@@ -31,13 +33,13 @@ Execution
 ---------
 
 At the heart of the execution phase is a Python trace function.  This is a
-function that Python will invoke for each line executed in a program.
+function that Python interpreter invokes for each line executed in a program.
 Coverage.py implements a trace function that records each file and line number
 as it is executed.
 
 Executing a function for every line in your program can make execution very
 slow.  Coverage.py's trace function is implemented in C to reduce that
-slowdown, and also takes care to not trace code that you aren't interested in.
+slowdown. It also takes care to not trace code that you aren't interested in.
 
 When measuring branch coverage, the same trace function is used, but instead of
 recording line numbers, coverage.py records pairs of line numbers.  Each
@@ -63,15 +65,12 @@ Analysis
 After your program has been executed and the line numbers recorded, coverage.py
 needs to determine what lines could have been executed.  Luckily, compiled
 Python files (.pyc files) have a table of line numbers in them.  Coverage.py
-reads this table to get the set of executable lines.
-
-The table isn't used directly, because it records line numbers for docstrings,
-for example, and we don't want to consider them executable.  A few tweaks are
-made for considerations like this, and we have a set of lines that could have
-been executed.
+reads this table to get the set of executable lines, with a little more source
+analysis to leave out things like docstrings.
 
 The data file is read to get the set of lines that were executed.  The
-difference between those two sets are the lines that were not executed.
+difference between the executable lines, and the executed lines, are the lines
+that were not executed.
 
 The same principle applies for branch measurement, though the process for
 determining possible branches is more involved.  Coverage.py reads the bytecode

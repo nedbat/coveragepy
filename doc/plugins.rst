@@ -11,11 +11,12 @@ Plugins
 .. :history: 20150802T174600, updated for 4.0b1
 
 
-.. versionadded:: 4.0
-
 Coverage.py's behavior can be extended with third-party plugins.  A plugin is a
 separately installed Python class that you register in your .coveragerc.
 Plugins can be used to implement coverage measurement for non-Python files.
+
+.. versionadded:: 4.0
+
 
 Using plugins
 -------------

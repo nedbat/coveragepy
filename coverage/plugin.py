@@ -199,7 +199,15 @@ class FileReporter(object):
 
     @contract(returns='unicode')
     def source(self):
-        """Return the source for the code, a Unicode string."""
+        """Get the source for the file.
+
+        Returns a Unicode string.
+
+        The base implementation simply reads the `self.filename` file and
+        decodes it as UTF8.  Override this method if your file isn't readable
+        as a text file, or if you need other encoding support.
+
+        """
         # A generic implementation: read the text of self.filename
         with open(self.filename, "rb") as f:
             return f.read().decode("utf8")
@@ -215,19 +223,21 @@ class FileReporter(object):
 
         Each pair has a token class, and the token text.  The token classes are:
 
-        * `'com'`: a comment
-        * `'key'`: a keyword
-        * `'nam'`: a name, or identifier
-        * `'num'`: a number
-        * `'op'`: an operator
-        * `'str'`: a string literal
-        * `'txt'`: some other kind of text
+        * ``'com'``: a comment
+        * ``'key'``: a keyword
+        * ``'nam'``: a name, or identifier
+        * ``'num'``: a number
+        * ``'op'``: an operator
+        * ``'str'``: a string literal
+        * ``'txt'``: some other kind of text
 
-        If you concatenate all the token texts, and then join them with newlines,
-        you should have your original `source` back.
+        If you concatenate all the token texts, and then join them with
+        newlines, you should have your original source back.
+
+        The base class implementation is simply to return each line tagged as
+        ``'txt'``.
 
         """
-        # A generic implementation, each line is one "txt" token.
         for line in self.source().splitlines():
             yield [('txt', line)]
 
