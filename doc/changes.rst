@@ -50,7 +50,7 @@ Version 4.0b1 pre-release --- 2 August 2015
 Backward incompatibilities:
 
 - Python versions supported are now:
-  
+
   - CPython 2.6, 2.7, 3.3, 3.4 and 3.5b4
   - PyPy2 2.4, 2.6
   - PyPy3 2.4
