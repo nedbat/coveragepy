@@ -49,6 +49,7 @@ class FarmTestCase(object):
     cleaning-only, or run and leave the results for debugging).
 
     """
+
     def __init__(self, runpy, clean_only=False, dont_clean=False):
         """Create a test case from a run.py file.
 
@@ -62,32 +63,13 @@ class FarmTestCase(object):
         self.dont_clean = dont_clean
         self.ok = True
 
-    def cd(self, newdir):
-        """Change the current directory, and return the old one."""
-        cwd = os.getcwd()
-        os.chdir(newdir)
-        return cwd
-
-    def addtopath(self, directory):
-        """Add `directory` to the path, and return the old path."""
-        oldpath = sys.path[:]
-        if directory is not None:
-            sys.path.insert(0, directory)
-        return oldpath
-
-    def restorepath(self, path):
-        """Restore the system path to `path`."""
-        sys.path = path
-
     def __call__(self):
-        """Execute the test from the run.py file.
-
-        """
+        """Execute the test from the run.py file."""
         if _TEST_NAME_FILE:                                 # pragma: debugging
             with open(_TEST_NAME_FILE, "w") as f:
                 f.write(self.description.replace("/", "_"))
 
-        cwd = self.cd(self.dir)
+        cwd = change_dir(self.dir)
 
         # Prepare a dictionary of globals for the run.py files to use.
         fns = """
@@ -109,7 +91,7 @@ class FarmTestCase(object):
             self.ok = False
             raise
         finally:
-            self.cd(cwd)
+            change_dir(cwd)
             # Remove any new modules imported during the test run. This lets us
             # import the same source files for more than one test.
             to_del = [m for m in sys.modules if m not in old_mods]
@@ -124,21 +106,8 @@ class FarmTestCase(object):
         finally:
             self.tearDown()
 
-    def fnmatch_list(self, files, file_pattern):
-        """Filter the list of `files` to only those that match `file_pattern`.
-
-        If `file_pattern` is None, then return the entire list of files.
-
-        Returns a list of the filtered files.
-
-        """
-        if file_pattern:
-            files = [f for f in files if fnmatch.fnmatch(f, file_pattern)]
-        return files
-
     def setUp(self):
         """Test set up, run by nose before __call__."""
-
         # Modules should be importable from the current directory.
         self.old_syspath = sys.path[:]
         sys.path.insert(0, '')
@@ -162,7 +131,6 @@ class FarmTestCase(object):
 
     def copy(self, src, dst):
         """Copy a directory."""
-
         if os.path.exists(dst):
             shutil.rmtree(dst)
         shutil.copytree(src, dst)
@@ -175,7 +143,7 @@ class FarmTestCase(object):
         `outfile` is a filename to redirect stdout to.
 
         """
-        cwd = self.cd(rundir)
+        cwd = change_dir(rundir)
         if outfile:
             fout = open(outfile, "a+")
         try:
@@ -192,7 +160,7 @@ class FarmTestCase(object):
         finally:
             if outfile:
                 fout.close()
-            self.cd(cwd)
+            change_dir(cwd)
 
     def runfunc(self, fn, rundir="src", addtopath=None):
         """Run a function.
@@ -201,14 +169,13 @@ class FarmTestCase(object):
         `rundir` is the directory in which to run the function.
 
         """
-
-        cwd = self.cd(rundir)
-        oldpath = self.addtopath(addtopath)
+        cwd = change_dir(rundir)
+        oldpath = add_to_path(addtopath)
         try:
             fn()
         finally:
-            self.cd(cwd)
-            self.restorepath(oldpath)
+            change_dir(cwd)
+            restore_path(oldpath)
 
     def compare(
         self, dir1, dir2, file_pattern=None, size_within=0,
@@ -251,9 +218,9 @@ class FarmTestCase(object):
         assert os.path.exists(dir2), "Right directory missing: %s" % dir2
 
         dc = filecmp.dircmp(dir1, dir2)
-        diff_files = self.fnmatch_list(dc.diff_files, file_pattern)
-        left_only = self.fnmatch_list(dc.left_only, file_pattern)
-        right_only = self.fnmatch_list(dc.right_only, file_pattern)
+        diff_files = fnmatch_list(dc.diff_files, file_pattern)
+        left_only = fnmatch_list(dc.left_only, file_pattern)
+        right_only = fnmatch_list(dc.right_only, file_pattern)
         show_diff = True
 
         if size_within:
@@ -290,8 +257,8 @@ class FarmTestCase(object):
                 with open(os.path.join(dir2, f), READ_MODE) as fobj:
                     right = fobj.read()
                 if scrubs:
-                    left = self._scrub(left, scrubs)
-                    right = self._scrub(right, scrubs)
+                    left = scrub(left, scrubs)
+                    right = scrub(right, scrubs)
                 if left != right:
                     text_diff.append(f)
                     left = left.splitlines()
@@ -303,17 +270,6 @@ class FarmTestCase(object):
             assert not left_only, "Files in %s only: %s" % (dir1, left_only)
         if not right_extra:
             assert not right_only, "Files in %s only: %s" % (dir2, right_only)
-
-    def _scrub(self, strdata, scrubs):
-        """Scrub uninteresting data from the payload in `strdata`.
-
-        `scrubs` is a list of (find, replace) pairs of regexes that are used on
-        `strdata`.  A string is returned.
-
-        """
-        for rgx_find, rgx_replace in scrubs:
-            strdata = re.sub(rgx_find, re.escape(rgx_replace), strdata)
-        return strdata
 
     def contains(self, filename, *strlist):
         """Check that the file contains all of a list of strings.
@@ -378,6 +334,53 @@ class FarmTestCase(object):
         raise SkipTest(msg)
 
 
+# Helpers
+
+def change_dir(newdir):
+    """Change the current directory, and return the old one."""
+    cwd = os.getcwd()
+    os.chdir(newdir)
+    return cwd
+
+
+def add_to_path(directory):
+    """Add `directory` to the path, and return the old path."""
+    old_path = sys.path[:]
+    if directory is not None:
+        sys.path.insert(0, directory)
+    return old_path
+
+
+def restore_path(path):
+    """Restore the system path to `path`."""
+    sys.path = path
+
+
+def fnmatch_list(files, file_pattern):
+    """Filter the list of `files` to only those that match `file_pattern`.
+
+    If `file_pattern` is None, then return the entire list of files.
+
+    Returns a list of the filtered files.
+
+    """
+    if file_pattern:
+        files = [f for f in files if fnmatch.fnmatch(f, file_pattern)]
+    return files
+
+
+def scrub(strdata, scrubs):
+    """Scrub uninteresting data from the payload in `strdata`.
+
+    `scrubs` is a list of (find, replace) pairs of regexes that are used on
+    `strdata`.  A string is returned.
+
+    """
+    for rgx_find, rgx_replace in scrubs:
+        strdata = re.sub(rgx_find, re.escape(rgx_replace), strdata)
+    return strdata
+
+
 def main():     # pragma: not covered
     """Command-line access to test_farm.
 
@@ -388,11 +391,10 @@ def main():     # pragma: not covered
     clean               - Clean all the output for all tests.
 
     """
-    op = 'help'
     try:
         op = sys.argv[1]
     except IndexError:
-        pass
+        op = 'help'
 
     if op == 'run':
         # Run the test for real.
