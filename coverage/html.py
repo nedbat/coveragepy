@@ -39,15 +39,22 @@ def data_filename(fname, pkgdir=""):
     is provided, at that sub-directory.
 
     """
+    tried = []
     for static_dir in STATIC_PATH:
         static_filename = os.path.join(static_dir, fname)
         if os.path.exists(static_filename):
             return static_filename
+        else:
+            tried.append(static_filename)
         if pkgdir:
             static_filename = os.path.join(static_dir, pkgdir, fname)
             if os.path.exists(static_filename):
                 return static_filename
-    raise CoverageException("Couldn't find static file %r" % fname)
+            else:
+                tried.append(static_filename)
+    raise CoverageException(
+        "Couldn't find static file %r from %r, tried: %r" % (fname, os.getcwd(), tried)
+    )
 
 
 def data(fname):
