@@ -47,8 +47,8 @@ class Tee(object):
 def change_dir(new_dir):
     """Change directory, and then change back.
 
-    Use as a context manager, it will give you the new directory, and restore
-    the old one.
+    Use as a context manager, it will give you the new directory, and later
+    restore the old one.
 
     """
     old_dir = os.getcwd()
@@ -65,7 +65,7 @@ def saved_sys_path():
     sys.path = old_syspath
 
 
-def setup_context_manager(testcase, cm):
+def setup_with_context_manager(testcase, cm):
     """Use a contextmanager to setUp a test case.
 
     If you have a context manager you like::
@@ -78,7 +78,7 @@ def setup_context_manager(testcase, cm):
     when the test is done::
 
         def setUp(self):
-            self.v = setup_context_manager(self, ctxmgr(a, b, c))
+            self.v = setup_with_context_manager(self, ctxmgr(a, b, c))
 
         def test_foo(self):
             # do something with self.v
@@ -114,7 +114,7 @@ class SysPathAwareMixin(TestCase):
 
     def setUp(self):
         super(SysPathAwareMixin, self).setUp()
-        setup_context_manager(self, saved_sys_path())
+        setup_with_context_manager(self, saved_sys_path())
 
 
 class EnvironmentAwareMixin(TestCase):
