@@ -15,7 +15,7 @@ import unittest
 
 from nose.plugins.skip import SkipTest
 
-from coverage.test_helpers import ModuleAwareMixin
+from coverage.test_helpers import ModuleAwareMixin, SysPathAwareMixin, change_dir, saved_sys_path
 from tests.helpers import run_command
 from tests.backtest import execfile         # pylint: disable=redefined-builtin
 
@@ -33,7 +33,7 @@ def test_farm(clean_only=False):
 READ_MODE = "rU" if sys.version_info < (3, 4) else "r"
 
 
-class FarmTestCase(ModuleAwareMixin, unittest.TestCase):
+class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
     """A test case from the farm tree.
 
     Tests are short Python script files, often called run.py:
@@ -76,8 +76,6 @@ class FarmTestCase(ModuleAwareMixin, unittest.TestCase):
             with open(_TEST_NAME_FILE, "w") as f:
                 f.write(self.description.replace("/", "_"))
 
-        cwd = change_dir(self.dir)
-
         # Prepare a dictionary of globals for the run.py files to use.
         fns = """
             copy run runfunc clean skip
@@ -91,13 +89,12 @@ class FarmTestCase(ModuleAwareMixin, unittest.TestCase):
             if self.dont_clean:                 # pragma: not covered
                 glo['clean'] = noop
 
-        try:
-            execfile(self.runpy, glo)
-        except Exception:
-            self.ok = False
-            raise
-        finally:
-            change_dir(cwd)
+        with change_dir(self.dir):
+            try:
+                execfile(self.runpy, glo)
+            except Exception:
+                self.ok = False
+                raise
 
     def run_fully(self):        # pragma: not covered
         """Run as a full test case, with setUp and tearDown."""
@@ -108,22 +105,18 @@ class FarmTestCase(ModuleAwareMixin, unittest.TestCase):
             self.tearDown()
 
     def setUp(self):
-        """Test set up, run by nose before __call__."""
+        """Test set up, run by nose before runTest."""
         super(FarmTestCase, self).setUp()
         # Modules should be importable from the current directory.
-        self.old_syspath = sys.path[:]
         sys.path.insert(0, '')
 
     def tearDown(self):
-        """Test tear down, run by nose after __call__."""
+        """Test tear down, run by nose after runTest."""
         # Make sure the test is cleaned up, unless we never want to, or if the
         # test failed.
         if not self.dont_clean and self.ok:         # pragma: part covered
             self.clean_only = True
             self.runTest()
-
-        # Restore the original sys.path
-        sys.path = self.old_syspath
 
         super(FarmTestCase, self).tearDown()
 
@@ -150,24 +143,23 @@ def run(cmds, rundir="src", outfile=None):
     `outfile` is a filename to redirect stdout to.
 
     """
-    cwd = change_dir(rundir)
-    if outfile:
-        fout = open(outfile, "a+")
-    try:
-        for cmd in cmds.split("\n"):
-            cmd = cmd.strip()
-            if not cmd:
-                continue
-            retcode, output = run_command(cmd)
-            print(output.rstrip())
-            if outfile:
-                fout.write(output)
-            if retcode:
-                raise Exception("command exited abnormally")
-    finally:
+    with change_dir(rundir):
         if outfile:
-            fout.close()
-        change_dir(cwd)
+            fout = open(outfile, "a+")
+        try:
+            for cmd in cmds.split("\n"):
+                cmd = cmd.strip()
+                if not cmd:
+                    continue
+                retcode, output = run_command(cmd)
+                print(output.rstrip())
+                if outfile:
+                    fout.write(output)
+                if retcode:
+                    raise Exception("command exited abnormally")
+        finally:
+            if outfile:
+                fout.close()
 
 
 def runfunc(fn, rundir="src", addtopath=None):
@@ -177,13 +169,11 @@ def runfunc(fn, rundir="src", addtopath=None):
     `rundir` is the directory in which to run the function.
 
     """
-    cwd = change_dir(rundir)
-    oldpath = add_to_path(addtopath)
-    try:
-        fn()
-    finally:
-        change_dir(cwd)
-        restore_path(oldpath)
+    with change_dir(rundir):
+        with saved_sys_path():
+            if addtopath is not None:
+                sys.path.insert(0, addtopath)
+            fn()
 
 
 def compare(
@@ -347,26 +337,6 @@ def skip(msg=None):
 
 
 # Helpers
-
-def change_dir(newdir):
-    """Change the current directory, and return the old one."""
-    cwd = os.getcwd()
-    os.chdir(newdir)
-    return cwd
-
-
-def add_to_path(directory):
-    """Add `directory` to the path, and return the old path."""
-    old_path = sys.path[:]
-    if directory is not None:
-        sys.path.insert(0, directory)
-    return old_path
-
-
-def restore_path(path):
-    """Restore the system path to `path`."""
-    sys.path = path
-
 
 def fnmatch_list(files, file_pattern):
     """Filter the list of `files` to only those that match `file_pattern`.

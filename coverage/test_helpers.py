@@ -5,6 +5,7 @@
 
 import atexit
 import collections
+import contextlib
 import os
 import random
 import shutil
@@ -42,6 +43,52 @@ class Tee(object):
             return getattr(self._files[0], name)
 
 
+@contextlib.contextmanager
+def change_dir(new_dir):
+    """Change directory, and then change back.
+
+    Use as a context manager, it will give you the new directory, and restore
+    the old one.
+
+    """
+    old_dir = os.getcwd()
+    os.chdir(new_dir)
+    yield os.getcwd()
+    os.chdir(old_dir)
+
+
+@contextlib.contextmanager
+def saved_sys_path():
+    """Save sys.path, and restore it later."""
+    old_syspath = sys.path[:]
+    yield
+    sys.path = old_syspath
+
+
+def setup_context_manager(testcase, cm):
+    """Use a contextmanager to setUp a test case.
+
+    If you have a context manager you like::
+
+        with ctxmgr(a, b, c) as v:
+            # do something with v
+
+    and you want to have that effect for a test case, call this function from
+    your setUp, and it will start the context manager for your test, and end it
+    when the test is done::
+
+        def setUp(self):
+            self.v = setup_context_manager(self, ctxmgr(a, b, c))
+
+        def test_foo(self):
+            # do something with self.v
+
+    """
+    val = cm.__enter__()
+    testcase.addCleanup(cm.__exit__, None, None, None)
+    return val
+
+
 class ModuleAwareMixin(TestCase):
     """A test case mixin that isolates changes to sys.modules."""
 
@@ -67,13 +114,7 @@ class SysPathAwareMixin(TestCase):
 
     def setUp(self):
         super(SysPathAwareMixin, self).setUp()
-
-        self.old_syspath = sys.path[:]
-        self.addCleanup(self.cleanup_syspath)
-
-    def cleanup_syspath(self):
-        """Restore the original sys.path."""
-        sys.path = self.old_syspath
+        setup_context_manager(self, saved_sys_path())
 
 
 class EnvironmentAwareMixin(TestCase):
