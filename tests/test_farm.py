@@ -11,9 +11,11 @@ import os
 import re
 import shutil
 import sys
+import unittest
 
 from nose.plugins.skip import SkipTest
 
+from coverage.test_helpers import ModuleAwareMixin
 from tests.helpers import run_command
 from tests.backtest import execfile         # pylint: disable=redefined-builtin
 
@@ -31,7 +33,7 @@ def test_farm(clean_only=False):
 READ_MODE = "rU" if sys.version_info < (3, 4) else "r"
 
 
-class FarmTestCase(object):
+class FarmTestCase(ModuleAwareMixin, unittest.TestCase):
     """A test case from the farm tree.
 
     Tests are short Python script files, often called run.py:
@@ -50,6 +52,9 @@ class FarmTestCase(object):
 
     """
 
+    # We don't want test runners finding this and instantiating it themselves.
+    __test__ = False
+
     def __init__(self, runpy, clean_only=False, dont_clean=False):
         """Create a test case from a run.py file.
 
@@ -57,13 +62,15 @@ class FarmTestCase(object):
         `dont_clean` means that the clean() action is not executed.
 
         """
+        super(FarmTestCase, self).__init__()
+
         self.description = runpy
         self.dir, self.runpy = os.path.split(runpy)
         self.clean_only = clean_only
         self.dont_clean = dont_clean
         self.ok = True
 
-    def __call__(self):
+    def runTest(self):
         """Execute the test from the run.py file."""
         if _TEST_NAME_FILE:                                 # pragma: debugging
             with open(_TEST_NAME_FILE, "w") as f:
@@ -84,7 +91,6 @@ class FarmTestCase(object):
             if self.dont_clean:                 # pragma: not covered
                 glo['clean'] = noop
 
-        old_mods = dict(sys.modules)
         try:
             execfile(self.runpy, glo)
         except Exception:
@@ -92,22 +98,18 @@ class FarmTestCase(object):
             raise
         finally:
             change_dir(cwd)
-            # Remove any new modules imported during the test run. This lets us
-            # import the same source files for more than one test.
-            to_del = [m for m in sys.modules if m not in old_mods]
-            for m in to_del:
-                del sys.modules[m]
 
     def run_fully(self):        # pragma: not covered
         """Run as a full test case, with setUp and tearDown."""
         self.setUp()
         try:
-            self()
+            self.runTest()
         finally:
             self.tearDown()
 
     def setUp(self):
         """Test set up, run by nose before __call__."""
+        super(FarmTestCase, self).setUp()
         # Modules should be importable from the current directory.
         self.old_syspath = sys.path[:]
         sys.path.insert(0, '')
@@ -118,10 +120,12 @@ class FarmTestCase(object):
         # test failed.
         if not self.dont_clean and self.ok:         # pragma: part covered
             self.clean_only = True
-            self()
+            self.runTest()
 
         # Restore the original sys.path
         sys.path = self.old_syspath
+
+        super(FarmTestCase, self).tearDown()
 
 
 # Functions usable inside farm run.py files

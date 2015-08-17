@@ -49,7 +49,7 @@ class ModuleAwareMixin(TestCase):
         super(ModuleAwareMixin, self).setUp()
 
         # Record sys.modules here so we can restore it in cleanup_modules.
-        self.old_modules = dict(sys.modules)
+        self.old_modules = list(sys.modules)
         self.addCleanup(self.cleanup_modules)
 
     def cleanup_modules(self):
