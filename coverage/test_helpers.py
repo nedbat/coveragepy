@@ -53,16 +53,20 @@ def change_dir(new_dir):
     """
     old_dir = os.getcwd()
     os.chdir(new_dir)
-    yield os.getcwd()
-    os.chdir(old_dir)
+    try:
+        yield os.getcwd()
+    finally:
+        os.chdir(old_dir)
 
 
 @contextlib.contextmanager
 def saved_sys_path():
     """Save sys.path, and restore it later."""
     old_syspath = sys.path[:]
-    yield
-    sys.path = old_syspath
+    try:
+        yield
+    finally:
+        sys.path = old_syspath
 
 
 def setup_with_context_manager(testcase, cm):
