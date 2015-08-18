@@ -50,6 +50,10 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
     has options to allow various uses of the test cases (normal execution,
     cleaning-only, or run and leave the results for debugging).
 
+    This class is a unittest.TestCase so that we can use behavior-modifying
+    mixins, but it's only useful as a nose test function.  Yes, this is
+    confusing.
+
     """
 
     # We don't want test runners finding this and instantiating it themselves.
@@ -70,7 +74,31 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
         self.dont_clean = dont_clean
         self.ok = True
 
+    def setUp(self):
+        """Test set up, run by nose before __call__."""
+        super(FarmTestCase, self).setUp()
+        # Modules should be importable from the current directory.
+        sys.path.insert(0, '')
+
+    def tearDown(self):
+        """Test tear down, run by nose after __call__."""
+        # Make sure the test is cleaned up, unless we never want to, or if the
+        # test failed.
+        if not self.dont_clean and self.ok:         # pragma: part covered
+            self.clean_only = True
+            self()
+
+        super(FarmTestCase, self).tearDown()
+
+        # This object will be run by nose via the __call__ method, and nose
+        # doesn't do cleanups in that case.  Do them now.
+        self.doCleanups()
+
     def runTest(self):
+        """Here to make unittest.TestCase happy, but will never be invoked."""
+        raise Exception("runTest isn't used in this class!")
+
+    def __call__(self):
         """Execute the test from the run.py file."""
         if _TEST_NAME_FILE:                                 # pragma: debugging
             with open(_TEST_NAME_FILE, "w") as f:
@@ -100,25 +128,9 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
         """Run as a full test case, with setUp and tearDown."""
         self.setUp()
         try:
-            self.runTest()
+            self()
         finally:
             self.tearDown()
-
-    def setUp(self):
-        """Test set up, run by nose before runTest."""
-        super(FarmTestCase, self).setUp()
-        # Modules should be importable from the current directory.
-        sys.path.insert(0, '')
-
-    def tearDown(self):
-        """Test tear down, run by nose after runTest."""
-        # Make sure the test is cleaned up, unless we never want to, or if the
-        # test failed.
-        if not self.dont_clean and self.ok:         # pragma: part covered
-            self.clean_only = True
-            self.runTest()
-
-        super(FarmTestCase, self).tearDown()
 
 
 # Functions usable inside farm run.py files
