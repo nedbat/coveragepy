@@ -14,10 +14,6 @@ def html_it():
     global source_path
     source_path = coverage.files.relative_directory().rstrip('/')
 
-import os
-if not os.path.exists("xml_2"):
-    os.makedirs("xml_2")
-
 runfunc(html_it, rundir="src")
 
 compare("gold_x_xml", "xml_2", scrubs=[

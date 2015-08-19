@@ -14,10 +14,6 @@ def xml_it():
     global source_path
     source_path = coverage.files.relative_directory().rstrip('/')
 
-import os
-if not os.path.exists("xml_branch"):
-    os.makedirs("xml_branch")
-
 runfunc(xml_it, rundir="src")
 
 compare("gold_y_xml_branch", "xml_branch", scrubs=[
