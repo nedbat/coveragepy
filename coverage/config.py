@@ -20,7 +20,7 @@ class HandyConfigParser(configparser.RawConfigParser):
         self.section_prefix = section_prefix
 
     def read(self, filename):
-        """Read a filename as UTF-8 configuration data."""
+        """Read a file name as UTF-8 configuration data."""
         kwargs = {}
         if sys.version_info >= (3, 2):
             kwargs['encoding'] = "utf-8"

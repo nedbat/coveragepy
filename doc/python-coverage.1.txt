@@ -72,7 +72,7 @@ GLOBAL OPTIONS
     Specify configuration file `RCFILE`. Defaults to ``.coveragerc``.
 
 **--omit** `PATTERN` [ , ... ]
-    Omit files when their filename matches one of these PATTERNs.
+    Omit files when their file name matches one of these PATTERNs.
     Usually needs quoting on the command line.
 
 **--include** `PATTERN` [ , ... ]

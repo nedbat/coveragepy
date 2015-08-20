@@ -629,7 +629,7 @@ def unshell_list(s):
     if env.WINDOWS:
         # When running coverage.py as coverage.exe, some of the behavior
         # of the shell is emulated: wildcards are expanded into a list of
-        # filenames.  So you have to single-quote patterns on the command
+        # file names.  So you have to single-quote patterns on the command
         # line, but (not) helpfully, the single quotes are included in the
         # argument, so we have to strip them off here.
         s = s.strip("'")

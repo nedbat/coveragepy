@@ -38,7 +38,7 @@ def relative_directory():
 def relative_filename(filename):
     """Return the relative form of `filename`.
 
-    The filename will be relative to the current directory when the
+    The file name will be relative to the current directory when the
     `set_relative_directory` was called.
 
     """
@@ -48,7 +48,7 @@ def relative_filename(filename):
     return filename
 
 def canonical_filename(filename):
-    """Return a canonical filename for `filename`.
+    """Return a canonical file name for `filename`.
 
     An absolute path with no redundant components and normalized case.
 
@@ -68,7 +68,7 @@ def canonical_filename(filename):
 
 
 def flat_rootname(filename):
-    """A base for a flat filename to correspond to this file.
+    """A base for a flat file name to correspond to this file.
 
     Useful for writing files about the code where you want all the files in
     the same directory, but need to differentiate same-named files from
@@ -210,7 +210,7 @@ class ModuleMatcher(object):
 
 
 class FnmatchMatcher(object):
-    """A matcher for files by filename pattern."""
+    """A matcher for files by file name pattern."""
     def __init__(self, pats):
         self.pats = pats[:]
         # fnmatch is platform-specific. On Windows, it does the Windows thing
@@ -233,7 +233,7 @@ class FnmatchMatcher(object):
         return self.pats
 
     def match(self, fpath):
-        """Does `fpath` match one of our filename patterns?"""
+        """Does `fpath` match one of our file name patterns?"""
         return self.re.match(fpath) is not None
 
 

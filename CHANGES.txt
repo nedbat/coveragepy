@@ -470,7 +470,7 @@ Version 3.6b2 --- 23 December 2012
 - ``debug sys`` now shows the configuration file path that was read.
 
 - If an oddly-behaved package claims that code came from an empty-string
-  filename, coverage.py no longer associates it with the directory name,
+  file name, coverage.py no longer associates it with the directory name,
   fixing `issue 221`_.
 
 .. _issue 80: https://bitbucket.org/ned/coveragepy/issue/80/is-there-a-duck-typing-way-to-know-we-cant
@@ -505,7 +505,7 @@ Version 3.6b1 --- 28 November 2012
 - Embarrassingly, the ``[xml] output=`` setting in the .coveragerc file simply
   didn't work.  Now it does.
 
-- The XML report now consistently uses filenames for the filename attribute,
+- The XML report now consistently uses file names for the file name attribute,
   rather than sometimes using module names.  Fixes `issue 67`_.
   Thanks, Marcus Cobden.
 
@@ -653,7 +653,7 @@ Version 3.5.2b1 --- 29 April 2012
   option, fixing `issue 168`_.
 
 - If a file doesn't parse properly as Python, we don't report it as an error
-  if the filename seems like maybe it wasn't meant to be Python.  This is a
+  if the file name seems like maybe it wasn't meant to be Python.  This is a
   pragmatic fix for `issue 82`_.
 
 - The ``-m`` switch on ``coverage report``, which includes missing line numbers
@@ -863,7 +863,7 @@ Version 3.4b1 --- 21 August 2010
   file patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
 
 - BACKWARD INCOMPATIBILITY: the `omit_prefixes` argument is gone throughout
-  coverage.py, replaced with `omit`, a list of filename patterns suitable for
+  coverage.py, replaced with `omit`, a list of file name patterns suitable for
   `fnmatch`.  A parallel argument `include` controls what files are included.
 
 - The run command now has a ``--source`` switch, a list of directories or
@@ -913,7 +913,7 @@ Version 3.4b1 --- 21 August 2010
 - Doctest text files are no longer recorded in the coverage data, since they
   can't be reported anyway.  Fixes `issue 52`_ and `issue 61`_.
 
-- Jinja HTML templates compile into Python code using the HTML filename,
+- Jinja HTML templates compile into Python code using the HTML file name,
   which confused coverage.py.  Now these files are no longer traced, fixing
   `issue 82`_.
 

@@ -321,7 +321,7 @@ class ExceptionTest(CoverageTest):
             cov.stop()              # pragma: nested
 
             # Clean the line data and compare to expected results.
-            # The filenames are absolute, so keep just the base.
+            # The file names are absolute, so keep just the base.
             clean_lines = {}
             data = cov.get_data()
             for callname in callnames:

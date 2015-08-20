@@ -99,7 +99,7 @@ class Coverage(object):
         in the trees indicated by the file paths or package names will be
         measured.
 
-        `include` and `omit` are lists of filename patterns. Files that match
+        `include` and `omit` are lists of file name patterns. Files that match
         `include` will be measured, files that match `omit` will not.  Each
         will also accept a single string argument.
 
@@ -294,7 +294,7 @@ class Coverage(object):
                     self.pylib_dirs.add(self._canonical_dir(m))
             if _structseq and not hasattr(_structseq, '__file__'):
                 # PyPy 2.4 has no __file__ in the builtin modules, but the code
-                # objects still have the filenames.  So dig into one to find
+                # objects still have the file names.  So dig into one to find
                 # the path to exclude.
                 structseq_new = _structseq.structseq_new
                 try:
@@ -361,7 +361,7 @@ class Coverage(object):
     def _source_for_file(self, filename):
         """Return the source file for `filename`.
 
-        Given a filename being traced, return the best guess as to the source
+        Given a file name being traced, return the best guess as to the source
         file to attribute it to.
 
         """
@@ -387,18 +387,18 @@ class Coverage(object):
             # Jython is easy to guess.
             return filename[:-9] + ".py"
 
-        # No idea, just use the filename as-is.
+        # No idea, just use the file name as-is.
         return filename
 
     def _name_for_module(self, module_globals, filename):
-        """Get the name of the module for a set of globals and filename.
+        """Get the name of the module for a set of globals and file name.
 
         For configurability's sake, we allow __main__ modules to be matched by
         their importable name.
 
         If loaded via runpy (aka -m), we can usually recover the "original"
         full dotted module name, otherwise, we resort to interpreting the
-        filename to get the module's name.  In the case that the module name
+        file name to get the module's name.  In the case that the module name
         can't be determined, None is returned.
 
         """
@@ -444,8 +444,8 @@ class Coverage(object):
             disp.reason = reason
             return disp
 
-        # Compiled Python files have two filenames: frame.f_code.co_filename is
-        # the filename at the time the .pyc was compiled.  The second name is
+        # Compiled Python files have two file names: frame.f_code.co_filename is
+        # the file name at the time the .pyc was compiled.  The second name is
         # __file__, which is where the .pyc was actually loaded from.  Since
         # .pyc files can be moved after compilation (for example, by being
         # installed), we look for __file__ in the frame and prefer it to the
@@ -458,22 +458,22 @@ class Coverage(object):
                 if orig != os.path.basename(filename):
                     # Files shouldn't be renamed when moved. This happens when
                     # exec'ing code.  If it seems like something is wrong with
-                    # the frame's filename, then just use the original.
+                    # the frame's file name, then just use the original.
                     filename = original_filename
 
         if not filename:
             # Empty string is pretty useless.
-            return nope(disp, "empty string isn't a filename")
+            return nope(disp, "empty string isn't a file name")
 
         if filename.startswith('memory:'):
             return nope(disp, "memory isn't traceable")
 
         if filename.startswith('<'):
             # Lots of non-file execution is represented with artificial
-            # filenames like "<string>", "<doctest readme.txt[0]>", or
+            # file names like "<string>", "<doctest readme.txt[0]>", or
             # "<exec_function>".  Don't ever trace these executions, since we
             # can't do anything with the data later anyway.
-            return nope(disp, "not a real filename")
+            return nope(disp, "not a real file name")
 
         # Jython reports the .class file to the tracer, use the source file.
         if filename.endswith("$py.class"):
@@ -530,7 +530,7 @@ class Coverage(object):
         return disp
 
     def _check_include_omit_etc_internal(self, filename, frame):
-        """Check a filename against the include, omit, etc, rules.
+        """Check a file name against the include, omit, etc, rules.
 
         Returns a string or None.  String means, don't trace, and is the reason
         why.  None means no reason found to not trace.
@@ -583,7 +583,7 @@ class Coverage(object):
         return disp
 
     def _check_include_omit_etc(self, filename, frame):
-        """Check a filename against the include/omit/etc, rules, verbosely.
+        """Check a file name against the include/omit/etc, rules, verbosely.
 
         Returns a boolean: True if the file should be traced, False if not.
 
@@ -856,10 +856,10 @@ class Coverage(object):
     def analysis2(self, morf):
         """Analyze a module.
 
-        `morf` is a module or a filename.  It will be analyzed to determine
+        `morf` is a module or a file name.  It will be analyzed to determine
         its coverage statistics.  The return value is a 5-tuple:
 
-        * The filename for the module.
+        * The file name for the module.
         * A list of line numbers of executable statements.
         * A list of line numbers of excluded statements.
         * A list of line numbers of statements not run (missing from
@@ -893,7 +893,7 @@ class Coverage(object):
         return Analysis(self.data, it)
 
     def _get_file_reporter(self, morf):
-        """Get a FileReporter for a module or filename."""
+        """Get a FileReporter for a module or file name."""
         plugin = None
         file_reporter = "python"
 
@@ -918,12 +918,12 @@ class Coverage(object):
         return file_reporter
 
     def _get_file_reporters(self, morfs=None):
-        """Get a list of FileReporters for a list of modules or filenames.
+        """Get a list of FileReporters for a list of modules or file names.
 
-        For each module or filename in `morfs`, find a FileReporter.  Return
+        For each module or file name in `morfs`, find a FileReporter.  Return
         the list of FileReporters.
 
-        If `morfs` is a single module or filename, this returns a list of one
+        If `morfs` is a single module or file name, this returns a list of one
         FileReporter.  If `morfs` is empty or None, then the list of all files
         measured is used to find the FileReporters.
 
@@ -952,7 +952,7 @@ class Coverage(object):
         Each module in `morfs` is listed, with counts of statements, executed
         statements, missing statements, and a list of lines missed.
 
-        `include` is a list of filename patterns.  Files that match will be
+        `include` is a list of file name patterns.  Files that match will be
         included in the report. Files matching `omit` will not be included in
         the report.
 

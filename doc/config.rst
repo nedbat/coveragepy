@@ -124,14 +124,14 @@ for storing or reporting coverage.
 ``debug`` (multi-string): a list of debug options.  See :ref:`the run
 --debug option <cmd_run_debug>` for details.
 
-``include`` (multi-string): a list of filename patterns, the files to include
+``include`` (multi-string): a list of file name patterns, the files to include
 in measurement or reporting.  See :ref:`source` for details.
 
 ``note`` (string): an arbitrary string that will be written to the data file.
 You can use the :meth:`CoverageData.run_infos` method to retrieve this string
 from a data file.
 
-``omit`` (multi-string): a list of filename patterns, the files to leave out
+``omit`` (multi-string): a list of file name patterns, the files to leave out
 of measurement or reporting.  See :ref:`source` for details.
 
 ``parallel`` (boolean, default False): append the machine name, process
@@ -194,10 +194,10 @@ measurement is under this value, then exit with a status code of 2.
 ``ignore_errors`` (boolean, default False): ignore source code that can't be
 found.
 
-``include`` (multi-string): a list of filename patterns, the files to include
+``include`` (multi-string): a list of file name patterns, the files to include
 in reporting.  See :ref:`source` for details.
 
-``omit`` (multi-string): a list of filename patterns, the files to leave out
+``omit`` (multi-string): a list of file name patterns, the files to leave out
 of reporting.  See :ref:`source` for details.
 
 ``partial_branches`` (multi-string): a list of regular expressions.  Any line

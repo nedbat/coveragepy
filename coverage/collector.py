@@ -62,10 +62,10 @@ class Collector(object):
     ):
         """Create a collector.
 
-        `should_trace` is a function, taking a filename, and returning a
+        `should_trace` is a function, taking a file name, and returning a
         `coverage.FileDisposition object`.
 
-        `check_include` is a function taking a filename and a frame. It returns
+        `check_include` is a function taking a file name and a frame. It returns
         a boolean: True if the file should be traced, False if not.
 
         If `timid` is true, then a slower simpler trace function will be
@@ -146,21 +146,21 @@ class Collector(object):
 
     def reset(self):
         """Clear collected data, and prepare to collect more."""
-        # A dictionary mapping filenames to dicts with line number keys (if not
-        # branch coverage), or mapping filenames to dicts with line number
+        # A dictionary mapping file names to dicts with line number keys (if not
+        # branch coverage), or mapping file names to dicts with line number
         # pairs as keys (if branch coverage).
         self.data = {}
 
-        # A dictionary mapping filenames to file tracer plugin names that will
+        # A dictionary mapping file names to file tracer plugin names that will
         # handle them.
         self.file_tracers = {}
 
-        # The .should_trace_cache attribute is a cache from filenames to
+        # The .should_trace_cache attribute is a cache from file names to
         # coverage.FileDisposition objects, or None.  When a file is first
         # considered for tracing, a FileDisposition is obtained from
         # Coverage.should_trace.  Its .trace attribute indicates whether the
         # file should be traced or not.  If it should be, a plugin with dynamic
-        # filenames can decide not to trace it based on the dynamic filename
+        # file names can decide not to trace it based on the dynamic file name
         # being excluded by the inclusion rules, in which case the
         # FileDisposition will be replaced by None in the cache.
         if env.PYPY:

@@ -40,7 +40,7 @@ class XmlReporter(Reporter):
     def report(self, morfs, outfile=None):
         """Generate a Cobertura-compatible XML report for `morfs`.
 
-        `morfs` is a list of modules or filenames.
+        `morfs` is a list of modules or file names.
 
         `outfile` is a file object to write the XML to.
 

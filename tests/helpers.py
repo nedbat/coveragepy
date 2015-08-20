@@ -29,7 +29,7 @@ def run_command(cmd):
 
 
 class CheckUniqueFilenames(object):
-    """Asserts the uniqueness of filenames passed to a function."""
+    """Asserts the uniqueness of file names passed to a function."""
     def __init__(self, wrapped):
         self.filenames = set()
         self.wrapped = wrapped
@@ -45,7 +45,7 @@ class CheckUniqueFilenames(object):
     def wrapper(self, filename, *args, **kwargs):
         """The replacement method.  Check that we don't have dupes."""
         assert filename not in self.filenames, (
-            "Filename %r passed to %r twice" % (filename, self.wrapped)
+            "File name %r passed to %r twice" % (filename, self.wrapped)
             )
         self.filenames.add(filename)
         ret = self.wrapped(filename, *args, **kwargs)

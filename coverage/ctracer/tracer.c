@@ -971,7 +971,7 @@ CTracer_members[] = {
             PyDoc_STR("The raw dictionary of trace data.") },
 
     { "file_tracers",       T_OBJECT, offsetof(CTracer, file_tracers), 0,
-            PyDoc_STR("Mapping from filename to plugin name.") },
+            PyDoc_STR("Mapping from file name to plugin name.") },
 
     { "should_trace_cache", T_OBJECT, offsetof(CTracer, should_trace_cache), 0,
             PyDoc_STR("Dictionary caching should_trace results.") },

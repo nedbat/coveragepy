@@ -19,7 +19,7 @@ class ApiTest(CoverageTest):
     """Api-oriented tests for coverage.py."""
 
     def clean_files(self, files, pats):
-        """Remove names matching `pats` from `files`, a list of filenames."""
+        """Remove names matching `pats` from `files`, a list of file names."""
         good = []
         for f in files:
             for pat in pats:

@@ -379,10 +379,10 @@ Fixes:
 - ``debug sys`` now shows the configuration file path that was read.
 
 - If an oddly-behaved package claims that code came from an empty-string
-  filename, coverage.py no longer associates it with the directory name,
+  file name, coverage.py no longer associates it with the directory name,
   fixing `issue 221`_.
 
-- The XML report now consistently uses filenames for the filename attribute,
+- The XML report now consistently uses file names for the filename attribute,
   rather than sometimes using module names.  Fixes `issue 67`_.
   Thanks, Marcus Cobden.
 
@@ -505,7 +505,7 @@ Version 3.5.2 --- 4 May 2012
   option, fixing `issue 168`_.
 
 - If a file doesn't parse properly as Python, we don't report it as an error
-  if the filename seems like maybe it wasn't meant to be Python.  This is a
+  if the file name seems like maybe it wasn't meant to be Python.  This is a
   pragmatic fix for `issue 82`_.
 
 - The ``-m`` switch on ``coverage report``, which includes missing line numbers
@@ -649,7 +649,7 @@ Controlling source:
   file patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
 
 - BACKWARD INCOMPATIBILITY: the `omit_prefixes` argument is gone throughout
-  coverage.py, replaced with `omit`, a list of filename patterns suitable for
+  coverage.py, replaced with `omit`, a list of file name patterns suitable for
   `fnmatch`.  A parallel argument `include` controls what files are included.
 
 - The run command now has a ``--source`` switch, a list of directories or

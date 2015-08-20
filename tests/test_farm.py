@@ -152,7 +152,7 @@ def run(cmds, rundir="src", outfile=None):
 
     `cmds` is a string, commands separated by newlines.
     `rundir` is the directory in which to run the commands.
-    `outfile` is a filename to redirect stdout to.
+    `outfile` is a file name to redirect stdout to.
 
     """
     with change_dir(rundir):

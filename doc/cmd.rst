@@ -82,7 +82,7 @@ command::
 
 Your program runs just as if it had been invoked with the Python command line.
 Arguments after your file name are passed to your program as usual in
-``sys.argv``.  Rather than providing a filename, you can use the ``-m`` switch
+``sys.argv``.  Rather than providing a file name, you can use the ``-m`` switch
 and specify an importable module name instead, just as you can with the
 Python ``-m`` switch::
 
@@ -232,9 +232,9 @@ Coverage.py provides a few styles of reporting, with the **report**, **html**,
 The command-line arguments are module or file names to report on, if you'd like
 to report on a subset of the data collected.
 
-The ``--include`` and ``--omit`` flags specify lists of filename patterns. They
-control which files to report on, and are described in more detail
-in :ref:`source`.
+The ``--include`` and ``--omit`` flags specify lists of file name patterns.
+They control which files to report on, and are described in more detail in
+:ref:`source`.
 
 The ``-i`` or ``--ignore-errors`` switch tells coverage.py to ignore problems
 encountered trying to find source files to report on.  This can be useful if

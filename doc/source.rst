@@ -40,14 +40,14 @@ considered, and files with unusual punctuation in their names will be skipped
 
 You can further fine-tune coverage.py's attention with the ``--include`` and
 ``--omit`` switches (or ``[run] include`` and ``[run] omit`` configuration
-values). ``--include`` is a list of filename patterns. If specified, only files
-matching those patterns will be measured. ``--omit`` is also a list of filename
-patterns, specifying files not to measure.  If both ``include`` and ``omit``
-are specified, first the set of files is reduced to only those that match the
-include patterns, then any files that match the omit pattern are removed from
-the set.
+values). ``--include`` is a list of file name patterns. If specified, only
+files matching those patterns will be measured. ``--omit`` is also a list of
+file name patterns, specifying files not to measure.  If both ``include`` and
+``omit`` are specified, first the set of files is reduced to only those that
+match the include patterns, then any files that match the omit pattern are
+removed from the set.
 
-The ``include`` and ``omit`` filename patterns follow typical shell syntax:
+The ``include`` and ``omit`` file name patterns follow typical shell syntax:
 ``*`` matches any number of characters and ``?`` matches a single character.
 Patterns that start with a wildcard character are used as-is, other patterns
 are interpreted relative to the current directory.
@@ -69,7 +69,7 @@ parts.
 The report commands (``report``, ``html``, ``annotate``, and ``xml``) all take
 optional ``modules`` arguments, and ``--include`` and ``--omit`` switches. The
 ``modules`` arguments specify particular modules to report on.  The ``include``
-and ``omit`` values are lists of filename patterns, just as with the ``run``
+and ``omit`` values are lists of file name patterns, just as with the ``run``
 command.
 
 Remember that the reporting commands can only report on the data that has been

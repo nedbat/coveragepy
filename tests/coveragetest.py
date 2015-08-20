@@ -252,7 +252,7 @@ class CoverageTest(
         return cov
 
     def nice_file(self, *fparts):
-        """Canonicalize the filename composed of the parts in `fparts`."""
+        """Canonicalize the file name composed of the parts in `fparts`."""
         fname = os.path.join(*fparts)
         return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
 

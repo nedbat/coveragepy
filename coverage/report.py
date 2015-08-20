@@ -32,7 +32,7 @@ class Reporter(object):
     def find_file_reporters(self, morfs):
         """Find the FileReporters we'll report on.
 
-        `morfs` is a list of modules or filenames.
+        `morfs` is a list of modules or file names.
 
         """
         self.file_reporters = self.coverage._get_file_reporters(morfs)

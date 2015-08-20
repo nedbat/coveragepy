@@ -84,16 +84,16 @@ class CoverageData(object):
 
     # The data file format is JSON, with these keys:
     #
-    #     * lines: a dict mapping filenames to lists of line numbers
+    #     * lines: a dict mapping file names to lists of line numbers
     #       executed::
     #
     #         { "file1": [17,23,45], "file2": [1,2,3], ... }
     #
-    #     * arcs: a dict mapping filenames to lists of line number pairs::
+    #     * arcs: a dict mapping file names to lists of line number pairs::
     #
     #         { "file1": [[17,23], [17,25], [25,26]], ... }
     #
-    #     * file_tracers: a dict mapping filenames to plugin names::
+    #     * file_tracers: a dict mapping file names to plugin names::
     #
     #         { "file1": "django.coverage", ... }
     #
@@ -235,11 +235,11 @@ class CoverageData(object):
     def line_counts(self, fullpath=False):
         """Return a dict summarizing the line coverage data.
 
-        Keys are based on the filenames, and values are the number of executed
+        Keys are based on the file names, and values are the number of executed
         lines.  If `fullpath` is true, then the keys are the full pathnames of
         the files, otherwise they are the basenames of the files.
 
-        Returns a dict mapping filenames to counts of lines.
+        Returns a dict mapping file names to counts of lines.
 
         """
         summ = {}
@@ -610,7 +610,7 @@ class CoverageDataFiles(object):
         `basename` is the name of the file to use for storing data.
 
         """
-        # Construct the filename that will be used for data storage.
+        # Construct the file name that will be used for data storage.
         self.filename = os.path.abspath(basename or ".coverage")
 
     def erase(self, parallel=False):

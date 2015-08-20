@@ -109,7 +109,7 @@ class HtmlReporter(Reporter):
     def report(self, morfs):
         """Generate an HTML report for `morfs`.
 
-        `morfs` is a list of modules or filenames.
+        `morfs` is a list of modules or file names.
 
         """
         assert self.config.html_dir, "must give a directory for html reporting"
