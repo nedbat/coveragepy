@@ -318,9 +318,9 @@ class Collector(object):
             return dict((abs_file(k), v) for k, v in iitems(d))
 
         if self.branch:
-            covdata.set_arcs(abs_file_dict(self.data))
+            covdata.add_arcs(abs_file_dict(self.data))
         else:
-            covdata.set_lines(abs_file_dict(self.data))
-        covdata.set_file_tracers(abs_file_dict(self.file_tracers))
+            covdata.add_lines(abs_file_dict(self.data))
+        covdata.add_file_tracers(abs_file_dict(self.file_tracers))
 
         self.reset()

@@ -66,8 +66,8 @@ class CoverageData(object):
 
 
     Most data files will be created by coverage.py itself, but you can use
-    methods here to create data files if you like.  The :meth:`set_lines`,
-    :meth:`set_arcs`, and :meth:`set_file_tracers` methods add data, in ways
+    methods here to create data files if you like.  The :meth:`add_lines`,
+    :meth:`add_arcs`, and :meth:`add_file_tracers` methods add data, in ways
     that are convenient for coverage.py.  The :meth:`add_run_info` method adds
     key-value pairs to the run information.
 
@@ -121,14 +121,14 @@ class CoverageData(object):
         #
         #   { 'filename1.py': [12, 47, 1001], ... }
         #
-        self._lines = {}
+        self._lines = None
 
         # A map from canonical Python source file name to a dictionary with an
         # entry for each pair of line numbers forming an arc:
         #
         #   { 'filename1.py': [(12,14), (47,48), ... ], ... }
         #
-        self._arcs = {}
+        self._arcs = None
 
         # A map from canonical source file name to a plugin module name:
         #
@@ -138,6 +138,15 @@ class CoverageData(object):
 
         # A list of dicts of information about the coverage.py runs.
         self._runs = []
+
+    def __repr__(self):
+        return "<{klass} lines={lines} arcs={arcs} tracers={tracers} runs={runs}>".format(
+            klass=self.__class__.__name__,
+            lines="None" if self._lines is None else "{{{0}}}".format(len(self._lines)),
+            arcs="None" if self._arcs is None else "{{{0}}}".format(len(self._arcs)),
+            tracers="{{{0}}}".format(len(self._file_tracers)),
+            runs="[{0}]".format(len(self._runs)),
+        )
 
     ##
     ## Reading data
@@ -164,10 +173,10 @@ class CoverageData(object):
         executed in the file. The list is in no particular order.
 
         """
-        if self._arcs:
+        if self._arcs is not None:
             if filename in self._arcs:
                 return [s for s, __ in self._arcs[filename] if s > 0]
-        else:
+        elif self._lines is not None:
             if filename in self._lines:
                 return self._lines[filename]
         return None
@@ -189,8 +198,9 @@ class CoverageData(object):
         starts at line N.
 
         """
-        if filename in self._arcs:
-            return self._arcs[filename]
+        if self._arcs is not None:
+            if filename in self._arcs:
+                return self._arcs[filename]
         return None
 
     def file_tracer(self, filename):
@@ -204,7 +214,7 @@ class CoverageData(object):
         # Because the vast majority of files involve no plugin, we don't store
         # them explicitly in self._file_tracers.  Check the measured data
         # instead to see if it was a known file with no plugin.
-        if filename in (self._arcs or self._lines):
+        if filename in (self._arcs or self._lines or {}):
             return self._file_tracers.get(filename, "")
         return None
 
@@ -220,7 +230,7 @@ class CoverageData(object):
 
     def measured_files(self):
         """A list of all files that had been measured."""
-        return list(self._arcs or self._lines)
+        return list(self._arcs or self._lines or {})
 
     def line_counts(self, fullpath=False):
         """Return a dict summarizing the line coverage data.
@@ -242,7 +252,7 @@ class CoverageData(object):
         return summ
 
     def __nonzero__(self):
-        return bool(self._lines) or bool(self._arcs)
+        return bool(self._lines or self._arcs)
 
     __bool__ = __nonzero__
 
@@ -254,11 +264,15 @@ class CoverageData(object):
         """
         data = self._read_raw_data(file_obj)
 
-        self._lines = data.get('lines', {})
-        self._arcs = dict(
-            (fname, [tuple(pair) for pair in arcs])
-            for fname, arcs in iitems(data.get('arcs', {}))
-        )
+        self._lines = self._arcs = None
+
+        if 'lines' in data:
+            self._lines = data['lines']
+        if 'arcs' in data:
+            self._arcs = dict(
+                (fname, [tuple(pair) for pair in arcs])
+                for fname, arcs in iitems(data['arcs'])
+            )
         self._file_tracers = data.get('file_tracers', {})
         self._runs = data.get('runs', [])
 
@@ -308,60 +322,68 @@ class CoverageData(object):
     ## Writing data
     ##
 
-    def set_lines(self, line_data):
-        """Add executed line data.
+    def add_lines(self, line_data):
+        """Add measured line data.
 
-        `line_data` is a dictionary mapping filenames to dictionaries::
+        `line_data` is a dictionary mapping file names to dictionaries::
 
             { filename: { lineno: None, ... }, ...}
 
-        Do not call this more than once, it will not update data, it only sets
-        data.
-
         """
         if self._debug and self._debug.should('dataop'):
-            self._debug.write("Setting lines: %d files, %d lines total" % (
+            self._debug.write("Adding lines: %d files, %d lines total" % (
                 len(line_data), sum(len(lines) for lines in line_data.values())
             ))
         if self._has_arcs():
             raise CoverageException("Can't add lines to existing arc data")
 
+        if self._lines is None:
+            self._lines = {}
         for filename, linenos in iitems(line_data):
+            if filename in self._lines:
+                new_linenos = set(self._lines[filename])
+                new_linenos.update(linenos)
+                linenos = new_linenos
             self._lines[filename] = list(linenos)
 
         self._validate()
 
-    def set_arcs(self, arc_data):
+    def add_arcs(self, arc_data):
         """Add measured arc data.
 
-        `arc_data` is { filename: { (l1,l2): None, ... }, ...}
+        `arc_data` is a dictionary mapping file names to dictionaries::
 
-        Do not call this more than once, it will not update data, it only sets
-        data.
+            { filename: { (l1,l2): None, ... }, ...}
 
         """
         if self._debug and self._debug.should('dataop'):
-            self._debug.write("Setting arcs: %d files, %d arcs total" % (
+            self._debug.write("Adding arcs: %d files, %d arcs total" % (
                 len(arc_data), sum(len(arcs) for arcs in arc_data.values())
             ))
         if self._has_lines():
             raise CoverageException("Can't add arcs to existing line data")
 
+        if self._arcs is None:
+            self._arcs = {}
         for filename, arcs in iitems(arc_data):
+            if filename in self._arcs:
+                new_arcs = set(self._arcs[filename])
+                new_arcs.update(arcs)
+                arcs = new_arcs
             self._arcs[filename] = list(arcs)
 
         self._validate()
 
-    def set_file_tracers(self, file_tracers):
+    def add_file_tracers(self, file_tracers):
         """Add per-file plugin information.
 
         `file_tracers` is { filename: plugin_name, ... }
 
         """
         if self._debug and self._debug.should('dataop'):
-            self._debug.write("Setting file tracers: %d files" % (len(file_tracers),))
+            self._debug.write("Adding file tracers: %d files" % (len(file_tracers),))
 
-        existing_files = self._arcs or self._lines
+        existing_files = self._arcs or self._lines or {}
         for filename, plugin_name in iitems(file_tracers):
             if filename not in existing_files:
                 raise CoverageException(
@@ -397,7 +419,15 @@ class CoverageData(object):
         """Ensure that `filename` appears in the data, empty if needed."""
         if self._debug and self._debug.should('dataop'):
             self._debug.write("Touching %r" % (filename,))
-        (self._arcs or self._lines).setdefault(filename, [])
+        if not self._has_arcs() and not self._has_lines():
+            raise CoverageException("Can't touch files in an empty CoverageData")
+
+        if self._has_arcs():
+            where = self._arcs
+        else:
+            where = self._lines
+        where.setdefault(filename, [])
+
         self._validate()
 
     def write(self, file_obj):
@@ -406,9 +436,10 @@ class CoverageData(object):
         # Create the file data.
         file_data = {}
 
-        if self._arcs:
+        if self._has_arcs():
             file_data['arcs'] = self._arcs
-        else:
+
+        if self._has_lines():
             file_data['lines'] = self._lines
 
         if self._file_tracers:
@@ -430,8 +461,8 @@ class CoverageData(object):
 
     def erase(self):
         """Erase the data in this object."""
-        self._lines = {}
-        self._arcs = {}
+        self._lines = None
+        self._arcs = None
         self._file_tracers = {}
         self._runs = []
         self._validate()
@@ -471,22 +502,28 @@ class CoverageData(object):
         self._runs.extend(other_data._runs)
 
         # _lines: merge dicts.
-        for filename, file_lines in iitems(other_data._lines):
-            filename = aliases.map(filename)
-            if filename in self._lines:
-                lines = set(self._lines[filename])
-                lines.update(file_lines)
-                file_lines = list(lines)
-            self._lines[filename] = file_lines
+        if other_data._has_lines():
+            if self._lines is None:
+                self._lines = {}
+            for filename, file_lines in iitems(other_data._lines):
+                filename = aliases.map(filename)
+                if filename in self._lines:
+                    lines = set(self._lines[filename])
+                    lines.update(file_lines)
+                    file_lines = list(lines)
+                self._lines[filename] = file_lines
 
         # _arcs: merge dicts.
-        for filename, file_arcs in iitems(other_data._arcs):
-            filename = aliases.map(filename)
-            if filename in self._arcs:
-                arcs = set(self._arcs[filename])
-                arcs.update(file_arcs)
-                file_arcs = list(arcs)
-            self._arcs[filename] = file_arcs
+        if other_data._has_arcs():
+            if self._arcs is None:
+                self._arcs = {}
+            for filename, file_arcs in iitems(other_data._arcs):
+                filename = aliases.map(filename)
+                if filename in self._arcs:
+                    arcs = set(self._arcs[filename])
+                    arcs.update(file_arcs)
+                    file_arcs = list(arcs)
+                self._arcs[filename] = file_arcs
 
         self._validate()
 
@@ -507,18 +544,20 @@ class CoverageData(object):
         )
 
         # _lines should be a dict of lists of ints.
-        for fname, lines in iitems(self._lines):
-            assert isinstance(fname, string_class), "Key in _lines shouldn't be %r" % (fname,)
-            assert all(isinstance(x, int) for x in lines), (
-                "_lines[%r] shouldn't be %r" % (fname, lines)
-            )
+        if self._has_lines():
+            for fname, lines in iitems(self._lines):
+                assert isinstance(fname, string_class), "Key in _lines shouldn't be %r" % (fname,)
+                assert all(isinstance(x, int) for x in lines), (
+                    "_lines[%r] shouldn't be %r" % (fname, lines)
+                )
 
         # _arcs should be a dict of lists of pairs of ints.
-        for fname, arcs in iitems(self._arcs):
-            assert isinstance(fname, string_class), "Key in _arcs shouldn't be %r" % (fname,)
-            assert all(isinstance(x, int) and isinstance(y, int) for x, y in arcs), (
-                "_arcs[%r] shouldn't be %r" % (fname, arcs)
-            )
+        if self._has_arcs():
+            for fname, arcs in iitems(self._arcs):
+                assert isinstance(fname, string_class), "Key in _arcs shouldn't be %r" % (fname,)
+                assert all(isinstance(x, int) and isinstance(y, int) for x, y in arcs), (
+                    "_arcs[%r] shouldn't be %r" % (fname, arcs)
+                )
 
         # _file_tracers should have only non-empty strings as values.
         for fname, plugin in iitems(self._file_tracers):
@@ -543,7 +582,7 @@ class CoverageData(object):
         data.
 
         """
-        if self._arcs:
+        if self._has_arcs():
             hasher.update(sorted(self.arcs(filename)))
         else:
             hasher.update(sorted(self.lines(filename)))
@@ -555,11 +594,11 @@ class CoverageData(object):
 
     def _has_lines(self):
         """Do we have data in self._lines?"""
-        return bool(self._lines)
+        return self._lines is not None
 
     def _has_arcs(self):
         """Do we have data in self._arcs?"""
-        return bool(self._arcs)
+        return self._arcs is not None
 
 
 class CoverageDataFiles(object):

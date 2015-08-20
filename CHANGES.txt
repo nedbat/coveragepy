@@ -12,6 +12,12 @@ Latest
 - 4.0b1 broke --append creating new data files.  This is now fixed, closing
   `issue 392`_.
 
+- ``py.test --cov`` can write empty data, then touch files due to ``--source``,
+  which made coverage.py mistakenly force the data file to record lines instead
+  of arcs.  This would lead to a "Can't combine line data with arc data" error
+  message.  This is now fixed, and changed some method names in the
+  CoverageData interface.  Fixes `issue 399`_.
+
 - When using ``report --skip-covered``, a message will now be included in the
   report output indicating how many files were skipped, and if all files are
   skipped, coverage.py won't accidentally scold you for having no data to
@@ -23,6 +29,7 @@ Latest
 
 .. _issue 392: https://bitbucket.org/ned/coveragepy/issues/392/run-append-doesnt-create-coverage-file
 .. _issue 395: https://bitbucket.org/ned/coveragepy/issues/395/rfe-read-pickled-files-as-well-for
+.. _issue 399: https://bitbucket.org/ned/coveragepy/issues/399/coverageexception-cant-combine-line-data
 
 
 Version 4.0b1 --- 2 August 2015

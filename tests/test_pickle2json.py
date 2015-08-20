@@ -33,7 +33,7 @@ class Pickle2JsonTestInTempDir(DataTestHelpers, CoverageTest):
     def test_read_write_lines_pickle(self):
         # Test the old pickle format.
         covdata1 = CoverageData()
-        covdata1.set_lines(LINES_1)
+        covdata1.add_lines(LINES_1)
         self.write_pickled_file(covdata1, "lines.pkl")
 
         pickle2json("lines.pkl", "lines.json")
@@ -45,7 +45,7 @@ class Pickle2JsonTestInTempDir(DataTestHelpers, CoverageTest):
     def test_read_write_arcs_pickle(self):
         # Test the old pickle format.
         covdata1 = CoverageData()
-        covdata1.set_arcs(ARCS_3)
+        covdata1.add_arcs(ARCS_3)
         self.write_pickled_file(covdata1, "arcs.pkl")
 
         pickle2json("arcs.pkl", "arcs.json")
