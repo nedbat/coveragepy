@@ -417,22 +417,30 @@ and ``data`` to show a summary of the collected coverage data.
 The ``--debug`` option is available on all commands.  It instructs coverage.py
 to log internal details of its operation, to help with diagnosing problems.  It
 takes a comma-separated list of options, each indicating a facet of operation
-to log to stderr:
+to log:
 
-* ``trace``: print every decision about whether to trace a file or not. For
-  files not being traced, the reason is also given.
+* ``callers``: annotate each debug message with a stack trace of the callers
+  to that point.
 
 * ``config``: before starting, dump all the :ref:`configuration <config>`
   values.
 
-* ``sys``: before starting, dump all the system and environment information,
-  as with :ref:`coverage debug sys <cmd_debug>`.
-
 * ``dataio``: log when reading or writing any data file.
+
+* ``dataop``: log when data is added to the CoverageData object.
 
 * ``pid``: annotate all debug output with the process id.
 
 * ``plugin``: print information about plugin operations.
 
+* ``sys``: before starting, dump all the system and environment information,
+  as with :ref:`coverage debug sys <cmd_debug>`.
+
+* ``trace``: print every decision about whether to trace a file or not. For
+  files not being traced, the reason is also given.
+
 Debug options can also be set with the ``COVERAGE_DEBUG`` environment variable,
 a comma-separated list of these options.
+
+The debug output goes to stderr, unless the ``COVERAGE_DEBUG_FILE`` environment
+variable names a different file, which will be appended to.

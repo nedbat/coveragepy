@@ -7,6 +7,7 @@ import inspect
 import json
 import os
 import re
+import sys
 
 
 # When debugging, it can be helpful to force some options, especially when
@@ -27,9 +28,7 @@ class DebugControl(object):
         self.output = output
 
     def __repr__(self):
-        return "<DebugControl options=%r output=%r>" % (
-            self.options, self.output
-            )
+        return "<DebugControl options=%r output=%r>" % (self.options, self.output)
 
     def should(self, option):
         """Decide whether to output debug information in category `option`."""
@@ -40,6 +39,8 @@ class DebugControl(object):
         if self.should('pid'):
             msg = "pid %5d: %s" % (os.getpid(), msg)
         self.output.write(msg+"\n")
+        if self.should('callers'):
+            dump_stack_frames(self.output)
         self.output.flush()
 
     def write_formatted_info(self, header, info):
@@ -94,9 +95,11 @@ def short_stack():                                          # pragma: debugging
     return "\n".join("%30s : %s @%d" % (t[3], t[1], t[2]) for t in stack)
 
 
-def dump_stack_frames():                                    # pragma: debugging
-    """Print a summary of the stack to stdout."""
-    print(short_stack())
+def dump_stack_frames(out=None):                            # pragma: debugging
+    """Print a summary of the stack to stdout, or some place else."""
+    out = out or sys.stdout
+    out.write(short_stack())
+    out.write("\n")
 
 
 def pretty_data(data):

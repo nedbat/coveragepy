@@ -201,9 +201,15 @@ class Coverage(object):
         if self._inited:
             return
 
-        # Create and configure the debugging controller.
+        # Create and configure the debugging controller. COVERAGE_DEBUG_FILE
+        # is an environment variable, the name of a file to append debug logs
+        # to.
         if self._debug_file is None:
-            self._debug_file = sys.stderr
+            debug_file_name = os.environ.get("COVERAGE_DEBUG_FILE")
+            if debug_file_name:
+                self._debug_file = open(debug_file_name, "a")
+            else:
+                self._debug_file = sys.stderr
         self.debug = DebugControl(self.config.debug, self._debug_file)
 
         # Load plugins

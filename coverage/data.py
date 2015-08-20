@@ -319,6 +319,10 @@ class CoverageData(object):
         data.
 
         """
+        if self._debug and self._debug.should('dataop'):
+            self._debug.write("Setting lines: %d files, %d lines total" % (
+                len(line_data), sum(len(lines) for lines in line_data.values())
+            ))
         if self._has_arcs():
             raise CoverageException("Can't add lines to existing arc data")
 
@@ -336,6 +340,10 @@ class CoverageData(object):
         data.
 
         """
+        if self._debug and self._debug.should('dataop'):
+            self._debug.write("Setting arcs: %d files, %d arcs total" % (
+                len(arc_data), sum(len(arcs) for arcs in arc_data.values())
+            ))
         if self._has_lines():
             raise CoverageException("Can't add arcs to existing line data")
 
@@ -350,6 +358,9 @@ class CoverageData(object):
         `file_tracers` is { filename: plugin_name, ... }
 
         """
+        if self._debug and self._debug.should('dataop'):
+            self._debug.write("Setting file tracers: %d files" % (len(file_tracers),))
+
         existing_files = self._arcs or self._lines
         for filename, plugin_name in iitems(file_tracers):
             if filename not in existing_files:
@@ -375,6 +386,8 @@ class CoverageData(object):
         but repeated keywords overwrite each other.
 
         """
+        if self._debug and self._debug.should('dataop'):
+            self._debug.write("Adding run info: %r" % (kwargs,))
         if not self._runs:
             self._runs = [{}]
         self._runs[0].update(kwargs)
@@ -382,6 +395,8 @@ class CoverageData(object):
 
     def touch_file(self, filename):
         """Ensure that `filename` appears in the data, empty if needed."""
+        if self._debug and self._debug.should('dataop'):
+            self._debug.write("Touching %r" % (filename,))
         (self._arcs or self._lines).setdefault(filename, [])
         self._validate()
 
