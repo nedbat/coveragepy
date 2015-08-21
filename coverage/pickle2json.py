@@ -21,7 +21,7 @@ def pickle2json(infile, outfile):
         covdata = CoverageData()
 
         with open(infile, 'rb') as inf:
-            covdata.read(inf)
+            covdata.read_fileobj(inf)
 
         covdata.write_file(outfile)
     finally:

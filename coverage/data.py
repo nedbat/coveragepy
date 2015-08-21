@@ -52,10 +52,10 @@ class CoverageData(object):
     names in this API are case-sensitive, even on platforms with
     case-insensitive file systems.
 
-    To read a coverage.py data file, use :meth:`read_file`, or :meth:`read`
-    if you have an already-opened file.  You can then access the line, arc, or
-    file tracer data with :meth:`lines`, :meth:`arcs`, or
-    :meth:`file_tracer`.  Run information is available with
+    To read a coverage.py data file, use :meth:`read_file`, or
+    :meth:`read_fileobj` if you have an already-opened file.  You can then
+    access the line, arc, or file tracer data with :meth:`lines`, :meth:`arcs`,
+    or :meth:`file_tracer`.  Run information is available with
     :meth:`run_infos`.
 
     The :meth:`has_arcs` method indicates whether arc data is available.  You
@@ -74,7 +74,7 @@ class CoverageData(object):
     To add a file without any measured data, use :meth:`touch_file`.
 
     You write to a named file with :meth:`write_file`, or to an already opened
-    file with :meth:`write`.
+    file with :meth:`write_fileobj`.
 
     You can clear the data in memory with :meth:`erase`.  Two data collections
     can be combined by using :meth:`update` on one :class:`CoverageData`,
@@ -256,7 +256,7 @@ class CoverageData(object):
 
     __bool__ = __nonzero__
 
-    def read(self, file_obj):
+    def read_fileobj(self, file_obj):
         """Read the coverage data from the given file object.
 
         Should only be used on an empty CoverageData object.
@@ -284,7 +284,7 @@ class CoverageData(object):
             self._debug.write("Reading data from %r" % (filename,))
         try:
             with self._open_for_reading(filename) as f:
-                self.read(f)
+                self.read_fileobj(f)
         except Exception as exc:
             raise CoverageException(
                 "Couldn't read data from '%s': %s: %s" % (
@@ -425,7 +425,7 @@ class CoverageData(object):
 
         self._validate()
 
-    def write(self, file_obj):
+    def write_fileobj(self, file_obj):
         """Write the coverage data to `file_obj`."""
 
         # Create the file data.
@@ -452,7 +452,7 @@ class CoverageData(object):
         if self._debug and self._debug.should('dataio'):
             self._debug.write("Writing data to %r" % (filename,))
         with open(filename, 'w') as fdata:
-            self.write(fdata)
+            self.write_fileobj(fdata)
 
     def erase(self):
         """Erase the data in this object."""

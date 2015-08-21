@@ -397,11 +397,11 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata1 = CoverageData()
         covdata1.add_arcs(ARCS_3)
         stringio = StringIO()
-        covdata1.write(stringio)
+        covdata1.write_fileobj(stringio)
 
         stringio.seek(0)
         covdata2 = CoverageData()
-        covdata2.read(stringio)
+        covdata2.read_fileobj(stringio)
         self.assert_arcs3_data(covdata2)
 
 
