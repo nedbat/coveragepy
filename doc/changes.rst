@@ -141,8 +141,8 @@ New features:
 - The COVERAGE_DEBUG environment variable can be used to set the ``[run] debug``
   configuration option to control what internal operations are logged.
 
-- A new version identifier is available, `coverage.hexversion`, with semantics
-  identical to sys.hexversion.
+- A new version identifier is available, `coverage.version_info`, a plain tuple
+  of values similar to `sys.version_info`_.
 
 
 Improvements:
@@ -210,7 +210,7 @@ Bug fixes:
   preventing paradoxical results, fixing `issue 284`_.
 
 - Branch coverage couldn't properly handle certain extremely long files. This
-  is now fixed. (`issue 359`_).
+  is now fixed, closing `issue 359`_.
 
 - Branch coverage didn't understand yield statements properly.  Mickie Betz
   persisted in pursuing this despite Ned's pessimism.  Fixes `issue 308`_ and
@@ -222,7 +222,7 @@ Bug fixes:
 - Empty files are now reported as 100% covered in the XML report, not 0%
   covered.
 
-- The XML report will now create the output directory if need be. Thanks Chris
+- The XML report will now create the output directory if need be. Thanks, Chris
   Rose.
 
 - HTML reports no longer raise UnicodeDecodeError if a Python file has
@@ -238,6 +238,7 @@ Bug fixes:
 .. _issue 324: https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
 .. _issue 342: https://bitbucket.org/ned/coveragepy/issue/342/console-and-html-coverage-reports-differ
 .. _issue 359: https://bitbucket.org/ned/coveragepy/issue/359/xml-report-chunk-error
+.. _sys.version_info: https://docs.python.org/3/library/sys.html#sys.version_info
 
 
 .. _changes_371:

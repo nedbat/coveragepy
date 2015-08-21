@@ -30,12 +30,13 @@ Latest
   will convert v3.x pickle data files to v4.x JSON data files.  Thanks,
   Alexander Todorov.  Closes `issue 395`_.
 
-- A new version identifier is available, `coverage.hexversion`, with semantics
-  identical to sys.hexversion.
+- A new version identifier is available, `coverage.version_info`, a plain tuple
+  of values similar to `sys.version_info`_.
 
 .. _issue 392: https://bitbucket.org/ned/coveragepy/issues/392/run-append-doesnt-create-coverage-file
 .. _issue 395: https://bitbucket.org/ned/coveragepy/issues/395/rfe-read-pickled-files-as-well-for
 .. _issue 399: https://bitbucket.org/ned/coveragepy/issues/399/coverageexception-cant-combine-line-data
+.. _sys.version_info: https://docs.python.org/3/library/sys.html#sys.version_info
 
 
 Version 4.0b1 --- 2 August 2015
@@ -352,7 +353,7 @@ Version 4.0a1 --- 27 September 2014
   preventing paradoxical results, fixing `issue 284`_.
 
 - The XML report will now create the output directory if need be, fixing
-  `issue 285`_.  Thanks Chris Rose.
+  `issue 285`_.  Thanks, Chris Rose.
 
 - HTML reports no longer raise UnicodeDecodeError if a Python file has
   undecodable characters, fixing `issue 303`_ and `issue 331`_.

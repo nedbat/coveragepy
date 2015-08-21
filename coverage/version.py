@@ -4,21 +4,28 @@
 """The version and URL for coverage.py"""
 # This file is exec'ed in setup.py, don't import anything!
 
-_maj = 4
-_min = 0
-_mic = 0
-_rel = 0xb
-_ser = 2
+# Same semantics as sys.version_info.
+version_info = (4, 0, 0, 'beta', 2)
 
-hexversion = (_maj << 24) + (_min << 16) + (_mic << 8) + (_rel << 4) + _ser
 
-__version__ = "%d.%d" % (_maj, _min)
-if _mic:
-    __version__ += ".%d" % (_mic,)
-if _rel != 0xf:
-    __version__ += "%x%d" % (_rel, _ser)
+def _make_version(major, minor, micro, releaselevel, serial):
+    """Create a readable version string from version_info tuple components."""
+    assert releaselevel in ['alpha', 'beta', 'candidate', 'final']
+    version = "%d.%d" % (major, minor)
+    if micro:
+        version += ".%d" % (micro,)
+    if releaselevel != 'final':
+        version += "%s%d" % (releaselevel[0], serial)
+    return version
 
-__url__ = "https://coverage.readthedocs.org"
-if _rel != 0xf:
-    # For pre-releases, use a version-specific URL.
-    __url__ += "/en/coverage-" + __version__
+
+def _make_url(major, minor, micro, releaselevel, serial):
+    url = "https://coverage.readthedocs.org"
+    if releaselevel != 'final':
+        # For pre-releases, use a version-specific URL.
+        url += "/en/coverage-" + _make_version(major, minor, micro, releaselevel, serial)
+    return url
+
+
+__version__ = _make_version(*version_info)
+__url__ = _make_url(*version_info)
