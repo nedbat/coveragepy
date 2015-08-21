@@ -7,7 +7,7 @@
 _maj = 4
 _min = 0
 _mic = 0
-_rel = 0xf
+_rel = 0xb
 _ser = 2
 
 hexversion = (_maj << 24) + (_min << 16) + (_mic << 8) + (_rel << 4) + _ser
