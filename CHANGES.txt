@@ -18,6 +18,9 @@ Latest
   message.  This is now fixed, and changed some method names in the
   CoverageData interface.  Fixes `issue 399`_.
 
+- `CoverageData.read` and `CoverageData.write` are now properly inverses of
+  each other.
+
 - When using ``report --skip-covered``, a message will now be included in the
   report output indicating how many files were skipped, and if all files are
   skipped, coverage.py won't accidentally scold you for having no data to

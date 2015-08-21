@@ -11,7 +11,7 @@ import re
 
 import mock
 
-from coverage.backward import iitems
+from coverage.backward import iitems, StringIO
 from coverage.data import CoverageData, CoverageDataFiles, debug_main
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
@@ -392,6 +392,17 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.add_arcs({})
         covdata.touch_file("abc.py")
         self.assertTrue(covdata.has_arcs())
+
+    def test_read_and_write_are_opposites(self):
+        covdata1 = CoverageData()
+        covdata1.add_arcs(ARCS_3)
+        stringio = StringIO()
+        covdata1.write(stringio)
+
+        stringio.seek(0)
+        covdata2 = CoverageData()
+        covdata2.read(stringio)
+        self.assert_arcs3_data(covdata2)
 
 
 class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
