@@ -141,6 +141,9 @@ New features:
 - The COVERAGE_DEBUG environment variable can be used to set the ``[run] debug``
   configuration option to control what internal operations are logged.
 
+- A new version identifier is available, `coverage.hexversion`, with semantics
+  identical to sys.hexversion.
+
 
 Improvements:
 
