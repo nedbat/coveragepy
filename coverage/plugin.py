@@ -11,7 +11,7 @@ class CoveragePlugin(object):
     """Base class for coverage.py plugins.
 
     To write a coverage.py plugin, create a module with a subclass of
-    :class:`CoveragePlugin`.  You can override methods in your class to
+    :class:`CoveragePlugin`.  You will override methods in your class to
     participate in various aspects of coverage.py's processing.
 
     Currently the only plugin type is a file tracer, for implementing

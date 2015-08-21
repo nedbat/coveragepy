@@ -20,6 +20,7 @@ def _make_version(major, minor, micro, releaselevel, serial):
 
 
 def _make_url(major, minor, micro, releaselevel, serial):
+    """Make the URL people should start at for this version of coverage.py."""
     url = "https://coverage.readthedocs.org"
     if releaselevel != 'final':
         # For pre-releases, use a version-specific URL.
