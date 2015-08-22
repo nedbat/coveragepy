@@ -7,7 +7,7 @@
     - Pythons 2.6, 2.7, 3.3, 3.4
 - Version number in coverage/version.py
     - 3.1a1, 3.1b1, 3.1c1, 3.1
-- Copyright date in coverage/__init__.py
+- Copyright date in NOTICE.txt
 - Update CHANGES.txt, including release date.
 - Update docstring in setup.py, including "New in x.y:"
 - Update docs
@@ -15,6 +15,7 @@
     - Version and date in doc/index.rst
     - Version and copyright date in doc/conf.py
     - Don't forget the man page: doc/python-coverage.1.txt
+    - done with changes to source files, check them in.
     - Generate new sample_html to get the latest, incl footer version number:
         pip install -e .
         cd ~/cog/trunk

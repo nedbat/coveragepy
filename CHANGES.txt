@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Latest
-------
+Version 4.0b2 --- 22 August 2015
+--------------------------------
 
 - 4.0b1 broke --append creating new data files.  This is now fixed, closing
   `issue 392`_.

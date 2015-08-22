@@ -31,7 +31,8 @@ Major change history for coverage.py
 .. :history: 20131005T205700, updated for 3.7
 .. :history: 20131212T213100, updated for 3.7.1
 .. :history: 20150124T134800, updated for 4.0a4
-.. :history: 20150902T174700, updated for 4.0b1
+.. :history: 20150802T174700, updated for 4.0b1
+.. :history: 20150822T092800, updated for 4.0b2
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -43,8 +44,8 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _changes_40:
 
-Version 4.0b1 pre-release --- 2 August 2015
--------------------------------------------
+Version 4.0b2 pre-release --- 22 August 2015
+--------------------------------------------
 
 
 Backward incompatibilities:

@@ -17,7 +17,7 @@ mirrored repository on `GitHub <https://github.com/nedbat/coveragepy>`_.
 
 New in 4.0 beta: ``--concurrency``, dropped support for older Pythons,
 setup.cfg support, plugins for other file variants, supported data API,
---skip-covered, HTML filtering, and 49 issues closed.
+--skip-covered, HTML filtering, and 52 issues closed.
 """
 
 # This file is used unchanged under all versions of Python, 2.x and 3.x.
