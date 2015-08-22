@@ -94,11 +94,6 @@ WEBHOME = ~/web/stellated/pages/code/coverage
 docreqs:
 	pip install -r doc/requirements.txt
 
-px:
-	$(SPHINXBUILD) -b px $(SPHINXOPTS) doc/_build/px
-	rm doc/_build/px/search.px
-	python doc/_ext/px_cleaner.py doc/_build/px/*.px
-
 dochtml:
 	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
 	@echo
@@ -107,16 +102,11 @@ dochtml:
 docspell:
 	$(SPHINXBUILD) -b spelling $(SPHINXOPTS) doc/_spell
 
-publish: px
-	rm -f $(WEBHOME)/*.px
-	cp doc/_build/px/*.px $(WEBHOME)
+publish:
 	rm -f $(WEBHOME)/sample_html/*.*
 	cp doc/sample_html/*.* $(WEBHOME)/sample_html
 
-publishbeta: px
-	rm -f $(WEBHOME)/beta/*.px
-	mkdir -p $(WEBHOME)/beta
-	cp doc/_build/px/*.px $(WEBHOME)/beta
+publishbeta:
 	rm -f $(WEBHOME)/sample_html_beta/*.*
 	mkdir -p $(WEBHOME)/sample_html_beta
 	cp doc/sample_html_beta/*.* $(WEBHOME)/sample_html_beta

@@ -20,8 +20,6 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.append(os.path.abspath('.'))
-# Copied from django docs:
-sys.path.append(os.path.join(os.path.dirname(__file__), "_ext"))
 
 # on_rtd is whether we are on readthedocs.org
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -35,7 +33,6 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
     'sphinxcontrib.spelling',
-    'px_xlator',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

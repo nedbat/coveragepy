@@ -28,20 +28,20 @@ Key:
     + we can use "except ExcClass as e:"
 
 - Plugins
-    - Clean up
+    + Clean up
     + implement plugin support in CTracer
     + remove plugin support from PyTracer
-    - add services:
+    x add services:
         - filelocator
         - warning
     - dynamic_source_filename: return should be a canonical path
         - update the omit test to use "quux*" instead of "*quux*"
-    - docs
+    + docs
 + Make reports use filenames, not module names
 - documentation
     - test helpers
     + cov.config["run:branch"] api (well, coverage.get_option etc)
-    - "added in 4.0"
+    + "added in 4.0"
     - tweaks to theme?
     - Plugins!
         Once per process
@@ -52,7 +52,7 @@ Key:
         Once per line
 - build process
     - don't publish to nedbat.com any more (but still need the sample html reports)
-        - don't need .px tooling
+        + don't need .px tooling
         - write a new nedbat.com/code/coverage page.
     - all doc links should point to rtfd
 + Remove code only run on <2.6
