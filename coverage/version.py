@@ -5,7 +5,7 @@
 # This file is exec'ed in setup.py, don't import anything!
 
 # Same semantics as sys.version_info.
-version_info = (4, 0, 0, 'beta', 2)
+version_info = (4, 0, 0, 'candidate', 1)
 
 
 def _make_version(major, minor, micro, releaselevel, serial):
@@ -15,7 +15,8 @@ def _make_version(major, minor, micro, releaselevel, serial):
     if micro:
         version += ".%d" % (micro,)
     if releaselevel != 'final':
-        version += "%s%d" % (releaselevel[0], serial)
+        short = {'alpha': 'a', 'beta': 'b', 'candidate': 'rc'}[releaselevel]
+        version += "%s%d" % (short, serial)
     return version
 
 

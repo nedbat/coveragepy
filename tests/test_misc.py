@@ -79,7 +79,7 @@ class VersionTest(CoverageTest):
         self.assertEqual(_make_version(4, 0, 0, 'final', 0), "4.0")
         self.assertEqual(_make_version(4, 1, 2, 'beta', 3), "4.1.2b3")
         self.assertEqual(_make_version(4, 1, 2, 'final', 0), "4.1.2")
-        self.assertEqual(_make_version(5, 10, 2, 'candidate', 7), "5.10.2c7")
+        self.assertEqual(_make_version(5, 10, 2, 'candidate', 7), "5.10.2rc7")
 
     def test_make_url(self):
         self.assertEqual(
