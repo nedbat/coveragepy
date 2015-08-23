@@ -223,7 +223,7 @@ class Collector(object):
     # install this as a trace function, and the first time it's called, it does
     # the real trace installation.
 
-    def _installation_trace(self, frame_unused, event_unused, arg_unused):
+    def _installation_trace(self, frame, event, arg):
         """Called on new threads, installs the real tracer."""
         # Remove ourselves as the trace function
         sys.settrace(None)
@@ -232,7 +232,7 @@ class Collector(object):
         # Invoke the real trace function with the current event, to be sure
         # not to lose an event.
         if fn:
-            fn = fn(frame_unused, event_unused, arg_unused)
+            fn = fn(frame, event, arg)
         # Return the new trace function to continue tracing in this scope.
         return fn
 
