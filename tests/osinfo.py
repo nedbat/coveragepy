@@ -64,9 +64,9 @@ elif env.LINUX:
         """How much RAM is this process using? (Linux implementation)"""
         return _VmB('VmRSS')
 
-
 else:
-    # Don't have an implementation, at least satisfy the interface.
+    # Generic implementation.
     def process_ram():
-        """How much RAM is this process using? (placebo implementation)"""
-        return 0
+        """How much RAM is this process using? (stdlib implementation)"""
+        import resource
+        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
