@@ -23,9 +23,7 @@ except ImportError:
         # it, then exit quickly and clearly instead of dribbling confusing
         # errors. I'm using sys.exit here instead of an exception because an
         # exception here causes all sorts of other noise in unittest.
-        sys.stderr.write(
-            "*** COVERAGE_TEST_TRACER is 'c' but can't import CTracer!\n"
-        )
+        sys.stderr.write("*** COVERAGE_TEST_TRACER is 'c' but can't import CTracer!\n")
         sys.exit(1)
     CTracer = None
 
@@ -56,10 +54,7 @@ class Collector(object):
     # the top, and resumed when they become the top again.
     _collectors = []
 
-    def __init__(
-        self,
-        should_trace, check_include, timid, branch, warn, concurrency,
-    ):
+    def __init__(self, should_trace, check_include, timid, branch, warn, concurrency):
         """Create a collector.
 
         `should_trace` is a function, taking a file name, and returning a
@@ -111,13 +106,10 @@ class Collector(object):
                 import threading
                 self.threading = threading
             else:
-                raise CoverageException(
-                    "Don't understand concurrency=%s" % concurrency
-                )
+                raise CoverageException("Don't understand concurrency=%s" % concurrency)
         except ImportError:
             raise CoverageException(
-                "Couldn't trace with concurrency=%s, "
-                "the module isn't installed." % concurrency
+                "Couldn't trace with concurrency=%s, the module isn't installed." % concurrency
             )
 
         self.reset()
@@ -199,8 +191,7 @@ class Collector(object):
             tracer.concur_id_func = self.concur_id_func
         elif self.concur_id_func:
             raise CoverageException(
-                "Can't support concurrency=%s with %s, "
-                "only threads are supported" % (
+                "Can't support concurrency=%s with %s, only threads are supported" % (
                     self.concurrency, self.tracer_name(),
                 )
             )
@@ -225,7 +216,7 @@ class Collector(object):
 
     def _installation_trace(self, frame, event, arg):
         """Called on new threads, installs the real tracer."""
-        # Remove ourselves as the trace function
+        # Remove ourselves as the trace function.
         sys.settrace(None)
         # Install the real tracer.
         fn = self._start_tracer()
@@ -259,9 +250,7 @@ class Collector(object):
             try:
                 fn(frame, event, arg, lineno=lineno)
             except TypeError:
-                raise Exception(
-                    "fullcoverage must be run with the C trace function."
-                )
+                raise Exception("fullcoverage must be run with the C trace function.")
 
         # Install our installation tracer in threading, to jump start other
         # threads.
@@ -272,9 +261,7 @@ class Collector(object):
         """Stop collecting trace information."""
         assert self._collectors
         assert self._collectors[-1] is self, (
-            "Expected current collector to be %r, but it's %r" % (
-                self, self._collectors[-1],
-            )
+            "Expected current collector to be %r, but it's %r" % (self, self._collectors[-1])
         )
 
         self.pause()
