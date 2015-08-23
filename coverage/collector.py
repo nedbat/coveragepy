@@ -232,6 +232,15 @@ class Collector(object):
         if self._collectors:
             self._collectors[-1].pause()
 
+        # Check to see whether we had a fullcoverage tracer installed. If so,
+        # get the stack frames it stashed away for us.
+        traces0 = []
+        fn0 = sys.gettrace()
+        if fn0:
+            tracer0 = getattr(fn0, '__self__', None)
+            if tracer0:
+                traces0 = getattr(tracer0, 'traces', [])
+
         try:
             # Install the tracer on this thread.
             fn = self._start_tracer()
@@ -243,14 +252,6 @@ class Collector(object):
         # If _start_tracer succeeded, then we add ourselves to the global
         # stack of collectors.
         self._collectors.append(self)
-
-        # Check to see whether we had a fullcoverage tracer installed.
-        traces0 = []
-        fn0 = sys.gettrace()
-        if fn0:
-            tracer0 = getattr(fn0, '__self__', None)
-            if tracer0:
-                traces0 = getattr(tracer0, 'traces', [])
 
         # Replay all the events from fullcoverage into the new trace function.
         for args in traces0:
