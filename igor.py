@@ -26,6 +26,7 @@ import zipfile
 # disable warnings for some of the more complex setting up of tests.
 warnings.simplefilter("default")
 
+
 @contextlib.contextmanager
 def ignore_warnings():
     """Context manager to ignore warning within the with statement."""
@@ -57,42 +58,53 @@ def do_remove_extension():
                 pass
 
 
-def run_tests(tracer, *nose_args):
-    """The actual running of tests."""
-    with ignore_warnings():
-        import nose.core
-
+def label_for_tracer(tracer):
+    """Get the label for these tests."""
     if tracer == "py":
         label = "with Python tracer"
-        skipper = os.environ.get("COVERAGE_NO_PYTRACER")
     else:
         label = "with C tracer"
+
+    return label
+
+
+def should_skip(tracer):
+    """Is there a reason to skip these tests?"""
+    if tracer == "py":
+        skipper = os.environ.get("COVERAGE_NO_PYTRACER")
+    else:
         skipper = (
             os.environ.get("COVERAGE_NO_EXTENSION") or
             os.environ.get("COVERAGE_NO_CTRACER")
         )
 
     if skipper:
-        msg = "Skipping tests " + label
+        msg = "Skipping tests " + label_for_tracer(tracer)
         if len(skipper) > 1:
             msg += ": " + skipper
-        print(msg)
-        return
+    else:
+        msg = ""
+
+    return msg
+
+
+def run_tests(tracer, *nose_args):
+    """The actual running of tests."""
+    with ignore_warnings():
+        import nose.core
 
     if 'COVERAGE_TESTING' not in os.environ:
         os.environ['COVERAGE_TESTING'] = "True"
-    print_banner(label)
+    print_banner(label_for_tracer(tracer))
     nose_args = ["nosetests"] + list(nose_args)
     nose.core.main(argv=nose_args)
 
 
 def run_tests_with_coverage(tracer, *nose_args):
     """Run tests, but with coverage."""
+
     # Need to define this early enough that the first import of env.py sees it.
     os.environ['COVERAGE_TESTING'] = "True"
-
-    import coverage
-
     os.environ['COVERAGE_PROCESS_START'] = os.path.abspath('metacov.ini')
     os.environ['COVERAGE_HOME'] = os.getcwd()
 
@@ -108,6 +120,7 @@ def run_tests_with_coverage(tracer, *nose_args):
     version = "%s%s" % sys.version_info[:2]
     suffix = "%s_%s_%s" % (version, tracer, socket.gethostname())
 
+    import coverage
     cov = coverage.Coverage(config_file="metacov.ini", data_suffix=suffix)
     # Cheap trick: the coverage.py code itself is excluded from measurement,
     # but if we clobber the cover_prefix in the coverage object, we can defeat
@@ -158,6 +171,12 @@ def do_combine_html():
 
 def do_test_with_tracer(tracer, *noseargs):
     """Run nosetests with a particular tracer."""
+    # If we should skip these tests, skip them.
+    skip_msg = should_skip(tracer)
+    if skip_msg:
+        print(skip_msg)
+        return
+
     os.environ["COVERAGE_TEST_TRACER"] = tracer
     if os.environ.get("COVERAGE_COVERAGE", ""):
         return run_tests_with_coverage(tracer, *noseargs)
