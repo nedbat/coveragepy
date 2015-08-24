@@ -117,8 +117,10 @@ def run_tests_with_coverage(tracer, *nose_args):
     with open(pth_path, "w") as pth_file:
         pth_file.write("import coverage; coverage.process_startup()\n")
 
+    # Make names for the data files that keep all the test runs distinct.
+    impl = platform.python_implementation().lower()
     version = "%s%s" % sys.version_info[:2]
-    suffix = "%s_%s_%s" % (version, tracer, socket.gethostname())
+    suffix = "%s%s_%s_%s" % (impl, version, tracer, socket.gethostname())
 
     import coverage
     cov = coverage.Coverage(config_file="metacov.ini", data_suffix=suffix)
