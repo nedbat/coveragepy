@@ -4,9 +4,7 @@
 """Control of and utilities for debugging."""
 
 import inspect
-import json
 import os
-import re
 import sys
 
 
@@ -100,18 +98,3 @@ def dump_stack_frames(out=None):                            # pragma: debugging
     out = out or sys.stdout
     out.write(short_stack())
     out.write("\n")
-
-
-def pretty_data(data):
-    """Format data as JSON, but as nicely as possible.
-
-    Returns a string.
-
-    """
-    # Start with a basic JSON dump.
-    out = json.dumps(data, indent=4, sort_keys=True)
-    # But pairs of numbers shouldn't be split across lines...
-    out = re.sub(r"\[\s+(-?\d+),\s+(-?\d+)\s+]", r"[\1, \2]", out)
-    # Trailing spaces mess with tests, get rid of them.
-    out = re.sub(r"(?m)\s+$", "", out)
-    return out

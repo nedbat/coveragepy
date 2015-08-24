@@ -11,8 +11,8 @@ import re
 
 import mock
 
-from coverage.backward import iitems, StringIO
-from coverage.data import CoverageData, CoverageDataFiles, debug_main
+from coverage.backward import StringIO
+from coverage.data import CoverageData, CoverageDataFiles, debug_main, canonicalize_json_data
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
 
@@ -491,14 +491,6 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
             json_got = json.loads(json_out)
             canonicalize_json_data(json_got)
             self.assertEqual(expected[name], json_got)
-
-
-def canonicalize_json_data(data):
-    """Canonicalize our JSON data so it can be compared."""
-    for fname, lines in iitems(data.get('lines', {})):
-        data['lines'][fname] = sorted(lines)
-    for fname, arcs in iitems(data.get('arcs', {})):
-        data['arcs'][fname] = sorted(arcs)
 
 
 class CoverageDataFilesTest(DataTestHelpers, CoverageTest):

@@ -5,14 +5,16 @@
 
 import glob
 import json
+import optparse
 import os
 import os.path
 import random
+import re
 import socket
 
 from coverage import env
 from coverage.backward import iitems, string_class
-from coverage.debug import _TEST_NAME_FILE, pretty_data
+from coverage.debug import _TEST_NAME_FILE
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
 
@@ -699,6 +701,29 @@ class CoverageDataFiles(object):
             file_be_gone(f)
 
 
+def canonicalize_json_data(data):
+    """Canonicalize our JSON data so it can be compared."""
+    for fname, lines in iitems(data.get('lines', {})):
+        data['lines'][fname] = sorted(lines)
+    for fname, arcs in iitems(data.get('arcs', {})):
+        data['arcs'][fname] = sorted(arcs)
+
+
+def pretty_data(data):
+    """Format data as JSON, but as nicely as possible.
+
+    Returns a string.
+
+    """
+    # Start with a basic JSON dump.
+    out = json.dumps(data, indent=4, sort_keys=True)
+    # But pairs of numbers shouldn't be split across lines...
+    out = re.sub(r"\[\s+(-?\d+),\s+(-?\d+)\s+]", r"[\1, \2]", out)
+    # Trailing spaces mess with tests, get rid of them.
+    out = re.sub(r"(?m)\s+$", "", out)
+    return out
+
+
 def debug_main(args):
     """Dump the raw data from data files.
 
@@ -707,9 +732,18 @@ def debug_main(args):
         $ python -m coverage.data [FILE]
 
     """
+    parser = optparse.OptionParser()
+    parser.add_option(
+        "-c", "--canonical", action="store_true",
+        help="Sort data into a canonical order",
+    )
+    options, args = parser.parse_args(args)
+
     for filename in (args or [".coverage"]):
         print("--- {0} ------------------------------".format(filename))
         data = CoverageData._read_raw_data_file(filename)
+        if options.canonical:
+            canonicalize_json_data(data)
         print(pretty_data(data))
 
 
