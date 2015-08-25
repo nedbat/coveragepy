@@ -160,7 +160,7 @@ def run_tests_with_coverage(tracer, *nose_args):
         cov.stop()
         os.remove(pth_path)
 
-    #cov.combine()
+    cov.combine()
     cov.save()
 
 
