@@ -102,7 +102,7 @@ class CoverageData(object):
     #     * runs: a list of dicts of information about the coverage.py runs
     #       contributing to the data::
     #
-    #         [ { "briefsys": "CPython 2.7.10 Darwin" }, ... ]
+    #         [ { "brief_sys": "CPython 2.7.10 Darwin" }, ... ]
     #
     # Only one of `lines` or `arcs` will be present: with branch coverage, data
     # is stored as arcs. Without branch coverage, it is stored as lines.  The

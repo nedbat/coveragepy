@@ -15,7 +15,6 @@ import glob
 import inspect
 import os
 import platform
-import socket
 import sys
 import textwrap
 import warnings
@@ -120,10 +119,14 @@ def run_tests_with_coverage(tracer, *nose_args):
     # Make names for the data files that keep all the test runs distinct.
     impl = platform.python_implementation().lower()
     version = "%s%s" % sys.version_info[:2]
-    suffix = "%s%s_%s_%s" % (impl, version, tracer, socket.gethostname())
+    if '__pypy__' in sys.builtin_module_names:
+        version += "_%s%s" % sys.pypy_version_info[:2]
+    suffix = "%s%s_%s_%s" % (impl, version, tracer, platform.platform())
+
+    os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov."+suffix)
 
     import coverage
-    cov = coverage.Coverage(config_file="metacov.ini", data_suffix=suffix)
+    cov = coverage.Coverage(config_file="metacov.ini", data_suffix=False)
     # Cheap trick: the coverage.py code itself is excluded from measurement,
     # but if we clobber the cover_prefix in the coverage object, we can defeat
     # the self-detection.
@@ -157,6 +160,7 @@ def run_tests_with_coverage(tracer, *nose_args):
         cov.stop()
         os.remove(pth_path)
 
+    #cov.combine()
     cov.save()
 
 
@@ -310,8 +314,7 @@ def print_banner(label):
     version = platform.python_version()
 
     if '__pypy__' in sys.builtin_module_names:
-        pypy_version = sys.pypy_version_info
-        version += " (pypy %s)" % ".".join(str(v) for v in pypy_version)
+        version += " (pypy %s)" % ".".join(str(v) for v in sys.pypy_version_info)
 
     which_python = os.path.relpath(sys.executable)
     print('=== %s %s %s (%s) ===' % (impl, version, label, which_python))
