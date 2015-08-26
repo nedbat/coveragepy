@@ -2,14 +2,14 @@
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
 # PyPI requirements for running tests for coverage.py
-nose
-mock
-PyContracts
-tox >= 1.9
+nose==1.3.7
+mock==1.3.0
+PyContracts==1.7.6
+tox==2.1.1
 
 # and for linting...
-pyenchant
-pylint
+pyenchant==1.6.6
+pylint==1.4.4
 
 # and for kitting...
-twine
+twine==1.5.0
