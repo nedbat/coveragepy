@@ -71,6 +71,20 @@ class HtmlTestHelpers(CoverageTest):
         )
         return index
 
+    def assert_correct_timestamp(self, html):
+        """Extract the timestamp from `html`, and assert it is recent."""
+        timestamp_pat = r"created at (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})"
+        m = re.search(timestamp_pat, html)
+        self.assertTrue(m, "Didn't find a timestamp!")
+        timestamp = datetime.datetime(*map(int, m.groups()))
+        # The timestamp only records the minute, so the delta could be from
+        # 12:00 to 12:01:59, or two minutes.
+        self.assert_recent_datetime(
+            timestamp,
+            seconds=120,
+            msg="Timestamp is wrong: {0}".format(timestamp),
+        )
+
 
 class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML delta speed-ups."""
@@ -81,9 +95,9 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         # At least one of our tests monkey-patches the version of coverage.py,
         # so grab it here to restore it later.
         self.real_coverage_version = coverage.__version__
-        self.addCleanup(self.restore_coverage_version)
+        self.addCleanup(self.cleanup_coverage_version)
 
-    def restore_coverage_version(self):
+    def cleanup_coverage_version(self):
         """A cleanup."""
         coverage.__version__ = self.real_coverage_version
 
@@ -374,20 +388,6 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         with open("htmlcov/main_file_py.html") as f:
             self.assert_correct_timestamp(f.read())
 
-    def assert_correct_timestamp(self, html):
-        """Extract the timestamp from `html`, and assert it is recent."""
-        timestamp_pat = r"created at (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})"
-        m = re.search(timestamp_pat, html)
-        self.assertTrue(m, "Didn't find a timestamp!")
-        timestamp = datetime.datetime(*map(int, m.groups()))
-        # The timestamp only records the minute, so the delta could be from
-        # 12:00 to 12:01:59, or two minutes.
-        self.assert_recent_datetime(
-            timestamp,
-            seconds=120,
-            msg="Timestamp is wrong: {0}".format(timestamp),
-        )
-
 
 class HtmlStaticFileTest(CoverageTest):
     """Tests of the static file copying for the HTML report."""
@@ -395,9 +395,9 @@ class HtmlStaticFileTest(CoverageTest):
     def setUp(self):
         super(HtmlStaticFileTest, self).setUp()
         self.original_path = list(coverage.html.STATIC_PATH)
-        self.addCleanup(self.restore_static_path)
+        self.addCleanup(self.cleanup_static_path)
 
-    def restore_static_path(self):
+    def cleanup_static_path(self):
         """A cleanup."""
         coverage.html.STATIC_PATH = self.original_path
 
