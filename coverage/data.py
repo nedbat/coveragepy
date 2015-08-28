@@ -580,9 +580,9 @@ class CoverageData(object):
 
         """
         if self._has_arcs():
-            hasher.update(sorted(self.arcs(filename)))
+            hasher.update(sorted(self.arcs(filename) or []))
         else:
-            hasher.update(sorted(self.lines(filename)))
+            hasher.update(sorted(self.lines(filename) or []))
         hasher.update(self.file_tracer(filename))
 
     ##

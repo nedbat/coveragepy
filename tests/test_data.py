@@ -381,6 +381,29 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             mock.call.update("hologram_plugin"),                # file_tracer name
         ])
 
+    def test_add_to_lines_hash_with_missing_file(self):
+        # https://bitbucket.org/ned/coveragepy/issues/403
+        covdata = CoverageData()
+        covdata.add_lines(LINES_1)
+        hasher = mock.Mock()
+        covdata.add_to_hash("missing.py", hasher)
+        self.assertEqual(hasher.method_calls, [
+            mock.call.update([]),
+            mock.call.update(None),
+        ])
+
+    def test_add_to_arcs_hash_with_missing_file(self):
+        # https://bitbucket.org/ned/coveragepy/issues/403
+        covdata = CoverageData()
+        covdata.add_arcs(ARCS_3)
+        covdata.add_file_tracers({"y.py": "hologram_plugin"})
+        hasher = mock.Mock()
+        covdata.add_to_hash("missing.py", hasher)
+        self.assertEqual(hasher.method_calls, [
+            mock.call.update([]),
+            mock.call.update(None),
+        ])
+
     def test_empty_lines_are_still_lines(self):
         covdata = CoverageData()
         covdata.add_lines({})

@@ -388,6 +388,15 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         with open("htmlcov/main_file_py.html") as f:
             self.assert_correct_timestamp(f.read())
 
+    def test_reporting_on_unmeasured_file(self):
+        # It should be ok to ask for an HTML report on a file that wasn't even
+        # measured at all.  https://bitbucket.org/ned/coveragepy/issues/403
+        self.create_initial_files()
+        self.make_file("other.py", "a = 1\n")
+        self.run_coverage(htmlargs=dict(morfs=['other.py']))
+        self.assert_exists("htmlcov/index.html")
+        self.assert_exists("htmlcov/other_py.html")
+
 
 class HtmlStaticFileTest(CoverageTest):
     """Tests of the static file copying for the HTML report."""

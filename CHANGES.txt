@@ -6,6 +6,16 @@ Change history for Coverage.py
 ==============================
 
 
+Latest
+------
+
+- Reporting on an unmeasured file would fail with a traceback.  This is now
+  fixed, closing `issue 403`_.
+
+.. _issue 403: https://bitbucket.org/ned/coveragepy/issues/403/hasherupdate-fails-with-typeerror-nonetype
+
+
+
 Version 4.0b2 --- 22 August 2015
 --------------------------------
 
