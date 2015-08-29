@@ -8,9 +8,9 @@ $GET_PIP_URL = "https://bootstrap.pypa.io/get-pip.py"
 $GET_PIP_PATH = "C:\get-pip.py"
 
 
-function DownloadPython ($python_version, $platform_suffix) {
+function DownloadPython ($python_version, $prerelease, $platform_suffix) {
     $webclient = New-Object System.Net.WebClient
-    $filename = "python-" + $python_version + $platform_suffix + ".msi"
+    $filename = "python-" + $python_version + $prerelease + $platform_suffix + ".msi"
     $url = $BASE_URL + $python_version + "/" + $filename
 
     $basedir = $pwd.Path + "\"
@@ -23,12 +23,12 @@ function DownloadPython ($python_version, $platform_suffix) {
     # Download and retry up to 5 times in case of network transient errors.
     Write-Host "Downloading" $filename "from" $url
     $retry_attempts = 3
-    for($i=0; $i -lt $retry_attempts; $i++){
+    for ($i=0; $i -lt $retry_attempts; $i++) {
         try {
             $webclient.DownloadFile($url, $filepath)
             break
         }
-        Catch [Exception]{
+        Catch [Exception] {
             Start-Sleep 1
         }
    }
@@ -37,7 +37,7 @@ function DownloadPython ($python_version, $platform_suffix) {
 }
 
 
-function InstallPython ($python_version, $architecture, $python_home) {
+function InstallPython ($python_version, $prerelease, $architecture, $python_home) {
     Write-Host "Installing Python" $python_version "for" $architecture "bit architecture to" $python_home
     if (Test-Path $python_home) {
         Write-Host $python_home "already exists, skipping."
@@ -48,7 +48,7 @@ function InstallPython ($python_version, $architecture, $python_home) {
     } else {
         $platform_suffix = ".amd64"
     }
-    $filepath = DownloadPython $python_version $platform_suffix
+    $filepath = DownloadPython $python_version $prerelease $platform_suffix
     Write-Host "Installing" $filepath "to" $python_home
     $args = "/qn /i $filepath TARGETDIR=$python_home"
     Write-Host "msiexec.exe" $args
@@ -78,7 +78,7 @@ function InstallPackage ($python_home, $pkg) {
 }
 
 function main () {
-    InstallPython $env:PYTHON_VERSION $env:PYTHON_ARCH $env:PYTHON_HOME
+    InstallPython $env:PYTHON_VERSION $env:PYTHON_PRERELEASE $env:PYTHON_ARCH $env:PYTHON_HOME
     InstallPip $env:PYTHON_HOME
     InstallPackage $env:PYTHON_HOME setuptools
     InstallPackage $env:PYTHON_HOME wheel

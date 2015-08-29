@@ -5,7 +5,11 @@ version: '{branch}-{build}'
 
 build: off
 
+shallow_clone: true
+
 environment:
+
+  PYTHON_PRERELEASE: ""
 
   global:
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\ci\\appveyor-with-compiler.cmd"
@@ -17,13 +21,6 @@ environment:
       PYTHON_VERSION: "2.6.6"
       PYTHON_ARCH: "32"
 
-#    - TOXENV: "py26"
-#      TOXPYTHON: "C:\\Python26\\python.exe"
-#      WINDOWS_SDK_VERSION: "v7.0"
-#      PYTHON_HOME: "C:\\Python26"
-#      PYTHON_VERSION: "2.6"
-#      PYTHON_ARCH: "32"
-#
     - TOXENV: "py27"
       WINDOWS_SDK_VERSION: "v7.0"
       PYTHON_HOME: "C:\\Python27"
@@ -40,6 +37,13 @@ environment:
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python34"
       PYTHON_VERSION: "3.4"
+      PYTHON_ARCH: "32"
+
+    - TOXENV: "py35"
+      WINDOWS_SDK_VERSION: "v7.1"
+      PYTHON_HOME: "C:\\Python35"
+      PYTHON_VERSION: "3.5"
+      PYTHON_PRERELEASE: "rc2"
       PYTHON_ARCH: "32"
 
     # Meta coverage
@@ -59,7 +63,6 @@ environment:
 
 init:
   - "ECHO %TOXENV%"
-  - ps: "ls C:\\Python*"
 
 install:
   - "powershell ci\\appveyor-bootstrap.ps1"
