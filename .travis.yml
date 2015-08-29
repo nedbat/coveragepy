@@ -13,8 +13,8 @@ python:
   - pypy
 
 install:
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi
-  - pip install PyContracts
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2==1.1.0; fi
+  - pip install PyContracts==1.7.6
   - python setup.py clean develop
 
 before_script:
