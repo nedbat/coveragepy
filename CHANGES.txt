@@ -12,7 +12,13 @@ Latest
 - Reporting on an unmeasured file would fail with a traceback.  This is now
   fixed, closing `issue 403`_.
 
+- The Jenkins ShiningPanda plugin looks for an obsolete file name to find the
+  HTML reports to publish, so it was failing under coverage.py 4.0.  Now we
+  create that file if we are running under Jenkins, to keep things working
+  smoothly. `issue 404`_.
+
 .. _issue 403: https://bitbucket.org/ned/coveragepy/issues/403/hasherupdate-fails-with-typeerror-nonetype
+.. _issue 404: https://bitbucket.org/ned/coveragepy/issues/404/shiningpanda-jenkins-plugin-cant-find-html
 
 
 

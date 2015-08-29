@@ -397,6 +397,14 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/other_py.html")
 
+    def test_shining_panda_fix(self):
+        # The ShiningPanda plugin looks for "status.dat" to find HTML reports.
+        # Accomodate them, but only if we are running under Jenkins.
+        self.set_environ("JENKINS_URL", "Something or other")
+        self.create_initial_files()
+        self.run_coverage()
+        self.assert_exists("htmlcov/status.dat")
+
 
 class HtmlStaticFileTest(CoverageTest):
     """Tests of the static file copying for the HTML report."""
