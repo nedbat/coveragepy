@@ -69,7 +69,7 @@ test_script:
   - "%PYTHON_HOME%\\Scripts\\pip --version"
   - "%WITH_COMPILER% %PYTHON_HOME%\\Scripts\\tox"
 
-after_build:
+after_test:
   - 7z a metacov.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
 
 artifacts:
