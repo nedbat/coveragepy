@@ -92,7 +92,7 @@ SPHINXOPTS = -a -E doc
 WEBHOME = ~/web/stellated/pages/code/coverage
 
 docreqs:
-	pip install -r doc/requirements.txt
+	pip install -r doc/requirements.pip
 
 dochtml:
 	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html

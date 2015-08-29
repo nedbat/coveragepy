@@ -12,7 +12,7 @@ include __main__.py
 include README.txt
 include CHANGES.txt
 include AUTHORS.txt
-include requirements.txt
+include requirements.pip
 include igor.py
 include tox.ini
 

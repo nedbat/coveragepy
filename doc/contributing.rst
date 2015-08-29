@@ -45,10 +45,11 @@ these steps:
 #.  Clone the repo::
 
         $ hg clone https://bitbucket.org/ned/coveragepy
+        $ cd coveragepy
 
 #.  Install the requirements::
 
-        $ pip install -r requirements.txt
+        $ pip install -r requirements.pip
 
 #.  Install a number of versions of Python.  Coverage.py supports a wide range
     of Python versions.  The more you can test with, the more easily your code
@@ -63,47 +64,50 @@ The tests are written as standard unittest-style tests, and are run with
 `tox`_::
 
     $ tox
-    GLOB sdist-make: /home/ned/coverage/setup.py
-    py25 sdist-reinst: /home/ned/coverage/tox/dist/coverage-3.6b1.zip
-    py25 runtests: commands[0]
-    py25 runtests: commands[1]
-    py25 runtests: commands[2]
-    py25 runtests: commands[3]
-    py25 runtests: commands[4]
-    === Python 2.5.5 with Python tracer (/home/ned/coverage/tox/py25/bin/python) ===
-    ...........................................................................................(etc)
+    py27 create: /Users/ned/coverage/trunk/.tox/py27
+    py27 installdeps: nose==1.3.7, mock==1.3.0, PyContracts==1.7.6, gevent==1.0.2, eventlet==0.17.4, greenlet==0.4.7
+    py27 develop-inst: /Users/ned/coverage/trunk
+    py27 installed: -f /Users/ned/Downloads/local_pypi,-e hg+ssh://hg@bitbucket.org/ned/coveragepy@22fe9a2b7796f6498aa013c860c268ac21651226#egg=coverage-dev,decorator==4.0.2,eventlet==0.17.4,funcsigs==0.4,gevent==1.0.2,greenlet==0.4.7,mock==1.3.0,nose==1.3.7,pbr==1.6.0,PyContracts==1.7.6,pyparsing==2.0.3,six==1.9.0,wheel==0.24.0
+    py27 runtests: PYTHONHASHSEED='1294330776'
+    py27 runtests: commands[0] | python setup.py --quiet clean develop
+    py27 runtests: commands[1] | python igor.py zip_mods install_egg remove_extension
+    py27 runtests: commands[2] | python igor.py test_with_tracer py
+    === CPython 2.7.10 with Python tracer (.tox/py27/bin/python) ===
+    ............................................................................(etc)
     ----------------------------------------------------------------------
-    Ran 360 tests in 10.836s
+    Ran 592 tests in 65.524s
 
-    OK
-    py25 runtests: commands[5]
-    py25 runtests: commands[6]
-    === Python 2.5.5 with C tracer (/home/ned/coverage/tox/py25/bin/python) ===
-    ...........................................................................................(etc)
+    OK (SKIP=20)
+    py27 runtests: commands[3] | python setup.py --quiet build_ext --inplace
+    py27 runtests: commands[4] | python igor.py test_with_tracer c
+    === CPython 2.7.10 with C tracer (.tox/py27/bin/python) ===
+    ............................................................................(etc)
     ----------------------------------------------------------------------
-    Ran 360 tests in 10.044s
+    Ran 592 tests in 69.635s
 
-    OK
-    py26 sdist-reinst: /home/ned/coverage/trunk/.tox/dist/coverage-3.6b1.zip
-    py26 runtests: commands[0]
-    py26 runtests: commands[1]
-    py26 runtests: commands[2]
-    py26 runtests: commands[3]
-    py26 runtests: commands[4]
-    === CPython 2.6.6 with Python tracer (/home/ned/coverage/tox/py26/bin/python) ===
-    ...........................................................................................(etc)
+    OK (SKIP=4)
+    py33 create: /Users/ned/coverage/trunk/.tox/py33
+    py33 installdeps: nose==1.3.7, mock==1.3.0, PyContracts==1.7.6, greenlet==0.4.7
+    py33 develop-inst: /Users/ned/coverage/trunk
+    py33 installed: -f /Users/ned/Downloads/local_pypi,-e hg+ssh://hg@bitbucket.org/ned/coveragepy@22fe9a2b7796f6498aa013c860c268ac21651226#egg=coverage-dev,decorator==4.0.2,greenlet==0.4.7,mock==1.3.0,nose==1.3.7,pbr==1.6.0,PyContracts==1.7.6,pyparsing==2.0.3,six==1.9.0,wheel==0.24.0
+    py33 runtests: PYTHONHASHSEED='1294330776'
+    py33 runtests: commands[0] | python setup.py --quiet clean develop
+    py33 runtests: commands[1] | python igor.py zip_mods install_egg remove_extension
+    py33 runtests: commands[2] | python igor.py test_with_tracer py
+    === CPython 3.3.6 with Python tracer (.tox/py33/bin/python) ===
+    ............................................S...............................(etc)
     ----------------------------------------------------------------------
-    Ran 364 tests in 12.572s
+    Ran 592 tests in 73.007s
 
-    OK
-    py26 runtests: commands[5]
-    py26 runtests: commands[6]
-    === CPython 2.6.6 with C tracer (/home/ned/coverage/tox/py26/bin/python) ===
-    ...........................................................................................(etc)
+    OK (SKIP=22)
+    py33 runtests: commands[3] | python setup.py --quiet build_ext --inplace
+    py33 runtests: commands[4] | python igor.py test_with_tracer c
+    === CPython 3.3.6 with C tracer (.tox/py33/bin/python) ===
+    ............................................S...............................(etc)
     ----------------------------------------------------------------------
-    Ran 364 tests in 11.458s
+    Ran 592 tests in 72.071s
 
-    OK
+    OK (SKIP=5)
     (and so on...)
 
 Tox runs the complete test suite twice for each version of Python you have
@@ -140,6 +144,8 @@ The source is pylint-clean, even if it's because there are pragmas quieting
 some warnings.  Please try to keep it that way, but don't let pylint warnings
 keep you from sending patches.  I can clean them up.
 
+Lines should be kept to a 100-character maximum length.
+
 
 Coverage testing coverage.py
 ----------------------------
@@ -147,8 +153,7 @@ Coverage testing coverage.py
 Coverage.py can measure itself, but it's complicated.  The process has been
 packaged up to make it easier::
 
-    $ COVERAGE_COVERAGE=yes tox
-    $ python igor.py combine_html
+    $ make metacov metahtml
 
 Then look at htmlcov/index.html.  Note that due to the recursive nature of
 coverage.py measuring itself, there are some parts of the code that will never
