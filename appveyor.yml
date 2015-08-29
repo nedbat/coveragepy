@@ -12,28 +12,31 @@ environment:
 
   matrix:
     - TOXENV: "py26"
-      TOXPYTHON: "C:\\Python26\\python.exe"
       WINDOWS_SDK_VERSION: "v7.0"
-      PYTHON_HOME: "C:\\Python26"
-      PYTHON_VERSION: "2.6"
+      PYTHON_HOME: "C:\\Python266"
+      PYTHON_VERSION: "2.6.6"
       PYTHON_ARCH: "32"
 
+#    - TOXENV: "py26"
+#      TOXPYTHON: "C:\\Python26\\python.exe"
+#      WINDOWS_SDK_VERSION: "v7.0"
+#      PYTHON_HOME: "C:\\Python26"
+#      PYTHON_VERSION: "2.6"
+#      PYTHON_ARCH: "32"
+#
     - TOXENV: "py27"
-      TOXPYTHON: "C:\\Python27\\python.exe"
       WINDOWS_SDK_VERSION: "v7.0"
       PYTHON_HOME: "C:\\Python27"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
 
     - TOXENV: "py33"
-      TOXPYTHON: "C:\\Python33\\python.exe"
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python33"
       PYTHON_VERSION: "3.3"
       PYTHON_ARCH: "32"
 
     - TOXENV: "py34"
-      TOXPYTHON: "C:\\Python34\\python.exe"
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python34"
       PYTHON_VERSION: "3.4"
@@ -41,7 +44,6 @@ environment:
 
     # Meta coverage
     - TOXENV: "py27"
-      TOXPYTHON: "C:\\Python27\\python.exe"
       WINDOWS_SDK_VERSION: "v7.0"
       PYTHON_HOME: "C:\\Python27"
       PYTHON_VERSION: "2.7"
@@ -49,7 +51,6 @@ environment:
       COVERAGE_COVERAGE: "yes"
 
     - TOXENV: "py34"
-      TOXPYTHON: "C:\\Python34\\python.exe"
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python34"
       PYTHON_VERSION: "3.4"
