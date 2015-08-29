@@ -1,28 +1,11 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
+"""Code coverage measurement for Python"""
+
 # Distutils setup for coverage.py
-
-"""Code coverage measurement for Python
-
-Coverage.py measures code coverage, typically during test execution. It uses
-the code analysis tools and tracing hooks provided in the Python standard
-library to determine which lines are executable, and which have been executed.
-
-Coverage.py runs on CPython 2.6, 2.7, 3.3, 3.4 or 3.5, PyPy 2.4, and PyPy3 2.4.
-
-Documentation is on `Read the Docs <{docurl}>`_.  Code repository and issue
-tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_, with a
-mirrored repository on `GitHub <https://github.com/nedbat/coveragepy>`_.
-
-New in 4.0 beta: ``--concurrency``, dropped support for older Pythons,
-setup.cfg support, plugins for other file variants, supported data API,
---skip-covered, HTML filtering, and 52 issues closed.
-"""
-
 # This file is used unchanged under all versions of Python, 2.x and 3.x.
 
-# Pull in the tools we need.
 import os
 import sys
 
@@ -45,31 +28,25 @@ Topic :: Software Development :: Quality Assurance
 Topic :: Software Development :: Testing
 """
 
-doc = __doc__                   # __doc__ will be overwritten by version.py.
-__version__ = __url__ = ""      # Keep pylint happy.
-
 cov_ver_py = os.path.join(os.path.split(__file__)[0], "coverage/version.py")
 with open(cov_ver_py) as version_file:
+    doc = __doc__                           # __doc__ will be overwritten by version.py.
+    __version__ = __url__ = version = ""    # Keep pylint happy.
     exec(compile(version_file.read(), cov_ver_py, 'exec'))
 
-doclines = (doc.format(docurl=__url__)).splitlines()
+with open("README.rst") as readme:
+    long_description = readme.read().replace("http://coverage.readthedocs.org", __url__)
+
 classifier_list = classifiers.splitlines()
 
-if 'a' in __version__:
+if version_info[3] == 'alpha':
     devstat = "3 - Alpha"
-elif 'b' in __version__:
+elif version_info[3] in ['beta', 'candidate']:
     devstat = "4 - Beta"
 else:
+    assert version_info[3] == 'final'
     devstat = "5 - Production/Stable"
 classifier_list.append("Development Status :: " + devstat)
-
-# Install a script as "coverage", and as "coverage[23]", and as
-# "coverage-2.7" (or whatever).
-scripts = [
-    'coverage = coverage.cmdline:main',
-    'coverage%d = coverage.cmdline:main' % sys.version_info[:1],
-    'coverage-%d.%d = coverage.cmdline:main' % sys.version_info[:2],
-]
 
 # Create the keyword arguments for setup()
 
@@ -87,15 +64,23 @@ setup_args = dict(
         ]
     },
 
-    entry_points={'console_scripts': scripts},
+    entry_points={
+        # Install a script as "coverage", and as "coverage[23]", and as
+        # "coverage-2.7" (or whatever).
+        'console_scripts': [
+            'coverage = coverage.cmdline:main',
+            'coverage%d = coverage.cmdline:main' % sys.version_info[:1],
+            'coverage-%d.%d = coverage.cmdline:main' % sys.version_info[:2],
+        ],
+    },
 
     # We need to get HTML assets from our htmlfiles directory.
     zip_safe=False,
 
     author='Ned Batchelder and others',
     author_email='ned@nedbatchelder.com',
-    description=doclines[0],
-    long_description='\n'.join(doclines[2:]),
+    description=doc,
+    long_description=long_description,
     keywords='code coverage testing',
     license='Apache 2.0',
     classifiers=classifier_list,
@@ -136,7 +121,7 @@ class ve_build_ext(build_ext):
     def build_extension(self, ext):
         """Wrap `build_extension` with `BuildFailed`."""
         try:
-            # Uncomment to test compile failures:
+            # Uncomment to test compile failure handling:
             #   raise errors.CCompilerError("OOPS")
             build_ext.build_extension(self, ext)
         except ext_errors:
@@ -170,8 +155,8 @@ if compile_extension:
                     "coverage/ctracer/filedisp.c",
                     "coverage/ctracer/module.c",
                     "coverage/ctracer/tracer.c",
-                ]
-            )
+                ],
+            ),
         ],
         cmdclass={
             'build_ext': ve_build_ext,
