@@ -319,6 +319,7 @@ def print_banner(label):
 
     which_python = os.path.relpath(sys.executable)
     print('=== %s %s %s (%s) ===' % (impl, version, label, which_python))
+    sys.stdout.flush()
 
 
 def do_help():
