@@ -31,6 +31,21 @@ environment:
       PYTHON_HOME: "C:\\Python34"
       PYTHON_VERSION: "3.4"
       PYTHON_ARCH: "32"
+    # Meta coverage
+    - TOXENV: "py27"
+      TOXPYTHON: "C:\\Python27\\python.exe"
+      WINDOWS_SDK_VERSION: "v7.0"
+      PYTHON_HOME: "C:\\Python27"
+      PYTHON_VERSION: "2.7"
+      PYTHON_ARCH: "32"
+      COVERAGE_COVERAGE: "yes"
+    - TOXENV: "py34"
+      TOXPYTHON: "C:\\Python34\\python.exe"
+      WINDOWS_SDK_VERSION: "v7.1"
+      PYTHON_HOME: "C:\\Python34"
+      PYTHON_VERSION: "3.4"
+      PYTHON_ARCH: "32"
+      COVERAGE_COVERAGE: "yes"
 init:
   - "ECHO %TOXENV%"
   - ps: "ls C:\\Python*"
@@ -42,4 +57,5 @@ test_script:
   - "%PYTHON_HOME%\\Scripts\\pip --version"
   - "%WITH_COMPILER% %PYTHON_HOME%\\Scripts\\tox"
 artifacts:
-  - path: dist\*
+  - path: "dist\*"
+  - path: ".metacov*"
