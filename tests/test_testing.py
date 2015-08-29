@@ -10,8 +10,9 @@ import sys
 
 from coverage.backunittest import TestCase
 from coverage.backward import to_bytes
+from coverage.test_helpers import EnvironmentAwareMixin, TempDirMixin
 
-from tests.coveragetest import TempDirMixin, CoverageTest
+from tests.coveragetest import CoverageTest
 
 
 class TestingTest(TestCase):
@@ -61,6 +62,30 @@ class TempDirMixinTest(TempDirMixin, TestCase):
         with open("unicode.txt", "rb") as f:
             text = f.read()
         self.assertEqual(text, to_bytes("tabblo: «ταБЬℓσ»"))
+
+
+class EnvironmentAwareMixinTest(EnvironmentAwareMixin, TestCase):
+    """Tests of test_helpers.EnvironmentAwareMixin."""
+
+    def test_setting_and_cleaning_env_vars(self):
+        # The before state.
+        home = os.environ["HOME"]
+        self.assertNotEqual(home, "Is where the heart is")
+        self.assertNotIn("XYZZY_PLUGH", os.environ)
+
+        # Change the environment.
+        self.set_environ("HOME", "Is where the heart is")
+        self.set_environ("XYZZY_PLUGH", "Vogon")
+
+        self.assertEqual(os.environ["HOME"], "Is where the heart is")
+        self.assertEqual(os.environ["XYZZY_PLUGH"], "Vogon")
+
+        # Do the clean ups early.
+        self.doCleanups()
+
+        # The environment should be restored.
+        self.assertEqual(os.environ["HOME"], home)
+        self.assertNotIn("XYZZY_PLUGH", os.environ)
 
 
 class CoverageTestTest(CoverageTest):
