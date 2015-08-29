@@ -23,7 +23,8 @@ setup.cfg support, plugins for other file variants, supported data API,
 # This file is used unchanged under all versions of Python, 2.x and 3.x.
 
 # Pull in the tools we need.
-import os, sys
+import os
+import sys
 
 from setuptools import setup
 from distutils.core import Extension                # pylint: disable=no-name-in-module, import-error
@@ -73,32 +74,32 @@ scripts = [
 # Create the keyword arguments for setup()
 
 setup_args = dict(
-    name = 'coverage',
-    version = __version__,
+    name='coverage',
+    version=__version__,
 
-    packages = [
+    packages=[
         'coverage',
     ],
 
-    package_data = {
+    package_data={
         'coverage': [
             'htmlfiles/*.*',
         ]
     },
 
-    entry_points = {'console_scripts': scripts},
+    entry_points={'console_scripts': scripts},
 
     # We need to get HTML assets from our htmlfiles directory.
-    zip_safe = False,
+    zip_safe=False,
 
-    author = 'Ned Batchelder and others',
-    author_email = 'ned@nedbatchelder.com',
-    description = doclines[0],
-    long_description = '\n'.join(doclines[2:]),
-    keywords = 'code coverage testing',
-    license = 'Apache 2.0',
-    classifiers = classifier_list,
-    url = __url__,
+    author='Ned Batchelder and others',
+    author_email='ned@nedbatchelder.com',
+    description=doclines[0],
+    long_description='\n'.join(doclines[2:]),
+    keywords='code coverage testing',
+    license='Apache 2.0',
+    classifiers=classifier_list,
+    url=__url__,
 )
 
 # A replacement for the build_ext command which raises a single exception
@@ -161,7 +162,7 @@ if '__pypy__' in sys.builtin_module_names:
 
 if compile_extension:
     setup_args.update(dict(
-        ext_modules = [
+        ext_modules=[
             Extension(
                 "coverage.tracer",
                 sources=[
@@ -172,7 +173,7 @@ if compile_extension:
                 ]
             )
         ],
-        cmdclass = {
+        cmdclass={
             'build_ext': ve_build_ext,
         },
     ))
@@ -181,7 +182,7 @@ if compile_extension:
 
 if sys.version_info >= (3, 0):
     setup_args.update(dict(
-        use_2to3 = False,
+        use_2to3=False,
     ))
 
 
