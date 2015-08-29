@@ -10,6 +10,7 @@ import sys
 
 from coverage.backunittest import TestCase
 from coverage.backward import to_bytes
+from coverage.files import actual_path
 from coverage.test_helpers import EnvironmentAwareMixin, TempDirMixin
 
 from tests.coveragetest import CoverageTest
@@ -69,22 +70,29 @@ class EnvironmentAwareMixinTest(EnvironmentAwareMixin, TestCase):
 
     def test_setting_and_cleaning_env_vars(self):
         # The before state.
-        home = os.environ["HOME"]
-        self.assertNotEqual(home, "Is where the heart is")
+        # Not sure what environment variables are available in all of our
+        # different testing environments, so try a bunch.
+        for envvar in ["HOME", "HOMEDIR", "USER", "SYSTEMDRIVE", "TEMP"]:
+            if envvar in os.environ:
+                original_text = os.environ[envvar]
+                new_text = "Some Strange Text"
+                break
+        # pylint: disable=undefined-loop-variable
+        self.assertNotEqual(original_text, new_text)
         self.assertNotIn("XYZZY_PLUGH", os.environ)
 
         # Change the environment.
-        self.set_environ("HOME", "Is where the heart is")
+        self.set_environ(envvar, new_text)
         self.set_environ("XYZZY_PLUGH", "Vogon")
 
-        self.assertEqual(os.environ["HOME"], "Is where the heart is")
+        self.assertEqual(os.environ[envvar], new_text)
         self.assertEqual(os.environ["XYZZY_PLUGH"], "Vogon")
 
         # Do the clean ups early.
         self.doCleanups()
 
         # The environment should be restored.
-        self.assertEqual(os.environ["HOME"], home)
+        self.assertEqual(os.environ[envvar], original_text)
         self.assertNotIn("XYZZY_PLUGH", os.environ)
 
 
@@ -148,7 +156,7 @@ class CoverageTestTest(CoverageTest):
             print(os.environ['COV_FOOBAR'])
             """)
         out = self.run_command("python showme.py").splitlines()
-        self.assertEqual(out[0], sys.executable)
+        self.assertEqual(actual_path(out[0]), actual_path(sys.executable))
         self.assertEqual(out[1], os.__file__)
         self.assertEqual(out[2], 'XYZZY')
 
