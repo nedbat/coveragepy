@@ -2,10 +2,14 @@
 # https://ci.appveyor.com/project/nedbat/coveragepy
 
 version: '{branch}-{build}'
+
 build: off
+
 environment:
+
   global:
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\ci\\appveyor-with-compiler.cmd"
+
   matrix:
     - TOXENV: "py26"
       TOXPYTHON: "C:\\Python26\\python.exe"
@@ -13,24 +17,28 @@ environment:
       PYTHON_HOME: "C:\\Python26"
       PYTHON_VERSION: "2.6"
       PYTHON_ARCH: "32"
+
     - TOXENV: "py27"
       TOXPYTHON: "C:\\Python27\\python.exe"
       WINDOWS_SDK_VERSION: "v7.0"
       PYTHON_HOME: "C:\\Python27"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
+
     - TOXENV: "py33"
       TOXPYTHON: "C:\\Python33\\python.exe"
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python33"
       PYTHON_VERSION: "3.3"
       PYTHON_ARCH: "32"
+
     - TOXENV: "py34"
       TOXPYTHON: "C:\\Python34\\python.exe"
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python34"
       PYTHON_VERSION: "3.4"
       PYTHON_ARCH: "32"
+
     # Meta coverage
     - TOXENV: "py27"
       TOXPYTHON: "C:\\Python27\\python.exe"
@@ -39,6 +47,7 @@ environment:
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
+
     - TOXENV: "py34"
       TOXPYTHON: "C:\\Python34\\python.exe"
       WINDOWS_SDK_VERSION: "v7.1"
@@ -46,16 +55,29 @@ environment:
       PYTHON_VERSION: "3.4"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
+
 init:
   - "ECHO %TOXENV%"
   - ps: "ls C:\\Python*"
+
 install:
   - "powershell ci\\appveyor-bootstrap.ps1"
+
 test_script:
   - "%PYTHON_HOME%\\Scripts\\tox --version"
   - "%PYTHON_HOME%\\Scripts\\virtualenv --version"
   - "%PYTHON_HOME%\\Scripts\\pip --version"
   - "%WITH_COMPILER% %PYTHON_HOME%\\Scripts\\tox"
+
+after_build:
+  - 7z a metacov.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
+
 artifacts:
   - path: "dist\\*"
-  - path: ".metacov*"
+  - path: "metacov.zip"
+
+notifications:
+  - provider: Email
+    to:
+      - ned@nedbatchelder.com
+    on_build_status_changed: true
