@@ -72,7 +72,7 @@ class EnvironmentAwareMixinTest(EnvironmentAwareMixin, TestCase):
         # The before state.
         # Not sure what environment variables are available in all of our
         # different testing environments, so try a bunch.
-        for envvar in ["HOME", "HOMEDIR", "USER", "SYSTEMDRIVE", "TEMP"]:
+        for envvar in ["HOME", "HOMEDIR", "USER", "SYSTEMDRIVE", "TEMP"]:   # pragma: part covered
             if envvar in os.environ:
                 original_text = os.environ[envvar]
                 new_text = "Some Strange Text"

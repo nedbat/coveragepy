@@ -150,7 +150,7 @@ class PluginTest(CoverageTest):
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ["my_plugin"])
         cov.start()
-        cov.stop()
+        cov.stop()      # pragma: nested
 
         with open("evidence.out") as f:
             self.assertEqual(f.read(), "we are here!")

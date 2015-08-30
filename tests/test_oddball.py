@@ -176,7 +176,7 @@ class MemoryLeakTest(CoverageTest):
             # Running the code 10k times shouldn't grow the ram much more than
             # running it 10 times.
             ram_growth = (ram_10k - ram_10) - (ram_10 - ram_0)
-            if ram_growth > 100000:
+            if ram_growth > 100000:                     # pragma: only failure
                 fails += 1
 
         if fails > 8:                                   # pragma: only failure
