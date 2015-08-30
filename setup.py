@@ -30,8 +30,11 @@ Topic :: Software Development :: Testing
 
 cov_ver_py = os.path.join(os.path.split(__file__)[0], "coverage/version.py")
 with open(cov_ver_py) as version_file:
-    doc = __doc__                           # __doc__ will be overwritten by version.py.
-    __version__ = __url__ = version = ""    # Keep pylint happy.
+    # __doc__ will be overwritten by version.py.
+    doc = __doc__
+    # Keep pylint happy.
+    __version__ = __url__ = version_info = ""
+    # Execute the code in version.py.
     exec(compile(version_file.read(), cov_ver_py, 'exec'))
 
 with open("README.rst") as readme:
