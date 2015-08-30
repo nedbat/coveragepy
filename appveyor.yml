@@ -37,13 +37,6 @@ environment:
       PYTHON_VERSION: "3.4"
       PYTHON_ARCH: "32"
 
-    - TOXENV: "py35"
-      WINDOWS_SDK_VERSION: "v7.1"
-      PYTHON_HOME: "C:\\Python35"
-      PYTHON_VERSION: "3.5.0"
-      PYTHON_PRERELEASE: "rc2"
-      PYTHON_ARCH: "32"
-
     # Meta coverage
     - TOXENV: "py27"
       WINDOWS_SDK_VERSION: "v7.0"
