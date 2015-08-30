@@ -61,7 +61,7 @@ typedef struct CTracer {
     Stats stats;
 } CTracer;
 
-int CTracer_intern_strings();
+int CTracer_intern_strings(void);
 
 extern PyTypeObject CTracerType;
 

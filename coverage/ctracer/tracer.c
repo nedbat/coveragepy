@@ -34,7 +34,7 @@ static PyObject *str_dynamic_source_filename;
 static PyObject *str_line_number_range;
 
 int
-CTracer_intern_strings()
+CTracer_intern_strings(void)
 {
     int ret = RET_ERROR;
 
@@ -331,7 +331,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     PyObject * file_tracer = NULL;
     PyObject * has_dynamic_filename = NULL;
 
-    CFileDisposition * pdisp;
+    CFileDisposition * pdisp = NULL;
 
 
     STATS( self->stats.calls++; )
@@ -629,7 +629,8 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
     if (self->pdata_stack->depth >= 0) {
         SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "line");
         if (self->cur_entry.file_data) {
-            int lineno_from, lineno_to;
+            int lineno_from = -1;
+            int lineno_to = -1;
 
             /* We're tracing in this frame: record something. */
             if (self->cur_entry.file_tracer != Py_None) {
