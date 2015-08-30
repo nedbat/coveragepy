@@ -16,7 +16,7 @@ Documentation is on `Read the Docs <http://coverage.readthedocs.org>`_.
 Code repository and issue tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_,
 with a mirrored repository on `GitHub <https://github.com/nedbat/coveragepy>`_.
 
-**New in 4.0:** ``--concurrency``, plugins for other file variants, setup.cfg
+**New in 4.0:** ``--concurrency``, plugins for non-Python files, setup.cfg
 support, --skip-covered, HTML filtering, and more than 50 issues closed.
 
 
@@ -33,12 +33,13 @@ License
 Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0.
 For details, see https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
 
-.. |ci-status| image:: https://api.travis-ci.org/nedbat/coveragepy.svg?branch=master&style=flat
-   :target: https://travis-ci.org/nedbat/coveragepy
-   :alt: build status
+
+.. |ci-status| image:: https://travis-ci.org/nedbat/coveragepy.svg?branch=master
+    :target: https://travis-ci.org/nedbat/coveragepy
+    :alt: build status
 .. |win-ci-status| image:: https://ci.appveyor.com/api/projects/status/bitbucket/ned/coveragepy?svg=true
-   :target: https://ci.appveyor.com/project/nedbat/coveragepy
-   :alt: Windows build status
+    :target: https://ci.appveyor.com/project/nedbat/coveragepy
+    :alt: Windows build status
 .. |docs| image:: https://readthedocs.org/projects/coverage/badge/?version=latest&style=flat
-   :target: http://coverage.readthedocs.org
-   :alt: Documentation
+    :target: http://coverage.readthedocs.org
+    :alt: Documentation
