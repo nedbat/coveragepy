@@ -65,7 +65,7 @@ test_script:
   - "%WITH_COMPILER% %PYTHON_HOME%\\Scripts\\tox"
 
 after_test:
-  - 7z a metacov-win-%TOXENV%.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
+  - if "%COVERAGE_COVERAGE%" == "yes" 7z a metacov-win-%TOXENV%.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
 
 artifacts:
   - path: "dist\\*"
