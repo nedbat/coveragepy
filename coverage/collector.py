@@ -130,7 +130,7 @@ class Collector(object):
             self.supports_plugins = False
 
     def __repr__(self):
-        return "<Collector at 0x%x>" % id(self)
+        return "<Collector at 0x%x: %s>" % (id(self), self.tracer_name())
 
     def tracer_name(self):
         """Return the class name of the tracer we're using."""

@@ -128,6 +128,7 @@ class PyTracer(object):
         if self.threading:
             self.thread = self.threading.currentThread()
         sys.settrace(self._trace)
+        self.stopped = False
         return self._trace
 
     def stop(self):
