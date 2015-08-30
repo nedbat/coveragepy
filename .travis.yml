@@ -13,16 +13,14 @@ python:
   - pypy
 
 install:
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2==1.1.0; fi
-  - pip install PyContracts==1.7.6
-  - python setup.py clean develop
+  - pip install tox==2.1.1 
 
 before_script:
   - coverage debug sys
-  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then export COVERAGE_NO_EXTENSION=1; fi
 
 script:
-  - python igor.py zip_mods install_egg
-  - python igor.py test_with_tracer c
-  - python igor.py remove_extension
-  - python igor.py test_with_tracer py
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then tox -e py26; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then tox -e py27; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then tox -e py33; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then tox -e py34; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then tox -e pypy25; fi
