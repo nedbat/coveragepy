@@ -65,11 +65,11 @@ test_script:
   - "%WITH_COMPILER% %PYTHON_HOME%\\Scripts\\tox"
 
 after_test:
-  - 7z a metacov.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
+  - 7z a metacov-win-%TOXENV%.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
 
 artifacts:
   - path: "dist\\*"
-  - path: "metacov.zip"
+  - path: "metacov-*.zip"
 
 notifications:
   - provider: Email
