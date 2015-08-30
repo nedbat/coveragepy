@@ -13,7 +13,8 @@ python:
   - pypy
 
 install:
-  - pip install tox==2.1.1 
+  - pip install tox==2.1.1
+  - python setup.py clean develop
 
 before_script:
   - coverage debug sys
