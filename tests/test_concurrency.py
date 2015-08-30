@@ -24,10 +24,7 @@ try:
 except ImportError:
     gevent = None
 
-try:
-    import greenlet
-except ImportError:
-    greenlet = None
+import greenlet
 
 
 def line_count(s):

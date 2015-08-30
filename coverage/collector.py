@@ -91,7 +91,7 @@ class Collector(object):
 
         try:
             if concurrency == "greenlet":
-                import greenlet                 # pylint: disable=import-error,useless-suppression
+                import greenlet
                 self.concur_id_func = greenlet.getcurrent
             elif concurrency == "eventlet":
                 import eventlet.greenthread     # pylint: disable=import-error,useless-suppression
