@@ -24,4 +24,4 @@ script:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then tox -e py27; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then tox -e py33; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then tox -e py34; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then tox -e pypy25; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then tox -e pypy; fi
