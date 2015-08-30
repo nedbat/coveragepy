@@ -10,9 +10,7 @@ shallow_clone: true
 environment:
 
   PYTHON_PRERELEASE: ""
-
-  global:
-    WITH_COMPILER: "cmd /E:ON /V:ON /C .\\ci\\appveyor-with-compiler.cmd"
+  WITH_COMPILER: "cmd /E:ON /V:ON /C .\\ci\\appveyor-with-compiler.cmd"
 
   matrix:
     - TOXENV: "py26"
@@ -42,7 +40,7 @@ environment:
     - TOXENV: "py35"
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python35"
-      PYTHON_VERSION: "3.5"
+      PYTHON_VERSION: "3.5.0"
       PYTHON_PRERELEASE: "rc2"
       PYTHON_ARCH: "32"
 
