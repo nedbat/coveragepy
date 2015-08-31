@@ -9,6 +9,8 @@ import re
 import coverage
 
 from tests.coveragetest import CoverageTest
+from tests.goldtest import CoverageGoldTest
+from tests.goldtest import change_dir, compare, contains
 
 
 class XmlTestHelpers(CoverageTest):
@@ -252,3 +254,63 @@ def clean(text, scrub=None):
     text = re.sub(r"(?m)^\s+", "", text)
     text = re.sub(r"\\", "/", text)
     return text
+
+
+class XmlGoldTest(CoverageGoldTest):
+
+    # TODO: this should move out of html.
+    root_dir = 'tests/farm/html'
+
+    def test_a_xml_1(self):
+        self.output_dir("out/xml_1")
+
+        with change_dir("src"):
+            cov = coverage.Coverage()
+            cov.start()
+            import a            # pragma: nested
+            cov.stop()          # pragma: nested
+            cov.xml_report(a, outfile="../out/xml_1/coverage.xml")
+            source_path = coverage.files.relative_directory().rstrip('/')
+
+        compare("gold_x_xml", "out/xml_1", scrubs=[
+            (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
+            (r' version="[-.\w]+"', ' version="VERSION"'),
+            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
+            (r'/coverage.readthedocs.org/?[-.\w/]*', '/coverage.readthedocs.org/VER'),
+        ])
+
+    def test_a_xml_2(self):
+        self.output_dir("out/xml_2")
+
+        with change_dir("src"):
+            cov = coverage.Coverage(config_file="run_a_xml_2.ini")
+            cov.start()
+            import a            # pragma: nested
+            cov.stop()          # pragma: nested
+            cov.xml_report(a)
+            source_path = coverage.files.relative_directory().rstrip('/')
+
+        compare("gold_x_xml", "out/xml_2", scrubs=[
+            (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
+            (r' version="[-.\w]+"', ' version="VERSION"'),
+            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
+            (r'/coverage.readthedocs.org/?[-.\w/]*', '/coverage.readthedocs.org/VER'),
+        ])
+
+    def test_y_xml_branch(self):
+        self.output_dir("out/y_xml_branch")
+
+        with change_dir("src"):
+            cov = coverage.Coverage(branch=True)
+            cov.start()
+            import y            # pragma: nested
+            cov.stop()          # pragma: nested
+            cov.xml_report(y, outfile="../out/y_xml_branch/coverage.xml")
+            source_path = coverage.files.relative_directory().rstrip('/')
+
+        compare("gold_y_xml_branch", "out/y_xml_branch", scrubs=[
+            (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
+            (r' version="[-.\w]+"', ' version="VERSION"'),
+            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
+            (r'/coverage.readthedocs.org/?[-.\w/]*', '/coverage.readthedocs.org/VER'),
+        ])
