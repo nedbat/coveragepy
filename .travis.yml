@@ -9,14 +9,15 @@ python:
   - 2.7
 
 env:
-    - TOXENV=py26
-    - TOXENV=py27
-    - TOXENV=py33
-    - TOXENV=py34
-    - TOXENV=pypy
+  - TOXENV=py26
+  - TOXENV=py27
+  - TOXENV=py33
+  - TOXENV=py34
+  - TOXENV=pypy
 
 install:
   - pip install tox==2.1.1
 
 script:
   - tox
+  - .tox/$(TOXENV)/bin/python -m coverage debug sys
