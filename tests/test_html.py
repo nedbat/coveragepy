@@ -7,6 +7,7 @@
 import datetime
 import os.path
 import re
+import sys
 
 import coverage
 import coverage.html
@@ -465,3 +466,52 @@ class HtmlStaticFileTest(CoverageTest):
         msg = "Couldn't find static file u?'.*'"
         with self.assertRaisesRegex(CoverageException, msg):
             cov.html_report()
+
+
+class CoverageGoldTest(CoverageTest):
+
+    run_in_temp_dir = False
+
+    def setUp(self):
+        super(CoverageGoldTest, self).setUp()
+        self.chdir(self.root_dir)
+        # Modules should be importable from the current directory.
+        sys.path.insert(0, '')
+
+    def output_dir(self, the_dir):
+        self.addCleanup(self.cleanup_output_dir, the_dir)
+
+    def cleanup_output_dir(self, the_dir):
+        if not os.environ.get("COVERAGE_KEEP_OUTPUT"):
+            clean(the_dir)
+
+from coverage.test_helpers import change_dir
+from tests.test_farm import clean, compare, contains
+
+class HtmlGoldTests(CoverageGoldTest):
+
+    root_dir = 'tests/farm/html'
+
+    def test_a(self):
+        self.output_dir("html_a")
+
+        with change_dir("src"):
+            cov = coverage.Coverage()
+            cov.start()
+            import a
+            cov.stop()
+            cov.html_report(a, directory='../html_a')
+
+        compare("gold_a", "html_a", size_within=10, file_pattern="*.html")
+        contains("html_a/a_py.html",
+            '<span class="key">if</span> <span class="num">1</span> '
+                '<span class="op">&lt;</span> <span class="num">2</span>',
+            '&nbsp; &nbsp; <span class="nam">a</span> '
+                '<span class="op">=</span> <span class="num">3</span>',
+            '<span class="pc_cov">67%</span>',
+        )
+        contains("html_a/index.html",
+            '<a href="a_py.html">a.py</a>',
+            '<span class="pc_cov">67%</span>',
+            '<td class="right" data-ratio="2 3">67%</td>',
+        )
