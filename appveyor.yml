@@ -13,28 +13,28 @@ environment:
   WITH_COMPILER: "cmd /E:ON /V:ON /C .\\ci\\appveyor-with-compiler.cmd"
 
   matrix:
-    - JOB: "2.6 32-bit"
+    - JOB: "2.6 32-bit          "
       TOXENV: "py26"
       WINDOWS_SDK_VERSION: "v7.0"
       PYTHON_HOME: "C:\\Python266"
       PYTHON_VERSION: "2.6.6"
       PYTHON_ARCH: "32"
 
-    - JOB: "2.7 32-bit"
+    - JOB: "2.7 32-bit          "
       TOXENV: "py27"
       WINDOWS_SDK_VERSION: "v7.0"
       PYTHON_HOME: "C:\\Python27"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
 
-    - JOB: "3.3 32-bit"
+    - JOB: "3.3 32-bit          "
       TOXENV: "py33"
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python33"
       PYTHON_VERSION: "3.3"
       PYTHON_ARCH: "32"
 
-    - JOB: "3.4 32-bit"
+    - JOB: "3.4 32-bit          "
       TOXENV: "py34"
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python34"
@@ -42,7 +42,7 @@ environment:
       PYTHON_ARCH: "32"
 
     # Meta coverage
-    - JOB: "Meta 2.7"
+    - JOB: "Meta 2.7          "
       TOXENV: "py27"
       WINDOWS_SDK_VERSION: "v7.0"
       PYTHON_HOME: "C:\\Python27"
@@ -50,7 +50,7 @@ environment:
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
-    - JOB: "Meta 3.4"
+    - JOB: "Meta 3.4          "
       TOXENV: "py34"
       WINDOWS_SDK_VERSION: "v7.1"
       PYTHON_HOME: "C:\\Python34"
