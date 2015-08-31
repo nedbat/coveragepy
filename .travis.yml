@@ -20,4 +20,4 @@ install:
 
 script:
   - tox
-  - .tox/$(TOXENV)/bin/python -m coverage debug sys
+  - .tox/${TOXENV}/bin/python -m coverage debug sys
