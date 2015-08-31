@@ -6,22 +6,17 @@ language: python
 sudo: false
 
 python:
-  - 2.6
   - 2.7
-  - 3.3
-  - 3.4
-  - pypy
+
+env:
+    - TOXENV=py26
+    - TOXENV=py27
+    - TOXENV=py33
+    - TOXENV=py34
+    - TOXENV=pypy
 
 install:
   - pip install tox==2.1.1
-  - python setup.py clean develop
-
-before_script:
-  - coverage debug sys
 
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then tox -e py26; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then tox -e py27; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then tox -e py33; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then tox -e py34; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then tox -e pypy; fi
+  - tox
