@@ -33,7 +33,7 @@ Execution
 ---------
 
 At the heart of the execution phase is a Python trace function.  This is a
-function that Python interpreter invokes for each line executed in a program.
+function that the Python interpreter invokes for each line executed in a program.
 Coverage.py implements a trace function that records each file and line number
 as it is executed.
 
