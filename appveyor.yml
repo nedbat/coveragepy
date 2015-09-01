@@ -93,7 +93,7 @@ test_script:
 
 after_test:
   - if "%COVERAGE_COVERAGE%" == "yes" 7z a metacov-win-%TOXENV%.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
-  - if NOT "%COVERAGE_COVERAGE%" == "yes" "%WITH_COMPILER% %PYTHON%/python setup.py bdist_wheel"
+  - if NOT "%COVERAGE_COVERAGE%" == "yes" %WITH_COMPILER% %PYTHON_HOME%\python setup.py bdist_wheel bdist_wininst
 
 artifacts:
   - path: "dist\\*"
