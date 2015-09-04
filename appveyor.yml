@@ -3,78 +3,72 @@
 
 version: '{branch}-{build}'
 
-build: off
-
 shallow_clone: true
 
 environment:
 
-  PYTHON_PRERELEASE: ""
-  WITH_COMPILER: "cmd /E:ON /V:ON /C .\\ci\\appveyor-with-compiler.cmd"
+  CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\run_with_env.cmd"
 
   matrix:
     - JOB: "2.6 32-bit"
       TOXENV: "py26"
-      WINDOWS_SDK_VERSION: "v7.0"
-      PYTHON_HOME: "C:\\Python266"
+      PYTHON: "C:\\Python266"
       PYTHON_VERSION: "2.6.6"
       PYTHON_ARCH: "32"
 
     - JOB: "2.7 32-bit"
       TOXENV: "py27"
-      WINDOWS_SDK_VERSION: "v7.0"
-      PYTHON_HOME: "C:\\Python27"
+      PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
 
     - JOB: "3.3 32-bit"
       TOXENV: "py33"
-      WINDOWS_SDK_VERSION: "v7.1"
-      PYTHON_HOME: "C:\\Python33"
+      PYTHON: "C:\\Python33"
       PYTHON_VERSION: "3.3"
       PYTHON_ARCH: "32"
 
     - JOB: "3.4 32-bit"
       TOXENV: "py34"
-      WINDOWS_SDK_VERSION: "v7.1"
-      PYTHON_HOME: "C:\\Python34"
+      PYTHON: "C:\\Python34"
       PYTHON_VERSION: "3.4"
+      PYTHON_ARCH: "32"
+
+    - JOB: "3.5 32-bit"
+      TOXENV: "py35"
+      PYTHON: "C:\\Python35rc2"
+      PYTHON_VERSION: "3.5.0rc2"
       PYTHON_ARCH: "32"
 
     #    - JOB: "2.7 64-bit"
     #      TOXENV: "py27"
-    #      WINDOWS_SDK_VERSION: "v7.0"
-    #      PYTHON_HOME: "C:\\Python27-x64"
+    #      PYTHON: "C:\\Python27-x64"
     #      PYTHON_VERSION: "2.7"
     #      PYTHON_ARCH: "64"
     #
     #    - JOB: "3.3 64-bit"
     #      TOXENV: "py33"
-    #      WINDOWS_SDK_VERSION: "v7.1"
-    #      PYTHON_HOME: "C:\\Python33-x64"
+    #      PYTHON: "C:\\Python33-x64"
     #      PYTHON_VERSION: "3.3"
     #      PYTHON_ARCH: "64"
     #
     #    - JOB: "3.4 64-bit"
     #      TOXENV: "py34"
-    #      WINDOWS_SDK_VERSION: "v7.1"
-    #      PYTHON_HOME: "C:\\Python34-x64"
+    #      PYTHON: "C:\\Python34-x64"
     #      PYTHON_VERSION: "3.4"
     #      PYTHON_ARCH: "64"
 
     # Meta coverage
     - JOB: "Meta 2.7"
       TOXENV: "py27"
-      WINDOWS_SDK_VERSION: "v7.0"
-      PYTHON_HOME: "C:\\Python27"
+      PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
     - JOB: "Meta 3.4"
       TOXENV: "py34"
-      WINDOWS_SDK_VERSION: "v7.1"
-      PYTHON_HOME: "C:\\Python34"
+      PYTHON: "C:\\Python34"
       PYTHON_VERSION: "3.4"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
@@ -83,17 +77,37 @@ init:
   - "ECHO %TOXENV%"
 
 install:
-  - "powershell ci\\appveyor-bootstrap.ps1"
+  # Install Python (from the official .msi of http://python.org) and pip when
+  # not already installed.
+  - ps: if (-not(Test-Path($env:PYTHON))) { & ci\install.ps1 }
+
+  # Prepend newly installed Python to the PATH of this build (this cannot be
+  # done from inside the powershell script as it would require to restart
+  # the parent CMD process).
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+
+  # Check that we have the expected version and architecture for Python
+  - "python --version"
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+
+  # Upgrade to the latest version of pip to avoid it displaying warnings
+  # about it being out of date.
+  - "pip install --disable-pip-version-check --user --upgrade pip"
+
+  # Install requirements. TODO: put this in a .pip file somewhere.
+  - "%CMD_IN_ENV% pip install setuptools==18.2 wheel==0.24.0 tox==2.1.1"
+
+build: off
 
 test_script:
-  - "%PYTHON_HOME%\\Scripts\\tox --version"
-  - "%PYTHON_HOME%\\Scripts\\virtualenv --version"
-  - "%PYTHON_HOME%\\Scripts\\pip --version"
-  - "%WITH_COMPILER% %PYTHON_HOME%\\Scripts\\tox"
+  - "%PYTHON%\\Scripts\\tox --version"
+  - "%PYTHON%\\Scripts\\virtualenv --version"
+  - "%PYTHON%\\Scripts\\pip --version"
+  - "%CMD_IN_ENV% %PYTHON%\\Scripts\\tox"
 
 after_test:
   - if "%COVERAGE_COVERAGE%" == "yes" 7z a metacov-win-%TOXENV%.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
-  - if NOT "%COVERAGE_COVERAGE%" == "yes" %WITH_COMPILER% %PYTHON_HOME%\python setup.py bdist_wheel bdist_wininst
+  - if NOT "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% %PYTHON%\python setup.py bdist_wheel bdist_wininst
 
 artifacts:
   - path: "dist\\*"
