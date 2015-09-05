@@ -7,8 +7,6 @@ shallow_clone: true
 
 matrix:
 
-  fast_finish: true
-
   allow_failures:
     - PYTHON_ARCH: "64"
 
@@ -113,9 +111,6 @@ install:
 build: off
 
 test_script:
-  - "%PYTHON%\\Scripts\\tox --version"
-  - "%PYTHON%\\Scripts\\virtualenv --version"
-  - "%PYTHON%\\Scripts\\pip --version"
   - "%CMD_IN_ENV% %PYTHON%\\Scripts\\tox"
 
 after_test:
