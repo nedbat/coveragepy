@@ -34,7 +34,7 @@ function Download ($filename, $url) {
     # Download and retry up to 3 times in case of network transient errors.
     Write-Host "Downloading" $filename "from" $url
     $retry_attempts = 2
-    for($i=0; $i -lt $retry_attempts; $i++){
+    for ($i = 0; $i -lt $retry_attempts; $i++) {
         try {
             $webclient.DownloadFile($url, $filepath)
             break
@@ -87,12 +87,18 @@ function DownloadPython ($python_version, $platform_suffix) {
 
     if (($major -le 2) -or ($major -le 3 -and $minor -le 4)) {
         $ext = "msi"
+        if ($platform_suffix) {
+            $platform_suffix = ".$platform_suffix"
+        }
     } else {
         $ext = "exe"
+        if ($platform_suffix) {
+            $platform_suffix = "-$platform_suffix"
+        }
     }
 
     $filename = "python-$python_version$platform_suffix.$ext"
-    $url = "$BASE_URL/$dir/$filename"
+    $url = "$BASE_URL$dir/$filename"
     $filepath = Download $filename $url
     return $filepath
 }
@@ -107,7 +113,7 @@ function InstallPython ($python_version, $architecture, $python_home) {
     if ($architecture -eq "32") {
         $platform_suffix = ""
     } else {
-        $platform_suffix = ".amd64"
+        $platform_suffix = "amd64"
     }
     $installer_path = DownloadPython $python_version $platform_suffix
     $installer_ext = [System.IO.Path]::GetExtension($installer_path)
