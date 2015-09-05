@@ -34,3 +34,6 @@ zipmods.zip
 _build
 _spell
 sample_html_beta
+
+# Stuff in the ci directory.
+*.token
