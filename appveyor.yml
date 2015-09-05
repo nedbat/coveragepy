@@ -107,8 +107,8 @@ install:
   # about it being out of date.
   - "pip install --disable-pip-version-check --user --upgrade pip"
 
-  # Install requirements. TODO: put this in a .pip file somewhere.
-  - "%CMD_IN_ENV% pip install setuptools==18.2 wheel==0.24.0 tox==2.1.1"
+  # Install requirements.
+  - "%CMD_IN_ENV% pip install -r ci/requirements.pip"
 
 build: off
 
