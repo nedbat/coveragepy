@@ -474,6 +474,7 @@ class HtmlStaticFileTest(CoverageTest):
 
 
 class HtmlGoldTests(CoverageGoldTest):
+    """Tests of HTML reporting that use gold files."""
 
     root_dir = 'tests/farm/html'
 
@@ -481,6 +482,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/a")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage()
             cov.start()
             import a            # pragma: nested
@@ -507,6 +509,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/b_branch")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage(branch=True)
             cov.start()
             import b            # pragma: nested
@@ -540,6 +543,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/bom")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage()
             cov.start()
             import bom          # pragma: nested
@@ -556,6 +560,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/isolatin1")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage()
             cov.start()
             import isolatin1            # pragma: nested
@@ -572,6 +577,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_1")
 
         with change_dir("src"):
+            # pylint: disable=import-error, unused-variable
             cov = coverage.Coverage(include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -584,6 +590,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_2")
 
         with change_dir("src"):
+            # pylint: disable=import-error, unused-variable
             cov = coverage.Coverage(include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -596,6 +603,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_3")
 
         with change_dir("src"):
+            # pylint: disable=import-error, unused-variable
             cov = coverage.Coverage(include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -608,6 +616,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_4")
 
         with change_dir("src"):
+            # pylint: disable=import-error, unused-variable
             cov = coverage.Coverage(config_file="omit4.ini", include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -620,6 +629,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_5")
 
         with change_dir("src"):
+            # pylint: disable=import-error, unused-variable
             cov = coverage.Coverage(config_file="omit5.ini", include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -632,6 +642,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/other")
 
         with change_dir("src"):
+            # pylint: disable=import-error, unused-variable
             sys.path.insert(0, "../othersrc")
             cov = coverage.Coverage(include=["./*", "../othersrc/*"])
             cov.start()
@@ -654,6 +665,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/partial")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage(branch=True)
             cov.start()
             import partial          # pragma: nested
@@ -682,6 +694,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/styled")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage()
             cov.start()
             import a            # pragma: nested
@@ -710,6 +723,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/tabbed")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage()
             cov.start()
             import tabbed           # pragma: nested
@@ -734,6 +748,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/unicode")
 
         with change_dir("src"):
+            # pylint: disable=import-error, redefined-builtin
             cov = coverage.Coverage()
             cov.start()
             import unicode          # pragma: nested

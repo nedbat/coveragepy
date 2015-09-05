@@ -10,7 +10,7 @@ import coverage
 
 from tests.coveragetest import CoverageTest
 from tests.goldtest import CoverageGoldTest
-from tests.goldtest import change_dir, compare, contains
+from tests.goldtest import change_dir, compare
 
 
 class XmlTestHelpers(CoverageTest):
@@ -257,6 +257,7 @@ def clean(text, scrub=None):
 
 
 class XmlGoldTest(CoverageGoldTest):
+    """Tests of XML reporting that use gold files."""
 
     # TODO: this should move out of html.
     root_dir = 'tests/farm/html'
@@ -265,6 +266,7 @@ class XmlGoldTest(CoverageGoldTest):
         self.output_dir("out/xml_1")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage()
             cov.start()
             import a            # pragma: nested
@@ -283,6 +285,7 @@ class XmlGoldTest(CoverageGoldTest):
         self.output_dir("out/xml_2")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage(config_file="run_a_xml_2.ini")
             cov.start()
             import a            # pragma: nested
@@ -301,6 +304,7 @@ class XmlGoldTest(CoverageGoldTest):
         self.output_dir("out/y_xml_branch")
 
         with change_dir("src"):
+            # pylint: disable=import-error
             cov = coverage.Coverage(branch=True)
             cov.start()
             import y            # pragma: nested
