@@ -5,6 +5,13 @@ version: '{branch}-{build}'
 
 shallow_clone: true
 
+matrix:
+
+  fast_finish: true
+
+  allow_failures:
+    - PYTHON_ARCH: "64"
+
 environment:
 
   CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\run_with_env.cmd"
@@ -40,29 +47,29 @@ environment:
       PYTHON_VERSION: "3.5.0rc2"
       PYTHON_ARCH: "32"
 
-    #    - JOB: "2.7 64-bit"
-    #      TOXENV: "py27"
-    #      PYTHON: "C:\\Python27-x64"
-    #      PYTHON_VERSION: "2.7"
-    #      PYTHON_ARCH: "64"
-    #
-    #    - JOB: "3.3 64-bit"
-    #      TOXENV: "py33"
-    #      PYTHON: "C:\\Python33-x64"
-    #      PYTHON_VERSION: "3.3"
-    #      PYTHON_ARCH: "64"
-    #
-    #    - JOB: "3.4 64-bit"
-    #      TOXENV: "py34"
-    #      PYTHON: "C:\\Python34-x64"
-    #      PYTHON_VERSION: "3.4"
-    #      PYTHON_ARCH: "64"
-    #
-    #    - JOB: "3.5 64-bit"
-    #      TOXENV: "py35"
-    #      PYTHON: "C:\\Python35rc2-x64"
-    #      PYTHON_VERSION: "3.5.0rc2"
-    #      PYTHON_ARCH: "64"
+    - JOB: "2.7 64-bit"
+      TOXENV: "py27"
+      PYTHON: "C:\\Python27-x64"
+      PYTHON_VERSION: "2.7"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.3 64-bit"
+      TOXENV: "py33"
+      PYTHON: "C:\\Python33-x64"
+      PYTHON_VERSION: "3.3"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.4 64-bit"
+      TOXENV: "py34"
+      PYTHON: "C:\\Python34-x64"
+      PYTHON_VERSION: "3.4"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.5 64-bit"
+      TOXENV: "py35"
+      PYTHON: "C:\\Python35rc2-x64"
+      PYTHON_VERSION: "3.5.0rc2"
+      PYTHON_ARCH: "64"
 
     # Meta coverage
     - JOB: "Meta 2.7"
