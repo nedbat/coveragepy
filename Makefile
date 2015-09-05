@@ -69,6 +69,9 @@ kit_local:
 	# don't go crazy trying to figure out why our new code isn't installing.
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
+download_appveyor:
+	python ci/download_appveyor.py nedbat/coveragepy
+
 pypi:
 	python setup.py register
 

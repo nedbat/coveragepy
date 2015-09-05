@@ -2,6 +2,7 @@
 
 import os
 import os.path
+import sys
 import zipfile
 
 import requests
@@ -46,7 +47,7 @@ def download_latest_artifacts(account_project):
         for artifact in artifacts:
             is_zip = artifact['type'] == "Zip"
             filename = artifact['fileName']
-            print "    {0}".format(filename)
+            print "    {0}, {1} bytes".format(filename, artifact['size'])
 
             url = make_url(
                 "/buildjobs/{jobid}/artifacts/{filename}",
@@ -88,4 +89,4 @@ def unpack_zipfile(filename):
 
 
 if __name__ == "__main__":
-    download_latest_artifacts("nedbat/coveragepy")
+    download_latest_artifacts(sys.argv[1])
