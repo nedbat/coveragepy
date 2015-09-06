@@ -60,9 +60,6 @@ wheel:
 kit_upload:
 	twine upload dist/*
 
-winkit:
-	tox -c tox_winkits.ini
-
 kit_local:
 	cp -v dist/* `awk -F "=" '/find-links/ {print $$2}' ~/.pip/pip.conf`
 	# pip caches wheels of things it has installed. Clean them out so we
