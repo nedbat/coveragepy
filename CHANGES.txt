@@ -17,6 +17,11 @@ Latest
   create that file if we are running under Jenkins, to keep things working
   smoothly. `issue 404`_.
 
+- Kits used to include tests and docs, but didn't install them anywhere, or
+  provide all of the supporting tools to make them useful.  Kits no longer
+  include tests and docs.  If you were using them from the older packages, get
+  in touch and help me understand how.
+
 .. _issue 403: https://bitbucket.org/ned/coveragepy/issues/403/hasherupdate-fails-with-typeerror-nonetype
 .. _issue 404: https://bitbucket.org/ned/coveragepy/issues/404/shiningpanda-jenkins-plugin-cant-find-html
 
