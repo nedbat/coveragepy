@@ -113,7 +113,7 @@ build: off
 test_script:
   - "%CMD_IN_ENV% %PYTHON%\\Scripts\\tox"
 
-on_finish:
+after_test:
   - if "%COVERAGE_COVERAGE%" == "yes" 7z a metacov-win-%TOXENV%.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
   - if NOT "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% %PYTHON%\python setup.py bdist_wheel bdist_wininst
 
