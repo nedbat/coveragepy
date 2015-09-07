@@ -110,7 +110,7 @@ install:
 
 build_script:
   - if NOT "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% %PYTHON%\python setup.py bdist_wheel bdist_wininst
-  - ps: Get-ChildItem dist\*.* | % { Push-AppveyorArtifact $_.FullName -FileName dist\$_.Name }
+  - ps: Get-ChildItem dist\*.* | % { Push-AppveyorArtifact $_.FullName -FileName ('dist\' + $_.Name) }
 
 test_script:
   - "%CMD_IN_ENV% %PYTHON%\\Scripts\\tox"
