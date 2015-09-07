@@ -110,7 +110,7 @@ install:
 
 build_script:
   - if NOT "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% %PYTHON%\python setup.py bdist_wheel bdist_wininst
-  - if NOT "%COVERAGE_COVERAGE%" == "yes" appveyor PushArtifact dist\*.*
+  - if NOT "%COVERAGE_COVERAGE%" == "yes" appveyor PushArtifact dist
 
 test_script:
   - "%CMD_IN_ENV% %PYTHON%\\Scripts\\tox"
