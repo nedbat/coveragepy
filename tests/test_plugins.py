@@ -517,16 +517,12 @@ class GoodPluginTest(FileTracerTest):
 class BadPluginTest(FileTracerTest):
     """Test error handling around plugins."""
 
-    def run_bad_plugin(self, module_name, plugin_name, our_error=True):
-        """Run a file, and see that the plugin failed.
+    def run_plugin(self, module_name):
+        """Run a plugin with the given module_name.
 
-        `plugin_name` is the name of the plugin to use.
+        Uses a few fixed Python files.
 
-        `our_error` is True if the error reported to the user will be an
-        explicit error in our test code, marked with an # Oh noes! comment.
-
-        The plugin will be disabled, and we check that a warning is output
-        explaining why.
+        Returns the Coverage object.
 
         """
         self.make_file("simple.py", """\
@@ -550,6 +546,24 @@ class BadPluginTest(FileTracerTest):
         cov = coverage.Coverage()
         cov.set_option("run:plugins", [module_name])
         self.start_import_stop(cov, "simple")
+        return cov
+
+    def run_bad_plugin(self, module_name, plugin_name, our_error=True, excmsg=None):
+        """Run a file, and see that the plugin failed.
+
+        `module_name` and `plugin_name` is the module and name of the plugin to
+        use.
+
+        `our_error` is True if the error reported to the user will be an
+        explicit error in our test code, marked with an '# Oh noes!' comment.
+
+        `excmsg`, if provided, is text that should appear in the stderr.
+
+        The plugin will be disabled, and we check that a warning is output
+        explaining why.
+
+        """
+        self.run_plugin(module_name)
 
         stderr = self.stderr()
         print(stderr)           # for diagnosing test failures.
@@ -568,6 +582,9 @@ class BadPluginTest(FileTracerTest):
         warnings = stderr.count(msg)
         self.assertEqual(warnings, 1)
 
+        if excmsg:
+            self.assertIn(excmsg, stderr)
+
     def test_file_tracer_has_no_file_tracer_method(self):
         self.make_file("bad_plugin.py", """\
             class Plugin(object):
@@ -577,6 +594,45 @@ class BadPluginTest(FileTracerTest):
                 reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
+
+    def test_file_tracer_has_inherited_sourcefilename_method(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage
+            class Plugin(coverage.CoveragePlugin):
+                def file_tracer(self, filename):
+                    # Just grab everything.
+                    return FileTracer()
+
+            class FileTracer(coverage.FileTracer):
+                pass
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin())
+            """)
+        self.run_bad_plugin(
+            "bad_plugin", "Plugin", our_error=False,
+            excmsg="Class 'bad_plugin.FileTracer' needs to implement source_filename()",
+        )
+
+    def test_plugin_has_inherited_filereporter_method(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage
+            class Plugin(coverage.CoveragePlugin):
+                def file_tracer(self, filename):
+                    # Just grab everything.
+                    return FileTracer()
+
+            class FileTracer(coverage.FileTracer):
+                def source_filename(self):
+                    return "foo.xxx"
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin())
+            """)
+        cov = self.run_plugin("bad_plugin")
+        expected_msg = "Plugin 'bad_plugin.Plugin' needs to implement file_reporter()"
+        with self.assertRaisesRegex(NotImplementedError, expected_msg):
+            cov.report()
 
     def test_file_tracer_fails(self):
         self.make_file("bad_plugin.py", """\
