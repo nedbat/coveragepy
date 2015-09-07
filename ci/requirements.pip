@@ -1,4 +1,0 @@
-# Things to install in continuous integration environments.
-setuptools==18.2
-tox==2.1.1
-wheel==0.24.0

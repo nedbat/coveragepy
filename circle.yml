@@ -11,7 +11,7 @@ dependencies:
   pre:
     - pip install -U pip
   override:
-    - pip install -r ci/requirements.pip
+    - pip install -r requirements/tox.pip
 
 test:
   override:

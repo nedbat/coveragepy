@@ -16,7 +16,7 @@ env:
   - TOXENV=pypy
 
 install:
-  - pip install -r ci/requirements.pip
+  - pip install -r requirements/tox.pip
 
 script:
   - tox
