@@ -44,7 +44,7 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _changes_40:
 
-Version 4.0b2 pre-release --- 22 August 2015
+Version 4.0b3 pre-release --- 7 September 2015
 --------------------------------------------
 
 
@@ -52,7 +52,7 @@ Backward incompatibilities:
 
 - Python versions supported are now:
 
-  - CPython 2.6, 2.7, 3.3, 3.4 and 3.5b4
+  - CPython 2.6, 2.7, 3.3, 3.4 and 3.5rc2
   - PyPy2 2.4, 2.6
   - PyPy3 2.4
 
@@ -74,6 +74,9 @@ Backward incompatibilities:
 
 - Coverage.py is now licensed under the Apache 2.0 license. See `NOTICE.txt`_
   for details.
+
+- Coverage.py kits no longer include tests and docs.  If you were using them,
+  get in touch and let me know how.
 
 .. _NOTICE.txt: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 

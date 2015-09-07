@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Latest
-------
+Version 4.0b3 --- 7 September 2015
+----------------------------------
 
 - Reporting on an unmeasured file would fail with a traceback.  This is now
   fixed, closing `issue 403`_.
