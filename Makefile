@@ -41,7 +41,7 @@ pep8:
 	pep8 --filename=*.py --repeat $(LINTABLE)
 
 test:
-	tox -e py27 $(ARGS)
+	tox -e py27,py34 $(ARGS)
 
 metacov:
 	COVERAGE_COVERAGE=yes tox $(ARGS)

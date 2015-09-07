@@ -115,8 +115,11 @@ install:
   - "%CMD_IN_ENV% pip install -r ci/requirements.pip"
 
 build_script:
+  # If not a metacov job, then build wheels and .exe installers.
   - if NOT "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% %PYTHON%\python setup.py bdist_wheel bdist_wininst
-  - ps: Get-ChildItem dist\*.* | % { Push-AppveyorArtifact $_.FullName -FileName ('dist\' + $_.Name) }
+
+  # Push everything in dist\ as an artifact.
+  - ps: if ( Test-Path 'dist' -PathType Container ) { Get-ChildItem dist\*.* | % { Push-AppveyorArtifact $_.FullName -FileName ('dist\' + $_.Name) } }
 
 test_script:
   - "%CMD_IN_ENV% %PYTHON%\\Scripts\\tox"
