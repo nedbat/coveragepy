@@ -290,7 +290,8 @@ def do_check_eol():
                 for dir_name in ignored:
                     dirs.remove(dir_name)
 
-    check_files("coverage", ["*.py", "*.c"])
+    check_files("coverage", ["*.py"])
+    check_files("coverage/ctracer", ["*.c", "*.h"])
     check_files("coverage/htmlfiles", ["*.html", "*.css", "*.js"])
     check_file("tests/farm/html/src/bom.py", crlf=False)
     check_files("tests", ["*.py"])
@@ -301,8 +302,8 @@ def do_check_eol():
     check_file("Makefile")
     check_file(".hgignore")
     check_file(".travis.yml")
-    check_files("doc", ["*.rst"])
-    check_files(".", ["*.txt"])
+    check_files(".", ["*.rst", "*.txt"])
+    check_files(".", ["*.pip"])
 
 
 def print_banner(label):
