@@ -45,6 +45,12 @@ environment:
       PYTHON_VERSION: "3.5.0rc2"
       PYTHON_ARCH: "32"
 
+    - JOB: "2.6 64-bit"
+      TOXENV: "py26"
+      PYTHON: "C:\\Python266-x64"
+      PYTHON_VERSION: "2.6.6"
+      PYTHON_ARCH: "64"
+
     - JOB: "2.7 64-bit"
       TOXENV: "py27"
       PYTHON: "C:\\Python27-x64"
