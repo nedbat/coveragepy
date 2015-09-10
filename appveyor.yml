@@ -114,6 +114,10 @@ install:
   # Install requirements.
   - "%CMD_IN_ENV% pip install -r requirements/tox.pip -r requirements/wheel.pip"
 
+  # Make a python3.4.bat file in the current directory so that tox will find it
+  # and python3.4 will mean what we want it to.
+  - "python -c \"import os; toxenv = os.environ['TOXENV']; bat = open('python{0}.{1}.bat'.format(*toxenv[2:]), 'w'); bat.write(r'@C:\{0}\python %*'.format(os.environ['PYTHON']))\""
+
 build_script:
   # If not a metacov job, then build wheels and .exe installers.
   - if NOT "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% %PYTHON%\python setup.py bdist_wheel bdist_wininst
@@ -122,7 +126,7 @@ build_script:
   - ps: if ( Test-Path 'dist' -PathType Container ) { Get-ChildItem dist\*.* | % { Push-AppveyorArtifact $_.FullName -FileName ('dist\' + $_.Name) } }
 
 test_script:
-  - "%CMD_IN_ENV% %PYTHON%\\Scripts\\tox --recreate"
+  - "%CMD_IN_ENV% %PYTHON%\\Scripts\\tox"
 
 after_test:
   - if "%COVERAGE_COVERAGE%" == "yes" 7z a metacov-win-%TOXENV%.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
