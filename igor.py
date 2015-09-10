@@ -38,6 +38,13 @@ def ignore_warnings():
 # by "python igor.py blah".
 
 
+def do_show_env():
+    """Show the environment variables."""
+    print("Environment:")
+    for env in sorted(os.environ):
+        print("  %s = %r" % (env, os.environ[env]))
+
+
 def do_remove_extension():
     """Remove the compiled C extension, no matter what its name."""
 
