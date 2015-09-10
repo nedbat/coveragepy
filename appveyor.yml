@@ -117,6 +117,7 @@ install:
   # Make a python3.4.bat file in the current directory so that tox will find it
   # and python3.4 will mean what we want it to.
   - "python -c \"import os; toxenv = os.environ['TOXENV']; bat = open('python{0}.{1}.bat'.format(*toxenv[2:]), 'w'); bat.write(r'@{0}\\python %*'+'\\n'.format(os.environ['PYTHON']))\""
+  - "TYPE python2.6.bat"
 
 build_script:
   # If not a metacov job, then build wheels and .exe installers.
