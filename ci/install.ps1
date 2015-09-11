@@ -1,4 +1,4 @@
-# From: https://github.com/moreati/python-appveyor-demo/blob/78c429d132fb2a3bc2f99b565b6763f07987cef5/appveyor/install.ps1
+# From: https://github.com/ogrisel/python-appveyor-demo/blob/master/appveyor/install.ps1
 #
 #
 # Sample script to install Python and pip under Windows

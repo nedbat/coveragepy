@@ -1,3 +1,6 @@
+:: From: https://github.com/ogrisel/python-appveyor-demo/blob/master/appveyor/run_with_env.cmd
+::
+::
 :: To build extensions for 64 bit Python 3, we need to configure environment
 :: variables to use the MSVC 2010 C++ compilers from GRMSDKX_EN_DVD.iso of:
 :: MS Windows SDK for Windows 7 and .NET Framework 4 (SDK v7.1)
