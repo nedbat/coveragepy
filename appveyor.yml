@@ -60,14 +60,14 @@ environment:
 
     - JOB: "3.5 32-bit"
       TOXENV: "py35"
-      PYTHON: "C:\\Python35rc4"
-      PYTHON_VERSION: "3.5.0rc4"
+      PYTHON: "C:\\Python35"
+      PYTHON_VERSION: "3.5.0"
       PYTHON_ARCH: "32"
 
     - JOB: "3.5 64-bit"
       TOXENV: "py35"
-      PYTHON: "C:\\Python35rc4-x64"
-      PYTHON_VERSION: "3.5.0rc4"
+      PYTHON: "C:\\Python35-x64"
+      PYTHON_VERSION: "3.5.0"
       PYTHON_ARCH: "64"
 
     # Meta coverage
