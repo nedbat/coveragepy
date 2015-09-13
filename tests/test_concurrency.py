@@ -214,7 +214,7 @@ class ConcurrencyTest(CoverageTest):
                 eventlet.sleep(.005)
 
             eventlet.sleep(.1)
-            print len(gts)
+            print(len(gts))
             """
         self.try_some_code(BUG_330, "eventlet", eventlet, "0\n")
 
