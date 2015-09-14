@@ -153,7 +153,7 @@ function InstallPythonMSI ($msipath, $python_home, $install_log) {
 
 function RunCommand ($command, $command_args) {
     Write-Host $command $command_args
-    Start-Process -FilePath $command -ArgumentList $command_args -Wait -Passthru
+    & $command $command_args
 }
 
 
@@ -200,7 +200,7 @@ function InstallMiniconda ($python_version, $architecture, $python_home) {
     $install_log = $python_home + ".log"
     $args = "/S /D=$python_home"
     Write-Host $filepath $args
-    Start-Process -FilePath $filepath -ArgumentList $args -Wait -Passthru
+    & $filepath $args
     if (Test-Path $python_home) {
         Write-Host "Python $python_version ($architecture) installation complete"
     } else {
@@ -218,7 +218,7 @@ function InstallMinicondaPip ($python_home) {
         Write-Host "Installing pip..."
         $args = "install --yes pip"
         Write-Host $conda_path $args
-        Start-Process -FilePath "$conda_path" -ArgumentList $args -Wait -Passthru
+        & "$conda_path" $args
     } else {
         Write-Host "pip already installed."
     }
