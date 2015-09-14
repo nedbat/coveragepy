@@ -9,6 +9,7 @@ $MINICONDA_URL = "http://repo.continuum.io/miniconda/"
 $BASE_URL = "https://www.python.org/ftp/python/"
 $GET_PIP_URL = "https://bootstrap.pypa.io/get-pip.py"
 $GET_PIP_PATH = "C:\get-pip.py"
+$RUN_GET_PIP_PATH = "ci\get-pip.py"
 
 $PYTHON_PRERELEASE_REGEX = @"
 (?x)
@@ -164,8 +165,8 @@ function InstallPip ($python_home) {
         Write-Host "Installing pip..."
         $webclient = New-Object System.Net.WebClient
         $webclient.DownloadFile($GET_PIP_URL, $GET_PIP_PATH)
-        Write-Host "Executing:" $python_path $GET_PIP_PATH
-        Start-Process -FilePath "$python_path" -ArgumentList "$GET_PIP_PATH" -Wait -Passthru
+        Write-Host "Executing:" $python_path $RUN_GET_PIP_PATH
+        Start-Process -FilePath "$python_path" -ArgumentList "$RUN_GET_PIP_PATH" -Wait -Passthru
     } else {
         Write-Host "pip already installed."
     }
