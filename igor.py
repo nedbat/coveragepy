@@ -172,7 +172,7 @@ def run_tests_with_coverage(tracer, *nose_args):
 
 
 def do_combine_html():
-    """Combine data from a meta-coverage run, and make the HTML report."""
+    """Combine data from a meta-coverage run, and make the HTML and XML reports."""
     import coverage
     os.environ['COVERAGE_HOME'] = os.getcwd()
     os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov")

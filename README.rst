@@ -7,7 +7,7 @@ Coverage.py
 
 Code coverage testing for Python.
 
-|  |ci-status| |win-ci-status| |reqs|
+|  |ci-status| |win-ci-status| |reqs| |codecov|
 |  |kit| |downloads| |docs|
 
 Coverage.py measures code coverage, typically during test execution. It uses
@@ -56,3 +56,6 @@ For details, see https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
 .. |downloads| image:: https://img.shields.io/pypi/dm/coverage.svg
     :target: https://pypi.python.org/pypi/coverage
     :alt: Monthly PyPI downloads
+.. |codecov| image:: http://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master
+    :target: http://codecov.io/github/nedbat/coveragepy?branch=master
+    :alt: Coverage!
