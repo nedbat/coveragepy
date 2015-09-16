@@ -22,8 +22,4 @@ install:
 script:
   - tox
   - if [ $COVERAGE_COVERAGE == 'yes' ]; then python igor.py combine_html; fi
-  - if [ $COVERAGE_COVERAGE == 'yes' ]; then mv .metacov .coverage; fi
-  - ls -al 
-  - if [ $COVERAGE_COVERAGE == 'yes' ]; then coverage xml -i; fi
-  - ls -al 
   - if [ $COVERAGE_COVERAGE == 'yes' ]; then codecov; fi

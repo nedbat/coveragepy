@@ -181,6 +181,7 @@ def do_combine_html():
     cov.combine()
     cov.save()
     cov.html_report()
+    cov.xml_report()
 
 
 def do_test_with_tracer(tracer, *noseargs):
