@@ -21,4 +21,4 @@ install:
 
 script:
   - tox
-  - if [ $COVERAGE_COVERAGE == 'yes' ]; then codecov; fi
+  - if [ $COVERAGE_COVERAGE == 'yes' ]; then python igor.py combine_html; codecov; fi
