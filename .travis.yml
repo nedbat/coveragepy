@@ -14,10 +14,11 @@ env:
   - TOXENV=py33
   - TOXENV=py34
   - TOXENV=pypy
+  - TOXENV=py27 COVERAGE_COVERAGE=yes
 
 install:
-  - pip install -r requirements/tox.pip
+  - pip install -r requirements/tox.pip codecov
 
 script:
   - tox
-  - .tox/$TOXENV/bin/coverage debug sys
+  - if [ $COVERAGE_COVERAGE == 'yes' ]; then codecov; fi
