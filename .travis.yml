@@ -9,11 +9,11 @@ python:
   - 2.7
 
 env:
-  - TOXENV=py26
-  - TOXENV=py27
-  - TOXENV=py33
-  - TOXENV=py34
-  - TOXENV=pypy
+  #- TOXENV=py26
+  #- TOXENV=py27
+  #- TOXENV=py33
+  #- TOXENV=py34
+  #- TOXENV=pypy
   - TOXENV=py27 COVERAGE_COVERAGE=yes
 
 install:
@@ -21,4 +21,9 @@ install:
 
 script:
   - tox
-  - if [ $COVERAGE_COVERAGE == 'yes' ]; then python igor.py combine_html; mv .metacov .coverage; codecov; fi
+  - if [ $COVERAGE_COVERAGE == 'yes' ]; then python igor.py combine_html; fi
+  - if [ $COVERAGE_COVERAGE == 'yes' ]; then mv .metacov .coverage; fi
+  - ls -al 
+  - if [ $COVERAGE_COVERAGE == 'yes' ]; then coverage xml -i; fi
+  - ls -al 
+  - if [ $COVERAGE_COVERAGE == 'yes' ]; then codecov; fi
