@@ -8,7 +8,7 @@ Coverage.py
 Code coverage testing for Python.
 
 |  |ci-status| |win-ci-status| |reqs| |codecov|
-|  |kit| |downloads| |docs|
+|  |kit| |format| |downloads| |versions| |status| |license| |docs|
 
 Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
@@ -53,9 +53,21 @@ For details, see https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
 .. |kit| image:: https://badge.fury.io/py/coverage.svg
     :target: https://pypi.python.org/pypi/coverage
     :alt: PyPI status
-.. |downloads| image:: https://img.shields.io/pypi/dm/coverage.svg
+.. |format| image:: https://img.shields.io/pypi/format/coverage.svg
     :target: https://pypi.python.org/pypi/coverage
-    :alt: Monthly PyPI downloads
+    :alt: Kit format
+.. |downloads| image:: https://img.shields.io/pypi/dd/coverage.svg
+    :target: https://pypi.python.org/pypi/coverage
+    :alt: Daily PyPI downloads
+.. |versions| image:: https://img.shields.io/pypi/pyversions/coverage.svg
+    :target: https://pypi.python.org/pypi/coverage
+    :alt: Python versions supported
+.. |status| image:: https://img.shields.io/pypi/status/coverage.svg
+    :target: https://pypi.python.org/pypi/coverage
+    :alt: Package stability
+.. |license| image:: https://img.shields.io/pypi/l/coverage.svg
+    :target: https://pypi.python.org/pypi/coverage
+    :alt: License
 .. |codecov| image:: http://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master
     :target: http://codecov.io/github/nedbat/coveragepy?branch=master
     :alt: Coverage!

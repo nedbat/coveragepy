@@ -4,9 +4,10 @@
     - Windows
     - Ubuntu
     - Mac
-    - Pythons 2.6, 2.7, 3.3, 3.4
+    - Pythons 2.6, 2.7, 3.3, 3.4, 3.5
 - Version number in coverage/version.py
     - 3.1a1, 3.1b1, 3.1c1, 3.1
+- Version number in classifiers in setup.py
 - Copyright date in NOTICE.txt
 - Update CHANGES.txt, including release date.
 - Update README.rst, including "New in x.y:"
