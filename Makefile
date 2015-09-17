@@ -55,7 +55,7 @@ kit:
 	python setup.py sdist --formats=gztar,zip
 
 wheel:
-	tox -c tox_wheels.ini
+	tox -c tox_wheels.ini $(ARGS)
 
 kit_upload:
 	twine upload dist/*
