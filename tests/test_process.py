@@ -713,8 +713,8 @@ class AliasedCommandTest(CoverageTest):
         badcmd = "coverage%d" % (5 - sys.version_info[0])
         out = self.run_command(badcmd)
         if "Code coverage" in out:
-            out = self.run_command(badcmd + " debug sys")
-            print(out)
+            out2 = self.run_command(badcmd + " debug sys")
+            print(out2)
         self.assertNotIn("Code coverage for Python", out)
 
     def test_specific_alias_works(self):
