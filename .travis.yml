@@ -17,6 +17,7 @@ env:
   - TOXENV=py27 COVERAGE_COVERAGE=yes
 
 install:
+  - pip uninstall coverage
   - pip install -r requirements/tox.pip codecov
 
 script:
