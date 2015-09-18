@@ -36,6 +36,7 @@
 
 SET COMMAND_TO_RUN=%*
 SET WIN_SDK_ROOT=C:\Program Files\Microsoft SDKs\Windows
+SET WIN_WDK=c:\Program Files (x86)\Windows Kits\10\Include\wdf
 
 :: Extract the major and minor versions, and allow for the minor version to be
 :: more than 9.  This requires the version number to have two dots in it.
@@ -58,6 +59,10 @@ IF %MAJOR_PYTHON_VERSION% == 2 (
             SET SET_SDK_64=Y
         ) ELSE (
             SET SET_SDK_64=N
+            IF EXIST "%WIN_WDK%" (
+                :: See: https://connect.microsoft.com/VisualStudio/feedback/details/1610302/
+                REN "%WIN_WDK%" 0wdf
+            )
         )
     ) ELSE (
         ECHO Unsupported Python version: "%MAJOR_PYTHON_VERSION%"
