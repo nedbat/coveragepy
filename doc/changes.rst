@@ -33,6 +33,7 @@ Major change history for coverage.py
 .. :history: 20150124T134800, updated for 4.0a4
 .. :history: 20150802T174700, updated for 4.0b1
 .. :history: 20150822T092800, updated for 4.0b2
+.. :history: 20150919T072700, updated for 4.0
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -44,15 +45,15 @@ history, see the `CHANGES.txt`_ file in the source tree.
 
 .. _changes_40:
 
-Version 4.0b3 pre-release --- 7 September 2015
---------------------------------------------
+Version 4.0 --- 20 September 2015
+---------------------------------
 
 
 Backward incompatibilities:
 
 - Python versions supported are now:
 
-  - CPython 2.6, 2.7, 3.3, 3.4 and 3.5rc2
+  - CPython 2.6, 2.7, 3.3, 3.4 and 3.5
   - PyPy2 2.4, 2.6
   - PyPy3 2.4
 
