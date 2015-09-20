@@ -37,9 +37,9 @@ Major change history for coverage.py
 
 
 These are the major changes for coverage.py.  For a more complete change
-history, see the `CHANGES.txt`_ file in the source tree.
+history, see the `CHANGES.rst`_ file in the source tree.
 
-.. _CHANGES.txt: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.txt
+.. _CHANGES.rst: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.rst
 
 .. module:: coverage
 

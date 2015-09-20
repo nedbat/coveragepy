@@ -5,7 +5,7 @@
 
 include __main__.py
 include AUTHORS.txt
-include CHANGES.txt
+include CHANGES.rst
 include LICENSE.txt
 include NOTICE.txt
 include README.rst

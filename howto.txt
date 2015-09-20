@@ -9,7 +9,7 @@
     - 3.1a1, 3.1b1, 3.1c1, 3.1
 - Python version number in classifiers in setup.py
 - Copyright date in NOTICE.txt
-- Update CHANGES.txt, including release date.
+- Update CHANGES.rst, including release date.
 - Update README.rst, including "New in x.y:"
 - Update docs
     - Version, date, and changes in doc/changes.rst
