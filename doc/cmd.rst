@@ -321,7 +321,7 @@ file decorated to show the status of each line.
 
 Here's a `sample report`__.
 
-__ /code/coverage/sample_html/index.html
+__ http://nedbatchelder.com/files/sample_coverage_html/index.html
 
 Lines are highlighted green for executed, red for missing, and gray for
 excluded.  The counts at the top of the file are buttons to turn on and off

@@ -102,7 +102,7 @@ coverage.py installed properly:
 
         $ coverage --version
         Coverage.py, version |release|.
-        Documentation at https://coverage.readthedocs.org/en/|release|
+        Documentation at https://coverage.readthedocs.org/en/coverage-|release|
 
 You can also invoke coverage.py as a module:
 
@@ -120,4 +120,4 @@ You can also invoke coverage.py as a module:
 
         $ python -m coverage --version
         Coverage.py, version |release|.
-        Documentation at https://coverage.readthedocs.org/en/|release|
+        Documentation at https://coverage.readthedocs.org/en/coverage-|release|

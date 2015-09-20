@@ -58,6 +58,9 @@
 - Update readthedocs
     - Coverage / versions
         - find the latest tag in the inactive list, edit it, make it active.
+    - IF NOT BETA:
+        - visit https://readthedocs.org/dashboard/coverage/advanced/
+        - change the default version
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
     # Note: don't delete old version numbers: it marks changes on the tickets

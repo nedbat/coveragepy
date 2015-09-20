@@ -113,8 +113,8 @@ Getting started is easy:
         `report like this one`_.
 
 .. _coverage.py page on the Python Package Index: http://pypi.python.org/pypi/coverage
-.. _report like this: http://nedbatchelder.com/code/coverage/sample_html/index.html
-.. _report like this one: http://nedbatchelder.com/code/coverage/sample_html_beta/index.html
+.. _report like this: http://nedbatchelder.com/files/sample_coverage_html/index.html
+.. _report like this one: http://nedbatchelder.com/files/sample_coverage_html_beta/index.html
 
 
 Using coverage.py

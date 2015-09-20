@@ -83,7 +83,9 @@ uninstall:
 
 SPHINXBUILD = sphinx-build
 SPHINXOPTS = -a -E doc
-WEBHOME = ~/web/stellated/pages/code/coverage
+WEBHOME = ~/web/stellated/
+WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
+WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
 
 docreqs:
 	pip install -r doc/requirements.pip
@@ -97,10 +99,11 @@ docspell:
 	$(SPHINXBUILD) -b spelling $(SPHINXOPTS) doc/_spell
 
 publish:
-	rm -f $(WEBHOME)/sample_html/*.*
-	cp doc/sample_html/*.* $(WEBHOME)/sample_html
+	rm -f $(WEBSAMPLE)/*.*
+	mkdir -p $(WEBSAMPLE)
+	cp doc/sample_html/*.* $(WEBSAMPLE)
 
 publishbeta:
-	rm -f $(WEBHOME)/sample_html_beta/*.*
-	mkdir -p $(WEBHOME)/sample_html_beta
-	cp doc/sample_html_beta/*.* $(WEBHOME)/sample_html_beta
+	rm -f $(WEBSAMPLEBETA)/*.*
+	mkdir -p $(WEBSAMPLEBETA)
+	cp doc/sample_html_beta/*.* $(WEBSAMPLEBETA)
