@@ -25,8 +25,10 @@
         coverage combine
         coverage html
         - IF BETA:
+            rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
         - ELSE:
+            rm -f ~/coverage/trunk/doc/sample_html/*.*
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
     - IF BETA:
         - Build and publish docs:
