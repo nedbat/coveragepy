@@ -35,27 +35,17 @@ class Reporter(object):
         `morfs` is a list of modules or file names.
 
         """
-        self.file_reporters = self.coverage._get_file_reporters(morfs)
+        reporters = self.coverage._get_file_reporters(morfs)
 
         if self.config.include:
-            patterns = prep_patterns(self.config.include)
-            matcher = FnmatchMatcher(patterns)
-            filtered = []
-            for fr in self.file_reporters:
-                if matcher.match(fr.filename):
-                    filtered.append(fr)
-            self.file_reporters = filtered
+            matcher = FnmatchMatcher(prep_patterns(self.config.include))
+            reporters = [fr for fr in reporters if matcher.match(fr.filename)]
 
         if self.config.omit:
-            patterns = prep_patterns(self.config.omit)
-            matcher = FnmatchMatcher(patterns)
-            filtered = []
-            for fr in self.file_reporters:
-                if not matcher.match(fr.filename):
-                    filtered.append(fr)
-            self.file_reporters = filtered
+            matcher = FnmatchMatcher(prep_patterns(self.config.omit))
+            reporters = [fr for fr in reporters if not matcher.match(fr.filename)]
 
-        self.file_reporters.sort()
+        self.file_reporters = sorted(reporters)
 
     def report_files(self, report_fn, morfs, directory=None):
         """Run a reporting function on a number of morfs.
