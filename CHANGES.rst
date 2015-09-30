@@ -6,6 +6,12 @@ Change history for Coverage.py
 ==============================
 
 
+Version 4.1
+-----------
+
+Nothing yet.
+
+
 Version 4.0 --- 20 September 2015
 ---------------------------------
 
