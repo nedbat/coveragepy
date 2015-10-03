@@ -91,7 +91,7 @@ class BaseCmdLineTest(CoverageTest):
         m2 = self.model_object()
         m2.path_exists.return_value = path_exists
         code_obj = compile(code, "<code>", "exec")
-        eval(code_obj, globals(), { 'm2': m2 })     # pylint: disable=eval-used
+        eval(code_obj, globals(), {'m2': m2})       # pylint: disable=eval-used
 
         # Many of our functions take a lot of arguments, and cmdline.py
         # calls them with many.  But most of them are just the defaults, which
@@ -128,17 +128,11 @@ class BaseCmdLineTest(CoverageTest):
 
         """
         m, r = self.mock_command_line(args)
-        self.assertEqual(r, ret,
-                "Wrong status: got %s, wanted %s" % (r, ret)
-                )
+        self.assertEqual(r, ret, "Wrong status: got %s, wanted %s" % (r, ret))
         if help_msg:
-            self.assertEqual(m.method_calls[-1],
-                ('help_fn', (help_msg,), {})
-                )
+            self.assertEqual(m.method_calls[-1], ('help_fn', (help_msg,), {}))
         else:
-            self.assertEqual(m.method_calls[-1],
-                ('help_fn', (), {'topic':topic})
-                )
+            self.assertEqual(m.method_calls[-1], ('help_fn', (), {'topic': topic}))
 
 
 class BaseCmdLineTestTest(BaseCmdLineTest):
@@ -252,8 +246,7 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_executes("help", ".help_fn(topic='help')")
 
     def test_cmd_help(self):
-        self.cmd_executes("run --help",
-                                ".help_fn(parser='<CmdOptionParser:run>')")
+        self.cmd_executes("run --help", ".help_fn(parser='<CmdOptionParser:run>')")
         self.cmd_executes_same("help run", "run --help")
 
     def test_html(self):
@@ -423,8 +416,7 @@ class CmdLineTest(BaseCmdLineTest):
             .stop()
             .save()
             """)
-        self.cmd_executes("run --include=pre1,pre2 --omit=opre1,opre2 foo.py",
-            """\
+        self.cmd_executes("run --include=pre1,pre2 --omit=opre1,opre2 foo.py", """\
             .coverage(include=["pre1", "pre2"], omit=["opre1", "opre2"])
             .erase()
             .start()
@@ -651,7 +643,7 @@ class CmdMainTest(CoverageTest):
             elif argv[0] == 'exit':
                 sys.exit(23)
             else:
-                raise AssertionError("Bad CoverageScriptStub: %r"% (argv,))
+                raise AssertionError("Bad CoverageScriptStub: %r" % (argv,))
             return 0
 
     def setUp(self):
