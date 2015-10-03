@@ -476,8 +476,8 @@ class AnalysisTest(CoverageTest):
         self.assertEqual(nums.n_missing_branches, 2)
 
 
-class PluginTest(CoverageTest):
-    """Test that the API works properly the way the plugins call it.
+class TestRunnerPluginTest(CoverageTest):
+    """Test that the API works properly the way various third-party plugins call it.
 
     We don't actually use the plugins, but these tests call the API the same
     way they do.
