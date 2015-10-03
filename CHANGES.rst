@@ -15,7 +15,11 @@ Version 4.1
   are seeing corrupt data files, but this lets them continue combining anyway.
   Prompted by `issue 418`_.
 
+- Pyexpat C code will no longer be recorded as a source file, fixing
+  `issue 419`_.
+
 .. _issue 418: https://bitbucket.org/ned/coveragepy/issues/418/json-parse-error
+.. _issue 419: https://bitbucket.org/ned/coveragepy/issues/419/nosource-no-source-for-code-path-to-c
 
 
 Version 4.0 --- 20 September 2015

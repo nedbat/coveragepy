@@ -7,6 +7,7 @@ import atexit
 import inspect
 import os
 import platform
+import re
 import sys
 import traceback
 
@@ -289,7 +290,7 @@ class Coverage(object):
             # environments (virtualenv, for example), these modules may be
             # spread across a few locations. Look at all the candidate modules
             # we've imported, and take all the different ones.
-            for m in (atexit, inspect, os, platform, _structseq, traceback):
+            for m in (atexit, inspect, os, platform, re, _structseq, traceback):
                 if m is not None and hasattr(m, "__file__"):
                     self.pylib_dirs.add(self._canonical_dir(m))
             if _structseq and not hasattr(_structseq, '__file__'):
@@ -474,6 +475,11 @@ class Coverage(object):
             # "<exec_function>".  Don't ever trace these executions, since we
             # can't do anything with the data later anyway.
             return nope(disp, "not a real file name")
+
+        # pyexpat does a dumb thing, calling the trace function explicitly from
+        # C code with a C file name.
+        if re.search(r"[/\\]Modules[/\\]pyexpat.c", filename):
+            return nope(disp, "pyexpat lies about itself")
 
         # Jython reports the .class file to the tracer, use the source file.
         if filename.endswith("$py.class"):
@@ -805,7 +811,7 @@ class Coverage(object):
         """
         self._init()
         if not self._measured:
-            return
+            return self.data
 
         self.collector.save_data(self.data)
 

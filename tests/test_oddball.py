@@ -226,6 +226,14 @@ class PyexpatTest(CoverageTest):
         self.assertEqual(statements, [101, 102])
         self.assertEqual(missing, [])
 
+        # Make sure pyexpat isn't recorded as a source file.
+        # https://bitbucket.org/ned/coveragepy/issues/419/nosource-no-source-for-code-path-to-c
+        files = cov.get_data().measured_files()
+        self.assertFalse(
+            any(f.endswith("pyexpat.c") for f in files),
+            "Pyexpat.c is in the measured files!: %r:" % (files,)
+        )
+
 
 class ExceptionTest(CoverageTest):
     """I suspect different versions of Python deal with exceptions differently
