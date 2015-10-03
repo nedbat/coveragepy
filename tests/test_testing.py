@@ -8,6 +8,7 @@ import datetime
 import os
 import sys
 
+import coverage
 from coverage.backunittest import TestCase
 from coverage.backward import to_bytes
 from coverage.files import actual_path
@@ -145,6 +146,44 @@ class CoverageTestTest(CoverageTest):
             self.assert_recent_datetime(now_delta(-1000), seconds=120)
         with self.assertRaises(AssertionError):
             self.assert_recent_datetime(now_delta(1), seconds=120)
+
+    def test_assert_warnings(self):
+        cov = coverage.Coverage()
+
+        # Make a warning, it should catch it properly.
+        with self.assert_warnings(cov, ["Hello there!"]):
+            cov._warn("Hello there!")
+
+        # The expected warnings are regexes.
+        with self.assert_warnings(cov, ["Hello.*!"]):
+            cov._warn("Hello there!")
+
+        # There can be a bunch of actual warnings.
+        with self.assert_warnings(cov, ["Hello.*!"]):
+            cov._warn("You there?")
+            cov._warn("Hello there!")
+
+        # There can be a bunch of expected warnings.
+        with self.assert_warnings(cov, ["Hello.*!", "You"]):
+            cov._warn("You there?")
+            cov._warn("Hello there!")
+
+        # But if there are a bunch of expected warnings, they have to all happen.
+        warn_regex = r"Didn't find warning 'You' in \['Hello there!'\]"
+        with self.assertRaisesRegex(AssertionError, warn_regex):
+            with self.assert_warnings(cov, ["Hello.*!", "You"]):
+                cov._warn("Hello there!")
+
+        # Make a different warning than expected, it should raise an assertion.
+        warn_regex = r"Didn't find warning 'Not me' in \['Hello there!'\]"
+        with self.assertRaisesRegex(AssertionError, warn_regex):
+            with self.assert_warnings(cov, ["Not me"]):
+                cov._warn("Hello there!")
+
+        # assert_warnings shouldn't hide a real exception.
+        with self.assertRaises(ZeroDivisionError):
+            with self.assert_warnings(cov, ["Hello there!"]):
+                raise ZeroDivisionError("oops")
 
     def test_sub_python_is_this_python(self):
         # Try it with a Python command.

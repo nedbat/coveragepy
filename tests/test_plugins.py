@@ -255,17 +255,11 @@ class PluginWarningOnPyTracer(CoverageTest):
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ["tests.plugin1"])
 
-        warnings = []
-        def capture_warning(msg):
-            """A fake implementation of Coverage._warn, to capture warnings."""
-            warnings.append(msg)
-        cov._warn = capture_warning
-
-        self.start_import_stop(cov, "simple")
-        self.assertIn(
-            "Plugin file tracers (tests.plugin1.Plugin) aren't supported with PyTracer",
-            warnings
-        )
+        expected_warnings = [
+            r"Plugin file tracers \(tests.plugin1.Plugin\) aren't supported with PyTracer",
+        ]
+        with self.assert_warnings(cov, expected_warnings):
+            self.start_import_stop(cov, "simple")
 
 
 class FileTracerTest(CoverageTest):

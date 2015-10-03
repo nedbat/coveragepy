@@ -3,6 +3,7 @@
 
 """Base test case class for coverage.py testing."""
 
+import contextlib
 import datetime
 import glob
 import os
@@ -250,6 +251,30 @@ class CoverageTest(
             self.assertEqual(report, rep)
 
         return cov
+
+    @contextlib.contextmanager
+    def assert_warnings(self, cov, warnings):
+        """A context manager to check that particular warnings happened in `cov`."""
+        saved_warnings = []
+        def capture_warning(msg):
+            """A fake implementation of Coverage._warn, to capture warnings."""
+            saved_warnings.append(msg)
+
+        original_warn = cov._warn
+        cov._warn = capture_warning
+
+        try:
+            yield
+        except:
+            raise
+        else:
+            for warning_regex in warnings:
+                for saved in saved_warnings:
+                    if re.search(warning_regex, saved):
+                        break
+                else:
+                    self.fail("Didn't find warning %r in %r" % (warning_regex, saved_warnings))
+            cov._warn = original_warn
 
     def nice_file(self, *fparts):
         """Canonicalize the file name composed of the parts in `fparts`."""
