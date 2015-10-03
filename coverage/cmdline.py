@@ -58,6 +58,10 @@ class Opts(object):
         '-i', '--ignore-errors', action='store_true',
         help="Ignore errors while reading source files.",
     )
+    ignore_combine_errors = optparse.make_option(
+        '-i', '--ignore-errors', action='store_true',
+        help="Ignore errors while reading data files.",
+    )
     include = optparse.make_option(
         '', '--include', action='store',
         metavar="PAT1,PAT2,...",
@@ -265,7 +269,10 @@ CMDS = {
     ),
 
     'combine': CmdOptionParser(
-        "combine", GLOBAL_ARGS,
+        "combine",
+        [
+            Opts.ignore_combine_errors,
+            ] + GLOBAL_ARGS,
         usage="<path1> <path2> ... <pathN>",
         description=(
             "Combine data from multiple coverage files collected "
@@ -464,7 +471,7 @@ class CoverageScript(object):
         elif options.action == "combine":
             self.coverage.load()
             data_dirs = args or None
-            self.coverage.combine(data_dirs)
+            self.coverage.combine(data_dirs, ignore_errors=options.ignore_errors)
             self.coverage.save()
             return OK
 

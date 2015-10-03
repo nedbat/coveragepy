@@ -9,7 +9,13 @@ Change history for Coverage.py
 Version 4.1
 -----------
 
-Nothing yet.
+- When combining data files, you can now ignore errors while reading the data
+  files, using the ``--ignore-errors`` command line switch, or the ``[combine]
+  ignore_errors`` configuration file setting.  I don't understand why people
+  are seeing corrupt data files, but this lets them continue combining anyway.
+  Prompted by `issue 418`_.
+
+.. _issue 418: https://bitbucket.org/ned/coveragepy/issues/418/json-parse-error
 
 
 Version 4.0 --- 20 September 2015

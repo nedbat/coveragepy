@@ -601,12 +601,15 @@ class CoverageData(object):
 class CoverageDataFiles(object):
     """Manage the use of coverage data files."""
 
-    def __init__(self, basename=None):
+    def __init__(self, basename=None, warn=None):
         """Create a CoverageDataFiles to manage data files.
+
+        `warn` is the warning function to use.
 
         `basename` is the name of the file to use for storing data.
 
         """
+        self.warn = warn
         # Construct the file name that will be used for data storage.
         self.filename = os.path.abspath(basename or ".coverage")
 
@@ -659,7 +662,7 @@ class CoverageDataFiles(object):
             filename += "." + suffix
         data.write_file(filename)
 
-    def combine_parallel_data(self, data, aliases=None, data_paths=None):
+    def combine_parallel_data(self, data, aliases=None, data_paths=None, ignore_errors=False):
         """Combine a number of data files together.
 
         Treat `self.filename` as a file prefix, and combine the data from all
@@ -676,6 +679,9 @@ class CoverageDataFiles(object):
         `self.filename` is used as the directory to search for data files.
 
         Every data file found and combined is then deleted from disk.
+
+        If `ignore_errors` is True, then files that cannot be read will cause
+        a warning, and will not be deleted.
 
         """
         # Because of the os.path.abspath in the constructor, data_dir will
@@ -696,9 +702,18 @@ class CoverageDataFiles(object):
 
         for f in files_to_combine:
             new_data = CoverageData()
-            new_data.read_file(f)
-            data.update(new_data, aliases=aliases)
-            file_be_gone(f)
+            try:
+                new_data.read_file(f)
+            except CoverageException as exc:
+                if not ignore_errors:
+                    raise
+                if self.warn:
+                    # The CoverageException has the file name in it, so just
+                    # use the message as the warning.
+                    self.warn(str(exc))
+            else:
+                data.update(new_data, aliases=aliases)
+                file_be_gone(f)
 
 
 def canonicalize_json_data(data):

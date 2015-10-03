@@ -279,7 +279,7 @@ class Coverage(object):
         # data file will be written into the directory where the process
         # started rather than wherever the process eventually chdir'd to.
         self.data = CoverageData(debug=self.debug)
-        self.data_files = CoverageDataFiles(basename=self.config.data_file)
+        self.data_files = CoverageDataFiles(basename=self.config.data_file, warn=self._warn)
 
         # The directories for files considered "installed with the interpreter".
         self.pylib_dirs = set()
@@ -757,7 +757,7 @@ class Coverage(object):
         self.get_data()
         self.data_files.write(self.data, suffix=self.data_suffix)
 
-    def combine(self, data_paths=None):
+    def combine(self, data_paths=None, ignore_errors=None):
         """Combine together a number of similarly-named coverage data files.
 
         All coverage data files whose name starts with `data_file` (from the
@@ -776,6 +776,8 @@ class Coverage(object):
         self._init()
         self.get_data()
 
+        self.config.from_args(ignore_combine_errors=ignore_errors)
+
         aliases = None
         if self.config.paths:
             aliases = PathAliases()
@@ -784,7 +786,12 @@ class Coverage(object):
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
 
-        self.data_files.combine_parallel_data(self.data, aliases=aliases, data_paths=data_paths)
+        self.data_files.combine_parallel_data(
+            self.data,
+            aliases=aliases,
+            data_paths=data_paths,
+            ignore_errors=self.config.ignore_combine_errors,
+        )
 
     def get_data(self):
         """Get the collected data and reset the collector.

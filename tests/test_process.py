@@ -94,6 +94,42 @@ class ProcessTest(CoverageTest):
         data.read_file(".coverage")
         self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
+    def test_combine_parallel_data_with_a_corrupt_file(self):
+        self.make_b_or_c_py()
+        out = self.run_command("coverage run -p b_or_c.py b")
+        self.assertEqual(out, 'done\n')
+        self.assert_doesnt_exist(".coverage")
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        out = self.run_command("coverage run -p b_or_c.py c")
+        self.assertEqual(out, 'done\n')
+        self.assert_doesnt_exist(".coverage")
+
+        # After two -p runs, there should be two .coverage.machine.123 files.
+        self.assertEqual(self.number_of_data_files(), 2)
+
+        # Make a bogus data file.
+        self.make_file(".coverage.bad", "This isn't a coverage data file.")
+
+        # Combine the parallel coverage data files into .coverage .
+        out = self.run_command("coverage combine -i")
+        self.assert_exists(".coverage")
+        self.assert_exists(".coverage.bad")
+        warning_regex = (
+            r"Coverage.py warning: Couldn't read data from '.*\.coverage\.bad': "
+            r"CoverageException: Doesn't seem to be a coverage\.py data file"
+        )
+        self.assertRegex(out, warning_regex)
+
+        # After combining, those two should be the only data files.
+        self.assertEqual(self.number_of_data_files(), 2)
+
+        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+
     def test_combine_parallel_data_in_two_steps(self):
         self.make_b_or_c_py()
 

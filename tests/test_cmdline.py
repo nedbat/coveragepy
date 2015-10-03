@@ -190,14 +190,20 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_executes("combine datadir1", """\
             .coverage()
             .load()
-            .combine(["datadir1"])
+            .combine(["datadir1"], ignore_errors=None)
             .save()
             """)
         # coverage combine without args
         self.cmd_executes("combine", """\
             .coverage()
             .load()
-            .combine(None)
+            .combine(None, ignore_errors=None)
+            .save()
+            """)
+        self.cmd_executes("combine -i", """\
+            .coverage()
+            .load()
+            .combine(None, ignore_errors=True)
             .save()
             """)
 
@@ -206,13 +212,13 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_executes("combine --rcfile cov.ini", """\
             .coverage(config_file='cov.ini')
             .load()
-            .combine(None)
+            .combine(None, ignore_errors=None)
             .save()
             """)
         self.cmd_executes("combine --rcfile cov.ini data1 data2/more", """\
             .coverage(config_file='cov.ini')
             .load()
-            .combine(["data1", "data2/more"])
+            .combine(["data1", "data2/more"], ignore_errors=None)
             .save()
             """)
 

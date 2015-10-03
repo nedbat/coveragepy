@@ -251,7 +251,8 @@ class ApiTest(CoverageTest):
         cov.erase()
         self.assertRaises(CoverageException, cov.report)
 
-    def test_start_stop_start_stop(self):
+    def make_code1_code2(self):
+        """Create the code1.py and code2.py files."""
         self.make_file("code1.py", """\
             code1 = 1
             """)
@@ -259,10 +260,9 @@ class ApiTest(CoverageTest):
             code2 = 1
             code2 = 2
             """)
-        cov = coverage.Coverage()
-        self.start_import_stop(cov, "code1")
-        cov.save()
-        self.start_import_stop(cov, "code2")
+
+    def check_code1_code2(self, cov):
+        """Check the analysis is correct for code1.py and code2.py."""
         _, statements, missing, _ = cov.analysis("code1.py")
         self.assertEqual(statements, [1])
         self.assertEqual(missing, [])
@@ -270,16 +270,18 @@ class ApiTest(CoverageTest):
         self.assertEqual(statements, [1, 2])
         self.assertEqual(missing, [])
 
+    def test_start_stop_start_stop(self):
+        self.make_code1_code2()
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "code1")
+        cov.save()
+        self.start_import_stop(cov, "code2")
+        self.check_code1_code2(cov)
+
     if 0:   # expected failure
         # for https://bitbucket.org/ned/coveragepy/issue/79
         def test_start_save_stop(self):
-            self.make_file("code1.py", """\
-                code1 = 1
-                """)
-            self.make_file("code2.py", """\
-                code2 = 1
-                code2 = 2
-                """)
+            self.make_code1_code2()
             cov = coverage.Coverage()
             cov.start()
             self.import_local_file("code1")
@@ -287,13 +289,49 @@ class ApiTest(CoverageTest):
             self.import_local_file("code2")
             cov.stop()
 
-            _, statements, missing, _ = cov.analysis("code1.py")
-            self.assertEqual(statements, [1])
-            self.assertEqual(missing, [])
-            _, statements, missing, _ = cov.analysis("code2.py")
-            self.assertEqual(statements, [1, 2])
-            self.assertEqual(missing, [])
+            self.check_code1_code2(cov)
 
+    def make_corrupt_data_files(self):
+        """Make some good and some bad data files."""
+        self.make_code1_code2()
+        cov = coverage.Coverage(data_suffix=True)
+        self.start_import_stop(cov, "code1")
+        cov.save()
+
+        cov = coverage.Coverage(data_suffix=True)
+        self.start_import_stop(cov, "code2")
+        cov.save()
+
+        self.make_file(".coverage.foo", """La la la, this isn't coverage data!""")
+
+    def test_combining_corrupt_data(self):
+        self.make_corrupt_data_files()
+        cov = coverage.Coverage()
+
+        msg = r"Couldn't read data from '.*\.coverage\.foo'"
+        with self.assertRaisesRegex(CoverageException, msg):
+            cov.combine()
+
+        # The bad file still exists.
+        self.assert_exists(".coverage.foo")
+
+    def test_combining_corrupt_data_while_ignoring_errors(self):
+        # If you combine a corrupt data file with ignore_errors=True, then you
+        # will get a warning, and the file will remain.
+        self.make_corrupt_data_files()
+        cov = coverage.Coverage()
+        warning_regex = (
+            r"Couldn't read data from '.*\.coverage\.foo': "
+            r"CoverageException: Doesn't seem to be a coverage\.py data file"
+        )
+        with self.assert_warnings(cov, [warning_regex]):
+            cov.combine(ignore_errors=True)
+
+        # We got the results from code1 and code2 properly.
+        self.check_code1_code2(cov)
+
+        # The bad file still exists.
+        self.assert_exists(".coverage.foo")
 
 
 class UsingModulesMixin(object):

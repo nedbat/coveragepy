@@ -221,6 +221,11 @@ systems, coverage.py won't know how to combine the data.  You can tell
 coverage.py how the different locations correlate with a ``[paths]`` section in
 your configuration file.  See :ref:`config_paths` for details.
 
+Some techniques for collecting data can result in corrupt data files.  If you
+have this problem, you can use the ``--ignore-errors`` option to turn those
+errors into warnings instead.
+
+
 .. _cmd_reporting:
 
 Reporting
