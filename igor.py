@@ -241,7 +241,7 @@ def do_install_egg():
         egg = glob.glob("dist/*.egg")[0]
         distutils.core.run_setup(
             "setup.py", ["--quiet", "easy_install", "--no-deps", "--zip-ok", egg]
-            )
+        )
     os.chdir(cur_dir)
 
 
@@ -253,7 +253,7 @@ def do_check_eol():
         '.tox*',
         '*.egg-info',
         '_build',
-        ]
+    ]
     checked = set()
 
     def check_file(fname, crlf=True, trail_white=True):
