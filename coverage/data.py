@@ -662,7 +662,7 @@ class CoverageDataFiles(object):
             filename += "." + suffix
         data.write_file(filename)
 
-    def combine_parallel_data(self, data, aliases=None, data_paths=None, ignore_errors=False):
+    def combine_parallel_data(self, data, aliases=None, data_paths=None):
         """Combine a number of data files together.
 
         Treat `self.filename` as a file prefix, and combine the data from all
@@ -678,10 +678,9 @@ class CoverageDataFiles(object):
         If `data_paths` is not provided, then the directory portion of
         `self.filename` is used as the directory to search for data files.
 
-        Every data file found and combined is then deleted from disk.
-
-        If `ignore_errors` is True, then files that cannot be read will cause
-        a warning, and will not be deleted.
+        Every data file found and combined is then deleted from disk. If a file
+        cannot be read, a warning will be issued, and the file will not be
+        deleted.
 
         """
         # Because of the os.path.abspath in the constructor, data_dir will
@@ -705,8 +704,6 @@ class CoverageDataFiles(object):
             try:
                 new_data.read_file(f)
             except CoverageException as exc:
-                if not ignore_errors:
-                    raise
                 if self.warn:
                     # The CoverageException has the file name in it, so just
                     # use the message as the warning.

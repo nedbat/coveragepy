@@ -9,10 +9,9 @@ Change history for Coverage.py
 Version 4.1
 -----------
 
-- When combining data files, you can now ignore errors while reading the data
-  files, using the ``--ignore-errors`` command line switch, or the ``[combine]
-  ignore_errors`` configuration file setting.  I don't understand why people
-  are seeing corrupt data files, but this lets them continue combining anyway.
+- When combining data files, unreadable files will now generate a warning
+  instead of failing the command.  This is more in line with the older
+  coverage.py v3.7.1 behavior, which silently ignored unreadable files.
   Prompted by `issue 418`_.
 
 - Code that uses ``sys.settrace(sys.gettrace())`` used to incur more than a 2x

@@ -235,9 +235,6 @@ class ConfigFileTest(CoverageTest):
             plugins.a_plugin
             plugins.another
 
-        [{section}combine]
-        ignore_errors =         True
-
         [{section}report]
         ; these settings affect reporting.
         exclude_lines =
@@ -303,8 +300,6 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.cover_pylib)
         self.assertTrue(cov.config.parallel)
         self.assertEqual(cov.config.concurrency, "thread")
-
-        self.assertTrue(cov.config.ignore_combine_errors)
 
         self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])
         self.assertTrue(cov.config.ignore_errors)

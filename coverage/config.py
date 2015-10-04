@@ -162,9 +162,6 @@ class CoverageConfig(object):
         self.source = None
         self.timid = False
 
-        # Defaults for [combine]
-        self.ignore_combine_errors = False
-
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
         self.fail_under = 0
@@ -279,9 +276,6 @@ class CoverageConfig(object):
         ('plugins', 'run:plugins', 'list'),
         ('source', 'run:source', 'list'),
         ('timid', 'run:timid', 'boolean'),
-
-        # [combine]
-        ('ignore_combine_errors', 'combine:ignore_errors', 'boolean'),
 
         # [report]
         ('exclude_list', 'report:exclude_lines', 'regexlist'),

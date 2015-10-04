@@ -305,19 +305,8 @@ class ApiTest(CoverageTest):
         self.make_file(".coverage.foo", """La la la, this isn't coverage data!""")
 
     def test_combining_corrupt_data(self):
-        self.make_corrupt_data_files()
-        cov = coverage.Coverage()
-
-        msg = r"Couldn't read data from '.*\.coverage\.foo'"
-        with self.assertRaisesRegex(CoverageException, msg):
-            cov.combine()
-
-        # The bad file still exists.
-        self.assert_exists(".coverage.foo")
-
-    def test_combining_corrupt_data_while_ignoring_errors(self):
-        # If you combine a corrupt data file with ignore_errors=True, then you
-        # will get a warning, and the file will remain.
+        # If you combine a corrupt data file, then you will get a warning,
+        # and the file will remain.
         self.make_corrupt_data_files()
         cov = coverage.Coverage()
         warning_regex = (
@@ -325,7 +314,7 @@ class ApiTest(CoverageTest):
             r"CoverageException: Doesn't seem to be a coverage\.py data file"
         )
         with self.assert_warnings(cov, [warning_regex]):
-            cov.combine(ignore_errors=True)
+            cov.combine()
 
         # We got the results from code1 and code2 properly.
         self.check_code1_code2(cov)

@@ -112,7 +112,7 @@ class ProcessTest(CoverageTest):
         self.make_file(".coverage.bad", "This isn't a coverage data file.")
 
         # Combine the parallel coverage data files into .coverage .
-        out = self.run_command("coverage combine -i")
+        out = self.run_command("coverage combine")
         self.assert_exists(".coverage")
         self.assert_exists(".coverage.bad")
         warning_regex = (
