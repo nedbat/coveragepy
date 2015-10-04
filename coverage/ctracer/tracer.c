@@ -903,6 +903,10 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     /* Clean up. */
     frame->f_lineno = orig_lineno;
 
+    /* For better speed, install ourselves the C way so that future calls go
+       directly to CTracer_trace, without this intermediate function. */
+    PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
+
 done:
     return ret;
 }
