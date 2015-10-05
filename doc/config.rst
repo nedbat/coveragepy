@@ -148,20 +148,6 @@ measure during execution.  See :ref:`source` for details.
 Try this if you get seemingly impossible results.
 
 
-.. _config_combine:
-
-[combine]
----------
-
-Options for the ``coverage combine`` command.
-
-``ignore_errors`` (boolean, default False): ignore errors when reading the data
-files, so that corrupt data files won't prevent the other good ones from being
-combined.
-
-.. versionadded:: 4.1
-
-
 .. _config_paths:
 
 [paths]
