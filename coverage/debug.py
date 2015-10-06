@@ -7,6 +7,10 @@ import inspect
 import os
 import sys
 
+from coverage.misc import isolate_module
+
+os = isolate_module(os)
+
 
 # When debugging, it can be helpful to force some options, especially when
 # debugging the configuration mechanisms you usually use to control debugging!

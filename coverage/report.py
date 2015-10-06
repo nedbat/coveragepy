@@ -6,7 +6,9 @@
 import os
 
 from coverage.files import prep_patterns, FnmatchMatcher
-from coverage.misc import CoverageException, NoSource, NotPython
+from coverage.misc import CoverageException, NoSource, NotPython, isolate_module
+
+os = isolate_module(os)
 
 
 class Reporter(object):

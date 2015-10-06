@@ -9,7 +9,9 @@ import re
 import sys
 
 from coverage.backward import configparser, iitems, string_class
-from coverage.misc import CoverageException
+from coverage.misc import CoverageException, isolate_module
+
+os = isolate_module(os)
 
 
 class HandyConfigParser(configparser.RawConfigParser):

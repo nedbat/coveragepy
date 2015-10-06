@@ -3,13 +3,17 @@
 
 """Raw data collector for coverage.py."""
 
-import os, sys
+import os
+import sys
 
 from coverage import env
 from coverage.backward import iitems
 from coverage.files import abs_file
-from coverage.misc import CoverageException
+from coverage.misc import CoverageException, isolate_module
 from coverage.pytracer import PyTracer
+
+os = isolate_module(os)
+
 
 try:
     # Use the C extension code when we can, for speed.

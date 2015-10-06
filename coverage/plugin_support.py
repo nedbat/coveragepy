@@ -3,11 +3,14 @@
 
 """Support for plugins."""
 
+import os
 import os.path
 import sys
 
-from coverage.misc import CoverageException
+from coverage.misc import CoverageException, isolate_module
 from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
+
+os = isolate_module(os)
 
 
 class Plugins(object):

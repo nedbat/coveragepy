@@ -14,13 +14,18 @@ Version 4.0.1
   coverage.py v3.7.1 behavior, which silently ignored unreadable files.
   Prompted by `issue 418`_.
 
-- Code that uses ``sys.settrace(sys.gettrace())`` used to incur more than a 2x
+- Test suites that mocked os.path.exists would experience strange failures, due
+  to coverage.py using their mock inadvertently.  This is now fixed, closing
+  `issue 416`_.
+
+- Code that uses ``sys.settrace(sys.gettrace())`` used to incur a more than 2x
   speed penalty.  Now there's no penalty at all. Fixes `issue 397`_.
 
 - Pyexpat C code will no longer be recorded as a source file, fixing
   `issue 419`_.
 
 .. _issue 397: https://bitbucket.org/ned/coveragepy/issues/397/stopping-and-resuming-coverage-with
+.. _issue 416: https://bitbucket.org/ned/coveragepy/issues/416/mocking-ospathexists-causes-failures
 .. _issue 418: https://bitbucket.org/ned/coveragepy/issues/418/json-parse-error
 .. _issue 419: https://bitbucket.org/ned/coveragepy/issues/419/nosource-no-source-for-code-path-to-c
 

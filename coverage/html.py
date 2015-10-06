@@ -13,10 +13,12 @@ import coverage
 from coverage import env
 from coverage.backward import iitems
 from coverage.files import flat_rootname
-from coverage.misc import CoverageException, Hasher
+from coverage.misc import CoverageException, Hasher, isolate_module
 from coverage.report import Reporter
 from coverage.results import Numbers
 from coverage.templite import Templite
+
+os = isolate_module(os)
 
 
 # Static files are looked for in a list of places.

@@ -441,3 +441,39 @@ class ExecTest(CoverageTest):
         _, statements, missing, _ = cov.analysis("to_exec.py")
         self.assertEqual(statements, [31])
         self.assertEqual(missing, [])
+
+
+class MockingProtectionTest(CoverageTest):
+    """Tests about protecting ourselves from aggressive mocking.
+
+    https://bitbucket.org/ned/coveragepy/issues/416/coverage-40-is-causing-existing-unit-tests
+
+    """
+    def test_os_path_exists(self):
+        # To see if this test still detects the problem, change isolate_module
+        # in misc.py to simply return its argument.  It should fail with a
+        # StopIteration error.
+        self.make_file("bug416.py", """\
+            import os.path
+
+            import mock
+
+            @mock.patch('os.path.exists')
+            def test_path_exists(mock_exists):
+                mock_exists.side_effect = [17]
+                print("in test")
+                import bug416a
+                print(bug416a.foo)
+                print(os.path.exists("."))
+
+            test_path_exists()
+            """)
+        self.make_file("bug416a.py", """\
+            print("bug416a.py")
+            foo = 23
+            """)
+
+        import py_compile
+        py_compile.compile("bug416a.py")
+        out = self.run_command("coverage run bug416.py")
+        self.assertEqual(out, "in test\nbug416a.py\n23\n17\n")

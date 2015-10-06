@@ -10,9 +10,11 @@ import types
 
 from coverage.backward import BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
-from coverage.misc import ExceptionDuringRun, NoCode, NoSource
+from coverage.misc import ExceptionDuringRun, NoCode, NoSource, isolate_module
 from coverage.phystokens import compile_unicode
 from coverage.python import get_python_source
+
+os = isolate_module(os)
 
 
 class DummyLoader(object):

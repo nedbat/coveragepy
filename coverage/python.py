@@ -7,10 +7,12 @@ import os.path
 import zipimport
 
 from coverage import env, files
-from coverage.misc import contract, expensive, NoSource, join_regex
+from coverage.misc import contract, expensive, NoSource, join_regex, isolate_module
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.plugin import FileReporter
+
+os = isolate_module(os)
 
 
 @contract(returns='bytes')

@@ -8,7 +8,11 @@ import os
 import re
 
 from coverage.files import flat_rootname
+from coverage.misc import isolate_module
 from coverage.report import Reporter
+
+os = isolate_module(os)
+
 
 class AnnotateReporter(Reporter):
     """Generate annotated source files showing line coverage.

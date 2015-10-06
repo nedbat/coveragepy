@@ -9,7 +9,11 @@ import time
 import xml.dom.minidom
 
 from coverage import __url__, __version__, files
+from coverage.misc import isolate_module
 from coverage.report import Reporter
+
+os = isolate_module(os)
+
 
 DTD_URL = (
     'https://raw.githubusercontent.com/cobertura/web/'

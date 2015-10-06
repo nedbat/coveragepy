@@ -13,11 +13,13 @@ import sys
 
 from coverage import env
 from coverage.backward import unicode_class
-from coverage.misc import CoverageException, join_regex
+from coverage.misc import CoverageException, join_regex, isolate_module
 
 
 RELATIVE_DIR = None
 CANONICAL_FILENAME_CACHE = {}
+
+os = isolate_module(os)
 
 
 def set_relative_directory():

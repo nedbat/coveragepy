@@ -7,9 +7,33 @@ import errno
 import hashlib
 import inspect
 import os
+import types
 
 from coverage import env
 from coverage.backward import string_class, to_bytes, unicode_class
+
+ISOLATED_MODULES = {}
+
+
+def isolate_module(mod):
+    """Copy a module so that we are isolated from aggressive mocking.
+
+    If a test suite mocks os.path.exists (for example), and then we need to use
+    it during the test, everything will get tangled up if we use their mock.
+    Making a copy of the module when we import it will isolate coverage.py from
+    those complications.
+    """
+    if mod not in ISOLATED_MODULES:
+        new_mod = types.ModuleType(mod.__name__)
+        ISOLATED_MODULES[mod] = new_mod
+        for name in dir(mod):
+            value = getattr(mod, name)
+            if isinstance(value, types.ModuleType):
+                value = isolate_module(value)
+            setattr(new_mod, name, value)
+    return ISOLATED_MODULES[mod]
+
+os = isolate_module(os)
 
 
 # Use PyContracts for assertion testing on parameters and returns, but only if

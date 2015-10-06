@@ -23,7 +23,7 @@ from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.files import ModuleMatcher, abs_file
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
-from coverage.misc import file_be_gone
+from coverage.misc import file_be_gone, isolate_module
 from coverage.monkey import patch_multiprocessing
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
@@ -32,6 +32,7 @@ from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
 
+os = isolate_module(os)
 
 # Pypy has some unusual stuff in the "stdlib".  Consider those locations
 # when deciding where the stdlib is.

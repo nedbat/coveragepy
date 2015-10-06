@@ -16,7 +16,9 @@ from coverage import env
 from coverage.backward import iitems, string_class
 from coverage.debug import _TEST_NAME_FILE
 from coverage.files import PathAliases
-from coverage.misc import CoverageException, file_be_gone
+from coverage.misc import CoverageException, file_be_gone, isolate_module
+
+os = isolate_module(os)
 
 
 class CoverageData(object):
