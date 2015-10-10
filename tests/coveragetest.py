@@ -354,7 +354,8 @@ class CoverageTest(
 
         Compare with `command_line`.
 
-        Returns a pair: the process' exit status and stdout text.
+        Returns a pair: the process' exit status and stdout text, which are
+        also stored as self.last_command_status and self.last_command_output.
 
         """
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
@@ -368,9 +369,9 @@ class CoverageTest(
         pypath += testmods + os.pathsep + zipfile
         self.set_environ('PYTHONPATH', pypath)
 
-        status, output = run_command(cmd)
-        print(output)
-        return status, output
+        self.last_command_status, self.last_command_output = run_command(cmd)
+        print(self.last_command_output)
+        return self.last_command_status, self.last_command_output
 
     def report_from_command(self, cmd):
         """Return the report from the `cmd`, with some convenience added."""

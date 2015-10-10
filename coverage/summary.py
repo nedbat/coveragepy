@@ -60,6 +60,7 @@ class SummaryReporter(Reporter):
             try:
                 analysis = self.coverage._analyze(fr)
                 nums = analysis.numbers
+                total += nums
 
                 if self.config.skip_covered:
                     # Don't report on 100% files.
@@ -83,7 +84,6 @@ class SummaryReporter(Reporter):
                             missing_fmtd += branches_fmtd
                     args += (missing_fmtd,)
                 outfile.write(fmt_coverage % args)
-                total += nums
             except Exception:
                 report_it = not self.config.ignore_errors
                 if report_it:

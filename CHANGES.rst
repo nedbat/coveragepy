@@ -14,7 +14,12 @@ Version 4.0.1
   coverage.py v3.7.1 behavior, which silently ignored unreadable files.
   Prompted by `issue 418`_.
 
-- In 4.0, data files recorded a summary of the system on which it was run.
+- The --skip-covered option would skip reporting on 100% covered files, but
+  also skipped them when calculating total coverage.  This was wrong, it should
+  only remove lines from the report, not change the final answer.  This is now
+  fixed, closing `issue 423`_.
+
+- In 4.0, the data file recorded a summary of the system on which it was run.
   Combined data files would keep all of those summaries.  This could lead to
   enormous data files consisting of mostly repetitive useless information. That
   summary is now gone, fixing `issue 415`_.  If you want summary information,
@@ -35,6 +40,7 @@ Version 4.0.1
 .. _issue 416: https://bitbucket.org/ned/coveragepy/issues/416/mocking-ospathexists-causes-failures
 .. _issue 418: https://bitbucket.org/ned/coveragepy/issues/418/json-parse-error
 .. _issue 419: https://bitbucket.org/ned/coveragepy/issues/419/nosource-no-source-for-code-path-to-c
+.. _issue 423: https://bitbucket.org/ned/coveragepy/issues/423/skip_covered-changes-reported-total
 
 
 Version 4.0 --- 20 September 2015

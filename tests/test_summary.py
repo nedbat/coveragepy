@@ -253,17 +253,22 @@ class SummaryTest(CoverageTest):
         """)
         out = self.run_command("coverage run main.py")
         self.assertEqual(out, "z\n")
-        report = self.report_from_command("coverage report --skip-covered")
+        report = self.report_from_command("coverage report --skip-covered --fail-under=70")
 
         # Name             Stmts   Miss  Cover
         # ------------------------------------
         # not_covered.py       2      1    50%
+        # ------------------------------------
+        # TOTAL                6      1    83%
         #
         # 1 file skipped due to complete coverage.
 
-        self.assertEqual(self.line_count(report), 5, report)
+        self.assertEqual(self.line_count(report), 7, report)
         squeezed = self.squeezed_lines(report)
         self.assertEqual(squeezed[2], "not_covered.py 2 1 50%")
+        self.assertEqual(squeezed[4], "TOTAL 6 1 83%")
+        self.assertEqual(squeezed[6], "1 file skipped due to complete coverage.")
+        self.assertEqual(self.last_command_status, 0)
 
     def test_report_skip_covered_branches(self):
         self.make_file("main.py", """
@@ -293,12 +298,16 @@ class SummaryTest(CoverageTest):
         # Name             Stmts   Miss Branch BrPart  Cover
         # --------------------------------------------------
         # not_covered.py       4      0      2      1    83%
+        # --------------------------------------------------
+        # TOTAL               13      0      4      1    94%
         #
         # 2 files skipped due to complete coverage.
 
-        self.assertEqual(self.line_count(report), 5, report)
+        self.assertEqual(self.line_count(report), 7, report)
         squeezed = self.squeezed_lines(report)
         self.assertEqual(squeezed[2], "not_covered.py 4 0 2 1 83%")
+        self.assertEqual(squeezed[4], "TOTAL 13 0 4 1 94%")
+        self.assertEqual(squeezed[6], "2 files skipped due to complete coverage.")
 
     def test_report_skip_covered_branches_with_totals(self):
         self.make_file("main.py", """
@@ -330,7 +339,7 @@ class SummaryTest(CoverageTest):
         # also_not_run.py      2      1      0      0    50%
         # not_covered.py       4      0      2      1    83%
         # --------------------------------------------------
-        # TOTAL                6      1      2      1    75%
+        # TOTAL                13     1      4      1    88%
         #
         # 1 file skipped due to complete coverage.
 
@@ -338,7 +347,7 @@ class SummaryTest(CoverageTest):
         squeezed = self.squeezed_lines(report)
         self.assertEqual(squeezed[2], "also_not_run.py 2 1 0 0 50%")
         self.assertEqual(squeezed[3], "not_covered.py 4 0 2 1 83%")
-        self.assertEqual(squeezed[5], "TOTAL 6 1 2 1 75%")
+        self.assertEqual(squeezed[5], "TOTAL 13 1 4 1 88%")
         self.assertEqual(squeezed[7], "1 file skipped due to complete coverage.")
 
     def test_report_skip_covered_all_files_covered(self):
