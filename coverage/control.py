@@ -839,15 +839,6 @@ class Coverage(object):
 
                 self.data.touch_file(py_file)
 
-        # Add run information.
-        self.data.add_run_info(
-            brief_sys=" ".join([
-                platform.python_implementation(),
-                platform.python_version(),
-                platform.system(),
-            ])
-        )
-
         if self.config.note:
             self.data.add_run_info(note=self.config.note)
 
