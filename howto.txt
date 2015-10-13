@@ -38,7 +38,7 @@
             $ make publish
 - Kits:
     - Source kit:
-        - $ make kit
+        - $ make clean kit
     - Wheels
         - $ make wheel
     - Windows kits
