@@ -35,6 +35,10 @@ Version 4.0.1
 - Pyexpat C code will no longer be recorded as a source file, fixing
   `issue 419`_.
 
+- The source kit now contains all of the files needed to have a complete source
+  tree, re-fixing `issue 137`_.
+
+.. _issue 137: https://bitbucket.org/ned/coveragepy/issues/137/provide-docs-with-source-distribution
 .. _issue 397: https://bitbucket.org/ned/coveragepy/issues/397/stopping-and-resuming-coverage-with
 .. _issue 415: https://bitbucket.org/ned/coveragepy/issues/415/repeated-coveragedataupdates-cause
 .. _issue 416: https://bitbucket.org/ned/coveragepy/issues/416/mocking-ospathexists-causes-failures
