@@ -41,7 +41,7 @@ if importlib_util_find_spec:
             raise NoSource("No module named %r" % (modulename,))
         pathname = spec.origin
         packagename = spec.name
-        if pathname.endswith("__init__.py"):
+        if pathname.endswith("__init__.py") and not modulename.endswith("__init__"):
             mod_main = modulename + ".__main__"
             spec = importlib_util_find_spec(mod_main)
             if not spec:

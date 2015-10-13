@@ -29,6 +29,10 @@ Version 4.0.1
   to coverage.py using their mock inadvertently.  This is now fixed, closing
   `issue 416`_.
 
+- Importing a ``__init__`` module explicitly would lead to an error:
+  ``AttributeError: 'module' object has no attribute '__path__'``, as reported
+  in `issue 410`_.  This is now fixed.
+  
 - Code that uses ``sys.settrace(sys.gettrace())`` used to incur a more than 2x
   speed penalty.  Now there's no penalty at all. Fixes `issue 397`_.
 
@@ -40,6 +44,7 @@ Version 4.0.1
 
 .. _issue 137: https://bitbucket.org/ned/coveragepy/issues/137/provide-docs-with-source-distribution
 .. _issue 397: https://bitbucket.org/ned/coveragepy/issues/397/stopping-and-resuming-coverage-with
+.. _issue 410: https://bitbucket.org/ned/coveragepy/issues/410/attributeerror-module-object-has-no
 .. _issue 415: https://bitbucket.org/ned/coveragepy/issues/415/repeated-coveragedataupdates-cause
 .. _issue 416: https://bitbucket.org/ned/coveragepy/issues/416/mocking-ospathexists-causes-failures
 .. _issue 418: https://bitbucket.org/ned/coveragepy/issues/418/json-parse-error
