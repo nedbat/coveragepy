@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Version 4.0.1
--------------
+Version 4.0.1 --- 13 October 2015
+---------------------------------
 
 - When combining data files, unreadable files will now generate a warning
   instead of failing the command.  This is more in line with the older

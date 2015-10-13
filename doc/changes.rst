@@ -34,6 +34,7 @@ Major change history for coverage.py
 .. :history: 20150802T174700, updated for 4.0b1
 .. :history: 20150822T092800, updated for 4.0b2
 .. :history: 20150919T072700, updated for 4.0
+.. :history: 20151013T103000, updated for 4.0.1
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -42,6 +43,55 @@ history, see the `CHANGES.rst`_ file in the source tree.
 .. _CHANGES.rst: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.rst
 
 .. module:: coverage
+
+.. _changes_401:
+
+Version 4.0.1 --- 13 October 2015
+---------------------------------
+
+- When combining data files, unreadable files will now generate a warning
+  instead of failing the command.  This is more in line with the older
+  coverage.py v3.7.1 behavior, which silently ignored unreadable files.
+  Prompted by `issue 418`_.
+
+- The --skip-covered option would skip reporting on 100% covered files, but
+  also skipped them when calculating total coverage.  This was wrong, it should
+  only remove lines from the report, not change the final answer.  This is now
+  fixed, closing `issue 423`_.
+
+- In 4.0, the data file recorded a summary of the system on which it was run.
+  Combined data files would keep all of those summaries.  This could lead to
+  enormous data files consisting of mostly repetitive useless information. That
+  summary is now gone, fixing `issue 415`_.  If you want summary information,
+  get in touch, and we'll figure out a better way to do it.
+
+- Test suites that mocked os.path.exists would experience strange failures, due
+  to coverage.py using their mock inadvertently.  This is now fixed, closing
+  `issue 416`_.
+
+- Importing a ``__init__`` module explicitly would lead to an error:
+  ``AttributeError: 'module' object has no attribute '__path__'``, as reported
+  in `issue 410`_.  This is now fixed.
+  
+- Code that uses ``sys.settrace(sys.gettrace())`` used to incur a more than 2x
+  speed penalty.  Now there's no penalty at all. Fixes `issue 397`_.
+
+- Pyexpat C code will no longer be recorded as a source file, fixing
+  `issue 419`_.
+
+- The source kit now contains all of the files needed to have a complete source
+  tree, re-fixing `issue 137`_ and closing `issue 281`_.
+
+.. _issue 137: https://bitbucket.org/ned/coveragepy/issues/137/provide-docs-with-source-distribution
+.. _issue 281: https://bitbucket.org/ned/coveragepy/issues/281/supply-scripts-for-testing-in-the
+.. _issue 397: https://bitbucket.org/ned/coveragepy/issues/397/stopping-and-resuming-coverage-with
+.. _issue 410: https://bitbucket.org/ned/coveragepy/issues/410/attributeerror-module-object-has-no
+.. _issue 415: https://bitbucket.org/ned/coveragepy/issues/415/repeated-coveragedataupdates-cause
+.. _issue 416: https://bitbucket.org/ned/coveragepy/issues/416/mocking-ospathexists-causes-failures
+.. _issue 418: https://bitbucket.org/ned/coveragepy/issues/418/json-parse-error
+.. _issue 419: https://bitbucket.org/ned/coveragepy/issues/419/nosource-no-source-for-code-path-to-c
+.. _issue 423: https://bitbucket.org/ned/coveragepy/issues/423/skip_covered-changes-reported-total
+
 
 .. _changes_40:
 
