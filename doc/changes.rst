@@ -72,7 +72,7 @@ Version 4.0.1 --- 13 October 2015
 - Importing a ``__init__`` module explicitly would lead to an error:
   ``AttributeError: 'module' object has no attribute '__path__'``, as reported
   in `issue 410`_.  This is now fixed.
-  
+
 - Code that uses ``sys.settrace(sys.gettrace())`` used to incur a more than 2x
   speed penalty.  Now there's no penalty at all. Fixes `issue 397`_.
 
