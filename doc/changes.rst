@@ -82,7 +82,6 @@ Version 4.0.1 --- 13 October 2015
 - The source kit now contains all of the files needed to have a complete source
   tree, re-fixing `issue 137`_ and closing `issue 281`_.
 
-.. _issue 137: https://bitbucket.org/ned/coveragepy/issues/137/provide-docs-with-source-distribution
 .. _issue 281: https://bitbucket.org/ned/coveragepy/issues/281/supply-scripts-for-testing-in-the
 .. _issue 397: https://bitbucket.org/ned/coveragepy/issues/397/stopping-and-resuming-coverage-with
 .. _issue 410: https://bitbucket.org/ned/coveragepy/issues/410/attributeerror-module-object-has-no
