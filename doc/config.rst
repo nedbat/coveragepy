@@ -17,6 +17,7 @@ Configuration files
 .. :history: 20150124T173400, updated for 4.0a4
 .. :history: 20150802T174600, updated for 4.0b1
 
+.. module:: coverage
 
 Coverage.py options can be specified in a configuration file.  This makes it
 easier to re-run coverage.py with consistent settings, and also allows for

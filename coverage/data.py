@@ -576,7 +576,7 @@ class CoverageData(object):
     def add_to_hash(self, filename, hasher):
         """Contribute `filename`'s data to the `hasher`.
 
-        `hasher` is a :class:`coverage.misc.Hasher` instance to be updated with
+        `hasher` is a `coverage.misc.Hasher` instance to be updated with
         the file's data.  It should only get the results data, not the run
         data.
 
