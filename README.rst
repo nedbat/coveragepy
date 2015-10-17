@@ -25,8 +25,8 @@ with a mirrored repository on `GitHub <https://github.com/nedbat/coveragepy>`_.
 support, --skip-covered, HTML filtering, and more than 50 issues closed.
 
 
-Quick Start
------------
+Getting Started
+---------------
 
 See the `quick start <http://coverage.readthedocs.org/#quick-start>`_
 section of the docs.

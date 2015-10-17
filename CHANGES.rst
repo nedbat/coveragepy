@@ -561,7 +561,6 @@ Version 3.6b2 --- 23 December 2012
   file name, coverage.py no longer associates it with the directory name,
   fixing `issue 221`_.
 
-.. _issue 80: https://bitbucket.org/ned/coveragepy/issue/80/is-there-a-duck-typing-way-to-know-we-cant
 .. _issue 221: https://bitbucket.org/ned/coveragepy/issue/221/coveragepy-incompatible-with-pyratemp
 
 
