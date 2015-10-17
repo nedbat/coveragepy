@@ -274,20 +274,14 @@ def compile_unicode(source, filename, mode):
 
     Python 2's compile() builtin has a stupid restriction: if the source string
     is Unicode, then it may not have a encoding declaration in it.  Why not?
-    Who knows!
+    Who knows!  It also decodes to utf8, and then tries to interpret those utf8
+    bytes according to the encoding declaration.  Why? Who knows!
 
-    This function catches that exception, neuters the coding declaration, and
-    compiles it anyway.
+    This function neuters the coding declaration, and compiles it.
 
     """
-    try:
-        code = compile(source, filename, mode)
-    except SyntaxError as synerr:
-        if "coding declaration in unicode string" not in synerr.args[0].lower():
-            raise
-        source = neuter_encoding_declaration(source)
-        code = compile(source, filename, mode)
-
+    source = neuter_encoding_declaration(source)
+    code = compile(source, filename, mode)
     return code
 
 

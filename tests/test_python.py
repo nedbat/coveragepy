@@ -20,7 +20,7 @@ class GetZipBytesTest(CoverageTest):
         # See igor.py, do_zipmods, for the text of these files.
         zip_file = "tests/zipmods.zip"
         sys.path.append(zip_file)       # So we can import the files.
-        for encoding in ["utf8", "gb2312", "hebrew", "shift_jis"]:
+        for encoding in ["utf8", "gb2312", "hebrew", "shift_jis", "cp1252"]:
             filename = zip_file + "/encoded_" + encoding + ".py"
             filename = filename.replace("/", os.sep)
             zip_data = get_zip_bytes(filename)

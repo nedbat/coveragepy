@@ -8,7 +8,7 @@ import re
 
 from coverage import env
 from coverage.phystokens import source_token_lines, source_encoding
-from coverage.phystokens import neuter_encoding_declaration
+from coverage.phystokens import neuter_encoding_declaration, compile_unicode
 from coverage.python import get_python_source
 
 from tests.coveragetest import CoverageTest
@@ -165,3 +165,13 @@ class NeuterEncodingDeclarationTest(CoverageTest):
                 DEF_ENCODING,
                 "Wrong encoding in %r" % neutered
             )
+
+
+class CompileUnicodeTest(CoverageTest):
+    """Tests of compiling Unicode strings."""
+
+    run_in_temp_dir = False
+
+    def test_cp1252(self):
+        uni = u"""# coding: cp1252\n# \u201C curly \u201D\n"""
+        compile_unicode(uni, "<string>", "exec")

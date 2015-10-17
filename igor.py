@@ -214,11 +214,13 @@ def do_zip_mods():
         assert [ord(c) for c in text] == ords
         print(u"All OK with {encoding}")
         """)
+    # These encodings should match the list in tests/test_python.py
     details = [
         (u'utf8', u'ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ'),
         (u'gb2312', u'你好，世界'),
         (u'hebrew', u'שלום, עולם'),
         (u'shift_jis', u'こんにちは世界'),
+        (u'cp1252', u'“hi”'),
     ]
     for encoding, text in details:
         filename = 'encoded_{0}.py'.format(encoding)

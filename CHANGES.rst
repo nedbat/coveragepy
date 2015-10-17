@@ -6,6 +6,14 @@ Change history for Coverage.py
 ==============================
 
 
+Version 4.0.2
+-------------
+
+- More work on supporting unusually encoded source. Fixed `issue 431`_.
+
+.. _issue 431: https://bitbucket.org/ned/coveragepy/issues/431/couldnt-parse-python-file-with-cp1252
+
+
 Version 4.0.1 --- 13 October 2015
 ---------------------------------
 
