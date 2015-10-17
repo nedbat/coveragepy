@@ -287,11 +287,6 @@ def compile_unicode(source, filename, mode):
 
 @contract(source='unicode', returns='unicode')
 def neuter_encoding_declaration(source):
-    """Return `source`, with any encoding declaration neutered.
-
-    This function will only ever be called on `source` that has an encoding
-    declaration, so some edge cases can be ignored.
-
-    """
-    source = COOKIE_RE.sub("# (deleted declaration)", source)
+    """Return `source`, with any encoding declaration neutered."""
+    source = COOKIE_RE.sub("# (deleted declaration)", source, count=1)
     return source
