@@ -230,7 +230,6 @@ class CmdOptionParser(CoverageOptionParser):
         if usage:
             usage = "%prog " + usage
         super(CmdOptionParser, self).__init__(
-            prog="%(program_name)s %s" % action,
             usage=usage,
             description=description,
         )
@@ -243,6 +242,15 @@ class CmdOptionParser(CoverageOptionParser):
         # A convenience equality, so that I can put strings in unit test
         # results, and they will compare equal to objects.
         return (other == "<CmdOptionParser:%s>" % self.cmd)
+
+    def get_prog_name(self):
+        program_name = super(CmdOptionParser, self).get_prog_name()
+
+        # Include the sub-command for this parser as part of the command.
+        result = "%(command)s %(subcommand)s" % {
+                'command': program_name, 'subcommand': self.cmd}
+        return result
+
 
 GLOBAL_ARGS = [
     Opts.debug,
