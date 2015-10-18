@@ -142,8 +142,6 @@ class CoverageOptionParser(optparse.OptionParser, object):
 
     """
 
-    program_name = os.path.basename(sys.argv[0])
-
     def __init__(self, *args, **kwargs):
         super(CoverageOptionParser, self).__init__(
             add_help_option=False, *args, **kwargs
@@ -382,6 +380,8 @@ OK, ERR, FAIL_UNDER = 0, 1, 2
 class CoverageScript(object):
     """The command-line interface to coverage.py."""
 
+    program_name = os.path.basename(sys.argv[0])
+
     def __init__(self, _covpkg=None, _run_python_file=None,
                  _run_python_module=None, _help_fn=None, _path_exists=None):
         # _covpkg is for dependency injection, so we can test this code.
@@ -534,13 +534,13 @@ class CoverageScript(object):
         if error:
             print(error)
             print("Use '%(program_name)s help' for help." % {
-                    'program_name': parser.program_name})
+                    'program_name': self.program_name})
         elif parser:
             print(parser.format_help().strip())
         else:
             help_params = self.covpkg.__dict__
             help_params.update({
-                    'program_name': CoverageOptionParser.program_name})
+                    'program_name': self.program_name})
             help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
             if help_msg:
                 print(help_msg % help_params)
