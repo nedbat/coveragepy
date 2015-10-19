@@ -17,7 +17,7 @@ def make_auth_headers():
         token = f.read().strip()
 
     headers = {
-        'Authorization': 'Bearer {}'.format(token),
+        'Authorization': 'Bearer {0}'.format(token),
     }
     return headers
 
@@ -86,7 +86,7 @@ def unpack_zipfile(filename):
     with open(filename, 'rb') as fzip:
         z = zipfile.ZipFile(fzip)
         for name in z.namelist():
-            print "      extracting {}".format(name)
+            print "      extracting {0}".format(name)
             ensure_dirs(name)
             z.extract(name)
 

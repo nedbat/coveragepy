@@ -65,9 +65,9 @@ class ParserMain(object):
 
         if options.histogram:
             total = sum(opcode_counts.values())
-            print("{} total opcodes".format(total))
+            print("{0} total opcodes".format(total))
             for opcode, number in opcode_counts.most_common():
-                print("{:20s} {:6d}  {:.1%}".format(opcode, number, number/total))
+                print("{0:20s} {1:6d}  {2:.1%}".format(opcode, number, number/total))
 
 
     def one_file(self, options, filename):
