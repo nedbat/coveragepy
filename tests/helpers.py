@@ -17,9 +17,11 @@ def run_command(cmd):
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
     # the subprocess is set incorrectly to ascii.  Use an environment variable
     # to force the encoding to be the same as ours.
-    sub_env = dict(os.environ, PYTHONIOENCODING=sys.__stdout__.encoding)
-    print("__stdout__: %r, enc = %r" % (sys.__stdout__, sys.__stdout__.encoding))
-    print("stdout: %r, enc = %r" % (sys.stdout, sys.stdout.encoding))
+    sub_env = dict(os.environ)
+    encoding = sys.__stdout__.encoding
+    if encoding:
+        sub_env['PYTHONIOENCODING'] = encoding
+
     proc = subprocess.Popen(
         cmd,
         shell=True,
