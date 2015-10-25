@@ -884,6 +884,82 @@ class FailUnderEmptyFilesTest(CoverageTest):
         self.assertEqual(st, 2)
 
 
+class UnicodeFilePathsTest(CoverageTest):
+    """Tests of using non-ascii characters in the names of files."""
+
+    def test_snowman_dot_py(self):
+        # Make a file with a non-ascii character in the filename.
+        self.make_file(u"snowman☃.py", "print('snowman')")
+        out = self.run_command(u"coverage run snowman☃.py")
+        self.assertEqual(out, "snowman\n")
+
+        # The HTML report uses ascii-encoded HTML entities.
+        out = self.run_command("coverage html")
+        self.assertEqual(out, "")
+        self.assert_exists("htmlcov/snowman☃_py.html")
+        with open("htmlcov/index.html") as indexf:
+            index = indexf.read()
+        self.assertIn('<a href="snowman&#9731;_py.html">snowman&#9731;.py</a>', index)
+
+        # The XML report is always UTF8-encoded.
+        out = self.run_command("coverage xml")
+        self.assertEqual(out, "")
+        with open("coverage.xml", "rb") as xmlf:
+            xml = xmlf.read()
+        self.assertIn(u' filename="snowman☃.py"'.encode('utf8'), xml)
+        self.assertIn(u' name="snowman☃.py"'.encode('utf8'), xml)
+
+        report_expected = (
+            u"Name          Stmts   Miss  Cover\n"
+            u"---------------------------------\n"
+            u"snowman☃.py       1      0   100%\n"
+        )
+
+        if env.PY2:
+            report_expected = report_expected.encode("utf8")
+
+        out = self.run_command("coverage report")
+        self.assertEqual(out, report_expected)
+
+    def test_snowman_directory(self):
+        # Make a file with a non-ascii character in the directory name.
+        self.make_file(u"☃/snowman.py", "print('snowman')")
+        out = self.run_command(u"coverage run ☃/snowman.py")
+        self.assertEqual(out, "snowman\n")
+
+        # The HTML report uses ascii-encoded HTML entities.
+        out = self.run_command("coverage html")
+        self.assertEqual(out, "")
+        self.assert_exists("htmlcov/☃_snowman_py.html")
+        with open("htmlcov/index.html") as indexf:
+            index = indexf.read()
+        self.assertIn('<a href="&#9731;_snowman_py.html">&#9731;/snowman.py</a>', index)
+
+        # The XML report is always UTF8-encoded.
+        out = self.run_command("coverage xml")
+        self.assertEqual(out, "")
+        with open("coverage.xml", "rb") as xmlf:
+            xml = xmlf.read()
+        self.assertIn(u' filename="☃/snowman.py"'.encode('utf8'), xml)
+        self.assertIn(u' name="snowman.py"'.encode('utf8'), xml)
+        self.assertIn(
+            u'<package branch-rate="0" complexity="0" line-rate="1" name="☃">'.encode('utf8'),
+            xml
+        )
+
+        report_expected = (
+            u"Name           Stmts   Miss  Cover\n"
+            u"----------------------------------\n"
+            u"☃/snowman.py       1      0   100%\n"
+        )
+
+        if env.PY2:
+            report_expected = report_expected.encode("utf8")
+
+        out = self.run_command("coverage report")
+        self.assertEqual(out, report_expected)
+
+
 def possible_pth_dirs():
     """Produce a sequence of directories for trying to write .pth files."""
     # First look through sys.path, and we find a .pth file, then it's a good

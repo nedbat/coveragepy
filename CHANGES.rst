@@ -11,7 +11,11 @@ Version 4.0.2
 
 - More work on supporting unusually encoded source. Fixed `issue 431`_.
 
+- Files or directories with non-ASCII characters are now handled properly,
+  fixing `issue 432`_.
+
 .. _issue 431: https://bitbucket.org/ned/coveragepy/issues/431/couldnt-parse-python-file-with-cp1252
+.. _issue 432: https://bitbucket.org/ned/coveragepy/issues/432/path-with-unicode-characters-various
 
 
 Version 4.0.1 --- 13 October 2015

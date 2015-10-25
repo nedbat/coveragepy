@@ -1,3 +1,4 @@
+# coding: utf8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
@@ -403,6 +404,33 @@ class SummaryTest(CoverageTest):
             last,
             "mycode.py NotPython: Couldn't parse 'mycode.py' as Python source: 'error' at line 1"
         )
+
+    def test_snowmandotpy_not_python(self):
+        # We run a .py file with a non-ascii name, and when reporting, we can't
+        # parse it as Python.  We should get an error message in the report.
+
+        self.make_file(u"snowman☃.py", "print('snowman')")
+        self.run_command(u"coverage run snowman☃.py")
+        self.make_file(u"snowman☃.py", "This isn't python at all!")
+        report = self.report_from_command(u"coverage report snowman☃.py")
+
+        # Name     Stmts   Miss  Cover
+        # ----------------------------
+        # xxxx   NotPython: Couldn't parse '...' as Python source: 'invalid syntax' at line 1
+        # No data to report.
+
+        last = self.squeezed_lines(report)[-2]
+        # The actual file name varies run to run.
+        last = re.sub(r"parse '.*(snowman.*?\.py)", r"parse '\1", last)
+        # The actual error message varies version to version
+        last = re.sub(r": '.*' at", ": 'error' at", last)
+        expected = (
+            u"snowman☃.py NotPython: "
+            u"Couldn't parse 'snowman☃.py' as Python source: 'error' at line 1"
+        )
+        if env.PY2:
+            expected = expected.encode("utf8")
+        self.assertEqual(last, expected)
 
     def test_dotpy_not_python_ignored(self):
         # We run a .py file, and when reporting, we can't parse it as Python,

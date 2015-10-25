@@ -27,7 +27,7 @@ class FilesTest(CoverageTest):
     def test_simple(self):
         self.make_file("hello.py")
         files.set_relative_directory()
-        self.assertEqual(files.relative_filename("hello.py"), "hello.py")
+        self.assertEqual(files.relative_filename(u"hello.py"), u"hello.py")
         a = self.abs_path("hello.py")
         self.assertNotEqual(a, "hello.py")
         self.assertEqual(files.relative_filename(a), "hello.py")

@@ -6,6 +6,7 @@
 import codecs
 import keyword
 import re
+import sys
 import token
 import tokenize
 
@@ -281,6 +282,8 @@ def compile_unicode(source, filename, mode):
 
     """
     source = neuter_encoding_declaration(source)
+    if env.PY2 and isinstance(filename, unicode):
+        filename = filename.encode(sys.getfilesystemencoding(), "replace")
     code = compile(source, filename, mode)
     return code
 

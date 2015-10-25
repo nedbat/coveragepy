@@ -211,7 +211,7 @@ class PythonParser(object):
             else:
                 lineno = err.args[1][0]     # TokenError
             raise NotPython(
-                "Couldn't parse '%s' as Python source: '%s' at line %d" % (
+                u"Couldn't parse '%s' as Python source: '%s' at line %d" % (
                     self.filename, err.args[0], lineno
                 )
             )
@@ -338,7 +338,7 @@ class ByteParser(object):
                 self.code = compile_unicode(text, filename, "exec")
             except SyntaxError as synerr:
                 raise NotPython(
-                    "Couldn't parse '%s' as Python source: '%s' at line %d" % (
+                    u"Couldn't parse '%s' as Python source: '%s' at line %d" % (
                         filename, synerr.msg, synerr.lineno
                     )
                 )

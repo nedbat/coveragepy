@@ -8,6 +8,7 @@ import sys
 import time
 import xml.dom.minidom
 
+from coverage import env
 from coverage import __url__, __version__, files
 from coverage.misc import isolate_module
 from coverage.report import Reporter
@@ -116,7 +117,10 @@ class XmlReporter(Reporter):
         xcoverage.setAttribute("branch-rate", branch_rate)
 
         # Use the DOM to write the output file.
-        outfile.write(self.xml_out.toprettyxml())
+        out = self.xml_out.toprettyxml()
+        if env.PY2:
+            out = out.encode("utf8")
+        outfile.write(out)
 
         # Return the total percentage.
         denom = lnum_tot + bnum_tot

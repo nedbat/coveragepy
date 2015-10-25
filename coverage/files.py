@@ -13,11 +13,8 @@ import sys
 
 from coverage import env
 from coverage.backward import unicode_class
-from coverage.misc import CoverageException, join_regex, isolate_module
+from coverage.misc import contract, CoverageException, join_regex, isolate_module
 
-
-RELATIVE_DIR = None
-CANONICAL_FILENAME_CACHE = {}
 
 os = isolate_module(os)
 
@@ -33,10 +30,13 @@ def set_relative_directory():
     # avoid duplicating work.
     CANONICAL_FILENAME_CACHE = {}
 
+
 def relative_directory():
     """Return the directory that `relative_filename` is relative to."""
     return RELATIVE_DIR
 
+
+@contract(returns='unicode')
 def relative_filename(filename):
     """Return the relative form of `filename`.
 
@@ -47,8 +47,10 @@ def relative_filename(filename):
     fnorm = os.path.normcase(filename)
     if fnorm.startswith(RELATIVE_DIR):
         filename = filename[len(RELATIVE_DIR):]
-    return filename
+    return unicode_filename(filename)
 
+
+@contract(returns='unicode')
 def canonical_filename(filename):
     """Return a canonical file name for `filename`.
 
@@ -65,6 +67,8 @@ def canonical_filename(filename):
                     filename = f
                     break
         cf = abs_file(filename)
+        if env.PY2 and isinstance(cf, str):
+            cf = cf.decode(sys.getfilesystemencoding())
         CANONICAL_FILENAME_CACHE[filename] = cf
     return CANONICAL_FILENAME_CACHE[filename]
 
@@ -126,12 +130,33 @@ else:
         return filename
 
 
+if env.PY2:
+    @contract(returns='unicode')
+    def unicode_filename(filename):
+        """Return a Unicode version of `filename`."""
+        if isinstance(filename, str):
+            filename = filename.decode(sys.getfilesystemencoding())
+        return filename
+else:
+    @contract(filename='unicode', returns='unicode')
+    def unicode_filename(filename):
+        """Return a Unicode version of `filename`."""
+        return filename
+
+
+@contract(returns='unicode')
 def abs_file(filename):
     """Return the absolute normalized form of `filename`."""
     path = os.path.expandvars(os.path.expanduser(filename))
     path = os.path.abspath(os.path.realpath(path))
     path = actual_path(path)
+    path = unicode_filename(path)
     return path
+
+
+RELATIVE_DIR = None
+CANONICAL_FILENAME_CACHE = None
+set_relative_directory()
 
 
 def isabs_anywhere(filename):

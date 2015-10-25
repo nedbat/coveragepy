@@ -4,6 +4,7 @@
 """Helpers for coverage.py tests."""
 
 import subprocess
+import sys
 
 
 def run_command(cmd):
@@ -12,8 +13,12 @@ def run_command(cmd):
     Returns the exit status code and the combined stdout and stderr.
 
     """
+    # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
+    # the subprocess is set incorrectly to ascii.  Use an environment variable
+    # to force the encoding to be the same as ours.
     proc = subprocess.Popen(
-        cmd, shell=True,
+        "PYTHONIOENCODING=%s %s" % (sys.__stdout__.encoding, cmd),
+        shell=True,
         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT
         )
