@@ -96,8 +96,7 @@ class PythonFileReporter(FileReporter):
         else:
             filename = morf
 
-        if env.PY2 and isinstance(filename, str):
-            filename = filename.decode(sys.getfilesystemencoding())
+        filename = files.unicode_filename(filename)
 
         # .pyc files should always refer to a .py instead.
         if filename.endswith(('.pyc', '.pyo')):
@@ -110,8 +109,7 @@ class PythonFileReporter(FileReporter):
         if hasattr(morf, '__name__'):
             name = morf.__name__
             name = name.replace(".", os.sep) + ".py"
-            if isinstance(name, bytes):
-                name = name.decode(sys.getfilesystemencoding())
+            name = files.unicode_filename(name)
         else:
             name = files.relative_filename(filename)
         self.relname = name

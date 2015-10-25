@@ -67,8 +67,6 @@ def canonical_filename(filename):
                     filename = f
                     break
         cf = abs_file(filename)
-        if env.PY2 and isinstance(cf, str):
-            cf = cf.decode(sys.getfilesystemencoding())
         CANONICAL_FILENAME_CACHE[filename] = cf
     return CANONICAL_FILENAME_CACHE[filename]
 
@@ -135,7 +133,8 @@ if env.PY2:
     def unicode_filename(filename):
         """Return a Unicode version of `filename`."""
         if isinstance(filename, str):
-            filename = filename.decode(sys.getfilesystemencoding())
+            encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
+            filename = filename.decode(encoding, "replace")
         return filename
 else:
     @contract(filename='unicode', returns='unicode')
