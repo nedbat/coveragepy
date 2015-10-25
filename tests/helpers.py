@@ -18,7 +18,8 @@ def run_command(cmd):
     # the subprocess is set incorrectly to ascii.  Use an environment variable
     # to force the encoding to be the same as ours.
     sub_env = dict(os.environ, PYTHONIOENCODING=sys.__stdout__.encoding)
-    print("SUB_ENV: %r" % (sub_env,))
+    print("__stdout__: %r, enc = %r" % (sys.__stdout__, sys.__stdout__.encoding))
+    print("stdout: %r, enc = %r" % (sys.stdout, sys.stdout.encoding))
     proc = subprocess.Popen(
         cmd,
         shell=True,
