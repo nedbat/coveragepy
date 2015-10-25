@@ -3,6 +3,7 @@
 
 """Helpers for coverage.py tests."""
 
+import os
 import subprocess
 import sys
 
@@ -17,8 +18,9 @@ def run_command(cmd):
     # the subprocess is set incorrectly to ascii.  Use an environment variable
     # to force the encoding to be the same as ours.
     proc = subprocess.Popen(
-        "PYTHONIOENCODING=%s %s" % (sys.__stdout__.encoding, cmd),
+        cmd,
         shell=True,
+        env=dict(os.environ, PYTHONIOENCODING=sys.__stdout__.encoding),
         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT
         )
