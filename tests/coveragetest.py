@@ -335,21 +335,31 @@ class CoverageTest(
         self.assertEqual(ret_actual, ret)
 
     def run_command(self, cmd):
-        """Run the command-line `cmd` in a sub-process, and print its output.
+        """ Run the command-line `cmd` in a sub-process.
 
-        Use this when you need to test the process behavior of coverage.
+            :param cmd: The command line to invoke in a sub-process.
+            :return: Combined content of `stdout` and `stderr` output
+                streams from the sub-process.
 
-        Compare with `command_line`.
+            Use this when you need to test the process behavior of
+            coverage.
 
-        Returns the process' stdout text.
+            Compare with `command_line`.
 
-        """
-        # Running Python sub-processes can be tricky.  Use the real name of our
-        # own executable.  So "python foo.py" might get executed as
-        # "python3.3 foo.py".  This is important because Python 3.x doesn't
-        # install as "python", so you might get a Python 2 executable instead
-        # if you don't use the executable's basename.
+            Handles the following command name specially:
+
+            * "python" is replaced with the command name of the current
+              Python interpreter.
+
+            """
         if cmd.startswith("python "):
+            # Running a Python interpreter in a sub-processes can be
+            # tricky. Use the real name of our own executable. So
+            # "python foo.py" might get executed as "python3.3
+            # foo.py". This is important because Python 3.x doesn't
+            # install as "python", so you might get a Python 2
+            # executable instead if you don't use the executable's
+            # basename.
             cmd = os.path.basename(sys.executable) + cmd[6:]
 
         _, output = self.run_command_status(cmd)
