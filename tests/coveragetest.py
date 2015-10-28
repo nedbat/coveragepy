@@ -334,6 +334,8 @@ class CoverageTest(
         ret_actual = script.command_line(shlex.split(args))
         self.assertEqual(ret_actual, ret)
 
+    coverage_command = "coverage"
+
     def run_command(self, cmd):
         """ Run the command-line `cmd` in a sub-process.
 
@@ -351,6 +353,9 @@ class CoverageTest(
             * "python" is replaced with the command name of the current
               Python interpreter.
 
+            * "coverage" is replaced with the command name for the main
+              Coverage.py program.
+
             """
         split_commandline = cmd.split(" ", 1)
         command_name = split_commandline[0]
@@ -365,6 +370,13 @@ class CoverageTest(
             # executable instead if you don't use the executable's
             # basename.
             command_name = os.path.basename(sys.executable)
+ 
+        if command_name == "coverage":
+            # The invocation requests the Coverage.py program. Test
+            # whether that's actually the command name to use.
+            if command_name != self.coverage_command:
+                # Substitute the actual Coverage.py main command name.
+                command_name = self.coverage_command
 
         full_commandline = " ".join([shlex.quote(command_name)] + command_args)
 
