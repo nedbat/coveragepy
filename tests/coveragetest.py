@@ -352,7 +352,11 @@ class CoverageTest(
               Python interpreter.
 
             """
-        if cmd.startswith("python "):
+        split_commandline = cmd.split(" ", 1)
+        command_name = split_commandline[0]
+        command_args = split_commandline[1:]
+
+        if command_name == "python":
             # Running a Python interpreter in a sub-processes can be
             # tricky. Use the real name of our own executable. So
             # "python foo.py" might get executed as "python3.3
@@ -360,9 +364,11 @@ class CoverageTest(
             # install as "python", so you might get a Python 2
             # executable instead if you don't use the executable's
             # basename.
-            cmd = os.path.basename(sys.executable) + cmd[6:]
+            command_name = os.path.basename(sys.executable)
 
-        _, output = self.run_command_status(cmd)
+        full_commandline = " ".join([shlex.quote(command_name)] + command_args)
+
+        _, output = self.run_command_status(full_commandline)
         return output
 
     def run_command_status(self, cmd):
