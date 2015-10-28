@@ -10,6 +10,14 @@ import os
 import random
 import re
 import shlex
+try:
+    shlex.quote
+except AttributeError:
+    # Useful function, available under a different (undocumented) name
+    # in Python versions earlier than 3.3.
+    import pipes
+    shlex.quote = pipes.quote
+    del pipes
 import shutil
 import sys
 
