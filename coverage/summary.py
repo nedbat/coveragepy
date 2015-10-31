@@ -8,7 +8,7 @@ import sys
 from coverage import env
 from coverage.report import Reporter
 from coverage.results import Numbers
-from coverage.misc import NotPython, CoverageException
+from coverage.misc import NotPython, CoverageException, output_encoding
 
 
 class SummaryReporter(Reporter):
@@ -52,8 +52,7 @@ class SummaryReporter(Reporter):
             outfile = sys.stdout
 
         if env.PY2:
-            encoding = getattr(outfile, "encoding", None) or sys.getfilesystemencoding()
-            writeout = lambda u: outfile.write(u.encode(encoding))
+            writeout = lambda u: outfile.write(u.encode(output_encoding()))
         else:
             writeout = outfile.write
 

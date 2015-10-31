@@ -6,7 +6,9 @@
 import errno
 import hashlib
 import inspect
+import locale
 import os
+import sys
 import types
 
 from coverage import env
@@ -147,6 +149,18 @@ def file_be_gone(path):
     except OSError as e:
         if e.errno != errno.ENOENT:
             raise
+
+
+def output_encoding(outfile=None):
+    """Determine the encoding to use for output written to `outfile` or stdout."""
+    if outfile is None:
+        outfile = sys.stdout
+    encoding = (
+        getattr(outfile, "encoding", None) or
+        getattr(sys.__stdout__, "encoding", None) or
+        locale.getpreferredencoding()
+    )
+    return encoding
 
 
 class Hasher(object):

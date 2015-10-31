@@ -4,7 +4,6 @@
 """Python source expertise for coverage.py"""
 
 import os.path
-import sys
 import zipimport
 
 from coverage import env, files

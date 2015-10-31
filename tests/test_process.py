@@ -13,6 +13,7 @@ import textwrap
 
 import coverage
 from coverage import env, CoverageData
+from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
 
@@ -916,7 +917,7 @@ class UnicodeFilePathsTest(CoverageTest):
         )
 
         if env.PY2:
-            report_expected = report_expected.encode(sys.__stdout__.encoding)
+            report_expected = report_expected.encode(output_encoding())
 
         out = self.run_command("coverage report")
         self.assertEqual(out, report_expected)
@@ -954,7 +955,7 @@ class UnicodeFilePathsTest(CoverageTest):
         )
 
         if env.PY2:
-            report_expected = report_expected.encode(sys.__stdout__.encoding)
+            report_expected = report_expected.encode(output_encoding())
 
         out = self.run_command("coverage report")
         self.assertEqual(out, report_expected)
