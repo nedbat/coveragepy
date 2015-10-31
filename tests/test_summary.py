@@ -14,6 +14,7 @@ import sys
 import coverage
 from coverage import env
 from coverage.backward import StringIO
+from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
 
@@ -405,14 +406,14 @@ class SummaryTest(CoverageTest):
             "mycode.py NotPython: Couldn't parse 'mycode.py' as Python source: 'error' at line 1"
         )
 
-    def test_snowmandotpy_not_python(self):
+    def test_accenteddotpy_not_python(self):
         # We run a .py file with a non-ascii name, and when reporting, we can't
         # parse it as Python.  We should get an error message in the report.
 
-        self.make_file(u"snowman☃.py", "print('snowman')")
-        self.run_command(u"coverage run snowman☃.py")
-        self.make_file(u"snowman☃.py", "This isn't python at all!")
-        report = self.report_from_command(u"coverage report snowman☃.py")
+        self.make_file(u"accented\xe2.py", "print('accented')")
+        self.run_command(u"coverage run accented\xe2.py")
+        self.make_file(u"accented\xe2.py", "This isn't python at all!")
+        report = self.report_from_command(u"coverage report accented\xe2.py")
 
         # Name     Stmts   Miss  Cover
         # ----------------------------
@@ -421,15 +422,15 @@ class SummaryTest(CoverageTest):
 
         last = self.squeezed_lines(report)[-2]
         # The actual file name varies run to run.
-        last = re.sub(r"parse '.*(snowman.*?\.py)", r"parse '\1", last)
+        last = re.sub(r"parse '.*(accented.*?\.py)", r"parse '\1", last)
         # The actual error message varies version to version
         last = re.sub(r": '.*' at", ": 'error' at", last)
         expected = (
-            u"snowman☃.py NotPython: "
-            u"Couldn't parse 'snowman☃.py' as Python source: 'error' at line 1"
+            u"accented\xe2.py NotPython: "
+            u"Couldn't parse 'accented\xe2.py' as Python source: 'error' at line 1"
         )
         if env.PY2:
-            expected = expected.encode("utf8")
+            expected = expected.encode(output_encoding())
         self.assertEqual(last, expected)
 
     def test_dotpy_not_python_ignored(self):
