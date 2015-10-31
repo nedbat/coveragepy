@@ -7,6 +7,8 @@ import os
 import subprocess
 import sys
 
+from coverage import env
+
 
 def run_command(cmd):
     """Run a command in a sub-process.
@@ -14,6 +16,9 @@ def run_command(cmd):
     Returns the exit status code and the combined stdout and stderr.
 
     """
+    if env.PY2 and isinstance(cmd, unicode):
+        cmd = cmd.encode(sys.getfilesystemencoding())
+
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
     # the subprocess is set incorrectly to ascii.  Use an environment variable
     # to force the encoding to be the same as ours.

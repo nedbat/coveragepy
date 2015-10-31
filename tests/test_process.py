@@ -887,74 +887,74 @@ class FailUnderEmptyFilesTest(CoverageTest):
 class UnicodeFilePathsTest(CoverageTest):
     """Tests of using non-ascii characters in the names of files."""
 
-    def test_snowman_dot_py(self):
+    def test_accented_dot_py(self):
         # Make a file with a non-ascii character in the filename.
-        self.make_file(u"snowman☃.py", "print('snowman')")
-        out = self.run_command(u"coverage run snowman☃.py")
-        self.assertEqual(out, "snowman\n")
+        self.make_file(u"h\xe2t.py", "print('accented')")
+        out = self.run_command(u"coverage run h\xe2t.py")
+        self.assertEqual(out, "accented\n")
 
         # The HTML report uses ascii-encoded HTML entities.
         out = self.run_command("coverage html")
         self.assertEqual(out, "")
-        self.assert_exists("htmlcov/snowman☃_py.html")
+        self.assert_exists(u"htmlcov/h\xe2t_py.html")
         with open("htmlcov/index.html") as indexf:
             index = indexf.read()
-        self.assertIn('<a href="snowman&#9731;_py.html">snowman&#9731;.py</a>', index)
+        self.assertIn('<a href="h&#226;t_py.html">h&#226;t.py</a>', index)
 
         # The XML report is always UTF8-encoded.
         out = self.run_command("coverage xml")
         self.assertEqual(out, "")
         with open("coverage.xml", "rb") as xmlf:
             xml = xmlf.read()
-        self.assertIn(u' filename="snowman☃.py"'.encode('utf8'), xml)
-        self.assertIn(u' name="snowman☃.py"'.encode('utf8'), xml)
+        self.assertIn(u' filename="h\xe2t.py"'.encode('utf8'), xml)
+        self.assertIn(u' name="h\xe2t.py"'.encode('utf8'), xml)
 
         report_expected = (
-            u"Name          Stmts   Miss  Cover\n"
-            u"---------------------------------\n"
-            u"snowman☃.py       1      0   100%\n"
+            u"Name     Stmts   Miss  Cover\n"
+            u"----------------------------\n"
+            u"h\xe2t.py       1      0   100%\n"
         )
 
         if env.PY2:
-            report_expected = report_expected.encode("utf8")
+            report_expected = report_expected.encode(sys.__stdout__.encoding)
 
         out = self.run_command("coverage report")
         self.assertEqual(out, report_expected)
 
-    def test_snowman_directory(self):
+    def test_accented_directory(self):
         # Make a file with a non-ascii character in the directory name.
-        self.make_file(u"☃/snowman.py", "print('snowman')")
-        out = self.run_command(u"coverage run ☃/snowman.py")
-        self.assertEqual(out, "snowman\n")
+        self.make_file(u"\xe2/accented.py", "print('accented')")
+        out = self.run_command(u"coverage run \xe2/accented.py")
+        self.assertEqual(out, "accented\n")
 
         # The HTML report uses ascii-encoded HTML entities.
         out = self.run_command("coverage html")
         self.assertEqual(out, "")
-        self.assert_exists("htmlcov/☃_snowman_py.html")
+        self.assert_exists(u"htmlcov/\xe2_accented_py.html")
         with open("htmlcov/index.html") as indexf:
             index = indexf.read()
-        self.assertIn('<a href="&#9731;_snowman_py.html">&#9731;/snowman.py</a>', index)
+        self.assertIn('<a href="&#226;_accented_py.html">&#226;%saccented.py</a>' % os.sep, index)
 
         # The XML report is always UTF8-encoded.
         out = self.run_command("coverage xml")
         self.assertEqual(out, "")
         with open("coverage.xml", "rb") as xmlf:
             xml = xmlf.read()
-        self.assertIn(u' filename="☃/snowman.py"'.encode('utf8'), xml)
-        self.assertIn(u' name="snowman.py"'.encode('utf8'), xml)
+        self.assertIn(u' filename="\xe2/accented.py"'.encode('utf8'), xml)
+        self.assertIn(u' name="accented.py"'.encode('utf8'), xml)
         self.assertIn(
-            u'<package branch-rate="0" complexity="0" line-rate="1" name="☃">'.encode('utf8'),
+            u'<package branch-rate="0" complexity="0" line-rate="1" name="\xe2">'.encode('utf8'),
             xml
         )
 
         report_expected = (
-            u"Name           Stmts   Miss  Cover\n"
-            u"----------------------------------\n"
-            u"☃/snowman.py       1      0   100%\n"
+            u"Name            Stmts   Miss  Cover\n"
+            u"-----------------------------------\n"
+            u"\xe2%saccented.py       1      0   100%%\n" % os.sep
         )
 
         if env.PY2:
-            report_expected = report_expected.encode("utf8")
+            report_expected = report_expected.encode(sys.__stdout__.encoding)
 
         out = self.run_command("coverage report")
         self.assertEqual(out, report_expected)
