@@ -8,6 +8,7 @@ import subprocess
 import sys
 
 from coverage import env
+from coverage.misc import output_encoding
 
 
 def run_command(cmd):
@@ -23,7 +24,7 @@ def run_command(cmd):
     # the subprocess is set incorrectly to ascii.  Use an environment variable
     # to force the encoding to be the same as ours.
     sub_env = dict(os.environ)
-    encoding = sys.__stdout__.encoding
+    encoding = output_encoding()
     if encoding:
         sub_env['PYTHONIOENCODING'] = encoding
 
@@ -39,7 +40,7 @@ def run_command(cmd):
 
     # Get the output, and canonicalize it to strings with newlines.
     if not isinstance(output, str):
-        output = output.decode('utf-8')
+        output = output.decode(output_encoding())
     output = output.replace('\r', '')
 
     return status, output
