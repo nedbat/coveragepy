@@ -78,11 +78,11 @@ def show_code(code, indent='', number=None):
 def show_hex(label, h, indent):
     h = binascii.hexlify(h)
     if len(h) < 60:
-        print("%s%s %s" % (indent, label, h))
+        print("%s%s %s" % (indent, label, h.decode('ascii')))
     else:
         print("%s%s" % (indent, label))
         for i in range(0, len(h), 60):
-            print("%s   %s" % (indent, h[i:i+60]))
+            print("%s   %s" % (indent, h[i:i+60].decode('ascii')))
 
 def flag_words(flags, flag_defs):
     words = []
