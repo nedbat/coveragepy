@@ -14,7 +14,8 @@ Version 4.0.2
 - Files or directories with non-ASCII characters are now handled properly,
   fixing `issue 432`_.
 
-- Officially support PyPy 4.0.
+- Officially support PyPy 4.0, which required no changes, just updates to the
+  docs.
 
 .. _issue 431: https://bitbucket.org/ned/coveragepy/issues/431/couldnt-parse-python-file-with-cp1252
 .. _issue 432: https://bitbucket.org/ned/coveragepy/issues/432/path-with-unicode-characters-various
