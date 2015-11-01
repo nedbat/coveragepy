@@ -17,4 +17,4 @@ pylint==1.4.4
 
 # for kitting.
 requests==2.8.1
-twine==1.6.3
+twine==1.6.4
