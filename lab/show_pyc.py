@@ -1,15 +1,22 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
-import dis, marshal, struct, sys, time, types
+import binascii
+import dis
+import marshal
+import struct
+import sys
+import time
+import types
+
 
 def show_pyc_file(fname):
     f = open(fname, "rb")
     magic = f.read(4)
     moddate = f.read(4)
     modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
-    print "magic %s" % (magic.encode('hex'))
-    print "moddate %s (%s)" % (moddate.encode('hex'), modtime)
+    print("magic %s" % (binascii.hexlify(magic)))
+    print("moddate %s (%s)" % (binascii.hexlify(moddate), modtime))
     code = marshal.load(f)
     show_code(code)
 
@@ -22,37 +29,37 @@ def show_py_text(text, fname="<string>"):
     show_code(code)
 
 def show_code(code, indent=''):
-    print "%scode" % indent
+    print("%scode" % indent)
     indent += '   '
-    print "%sargcount %d" % (indent, code.co_argcount)
-    print "%snlocals %d" % (indent, code.co_nlocals)
-    print "%sstacksize %d" % (indent, code.co_stacksize)
-    print "%sflags %04x" % (indent, code.co_flags)
+    print("%sargcount %d" % (indent, code.co_argcount))
+    print("%snlocals %d" % (indent, code.co_nlocals))
+    print("%sstacksize %d" % (indent, code.co_stacksize))
+    print("%sflags %04x" % (indent, code.co_flags))
     show_hex("code", code.co_code, indent=indent)
     dis.disassemble(code)
-    print "%sconsts" % indent
+    print("%sconsts" % indent)
     for const in code.co_consts:
         if type(const) == types.CodeType:
             show_code(const, indent+'   ')
         else:
-            print "   %s%r" % (indent, const)
-    print "%snames %r" % (indent, code.co_names)
-    print "%svarnames %r" % (indent, code.co_varnames)
-    print "%sfreevars %r" % (indent, code.co_freevars)
-    print "%scellvars %r" % (indent, code.co_cellvars)
-    print "%sfilename %r" % (indent, code.co_filename)
-    print "%sname %r" % (indent, code.co_name)
-    print "%sfirstlineno %d" % (indent, code.co_firstlineno)
+            print("   %s%r" % (indent, const))
+    print("%snames %r" % (indent, code.co_names))
+    print("%svarnames %r" % (indent, code.co_varnames))
+    print("%sfreevars %r" % (indent, code.co_freevars))
+    print("%scellvars %r" % (indent, code.co_cellvars))
+    print("%sfilename %r" % (indent, code.co_filename))
+    print("%sname %r" % (indent, code.co_name))
+    print("%sfirstlineno %d" % (indent, code.co_firstlineno))
     show_hex("lnotab", code.co_lnotab, indent=indent)
 
 def show_hex(label, h, indent):
-    h = h.encode('hex')
+    h = binascii.hexlify(h)
     if len(h) < 60:
-        print "%s%s %s" % (indent, label, h)
+        print("%s%s %s" % (indent, label, h))
     else:
-        print "%s%s" % (indent, label)
+        print("%s%s" % (indent, label))
         for i in range(0, len(h), 60):
-            print "%s   %s" % (indent, h[i:i+60])
+            print("%s   %s" % (indent, h[i:i+60]))
 
 def show_file(fname):
     if fname.endswith('pyc'):
@@ -60,7 +67,7 @@ def show_file(fname):
     elif fname.endswith('py'):
         show_py_file(fname)
     else:
-        print "Odd file:", fname
+        print("Odd file:", fname)
 
 def main(args):
     if args[0] == '-c':
