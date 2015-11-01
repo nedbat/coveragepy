@@ -54,8 +54,11 @@ not.
 .. ifconfig:: not prerelease
 
     The latest version is coverage.py 4.0.1, released 13 October 2015.
-    It is supported on Python versions 2.6, 2.7, 3.3, 3.4, and 3.5, as well
-    as PyPy 2.4 and 2.6, and PyPy3 2.4.
+    It is supported on:
+    
+    * Python versions 2.6, 2.7, 3.3, 3.4, and 3.5
+    * PyPy 2.4, 2.6, and 4.0
+    * PyPy3 2.4
 
 .. ifconfig:: prerelease
 
