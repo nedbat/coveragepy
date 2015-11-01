@@ -28,27 +28,50 @@ def show_py_text(text, fname="<string>"):
     code = compile(text, fname, "exec")
     show_code(code)
 
-def show_code(code, indent=''):
-    print("%scode" % indent)
+CO_FLAGS = [
+    ('CO_OPTIMIZED',                0x00001),
+    ('CO_NEWLOCALS',                0x00002),
+    ('CO_VARARGS',                  0x00004),
+    ('CO_VARKEYWORDS',              0x00008),
+    ('CO_NESTED',                   0x00010),
+    ('CO_GENERATOR',                0x00020),
+    ('CO_NOFREE',                   0x00040),
+    ('CO_COROUTINE',                0x00080),
+    ('CO_ITERABLE_COROUTINE',       0x00100),
+    ('CO_GENERATOR_ALLOWED',        0x01000),
+    ('CO_FUTURE_DIVISION',          0x02000),
+    ('CO_FUTURE_ABSOLUTE_IMPORT',   0x04000),
+    ('CO_FUTURE_WITH_STATEMENT',    0x08000),
+    ('CO_FUTURE_PRINT_FUNCTION',    0x10000),
+    ('CO_FUTURE_UNICODE_LITERALS',  0x20000),
+    ('CO_FUTURE_BARRY_AS_BDFL',     0x40000),
+    ('CO_FUTURE_GENERATOR_STOP',    0x80000),
+]
+
+def show_code(code, indent='', number=None):
+    label = ""
+    if number is not None:
+        label = "%d: " % number
+    print("%s%scode" % (indent, label))
     indent += '   '
+    print("%sname %r" % (indent, code.co_name))
     print("%sargcount %d" % (indent, code.co_argcount))
     print("%snlocals %d" % (indent, code.co_nlocals))
     print("%sstacksize %d" % (indent, code.co_stacksize))
-    print("%sflags %04x" % (indent, code.co_flags))
+    print("%sflags %04x: %s" % (indent, code.co_flags, flag_words(code.co_flags, CO_FLAGS)))
     show_hex("code", code.co_code, indent=indent)
     dis.disassemble(code)
     print("%sconsts" % indent)
-    for const in code.co_consts:
+    for i, const in enumerate(code.co_consts):
         if type(const) == types.CodeType:
-            show_code(const, indent+'   ')
+            show_code(const, indent+'   ', number=i)
         else:
-            print("   %s%r" % (indent, const))
+            print("   %s%d: %r" % (indent, i, const))
     print("%snames %r" % (indent, code.co_names))
     print("%svarnames %r" % (indent, code.co_varnames))
     print("%sfreevars %r" % (indent, code.co_freevars))
     print("%scellvars %r" % (indent, code.co_cellvars))
     print("%sfilename %r" % (indent, code.co_filename))
-    print("%sname %r" % (indent, code.co_name))
     print("%sfirstlineno %d" % (indent, code.co_firstlineno))
     show_hex("lnotab", code.co_lnotab, indent=indent)
 
@@ -60,6 +83,13 @@ def show_hex(label, h, indent):
         print("%s%s" % (indent, label))
         for i in range(0, len(h), 60):
             print("%s   %s" % (indent, h[i:i+60]))
+
+def flag_words(flags, flag_defs):
+    words = []
+    for word, flag in flag_defs:
+        if flag & flags:
+            words.append(word)
+    return ", ".join(words)
 
 def show_file(fname):
     if fname.endswith('pyc'):
