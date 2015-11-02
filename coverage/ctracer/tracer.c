@@ -877,8 +877,9 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     /* In Python, the what argument is a string, we need to find an int
        for the C function. */
     for (what = 0; what_names[what]; what++) {
+        int should_break;
         ascii = MyText_AS_BYTES(what_str);
-        int should_break = !strcmp(MyBytes_AS_STRING(ascii), what_names[what]);
+        should_break = !strcmp(MyBytes_AS_STRING(ascii), what_names[what]);
         Py_DECREF(ascii);
         if (should_break) {
             break;
