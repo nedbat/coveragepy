@@ -48,6 +48,11 @@ class CoverageTest(
     def setUp(self):
         super(CoverageTest, self).setUp()
 
+        # Attributes for getting info about what happened.
+        self.last_command_status = None
+        self.last_command_output = None
+        self.last_module_name = None
+
         if _TEST_NAME_FILE:                                 # pragma: debugging
             with open(_TEST_NAME_FILE, "w") as f:
                 f.write("%s_%s" % (
@@ -104,8 +109,9 @@ class CoverageTest(
         return mod
 
     def get_module_name(self):
-        """Return the module name to use for this test run."""
-        return 'coverage_test_' + str(random.random())[2:]
+        """Return a random module name to use for this test run."""
+        self.last_module_name = 'coverage_test_' + str(random.random())[2:]
+        return self.last_module_name
 
     # Map chars to numbers for arcz_to_arcs
     _arcz_map = {'.': -1}

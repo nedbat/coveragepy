@@ -410,6 +410,46 @@ class GettraceTest(CoverageTest):
             ''',
             [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "")
 
+    def test_setting_new_trace_function(self):
+        # https://bitbucket.org/ned/coveragepy/issues/436/disabled-coverage-ctracer-may-rise-from
+        self.check_coverage('''\
+            import sys
+
+            def tracer(frame, event, arg):
+                print("%s: %s @ %d" % (event, frame.f_code.co_filename, frame.f_lineno))
+                return tracer
+
+            def begin():
+                sys.settrace(tracer)
+
+            def collect():
+                t = sys.gettrace()
+                assert t is tracer, t
+
+            def test_unsets_trace():
+                begin()
+                collect()
+
+            old = sys.gettrace()
+            test_unsets_trace()
+            sys.settrace(old)
+            ''',
+            lines=[1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20],
+            missing="4-5, 11-12",
+        )
+
+        out = self.stdout().replace(self.last_module_name, "coverage_test")
+
+        self.assertEqual(
+            out,
+            (
+                "call: coverage_test.py @ 10\n"
+                "line: coverage_test.py @ 11\n"
+                "line: coverage_test.py @ 12\n"
+                "return: coverage_test.py @ 12\n"
+            ),
+        )
+
 
 class ExecTest(CoverageTest):
     """Tests of exec."""

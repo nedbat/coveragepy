@@ -14,11 +14,15 @@ Version 4.0.2
 - Files or directories with non-ASCII characters are now handled properly,
   fixing `issue 432`_.
 
+- Setting a trace function with sys.settrace was broken by a change in 4.0.1,
+  as reported in `issue 436`_.  This is now fixed.
+
 - Officially support PyPy 4.0, which required no changes, just updates to the
   docs.
 
 .. _issue 431: https://bitbucket.org/ned/coveragepy/issues/431/couldnt-parse-python-file-with-cp1252
 .. _issue 432: https://bitbucket.org/ned/coveragepy/issues/432/path-with-unicode-characters-various
+.. _issue 436: https://bitbucket.org/ned/coveragepy/issues/436/disabled-coverage-ctracer-may-rise-from
 
 
 Version 4.0.1 --- 13 October 2015

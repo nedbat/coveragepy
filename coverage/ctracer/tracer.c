@@ -768,7 +768,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     #endif
 
     #if WHAT_LOG
-    if (what <= sizeof(what_sym)/sizeof(const char *)) {
+    if (what <= (int)(sizeof(what_sym)/sizeof(const char *))) {
         ascii = MyText_AS_BYTES(frame->f_code->co_filename);
         printf("trace: %s @ %s %d\n", what_sym[what], MyBytes_AS_STRING(ascii), frame->f_lineno);
         Py_DECREF(ascii);
@@ -859,16 +859,13 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     int what;
     int orig_lineno;
     PyObject *ret = NULL;
+    PyObject * ascii = NULL;
 
     static char *what_names[] = {
         "call", "exception", "line", "return",
         "c_call", "c_exception", "c_return",
         NULL
         };
-
-    #if WHAT_LOG
-    printf("pytrace\n");
-    #endif
 
     static char *kwlist[] = {"frame", "event", "arg", "lineno", NULL};
 
@@ -880,13 +877,19 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     /* In Python, the what argument is a string, we need to find an int
        for the C function. */
     for (what = 0; what_names[what]; what++) {
-        PyObject *ascii = MyText_AS_BYTES(what_str);
+        ascii = MyText_AS_BYTES(what_str);
         int should_break = !strcmp(MyBytes_AS_STRING(ascii), what_names[what]);
         Py_DECREF(ascii);
         if (should_break) {
             break;
         }
     }
+
+    #if WHAT_LOG
+    ascii = MyText_AS_BYTES(frame->f_code->co_filename);
+    printf("pytrace: %s @ %s %d\n", what_sym[what], MyBytes_AS_STRING(ascii), frame->f_lineno);
+    Py_DECREF(ascii);
+    #endif
 
     /* Save off the frame's lineno, and use the forced one, if provided. */
     orig_lineno = frame->f_lineno;
@@ -904,8 +907,30 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     frame->f_lineno = orig_lineno;
 
     /* For better speed, install ourselves the C way so that future calls go
-       directly to CTracer_trace, without this intermediate function. */
-    PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
+       directly to CTracer_trace, without this intermediate function.
+       
+       Only do this if this is a CALL event, since new trace functions only
+       take effect then.  If we don't condition it on CALL, then we'll clobber
+       the new trace function before it has a chance to get called.  To
+       understand why, there are three internal values to track: frame.f_trace,
+       c_tracefunc, and c_traceobj.  They are explained here:
+       http://nedbatchelder.com/text/trace-function.html
+
+       Without the conditional on PyTrace_CALL, this is what happens:
+
+            def func():                 #   f_trace         c_tracefunc     c_traceobj
+                                        #   --------------  --------------  --------------
+                                        #   CTracer         CTracer.trace   CTracer
+                sys.settrace(my_func)   
+                                        #   CTracer         trampoline      my_func
+                        # Now Python calls trampoline(CTracer), which calls this function
+                        # which calls PyEval_SetTrace below, setting us as the tracer again:
+                                        #   CTracer         CTracer.trace   CTracer
+                        # and it's as if the settrace never happened.
+        */
+    if (what == PyTrace_CALL) {
+        PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
+    }
 
 done:
     return ret;
