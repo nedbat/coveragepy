@@ -908,7 +908,7 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
 
     /* For better speed, install ourselves the C way so that future calls go
        directly to CTracer_trace, without this intermediate function.
-       
+
        Only do this if this is a CALL event, since new trace functions only
        take effect then.  If we don't condition it on CALL, then we'll clobber
        the new trace function before it has a chance to get called.  To
@@ -921,7 +921,7 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
             def func():                 #   f_trace         c_tracefunc     c_traceobj
                                         #   --------------  --------------  --------------
                                         #   CTracer         CTracer.trace   CTracer
-                sys.settrace(my_func)   
+                sys.settrace(my_func)
                                         #   CTracer         trampoline      my_func
                         # Now Python calls trampoline(CTracer), which calls this function
                         # which calls PyEval_SetTrace below, setting us as the tracer again:
