@@ -33,6 +33,8 @@
         - ELSE:
             rm -f ~/coverage/trunk/doc/sample_html/*.*
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
+        cd ~/coverage/trunk
+        check in the new sample html
     - IF BETA:
         - Build and publish docs:
             $ make publishbeta
