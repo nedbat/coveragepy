@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Version 4.0.2
--------------
+Version 4.0.2 --- 4 November 2015
+---------------------------------
 
 - More work on supporting unusually encoded source. Fixed `issue 431`_.
 
