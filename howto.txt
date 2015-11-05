@@ -48,7 +48,7 @@
         - $ make wheel
     - Windows kits
         - $ hg push
-        - wait about 35 minutes for Appveyor to build kits.
+        - wait about an hour for Appveyor to build kits.
         - $ make download_appveyor
     - examine the dist directory, and remove anything that looks malformed.
 - Update PyPi:
@@ -62,11 +62,11 @@
 - Update nedbatchelder.com
     - Blog post?
 - Update readthedocs
-    - Coverage / versions
+    - visit https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
     - IF NOT BETA:
         - visit https://readthedocs.org/dashboard/coverage/advanced/
-        - change the default version
+        - change the default version to the new version
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
     # Note: don't delete old version numbers: it marks changes on the tickets
