@@ -35,6 +35,7 @@ Major change history for coverage.py
 .. :history: 20150822T092800, updated for 4.0b2
 .. :history: 20150919T072700, updated for 4.0
 .. :history: 20151013T103000, updated for 4.0.1
+.. :history: 20151104T050900, updated for 4.0.2
 
 
 These are the major changes for coverage.py.  For a more complete change
