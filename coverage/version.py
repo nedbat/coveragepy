@@ -5,7 +5,8 @@
 # This file is exec'ed in setup.py, don't import anything!
 
 # Same semantics as sys.version_info.
-version_info = (4, 0, 2, 'final', 0)
+# Word is 'alpha', 'beta', 'candidate', or 'final'.
+version_info = (4, 1, 0, 'alpha', 0)
 
 
 def _make_version(major, minor, micro, releaselevel, serial):
