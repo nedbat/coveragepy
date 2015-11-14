@@ -10,6 +10,14 @@ import os
 import random
 import re
 import shlex
+try:
+    shlex.quote
+except AttributeError:
+    # Useful function, available under a different (undocumented) name
+    # in Python versions earlier than 3.3.
+    import pipes
+    shlex.quote = pipes.quote
+    del pipes
 import shutil
 import sys
 
@@ -332,25 +340,53 @@ class CoverageTest(
         ret_actual = script.command_line(shlex.split(args))
         self.assertEqual(ret_actual, ret)
 
+    coverage_command = "coverage"
+
     def run_command(self, cmd):
-        """Run the command-line `cmd` in a sub-process, and print its output.
+        """ Run the command-line `cmd` in a sub-process.
 
-        Use this when you need to test the process behavior of coverage.
+            :param cmd: The command line to invoke in a sub-process.
+            :return: Combined content of `stdout` and `stderr` output
+                streams from the sub-process.
 
-        Compare with `command_line`.
+            Use this when you need to test the process behavior of
+            coverage.
 
-        Returns the process' stdout text.
+            Compare with `command_line`.
 
-        """
-        # Running Python sub-processes can be tricky.  Use the real name of our
-        # own executable.  So "python foo.py" might get executed as
-        # "python3.3 foo.py".  This is important because Python 3.x doesn't
-        # install as "python", so you might get a Python 2 executable instead
-        # if you don't use the executable's basename.
-        if cmd.startswith("python "):
-            cmd = os.path.basename(sys.executable) + cmd[6:]
+            Handles the following command name specially:
 
-        _, output = self.run_command_status(cmd)
+            * "python" is replaced with the command name of the current
+              Python interpreter.
+
+            * "coverage" is replaced with the command name for the main
+              Coverage.py program.
+
+            """
+        split_commandline = cmd.split(" ", 1)
+        command_name = split_commandline[0]
+        command_args = split_commandline[1:]
+
+        if command_name == "python":
+            # Running a Python interpreter in a sub-processes can be
+            # tricky. Use the real name of our own executable. So
+            # "python foo.py" might get executed as "python3.3
+            # foo.py". This is important because Python 3.x doesn't
+            # install as "python", so you might get a Python 2
+            # executable instead if you don't use the executable's
+            # basename.
+            command_name = os.path.basename(sys.executable)
+ 
+        if command_name == "coverage":
+            # The invocation requests the Coverage.py program. Test
+            # whether that's actually the command name to use.
+            if command_name != self.coverage_command:
+                # Substitute the actual Coverage.py main command name.
+                command_name = self.coverage_command
+
+        full_commandline = " ".join([shlex.quote(command_name)] + command_args)
+
+        _, output = self.run_command_status(full_commandline)
         return output
 
     def run_command_status(self, cmd):

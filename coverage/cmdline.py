@@ -228,7 +228,6 @@ class CmdOptionParser(CoverageOptionParser):
         if usage:
             usage = "%prog " + usage
         super(CmdOptionParser, self).__init__(
-            prog="coverage %s" % action,
             usage=usage,
             description=description,
         )
@@ -241,6 +240,15 @@ class CmdOptionParser(CoverageOptionParser):
         # A convenience equality, so that I can put strings in unit test
         # results, and they will compare equal to objects.
         return (other == "<CmdOptionParser:%s>" % self.cmd)
+
+    def get_prog_name(self):
+        program_name = super(CmdOptionParser, self).get_prog_name()
+
+        # Include the sub-command for this parser as part of the command.
+        result = "%(command)s %(subcommand)s" % {
+                'command': program_name, 'subcommand': self.cmd}
+        return result
+
 
 GLOBAL_ARGS = [
     Opts.debug,
@@ -371,6 +379,8 @@ OK, ERR, FAIL_UNDER = 0, 1, 2
 
 class CoverageScript(object):
     """The command-line interface to coverage.py."""
+
+    program_name = os.path.basename(sys.argv[0])
 
     def __init__(self, _covpkg=None, _run_python_file=None,
                  _run_python_module=None, _help_fn=None, _path_exists=None):
@@ -523,13 +533,17 @@ class CoverageScript(object):
         assert error or topic or parser
         if error:
             print(error)
-            print("Use 'coverage help' for help.")
+            print("Use '%(program_name)s help' for help." % {
+                    'program_name': self.program_name})
         elif parser:
             print(parser.format_help().strip())
         else:
+            help_params = self.covpkg.__dict__
+            help_params.update({
+                    'program_name': self.program_name})
             help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
             if help_msg:
-                print(help_msg % self.covpkg.__dict__)
+                print(help_msg % help_params)
             else:
                 print("Don't know topic %r" % topic)
 
@@ -682,7 +696,7 @@ HELP_TOPICS = {
     Coverage.py, version %(__version__)s
     Measure, collect, and report on code coverage in Python programs.
 
-    usage: coverage <command> [options] [args]
+    usage: %(program_name)s <command> [options] [args]
 
     Commands:
         annotate    Annotate source files with execution information.
@@ -694,12 +708,12 @@ HELP_TOPICS = {
         run         Run a Python program and measure code execution.
         xml         Create an XML report of coverage results.
 
-    Use "coverage help <command>" for detailed help on any command.
+    Use "%(program_name)s help <command>" for detailed help on any command.
     For full documentation, see %(__url__)s
     """,
 
     'minimum_help': """\
-    Code coverage for Python.  Use 'coverage help' for help.
+    Code coverage for Python.  Use '%(program_name)s help' for help.
     """,
 
     'version': """\
