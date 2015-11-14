@@ -6,6 +6,15 @@ Change history for Coverage.py
 ==============================
 
 
+Version 4.0.2, in progress
+--------------------------
+
+- Fixed an unusual edge case of detecting source encodings, described in
+  `issue 443`_.
+
+.. _issue 443: https://bitbucket.org/ned/coveragepy/issues/443/coverage-gets-confused-when-encoding
+
+
 Version 4.0.2 --- 4 November 2015
 ---------------------------------
 

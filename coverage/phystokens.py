@@ -153,7 +153,7 @@ class CachedTokenizer(object):
 generate_tokens = CachedTokenizer().generate_tokens
 
 
-COOKIE_RE = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)", flags=re.MULTILINE)
+COOKIE_RE = re.compile(r"^[ \t]*#.*coding[:=][ \t]*([-\w.]+)", flags=re.MULTILINE)
 
 @contract(source='bytes')
 def _source_encoding_py2(source):
