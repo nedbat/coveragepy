@@ -12,7 +12,12 @@ Version 4.0.2, in progress
 - Fixed an unusual edge case of detecting source encodings, described in
   `issue 443`_.
 
+- Help messages that mention the command to use now properly use the actual
+  command name, which might be different than "coverage".  Thanks to Ben Finney,
+  this closes `issue 438`_.
+
 .. _issue 443: https://bitbucket.org/ned/coveragepy/issues/443/coverage-gets-confused-when-encoding
+.. _issue 438: https://bitbucket.org/ned/coveragepy/issues/438/parameterise-coverage-command-name
 
 
 Version 4.0.2 --- 4 November 2015

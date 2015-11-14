@@ -242,12 +242,11 @@ class CmdOptionParser(CoverageOptionParser):
         return (other == "<CmdOptionParser:%s>" % self.cmd)
 
     def get_prog_name(self):
+        """Override of an undocumented function in optparse.OptionParser."""
         program_name = super(CmdOptionParser, self).get_prog_name()
 
         # Include the sub-command for this parser as part of the command.
-        result = "%(command)s %(subcommand)s" % {
-                'command': program_name, 'subcommand': self.cmd}
-        return result
+        return "%(command)s %(subcommand)s" % {'command': program_name, 'subcommand': self.cmd}
 
 
 GLOBAL_ARGS = [
@@ -533,14 +532,12 @@ class CoverageScript(object):
         assert error or topic or parser
         if error:
             print(error)
-            print("Use '%(program_name)s help' for help." % {
-                    'program_name': self.program_name})
+            print("Use '%s help' for help." % (self.program_name,))
         elif parser:
             print(parser.format_help().strip())
         else:
-            help_params = self.covpkg.__dict__
-            help_params.update({
-                    'program_name': self.program_name})
+            help_params = dict(self.covpkg.__dict__)
+            help_params['program_name'] = self.program_name
             help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
             if help_msg:
                 print(help_msg % help_params)

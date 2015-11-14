@@ -49,6 +49,15 @@ try:
 except NameError:
     range = range
 
+# shlex.quote is new, but there's an undocumented implementation in "pipes",
+# who knew!?
+try:
+    from shlex import quote as shlex_quote
+except ImportError:
+    # Useful function, available under a different (undocumented) name
+    # in Python versions earlier than 3.3.
+    from pipes import quote as shlex_quote
+
 # A function to iterate listlessly over a dict's items.
 try:
     {}.iteritems
