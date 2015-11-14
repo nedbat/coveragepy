@@ -139,7 +139,7 @@ indent(int n)
     return spaces + strlen(spaces) - n*2;
 }
 
-static int logging = 0;
+static int logging = FALSE;
 /* Set these constants to be a file substring and line number to start logging. */
 static const char * start_file = "tests/views";
 static int start_line = 27;
@@ -778,7 +778,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     #if TRACE_LOG
     ascii = MyText_AS_BYTES(frame->f_code->co_filename);
     if (strstr(MyBytes_AS_STRING(ascii), start_file) && frame->f_lineno == start_line) {
-        logging = 1;
+        logging = TRUE;
     }
     Py_DECREF(ascii);
     #endif
@@ -941,7 +941,7 @@ static PyObject *
 CTracer_start(CTracer *self, PyObject *args_unused)
 {
     PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
-    self->started = 1;
+    self->started = TRUE;
     self->tracing_arcs = self->trace_arcs && PyObject_IsTrue(self->trace_arcs);
     self->cur_entry.last_line = -1;
 
@@ -955,7 +955,7 @@ CTracer_stop(CTracer *self, PyObject *args_unused)
 {
     if (self->started) {
         PyEval_SetTrace(NULL, NULL);
-        self->started = 0;
+        self->started = FALSE;
     }
 
     Py_RETURN_NONE;

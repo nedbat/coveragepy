@@ -49,4 +49,8 @@
 #define RET_OK      0
 #define RET_ERROR   -1
 
+/* Nicer booleans */
+#define FALSE   0
+#define TRUE    1
+
 #endif /* _COVERAGE_UTIL_H */
