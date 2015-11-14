@@ -11,6 +11,8 @@
 #undef TRACE_LOG        /* Define to log our bookkeeping. */
 #undef COLLECT_STATS    /* Collect counters: stats are printed when tracer is stopped. */
 
+#define COLLECT_STATS 1
+
 /* Py 2.x and 3.x compatibility */
 
 #if PY_MAJOR_VERSION >= 3

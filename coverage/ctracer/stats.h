@@ -24,6 +24,7 @@ typedef struct Stats {
     unsigned int stack_reallocs;
     unsigned int errors;
     unsigned int pycalls;
+    unsigned int start_context_calls;
 #endif
 } Stats;
 

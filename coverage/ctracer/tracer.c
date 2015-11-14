@@ -86,6 +86,8 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 
     self->cur_entry.last_line = -1;
 
+    self->context = Py_None;
+
     ret = RET_OK;
     goto ok;
 
@@ -112,6 +114,9 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->data);
     Py_XDECREF(self->file_tracers);
     Py_XDECREF(self->should_trace_cache);
+    Py_XDECREF(self->should_start_context);
+    Py_XDECREF(self->switch_context);
+    Py_XDECREF(self->context);
 
     DataStack_dealloc(&self->stats, &self->data_stack);
     if (self->data_stacks) {
@@ -335,6 +340,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
 
     STATS( self->stats.calls++; )
+
     /* Grow the stack. */
     if (CTracer_set_pdata_stack(self) < 0) {
         goto error;
@@ -345,6 +351,37 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
     /* Push the current state on the stack. */
     self->pdata_stack->stack[self->pdata_stack->depth] = self->cur_entry;
+
+    /* See if this frame begins a new context. */
+    if (self->should_start_context != Py_None && self->context == Py_None) {
+        PyObject * context;
+        /* We're looking for our context, ask should_start_context if this is the start. */
+        STATS( self->stats.start_context_calls++; )
+        STATS( self->stats.pycalls++; )
+        context = PyObject_CallFunctionObjArgs(self->should_start_context, frame, NULL);
+        if (context == NULL) {
+            goto error;
+        }
+        if (context != Py_None) {
+            PyObject * val;
+            Py_DECREF(self->context);
+            self->context = context;
+            self->cur_entry.started_context = TRUE;
+            STATS( self->stats.pycalls++; )
+            val = PyObject_CallFunctionObjArgs(self->switch_context, context, NULL);
+            if (val == NULL) {
+                goto error;
+            }
+            Py_DECREF(val);
+        }
+        else {
+            Py_DECREF(context);
+            self->cur_entry.started_context = FALSE;
+        }
+    }
+    else {
+        self->cur_entry.started_context = FALSE;
+    }
 
     /* Check if we should trace this line. */
     filename = frame->f_code->co_filename;
@@ -719,6 +756,22 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
             }
         }
 
+        /* If this frame started a context, then returning from it ends the context. */
+        if (self->cur_entry.started_context) {
+            PyObject * val;
+            Py_DECREF(self->context);
+            self->context = Py_None;
+            Py_INCREF(self->context);
+            STATS( self->stats.pycalls++; )
+
+            val = PyObject_CallFunctionObjArgs(self->switch_context, context, NULL);
+            if (val == NULL) {
+                goto error;
+            }
+            Py_DECREF(val);
+        }
+
+        /* Pop the stack. */
         SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "return");
         self->cur_entry = self->pdata_stack->stack[self->pdata_stack->depth];
         self->pdata_stack->depth--;
@@ -966,7 +1019,7 @@ CTracer_get_stats(CTracer *self)
 {
 #if COLLECT_STATS
     return Py_BuildValue(
-        "{sI,sI,sI,sI,sI,sI,sI,sI,si,sI,sI}",
+        "{sI,sI,sI,sI,sI,sI,sI,sI,si,sI,sI,sI}",
         "calls", self->stats.calls,
         "lines", self->stats.lines,
         "returns", self->stats.returns,
@@ -977,7 +1030,8 @@ CTracer_get_stats(CTracer *self)
         "stack_reallocs", self->stats.stack_reallocs,
         "stack_alloc", self->pdata_stack->alloc,
         "errors", self->stats.errors,
-        "pycalls", self->stats.pycalls
+        "pycalls", self->stats.pycalls,
+        "start_context_calls", self->stats.start_context_calls
         );
 #else
     Py_RETURN_NONE;
@@ -1009,6 +1063,12 @@ CTracer_members[] = {
 
     { "trace_arcs",         T_OBJECT, offsetof(CTracer, trace_arcs), 0,
             PyDoc_STR("Should we trace arcs, or just lines?") },
+
+    { "should_start_context", T_OBJECT, offsetof(CTracer, should_start_context), 0,
+            PyDoc_STR("Function for starting contexts.") },
+
+    { "switch_context", T_OBJECT, offsetof(CTracer, switch_context), 0,
+            PyDoc_STR("Function for switch to a new context.") },
 
     { NULL }
 };

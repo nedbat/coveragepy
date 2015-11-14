@@ -37,6 +37,11 @@ class FileDisposition(object):
     pass
 
 
+def should_start_context(frame):
+    fn_name = frame.f_code.co_name
+    if fn_name.startswith("test"):
+        return fn_name
+
 class Collector(object):
     """Collects trace data.
 
@@ -147,6 +152,10 @@ class Collector(object):
         # pairs as keys (if branch coverage).
         self.data = {}
 
+        # A dict mapping contexts to data dictionaries.
+        self.contexts = {}
+        self.contexts[None] = self.data
+
         # A dictionary mapping file names to file tracer plugin names that will
         # handle them.
         self.file_tracers = {}
@@ -206,6 +215,10 @@ class Collector(object):
             tracer.threading = self.threading
         if hasattr(tracer, 'check_include'):
             tracer.check_include = self.check_include
+        if hasattr(tracer, 'should_start_context'):
+            tracer.should_start_context = should_start_context
+        if hasattr(tracer, 'switch_context'):
+            tracer.switch_context = self.switch_context
 
         fn = tracer.start()
         self.tracers.append(tracer)
@@ -294,7 +307,7 @@ class Collector(object):
             if stats:
                 print("\nCoverage.py tracer stats:")
                 for k in sorted(stats.keys()):
-                    print("%16s: %s" % (k, stats[k]))
+                    print("%20s: %s" % (k, stats[k]))
         if self.threading:
             self.threading.settrace(None)
 
@@ -307,6 +320,12 @@ class Collector(object):
         else:
             self._start_tracer()
 
+    def switch_context(self, new_context):
+        print("** Switching to {!r}".format(new_context))
+        data = self.contexts.setdefault(new_context, {})
+        for tracer in self.tracers:
+            tracer.data = data
+
     def save_data(self, covdata):
         """Save the collected data to a `CoverageData`.
 
@@ -317,6 +336,7 @@ class Collector(object):
             """Return a dict like d, but with keys modified by `abs_file`."""
             return dict((abs_file(k), v) for k, v in iitems(d))
 
+        import pprint; pprint.pprint(self.contexts)
         if self.branch:
             covdata.add_arcs(abs_file_dict(self.data))
         else:
