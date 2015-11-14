@@ -757,6 +757,17 @@ class AliasedCommandTest(CoverageTest):
         out = self.run_command(cmd)
         self.assertIn("Code coverage for Python", out)
 
+    def test_aliases_used_in_messages(self):
+        cmds = [
+            "coverage",
+            "coverage%d" % sys.version_info[0],
+            "coverage-%d.%d" % sys.version_info[:2],
+        ]
+        for cmd in cmds:
+            out = self.run_command("%s foobar" % cmd)
+            self.assertIn("Unknown command: 'foobar'", out)
+            self.assertIn("Use '%s help' for help" % cmd, out)
+
 
 class PydocTest(CoverageTest):
     """Test that pydoc can get our information."""
