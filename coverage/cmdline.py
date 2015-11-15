@@ -379,8 +379,6 @@ OK, ERR, FAIL_UNDER = 0, 1, 2
 class CoverageScript(object):
     """The command-line interface to coverage.py."""
 
-    program_name = os.path.basename(sys.argv[0])
-
     def __init__(self, _covpkg=None, _run_python_file=None,
                  _run_python_module=None, _help_fn=None, _path_exists=None):
         # _covpkg is for dependency injection, so we can test this code.
@@ -398,6 +396,17 @@ class CoverageScript(object):
         self.global_option = False
 
         self.coverage = None
+
+        self.program_name = os.path.basename(sys.argv[0])
+        if env.WINDOWS:
+            # entry_points={'console_scripts':...} on Windows makes files
+            # called coverage.exe, coverage3.exe, and coverage-3.5.exe. These
+            # invoke coverage-script.py, coverage3-script.py, and
+            # coverage-3.5-script.py.  argv[0] is the .py file, but we want to
+            # get back to the original form.
+            auto_suffix = "-script.py"
+            if self.program_name.endswith(auto_suffix):
+                self.program_name = self.program_name[:-len(auto_suffix)]
 
     def command_line(self, argv):
         """The bulk of the command line interface to coverage.py.
