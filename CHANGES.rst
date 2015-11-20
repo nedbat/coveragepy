@@ -6,7 +6,7 @@ Change history for Coverage.py
 ==============================
 
 
-Version 4.0.2, in progress
+Version 4.0.3, in progress
 --------------------------
 
 - Fixed an unusual edge case of detecting source encodings, described in
