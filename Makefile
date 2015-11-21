@@ -72,6 +72,9 @@ download_appveyor:
 pypi:
 	python setup.py register
 
+build_ext:
+	python setup.py build_ext
+
 install:
 	python setup.py install
 
