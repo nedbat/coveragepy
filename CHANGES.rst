@@ -9,6 +9,10 @@ Change history for Coverage.py
 Version 4.0.3, in progress
 --------------------------
 
+- Fixed a mysterious problem that manifested in different ways: sometimes
+  hanging the process (`issue 420`_), sometimes making database connections
+  fail (`issue 445`_).
+
 - Fixed an unusual edge case of detecting source encodings, described in
   `issue 443`_.
 
@@ -16,8 +20,10 @@ Version 4.0.3, in progress
   command name, which might be different than "coverage".  Thanks to Ben Finney,
   this closes `issue 438`_.
 
-.. _issue 443: https://bitbucket.org/ned/coveragepy/issues/443/coverage-gets-confused-when-encoding
+.. _issue 420: https://bitbucket.org/ned/coveragepy/issues/420/coverage-40-hangs-indefinitely-on-python27
 .. _issue 438: https://bitbucket.org/ned/coveragepy/issues/438/parameterise-coverage-command-name
+.. _issue 443: https://bitbucket.org/ned/coveragepy/issues/443/coverage-gets-confused-when-encoding
+.. _issue 445: https://bitbucket.org/ned/coveragepy/issues/445/django-app-cannot-connect-to-cassandra
 
 
 Version 4.0.2 --- 4 November 2015
