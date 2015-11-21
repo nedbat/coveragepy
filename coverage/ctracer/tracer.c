@@ -64,21 +64,8 @@ static int
 CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 {
     int ret = RET_ERROR;
-    PyObject * weakref = NULL;
 
     if (DataStack_init(&self->stats, &self->data_stack) < 0) {
-        goto error;
-    }
-
-    weakref = PyImport_ImportModule("weakref");
-    if (weakref == NULL) {
-        goto error;
-    }
-    STATS( self->stats.pycalls++; )
-    self->data_stack_index = PyObject_CallMethod(weakref, "WeakKeyDictionary", NULL);
-    Py_XDECREF(weakref);
-
-    if (self->data_stack_index == NULL) {
         goto error;
     }
 
@@ -211,6 +198,22 @@ CTracer_set_pdata_stack(CTracer *self)
 
     if (self->concur_id_func != Py_None) {
         int the_index = 0;
+
+        if (self->data_stack_index == NULL) {
+            PyObject * weakref = NULL;
+
+            weakref = PyImport_ImportModule("weakref");
+            if (weakref == NULL) {
+                goto error;
+            }
+            STATS( self->stats.pycalls++; )
+            self->data_stack_index = PyObject_CallMethod(weakref, "WeakKeyDictionary", NULL);
+            Py_XDECREF(weakref);
+
+            if (self->data_stack_index == NULL) {
+                goto error;
+            }
+        }
 
         STATS( self->stats.pycalls++; )
         co_obj = PyObject_CallObject(self->concur_id_func, NULL);
