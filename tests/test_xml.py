@@ -8,6 +8,7 @@ import os.path
 import re
 
 import coverage
+from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
 from tests.goldtest import CoverageGoldTest
@@ -144,6 +145,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
 
     def assert_source(self, xml, src):
         """Assert that the XML has a <source> element with `src`."""
+        src = abs_file(src)
         self.assertRegex(xml, r'<source>\s*{0}\s*</source>'.format(re.escape(src)))
 
     def test_curdir_source(self):
@@ -152,7 +154,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         cov = self.run_doit()
         cov.xml_report(outfile="-")
         xml = self.stdout()
-        self.assert_source(xml, os.path.abspath("."))
+        self.assert_source(xml, ".")
         self.assertEqual(xml.count('<source>'), 1)
 
     def test_deep_source(self):
@@ -169,8 +171,8 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         cov.xml_report([mod_foo, mod_bar], outfile="-")
         xml = self.stdout()
 
-        self.assert_source(xml, os.path.abspath("src/main"))
-        self.assert_source(xml, os.path.abspath("also/over/there"))
+        self.assert_source(xml, "src/main")
+        self.assert_source(xml, "also/over/there")
         self.assertEqual(xml.count('<source>'), 2)
 
         self.assertIn(
