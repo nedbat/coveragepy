@@ -315,7 +315,7 @@ class XmlGoldTest(CoverageGoldTest):
             import a            # pragma: nested
             cov.stop()          # pragma: nested
             cov.xml_report(a, outfile="../out/xml_1/coverage.xml")
-            source_path = coverage.files.relative_directory().rstrip('/')
+            source_path = coverage.files.relative_directory().rstrip(r"\/")
 
         compare("gold_x_xml", "out/xml_1", scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
@@ -334,7 +334,7 @@ class XmlGoldTest(CoverageGoldTest):
             import a            # pragma: nested
             cov.stop()          # pragma: nested
             cov.xml_report(a)
-            source_path = coverage.files.relative_directory().rstrip('/')
+            source_path = coverage.files.relative_directory().rstrip(r"\/")
 
         compare("gold_x_xml", "out/xml_2", scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
@@ -353,7 +353,7 @@ class XmlGoldTest(CoverageGoldTest):
             import y            # pragma: nested
             cov.stop()          # pragma: nested
             cov.xml_report(y, outfile="../out/y_xml_branch/coverage.xml")
-            source_path = coverage.files.relative_directory().rstrip('/')
+            source_path = coverage.files.relative_directory().rstrip(r"\/")
 
         compare("gold_y_xml_branch", "out/y_xml_branch", scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),

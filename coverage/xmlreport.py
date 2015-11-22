@@ -149,7 +149,7 @@ class XmlReporter(Reporter):
         rel_name = fr.relative_filename()
 
         if rel_name != fr.filename:
-            self.source_paths.add(fr.filename[:-len(rel_name)].rstrip('/'))
+            self.source_paths.add(fr.filename[:-len(rel_name)].rstrip(r"\/"))
         package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])
 
         xclass = self.xml_out.createElement("class")
