@@ -4,6 +4,7 @@
 """Tests for XML reports from coverage.py."""
 
 import os
+import os.path
 import re
 
 import coverage
@@ -140,6 +141,46 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         xml = self.stdout()
         init_line = re_line(xml, 'filename="sub/__init__.py"')
         self.assertIn('line-rate="1"', init_line)
+
+    def assert_source(self, xml, src):
+        """Assert that the XML has a <source> element with `src`."""
+        self.assertRegex(xml, r'<source>\s*{0}\s*</source>'.format(re.escape(src)))
+
+    def test_curdir_source(self):
+        # With no source= option, the XML report should explain that the source
+        # is in the current directory.
+        cov = self.run_doit()
+        cov.xml_report(outfile="-")
+        xml = self.stdout()
+        self.assert_source(xml, os.path.abspath("."))
+        self.assertEqual(xml.count('<source>'), 1)
+
+    def test_deep_source(self):
+        # When using source=, the XML report needs to mention those directories
+        # in the <source> elements.
+        # https://bitbucket.org/ned/coveragepy/issues/439/incorrect-cobertura-file-sources-generated
+        self.make_file("src/main/foo.py", "a = 1")
+        self.make_file("also/over/there/bar.py", "b = 2")
+        cov = coverage.Coverage(source=["src/main", "also/over/there", "not/really"])
+        cov.start()
+        mod_foo = self.import_local_file("foo", "src/main/foo.py")
+        mod_bar = self.import_local_file("bar", "also/over/there/bar.py")
+        cov.stop()
+        cov.xml_report([mod_foo, mod_bar], outfile="-")
+        xml = self.stdout()
+
+        self.assert_source(xml, os.path.abspath("src/main"))
+        self.assert_source(xml, os.path.abspath("also/over/there"))
+        self.assertEqual(xml.count('<source>'), 2)
+
+        self.assertIn(
+            '<class branch-rate="0" complexity="0" filename="foo.py" line-rate="1" name="foo.py">',
+            xml
+        )
+        self.assertIn(
+            '<class branch-rate="0" complexity="0" filename="bar.py" line-rate="1" name="bar.py">',
+            xml
+        )
 
 
 class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):

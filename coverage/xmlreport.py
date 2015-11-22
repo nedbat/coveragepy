@@ -4,6 +4,7 @@
 """XML reporting for coverage.py"""
 
 import os
+import os.path
 import sys
 import time
 import xml.dom.minidom
@@ -38,6 +39,10 @@ class XmlReporter(Reporter):
         super(XmlReporter, self).__init__(coverage, config)
 
         self.source_paths = set()
+        if config.source:
+            for src in config.source:
+                if os.path.exists(src):
+                    self.source_paths.add(files.canonical_filename(src))
         self.packages = {}
         self.xml_out = None
         self.has_arcs = coverage.data.has_arcs()
@@ -141,9 +146,10 @@ class XmlReporter(Reporter):
         parts = dirname.split("/")
         dirname = "/".join(parts[:self.config.xml_package_depth])
         package_name = dirname.replace("/", ".")
-        className = fr.relative_filename()
+        rel_name = fr.relative_filename()
 
-        self.source_paths.add(files.relative_directory().rstrip('/'))
+        if rel_name != fr.filename:
+            self.source_paths.add(fr.filename[:-len(rel_name)].rstrip('/'))
         package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])
 
         xclass = self.xml_out.createElement("class")
@@ -201,7 +207,7 @@ class XmlReporter(Reporter):
             branch_rate = "0"
         xclass.setAttribute("branch-rate", branch_rate)
 
-        package[0][className] = xclass
+        package[0][rel_name] = xclass
         package[1] += class_hits
         package[2] += class_lines
         package[3] += class_br_hits

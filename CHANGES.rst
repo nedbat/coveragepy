@@ -13,6 +13,10 @@ Version 4.0.3, in progress
   hanging the process (`issue 420`_), sometimes making database connections
   fail (`issue 445`_).
 
+- The XML report now has correct ``<source>`` elements when using a
+  ``--source=`` option somewhere besides the current directory.  This fixes
+  `issue 439`_. Thanks, Arcady Ivanov.
+
 - Fixed an unusual edge case of detecting source encodings, described in
   `issue 443`_.
 
@@ -22,6 +26,7 @@ Version 4.0.3, in progress
 
 .. _issue 420: https://bitbucket.org/ned/coveragepy/issues/420/coverage-40-hangs-indefinitely-on-python27
 .. _issue 438: https://bitbucket.org/ned/coveragepy/issues/438/parameterise-coverage-command-name
+.. _issue 439: https://bitbucket.org/ned/coveragepy/issues/439/incorrect-cobertura-file-sources-generated
 .. _issue 443: https://bitbucket.org/ned/coveragepy/issues/443/coverage-gets-confused-when-encoding
 .. _issue 445: https://bitbucket.org/ned/coveragepy/issues/445/django-app-cannot-connect-to-cassandra
 
