@@ -151,11 +151,12 @@ except AttributeError:
     PYC_MAGIC_NUMBER = imp.get_magic()
 
 
-def import_local_file(modname):
+def import_local_file(modname, modfile=None):
     """Import a local file as a module.
 
     Opens a file in the current directory named `modname`.py, imports it
-    as `modname`, and returns the module object.
+    as `modname`, and returns the module object.  `modfile` is the file to
+    import if it isn't in the current directory.
 
     """
     try:
@@ -163,7 +164,8 @@ def import_local_file(modname):
     except ImportError:
         SourceFileLoader = None
 
-    modfile = modname + '.py'
+    if modfile is None:
+        modfile = modname + '.py'
     if SourceFileLoader:
         mod = SourceFileLoader(modname, modfile).load_module()
     else:
