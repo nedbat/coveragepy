@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Version 4.0.3, in progress
---------------------------
+Version 4.0.3, 24 November 2015
+-------------------------------
 
 - Fixed a mysterious problem that manifested in different ways: sometimes
   hanging the process (`issue 420`_), sometimes making database connections

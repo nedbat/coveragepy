@@ -36,6 +36,7 @@ Major change history for coverage.py
 .. :history: 20150919T072700, updated for 4.0
 .. :history: 20151013T103000, updated for 4.0.1
 .. :history: 20151104T050900, updated for 4.0.2
+.. :history: 20151124T065800, updated for 4.0.3
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -44,6 +45,32 @@ history, see the `CHANGES.rst`_ file in the source tree.
 .. _CHANGES.rst: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.rst
 
 .. module:: coverage
+
+.. _changes_403:
+
+Version 4.0.3 --- 24 November 2015
+----------------------------------
+
+- Fixed a mysterious problem that manifested in different ways: sometimes
+  hanging the process (`issue 420`_), sometimes making database connections
+  fail (`issue 445`_).
+
+- The XML report now has correct ``<source>`` elements when using a
+  ``--source=`` option somewhere besides the current directory.  This fixes
+  `issue 439`_. Thanks, Arcady Ivanov.
+
+- Fixed an unusual edge case of detecting source encodings, described in
+  `issue 443`_.
+
+- Help messages that mention the command to use now properly use the actual
+  command name, which might be different than "coverage".  Thanks to Ben Finney,
+  this closes `issue 438`_.
+
+.. _issue 420: https://bitbucket.org/ned/coveragepy/issues/420/coverage-40-hangs-indefinitely-on-python27
+.. _issue 438: https://bitbucket.org/ned/coveragepy/issues/438/parameterise-coverage-command-name
+.. _issue 439: https://bitbucket.org/ned/coveragepy/issues/439/incorrect-cobertura-file-sources-generated
+.. _issue 443: https://bitbucket.org/ned/coveragepy/issues/443/coverage-gets-confused-when-encoding
+.. _issue 445: https://bitbucket.org/ned/coveragepy/issues/445/django-app-cannot-connect-to-cassandra
 
 
 .. _changes_402:
