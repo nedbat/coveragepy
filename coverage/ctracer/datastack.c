@@ -26,10 +26,10 @@ DataStack_grow(Stats *pstats, DataStack *pdata_stack)
 {
     pdata_stack->depth++;
     if (pdata_stack->depth >= pdata_stack->alloc) {
-        STATS( pstats->stack_reallocs++; )
         /* We've outgrown our data_stack array: make it bigger. */
         int bigger = pdata_stack->alloc + STACK_DELTA;
         DataStackEntry * bigger_data_stack = PyMem_Realloc(pdata_stack->stack, bigger * sizeof(DataStackEntry));
+        STATS( pstats->stack_reallocs++; )
         if (bigger_data_stack == NULL) {
             PyErr_NoMemory();
             pdata_stack->depth--;
