@@ -120,7 +120,8 @@ option, or coverage.py will produce very wrong results.
 .. versionadded:: 4.0
 
 ``data_file`` (string, default ".coverage"): the name of the data file to use
-for storing or reporting coverage.
+for storing or reporting coverage. This value can include a path to another
+directory.
 
 ``debug`` (multi-string): a list of debug options.  See :ref:`the run
 --debug option <cmd_run_debug>` for details.

@@ -165,7 +165,8 @@ Data file
 ---------
 
 Coverage.py collects execution data in a file called ".coverage".  If need be,
-you can set a new file name with the COVERAGE_FILE environment variable.
+you can set a new file name with the COVERAGE_FILE environment variable.  This
+can include a path to another directory.
 
 By default,each run of your program starts with an empty data set. If you need
 to run your program multiple times to get complete data (for example, because
