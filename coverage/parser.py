@@ -12,7 +12,7 @@ import tokenize
 from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints
 from coverage.bytecode import ByteCodes, CodeObjects
-from coverage.misc import contract, nice_pair, expensive, join_regex
+from coverage.misc import contract, nice_pair, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
 from coverage.phystokens import compile_unicode, generate_tokens
 
@@ -42,25 +42,39 @@ class PythonParser(object):
 
         self.exclude = exclude
 
-        self.show_tokens = False
-
         # The text lines of the parsed code.
         self.lines = self.text.split('\n')
 
-        # The line numbers of excluded lines of code.
+        # The normalized line numbers of the statements in the code. Exclusions
+        # are taken into account, and statements are adjusted to their first
+        # lines.
+        self.statements = set()
+
+        # The normalized line numbers of the excluded lines in the code,
+        # adjusted to their first lines.
         self.excluded = set()
 
-        # The line numbers of docstring lines.
-        self.docstrings = set()
+        # The raw_* attributes are only used in this class, and in
+        # lab/parser.py to show how this class is working.
+
+        # The line numbers that start statements, as reported by the line
+        # number table in the bytecode.
+        self.raw_statements = set()
+
+        # The raw line numbers of excluded lines of code, as marked by pragmas.
+        self.raw_excluded = set()
 
         # The line numbers of class definitions.
-        self.classdefs = set()
+        self.raw_classdefs = set()
+
+        # The line numbers of docstring lines.
+        self.raw_docstrings = set()
+
+        # Internal detail, used by lab/parser.py.
+        self.show_tokens = False
 
         # A dict mapping line numbers to (lo,hi) for multi-line statements.
-        self.multiline = {}
-
-        # The line numbers that start statements.
-        self.statement_starts = set()
+        self._multiline = {}
 
         # Lazily-created ByteParser and arc data.
         self._byte_parser = None
@@ -91,12 +105,12 @@ class PythonParser(object):
     def _raw_parse(self):
         """Parse the source to find the interesting facts about its lines.
 
-        A handful of member fields are updated.
+        A handful of attributes are updated.
 
         """
         # Find lines which match an exclusion pattern.
         if self.exclude:
-            self.excluded = self.lines_matching(self.exclude)
+            self.raw_excluded = self.lines_matching(self.exclude)
 
         # Tokenize, to find excluded suites, to find docstrings, and to find
         # multi-line statements.
@@ -122,9 +136,9 @@ class PythonParser(object):
                 # Class definitions look like branches in the byte code, so
                 # we need to exclude them.  The simplest way is to note the
                 # lines with the 'class' keyword.
-                self.classdefs.add(slineno)
+                self.raw_classdefs.add(slineno)
             elif toktype == token.OP and ttext == ':':
-                if not excluding and elineno in self.excluded:
+                if not excluding and elineno in self.raw_excluded:
                     # Start excluding a suite.  We trigger off of the colon
                     # token so that the #pragma comment will be recognized on
                     # the same line as the colon.
@@ -135,14 +149,14 @@ class PythonParser(object):
                 # (a trick from trace.py in the stdlib.) This works for
                 # 99.9999% of cases.  For the rest (!) see:
                 # http://stackoverflow.com/questions/1769332/x/1769794#1769794
-                self.docstrings.update(range(slineno, elineno+1))
+                self.raw_docstrings.update(range(slineno, elineno+1))
             elif toktype == token.NEWLINE:
                 if first_line is not None and elineno != first_line:
                     # We're at the end of a line, and we've ended on a
                     # different line than the first line of the statement,
                     # so record a multi-line range.
                     for l in range(first_line, elineno+1):
-                        self.multiline[l] = first_line
+                        self._multiline[l] = first_line
                 first_line = None
 
             if ttext.strip() and toktype != tokenize.COMMENT:
@@ -156,17 +170,17 @@ class PythonParser(object):
                     if excluding and indent <= exclude_indent:
                         excluding = False
                     if excluding:
-                        self.excluded.add(elineno)
+                        self.raw_excluded.add(elineno)
 
             prev_toktype = toktype
 
         # Find the starts of the executable statements.
         if not empty:
-            self.statement_starts.update(self.byte_parser._find_statements())
+            self.raw_statements.update(self.byte_parser._find_statements())
 
     def first_line(self, line):
         """Return the first line number of the statement including `line`."""
-        first_line = self.multiline.get(line)
+        first_line = self._multiline.get(line)
         if first_line:
             return first_line
         else:
@@ -187,20 +201,13 @@ class PythonParser(object):
 
     def translate_arcs(self, arcs):
         """Implement `FileReporter.translate_arcs`."""
-        return [
-            (self.first_line(a), self.first_line(b))
-            for (a, b) in arcs
-        ]
+        return [(self.first_line(a), self.first_line(b)) for (a, b) in arcs]
 
-    @expensive
     def parse_source(self):
         """Parse source text to find executable lines, excluded lines, etc.
 
-        Return values are 1) a set of executable line numbers, and 2) a set of
-        excluded line numbers.
-
-        Reported line numbers are normalized to the first line of multi-line
-        statements.
+        Sets the .excluded and .statements attributes, normalized to the first
+        line of multi-line statements.
 
         """
         try:
@@ -216,15 +223,11 @@ class PythonParser(object):
                 )
             )
 
-        excluded_lines = self.first_lines(self.excluded)
-        ignore = set()
-        ignore.update(excluded_lines)
-        ignore.update(self.docstrings)
-        starts = self.statement_starts - ignore
-        lines = self.first_lines(starts)
-        lines -= ignore
+        self.excluded = self.first_lines(self.raw_excluded)
 
-        return lines, excluded_lines
+        ignore = self.excluded | self.raw_docstrings
+        starts = self.raw_statements - ignore
+        self.statements = self.first_lines(starts) - ignore
 
     def arcs(self):
         """Get information about the arcs available in the code.
@@ -248,22 +251,21 @@ class PythonParser(object):
         Excluded lines are excluded.
 
         """
-        excluded_lines = self.first_lines(self.excluded)
         exit_counts = collections.defaultdict(int)
         for l1, l2 in self.arcs():
             if l1 < 0:
                 # Don't ever report -1 as a line number
                 continue
-            if l1 in excluded_lines:
+            if l1 in self.excluded:
                 # Don't report excluded lines as line numbers.
                 continue
-            if l2 in excluded_lines:
+            if l2 in self.excluded:
                 # Arcs to excluded lines shouldn't count.
                 continue
             exit_counts[l1] += 1
 
         # Class definitions have one extra exit, so remove one for each:
-        for l in self.classdefs:
+        for l in self.raw_classdefs:
             # Ensure key is there: class definitions can include excluded lines.
             if l in exit_counts:
                 exit_counts[l] -= 1

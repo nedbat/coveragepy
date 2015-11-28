@@ -17,6 +17,7 @@ from coverage.python import get_python_source
 
 opcode_counts = collections.Counter()
 
+
 class ParserMain(object):
     """A main for code parsing experiments."""
 
@@ -69,7 +70,6 @@ class ParserMain(object):
             for opcode, number in opcode_counts.most_common():
                 print("{0:20s} {1:6d}  {2:.1%}".format(opcode, number, number/total))
 
-
     def one_file(self, options, filename):
         """Process just one file."""
 
@@ -85,7 +85,7 @@ class ParserMain(object):
             self.disassemble(bp, histogram=options.histogram)
 
         arcs = bp._all_arcs()
-        if options.chunks:# and not options.dis:
+        if options.chunks:
             chunks = bp._all_chunks()
             if options.recursive:
                 print("%6d: %s" % (len(chunks), filename))
@@ -96,7 +96,7 @@ class ParserMain(object):
         if options.source or options.tokens:
             cp = PythonParser(filename=filename, exclude=r"no\s*cover")
             cp.show_tokens = options.tokens
-            cp._raw_parse()
+            cp.parse_source()
 
             if options.source:
                 if options.chunks:
@@ -108,21 +108,19 @@ class ParserMain(object):
 
                 for lineno, ltext in enumerate(cp.lines, start=1):
                     m0 = m1 = m2 = m3 = a = ' '
-                    if lineno in cp.statement_starts:
+                    if lineno in cp.raw_statements:
                         m0 = '-'
                     exits = exit_counts.get(lineno, 0)
                     if exits > 1:
                         m1 = str(exits)
-                    if lineno in cp.docstrings:
+                    if lineno in cp.raw_docstrings:
                         m2 = '"'
-                    if lineno in cp.classdefs:
+                    if lineno in cp.raw_classdefs:
                         m2 = 'C'
-                    if lineno in cp.excluded:
+                    if lineno in cp.raw_excluded:
                         m3 = 'x'
                     a = arc_chars[lineno].ljust(arc_width)
-                    print("%4d %s%s%s%s%s %s" %
-                                (lineno, m0, m1, m2, m3, a, ltext)
-                        )
+                    print("%4d %s%s%s%s%s %s" % (lineno, m0, m1, m2, m3, a, ltext))
 
     def disassemble(self, byte_parser, histogram=False):
         """Disassemble code, for ad-hoc experimenting."""
@@ -199,4 +197,3 @@ class ParserMain(object):
 
 if __name__ == '__main__':
     ParserMain().main(sys.argv[1:])
-

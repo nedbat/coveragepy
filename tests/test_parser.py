@@ -142,9 +142,8 @@ class ParserFileTest(CoverageTest):
 
     def parse_file(self, filename):
         """Parse `text` as source, and return the `PythonParser` used."""
-        # pylint: disable=attribute-defined-outside-init
         parser = PythonParser(filename=filename, exclude="nocover")
-        self.statements, self.excluded = parser.parse_source()
+        parser.parse_source()
         return parser
 
     def test_line_endings(self):
@@ -191,8 +190,8 @@ class ParserFileTest(CoverageTest):
                 stderr=subprocess.PIPE).communicate()
             """)
 
-        self.parse_file("normal.py")
-        self.assertEqual(self.statements, set([1]))
+        parser = self.parse_file("normal.py")
+        self.assertEqual(parser.statements, set([1]))
 
         self.make_file("abrupt.py", """\
             out, err = subprocess.Popen(
@@ -204,5 +203,5 @@ class ParserFileTest(CoverageTest):
         with open("abrupt.py") as f:
             self.assertEqual(f.read()[-1], ")")
 
-        self.parse_file("abrupt.py")
-        self.assertEqual(self.statements, set([1]))
+        parser = self.parse_file("abrupt.py")
+        self.assertEqual(parser.statements, set([1]))

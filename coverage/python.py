@@ -130,21 +130,16 @@ class PythonFileReporter(FileReporter):
                 filename=self.filename,
                 exclude=self.coverage._exclude_regex('exclude'),
             )
+            self._parser.parse_source()
         return self._parser
 
-    @expensive
     def lines(self):
         """Return the line numbers of statements in the file."""
-        if self._statements is None:
-            self._statements, self._excluded = self.parser.parse_source()
-        return self._statements
+        return self.parser.statements
 
-    @expensive
     def excluded_lines(self):
         """Return the line numbers of statements in the file."""
-        if self._excluded is None:
-            self._statements, self._excluded = self.parser.parse_source()
-        return self._excluded
+        return self.parser.excluded
 
     def translate_lines(self, lines):
         return self.parser.translate_lines(lines)
