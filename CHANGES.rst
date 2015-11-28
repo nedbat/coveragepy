@@ -6,6 +6,16 @@ Change history for Coverage.py
 ==============================
 
 
+Version 4.1, in progress
+------------------------
+
+- Pragmas to disable coverage measurement can now be used on decorator lines,
+  and they will apply to the entire function or class being decorated.  This
+  implements the feature requested in `issue 131`_.
+
+.. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
+
+
 Version 4.0.3, 24 November 2015
 -------------------------------
 

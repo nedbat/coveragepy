@@ -136,6 +136,55 @@ class PythonParserTest(CoverageTest):
                 '''
                 """)
 
+    def test_decorator_pragmas(self):
+        parser = self.parse_source("""\
+            # 1
+
+            @foo(3)                     # nocover
+            @bar
+            def func(x, y=5):
+                return 6
+
+            class Foo:      # the only statement...
+                '''9'''
+                @foo                    # nocover
+                def __init__(self):
+                    '''12'''
+                    return 13
+
+                @foo(                   # nocover
+                    16,
+                    17,
+                )
+                def meth(self):
+                    return 20
+
+            @foo(                       # nocover
+                23
+            )
+            def func(x=25):
+                return 26
+            """)
+        self.assertEqual(
+            parser.raw_statements,
+            set([3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26])
+        )
+        self.assertEqual(parser.statements, set([8]))
+
+    def test_class_decorator_pragmas(self):
+        parser = self.parse_source("""\
+            class Foo(object):
+                def __init__(self):
+                    self.x = 3
+
+            @foo                        # nocover
+            class Bar(object):
+                def __init__(self):
+                    self.x = 8
+            """)
+        self.assertEqual(parser.raw_statements, set([1, 2, 3, 5, 6, 7, 8]))
+        self.assertEqual(parser.statements, set([1, 2, 3]))
+
 
 class ParserFileTest(CoverageTest):
     """Tests for coverage.py's code parsing from files."""

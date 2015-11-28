@@ -108,7 +108,9 @@ class ParserMain(object):
 
                 for lineno, ltext in enumerate(cp.lines, start=1):
                     m0 = m1 = m2 = m3 = a = ' '
-                    if lineno in cp.raw_statements:
+                    if lineno in cp.statements:
+                        m0 = '='
+                    elif lineno in cp.raw_statements:
                         m0 = '-'
                     exits = exit_counts.get(lineno, 0)
                     if exits > 1:

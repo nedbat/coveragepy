@@ -117,9 +117,11 @@ class PythonParser(object):
         indent = 0
         exclude_indent = 0
         excluding = False
+        excluding_decorators = False
         prev_toktype = token.INDENT
         first_line = None
         empty = True
+        first_on_line = True
 
         tokgen = generate_tokens(self.text)
         for toktype, ttext, (slineno, _), (elineno, _), ltext in tokgen:
@@ -132,18 +134,29 @@ class PythonParser(object):
                 indent += 1
             elif toktype == token.DEDENT:
                 indent -= 1
-            elif toktype == token.NAME and ttext == 'class':
-                # Class definitions look like branches in the byte code, so
-                # we need to exclude them.  The simplest way is to note the
-                # lines with the 'class' keyword.
-                self.raw_classdefs.add(slineno)
-            elif toktype == token.OP and ttext == ':':
-                if not excluding and elineno in self.raw_excluded:
-                    # Start excluding a suite.  We trigger off of the colon
-                    # token so that the #pragma comment will be recognized on
-                    # the same line as the colon.
-                    exclude_indent = indent
-                    excluding = True
+            elif toktype == token.NAME:
+                if ttext == 'class':
+                    # Class definitions look like branches in the byte code, so
+                    # we need to exclude them.  The simplest way is to note the
+                    # lines with the 'class' keyword.
+                    self.raw_classdefs.add(slineno)
+            elif toktype == token.OP:
+                if ttext == ':':
+                    should_exclude = (elineno in self.raw_excluded) or excluding_decorators
+                    if not excluding and should_exclude:
+                        # Start excluding a suite.  We trigger off of the colon
+                        # token so that the #pragma comment will be recognized on
+                        # the same line as the colon.
+                        self.raw_excluded.add(elineno)
+                        exclude_indent = indent
+                        excluding = True
+                        excluding_decorators = False
+                elif ttext == '@' and first_on_line:
+                    # A decorator.
+                    if elineno in self.raw_excluded:
+                        excluding_decorators = True
+                    if excluding_decorators:
+                        self.raw_excluded.add(elineno)
             elif toktype == token.STRING and prev_toktype == token.INDENT:
                 # Strings that are first on an indented line are docstrings.
                 # (a trick from trace.py in the stdlib.) This works for
@@ -158,6 +171,7 @@ class PythonParser(object):
                     for l in range(first_line, elineno+1):
                         self._multiline[l] = first_line
                 first_line = None
+                first_on_line = True
 
             if ttext.strip() and toktype != tokenize.COMMENT:
                 # A non-whitespace token.
@@ -171,6 +185,7 @@ class PythonParser(object):
                         excluding = False
                     if excluding:
                         self.raw_excluded.add(elineno)
+                    first_on_line = False
 
             prev_toktype = toktype
 
