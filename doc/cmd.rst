@@ -194,7 +194,7 @@ single directory, and use the **combine** command to combine them into one
 
 You can also name directories or files on the command line::
 
-    $ combine combine data1.dat windows_data_files/
+    $ coverage combine data1.dat windows_data_files/
 
 Coverage.py will collect the data from those places and combine them.  The
 current directory isn't searched if you use command-line arguments.  If you
