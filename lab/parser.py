@@ -99,10 +99,12 @@ class ParserMain(object):
             cp.parse_source()
 
             if options.source:
+                arc_width = 0
+                arc_chars = {}
                 if options.chunks:
-                    arc_width, arc_chars = self.arc_ascii_art(arcs)
-                else:
-                    arc_width, arc_chars = 0, {}
+                    arc_chars = self.arc_ascii_art(arcs)
+                    if arc_chars:
+                        arc_width = max(len(a) for a in arc_chars.values())
 
                 exit_counts = cp.exit_counts()
 
@@ -161,10 +163,11 @@ class ParserMain(object):
     def arc_ascii_art(self, arcs):
         """Draw arcs as ascii art.
 
-        Returns a width of characters needed to draw all the arcs, and a
-        dictionary mapping line numbers to ascii strings to draw for that line.
+        Returns a dictionary mapping line numbers to ascii strings to draw for
+        that line.
 
         """
+
         arc_chars = collections.defaultdict(str)
         for lfrom, lto in sorted(arcs):
             if lfrom < 0:
@@ -179,7 +182,8 @@ class ParserMain(object):
                     l1, l2 = lfrom, lto
                 else:
                     l1, l2 = lto, lfrom
-                w = max(len(arc_chars[l]) for l in range(l1, l2+1))
+                #w = max(len(arc_chars[l]) for l in range(l1, l2+1))
+                w = first_all_blanks(arc_chars[l] for l in range(l1, l2+1))
                 for l in range(l1, l2+1):
                     if l == lfrom:
                         ch = '<'
@@ -187,15 +191,33 @@ class ParserMain(object):
                         ch = '>'
                     else:
                         ch = '|'
-                    arc_chars[l] = arc_chars[l].ljust(w) + ch
-                arc_width = 0
+                    arc_chars[l] = set_char(arc_chars[l], w, ch)
 
-        if arc_chars:
-            arc_width = max(len(a) for a in arc_chars.values())
-        else:
-            arc_width = 0
+        return arc_chars
 
-        return arc_width, arc_chars
+
+def set_char(s, n, c):
+    """Set the nth char of s to be c, extending s if needed."""
+    s = s.ljust(n)
+    return s[:n] + c + s[n+1:]
+
+
+def blanks(s):
+    """Return the set of positions where s is blank."""
+    return set(i for i, c in enumerate(s) if c == " ")
+
+
+def first_all_blanks(ss):
+    """Find the first position that is all blank in the strings ss."""
+    ss = list(ss)
+    blankss = blanks(ss[0])
+    for s in ss[1:]:
+        blankss &= blanks(s)
+    if blankss:
+        return min(blankss)
+    else:
+        return max(len(s) for s in ss)
+
 
 if __name__ == '__main__':
     ParserMain().main(sys.argv[1:])
