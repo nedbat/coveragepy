@@ -17,6 +17,8 @@ env:
   - TOXENV=pypy
   - TOXENV=py27 COVERAGE_COVERAGE=yes
 
+sudo: false
+
 install:
   - pip install -r requirements/tox.pip
 
