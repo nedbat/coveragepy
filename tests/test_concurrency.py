@@ -224,10 +224,6 @@ class MultiprocessingTest(CoverageTest):
 
     def setUp(self):
         super(MultiprocessingTest, self).setUp()
-        # Currently, this doesn't work on Windows, something about pickling
-        # the monkey-patched Process class?
-        if env.WINDOWS:
-            self.skip("Multiprocessing support doesn't work on Windows")
 
     def test_multiprocessing(self):
         self.make_file("multi.py", """\

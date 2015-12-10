@@ -11,6 +11,28 @@ import sys
 # monkey-patched.
 PATCHED_MARKER = "_coverage$patched"
 
+if sys.version_info >= (3, 4):
+
+    klass = multiprocessing.process.BaseProcess
+else:
+    klass = multiprocessing.Process
+
+original_bootstrap = klass._bootstrap
+
+
+class ProcessWithCoverage(klass):
+    """A replacement for multiprocess.Process that starts coverage."""
+    def _bootstrap(self):
+        """Wrapper around _bootstrap to start coverage."""
+        from coverage import Coverage
+        cov = Coverage(data_suffix=True)
+        cov.start()
+        try:
+            return original_bootstrap(self)
+        finally:
+            cov.stop()
+            cov.save()
+
 
 def patch_multiprocessing():
     """Monkey-patch the multiprocessing module.
@@ -21,26 +43,6 @@ def patch_multiprocessing():
     """
     if hasattr(multiprocessing, PATCHED_MARKER):
         return
-
-    if sys.version_info >= (3, 4):
-        klass = multiprocessing.process.BaseProcess
-    else:
-        klass = multiprocessing.Process
-
-    original_bootstrap = klass._bootstrap
-
-    class ProcessWithCoverage(klass):
-        """A replacement for multiprocess.Process that starts coverage."""
-        def _bootstrap(self):
-            """Wrapper around _bootstrap to start coverage."""
-            from coverage import Coverage
-            cov = Coverage(data_suffix=True)
-            cov.start()
-            try:
-                return original_bootstrap(self)
-            finally:
-                cov.stop()
-                cov.save()
 
     if sys.version_info >= (3, 4):
         klass._bootstrap = ProcessWithCoverage._bootstrap
