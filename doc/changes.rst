@@ -48,8 +48,8 @@ history, see the `CHANGES.rst`_ file in the source tree.
 
 .. _changes_403:
 
-Version 4.0.3 --- 24 November 2015
-----------------------------------
+Version 4.0.3 --- 2015-11-24
+----------------------------
 
 - Fixed a mysterious problem that manifested in different ways: sometimes
   hanging the process (`issue 420`_), sometimes making database connections
@@ -63,8 +63,8 @@ Version 4.0.3 --- 24 November 2015
   `issue 443`_.
 
 - Help messages that mention the command to use now properly use the actual
-  command name, which might be different than "coverage".  Thanks to Ben Finney,
-  this closes `issue 438`_.
+  command name, which might be different than "coverage".  Thanks to Ben
+  Finney, this closes `issue 438`_.
 
 .. _issue 420: https://bitbucket.org/ned/coveragepy/issues/420/coverage-40-hangs-indefinitely-on-python27
 .. _issue 438: https://bitbucket.org/ned/coveragepy/issues/438/parameterise-coverage-command-name
@@ -75,8 +75,8 @@ Version 4.0.3 --- 24 November 2015
 
 .. _changes_402:
 
-Version 4.0.2 --- 4 November 2015
----------------------------------
+Version 4.0.2 --- 2015-11-04
+----------------------------
 
 - More work on supporting unusually encoded source. Fixed `issue 431`_.
 
@@ -96,8 +96,8 @@ Version 4.0.2 --- 4 November 2015
 
 .. _changes_401:
 
-Version 4.0.1 --- 13 October 2015
----------------------------------
+Version 4.0.1 --- 2015-10-13
+----------------------------
 
 - When combining data files, unreadable files will now generate a warning
   instead of failing the command.  This is more in line with the older
@@ -144,8 +144,8 @@ Version 4.0.1 --- 13 October 2015
 
 .. _changes_40:
 
-Version 4.0 --- 20 September 2015
----------------------------------
+Version 4.0 --- 2015-09-20
+--------------------------
 
 
 Backward incompatibilities:
@@ -347,8 +347,8 @@ Bug fixes:
 
 .. _changes_371:
 
-Version 3.7.1 --- 13 December 2013
-----------------------------------
+Version 3.7.1 --- 2013-12-13
+----------------------------
 
 - Improved the speed of HTML report generation by about 20%.
 
@@ -358,8 +358,8 @@ Version 3.7.1 --- 13 December 2013
 
 .. _changes_37:
 
-Version 3.7 --- 6 October 2013
-------------------------------
+Version 3.7 --- 2013-10-06
+--------------------------
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
   options indicating the type of internal activity to log to stderr. For
@@ -416,8 +416,10 @@ Version 3.7 --- 6 October 2013
 .. _issue 267: https://bitbucket.org/ned/coveragepy/issue/267/relative-path-aliases-dont-work
 
 
-Version 3.6 --- 5 January 2013
-------------------------------
+.. _changes_36:
+
+Version 3.6 --- 2013-01-05
+--------------------------
 
 Features:
 
@@ -560,8 +562,10 @@ Fixes:
 .. _issue 227: https://bitbucket.org/ned/coveragepy/issue/227/update-todo
 
 
-Version 3.5.3 --- 29 September 2012
------------------------------------
+.. _changes_353:
+
+Version 3.5.3 --- 2012-09-29
+----------------------------
 
 - Line numbers in the HTML report line up better with the source lines, fixing
   `issue 197`_, thanks Marius Gedminas.
@@ -596,7 +600,9 @@ Version 3.5.3 --- 29 September 2012
 .. _issue 197: https://bitbucket.org/ned/coveragepy/issue/197/line-numbers-in-html-report-do-not-align
 
 
-Version 3.5.2 --- 4 May 2012
+.. _changes_352:
+
+Version 3.5.2 --- 2012-05-04
 ----------------------------
 
 - The HTML report has slightly tweaked controls: the buttons at the top of
@@ -640,8 +646,10 @@ Version 3.5.2 --- 4 May 2012
 .. _issue 173: https://bitbucket.org/ned/coveragepy/issue/173/theres-no-way-to-specify-show-missing-in
 
 
-Version 3.5.1 --- 23 September 2011
------------------------------------
+.. _changes_351:
+
+Version 3.5.1 --- 2011-09-23
+----------------------------
 
 - When combining data files from parallel runs, you can now instruct
   coverage.py about which directories are equivalent on different machines.  A
@@ -679,8 +687,10 @@ Version 3.5.1 --- 23 September 2011
 .. _issue 144: http://bitbucket.org/ned/coveragepy/issue/144/failure-generating-html-output-for
 
 
-Version 3.5 --- 29 June 2011
-----------------------------
+.. _changes_35:
+
+Version 3.5 --- 2011-06-29
+--------------------------
 
 HTML reporting:
 
@@ -748,8 +758,10 @@ Reporting
 .. _issue 125: https://bitbucket.org/ned/coveragepy/issue/125/coverage-removes-decoratortoolss-tracing
 
 
-Version 3.4 --- 19 September 2010
----------------------------------
+.. _changes_34:
+
+Version 3.4 --- 2010-09-19
+--------------------------
 
 Controlling source:
 
@@ -843,8 +855,10 @@ Execution and measurement:
 .. _issue 88: http://bitbucket.org/ned/coveragepy/issue/88/xml-report-lists-packages-in-random-order
 
 
-Version 3.3.1 --- 6 March 2010
-------------------------------
+.. _changes_331:
+
+Version 3.3.1 --- 2010-03-06
+----------------------------
 
 - Using ``parallel=True`` in a .coveragerc file prevented reporting, but now
   does not, fixing `issue 49`_.
@@ -856,8 +870,10 @@ Version 3.3.1 --- 6 March 2010
 .. _issue 50: http://bitbucket.org/ned/coveragepy/issue/50
 
 
-Version 3.3 --- 24 February 2010
---------------------------------
+.. _changes_33:
+
+Version 3.3 --- 2010-02-24
+--------------------------
 
 - Settings are now read from a .coveragerc file.  A specific file can be
   specified on the command line with ``--rcfile=FILE``.  The name of the file
@@ -884,8 +900,10 @@ Version 3.3 --- 24 February 2010
 .. _issue 47: http://bitbucket.org/ned/coveragepy/issue/47
 
 
-Version 3.2 --- 5 December 2009
--------------------------------
+.. _changes_32:
+
+Version 3.2 --- 2009-12-05
+--------------------------
 
 - Branch coverage: coverage.py can tell you which branches didn't have both (or
   all) choices executed, even where the choice doesn't affect which lines were
@@ -920,8 +938,10 @@ Version 3.2 --- 5 December 2009
 .. _issue 33: http://bitbucket.org/ned/coveragepy/issue/33
 
 
-Version 3.1 --- 4 October 2009
-------------------------------
+.. _changes_31:
+
+Version 3.1 --- 2009-10-04
+--------------------------
 
 - Python 3.1 is now supported.
 
@@ -951,8 +971,10 @@ Version 3.1 --- 4 October 2009
 .. _issue 13: http://bitbucket.org/ned/coveragepy/issue/13
 
 
-Version 3.0.1 --- 7 July 2009
------------------------------
+.. _changes_301:
+
+Version 3.0.1 --- 2009-07-07
+----------------------------
 
 - Removed the recursion limit in the tracer function.  Previously, code that
   ran more than 500 frames deep would crash.
@@ -971,8 +993,10 @@ Version 3.0.1 --- 7 July 2009
   example.
 
 
-Version 3.0 --- 13 June 2009
-----------------------------
+.. _changes_30:
+
+Version 3.0 --- 2009-06-13
+--------------------------
 
 - Coverage.py is now a package rather than a module.  Functionality has been
   split into classes.

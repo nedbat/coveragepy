@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Version 4.1, in progress
-------------------------
+Unreleased
+----------
 
 - Pragmas to disable coverage measurement can now be used on decorator lines,
   and they will apply to the entire function or class being decorated.  This
@@ -16,8 +16,8 @@ Version 4.1, in progress
 .. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
 
 
-Version 4.0.3, 24 November 2015
--------------------------------
+Version 4.0.3 --- 2015-11-24
+----------------------------
 
 - Fixed a mysterious problem that manifested in different ways: sometimes
   hanging the process (`issue 420`_), sometimes making database connections
@@ -31,8 +31,8 @@ Version 4.0.3, 24 November 2015
   `issue 443`_.
 
 - Help messages that mention the command to use now properly use the actual
-  command name, which might be different than "coverage".  Thanks to Ben Finney,
-  this closes `issue 438`_.
+  command name, which might be different than "coverage".  Thanks to Ben
+  Finney, this closes `issue 438`_.
 
 .. _issue 420: https://bitbucket.org/ned/coveragepy/issues/420/coverage-40-hangs-indefinitely-on-python27
 .. _issue 438: https://bitbucket.org/ned/coveragepy/issues/438/parameterise-coverage-command-name
@@ -41,8 +41,8 @@ Version 4.0.3, 24 November 2015
 .. _issue 445: https://bitbucket.org/ned/coveragepy/issues/445/django-app-cannot-connect-to-cassandra
 
 
-Version 4.0.2 --- 4 November 2015
----------------------------------
+Version 4.0.2 --- 2015-11-04
+----------------------------
 
 - More work on supporting unusually encoded source. Fixed `issue 431`_.
 
@@ -60,8 +60,8 @@ Version 4.0.2 --- 4 November 2015
 .. _issue 436: https://bitbucket.org/ned/coveragepy/issues/436/disabled-coverage-ctracer-may-rise-from
 
 
-Version 4.0.1 --- 13 October 2015
----------------------------------
+Version 4.0.1 --- 2015-10-13
+----------------------------
 
 - When combining data files, unreadable files will now generate a warning
   instead of failing the command.  This is more in line with the older
@@ -106,14 +106,14 @@ Version 4.0.1 --- 13 October 2015
 .. _issue 423: https://bitbucket.org/ned/coveragepy/issues/423/skip_covered-changes-reported-total
 
 
-Version 4.0 --- 20 September 2015
----------------------------------
+Version 4.0 --- 2015-09-20
+--------------------------
 
 No changes from 4.0b3
 
 
-Version 4.0b3 --- 7 September 2015
-----------------------------------
+Version 4.0b3 --- 2015-09-07
+----------------------------
 
 - Reporting on an unmeasured file would fail with a traceback.  This is now
   fixed, closing `issue 403`_.
@@ -133,10 +133,10 @@ Version 4.0b3 --- 7 September 2015
 
 
 
-Version 4.0b2 --- 22 August 2015
---------------------------------
+Version 4.0b2 --- 2015-08-22
+----------------------------
 
-- 4.0b1 broke --append creating new data files.  This is now fixed, closing
+- 4.0b1 broke ``--append`` creating new data files.  This is now fixed, closing
   `issue 392`_.
 
 - ``py.test --cov`` can write empty data, then touch files due to ``--source``,
@@ -166,8 +166,8 @@ Version 4.0b2 --- 22 August 2015
 .. _sys.version_info: https://docs.python.org/3/library/sys.html#sys.version_info
 
 
-Version 4.0b1 --- 2 August 2015
--------------------------------
+Version 4.0b1 --- 2015-08-02
+----------------------------
 
 - Coverage.py is now licensed under the Apache 2.0 license.  See NOTICE.txt for
   details.  Closes `issue 313`_.
@@ -245,8 +245,8 @@ Version 4.0b1 --- 2 August 2015
 .. 40 issues closed in 4.0 below here
 
 
-Version 4.0a6 --- 21 June 2015
-------------------------------
+Version 4.0a6 --- 2015-06-21
+----------------------------
 
 - Python 3.5b2 and PyPy 2.6.0 are supported.
 
@@ -306,8 +306,8 @@ Version 4.0a6 --- 21 June 2015
 .. _issue 375: https://bitbucket.org/ned/coveragepy/issue/375/ctracer_handle_return-reads-byte-code
 
 
-Version 4.0a5 --- 16 February 2015
-----------------------------------
+Version 4.0a5 --- 2015-02-16
+----------------------------
 
 - Plugin support is now implemented in the C tracer instead of the Python
   tracer. This greatly improves the speed of tracing projects using plugins.
@@ -340,8 +340,8 @@ Version 4.0a5 --- 16 February 2015
 .. _issue 358: https://bitbucket.org/ned/coveragepy/issue/358/all-coverage-commands-should-adjust
 
 
-Version 4.0a4 --- 25 January 2015
----------------------------------
+Version 4.0a4 --- 2015-01-25
+----------------------------
 
 - Plugins can now provide sys_info for debugging output.
 
@@ -350,8 +350,8 @@ Version 4.0a4 --- 25 January 2015
 - Prepared to move the docs to readthedocs.org.
 
 
-Version 4.0a3 --- 20 January 2015
----------------------------------
+Version 4.0a3 --- 2015-01-20
+----------------------------
 
 - Reports now use file names with extensions.  Previously, a report would
   describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
@@ -384,8 +384,8 @@ Version 4.0a3 --- 20 January 2015
 .. _issue 349: https://bitbucket.org/ned/coveragepy/issue/349/bad-regex-in-config-should-get-an-earlier
 
 
-Version 4.0a2 --- 14 January 2015
----------------------------------
+Version 4.0a2 --- 2015-01-14
+----------------------------
 
 - Officially support PyPy 2.4, and PyPy3 2.4.  Drop support for
   CPython 3.2 and older versions of PyPy.  The code won't work on CPython 3.2.
@@ -452,8 +452,8 @@ Version 4.0a2 --- 14 January 2015
 .. _issue 343: https://bitbucket.org/ned/coveragepy/issue/343/an-explicitly-named-non-existent-config
 
 
-Version 4.0a1 --- 27 September 2014
------------------------------------
+Version 4.0a1 --- 2014-09-27
+----------------------------
 
 - Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
   PyPy 2.2.
@@ -506,8 +506,8 @@ Version 4.0a1 --- 27 September 2014
 .. _issue 331: https://bitbucket.org/ned/coveragepy/issue/331/failure-of-encoding-detection-on-python2
 
 
-Version 3.7.1 --- 13 December 2013
-----------------------------------
+Version 3.7.1 --- 2013-12-13
+----------------------------
 
 - Improved the speed of HTML report generation by about 20%.
 
@@ -515,8 +515,8 @@ Version 3.7.1 --- 13 December 2013
   so that it will actually find OS-installed static files.
 
 
-Version 3.7 --- 6 October 2013
-------------------------------
+Version 3.7 --- 2013-10-06
+--------------------------
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
   options indicating the type of internal activity to log to stderr.
@@ -572,8 +572,8 @@ Version 3.7 --- 6 October 2013
 .. _issue 267: https://bitbucket.org/ned/coveragepy/issue/267/relative-path-aliases-dont-work
 
 
-Version 3.6 --- 5 January 2013
-------------------------------
+Version 3.6 --- 2013-01-05
+--------------------------
 
 - Added a page to the docs about troublesome situations, closing `issue 226`_,
   and added some info to the TODO file, closing `issue 227`_.
@@ -582,16 +582,16 @@ Version 3.6 --- 5 January 2013
 .. _issue 227: https://bitbucket.org/ned/coveragepy/issue/227/update-todo
 
 
-Version 3.6b3 --- 29 December 2012
-----------------------------------
+Version 3.6b3 --- 2012-12-29
+----------------------------
 
 - Beta 2 broke the nose plugin. It's fixed again, closing `issue 224`_.
 
 .. _issue 224: https://bitbucket.org/ned/coveragepy/issue/224/36b2-breaks-nosexcover
 
 
-Version 3.6b2 --- 23 December 2012
-----------------------------------
+Version 3.6b2 --- 2012-12-23
+----------------------------
 
 - Coverage.py runs on Python 2.3 and 2.4 again. It was broken in 3.6b1.
 
@@ -610,8 +610,8 @@ Version 3.6b2 --- 23 December 2012
 .. _issue 221: https://bitbucket.org/ned/coveragepy/issue/221/coveragepy-incompatible-with-pyratemp
 
 
-Version 3.6b1 --- 28 November 2012
-----------------------------------
+Version 3.6b1 --- 2012-11-28
+----------------------------
 
 - Wildcards in ``include=`` and ``omit=`` arguments were not handled properly
   in reporting functions, though they were when running.  Now they are handled
@@ -724,8 +724,8 @@ Version 3.6b1 --- 28 November 2012
 .. _issue 214: https://bitbucket.org/ned/coveragepy/issue/214/coveragepy-measures-itself-on-precise
 
 
-Version 3.5.3 --- 29 September 2012
------------------------------------
+Version 3.5.3 --- 2012-09-29
+----------------------------
 
 - Line numbers in the HTML report line up better with the source lines, fixing
   `issue 197`_, thanks Marius Gedminas.
@@ -763,14 +763,14 @@ Version 3.5.3 --- 29 September 2012
 .. _tox: http://tox.readthedocs.org/
 
 
-Version 3.5.2 --- 4 May 2012
+Version 3.5.2 --- 2012-05-04
 ----------------------------
 
 No changes since 3.5.2.b1
 
 
-Version 3.5.2b1 --- 29 April 2012
----------------------------------
+Version 3.5.2b1 --- 2012-04-29
+------------------------------
 
 - The HTML report has slightly tweaked controls: the buttons at the top of
   the page are color-coded to the source lines they affect.
@@ -813,16 +813,16 @@ Version 3.5.2b1 --- 29 April 2012
 .. _issue 173: https://bitbucket.org/ned/coveragepy/issue/173/theres-no-way-to-specify-show-missing-in
 
 
-Version 3.5.1 --- 23 September 2011
------------------------------------
+Version 3.5.1 --- 2011-09-23
+----------------------------
 
 - The ``[paths]`` feature unfortunately didn't work in real world situations
   where you wanted to, you know, report on the combined data.  Now all paths
   stored in the combined file are canonicalized properly.
 
 
-Version 3.5.1b1 --- 28 August 2011
-----------------------------------
+Version 3.5.1b1 --- 2011-08-28
+------------------------------
 
 - When combining data files from parallel runs, you can now instruct
   coverage.py about which directories are equivalent on different machines.  A
@@ -860,8 +860,8 @@ Version 3.5.1b1 --- 28 August 2011
 .. _issue 144: http://bitbucket.org/ned/coveragepy/issue/144/failure-generating-html-output-for
 
 
-Version 3.5 --- 29 June 2011
-----------------------------
+Version 3.5 --- 2011-06-29
+--------------------------
 
 - The HTML report hotkeys now behave slightly differently when the current
   chunk isn't visible at all:  a chunk on the screen will be selected,
@@ -869,8 +869,8 @@ Version 3.5 --- 29 June 2011
   The hotkeys now work in Google Chrome.  Thanks, Guido van Rossum.
 
 
-Version 3.5b1 --- 5 June 2011
------------------------------
+Version 3.5b1 --- 2011-06-05
+----------------------------
 
 - The HTML report now has hotkeys.  Try ``n``, ``s``, ``m``, ``x``, ``b``,
   ``p``, and ``c`` on the overview page to change the column sorting.
@@ -948,8 +948,8 @@ Version 3.5b1 --- 5 June 2011
 .. _issue 125: https://bitbucket.org/ned/coveragepy/issue/125/coverage-removes-decoratortoolss-tracing
 
 
-Version 3.4 --- 19 September 2010
----------------------------------
+Version 3.4 --- 2010-09-19
+--------------------------
 
 - The XML report is now sorted by package name, fixing `issue 88`_.
 
@@ -959,8 +959,8 @@ Version 3.4 --- 19 September 2010
 .. _issue 88: http://bitbucket.org/ned/coveragepy/issue/88/xml-report-lists-packages-in-random-order
 
 
-Version 3.4b2 --- 6 September 2010
-----------------------------------
+Version 3.4b2 --- 2010-09-06
+----------------------------
 
 - Completely unexecuted files can now be included in coverage results, reported
   as 0% covered.  This only happens if the --source option is specified, since
@@ -989,8 +989,8 @@ Version 3.4b2 --- 6 September 2010
 .. _issue 85: http://bitbucket.org/ned/coveragepy/issue/85/threadrun-isnt-measured
 
 
-Version 3.4b1 --- 21 August 2010
---------------------------------
+Version 3.4b1 --- 2010-08-21
+----------------------------
 
 - BACKWARD INCOMPATIBILITY: the ``--omit`` and ``--include`` switches now take
   file patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
@@ -1075,8 +1075,8 @@ Version 3.4b1 --- 21 August 2010
 .. _issue 82: http://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 
 
-Version 3.3.1 --- 6 March 2010
-------------------------------
+Version 3.3.1 --- 2010-03-06
+----------------------------
 
 - Using `parallel=True` in .coveragerc file prevented reporting, but now does
   not, fixing `issue 49`_.
@@ -1088,8 +1088,8 @@ Version 3.3.1 --- 6 March 2010
 .. _issue 50: http://bitbucket.org/ned/coveragepy/issue/50
 
 
-Version 3.3 --- 24 February 2010
---------------------------------
+Version 3.3 --- 2010-02-24
+--------------------------
 
 - Settings are now read from a .coveragerc file.  A specific file can be
   specified on the command line with --rcfile=FILE.  The name of the file can
@@ -1127,14 +1127,14 @@ Version 3.3 --- 24 February 2010
 .. _issue 47: http://bitbucket.org/ned/coveragepy/issue/47
 
 
-Version 3.2 --- 5 December 2009
--------------------------------
+Version 3.2 --- 2009-12-05
+--------------------------
 
 - Added a ``--version`` option on the command line.
 
 
-Version 3.2b4 --- 1 December 2009
----------------------------------
+Version 3.2b4 --- 2009-12-01
+----------------------------
 
 - Branch coverage improvements:
 
@@ -1149,8 +1149,8 @@ Version 3.2b4 --- 1 December 2009
 .. _Distribute: http://packages.python.org/distribute/
 
 
-Version 3.2b3 --- 23 November 2009
-----------------------------------
+Version 3.2b3 --- 2009-11-23
+----------------------------
 
 - Fixed a memory leak in the C tracer that was introduced in 3.2b1.
 
@@ -1164,8 +1164,8 @@ Version 3.2b3 --- 23 November 2009
 .. _Chris Adams: http://improbable.org/chris/
 
 
-Version 3.2b2 --- 19 November 2009
-----------------------------------
+Version 3.2b2 --- 2009-11-19
+----------------------------
 
 - Branch coverage improvements:
 
@@ -1188,8 +1188,8 @@ Version 3.2b2 --- 19 November 2009
 .. _issue 35: http://bitbucket.org/ned/coveragepy/issue/35
 
 
-Version 3.2b1 --- 10 November 2009
-----------------------------------
+Version 3.2b1 --- 2009-11-10
+----------------------------
 
 - Branch coverage!
 
@@ -1203,8 +1203,8 @@ Version 3.2b1 --- 10 November 2009
 .. _issue 23: http://bitbucket.org/ned/coveragepy/issue/23
 
 
-Version 3.1 --- 4 October 2009
-------------------------------
+Version 3.1 --- 2009-10-04
+--------------------------
 
 - Source code can now be read from eggs.  Thanks, Ross Lawley.  Fixes
   `issue 25`_.
@@ -1212,8 +1212,8 @@ Version 3.1 --- 4 October 2009
 .. _issue 25: http://bitbucket.org/ned/coveragepy/issue/25
 
 
-Version 3.1b1 --- 27 September 2009
------------------------------------
+Version 3.1b1 --- 2009-09-27
+----------------------------
 
 - Python 3.1 is now supported.
 
@@ -1245,8 +1245,8 @@ Version 3.1b1 --- 27 September 2009
 .. _issue 24: http://bitbucket.org/ned/coveragepy/issue/24
 
 
-Version 3.0.1 --- 7 July 2009
------------------------------
+Version 3.0.1 --- 2009-07-07
+----------------------------
 
 - Removed the recursion limit in the tracer function.  Previously, code that
   ran more than 500 frames deep would crash. Fixed `issue 9`_.
@@ -1270,8 +1270,8 @@ Version 3.0.1 --- 7 July 2009
 .. _issue 8: http://bitbucket.org/ned/coveragepy/issue/8
 
 
-Version 3.0 --- 13 June 2009
-----------------------------
+Version 3.0 --- 2009-06-13
+--------------------------
 
 - Fixed the way the Python library was ignored.  Too much code was being
   excluded the old way.
@@ -1284,8 +1284,8 @@ Version 3.0 --- 13 June 2009
 .. _issue 6: http://bitbucket.org/ned/coveragepy/issue/6
 
 
-Version 3.0b3 --- 16 May 2009
------------------------------
+Version 3.0b3 --- 2009-05-16
+----------------------------
 
 - Added parameters to coverage.__init__ for options that had been set on the
   coverage object itself.
@@ -1305,8 +1305,8 @@ Version 3.0b3 --- 16 May 2009
   interface still uses automatic saving.
 
 
-Version 3.0b --- 30 April 2009
-------------------------------
+Version 3.0b --- 2009-04-30
+---------------------------
 
 HTML reporting, and continued refactoring.
 
@@ -1333,8 +1333,8 @@ HTML reporting, and continued refactoring.
 - Removed the undocumented cache_file argument to coverage.usecache().
 
 
-Version 3.0b1 --- 7 March 2009
-------------------------------
+Version 3.0b1 --- 2009-03-07
+----------------------------
 
 Major overhaul.
 
@@ -1358,8 +1358,8 @@ Major overhaul.
 - The minimum supported Python version is 2.3.
 
 
-Version 2.85 --- 14 September 2008
-----------------------------------
+Version 2.85 --- 2008-09-14
+---------------------------
 
 - Add support for finding source files in eggs. Don't check for
   morf's being instances of ModuleType, instead use duck typing so that
@@ -1369,35 +1369,35 @@ Version 2.85 --- 14 September 2008
   confuse things. Thanks, Patrick Mezard.
 
 
-Version 2.80 --- 25 May 2008
-----------------------------
+Version 2.80 --- 2008-05-25
+---------------------------
 
 - Open files in rU mode to avoid line ending craziness. Thanks, Edward Loper.
 
 
-Version 2.78 --- 30 September 2007
-----------------------------------
+Version 2.78 --- 2007-09-30
+---------------------------
 
 - Don't try to predict whether a file is Python source based on the extension.
   Extension-less files are often Pythons scripts. Instead, simply parse the file
   and catch the syntax errors. Hat tip to Ben Finney.
 
 
-Version 2.77 --- 29 July 2007
------------------------------
+Version 2.77 --- 2007-07-29
+---------------------------
 
 - Better packaging.
 
 
-Version 2.76 --- 23 July 2007
------------------------------
+Version 2.76 --- 2007-07-23
+---------------------------
 
 - Now Python 2.5 is *really* fully supported: the body of the new with
   statement is counted as executable.
 
 
-Version 2.75 --- 22 July 2007
------------------------------
+Version 2.75 --- 2007-07-22
+---------------------------
 
 - Python 2.5 now fully supported. The method of dealing with multi-line
   statements is now less sensitive to the exact line that Python reports during
@@ -1405,8 +1405,8 @@ Version 2.75 --- 22 July 2007
   during execution won't throw off the measurement.
 
 
-Version 2.7 --- 21 July 2007
-----------------------------
+Version 2.7 --- 2007-07-21
+--------------------------
 
 - "#pragma: nocover" is excluded by default.
 
@@ -1429,8 +1429,8 @@ Version 2.7 --- 21 July 2007
 - Minor changes to avoid lint warnings.
 
 
-Version 2.6 --- 23 August 2006
-------------------------------
+Version 2.6 --- 2006-08-23
+--------------------------
 
 - Applied Joseph Tate's patch for function decorators.
 
@@ -1442,8 +1442,8 @@ Version 2.6 --- 23 August 2006
   mode and collect.
 
 
-Version 2.5 --- 4 December 2005
--------------------------------
+Version 2.5 --- 2005-12-04
+--------------------------
 
 - Call threading.settrace so that all threads are measured. Thanks Martin
   Fuzzey.
@@ -1457,21 +1457,21 @@ Version 2.5 --- 4 December 2005
   omitting files to report on.
 
 
-Version 2.2 --- 31 December 2004
---------------------------------
+Version 2.2 --- 2004-12-31
+--------------------------
 
 - Allow for keyword arguments in the module global functions. Thanks, Allen.
 
 
-Version 2.1 --- 14 December 2004
---------------------------------
+Version 2.1 --- 2004-12-14
+--------------------------
 
 - Return 'analysis' to its original behavior and add 'analysis2'. Add a global
   for 'annotate', and factor it, adding 'annotate_file'.
 
 
-Version 2.0 --- 12 December 2004
---------------------------------
+Version 2.0 --- 2004-12-12
+--------------------------
 
 Significant code changes.
 
