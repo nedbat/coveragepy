@@ -222,9 +222,6 @@ class ConcurrencyTest(CoverageTest):
 class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
 
-    def setUp(self):
-        super(MultiprocessingTest, self).setUp()
-
     def test_multiprocessing(self):
         self.make_file("multi.py", """\
             import multiprocessing
