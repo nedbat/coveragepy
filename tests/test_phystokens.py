@@ -97,13 +97,13 @@ else:
 
 ENCODING_DECLARATION_SOURCES = [
     # Various forms from http://www.python.org/dev/peps/pep-0263/
-    b"# coding=cp850\n\n",
-    b"#!/usr/bin/python\n# -*- coding: cp850 -*-\n",
-    b"#!/usr/bin/python\n# vim: set fileencoding=cp850:\n",
-    b"# This Python file uses this encoding: cp850\n",
-    b"# This file uses a different encoding:\n# coding: cp850\n",
-    b"\n# coding=cp850\n\n",
-    b"# -*-  coding:cp850 -*-\n# vim: fileencoding=cp850\n",
+    (1, b"# coding=cp850\n\n"),
+    (1, b"#!/usr/bin/python\n# -*- coding: cp850 -*-\n"),
+    (1, b"#!/usr/bin/python\n# vim: set fileencoding=cp850:\n"),
+    (1, b"# This Python file uses this encoding: cp850\n"),
+    (1, b"# This file uses a different encoding:\n# coding: cp850\n"),
+    (1, b"\n# coding=cp850\n\n"),
+    (2, b"# -*-  coding:cp850 -*-\n# vim: fileencoding=cp850\n"),
 ]
 
 class SourceEncodingTest(CoverageTest):
@@ -112,7 +112,7 @@ class SourceEncodingTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_detect_source_encoding(self):
-        for source in ENCODING_DECLARATION_SOURCES:
+        for _, source in ENCODING_DECLARATION_SOURCES:
             self.assertEqual(
                 source_encoding(source),
                 'cp850',
@@ -154,7 +154,7 @@ class NeuterEncodingDeclarationTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_neuter_encoding_declaration(self):
-        for source in ENCODING_DECLARATION_SOURCES:
+        for lines_diff_expected, source in ENCODING_DECLARATION_SOURCES:
             neutered = neuter_encoding_declaration(source.decode("ascii"))
             neutered = neutered.encode("ascii")
 
@@ -167,7 +167,7 @@ class NeuterEncodingDeclarationTest(CoverageTest):
             lines_different = sum(
                 int(nline != sline) for nline, sline in zip(neutered_lines, source_lines)
             )
-            self.assertEqual(lines_different, 1)
+            self.assertEqual(lines_diff_expected, lines_different)
 
             # The neutered source will be detected as having no encoding
             # declaration.
@@ -183,10 +183,18 @@ class CompileUnicodeTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_cp1252(self):
-        uni = u"""# coding: cp1252\n# \u201C curly \u201D\na = 42"""
+    def assert_compile_unicode(self, source):
+        source += u"a = 42\n"
         # This doesn't raise an exception:
-        code = compile_unicode(uni, "<string>", "exec")
+        code = compile_unicode(source, "<string>", "exec")
         globs = {}
         exec(code, globs)
         self.assertEqual(globs['a'], 42)
+
+    def test_cp1252(self):
+        uni = u"""# coding: cp1252\n# \u201C curly \u201D\n"""
+        self.assert_compile_unicode(uni)
+
+    def test_double_coding_declaration(self):
+        uni = u"""# -*-  coding:utf-8 -*-\n# vim: fileencoding=utf-8\n"""
+        self.assert_compile_unicode(uni)

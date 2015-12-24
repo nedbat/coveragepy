@@ -16,7 +16,12 @@ Unreleased
 - Multiprocessing support is now available on Windows.  Thanks, Rodrigue
   Cloutier.
 
+- Files with two encoding declarations are properly supported, fixing
+  `issue 453`_. Thanks, Max Linke.
+
+
 .. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
+.. _issue 453: https://bitbucket.org/ned/coveragepy/issues/453/source-code-encoding-can-only-be-specified
 
 
 Version 4.0.3 --- 2015-11-24
