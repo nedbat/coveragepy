@@ -61,7 +61,10 @@ kit_upload:
 	twine upload dist/*
 
 kit_local:
-	cp -v dist/* `awk -F "=" '/find-links/ {print $$2}' ~/.pip/pip.conf`
+	# pip.conf looks like this:
+	#   [global]
+	#   find-links = file:///Users/ned/Downloads/local_pypi
+	cp -v dist/* `awk -F "//" '/find-links/ {print $$2}' ~/.pip/pip.conf`
 	# pip caches wheels of things it has installed. Clean them out so we
 	# don't go crazy trying to figure out why our new code isn't installing.
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
