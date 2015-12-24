@@ -82,7 +82,7 @@ class ParserMain(object):
 
         if options.dis:
             print("Main code:")
-            self.disassemble(bp, histogram=options.histogram)
+            self.disassemble(bp, chunks=options.chunks, histogram=options.histogram)
 
         arcs = bp._all_arcs()
         if options.chunks:
@@ -123,15 +123,20 @@ class ParserMain(object):
                         m2 = 'C'
                     if lineno in cp.raw_excluded:
                         m3 = 'x'
-                    a = arc_chars[lineno].ljust(arc_width)
+
+                    if arc_chars:
+                        a = arc_chars[lineno].ljust(arc_width)
+                    else:
+                        a = ""
+
                     print("%4d %s%s%s%s%s %s" % (lineno, m0, m1, m2, m3, a, ltext))
 
-    def disassemble(self, byte_parser, histogram=False):
+    def disassemble(self, byte_parser, chunks=False, histogram=False):
         """Disassemble code, for ad-hoc experimenting."""
 
         for bp in byte_parser.child_parsers():
-            chunks = bp._split_into_chunks()
-            chunkd = dict((chunk.byte, chunk) for chunk in chunks)
+            if chunks:
+                chunkd = dict((chunk.byte, chunk) for chunk in bp._split_into_chunks())
             if bp.text:
                 srclines = bp.text.splitlines()
             else:
@@ -151,11 +156,11 @@ class ParserMain(object):
                     elif disline.offset > 0:
                         print("")
                 line = disgen.format_dis_line(disline)
-                chunk = chunkd.get(disline.offset)
-                if chunk:
-                    chunkstr = ":: %r" % chunk
-                else:
-                    chunkstr = ""
+                chunkstr = ""
+                if chunks:
+                    chunk = chunkd.get(disline.offset)
+                    if chunk:
+                        chunkstr = ":: %r" % chunk
                 print("%-70s%s" % (line, chunkstr))
 
         print("")

@@ -26,6 +26,7 @@ class Analysis(object):
 
         if self.data.has_arcs():
             self._arc_possibilities = sorted(self.file_reporter.arcs())
+            self._ast_arc_possibilities = sorted(self.file_reporter.ast_arcs())
             self.exit_counts = self.file_reporter.exit_counts()
             self.no_branch = self.file_reporter.no_branch_lines()
             n_branches = self.total_branches()
@@ -36,6 +37,7 @@ class Analysis(object):
             n_missing_branches = sum(len(v) for k,v in iitems(mba))
         else:
             self._arc_possibilities = []
+            self._ast_arc_possibilities = []
             self.exit_counts = {}
             self.no_branch = set()
             n_branches = n_partial_branches = n_missing_branches = 0
@@ -65,6 +67,9 @@ class Analysis(object):
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
         return self._arc_possibilities
+
+    def ast_arc_possibilities(self):
+        return self._ast_arc_possibilities
 
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
