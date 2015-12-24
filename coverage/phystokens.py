@@ -291,5 +291,5 @@ def compile_unicode(source, filename, mode):
 @contract(source='unicode', returns='unicode')
 def neuter_encoding_declaration(source):
     """Return `source`, with any encoding declaration neutered."""
-    source = COOKIE_RE.sub("# (deleted declaration)", source, count=1)
+    source = COOKIE_RE.sub("# (deleted declaration)", source, count=2)
     return source
