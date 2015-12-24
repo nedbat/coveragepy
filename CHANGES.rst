@@ -13,6 +13,9 @@ Unreleased
   and they will apply to the entire function or class being decorated.  This
   implements the feature requested in `issue 131`_.
 
+- Multiprocessing support is now available on Windows.  Thanks, Rodrigue
+  Cloutier.
+
 .. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
 
 
