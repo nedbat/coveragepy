@@ -103,6 +103,7 @@ ENCODING_DECLARATION_SOURCES = [
     b"# This Python file uses this encoding: cp850\n",
     b"# This file uses a different encoding:\n# coding: cp850\n",
     b"\n# coding=cp850\n\n",
+    b"# -*-  coding:cp850 -*-\n# vim: fileencoding=cp850\n",
 ]
 
 class SourceEncodingTest(CoverageTest):
@@ -168,6 +169,8 @@ class NeuterEncodingDeclarationTest(CoverageTest):
             )
             self.assertEqual(lines_different, 1)
 
+            # The neutered source will be detected as having no encoding
+            # declaration.
             self.assertEqual(
                 source_encoding(neutered),
                 DEF_ENCODING,
@@ -181,5 +184,9 @@ class CompileUnicodeTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_cp1252(self):
-        uni = u"""# coding: cp1252\n# \u201C curly \u201D\n"""
-        compile_unicode(uni, "<string>", "exec")
+        uni = u"""# coding: cp1252\n# \u201C curly \u201D\na = 42"""
+        # This doesn't raise an exception:
+        code = compile_unicode(uni, "<string>", "exec")
+        globs = {}
+        exec(code, globs)
+        self.assertEqual(globs['a'], 42)
