@@ -184,6 +184,7 @@ class CompileUnicodeTest(CoverageTest):
     run_in_temp_dir = False
 
     def assert_compile_unicode(self, source):
+        """Assert that `source` will compile properly with `compile_unicode`."""
         source += u"a = 42\n"
         # This doesn't raise an exception:
         code = compile_unicode(source, "<string>", "exec")
