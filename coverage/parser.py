@@ -9,6 +9,7 @@ import re
 import token
 import tokenize
 
+from coverage import env
 from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints
 from coverage.bytecode import ByteCodes, CodeObjects
@@ -95,7 +96,10 @@ class PythonParser(object):
         part of it.
 
         """
-        regex_c = re.compile(join_regex(regexes))
+        combined = join_regex(regexes)
+        if env.PY2:
+            combined = combined.decode("utf8")
+        regex_c = re.compile(combined)
         matches = set()
         for i, ltext in enumerate(self.lines, start=1):
             if regex_c.search(ltext):

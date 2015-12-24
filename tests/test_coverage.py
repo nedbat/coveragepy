@@ -1,3 +1,4 @@
+# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
@@ -1128,7 +1129,7 @@ class ExcludeTest(CoverageTest):
         self.check_coverage("""\
             a = 1; b = 2
 
-            if 0:
+            if len([]):
                 a = 4   # -cc
             """,
             [1,3], "", excludes=['-cc'])
@@ -1477,6 +1478,17 @@ class ExcludeTest(CoverageTest):
             assert x == 1
             """,
             [8,9], "", excludes=['#pragma: NO COVER'])
+
+    def test_excludes_non_ascii(self):
+        self.check_coverage("""\
+            # coding: utf-8
+            a = 1; b = 2
+
+            if len([]):
+                a = 5   # ✘cover
+            """,
+            [2, 4], "", excludes=['✘cover']
+        )
 
 
 class Py24Test(CoverageTest):
