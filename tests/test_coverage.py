@@ -1150,19 +1150,19 @@ class ExcludeTest(CoverageTest):
         self.check_coverage("""\
             a = 1; b = 2
 
-            if 0:
+            if len([]):     # not-here
                 a = 4
                 b = 5
                 c = 6
             assert a == 1 and b == 2
             """,
-            [1,7], "", excludes=['if 0:'])
+            [1,7], "", excludes=['not-here'])
 
     def test_excluding_if_but_not_else_suite(self):
         self.check_coverage("""\
             a = 1; b = 2
 
-            if 0:
+            if len([]):     # not-here
                 a = 4
                 b = 5
                 c = 6
@@ -1171,7 +1171,7 @@ class ExcludeTest(CoverageTest):
                 b = 9
             assert a == 8 and b == 9
             """,
-            [1,8,9,10], "", excludes=['if 0:'])
+            [1,8,9,10], "", excludes=['not-here'])
 
     def test_excluding_else_suite(self):
         self.check_coverage("""\
@@ -1230,7 +1230,7 @@ class ExcludeTest(CoverageTest):
         self.check_coverage("""\
             def foo():
                 a = 2
-                if 0: x = 3     # no cover
+                if len([]): x = 3       # no cover
                 b = 4
 
             foo()

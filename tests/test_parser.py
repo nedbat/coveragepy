@@ -81,7 +81,7 @@ class PythonParserTest(CoverageTest):
                 def __init__(self):
                     pass
 
-            if 0:   # nocover
+            if len([]):     # nocover
                 class Bar:
                     pass
             """)
