@@ -481,6 +481,7 @@ class ExceptionArcTest(CoverageTest):
 
 
     def test_break_in_finally(self):
+        # TODO: the name and the code don't seem to match
         self.check_coverage("""\
             a, c, d, i = 1, 1, 1, 99
             try:
@@ -565,6 +566,23 @@ class ExceptionArcTest(CoverageTest):
             """,
             arcz=".1 12 .3 3-2 24 45 56 67 7B 89 9B BC C.",
             arcz_missing="67 7B", arcz_unpredicted="68")
+
+    def test_multiple_except_clauses(self):
+        self.check_coverage("""\
+            a, b, c = 1, 1, 1
+            try:
+                a = 3
+            except ValueError:
+                b = 5
+            except IndexError:
+                a = 7
+            finally:
+                c = 9
+            assert a == 3 and b == 1 and c == 9
+            """,
+            arcz=".1 12 23 45 39 59 67 79 9A A.", arcz_missing="45 59 67 79")
+        # TODO: do it again, with line 3 raising a caught exception
+        # TODO: do it again, with line 3 raising an uncaught exception.
 
 
 class YieldTest(CoverageTest):

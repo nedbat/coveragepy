@@ -341,8 +341,9 @@ class AstArcAnalyzer(object):
         handler = getattr(self, "handle_" + node_name, self.handle_default)
         return handler(node)
 
-    def add_body_arcs(self, body, from_line):
-        prev_lines = set([from_line])
+    def add_body_arcs(self, body, from_line=None, prev_lines=None):
+        if prev_lines is None:
+            prev_lines = set([from_line])
         for body_node in body:
             lineno = self.line_for_node(body_node)
             for prev_lineno in prev_lines:
@@ -363,6 +364,7 @@ class AstArcAnalyzer(object):
     # TODO: listcomps hidden in lists: x = [[i for i in range(10)]]
     # TODO: multi-line listcomps
     # TODO: nested function definitions
+    # TODO: multiple `except` clauses
 
     def handle_Break(self, node):
         here = self.line_for_node(node)
@@ -411,11 +413,29 @@ class AstArcAnalyzer(object):
     def handle_Module(self, node):
         raise Exception("TODO: this shouldn't happen")
 
+    def handle_Raise(self, node):
+        # `raise` statement jumps away, no exits from here.
+        return set([])
+
     def handle_Return(self, node):
         here = self.line_for_node(node)
         # TODO: what if self.function_start is None?
         self.arcs.add((here, -self.function_start))
         return set([])
+
+    def handle_Try(self, node):
+        start = self.line_for_node(node)
+        exits = self.add_body_arcs(node.body, from_line=start)
+        handler_exits = set()
+        for handler_node in node.handlers:
+            handler_start = self.line_for_node(handler_node)
+            # TODO: handler_node.name and handler_node.type
+            handler_exits |= self.add_body_arcs(handler_node.body, from_line=handler_start)
+        # TODO: node.orelse
+        # TODO: node.finalbody
+        if node.finalbody:
+            exits = self.add_body_arcs(node.finalbody, prev_lines=exits|handler_exits)
+        return exits
 
     def handle_While(self, node):
         constant_test = self.is_constant_expr(node.test)
