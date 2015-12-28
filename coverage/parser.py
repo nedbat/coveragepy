@@ -432,9 +432,9 @@ class AstArcAnalyzer(object):
             # TODO: handler_node.name and handler_node.type
             handler_exits |= self.add_body_arcs(handler_node.body, from_line=handler_start)
         # TODO: node.orelse
-        # TODO: node.finalbody
+        exits |= handler_exits
         if node.finalbody:
-            exits = self.add_body_arcs(node.finalbody, prev_lines=exits|handler_exits)
+            exits = self.add_body_arcs(node.finalbody, prev_lines=exits)
         return exits
 
     def handle_While(self, node):

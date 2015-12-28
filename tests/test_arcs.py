@@ -581,8 +581,50 @@ class ExceptionArcTest(CoverageTest):
             assert a == 3 and b == 1 and c == 9
             """,
             arcz=".1 12 23 45 39 59 67 79 9A A.", arcz_missing="45 59 67 79")
-        # TODO: do it again, with line 3 raising a caught exception
-        # TODO: do it again, with line 3 raising an uncaught exception.
+        self.check_coverage("""\
+            a, b, c = 1, 1, 1
+            try:
+                a = int("xyz")  # ValueError
+            except ValueError:
+                b = 5
+            except IndexError:
+                a = 7
+            finally:
+                c = 9
+            assert a == 1 and b == 5 and c == 9
+            """,
+            arcz=".1 12 23 45 39 59 67 79 9A A.", arcz_missing="39 67 79",
+            arcz_unpredicted="34")
+        self.check_coverage("""\
+            a, b, c = 1, 1, 1
+            try:
+                a = [1][3]      # IndexError
+            except ValueError:
+                b = 5
+            except IndexError:
+                a = 7
+            finally:
+                c = 9
+            assert a == 7 and b == 1 and c == 9
+            """,
+            arcz=".1 12 23 45 39 59 67 79 9A A.", arcz_missing="39 45 59",
+            arcz_unpredicted="34 46")
+        self.check_coverage("""\
+            a, b, c = 1, 1, 1
+            try:
+                try:
+                    a = 4/0         # ZeroDivisionError
+                except ValueError:
+                    b = 6
+                except IndexError:
+                    a = 8
+                finally:
+                    c = 10
+            except ZeroDivisionError:
+                pass
+            assert a == 1 and b == 1 and c == 10
+            """,
+            arcz=".1 12 23 34 4A 56 6A 78 8A AB AD BC CD D.", arcz_missing="45 56 57 78")
 
 
 class YieldTest(CoverageTest):
