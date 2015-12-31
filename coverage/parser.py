@@ -6,6 +6,7 @@
 import ast
 import collections
 import dis
+import os
 import re
 import token
 import tokenize
@@ -315,16 +316,17 @@ class TryBlock(object):
     def __init__(self, handler_start=None, final_start=None):
         self.handler_start = handler_start  # TODO: is this used?
         self.final_start = final_start      # TODO: is this used?
-        self.break_from = set([])
-        self.continue_from = set([])
-        self.return_from = set([])
-        self.raise_from = set([])
+        self.break_from = set()
+        self.continue_from = set()
+        self.return_from = set()
+        self.raise_from = set()
 
 
 class AstArcAnalyzer(object):
     def __init__(self, text):
         self.root_node = ast.parse(text)
-        ast_dump(self.root_node)
+        if int(os.environ.get("COVERAGE_ASTDUMP", 0)):
+            ast_dump(self.root_node)
 
         self.arcs = None
         self.block_stack = []
@@ -434,12 +436,17 @@ class AstArcAnalyzer(object):
     def handle_Break(self, node):
         here = self.line_for_node(node)
         self.process_break_exits([here])
-        return set([])
+        return set()
+
+    def handle_ClassDef(self, node):
+        start = self.line_for_node(node)
+        # the body is handled in add_arcs_for_code_objects.
+        return set([start])
 
     def handle_Continue(self, node):
         here = self.line_for_node(node)
         self.process_continue_exits([here])
-        return set([])
+        return set()
 
     def handle_For(self, node):
         start = self.line_for_node(node.iter)
@@ -459,11 +466,14 @@ class AstArcAnalyzer(object):
             exits.add(start)
         return exits
 
+    handle_AsyncFor = handle_For
+
     def handle_FunctionDef(self, node):
         start = self.line_for_node(node)
         # the body is handled in add_arcs_for_code_objects.
-        exits = set([start])
-        return exits
+        return set([start])
+
+    handle_AsyncFunctionDef = handle_FunctionDef
 
     def handle_If(self, node):
         start = self.line_for_node(node.test)
@@ -478,13 +488,13 @@ class AstArcAnalyzer(object):
         # `raise` statement jumps away, no exits from here.
         here = self.line_for_node(node)
         self.process_raise_exits([here])
-        return set([])
+        return set()
 
     def handle_Return(self, node):
         # TODO: deal with returning through a finally.
         here = self.line_for_node(node)
         self.process_return_exits([here])
-        return set([])
+        return set()
 
     def handle_Try(self, node):
         return self.try_work(node, node.body, node.handlers, node.orelse, node.finalbody)
@@ -541,15 +551,17 @@ class AstArcAnalyzer(object):
         exits = self.add_body_arcs(node.body, from_line=start)
         for exit in exits:
             self.arcs.add((exit, to_top))
-        # TODO: while loop that finishes?
+        exits = set()
+        if not constant_test:
+            exits.add(start)
         my_block = self.block_stack.pop()
-        exits = my_block.break_exits
+        exits.update(my_block.break_exits)
         # TODO: orelse
         return exits
 
     def handle_default(self, node):
         node_name = node.__class__.__name__
-        if node_name not in ["Assign", "Assert", "AugAssign", "Expr", "Pass"]:
+        if node_name not in ["Assign", "Assert", "AugAssign", "Expr", "Import", "Pass", "Print"]:
             print("*** Unhandled: {}".format(node))
         return set([self.line_for_node(node)])
 
@@ -565,19 +577,31 @@ class AstArcAnalyzer(object):
                 exits = self.add_body_arcs(node.body, from_line=-1)
                 for exit in exits:
                     self.arcs.add((exit, -start))
-            elif node_name == "FunctionDef":
+            elif node_name in ["FunctionDef", "AsyncFunctionDef"]:
                 start = self.line_for_node(node)
                 self.block_stack.append(FunctionBlock(start=start))
-                func_exits = self.add_body_arcs(node.body, from_line=-1)
+                exits = self.add_body_arcs(node.body, from_line=-1)
                 self.block_stack.pop()
-                for exit in func_exits:
+                for exit in exits:
+                    self.arcs.add((exit, -start))
+            elif node_name == "ClassDef":
+                start = self.line_for_node(node)
+                self.arcs.add((-1, start))
+                exits = self.add_body_arcs(node.body, from_line=start)
+                for exit in exits:
                     self.arcs.add((exit, -start))
             elif node_name in self.CODE_COMPREHENSIONS:
+                # TODO: tests for when generators is more than one?
                 for gen in node.generators:
                     start = self.line_for_node(gen)
                     self.arcs.add((-1, start))
                     self.arcs.add((start, -start))
                     # TODO: guaranteed this won't work for multi-line comps.
+            elif node_name == "Lambda":
+                start = self.line_for_node(node)
+                self.arcs.add((-1, start))
+                self.arcs.add((start, -start))
+                # TODO: test multi-line lambdas
 
 
 ## Opcodes that guide the ByteParser.

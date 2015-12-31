@@ -260,7 +260,7 @@ class LoopArcTest(CoverageTest):
         if env.PY3:
             arcz = ".1 12 23 34 45 36 63 57 7."
         else:
-            arcz = ".1 12 23 34 45 36 62 57 7."
+            arcz = ".1 12 23 27 34 45 36 62 57 7."
         self.check_coverage("""\
             a, i = 1, 0
             while True:
@@ -271,6 +271,7 @@ class LoopArcTest(CoverageTest):
             assert a == 4 and i == 3
             """,
             arcz=arcz,
+            arcz_missing="",
             )
 
     def test_for_if_else_for(self):
@@ -764,7 +765,7 @@ class YieldTest(CoverageTest):
     def test_coroutines(self):
         self.check_coverage("""\
             def double_inputs():
-                while [1]:      # avoid compiler differences
+                while len([1]):     # avoid compiler differences
                     x = yield
                     x *= 2
                     yield x
@@ -890,8 +891,9 @@ class AsyncTest(CoverageTest):
                 ".H HI IH HJ J-G "          # doit
                 ".5 5-4 "                   # __init__
                 ".8 8-7 "                   # __aiter__
-                ".B BC C-A DE ",            # __anext__
+                ".B BC C-A DE E-A ",        # __anext__
             arcz_missing="",
+            arcz_unpredicted="CD",
         )
         self.assertEqual(self.stdout(), "a\nb\nc\n.\n")
 
