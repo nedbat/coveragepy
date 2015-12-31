@@ -10,6 +10,7 @@ import re
 import token
 import tokenize
 
+from coverage import env
 from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints, string_class
 from coverage.bytecode import ByteCodes, CodeObjects
@@ -323,7 +324,7 @@ class TryBlock(object):
 class AstArcAnalyzer(object):
     def __init__(self, text):
         self.root_node = ast.parse(text)
-        #ast_dump(self.root_node)
+        ast_dump(self.root_node)
 
         self.arcs = None
         self.block_stack = []
@@ -542,6 +543,10 @@ class AstArcAnalyzer(object):
             print("*** Unhandled: {}".format(node))
         return set([self.line_for_node(node)])
 
+    CODE_COMPREHENSIONS = set(["GeneratorExp", "DictComp", "SetComp"])
+    if env.PY3:
+        CODE_COMPREHENSIONS.add("ListComp")
+
     def add_arcs_for_code_objects(self, root_node):
         for node in ast.walk(root_node):
             node_name = node.__class__.__name__
@@ -557,13 +562,12 @@ class AstArcAnalyzer(object):
                 self.block_stack.pop()
                 for exit in func_exits:
                     self.arcs.add((exit, -start))
-            elif node_name == "comprehension":
-                start = self.line_for_node(node)
-                self.arcs.add((-1, start))
-                self.arcs.add((start, -start))
-                # TODO: guaranteed this won't work for multi-line comps.
-
-
+            elif node_name in self.CODE_COMPREHENSIONS:
+                for gen in node.generators:
+                    start = self.line_for_node(gen)
+                    self.arcs.add((-1, start))
+                    self.arcs.add((start, -start))
+                    # TODO: guaranteed this won't work for multi-line comps.
 
 
 ## Opcodes that guide the ByteParser.

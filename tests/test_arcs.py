@@ -260,7 +260,7 @@ class LoopArcTest(CoverageTest):
         if env.PY3:
             arcz = ".1 12 23 34 45 36 63 57 7."
         else:
-            arcz = ".1 12 23 27 34 45 36 62 57 7."
+            arcz = ".1 12 23 34 45 36 62 57 7."
         self.check_coverage("""\
             a, i = 1, 0
             while True:
@@ -340,6 +340,41 @@ class LoopArcTest(CoverageTest):
                 y = tup[1]
             """,
             arcz=arcz, arcz_missing="", arcz_unpredicted="")
+
+    def test_other_comprehensions(self):
+        # Generator expression:
+        self.check_coverage("""\
+            o = ((1,2), (3,4))
+            o = (a for a in o)
+            for tup in o:
+                x = tup[0]
+                y = tup[1]
+            """,
+            arcz=".1 .2 2-2 12 23 34 45 53 3.",
+            arcz_missing="", arcz_unpredicted=""
+        )
+        # Set comprehension:
+        self.check_coverage("""\
+            o = ((1,2), (3,4))
+            o = {a for a in o}
+            for tup in o:
+                x = tup[0]
+                y = tup[1]
+            """,
+            arcz=".1 .2 2-2 12 23 34 45 53 3.",
+            arcz_missing="", arcz_unpredicted=""
+        )
+        # Dict comprehension:
+        self.check_coverage("""\
+            o = ((1,2), (3,4))
+            o = {a:1 for a in o}
+            for tup in o:
+                x = tup[0]
+                y = tup[1]
+            """,
+            arcz=".1 .2 2-2 12 23 34 45 53 3.",
+            arcz_missing="", arcz_unpredicted=""
+        )
 
 
 class ExceptionArcTest(CoverageTest):
