@@ -165,6 +165,7 @@ class CoverageTest(
         excludes=None, partials="",
         arcz=None, arcz_missing=None, arcz_unpredicted=None,
         arcs=None, arcs_missing=None, arcs_unpredicted=None,
+        ast_differs=False,
     ):
         """Check the coverage measurement of `text`.
 
@@ -239,7 +240,6 @@ class CoverageTest(
 
         if arcs is not None:
             self.assert_equal_args(analysis.arc_possibilities(), arcs, "Possible arcs differ")
-            self.assert_equal_args(analysis.ast_arc_possibilities(), arcs, "Possible ast arcs differ")
 
             if arcs_missing is not None:
                 self.assert_equal_args(

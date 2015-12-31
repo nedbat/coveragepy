@@ -11,7 +11,7 @@ import token
 import tokenize
 
 from coverage.backward import range    # pylint: disable=redefined-builtin
-from coverage.backward import bytes_to_ints
+from coverage.backward import bytes_to_ints, string_class
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import contract, nice_pair, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
@@ -245,7 +245,7 @@ class PythonParser(object):
         starts = self.raw_statements - ignore
         self.statements = self.first_lines(starts) - ignore
 
-    def arcs(self):
+    def old_arcs(self):
         """Get information about the arcs available in the code.
 
         Returns a set of line number pairs.  Line numbers have been normalized
@@ -261,7 +261,7 @@ class PythonParser(object):
                     self._all_arcs.add((fl1, fl2))
         return self._all_arcs
 
-    def ast_arcs(self):
+    def arcs(self):
         aaa = AstArcAnalyzer(self.text)
         arcs = aaa.collect_arcs()
 
@@ -301,18 +301,36 @@ class PythonParser(object):
         return exit_counts
 
 
+class LoopBlock(object):
+    def __init__(self, start):
+        self.start = start
+        self.break_exits = set()
+
+class FunctionBlock(object):
+    def __init__(self, start):
+        self.start = start
+
+class TryBlock(object):
+    def __init__(self, handler_start=None, final_start=None):
+        self.handler_start = handler_start  # TODO: is this used?
+        self.final_start = final_start      # TODO: is this used?
+        self.break_from = set([])
+        self.continue_from = set([])
+        self.return_from = set([])
+        self.raise_from = set([])
+
+
 class AstArcAnalyzer(object):
     def __init__(self, text):
         self.root_node = ast.parse(text)
-        ast_dump(self.root_node)
+        #ast_dump(self.root_node)
 
         self.arcs = None
-        # References to the nearest enclosing thing of its kind.
-        self.function_start = None
-        self.loop_start = None
+        self.block_stack = []
 
-        # Break-exits from a loop
-        self.break_exits = None
+    def blocks(self):
+        """Yield the blocks in nearest-to-farthest order."""
+        return reversed(self.block_stack)
 
     def line_for_node(self, node):
         """What is the right line number to use for this node?"""
@@ -366,28 +384,70 @@ class AstArcAnalyzer(object):
     # TODO: nested function definitions
     # TODO: multiple `except` clauses
 
+    def process_break_exits(self, exits):
+        for block in self.blocks():
+            if isinstance(block, LoopBlock):
+                # TODO: what if there is no loop?
+                block.break_exits.update(exits)
+                break
+            elif isinstance(block, TryBlock) and block.final_start:
+                block.break_from.update(exits)
+                break
+
+    def process_continue_exits(self, exits):
+        for block in self.blocks():
+            if isinstance(block, LoopBlock):
+                # TODO: what if there is no loop?
+                for exit in exits:
+                    self.arcs.add((exit, block.start))
+                break
+            elif isinstance(block, TryBlock) and block.final_start:
+                block.continue_from.update(exits)
+                break
+
+    def process_raise_exits(self, exits):
+        for block in self.blocks():
+            if isinstance(block, TryBlock):
+                if block.handler_start:
+                    for exit in exits:
+                        self.arcs.add((exit, block.handler_start))
+                    break
+                elif block.final_start:
+                    block.raise_from.update(exits)
+                    break
+            elif isinstance(block, FunctionBlock):
+                for exit in exits:
+                    self.arcs.add((exit, -block.start))
+                break
+
+    def process_return_exits(self, exits):
+        for block in self.blocks():
+            if isinstance(block, FunctionBlock):
+                # TODO: what if there is no enclosing function?
+                for exit in exits:
+                    self.arcs.add((exit, -block.start))
+                break
+
+    ## Handlers
+
     def handle_Break(self, node):
         here = self.line_for_node(node)
-        # TODO: what if self.break_exits is None?
-        self.break_exits.add(here)
+        self.process_break_exits([here])
         return set([])
 
     def handle_Continue(self, node):
         here = self.line_for_node(node)
-        # TODO: what if self.loop_start is None?
-        self.arcs.add((here, self.loop_start))
+        self.process_continue_exits([here])
         return set([])
 
     def handle_For(self, node):
         start = self.line_for_node(node.iter)
-        loop_state = self.loop_start, self.break_exits
-        self.loop_start = start
-        self.break_exits = set()
+        self.block_stack.append(LoopBlock(start=start))
         exits = self.add_body_arcs(node.body, from_line=start)
         for exit in exits:
             self.arcs.add((exit, start))
-        exits = self.break_exits
-        self.loop_start, self.break_exits = loop_state
+        my_block = self.block_stack.pop()
+        exits = my_block.break_exits
         if node.orelse:
             else_start = self.line_for_node(node.orelse[0])
             self.arcs.add((start, else_start))
@@ -415,15 +475,29 @@ class AstArcAnalyzer(object):
 
     def handle_Raise(self, node):
         # `raise` statement jumps away, no exits from here.
+        here = self.line_for_node(node)
+        self.process_raise_exits([here])
         return set([])
 
     def handle_Return(self, node):
+        # TODO: deal with returning through a finally.
         here = self.line_for_node(node)
-        # TODO: what if self.function_start is None?
-        self.arcs.add((here, -self.function_start))
+        self.process_return_exits([here])
         return set([])
 
     def handle_Try(self, node):
+        # try/finally is tricky. If there's a finally clause, then we need a
+        # FinallyBlock to track what flows might go through the finally instead
+        # of their normal flow.
+        if node.handlers:
+            handler_start = self.line_for_node(node.handlers[0])
+        else:
+            handler_start = None
+        if node.finalbody:
+            final_start = self.line_for_node(node.finalbody[0])
+        else:
+            final_start = None
+        self.block_stack.append(TryBlock(handler_start=handler_start, final_start=final_start))
         start = self.line_for_node(node)
         exits = self.add_body_arcs(node.body, from_line=start)
         handler_exits = set()
@@ -434,7 +508,17 @@ class AstArcAnalyzer(object):
         # TODO: node.orelse
         exits |= handler_exits
         if node.finalbody:
-            exits = self.add_body_arcs(node.finalbody, prev_lines=exits)
+            final_block = self.block_stack.pop()
+            final_from = exits | final_block.break_from | final_block.continue_from | final_block.raise_from | final_block.return_from
+            exits = self.add_body_arcs(node.finalbody, prev_lines=final_from)
+            if final_block.break_from:
+                self.process_break_exits(exits)
+            if final_block.continue_from:
+                self.process_continue_exits(exits)
+            if final_block.raise_from:
+                self.process_raise_exits(exits)
+            if final_block.return_from:
+                self.process_return_exits(exits)
         return exits
 
     def handle_While(self, node):
@@ -442,20 +526,19 @@ class AstArcAnalyzer(object):
         start = to_top = self.line_for_node(node.test)
         if constant_test:
             to_top = self.line_for_node(node.body[0])
-        loop_state = self.loop_start, self.break_exits
-        self.loop_start = start
-        self.break_exits = set()
+        self.block_stack.append(LoopBlock(start=start))
         exits = self.add_body_arcs(node.body, from_line=start)
         for exit in exits:
             self.arcs.add((exit, to_top))
-        exits = self.break_exits
-        self.loop_start, self.break_exits = loop_state
+        # TODO: while loop that finishes?
+        my_block = self.block_stack.pop()
+        exits = my_block.break_exits
         # TODO: orelse
         return exits
 
     def handle_default(self, node):
         node_name = node.__class__.__name__
-        if node_name not in ["Assign", "Assert", "AugAssign", "Expr"]:
+        if node_name not in ["Assign", "Assert", "AugAssign", "Expr", "Pass"]:
             print("*** Unhandled: {}".format(node))
         return set([self.line_for_node(node)])
 
@@ -469,11 +552,11 @@ class AstArcAnalyzer(object):
                     self.arcs.add((exit, -start))
             elif node_name == "FunctionDef":
                 start = self.line_for_node(node)
-                self.function_start = start
+                self.block_stack.append(FunctionBlock(start=start))
                 func_exits = self.add_body_arcs(node.body, from_line=-1)
+                self.block_stack.pop()
                 for exit in func_exits:
                     self.arcs.add((exit, -start))
-                self.function_start = None
             elif node_name == "comprehension":
                 start = self.line_for_node(node)
                 self.arcs.add((-1, start))
@@ -917,7 +1000,7 @@ def ast_dump(node, depth=0):
         prefix = "{0}{1}:".format(indent, field_name)
         if value is None:
             print("{0} None".format(prefix))
-        elif isinstance(value, (str, int)):
+        elif isinstance(value, (string_class, int, float)):
             print("{0} {1!r}".format(prefix, value))
         elif isinstance(value, list):
             if value == []:

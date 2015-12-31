@@ -365,44 +365,50 @@ class ExceptionArcTest(CoverageTest):
                 b = 7
             assert a == 3 and b == 7
             """,
-            arcz=".1 12 23 34 58 67 78 8.",
-            arcz_missing="58", arcz_unpredicted="46")
+            arcz=".1 12 23 34 46 58 67 78 8.",
+            arcz_missing="58",
+            ast_differs=True,
+        )
 
     def test_hidden_raise(self):
         self.check_coverage("""\
             a, b = 1, 1
             def oops(x):
-                if x % 2: raise Exception("odd")
+                if x % 2:
+                    raise Exception("odd")
             try:
-                a = 5
+                a = 6
                 oops(1)
-                a = 7
+                a = 8
             except:
-                b = 9
-            assert a == 5 and b == 9
+                b = 10
+            assert a == 6 and b == 10
             """,
-            arcz=".1 12 .3 3-2 24 45 56 67 7A 89 9A A.",
-            arcz_missing="67 7A", arcz_unpredicted="68")
+            arcz=".1 12 .3 34 3-2 4-2 25 56 67 78 8B 9A AB B.",
+            arcz_missing="3-2 78 8B", arcz_unpredicted="79",
+            ast_differs=True,
+        )
 
     def test_except_with_type(self):
         self.check_coverage("""\
             a, b = 1, 1
             def oops(x):
-                if x % 2: raise ValueError("odd")
+                if x % 2:
+                    raise ValueError("odd")
             def try_it(x):
                 try:
-                    a = 6
+                    a = 7
                     oops(x)
-                    a = 8
+                    a = 9
                 except ValueError:
-                    b = 10
+                    b = 11
                 return a
-            assert try_it(0) == 8   # C
-            assert try_it(1) == 6   # D
+            assert try_it(0) == 9   # C
+            assert try_it(1) == 7   # D
             """,
-            arcz=".1 12 .3 3-2 24 4C CD D. .5 56 67 78 8B 9A AB B-4",
+            arcz=".1 12 .3 34 3-2 4-2 25 5D DE E. .6 67 78 89 9C AB BC C-5",
             arcz_missing="",
-            arcz_unpredicted="79")
+            arcz_unpredicted="8A")
 
     def test_try_finally(self):
         self.check_coverage("""\
@@ -425,8 +431,8 @@ class ExceptionArcTest(CoverageTest):
                 d = 8
             assert a == 4 and c == 6 and d == 1    # 9
             """,
-            arcz=".1 12 23 34 46 67 78 89 69 9.",
-            arcz_missing="67 78 89", arcz_unpredicted="")
+            arcz=".1 12 23 34 46 78 89 69 9.",
+            arcz_missing="78 89", arcz_unpredicted="")
         self.check_coverage("""\
             a, c, d = 1, 1, 1
             try:
@@ -440,8 +446,8 @@ class ExceptionArcTest(CoverageTest):
                 d = 10                              # A
             assert a == 4 and c == 8 and d == 10    # B
             """,
-            arcz=".1 12 23 34 45 68 89 8B 9A AB B.",
-            arcz_missing="68 8B", arcz_unpredicted="58")
+            arcz=".1 12 23 34 45 58 68 89 8B 9A AB B.",
+            arcz_missing="68 8B", arcz_unpredicted="")
 
     def test_finally_in_loop(self):
         self.check_coverage("""\
@@ -459,8 +465,10 @@ class ExceptionArcTest(CoverageTest):
                 d = 12                              # C
             assert a == 5 and c == 10 and d == 12   # D
             """,
-            arcz=".1 12 23 34 3D 45 56 67 68 8A A3 AB BC CD D.",
-            arcz_missing="3D", arcz_unpredicted="7A")
+            arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB BC CD D.",
+            arcz_missing="3D",
+            ast_differs=True,
+        )
         self.check_coverage("""\
             a, c, d, i = 1, 1, 1, 99
             try:
@@ -476,12 +484,12 @@ class ExceptionArcTest(CoverageTest):
                 d = 12                              # C
             assert a == 8 and c == 10 and d == 1    # D
             """,
-            arcz=".1 12 23 34 3D 45 56 67 68 8A A3 AB BC CD D.",
-            arcz_missing="67 AB BC CD", arcz_unpredicted="")
+            arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB BC CD D.",
+            arcz_missing="67 7A AB BC CD", arcz_unpredicted="",
+        )
 
 
-    def test_break_in_finally(self):
-        # TODO: the name and the code don't seem to match
+    def test_break_through_finally(self):
         self.check_coverage("""\
             a, c, d, i = 1, 1, 1, 99
             try:
@@ -497,8 +505,12 @@ class ExceptionArcTest(CoverageTest):
                 d = 12                              # C
             assert a == 5 and c == 10 and d == 1    # D
             """,
-            arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB BC CD D.",
-            arcz_missing="3D AB BC CD", arcz_unpredicted="AD")
+            arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AD BC CD D.",
+            arcz_missing="3D BC CD", arcz_unpredicted="",
+        )
+
+    # TODO: shouldn't arcz_unpredicted always be empty?
+    #           NO: it has arcs due to exceptions.
 
     def test_finally_in_loop_bug_92(self):
         self.check_coverage("""\
@@ -608,7 +620,8 @@ class ExceptionArcTest(CoverageTest):
             assert a == 7 and b == 1 and c == 9
             """,
             arcz=".1 12 23 45 39 59 67 79 9A A.", arcz_missing="39 45 59",
-            arcz_unpredicted="34 46")
+            arcz_unpredicted="34 46",
+        )
         self.check_coverage("""\
             a, b, c = 1, 1, 1
             try:
@@ -624,7 +637,11 @@ class ExceptionArcTest(CoverageTest):
                 pass
             assert a == 1 and b == 1 and c == 10
             """,
-            arcz=".1 12 23 34 4A 56 6A 78 8A AB AD BC CD D.", arcz_missing="45 56 57 78")
+            arcz=".1 12 23 34 4A 56 6A 78 8A AD BC CD D.",
+            arcz_missing="4A 56 6A 78 8A AD",
+            arcz_unpredicted="45 57 7A AB",
+            ast_differs=True,   # TODO: get rid of all ast_differs
+        )
 
 
 class YieldTest(CoverageTest):
