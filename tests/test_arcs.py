@@ -562,10 +562,6 @@ class ExceptionArcTest(CoverageTest):
 
     # "except Exception as e" is crucial here.
     def test_bug_212(self):
-        # Run this test only on Py2 for now.  I hope to fix it on Py3
-        # eventually...
-        if env.PY3:
-            self.skip("This doesn't work on Python 3")
         self.check_coverage("""\
             def b(exc):
                 try:
@@ -582,8 +578,8 @@ class ExceptionArcTest(CoverageTest):
             except:
                 pass
             """,
-            arcz=".1 .2 1A 23 34 56 67 68 8. AB BC C. DE E.",
-            arcz_missing="C.", arcz_unpredicted="45 7. CD")
+            arcz=".1 .2 1A 23 34 45 56 67 68 7. 8. AB BC C. DE E.",
+            arcz_missing="C.", arcz_unpredicted="CD")
 
     def test_except_finally(self):
         self.check_coverage("""\

@@ -487,38 +487,48 @@ class AstArcAnalyzer(object):
         return set([])
 
     def handle_Try(self, node):
+        return self.try_work(node, node.body, node.handlers, node.orelse, node.finalbody)
+
+    def handle_TryExcept(self, node):
+        return self.try_work(node, node.body, node.handlers, node.orelse, None)
+
+    def handle_TryFinally(self, node):
+        return self.try_work(node, node.body, None, None, node.finalbody)
+
+    def try_work(self, node, body, handlers, orelse, finalbody):
         # try/finally is tricky. If there's a finally clause, then we need a
         # FinallyBlock to track what flows might go through the finally instead
         # of their normal flow.
-        if node.handlers:
-            handler_start = self.line_for_node(node.handlers[0])
+        if handlers:
+            handler_start = self.line_for_node(handlers[0])
         else:
             handler_start = None
-        if node.finalbody:
-            final_start = self.line_for_node(node.finalbody[0])
+        if finalbody:
+            final_start = self.line_for_node(finalbody[0])
         else:
             final_start = None
         self.block_stack.append(TryBlock(handler_start=handler_start, final_start=final_start))
         start = self.line_for_node(node)
-        exits = self.add_body_arcs(node.body, from_line=start)
+        exits = self.add_body_arcs(body, from_line=start)
+        try_block = self.block_stack.pop()
         handler_exits = set()
-        for handler_node in node.handlers:
-            handler_start = self.line_for_node(handler_node)
-            # TODO: handler_node.name and handler_node.type
-            handler_exits |= self.add_body_arcs(handler_node.body, from_line=handler_start)
+        if handlers:
+            for handler_node in handlers:
+                handler_start = self.line_for_node(handler_node)
+                # TODO: handler_node.name and handler_node.type
+                handler_exits |= self.add_body_arcs(handler_node.body, from_line=handler_start)
         # TODO: node.orelse
         exits |= handler_exits
-        if node.finalbody:
-            final_block = self.block_stack.pop()
-            final_from = exits | final_block.break_from | final_block.continue_from | final_block.raise_from | final_block.return_from
-            exits = self.add_body_arcs(node.finalbody, prev_lines=final_from)
-            if final_block.break_from:
+        if finalbody:
+            final_from = exits | try_block.break_from | try_block.continue_from | try_block.raise_from | try_block.return_from
+            exits = self.add_body_arcs(finalbody, prev_lines=final_from)
+            if try_block.break_from:
                 self.process_break_exits(exits)
-            if final_block.continue_from:
+            if try_block.continue_from:
                 self.process_continue_exits(exits)
-            if final_block.raise_from:
+            if try_block.raise_from:
                 self.process_raise_exits(exits)
-            if final_block.return_from:
+            if try_block.return_from:
                 self.process_return_exits(exits)
         return exits
 
