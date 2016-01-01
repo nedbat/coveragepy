@@ -87,7 +87,8 @@ class SimpleArcTest(CoverageTest):
             if len([]) == 0: a = 2
             assert a == 2
             """,
-            arcz=".1 12 23 3.", arcz_missing="")
+            arcz=".1 12 23 3.",
+        )
         self.check_coverage("""\
             def fn(x):
                 if x % 2: return True
@@ -106,7 +107,8 @@ class SimpleArcTest(CoverageTest):
             b = \\
                 6
             """,
-            arcz=".1 15 5-2", arcz_missing="")
+            arcz=".1 15 5-2",
+        )
 
     def test_if_return(self):
         self.check_coverage("""\
@@ -118,8 +120,8 @@ class SimpleArcTest(CoverageTest):
             x = if_ret(0) + if_ret(1)
             assert x == 8
             """,
-            arcz=".1 16 67 7.   .2 23 24 3. 45 5.", arcz_missing=""
-            )
+            arcz=".1 16 67 7.   .2 23 24 3. 45 5.",
+        )
 
     def test_dont_confuse_exit_and_else(self):
         self.check_coverage("""\
@@ -192,7 +194,8 @@ class LoopArcTest(CoverageTest):
                 a = i
             assert a == 9
             """,
-            arcz=".1 12 21 13 3.", arcz_missing="")
+            arcz=".1 12 21 13 3.",
+        )
         self.check_coverage("""\
             a = -1
             for i in range(0):
@@ -208,7 +211,8 @@ class LoopArcTest(CoverageTest):
                     a = i + j
             assert a == 4
             """,
-            arcz=".1 12 23 32 21 14 4.", arcz_missing="")
+            arcz=".1 12 23 32 21 14 4.",
+        )
 
     def test_break(self):
         self.check_coverage("""\
@@ -271,8 +275,7 @@ class LoopArcTest(CoverageTest):
             assert a == 4 and i == 3
             """,
             arcz=arcz,
-            arcz_missing="",
-            )
+        )
 
     def test_for_if_else_for(self):
         self.check_coverage("""\
@@ -329,7 +332,8 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=arcz, arcz_missing="", arcz_unpredicted="")
+            arcz=arcz,
+        )
         if env.PY3:
             arcz = ".1 12 .2 2-2 23 34 42 2."
         else:
@@ -340,7 +344,8 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=arcz, arcz_missing="", arcz_unpredicted="")
+            arcz=arcz,
+        )
 
     def test_generator_expression(self):
         # Generator expression:
@@ -352,7 +357,6 @@ class LoopArcTest(CoverageTest):
                 y = tup[1]
             """,
             arcz=".1 .2 2-2 12 23 34 45 53 3.",
-            arcz_missing="", arcz_unpredicted=""
         )
 
     def test_other_comprehensions(self):
@@ -367,7 +371,6 @@ class LoopArcTest(CoverageTest):
                 y = tup[1]
             """,
             arcz=".1 .2 2-2 12 23 34 45 53 3.",
-            arcz_missing="", arcz_unpredicted=""
         )
         # Dict comprehension:
         self.check_coverage("""\
@@ -378,7 +381,6 @@ class LoopArcTest(CoverageTest):
                 y = tup[1]
             """,
             arcz=".1 .2 2-2 12 23 34 45 53 3.",
-            arcz_missing="", arcz_unpredicted=""
         )
 
 
@@ -445,8 +447,8 @@ class ExceptionArcTest(CoverageTest):
             assert try_it(1) == 7   # D
             """,
             arcz=".1 12 .3 34 3-2 4-2 25 5D DE E. .6 67 78 89 9C AB BC C-5",
-            arcz_missing="",
-            arcz_unpredicted="8A")
+            arcz_unpredicted="8A",
+        )
 
     def test_try_finally(self):
         self.check_coverage("""\
@@ -457,7 +459,8 @@ class ExceptionArcTest(CoverageTest):
                 c = 5
             assert a == 3 and c == 5
             """,
-            arcz=".1 12 23 35 56 6.", arcz_missing="")
+            arcz=".1 12 23 35 56 6.",
+        )
         self.check_coverage("""\
             a, c, d = 1, 1, 1
             try:
@@ -470,7 +473,8 @@ class ExceptionArcTest(CoverageTest):
             assert a == 4 and c == 6 and d == 1    # 9
             """,
             arcz=".1 12 23 34 46 78 89 69 9.",
-            arcz_missing="78 89", arcz_unpredicted="")
+            arcz_missing="78 89",
+        )
         self.check_coverage("""\
             a, c, d = 1, 1, 1
             try:
@@ -485,7 +489,8 @@ class ExceptionArcTest(CoverageTest):
             assert a == 4 and c == 8 and d == 10    # B
             """,
             arcz=".1 12 23 34 45 58 68 89 8B 9A AB B.",
-            arcz_missing="68 8B", arcz_unpredicted="")
+            arcz_missing="68 8B",
+        )
 
     def test_finally_in_loop(self):
         self.check_coverage("""\
@@ -522,7 +527,7 @@ class ExceptionArcTest(CoverageTest):
             assert a == 8 and c == 10 and d == 1    # D
             """,
             arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB BC CD D.",
-            arcz_missing="67 7A AB BC CD", arcz_unpredicted="",
+            arcz_missing="67 7A AB BC CD",
         )
 
 
@@ -543,11 +548,8 @@ class ExceptionArcTest(CoverageTest):
             assert a == 5 and c == 10 and d == 1    # D
             """,
             arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AD BC CD D.",
-            arcz_missing="3D BC CD", arcz_unpredicted="",
+            arcz_missing="3D BC CD",
         )
-
-    # TODO: shouldn't arcz_unpredicted always be empty?
-    #           NO: it has arcs due to exceptions.
 
     def test_finally_in_loop_bug_92(self):
         self.check_coverage("""\
@@ -560,7 +562,7 @@ class ExceptionArcTest(CoverageTest):
             h = 7
             """,
             arcz=".1 12 23 35 56 61 17 7.",
-            arcz_missing="", arcz_unpredicted="")
+        )
 
     # "except Exception as e" is crucial here.
     def test_bug_212(self):
@@ -688,8 +690,7 @@ class YieldTest(CoverageTest):
             list(gen([1,2,3]))
             """,
             arcz=".1 .2 23 2. 32 15 5.",
-            arcz_missing="",
-            arcz_unpredicted="")
+        )
 
     def test_padded_yield_in_loop(self):
         self.check_coverage("""\
@@ -704,8 +705,7 @@ class YieldTest(CoverageTest):
             list(gen([1,2,3]))
             """,
             arcz=".1 19 9.  .2 23 34 45 56 63 37 7.",
-            arcz_missing="",
-            arcz_unpredicted="")
+        )
 
     def test_bug_308(self):
         self.check_coverage("""\
@@ -717,8 +717,7 @@ class YieldTest(CoverageTest):
                 print(f())
             """,
             arcz=".1 15 56 65 5.  .2 23 32 2.  .3 3-3",
-            arcz_missing="",
-            arcz_unpredicted="")
+        )
 
         self.check_coverage("""\
             def run():
@@ -730,8 +729,7 @@ class YieldTest(CoverageTest):
                 print(f())
             """,
             arcz=".1 16 67 76 6.  .2 23 34 43 3.   2-2  .4 4-4",
-            arcz_missing="",
-            arcz_unpredicted="")
+        )
 
         self.check_coverage("""\
             def run():
@@ -741,8 +739,7 @@ class YieldTest(CoverageTest):
                 print(f())
             """,
             arcz=".1 14 45 54 4.  .2 2.  2-2",
-            arcz_missing="",
-            arcz_unpredicted="")
+        )
 
     def test_bug_324(self):
         # This code is tricky: the list() call pulls all the values from gen(),
@@ -760,7 +757,7 @@ class YieldTest(CoverageTest):
                 ".2 23 32 2. "  # The gen() function
                 ".3 3-3",       # The generator expression
             arcz_missing=".3 3-3",
-            arcz_unpredicted="")
+        )
 
     def test_coroutines(self):
         self.check_coverage("""\
@@ -780,7 +777,7 @@ class YieldTest(CoverageTest):
                 ".1 17 78 89 9A AB B. "
                 ".2 23 34 45 52 2.",
             arcz_missing="2.",
-            arcz_unpredicted="")
+        )
         self.assertEqual(self.stdout(), "20\n12\n")
 
     def test_yield_from(self):
@@ -798,8 +795,7 @@ class YieldTest(CoverageTest):
             list(gen([1,2,3]))
             """,
             arcz=".1 19 9.  .2 23 34 45 56 5. 63 37 7.",
-            arcz_missing="",
-            arcz_unpredicted="")
+        )
 
 
 class MiscArcTest(CoverageTest):
@@ -888,7 +884,6 @@ class AsyncTest(CoverageTest):
                 ".1 13 38 8C CD DE E. "
                 ".4 45 56 6-3 "
                 ".9 9A A-8",
-            arcz_missing="",
         )
         self.assertEqual(self.stdout(), "Compute 1 + 2 ...\n1 + 2 = 3\n")
 
@@ -925,7 +920,6 @@ class AsyncTest(CoverageTest):
                 ".5 5-4 "                   # __init__
                 ".8 8-7 "                   # __aiter__
                 ".B BC C-A DE E-A ",        # __anext__
-            arcz_missing="",
             arcz_unpredicted="CD",
         )
         self.assertEqual(self.stdout(), "a\nb\nc\n.\n")
@@ -1053,7 +1047,8 @@ class ExcludeTest(CoverageTest):
                 f = 9
             """,
             [1,2,3,4,5,6,7,8,9],
-            arcz=".1 12 23 24 34 45 56 57 67 78 89 9. 8.", arcz_missing="")
+            arcz=".1 12 23 24 34 45 56 57 67 78 89 9. 8.",
+        )
 
     def test_custom_pragmas(self):
         self.check_coverage("""\
@@ -1065,7 +1060,8 @@ class ExcludeTest(CoverageTest):
             """,
             [1,2,3,4,5],
             partials=["only some"],
-            arcz=".1 12 23 34 45 25 5.", arcz_missing="")
+            arcz=".1 12 23 34 45 25 5.",
+        )
 
 
 class LineDataTest(CoverageTest):

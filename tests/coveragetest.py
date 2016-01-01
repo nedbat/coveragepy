@@ -163,7 +163,7 @@ class CoverageTest(
     def check_coverage(
         self, text, lines=None, missing="", report="",
         excludes=None, partials="",
-        arcz=None, arcz_missing=None, arcz_unpredicted=None,
+        arcz=None, arcz_missing="", arcz_unpredicted="",
         arcs=None, arcs_missing=None, arcs_unpredicted=None,
     ):
         """Check the coverage measurement of `text`.
@@ -175,10 +175,11 @@ class CoverageTest(
         of the measurement report.
 
         For arc measurement, `arcz` is a string that can be decoded into arcs
-        in the code (see `arcz_to_arcs` for the encoding scheme),
+        in the code (see `arcz_to_arcs` for the encoding scheme).
         `arcz_missing` are the arcs that are not executed, and
-        `arcs_unpredicted` are the arcs executed in the code, but not deducible
-        from the code.
+        `arcz_unpredicted` are the arcs executed in the code, but not deducible
+        from the code.  These last two default to "", meaning we explicitly
+        check that there are no missing or unpredicted arcs.
 
         Returns the Coverage object, in case you want to poke at it some more.
 
@@ -191,14 +192,13 @@ class CoverageTest(
 
         if arcs is None and arcz is not None:
             arcs = self.arcz_to_arcs(arcz)
-        if arcs_missing is None:# and arcz_missing is not None:
-            arcs_missing = self.arcz_to_arcs(arcz_missing or "")
-        if arcs_unpredicted is None:# and arcz_unpredicted is not None:
-            arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted or "")
-        branch = any(x is not None for x in [arcs, arcs_missing, arcs_unpredicted])
+        if arcs_missing is None:
+            arcs_missing = self.arcz_to_arcs(arcz_missing)
+        if arcs_unpredicted is None:
+            arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted)
 
         # Start up coverage.py.
-        cov = coverage.Coverage(branch=branch)
+        cov = coverage.Coverage(branch=True)
         cov.erase()
         for exc in excludes or []:
             cov.exclude(exc)
@@ -240,17 +240,15 @@ class CoverageTest(
         if arcs is not None:
             self.assert_equal_args(analysis.arc_possibilities(), arcs, "Possible arcs differ")
 
-            if arcs_missing is not None:
-                self.assert_equal_args(
-                    analysis.arcs_missing(), arcs_missing,
-                    "Missing arcs differ"
-                )
+            self.assert_equal_args(
+                analysis.arcs_missing(), arcs_missing,
+                "Missing arcs differ"
+            )
 
-            if arcs_unpredicted is not None:
-                self.assert_equal_args(
-                    analysis.arcs_unpredicted(), arcs_unpredicted,
-                    "Unpredicted arcs differ"
-                )
+            self.assert_equal_args(
+                analysis.arcs_unpredicted(), arcs_unpredicted,
+                "Unpredicted arcs differ"
+            )
 
         if report:
             frep = StringIO()
