@@ -165,7 +165,6 @@ class CoverageTest(
         excludes=None, partials="",
         arcz=None, arcz_missing=None, arcz_unpredicted=None,
         arcs=None, arcs_missing=None, arcs_unpredicted=None,
-        ast_differs=False,
     ):
         """Check the coverage measurement of `text`.
 

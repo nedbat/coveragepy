@@ -407,7 +407,6 @@ class ExceptionArcTest(CoverageTest):
             """,
             arcz=".1 12 23 34 46 58 67 78 8.",
             arcz_missing="58",
-            ast_differs=True,
         )
 
     def test_hidden_raise(self):
@@ -426,7 +425,6 @@ class ExceptionArcTest(CoverageTest):
             """,
             arcz=".1 12 .3 34 3-2 4-2 25 56 67 78 8B 9A AB B.",
             arcz_missing="3-2 78 8B", arcz_unpredicted="79",
-            ast_differs=True,
         )
 
     def test_except_with_type(self):
@@ -507,7 +505,6 @@ class ExceptionArcTest(CoverageTest):
             """,
             arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 AB BC CD D.",
             arcz_missing="3D",
-            ast_differs=True,
         )
         self.check_coverage("""\
             a, c, d, i = 1, 1, 1, 99
@@ -676,7 +673,6 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 34 4A 56 6A 78 8A AD BC CD D.",
             arcz_missing="4A 56 6A 78 8A AD",
             arcz_unpredicted="45 57 7A AB",
-            ast_differs=True,   # TODO: get rid of all ast_differs
         )
 
 
