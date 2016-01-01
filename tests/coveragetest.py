@@ -191,10 +191,10 @@ class CoverageTest(
 
         if arcs is None and arcz is not None:
             arcs = self.arcz_to_arcs(arcz)
-        if arcs_missing is None and arcz_missing is not None:
-            arcs_missing = self.arcz_to_arcs(arcz_missing)
-        if arcs_unpredicted is None and arcz_unpredicted is not None:
-            arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted)
+        if arcs_missing is None:# and arcz_missing is not None:
+            arcs_missing = self.arcz_to_arcs(arcz_missing or "")
+        if arcs_unpredicted is None:# and arcz_unpredicted is not None:
+            arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted or "")
         branch = any(x is not None for x in [arcs, arcs_missing, arcs_unpredicted])
 
         # Start up coverage.py.

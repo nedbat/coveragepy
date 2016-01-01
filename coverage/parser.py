@@ -347,7 +347,7 @@ class AstArcAnalyzer(object):
 
     def line_Dict(self, node):
         # Python 3.5 changed how dict literals are made.
-        if env.PYVERSION >= (3, 5):
+        if env.PYVERSION >= (3, 5) and node.keys:
             return node.keys[0].lineno
         return node.lineno
 
@@ -587,7 +587,7 @@ class AstArcAnalyzer(object):
     def handle_default(self, node):
         node_name = node.__class__.__name__
         if node_name not in ["Assign", "Assert", "AugAssign", "Expr", "Import", "Pass", "Print"]:
-            print("*** Unhandled: {}".format(node))
+            print("*** Unhandled: {0}".format(node))
         return set([self.line_for_node(node)])
 
     CODE_COMPREHENSIONS = set(["GeneratorExp", "DictComp", "SetComp"])
@@ -1049,6 +1049,10 @@ SKIP_FIELDS = ["ctx"]
 
 def ast_dump(node, depth=0):
     indent = " " * depth
+    if not isinstance(node, ast.AST):
+        print("{0}<{1} {2!r}>".format(indent, node.__class__.__name__, node))
+        return
+
     lineno = getattr(node, "lineno", None)
     if lineno is not None:
         linemark = " @ {0}".format(lineno)

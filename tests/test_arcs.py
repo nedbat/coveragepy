@@ -653,7 +653,7 @@ class ExceptionArcTest(CoverageTest):
             assert a == 7 and b == 1 and c == 9
             """,
             arcz=".1 12 23 45 39 59 67 79 9A A.", arcz_missing="39 45 59",
-            arcz_unpredicted="34 46",
+            arcz_unpredicted="34 46",   # TODO: 46 can be predicted.
         )
         self.check_coverage("""\
             a, b, c = 1, 1, 1
@@ -672,7 +672,7 @@ class ExceptionArcTest(CoverageTest):
             """,
             arcz=".1 12 23 34 4A 56 6A 78 8A AD BC CD D.",
             arcz_missing="4A 56 6A 78 8A AD",
-            arcz_unpredicted="45 57 7A AB",
+            arcz_unpredicted="45 57 7A AB",     # TODO: 57 7A can be predicted.
         )
 
 
@@ -782,6 +782,24 @@ class YieldTest(CoverageTest):
             arcz_missing="2.",
             arcz_unpredicted="")
         self.assertEqual(self.stdout(), "20\n12\n")
+
+    def test_yield_from(self):
+        if env.PYVERSION < (3, 3):
+            self.skip("Python before 3.3 doesn't have 'yield from'")
+        self.check_coverage("""\
+            def gen(inp):
+                i = 2
+                for n in inp:
+                    i = 4
+                    yield from range(3)
+                    i = 6
+                i = 7
+
+            list(gen([1,2,3]))
+            """,
+            arcz=".1 19 9.  .2 23 34 45 56 5. 63 37 7.",
+            arcz_missing="",
+            arcz_unpredicted="")
 
 
 class MiscArcTest(CoverageTest):
