@@ -804,7 +804,21 @@ class MiscArcTest(CoverageTest):
                 }
             assert d
             """,
-            arcz=arcz)
+            arcz=arcz,
+        )
+        self.check_coverage("""\
+            d = \\
+                { 'a': 2,
+                'b': 3,
+                'c': {
+                    'd': 5,
+                    'e': 6,
+                    }
+                }
+            assert d
+            """,
+            arcz=".1 19 9-2",
+        )
 
     def test_pathologically_long_code_object(self):
         # https://bitbucket.org/ned/coveragepy/issue/359
@@ -814,17 +828,18 @@ class MiscArcTest(CoverageTest):
         code = """\
             data = [
             """ + "".join("""\
-                [{i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}],
+                [
+                    {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}],
             """.format(i=i) for i in range(2000)
             ) + """\
             ]
 
-            if __name__ == "__main__":
-                print(len(data))
+            print(len(data))
             """
         self.check_coverage(
             code,
-            arcs=[(-1, 1), (1, 2004), (2004, -2), (2004, 2005), (2005, -2)],
+            arcs=[(-1, 1), (1, 4004), (4004, -3)],
+            arcs_missing=[], arcs_unpredicted=[],
             )
 
 

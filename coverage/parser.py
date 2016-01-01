@@ -339,13 +339,27 @@ class AstArcAnalyzer(object):
     def line_for_node(self, node):
         """What is the right line number to use for this node?"""
         node_name = node.__class__.__name__
-        if node_name == "Assign":
-            return node.value.lineno
-        elif node_name == "comprehension":
-            # TODO: is this how to get the line number for a comprehension?
-            return node.target.lineno
-        else:
-            return node.lineno
+        handler = getattr(self, "line_" + node_name, self.line_default)
+        return handler(node)
+
+    def line_Assign(self, node):
+        return self.line_for_node(node.value)
+
+    def line_Dict(self, node):
+        # Python 3.5 changed how dict literals are made.
+        if env.PYVERSION >= (3, 5):
+            return node.keys[0].lineno
+        return node.lineno
+
+    def line_List(self, node):
+        return self.line_for_node(node.elts[0])
+
+    def line_comprehension(self, node):
+        # TODO: is this how to get the line number for a comprehension?
+        return node.target.lineno
+
+    def line_default(self, node):
+        return node.lineno
 
     def collect_arcs(self):
         self.arcs = set()
@@ -358,8 +372,6 @@ class AstArcAnalyzer(object):
         Return a set of line numbers, exits from this node to the next.
         """
         node_name = node.__class__.__name__
-        #print("Adding arcs for {}".format(node_name))
-
         handler = getattr(self, "handle_" + node_name, self.handle_default)
         return handler(node)
 
