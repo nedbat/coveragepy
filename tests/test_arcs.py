@@ -860,7 +860,7 @@ class MiscArcTest(CoverageTest):
 class AsyncTest(CoverageTest):
     def setUp(self):
         if env.PYVERSION < (3, 5):
-            self.skip("No point testing 3.5 syntax below 3.5")
+            self.skip("Async features are new in Python 3.5")
         super(AsyncTest, self).setUp()
 
     def test_async(self):
@@ -924,110 +924,16 @@ class AsyncTest(CoverageTest):
         )
         self.assertEqual(self.stdout(), "a\nb\nc\n.\n")
 
-    def test_async_for2(self):
-        self.check_coverage("""\
-            async def go1():
-                async for x2 in y2:
-                    try:
-                        async for x4 in y4:
-                            if a5:
-                                break
-                        else:
-                            x8 = 1
-                    except:
-                        x10 = 1
-                    x11 = 1
-                x12 = 1
-            """,
-            arcz=".1 1. .2 23 2C 34 45 48 54 56 6B 8B 9A AB B2 C.",
-        )
-
     def test_async_with(self):
         self.check_coverage("""\
             async def go():
                 async with x:
                     pass
             """,
+            # TODO: we don't run any code, so many arcs are missing.
             arcz=".1 1. .2 23 3.",
+            arcz_missing=".2 23 3.",
         )
-
-    def test_async_it(self):
-        self.check_coverage("""\
-            async def func():
-                for x in g2:
-                    x = 3
-                else:
-                    x = 5
-            """,
-            arcz=".1 1. .2 23 32 25 5.",
-        )
-        self.check_coverage("""\
-            async def func():
-                async for x in g2:
-                    x = 3
-                else:
-                    x = 5
-            """,
-            arcz=".1 1. .2 23 32 25 5.",
-        )
-
-    def xxxx_async_is_same_flow(self):
-        SOURCE = """\
-        async def func():
-            for x in g2:
-                try:
-                    x = g4
-                finally:
-                    x = g6
-                try:
-                    with g8 as x:
-                        x = g9
-                    continue
-                finally:
-                    x = g12
-                    for x in g13:
-                        continue
-                    else:
-                        break
-            while g17:
-                x = g18
-                continue
-            else:
-                x = g21
-                for x in g22:
-                    x = g23
-                    continue
-        """
-
-        parts = re.split(r"(for |with )", SOURCE)
-        nchoices = len(parts) // 2
-
-        def only(s):
-            return [s]
-
-        def maybe_async(s):
-            return [s, "async "+s]
-
-        all_all_arcs = collections.defaultdict(list)
-        choices = [f(x) for f, x in zip(cycle([only, maybe_async]), parts)]
-        for i, result in enumerate(product(*choices)):
-            source = "".join(result)
-            self.make_file("async.py", source)
-            cov = coverage.Coverage(branch=True)
-            self.start_import_stop(cov, "async")
-            analysis = cov._analyze("async.py")
-            all_all_arcs[tuple(analysis.arc_possibilities())].append((i, source))
-
-        import pprint
-        pprint.pprint(list(all_all_arcs.keys()))
-        for arcs, numbers in all_all_arcs.items():
-            print(" ".join("{0:0{1}b}".format(x[0], nchoices) for x in numbers))
-            print("    {}".format(arcs))
-            for i, source in numbers:
-                print("-" * 80)
-                print(source)
-
-        assert len(all_all_arcs) == 1
 
 
 class ExcludeTest(CoverageTest):
