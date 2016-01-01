@@ -388,7 +388,12 @@ class AstArcAnalyzer(object):
     def is_constant_expr(self, node):
         """Is this a compile-time constant?"""
         node_name = node.__class__.__name__
-        return node_name in ["NameConstant", "Num"]
+        if node_name in ["NameConstant", "Num"]:
+            return True
+        elif node_name == "Name":
+            if env.PY3 and node.id in ["True", "False", "None"]:
+                return True
+        return False
 
     # tests to write:
     # TODO: while EXPR:

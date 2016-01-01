@@ -342,7 +342,7 @@ class LoopArcTest(CoverageTest):
             """,
             arcz=arcz, arcz_missing="", arcz_unpredicted="")
 
-    def test_other_comprehensions(self):
+    def test_generator_expression(self):
         # Generator expression:
         self.check_coverage("""\
             o = ((1,2), (3,4))
@@ -354,6 +354,10 @@ class LoopArcTest(CoverageTest):
             arcz=".1 .2 2-2 12 23 34 45 53 3.",
             arcz_missing="", arcz_unpredicted=""
         )
+
+    def test_other_comprehensions(self):
+        if env.PYVERSION < (2, 7):
+            self.skip("Don't have set or dict comprehensions before 2.7")
         # Set comprehension:
         self.check_coverage("""\
             o = ((1,2), (3,4))
