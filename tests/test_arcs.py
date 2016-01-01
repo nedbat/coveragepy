@@ -912,7 +912,7 @@ class AsyncTest(CoverageTest):
                     x11 = 1
                 x12 = 1
             """,
-            arcz=".1 1. .2 23 2C 34 45 56 6B",
+            arcz=".1 1. .2 23 2C 34 45 48 54 56 6B 8B 9A AB B2 C.",
         )
 
     def test_async_with(self):

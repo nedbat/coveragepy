@@ -264,16 +264,17 @@ class PythonParser(object):
         return self._all_arcs
 
     def arcs(self):
-        aaa = AstArcAnalyzer(self.text)
-        arcs = aaa.collect_arcs()
+        if self._all_arcs is None:
+            aaa = AstArcAnalyzer(self.text)
+            arcs = aaa.collect_arcs()
 
-        arcs_ = set()
-        for l1, l2 in arcs:
-            fl1 = self.first_line(l1)
-            fl2 = self.first_line(l2)
-            if fl1 != fl2:
-                arcs_.add((fl1, fl2))
-        return arcs_
+            self._all_arcs = set()
+            for l1, l2 in arcs:
+                fl1 = self.first_line(l1)
+                fl2 = self.first_line(l2)
+                if fl1 != fl2:
+                    self._all_arcs.add((fl1, fl2))
+        return self._all_arcs
 
     def exit_counts(self):
         """Get a count of exits from that each line.
@@ -558,6 +559,13 @@ class AstArcAnalyzer(object):
         exits.update(my_block.break_exits)
         # TODO: orelse
         return exits
+
+    def handle_With(self, node):
+        start = self.line_for_node(node)
+        exits = self.add_body_arcs(node.body, from_line=start)
+        return exits
+
+    handle_AsyncWith = handle_With
 
     def handle_default(self, node):
         node_name = node.__class__.__name__
