@@ -355,10 +355,23 @@ class AstArcAnalyzer(object):
         # Python 3.5 changed how dict literals are made.
         if env.PYVERSION >= (3, 5) and node.keys:
             return node.keys[0].lineno
-        return node.lineno
+        else:
+            return node.lineno
 
     def line_List(self, node):
-        return self.line_for_node(node.elts[0])
+        if node.elts:
+            return self.line_for_node(node.elts[0])
+        else:
+            # TODO: test case for this branch:  x = []
+            return node.lineno
+
+    def line_Module(self, node):
+        if node.body:
+            return self.line_for_node(node.body[0])
+        else:
+            # Modules have no line number, they always start at 1.
+            # TODO: test case for empty module.
+            return 1
 
     def line_comprehension(self, node):
         # TODO: is this how to get the line number for a comprehension?
@@ -595,9 +608,14 @@ class AstArcAnalyzer(object):
 
     handle_AsyncWith = handle_With
 
+    OK_TO_DEFAULT = set([
+        "Assign", "Assert", "AugAssign", "Delete", "Exec", "Expr", "Global",
+        "Import", "ImportFrom", "Pass", "Print",
+    ])
+
     def handle_default(self, node):
         node_name = node.__class__.__name__
-        if node_name not in ["Assign", "Assert", "AugAssign", "Expr", "Import", "Pass", "Print"]:
+        if node_name not in self.OK_TO_DEFAULT:
             # TODO: put 1/0 here to find unhandled nodes.
             print("*** Unhandled: {0}".format(node))
         return set([self.line_for_node(node)])
@@ -610,7 +628,7 @@ class AstArcAnalyzer(object):
         for node in ast.walk(root_node):
             node_name = node.__class__.__name__
             if node_name == "Module":
-                start = self.line_for_node(node.body[0])
+                start = self.line_for_node(node)
                 exits = self.add_body_arcs(node.body, from_line=-1)
                 for exit in exits:
                     self.arcs.add((exit, -start))
