@@ -17,7 +17,7 @@ from coverage.backward import bytes_to_ints, string_class
 from coverage.bytecode import ByteCodes, CodeObjects
 from coverage.misc import contract, nice_pair, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
-from coverage.phystokens import compile_unicode, generate_tokens
+from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
 
 
 class PythonParser(object):
@@ -324,8 +324,9 @@ class TryBlock(object):
 
 
 class AstArcAnalyzer(object):
+    @contract(text='unicode')
     def __init__(self, text):
-        self.root_node = ast.parse(text)
+        self.root_node = ast.parse(neuter_encoding_declaration(text))
         if int(os.environ.get("COVERAGE_ASTDUMP", 0)):
             # Dump the AST so that failing tests have helpful output.
             ast_dump(self.root_node)

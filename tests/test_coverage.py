@@ -549,6 +549,15 @@ class SimpleStatementTest(CoverageTest):
             """,
             ([1,3,6,7], [1,3,5,6,7], [1,3,4,5,6,7]), "")
 
+    def test_nonascii(self):
+        self.check_coverage("""\
+            # coding: utf8
+            a = 2
+            b = 3
+            """,
+            [2, 3]
+        )
+
 
 class CompoundStatementTest(CoverageTest):
     """Testing coverage of multi-line compound statements."""
