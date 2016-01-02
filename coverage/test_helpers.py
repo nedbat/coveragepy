@@ -162,20 +162,20 @@ class StdStreamCapturingMixin(TestCase):
         # nose keeps stdout from littering the screen, so we can safely Tee it,
         # but it doesn't capture stderr, so we don't want to Tee stderr to the
         # real stderr, since it will interfere with our nice field of dots.
-        self.old_stdout = sys.stdout
+        old_stdout = sys.stdout
         self.captured_stdout = StringIO()
         sys.stdout = Tee(sys.stdout, self.captured_stdout)
 
-        self.old_stderr = sys.stderr
+        old_stderr = sys.stderr
         self.captured_stderr = StringIO()
         sys.stderr = self.captured_stderr
 
-        self.addCleanup(self.cleanup_std_streams)
+        self.addCleanup(self.cleanup_std_streams, old_stdout, old_stderr)
 
-    def cleanup_std_streams(self):
+    def cleanup_std_streams(self, old_stdout, old_stderr):
         """Restore stdout and stderr."""
-        sys.stdout = self.old_stdout
-        sys.stderr = self.old_stderr
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
 
     def stdout(self):
         """Return the data written to stdout during the test."""

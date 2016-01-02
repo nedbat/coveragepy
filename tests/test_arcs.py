@@ -867,23 +867,25 @@ class AsyncTest(CoverageTest):
         self.check_coverage("""\
             import asyncio
 
-            async def compute(x, y):
+            async def compute(x, y):                        # 3
                 print("Compute %s + %s ..." % (x, y))
                 await asyncio.sleep(0.001)
-                return x + y
+                return x + y                                # 6
 
-            async def print_sum(x, y):
-                result = await compute(x, y)
+            async def print_sum(x, y):                      # 8
+                result = (0 +
+                            await compute(x, y)             # A
+                )
                 print("%s + %s = %s" % (x, y, result))
 
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_event_loop()                 # E
             loop.run_until_complete(print_sum(1, 2))
-            loop.close()
+            loop.close()                                    # G
             """,
             arcz=
-                ".1 13 38 8C CD DE E. "
-                ".4 45 56 6-3 "
-                ".9 9A A-8",
+                ".1 13 38 8E EF FG G. "
+                ".4 45 56 5-3 6-3 "
+                ".9 9-8 9C C-8",
         )
         self.assertEqual(self.stdout(), "Compute 1 + 2 ...\n1 + 2 = 3\n")
 
