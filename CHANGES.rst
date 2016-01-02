@@ -9,11 +9,22 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Branch coverage has been rewritten: it used to be based on bytecode analysis,
+  but now uses AST analysis.  This has changed a number of things:
+
+  - More code paths are now considered runnable, especially in `try`/`except`
+    structures.  This may mean that  coverage.py will identify more code paths
+    as uncovered.
+
+  - Python 3.5's `async` and `await` keywords are properly supported, fixing
+    `issue 434`_.
+
 - Pragmas to disable coverage measurement can now be used on decorator lines,
   and they will apply to the entire function or class being decorated.  This
   implements the feature requested in `issue 131`_.
 
 .. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
+.. _issue 434: https://bitbucket.org/ned/coveragepy/issues/434/indexerror-in-python-35
 
 
 Version 4.0.3 --- 2015-11-24
