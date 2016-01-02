@@ -682,6 +682,21 @@ class ExceptionArcTest(CoverageTest):
             arcz_unpredicted="45 AB",
         )
 
+    def test_return_finally(self):
+        self.check_coverage("""\
+            a = [1]
+            def func():
+                try:
+                    return 10
+                finally:
+                    a.append(6)
+
+            assert func() == 10
+            assert a == [1, 6]
+            """,
+            arcz=".1 12 28 89 9.  .3 34 46 6-2",
+        )
+
 
 class YieldTest(CoverageTest):
     """Arc tests for generators."""

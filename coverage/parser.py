@@ -426,8 +426,6 @@ class AstArcAnalyzer(object):
     # TODO: listcomps hidden in lists: x = [[i for i in range(10)]]
     # TODO: multi-line listcomps
     # TODO: nested function definitions
-    # TODO: multiple `except` clauses
-    # TODO: return->finally
 
     def process_break_exits(self, exits):
         for block in self.blocks():
@@ -467,8 +465,10 @@ class AstArcAnalyzer(object):
 
     def process_return_exits(self, exits):
         for block in self.blocks():
-            # TODO: need a check here for TryBlock
-            if isinstance(block, FunctionBlock):
+            if isinstance(block, TryBlock) and block.final_start:
+                block.return_from.update(exits)
+                break
+            elif isinstance(block, FunctionBlock):
                 # TODO: what if there is no enclosing function?
                 for exit in exits:
                     self.arcs.add((exit, -block.start))
