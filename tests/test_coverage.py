@@ -1021,7 +1021,10 @@ class CompoundStatementTest(CoverageTest):
                 a = 123
             assert a == 123
             """,
-            [1,2,3,4,5,7,8], "4-5")
+            [1,2,3,4,5,7,8], "4-5",
+            arcz=".1 12 23 45 58 37 78 8.",
+            arcz_missing="45 58",
+        )
         self.check_coverage("""\
             a = 0
             try:
@@ -1033,7 +1036,10 @@ class CompoundStatementTest(CoverageTest):
                 a = 123
             assert a == 99
             """,
-            [1,2,3,4,5,6,8,9], "8")
+            [1,2,3,4,5,6,8,9], "8",
+            arcz=".1 12 23 34 45 56 69 89 9.",
+            arcz_missing="89",
+        )
 
     def test_try_finally(self):
         self.check_coverage("""\
@@ -1379,7 +1385,10 @@ class ExcludeTest(CoverageTest):
                 a = 123
             assert a == 123
             """,
-            [1,2,3,7,8], "", excludes=['#pragma: NO COVER'])
+            [1,2,3,7,8], "", excludes=['#pragma: NO COVER'],
+            arcz=".1 12 23 37 45 58 78 8.",
+            arcz_missing="45 58",
+        )
         self.check_coverage("""\
             a = 0
             try:
@@ -1391,7 +1400,10 @@ class ExcludeTest(CoverageTest):
                 a = 123
             assert a == 99
             """,
-            [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'])
+            [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'],
+            arcz=".1 12 23 34 45 56 69 89 9.",
+            arcz_missing="89",
+        )
 
     def test_excluding_try_except_pass(self):
         self.check_coverage("""\
@@ -1425,7 +1437,10 @@ class ExcludeTest(CoverageTest):
                 a = 123
             assert a == 123
             """,
-            [1,2,3,7,8], "", excludes=['#pragma: NO COVER'])
+            [1,2,3,7,8], "", excludes=['#pragma: NO COVER'],
+            arcz=".1 12 23 37 45 58 78 8.",
+            arcz_missing="45 58",
+        )
         self.check_coverage("""\
             a = 0
             try:
@@ -1437,7 +1452,10 @@ class ExcludeTest(CoverageTest):
                 x = 2
             assert a == 99
             """,
-            [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'])
+            [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'],
+            arcz=".1 12 23 34 45 56 69 89 9.",
+            arcz_missing="89",
+        )
 
     def test_excluding_if_pass(self):
         # From a comment on the coverage.py page by Michael McNeil Forbes:
@@ -1600,7 +1618,9 @@ class Py25Test(CoverageTest):
                 b = 2
             assert a == 1 and b == 2
             """,
-            [1,2,3,4,5,7,8], "4-5")
+            [1,2,3,4,5,7,8], "4-5",
+            arcz=".1 12 23 37 45 57 78 8.", arcz_missing="45 57",
+        )
         self.check_coverage("""\
             a = 0; b = 0
             try:
@@ -1612,7 +1632,9 @@ class Py25Test(CoverageTest):
                 b = 2
             assert a == 99 and b == 2
             """,
-            [1,2,3,4,5,6,8,9], "")
+            [1,2,3,4,5,6,8,9], "",
+            arcz=".1 12 23 34 45 56 68 89 9.",
+        )
         self.check_coverage("""\
             a = 0; b = 0
             try:
@@ -1626,7 +1648,9 @@ class Py25Test(CoverageTest):
                 b = 2
             assert a == 123 and b == 2
             """,
-            [1,2,3,4,5,6,7,8,10,11], "6")
+            [1,2,3,4,5,6,7,8,10,11], "6",
+            arcz=".1 12 23 34 45 56 57 78 6A 8A AB B.", arcz_missing="56 6A",
+        )
         self.check_coverage("""\
             a = 0; b = 0
             try:
@@ -1642,7 +1666,10 @@ class Py25Test(CoverageTest):
                 b = 2
             assert a == 17 and b == 2
             """,
-            [1,2,3,4,5,6,7,8,9,10,12,13], "6, 9-10")
+            [1,2,3,4,5,6,7,8,9,10,12,13], "6, 9-10",
+            arcz=".1 12 23 34 45 56 6C 57 78 8C 79 9A AC CD D.",
+            arcz_missing="56 6C 79 9A AC",
+        )
         self.check_coverage("""\
             a = 0; b = 0
             try:
@@ -1655,7 +1682,10 @@ class Py25Test(CoverageTest):
                 b = 2
             assert a == 123 and b == 2
             """,
-            [1,2,3,4,5,7,9,10], "4-5")
+            [1,2,3,4,5,7,9,10], "4-5",
+            arcz=".1 12 23 37 45 59 79 9A A.",
+            arcz_missing="45 59",
+        )
         self.check_coverage("""\
             a = 0; b = 0
             try:
@@ -1669,7 +1699,10 @@ class Py25Test(CoverageTest):
                 b = 2
             assert a == 99 and b == 2
             """,
-            [1,2,3,4,5,6,8,10,11], "8")
+            [1,2,3,4,5,6,8,10,11], "8",
+            arcz=".1 12 23 34 45 56 6A 8A AB B.",
+            arcz_missing="8A",
+        )
 
 
 class ModuleTest(CoverageTest):

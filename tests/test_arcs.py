@@ -627,7 +627,9 @@ class ExceptionArcTest(CoverageTest):
                 c = 9
             assert a == 3 and b == 1 and c == 9
             """,
-            arcz=".1 12 23 45 39 59 67 79 9A A.", arcz_missing="45 59 67 79")
+            arcz=".1 12 23 45 46 39 59 67 79 69 9A A.",
+            arcz_missing="45 59 46 67 79 69",
+        )
         self.check_coverage("""\
             a, b, c = 1, 1, 1
             try:
@@ -640,8 +642,10 @@ class ExceptionArcTest(CoverageTest):
                 c = 9
             assert a == 1 and b == 5 and c == 9
             """,
-            arcz=".1 12 23 45 39 59 67 79 9A A.", arcz_missing="39 67 79",
-            arcz_unpredicted="34")
+            arcz=".1 12 23 45 46 69 39 59 67 79 9A A.",
+            arcz_missing="39 46 67 79 69",
+            arcz_unpredicted="34",
+        )
         self.check_coverage("""\
             a, b, c = 1, 1, 1
             try:
@@ -654,8 +658,9 @@ class ExceptionArcTest(CoverageTest):
                 c = 9
             assert a == 7 and b == 1 and c == 9
             """,
-            arcz=".1 12 23 45 39 59 67 79 9A A.", arcz_missing="39 45 59",
-            arcz_unpredicted="34 46",   # TODO: 46 can be predicted.
+            arcz=".1 12 23 45 46 39 59 67 79 69 9A A.",
+            arcz_missing="39 45 59 69",
+            arcz_unpredicted="34",
         )
         self.check_coverage("""\
             a, b, c = 1, 1, 1
@@ -672,9 +677,9 @@ class ExceptionArcTest(CoverageTest):
                 pass
             assert a == 1 and b == 1 and c == 10
             """,
-            arcz=".1 12 23 34 4A 56 6A 78 8A AD BC CD D.",
+            arcz=".1 12 23 34 4A 56 6A 57 78 8A 7A AD BC CD D.",
             arcz_missing="4A 56 6A 78 8A AD",
-            arcz_unpredicted="45 57 7A AB",     # TODO: 57 7A can be predicted.
+            arcz_unpredicted="45 AB",
         )
 
 

@@ -540,41 +540,56 @@ class AstArcAnalyzer(object):
         return set()
 
     def handle_Try(self, node):
-        return self.try_work(node, node.body, node.handlers, node.orelse, node.finalbody)
-
-    def handle_TryExcept(self, node):
-        return self.try_work(node, node.body, node.handlers, node.orelse, None)
-
-    def handle_TryFinally(self, node):
-        return self.try_work(node, node.body, None, None, node.finalbody)
-
-    def try_work(self, node, body, handlers, orelse, finalbody):
         # try/finally is tricky. If there's a finally clause, then we need a
         # FinallyBlock to track what flows might go through the finally instead
         # of their normal flow.
-        if handlers:
-            handler_start = self.line_for_node(handlers[0])
+        if node.handlers:
+            handler_start = self.line_for_node(node.handlers[0])
         else:
             handler_start = None
-        if finalbody:
-            final_start = self.line_for_node(finalbody[0])
+
+        if node.finalbody:
+            final_start = self.line_for_node(node.finalbody[0])
         else:
             final_start = None
+
         self.block_stack.append(TryBlock(handler_start=handler_start, final_start=final_start))
+
         start = self.line_for_node(node)
-        exits = self.add_body_arcs(body, from_line=start)
+        exits = self.add_body_arcs(node.body, from_line=start)
+
         try_block = self.block_stack.pop()
         handler_exits = set()
-        if handlers:
-            for handler_node in handlers:
+        last_handler_start = None
+        if node.handlers:
+            for handler_node in node.handlers:
                 handler_start = self.line_for_node(handler_node)
-                # TODO: handler_node.name and handler_node.type
+                if last_handler_start is not None:
+                    self.arcs.add((last_handler_start, handler_start))
+                last_handler_start = handler_start
                 handler_exits |= self.add_body_arcs(handler_node.body, from_line=handler_start)
-        # TODO: node.orelse
+                if handler_node.type is None:
+                    # "except:" doesn't jump to subsequent handlers, or
+                    # "finally:".
+                    last_handler_start = None
+                    # TODO: should we break here? Handlers after "except:"
+                    # won't be run.  Should coverage know that code can't be
+                    # run, or should it flag it as not run?
+
+        if node.orelse:
+            exits = self.add_body_arcs(node.orelse, prev_lines=exits)
+
         exits |= handler_exits
-        if finalbody:
-            final_from = exits | try_block.break_from | try_block.continue_from | try_block.raise_from | try_block.return_from
-            exits = self.add_body_arcs(finalbody, prev_lines=final_from)
+        if node.finalbody:
+            final_from = exits | try_block.break_from | try_block.continue_from | try_block.return_from
+            if node.handlers and last_handler_start is not None:
+                # If there was an "except X:" clause, then a "raise" in the
+                # body goes to the "except X:" before the "finally", but the
+                # "except" go to the finally.
+                final_from.add(last_handler_start)
+            else:
+                final_from |= try_block.raise_from
+            exits = self.add_body_arcs(node.finalbody, prev_lines=final_from)
             if try_block.break_from:
                 self.process_break_exits(exits)
             if try_block.continue_from:
@@ -584,6 +599,30 @@ class AstArcAnalyzer(object):
             if try_block.return_from:
                 self.process_return_exits(exits)
         return exits
+
+    def handle_TryExcept(self, node):
+        # Python 2.7 uses separate TryExcept and TryFinally nodes. If we get
+        # TryExcept, it means there was no finally, so fake it, and treat as
+        # a general Try node.
+        node.finalbody = []
+        return self.handle_Try(node)
+
+    def handle_TryFinally(self, node):
+        # Python 2.7 uses separate TryExcept and TryFinally nodes. If we get
+        # TryFinally, see if there's a TryExcept nested inside. If so, merge
+        # them. Otherwise, fake fields to complete a Try node.
+        node.handlers = []
+        node.orelse = []
+
+        if node.body:
+            first = node.body[0]
+            if first.__class__.__name__ == "TryExcept" and node.lineno == first.lineno:
+                assert len(node.body) == 1
+                node.body = first.body
+                node.handlers = first.handlers
+                node.orelse = first.orelse
+
+        return self.handle_Try(node)
 
     def handle_While(self, node):
         constant_test = self.is_constant_expr(node.test)
