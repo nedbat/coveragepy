@@ -13,7 +13,7 @@ greenlet==0.4.9
 mock==1.3.0
 PyContracts==1.7.9
 pyenchant==1.6.6
-pylint==1.4.4
+pylint==1.4.5
 
 # for kitting.
 requests==2.8.1

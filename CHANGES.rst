@@ -23,8 +23,19 @@ Unreleased
   and they will apply to the entire function or class being decorated.  This
   implements the feature requested in `issue 131`_.
 
+- Multiprocessing support is now available on Windows.  Thanks, Rodrigue
+  Cloutier.
+
+- Files with two encoding declarations are properly supported, fixing
+  `issue 453`_. Thanks, Max Linke.
+
+- Non-ascii characters in regexes in the configuration file worked in 3.7, but
+  stopped working in 4.0.  Now they work again, closing `issue 455`_.
+
 .. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
 .. _issue 434: https://bitbucket.org/ned/coveragepy/issues/434/indexerror-in-python-35
+.. _issue 453: https://bitbucket.org/ned/coveragepy/issues/453/source-code-encoding-can-only-be-specified
+.. _issue 455: https://bitbucket.org/ned/coveragepy/issues/455/unusual-exclusions-stopped-working-in
 
 
 Version 4.0.3 --- 2015-11-24

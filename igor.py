@@ -328,7 +328,12 @@ def print_banner(label):
     if '__pypy__' in sys.builtin_module_names:
         version += " (pypy %s)" % ".".join(str(v) for v in sys.pypy_version_info)
 
-    which_python = os.path.relpath(sys.executable)
+    try:
+        which_python = os.path.relpath(sys.executable)
+    except ValueError:
+        # On Windows having a python executable on a different drives
+        # than the sources cannot be relative
+        which_python = sys.executable
     print('=== %s %s %s (%s) ===' % (impl, version, label, which_python))
     sys.stdout.flush()
 

@@ -98,7 +98,10 @@ class PythonParser(object):
         part of it.
 
         """
-        regex_c = re.compile(join_regex(regexes))
+        combined = join_regex(regexes)
+        if env.PY2:
+            combined = combined.decode("utf8")
+        regex_c = re.compile(combined)
         matches = set()
         for i, ltext in enumerate(self.lines, start=1):
             if regex_c.search(ltext):

@@ -278,18 +278,17 @@ class ApiTest(CoverageTest):
         self.start_import_stop(cov, "code2")
         self.check_code1_code2(cov)
 
-    if 0:   # expected failure
-        # for https://bitbucket.org/ned/coveragepy/issue/79
-        def test_start_save_stop(self):
-            self.make_code1_code2()
-            cov = coverage.Coverage()
-            cov.start()
-            self.import_local_file("code1")
-            cov.save()
-            self.import_local_file("code2")
-            cov.stop()
+    def test_start_save_stop(self):
+        self.skip("Expected failure: https://bitbucket.org/ned/coveragepy/issue/79")
+        self.make_code1_code2()
+        cov = coverage.Coverage()
+        cov.start()
+        self.import_local_file("code1")
+        cov.save()
+        self.import_local_file("code2")
+        cov.stop()
 
-            self.check_code1_code2(cov)
+        self.check_code1_code2(cov)
 
     def make_corrupt_data_files(self):
         """Make some good and some bad data files."""

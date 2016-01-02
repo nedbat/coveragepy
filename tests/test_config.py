@@ -379,11 +379,18 @@ class ConfigFileTest(CoverageTest):
 
     def test_non_ascii(self):
         self.make_file(".coveragerc", """\
+            [report]
+            exclude_lines =
+                first
+                ✘${TOX_ENVNAME}
+                third
             [html]
             title = tabblo & «ταБЬℓσ» # numbers
             """)
+        self.set_environ("TOX_ENVNAME", "weirdo")
         cov = coverage.Coverage()
 
+        self.assertEqual(cov.config.exclude_list, ["first", "✘weirdo", "third"])
         self.assertEqual(cov.config.html_title, "tabblo & «ταБЬℓσ» # numbers")
 
     def test_unreadable_config(self):

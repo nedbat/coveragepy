@@ -1,3 +1,4 @@
+# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
@@ -402,35 +403,35 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,4,5], "4")
 
-    if 0:   # expected failure
+    def test_strange_unexecuted_continue(self):
         # Peephole optimization of jumps to jumps can mean that some statements
         # never hit the line tracer.  The behavior is different in different
         # versions of Python, so don't run this test:
-        def test_strange_unexecuted_continue(self):
-            self.check_coverage("""\
-                a = b = c = 0
-                for n in range(100):
-                    if n % 2:
-                        if n % 4:
-                            a += 1
-                        continue    # <-- This line may not be hit.
-                    else:
-                        b += 1
-                    c += 1
-                assert a == 50 and b == 50 and c == 50
+        self.skip("Expected failure: peephole optimization of jumps to jumps")
+        self.check_coverage("""\
+            a = b = c = 0
+            for n in range(100):
+                if n % 2:
+                    if n % 4:
+                        a += 1
+                    continue    # <-- This line may not be hit.
+                else:
+                    b += 1
+                c += 1
+            assert a == 50 and b == 50 and c == 50
 
-                a = b = c = 0
-                for n in range(100):
-                    if n % 2:
-                        if n % 3:
-                            a += 1
-                        continue    # <-- This line is always hit.
-                    else:
-                        b += 1
-                    c += 1
-                assert a == 33 and b == 50 and c == 50
-                """,
-                [1,2,3,4,5,6,8,9,10, 12,13,14,15,16,17,19,20,21], "")
+            a = b = c = 0
+            for n in range(100):
+                if n % 2:
+                    if n % 3:
+                        a += 1
+                    continue    # <-- This line is always hit.
+                else:
+                    b += 1
+                c += 1
+            assert a == 33 and b == 50 and c == 50
+            """,
+            [1,2,3,4,5,6,8,9,10, 12,13,14,15,16,17,19,20,21], "")
 
     def test_import(self):
         self.check_coverage("""\
@@ -1148,7 +1149,7 @@ class ExcludeTest(CoverageTest):
         self.check_coverage("""\
             a = 1; b = 2
 
-            if 0:
+            if len([]):
                 a = 4   # -cc
             """,
             [1,3], "", excludes=['-cc'])
@@ -1169,19 +1170,19 @@ class ExcludeTest(CoverageTest):
         self.check_coverage("""\
             a = 1; b = 2
 
-            if 0:
+            if len([]):     # not-here
                 a = 4
                 b = 5
                 c = 6
             assert a == 1 and b == 2
             """,
-            [1,7], "", excludes=['if 0:'])
+            [1,7], "", excludes=['not-here'])
 
     def test_excluding_if_but_not_else_suite(self):
         self.check_coverage("""\
             a = 1; b = 2
 
-            if 0:
+            if len([]):     # not-here
                 a = 4
                 b = 5
                 c = 6
@@ -1190,7 +1191,7 @@ class ExcludeTest(CoverageTest):
                 b = 9
             assert a == 8 and b == 9
             """,
-            [1,8,9,10], "", excludes=['if 0:'])
+            [1,8,9,10], "", excludes=['not-here'])
 
     def test_excluding_else_suite(self):
         self.check_coverage("""\
@@ -1249,7 +1250,7 @@ class ExcludeTest(CoverageTest):
         self.check_coverage("""\
             def foo():
                 a = 2
-                if 0: x = 3     # no cover
+                if len([]): x = 3       # no cover
                 b = 4
 
             foo()
@@ -1509,6 +1510,17 @@ class ExcludeTest(CoverageTest):
             assert x == 1
             """,
             [8,9], "", excludes=['#pragma: NO COVER'])
+
+    def test_excludes_non_ascii(self):
+        self.check_coverage("""\
+            # coding: utf-8
+            a = 1; b = 2
+
+            if len([]):
+                a = 5   # ✘cover
+            """,
+            [2, 4], "", excludes=['✘cover']
+        )
 
 
 class Py24Test(CoverageTest):
