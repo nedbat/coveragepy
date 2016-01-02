@@ -143,13 +143,12 @@ class SimpleArcTest(CoverageTest):
             )
 
     def test_unused_lambdas_are_confusing_bug_90(self):
-        self.skip("Expected failure: bug 90")
         self.check_coverage("""\
             a = 1
             fn = lambda x: x
             b = 3
             """,
-            arcz=".1 12 .2 2-2 23 3."
+            arcz=".1 12 .2 2-2 23 3.", arcz_missing=".2 2-2",
             )
 
 
