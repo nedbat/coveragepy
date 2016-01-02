@@ -3,10 +3,6 @@
 
 """Tests for coverage.py's arc measurement."""
 
-import collections
-from itertools import cycle, product
-import re
-
 from tests.coveragetest import CoverageTest
 
 import coverage

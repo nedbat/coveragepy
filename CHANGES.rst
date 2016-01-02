@@ -13,7 +13,7 @@ Unreleased
   but now uses AST analysis.  This has changed a number of things:
 
   - More code paths are now considered runnable, especially in `try`/`except`
-    structures.  This may mean that  coverage.py will identify more code paths
+    structures.  This may mean that coverage.py will identify more code paths
     as uncovered.
 
   - Python 3.5's `async` and `await` keywords are properly supported, fixing
