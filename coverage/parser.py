@@ -399,7 +399,7 @@ class AstArcAnalyzer(object):
         # TODO: this is probably over-doing it, and too expensive. Can we
         # instrument the ast walking to see how many nodes we are revisiting?
         if isinstance(node, ast.stmt):
-            for name, value in ast.iter_fields(node):
+            for _, value in ast.iter_fields(node):
                 if isinstance(value, ast.expr) and self.contains_return_expression(value):
                     self.process_return_exits([self.line_for_node(node)])
                     break
@@ -450,8 +450,8 @@ class AstArcAnalyzer(object):
         for block in self.blocks():
             if isinstance(block, LoopBlock):
                 # TODO: what if there is no loop?
-                for exit in exits:
-                    self.arcs.add((exit, block.start))
+                for xit in exits:
+                    self.arcs.add((xit, block.start))
                 break
             elif isinstance(block, TryBlock) and block.final_start:
                 block.continue_from.update(exits)
@@ -461,15 +461,15 @@ class AstArcAnalyzer(object):
         for block in self.blocks():
             if isinstance(block, TryBlock):
                 if block.handler_start:
-                    for exit in exits:
-                        self.arcs.add((exit, block.handler_start))
+                    for xit in exits:
+                        self.arcs.add((xit, block.handler_start))
                     break
                 elif block.final_start:
                     block.raise_from.update(exits)
                     break
             elif isinstance(block, FunctionBlock):
-                for exit in exits:
-                    self.arcs.add((exit, -block.start))
+                for xit in exits:
+                    self.arcs.add((xit, -block.start))
                 break
 
     def process_return_exits(self, exits):
@@ -479,8 +479,8 @@ class AstArcAnalyzer(object):
                 break
             elif isinstance(block, FunctionBlock):
                 # TODO: what if there is no enclosing function?
-                for exit in exits:
-                    self.arcs.add((exit, -block.start))
+                for xit in exits:
+                    self.arcs.add((xit, -block.start))
                 break
 
     ## Handlers
@@ -491,10 +491,10 @@ class AstArcAnalyzer(object):
         return set()
 
     def handle_ClassDef(self, node):
-        return self.do_decorated(node, self.classdefs)
+        return self.process_decorated(node, self.classdefs)
 
-    def do_decorated(self, node, defs):
-        first = last = self.line_for_node(node)
+    def process_decorated(self, node, defs):
+        last = self.line_for_node(node)
         if node.decorator_list:
             for dec_node in node.decorator_list:
                 dec_start = self.line_for_node(dec_node)
@@ -520,8 +520,8 @@ class AstArcAnalyzer(object):
         start = self.line_for_node(node.iter)
         self.block_stack.append(LoopBlock(start=start))
         exits = self.add_body_arcs(node.body, from_line=start)
-        for exit in exits:
-            self.arcs.add((exit, start))
+        for xit in exits:
+            self.arcs.add((xit, start))
         my_block = self.block_stack.pop()
         exits = my_block.break_exits
         if node.orelse:
@@ -537,7 +537,7 @@ class AstArcAnalyzer(object):
     handle_AsyncFor = handle_For
 
     def handle_FunctionDef(self, node):
-        return self.do_decorated(node, self.funcdefs)
+        return self.process_decorated(node, self.funcdefs)
 
     handle_AsyncFunctionDef = handle_FunctionDef
 
@@ -546,9 +546,6 @@ class AstArcAnalyzer(object):
         exits = self.add_body_arcs(node.body, from_line=start)
         exits |= self.add_body_arcs(node.orelse, from_line=start)
         return exits
-
-    def handle_Module(self, node):
-        raise Exception("TODO: this shouldn't happen")
 
     def handle_Raise(self, node):
         # `raise` statement jumps away, no exits from here.
@@ -604,7 +601,12 @@ class AstArcAnalyzer(object):
 
         exits |= handler_exits
         if node.finalbody:
-            final_from = exits | try_block.break_from | try_block.continue_from | try_block.return_from
+            final_from = (                  # You can get to the `finally` clause from:
+                exits |                         # the exits of the body or `else` clause,
+                try_block.break_from |          # or a `break` in the body,
+                try_block.continue_from |       # or a `continue` in the body,
+                try_block.return_from           # or a `return` in the body.
+            )
             if node.handlers and last_handler_start is not None:
                 # If there was an "except X:" clause, then a "raise" in the
                 # body goes to the "except X:" before the "finally", but the
@@ -654,8 +656,8 @@ class AstArcAnalyzer(object):
             to_top = self.line_for_node(node.body[0])
         self.block_stack.append(LoopBlock(start=start))
         exits = self.add_body_arcs(node.body, from_line=start)
-        for exit in exits:
-            self.arcs.add((exit, to_top))
+        for xit in exits:
+            self.arcs.add((xit, to_top))
         exits = set()
         if not constant_test:
             exits.add(start)
@@ -693,21 +695,21 @@ class AstArcAnalyzer(object):
             if node_name == "Module":
                 start = self.line_for_node(node)
                 exits = self.add_body_arcs(node.body, from_line=-1)
-                for exit in exits:
-                    self.arcs.add((exit, -start))
+                for xit in exits:
+                    self.arcs.add((xit, -start))
             elif node_name in ["FunctionDef", "AsyncFunctionDef"]:
                 start = self.line_for_node(node)
                 self.block_stack.append(FunctionBlock(start=start))
                 exits = self.add_body_arcs(node.body, from_line=-1)
                 self.block_stack.pop()
-                for exit in exits:
-                    self.arcs.add((exit, -start))
+                for xit in exits:
+                    self.arcs.add((xit, -start))
             elif node_name == "ClassDef":
                 start = self.line_for_node(node)
                 self.arcs.add((-1, start))
                 exits = self.add_body_arcs(node.body, from_line=start)
-                for exit in exits:
-                    self.arcs.add((exit, -start))
+                for xit in exits:
+                    self.arcs.add((xit, -start))
             elif node_name in self.CODE_COMPREHENSIONS:
                 # TODO: tests for when generators is more than one?
                 for gen in node.generators:
