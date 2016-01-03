@@ -871,6 +871,53 @@ class MiscArcTest(CoverageTest):
             arcs_missing=[], arcs_unpredicted=[],
             )
 
+    def test_function_decorator(self):
+        self.check_coverage("""\
+            def decorator(arg):
+                def _dec(f):
+                    return f
+                return _dec
+
+            @decorator(6)
+            @decorator(
+                len([8]),
+            )
+            def my_function(
+                a=len([11]),
+            ):
+                x = 13
+            a = 14
+            my_function()
+            """,
+            arcz=
+                ".1 16 67 7A AE EF F. "     # main line
+                ".2 24 4.   .3 3-2 "        # decorators
+                ".D D-6 ",                  # my_function
+        )
+
+    def test_class_decorator(self):
+        self.check_coverage("""\
+            def decorator(arg):
+                def _dec(c):
+                    return c
+                return _dec
+
+            @decorator(6)
+            @decorator(
+                len([8]),
+            )
+            class MyObject(
+                object
+            ):
+                X = 13
+            a = 14
+            """,
+            arcz=
+                ".1 16 67 6D 7A AE E. "     # main line
+                ".2 24 4.   .3 3-2 "        # decorators
+                ".6 D-6 ",                  # MyObject
+        )
+
 
 class AsyncTest(CoverageTest):
     def setUp(self):

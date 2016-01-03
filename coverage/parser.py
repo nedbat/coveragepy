@@ -67,8 +67,9 @@ class PythonParser(object):
         # The raw line numbers of excluded lines of code, as marked by pragmas.
         self.raw_excluded = set()
 
-        # The line numbers of class definitions.
+        # The line numbers of class and function definitions.
         self.raw_classdefs = set()
+        self.raw_funcdefs = set()
 
         # The line numbers of docstring lines.
         self.raw_docstrings = set()
@@ -146,6 +147,8 @@ class PythonParser(object):
                     # we need to exclude them.  The simplest way is to note the
                     # lines with the 'class' keyword.
                     self.raw_classdefs.add(slineno)
+                elif ttext == 'def':
+                    self.raw_funcdefs.add(slineno)
             elif toktype == token.OP:
                 if ttext == ':':
                     should_exclude = (elineno in self.raw_excluded) or excluding_decorators
@@ -268,7 +271,7 @@ class PythonParser(object):
 
     def arcs(self):
         if self._all_arcs is None:
-            aaa = AstArcAnalyzer(self.text)
+            aaa = AstArcAnalyzer(self.text, self.raw_funcdefs, self.raw_classdefs)
             arcs = aaa.collect_arcs()
 
             self._all_arcs = set()
@@ -327,9 +330,12 @@ class TryBlock(object):
 
 
 class AstArcAnalyzer(object):
-    @contract(text='unicode')
-    def __init__(self, text):
+    @contract(text='unicode', funcdefs=set, classdefs=set)
+    def __init__(self, text, funcdefs, classdefs):
         self.root_node = ast.parse(neuter_encoding_declaration(text))
+        self.funcdefs = funcdefs
+        self.classdefs = classdefs
+
         if int(os.environ.get("COVERAGE_ASTDUMP", 0)):
             # Dump the AST so that failing tests have helpful output.
             ast_dump(self.root_node)
@@ -485,9 +491,25 @@ class AstArcAnalyzer(object):
         return set()
 
     def handle_ClassDef(self, node):
-        start = self.line_for_node(node)
+        return self.do_decorated(node, self.classdefs)
+
+    def do_decorated(self, node, defs):
+        first = last = self.line_for_node(node)
+        if node.decorator_list:
+            for dec_node in node.decorator_list:
+                dec_start = self.line_for_node(dec_node)
+                if dec_start != last:
+                    self.arcs.add((last, dec_start))
+                last = dec_start
+        # The definition line may have been missed, but we should have it in
+        # `defs`.
+        body_start = self.line_for_node(node.body[0])
+        for lineno in range(last+1, body_start):
+            if lineno in defs:
+                self.arcs.add((last, lineno))
+                last = lineno
         # the body is handled in add_arcs_for_code_objects.
-        return set([start])
+        return set([last])
 
     def handle_Continue(self, node):
         here = self.line_for_node(node)
@@ -515,9 +537,7 @@ class AstArcAnalyzer(object):
     handle_AsyncFor = handle_For
 
     def handle_FunctionDef(self, node):
-        start = self.line_for_node(node)
-        # the body is handled in add_arcs_for_code_objects.
-        return set([start])
+        return self.do_decorated(node, self.funcdefs)
 
     handle_AsyncFunctionDef = handle_FunctionDef
 
@@ -1159,7 +1179,10 @@ def ast_dump(node, depth=0):
         print("{0} {1}: {2!r}>".format(head, field_name, value))
     else:
         print(head)
-        print("{0}# mro: {1}".format(indent, ", ".join(c.__name__ for c in node.__class__.__mro__[1:])))
+        if 0:
+            print("{0}# mro: {1}".format(
+                indent, ", ".join(c.__name__ for c in node.__class__.__mro__[1:]),
+            ))
         next_indent = indent + "    "
         for field_name, value in named_fields:
             prefix = "{0}{1}:".format(next_indent, field_name)
