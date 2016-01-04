@@ -198,7 +198,11 @@ class DelayedAssertionMixin(TestCase):
     All of the assertions will run.  The failures will be displayed at the end
     of the with-statement.
 
-    NOTE: only works with some assert methods, I'm not sure which!
+    NOTE: this only works with some assertions.  These are known to work:
+
+        - `assertEqual(str, str)`
+
+        - `assertMultilineEqual(str, str)`
 
     """
     def __init__(self, *args, **kwargs):
