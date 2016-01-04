@@ -224,7 +224,7 @@ class DelayedAssertionMixin(TestCase):
                 self.fail(self._delayed_assertions[0])
             else:
                 self.fail(
-                    "{} failed assertions:\n{}".format(
+                    "{0} failed assertions:\n{1}".format(
                         len(self._delayed_assertions),
                         "\n".join(self._delayed_assertions),
                     )
