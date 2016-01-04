@@ -186,6 +186,55 @@ class StdStreamCapturingMixin(TestCase):
         return self.captured_stderr.getvalue()
 
 
+class DelayedAssertionMixin(TestCase):
+    """A test case mixin that provides a `delayed_assertions` context manager.
+
+    Use it like this::
+
+        with self.delayed_assertions():
+            self.assertEqual(x, y)
+            self.assertEqual(z, w)
+
+    All of the assertions will run.  The failures will be displayed at the end
+    of the with-statement.
+
+    NOTE: only works with some assert methods, I'm not sure which!
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(DelayedAssertionMixin, self).__init__(*args, **kwargs)
+        # This mixin only works with assert methods that call `self.fail`.  In
+        # Python 2.7, `assertEqual` didn't, but we can do what Python 3 does,
+        # and use `assertMultiLineEqual` for comparing strings.
+        self.addTypeEqualityFunc(str, 'assertMultiLineEqual')
+        self._delayed_assertions = None
+
+    @contextlib.contextmanager
+    def delayed_assertions(self):
+        """The context manager: assert that we didn't collect any assertions."""
+        self._delayed_assertions = []
+        old_fail = self.fail
+        self.fail = self._delayed_fail
+        try:
+            yield
+        finally:
+            self.fail = old_fail
+        if self._delayed_assertions:
+            if len(self._delayed_assertions) == 1:
+                self.fail(self._delayed_assertions[0])
+            else:
+                self.fail(
+                    "{} failed assertions:\n{}".format(
+                        len(self._delayed_assertions),
+                        "\n".join(self._delayed_assertions),
+                    )
+                )
+
+    def _delayed_fail(self, msg=None):
+        """The stand-in for TestCase.fail during delayed_assertions."""
+        self._delayed_assertions.append(msg)
+
+
 class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):
     """A test case mixin that creates a temp directory and files in it.
 

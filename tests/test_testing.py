@@ -6,13 +6,15 @@
 
 import datetime
 import os
+import re
 import sys
+import textwrap
 
 import coverage
 from coverage.backunittest import TestCase
 from coverage.backward import to_bytes
 from coverage.files import actual_path
-from coverage.test_helpers import EnvironmentAwareMixin, TempDirMixin
+from coverage.test_helpers import EnvironmentAwareMixin, TempDirMixin, DelayedAssertionMixin
 
 from tests.coveragetest import CoverageTest
 
@@ -95,6 +97,45 @@ class EnvironmentAwareMixinTest(EnvironmentAwareMixin, TestCase):
         # The environment should be restored.
         self.assertEqual(os.environ[envvar], original_text)
         self.assertNotIn("XYZZY_PLUGH", os.environ)
+
+
+class DelayedAssertionMixinTest(DelayedAssertionMixin, TestCase):
+    """Test the `delayed_assertions` method."""
+
+    def test_delayed_assertions(self):
+        # Two assertions can be shown at once:
+        msg = re.escape(textwrap.dedent("""\
+            2 failed assertions:
+            'x' != 'y'
+            - x
+            + y
+
+            'w' != 'z'
+            - w
+            + z
+            """))
+        with self.assertRaisesRegex(AssertionError, msg):
+            with self.delayed_assertions():
+                self.assertEqual("x", "y")
+                self.assertEqual("w", "z")
+
+        # It's also OK if only one fails:
+        msg = re.escape(textwrap.dedent("""\
+            'w' != 'z'
+            - w
+            + z
+            """))
+        with self.assertRaisesRegex(AssertionError, msg):
+            with self.delayed_assertions():
+                self.assertEqual("x", "x")
+                self.assertEqual("w", "z")
+
+        # If an error happens, it gets reported immediately, no special
+        # handling:
+        with self.assertRaises(ZeroDivisionError):
+            with self.delayed_assertions():
+                self.assertEqual("x", "y")
+                self.assertEqual("w", 1/0)
 
 
 class CoverageTestTest(CoverageTest):
