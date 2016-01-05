@@ -72,7 +72,6 @@ class ParserMain(object):
 
     def one_file(self, options, filename):
         """Process just one file."""
-
         try:
             text = get_python_source(filename)
             bp = ByteParser(text, filename=filename)
@@ -109,27 +108,30 @@ class ParserMain(object):
                 exit_counts = cp.exit_counts()
 
                 for lineno, ltext in enumerate(cp.lines, start=1):
-                    m0 = m1 = m2 = m3 = a = ' '
+                    marks = [' ', ' ', ' ', ' ', ' ']
+                    a = ' '
+                    if lineno in cp.raw_statements:
+                        marks[0] = '-'
                     if lineno in cp.statements:
-                        m0 = '='
-                    elif lineno in cp.raw_statements:
-                        m0 = '-'
+                        marks[1] = '='
                     exits = exit_counts.get(lineno, 0)
                     if exits > 1:
-                        m1 = str(exits)
+                        marks[2] = str(exits)
                     if lineno in cp.raw_docstrings:
-                        m2 = '"'
+                        marks[3] = '"'
                     if lineno in cp.raw_classdefs:
-                        m2 = 'C'
+                        marks[3] = 'C'
+                    if lineno in cp.raw_funcdefs:
+                        marks[3] = 'f'
                     if lineno in cp.raw_excluded:
-                        m3 = 'x'
+                        marks[4] = 'x'
 
                     if arc_chars:
                         a = arc_chars[lineno].ljust(arc_width)
                     else:
                         a = ""
 
-                    print("%4d %s%s%s%s%s %s" % (lineno, m0, m1, m2, m3, a, ltext))
+                    print("%4d %s%s %s" % (lineno, "".join(marks), a, ltext))
 
     def disassemble(self, byte_parser, chunks=False, histogram=False):
         """Disassemble code, for ad-hoc experimenting."""
@@ -173,6 +175,7 @@ class ParserMain(object):
 
         """
 
+        plus_ones = set()
         arc_chars = collections.defaultdict(str)
         for lfrom, lto in sorted(arcs):
             if lfrom < 0:
@@ -181,13 +184,12 @@ class ParserMain(object):
                 arc_chars[lfrom] += '^'
             else:
                 if lfrom == lto - 1:
-                    # Don't show obvious arcs.
+                    plus_ones.add(lfrom)
                     continue
                 if lfrom < lto:
                     l1, l2 = lfrom, lto
                 else:
                     l1, l2 = lto, lfrom
-                #w = max(len(arc_chars[l]) for l in range(l1, l2+1))
                 w = first_all_blanks(arc_chars[l] for l in range(l1, l2+1))
                 for l in range(l1, l2+1):
                     if l == lfrom:
@@ -197,6 +199,13 @@ class ParserMain(object):
                     else:
                         ch = '|'
                     arc_chars[l] = set_char(arc_chars[l], w, ch)
+
+        # Add the plusses as the first character
+        for lineno, arcs in arc_chars.items():
+            arc_chars[lineno] = (
+                ("+" if lineno in plus_ones else " ") +
+                arcs
+            )
 
         return arc_chars
 
