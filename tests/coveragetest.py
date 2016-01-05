@@ -20,6 +20,7 @@ from coverage.cmdline import CoverageScript
 from coverage.debug import _TEST_NAME_FILE, DebugControl
 from coverage.test_helpers import (
     EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
+    DelayedAssertionMixin,
 )
 
 from nose.plugins.skip import SkipTest
@@ -35,6 +36,7 @@ class CoverageTest(
     EnvironmentAwareMixin,
     StdStreamCapturingMixin,
     TempDirMixin,
+    DelayedAssertionMixin,
     TestCase
 ):
     """A base class for coverage.py test cases."""
@@ -238,17 +240,21 @@ class CoverageTest(
                     self.fail("None of the missing choices matched %r" % missing_formatted)
 
         if arcs is not None:
-            self.assert_equal_args(analysis.arc_possibilities(), arcs, "Possible arcs differ")
+            with self.delayed_assertions():
+                self.assert_equal_args(
+                    analysis.arc_possibilities(), arcs,
+                    "Possible arcs differ",
+                )
 
-            self.assert_equal_args(
-                analysis.arcs_missing(), arcs_missing,
-                "Missing arcs differ"
-            )
+                self.assert_equal_args(
+                    analysis.arcs_missing(), arcs_missing,
+                    "Missing arcs differ"
+                )
 
-            self.assert_equal_args(
-                analysis.arcs_unpredicted(), arcs_unpredicted,
-                "Unpredicted arcs differ"
-            )
+                self.assert_equal_args(
+                    analysis.arcs_unpredicted(), arcs_unpredicted,
+                    "Unpredicted arcs differ"
+                )
 
         if report:
             frep = StringIO()
