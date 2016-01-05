@@ -520,8 +520,6 @@ class AstArcAnalyzer(object):
         my_block = self.block_stack.pop()
         exits = my_block.break_exits
         if node.orelse:
-            else_start = self.line_for_node(node.orelse[0])
-            self.arcs.add((start, else_start))
             else_exits = self.add_body_arcs(node.orelse, from_line=start)
             exits |= else_exits
         else:
@@ -653,11 +651,15 @@ class AstArcAnalyzer(object):
         for xit in exits:
             self.arcs.add((xit, to_top))
         exits = set()
-        if not constant_test:
-            exits.add(start)
         my_block = self.block_stack.pop()
         exits.update(my_block.break_exits)
-        # TODO: orelse
+        if node.orelse:
+            else_exits = self.add_body_arcs(node.orelse, from_line=start)
+            exits |= else_exits
+        else:
+            # No `else` clause: you can exit from the start.
+            if not constant_test:
+                exits.add(start)
         return exits
 
     def handle_With(self, node):

@@ -314,6 +314,22 @@ class LoopArcTest(CoverageTest):
             arcz=".1 .2 23 32 34 47 26 67 7. 18 89 9."
             )
 
+    def test_while_else(self):
+        self.check_coverage("""\
+            def whileelse(seq):
+                while seq:
+                    n = seq.pop()
+                    if n > 4:
+                        break
+                else:
+                    n = 99
+                return n
+            assert whileelse([1, 2]) == 99
+            assert whileelse([1, 5]) == 5
+            """,
+            arcz=".1 19 9A A.  .2 23 34 45 58 42 27 78 8.",
+        )
+
     def test_confusing_for_loop_bug_175(self):
         if env.PY3:
             # Py3 counts the list comp as a separate code object.
