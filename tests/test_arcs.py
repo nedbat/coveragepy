@@ -378,6 +378,54 @@ class LoopArcTest(CoverageTest):
             arcz=".1 .2 2-2 12 23 34 45 53 3.",
         )
 
+    def test_multiline_dict_comp(self):
+        if env.PYVERSION < (2, 7):
+            self.skip("Don't have set or dict comprehensions before 2.7")
+        if env.PY2:
+            arcz = ".2 2B B-4   2-4"
+        else:
+            arcz = ".2 2B B-3   2-3"
+        # Multiline dict comp:
+        self.check_coverage("""\
+            # comment
+            d = \\
+                {
+                i:
+                    str(i)
+                for
+                    i
+                    in
+                    range(9)
+            }
+            x = 11
+            """,
+            arcz=arcz,
+        )
+        # Multi dict comp:
+        if env.PY2:
+            arcz = ".2 2F F-4   2-4"
+        else:
+            arcz = ".2 2F F-3   2-3"
+        self.check_coverage("""\
+            # comment
+            d = \\
+                {
+                (i, j):
+                    str(i+j)
+                for
+                    i
+                    in
+                    range(9)
+                for
+                    j
+                    in
+                    range(13)
+            }
+            x = 15
+            """,
+            arcz=arcz,
+        )
+
 
 class ExceptionArcTest(CoverageTest):
     """Arc-measuring tests involving exception handling."""

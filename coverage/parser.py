@@ -383,10 +383,6 @@ class AstArcAnalyzer(object):
             # TODO: test case for empty module.
             return 1
 
-    def line_comprehension(self, node):
-        # TODO: is this how to get the line number for a comprehension?
-        return node.target.lineno
-
     def line_default(self, node):
         return node.lineno
 
@@ -433,7 +429,6 @@ class AstArcAnalyzer(object):
     # TODO: multi-target assignment with computed targets
     # TODO: listcomps hidden deep in other expressions
     # TODO: listcomps hidden in lists: x = [[i for i in range(10)]]
-    # TODO: multi-line listcomps
     # TODO: nested function definitions
 
     def process_break_exits(self, exits):
@@ -554,7 +549,6 @@ class AstArcAnalyzer(object):
         return set()
 
     def handle_Return(self, node):
-        # TODO: deal with returning through a finally.
         here = self.line_for_node(node)
         self.process_return_exits([here])
         return set()
@@ -711,12 +705,9 @@ class AstArcAnalyzer(object):
                 for xit in exits:
                     self.arcs.add((xit, -start))
             elif node_name in self.CODE_COMPREHENSIONS:
-                # TODO: tests for when generators is more than one?
-                for gen in node.generators:
-                    start = self.line_for_node(gen)
-                    self.arcs.add((-1, start))
-                    self.arcs.add((start, -start))
-                    # TODO: guaranteed this won't work for multi-line comps.
+                start = self.line_for_node(node)
+                self.arcs.add((-1, start))
+                self.arcs.add((start, -start))
             elif node_name == "Lambda":
                 start = self.line_for_node(node)
                 self.arcs.add((-1, start))
