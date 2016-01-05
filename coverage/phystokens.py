@@ -92,8 +92,7 @@ def source_token_lines(source):
     line = []
     col = 0
 
-    # The \f is because of http://bugs.python.org/issue19035
-    source = source.expandtabs(8).replace('\r\n', '\n').replace('\f', ' ')
+    source = source.expandtabs(8).replace('\r\n', '\n')
     tokgen = generate_tokens(source)
 
     for ttype, ttext, (_, scol), (_, ecol), _ in phys_tokens(tokgen):

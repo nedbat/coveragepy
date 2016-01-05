@@ -1490,6 +1490,22 @@ class ExcludeTest(CoverageTest):
             [2, 4], "", excludes=['✘cover']
         )
 
+    def test_formfeed(self):
+        # https://bitbucket.org/ned/coveragepy/issues/461/multiline-asserts-need-too-many-pragma
+        self.check_coverage("""\
+            x = 1
+            assert len([]) == 0, (
+                "This won't happen %s" % ("hello",)
+            )
+            \f
+            x = 6
+            assert len([]) == 0, (
+                "This won't happen %s" % ("hello",)
+            )
+            """,
+            [1, 6], "", excludes=['assert'],
+        )
+
 
 class Py24Test(CoverageTest):
     """Tests of new syntax in Python 2.4."""

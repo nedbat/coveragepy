@@ -22,9 +22,13 @@ Unreleased
 - Non-ascii characters in regexes in the configuration file worked in 3.7, but
   stopped working in 4.0.  Now they work again, closing `issue 455`_.
 
+- Form-feed characters would prevent accurate determination of the beginning of
+  statements in the rest of the file.  This is now fixed, closing `issue 461`_.
+
 .. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
 .. _issue 453: https://bitbucket.org/ned/coveragepy/issues/453/source-code-encoding-can-only-be-specified
 .. _issue 455: https://bitbucket.org/ned/coveragepy/issues/455/unusual-exclusions-stopped-working-in
+.. _issue 461: https://bitbucket.org/ned/coveragepy/issues/461/multiline-asserts-need-too-many-pragma
 
 
 Version 4.0.3 --- 2015-11-24

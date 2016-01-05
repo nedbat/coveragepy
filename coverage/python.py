@@ -50,6 +50,8 @@ def get_python_source(filename):
         # Couldn't find source.
         raise NoSource("No source for code: '%s'." % filename)
 
+    # Replace \f because of http://bugs.python.org/issue19035
+    source = source.replace(b'\f', b' ')
     source = source.decode(source_encoding(source), "replace")
 
     # Python code should always end with a line with a newline.
