@@ -617,6 +617,26 @@ class ExceptionArcTest(CoverageTest):
             arcz_missing="3D BC CD",
         )
 
+    def test_continue_through_finally(self):
+        self.check_coverage("""\
+            a, b, c, d, i = 1, 1, 1, 1, 99
+            try:
+                for i in range(5):
+                    try:
+                        a = 5
+                        if i > 0:
+                            continue
+                        b = 8
+                    finally:
+                        c = 10
+            except:
+                d = 12                              # C
+            assert (a, b, c, d) == (5, 8, 10, 1)    # D
+            """,
+            arcz=".1 12 23 34 3D 45 56 67 68 7A 8A A3 BC CD D.",
+            arcz_missing="BC CD",
+        )
+
     def test_finally_in_loop_bug_92(self):
         self.check_coverage("""\
             for i in range(5):
