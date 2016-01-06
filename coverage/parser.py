@@ -431,7 +431,6 @@ class AstArcAnalyzer(object):
     def process_break_exits(self, exits):
         for block in self.blocks():
             if isinstance(block, LoopBlock):
-                # TODO: what if there is no loop?
                 block.break_exits.update(exits)
                 break
             elif isinstance(block, TryBlock) and block.final_start:
@@ -441,7 +440,6 @@ class AstArcAnalyzer(object):
     def process_continue_exits(self, exits):
         for block in self.blocks():
             if isinstance(block, LoopBlock):
-                # TODO: what if there is no loop?
                 for xit in exits:
                     self.arcs.add((xit, block.start))
                 break
@@ -470,7 +468,6 @@ class AstArcAnalyzer(object):
                 block.return_from.update(exits)
                 break
             elif isinstance(block, FunctionBlock):
-                # TODO: what if there is no enclosing function?
                 for xit in exits:
                     self.arcs.add((xit, -block.start))
                 break
@@ -628,13 +625,12 @@ class AstArcAnalyzer(object):
         node.handlers = []
         node.orelse = []
 
-        if node.body:
-            first = node.body[0]
-            if first.__class__.__name__ == "TryExcept" and node.lineno == first.lineno:
-                assert len(node.body) == 1
-                node.body = first.body
-                node.handlers = first.handlers
-                node.orelse = first.orelse
+        first = node.body[0]
+        if first.__class__.__name__ == "TryExcept" and node.lineno == first.lineno:
+            assert len(node.body) == 1
+            node.body = first.body
+            node.handlers = first.handlers
+            node.orelse = first.orelse
 
         return self.handle_Try(node)
 
@@ -672,10 +668,10 @@ class AstArcAnalyzer(object):
     ])
 
     def handle_default(self, node):
-        node_name = node.__class__.__name__
-        if node_name not in self.OK_TO_DEFAULT:
-            # TODO: put 1/0 here to find unhandled nodes.
-            print("*** Unhandled: {0}".format(node))
+        if 0:
+            node_name = node.__class__.__name__
+            if node_name not in self.OK_TO_DEFAULT:
+                print("*** Unhandled: {0}".format(node))
         return set([self.line_for_node(node)])
 
     CODE_COMPREHENSIONS = set(["GeneratorExp", "DictComp", "SetComp"])
