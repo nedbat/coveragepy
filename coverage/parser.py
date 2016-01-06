@@ -336,7 +336,7 @@ class AstArcAnalyzer(object):
         self.funcdefs = funcdefs
         self.classdefs = classdefs
 
-        if int(os.environ.get("COVERAGE_ASTDUMP", 0)):
+        if int(os.environ.get("COVERAGE_ASTDUMP", 0)):      # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
             ast_dump(self.root_node)
 
@@ -372,7 +372,6 @@ class AstArcAnalyzer(object):
         if node.elts:
             return self.line_for_node(node.elts[0])
         else:
-            # TODO: test case for this branch:  x = []
             return node.lineno
 
     def line_Module(self, node):
@@ -380,7 +379,6 @@ class AstArcAnalyzer(object):
             return self.line_for_node(node.body[0])
         else:
             # Modules have no line number, they always start at 1.
-            # TODO: test case for empty module.
             return 1
 
     def line_default(self, node):
@@ -426,7 +424,6 @@ class AstArcAnalyzer(object):
     # tests to write:
     # TODO: while EXPR:
     # TODO: while False:
-    # TODO: multi-target assignment with computed targets
     # TODO: listcomps hidden deep in other expressions
     # TODO: listcomps hidden in lists: x = [[i for i in range(10)]]
     # TODO: nested function definitions
@@ -688,11 +685,17 @@ class AstArcAnalyzer(object):
     def add_arcs_for_code_objects(self, root_node):
         for node in ast.walk(root_node):
             node_name = node.__class__.__name__
+            # TODO: should this be broken into separate methods?
             if node_name == "Module":
                 start = self.line_for_node(node)
-                exits = self.add_body_arcs(node.body, from_line=-1)
-                for xit in exits:
-                    self.arcs.add((xit, -start))
+                if node.body:
+                    exits = self.add_body_arcs(node.body, from_line=-1)
+                    for xit in exits:
+                        self.arcs.add((xit, -start))
+                else:
+                    # Empty module.
+                    self.arcs.add((-1, start))
+                    self.arcs.add((start, -1))
             elif node_name in ["FunctionDef", "AsyncFunctionDef"]:
                 start = self.line_for_node(node)
                 self.block_stack.append(FunctionBlock(start=start))

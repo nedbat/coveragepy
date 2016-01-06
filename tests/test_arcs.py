@@ -151,6 +151,13 @@ class SimpleArcTest(CoverageTest):
             arcz=".1 12 .2 2-2 23 3.", arcz_missing=".2 2-2",
             )
 
+    def test_what_is_the_sound_of_no_lines_clapping(self):
+        self.check_coverage("""\
+            # __init__.py
+            """,
+            arcz=".1 1.",
+        )
+
 
 class WithTest(CoverageTest):
     """Arc-measuring tests involving context managers."""

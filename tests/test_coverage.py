@@ -109,7 +109,7 @@ class BasicCoverageTest(CoverageTest):
             import sys
             if not sys.path:
                 a = 1
-                """,
+                """,    # indented last line
             [1,2,3], "3")
 
     def test_multiline_initializer(self):
@@ -197,6 +197,21 @@ class SimpleStatementTest(CoverageTest):
             assert a == 7 and b == 8 and c == 9
             """,
             [1,2,3], "")
+
+    def test_more_assignments(self):
+        self.check_coverage("""\
+            x = []
+            d = {}
+            d[
+                4 + len(x)
+                + 5
+            ] = \\
+            d[
+                8 ** 2
+            ] = \\
+                9
+            """,
+            [1, 2, 3], "")
 
     def test_attribute_assignment(self):
         # Attribute assignment
