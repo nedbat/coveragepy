@@ -93,10 +93,6 @@ if env.PY3:
         """Produce a byte string with the ints from `byte_values`."""
         return bytes(byte_values)
 
-    def byte_to_int(byte_value):
-        """Turn an element of a bytes object into an int."""
-        return byte_value
-
     def bytes_to_ints(bytes_value):
         """Turn a bytes object into a sequence of ints."""
         # In Python 3, iterating bytes gives ints.
@@ -110,10 +106,6 @@ else:
     def binary_bytes(byte_values):
         """Produce a byte string with the ints from `byte_values`."""
         return "".join(chr(b) for b in byte_values)
-
-    def byte_to_int(byte_value):
-        """Turn an element of a bytes object into an int."""
-        return ord(byte_value)
 
     def bytes_to_ints(bytes_value):
         """Turn a bytes object into a sequence of ints."""

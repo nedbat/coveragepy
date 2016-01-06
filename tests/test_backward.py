@@ -4,7 +4,7 @@
 """Tests that our version shims in backward.py are working."""
 
 from coverage.backunittest import TestCase
-from coverage.backward import iitems, binary_bytes, byte_to_int, bytes_to_ints
+from coverage.backward import iitems, binary_bytes, bytes_to_ints
 
 
 class BackwardTest(TestCase):
@@ -20,4 +20,3 @@ class BackwardTest(TestCase):
         bb = binary_bytes(byte_values)
         self.assertEqual(len(bb), len(byte_values))
         self.assertEqual(byte_values, list(bytes_to_ints(bb)))
-        self.assertEqual(byte_values, [byte_to_int(b) for b in bb])

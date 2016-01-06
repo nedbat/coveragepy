@@ -5,7 +5,6 @@
 
 import ast
 import collections
-import dis
 import os
 import re
 import token
@@ -14,7 +13,7 @@ import tokenize
 from coverage import env
 from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints, string_class
-from coverage.bytecode import ByteCodes, CodeObjects
+from coverage.bytecode import CodeObjects
 from coverage.misc import contract, nice_pair, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
 from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
@@ -252,22 +251,6 @@ class PythonParser(object):
         ignore = self.excluded | self.raw_docstrings
         starts = self.raw_statements - ignore
         self.statements = self.first_lines(starts) - ignore
-
-    def old_arcs(self):
-        """Get information about the arcs available in the code.
-
-        Returns a set of line number pairs.  Line numbers have been normalized
-        to the first line of multi-line statements.
-
-        """
-        if self._all_arcs is None:
-            self._all_arcs = set()
-            for l1, l2 in self.byte_parser._all_arcs():
-                fl1 = self.first_line(l1)
-                fl2 = self.first_line(l2)
-                if fl1 != fl2:
-                    self._all_arcs.add((fl1, fl2))
-        return self._all_arcs
 
     def arcs(self):
         if self._all_arcs is None:
@@ -736,62 +719,6 @@ class AstArcAnalyzer(object):
         return False
 
 
-## Opcodes that guide the ByteParser.
-
-def _opcode(name):
-    """Return the opcode by name from the dis module."""
-    return dis.opmap[name]
-
-
-def _opcode_set(*names):
-    """Return a set of opcodes by the names in `names`."""
-    s = set()
-    for name in names:
-        try:
-            s.add(_opcode(name))
-        except KeyError:
-            pass
-    return s
-
-# Opcodes that leave the code object.
-OPS_CODE_END = _opcode_set('RETURN_VALUE')
-
-# Opcodes that unconditionally end the code chunk.
-OPS_CHUNK_END = _opcode_set(
-    'JUMP_ABSOLUTE', 'JUMP_FORWARD', 'RETURN_VALUE', 'RAISE_VARARGS',
-    'BREAK_LOOP', 'CONTINUE_LOOP',
-)
-
-# Opcodes that unconditionally begin a new code chunk.  By starting new chunks
-# with unconditional jump instructions, we neatly deal with jumps to jumps
-# properly.
-OPS_CHUNK_BEGIN = _opcode_set('JUMP_ABSOLUTE', 'JUMP_FORWARD')
-
-# Opcodes that push a block on the block stack.
-OPS_PUSH_BLOCK = _opcode_set(
-    'SETUP_LOOP', 'SETUP_EXCEPT', 'SETUP_FINALLY', 'SETUP_WITH', 'SETUP_ASYNC_WITH',
-)
-
-# Block types for exception handling.
-OPS_EXCEPT_BLOCKS = _opcode_set('SETUP_EXCEPT', 'SETUP_FINALLY')
-
-# Opcodes that pop a block from the block stack.
-OPS_POP_BLOCK = _opcode_set('POP_BLOCK')
-
-OPS_GET_AITER = _opcode_set('GET_AITER')
-
-# Opcodes that have a jump destination, but aren't really a jump.
-OPS_NO_JUMP = OPS_PUSH_BLOCK
-
-# Individual opcodes we need below.
-OP_BREAK_LOOP = _opcode('BREAK_LOOP')
-OP_END_FINALLY = _opcode('END_FINALLY')
-OP_COMPARE_OP = _opcode('COMPARE_OP')
-COMPARE_EXCEPTION = 10  # just have to get this constant from the code.
-OP_LOAD_CONST = _opcode('LOAD_CONST')
-OP_RETURN_VALUE = _opcode('RETURN_VALUE')
-
-
 class ByteParser(object):
     """Parse byte codes to understand the structure of code."""
 
@@ -812,7 +739,7 @@ class ByteParser(object):
 
         # Alternative Python implementations don't always provide all the
         # attributes on code objects that we need to do the analysis.
-        for attr in ['co_lnotab', 'co_firstlineno', 'co_consts', 'co_code']:
+        for attr in ['co_lnotab', 'co_firstlineno', 'co_consts']:
             if not hasattr(self.code, attr):
                 raise CoverageException(
                     "This implementation of Python doesn't support code analysis.\n"
@@ -866,290 +793,6 @@ class ByteParser(object):
             # Get all of the lineno information from this code.
             for _, l in bp._bytes_lines():
                 yield l
-
-    def _block_stack_repr(self, block_stack):               # pragma: debugging
-        """Get a string version of `block_stack`, for debugging."""
-        blocks = ", ".join(
-            "(%s, %r)" % (dis.opname[b[0]], b[1]) for b in block_stack
-        )
-        return "[" + blocks + "]"
-
-    def _split_into_chunks(self):
-        """Split the code object into a list of `Chunk` objects.
-
-        Each chunk is only entered at its first instruction, though there can
-        be many exits from a chunk.
-
-        Returns a list of `Chunk` objects.
-
-        """
-        # The list of chunks so far, and the one we're working on.
-        chunks = []
-        chunk = None
-
-        # A dict mapping byte offsets of line starts to the line numbers.
-        bytes_lines_map = dict(self._bytes_lines())
-
-        # The block stack: loops and try blocks get pushed here for the
-        # implicit jumps that can occur.
-        # Each entry is a tuple: (block type, destination)
-        block_stack = []
-
-        # Some op codes are followed by branches that should be ignored.  This
-        # is a count of how many ignores are left.
-        ignore_branch = 0
-
-        ignore_pop_block = 0
-
-        # We have to handle the last two bytecodes specially.
-        ult = penult = None
-
-        # Get a set of all of the jump-to points.
-        jump_to = set()
-        bytecodes = list(ByteCodes(self.code.co_code))
-        for bc in bytecodes:
-            if bc.jump_to >= 0:
-                jump_to.add(bc.jump_to)
-
-        chunk_lineno = 0
-
-        # Walk the byte codes building chunks.
-        for bc in bytecodes:
-            # Maybe have to start a new chunk.
-            start_new_chunk = False
-            first_chunk = False
-            if bc.offset in bytes_lines_map:
-                # Start a new chunk for each source line number.
-                start_new_chunk = True
-                chunk_lineno = bytes_lines_map[bc.offset]
-                first_chunk = True
-            elif bc.offset in jump_to:
-                # To make chunks have a single entrance, we have to make a new
-                # chunk when we get to a place some bytecode jumps to.
-                start_new_chunk = True
-            elif bc.op in OPS_CHUNK_BEGIN:
-                # Jumps deserve their own unnumbered chunk.  This fixes
-                # problems with jumps to jumps getting confused.
-                start_new_chunk = True
-
-            if not chunk or start_new_chunk:
-                if chunk:
-                    chunk.exits.add(bc.offset)
-                chunk = Chunk(bc.offset, chunk_lineno, first_chunk)
-                if not chunks:
-                    # The very first chunk of a code object is always an
-                    # entrance.
-                    chunk.entrance = True
-                chunks.append(chunk)
-
-            # Look at the opcode.
-            if bc.jump_to >= 0 and bc.op not in OPS_NO_JUMP:
-                if ignore_branch:
-                    # Someone earlier wanted us to ignore this branch.
-                    ignore_branch -= 1
-                else:
-                    # The opcode has a jump, it's an exit for this chunk.
-                    chunk.exits.add(bc.jump_to)
-
-            if bc.op in OPS_CODE_END:
-                # The opcode can exit the code object.
-                chunk.exits.add(-self.code.co_firstlineno)
-            if bc.op in OPS_PUSH_BLOCK:
-                # The opcode adds a block to the block_stack.
-                block_stack.append((bc.op, bc.jump_to))
-            if bc.op in OPS_POP_BLOCK:
-                # The opcode pops a block from the block stack.
-                if ignore_pop_block:
-                    ignore_pop_block -= 1
-                else:
-                    block_stack.pop()
-            if bc.op in OPS_CHUNK_END:
-                # This opcode forces the end of the chunk.
-                if bc.op == OP_BREAK_LOOP:
-                    # A break is implicit: jump where the top of the
-                    # block_stack points.
-                    chunk.exits.add(block_stack[-1][1])
-                chunk = None
-            if bc.op == OP_END_FINALLY:
-                # For the finally clause we need to find the closest exception
-                # block, and use its jump target as an exit.
-                for block in reversed(block_stack):
-                    if block[0] in OPS_EXCEPT_BLOCKS:
-                        chunk.exits.add(block[1])
-                        break
-            if bc.op == OP_COMPARE_OP and bc.arg == COMPARE_EXCEPTION:
-                # This is an except clause.  We want to overlook the next
-                # branch, so that except's don't count as branches.
-                ignore_branch += 1
-
-            if bc.op in OPS_GET_AITER:
-                # GET_AITER is weird: First, it seems to generate one more
-                # POP_BLOCK than SETUP_*, so we have to prepare to ignore one
-                # of the POP_BLOCKS.  Second, we don't have a clear branch to
-                # the exit of the loop, so we peek into the block stack to find
-                # it.
-                ignore_pop_block += 1
-                chunk.exits.add(block_stack[-1][1])
-
-            penult = ult
-            ult = bc
-
-        if chunks:
-            # The last two bytecodes could be a dummy "return None" that
-            # shouldn't be counted as real code. Every Python code object seems
-            # to end with a return, and a "return None" is inserted if there
-            # isn't an explicit return in the source.
-            if ult and penult:
-                if penult.op == OP_LOAD_CONST and ult.op == OP_RETURN_VALUE:
-                    if self.code.co_consts[penult.arg] is None:
-                        # This is "return None", but is it dummy?  A real line
-                        # would be a last chunk all by itself.
-                        if chunks[-1].byte != penult.offset:
-                            ex = -self.code.co_firstlineno
-                            # Split the last chunk
-                            last_chunk = chunks[-1]
-                            last_chunk.exits.remove(ex)
-                            last_chunk.exits.add(penult.offset)
-                            chunk = Chunk(
-                                penult.offset, last_chunk.line, False
-                            )
-                            chunk.exits.add(ex)
-                            chunks.append(chunk)
-
-            # Give all the chunks a length.
-            chunks[-1].length = bc.next_offset - chunks[-1].byte
-            for i in range(len(chunks)-1):
-                chunks[i].length = chunks[i+1].byte - chunks[i].byte
-
-        #self.validate_chunks(chunks)
-        return chunks
-
-    def validate_chunks(self, chunks):                      # pragma: debugging
-        """Validate the rule that chunks have a single entrance."""
-        # starts is the entrances to the chunks
-        starts = set(ch.byte for ch in chunks)
-        for ch in chunks:
-            assert all((ex in starts or ex < 0) for ex in ch.exits)
-
-    def _arcs(self):
-        """Find the executable arcs in the code.
-
-        Yields pairs: (from,to).  From and to are integer line numbers.  If
-        from is < 0, then the arc is an entrance into the code object.  If to
-        is < 0, the arc is an exit from the code object.
-
-        """
-        chunks = self._split_into_chunks()
-
-        # A map from byte offsets to the chunk starting at that offset.
-        byte_chunks = dict((c.byte, c) for c in chunks)
-
-        # Traverse from the first chunk in each line, and yield arcs where
-        # the trace function will be invoked.
-        for chunk in chunks:
-            if chunk.entrance:
-                yield (-1, chunk.line)
-
-            if not chunk.first:
-                continue
-
-            chunks_considered = set()
-            chunks_to_consider = [chunk]
-            while chunks_to_consider:
-                # Get the chunk we're considering, and make sure we don't
-                # consider it again.
-                this_chunk = chunks_to_consider.pop()
-                chunks_considered.add(this_chunk)
-
-                # For each exit, add the line number if the trace function
-                # would be triggered, or add the chunk to those being
-                # considered if not.
-                for ex in this_chunk.exits:
-                    if ex < 0:
-                        yield (chunk.line, ex)
-                    else:
-                        next_chunk = byte_chunks[ex]
-                        if next_chunk in chunks_considered:
-                            continue
-
-                        # The trace function is invoked if visiting the first
-                        # bytecode in a line, or if the transition is a
-                        # backward jump.
-                        backward_jump = next_chunk.byte < this_chunk.byte
-                        if next_chunk.first or backward_jump:
-                            if next_chunk.line != chunk.line:
-                                yield (chunk.line, next_chunk.line)
-                        else:
-                            chunks_to_consider.append(next_chunk)
-
-    def _all_chunks(self):
-        """Returns a list of `Chunk` objects for this code and its children.
-
-        See `_split_into_chunks` for details.
-
-        """
-        chunks = []
-        for bp in self.child_parsers():
-            chunks.extend(bp._split_into_chunks())
-
-        return chunks
-
-    def _all_arcs(self):
-        """Get the set of all arcs in this code object and its children.
-
-        See `_arcs` for details.
-
-        """
-        arcs = set()
-        for bp in self.child_parsers():
-            arcs.update(bp._arcs())
-
-        return arcs
-
-
-class Chunk(object):
-    """A sequence of byte codes with a single entrance.
-
-    To analyze byte code, we have to divide it into chunks, sequences of byte
-    codes such that each chunk has only one entrance, the first instruction in
-    the block.
-
-    This is almost the CS concept of `basic block`_, except that we're willing
-    to have many exits from a chunk, and "basic block" is a more cumbersome
-    term.
-
-    .. _basic block: http://en.wikipedia.org/wiki/Basic_block
-
-    `byte` is the offset to the bytecode starting this chunk.
-
-    `line` is the source line number containing this chunk.
-
-    `first` is true if this is the first chunk in the source line.
-
-    An exit < 0 means the chunk can leave the code (return).  The exit is
-    the negative of the starting line number of the code block.
-
-    The `entrance` attribute is a boolean indicating whether the code object
-    can be entered at this chunk.
-
-    """
-    def __init__(self, byte, line, first):
-        self.byte = byte
-        self.line = line
-        self.first = first
-        self.length = 0
-        self.entrance = False
-        self.exits = set()
-
-    def __repr__(self):
-        return "<%d+%d @%d%s%s %r>" % (
-            self.byte,
-            self.length,
-            self.line,
-            "!" if self.first else "",
-            "v" if self.entrance else "",
-            list(self.exits),
-        )
 
 
 SKIP_DUMP_FIELDS = ["ctx"]
