@@ -355,8 +355,11 @@ class AstArcAnalyzer(object):
     def line_for_node(self, node):
         """What is the right line number to use for this node?"""
         node_name = node.__class__.__name__
-        handler = getattr(self, "line_" + node_name, self.line_default)
-        return handler(node)
+        handler = getattr(self, "line_" + node_name, None)
+        if handler is not None:
+            return handler(node)
+        else:
+            return node.lineno
 
     def line_Assign(self, node):
         return self.line_for_node(node.value)
@@ -381,8 +384,10 @@ class AstArcAnalyzer(object):
             # Modules have no line number, they always start at 1.
             return 1
 
-    def line_default(self, node):
-        return node.lineno
+    OK_TO_DEFAULT = set([
+        "Assign", "Assert", "AugAssign", "Delete", "Exec", "Expr", "Global",
+        "Import", "ImportFrom", "Pass", "Print",
+    ])
 
     def add_arcs(self, node):
         """Add the arcs for `node`.
@@ -397,9 +402,17 @@ class AstArcAnalyzer(object):
                 if isinstance(value, ast.expr) and self.contains_return_expression(value):
                     self.process_return_exits([self.line_for_node(node)])
                     break
+
         node_name = node.__class__.__name__
-        handler = getattr(self, "handle_" + node_name, self.handle_default)
-        return handler(node)
+        handler = getattr(self, "handle_" + node_name, None)
+        if handler is not None:
+            return handler(node)
+
+        if 0:
+            node_name = node.__class__.__name__
+            if node_name not in self.OK_TO_DEFAULT:
+                print("*** Unhandled: {0}".format(node))
+        return set([self.line_for_node(node)])
 
     def add_body_arcs(self, body, from_line=None, prev_lines=None):
         if prev_lines is None:
@@ -662,58 +675,57 @@ class AstArcAnalyzer(object):
 
     handle_AsyncWith = handle_With
 
-    OK_TO_DEFAULT = set([
-        "Assign", "Assert", "AugAssign", "Delete", "Exec", "Expr", "Global",
-        "Import", "ImportFrom", "Pass", "Print",
-    ])
-
-    def handle_default(self, node):
-        if 0:
-            node_name = node.__class__.__name__
-            if node_name not in self.OK_TO_DEFAULT:
-                print("*** Unhandled: {0}".format(node))
-        return set([self.line_for_node(node)])
-
-    CODE_COMPREHENSIONS = set(["GeneratorExp", "DictComp", "SetComp"])
-    if env.PY3:
-        CODE_COMPREHENSIONS.add("ListComp")
-
     def add_arcs_for_code_objects(self, root_node):
         for node in ast.walk(root_node):
             node_name = node.__class__.__name__
-            # TODO: should this be broken into separate methods?
-            if node_name == "Module":
-                start = self.line_for_node(node)
-                if node.body:
-                    exits = self.add_body_arcs(node.body, from_line=-1)
-                    for xit in exits:
-                        self.arcs.add((xit, -start))
-                else:
-                    # Empty module.
-                    self.arcs.add((-1, start))
-                    self.arcs.add((start, -1))
-            elif node_name in ["FunctionDef", "AsyncFunctionDef"]:
-                start = self.line_for_node(node)
-                self.block_stack.append(FunctionBlock(start=start))
-                exits = self.add_body_arcs(node.body, from_line=-1)
-                self.block_stack.pop()
-                for xit in exits:
-                    self.arcs.add((xit, -start))
-            elif node_name == "ClassDef":
-                start = self.line_for_node(node)
-                self.arcs.add((-1, start))
-                exits = self.add_body_arcs(node.body, from_line=start)
-                for xit in exits:
-                    self.arcs.add((xit, -start))
-            elif node_name in self.CODE_COMPREHENSIONS:
-                start = self.line_for_node(node)
-                self.arcs.add((-1, start))
-                self.arcs.add((start, -start))
-            elif node_name == "Lambda":
-                start = self.line_for_node(node)
-                self.arcs.add((-1, start))
-                self.arcs.add((start, -start))
-                # TODO: test multi-line lambdas
+            code_object_handler = getattr(self, "code_object_" + node_name, None)
+            if code_object_handler is not None:
+                code_object_handler(node)
+
+    def code_object_Module(self, node):
+        start = self.line_for_node(node)
+        if node.body:
+            exits = self.add_body_arcs(node.body, from_line=-1)
+            for xit in exits:
+                self.arcs.add((xit, -start))
+        else:
+            # Empty module.
+            self.arcs.add((-1, start))
+            self.arcs.add((start, -1))
+
+    def code_object_FunctionDef(self, node):
+        start = self.line_for_node(node)
+        self.block_stack.append(FunctionBlock(start=start))
+        exits = self.add_body_arcs(node.body, from_line=-1)
+        self.block_stack.pop()
+        for xit in exits:
+            self.arcs.add((xit, -start))
+
+    code_object_AsyncFunctionDef = code_object_FunctionDef
+
+    def code_object_ClassDef(self, node):
+        start = self.line_for_node(node)
+        self.arcs.add((-1, start))
+        exits = self.add_body_arcs(node.body, from_line=start)
+        for xit in exits:
+            self.arcs.add((xit, -start))
+
+    def do_code_object_comprehension(self, node):
+        start = self.line_for_node(node)
+        self.arcs.add((-1, start))
+        self.arcs.add((start, -start))
+
+    code_object_GeneratorExp = do_code_object_comprehension
+    code_object_DictComp = do_code_object_comprehension
+    code_object_SetComp = do_code_object_comprehension
+    if env.PY3:
+        code_object_ListComp = do_code_object_comprehension
+
+    def code_object_Lambda(self, node):
+        start = self.line_for_node(node)
+        self.arcs.add((-1, start))
+        self.arcs.add((start, -start))
+        # TODO: test multi-line lambdas
 
     def contains_return_expression(self, node):
         """Is there a yield-from or await in `node` someplace?"""
