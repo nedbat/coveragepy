@@ -355,29 +355,29 @@ class AstArcAnalyzer(object):
     def line_for_node(self, node):
         """What is the right line number to use for this node?"""
         node_name = node.__class__.__name__
-        handler = getattr(self, "line_" + node_name, None)
+        handler = getattr(self, "_line__" + node_name, None)
         if handler is not None:
             return handler(node)
         else:
             return node.lineno
 
-    def line_Assign(self, node):
+    def _line__Assign(self, node):
         return self.line_for_node(node.value)
 
-    def line_Dict(self, node):
+    def _line__Dict(self, node):
         # Python 3.5 changed how dict literals are made.
         if env.PYVERSION >= (3, 5) and node.keys:
             return node.keys[0].lineno
         else:
             return node.lineno
 
-    def line_List(self, node):
+    def _line__List(self, node):
         if node.elts:
             return self.line_for_node(node.elts[0])
         else:
             return node.lineno
 
-    def line_Module(self, node):
+    def _line__Module(self, node):
         if node.body:
             return self.line_for_node(node.body[0])
         else:
@@ -404,7 +404,7 @@ class AstArcAnalyzer(object):
                     break
 
         node_name = node.__class__.__name__
-        handler = getattr(self, "handle_" + node_name, None)
+        handler = getattr(self, "_handle__" + node_name, None)
         if handler is not None:
             return handler(node)
 
@@ -487,12 +487,12 @@ class AstArcAnalyzer(object):
 
     ## Handlers
 
-    def handle_Break(self, node):
+    def _handle__Break(self, node):
         here = self.line_for_node(node)
         self.process_break_exits([here])
         return set()
 
-    def handle_ClassDef(self, node):
+    def _handle__ClassDef(self, node):
         return self.process_decorated(node, self.classdefs)
 
     def process_decorated(self, node, defs):
@@ -513,12 +513,12 @@ class AstArcAnalyzer(object):
         # the body is handled in add_arcs_for_code_objects.
         return set([last])
 
-    def handle_Continue(self, node):
+    def _handle__Continue(self, node):
         here = self.line_for_node(node)
         self.process_continue_exits([here])
         return set()
 
-    def handle_For(self, node):
+    def _handle__For(self, node):
         start = self.line_for_node(node.iter)
         self.block_stack.append(LoopBlock(start=start))
         exits = self.add_body_arcs(node.body, from_line=start)
@@ -534,31 +534,31 @@ class AstArcAnalyzer(object):
             exits.add(start)
         return exits
 
-    handle_AsyncFor = handle_For
+    _handle__AsyncFor = _handle__For
 
-    def handle_FunctionDef(self, node):
+    def _handle__FunctionDef(self, node):
         return self.process_decorated(node, self.funcdefs)
 
-    handle_AsyncFunctionDef = handle_FunctionDef
+    _handle__AsyncFunctionDef = _handle__FunctionDef
 
-    def handle_If(self, node):
+    def _handle__If(self, node):
         start = self.line_for_node(node.test)
         exits = self.add_body_arcs(node.body, from_line=start)
         exits |= self.add_body_arcs(node.orelse, from_line=start)
         return exits
 
-    def handle_Raise(self, node):
+    def _handle__Raise(self, node):
         # `raise` statement jumps away, no exits from here.
         here = self.line_for_node(node)
         self.process_raise_exits([here])
         return set()
 
-    def handle_Return(self, node):
+    def _handle__Return(self, node):
         here = self.line_for_node(node)
         self.process_return_exits([here])
         return set()
 
-    def handle_Try(self, node):
+    def _handle__Try(self, node):
         # try/finally is tricky. If there's a finally clause, then we need a
         # FinallyBlock to track what flows might go through the finally instead
         # of their normal flow.
@@ -624,14 +624,14 @@ class AstArcAnalyzer(object):
                 self.process_return_exits(exits)
         return exits
 
-    def handle_TryExcept(self, node):
+    def _handle__TryExcept(self, node):
         # Python 2.7 uses separate TryExcept and TryFinally nodes. If we get
         # TryExcept, it means there was no finally, so fake it, and treat as
         # a general Try node.
         node.finalbody = []
-        return self.handle_Try(node)
+        return self._handle__Try(node)
 
-    def handle_TryFinally(self, node):
+    def _handle__TryFinally(self, node):
         # Python 2.7 uses separate TryExcept and TryFinally nodes. If we get
         # TryFinally, see if there's a TryExcept nested inside. If so, merge
         # them. Otherwise, fake fields to complete a Try node.
@@ -645,9 +645,9 @@ class AstArcAnalyzer(object):
             node.handlers = first.handlers
             node.orelse = first.orelse
 
-        return self.handle_Try(node)
+        return self._handle__Try(node)
 
-    def handle_While(self, node):
+    def _handle__While(self, node):
         constant_test = self.is_constant_expr(node.test)
         start = to_top = self.line_for_node(node.test)
         if constant_test:
@@ -668,21 +668,21 @@ class AstArcAnalyzer(object):
                 exits.add(start)
         return exits
 
-    def handle_With(self, node):
+    def _handle__With(self, node):
         start = self.line_for_node(node)
         exits = self.add_body_arcs(node.body, from_line=start)
         return exits
 
-    handle_AsyncWith = handle_With
+    _handle__AsyncWith = _handle__With
 
     def add_arcs_for_code_objects(self, root_node):
         for node in ast.walk(root_node):
             node_name = node.__class__.__name__
-            code_object_handler = getattr(self, "code_object_" + node_name, None)
+            code_object_handler = getattr(self, "_code_object__" + node_name, None)
             if code_object_handler is not None:
                 code_object_handler(node)
 
-    def code_object_Module(self, node):
+    def _code_object__Module(self, node):
         start = self.line_for_node(node)
         if node.body:
             exits = self.add_body_arcs(node.body, from_line=-1)
@@ -693,7 +693,7 @@ class AstArcAnalyzer(object):
             self.arcs.add((-1, start))
             self.arcs.add((start, -1))
 
-    def code_object_FunctionDef(self, node):
+    def _code_object__FunctionDef(self, node):
         start = self.line_for_node(node)
         self.block_stack.append(FunctionBlock(start=start))
         exits = self.add_body_arcs(node.body, from_line=-1)
@@ -701,9 +701,9 @@ class AstArcAnalyzer(object):
         for xit in exits:
             self.arcs.add((xit, -start))
 
-    code_object_AsyncFunctionDef = code_object_FunctionDef
+    _code_object__AsyncFunctionDef = _code_object__FunctionDef
 
-    def code_object_ClassDef(self, node):
+    def _code_object__ClassDef(self, node):
         start = self.line_for_node(node)
         self.arcs.add((-1, start))
         exits = self.add_body_arcs(node.body, from_line=start)
@@ -715,13 +715,13 @@ class AstArcAnalyzer(object):
         self.arcs.add((-1, start))
         self.arcs.add((start, -start))
 
-    code_object_GeneratorExp = do_code_object_comprehension
-    code_object_DictComp = do_code_object_comprehension
-    code_object_SetComp = do_code_object_comprehension
+    _code_object__GeneratorExp = do_code_object_comprehension
+    _code_object__DictComp = do_code_object_comprehension
+    _code_object__SetComp = do_code_object_comprehension
     if env.PY3:
-        code_object_ListComp = do_code_object_comprehension
+        _code_object__ListComp = do_code_object_comprehension
 
-    def code_object_Lambda(self, node):
+    def _code_object__Lambda(self, node):
         start = self.line_for_node(node)
         self.arcs.add((-1, start))
         self.arcs.add((start, -start))
