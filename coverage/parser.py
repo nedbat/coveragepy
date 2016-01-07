@@ -142,7 +142,7 @@ class PythonParser(object):
                 indent -= 1
             elif toktype == token.NAME:
                 if ttext == 'class':
-                    # Class definitions look like branches in the byte code, so
+                    # Class definitions look like branches in the bytecode, so
                     # we need to exclude them.  The simplest way is to note the
                     # lines with the 'class' keyword.
                     self.raw_classdefs.add(slineno)
@@ -720,7 +720,7 @@ class AstArcAnalyzer(object):
 
 
 class ByteParser(object):
-    """Parse byte codes to understand the structure of code."""
+    """Parse bytecode to understand the structure of code."""
 
     @contract(text='unicode')
     def __init__(self, text, code=None, filename=None):

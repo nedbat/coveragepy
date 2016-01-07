@@ -21,7 +21,7 @@ def my_function(x):
 
     # Notice that "while 1" also has this problem.  Even though the compiler
     # knows there's no computation at the top of the loop, it's still expressed
-    # in byte code as a branch with two possibilities.
+    # in bytecode as a branch with two possibilities.
 
     i = 0
     while 1:

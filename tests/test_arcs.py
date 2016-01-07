@@ -942,9 +942,11 @@ class MiscArcTest(CoverageTest):
 
     def test_pathologically_long_code_object(self):
         # https://bitbucket.org/ned/coveragepy/issue/359
-        # The structure of this file is such that an EXTENDED_ARG byte code is
+        # The structure of this file is such that an EXTENDED_ARG bytecode is
         # needed to encode the jump at the end.  We weren't interpreting those
         # opcodes.
+        # Note that we no longer interpret bytecode at all, but it couldn't
+        # hurt to keep the test...
         code = """\
             data = [
             """ + "".join("""\
