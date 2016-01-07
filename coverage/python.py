@@ -160,10 +160,6 @@ class PythonFileReporter(FileReporter):
         return self.parser.arcs()
 
     @expensive
-    def ast_arcs(self):
-        return self.parser.ast_arcs()
-
-    @expensive
     def exit_counts(self):
         return self.parser.exit_counts()
 

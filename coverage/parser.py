@@ -253,6 +253,12 @@ class PythonParser(object):
         self.statements = self.first_lines(starts) - ignore
 
     def arcs(self):
+        """Get information about the arcs available in the code.
+
+        Returns a set of line number pairs.  Line numbers have been normalized
+        to the first line of multi-line statements.
+
+        """
         if self._all_arcs is None:
             aaa = AstArcAnalyzer(self.text, self.raw_funcdefs, self.raw_classdefs)
             arcs = aaa.collect_arcs()
@@ -298,9 +304,11 @@ class LoopBlock(object):
         self.start = start
         self.break_exits = set()
 
+
 class FunctionBlock(object):
     def __init__(self, start):
         self.start = start
+
 
 class TryBlock(object):
     def __init__(self, handler_start=None, final_start=None):
@@ -803,6 +811,7 @@ def is_simple_value(value):
         isinstance(value, (string_class, int, float))
     )
 
+# TODO: a test of ast_dump?
 def ast_dump(node, depth=0):
     indent = " " * depth
     if not isinstance(node, ast.AST):

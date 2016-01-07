@@ -1032,6 +1032,8 @@ class DecoractorArcTest(CoverageTest):
 
 
 class AsyncTest(CoverageTest):
+    """Tests of the new async and await keywords in Python 3.5"""
+
     def setUp(self):
         if env.PYVERSION < (3, 5):
             self.skip("Async features are new in Python 3.5")
