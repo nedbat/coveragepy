@@ -964,6 +964,25 @@ class MiscArcTest(CoverageTest):
             arcs_missing=[], arcs_unpredicted=[],
             )
 
+    def test_optimized_away_lines(self):
+        self.skip("TODO: fix this test")
+        self.check_coverage("""\
+            a = 1
+            if len([2]):
+                c = 3
+            if 0:               # this line isn't in the compiled code.
+                if len([5]):
+                    d = 6
+            e = 7
+            """,
+            lines=[1, 2, 3, 7],
+            arcz=".1 12 23 27 37 7.",
+        )
+
+
+class DecoractorArcTest(CoverageTest):
+    """Tests of arcs with decorators."""
+
     def test_function_decorator(self):
         self.check_coverage("""\
             def decorator(arg):
