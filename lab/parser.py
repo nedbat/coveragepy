@@ -5,9 +5,13 @@
 
 from __future__ import division
 
-import glob, os, sys
 import collections
-from optparse import OptionParser
+import glob
+import optparse
+import os
+import re
+import sys
+import textwrap
 
 import disgen
 
@@ -24,7 +28,7 @@ class ParserMain(object):
     def main(self, args):
         """A main function for trying the code from the command line."""
 
-        parser = OptionParser()
+        parser = optparse.OptionParser()
         parser.add_option(
             "-c", action="store_true", dest="chunks",
             help="Show basic block chunks"
@@ -72,8 +76,20 @@ class ParserMain(object):
 
     def one_file(self, options, filename):
         """Process just one file."""
+        # `filename` can have a line number suffix. In that case, extract those
+        # lines, dedent them, and use that.
+        match = re.search(r"^(.*):(\d+)-(\d+)$", filename)
+        if match:
+            filename, start, end = match.groups()
+            start, end = int(start), int(end)
+        else:
+            start = end = None
+
         try:
             text = get_python_source(filename)
+            if start is not None:
+                lines = text.splitlines(True)
+                text = textwrap.dedent("".join(lines[start-1:end]))
             bp = ByteParser(text, filename=filename)
         except Exception as err:
             print("%s" % (err,))
