@@ -77,7 +77,8 @@ class ParserMain(object):
     def one_file(self, options, filename):
         """Process just one file."""
         # `filename` can have a line number suffix. In that case, extract those
-        # lines, dedent them, and use that.
+        # lines, dedent them, and use that.  This is for trying test cases
+        # embedded in the test files.
         match = re.search(r"^(.*):(\d+)-(\d+)$", filename)
         if match:
             filename, start, end = match.groups()
@@ -89,7 +90,7 @@ class ParserMain(object):
             text = get_python_source(filename)
             if start is not None:
                 lines = text.splitlines(True)
-                text = textwrap.dedent("".join(lines[start-1:end]))
+                text = textwrap.dedent("".join(lines[start-1:end]).replace("\\\\", "\\"))
             bp = ByteParser(text, filename=filename)
         except Exception as err:
             print("%s" % (err,))
