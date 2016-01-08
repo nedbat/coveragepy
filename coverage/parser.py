@@ -260,6 +260,7 @@ class PythonParser(object):
 
         """
         if self._all_arcs is None:
+            import pudb,sys as __sys;__sys.stdout=__sys.__stdout__;pudb.set_trace() # -={XX}=-={XX}=-={XX}=-         
             aaa = AstArcAnalyzer(self.text, self.raw_funcdefs, self.raw_classdefs)
             arcs = aaa.collect_arcs()
 

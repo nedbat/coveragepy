@@ -142,15 +142,6 @@ class SimpleArcTest(CoverageTest):
             arcz=".1 16 6.  .2 23 3. 25 5.", arcz_missing="25 5."
             )
 
-    def test_unused_lambdas_are_confusing_bug_90(self):
-        self.check_coverage("""\
-            a = 1
-            fn = lambda x: x
-            b = 3
-            """,
-            arcz=".1 12 .2 2-2 23 3.", arcz_missing=".2 2-2",
-            )
-
     def test_what_is_the_sound_of_no_lines_clapping(self):
         self.check_coverage("""\
             # __init__.py
@@ -1034,7 +1025,7 @@ class DecoractorArcTest(CoverageTest):
 class LambdaArcTest(CoverageTest):
     """Tests of lambdas"""
 
-    def test_lambda(self):
+    def test_multiline_lambda(self):
         self.check_coverage("""\
             fn = (lambda x:
                     x + 2
@@ -1057,6 +1048,15 @@ class LambdaArcTest(CoverageTest):
             """,
             arcz=".2 2A A-4   2-4",
         )
+
+    def test_unused_lambdas_are_confusing_bug_90(self):
+        self.check_coverage("""\
+            a = 1
+            fn = lambda x: x
+            b = 3
+            """,
+            arcz=".1 12 .2 2-2 23 3.", arcz_missing=".2 2-2",
+            )
 
 
 class AsyncTest(CoverageTest):
