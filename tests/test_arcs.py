@@ -1031,6 +1031,34 @@ class DecoractorArcTest(CoverageTest):
         )
 
 
+class LambdaArcTest(CoverageTest):
+    """Tests of lambdas"""
+
+    def test_lambda(self):
+        self.check_coverage("""\
+            fn = (lambda x:
+                    x + 2
+            )
+            assert fn(4) == 6
+            """,
+            arcz=".1 14 4-1   1-1",
+        )
+        self.check_coverage("""\
+
+            fn = \\
+                (
+                lambda
+                    x:
+                    x
+                    +
+                    8
+            )
+            assert fn(10) == 18
+            """,
+            arcz=".2 2A A-4   2-4",
+        )
+
+
 class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
 
@@ -1108,7 +1136,6 @@ class AsyncTest(CoverageTest):
                 async with x:
                     pass
             """,
-            # TODO: we don't run any code, so many arcs are missing.
             arcz=".1 1. .2 23 3.",
             arcz_missing=".2 23 3.",
         )

@@ -312,8 +312,8 @@ class FunctionBlock(object):
 
 class TryBlock(object):
     def __init__(self, handler_start=None, final_start=None):
-        self.handler_start = handler_start  # TODO: is this used?
-        self.final_start = final_start      # TODO: is this used?
+        self.handler_start = handler_start
+        self.final_start = final_start
         self.break_from = set()
         self.continue_from = set()
         self.return_from = set()
@@ -716,7 +716,6 @@ class AstArcAnalyzer(object):
         start = self.line_for_node(node)
         self.arcs.add((-1, start))
         self.arcs.add((start, -start))
-        # TODO: test multi-line lambdas
 
     def contains_return_expression(self, node):
         """Is there a yield-from or await in `node` someplace?"""
