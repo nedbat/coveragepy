@@ -1,4 +1,4 @@
-"""Disassembler of Python byte code into mnemonics."""
+"""Disassembler of Python bytecode into mnemonics."""
 
 # Adapted from stdlib dis.py, but returns structured information
 # instead of printing to stdout.
@@ -133,7 +133,7 @@ def byte_from_code(code, i):
     return byte
 
 def findlabels(code):
-    """Detect all offsets in a byte code which are jump targets.
+    """Detect all offsets in a bytecode which are jump targets.
 
     Return the list of offsets.
 
@@ -158,7 +158,7 @@ def findlabels(code):
     return labels
 
 def findlinestarts(code):
-    """Find the offsets in a byte code which are start of lines in the source.
+    """Find the offsets in a bytecode which are start of lines in the source.
 
     Generate pairs (offset, lineno) as described in Python/compile.c.
 

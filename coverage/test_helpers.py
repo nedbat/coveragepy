@@ -162,20 +162,20 @@ class StdStreamCapturingMixin(TestCase):
         # nose keeps stdout from littering the screen, so we can safely Tee it,
         # but it doesn't capture stderr, so we don't want to Tee stderr to the
         # real stderr, since it will interfere with our nice field of dots.
-        self.old_stdout = sys.stdout
+        old_stdout = sys.stdout
         self.captured_stdout = StringIO()
         sys.stdout = Tee(sys.stdout, self.captured_stdout)
 
-        self.old_stderr = sys.stderr
+        old_stderr = sys.stderr
         self.captured_stderr = StringIO()
         sys.stderr = self.captured_stderr
 
-        self.addCleanup(self.cleanup_std_streams)
+        self.addCleanup(self.cleanup_std_streams, old_stdout, old_stderr)
 
-    def cleanup_std_streams(self):
+    def cleanup_std_streams(self, old_stdout, old_stderr):
         """Restore stdout and stderr."""
-        sys.stdout = self.old_stdout
-        sys.stderr = self.old_stderr
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
 
     def stdout(self):
         """Return the data written to stdout during the test."""
@@ -184,6 +184,59 @@ class StdStreamCapturingMixin(TestCase):
     def stderr(self):
         """Return the data written to stderr during the test."""
         return self.captured_stderr.getvalue()
+
+
+class DelayedAssertionMixin(TestCase):
+    """A test case mixin that provides a `delayed_assertions` context manager.
+
+    Use it like this::
+
+        with self.delayed_assertions():
+            self.assertEqual(x, y)
+            self.assertEqual(z, w)
+
+    All of the assertions will run.  The failures will be displayed at the end
+    of the with-statement.
+
+    NOTE: this only works with some assertions.  These are known to work:
+
+        - `assertEqual(str, str)`
+
+        - `assertMultilineEqual(str, str)`
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(DelayedAssertionMixin, self).__init__(*args, **kwargs)
+        # This mixin only works with assert methods that call `self.fail`.  In
+        # Python 2.7, `assertEqual` didn't, but we can do what Python 3 does,
+        # and use `assertMultiLineEqual` for comparing strings.
+        self.addTypeEqualityFunc(str, 'assertMultiLineEqual')
+        self._delayed_assertions = None
+
+    @contextlib.contextmanager
+    def delayed_assertions(self):
+        """The context manager: assert that we didn't collect any assertions."""
+        self._delayed_assertions = []
+        old_fail = self.fail
+        self.fail = self._delayed_fail
+        try:
+            yield
+        finally:
+            self.fail = old_fail
+        if self._delayed_assertions:
+            if len(self._delayed_assertions) == 1:
+                self.fail(self._delayed_assertions[0])
+            else:
+                self.fail(
+                    "{0} failed assertions:\n{1}".format(
+                        len(self._delayed_assertions),
+                        "\n".join(self._delayed_assertions),
+                    )
+                )
+
+    def _delayed_fail(self, msg=None):
+        """The stand-in for TestCase.fail during delayed_assertions."""
+        self._delayed_assertions.append(msg)
 
 
 class TempDirMixin(SysPathAwareMixin, ModuleAwareMixin, TestCase):

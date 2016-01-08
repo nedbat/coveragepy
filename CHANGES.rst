@@ -9,6 +9,32 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Branch coverage has been rewritten: it used to be based on bytecode analysis,
+  but now uses AST analysis.  This has changed a number of things:
+
+  - More code paths are now considered runnable, especially in `try`/`except`
+    structures.  This may mean that coverage.py will identify more code paths
+    as uncovered.  This could either raise or lower your overall coverage
+    number.
+
+  - Python 3.5's `async` and `await` keywords are properly supported, fixing
+    `issue 434`_.
+
+  - A some long-standing branch coverage bugs were fixed:
+
+    - `issue 129`_: functions with only a docstring for a body would incorrectly
+      report a missing branch on the ``def`` line.
+
+    - `issue 212`_: code in an ``except`` block could be incorrectly marked as
+      a missing branch.
+
+    - `issue 146`_: context manages (``with`` statements) in a loop or ``try``
+      block could confuse the branch measurement, reporting incorrect partial
+      branches.
+
+    - `issue 422`_: in Python 3.5, an actual partial branch could be marked as
+      complete.
+
 - Pragmas to disable coverage measurement can now be used on decorator lines,
   and they will apply to the entire function or class being decorated.  This
   implements the feature requested in `issue 131`_.
@@ -25,7 +51,12 @@ Unreleased
 - Form-feed characters would prevent accurate determination of the beginning of
   statements in the rest of the file.  This is now fixed, closing `issue 461`_.
 
+.. _issue 129: https://bitbucket.org/ned/coveragepy/issues/129/misleading-branch-coverage-of-empty
 .. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
+.. _issue 146: https://bitbucket.org/ned/coveragepy/issues/146/context-managers-confuse-branch-coverage
+.. _issue 212: https://bitbucket.org/ned/coveragepy/issues/212/coverage-erroneously-reports-partial
+.. _issue 422: https://bitbucket.org/ned/coveragepy/issues/422/python35-partial-branch-marked-as-fully
+.. _issue 434: https://bitbucket.org/ned/coveragepy/issues/434/indexerror-in-python-35
 .. _issue 453: https://bitbucket.org/ned/coveragepy/issues/453/source-code-encoding-can-only-be-specified
 .. _issue 455: https://bitbucket.org/ned/coveragepy/issues/455/unusual-exclusions-stopped-working-in
 .. _issue 461: https://bitbucket.org/ned/coveragepy/issues/461/multiline-asserts-need-too-many-pragma

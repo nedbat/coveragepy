@@ -607,7 +607,7 @@ class SummaryTest2(CoverageTest):
     def test_empty_files(self):
         # Shows that empty files like __init__.py are listed as having zero
         # statements, not one statement.
-        cov = coverage.Coverage()
+        cov = coverage.Coverage(branch=True)
         cov.start()
         import usepkgs  # pragma: nested # pylint: disable=import-error,unused-variable
         cov.stop()      # pragma: nested
@@ -617,8 +617,8 @@ class SummaryTest2(CoverageTest):
 
         report = repout.getvalue().replace('\\', '/')
         report = re.sub(r"\s+", " ", report)
-        self.assertIn("tests/modules/pkg1/__init__.py 2 0 100%", report)
-        self.assertIn("tests/modules/pkg2/__init__.py 0 0 100%", report)
+        self.assertIn("tests/modules/pkg1/__init__.py 2 0 0 0 100%", report)
+        self.assertIn("tests/modules/pkg2/__init__.py 0 0 0 0 100%", report)
 
 
 class ReportingReturnValueTest(CoverageTest):

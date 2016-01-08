@@ -134,7 +134,11 @@ required-attributes=
 
 # Regular expression which should only match functions or classes name which do
 # not require a docstring
-no-docstring-rgx=__.*__|test[A-Z_].*|setUp|tearDown
+# Special methods don't: __foo__
+# Test methods don't: testXXXX
+# TestCase overrides don't: setUp, tearDown
+# Dispatched methods don't: _xxx__Xxxx
+no-docstring-rgx=__.*__|test[A-Z_].*|setUp|tearDown|_.*__.*
 
 # Regular expression which should only match correct module names
 module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
