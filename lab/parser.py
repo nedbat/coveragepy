@@ -122,8 +122,6 @@ class ParserMain(object):
                         marks[3] = '"'
                     if lineno in pyparser.raw_classdefs:
                         marks[3] = 'C'
-                    if lineno in pyparser.raw_funcdefs:
-                        marks[3] = 'f'
                     if lineno in pyparser.raw_excluded:
                         marks[4] = 'x'
 
