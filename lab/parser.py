@@ -15,8 +15,7 @@ import textwrap
 
 import disgen
 
-from coverage.misc import CoverageException
-from coverage.parser import ByteParser, PythonParser
+from coverage.parser import PythonParser
 from coverage.python import get_python_source
 
 opcode_counts = collections.Counter()
@@ -29,10 +28,6 @@ class ParserMain(object):
         """A main function for trying the code from the command line."""
 
         parser = optparse.OptionParser()
-        parser.add_option(
-            "-c", action="store_true", dest="chunks",
-            help="Show basic block chunks"
-            )
         parser.add_option(
             "-d", action="store_true", dest="dis",
             help="Disassemble"
@@ -91,56 +86,45 @@ class ParserMain(object):
             if start is not None:
                 lines = text.splitlines(True)
                 text = textwrap.dedent("".join(lines[start-1:end]).replace("\\\\", "\\"))
-            bp = ByteParser(text, filename=filename)
+            pyparser = PythonParser(text, filename=filename, exclude=r"no\s*cover")
         except Exception as err:
             print("%s" % (err,))
             return
 
         if options.dis:
             print("Main code:")
-            self.disassemble(bp, chunks=options.chunks, histogram=options.histogram)
+            self.disassemble(pyparser.byte_parser, histogram=options.histogram)
 
-        arcs = bp._all_arcs()
-        if options.chunks:
-            chunks = bp._all_chunks()
-            if options.recursive:
-                print("%6d: %s" % (len(chunks), filename))
-            else:
-                print("Chunks: %r" % chunks)
-                print("Arcs: %r" % sorted(arcs))
+        arcs = pyparser.arcs()
 
         if options.source or options.tokens:
-            cp = PythonParser(filename=filename, exclude=r"no\s*cover")
-            cp.show_tokens = options.tokens
-            cp.parse_source()
+            pyparser.show_tokens = options.tokens
+            pyparser.parse_source()
 
             if options.source:
-                arc_width = 0
-                arc_chars = {}
-                if options.chunks:
-                    arc_chars = self.arc_ascii_art(arcs)
-                    if arc_chars:
-                        arc_width = max(len(a) for a in arc_chars.values())
+                arc_chars = self.arc_ascii_art(arcs)
+                if arc_chars:
+                    arc_width = max(len(a) for a in arc_chars.values())
 
-                exit_counts = cp.exit_counts()
+                exit_counts = pyparser.exit_counts()
 
-                for lineno, ltext in enumerate(cp.lines, start=1):
+                for lineno, ltext in enumerate(pyparser.lines, start=1):
                     marks = [' ', ' ', ' ', ' ', ' ']
                     a = ' '
-                    if lineno in cp.raw_statements:
+                    if lineno in pyparser.raw_statements:
                         marks[0] = '-'
-                    if lineno in cp.statements:
+                    if lineno in pyparser.statements:
                         marks[1] = '='
                     exits = exit_counts.get(lineno, 0)
                     if exits > 1:
                         marks[2] = str(exits)
-                    if lineno in cp.raw_docstrings:
+                    if lineno in pyparser.raw_docstrings:
                         marks[3] = '"'
-                    if lineno in cp.raw_classdefs:
+                    if lineno in pyparser.raw_classdefs:
                         marks[3] = 'C'
-                    if lineno in cp.raw_funcdefs:
+                    if lineno in pyparser.raw_funcdefs:
                         marks[3] = 'f'
-                    if lineno in cp.raw_excluded:
+                    if lineno in pyparser.raw_excluded:
                         marks[4] = 'x'
 
                     if arc_chars:
@@ -150,12 +134,10 @@ class ParserMain(object):
 
                     print("%4d %s%s %s" % (lineno, "".join(marks), a, ltext))
 
-    def disassemble(self, byte_parser, chunks=False, histogram=False):
+    def disassemble(self, byte_parser, histogram=False):
         """Disassemble code, for ad-hoc experimenting."""
 
         for bp in byte_parser.child_parsers():
-            if chunks:
-                chunkd = dict((chunk.byte, chunk) for chunk in bp._split_into_chunks())
             if bp.text:
                 srclines = bp.text.splitlines()
             else:
@@ -175,12 +157,7 @@ class ParserMain(object):
                     elif disline.offset > 0:
                         print("")
                 line = disgen.format_dis_line(disline)
-                chunkstr = ""
-                if chunks:
-                    chunk = chunkd.get(disline.offset)
-                    if chunk:
-                        chunkstr = ":: %r" % chunk
-                print("%-70s%s" % (line, chunkstr))
+                print("%-70s" % (line,))
 
         print("")
 
