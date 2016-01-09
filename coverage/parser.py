@@ -299,18 +299,25 @@ class PythonParser(object):
         return exit_counts
 
 
+#
+# AST analysis
+#
+
 class LoopBlock(object):
+    """A block on the block stack representing a `for` or `while` loop."""
     def __init__(self, start):
         self.start = start
         self.break_exits = set()
 
 
 class FunctionBlock(object):
+    """A block on the block stack representing a function definition."""
     def __init__(self, start):
         self.start = start
 
 
 class TryBlock(object):
+    """A block on the block stack representing a `try` block."""
     def __init__(self, handler_start=None, final_start=None):
         self.handler_start = handler_start
         self.final_start = final_start
@@ -321,6 +328,8 @@ class TryBlock(object):
 
 
 class AstArcAnalyzer(object):
+    """Analyze source text with an AST to find executable code paths."""
+
     @contract(text='unicode', funcdefs=set, classdefs=set)
     def __init__(self, text, funcdefs, classdefs):
         self.root_node = ast.parse(neuter_encoding_declaration(text))
@@ -339,12 +348,16 @@ class AstArcAnalyzer(object):
         self.add_arcs_for_code_objects(self.root_node)
         return self.arcs
 
-    def blocks(self):
+    def nearest_blocks(self):
         """Yield the blocks in nearest-to-farthest order."""
         return reversed(self.block_stack)
 
     def line_for_node(self, node):
-        """What is the right line number to use for this node?"""
+        """What is the right line number to use for this node?
+
+        This dispatches to _line__Node functions where needed.
+
+        """
         node_name = node.__class__.__name__
         handler = getattr(self, "_line__" + node_name, None)
         if handler is not None:
@@ -433,7 +446,8 @@ class AstArcAnalyzer(object):
     # TODO: nested function definitions
 
     def process_break_exits(self, exits):
-        for block in self.blocks():
+        """Add arcs due to jumps from `exits` being breaks."""
+        for block in self.nearest_blocks():
             if isinstance(block, LoopBlock):
                 block.break_exits.update(exits)
                 break
@@ -442,7 +456,8 @@ class AstArcAnalyzer(object):
                 break
 
     def process_continue_exits(self, exits):
-        for block in self.blocks():
+        """Add arcs due to jumps from `exits` being continues."""
+        for block in self.nearest_blocks():
             if isinstance(block, LoopBlock):
                 for xit in exits:
                     self.arcs.add((xit, block.start))
@@ -452,7 +467,8 @@ class AstArcAnalyzer(object):
                 break
 
     def process_raise_exits(self, exits):
-        for block in self.blocks():
+        """Add arcs due to jumps from `exits` being raises."""
+        for block in self.nearest_blocks():
             if isinstance(block, TryBlock):
                 if block.handler_start:
                     for xit in exits:
@@ -467,7 +483,8 @@ class AstArcAnalyzer(object):
                 break
 
     def process_return_exits(self, exits):
-        for block in self.blocks():
+        """Add arcs due to jumps from `exits` being returns."""
+        for block in self.nearest_blocks():
             if isinstance(block, TryBlock) and block.final_start:
                 block.return_from.update(exits)
                 break
@@ -582,9 +599,9 @@ class AstArcAnalyzer(object):
                     # "except:" doesn't jump to subsequent handlers, or
                     # "finally:".
                     last_handler_start = None
-                    # TODO: should we break here? Handlers after "except:"
-                    # won't be run.  Should coverage know that code can't be
-                    # run, or should it flag it as not run?
+                    # Note that once we have `except:`, no further handlers
+                    # will ever be run.  We'll keep collecting them, and the
+                    # code will get marked as not run.
 
         if node.orelse:
             exits = self.add_body_arcs(node.orelse, prev_lines=exits)
@@ -804,7 +821,8 @@ class ByteParser(object):
 
 SKIP_DUMP_FIELDS = ["ctx"]
 
-def is_simple_value(value):
+def _is_simple_value(value):
+    """Is `value` simple enough to be displayed on a single line?"""
     return (
         value in [None, [], (), {}, set()] or
         isinstance(value, (string_class, int, float))
@@ -812,6 +830,11 @@ def is_simple_value(value):
 
 # TODO: a test of ast_dump?
 def ast_dump(node, depth=0):
+    """Dump the AST for `node`.
+
+    This recursively walks the AST, printing a readable version.
+
+    """
     indent = " " * depth
     if not isinstance(node, ast.AST):
         print("{0}<{1} {2!r}>".format(indent, node.__class__.__name__, node))
@@ -831,7 +854,7 @@ def ast_dump(node, depth=0):
     ]
     if not named_fields:
         print("{0}>".format(head))
-    elif len(named_fields) == 1 and is_simple_value(named_fields[0][1]):
+    elif len(named_fields) == 1 and _is_simple_value(named_fields[0][1]):
         field_name, value = named_fields[0]
         print("{0} {1}: {2!r}>".format(head, field_name, value))
     else:
@@ -843,7 +866,7 @@ def ast_dump(node, depth=0):
         next_indent = indent + "    "
         for field_name, value in named_fields:
             prefix = "{0}{1}:".format(next_indent, field_name)
-            if is_simple_value(value):
+            if _is_simple_value(value):
                 print("{0} {1!r}".format(prefix, value))
             elif isinstance(value, list):
                 print("{0} [".format(prefix))
