@@ -641,8 +641,8 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 35 56 61 17 7.",
         )
 
-    # "except Exception as e" is crucial here.
     def test_bug_212(self):
+        # "except Exception as e" is crucial here.
         self.check_coverage("""\
             def b(exc):
                 try:
@@ -1057,6 +1057,27 @@ class LambdaArcTest(CoverageTest):
             """,
             arcz=".1 12 .2 2-2 23 3.", arcz_missing=".2 2-2",
             )
+
+    def test_raise_with_lambda_looks_like_partial_branch(self):
+        self.check_coverage("""\
+            def ouch(fn):
+                2/0
+            a = b = c = d = 3
+            try:
+                a = ouch(lambda: 5)
+                if a:
+                    b = 7
+            except ZeroDivisionError:
+                c = 9
+            d = 10
+            assert (a, b, c, d) == (3, 3, 9, 10)
+            """,
+            lines=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            missing="6-7",
+            arcz=".1 13 34 45 56 67 6A 7A 89 9A AB B.   .2 2.  .5 5-5",
+            arcz_missing="56 67 6A 7A  .5 5-5",
+            arcz_unpredicted="58",
+        )
 
 
 class AsyncTest(CoverageTest):
