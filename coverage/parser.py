@@ -75,7 +75,8 @@ class PythonParser(object):
         # Internal detail, used by lab/parser.py.
         self.show_tokens = False
 
-        # A dict mapping line numbers to (lo,hi) for multi-line statements.
+        # A dict mapping line numbers to lexical statement starts for
+        # multi-line statements.
         self._multiline = {}
 
         # Lazily-created ByteParser and arc data.
@@ -200,11 +201,7 @@ class PythonParser(object):
 
     def first_line(self, line):
         """Return the first line number of the statement including `line`."""
-        first_line = self._multiline.get(line)
-        if first_line:
-            return first_line
-        else:
-            return line
+        return self._multiline.get(line, line)
 
     def first_lines(self, lines):
         """Map the line numbers in `lines` to the correct first line of the
@@ -257,7 +254,7 @@ class PythonParser(object):
 
         """
         if self._all_arcs is None:
-            aaa = AstArcAnalyzer(self.text, self.raw_statements)
+            aaa = AstArcAnalyzer(self.text, self.raw_statements, self._multiline)
             arcs = aaa.collect_arcs()
 
             self._all_arcs = set()
@@ -328,12 +325,15 @@ class AstArcAnalyzer(object):
     """Analyze source text with an AST to find executable code paths."""
 
     @contract(text='unicode', statements=set)
-    def __init__(self, text, statements):
+    def __init__(self, text, statements, multiline):
         self.root_node = ast.parse(neuter_encoding_declaration(text))
-        self.statements = statements
+        # TODO: I think this is happening in too many places.
+        self.statements = set(multiline.get(l, l) for l in statements)
+        self.multiline = multiline
 
         if int(os.environ.get("COVERAGE_ASTDUMP", 0)):      # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
+            print(self.statements)
             ast_dump(self.root_node)
 
         self.arcs = None
@@ -419,6 +419,9 @@ class AstArcAnalyzer(object):
             prev_lines = set([from_line])
         for body_node in body:
             lineno = self.line_for_node(body_node)
+            first_line = self.multiline.get(lineno, lineno)
+            if first_line not in self.statements:
+                continue
             for prev_lineno in prev_lines:
                 self.arcs.add((prev_lineno, lineno))
             prev_lines = self.add_arcs(body_node)

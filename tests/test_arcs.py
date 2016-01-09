@@ -956,7 +956,6 @@ class MiscArcTest(CoverageTest):
             )
 
     def test_optimized_away_lines(self):
-        self.skip("TODO: fix this test")
         self.check_coverage("""\
             a = 1
             if len([2]):
@@ -968,6 +967,7 @@ class MiscArcTest(CoverageTest):
             """,
             lines=[1, 2, 3, 7],
             arcz=".1 12 23 27 37 7.",
+            arcz_missing="27",
         )
 
 
