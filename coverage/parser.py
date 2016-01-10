@@ -340,12 +340,21 @@ class AstArcAnalyzer(object):
             print(self.multiline)
             ast_dump(self.root_node)
 
-        self.arcs = None
+        self.arcs = set()
         self.block_stack = []
 
     def collect_arcs(self):
-        self.arcs = set()
-        self.add_arcs_for_code_objects(self.root_node)
+        """Examine the AST tree from `root_node` to determine possible arcs.
+
+        Returns a set of (from, to) line number pairs.
+
+        """
+        for node in ast.walk(self.root_node):
+            node_name = node.__class__.__name__
+            code_object_handler = getattr(self, "_code_object__" + node_name, None)
+            if code_object_handler is not None:
+                code_object_handler(node)
+
         return self.arcs
 
     def nearest_blocks(self):
@@ -419,6 +428,15 @@ class AstArcAnalyzer(object):
         return set([self.line_for_node(node)])
 
     def add_body_arcs(self, body, from_line=None, prev_lines=None):
+        """Add arcs for the body of a compound statement.
+
+        `body` is the body node.  `from_line` is a single line that can be the
+        previous line in flow before this body.  `prev_lines` is a set of lines
+        that can be the previous line.  Only one of them should be given.
+
+        Returns a set of lines, the exits from this body.
+
+        """
         if prev_lines is None:
             prev_lines = set([from_line])
         for body_node in body:
@@ -519,7 +537,7 @@ class AstArcAnalyzer(object):
                 if lineno in self.statements:
                     self.arcs.add((last, lineno))
                     last = lineno
-        # the body is handled in add_arcs_for_code_objects.
+        # The body is handled in collect_arcs.
         return set([last])
 
     _handle__ClassDef = _handle_decorated
@@ -699,13 +717,6 @@ class AstArcAnalyzer(object):
 
     _handle__AsyncWith = _handle__With
 
-    def add_arcs_for_code_objects(self, root_node):
-        for node in ast.walk(root_node):
-            node_name = node.__class__.__name__
-            code_object_handler = getattr(self, "_code_object__" + node_name, None)
-            if code_object_handler is not None:
-                code_object_handler(node)
-
     def _code_object__Module(self, node):
         start = self.line_for_node(node)
         if node.body:
@@ -735,6 +746,7 @@ class AstArcAnalyzer(object):
             self.arcs.add((xit, -start))
 
     def do_code_object_comprehension(self, node):
+        """The common code for all comprehension nodes."""
         start = self.line_for_node(node)
         self.arcs.add((-1, start))
         self.arcs.add((start, -start))
