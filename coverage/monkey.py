@@ -33,6 +33,15 @@ class ProcessWithCoverage(klass):
             cov.save()
 
 
+class Stowaway(object):
+    """An object to pickle, so when it is unpickled, it can apply the monkey-patch."""
+    def __getstate__(self):
+        return {}
+
+    def __setstate__(self, state_unused):
+        patch_multiprocessing()
+
+
 def patch_multiprocessing():
     """Monkey-patch the multiprocessing module.
 
@@ -55,7 +64,7 @@ def patch_multiprocessing():
     # re-applies the monkey-patch.
     # Windows only spawns, so this is needed to keep Windows working.
     try:
-        from multiprocessing import spawn
+        from multiprocessing import spawn           # pylint: disable=no-name-in-module
         original_get_preparation_data = spawn.get_preparation_data
     except (ImportError, AttributeError):
         pass
@@ -69,12 +78,3 @@ def patch_multiprocessing():
         spawn.get_preparation_data = get_preparation_data_with_stowaway
 
     setattr(multiprocessing, PATCHED_MARKER, True)
-
-
-class Stowaway(object):
-    """An object to pickle, so when it is unpickled, it can apply the monkey-patch."""
-    def __getstate__(self):
-        return {}
-
-    def __setstate__(self, state):
-        patch_multiprocessing()
