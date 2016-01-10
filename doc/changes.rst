@@ -37,6 +37,7 @@ Major change history for coverage.py
 .. :history: 20151013T103000, updated for 4.0.1
 .. :history: 20151104T050900, updated for 4.0.2
 .. :history: 20151124T065800, updated for 4.0.3
+.. :history: 20160110T125800, updated for 4.1b1
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -45,6 +46,53 @@ history, see the `CHANGES.rst`_ file in the source tree.
 .. _CHANGES.rst: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.rst
 
 .. module:: coverage
+
+.. _changes_41:
+
+Version 4.1b1 pre-release --- 2016-01-10
+----------------------------------------
+
+- Branch analysis has been rewritten: it used to be based on bytecode, but now
+  uses AST analysis.  This has changed a number of things:
+
+  - More code paths are now considered runnable, especially in `try`/`except`
+    structures.  This may mean that coverage.py will identify more code paths
+    as uncovered.  This could either raise or lower your overall coverage
+    number.
+
+  - Python 3.5's `async` and `await` keywords are properly supported, fixing
+    `issue 434`_.
+
+  - A some long-standing branch coverage bugs were fixed:
+
+    - `issue 129`_: functions with only a docstring for a body would incorrectly
+      report a missing branch on the ``def`` line.
+
+    - `issue 212`_: code in an ``except`` block could be incorrectly marked as
+      a missing branch.
+
+    - `issue 146`_: context managers (``with`` statements) in a loop or ``try``
+      block could confuse the branch measurement, reporting incorrect partial
+      branches.
+
+    - `issue 422`_: in Python 3.5, an actual partial branch could be marked as
+      complete.
+
+- Pragmas to disable coverage measurement can now be used on decorator lines,
+  and they will apply to the entire function or class being decorated.  This
+  implements the feature requested in `issue 131`_.
+
+- Multiprocessing support is now available on Windows.  Thanks, Rodrigue
+  Cloutier.
+
+.. _issue 129: https://bitbucket.org/ned/coveragepy/issues/129/misleading-branch-coverage-of-empty
+.. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
+.. _issue 146: https://bitbucket.org/ned/coveragepy/issues/146/context-managers-confuse-branch-coverage
+.. _issue 212: https://bitbucket.org/ned/coveragepy/issues/212/coverage-erroneously-reports-partial
+.. _issue 422: https://bitbucket.org/ned/coveragepy/issues/422/python35-partial-branch-marked-as-fully
+.. _issue 434: https://bitbucket.org/ned/coveragepy/issues/434/indexerror-in-python-35
+.. _issue 461: https://bitbucket.org/ned/coveragepy/issues/461/multiline-asserts-need-too-many-pragma
+
 
 .. _changes_403:
 

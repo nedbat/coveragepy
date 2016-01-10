@@ -6,11 +6,11 @@ Change history for Coverage.py
 ==============================
 
 
-Unreleased
-----------
+Version 4.1b1 --- 2016-01-10
+----------------------------
 
-- Branch coverage has been rewritten: it used to be based on bytecode analysis,
-  but now uses AST analysis.  This has changed a number of things:
+- Branch analysis has been rewritten: it used to be based on bytecode, but now
+  uses AST analysis.  This has changed a number of things:
 
   - More code paths are now considered runnable, especially in `try`/`except`
     structures.  This may mean that coverage.py will identify more code paths
@@ -28,7 +28,7 @@ Unreleased
     - `issue 212`_: code in an ``except`` block could be incorrectly marked as
       a missing branch.
 
-    - `issue 146`_: context manages (``with`` statements) in a loop or ``try``
+    - `issue 146`_: context managers (``with`` statements) in a loop or ``try``
       block could confuse the branch measurement, reporting incorrect partial
       branches.
 
