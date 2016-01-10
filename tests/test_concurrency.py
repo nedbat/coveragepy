@@ -3,6 +3,7 @@
 
 """Tests for concurrency libraries."""
 
+import multiprocessing
 import threading
 
 import coverage
@@ -227,6 +228,7 @@ class MultiprocessingTest(CoverageTest):
             import multiprocessing
             import os
             import time
+            import sys
 
             def func(x):
                 # Need to pause, or the tasks go too quick, and some processes
@@ -240,6 +242,7 @@ class MultiprocessingTest(CoverageTest):
                 return os.getpid(), y
 
             if __name__ == "__main__":
+                if len(sys.argv) > 1: multiprocessing.set_start_method(sys.argv[1])
                 pool = multiprocessing.Pool(3)
                 inputs = range(30)
                 outputs = pool.imap_unordered(func, inputs)
@@ -253,16 +256,25 @@ class MultiprocessingTest(CoverageTest):
                 pool.join()
             """)
 
-        out = self.run_command(
-            "coverage run --concurrency=multiprocessing multi.py"
-        )
-        total = sum(x*x if x%2 else x*x*x for x in range(30))
-        self.assertEqual(out.rstrip(), "3 pids, total = %d" % total)
+        if env.PYVERSION >= (3, 4):
+            start_methods = ['fork', 'spawn']
+        else:
+            start_methods = ['']
 
-        self.run_command("coverage combine")
-        out = self.run_command("coverage report -m")
-        last_line = self.squeezed_lines(out)[-1]
-        self.assertEqual(last_line, "multi.py 21 0 100%")
+        for start_method in start_methods:
+            if start_method and start_method not in multiprocessing.get_all_start_methods():
+                continue
+
+            out = self.run_command(
+                "coverage run --concurrency=multiprocessing multi.py %s" % start_method
+            )
+            total = sum(x*x if x%2 else x*x*x for x in range(30))
+            self.assertEqual(out.rstrip(), "3 pids, total = %d" % total)
+
+            self.run_command("coverage combine")
+            out = self.run_command("coverage report -m")
+            last_line = self.squeezed_lines(out)[-1]
+            self.assertEqual(last_line, "multi.py 23 0 100%")
 
 
 def print_simple_annotation(code, linenos):

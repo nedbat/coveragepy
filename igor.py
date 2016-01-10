@@ -332,7 +332,7 @@ def print_banner(label):
         which_python = os.path.relpath(sys.executable)
     except ValueError:
         # On Windows having a python executable on a different drives
-        # than the sources cannot be relative
+        # than the sources cannot be relative.
         which_python = sys.executable
     print('=== %s %s %s (%s) ===' % (impl, version, label, which_python))
     sys.stdout.flush()

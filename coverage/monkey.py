@@ -12,7 +12,6 @@ import sys
 PATCHED_MARKER = "_coverage$patched"
 
 if sys.version_info >= (3, 4):
-
     klass = multiprocessing.process.BaseProcess
 else:
     klass = multiprocessing.Process
@@ -49,4 +48,33 @@ def patch_multiprocessing():
     else:
         multiprocessing.Process = ProcessWithCoverage
 
+    # When spawning processes rather than forking them, we have no state in the
+    # new process.  We sneak in there with a Stowaway: we stuff one of our own
+    # objects into the data that gets pickled and sent to the sub-process. When
+    # the Stowaway is unpickled, it's __setstate__ method is called, which
+    # re-applies the monkey-patch.
+    # Windows only spawns, so this is needed to keep Windows working.
+    try:
+        from multiprocessing import spawn
+        original_get_preparation_data = spawn.get_preparation_data
+    except (ImportError, AttributeError):
+        pass
+    else:
+        def get_preparation_data_with_stowaway(name):
+            """Get the original preparation data, and also insert our stowaway."""
+            d = original_get_preparation_data(name)
+            d['stowaway'] = Stowaway()
+            return d
+
+        spawn.get_preparation_data = get_preparation_data_with_stowaway
+
     setattr(multiprocessing, PATCHED_MARKER, True)
+
+
+class Stowaway(object):
+    """An object to pickle, so when it is unpickled, it can apply the monkey-patch."""
+    def __getstate__(self):
+        return {}
+
+    def __setstate__(self, state):
+        patch_multiprocessing()
