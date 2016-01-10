@@ -454,7 +454,7 @@ class AstArcAnalyzer(object):
             if isinstance(block, LoopBlock):
                 block.break_exits.update(exits)
                 break
-            elif isinstance(block, TryBlock) and block.final_start:
+            elif isinstance(block, TryBlock) and block.final_start is not None:
                 block.break_from.update(exits)
                 break
 
@@ -465,7 +465,7 @@ class AstArcAnalyzer(object):
                 for xit in exits:
                     self.arcs.add((xit, block.start))
                 break
-            elif isinstance(block, TryBlock) and block.final_start:
+            elif isinstance(block, TryBlock) and block.final_start is not None:
                 block.continue_from.update(exits)
                 break
 
@@ -473,11 +473,11 @@ class AstArcAnalyzer(object):
         """Add arcs due to jumps from `exits` being raises."""
         for block in self.nearest_blocks():
             if isinstance(block, TryBlock):
-                if block.handler_start:
+                if block.handler_start is not None:
                     for xit in exits:
                         self.arcs.add((xit, block.handler_start))
                     break
-                elif block.final_start:
+                elif block.final_start is not None:
                     block.raise_from.update(exits)
                     break
             elif isinstance(block, FunctionBlock):
@@ -488,7 +488,7 @@ class AstArcAnalyzer(object):
     def process_return_exits(self, exits):
         """Add arcs due to jumps from `exits` being returns."""
         for block in self.nearest_blocks():
-            if isinstance(block, TryBlock) and block.final_start:
+            if isinstance(block, TryBlock) and block.final_start is not None:
                 block.return_from.update(exits)
                 break
             elif isinstance(block, FunctionBlock):
@@ -568,9 +568,6 @@ class AstArcAnalyzer(object):
         return set()
 
     def _handle__Try(self, node):
-        # try/finally is tricky. If there's a finally clause, then we need a
-        # FinallyBlock to track what flows might go through the finally instead
-        # of their normal flow.
         if node.handlers:
             handler_start = self.line_for_node(node.handlers[0])
         else:
@@ -581,13 +578,27 @@ class AstArcAnalyzer(object):
         else:
             final_start = None
 
-        self.block_stack.append(TryBlock(handler_start=handler_start, final_start=final_start))
+        try_block = TryBlock(handler_start=handler_start, final_start=final_start)
+        self.block_stack.append(try_block)
 
         start = self.line_for_node(node)
         exits = self.add_body_arcs(node.body, from_line=start)
 
-        try_block = self.block_stack.pop()
+        # We're done with the `try` body, so this block no longer handles
+        # exceptions. We keep the block so the `finally` clause can pick up
+        # flows from the handlers and `else` clause.
+        if node.finalbody:
+            try_block.handler_start = None
+            if node.handlers:
+                # If there are `except` clauses, then raises in the try body
+                # will already jump to them.  Start this set over for raises in
+                # `except` and `else`.
+                try_block.raise_from = set([])
+        else:
+            self.block_stack.pop()
+
         handler_exits = set()
+
         last_handler_start = None
         if node.handlers:
             for handler_node in node.handlers:
@@ -608,20 +619,23 @@ class AstArcAnalyzer(object):
             exits = self.add_body_arcs(node.orelse, prev_lines=exits)
 
         exits |= handler_exits
+
         if node.finalbody:
+            self.block_stack.pop()
             final_from = (                  # You can get to the `finally` clause from:
                 exits |                         # the exits of the body or `else` clause,
-                try_block.break_from |          # or a `break` in the body,
-                try_block.continue_from |       # or a `continue` in the body,
-                try_block.return_from           # or a `return` in the body.
+                try_block.break_from |          # or a `break`,
+                try_block.continue_from |       # or a `continue`,
+                try_block.raise_from |          # or a `raise`,
+                try_block.return_from           # or a `return`.
             )
-            if node.handlers and last_handler_start is not None:
-                # If there was an "except X:" clause, then a "raise" in the
-                # body goes to the "except X:" before the "finally", but the
-                # "except" go to the finally.
-                final_from.add(last_handler_start)
-            else:
-                final_from |= try_block.raise_from
+            if node.handlers:
+                if last_handler_start is not None:
+                    # If we had handlers, and we didn't have a bare `except:`
+                    # handler, then the last handler jumps to the `finally` for the
+                    # unhandled exceptions.
+                    final_from.add(last_handler_start)
+
             exits = self.add_body_arcs(node.finalbody, prev_lines=final_from)
             if try_block.break_from:
                 self.process_break_exits(exits)
@@ -631,6 +645,7 @@ class AstArcAnalyzer(object):
                 self.process_raise_exits(exits)
             if try_block.return_from:
                 self.process_return_exits(exits)
+
         return exits
 
     def _handle__TryExcept(self, node):

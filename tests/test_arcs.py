@@ -774,6 +774,92 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 28 89 9.  .3 34 46 6-2",
         )
 
+    def test_except_jump_finally(self):
+        self.check_coverage("""\
+            def func(x):
+                a = f = g = 2
+                try:
+                    for i in range(4):
+                        try:
+                            6/0
+                        except ZeroDivisionError:
+                            if x == 'break':
+                                a = 9
+                                break
+                            elif x == 'continue':
+                                a = 12
+                                continue
+                            elif x == 'return':
+                                a = 15                      # F
+                                return a, f, g, i           # G
+                            elif x == 'raise':              # H
+                                a = 18                      # I
+                                raise ValueError()          # J
+                        finally:
+                            f = 21                          # L
+                except ValueError:                          # M
+                    g = 23                                  # N
+                return a, f, g, i                           # O
+
+            assert func('break') == (9, 21, 2, 0)           # Q
+            assert func('continue') == (12, 21, 2, 3)       # R
+            assert func('return') == (15, 2, 2, 0)          # S
+            assert func('raise') == (18, 21, 23, 0)         # T
+            """,
+            arcz=
+                ".1 1Q QR RS ST T. "
+                ".2 23 34 45 56 4O 6L 7L "
+                "78 89 9A AL  8B BC CD DL  BE EF FG GL  EH HI IJ JL  HL "
+                "LO L4 L. LM "
+                "MN NO O.",
+            arcz_missing="6L 7L HL",
+            arcz_unpredicted="67",
+        )
+
+    def test_else_jump_finally(self):
+        self.check_coverage("""\
+            def func(x):
+                a = f = g = 2
+                try:
+                    for i in range(4):
+                        try:
+                            b = 6
+                        except ZeroDivisionError:
+                            pass
+                        else:
+                            if x == 'break':
+                                a = 11
+                                break
+                            elif x == 'continue':
+                                a = 14
+                                continue
+                            elif x == 'return':
+                                a = 17                      # H
+                                return a, f, g, i           # I
+                            elif x == 'raise':              # J
+                                a = 20                      # K
+                                raise ValueError()          # L
+                        finally:
+                            f = 23                          # N
+                except ValueError:                          # O
+                    g = 25                                  # P
+                return a, f, g, i                           # Q
+
+            assert func('break') == (11, 23, 2, 0)          # S
+            assert func('continue') == (14, 23, 2, 3)       # T
+            assert func('return') == (17, 2, 2, 0)          # U
+            assert func('raise') == (20, 23, 25, 0)         # V
+            """,
+            arcz=
+                ".1 1S ST TU UV V. "
+                ".2 23 34 45 56 6A 78 7N 8N 4Q "
+                "AB BC CN  AD DE EF FN  DG GH HI IN  GJ JK KL LN  JN "
+                "NQ N4 N. NO "
+                "OP PQ Q.",
+            arcz_missing="78 8N 7N JN",
+            arcz_unpredicted="",
+        )
+
 
 class YieldTest(CoverageTest):
     """Arc tests for generators."""
