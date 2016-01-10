@@ -87,6 +87,7 @@ class ParserMain(object):
                 lines = text.splitlines(True)
                 text = textwrap.dedent("".join(lines[start-1:end]).replace("\\\\", "\\"))
             pyparser = PythonParser(text, filename=filename, exclude=r"no\s*cover")
+            pyparser.parse_source()
         except Exception as err:
             print("%s" % (err,))
             return
