@@ -125,6 +125,7 @@ class PythonParser(object):
         excluding = False
         excluding_decorators = False
         prev_toktype = token.INDENT
+        last_name = None
         first_line = None
         empty = True
         first_on_line = True
@@ -146,6 +147,7 @@ class PythonParser(object):
                     # we need to exclude them.  The simplest way is to note the
                     # lines with the 'class' keyword.
                     self.raw_classdefs.add(slineno)
+                last_name = ttext
             elif toktype == token.OP:
                 if ttext == ':':
                     should_exclude = (elineno in self.raw_excluded) or excluding_decorators
@@ -168,7 +170,8 @@ class PythonParser(object):
                 # (a trick from trace.py in the stdlib.) This works for
                 # 99.9999% of cases.  For the rest (!) see:
                 # http://stackoverflow.com/questions/1769332/x/1769794#1769794
-                self.raw_docstrings.update(range(slineno, elineno+1))
+                if last_name == 'def':
+                    self.raw_docstrings.update(range(slineno, elineno+1))
             elif toktype == token.NEWLINE:
                 if first_line is not None and elineno != first_line:
                     # We're at the end of a line, and we've ended on a
@@ -334,6 +337,7 @@ class AstArcAnalyzer(object):
         if int(os.environ.get("COVERAGE_ASTDUMP", 0)):      # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
             print(self.statements)
+            print(self.multiline)
             ast_dump(self.root_node)
 
         self.arcs = None
@@ -508,13 +512,13 @@ class AstArcAnalyzer(object):
                 if dec_start != last:
                     self.arcs.add((last, dec_start))
                 last = dec_start
-        # The definition line may have been missed, but we should have it in
-        # `self.statements`.
-        body_start = self.line_for_node(node.body[0])
-        for lineno in range(last+1, body_start):
-            if lineno in self.statements:
-                self.arcs.add((last, lineno))
-                last = lineno
+            # The definition line may have been missed, but we should have it in
+            # `self.statements`.
+            body_start = self.line_for_node(node.body[0])
+            for lineno in range(last+1, body_start):
+                if lineno in self.statements:
+                    self.arcs.add((last, lineno))
+                    last = lineno
         # the body is handled in add_arcs_for_code_objects.
         return set([last])
 
