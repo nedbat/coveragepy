@@ -971,7 +971,7 @@ class MiscArcTest(CoverageTest):
         )
 
 
-class DecoractorArcTest(CoverageTest):
+class DecoratorArcTest(CoverageTest):
     """Tests of arcs with decorators."""
 
     def test_function_decorator(self):
