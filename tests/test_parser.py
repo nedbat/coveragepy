@@ -145,8 +145,8 @@ class PythonParserTest(CoverageTest):
             def func(x, y=5):
                 return 6
 
-            class Foo:      # only this..
-                '''9'''     #  ..and this are statements.
+            class Foo:      # this is the only statement.
+                '''9'''
                 @foo                    # nocover
                 def __init__(self):
                     '''12'''
@@ -169,7 +169,7 @@ class PythonParserTest(CoverageTest):
             parser.raw_statements,
             set([3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26])
         )
-        self.assertEqual(parser.statements, set([8, 9]))
+        self.assertEqual(parser.statements, set([8]))
 
     def test_class_decorator_pragmas(self):
         parser = self.parse_source("""\

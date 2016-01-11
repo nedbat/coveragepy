@@ -1140,7 +1140,7 @@ class CompoundStatementTest(CoverageTest):
             x = theClass().foo()
             assert x == 1
             """,
-            [2, 3, 6, 8, 10, 11, 13, 14], "",
+            [2, 6, 8, 10, 11, 13, 14], "",
             arcz=".2 2D DE E-2  23 36 6A A-2  .8 8-6   .B B-A",
         )
 

@@ -6,6 +6,13 @@ Change history for Coverage.py
 ==============================
 
 
+Unreleased
+----------
+
+- In beta 1, class docstrings were considered executable.  Now they no longer
+  are.
+
+
 Version 4.1b1 --- 2016-01-10
 ----------------------------
 

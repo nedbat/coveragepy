@@ -125,7 +125,6 @@ class PythonParser(object):
         excluding = False
         excluding_decorators = False
         prev_toktype = token.INDENT
-        last_name = None
         first_line = None
         empty = True
         first_on_line = True
@@ -147,7 +146,6 @@ class PythonParser(object):
                     # we need to exclude them.  The simplest way is to note the
                     # lines with the 'class' keyword.
                     self.raw_classdefs.add(slineno)
-                last_name = ttext
             elif toktype == token.OP:
                 if ttext == ':':
                     should_exclude = (elineno in self.raw_excluded) or excluding_decorators
@@ -170,8 +168,7 @@ class PythonParser(object):
                 # (a trick from trace.py in the stdlib.) This works for
                 # 99.9999% of cases.  For the rest (!) see:
                 # http://stackoverflow.com/questions/1769332/x/1769794#1769794
-                if last_name == 'def':
-                    self.raw_docstrings.update(range(slineno, elineno+1))
+                self.raw_docstrings.update(range(slineno, elineno+1))
             elif toktype == token.NEWLINE:
                 if first_line is not None and elineno != first_line:
                     # We're at the end of a line, and we've ended on a
