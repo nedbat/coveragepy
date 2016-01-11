@@ -12,12 +12,12 @@ Version 4.1b1 --- 2016-01-10
 - Branch analysis has been rewritten: it used to be based on bytecode, but now
   uses AST analysis.  This has changed a number of things:
 
-  - More code paths are now considered runnable, especially in `try`/`except`
+  - More code paths are now considered runnable, especially in ``try``/``except``
     structures.  This may mean that coverage.py will identify more code paths
     as uncovered.  This could either raise or lower your overall coverage
     number.
 
-  - Python 3.5's `async` and `await` keywords are properly supported, fixing
+  - Python 3.5's ``async`` and ``await`` keywords are properly supported, fixing
     `issue 434`_.
 
   - A some long-standing branch coverage bugs were fixed:
