@@ -9,8 +9,13 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-- In beta 1, class docstrings were considered executable.  Now they no longer
-  are.
+- In 4.1 beta 1, class docstrings were considered executable.  Now they no
+  longer are.
+
+- In 4.1 beta 1, ``yield from`` and ``await`` were considered returns from
+  functions, since they could tranfer control to the caller.  This produced
+  unhelpful "missing branch" reports in a number of circumstances.  Now they no
+  longer are considered returns.
 
 
 Version 4.1b1 --- 2016-01-10

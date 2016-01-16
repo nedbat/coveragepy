@@ -404,15 +404,6 @@ class AstArcAnalyzer(object):
 
         Return a set of line numbers, exits from this node to the next.
         """
-        # Yield-froms and awaits can appear anywhere.
-        # TODO: this is probably over-doing it, and too expensive. Can we
-        # instrument the ast walking to see how many nodes we are revisiting?
-        if isinstance(node, ast.stmt):
-            for _, value in ast.iter_fields(node):
-                if isinstance(value, ast.expr) and self.contains_return_expression(value):
-                    self.process_return_exits([self.line_for_node(node)])
-                    break
-
         node_name = node.__class__.__name__
         handler = getattr(self, "_handle__" + node_name, None)
         if handler is not None:
@@ -758,14 +749,6 @@ class AstArcAnalyzer(object):
         start = self.line_for_node(node)
         self.arcs.add((-1, start))
         self.arcs.add((start, -start))
-
-    def contains_return_expression(self, node):
-        """Is there a yield-from or await in `node` someplace?"""
-        for child in ast.walk(node):
-            if child.__class__.__name__ in ["YieldFrom", "Await"]:
-                return True
-
-        return False
 
 
 class ByteParser(object):

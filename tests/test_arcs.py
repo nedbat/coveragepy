@@ -977,7 +977,8 @@ class YieldTest(CoverageTest):
 
             list(gen([1,2,3]))
             """,
-            arcz=".1 19 9.  .2 23 34 45 56 5. 63 37 7.",
+            arcz=".1 19 9.  .2 23 34 45 56 63 37 7.",
+            arcz_unpredicted="5.",
         )
 
 
@@ -1195,8 +1196,9 @@ class AsyncTest(CoverageTest):
             """,
             arcz=
                 ".1 13 38 8E EF FG G. "
-                ".4 45 56 5-3 6-3 "
-                ".9 9-8 9C C-8",
+                ".4 45 56 6-3 "
+                ".9 9C C-8",
+            arcz_unpredicted="5-3 9-8",
         )
         self.assertEqual(self.stdout(), "Compute 1 + 2 ...\n1 + 2 = 3\n")
 
