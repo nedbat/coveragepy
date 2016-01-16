@@ -73,12 +73,9 @@ difference between the executable lines, and the executed lines, are the lines
 that were not executed.
 
 The same principle applies for branch measurement, though the process for
-determining possible branches is more involved.  Coverage.py reads the bytecode
-of the compiled Python file, and decides on a set of possible branches.
-Unfortunately, this process is inexact, and there are some `well-known cases`__
-that aren't correct.
-
-.. __: https://bitbucket.org/ned/coveragepy/issues?status=new&status=open&component=branch
+determining possible branches is more involved.  Coverage.py uses the abstract
+syntax tree of the Python source file to determine the set of possible
+branches.
 
 
 Reporting

@@ -64,8 +64,8 @@ How it works
 
 When measuring branches, coverage.py collects pairs of line numbers, a source
 and destination for each transition from one line to another.  Static analysis
-of the compiled bytecode provides a list of possible transitions.  Comparing
-the measured to the possible indicates missing branches.
+of the source provides a list of possible transitions.  Comparing the measured
+to the possible indicates missing branches.
 
 The idea of tracking how lines follow each other was from `Titus Brown`__.
 Thanks, Titus!
