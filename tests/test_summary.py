@@ -218,28 +218,17 @@ class SummaryTest(CoverageTest):
         out = self.run_command("coverage run --branch main.py")
         self.assertEqual(out, 'x\ny\n')
         report = self.report_from_command("coverage report --show-missing")
+        report_lines = report.splitlines()
 
-        # Name        Stmts   Miss Branch BrPart  Cover   Missing
-        # -------------------------------------------------------
-        # main.py         1      0      0      0   100%
-        # mybranch.py    10      2      8      3    61%   7-8, 2->4, 4->6, 6->7
-        # -------------------------------------------------------
-        # TOTAL          11      2      8      3    63%
-
-        self.assertEqual(self.line_count(report), 6)
-        squeezed = self.squeezed_lines(report)
-        self.assertEqual(
-            squeezed[2],
-            "main.py 1 0 0 0 100%"
-        )
-        self.assertEqual(
-            squeezed[3],
-            "mybranch.py 10 2 8 3 61% 7-8, 2->4, 4->6, 6->7"
-        )
-        self.assertEqual(
-            squeezed[5],
-            "TOTAL 11 2 8 3 63%"
-        )
+        expected = [
+            'Name          Stmts   Miss Branch BrPart  Cover   Missing',
+            '---------------------------------------------------------',
+            'main.py           1      0      0      0   100%',
+            'mybranch.py      10      2      8      3    61%   7-8, 2->4, 4->6, 6->7',
+            '---------------------------------------------------------',
+            'TOTAL            11      2      8      3    63%',
+        ]
+        self.assertEqual(report_lines, expected)
 
     def test_report_skip_covered_no_branches(self):
         self.make_file("main.py", """

@@ -416,7 +416,7 @@ class GoodPluginTest(FileTracerTest):
             'bar_4.html       4      2      0      0    50%   1, 4',
             'foo_7.html       7      5      0      0    29%   1-3, 6-7',
             '--------------------------------------------------------',
-            'TOTAL           11      7      0      0    36%   ',
+            'TOTAL           11      7      0      0    36%',
             ]
         self.assertEqual(report, expected)
         self.assertAlmostEqual(total, 36.36, places=2)

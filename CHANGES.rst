@@ -17,6 +17,8 @@ Unreleased
   unhelpful "missing branch" reports in a number of circumstances.  Now they no
   longer are considered returns.
 
+- ``coverage report`` won't produce trailing whitespace.
+
 
 Version 4.1b1 --- 2016-01-10
 ----------------------------

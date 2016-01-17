@@ -30,8 +30,8 @@ class SummaryReporter(Reporter):
         # Prepare the formatting strings
         max_name = max([len(fr.relative_filename()) for fr in self.file_reporters] + [5])
         fmt_name = u"%%- %ds  " % max_name
-        fmt_err = u"%s   %s: %s\n"
-        fmt_skip_covered = u"\n%s file%s skipped due to complete coverage.\n"
+        fmt_err = u"%s   %s: %s"
+        fmt_skip_covered = u"\n%s file%s skipped due to complete coverage."
 
         header = (fmt_name % "Name") + u" Stmts   Miss"
         fmt_coverage = fmt_name + u"%6d %6d"
@@ -44,17 +44,16 @@ class SummaryReporter(Reporter):
         if self.config.show_missing:
             header += u"   Missing"
             fmt_coverage += u"   %s"
-        rule = u"-" * len(header) + u"\n"
-        header += u"\n"
-        fmt_coverage += u"\n"
+        rule = u"-" * len(header)
 
         if outfile is None:
             outfile = sys.stdout
 
-        if env.PY2:
-            writeout = lambda u: outfile.write(u.encode(output_encoding()))
-        else:
-            writeout = outfile.write
+        def writeout(line):
+            if env.PY2:
+                line = line.encode(output_encoding())
+            outfile.write(line.rstrip())
+            outfile.write("\n")
 
         # Write the header
         writeout(header)
