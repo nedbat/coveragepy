@@ -50,6 +50,7 @@ class SummaryReporter(Reporter):
             outfile = sys.stdout
 
         def writeout(line):
+            """Write a line to the output, adding a newline."""
             if env.PY2:
                 line = line.encode(output_encoding())
             outfile.write(line.rstrip())
