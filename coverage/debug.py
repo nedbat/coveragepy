@@ -42,7 +42,7 @@ class DebugControl(object):
             msg = "pid %5d: %s" % (os.getpid(), msg)
         self.output.write(msg+"\n")
         if self.should('callers'):
-            dump_stack_frames(self.output)
+            dump_stack_frames(out=self.output)
         self.output.flush()
 
     def write_formatted_info(self, header, info):
@@ -80,7 +80,7 @@ def info_formatter(info):
             yield "%*s: %s" % (label_len, label, data)
 
 
-def short_stack():                                          # pragma: debugging
+def short_stack(limit=None):                                # pragma: debugging
     """Return a string summarizing the call stack.
 
     The string is multi-line, with one line per stack frame. Each line shows
@@ -92,13 +92,15 @@ def short_stack():                                          # pragma: debugging
         import_local_file : /Users/ned/coverage/trunk/coverage/backward.py @159
         ...
 
+    `limit` is the number of frames to include, defaulting to all of them.
+
     """
-    stack = inspect.stack()[:0:-1]
+    stack = inspect.stack()[limit:0:-1]
     return "\n".join("%30s : %s @%d" % (t[3], t[1], t[2]) for t in stack)
 
 
-def dump_stack_frames(out=None):                            # pragma: debugging
+def dump_stack_frames(limit=None, out=None):                # pragma: debugging
     """Print a summary of the stack to stdout, or some place else."""
     out = out or sys.stdout
-    out.write(short_stack())
+    out.write(short_stack(limit=limit))
     out.write("\n")
