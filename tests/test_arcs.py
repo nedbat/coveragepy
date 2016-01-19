@@ -1108,6 +1108,38 @@ class DecoratorArcTest(CoverageTest):
                 ".6 D-6 ",                  # MyObject
         )
 
+    def test_bug_466(self):
+        # A bad interaction between decorators and multi-line list assignments,
+        # believe it or not...!
+        self.check_coverage("""\
+            class Parser(object):
+
+                @classmethod
+                def parse(cls):
+                    formats = [ 5 ]
+
+
+                    return None
+
+            Parser.parse()
+            """,
+            arcz=".1 1A A.  13 3.  .5 58 8-3",
+        )
+        self.check_coverage("""\
+            class Parser(object):
+
+                @classmethod
+                def parse(cls):
+                    formats = [
+                        6,
+                    ]
+                    return None
+
+            Parser.parse()
+            """,
+            arcz=".1 1A A.  13 3.  .5 58 8-3",
+        )
+
 
 class LambdaArcTest(CoverageTest):
     """Tests of lambdas"""

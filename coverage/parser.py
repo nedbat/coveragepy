@@ -321,6 +321,19 @@ class TryBlock(object):
         self.raise_from = set()
 
 
+class SetSpy(object):                                       # pragma: debugging
+    """A set proxy that shows who is adding things to it."""
+    def __init__(self, the_set):
+        self.the_set = the_set
+
+    def add(self, arc):
+        """set.add, but with a stack trace."""
+        from coverage.debug import short_stack
+        print("\nAdding arc: {}".format(arc))
+        print(short_stack(limit=6))
+        self.the_set.add(arc)
+
+
 class AstArcAnalyzer(object):
     """Analyze source text with an AST to find executable code paths."""
 
@@ -333,11 +346,13 @@ class AstArcAnalyzer(object):
 
         if int(os.environ.get("COVERAGE_ASTDUMP", 0)):      # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
-            print(self.statements)
-            print(self.multiline)
+            print("Statements: {}".format(self.statements))
+            print("Multiline map: {}".format(self.multiline))
             ast_dump(self.root_node)
 
-        self.arcs = set()
+        self.arcs = self.arcs_to_return = set()
+        if int(os.environ.get("COVERAGE_TRACK_ARCS", 0)):   # pragma: debugging
+            self.arcs = SetSpy(self.arcs)
         self.block_stack = []
 
     def collect_arcs(self):
@@ -352,7 +367,7 @@ class AstArcAnalyzer(object):
             if code_object_handler is not None:
                 code_object_handler(node)
 
-        return self.arcs
+        return self.arcs_to_return
 
     def nearest_blocks(self):
         """Yield the blocks in nearest-to-farthest order."""
@@ -517,10 +532,13 @@ class AstArcAnalyzer(object):
                 dec_start = self.line_for_node(dec_node)
                 if dec_start != last:
                     self.arcs.add((last, dec_start))
-                last = dec_start
-            # The definition line may have been missed, but we should have it in
-            # `self.statements`.
+                    last = dec_start
+            # The definition line may have been missed, but we should have it
+            # in `self.statements`.  For some constructs, `line_for_node` is
+            # not what we'd think of as the first line in the statement, so map
+            # it to the first one.
             body_start = self.line_for_node(node.body[0])
+            body_start = self.multiline.get(body_start, body_start)
             for lineno in range(last+1, body_start):
                 if lineno in self.statements:
                     self.arcs.add((last, lineno))

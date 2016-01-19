@@ -9,15 +9,22 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-- In 4.1 beta 1, class docstrings were considered executable.  Now they no
-  longer are.
+- Problems with the new branch measurement in 4.1 beta 1 were fixed:
+  
+  - Class docstrings were considered executable.  Now they no longer are.
 
-- In 4.1 beta 1, ``yield from`` and ``await`` were considered returns from
-  functions, since they could tranfer control to the caller.  This produced
-  unhelpful "missing branch" reports in a number of circumstances.  Now they no
-  longer are considered returns.
+  - ``yield from`` and ``await`` were considered returns from functions, since
+    they could tranfer control to the caller.  This produced unhelpful "missing
+    branch" reports in a number of circumstances.  Now they no longer are
+    considered returns.
 
+  - In unusual situations, a missing branch to a negative number was reported.
+    This has been fixed, closing `issue 466`_.
+  
 - ``coverage report`` won't produce trailing whitespace.
+
+
+.. _issue 466: https://bitbucket.org/ned/coveragepy/issues/466/impossible-missed-branch-to-a-negative
 
 
 Version 4.1b1 --- 2016-01-10
