@@ -98,7 +98,7 @@ class XmlReporter(Reporter):
             xpackages.appendChild(xpackage)
             xclasses = self.xml_out.createElement("classes")
             xpackage.appendChild(xclasses)
-            for class_name, class_elt in sorted(iitems(class_elts)):
+            for _, class_elt in sorted(iitems(class_elts)):
                 xclasses.appendChild(class_elt)
             xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
             xpackage.setAttribute("line-rate", rate(lhits, lnum))
