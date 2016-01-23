@@ -142,8 +142,8 @@ class XmlReporter(Reporter):
         # are populated later.  Note that a package == a directory.
         filename = fr.filename.replace("\\", "/")
         for source_path in self.source_paths:
-            if filename.startswith(source_path+"/"):
-                rel_name = fr.filename[len(source_path)+1:]
+            if filename.startswith(source_path.replace("\\", "/") + "/"):
+                rel_name = filename[len(source_path)+1:]
                 break
         else:
             rel_name = fr.relative_filename()
@@ -164,7 +164,7 @@ class XmlReporter(Reporter):
         xclass.appendChild(xlines)
 
         xclass.setAttribute("name", os.path.relpath(rel_name, dirname))
-        xclass.setAttribute("filename", fr.relative_filename())
+        xclass.setAttribute("filename", fr.relative_filename().replace("\\", "/"))
         xclass.setAttribute("complexity", "0")
 
         branch_stats = analysis.branch_stats()
