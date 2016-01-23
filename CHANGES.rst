@@ -10,7 +10,7 @@ Unreleased
 ----------
 
 - Problems with the new branch measurement in 4.1 beta 1 were fixed:
-  
+
   - Class docstrings were considered executable.  Now they no longer are.
 
   - ``yield from`` and ``await`` were considered returns from functions, since
@@ -20,7 +20,7 @@ Unreleased
 
   - In unusual situations, a missing branch to a negative number was reported.
     This has been fixed, closing `issue 466`_.
-  
+
 - ``coverage report`` won't produce trailing whitespace.
 
 
