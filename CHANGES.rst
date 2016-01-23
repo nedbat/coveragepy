@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Unreleased
-----------
+Version 4.1b2 --- 2016-01-23 
+----------------------------
 
 - Problems with the new branch measurement in 4.1 beta 1 were fixed:
 
@@ -22,7 +22,7 @@ Unreleased
     This has been fixed, closing `issue 466`_.
 
 - The XML report now produces correct package names for modules found in
-  directories specified with ``source=``.  Fixes ``issue 465``_.
+  directories specified with ``source=``.  Fixes `issue 465`_.
   
 - ``coverage report`` won't produce trailing whitespace.
 
@@ -44,7 +44,7 @@ Version 4.1b1 --- 2016-01-10
   - Python 3.5's ``async`` and ``await`` keywords are properly supported, fixing
     `issue 434`_.
 
-  - A some long-standing branch coverage bugs were fixed:
+  - Some long-standing branch coverage bugs were fixed:
 
     - `issue 129`_: functions with only a docstring for a body would incorrectly
       report a missing branch on the ``def`` line.

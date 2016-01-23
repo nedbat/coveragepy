@@ -49,7 +49,7 @@ history, see the `CHANGES.rst`_ file in the source tree.
 
 .. _changes_41:
 
-Version 4.1b1 pre-release --- 2016-01-10
+Version 4.1b2 pre-release --- 2016-01-23
 ----------------------------------------
 
 - Branch analysis has been rewritten: it used to be based on bytecode, but now
@@ -63,7 +63,7 @@ Version 4.1b1 pre-release --- 2016-01-10
   - Python 3.5's ``async`` and ``await`` keywords are properly supported, fixing
     `issue 434`_.
 
-  - A some long-standing branch coverage bugs were fixed:
+  - Some long-standing branch coverage bugs were fixed:
 
     - `issue 129`_: functions with only a docstring for a body would incorrectly
       report a missing branch on the ``def`` line.
@@ -85,6 +85,9 @@ Version 4.1b1 pre-release --- 2016-01-10
 - Multiprocessing support is now available on Windows.  Thanks, Rodrigue
   Cloutier.
 
+- The XML report now produces correct package names for modules found in
+  directories specified with ``source=``.  Fixes `issue 465`_.
+
 .. _issue 129: https://bitbucket.org/ned/coveragepy/issues/129/misleading-branch-coverage-of-empty
 .. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
 .. _issue 146: https://bitbucket.org/ned/coveragepy/issues/146/context-managers-confuse-branch-coverage
@@ -92,6 +95,7 @@ Version 4.1b1 pre-release --- 2016-01-10
 .. _issue 422: https://bitbucket.org/ned/coveragepy/issues/422/python35-partial-branch-marked-as-fully
 .. _issue 434: https://bitbucket.org/ned/coveragepy/issues/434/indexerror-in-python-35
 .. _issue 461: https://bitbucket.org/ned/coveragepy/issues/461/multiline-asserts-need-too-many-pragma
+.. _issue 465: https://bitbucket.org/ned/coveragepy/issues/465/coveragexml-produces-package-names-with-an
 
 
 .. _changes_403:
