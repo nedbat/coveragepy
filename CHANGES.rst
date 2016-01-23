@@ -21,9 +21,12 @@ Unreleased
   - In unusual situations, a missing branch to a negative number was reported.
     This has been fixed, closing `issue 466`_.
 
+- The XML report now produces correct package names for modules found in
+  directories specified with ``source=``.  Fixes ``issue 465``_.
+  
 - ``coverage report`` won't produce trailing whitespace.
 
-
+.. _issue 465: https://bitbucket.org/ned/coveragepy/issues/465/coveragexml-produces-package-names-with-an
 .. _issue 466: https://bitbucket.org/ned/coveragepy/issues/466/impossible-missed-branch-to-a-negative
 
 
