@@ -271,6 +271,16 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
                <class filename="d0/d0/d0/f0.py" name="f0.py">
             """)
 
+    def test_source_prefix(self):
+        # https://bitbucket.org/ned/coveragepy/issues/465
+        self.make_file("src/mod.py", "print(17)")
+        cov = coverage.Coverage(source=["src"])
+        self.start_import_stop(cov, "mod", modfile="src/mod.py")
+        self.assert_package_and_class_tags(cov, """\
+            <package name=".">
+                <class filename="src/mod.py" name="mod.py">
+            """)
+
 
 def re_lines(text, pat):
     """Return a list of lines that match `pat` in the string `text`."""

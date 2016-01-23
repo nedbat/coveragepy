@@ -11,6 +11,7 @@ import xml.dom.minidom
 
 from coverage import env
 from coverage import __url__, __version__, files
+from coverage.backward import iitems
 from coverage.misc import isolate_module
 from coverage.report import Reporter
 
@@ -91,15 +92,14 @@ class XmlReporter(Reporter):
         xcoverage.appendChild(xpackages)
 
         # Populate the XML DOM with the package info.
-        for pkg_name in sorted(self.packages.keys()):
-            pkg_data = self.packages[pkg_name]
+        for pkg_name, pkg_data in sorted(iitems(self.packages)):
             class_elts, lhits, lnum, bhits, bnum = pkg_data
             xpackage = self.xml_out.createElement("package")
             xpackages.appendChild(xpackage)
             xclasses = self.xml_out.createElement("classes")
             xpackage.appendChild(xclasses)
-            for class_name in sorted(class_elts.keys()):
-                xclasses.appendChild(class_elts[class_name])
+            for class_name, class_elt in sorted(iitems(class_elts)):
+                xclasses.appendChild(class_elt)
             xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
             xpackage.setAttribute("line-rate", rate(lhits, lnum))
             if self.has_arcs:
@@ -140,13 +140,17 @@ class XmlReporter(Reporter):
 
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
-        filename = fr.relative_filename()
-        filename = filename.replace("\\", "/")
-        dirname = os.path.dirname(filename) or "."
-        parts = dirname.split("/")
-        dirname = "/".join(parts[:self.config.xml_package_depth])
+        filename = fr.filename.replace("\\", "/")
+        for source_path in self.source_paths:
+            if filename.startswith(source_path+"/"):
+                rel_name = fr.filename[len(source_path)+1:]
+                break
+        else:
+            rel_name = fr.relative_filename()
+
+        dirname = os.path.dirname(rel_name) or "."
+        dirname = "/".join(dirname.split("/")[:self.config.xml_package_depth])
         package_name = dirname.replace("/", ".")
-        rel_name = fr.relative_filename()
 
         if rel_name != fr.filename:
             self.source_paths.add(fr.filename[:-len(rel_name)].rstrip(r"\/"))
@@ -159,8 +163,8 @@ class XmlReporter(Reporter):
         xlines = self.xml_out.createElement("lines")
         xclass.appendChild(xlines)
 
-        xclass.setAttribute("name", os.path.relpath(filename, dirname))
-        xclass.setAttribute("filename", filename)
+        xclass.setAttribute("name", os.path.relpath(rel_name, dirname))
+        xclass.setAttribute("filename", fr.relative_filename())
         xclass.setAttribute("complexity", "0")
 
         branch_stats = analysis.branch_stats()
