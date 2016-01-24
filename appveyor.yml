@@ -24,14 +24,14 @@ environment:
 
     - JOB: "2.7 32-bit"
       TOXENV: "py27"
-      PYTHON: "C:\\Python27.10"
-      PYTHON_VERSION: "2.7.10"
+      PYTHON: "C:\\Python27.11"
+      PYTHON_VERSION: "2.7.11"
       PYTHON_ARCH: "32"
 
     - JOB: "2.7 64-bit"
       TOXENV: "py27"
-      PYTHON: "C:\\Python27.10-x64"
-      PYTHON_VERSION: "2.7.10"
+      PYTHON: "C:\\Python27.11-x64"
+      PYTHON_VERSION: "2.7.11"
       PYTHON_ARCH: "64"
 
     - JOB: "3.3 32-bit"
