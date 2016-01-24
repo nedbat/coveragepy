@@ -17,6 +17,7 @@
     - Check that the docs build correctly:
         $ tox -e doc
     - Done with changes to source files, check them in.
+        - hg push
     - Generate new sample_html to get the latest, incl footer version number:
         pip install -e .
         cd ~/cog/trunk
@@ -39,13 +40,11 @@
         - Build and publish docs:
             $ make publish
 - Kits:
-    - Source kit:
-        - $ make clean kit
-    - Wheels
-        - $ make wheel
+    - Source kit and wheels:
+        - $ make clean kit wheel
     - Windows kits
-        - $ hg push
-        - wait about an hour for Appveyor to build kits.
+        - wait for over an hour for Appveyor to build kits.
+            - https://ci.appveyor.com/project/nedbat/coveragepy
         - $ make download_appveyor
     - examine the dist directory, and remove anything that looks malformed.
 - Update PyPi:
