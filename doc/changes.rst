@@ -49,24 +49,29 @@ history, see the `CHANGES.rst`_ file in the source tree.
 
 .. _changes_41:
 
+Unreleased
+----------
+
+
+
 Version 4.1b2 pre-release --- 2016-01-23
 ----------------------------------------
 
 - Branch analysis has been rewritten: it used to be based on bytecode, but now
   uses AST analysis.  This has changed a number of things:
 
-  - More code paths are now considered runnable, especially in ``try``/``except``
-    structures.  This may mean that coverage.py will identify more code paths
-    as uncovered.  This could either raise or lower your overall coverage
-    number.
+  - More code paths are now considered runnable, especially in
+    ``try``/``except`` structures.  This may mean that coverage.py will
+    identify more code paths as uncovered.  This could either raise or lower
+    your overall coverage number.
 
-  - Python 3.5's ``async`` and ``await`` keywords are properly supported, fixing
-    `issue 434`_.
+  - Python 3.5's ``async`` and ``await`` keywords are properly supported,
+    fixing `issue 434`_.
 
   - Some long-standing branch coverage bugs were fixed:
 
-    - `issue 129`_: functions with only a docstring for a body would incorrectly
-      report a missing branch on the ``def`` line.
+    - `issue 129`_: functions with only a docstring for a body would
+      incorrectly report a missing branch on the ``def`` line.
 
     - `issue 212`_: code in an ``except`` block could be incorrectly marked as
       a missing branch.
