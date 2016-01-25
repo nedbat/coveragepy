@@ -1,13 +1,4 @@
 {
-    "run" {
-        "collector": "coverage.py 4.0",
-        "config": {
-            "branch": true,
-            "source": ".",
-        },
-        "collected": "20150711T090600",
-    },
-
     // As of now:
     "lines": {
         "a/b/c.py": [1, 2, 3, 4, 5],
@@ -16,8 +7,18 @@
     "arcs": {
         "a/b/c.py: [[1, 2], [2, 3], [4, 5]],
     },
-    "plugins: {
+    "file_tracers": {
         "a/b/c.py": "fooey.plugin",
+    },
+
+    // We used to do this, but it got too bulky, removed in 4.0.1:
+    "run" {
+        "collector": "coverage.py 4.0",
+        "config": {
+            "branch": true,
+            "source": ".",
+        },
+        "collected": "20150711T090600",
     },
 
     // Maybe in the future?
