@@ -653,12 +653,11 @@ class AstArcAnalyzer(object):
                 try_block.raise_from |          # or a `raise`,
                 try_block.return_from           # or a `return`.
             )
-            if node.handlers:
-                if last_handler_start is not None:
-                    # If we had handlers, and we didn't have a bare `except:`
-                    # handler, then the last handler jumps to the `finally` for the
-                    # unhandled exceptions.
-                    final_from.add(last_handler_start)
+            if last_handler_start is not None:
+                # If we had handlers, and we didn't have a bare `except:`
+                # handler, then the last handler jumps to the `finally` for the
+                # unhandled exceptions.
+                final_from.add(last_handler_start)
 
             exits = self.add_body_arcs(node.finalbody, prev_lines=final_from)
             if try_block.break_from:
