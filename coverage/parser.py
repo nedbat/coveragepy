@@ -668,6 +668,11 @@ class AstArcAnalyzer(object):
                 self.process_raise_exits(exits)
             if try_block.return_from:
                 self.process_return_exits(exits)
+        else:
+            # No final body: if there is an `except` handler without a
+            # catch-all, then exceptions can raise from there.
+            if last_handler_start is not None:
+                self.process_raise_exits([last_handler_start])
 
         return exits
 
