@@ -631,13 +631,6 @@ class AstArcAnalyzer(object):
                     self.arcs.add((last_handler_start, handler_start))
                 last_handler_start = handler_start
                 handler_exits |= self.add_body_arcs(handler_node.body, from_line=handler_start)
-                if handler_node.type is None:
-                    # "except:" doesn't jump to subsequent handlers, or
-                    # "finally:".
-                    last_handler_start = None
-                    # Note that once we have `except:`, no further handlers
-                    # will ever be run.  We'll keep collecting them, and the
-                    # code will get marked as not run.
 
         if node.orelse:
             exits = self.add_body_arcs(node.orelse, prev_lines=exits)
@@ -653,11 +646,6 @@ class AstArcAnalyzer(object):
                 try_block.raise_from |          # or a `raise`,
                 try_block.return_from           # or a `return`.
             )
-            if last_handler_start is not None:
-                # If we had handlers, and we didn't have a bare `except:`
-                # handler, then the last handler jumps to the `finally` for the
-                # unhandled exceptions.
-                final_from.add(last_handler_start)
 
             exits = self.add_body_arcs(node.finalbody, prev_lines=final_from)
             if try_block.break_from:
@@ -668,11 +656,6 @@ class AstArcAnalyzer(object):
                 self.process_raise_exits(exits)
             if try_block.return_from:
                 self.process_return_exits(exits)
-        else:
-            # No final body: if there is an `except` handler without a
-            # catch-all, then exceptions can raise from there.
-            if last_handler_start is not None:
-                self.process_raise_exits([last_handler_start])
 
         return exits
 

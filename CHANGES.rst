@@ -6,6 +6,14 @@ Change history for Coverage.py
 ==============================
 
 
+Unreleased
+----------
+
+- When running your program, execution can jump from an ``except X:`` line to
+  some other line when an exception other than ``X`` happens.  This jump is no
+  longer considered a branch when measuring branch coverage.
+
+
 Version 4.1b2 --- 2016-01-23 
 ----------------------------
 

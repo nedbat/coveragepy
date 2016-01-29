@@ -704,8 +704,8 @@ class ExceptionArcTest(CoverageTest):
                 c = 9
             assert a == 3 and b == 1 and c == 9
             """,
-            arcz=".1 12 23 45 46 39 59 67 79 69 9A A.",
-            arcz_missing="45 59 46 67 79 69",
+            arcz=".1 12 23 45 46 39 59 67 79 9A A.",
+            arcz_missing="45 59 46 67 79",
         )
         self.check_coverage("""\
             a, b, c = 1, 1, 1
@@ -719,8 +719,8 @@ class ExceptionArcTest(CoverageTest):
                 c = 9
             assert a == 1 and b == 5 and c == 9
             """,
-            arcz=".1 12 23 45 46 69 39 59 67 79 9A A.",
-            arcz_missing="39 46 67 79 69",
+            arcz=".1 12 23 45 46 39 59 67 79 9A A.",
+            arcz_missing="39 46 67 79",
             arcz_unpredicted="34",
         )
         self.check_coverage("""\
@@ -735,8 +735,8 @@ class ExceptionArcTest(CoverageTest):
                 c = 9
             assert a == 7 and b == 1 and c == 9
             """,
-            arcz=".1 12 23 45 46 39 59 67 79 69 9A A.",
-            arcz_missing="39 45 59 69",
+            arcz=".1 12 23 45 46 39 59 67 79 9A A.",
+            arcz_missing="39 45 59",
             arcz_unpredicted="34",
         )
         self.check_coverage("""\
@@ -754,9 +754,9 @@ class ExceptionArcTest(CoverageTest):
                 pass
             assert a == 1 and b == 1 and c == 10
             """,
-            arcz=".1 12 23 34 4A 56 6A 57 78 8A 7A AD BC CD D.",
+            arcz=".1 12 23 34 4A 56 6A 57 78 8A AD BC CD D.",
             arcz_missing="4A 56 6A 78 8A AD",
-            arcz_unpredicted="45 AB",
+            arcz_unpredicted="45 7A AB",
         )
 
     def test_return_finally(self):
@@ -808,11 +808,11 @@ class ExceptionArcTest(CoverageTest):
             """,
             arcz=
                 ".1 1Q QR RS ST T. "
-                ".2 23 34 45 56 4O 6L 7L "
+                ".2 23 34 45 56 4O 6L "
                 "78 89 9A AL  8B BC CD DL  BE EF FG GL  EH HI IJ JL  HL "
                 "LO L4 L. LM "
                 "MN NO O.",
-            arcz_missing="6L 7L HL",
+            arcz_missing="6L HL",
             arcz_unpredicted="67",
         )
 
@@ -852,11 +852,11 @@ class ExceptionArcTest(CoverageTest):
             """,
             arcz=
                 ".1 1S ST TU UV V. "
-                ".2 23 34 45 56 6A 78 7N 8N 4Q "
+                ".2 23 34 45 56 6A 78 8N 4Q "
                 "AB BC CN  AD DE EF FN  DG GH HI IN  GJ JK KL LN  JN "
                 "NQ N4 N. NO "
                 "OP PQ Q.",
-            arcz_missing="78 8N 7N JN",
+            arcz_missing="78 8N JN",
             arcz_unpredicted="",
         )
 
