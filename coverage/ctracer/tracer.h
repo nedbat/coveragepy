@@ -30,9 +30,9 @@ typedef struct CTracer {
     PyObject * context;
 
     /* Has the tracer been started? */
-    int started;
+    BOOL started;
     /* Are we tracing arcs, or just lines? */
-    int tracing_arcs;
+    BOOL tracing_arcs;
 
     /*
         The data stack is a stack of dictionaries.  Each dictionary collects

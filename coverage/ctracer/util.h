@@ -48,6 +48,7 @@
 #define RET_ERROR   -1
 
 /* Nicer booleans */
+typedef int BOOL;
 #define FALSE   0
 #define TRUE    1
 

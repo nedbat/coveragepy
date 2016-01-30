@@ -28,7 +28,7 @@ typedef struct DataStackEntry {
     */
     int last_line;
 
-    int started_context;
+    BOOL started_context;
 } DataStackEntry;
 
 /* A data stack is a dynamically allocated vector of DataStackEntry's. */

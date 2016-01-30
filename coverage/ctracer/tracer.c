@@ -131,7 +131,7 @@ indent(int n)
     return spaces + strlen(spaces) - n*2;
 }
 
-static int logging = FALSE;
+static BOOL logging = FALSE;
 /* Set these constants to be a file substring and line number to start logging. */
 static const char * start_file = "tests/views";
 static int start_line = 27;
