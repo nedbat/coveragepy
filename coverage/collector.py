@@ -121,6 +121,10 @@ class Collector(object):
                 "Couldn't trace with concurrency=%s, the module isn't installed." % concurrency
             )
 
+        # Who-Tests-What is just a hack at the moment, so turn it on with an
+        # environment variable.
+        self.wtw = int(os.getenv('COVERAGE_WTW', 0))
+
         self.reset()
 
         if timid:
@@ -215,10 +219,11 @@ class Collector(object):
             tracer.threading = self.threading
         if hasattr(tracer, 'check_include'):
             tracer.check_include = self.check_include
-        if hasattr(tracer, 'should_start_context'):
-            tracer.should_start_context = should_start_context
-        if hasattr(tracer, 'switch_context'):
-            tracer.switch_context = self.switch_context
+        if self.wtw:
+            if hasattr(tracer, 'should_start_context'):
+                tracer.should_start_context = should_start_context
+            if hasattr(tracer, 'switch_context'):
+                tracer.switch_context = self.switch_context
 
         fn = tracer.start()
         self.tracers.append(tracer)
@@ -321,7 +326,6 @@ class Collector(object):
             self._start_tracer()
 
     def switch_context(self, new_context):
-        print("** Switching to {!r}".format(new_context))
         data = self.contexts.setdefault(new_context, {})
         for tracer in self.tracers:
             tracer.data = data
@@ -336,11 +340,16 @@ class Collector(object):
             """Return a dict like d, but with keys modified by `abs_file`."""
             return dict((abs_file(k), v) for k, v in iitems(d))
 
-        import pprint; pprint.pprint(self.contexts)
         if self.branch:
             covdata.add_arcs(abs_file_dict(self.data))
         else:
             covdata.add_lines(abs_file_dict(self.data))
         covdata.add_file_tracers(abs_file_dict(self.file_tracers))
+
+        if self.wtw:
+            # Just a hack, so just hack it.
+            import pprint
+            with open("coverage_wtw.py", "w") as wtw_out:
+                pprint.pprint(self.contexts, wtw_out)
 
         self.reset()

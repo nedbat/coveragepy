@@ -353,7 +353,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     self->pdata_stack->stack[self->pdata_stack->depth] = self->cur_entry;
 
     /* See if this frame begins a new context. */
-    if (self->should_start_context != Py_None && self->context == Py_None) {
+    if (self->should_start_context && self->context == Py_None) {
         PyObject * context;
         /* We're looking for our context, ask should_start_context if this is the start. */
         STATS( self->stats.start_context_calls++; )
@@ -1067,7 +1067,7 @@ CTracer_members[] = {
     { "should_start_context", T_OBJECT, offsetof(CTracer, should_start_context), 0,
             PyDoc_STR("Function for starting contexts.") },
 
-    { "switch_context", T_OBJECT, offsetof(CTracer, switch_context), 0,
+    { "switch_context",     T_OBJECT, offsetof(CTracer, switch_context), 0,
             PyDoc_STR("Function for switch to a new context.") },
 
     { NULL }
