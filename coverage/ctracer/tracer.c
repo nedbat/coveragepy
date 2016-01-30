@@ -842,7 +842,7 @@ cleanup:
  * PyEval_SetTrace.  So sys.gettrace() will return our self parameter, which
  * means it must be callable to be used in sys.settrace().
  *
- * So we make our self callable, equivalent to invoking our trace function.
+ * So we make ourself callable, equivalent to invoking our trace function.
  *
  * To help with the process of replaying stored frames, this function has an
  * optional keyword argument:
@@ -946,7 +946,6 @@ CTracer_start(CTracer *self, PyObject *args_unused)
     PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
     self->started = 1;
     self->tracing_arcs = self->trace_arcs && PyObject_IsTrue(self->trace_arcs);
-    self->cur_entry.last_line = -1;
 
     /* start() returns a trace function usable with sys.settrace() */
     Py_INCREF(self);
