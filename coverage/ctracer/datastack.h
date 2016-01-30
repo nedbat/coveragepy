@@ -27,6 +27,8 @@ typedef struct DataStackEntry {
         -1 means there was no previous line, as when entering a code object.
     */
     int last_line;
+
+    int started_context;
 } DataStackEntry;
 
 /* A data stack is a dynamically allocated vector of DataStackEntry's. */

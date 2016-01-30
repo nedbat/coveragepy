@@ -37,6 +37,11 @@ class FileDisposition(object):
     pass
 
 
+def should_start_context(frame):
+    fn_name = frame.f_code.co_name
+    if fn_name.startswith("test"):
+        return fn_name
+
 class Collector(object):
     """Collects trace data.
 
@@ -116,6 +121,10 @@ class Collector(object):
                 "Couldn't trace with concurrency=%s, the module isn't installed." % concurrency
             )
 
+        # Who-Tests-What is just a hack at the moment, so turn it on with an
+        # environment variable.
+        self.wtw = int(os.getenv('COVERAGE_WTW', 0))
+
         self.reset()
 
         if timid:
@@ -146,6 +155,10 @@ class Collector(object):
         # branch coverage), or mapping file names to dicts with line number
         # pairs as keys (if branch coverage).
         self.data = {}
+
+        # A dict mapping contexts to data dictionaries.
+        self.contexts = {}
+        self.contexts[None] = self.data
 
         # A dictionary mapping file names to file tracer plugin names that will
         # handle them.
@@ -206,6 +219,11 @@ class Collector(object):
             tracer.threading = self.threading
         if hasattr(tracer, 'check_include'):
             tracer.check_include = self.check_include
+        if self.wtw:
+            if hasattr(tracer, 'should_start_context'):
+                tracer.should_start_context = should_start_context
+            if hasattr(tracer, 'switch_context'):
+                tracer.switch_context = self.switch_context
 
         fn = tracer.start()
         self.tracers.append(tracer)
@@ -294,7 +312,7 @@ class Collector(object):
             if stats:
                 print("\nCoverage.py tracer stats:")
                 for k in sorted(stats.keys()):
-                    print("%16s: %s" % (k, stats[k]))
+                    print("%20s: %s" % (k, stats[k]))
         if self.threading:
             self.threading.settrace(None)
 
@@ -306,6 +324,11 @@ class Collector(object):
             self.threading.settrace(self._installation_trace)
         else:
             self._start_tracer()
+
+    def switch_context(self, new_context):
+        data = self.contexts.setdefault(new_context, {})
+        for tracer in self.tracers:
+            tracer.data = data
 
     def save_data(self, covdata):
         """Save the collected data to a `CoverageData`.
@@ -322,5 +345,11 @@ class Collector(object):
         else:
             covdata.add_lines(abs_file_dict(self.data))
         covdata.add_file_tracers(abs_file_dict(self.file_tracers))
+
+        if self.wtw:
+            # Just a hack, so just hack it.
+            import pprint
+            with open("coverage_wtw.py", "w") as wtw_out:
+                pprint.pprint(self.contexts, wtw_out)
 
         self.reset()
