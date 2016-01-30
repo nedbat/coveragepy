@@ -764,7 +764,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
             Py_INCREF(self->context);
             STATS( self->stats.pycalls++; )
 
-            val = PyObject_CallFunctionObjArgs(self->switch_context, context, NULL);
+            val = PyObject_CallFunctionObjArgs(self->switch_context, self->context, NULL);
             if (val == NULL) {
                 goto error;
             }
