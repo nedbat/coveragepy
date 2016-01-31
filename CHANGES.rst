@@ -13,6 +13,10 @@ Unreleased
   some other line when an exception other than ``X`` happens.  This jump is no
   longer considered a branch when measuring branch coverage.
 
+- The HTML report now has a map of the file along the rightmost edge of the
+  page, giving an overview of where the missed lines are.  Thanks, Dmitry
+  Shishov.
+
 
 Version 4.1b2 --- 2016-01-23 
 ----------------------------
