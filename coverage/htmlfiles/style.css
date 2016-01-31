@@ -327,10 +327,13 @@ td.text {
 
 /* scroll marker styles */
 #scroll_marker {
-    position:fixed;
-    right:0;
-    top:0;
-    width:16px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 16px;
+    height: 100%;
+    background: white;
+    border-left: 1px solid #eee;
     }
 
 #scroll_marker .marker {
