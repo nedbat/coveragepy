@@ -349,7 +349,8 @@ class Collector(object):
         if self.wtw:
             # Just a hack, so just hack it.
             import pprint
-            with open("coverage_wtw.py", "w") as wtw_out:
+            out_file = "coverage_wtw_{:06}.py".format(os.getpid())
+            with open(out_file, "w") as wtw_out:
                 pprint.pprint(self.contexts, wtw_out)
 
         self.reset()
