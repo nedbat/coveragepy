@@ -13,6 +13,10 @@ Unreleased
   some other line when an exception other than ``X`` happens.  This jump is no
   longer considered a branch when measuring branch coverage.
 
+- When measuring branch coverage, ``yield`` statements that were never resumed
+  were incorrectly marked as missing, as reported in `issue 440`_.  This is now
+  fixed.
+
 - The HTML report now has a map of the file along the rightmost edge of the
   page, giving an overview of where the missed lines are.  Thanks, Dmitry
   Shishov.
@@ -20,6 +24,7 @@ Unreleased
 - The HTML report now uses different monospaced fonts, favoring Consolas over
   Courier.
 
+.. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
 
 Version 4.1b2 --- 2016-01-23 
 ----------------------------

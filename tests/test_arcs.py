@@ -981,6 +981,22 @@ class YieldTest(CoverageTest):
             arcz_unpredicted="5.",
         )
 
+    def test_abandoned_yield(self):
+        # https://bitbucket.org/ned/coveragepy/issue/440
+        self.check_coverage("""\
+            def gen():
+                print("yup")
+                yield "yielded"
+                print("nope")
+
+            print(next(gen()))
+            """,
+            lines=[1, 2, 3, 4, 6],
+            missing="4",
+            arcz=".1 16 6.  .2 23 34 4.",
+            arcz_missing="34 4.",
+        )
+
 
 class MiscArcTest(CoverageTest):
     """Miscellaneous arc-measuring tests."""

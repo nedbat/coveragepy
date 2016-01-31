@@ -4,6 +4,7 @@
 """Coverage data for coverage.py."""
 
 import glob
+import itertools
 import json
 import optparse
 import os
@@ -178,11 +179,12 @@ class CoverageData(object):
 
         """
         if self._arcs is not None:
-            if filename in self._arcs:
-                return [s for s, __ in self._arcs[filename] if s > 0]
+            arcs = self._arcs.get(filename)
+            if arcs is not None:
+                all_lines = itertools.chain.from_iterable(arcs)
+                return list(set(l for l in all_lines if l > 0))
         elif self._lines is not None:
-            if filename in self._lines:
-                return self._lines[filename]
+            return self._lines.get(filename)
         return None
 
     def arcs(self, filename):

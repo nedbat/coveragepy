@@ -66,7 +66,7 @@ ARCS_4 = {
         (1000, -1): None,
     },
 }
-SUMMARY_3_4 = {'x.py': 5, 'y.py': 2, 'z.py': 1}
+SUMMARY_3_4 = {'x.py': 4, 'y.py': 2, 'z.py': 1}
 MEASURED_FILES_3_4 = ['x.py', 'y.py', 'z.py']
 
 
