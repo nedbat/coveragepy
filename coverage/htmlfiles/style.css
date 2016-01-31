@@ -308,10 +308,6 @@ td.text {
     text-decoration: none;
     color: #000;
     }
-#index td.name a:hover {
-    text-decoration: underline;
-    color: #000;
-    }
 #index tr.total,
 #index tr.total_dynamic {
     }
@@ -323,6 +319,10 @@ td.text {
     }
 #index tr.file:hover {
     background: #eeeeee;
+    }
+#index tr.file:hover td.name {
+    text-decoration: underline;
+    color: #000;
     }
 
 /* scroll marker styles */
