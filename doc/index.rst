@@ -68,13 +68,13 @@ not.
 
     The latest version is coverage.py 4.1b2, released January 23rd, 2016.  It
     is supported on:
-    
-    * Python versions 2.6, 2.7, 3.3, 3.4, and 3.5.  
-      
+
+    * Python versions 2.6, 2.7, 3.3, 3.4, and 3.5.
+
     * PyPy 2.4, 2.6, and 4.0
-      
+
     * PyPy3 2.4.
-      
+
     **This is a pre-release build.  The usual warnings about possible bugs
     apply.** The latest stable version is coverage.py 4.0.3, `described here`_.
 

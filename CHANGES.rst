@@ -22,11 +22,13 @@ Unreleased
   Shishov.
 
 - The HTML report now uses different monospaced fonts, favoring Consolas over
-  Courier.
+  Courier.  The index page also has slightly different styling, to try to make
+  the clickable detail pages more apparent.
 
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
 
-Version 4.1b2 --- 2016-01-23 
+
+Version 4.1b2 --- 2016-01-23
 ----------------------------
 
 - Problems with the new branch measurement in 4.1 beta 1 were fixed:
@@ -43,7 +45,7 @@ Version 4.1b2 --- 2016-01-23
 
 - The XML report now produces correct package names for modules found in
   directories specified with ``source=``.  Fixes `issue 465`_.
-  
+
 - ``coverage report`` won't produce trailing whitespace.
 
 .. _issue 465: https://bitbucket.org/ned/coveragepy/issues/465/coveragexml-produces-package-names-with-an

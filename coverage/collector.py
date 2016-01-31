@@ -38,9 +38,11 @@ class FileDisposition(object):
 
 
 def should_start_context(frame):
+    """Who-Tests-What hack: Determine whether this frame begins a new who-context."""
     fn_name = frame.f_code.co_name
     if fn_name.startswith("test"):
         return fn_name
+
 
 class Collector(object):
     """Collects trace data.
@@ -326,6 +328,9 @@ class Collector(object):
             self._start_tracer()
 
     def switch_context(self, new_context):
+        """Who-Tests-What hack: switch to a new who-context."""
+        # Make a new data dict, or find the existing one, and switch all the
+        # tracers to use it.
         data = self.contexts.setdefault(new_context, {})
         for tracer in self.tracers:
             tracer.data = data
