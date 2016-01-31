@@ -324,3 +324,18 @@ td.text {
 #index tr.file:hover {
     background: #eeeeee;
     }
+
+/* scroll marker styles */
+#scroll_marker {
+    position:fixed;
+    right:0;
+    top:0;
+    width:16px;
+    }
+
+#scroll_marker .marker {
+    background: #ffdddd;
+    position: relative;
+    min-height: 3px;
+    }
+
