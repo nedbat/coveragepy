@@ -532,7 +532,6 @@ coverage.resize_scroll_markers = function () {
     var c = coverage,
         min_line_height = 3,
         max_line_height = 10,
-        previous_line = 0,
         visible_window_h = $(window).height();
 
     $('#scroll_marker').remove();
@@ -543,9 +542,8 @@ coverage.resize_scroll_markers = function () {
 
     $("body").append("<div id='scroll_marker'>&nbsp;</div>");
     var scroll_marker = $('#scroll_marker'),
-        header_amend = Math.round(c.header_h*scroll_marker.height()/c.body_h),
-        line_height = scroll_marker.height()/c.lines_len,
-        general_height = 0;
+        marker_scale = scroll_marker.height() / c.body_h,
+        line_height = scroll_marker.height() / c.lines_len;
 
     // Line height must be between the extremes.
     if (line_height > min_line_height) {
@@ -557,26 +555,32 @@ coverage.resize_scroll_markers = function () {
         line_height = min_line_height;
     }
 
+    var previous_line = -99,
+        last_mark,
+        last_top;
+
     c.missed_lines.each(function () {
-        var line_position = Math.round($(this).offset().top*scroll_marker.height()/c.body_h);
-        var id_name = $(this).attr('id'),
-            line_number = id_name.substring(1, id_name.length);
-        if (line_number === parseInt(previous_line)+1) {
-            // If this solid missed block just make previous line higher.
-            $('#m' + previous_line).attr('id', 'm' + line_number).css({
-                'height': "+=" + line_height
+        var line_top = Math.round($(this).offset().top * marker_scale),
+            id_name = $(this).attr('id'),
+            line_number = parseInt(id_name.substring(1, id_name.length));
+
+        if (line_number === previous_line + 1) {
+            // If this solid missed block just make previous mark higher.
+            last_mark.css({
+                'height': line_top + line_height - last_top
             });
         }
         else {
             // Add colored line in scroll_marker block.
             scroll_marker.append('<div id="m' + line_number + '" class="marker"></div>');
-            $('#m' + line_number).css({
+            last_mark = $('#m' + line_number);
+            last_mark.css({
                 'height': line_height,
-                'top': line_position - header_amend - general_height
+                'top': line_top
             });
+            last_top = line_top;
         }
 
-        general_height += line_height;
         previous_line = line_number;
     });
 };
