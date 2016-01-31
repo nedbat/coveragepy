@@ -17,6 +17,9 @@ Unreleased
   page, giving an overview of where the missed lines are.  Thanks, Dmitry
   Shishov.
 
+- The HTML report now uses different monospaced fonts, favoring Consolas over
+  Courier.
+
 
 Version 4.1b2 --- 2016-01-23 
 ----------------------------

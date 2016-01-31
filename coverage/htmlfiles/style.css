@@ -64,7 +64,7 @@ a.nav:hover {
 
 #source {
     padding: 1em;
-    font-family: "courier new", monospace;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
     }
 
 .indexfile #footer {
