@@ -341,7 +341,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         cov.html_report()
 
         html_report = self.get_html_report_content("sub/not_ascii.py")
-        expected = "# Isn&#39;t this great?&#65533;!"
+        expected = "# Isn't this great?&#65533;!"
         self.assertIn(expected, html_report)
 
     def test_formfeeds(self):
@@ -494,7 +494,7 @@ class HtmlGoldTests(CoverageGoldTest):
             "out/a/a_py.html",
             ('<span class="key">if</span> <span class="num">1</span> '
              '<span class="op">&lt;</span> <span class="num">2</span>'),
-            ('&nbsp; &nbsp; <span class="nam">a</span> '
+            ('    <span class="nam">a</span> '
              '<span class="op">=</span> <span class="num">3</span>'),
             '<span class="pc_cov">67%</span>',
         )
@@ -521,7 +521,7 @@ class HtmlGoldTests(CoverageGoldTest):
             "out/b_branch/b_py.html",
             ('<span class="key">if</span> <span class="nam">x</span> '
              '<span class="op">&lt;</span> <span class="num">2</span>'),
-            ('&nbsp; &nbsp; <span class="nam">a</span> <span class="op">=</span> '
+            ('    <span class="nam">a</span> <span class="op">=</span> '
              '<span class="num">3</span>'),
             '<span class="pc_cov">70%</span>',
             ('<span class="annotate" title="Line 8 was executed, but never jumped to line 11">'
@@ -553,7 +553,7 @@ class HtmlGoldTests(CoverageGoldTest):
         compare("gold_bom", "out/bom", size_within=10, file_pattern="*.html")
         contains(
             "out/bom/bom_py.html",
-            '<span class="str">&quot;3&#215;4 = 12, &#247;2 = 6&#177;0&quot;</span>',
+            '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
         )
 
     def test_isolatin1(self):
@@ -570,7 +570,7 @@ class HtmlGoldTests(CoverageGoldTest):
         compare("gold_isolatin1", "out/isolatin1", size_within=10, file_pattern="*.html")
         contains(
             "out/isolatin1/isolatin1_py.html",
-            '<span class="str">&quot;3&#215;4 = 12, &#247;2 = 6&#177;0&quot;</span>',
+            '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
         )
 
     def test_omit_1(self):
@@ -708,7 +708,7 @@ class HtmlGoldTests(CoverageGoldTest):
             '<link rel="stylesheet" href="extra.css" type="text/css">',
             ('<span class="key">if</span> <span class="num">1</span> '
              '<span class="op">&lt;</span> <span class="num">2</span>'),
-            ('&nbsp; &nbsp; <span class="nam">a</span> <span class="op">=</span> '
+            ('    <span class="nam">a</span> <span class="op">=</span> '
              '<span class="num">3</span>'),
             '<span class="pc_cov">67%</span>'
         )
@@ -735,10 +735,9 @@ class HtmlGoldTests(CoverageGoldTest):
 
         contains(
             "out/tabbed/tabbed_py.html",
-            '>&nbsp; &nbsp; &nbsp; &nbsp; <span class="key">if</span> '
+            '>        <span class="key">if</span> '
             '<span class="nam">x</span><span class="op">:</span>'
-            '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '
-            '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; '
+            '                                   '
             '<span class="com"># look nice</span>'
         )
 
@@ -758,12 +757,11 @@ class HtmlGoldTests(CoverageGoldTest):
         compare("gold_unicode", "out/unicode", size_within=10, file_pattern="*.html")
         contains(
             "out/unicode/unicode_py.html",
-            ('<span class="str">&quot;&#654;d&#729;&#477;b&#592;&#633;&#477;&#652;o&#596;&quot;'
-             '</span>'),
+            '<span class="str">"&#654;d&#729;&#477;b&#592;&#633;&#477;&#652;o&#596;"</span>',
         )
 
         contains_any(
             "out/unicode/unicode_py.html",
-            '<span class="str">&quot;db40,dd00: x&#56128;&#56576;&quot;</span>',
-            '<span class="str">&quot;db40,dd00: x&#917760;&quot;</span>',
+            '<span class="str">"db40,dd00: x&#56128;&#56576;"</span>',
+            '<span class="str">"db40,dd00: x&#917760;"</span>',
         )

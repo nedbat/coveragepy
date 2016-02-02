@@ -22,10 +22,12 @@ Unreleased
   Shishov.
 
 - The HTML report now uses different monospaced fonts, favoring Consolas over
-  Courier.  The index page also has slightly different styling, to try to make
-  the clickable detail pages more apparent.
+  Courier.  Along the way, `issue 472`_ about not properly handling one-space
+  indents was fixed.  The index page also has slightly different styling, to
+  try to make the clickable detail pages more apparent.
 
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
+.. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
 
 
 Version 4.1b2 --- 2016-01-23

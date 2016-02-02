@@ -418,18 +418,13 @@ class HtmlStatus(object):
 # Helpers for templates and generating HTML
 
 def escape(t):
-    """HTML-escape the text in `t`."""
-    return (
-        t
-        # Convert HTML special chars into HTML entities.
-        .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        .replace("'", "&#39;").replace('"', "&quot;")
-        # Convert runs of spaces: "......" -> "&nbsp;.&nbsp;.&nbsp;."
-        .replace("  ", "&nbsp; ")
-        # To deal with odd-length runs, convert the final pair of spaces
-        # so that "....." -> "&nbsp;.&nbsp;&nbsp;."
-        .replace("  ", "&nbsp; ")
-    )
+    """HTML-escape the text in `t`.
+
+    This is only suitable for HTML text, not attributes.
+
+    """
+    # Convert HTML special chars into HTML entities.
+    return t.replace("&", "&amp;").replace("<", "&lt;")
 
 
 def spaceless(html):
