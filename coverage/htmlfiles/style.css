@@ -269,15 +269,17 @@ td.text {
     white-space: normal;
     float: right;
     position: absolute;
-    top: 1.5em;
-    right: 0;
+    top: 1.75em;
+    right: 1em;
     width: 30em;
     height: auto;
+    color: #333;
     background: #ffffcc;
     border: 1px solid #888;
     padding: .25em .5em;
     z-index: 999;
-
+    border-radius: .2em;
+    box-shadow: #cccccc .2em .2em .2em;
     }
 
 /* Syntax coloring */
