@@ -160,7 +160,7 @@ h2.stats {
 
 .help_panel {
     position: absolute;
-    background: #ffc;
+    background: #ffffcc;
     padding: .5em;
     border: 1px solid #883;
     display: none;
@@ -227,6 +227,7 @@ td.text {
     padding: 0 0 0 .5em;
     border-left: 2px solid #ffffff;
     white-space: pre;
+    position: relative;
     }
 
 .text p.mis {
@@ -258,6 +259,25 @@ td.text {
     }
 .text p.hide_par span.annotate {
     display: none;
+    }
+.text span.annotate.long {
+    display: none;
+    }
+.text p:hover span.annotate.long {
+    display: block;
+    max-width: 50%;
+    white-space: normal;
+    float: right;
+    position: absolute;
+    top: 1.5em;
+    right: 0;
+    width: 30em;
+    height: auto;
+    background: #ffffcc;
+    border: 1px solid #888;
+    padding: .25em .5em;
+    z-index: 999;
+
     }
 
 /* Syntax coloring */

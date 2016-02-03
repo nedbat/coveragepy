@@ -96,7 +96,7 @@ class HtmlReporter(Reporter):
             '__version__': coverage.__version__,
         }
         self.source_tmpl = Templite(
-            data("pyfile.html"), self.template_globals
+            data("pyfile.html"), self.template_globals,
         )
 
         self.coverage = cov
@@ -204,7 +204,7 @@ class HtmlReporter(Reporter):
             # Figure out how to mark this line.
             line_class = []
             annotate_html = ""
-            annotate_title = ""
+            annotate_long = ""
             if lineno in analysis.statements:
                 line_class.append("stm")
             if lineno in analysis.excluded:
@@ -226,15 +226,14 @@ class HtmlReporter(Reporter):
                 # 219B is RIGHTWARDS ARROW WITH STROKE.
                 short_fmt = "%s&#x202F;&#x219B;&#x202F;%s"
                 annotate_html = ",&nbsp;&nbsp; ".join(short_fmt % (lineno, d) for d in shorts)
-                annotate_html += " [?]"
 
-                annotate_title = "Line %d was executed, but never jumped to " % lineno
+                annotate_long = "Line %d was executed, but never jumped to " % lineno
                 if len(longs) == 1:
-                    annotate_title += longs[0]
+                    annotate_long += longs[0]
                 elif len(longs) == 2:
-                    annotate_title += longs[0] + " or " + longs[1]
+                    annotate_long += longs[0] + " or " + longs[1]
                 else:
-                    annotate_title += ", ".join(longs[:-1]) + ", or " + longs[-1]
+                    annotate_long += ", ".join(longs[:-1]) + ", or " + longs[-1]
             elif lineno in analysis.statements:
                 line_class.append(c_run)
 
@@ -254,7 +253,7 @@ class HtmlReporter(Reporter):
                 'number': lineno,
                 'class': ' '.join(line_class) or "pln",
                 'annotate': annotate_html,
-                'annotate_title': annotate_title,
+                'annotate_long': annotate_long,
             })
 
         # Write the HTML page for this file.

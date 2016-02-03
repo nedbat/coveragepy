@@ -77,7 +77,7 @@
             </td>
             <td class="text">
                 {% for line in lines %}
-                    <p id="t{{line.number}}" class="{{line.class}}">{% if line.annotate %}<span class="annotate" title="{{line.annotate_title}}">{{line.annotate}}</span>{% endif %}{{line.html}}<span class="strut">&nbsp;</span></p>
+                    <p id="t{{line.number}}" class="{{line.class}}">{% if line.annotate %}<span class="annotate short">{{line.annotate}}</span><span class="annotate long">{{line.annotate_long}}</span>{% endif %}{{line.html}}<span class="strut">&nbsp;</span></p>
                 {% endfor %}
             </td>
         </tr>
