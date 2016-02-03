@@ -524,13 +524,16 @@ class HtmlGoldTests(CoverageGoldTest):
             ('    <span class="nam">a</span> <span class="op">=</span> '
              '<span class="num">3</span>'),
             '<span class="pc_cov">70%</span>',
-            ('<span class="annotate" title="Line 8 was executed, but never jumped to line 11">'
-             '8&#x202F;&#x219B;&#x202F;11 [?]</span>'),
-            ('<span class="annotate" title="Line 17 was executed, but never jumped '
-             'to the function exit">17&#x202F;&#x219B;&#x202F;exit [?]</span>'),
-            ('<span class="annotate" title="Line 25 was executed, but never jumped '
-             'to line 26 or line 28">25&#x202F;&#x219B;&#x202F;26,&nbsp;&nbsp; '
-             '25&#x202F;&#x219B;&#x202F;28 [?]</span>'),
+            ('<span class="annotate short">8&#x202F;&#x219B;&#x202F;11</span>'
+             '<span class="annotate long">Line 8 was executed, '
+                                                'but never jumped to line 11</span>'),
+            ('<span class="annotate short">17&#x202F;&#x219B;&#x202F;exit</span>'
+             '<span class="annotate long">Line 17 was executed, '
+                                                'but never jumped to the function exit</span>'),
+            ('<span class="annotate short">25&#x202F;&#x219B;&#x202F;26,&nbsp;&nbsp; '
+                                                '25&#x202F;&#x219B;&#x202F;28</span>'
+             '<span class="annotate long">Line 25 was executed, '
+                                                'but never jumped to line 26 or line 28</span'),
         )
         contains(
             "out/b_branch/index.html",
