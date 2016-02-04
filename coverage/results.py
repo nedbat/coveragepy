@@ -30,9 +30,7 @@ class Analysis(object):
             self.no_branch = self.file_reporter.no_branch_lines()
             n_branches = self.total_branches()
             mba = self.missing_branch_arcs()
-            n_partial_branches = sum(
-                len(v) for k,v in iitems(mba) if k not in self.missing
-                )
+            n_partial_branches = sum(len(v) for k,v in iitems(mba) if k not in self.missing)
             n_missing_branches = sum(len(v) for k,v in iitems(mba))
         else:
             self._arc_possibilities = []
@@ -48,7 +46,7 @@ class Analysis(object):
             n_branches=n_branches,
             n_partial_branches=n_partial_branches,
             n_missing_branches=n_missing_branches,
-            )
+        )
 
     def missing_formatted(self):
         """The missing line numbers, formatted nicely.
@@ -84,7 +82,7 @@ class Analysis(object):
         return sorted(missing)
 
     def arcs_missing_formatted(self):
-        """ The missing branch arcs, formatted nicely.
+        """The missing branch arcs, formatted nicely.
 
         Returns a string like "1->2, 1->3, 16->20". Omits any mention of
         branches from missing lines, so if line 17 is missing, then 17->18
