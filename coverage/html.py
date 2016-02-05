@@ -218,16 +218,15 @@ class HtmlReporter(Reporter):
                 for b in missing_branch_arcs[lineno]:
                     if b < 0:
                         shorts.append("exit")
-                        longs.append("the function exit")
                     else:
                         shorts.append(b)
-                        longs.append("line %d" % b)
+                    longs.append(fr.arc_destination_description(b))
                 # 202F is NARROW NO-BREAK SPACE.
                 # 219B is RIGHTWARDS ARROW WITH STROKE.
                 short_fmt = "%s&#x202F;&#x219B;&#x202F;%s"
                 annotate_html = ",&nbsp;&nbsp; ".join(short_fmt % (lineno, d) for d in shorts)
 
-                annotate_long = "Line %d was executed, but never jumped to " % lineno
+                annotate_long = "Line %d was executed, but didn't " % lineno
                 if len(longs) == 1:
                     annotate_long += longs[0]
                 elif len(longs) == 2:
