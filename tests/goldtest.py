@@ -34,9 +34,9 @@ class CoverageGoldTest(CoverageTest):
         COVERAGE_KEEP_OUTPUT environment variable is set.
 
         """
-        self.addCleanup(self.cleanup_output_dir, the_dir)
+        # To make sure tests are isolated, we always clean the directory at the
+        # beginning of the test.
+        clean(the_dir)
 
-    def cleanup_output_dir(self, the_dir):
-        """Clean up the output directory of the test."""
         if not os.environ.get("COVERAGE_KEEP_OUTPUT"):      # pragma: partial
-            clean(the_dir)
+            self.addCleanup(clean, the_dir)
