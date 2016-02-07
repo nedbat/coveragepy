@@ -60,6 +60,10 @@ else:                                           # pragma: not covered
         """Dummy no-op implementation of `contract`."""
         return lambda func: func
 
+    def new_contract(*args, **kwargs):
+        """Dummy no-op implementation of `new_contract`."""
+        pass
+
 
 def nice_pair(pair):
     """Make a nice string representation of a pair of numbers.

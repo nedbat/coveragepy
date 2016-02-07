@@ -14,7 +14,7 @@ from coverage import env
 from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints, string_class
 from coverage.bytecode import CodeObjects
-from coverage.misc import contract, nice_pair, join_regex
+from coverage.misc import contract, new_contract, nice_pair, join_regex
 from coverage.misc import CoverageException, NoSource, NotPython
 from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
 
@@ -367,11 +367,10 @@ class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
         self = super(ArcStart, cls).__new__(cls, lineno, cause)
         return self
 
-if env.TESTING:
-    from contracts import new_contract
 
-    # Define contract words that PyContract doesn't have.
-    new_contract('ArcStarts', lambda seq: all(isinstance(x, ArcStart) for x in seq))
+# Define contract words that PyContract doesn't have.
+# ArcStarts is for a list or set of ArcStart's.
+new_contract('ArcStarts', lambda seq: all(isinstance(x, ArcStart) for x in seq))
 
 
 class AstArcAnalyzer(object):
