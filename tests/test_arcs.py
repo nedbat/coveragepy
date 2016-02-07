@@ -1065,7 +1065,6 @@ class MiscArcTest(CoverageTest):
             """,
             arcz=".1 15 5A A-2"
         )
-        1/0
 
     def test_pathologically_long_code_object(self):
         # https://bitbucket.org/ned/coveragepy/issue/359
