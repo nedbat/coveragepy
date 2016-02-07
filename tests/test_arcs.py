@@ -1034,6 +1034,39 @@ class MiscArcTest(CoverageTest):
             arcz=".1 19 9-2",
         )
 
+    def test_unpacked_literals(self):
+        if env.PYVERSION < (3, 5):
+            self.skip("Don't have unpacked literals until 3.5")
+        self.check_coverage("""\
+            d = {
+                'a': 2,
+                'b': 3,
+            }
+            weird = {
+                **d,
+                **{'c': 7},
+                'd': 8,
+            }
+            assert weird['b'] == 3
+            """,
+            arcz=".1 15 5A A-2"
+        )
+        self.check_coverage("""\
+            l = [
+                2,
+                3,
+            ]
+            weird = [
+                *l,
+                *[7],
+                8,
+            ]
+            assert weird[1] == 3
+            """,
+            arcz=".1 15 5A A-2"
+        )
+        1/0
+
     def test_pathologically_long_code_object(self):
         # https://bitbucket.org/ned/coveragepy/issue/359
         # The structure of this file is such that an EXTENDED_ARG bytecode is

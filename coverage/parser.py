@@ -420,7 +420,12 @@ class AstArcAnalyzer(object):
     def _line__Dict(self, node):
         # Python 3.5 changed how dict literals are made.
         if env.PYVERSION >= (3, 5) and node.keys:
-            return node.keys[0].lineno
+            if node.keys[0] is not None:
+                return node.keys[0].lineno
+            else:
+                # Unpacked dict literals `{**{'a':1}}` have None as the key,
+                # use the value in that case.
+                return node.values[0].lineno
         else:
             return node.lineno
 
@@ -439,7 +444,7 @@ class AstArcAnalyzer(object):
 
     OK_TO_DEFAULT = set([
         "Assign", "Assert", "AugAssign", "Delete", "Exec", "Expr", "Global",
-        "Import", "ImportFrom", "Pass", "Print",
+        "Import", "ImportFrom", "Nonlocal", "Pass", "Print",
     ])
 
     def add_arcs(self, node):
