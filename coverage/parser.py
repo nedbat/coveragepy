@@ -315,6 +315,83 @@ class PythonParser(object):
         return description
 
 
+
+class ByteParser(object):
+    """Parse bytecode to understand the structure of code."""
+
+    @contract(text='unicode')
+    def __init__(self, text, code=None, filename=None):
+        self.text = text
+        if code:
+            self.code = code
+        else:
+            try:
+                self.code = compile_unicode(text, filename, "exec")
+            except SyntaxError as synerr:
+                raise NotPython(
+                    u"Couldn't parse '%s' as Python source: '%s' at line %d" % (
+                        filename, synerr.msg, synerr.lineno
+                    )
+                )
+
+        # Alternative Python implementations don't always provide all the
+        # attributes on code objects that we need to do the analysis.
+        for attr in ['co_lnotab', 'co_firstlineno', 'co_consts']:
+            if not hasattr(self.code, attr):
+                raise CoverageException(
+                    "This implementation of Python doesn't support code analysis.\n"
+                    "Run coverage.py under CPython for this command."
+                )
+
+    def child_parsers(self):
+        """Iterate over all the code objects nested within this one.
+
+        The iteration includes `self` as its first value.
+
+        """
+        children = CodeObjects(self.code)
+        return (ByteParser(self.text, code=c) for c in children)
+
+    def _bytes_lines(self):
+        """Map byte offsets to line numbers in `code`.
+
+        Uses co_lnotab described in Python/compile.c to map byte offsets to
+        line numbers.  Produces a sequence: (b0, l0), (b1, l1), ...
+
+        Only byte offsets that correspond to line numbers are included in the
+        results.
+
+        """
+        # Adapted from dis.py in the standard library.
+        byte_increments = bytes_to_ints(self.code.co_lnotab[0::2])
+        line_increments = bytes_to_ints(self.code.co_lnotab[1::2])
+
+        last_line_num = None
+        line_num = self.code.co_firstlineno
+        byte_num = 0
+        for byte_incr, line_incr in zip(byte_increments, line_increments):
+            if byte_incr:
+                if line_num != last_line_num:
+                    yield (byte_num, line_num)
+                    last_line_num = line_num
+                byte_num += byte_incr
+            line_num += line_incr
+        if line_num != last_line_num:
+            yield (byte_num, line_num)
+
+    def _find_statements(self):
+        """Find the statements in `self.code`.
+
+        Produce a sequence of line numbers that start statements.  Recurses
+        into all code objects reachable from `self.code`.
+
+        """
+        for bp in self.child_parsers():
+            # Get all of the lineno information from this code.
+            for _, l in bp._bytes_lines():
+                yield l
+
+
 #
 # AST analysis
 #
@@ -827,82 +904,6 @@ class AstArcAnalyzer(object):
     _code_object__SetComp = _make_oneline_code_method("set comprehension")
     if env.PY3:
         _code_object__ListComp = _make_oneline_code_method("list comprehension")
-
-
-class ByteParser(object):
-    """Parse bytecode to understand the structure of code."""
-
-    @contract(text='unicode')
-    def __init__(self, text, code=None, filename=None):
-        self.text = text
-        if code:
-            self.code = code
-        else:
-            try:
-                self.code = compile_unicode(text, filename, "exec")
-            except SyntaxError as synerr:
-                raise NotPython(
-                    u"Couldn't parse '%s' as Python source: '%s' at line %d" % (
-                        filename, synerr.msg, synerr.lineno
-                    )
-                )
-
-        # Alternative Python implementations don't always provide all the
-        # attributes on code objects that we need to do the analysis.
-        for attr in ['co_lnotab', 'co_firstlineno', 'co_consts']:
-            if not hasattr(self.code, attr):
-                raise CoverageException(
-                    "This implementation of Python doesn't support code analysis.\n"
-                    "Run coverage.py under CPython for this command."
-                )
-
-    def child_parsers(self):
-        """Iterate over all the code objects nested within this one.
-
-        The iteration includes `self` as its first value.
-
-        """
-        children = CodeObjects(self.code)
-        return (ByteParser(self.text, code=c) for c in children)
-
-    def _bytes_lines(self):
-        """Map byte offsets to line numbers in `code`.
-
-        Uses co_lnotab described in Python/compile.c to map byte offsets to
-        line numbers.  Produces a sequence: (b0, l0), (b1, l1), ...
-
-        Only byte offsets that correspond to line numbers are included in the
-        results.
-
-        """
-        # Adapted from dis.py in the standard library.
-        byte_increments = bytes_to_ints(self.code.co_lnotab[0::2])
-        line_increments = bytes_to_ints(self.code.co_lnotab[1::2])
-
-        last_line_num = None
-        line_num = self.code.co_firstlineno
-        byte_num = 0
-        for byte_incr, line_incr in zip(byte_increments, line_increments):
-            if byte_incr:
-                if line_num != last_line_num:
-                    yield (byte_num, line_num)
-                    last_line_num = line_num
-                byte_num += byte_incr
-            line_num += line_incr
-        if line_num != last_line_num:
-            yield (byte_num, line_num)
-
-    def _find_statements(self):
-        """Find the statements in `self.code`.
-
-        Produce a sequence of line numbers that start statements.  Recurses
-        into all code objects reachable from `self.code`.
-
-        """
-        for bp in self.child_parsers():
-            # Get all of the lineno information from this code.
-            for _, l in bp._bytes_lines():
-                yield l
 
 
 SKIP_DUMP_FIELDS = ["ctx"]
