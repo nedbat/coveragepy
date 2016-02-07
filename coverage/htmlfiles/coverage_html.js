@@ -522,7 +522,7 @@ coverage.init_scroll_markers = function () {
     c.lines_len = $('td.text p').length;
     c.body_h = $('body').height();
     c.header_h = $('div#header').height();
-    c.missed_lines = $('td.text p.mis');
+    c.missed_lines = $('td.text p.mis, td.text p.par');
 
     // Build html
     c.resize_scroll_markers();

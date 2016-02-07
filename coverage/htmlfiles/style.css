@@ -359,7 +359,7 @@ td.text {
     }
 
 #scroll_marker .marker {
-    background: #ffdddd;
+    background: #eedddd;
     position: absolute;
     min-height: 3px;
     width: 100%;
