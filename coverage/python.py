@@ -166,10 +166,7 @@ class PythonFileReporter(FileReporter):
         return self.parser.exit_counts()
 
     def arc_destination_description(self, lineno):
-        if lineno < 0:
-            return "jump to the function exit"
-        else:
-            return "jump to line {lineno}".format(lineno=lineno)
+        return self.parser.arc_destination_description(lineno)
 
     @contract(returns='unicode')
     def source(self):

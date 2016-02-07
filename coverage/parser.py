@@ -79,9 +79,10 @@ class PythonParser(object):
         # multi-line statements.
         self._multiline = {}
 
-        # Lazily-created ByteParser and arc data.
+        # Lazily-created ByteParser, arc data, and arc destination descriptions.
         self._byte_parser = None
         self._all_arcs = None
+        self._arc_dest_descriptions = None
 
     @property
     def byte_parser(self):
@@ -254,16 +255,26 @@ class PythonParser(object):
 
         """
         if self._all_arcs is None:
-            aaa = AstArcAnalyzer(self.text, self.raw_statements, self._multiline)
-            arcs = aaa.collect_arcs()
-
-            self._all_arcs = set()
-            for l1, l2 in arcs:
-                fl1 = self.first_line(l1)
-                fl2 = self.first_line(l2)
-                if fl1 != fl2:
-                    self._all_arcs.add((fl1, fl2))
+            self._analyze_ast()
         return self._all_arcs
+
+    def _analyze_ast(self):
+        """Run the AstArcAnalyzer and save its results.
+
+        `_all_arcs` is the set of arcs in the code.
+
+        """
+        aaa = AstArcAnalyzer(self.text, self.raw_statements, self._multiline)
+        aaa.analyze()
+
+        self._all_arcs = set()
+        for l1, l2 in aaa.arcs:
+            fl1 = self.first_line(l1)
+            fl2 = self.first_line(l2)
+            if fl1 != fl2:
+                self._all_arcs.add((fl1, fl2))
+
+        self._arc_dest_descriptions = aaa.arc_dest_descriptions
 
     def exit_counts(self):
         """Get a count of exits from that each line.
@@ -291,6 +302,17 @@ class PythonParser(object):
                 exit_counts[l] -= 1
 
         return exit_counts
+
+    def arc_destination_description(self, lineno):
+        if self._arc_dest_descriptions is None:
+            self._analyze_ast()
+        description = self._arc_dest_descriptions.get(lineno)
+        if description is None:
+            if lineno < 0:
+                description = "jump to the function exit"
+            else:
+                description = "jump to line {lineno}".format(lineno=lineno)
+        return description
 
 
 #
@@ -350,24 +372,30 @@ class AstArcAnalyzer(object):
             print("Multiline map: {}".format(self.multiline))
             ast_dump(self.root_node)
 
-        self.arcs = self.arcs_to_return = set()
-        if int(os.environ.get("COVERAGE_TRACK_ARCS", 0)):   # pragma: debugging
-            self.arcs = SetSpy(self.arcs)
+        self.arcs = set()
+        self.arc_dest_descriptions = {}
         self.block_stack = []
 
-    def collect_arcs(self):
+    def analyze(self):
         """Examine the AST tree from `root_node` to determine possible arcs.
 
-        Returns a set of (from, to) line number pairs.
+        This sets the `arcs` attribute to be a set of (from, to) line number
+        pairs.
 
         """
+        # For debugging purposes, we might wrap the `arcs` set in a debugging
+        # wrapper.  Keep the unwrapped one to use as the results.
+        raw_arcs = self.arcs
+        if int(os.environ.get("COVERAGE_TRACK_ARCS", 0)):   # pragma: debugging
+            self.arcs = SetSpy(self.arcs)
+
         for node in ast.walk(self.root_node):
             node_name = node.__class__.__name__
             code_object_handler = getattr(self, "_code_object__" + node_name, None)
             if code_object_handler is not None:
                 code_object_handler(node)
 
-        return self.arcs_to_return
+        self.arcs = raw_arcs
 
     def nearest_blocks(self):
         """Yield the blocks in nearest-to-farthest order."""
@@ -716,6 +744,7 @@ class AstArcAnalyzer(object):
             exits = self.add_body_arcs(node.body, from_line=-1)
             for xit in exits:
                 self.arcs.add((xit, -start))
+            self.arc_dest_descriptions[-start] = 'exit the module'
         else:
             # Empty module.
             self.arcs.add((-1, start))
@@ -728,6 +757,7 @@ class AstArcAnalyzer(object):
         self.block_stack.pop()
         for xit in exits:
             self.arcs.add((xit, -start))
+        self.arc_dest_descriptions[-start] = 'exit function "{0}"'.format(node.name)
 
     _code_object__AsyncFunctionDef = _code_object__FunctionDef
 
@@ -737,23 +767,22 @@ class AstArcAnalyzer(object):
         exits = self.add_body_arcs(node.body, from_line=start)
         for xit in exits:
             self.arcs.add((xit, -start))
+        self.arc_dest_descriptions[-start] = 'exit the body of class "{0}"'.format(node.name)
 
-    def do_code_object_comprehension(self, node):
-        """The common code for all comprehension nodes."""
-        start = self.line_for_node(node)
-        self.arcs.add((-1, start))
-        self.arcs.add((start, -start))
+    def _make_oneline_code_method(noun):     # pylint: disable=no-self-argument
+        def _method(self, node):
+            start = self.line_for_node(node)
+            self.arcs.add((-1, start))
+            self.arcs.add((start, -start))
+            self.arc_dest_descriptions[-start] = 'run the {0} on line {1}'.format(noun, start)
+        return _method
 
-    _code_object__GeneratorExp = do_code_object_comprehension
-    _code_object__DictComp = do_code_object_comprehension
-    _code_object__SetComp = do_code_object_comprehension
+    _code_object__Lambda = _make_oneline_code_method("lambda")
+    _code_object__GeneratorExp = _make_oneline_code_method("generator expression")
+    _code_object__DictComp = _make_oneline_code_method("dictionary comprehension")
+    _code_object__SetComp = _make_oneline_code_method("set comprehension")
     if env.PY3:
-        _code_object__ListComp = do_code_object_comprehension
-
-    def _code_object__Lambda(self, node):
-        start = self.line_for_node(node)
-        self.arcs.add((-1, start))
-        self.arcs.add((start, -start))
+        _code_object__ListComp = _make_oneline_code_method("list comprehension")
 
 
 class ByteParser(object):

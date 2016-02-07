@@ -529,7 +529,7 @@ class HtmlGoldTests(CoverageGoldTest):
                                                 'but didn\'t jump to line 11</span>'),
             ('<span class="annotate short">17&#x202F;&#x219B;&#x202F;exit</span>'
              '<span class="annotate long">Line 17 was executed, '
-                                                'but didn\'t jump to the function exit</span>'),
+                                                'but didn\'t exit function "two"</span>'),
             ('<span class="annotate short">25&#x202F;&#x219B;&#x202F;26,&nbsp;&nbsp; '
                                                 '25&#x202F;&#x219B;&#x202F;28</span>'
              '<span class="annotate long">Line 25 was executed, '
