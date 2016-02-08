@@ -79,10 +79,10 @@ class PythonParser(object):
         # multi-line statements.
         self._multiline = {}
 
-        # Lazily-created ByteParser, arc data, and arc destination descriptions.
+        # Lazily-created ByteParser, arc data, and missing arc descriptions.
         self._byte_parser = None
         self._all_arcs = None
-        self._arc_dest_descriptions = None
+        self._missing_arc_descriptions = None
 
     @property
     def byte_parser(self):
@@ -274,7 +274,7 @@ class PythonParser(object):
             if fl1 != fl2:
                 self._all_arcs.add((fl1, fl2))
 
-        self._arc_dest_descriptions = aaa.arc_dest_descriptions
+        self._missing_arc_descriptions = aaa.missing_arc_descriptions
 
     def exit_counts(self):
         """Get a count of exits from that each line.
@@ -303,17 +303,27 @@ class PythonParser(object):
 
         return exit_counts
 
-    def arc_destination_description(self, lineno):
-        if self._arc_dest_descriptions is None:
+    def missing_arc_description(self, start, end):
+        if self._missing_arc_descriptions is None:
             self._analyze_ast()
-        description = self._arc_dest_descriptions.get(lineno)
+        description = self._missing_arc_descriptions.get((start, end))
+        #TODO: print(self._missing_arc_descriptions)
         if description is None:
-            if lineno < 0:
-                description = "jump to the function exit"
-            else:
-                description = "jump to line {lineno}".format(lineno=lineno)
-        return description
+            description = None, None
+        smsg, emsg = description
 
+        if smsg is None:
+            smsg = "line {lineno}"
+        smsg = smsg.format(lineno=start)
+
+        if emsg is None:
+            if end < 0:
+                emsg = "didn't jump to the function exit"
+            else:
+                emsg = "didn't jump to line {lineno}"
+        emsg = emsg.format(lineno=end)
+
+        return "line {start} {emsg}, because {smsg}".format(start=start, smsg=smsg, emsg=emsg)
 
 
 class ByteParser(object):
@@ -441,8 +451,7 @@ class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
 
     """
     def __new__(cls, lineno, cause=None):
-        self = super(ArcStart, cls).__new__(cls, lineno, cause)
-        return self
+        return super(ArcStart, cls).__new__(cls, lineno, cause)
 
 
 # Define contract words that PyContract doesn't have.
@@ -467,7 +476,7 @@ class AstArcAnalyzer(object):
             ast_dump(self.root_node)
 
         self.arcs = set()
-        self.arc_dest_descriptions = {}
+        self.missing_arc_descriptions = {}
         self.block_stack = []
 
     def analyze(self):
@@ -581,6 +590,8 @@ class AstArcAnalyzer(object):
                 continue
             for prev_start in prev_starts:
                 self.arcs.add((prev_start.lineno, lineno))
+                if prev_start.cause is not None:
+                    self.missing_arc_descriptions[(prev_start.lineno, lineno)] = (prev_start.cause, None)
             prev_starts = self.add_arcs(body_node)
         return prev_starts
 
@@ -696,12 +707,12 @@ class AstArcAnalyzer(object):
     def _handle__For(self, node):
         start = self.line_for_node(node.iter)
         self.block_stack.append(LoopBlock(start=start))
-        exits = self.add_body_arcs(node.body, from_start=ArcStart(start, "didn't enter the loop"))
+        exits = self.add_body_arcs(node.body, from_start=ArcStart(start, "the loop on line {lineno} never started"))
         for xit in exits:
             self.arcs.add((xit.lineno, start))
         my_block = self.block_stack.pop()
         exits = my_block.break_exits
-        from_start = ArcStart(start, "didn't finish naturally")
+        from_start = ArcStart(start, "the loop on line {lineno} didn't complete")
         if node.orelse:
             else_exits = self.add_body_arcs(node.orelse, from_start=from_start)
             exits |= else_exits
@@ -718,8 +729,8 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__If(self, node):
         start = self.line_for_node(node.test)
-        exits = self.add_body_arcs(node.body, from_start=ArcStart(start, "the condition wasn't true"))
-        exits |= self.add_body_arcs(node.orelse, from_start=ArcStart(start, "the condition wasn't false"))
+        exits = self.add_body_arcs(node.body, from_start=ArcStart(start, "the condition on line {lineno} was never true"))
+        exits |= self.add_body_arcs(node.orelse, from_start=ArcStart(start, "the condition on line {lineno} was never false"))
         return exits
 
     @contract(returns='ArcStarts')
@@ -865,7 +876,7 @@ class AstArcAnalyzer(object):
             exits = self.add_body_arcs(node.body, from_start=ArcStart(-1))
             for xit in exits:
                 self.arcs.add((xit.lineno, -start))
-            self.arc_dest_descriptions[-start] = 'exit the module'
+                self.missing_arc_descriptions[(xit.lineno, -start)] = (xit.cause, 'exit the module')
         else:
             # Empty module.
             self.arcs.add((-1, start))
@@ -878,7 +889,7 @@ class AstArcAnalyzer(object):
         self.block_stack.pop()
         for xit in exits:
             self.arcs.add((xit.lineno, -start))
-        self.arc_dest_descriptions[-start] = 'exit function "{0}"'.format(node.name)
+            self.missing_arc_descriptions[(xit.lineno, -start)] = (xit.cause, "didn't return from function '{0}'".format(node.name))
 
     _code_object__AsyncFunctionDef = _code_object__FunctionDef
 
@@ -888,14 +899,14 @@ class AstArcAnalyzer(object):
         exits = self.add_body_arcs(node.body, from_start=ArcStart(start))
         for xit in exits:
             self.arcs.add((xit.lineno, -start))
-        self.arc_dest_descriptions[-start] = 'exit the body of class "{0}"'.format(node.name)
+            self.missing_arc_descriptions[(xit.lineno, -start)] = (xit.cause, 'exit the body of class "{0}"'.format(node.name))
 
     def _make_oneline_code_method(noun):     # pylint: disable=no-self-argument
         def _method(self, node):
             start = self.line_for_node(node)
             self.arcs.add((-1, start))
             self.arcs.add((start, -start))
-            self.arc_dest_descriptions[-start] = 'run the {0} on line {1}'.format(noun, start)
+            self.missing_arc_descriptions[(start, -start)] = (None, 'run the {0} on line {1}'.format(noun, start))
         return _method
 
     _code_object__Lambda = _make_oneline_code_method("lambda")

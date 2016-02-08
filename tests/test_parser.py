@@ -186,6 +186,38 @@ class PythonParserTest(CoverageTest):
         self.assertEqual(parser.statements, set([1, 2, 3]))
 
 
+class ParserMissingArcDescriptionTest(CoverageTest):
+    """Tests for PythonParser.missing_arc_description."""
+
+    run_in_temp_dir = False
+
+    def test_missing_arc_description(self):
+        text = textwrap.dedent("""\
+            if x:
+                print(2)
+            print(3)
+
+            def func5():
+                for x in range(6):
+                    if x == 3:
+                        break
+            """)
+        parser = PythonParser(text=text)
+        parser.parse_source()
+        self.assertEqual(
+            parser.missing_arc_description(1, 2),
+            "line 1 didn't jump to line 2, because the condition on line 1 was never true"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(1, 3),
+            "line 1 didn't jump to line 3, because the condition on line 1 was never false"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(6, -5),
+            "line 6 didn't return from function 'func5', because the loop on line 6 didn't complete"
+        )
+
+
 class ParserFileTest(CoverageTest):
     """Tests for coverage.py's code parsing from files."""
 

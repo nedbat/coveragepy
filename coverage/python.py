@@ -165,8 +165,8 @@ class PythonFileReporter(FileReporter):
     def exit_counts(self):
         return self.parser.exit_counts()
 
-    def arc_destination_description(self, lineno):
-        return self.parser.arc_destination_description(lineno)
+    def missing_arc_description(self, start, end):
+        return self.parser.missing_arc_description(start, end)
 
     @contract(returns='unicode')
     def source(self):

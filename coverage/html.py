@@ -220,7 +220,7 @@ class HtmlReporter(Reporter):
                         shorts.append("exit")
                     else:
                         shorts.append(b)
-                    longs.append(fr.arc_destination_description(b))
+                    longs.append(fr.missing_arc_description(lineno, b))
                 # 202F is NARROW NO-BREAK SPACE.
                 # 219B is RIGHTWARDS ARROW WITH STROKE.
                 short_fmt = "%s&#x202F;&#x219B;&#x202F;%s"
