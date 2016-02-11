@@ -192,7 +192,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_missing_arc_description(self):
-        text = textwrap.dedent("""\
+        text = textwrap.dedent(u"""\
             if x:
                 print(2)
             print(3)
