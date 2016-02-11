@@ -110,8 +110,8 @@ class Coverage(object):
 
         `concurrency` is a string indicating the concurrency library being used
         in the measured code.  Without this, coverage.py will get incorrect
-        results.  Valid strings are "greenlet", "eventlet", "gevent", or
-        "thread" (the default).
+        results.  Valid strings are "greenlet", "eventlet", "gevent",
+        "multiprocessing", or "thread" (the default).
 
         .. versionadded:: 4.0
             The `concurrency` parameter.
