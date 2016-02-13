@@ -191,9 +191,15 @@ class ParserMissingArcDescriptionTest(CoverageTest):
 
     run_in_temp_dir = False
 
+    def parse_text(self, source):
+        """Parse Python source, and return the parser object."""
+        parser = PythonParser(textwrap.dedent(source))
+        parser.parse_source()
+        return parser
+
     def test_missing_arc_description(self):
         # This code is never run, so the actual values don't matter.
-        text = textwrap.dedent(u"""\
+        parser = self.parse_text(u"""\
             if x:
                 print(2)
             print(3)
@@ -203,8 +209,6 @@ class ParserMissingArcDescriptionTest(CoverageTest):
                     if x == 3:
                         break
             """)
-        parser = PythonParser(text=text)
-        parser.parse_source()
         self.assertEqual(
             parser.missing_arc_description(1, 2),
             "line 1 didn't jump to line 2, because the condition on line 1 was never true"
@@ -223,7 +227,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         )
 
     def test_missing_arc_descriptions_for_small_callables(self):
-        text = textwrap.dedent(u"""\
+        parser = self.parse_text(u"""\
             callables = [
                 lambda: 0,
                 (x for x in range(10)),
@@ -231,8 +235,6 @@ class ParserMissingArcDescriptionTest(CoverageTest):
                 {x for x in range(10)},
             ]
             """)
-        parser = PythonParser(text=text)
-        parser.parse_source()
         self.assertEqual(
             parser.missing_arc_description(2, -2),
             "line 2 didn't run the lambda on line 2"
@@ -251,7 +253,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         )
 
     def test_missing_arc_descriptions_for_exceptions(self):
-        text = textwrap.dedent(u"""\
+        parser = self.parse_text(u"""\
             try:
                 pass
             except ZeroDivideError:
@@ -259,8 +261,6 @@ class ParserMissingArcDescriptionTest(CoverageTest):
             except ValueError:
                 print("yikes")
             """)
-        parser = PythonParser(text=text)
-        parser.parse_source()
         self.assertEqual(
             parser.missing_arc_description(3, 4),
             "line 3 didn't jump to line 4, because the exception caught by line 3 didn't happen"
