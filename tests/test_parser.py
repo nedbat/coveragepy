@@ -192,6 +192,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_missing_arc_description(self):
+        # This code is never run, so the actual values don't matter.
         text = textwrap.dedent(u"""\
             if x:
                 print(2)
@@ -215,6 +216,10 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         self.assertEqual(
             parser.missing_arc_description(6, -5),
             "line 6 didn't return from function 'func5', because the loop on line 6 didn't complete"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(6, 7),
+            "line 6 didn't jump to line 7, because the loop on line 6 never started"
         )
 
 

@@ -226,13 +226,13 @@ class HtmlReporter(Reporter):
                 short_fmt = "%s&#x202F;&#x219B;&#x202F;%s"
                 annotate_html = ",&nbsp;&nbsp; ".join(short_fmt % (lineno, d) for d in shorts)
 
-                annotate_long = "Line %d was executed, but didn't " % lineno
                 if len(longs) == 1:
-                    annotate_long += longs[0]
-                elif len(longs) == 2:
-                    annotate_long += longs[0] + " or " + longs[1]
+                    annotate_long = longs[0]
                 else:
-                    annotate_long += ", ".join(longs[:-1]) + ", or " + longs[-1]
+                    annotate_long = "%d missed branches: %s" % (
+                        len(longs),
+                        ", ".join("%d) %s" % (num, ann_long) for num, ann_long in enumerate(longs, start=1)),
+                    )
             elif lineno in analysis.statements:
                 line_class.append(c_run)
 
