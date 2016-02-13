@@ -45,6 +45,7 @@ if env.TESTING:
     from contracts import new_contract as raw_new_contract
 
     def new_contract(*args, **kwargs):
+        """A proxy for contracts.new_contract that doesn't mind happening twice."""
         try:
             return raw_new_contract(*args, **kwargs)
         except ValueError:
@@ -63,7 +64,7 @@ else:                                           # pragma: not covered
         """Dummy no-op implementation of `contract`."""
         return lambda func: func
 
-    def new_contract(*args, **kwargs):
+    def new_contract(*args_unused, **kwargs_unused):
         """Dummy no-op implementation of `new_contract`."""
         pass
 
