@@ -222,6 +222,34 @@ class ParserMissingArcDescriptionTest(CoverageTest):
             "line 6 didn't jump to line 7, because the loop on line 6 never started"
         )
 
+    def test_missing_arc_descriptions_for_small_callables(self):
+        text = textwrap.dedent(u"""\
+            callables = [
+                lambda: 0,
+                (x for x in range(10)),
+                {x:1 for x in range(10)},
+                {x for x in range(10)},
+            ]
+            """)
+        parser = PythonParser(text=text)
+        parser.parse_source()
+        self.assertEqual(
+            parser.missing_arc_description(2, -2),
+            "line 2 didn't run the lambda on line 2"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(3, -3),
+            "line 3 didn't run the generator expression on line 3"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(4, -4),
+            "line 4 didn't run the dictionary comprehension on line 4"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(5, -5),
+            "line 5 didn't run the set comprehension on line 5"
+        )
+
 
 class ParserFileTest(CoverageTest):
     """Tests for coverage.py's code parsing from files."""
