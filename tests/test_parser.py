@@ -250,6 +250,26 @@ class ParserMissingArcDescriptionTest(CoverageTest):
             "line 5 didn't run the set comprehension on line 5"
         )
 
+    def test_missing_arc_descriptions_for_exceptions(self):
+        text = textwrap.dedent(u"""\
+            try:
+                pass
+            except ZeroDivideError:
+                print("whoops")
+            except ValueError:
+                print("yikes")
+            """)
+        parser = PythonParser(text=text)
+        parser.parse_source()
+        self.assertEqual(
+            parser.missing_arc_description(3, 4),
+            "line 3 didn't jump to line 4, because the exception caught by line 3 didn't happen"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(5, 6),
+            "line 5 didn't jump to line 6, because the exception caught by line 5 didn't happen"
+        )
+
 
 class ParserFileTest(CoverageTest):
     """Tests for coverage.py's code parsing from files."""

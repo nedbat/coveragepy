@@ -786,14 +786,15 @@ class AstArcAnalyzer(object):
 
         handler_exits = set()
 
-        last_handler_start = None
         if node.handlers:
+            last_handler_start = None
             for handler_node in node.handlers:
                 handler_start = self.line_for_node(handler_node)
                 if last_handler_start is not None:
                     self.arcs.add((last_handler_start, handler_start))
                 last_handler_start = handler_start
-                handler_exits |= self.add_body_arcs(handler_node.body, from_start=ArcStart(handler_start))
+                from_start = ArcStart(handler_start, cause="the exception caught by line {lineno} didn't happen")
+                handler_exits |= self.add_body_arcs(handler_node.body, from_start=from_start)
 
         if node.orelse:
             exits = self.add_body_arcs(node.orelse, prev_starts=exits)
