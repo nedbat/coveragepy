@@ -445,8 +445,8 @@ class SetSpy(object):                                       # pragma: debugging
 class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
     """The information needed to start an arc.
 
-    `lineno` is the line number the arc starts from.  `cause` is a phrase used
-    to describe the arc if it is missing.
+    `lineno` is the line number the arc starts from.  `cause` is a fragment
+    used as the startmsg for AstArcAnalyzer.missing_arc_fragments.
 
     """
     def __new__(cls, lineno, cause=None):
@@ -477,7 +477,7 @@ class AstArcAnalyzer(object):
         self.arcs = set()
 
         # A map from arc pairs to a pair of sentence fragments: (startmsg, endmsg).
-        # For an arc from line 17, they should be usable like: 
+        # For an arc from line 17, they should be usable like:
         #    "Line 17 {endmsg}, because {startmsg}"
         self.missing_arc_fragments = {}
         self.block_stack = []
@@ -570,7 +570,7 @@ class AstArcAnalyzer(object):
             node_name = node.__class__.__name__
             if node_name not in self.OK_TO_DEFAULT:
                 print("*** Unhandled: {0}".format(node))
-        return set([ArcStart(self.line_for_node(node))])
+        return set([ArcStart(self.line_for_node(node), cause=None)])
 
     @contract(returns='ArcStarts')
     def add_body_arcs(self, body, from_start=None, prev_starts=None):
@@ -672,7 +672,7 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__Break(self, node):
         here = self.line_for_node(node)
-        self.process_break_exits([ArcStart(here)])
+        self.process_break_exits([ArcStart(here, cause=None)])
         return set()
 
     @contract(returns='ArcStarts')
@@ -696,26 +696,27 @@ class AstArcAnalyzer(object):
                     self.arcs.add((last, lineno))
                     last = lineno
         # The body is handled in collect_arcs.
-        return set([ArcStart(last)])
+        return set([ArcStart(last, cause=None)])
 
     _handle__ClassDef = _handle_decorated
 
     @contract(returns='ArcStarts')
     def _handle__Continue(self, node):
         here = self.line_for_node(node)
-        self.process_continue_exits([ArcStart(here)])
+        self.process_continue_exits([ArcStart(here, cause=None)])
         return set()
 
     @contract(returns='ArcStarts')
     def _handle__For(self, node):
         start = self.line_for_node(node.iter)
         self.block_stack.append(LoopBlock(start=start))
-        exits = self.add_body_arcs(node.body, from_start=ArcStart(start, "the loop on line {lineno} never started"))
+        from_start = ArcStart(start, cause="the loop on line {lineno} never started")
+        exits = self.add_body_arcs(node.body, from_start=from_start)
         for xit in exits:
             self.arcs.add((xit.lineno, start))
         my_block = self.block_stack.pop()
         exits = my_block.break_exits
-        from_start = ArcStart(start, "the loop on line {lineno} didn't complete")
+        from_start = ArcStart(start, cause="the loop on line {lineno} didn't complete")
         if node.orelse:
             else_exits = self.add_body_arcs(node.orelse, from_start=from_start)
             exits |= else_exits
@@ -732,21 +733,24 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__If(self, node):
         start = self.line_for_node(node.test)
-        exits = self.add_body_arcs(node.body, from_start=ArcStart(start, "the condition on line {lineno} was never true"))
-        exits |= self.add_body_arcs(node.orelse, from_start=ArcStart(start, "the condition on line {lineno} was never false"))
+        from_start = ArcStart(start, cause="the condition on line {lineno} was never true")
+        exits = self.add_body_arcs(node.body, from_start=from_start)
+        from_start = ArcStart(start, cause="the condition on line {lineno} was never false")
+        exits |= self.add_body_arcs(node.orelse, from_start=from_start)
         return exits
 
     @contract(returns='ArcStarts')
     def _handle__Raise(self, node):
-        # `raise` statement jumps away, no exits from here.
         here = self.line_for_node(node)
-        self.process_raise_exits([ArcStart(here)])
+        self.process_raise_exits([ArcStart(here, cause=None)])
+        # `raise` statement jumps away, no exits from here.
         return set()
 
     @contract(returns='ArcStarts')
     def _handle__Return(self, node):
         here = self.line_for_node(node)
-        self.process_return_exits([ArcStart(here)])
+        self.process_return_exits([ArcStart(here, cause=None)])
+        # `return` statement jumps away, no exits from here.
         return set()
 
     @contract(returns='ArcStarts')
@@ -765,7 +769,7 @@ class AstArcAnalyzer(object):
         self.block_stack.append(try_block)
 
         start = self.line_for_node(node)
-        exits = self.add_body_arcs(node.body, from_start=ArcStart(start))
+        exits = self.add_body_arcs(node.body, from_start=ArcStart(start, cause=None))
 
         # We're done with the `try` body, so this block no longer handles
         # exceptions. We keep the block so the `finally` clause can pick up
