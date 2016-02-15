@@ -814,22 +814,27 @@ class AstArcAnalyzer(object):
 
             exits = self.add_body_arcs(node.finalbody, prev_starts=final_from)
             if try_block.break_from:
-                break_exits = self.combine_finally_starts(try_block.break_from, exits)
+                break_exits = self._combine_finally_starts(try_block.break_from, exits)
                 self.process_break_exits(break_exits)
             if try_block.continue_from:
-                continue_exits = self.combine_finally_starts(try_block.continue_from, exits)
+                continue_exits = self._combine_finally_starts(try_block.continue_from, exits)
                 self.process_continue_exits(continue_exits)
             if try_block.raise_from:
-                raise_exits = self.combine_finally_starts(try_block.raise_from, exits)
+                raise_exits = self._combine_finally_starts(try_block.raise_from, exits)
                 self.process_raise_exits(raise_exits)
             if try_block.return_from:
-                return_exits = self.combine_finally_starts(try_block.return_from, exits)
+                return_exits = self._combine_finally_starts(try_block.return_from, exits)
                 self.process_return_exits(return_exits)
 
         return exits
 
-    def combine_finally_starts(self, starts, exits):
-        cause = " or ".join(cause.format(lineno=lineno) for lineno, cause in sorted(starts) if cause is not None)
+    def _combine_finally_starts(self, starts, exits):
+        """Helper for building the cause of `finally` branches."""
+        causes = []
+        for lineno, cause in sorted(starts):
+            if cause is not None:
+                causes.append(cause.format(lineno=lineno))
+        cause = " or ".join(causes)
         exits = set(ArcStart(ex.lineno, cause) for ex in exits)
         return exits
 
