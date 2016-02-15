@@ -475,7 +475,7 @@ class AstArcAnalyzer(object):
         self.missing_arc_fragments = collections.defaultdict(list)
         self.block_stack = []
 
-        self.track = bool(int(os.environ.get("COVERAGE_TRACK_ARCS", 0)))
+        self.debug = bool(int(os.environ.get("COVERAGE_TRACK_ARCS", 0)))
 
     def analyze(self):
         """Examine the AST tree from `root_node` to determine possible arcs.
@@ -490,17 +490,14 @@ class AstArcAnalyzer(object):
             if code_object_handler is not None:
                 code_object_handler(node)
 
-    def add_arc(self, start, end):
-        if self.track:
-            print("\nAdding arc: ({}, {})".format(start, end))
+    def add_arc(self, start, end, smsg=None, emsg=None):
+        if self.debug:
+            print("\nAdding arc: ({}, {}): {!r}, {!r}".format(start, end, smsg, emsg))
             print(short_stack(limit=6))
         self.arcs.add((start, end))
 
-    def add_missing_fragments(self, start, end, smsg, emsg):
-        if self.track:
-            print("\nAdding fragment: ({}, {}) += {!r}, {!r}".format(start, end, smsg, emsg))
-            print(short_stack(limit=6))
-        self.missing_arc_fragments[(start, end)].append((smsg, emsg))
+        if smsg is not None or emsg is not None:
+            self.missing_arc_fragments[(start, end)].append((smsg, emsg))
 
     def nearest_blocks(self):
         """Yield the blocks in nearest-to-farthest order."""
@@ -591,9 +588,7 @@ class AstArcAnalyzer(object):
             if first_line not in self.statements:
                 continue
             for prev_start in prev_starts:
-                self.add_arc(prev_start.lineno, lineno)
-                if prev_start.cause is not None:
-                    self.add_missing_fragments(prev_start.lineno, lineno, prev_start.cause, None)
+                self.add_arc(prev_start.lineno, lineno, prev_start.cause)
             prev_starts = self.add_arcs(body_node)
         return prev_starts
 
@@ -631,9 +626,7 @@ class AstArcAnalyzer(object):
         for block in self.nearest_blocks():
             if isinstance(block, LoopBlock):
                 for xit in exits:
-                    self.add_arc(xit.lineno, block.start)
-                    if xit.cause is not None:
-                        self.add_missing_fragments(xit.lineno, block.start, xit.cause, None)
+                    self.add_arc(xit.lineno, block.start, xit.cause)
                 break
             elif isinstance(block, TryBlock) and block.final_start is not None:
                 block.continue_from.update(exits)
@@ -646,19 +639,15 @@ class AstArcAnalyzer(object):
             if isinstance(block, TryBlock):
                 if block.handler_start is not None:
                     for xit in exits:
-                        self.add_arc(xit.lineno, block.handler_start)
-                        if xit.cause is not None:
-                            self.add_missing_fragments(xit.lineno, block.handler_start, xit.cause, None)
+                        self.add_arc(xit.lineno, block.handler_start, xit.cause)
                     break
                 elif block.final_start is not None:
                     block.raise_from.update(exits)
                     break
             elif isinstance(block, FunctionBlock):
                 for xit in exits:
-                    self.add_arc(xit.lineno, -block.start)
-                    self.add_missing_fragments(
-                        xit.lineno, -block.start,
-                        xit.cause,
+                    self.add_arc(
+                        xit.lineno, -block.start, xit.cause,
                         "didn't except from function '{0}'".format(block.name),
                     )
                 break
@@ -672,10 +661,8 @@ class AstArcAnalyzer(object):
                 break
             elif isinstance(block, FunctionBlock):
                 for xit in exits:
-                    self.add_arc(xit.lineno, -block.start)
-                    self.add_missing_fragments(
-                        xit.lineno, -block.start,
-                        xit.cause,
+                    self.add_arc(
+                        xit.lineno, -block.start, xit.cause,
                         "didn't return from function '{0}'".format(block.name),
                     )
                 break
@@ -727,9 +714,7 @@ class AstArcAnalyzer(object):
         exits = self.add_body_arcs(node.body, from_start=from_start)
         # Any exit from the body will go back to the top of the loop.
         for xit in exits:
-            self.add_arc(xit.lineno, start)
-            if xit.cause is not None:
-                self.add_missing_fragments(xit.lineno, start, xit.cause, None)
+            self.add_arc(xit.lineno, start, xit.cause)
         my_block = self.block_stack.pop()
         exits = my_block.break_exits
         from_start = ArcStart(start, cause="the loop on line {lineno} didn't complete")
@@ -908,8 +893,7 @@ class AstArcAnalyzer(object):
         if node.body:
             exits = self.add_body_arcs(node.body, from_start=ArcStart(-1))
             for xit in exits:
-                self.add_arc(xit.lineno, -start)
-                self.add_missing_fragments(xit.lineno, -start, xit.cause, 'exit the module')
+                self.add_arc(xit.lineno, -start, xit.cause, 'exit the module')
         else:
             # Empty module.
             self.add_arc(-1, start)
@@ -929,10 +913,8 @@ class AstArcAnalyzer(object):
         self.add_arc(-1, start)
         exits = self.add_body_arcs(node.body, from_start=ArcStart(start))
         for xit in exits:
-            self.add_arc(xit.lineno, -start)
-            self.add_missing_fragments(
-                xit.lineno, -start,
-                xit.cause,
+            self.add_arc(
+                xit.lineno, -start, xit.cause,
                 "exit the body of class '{0}'".format(node.name),
             )
 
@@ -940,10 +922,8 @@ class AstArcAnalyzer(object):
         def _method(self, node):
             start = self.line_for_node(node)
             self.add_arc(-1, start)
-            self.add_arc(start, -start)
-            self.add_missing_fragments(
-                start, -start,
-                None,
+            self.add_arc(
+                start, -start, None,
                 "didn't run the {0} on line {1}".format(noun, start),
             )
         return _method
