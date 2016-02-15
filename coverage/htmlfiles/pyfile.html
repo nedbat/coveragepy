@@ -71,22 +71,22 @@
     <table>
         <tr>
             <td class="linenos">
-                {% for line in lines -%}
-                    <p id="n{{line.number}}" class="{{line.class}}"><a href="#n{{line.number}}">{{line.number}}</a></p>
-                {% endfor %}
+{% for line in lines -%}
+    <p id="n{{line.number}}" class="{{line.class}}"><a href="#n{{line.number}}">{{line.number}}</a></p>
+{% endfor %}
             </td>
             <td class="text">
-                {# These are the source lines, which are very sensitive to whitespace. #}
-                {# The `{ # - # }` below are comments which slurp up the following space. #}
-                {% for line in lines -%}
-                    <p id="t{{line.number}}" class="{{line.class}}">{#-#}
-                        {% if line.annotate -%}
-                            <span class="annotate short">{{line.annotate}}</span>{#-#}
-                            <span class="annotate long">{{line.annotate_long}}</span>{#-#}
-                        {% endif -%}
-                        {{line.html}}<span class="strut">&nbsp;</span>{#-#}
-                    </p>
-                {% endfor %}
+{# These are the source lines, which are very sensitive to whitespace. -#}
+{# The `{ # - # }` below are comments which slurp up the following space. -#}
+{% for line in lines -%}
+    <p id="t{{line.number}}" class="{{line.class}}">{#-#}
+        {% if line.annotate -%}
+            <span class="annotate short">{{line.annotate}}</span>{#-#}
+            <span class="annotate long">{{line.annotate_long}}</span>{#-#}
+        {% endif -%}
+        {{line.html}}<span class="strut">&nbsp;</span>{#-#}
+    </p>
+{% endfor %}
             </td>
         </tr>
     </table>
