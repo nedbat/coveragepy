@@ -263,7 +263,7 @@ class HtmlReporter(Reporter):
             'fr': fr, 'nums': nums, 'lines': lines,
             'time_stamp': self.time_stamp,
         }
-        html = spaceless(self.source_tmpl.render(template_values))
+        html = self.source_tmpl.render(template_values)
 
         html_filename = rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)
@@ -424,17 +424,6 @@ def escape(t):
     """
     # Convert HTML special chars into HTML entities.
     return t.replace("&", "&amp;").replace("<", "&lt;")
-
-
-def spaceless(html):
-    """Squeeze out some annoying extra space from an HTML string.
-
-    Nicely-formatted templates mean lots of extra space in the result.
-    Get rid of some.
-
-    """
-    html = re.sub(r">\s+<p ", ">\n<p ", html)
-    return html
 
 
 def pair(ratio):
