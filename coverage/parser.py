@@ -870,19 +870,21 @@ class AstArcAnalyzer(object):
         if constant_test:
             to_top = self.line_for_node(node.body[0])
         self.block_stack.append(LoopBlock(start=start))
-        exits = self.add_body_arcs(node.body, from_start=ArcStart(start))
+        from_start = ArcStart(start, cause="the condition on line {lineno} was never true")
+        exits = self.add_body_arcs(node.body, from_start=from_start)
         for xit in exits:
-            self.add_arc(xit.lineno, to_top)
+            self.add_arc(xit.lineno, to_top, xit.cause)
         exits = set()
         my_block = self.block_stack.pop()
         exits.update(my_block.break_exits)
+        from_start = ArcStart(start, cause="the condition on line {lineno} was never false")
         if node.orelse:
-            else_exits = self.add_body_arcs(node.orelse, from_start=ArcStart(start))
+            else_exits = self.add_body_arcs(node.orelse, from_start=from_start)
             exits |= else_exits
         else:
             # No `else` clause: you can exit from the start.
             if not constant_test:
-                exits.add(ArcStart(start))
+                exits.add(from_start)
         return exits
 
     @contract(returns='ArcStarts')

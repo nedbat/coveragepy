@@ -206,8 +206,13 @@ class ParserMissingArcDescriptionTest(CoverageTest):
 
             def func5():
                 for x in range(6):
-                    if x == 3:
+                    if x == 7:
                         break
+
+            def func10():
+                while something(11):
+                    thing(12)
+                more_stuff(13)
             """)
         self.assertEqual(
             parser.missing_arc_description(1, 2),
@@ -224,6 +229,14 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         self.assertEqual(
             parser.missing_arc_description(6, 7),
             "line 6 didn't jump to line 7, because the loop on line 6 never started"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(11, 12),
+            "line 11 didn't jump to line 12, because the condition on line 11 was never true"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(11, 13),
+            "line 11 didn't jump to line 13, because the condition on line 11 was never false"
         )
 
     def test_missing_arc_descriptions_for_small_callables(self):
