@@ -419,8 +419,9 @@ class LoopBlock(object):
 
 class FunctionBlock(object):
     """A block on the block stack representing a function definition."""
-    def __init__(self, start):
+    def __init__(self, start, name):
         self.start = start
+        self.name = name
 
 
 class TryBlock(object):
@@ -646,6 +647,8 @@ class AstArcAnalyzer(object):
                 if block.handler_start is not None:
                     for xit in exits:
                         self.add_arc(xit.lineno, block.handler_start)
+                        if xit.cause is not None:
+                            self.add_missing_fragments(xit.lineno, block.handler_start, xit.cause, None)
                     break
                 elif block.final_start is not None:
                     block.raise_from.update(exits)
@@ -653,6 +656,11 @@ class AstArcAnalyzer(object):
             elif isinstance(block, FunctionBlock):
                 for xit in exits:
                     self.add_arc(xit.lineno, -block.start)
+                    self.add_missing_fragments(
+                        xit.lineno, -block.start,
+                        xit.cause,
+                        "didn't except from function '{0}'".format(block.name),
+                    )
                 break
 
     @contract(exits='ArcStarts')
@@ -665,6 +673,11 @@ class AstArcAnalyzer(object):
             elif isinstance(block, FunctionBlock):
                 for xit in exits:
                     self.add_arc(xit.lineno, -block.start)
+                    self.add_missing_fragments(
+                        xit.lineno, -block.start,
+                        xit.cause,
+                        "didn't return from function '{0}'".format(block.name),
+                    )
                 break
 
     ## Handlers
@@ -745,7 +758,7 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__Raise(self, node):
         here = self.line_for_node(node)
-        self.process_raise_exits([ArcStart(here, cause=None)])
+        self.process_raise_exits([ArcStart(here, cause="the raise on line {lineno} wasn't executed")])
         # `raise` statement jumps away, no exits from here.
         return set()
 
@@ -822,7 +835,8 @@ class AstArcAnalyzer(object):
                 continue_exits = self.combine_finally_starts(try_block.continue_from, exits)
                 self.process_continue_exits(continue_exits)
             if try_block.raise_from:
-                self.process_raise_exits(exits)
+                raise_exits = self.combine_finally_starts(try_block.raise_from, exits)
+                self.process_raise_exits(raise_exits)
             if try_block.return_from:
                 return_exits = self.combine_finally_starts(try_block.return_from, exits)
                 self.process_return_exits(return_exits)
@@ -903,16 +917,10 @@ class AstArcAnalyzer(object):
 
     def _code_object__FunctionDef(self, node):
         start = self.line_for_node(node)
-        self.block_stack.append(FunctionBlock(start=start))
+        self.block_stack.append(FunctionBlock(start=start, name=node.name))
         exits = self.add_body_arcs(node.body, from_start=ArcStart(-1))
+        self.process_return_exits(exits)
         self.block_stack.pop()
-        for xit in exits:
-            self.add_arc(xit.lineno, -start)
-            self.add_missing_fragments(
-                xit.lineno, -start,
-                xit.cause,
-                "didn't return from function '{0}'".format(node.name),
-            )
 
     _code_object__AsyncFunctionDef = _code_object__FunctionDef
 

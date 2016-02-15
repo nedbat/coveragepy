@@ -297,7 +297,18 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         )
         self.assertEqual(
             parser.missing_arc_description(16, 2),
-            "line 16 didn't jump to line 2, because the continue on line 8 wasn't executed or the continue on line 10 wasn't executed"
+            "line 16 didn't jump to line 2, "
+                "because the continue on line 8 wasn't executed"
+                " or "
+                "the continue on line 10 wasn't executed"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(16, -1),
+            "line 16 didn't except from function 'function', "
+                "because the raise on line 14 wasn't executed"
+            " or "
+            "line 16 didn't return from function 'function', "
+                "because the return on line 12 wasn't executed"
         )
 
 
