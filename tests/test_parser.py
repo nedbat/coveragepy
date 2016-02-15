@@ -224,7 +224,8 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         )
         self.assertEqual(
             parser.missing_arc_description(6, -5),
-            "line 6 didn't return from function 'func5', because the loop on line 6 didn't complete"
+            "line 6 didn't return from function 'func5', "
+                            "because the loop on line 6 didn't complete"
         )
         self.assertEqual(
             parser.missing_arc_description(6, 7),

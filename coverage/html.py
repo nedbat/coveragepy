@@ -231,7 +231,8 @@ class HtmlReporter(Reporter):
                 else:
                     annotate_long = "%d missed branches: %s" % (
                         len(longs),
-                        ", ".join("%d) %s" % (num, ann_long) for num, ann_long in enumerate(longs, start=1)),
+                        ", ".join("%d) %s" % (num, ann_long)
+                            for num, ann_long in enumerate(longs, start=1)),
                     )
             elif lineno in analysis.statements:
                 line_class.append(c_run)

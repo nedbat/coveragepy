@@ -305,6 +305,7 @@ class PythonParser(object):
         return exit_counts
 
     def missing_arc_description(self, start, end):
+        """Provide an English sentence describing a missing arc."""
         if self._missing_arc_fragments is None:
             self._analyze_ast()
 
@@ -491,6 +492,7 @@ class AstArcAnalyzer(object):
                 code_object_handler(node)
 
     def add_arc(self, start, end, smsg=None, emsg=None):
+        """Add an arc, including message fragments to use if it is missing."""
         if self.debug:
             print("\nAdding arc: ({}, {}): {!r}, {!r}".format(start, end, smsg, emsg))
             print(short_stack(limit=6))
@@ -672,7 +674,8 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__Break(self, node):
         here = self.line_for_node(node)
-        self.process_break_exits([ArcStart(here, cause="the break on line {lineno} wasn't executed")])
+        break_start = ArcStart(here, cause="the break on line {lineno} wasn't executed")
+        self.process_break_exits([break_start])
         return set()
 
     @contract(returns='ArcStarts')
@@ -703,7 +706,8 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__Continue(self, node):
         here = self.line_for_node(node)
-        self.process_continue_exits([ArcStart(here, cause="the continue on line {lineno} wasn't executed")])
+        continue_start = ArcStart(here, cause="the continue on line {lineno} wasn't executed")
+        self.process_continue_exits([continue_start])
         return set()
 
     @contract(returns='ArcStarts')
@@ -743,14 +747,16 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__Raise(self, node):
         here = self.line_for_node(node)
-        self.process_raise_exits([ArcStart(here, cause="the raise on line {lineno} wasn't executed")])
+        raise_start = ArcStart(here, cause="the raise on line {lineno} wasn't executed")
+        self.process_raise_exits([raise_start])
         # `raise` statement jumps away, no exits from here.
         return set()
 
     @contract(returns='ArcStarts')
     def _handle__Return(self, node):
         here = self.line_for_node(node)
-        self.process_return_exits([ArcStart(here, cause="the return on line {lineno} wasn't executed")])
+        return_start = ArcStart(here, cause="the return on line {lineno} wasn't executed")
+        self.process_return_exits([return_start])
         # `return` statement jumps away, no exits from here.
         return set()
 
@@ -794,7 +800,8 @@ class AstArcAnalyzer(object):
                 if last_handler_start is not None:
                     self.add_arc(last_handler_start, handler_start)
                 last_handler_start = handler_start
-                from_start = ArcStart(handler_start, cause="the exception caught by line {lineno} didn't happen")
+                from_cause = "the exception caught by line {lineno} didn't happen"
+                from_start = ArcStart(handler_start, cause=from_cause)
                 handler_exits |= self.add_body_arcs(handler_node.body, from_start=from_start)
 
         if node.orelse:
@@ -926,14 +933,15 @@ class AstArcAnalyzer(object):
             )
 
     def _make_oneline_code_method(noun):     # pylint: disable=no-self-argument
-        def _method(self, node):
+        """A function to make methods for online callable _code_object__ methods."""
+        def _code_object__oneline_callable(self, node):
             start = self.line_for_node(node)
             self.add_arc(-1, start)
             self.add_arc(
                 start, -start, None,
                 "didn't run the {0} on line {1}".format(noun, start),
             )
-        return _method
+        return _code_object__oneline_callable
 
     _code_object__Lambda = _make_oneline_code_method("lambda")
     _code_object__GeneratorExp = _make_oneline_code_method("generator expression")

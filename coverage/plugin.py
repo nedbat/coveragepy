@@ -330,19 +330,13 @@ class FileReporter(object):
         return {}
 
     def missing_arc_description(self, start, end):
-        """Provide an English phrase describing a missing arc.
+        """Provide an English sentence describing a missing arc.
 
-        For an arc like (123, 456), it should read well to use the phrase like
-        this::
-
-            "Line {0} didn't {1}".format(123, missing_arc_description(123, 456))
-
-        TODO: say more.
-
-        By default, this simply returns the string "jump to {end}".
+        By default, this simply returns the string "Line {start} didn't jump
+        to {end}".
 
         """
-        return "jump to line {end}".format(end=end)
+        return "Line {start} didn't jump to line {end}".format(start=start, end=end)
 
     def source_token_lines(self):
         """Generate a series of tokenized lines, one for each line in `source`.

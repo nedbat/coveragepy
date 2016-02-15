@@ -525,12 +525,18 @@ class HtmlGoldTests(CoverageGoldTest):
              '<span class="num">3</span>'),
             '<span class="pc_cov">70%</span>',
             ('<span class="annotate short">8&#x202F;&#x219B;&#x202F;11</span>'
-             '<span class="annotate long">line 8 didn\'t jump to line 11, because the condition on line 8 was never false</span>'),
+             '<span class="annotate long">line 8 didn\'t jump to line 11, '
+                            'because the condition on line 8 was never false</span>'),
             ('<span class="annotate short">17&#x202F;&#x219B;&#x202F;exit</span>'
-             '<span class="annotate long">line 17 didn\'t return from function \'two\', because the condition on line 17 was never false</span>'),
+             '<span class="annotate long">line 17 didn\'t return from function \'two\', '
+                            'because the condition on line 17 was never false</span>'),
             ('<span class="annotate short">25&#x202F;&#x219B;&#x202F;26,&nbsp;&nbsp; '
-                                                '25&#x202F;&#x219B;&#x202F;28</span>'
-             '<span class="annotate long">2 missed branches: 1) line 25 didn\'t jump to line 26, because the condition on line 25 was never true, 2) line 25 didn\'t jump to line 28, because the condition on line 25 was never false</span>'),
+                            '25&#x202F;&#x219B;&#x202F;28</span>'
+             '<span class="annotate long">2 missed branches: '
+                            '1) line 25 didn\'t jump to line 26, '
+                                'because the condition on line 25 was never true, '
+                            '2) line 25 didn\'t jump to line 28, '
+                                'because the condition on line 25 was never false</span>'),
         )
         contains(
             "out/b_branch/index.html",
