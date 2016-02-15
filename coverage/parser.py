@@ -306,23 +306,27 @@ class PythonParser(object):
     def missing_arc_description(self, start, end):
         if self._missing_arc_fragments is None:
             self._analyze_ast()
-        description = self._missing_arc_fragments.get((start, end))
-        #TODO: print(self._missing_arc_fragments)
-        if description is None:
-            description = None, None
-        smsg, emsg = description
 
-        if emsg is None:
-            if end < 0:
-                emsg = "didn't jump to the function exit"
-            else:
-                emsg = "didn't jump to line {lineno}"
-        emsg = emsg.format(lineno=end)
+        fragment_pairs = self._missing_arc_fragments.get((start, end), [(None, None)])
 
-        msg = "line {start} {emsg}".format(start=start, emsg=emsg)
-        if smsg is not None:
-            msg += ", because {smsg}".format(smsg=smsg.format(lineno=start))
-        return msg
+        msgs = []
+        for fragment_pair in fragment_pairs:
+            smsg, emsg = fragment_pair
+
+            if emsg is None:
+                if end < 0:
+                    emsg = "didn't jump to the function exit"
+                else:
+                    emsg = "didn't jump to line {lineno}"
+            emsg = emsg.format(lineno=end)
+
+            msg = "line {start} {emsg}".format(start=start, emsg=emsg)
+            if smsg is not None:
+                msg += ", because {smsg}".format(smsg=smsg.format(lineno=start))
+
+            msgs.append(msg)
+
+        return " or ".join(msgs)
 
 
 class ByteParser(object):
@@ -442,6 +446,17 @@ class SetSpy(object):                                       # pragma: debugging
         self.the_set.add(arc)
 
 
+class MissingArcFragmentsSpy(object):                       # pragma: debugging
+    def __init__(self, fragments):
+        self.fragments = fragments
+
+    def append(self, more):
+        from coverage.debug import short_stack
+        print("\nAppending fragments: {}".format(more))
+        print(short_stack(limit=6))
+        self.fragments.append(more)
+
+
 class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
     """The information needed to start an arc.
 
@@ -479,7 +494,7 @@ class AstArcAnalyzer(object):
         # A map from arc pairs to a pair of sentence fragments: (startmsg, endmsg).
         # For an arc from line 17, they should be usable like:
         #    "Line 17 {endmsg}, because {startmsg}"
-        self.missing_arc_fragments = {}
+        self.missing_arc_fragments = collections.defaultdict(list)
         self.block_stack = []
 
     def analyze(self):
@@ -492,8 +507,11 @@ class AstArcAnalyzer(object):
         # For debugging purposes, we might wrap the `arcs` set in a debugging
         # wrapper.  Keep the unwrapped one to use as the results.
         raw_arcs = self.arcs
+        raw_missing_arc_fragments = self.missing_arc_fragments
+
         if int(os.environ.get("COVERAGE_TRACK_ARCS", 0)):   # pragma: debugging
             self.arcs = SetSpy(self.arcs)
+            self.missing_arc_fragments = MissingArcFragmentsSpy(self.missing_arc_fragments)
 
         for node in ast.walk(self.root_node):
             node_name = node.__class__.__name__
@@ -502,6 +520,7 @@ class AstArcAnalyzer(object):
                 code_object_handler(node)
 
         self.arcs = raw_arcs
+        self.missing_arc_fragments = raw_missing_arc_fragments
 
     def nearest_blocks(self):
         """Yield the blocks in nearest-to-farthest order."""
@@ -594,7 +613,7 @@ class AstArcAnalyzer(object):
             for prev_start in prev_starts:
                 self.arcs.add((prev_start.lineno, lineno))
                 if prev_start.cause is not None:
-                    self.missing_arc_fragments[(prev_start.lineno, lineno)] = (prev_start.cause, None)
+                    self.missing_arc_fragments[(prev_start.lineno, lineno)].append((prev_start.cause, None))
             prev_starts = self.add_arcs(body_node)
         return prev_starts
 
@@ -633,6 +652,8 @@ class AstArcAnalyzer(object):
             if isinstance(block, LoopBlock):
                 for xit in exits:
                     self.arcs.add((xit.lineno, block.start))
+                    if xit.cause is not None:
+                        self.missing_arc_fragments[(xit.lineno, block.start)].append((xit.cause, None))
                 break
             elif isinstance(block, TryBlock) and block.final_start is not None:
                 block.continue_from.update(exits)
@@ -672,7 +693,7 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__Break(self, node):
         here = self.line_for_node(node)
-        self.process_break_exits([ArcStart(here, cause=None)])
+        self.process_break_exits([ArcStart(here, cause="the break on line {lineno} wasn't executed")])
         return set()
 
     @contract(returns='ArcStarts')
@@ -703,7 +724,7 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__Continue(self, node):
         here = self.line_for_node(node)
-        self.process_continue_exits([ArcStart(here, cause=None)])
+        self.process_continue_exits([ArcStart(here, cause="the continue on line {lineno} wasn't executed")])
         return set()
 
     @contract(returns='ArcStarts')
@@ -712,8 +733,11 @@ class AstArcAnalyzer(object):
         self.block_stack.append(LoopBlock(start=start))
         from_start = ArcStart(start, cause="the loop on line {lineno} never started")
         exits = self.add_body_arcs(node.body, from_start=from_start)
+        # Any exit from the body will go back to the top of the loop.
         for xit in exits:
             self.arcs.add((xit.lineno, start))
+            if xit.cause is not None:
+                self.missing_arc_fragments[(xit.lineno, start)].append((xit.cause, None))
         my_block = self.block_stack.pop()
         exits = my_block.break_exits
         from_start = ArcStart(start, cause="the loop on line {lineno} didn't complete")
@@ -749,7 +773,7 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle__Return(self, node):
         here = self.line_for_node(node)
-        self.process_return_exits([ArcStart(here, cause=None)])
+        self.process_return_exits([ArcStart(here, cause="the return on line {lineno} wasn't executed")])
         # `return` statement jumps away, no exits from here.
         return set()
 
@@ -813,14 +837,22 @@ class AstArcAnalyzer(object):
 
             exits = self.add_body_arcs(node.finalbody, prev_starts=final_from)
             if try_block.break_from:
-                self.process_break_exits(exits)
+                break_exits = self.combine_finally_starts(try_block.break_from, exits)
+                self.process_break_exits(break_exits)
             if try_block.continue_from:
-                self.process_continue_exits(exits)
+                continue_exits = self.combine_finally_starts(try_block.continue_from, exits)
+                self.process_continue_exits(continue_exits)
             if try_block.raise_from:
                 self.process_raise_exits(exits)
             if try_block.return_from:
-                self.process_return_exits(exits)
+                return_exits = self.combine_finally_starts(try_block.return_from, exits)
+                self.process_return_exits(return_exits)
 
+        return exits
+
+    def combine_finally_starts(self, starts, exits):
+        cause = " or ".join(cause.format(lineno=lineno) for lineno, cause in sorted(starts) if cause is not None)
+        exits = set(ArcStart(ex.lineno, cause) for ex in exits)
         return exits
 
     @contract(returns='ArcStarts')
@@ -884,7 +916,7 @@ class AstArcAnalyzer(object):
             exits = self.add_body_arcs(node.body, from_start=ArcStart(-1))
             for xit in exits:
                 self.arcs.add((xit.lineno, -start))
-                self.missing_arc_fragments[(xit.lineno, -start)] = (xit.cause, 'exit the module')
+                self.missing_arc_fragments[(xit.lineno, -start)].append((xit.cause, 'exit the module'))
         else:
             # Empty module.
             self.arcs.add((-1, start))
@@ -897,7 +929,10 @@ class AstArcAnalyzer(object):
         self.block_stack.pop()
         for xit in exits:
             self.arcs.add((xit.lineno, -start))
-            self.missing_arc_fragments[(xit.lineno, -start)] = (xit.cause, "didn't return from function '{0}'".format(node.name))
+            self.missing_arc_fragments[(xit.lineno, -start)].append((
+                xit.cause,
+                "didn't return from function '{0}'".format(node.name),
+            ))
 
     _code_object__AsyncFunctionDef = _code_object__FunctionDef
 
@@ -907,17 +942,20 @@ class AstArcAnalyzer(object):
         exits = self.add_body_arcs(node.body, from_start=ArcStart(start))
         for xit in exits:
             self.arcs.add((xit.lineno, -start))
-            self.missing_arc_fragments[(xit.lineno, -start)] = (xit.cause, 'exit the body of class "{0}"'.format(node.name))
+            self.missing_arc_fragments[(xit.lineno, -start)].append((
+                xit.cause,
+                "exit the body of class '{0}'".format(node.name),
+            ))
 
     def _make_oneline_code_method(noun):     # pylint: disable=no-self-argument
         def _method(self, node):
             start = self.line_for_node(node)
             self.arcs.add((-1, start))
             self.arcs.add((start, -start))
-            self.missing_arc_fragments[(start, -start)] = (
+            self.missing_arc_fragments[(start, -start)].append((
                 None,
                 "didn't run the {0} on line {1}".format(noun, start),
-            )
+            ))
         return _method
 
     _code_object__Lambda = _make_oneline_code_method("lambda")

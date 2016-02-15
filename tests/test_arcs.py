@@ -592,7 +592,7 @@ class ExceptionArcTest(CoverageTest):
         self.check_coverage("""\
             a, c, d, i = 1, 1, 1, 99
             try:
-                for i in range(5):
+                for i in range(3):
                     try:
                         a = 5
                         if i > 0:

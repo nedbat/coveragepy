@@ -229,11 +229,12 @@ class ParserMissingArcDescriptionTest(CoverageTest):
     def test_missing_arc_descriptions_for_small_callables(self):
         parser = self.parse_text(u"""\
             callables = [
-                lambda: 0,
-                (x for x in range(10)),
-                {x:1 for x in range(10)},
-                {x for x in range(10)},
+                lambda: 2,
+                (x for x in range(3)),
+                {x:1 for x in range(4)},
+                {x for x in range(5)},
             ]
+            x = 7
             """)
         self.assertEqual(
             parser.missing_arc_description(2, -2),
@@ -268,6 +269,35 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         self.assertEqual(
             parser.missing_arc_description(5, 6),
             "line 5 didn't jump to line 6, because the exception caught by line 5 didn't happen"
+        )
+
+    def test_missing_arc_descriptions_for_finally(self):
+        parser = self.parse_text(u"""\
+            def function():
+                for i in range(2):
+                    try:
+                        if something(4):
+                            break
+                        else:
+                            if something(7):
+                                continue
+                            else:
+                                continue
+                        if also_this(11):
+                            return 12
+                        else:
+                            raise Exception(14)
+                    finally:
+                        this_thing(16)
+                that_thing(17)
+            """)
+        self.assertEqual(
+            parser.missing_arc_description(16, 17),
+            "line 16 didn't jump to line 17, because the break on line 5 wasn't executed"
+        )
+        self.assertEqual(
+            parser.missing_arc_description(16, 2),
+            "line 16 didn't jump to line 2, because the continue on line 8 wasn't executed or the continue on line 10 wasn't executed"
         )
 
 
