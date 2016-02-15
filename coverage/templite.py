@@ -90,6 +90,9 @@ class Templite(object):
 
         {# This will be ignored #}
 
+    Any of these constructs can have a hypen at the end (`-}}`, `-%}`, `-#}`),
+    which will collapse the whitespace following the tag.
+
     Construct a Templite with the template text, then use `render` against a
     dictionary context to create a finished string::
 
@@ -151,53 +154,64 @@ class Templite(object):
         # Split the text to form a list of tokens.
         tokens = re.split(r"(?s)({{.*?}}|{%.*?%}|{#.*?#})", text)
 
+        squash = False
+
         for token in tokens:
-            if token.startswith('{#'):
-                # Comment: ignore it and move on.
-                continue
-            elif token.startswith('{{'):
-                # An expression to evaluate.
-                expr = self._expr_code(token[2:-2].strip())
-                buffered.append("to_str(%s)" % expr)
-            elif token.startswith('{%'):
-                # Action tag: split into words and parse further.
-                flush_output()
-                words = token[2:-2].strip().split()
-                if words[0] == 'if':
-                    # An if statement: evaluate the expression to determine if.
-                    if len(words) != 2:
-                        self._syntax_error("Don't understand if", token)
-                    ops_stack.append('if')
-                    code.add_line("if %s:" % self._expr_code(words[1]))
-                    code.indent()
-                elif words[0] == 'for':
-                    # A loop: iterate over expression result.
-                    if len(words) != 4 or words[2] != 'in':
-                        self._syntax_error("Don't understand for", token)
-                    ops_stack.append('for')
-                    self._variable(words[1], self.loop_vars)
-                    code.add_line(
-                        "for c_%s in %s:" % (
-                            words[1],
-                            self._expr_code(words[3])
+            if token.startswith('{'):
+                start, end = 2, -2
+                squash = (token[-3] == '-')
+                if squash:
+                    end = -3
+
+                if token.startswith('{#'):
+                    # Comment: ignore it and move on.
+                    continue
+                elif token.startswith('{{'):
+                    # An expression to evaluate.
+                    expr = self._expr_code(token[start:end].strip())
+                    buffered.append("to_str(%s)" % expr)
+                elif token.startswith('{%'):
+                    # Action tag: split into words and parse further.
+                    flush_output()
+
+                    words = token[start:end].strip().split()
+                    if words[0] == 'if':
+                        # An if statement: evaluate the expression to determine if.
+                        if len(words) != 2:
+                            self._syntax_error("Don't understand if", token)
+                        ops_stack.append('if')
+                        code.add_line("if %s:" % self._expr_code(words[1]))
+                        code.indent()
+                    elif words[0] == 'for':
+                        # A loop: iterate over expression result.
+                        if len(words) != 4 or words[2] != 'in':
+                            self._syntax_error("Don't understand for", token)
+                        ops_stack.append('for')
+                        self._variable(words[1], self.loop_vars)
+                        code.add_line(
+                            "for c_%s in %s:" % (
+                                words[1],
+                                self._expr_code(words[3])
+                            )
                         )
-                    )
-                    code.indent()
-                elif words[0].startswith('end'):
-                    # Endsomething.  Pop the ops stack.
-                    if len(words) != 1:
-                        self._syntax_error("Don't understand end", token)
-                    end_what = words[0][3:]
-                    if not ops_stack:
-                        self._syntax_error("Too many ends", token)
-                    start_what = ops_stack.pop()
-                    if start_what != end_what:
-                        self._syntax_error("Mismatched end tag", end_what)
-                    code.dedent()
-                else:
-                    self._syntax_error("Don't understand tag", words[0])
+                        code.indent()
+                    elif words[0].startswith('end'):
+                        # Endsomething.  Pop the ops stack.
+                        if len(words) != 1:
+                            self._syntax_error("Don't understand end", token)
+                        end_what = words[0][3:]
+                        if not ops_stack:
+                            self._syntax_error("Too many ends", token)
+                        start_what = ops_stack.pop()
+                        if start_what != end_what:
+                            self._syntax_error("Mismatched end tag", end_what)
+                        code.dedent()
+                    else:
+                        self._syntax_error("Don't understand tag", words[0])
             else:
                 # Literal content.  If it isn't empty, output it.
+                if squash:
+                    token = token.lstrip()
                 if token:
                     buffered.append(repr(token))
 

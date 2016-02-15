@@ -33,6 +33,7 @@ class TempliteTest(CoverageTest):
 
         Result defaults to None so we can shorten the calls where we expect
         an exception and never get to the result comparison.
+
         """
         actual = Templite(text).render(ctx or {})
         # If result is None, then an exception should have prevented us getting
@@ -44,6 +45,7 @@ class TempliteTest(CoverageTest):
         """Assert that a `TempliteSyntaxError` will happen.
 
         A context manager, and the message should be `msg`.
+
         """
         pat = "^" + re.escape(msg) + "$"
         return self.assertRaisesRegex(TempliteSyntaxError, pat)
@@ -236,6 +238,26 @@ class TempliteTest(CoverageTest):
             "!",
             {'nums': [0,1,2], 'abc': ['a', 'b', 'c']},
             "@a0b0c0a1b1c1a2b2c2!"
+            )
+
+    def test_whitespace_handling(self):
+        self.try_render(
+            "@{% for n in nums %}\n"
+            " {% for a in abc %}{{a}}{{n}}{% endfor %}\n"
+            "{% endfor %}!\n",
+            {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
+            "@\n a0b0c0\n\n a1b1c1\n\n a2b2c2\n!\n"
+            )
+        self.try_render(
+            "@{% for n in nums -%}\n"
+            " {% for a in abc -%}\n"
+            "  {# this disappears completely -#}\n"
+            "  {{a -}}\n"
+            "  {{n -}}\n"
+            " {% endfor %}\n"
+            "{% endfor %}!\n",
+            {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
+            "@a0b0c0\na1b1c1\na2b2c2\n!\n"
             )
 
     def test_non_ascii(self):
