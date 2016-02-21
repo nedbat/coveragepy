@@ -231,6 +231,7 @@ class ConfigFileTest(CoverageTest):
         parallel = on
         include = a/   ,    b/
         concurrency = thread
+        source = myapp
         plugins =
             plugins.a_plugin
             plugins.another
@@ -300,6 +301,7 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.cover_pylib)
         self.assertTrue(cov.config.parallel)
         self.assertEqual(cov.config.concurrency, "thread")
+        self.assertEqual(cov.config.source, ["myapp"])
 
         self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])
         self.assertTrue(cov.config.ignore_errors)
