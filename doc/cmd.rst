@@ -113,7 +113,7 @@ Give it a value of ``greenlet``, ``eventlet``, or ``gevent``.
 
 By default, coverage.py does not measure code installed with the Python
 interpreter, for example, the standard library. If you want to measure that
-code as well as your own, add the ``-L`` flag.
+code as well as your own, add the ``-L`` (or ``--pylib``) flag.
 
 If your coverage results seem to be overlooking code that you know has been
 executed, try running coverage.py again with the ``--timid`` flag.  This uses a
@@ -168,7 +168,7 @@ Coverage.py collects execution data in a file called ".coverage".  If need be,
 you can set a new file name with the COVERAGE_FILE environment variable.  This
 can include a path to another directory.
 
-By default,each run of your program starts with an empty data set. If you need
+By default, each run of your program starts with an empty data set. If you need
 to run your program multiple times to get complete data (for example, because
 you need to supply disjoint options), you can accumulate data across runs with
 the ``-a`` flag on the **run** command.
