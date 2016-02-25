@@ -167,7 +167,6 @@ class ParserMain(object):
         that line.
 
         """
-
         plus_ones = set()
         arc_chars = collections.defaultdict(str)
         for lfrom, lto in sorted(arcs):
@@ -178,6 +177,7 @@ class ParserMain(object):
             else:
                 if lfrom == lto - 1:
                     plus_ones.add(lfrom)
+                    arc_chars[lfrom] += ""      # ensure this line is in arc_chars
                     continue
                 if lfrom < lto:
                     l1, l2 = lfrom, lto
