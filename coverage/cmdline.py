@@ -699,32 +699,32 @@ def unglob_args(args):
 
 HELP_TOPICS = {
     'help': """\
-    Coverage.py, version %(__version__)s
-    Measure, collect, and report on code coverage in Python programs.
+        Coverage.py, version %(__version__)s
+        Measure, collect, and report on code coverage in Python programs.
 
-    usage: %(program_name)s <command> [options] [args]
+        usage: %(program_name)s <command> [options] [args]
 
-    Commands:
-        annotate    Annotate source files with execution information.
-        combine     Combine a number of data files.
-        erase       Erase previously collected coverage data.
-        help        Get help on using coverage.py.
-        html        Create an HTML report.
-        report      Report coverage stats on modules.
-        run         Run a Python program and measure code execution.
-        xml         Create an XML report of coverage results.
+        Commands:
+            annotate    Annotate source files with execution information.
+            combine     Combine a number of data files.
+            erase       Erase previously collected coverage data.
+            help        Get help on using coverage.py.
+            html        Create an HTML report.
+            report      Report coverage stats on modules.
+            run         Run a Python program and measure code execution.
+            xml         Create an XML report of coverage results.
 
-    Use "%(program_name)s help <command>" for detailed help on any command.
-    For full documentation, see %(__url__)s
+        Use "%(program_name)s help <command>" for detailed help on any command.
+        For full documentation, see %(__url__)s
     """,
 
     'minimum_help': """\
-    Code coverage for Python.  Use '%(program_name)s help' for help.
+        Code coverage for Python.  Use '%(program_name)s help' for help.
     """,
 
     'version': """\
-    Coverage.py, version %(__version__)s.
-    Documentation at %(__url__)s
+        Coverage.py, version %(__version__)s.
+        Documentation at %(__url__)s
     """,
 }
 
