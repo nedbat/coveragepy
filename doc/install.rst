@@ -57,18 +57,20 @@ The alternate old-school technique is:
 .. __: coverage_pypi_
 
 
-Installing from source
+Installing dependencies for CTracer (a C extension for speed).
 ----------------------
 
-Coverage.py includes a C extension for speed. If you are installing from
-source, you may need to install the python-dev support files, for example
-with::
+Coverage.py includes a C extension for speed. It is recommended to use this extension if you are working with multiprocessed/multithreaded Python applications.
+You may need to install the python-dev and gcc support files before installing coverage via pip,
+for example::
 
-    $ sudo apt-get install python-dev
+    $ sudo apt-get install python-dev gcc
+    $ sudo yum install python-devel gcc
 
 or for Python 3.x::
 
-    $ sudo apt-get install python3-dev
+    $ sudo apt-get install python3-dev gcc
+    $ sudo yum install python3-devel gcc
 
 
 Installing on Windows
