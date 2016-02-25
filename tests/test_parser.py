@@ -329,6 +329,20 @@ class ParserMissingArcDescriptionTest(CoverageTest):
                 "because the return on line 12 wasn't executed"
         )
 
+    def test_missing_arc_descriptions_bug460(self):
+        parser = self.parse_text(u"""\
+            x = 1
+            d = {
+                3: lambda: [],
+                4: lambda: [],
+            }
+            x = 6
+            """)
+        self.assertEqual(
+            parser.missing_arc_description(2, -3),
+            "line 3 didn't run the lambda on line 3",
+        )
+
 
 class ParserFileTest(CoverageTest):
     """Tests for coverage.py's code parsing from files."""

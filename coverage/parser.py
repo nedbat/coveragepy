@@ -317,6 +317,9 @@ class PythonParser(object):
 
             if emsg is None:
                 if end < 0:
+                    # Hmm, maybe we have a one-line callable, let's check.
+                    if (-end, end) in self._missing_arc_fragments:
+                        return self.missing_arc_description(-end, end)
                     emsg = "didn't jump to the function exit"
                 else:
                     emsg = "didn't jump to line {lineno}"
@@ -907,7 +910,7 @@ class AstArcAnalyzer(object):
         if node.body:
             exits = self.add_body_arcs(node.body, from_start=ArcStart(-1))
             for xit in exits:
-                self.add_arc(xit.lineno, -start, xit.cause, 'exit the module')
+                self.add_arc(xit.lineno, -start, xit.cause, "didn't exit the module")
         else:
             # Empty module.
             self.add_arc(-1, start)
@@ -929,7 +932,7 @@ class AstArcAnalyzer(object):
         for xit in exits:
             self.add_arc(
                 xit.lineno, -start, xit.cause,
-                "exit the body of class '{0}'".format(node.name),
+                "didn't exit the body of class '{0}'".format(node.name),
             )
 
     def _make_oneline_code_method(noun):     # pylint: disable=no-self-argument

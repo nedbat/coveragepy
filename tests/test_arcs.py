@@ -1246,6 +1246,26 @@ class LambdaArcTest(CoverageTest):
             arcz_unpredicted="58",
         )
 
+    def test_lambda_in_dict(self):
+        self.check_coverage("""\
+            x = 1
+            x = 2
+            d = {
+                4: lambda: [],
+                5: lambda: [],
+                6: lambda: [],
+                7: lambda: [],
+            }
+
+            for k, v in d.items():          # 10
+                if k & 1:
+                    v()
+            """,
+            arcz=".1 12 23 3A AB BC BA CA A.  .3 3-4 3-5 3-6 3-7",
+            arcz_missing="3-4 3-6",
+            arcz_unpredicted="",
+        )
+
 
 class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
