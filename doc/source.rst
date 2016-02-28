@@ -29,14 +29,14 @@ When running your code, the ``coverage run`` command will by default measure
 all code, unless it is part of the Python standard library.
 
 You can specify source to measure with the ``--source`` command-line switch, or
-the ``[run] source`` configuration value.  The value is a comma seperated list of directories
-or package names.  If specified, only source inside these directories or
-packages will be measured.  Specifying the source option also enables
-coverage.py to report on unexecuted files, since it can search the source tree
-for files that haven't been measured at all.  Only importable files (ones at
-the root of the tree, or in directories with a ``__init__.py`` file) will be
-considered, and files with unusual punctuation in their names will be skipped
-(they are assumed to be scratch files written by text editors).
+the ``[run] source`` configuration value.  The value is a comma-separated list
+of directories or package names.  If specified, only source inside these
+directories or packages will be measured.  Specifying the source option also
+enables coverage.py to report on unexecuted files, since it can search the
+source tree for files that haven't been measured at all.  Only importable files
+(ones at the root of the tree, or in directories with a ``__init__.py`` file)
+will be considered, and files with unusual punctuation in their names will be
+skipped (they are assumed to be scratch files written by text editors).
 
 You can further fine-tune coverage.py's attention with the ``--include`` and
 ``--omit`` switches (or ``[run] include`` and ``[run] omit`` configuration
