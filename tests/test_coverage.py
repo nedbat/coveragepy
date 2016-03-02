@@ -1141,7 +1141,7 @@ class CompoundStatementTest(CoverageTest):
             assert x == 1
             """,
             [2, 6, 8, 10, 11, 13, 14], "",
-            arcz=".2 2D DE E-2  23 36 6A A-2  .8 8-6   .B B-A",
+            arcz="-22 2D DE E-2  23 36 6A A-2  -68 8-6   -AB B-A",
         )
 
 

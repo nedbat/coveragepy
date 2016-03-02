@@ -32,7 +32,7 @@ class SimpleArcTest(CoverageTest):
 
             c = 5
             """,
-            arcz=".2 23 35 5-2")
+            arcz="-22 23 35 5-2")
 
     def test_function_def(self):
         self.check_coverage("""\
@@ -103,7 +103,7 @@ class SimpleArcTest(CoverageTest):
             b = \\
                 6
             """,
-            arcz=".1 15 5-2",
+            arcz="-21 15 5-2",
         )
 
     def test_if_return(self):
@@ -293,7 +293,7 @@ class LoopArcTest(CoverageTest):
             arcz=
                 ".1 18 8G GH H. "
                 ".2 23 34 43 26 3. 6. "
-                ".9 9A 9-8 AB BC CB B9 AE E9",
+                "-89 9A 9-8 AB BC CB B9 AE E9",
             arcz_missing="26 6."
             )
 
@@ -331,7 +331,7 @@ class LoopArcTest(CoverageTest):
     def test_confusing_for_loop_bug_175(self):
         if env.PY3:
             # Py3 counts the list comp as a separate code object.
-            arcz = ".1 .2 2-2 12 23 34 45 53 3."
+            arcz = ".1 -22 2-2 12 23 34 45 53 3."
         else:
             arcz = ".1 12 23 34 45 53 3."
         self.check_coverage("""\
@@ -344,7 +344,7 @@ class LoopArcTest(CoverageTest):
             arcz=arcz,
         )
         if env.PY3:
-            arcz = ".1 12 .2 2-2 23 34 42 2."
+            arcz = ".1 12 -22 2-2 23 34 42 2."
         else:
             arcz = ".1 12 23 34 42 2."
         self.check_coverage("""\
@@ -365,7 +365,7 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=".1 .2 2-2 12 23 34 45 53 3.",
+            arcz=".1 -22 2-2 12 23 34 45 53 3.",
         )
 
     def test_other_comprehensions(self):
@@ -379,7 +379,7 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=".1 .2 2-2 12 23 34 45 53 3.",
+            arcz=".1 -22 2-2 12 23 34 45 53 3.",
         )
         # Dict comprehension:
         self.check_coverage("""\
@@ -389,16 +389,16 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=".1 .2 2-2 12 23 34 45 53 3.",
+            arcz=".1 -22 2-2 12 23 34 45 53 3.",
         )
 
     def test_multiline_dict_comp(self):
         if env.PYVERSION < (2, 7):
             self.skip("Don't have set or dict comprehensions before 2.7")
         if env.PYVERSION < (3, 5):
-            arcz = ".2 2B B-4   2-4"
+            arcz = "-42 2B B-4   2-4"
         else:
-            arcz = ".2 2B B-3   2-3"
+            arcz = "-32 2B B-3   2-3"
         # Multiline dict comp:
         self.check_coverage("""\
             # comment
@@ -417,9 +417,9 @@ class LoopArcTest(CoverageTest):
         )
         # Multi dict comp:
         if env.PYVERSION < (3, 5):
-            arcz = ".2 2F F-4   2-4"
+            arcz = "-42 2F F-4   2-4"
         else:
-            arcz = ".2 2F F-3   2-3"
+            arcz = "-32 2F F-3   2-3"
         self.check_coverage("""\
             # comment
             d = \\
@@ -482,7 +482,7 @@ class ExceptionArcTest(CoverageTest):
                 b = 10
             assert a == 6 and b == 10
             """,
-            arcz=".1 12 .3 34 3-2 4-2 25 56 67 78 8B 9A AB B.",
+            arcz=".1 12 -23 34 3-2 4-2 25 56 67 78 8B 9A AB B.",
             arcz_missing="3-2 78 8B", arcz_unpredicted="79",
         )
 
@@ -503,7 +503,7 @@ class ExceptionArcTest(CoverageTest):
             assert try_it(0) == 9   # C
             assert try_it(1) == 7   # D
             """,
-            arcz=".1 12 .3 34 3-2 4-2 25 5D DE E. .6 67 78 89 9C AB BC C-5",
+            arcz=".1 12 -23 34 3-2 4-2 25 5D DE E. -56 67 78 89 9C AB BC C-5",
             arcz_unpredicted="8A",
         )
 
@@ -688,7 +688,7 @@ class ExceptionArcTest(CoverageTest):
                 c = 11
             assert a == 5 and b == 9 and c == 11
             """,
-            arcz=".1 12 .3 3-2 24 45 56 67 7B 89 9B BC C.",
+            arcz=".1 12 -23 3-2 24 45 56 67 7B 89 9B BC C.",
             arcz_missing="67 7B", arcz_unpredicted="68")
 
     def test_multiple_except_clauses(self):
@@ -771,7 +771,7 @@ class ExceptionArcTest(CoverageTest):
             assert func() == 10
             assert a == [1, 6]
             """,
-            arcz=".1 12 28 89 9.  .3 34 46 6-2",
+            arcz=".1 12 28 89 9.  -23 34 46 6-2",
         )
 
     def test_except_jump_finally(self):
@@ -899,7 +899,7 @@ class YieldTest(CoverageTest):
             for f in run():
                 print(f())
             """,
-            arcz=".1 15 56 65 5.  .2 23 32 2.  .3 3-3",
+            arcz=".1 15 56 65 5.  .2 23 32 2.  -33 3-3",
         )
 
         self.check_coverage("""\
@@ -911,7 +911,7 @@ class YieldTest(CoverageTest):
             for f in run():
                 print(f())
             """,
-            arcz=".1 16 67 76 6.  .2 23 34 43 3.   2-2  .4 4-4",
+            arcz=".1 16 67 76 6.  .2 23 34 43 3.   -22 2-2  -44 4-4",
         )
 
         self.check_coverage("""\
@@ -921,7 +921,7 @@ class YieldTest(CoverageTest):
             for f in run():
                 print(f())
             """,
-            arcz=".1 14 45 54 4.  .2 2.  2-2",
+            arcz=".1 14 45 54 4.  .2 2.  -22 2-2",
         )
 
     def test_bug_324(self):
@@ -938,8 +938,8 @@ class YieldTest(CoverageTest):
             arcz=
                 ".1 15 5. "     # The module level
                 ".2 23 32 2. "  # The gen() function
-                ".3 3-3",       # The generator expression
-            arcz_missing=".3 3-3",
+                "-33 3-3",      # The generator expression
+            arcz_missing="-33 3-3",
         )
 
     def test_coroutines(self):
@@ -1006,7 +1006,7 @@ class MiscArcTest(CoverageTest):
             arcz = ".1 19 9."
         else:
             # Python 3.5 changed how dict literals are constructed.
-            arcz = ".1 19 9-2"
+            arcz = "-21 19 9-2"
         self.check_coverage("""\
             d = {
                 'a': 2,
@@ -1031,7 +1031,7 @@ class MiscArcTest(CoverageTest):
                 }
             assert d
             """,
-            arcz=".1 19 9-2",
+            arcz="-21 19 9-2",
         )
 
     def test_unpacked_literals(self):
@@ -1049,7 +1049,7 @@ class MiscArcTest(CoverageTest):
             }
             assert weird['b'] == 3
             """,
-            arcz=".1 15 5A A-2"
+            arcz="-21 15 5A A-2"
         )
         self.check_coverage("""\
             l = [
@@ -1063,7 +1063,7 @@ class MiscArcTest(CoverageTest):
             ]
             assert weird[1] == 3
             """,
-            arcz=".1 15 5A A-2"
+            arcz="-21 15 5A A-2"
         )
 
     def test_pathologically_long_code_object(self):
@@ -1086,7 +1086,7 @@ class MiscArcTest(CoverageTest):
             """
         self.check_coverage(
             code,
-            arcs=[(-1, 1), (1, 4004), (4004, -3)],
+            arcs=[(-3, 1), (1, 4004), (4004, -3)],
             arcs_missing=[], arcs_unpredicted=[],
             )
 
@@ -1129,8 +1129,8 @@ class DecoratorArcTest(CoverageTest):
             """,
             arcz=
                 ".1 16 67 7A AE EF F. "     # main line
-                ".2 24 4.   .3 3-2 "        # decorators
-                ".D D-6 ",                  # my_function
+                ".2 24 4.   -23 3-2 "       # decorators
+                "-6D D-6 ",                 # my_function
         )
 
     def test_class_decorator(self):
@@ -1152,8 +1152,8 @@ class DecoratorArcTest(CoverageTest):
             """,
             arcz=
                 ".1 16 67 6D 7A AE E. "     # main line
-                ".2 24 4.   .3 3-2 "        # decorators
-                ".6 D-6 ",                  # MyObject
+                ".2 24 4.   -23 3-2 "       # decorators
+                "-66 D-6 ",                 # MyObject
         )
 
     def test_bug_466(self):
@@ -1171,7 +1171,7 @@ class DecoratorArcTest(CoverageTest):
 
             Parser.parse()
             """,
-            arcz=".1 1A A.  13 3.  .5 58 8-3",
+            arcz=".1 1A A.  13 3.  -35 58 8-3",
         )
         self.check_coverage("""\
             class Parser(object):
@@ -1185,7 +1185,7 @@ class DecoratorArcTest(CoverageTest):
 
             Parser.parse()
             """,
-            arcz=".1 1A A.  13 3.  .5 58 8-3",
+            arcz=".1 1A A.  13 3.  -35 58 8-3",
         )
 
 
@@ -1213,7 +1213,7 @@ class LambdaArcTest(CoverageTest):
             )
             assert fn(10) == 18
             """,
-            arcz=".2 2A A-4   2-4",
+            arcz="-42 2A A-4   2-4",
         )
 
     def test_unused_lambdas_are_confusing_bug_90(self):
@@ -1222,7 +1222,7 @@ class LambdaArcTest(CoverageTest):
             fn = lambda x: x
             b = 3
             """,
-            arcz=".1 12 .2 2-2 23 3.", arcz_missing=".2 2-2",
+            arcz=".1 12 -22 2-2 23 3.", arcz_missing="-22 2-2",
             )
 
     def test_raise_with_lambda_looks_like_partial_branch(self):
@@ -1241,8 +1241,8 @@ class LambdaArcTest(CoverageTest):
             """,
             lines=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             missing="6-7",
-            arcz=".1 13 34 45 56 67 6A 7A 89 9A AB B.   .2 2.  .5 5-5",
-            arcz_missing="56 67 6A 7A  .5 5-5",
+            arcz=".1 13 34 45 56 67 6A 7A 89 9A AB B.   .2 2.  -55 5-5",
+            arcz_missing="56 67 6A 7A  -55 5-5",
             arcz_unpredicted="58",
         )
 
@@ -1261,8 +1261,8 @@ class LambdaArcTest(CoverageTest):
                 if k & 1:
                     v()
             """,
-            arcz=".1 12 23 3A AB BC BA CA A.  .3 3-4 3-5 3-6 3-7",
-            arcz_missing="3-4 3-6",
+            arcz=".1 12 23 3A AB BC BA CA A.  -43 -53 -63 -73 3-4 3-5 3-6 3-7",
+            arcz_missing="-43 3-4 -63 3-6",
             arcz_unpredicted="",
         )
 
@@ -1296,8 +1296,8 @@ class AsyncTest(CoverageTest):
             """,
             arcz=
                 ".1 13 38 8E EF FG G. "
-                ".4 45 56 6-3 "
-                ".9 9C C-8",
+                "-34 45 56 6-3 "
+                "-89 9C C-8",
             arcz_unpredicted="5-3 9-8",
         )
         self.assertEqual(self.stdout(), "Compute 1 + 2 ...\n1 + 2 = 3\n")
@@ -1330,11 +1330,11 @@ class AsyncTest(CoverageTest):
             """,
             arcz=
                 ".1 13 3G GL LM MN N. "     # module main line
-                ".3 34 47 7A A-3 "          # class definition
-                ".H HI IH HJ J-G "          # doit
-                ".5 5-4 "                   # __init__
-                ".8 8-7 "                   # __aiter__
-                ".B BC C-A DE E-A ",        # __anext__
+                "-33 34 47 7A A-3 "         # class definition
+                "-GH HI IH HJ J-G "         # doit
+                "-45 5-4 "                  # __init__
+                "-78 8-7 "                  # __aiter__
+                "-AB BC C-A DE E-A ",       # __anext__
             arcz_unpredicted="CD",
         )
         self.assertEqual(self.stdout(), "a\nb\nc\n.\n")

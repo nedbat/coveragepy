@@ -545,7 +545,12 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
      * re-entering a generator also.  f_lasti is -1 for a true call, and a
      * real byte offset for a generator re-entry.
      */
-    self->cur_entry.last_line = (frame->f_lasti < 0) ? -1 : frame->f_lineno;
+    if (frame->f_lasti < 0) {
+        self->cur_entry.last_line = -frame->f_code->co_firstlineno;
+    }
+    else {
+        self->cur_entry.last_line = frame->f_lineno;
+    }
 
 ok:
     ret = RET_OK;

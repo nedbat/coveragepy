@@ -908,18 +908,18 @@ class AstArcAnalyzer(object):
     def _code_object__Module(self, node):
         start = self.line_for_node(node)
         if node.body:
-            exits = self.add_body_arcs(node.body, from_start=ArcStart(-1))
+            exits = self.add_body_arcs(node.body, from_start=ArcStart(-start))
             for xit in exits:
                 self.add_arc(xit.lineno, -start, xit.cause, "didn't exit the module")
         else:
             # Empty module.
-            self.add_arc(-1, start)
-            self.add_arc(start, -1)
+            self.add_arc(-start, start)
+            self.add_arc(start, -start)
 
     def _code_object__FunctionDef(self, node):
         start = self.line_for_node(node)
         self.block_stack.append(FunctionBlock(start=start, name=node.name))
-        exits = self.add_body_arcs(node.body, from_start=ArcStart(-1))
+        exits = self.add_body_arcs(node.body, from_start=ArcStart(-start))
         self.process_return_exits(exits)
         self.block_stack.pop()
 
@@ -927,7 +927,7 @@ class AstArcAnalyzer(object):
 
     def _code_object__ClassDef(self, node):
         start = self.line_for_node(node)
-        self.add_arc(-1, start)
+        self.add_arc(-start, start)
         exits = self.add_body_arcs(node.body, from_start=ArcStart(start))
         for xit in exits:
             self.add_arc(
@@ -939,7 +939,7 @@ class AstArcAnalyzer(object):
         """A function to make methods for online callable _code_object__ methods."""
         def _code_object__oneline_callable(self, node):
             start = self.line_for_node(node)
-            self.add_arc(-1, start)
+            self.add_arc(-start, start)
             self.add_arc(
                 start, -start, None,
                 "didn't run the {0} on line {1}".format(noun, start),

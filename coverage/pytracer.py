@@ -92,9 +92,12 @@ class PyTracer(object):
                 self.cur_file_dict = self.data[tracename]
             # The call event is really a "start frame" event, and happens for
             # function calls and re-entering generators.  The f_lasti field is
-            # -1 for calls, and a real offset for generators.  Use -1 as the
+            # -1 for calls, and a real offset for generators.  Use <0 as the
             # line number for calls, and the real line number for generators.
-            self.last_line = -1 if (frame.f_lasti < 0) else frame.f_lineno
+            if frame.f_lasti < 0:
+                self.last_line = -frame.f_code.co_firstlineno
+            else:
+                self.last_line = frame.f_lineno
         elif event == 'line':
             # Record an executed line.
             if self.cur_file_dict is not None:
