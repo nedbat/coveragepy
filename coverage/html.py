@@ -6,7 +6,6 @@
 import datetime
 import json
 import os
-import re
 import shutil
 
 import coverage
