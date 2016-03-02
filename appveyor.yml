@@ -109,6 +109,9 @@ install:
   # Install requirements.
   - "%CMD_IN_ENV% pip install -r requirements/tox.pip -r requirements/wheel.pip"
 
+  # Test why gevent is failing
+  - "%CMD_IN_ENV% pip install -vvv gevent==1.1rc5"
+
   # Make a python3.4.bat file in the current directory so that tox will find it
   # and python3.4 will mean what we want it to.
   - "python -c \"import os; open('python{0}.{1}.bat'.format(*os.environ['TOXENV'][2:]), 'w').write('@{0}\\\\python \\x25*\\n'.format(os.environ['PYTHON']))\""
