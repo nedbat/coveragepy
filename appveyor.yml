@@ -105,6 +105,7 @@ install:
   # Upgrade to the latest version of pip to avoid it displaying warnings
   # about it being out of date.
   - "pip install --disable-pip-version-check --user --upgrade pip"
+  - "pip install --disable-pip-version-check --user --upgrade virtualenv"
 
   # Install requirements.
   - "%CMD_IN_ENV% pip install -r requirements/tox.pip -r requirements/wheel.pip"
