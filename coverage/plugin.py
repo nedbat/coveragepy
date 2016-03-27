@@ -329,8 +329,14 @@ class FileReporter(object):
         """
         return {}
 
-    def missing_arc_description(self, start, end):
+    def missing_arc_description(self, start, end, executed_arcs=None):     # pylint: disable=unused-argument
         """Provide an English sentence describing a missing arc.
+
+        The `start` and `end` arguments are the line numbers of the missing
+        arc. Negative numbers indicate entering or exiting code objects.
+
+        The `executed_arcs` argument is a set of line number pairs, the arcs
+        that were executed in this file.
 
         By default, this simply returns the string "Line {start} didn't jump
         to {end}".

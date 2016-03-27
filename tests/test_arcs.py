@@ -1105,6 +1105,36 @@ class MiscArcTest(CoverageTest):
             arcz_missing="27",
         )
 
+    def test_partial_generators(self):
+        # https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not
+        # Line 2 is executed completely.
+        # Line 3 is started but not finished, because zip ends when #2 ends.
+        # Line 4 is never started.
+        cov = self.check_coverage("""\
+            def f(a, b):
+                c = (i for i in a)          # 2
+                d = (j for j in b)          # 3
+                e = (k for k in b)          # 4
+                return dict(zip(c, d))
+
+            f(['a', 'b'], [1, 2])
+            """,
+            arcz=".1 17 7.  .2 23 34 45 5.  -22 2-2  -33 3-3  -44 4-4",
+            arcz_missing="3-3 -44 4-4",
+        )
+        # ugh, unexposed methods??
+        filename = self.last_module_name + ".py"
+        fr = cov._get_file_reporter(filename)
+        arcs_executed = cov._analyze(filename).arcs_executed()
+        self.assertEqual(
+            fr.missing_arc_description(3, -3, arcs_executed),
+            "line 3 didn't finish the generator expression on line 3"
+        )
+        self.assertEqual(
+            fr.missing_arc_description(4, -4, arcs_executed),
+            "line 4 didn't run the generator expression on line 4"
+        )
+
 
 class DecoratorArcTest(CoverageTest):
     """Tests of arcs with decorators."""

@@ -21,8 +21,12 @@ from coverage.phystokens import compile_unicode, generate_tokens, neuter_encodin
 
 
 class PythonParser(object):
-    """Parse code to find executable lines, excluded lines, etc."""
+    """Parse code to find executable lines, excluded lines, etc.
 
+    This information is all based on static analysis: no code execution is
+    involved.
+
+    """
     @contract(text='unicode|None')
     def __init__(self, text=None, filename=None, exclude=None):
         """
@@ -304,10 +308,22 @@ class PythonParser(object):
 
         return exit_counts
 
-    def missing_arc_description(self, start, end):
+    def missing_arc_description(self, start, end, executed_arcs=None):
         """Provide an English sentence describing a missing arc."""
         if self._missing_arc_fragments is None:
             self._analyze_ast()
+
+        actual_start = start
+
+        if (
+            executed_arcs and
+            end < 0 and end == -start and
+            (end, start) not in executed_arcs and
+            (end, start) in self._missing_arc_fragments
+        ):
+            # It's a one-line callable, and we never even started it,
+            # and we have a message about not starting it.
+            start, end = end, start
 
         fragment_pairs = self._missing_arc_fragments.get((start, end), [(None, None)])
 
@@ -325,9 +341,9 @@ class PythonParser(object):
                     emsg = "didn't jump to line {lineno}"
             emsg = emsg.format(lineno=end)
 
-            msg = "line {start} {emsg}".format(start=start, emsg=emsg)
+            msg = "line {start} {emsg}".format(start=actual_start, emsg=emsg)
             if smsg is not None:
-                msg += ", because {smsg}".format(smsg=smsg.format(lineno=start))
+                msg += ", because {smsg}".format(smsg=smsg.format(lineno=actual_start))
 
             msgs.append(msg)
 
@@ -939,10 +955,10 @@ class AstArcAnalyzer(object):
         """A function to make methods for online callable _code_object__ methods."""
         def _code_object__oneline_callable(self, node):
             start = self.line_for_node(node)
-            self.add_arc(-start, start)
+            self.add_arc(-start, start, None, "didn't run the {0} on line {1}".format(noun, start))
             self.add_arc(
                 start, -start, None,
-                "didn't run the {0} on line {1}".format(noun, start),
+                "didn't finish the {0} on line {1}".format(noun, start),
             )
         return _code_object__oneline_callable
 

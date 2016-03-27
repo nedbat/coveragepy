@@ -190,6 +190,7 @@ class HtmlReporter(Reporter):
 
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
+            arcs_executed = analysis.arcs_executed()
 
         # These classes determine which lines are highlighted by default.
         c_run = "run hide_run"
@@ -219,7 +220,7 @@ class HtmlReporter(Reporter):
                         shorts.append("exit")
                     else:
                         shorts.append(b)
-                    longs.append(fr.missing_arc_description(lineno, b))
+                    longs.append(fr.missing_arc_description(lineno, b, arcs_executed))
                 # 202F is NARROW NO-BREAK SPACE.
                 # 219B is RIGHTWARDS ARROW WITH STROKE.
                 short_fmt = "%s&#x202F;&#x219B;&#x202F;%s"

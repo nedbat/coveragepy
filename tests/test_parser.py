@@ -256,19 +256,19 @@ class ParserMissingArcDescriptionTest(CoverageTest):
             """)
         self.assertEqual(
             parser.missing_arc_description(2, -2),
-            "line 2 didn't run the lambda on line 2"
+            "line 2 didn't finish the lambda on line 2"
         )
         self.assertEqual(
             parser.missing_arc_description(3, -3),
-            "line 3 didn't run the generator expression on line 3"
+            "line 3 didn't finish the generator expression on line 3"
         )
         self.assertEqual(
             parser.missing_arc_description(4, -4),
-            "line 4 didn't run the dictionary comprehension on line 4"
+            "line 4 didn't finish the dictionary comprehension on line 4"
         )
         self.assertEqual(
             parser.missing_arc_description(5, -5),
-            "line 5 didn't run the set comprehension on line 5"
+            "line 5 didn't finish the set comprehension on line 5"
         )
 
     def test_missing_arc_descriptions_for_exceptions(self):
@@ -340,7 +340,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
             """)
         self.assertEqual(
             parser.missing_arc_description(2, -3),
-            "line 3 didn't run the lambda on line 3",
+            "line 3 didn't finish the lambda on line 3",
         )
 
 
