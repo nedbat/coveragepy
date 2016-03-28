@@ -17,6 +17,10 @@ Unreleased
   were incorrectly marked as missing, as reported in `issue 440`_.  This is now
   fixed.
 
+- During branch coverage of single-line callables like lambdas and generator
+  expressions, coverage.py can now distinguish between them never being called,
+  or being called but not completed.  Fixes `issue 475`_.
+
 - The HTML report now has a map of the file along the rightmost edge of the
   page, giving an overview of where the missed lines are.  Thanks, Dmitry
   Shishov.
@@ -28,6 +32,7 @@ Unreleased
 
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
 .. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
+.. _issue 475: https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not
 
 
 Version 4.1b2 --- 2016-01-23
