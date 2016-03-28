@@ -549,7 +549,7 @@ class CoverageScript(object):
             help_params['program_name'] = self.program_name
             help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
             if help_msg:
-                print(help_msg % help_params)
+                print(help_msg.format(**help_params))
             else:
                 print("Don't know topic %r" % topic)
 
@@ -699,10 +699,10 @@ def unglob_args(args):
 
 HELP_TOPICS = {
     'help': """\
-        Coverage.py, version %(__version__)s
+        Coverage.py, version {__version__} with {tracer_class.__name__}
         Measure, collect, and report on code coverage in Python programs.
 
-        usage: %(program_name)s <command> [options] [args]
+        usage: {program_name} <command> [options] [args]
 
         Commands:
             annotate    Annotate source files with execution information.
@@ -714,17 +714,17 @@ HELP_TOPICS = {
             run         Run a Python program and measure code execution.
             xml         Create an XML report of coverage results.
 
-        Use "%(program_name)s help <command>" for detailed help on any command.
-        For full documentation, see %(__url__)s
+        Use "{program_name} help <command>" for detailed help on any command.
+        For full documentation, see {__url__}
     """,
 
     'minimum_help': """\
-        Code coverage for Python.  Use '%(program_name)s help' for help.
+        Code coverage for Python.  Use '{program_name} help' for help.
     """,
 
     'version': """\
-        Coverage.py, version %(__version__)s.
-        Documentation at %(__url__)s
+        Coverage.py, version {__version__} with {tracer_class.__name__}
+        Documentation at {__url__}
     """,
 }
 

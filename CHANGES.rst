@@ -30,9 +30,13 @@ Unreleased
   indents was fixed.  The index page also has slightly different styling, to
   try to make the clickable detail pages more apparent.
 
+- ``coverage --help`` and ``coverage --version`` now mention which tracer is
+  installed, to help diagnose problems (`issue 479`_).
+
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
 .. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
 .. _issue 475: https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not
+.. _issue 479: https://bitbucket.org/ned/coveragepy/issues/479/clarify-the-need-for-the-c-extension
 
 
 Version 4.1b2 --- 2016-01-23

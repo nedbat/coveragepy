@@ -13,6 +13,7 @@ import mock
 
 import coverage
 import coverage.cmdline
+from coverage import env
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData, CoverageDataFiles
 from coverage.misc import ExceptionDuringRun
@@ -599,6 +600,10 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         self.command_line("--version")
         out = self.stdout()
         self.assertIn("ersion ", out)
+        if env.C_TRACER:
+            self.assertIn("with CTracer", out)
+        else:
+            self.assertIn("with PyTracer", out)
         self.assertLess(out.count("\n"), 4)
 
     def test_help(self):
