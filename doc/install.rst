@@ -96,7 +96,7 @@ coverage.py installed properly:
     .. parsed-literal::
 
         $ coverage --version
-        Coverage.py, version |release|.
+        Coverage.py, version |release| with CTracer
         Documentation at https://coverage.readthedocs.org
 
 .. ifconfig:: prerelease
@@ -104,7 +104,7 @@ coverage.py installed properly:
     .. parsed-literal::
 
         $ coverage --version
-        Coverage.py, version |release|.
+        Coverage.py, version |release| with CTracer
         Documentation at https://coverage.readthedocs.org/en/coverage-|release|
 
 You can also invoke coverage.py as a module:
@@ -114,7 +114,7 @@ You can also invoke coverage.py as a module:
     .. parsed-literal::
 
         $ python -m coverage --version
-        Coverage.py, version |release|.
+        Coverage.py, version |release| with CTracer
         Documentation at https://coverage.readthedocs.org
 
 .. ifconfig:: prerelease
@@ -122,5 +122,5 @@ You can also invoke coverage.py as a module:
     .. parsed-literal::
 
         $ python -m coverage --version
-        Coverage.py, version |release|.
+        Coverage.py, version |release| with CTracer
         Documentation at https://coverage.readthedocs.org/en/coverage-|release|
