@@ -601,9 +601,9 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         out = self.stdout()
         self.assertIn("ersion ", out)
         if env.C_TRACER:
-            self.assertIn("with CTracer", out)
+            self.assertIn("with C extension", out)
         else:
-            self.assertIn("with PyTracer", out)
+            self.assertIn("without C extension", out)
         self.assertLess(out.count("\n"), 4)
 
     def test_help(self):

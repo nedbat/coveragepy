@@ -65,13 +65,22 @@ this extension: it is much faster, and is needed to support a number of
 coverage.py features.  You may need to install the python-dev and gcc support
 files before installing coverage via pip.  The exact commands depend on which
 package manager you use on your operating system, which Python version you are
-using, and on the names of the packages for your distribution.  For example::
+using, and the names of the packages for your distribution.  For example::
 
     $ sudo apt-get install python-dev gcc
     $ sudo yum install python-devel gcc
 
     $ sudo apt-get install python3-dev gcc
     $ sudo yum install python3-devel gcc
+
+You can determine if you are using the extension by looking at the output of
+``coverage --version``::
+
+    $ coverage --version
+    Coverage.py, version |release| with C extension
+    Documentation at https://coverage.readthedocs.org
+
+The first line will either say "with C extension," or "without C extension."
 
 
 Installing on Windows
@@ -96,7 +105,7 @@ coverage.py installed properly:
     .. parsed-literal::
 
         $ coverage --version
-        Coverage.py, version |release| with CTracer
+        Coverage.py, version |release| with C extension
         Documentation at https://coverage.readthedocs.org
 
 .. ifconfig:: prerelease
@@ -104,7 +113,7 @@ coverage.py installed properly:
     .. parsed-literal::
 
         $ coverage --version
-        Coverage.py, version |release| with CTracer
+        Coverage.py, version |release| with C extension
         Documentation at https://coverage.readthedocs.org/en/coverage-|release|
 
 You can also invoke coverage.py as a module:
@@ -114,7 +123,7 @@ You can also invoke coverage.py as a module:
     .. parsed-literal::
 
         $ python -m coverage --version
-        Coverage.py, version |release| with CTracer
+        Coverage.py, version |release| with C extension
         Documentation at https://coverage.readthedocs.org
 
 .. ifconfig:: prerelease
@@ -122,5 +131,5 @@ You can also invoke coverage.py as a module:
     .. parsed-literal::
 
         $ python -m coverage --version
-        Coverage.py, version |release| with CTracer
+        Coverage.py, version |release| with C extension
         Documentation at https://coverage.readthedocs.org/en/coverage-|release|

@@ -11,6 +11,7 @@ import textwrap
 import traceback
 
 from coverage import env
+from coverage.collector import CTracer
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
 from coverage.debug import info_formatter, info_header
@@ -547,6 +548,10 @@ class CoverageScript(object):
         else:
             help_params = dict(self.covpkg.__dict__)
             help_params['program_name'] = self.program_name
+            if CTracer is not None:
+                help_params['extension_modifier'] = 'with C extension'
+            else:
+                help_params['extension_modifier'] = 'without C extension'
             help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
             if help_msg:
                 print(help_msg.format(**help_params))
@@ -699,7 +704,7 @@ def unglob_args(args):
 
 HELP_TOPICS = {
     'help': """\
-        Coverage.py, version {__version__} with {tracer_class.__name__}
+        Coverage.py, version {__version__} {extension_modifier}
         Measure, collect, and report on code coverage in Python programs.
 
         usage: {program_name} <command> [options] [args]
@@ -723,7 +728,7 @@ HELP_TOPICS = {
     """,
 
     'version': """\
-        Coverage.py, version {__version__} with {tracer_class.__name__}
+        Coverage.py, version {__version__} {extension_modifier}
         Documentation at {__url__}
     """,
 }
