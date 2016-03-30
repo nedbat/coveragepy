@@ -104,7 +104,9 @@ Coverage.py can measure multi-threaded programs by default. If you are using
 more exotic concurrency, with the `multiprocessing`_, `greenlet`_, `eventlet`_,
 or `gevent`_ libraries, then coverage.py will get very confused.  Use the
 ``--concurrency`` switch to properly measure programs using these libraries.
-Give it a value of ``greenlet``, ``eventlet``, or ``gevent``.
+Give it a value of ``multiprocessing``, ``thread``, ``greenlet``, ``eventlet``,
+or ``gevent``.  Values other than ``thread`` require the :ref:`C extension
+<install_extension>`.
 
 .. _multiprocessing: https://docs.python.org/2/library/multiprocessing.html
 .. _greenlet: http://greenlet.readthedocs.org/en/latest/

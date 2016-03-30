@@ -15,6 +15,9 @@ Coverage.py's behavior can be extended with third-party plugins.  A plugin is a
 separately installed Python class that you register in your .coveragerc.
 Plugins can be used to implement coverage measurement for non-Python files.
 
+Plugins are only supported with the :ref:`C extension <install_extension>`,
+which must be installed for plugins to work.
+
 Information about using plugins is on this page.  To write a plugin, see
 :ref:`api_plugin`.
 
@@ -51,7 +54,10 @@ coverage.py plugin called ``something.plugin``.
    Check the documentation for the plugin to see if it takes any options, and
    what they are.
 
-#. Run your tests with coverage.py as you usually would.
+#. Run your tests with coverage.py as you usually would.  If you get a message
+   like "Plugin file tracers (something.plugin) aren't supported with
+   PyTracer," then you don't have the :ref:`C extension <install_extension>`
+   installed.
 
 
 Available plugins

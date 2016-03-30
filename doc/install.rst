@@ -57,15 +57,20 @@ The alternate old-school technique is:
 .. __: coverage_pypi_
 
 
-Installing dependencies
------------------------
+.. _install_extension:
+
+C Extension
+-----------
 
 Coverage.py includes a C extension for speed. It is strongly recommended to use
 this extension: it is much faster, and is needed to support a number of
-coverage.py features.  You may need to install the python-dev and gcc support
-files before installing coverage via pip.  The exact commands depend on which
-package manager you use on your operating system, which Python version you are
-using, and the names of the packages for your distribution.  For example::
+coverage.py features.  Most of the time, the C extension will be installed
+without any special action on your part.
+
+If you are installing on Linux, you may need to install the python-dev and gcc
+support files before installing coverage via pip.  The exact commands depend on
+which package manager you use, which Python version you are using, and the
+names of the packages for your distribution.  For example::
 
     $ sudo apt-get install python-dev gcc
     $ sudo yum install python-devel gcc
@@ -81,6 +86,9 @@ You can determine if you are using the extension by looking at the output of
     Documentation at https://coverage.readthedocs.org
 
 The first line will either say "with C extension," or "without C extension."
+
+A few features of coverage.py aren't supported without the C extension, such
+as concurrency and plugins.
 
 
 Installing on Windows

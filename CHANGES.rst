@@ -31,7 +31,8 @@ Unreleased
   try to make the clickable detail pages more apparent.
 
 - ``coverage --help`` and ``coverage --version`` now mention which tracer is
-  installed, to help diagnose problems (`issue 479`_).
+  installed, to help diagnose problems. The docs mention which features need
+  the C extension. (`issue 479`_)
 
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
 .. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
