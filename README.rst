@@ -60,9 +60,9 @@ For details, see https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
 .. |format| image:: https://img.shields.io/pypi/format/coverage.svg
     :target: https://pypi.python.org/pypi/coverage
     :alt: Kit format
-.. |downloads| image:: https://img.shields.io/pypi/dd/coverage.svg
+.. |downloads| image:: https://img.shields.io/pypi/dw/coverage.svg
     :target: https://pypi.python.org/pypi/coverage
-    :alt: Daily PyPI downloads
+    :alt: Weekly PyPI downloads
 .. |versions| image:: https://img.shields.io/pypi/pyversions/coverage.svg
     :target: https://pypi.python.org/pypi/coverage
     :alt: Python versions supported
