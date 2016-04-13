@@ -173,8 +173,7 @@ class SummaryTest(CoverageTest):
 
         self.assertEqual(self.line_count(report), 3)
         self.assertIn("mymissing.py ", report)
-        self.assertEqual(self.last_line_squeezed(report),
-                         "mymissing.py 14 3 79% 3-4, 10")
+        self.assertEqual(self.last_line_squeezed(report), "mymissing.py 14 3 79% 3-4, 10")
 
     def test_report_show_missing_branches(self):
         self.make_file("mybranch.py", """\
@@ -196,8 +195,7 @@ class SummaryTest(CoverageTest):
 
         self.assertEqual(self.line_count(report), 3)
         self.assertIn("mybranch.py ", report)
-        self.assertEqual(self.last_line_squeezed(report),
-                         "mybranch.py 7 0 4 2 82% 2->4, 4->6")
+        self.assertEqual(self.last_line_squeezed(report), "mybranch.py 7 0 4 2 82% 2->4, 4->6")
 
     def test_report_show_missing_branches_and_lines(self):
         self.make_file("main.py", """\
