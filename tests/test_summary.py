@@ -182,7 +182,6 @@ class SummaryTest(CoverageTest):
                     print("x")
                 if y:
                     print("y")
-                return x
             branch(1, 1)
             """)
         out = self.run_command("coverage run --branch mybranch.py")
@@ -191,11 +190,11 @@ class SummaryTest(CoverageTest):
 
         # Name           Stmts   Miss Branch BrPart  Cover   Missing
         # ----------------------------------------------------------
-        # mybranch.py        7      0      4      2    82%   2->4, 4->6
+        # mybranch.py        6      0      4      2    80%   2->4, 4->exit
 
         self.assertEqual(self.line_count(report), 3)
         self.assertIn("mybranch.py ", report)
-        self.assertEqual(self.last_line_squeezed(report), "mybranch.py 7 0 4 2 82% 2->4, 4->6")
+        self.assertEqual(self.last_line_squeezed(report), "mybranch.py 6 0 4 2 80% 2->4, 4->exit")
 
     def test_report_show_missing_branches_and_lines(self):
         self.make_file("main.py", """\

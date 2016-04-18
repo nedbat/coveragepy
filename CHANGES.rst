@@ -30,11 +30,16 @@ Unreleased
   indents was fixed.  The index page also has slightly different styling, to
   try to make the clickable detail pages more apparent.
 
+- Missing branches reported with ``coverage report -m`` will now say ``->exit``
+  for missed branches to the exit of a function, rather than a negative number.
+  Fixes `issue 469`_.
+
 - ``coverage --help`` and ``coverage --version`` now mention which tracer is
   installed, to help diagnose problems. The docs mention which features need
   the C extension. (`issue 479`_)
 
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
+.. _issue 469: https://bitbucket.org/ned/coveragepy/issues/469/strange-1-line-number-in-branch-coverage
 .. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
 .. _issue 475: https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not
 .. _issue 479: https://bitbucket.org/ned/coveragepy/issues/479/clarify-the-need-for-the-c-extension

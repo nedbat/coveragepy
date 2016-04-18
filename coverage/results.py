@@ -96,7 +96,7 @@ class Analysis(object):
         for line, exits in line_exits:
             for ex in sorted(exits):
                 if line not in missing:
-                    pairs.append('%d->%d' % (line, ex))
+                    pairs.append("%d->%s" % (line, (ex if ex > 0 else "exit")))
         return ', '.join(pairs)
 
     def arcs_unpredicted(self):
