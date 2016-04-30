@@ -43,7 +43,7 @@ with open(cov_ver_py) as version_file:
     exec(compile(version_file.read(), cov_ver_py, 'exec'))
 
 with open("README.rst") as readme:
-    long_description = readme.read().replace("http://coverage.readthedocs.org", __url__)
+    long_description = readme.read().replace("http://coverage.readthedocs.io", __url__)
 
 classifier_list = classifiers.splitlines()
 

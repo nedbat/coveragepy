@@ -18,7 +18,7 @@ library to determine which lines are executable, and which have been executed.
 Coverage.py runs on CPython 2.6, 2.7, 3.3, 3.4 and 3.5; PyPy 2.4, 2.6 and 4.0;
 and PyPy3 2.4.
 
-Documentation is on `Read the Docs <http://coverage.readthedocs.org>`_.
+Documentation is on `Read the Docs <http://coverage.readthedocs.io>`_.
 Code repository and issue tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_,
 with a mirrored repository on `GitHub <https://github.com/nedbat/coveragepy>`_.
 
@@ -31,7 +31,7 @@ support, --skip-covered, HTML filtering, and more than 50 issues closed.
 Getting Started
 ---------------
 
-See the `quick start <http://coverage.readthedocs.org/#quick-start>`_
+See the `quick start <http://coverage.readthedocs.io/#quick-start>`_
 section of the docs.
 
 
@@ -49,7 +49,7 @@ For details, see https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
     :target: https://ci.appveyor.com/project/nedbat/coveragepy
     :alt: Windows build status
 .. |docs| image:: https://readthedocs.org/projects/coverage/badge/?version=latest&style=flat
-    :target: http://coverage.readthedocs.org
+    :target: http://coverage.readthedocs.io
     :alt: Documentation
 .. |reqs| image:: https://requires.io/github/nedbat/coveragepy/requirements.svg?branch=master
     :target: https://requires.io/github/nedbat/coveragepy/requirements/?branch=master

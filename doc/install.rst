@@ -83,7 +83,7 @@ You can determine if you are using the extension by looking at the output of
 
     $ coverage --version
     Coverage.py, version |release| with C extension
-    Documentation at https://coverage.readthedocs.org
+    Documentation at https://coverage.readthedocs.io
 
 The first line will either say "with C extension," or "without C extension."
 
@@ -114,7 +114,7 @@ coverage.py installed properly:
 
         $ coverage --version
         Coverage.py, version |release| with C extension
-        Documentation at https://coverage.readthedocs.org
+        Documentation at https://coverage.readthedocs.io
 
 .. ifconfig:: prerelease
 
@@ -122,7 +122,7 @@ coverage.py installed properly:
 
         $ coverage --version
         Coverage.py, version |release| with C extension
-        Documentation at https://coverage.readthedocs.org/en/coverage-|release|
+        Documentation at https://coverage.readthedocs.io/en/coverage-|release|
 
 You can also invoke coverage.py as a module:
 
@@ -132,7 +132,7 @@ You can also invoke coverage.py as a module:
 
         $ python -m coverage --version
         Coverage.py, version |release| with C extension
-        Documentation at https://coverage.readthedocs.org
+        Documentation at https://coverage.readthedocs.io
 
 .. ifconfig:: prerelease
 
@@ -140,4 +140,4 @@ You can also invoke coverage.py as a module:
 
         $ python -m coverage --version
         Coverage.py, version |release| with C extension
-        Documentation at https://coverage.readthedocs.org/en/coverage-|release|
+        Documentation at https://coverage.readthedocs.io/en/coverage-|release|

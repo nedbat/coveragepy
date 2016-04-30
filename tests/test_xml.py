@@ -331,7 +331,7 @@ class XmlGoldTest(CoverageGoldTest):
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
-            (r'/coverage.readthedocs.org/?[-.\w/]*', '/coverage.readthedocs.org/VER'),
+            (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
         ])
 
     def test_a_xml_2(self):
@@ -350,7 +350,7 @@ class XmlGoldTest(CoverageGoldTest):
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
-            (r'/coverage.readthedocs.org/?[-.\w/]*', '/coverage.readthedocs.org/VER'),
+            (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
         ])
 
     def test_y_xml_branch(self):
@@ -369,5 +369,5 @@ class XmlGoldTest(CoverageGoldTest):
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
-            (r'/coverage.readthedocs.org/?[-.\w/]*', '/coverage.readthedocs.org/VER'),
+            (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
         ])

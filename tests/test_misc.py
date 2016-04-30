@@ -84,11 +84,11 @@ class VersionTest(CoverageTest):
     def test_make_url(self):
         self.assertEqual(
             _make_url(4, 0, 0, 'final', 0),
-            "https://coverage.readthedocs.org"
+            "https://coverage.readthedocs.io"
         )
         self.assertEqual(
             _make_url(4, 1, 2, 'beta', 3),
-            "https://coverage.readthedocs.org/en/coverage-4.1.2b3"
+            "https://coverage.readthedocs.io/en/coverage-4.1.2b3"
         )
 
 
