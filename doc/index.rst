@@ -71,7 +71,7 @@ not.
 
     * Python versions 2.6, 2.7, 3.3, 3.4, and 3.5.
 
-    * PyPy 2.4, 2.6, and 4.0
+    * PyPy 4.0 and 5.1
 
     * PyPy3 2.4.
 

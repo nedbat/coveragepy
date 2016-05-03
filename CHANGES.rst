@@ -38,6 +38,9 @@ Unreleased
   installed, to help diagnose problems. The docs mention which features need
   the C extension. (`issue 479`_)
 
+- Officially support PyPy 5.1, which required no changes, just updates to the
+  docs.
+
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
 .. _issue 469: https://bitbucket.org/ned/coveragepy/issues/469/strange-1-line-number-in-branch-coverage
 .. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
