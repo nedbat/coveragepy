@@ -146,8 +146,8 @@ You can fine-tune coverage.py's view of your code by directing it to ignore
 parts that you know aren't interesting.  See :ref:`source` and :ref:`excluding`
 for details.
 
-.. _nose:           http://somethingaboutorange.com/mrl/projects/nose
-.. _cover plug-in:  https://nose.readthedocs.org/en/latest/plugins/cover.html
+.. _nose:           http://nose.readthedocs.io
+.. _cover plug-in:  https://nose.readthedocs.io/en/latest/plugins/cover.html
 
 
 .. _contact:

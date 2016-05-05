@@ -24,7 +24,7 @@ First run your tests and collect coverage data with `nose`_ and its plugin.
 This will write coverage data into a .coverage file.  Then run coverage.py from
 the :ref:`command line <cmd>` to create the reports you need from that data.
 
-.. _nose: http://somethingaboutorange.com/mrl/projects/nose
+.. _nose: http://nose.readthedocs.io
 
 
 **Q: Why do unexecutable lines show up as executed?**
