@@ -19,7 +19,8 @@ Unreleased
 
 - During branch coverage of single-line callables like lambdas and generator
   expressions, coverage.py can now distinguish between them never being called,
-  or being called but not completed.  Fixes `issue 475`_.
+  or being called but not completed.  Fixes `issue 90`_, `issue 460`_ and
+  `issue 475`_.
 
 - The HTML report now has a map of the file along the rightmost edge of the
   page, giving an overview of where the missed lines are.  Thanks, Dmitry
@@ -41,7 +42,9 @@ Unreleased
 - Officially support PyPy 5.1, which required no changes, just updates to the
   docs.
 
+.. _issue 90: https://bitbucket.org/ned/coveragepy/issues/90/lambda-expression-confuses-branch
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
+.. _issue 460: https://bitbucket.org/ned/coveragepy/issues/460/confusing-html-report-for-certain-partial
 .. _issue 469: https://bitbucket.org/ned/coveragepy/issues/469/strange-1-line-number-in-branch-coverage
 .. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
 .. _issue 475: https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not
