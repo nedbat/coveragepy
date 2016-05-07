@@ -324,7 +324,7 @@ class FileReporter(object):
         executable line number to a count of how many exits it has.
 
         To be honest, this feels wrong, and should be refactored.  Let me know
-        if you attempt to implement this...
+        if you attempt to implement this method in your plugin...
 
         """
         return {}
