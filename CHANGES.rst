@@ -42,7 +42,11 @@ Unreleased
 - Officially support PyPy 5.1, which required no changes, just updates to the
   docs.
 
+- Make a small tweak to how we compare threads, to avoid buggy custom
+  comparison code in thread classes. (`issue 245`_)
+
 .. _issue 90: https://bitbucket.org/ned/coveragepy/issues/90/lambda-expression-confuses-branch
+.. _issue 245: https://bitbucket.org/ned/coveragepy/issues/245/change-solution-for-issue-164
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
 .. _issue 460: https://bitbucket.org/ned/coveragepy/issues/460/confusing-html-report-for-certain-partial
 .. _issue 469: https://bitbucket.org/ned/coveragepy/issues/469/strange-1-line-number-in-branch-coverage

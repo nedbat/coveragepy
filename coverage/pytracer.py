@@ -137,7 +137,7 @@ class PyTracer(object):
     def stop(self):
         """Stop this Tracer."""
         self.stopped = True
-        if self.threading and self.thread != self.threading.currentThread():
+        if self.threading and self.thread.ident != self.threading.currentThread().ident:
             # Called on a different thread than started us: we can't unhook
             # ourselves, but we've set the flag that we should stop, so we
             # won't do any more tracing.
