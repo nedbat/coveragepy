@@ -4,10 +4,13 @@
 """Python source expertise for coverage.py"""
 
 import os.path
+import types
 import zipimport
 
 from coverage import env, files
-from coverage.misc import contract, expensive, NoSource, join_regex, isolate_module
+from coverage.misc import (
+    contract, CoverageException, expensive, NoSource, join_regex, isolate_module,
+)
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.plugin import FileReporter
@@ -94,6 +97,10 @@ class PythonFileReporter(FileReporter):
 
         if hasattr(morf, '__file__'):
             filename = morf.__file__
+        elif isinstance(morf, types.ModuleType):
+            # A module should have had .__file__, otherwise we can't use it.
+            # This could be a PEP-420 namespace package.
+            raise CoverageException("Module {0} has no file".format(morf))
         else:
             filename = morf
 

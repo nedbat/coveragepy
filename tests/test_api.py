@@ -9,6 +9,7 @@ import sys
 import textwrap
 
 import coverage
+from coverage import env
 from coverage.backward import StringIO
 from coverage.misc import CoverageException
 
@@ -320,6 +321,26 @@ class ApiTest(CoverageTest):
 
         # The bad file still exists.
         self.assert_exists(".coverage.foo")
+
+
+class NamespaceModuleTest(CoverageTest):
+    """Test PEP-420 namespace modules."""
+
+    def setUp(self):
+        super(NamespaceModuleTest, self).setUp()
+        if env.PYVERSION < (3, 3):
+            self.skip("Python before 3.3 doesn't have namespace packages")
+
+    def test_explicit_namespace_module(self):
+        self.make_file("namespace/package/module.py", "VAR = 1\n")
+        self.make_file("main.py", "import namespace\n")
+
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "main")
+
+        with self.assertRaisesRegex(CoverageException, r"Module .* has no file"):
+            cov.analysis(sys.modules['namespace'])
+
 
 
 class UsingModulesMixin(object):

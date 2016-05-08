@@ -42,12 +42,17 @@ Unreleased
 - Officially support PyPy 5.1, which required no changes, just updates to the
   docs.
 
+- It's never been possible to pass a namespace module to one of the analysis
+  functions, but now at least we raise a more specific error message, rather
+  than getting confused. (`issue 456`_)
+
 - Make a small tweak to how we compare threads, to avoid buggy custom
   comparison code in thread classes. (`issue 245`_)
 
 .. _issue 90: https://bitbucket.org/ned/coveragepy/issues/90/lambda-expression-confuses-branch
 .. _issue 245: https://bitbucket.org/ned/coveragepy/issues/245/change-solution-for-issue-164
 .. _issue 440: https://bitbucket.org/ned/coveragepy/issues/440/yielded-twisted-failure-marked-as-missed
+.. _issue 456: https://bitbucket.org/ned/coveragepy/issues/456/coverage-breaks-with-implicit-namespaces
 .. _issue 460: https://bitbucket.org/ned/coveragepy/issues/460/confusing-html-report-for-certain-partial
 .. _issue 469: https://bitbucket.org/ned/coveragepy/issues/469/strange-1-line-number-in-branch-coverage
 .. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
