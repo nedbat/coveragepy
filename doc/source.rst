@@ -51,7 +51,16 @@ removed from the set.
 The ``include`` and ``omit`` file name patterns follow typical shell syntax:
 ``*`` matches any number of characters and ``?`` matches a single character.
 Patterns that start with a wildcard character are used as-is, other patterns
-are interpreted relative to the current directory.
+are interpreted relative to the current directory::
+
+    [run]
+    omit =
+        # omit anything in a .local directory anywhere
+        */.local/*
+        # omit everything in /usr
+        /usr/*
+        # omit this single file
+        utils/tirefire.py
 
 The ``source``, ``include``, and ``omit`` values all work together to determine
 the source that will be measured.
