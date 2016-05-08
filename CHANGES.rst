@@ -42,6 +42,13 @@ Unreleased
 - Officially support PyPy 5.1, which required no changes, just updates to the
   docs.
 
+- The `coverage.report` function had two parameters with non-None defaults,
+  which have been changed.  `show_missing` used to default to True, but now
+  defaults to None.  If you had been calling `coverage.report` without
+  specifying `show_missing`, you'll need to explicitly set it to True to keep
+  the same behavior.  `skip_covered` used to default to False. It is now None,
+  which doesn't change the behavior.  This fixes `issue 485`_.
+
 - It's never been possible to pass a namespace module to one of the analysis
   functions, but now at least we raise a more specific error message, rather
   than getting confused. (`issue 456`_)
@@ -62,6 +69,7 @@ Unreleased
 .. _issue 475: https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not
 .. _issue 479: https://bitbucket.org/ned/coveragepy/issues/479/clarify-the-need-for-the-c-extension
 .. _issue 481: https://bitbucket.org/ned/coveragepy/issues/481/asyncioprocesspoolexecutor-tracing-not
+.. _issue 485: https://bitbucket.org/ned/coveragepy/issues/485/coveragereport-ignores-show_missing-and
 
 
 Version 4.1b2 --- 2016-01-23

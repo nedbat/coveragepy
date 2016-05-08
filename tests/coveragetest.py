@@ -258,7 +258,7 @@ class CoverageTest(
 
         if report:
             frep = StringIO()
-            cov.report(mod, file=frep)
+            cov.report(mod, file=frep, show_missing=True)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
             self.assertEqual(report, rep)
 

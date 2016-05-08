@@ -408,7 +408,7 @@ class GoodPluginTest(FileTracerTest):
         self.start_import_stop(cov, "caller")
 
         repout = StringIO()
-        total = cov.report(file=repout, include=["*.html"], omit=["uni*.html"])
+        total = cov.report(file=repout, include=["*.html"], omit=["uni*.html"], show_missing=True)
         report = repout.getvalue().splitlines()
         expected = [
             'Name         Stmts   Miss Branch BrPart  Cover   Missing',
@@ -497,7 +497,7 @@ class GoodPluginTest(FileTracerTest):
         self.start_import_stop(cov, "unsuspecting")
 
         repout = StringIO()
-        total = cov.report(file=repout)
+        total = cov.report(file=repout, show_missing=True)
         report = repout.getvalue().splitlines()
         expected = [
             'Name              Stmts   Miss  Cover   Missing',

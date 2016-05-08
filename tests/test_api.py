@@ -548,7 +548,7 @@ class TestRunnerPluginTest(CoverageTest):
         self.start_import_stop(cov, "no_biggie")
         cov.combine()
         cov.save()
-        cov.report(["no_biggie.py"])
+        cov.report(["no_biggie.py"], show_missing=True)
         self.assertEqual(self.stdout(), textwrap.dedent("""\
             Name           Stmts   Miss  Cover   Missing
             --------------------------------------------
