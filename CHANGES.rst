@@ -46,6 +46,9 @@ Unreleased
   functions, but now at least we raise a more specific error message, rather
   than getting confused. (`issue 456`_)
 
+- The `coverage.process_startup` function now returns the `Coverage` instance
+  it creates, as suggested in `issue 481`_.
+
 - Make a small tweak to how we compare threads, to avoid buggy custom
   comparison code in thread classes. (`issue 245`_)
 
@@ -58,6 +61,7 @@ Unreleased
 .. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
 .. _issue 475: https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not
 .. _issue 479: https://bitbucket.org/ned/coveragepy/issues/479/clarify-the-need-for-the-c-extension
+.. _issue 481: https://bitbucket.org/ned/coveragepy/issues/481/asyncioprocesspoolexecutor-tracing-not
 
 
 Version 4.1b2 --- 2016-01-23

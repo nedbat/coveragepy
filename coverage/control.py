@@ -1166,11 +1166,14 @@ def process_startup():
 
         import coverage; coverage.process_startup()
 
+    Returns the :class:`Coverage` instance that was started, or None if it was
+    not started by this call.
+
     """
     cps = os.environ.get("COVERAGE_PROCESS_START")
     if not cps:
         # No request for coverage, nothing to do.
-        return
+        return None
 
     # This function can be called more than once in a process. This happens
     # because some virtualenv configurations make the same directory visible
@@ -1185,10 +1188,12 @@ def process_startup():
     if hasattr(process_startup, "done"):
         # We've annotated this function before, so we must have already
         # started coverage.py in this process.  Nothing to do.
-        return
+        return None
 
     process_startup.done = True
     cov = Coverage(config_file=cps, auto_data=True)
     cov.start()
     cov._warn_no_data = False
     cov._warn_unimported_source = False
+
+    return cov
