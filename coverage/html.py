@@ -257,13 +257,18 @@ class HtmlReporter(Reporter):
             })
 
         # Write the HTML page for this file.
-        template_values = {
-            'c_exc': c_exc, 'c_mis': c_mis, 'c_par': c_par, 'c_run': c_run,
-            'has_arcs': self.has_arcs, 'extra_css': self.extra_css,
-            'fr': fr, 'nums': nums, 'lines': lines,
+        html = self.source_tmpl.render({
+            'c_exc': c_exc,
+            'c_mis': c_mis,
+            'c_par': c_par,
+            'c_run': c_run,
+            'has_arcs': self.has_arcs,
+            'extra_css': self.extra_css,
+            'fr': fr,
+            'nums': nums,
+            'lines': lines,
             'time_stamp': self.time_stamp,
-        }
-        html = self.source_tmpl.render(template_values)
+        })
 
         html_filename = rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)
