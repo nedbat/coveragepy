@@ -25,10 +25,10 @@ class SummaryReporter(Reporter):
         for native strings (bytes on Python 2, Unicode on Python 3).
 
         """
-        self.find_file_reporters(morfs)
+        file_reporters = self.find_file_reporters(morfs)
 
         # Prepare the formatting strings
-        max_name = max([len(fr.relative_filename()) for fr in self.file_reporters] + [5])
+        max_name = max([len(fr.relative_filename()) for fr in file_reporters] + [5])
         fmt_name = u"%%- %ds  " % max_name
         fmt_err = u"%s   %s: %s"
         fmt_skip_covered = u"\n%s file%s skipped due to complete coverage."
@@ -63,7 +63,7 @@ class SummaryReporter(Reporter):
         total = Numbers()
         skipped_count = 0
 
-        for fr in self.file_reporters:
+        for fr in file_reporters:
             try:
                 analysis = self.coverage._analyze(fr)
                 nums = analysis.numbers

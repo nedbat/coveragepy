@@ -24,9 +24,6 @@ class Reporter(object):
         self.coverage = coverage
         self.config = config
 
-        # The FileReporters to report on.  Set by find_file_reporters.
-        self.file_reporters = []
-
         # The directory into which to place the report, used by some derived
         # classes.
         self.directory = None
@@ -35,6 +32,8 @@ class Reporter(object):
         """Find the FileReporters we'll report on.
 
         `morfs` is a list of modules or file names.
+
+        Returns a list of FileReporters.
 
         """
         reporters = self.coverage._get_file_reporters(morfs)
@@ -47,7 +46,7 @@ class Reporter(object):
             matcher = FnmatchMatcher(prep_patterns(self.config.omit))
             reporters = [fr for fr in reporters if not matcher.match(fr.filename)]
 
-        self.file_reporters = sorted(reporters)
+        return sorted(reporters)
 
     def report_files(self, report_fn, morfs, directory=None):
         """Run a reporting function on a number of morfs.
@@ -61,16 +60,16 @@ class Reporter(object):
         `analysis` is the `Analysis` for the morf.
 
         """
-        self.find_file_reporters(morfs)
+        file_reporters = self.find_file_reporters(morfs)
 
-        if not self.file_reporters:
+        if not file_reporters:
             raise CoverageException("No data to report.")
 
         self.directory = directory
         if self.directory and not os.path.exists(self.directory):
             os.makedirs(self.directory)
 
-        for fr in self.file_reporters:
+        for fr in file_reporters:
             try:
                 report_fn(fr, self.coverage._analyze(fr))
             except NoSource:
