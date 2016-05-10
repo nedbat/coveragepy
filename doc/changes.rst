@@ -50,7 +50,7 @@ history, see the `CHANGES.rst`_ file in the source tree.
 
 .. _changes_41:
 
-Version 4.1b2 pre-release --- 2016-01-23
+Version 4.1b3 pre-release --- 2016-05-10
 ----------------------------------------
 
 - Branch analysis has been rewritten: it used to be based on bytecode, but now
@@ -113,9 +113,9 @@ Version 4.1b2 pre-release --- 2016-01-23
   installed, to help diagnose problems. The docs mention which features need
   the C extension. (`issue 479`_)
 
-- The `coverage.report` function had two parameters with non-None defaults,
+- The `Coverage.report` function had two parameters with non-None defaults,
   which have been changed.  `show_missing` used to default to True, but now
-  defaults to None.  If you had been calling `coverage.report` without
+  defaults to None.  If you had been calling `Coverage.report` without
   specifying `show_missing`, you'll need to explicitly set it to True to keep
   the same behavior.  `skip_covered` used to default to False. It is now None,
   which doesn't change the behavior.  This fixes `issue 485`_.

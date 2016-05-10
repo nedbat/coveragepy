@@ -42,9 +42,9 @@ Version 4.1b3 --- 2016-05-10
 - Officially support PyPy 5.1, which required no changes, just updates to the
   docs.
 
-- The `coverage.report` function had two parameters with non-None defaults,
+- The `Coverage.report` function had two parameters with non-None defaults,
   which have been changed.  `show_missing` used to default to True, but now
-  defaults to None.  If you had been calling `coverage.report` without
+  defaults to None.  If you had been calling `Coverage.report` without
   specifying `show_missing`, you'll need to explicitly set it to True to keep
   the same behavior.  `skip_covered` used to default to False. It is now None,
   which doesn't change the behavior.  This fixes `issue 485`_.
