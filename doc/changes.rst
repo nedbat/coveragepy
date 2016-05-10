@@ -38,6 +38,7 @@ Major change history for coverage.py
 .. :history: 20151104T050900, updated for 4.0.2
 .. :history: 20151124T065800, updated for 4.0.3
 .. :history: 20160110T125800, updated for 4.1b1
+.. :history: 20160510T125200, updated for 4.1b3
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -48,11 +49,6 @@ history, see the `CHANGES.rst`_ file in the source tree.
 .. module:: coverage
 
 .. _changes_41:
-
-Unreleased
-----------
-
-
 
 Version 4.1b2 pre-release --- 2016-01-23
 ----------------------------------------
@@ -67,6 +63,10 @@ Version 4.1b2 pre-release --- 2016-01-23
 
   - Python 3.5's ``async`` and ``await`` keywords are properly supported,
     fixing `issue 434`_.
+
+  - Missing branches reported with ``coverage report -m`` will now say
+    ``->exit`` for missed branches to the exit of a function, rather than a
+    negative number.  Fixes `issue 469`_.
 
   - Some long-standing branch coverage bugs were fixed:
 
@@ -83,6 +83,11 @@ Version 4.1b2 pre-release --- 2016-01-23
     - `issue 422`_: in Python 3.5, an actual partial branch could be marked as
       complete.
 
+    - During branch coverage of single-line callables like lambdas and
+      generator expressions, coverage.py can now distinguish between them never
+      being called, or being called but not completed.  Fixes `issue 90`_,
+      `issue 460`_ and `issue 475`_.
+
 - Pragmas to disable coverage measurement can now be used on decorator lines,
   and they will apply to the entire function or class being decorated.  This
   implements the feature requested in `issue 131`_.
@@ -90,17 +95,55 @@ Version 4.1b2 pre-release --- 2016-01-23
 - Multiprocessing support is now available on Windows.  Thanks, Rodrigue
   Cloutier.
 
+- The HTML report has a few changes:
+
+  - The HTML report now has a map of the file along the rightmost edge of the
+    page, giving an overview of where the missed lines are.  Thanks, Dmitry
+    Shishov.
+
+  - The HTML report now uses different monospaced fonts, favoring Consolas over
+    Courier.  Along the way, `issue 472`_ about not properly handling one-space
+    indents was fixed.  The index page also has slightly different styling, to
+    try to make the clickable detail pages more apparent.
+
 - The XML report now produces correct package names for modules found in
   directories specified with ``source=``.  Fixes `issue 465`_.
 
+- ``coverage --help`` and ``coverage --version`` now mention which tracer is
+  installed, to help diagnose problems. The docs mention which features need
+  the C extension. (`issue 479`_)
+
+- The `coverage.report` function had two parameters with non-None defaults,
+  which have been changed.  `show_missing` used to default to True, but now
+  defaults to None.  If you had been calling `coverage.report` without
+  specifying `show_missing`, you'll need to explicitly set it to True to keep
+  the same behavior.  `skip_covered` used to default to False. It is now None,
+  which doesn't change the behavior.  This fixes `issue 485`_.
+
+- It's never been possible to pass a namespace module to one of the analysis
+  functions, but now at least we raise a more specific error message, rather
+  than getting confused. (`issue 456`_)
+
+- The `coverage.process_startup` function now returns the `Coverage` instance
+  it creates, as suggested in `issue 481`_.
+
+.. _issue 90: https://bitbucket.org/ned/coveragepy/issues/90/lambda-expression-confuses-branch
 .. _issue 129: https://bitbucket.org/ned/coveragepy/issues/129/misleading-branch-coverage-of-empty
 .. _issue 131: https://bitbucket.org/ned/coveragepy/issues/131/pragma-on-a-decorator-line-should-affect
 .. _issue 146: https://bitbucket.org/ned/coveragepy/issues/146/context-managers-confuse-branch-coverage
 .. _issue 212: https://bitbucket.org/ned/coveragepy/issues/212/coverage-erroneously-reports-partial
 .. _issue 422: https://bitbucket.org/ned/coveragepy/issues/422/python35-partial-branch-marked-as-fully
 .. _issue 434: https://bitbucket.org/ned/coveragepy/issues/434/indexerror-in-python-35
+.. _issue 456: https://bitbucket.org/ned/coveragepy/issues/456/coverage-breaks-with-implicit-namespaces
+.. _issue 460: https://bitbucket.org/ned/coveragepy/issues/460/confusing-html-report-for-certain-partial
 .. _issue 461: https://bitbucket.org/ned/coveragepy/issues/461/multiline-asserts-need-too-many-pragma
 .. _issue 465: https://bitbucket.org/ned/coveragepy/issues/465/coveragexml-produces-package-names-with-an
+.. _issue 469: https://bitbucket.org/ned/coveragepy/issues/469/strange-1-line-number-in-branch-coverage
+.. _issue 472: https://bitbucket.org/ned/coveragepy/issues/472/html-report-indents-incorrectly-for-one
+.. _issue 475: https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not
+.. _issue 479: https://bitbucket.org/ned/coveragepy/issues/479/clarify-the-need-for-the-c-extension
+.. _issue 481: https://bitbucket.org/ned/coveragepy/issues/481/asyncioprocesspoolexecutor-tracing-not
+.. _issue 485: https://bitbucket.org/ned/coveragepy/issues/485/coveragereport-ignores-show_missing-and
 
 
 .. _changes_403:

@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Unreleased
-----------
+Version 4.1b3 --- 2016-05-10
+----------------------------
 
 - When running your program, execution can jump from an ``except X:`` line to
   some other line when an exception other than ``X`` happens.  This jump is no
