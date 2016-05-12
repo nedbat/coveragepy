@@ -61,25 +61,20 @@ enable=
 disable= 
     spelling,
 # Messages that are just silly:
-#   I0011:106: Locally disabling E1101
-#   W0122: 30:run_python_file: Use of the exec statement
-#   W0142: 31:call_singleton_method: Used * or ** magic
-#   W0232:  6:AnyOldObject: Class has no __init__ method
-#   C0323:311:coverage.report: Operator not followed by a space
-#   C0324: 15: Comma not followed by a space
-#   W0603: 28:call_singleton_method: Using the global statement
-#   W0703:133:CoverageData._read_file: Catch "Exception"
-    I0011,W0122,W0142,W0232,C0323,C0324,W0603,W0703,
+    locally-disabled,
+    exec-used,
+    no-init,
+    bad-whitespace,
+    global-statement,
+    broad-except,
 # Messages that may be silly:
-#   R0201: 42:Tracer.stop: Method could be a function
-#   E1103: 26:RunTests.test_run_python_file: Instance of 'file' has no 'getvalue' member (but some types could not be inferred)
-    R0201,E1103,
+    no-self-use,
+    no-member,
 # formatting stuff
     superfluous-parens,bad-continuation,
 # Messages that are noisy for now, eventually maybe we'll turn them on:
-#   C0103:256:coverage.morf_filename: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
-#   W0212: 86:Reporter.report_files: Access to a protected member _analyze of a client class     
-    C0103,W0212,
+    invalid-name,
+    protected-access,
     duplicate-code,
     cyclic-import
 
