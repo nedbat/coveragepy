@@ -54,8 +54,7 @@ load-plugins=
 
 # Enable the message(s) with the given id(s).
 enable=
-#   I0021: Useless suppression
-    I0021
+    useless-suppression
 
 # Disable the message(s) with the given id(s).
 disable= 
