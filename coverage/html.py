@@ -58,10 +58,16 @@ def data_filename(fname, pkgdir=""):
     )
 
 
-def data(fname):
+def read_data(fname):
     """Return the contents of a data file of ours."""
     with open(data_filename(fname)) as data_file:
         return data_file.read()
+
+
+def write_html(fname, html):
+    """Write `html` to `fname`, properly encoded."""
+    with open(fname, "wb") as fout:
+        fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
 
 class HtmlReporter(Reporter):
@@ -94,9 +100,7 @@ class HtmlReporter(Reporter):
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
         }
-        self.source_tmpl = Templite(
-            data("pyfile.html"), self.template_globals,
-        )
+        self.source_tmpl = Templite(read_data("pyfile.html"), self.template_globals)
 
         self.coverage = cov
 
@@ -157,11 +161,6 @@ class HtmlReporter(Reporter):
                 self.config.extra_css,
                 os.path.join(self.directory, self.extra_css)
             )
-
-    def write_html(self, fname, html):
-        """Write `html` to `fname`, properly encoded."""
-        with open(fname, "wb") as fout:
-            fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
     def file_hash(self, source, fr):
         """Compute a hash that changes if the file needs to be re-reported."""
@@ -272,7 +271,7 @@ class HtmlReporter(Reporter):
 
         html_filename = rootname + ".html"
         html_path = os.path.join(self.directory, html_filename)
-        self.write_html(html_path, html)
+        write_html(html_path, html)
 
         # Save this file's information for the index file.
         index_info = {
@@ -285,7 +284,7 @@ class HtmlReporter(Reporter):
 
     def index_file(self):
         """Write the index.html file for this report."""
-        index_tmpl = Templite(data("index.html"), self.template_globals)
+        index_tmpl = Templite(read_data("index.html"), self.template_globals)
 
         self.totals = sum(f['nums'] for f in self.files)
 
@@ -297,7 +296,7 @@ class HtmlReporter(Reporter):
             'time_stamp': self.time_stamp,
         })
 
-        self.write_html(os.path.join(self.directory, "index.html"), html)
+        write_html(os.path.join(self.directory, "index.html"), html)
 
         # Write the latest hashes for next time.
         self.status.write(self.directory)
