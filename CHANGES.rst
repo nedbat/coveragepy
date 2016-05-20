@@ -12,7 +12,7 @@ Unreleased
 - The internal attribute `Reporter.file_reporters` was removed in 4.1b3.  It
   should have come has no surprise that there were third-party tools out there
   using that attribute.  It has been restored, but with a deprecation warning.
-  
+
 
 Version 4.1b3 --- 2016-05-10
 ----------------------------

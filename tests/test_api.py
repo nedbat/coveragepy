@@ -571,8 +571,11 @@ class ReporterDeprecatedAttributeTest(CoverageTest):
 
     def test_reporter_file_reporters(self):
         rep = Reporter(None, None)
+
         with warnings.catch_warnings(record=True) as warns:
             warnings.simplefilter("always")
-            rep.file_reporters
+            # Accessing this attribute will raise a DeprecationWarning.
+            rep.file_reporters      # pylint: disable=pointless-statement
+
         self.assertEqual(len(warns), 1)
         self.assertTrue(issubclass(warns[0].category, DeprecationWarning))

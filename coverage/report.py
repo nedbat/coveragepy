@@ -37,6 +37,7 @@ class Reporter(object):
 
     @property
     def file_reporters(self):
+        """Keep .file_reporters working for private-grabbing tools."""
         warnings.warn(
             "Report.file_reporters will no longer be available in Coverage.py 4.2",
             DeprecationWarning,
