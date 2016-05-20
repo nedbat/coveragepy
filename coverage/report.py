@@ -4,6 +4,7 @@
 """Reporter foundation for coverage.py."""
 
 import os
+import warnings
 
 from coverage.files import prep_patterns, FnmatchMatcher
 from coverage.misc import CoverageException, NoSource, NotPython, isolate_module
@@ -28,6 +29,20 @@ class Reporter(object):
         # classes.
         self.directory = None
 
+        # Our method find_file_reporters used to set an attribute that other
+        # code could read.  That's been refactored away, but some third parties
+        # were using that attribute.  We'll continue to support it in a noisy
+        # way for now.
+        self._file_reporters = []
+
+    @property
+    def file_reporters(self):
+        warnings.warn(
+            "Report.file_reporters will no longer be available in Coverage.py 4.2",
+            DeprecationWarning,
+        )
+        return self._file_reporters
+
     def find_file_reporters(self, morfs):
         """Find the FileReporters we'll report on.
 
@@ -46,7 +61,8 @@ class Reporter(object):
             matcher = FnmatchMatcher(prep_patterns(self.config.omit))
             reporters = [fr for fr in reporters if not matcher.match(fr.filename)]
 
-        return sorted(reporters)
+        self._file_reporters = sorted(reporters)
+        return self._file_reporters
 
     def report_files(self, report_fn, morfs, directory=None):
         """Run a reporting function on a number of morfs.

@@ -7,11 +7,13 @@ import fnmatch
 import os
 import sys
 import textwrap
+import warnings
 
 import coverage
 from coverage import env
 from coverage.backward import StringIO
 from coverage.misc import CoverageException
+from coverage.report import Reporter
 
 from tests.coveragetest import CoverageTest
 
@@ -560,3 +562,17 @@ class TestRunnerPluginTest(CoverageTest):
 
     def test_nose_plugin_with_erase(self):
         self.pretend_to_be_nose_with_cover(erase=True)
+
+
+class ReporterDeprecatedAttributeTest(CoverageTest):
+    """Test that Reporter.file_reporters has been deprecated."""
+
+    run_in_temp_dir = False
+
+    def test_reporter_file_reporters(self):
+        rep = Reporter(None, None)
+        with warnings.catch_warnings(record=True) as warns:
+            warnings.simplefilter("always")
+            rep.file_reporters
+        self.assertEqual(len(warns), 1)
+        self.assertTrue(issubclass(warns[0].category, DeprecationWarning))
