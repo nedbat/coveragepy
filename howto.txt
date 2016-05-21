@@ -1,3 +1,9 @@
+* Making a working tree
+
+mkvirtualenv -p /usr/local/pythonz/pythons/CPython-2.7.11/bin/python coverage
+pip install -U pip
+pip install -r requirements/dev.pip
+
 * Release checklist
 
 - Version number in coverage/version.py
