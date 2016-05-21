@@ -39,6 +39,7 @@ Major change history for coverage.py
 .. :history: 20151124T065800, updated for 4.0.3
 .. :history: 20160110T125800, updated for 4.1b1
 .. :history: 20160510T125200, updated for 4.1b3
+.. :history: 20160521T074300, updated for 4.1
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -50,8 +51,8 @@ history, see the `CHANGES.rst`_ file in the source tree.
 
 .. _changes_41:
 
-Version 4.1b3 pre-release --- 2016-05-10
-----------------------------------------
+Version 4.1b --- 2016-05-21
+---------------------------
 
 - Branch analysis has been rewritten: it used to be based on bytecode, but now
   uses AST analysis.  This has changed a number of things:

@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Unreleased
-----------
+Version 4.1 --- 2016-05-21
+--------------------------
 
 - The internal attribute `Reporter.file_reporters` was removed in 4.1b3.  It
   should have come has no surprise that there were third-party tools out there

@@ -5,7 +5,7 @@
 # This file is exec'ed in setup.py, don't import anything!
 
 # Same semantics as sys.version_info.
-version_info = (4, 1, 0, 'candidate', 1)
+version_info = (4, 1, 0, 'final', 0)
 
 
 def _make_version(major, minor, micro, releaselevel, serial):
