@@ -264,6 +264,11 @@ coverage.pyfile_ready = function ($) {
 
     coverage.assign_shortkeys();
     coverage.wire_up_help_panel();
+
+    coverage.init_scroll_markers();
+
+    // Rebuild scroll markers after window high changing
+    $(window).resize(coverage.resize_scroll_markers);
 };
 
 coverage.toggle_lines = function (btn, cls) {
@@ -509,4 +514,73 @@ coverage.scroll_window = function (to_pos) {
 
 coverage.finish_scrolling = function () {
     $("html,body").stop(true, true);
+};
+
+coverage.init_scroll_markers = function () {
+    var c = coverage;
+    // Init some variables
+    c.lines_len = $('td.text p').length;
+    c.body_h = $('body').height();
+    c.header_h = $('div#header').height();
+    c.missed_lines = $('td.text p.mis, td.text p.par');
+
+    // Build html
+    c.resize_scroll_markers();
+};
+
+coverage.resize_scroll_markers = function () {
+    var c = coverage,
+        min_line_height = 3,
+        max_line_height = 10,
+        visible_window_h = $(window).height();
+
+    $('#scroll_marker').remove();
+    // Don't build markers if the window has no scroll bar.
+    if (c.body_h <= visible_window_h) {
+        return;
+    }
+
+    $("body").append("<div id='scroll_marker'>&nbsp;</div>");
+    var scroll_marker = $('#scroll_marker'),
+        marker_scale = scroll_marker.height() / c.body_h,
+        line_height = scroll_marker.height() / c.lines_len;
+
+    // Line height must be between the extremes.
+    if (line_height > min_line_height) {
+        if (line_height > max_line_height) {
+            line_height = max_line_height;
+        }
+    }
+    else {
+        line_height = min_line_height;
+    }
+
+    var previous_line = -99,
+        last_mark,
+        last_top;
+
+    c.missed_lines.each(function () {
+        var line_top = Math.round($(this).offset().top * marker_scale),
+            id_name = $(this).attr('id'),
+            line_number = parseInt(id_name.substring(1, id_name.length));
+
+        if (line_number === previous_line + 1) {
+            // If this solid missed block just make previous mark higher.
+            last_mark.css({
+                'height': line_top + line_height - last_top
+            });
+        }
+        else {
+            // Add colored line in scroll_marker block.
+            scroll_marker.append('<div id="m' + line_number + '" class="marker"></div>');
+            last_mark = $('#m' + line_number);
+            last_mark.css({
+                'height': line_height,
+                'top': line_top
+            });
+            last_top = line_top;
+        }
+
+        previous_line = line_number;
+    });
 };
