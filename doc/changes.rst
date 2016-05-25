@@ -51,8 +51,8 @@ history, see the `CHANGES.rst`_ file in the source tree.
 
 .. _changes_41:
 
-Version 4.1b --- 2016-05-21
----------------------------
+Version 4.1 --- 2016-05-21
+--------------------------
 
 - Branch analysis has been rewritten: it used to be based on bytecode, but now
   uses AST analysis.  This has changed a number of things:
