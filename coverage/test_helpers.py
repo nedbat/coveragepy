@@ -36,6 +36,10 @@ class Tee(object):
         for f in self._files:
             f.flush()
 
+    def getvalue(self):
+        """StringIO file-likes have .getvalue()"""
+        return self._files[0].getvalue()
+
     if 0:
         # Use this if you need to use a debugger, though it makes some tests
         # fail, I'm not sure why...
