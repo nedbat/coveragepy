@@ -15,7 +15,7 @@ import unittest
 
 from nose.plugins.skip import SkipTest
 
-from coverage.test_helpers import ModuleAwareMixin, SysPathAwareMixin, change_dir, saved_sys_path
+from unittest_mixins import ModuleAwareMixin, SysPathAwareMixin, change_dir, saved_sys_path
 from tests.helpers import run_command
 from tests.backtest import execfile         # pylint: disable=redefined-builtin
 

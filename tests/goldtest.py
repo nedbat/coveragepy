@@ -8,7 +8,7 @@ import sys
 
 from tests.coveragetest import CoverageTest
 
-from coverage.test_helpers import change_dir    # pylint: disable=unused-import
+from unittest_mixins import change_dir    # pylint: disable=unused-import
 from tests.test_farm import clean
 # Import helpers, eventually test_farm.py will go away.
 from tests.test_farm import (       # pylint: disable=unused-import

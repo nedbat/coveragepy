@@ -13,15 +13,16 @@ import shlex
 import shutil
 import sys
 
+from unittest_mixins import (
+    EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
+    DelayedAssertionMixin,
+)
+
 import coverage
 from coverage.backunittest import TestCase
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
 from coverage.debug import _TEST_NAME_FILE, DebugControl
-from coverage.test_helpers import (
-    EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
-    DelayedAssertionMixin,
-)
 
 from nose.plugins.skip import SkipTest
 
