@@ -641,7 +641,7 @@ class CoverageScript(object):
         """Implementation of 'coverage debug'."""
 
         if not args:
-            self.help_fn("What information would you like: data, sys?")
+            self.help_fn("What information would you like: config, data, sys?")
             return ERR
 
         for info in args:
@@ -668,6 +668,11 @@ class CoverageScript(object):
                         print(line)
                 else:
                     print("No data collected")
+            elif info == 'config':
+                print(info_header("config"))
+                config_info = self.coverage.config.__dict__.items()
+                for line in info_formatter(config_info):
+                    print(" %s" % line)
             else:
                 self.help_fn("Don't know what you mean by %r" % info)
                 return ERR

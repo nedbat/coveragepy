@@ -218,7 +218,7 @@ class CmdLineTest(BaseCmdLineTest):
             """)
 
     def test_debug(self):
-        self.cmd_help("debug", "What information would you like: data, sys?")
+        self.cmd_help("debug", "What information would you like: config, data, sys?")
         self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
 
     def test_debug_sys(self):
@@ -226,6 +226,12 @@ class CmdLineTest(BaseCmdLineTest):
         out = self.stdout()
         self.assertIn("version:", out)
         self.assertIn("data_path:", out)
+
+    def test_debug_config(self):
+        self.command_line("debug config")
+        out = self.stdout()
+        self.assertIn("cover_pylib:", out)
+        self.assertIn("skip_covered:", out)
 
     def test_erase(self):
         # coverage erase
