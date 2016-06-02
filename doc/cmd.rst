@@ -415,8 +415,11 @@ command can often help::
 
     $ coverage debug sys > please_attach_to_bug_report.txt
 
-Two types of information are available: ``sys`` to show system configuration,
-and ``data`` to show a summary of the collected coverage data.
+Three types of information are available:
+
+* ``config``: show coverage's configuration
+* ``sys``: show system configuration,
+* ``data``: show a summary of the collected coverage data
 
 
 .. _cmd_run_debug:
