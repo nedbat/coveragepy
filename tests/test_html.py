@@ -274,6 +274,20 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.start_import_stop(cov, "innocuous")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         cov.html_report(ignore_errors=True)
+        self.assertEqual(
+            len(cov._warnings),
+            1,
+            "Expected a warning to be thrown when an invalid python file is parsed")
+        self.assertIn(
+            "Could not parse python file",
+            cov._warnings[0],
+            "Warning message should be in 'invalid file' warning"
+        )
+        self.assertIn(
+            "innocuous.py",
+            cov._warnings[0],
+            "Filename should be in 'invalid file' warning"
+        )
         self.assert_exists("htmlcov/index.html")
         # This would be better as a glob, if the HTML layout changes:
         self.assert_doesnt_exist("htmlcov/innocuous.html")

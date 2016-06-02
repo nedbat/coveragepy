@@ -194,7 +194,7 @@ supply the "pragma: no cover" regex if you still want to use it.
 measurement is under this value, then exit with a status code of 2.
 
 ``ignore_errors`` (boolean, default False): ignore source code that can't be
-found.
+found, emitting a warning instead of an exception.
 
 ``include`` (multi-string): a list of file name patterns, the files to include
 in reporting.  See :ref:`source` for details.

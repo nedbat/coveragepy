@@ -97,5 +97,8 @@ class Reporter(object):
                 # explicitly suppress those errors.
                 # NotPython is only raised by PythonFileReporter, which has a
                 # should_be_python() method.
-                if fr.should_be_python() and not self.config.ignore_errors:
-                    raise
+                if fr.should_be_python(): 
+                    if self.config.ignore_errors:
+                        self.coverage._warn("Could not parse python file {0}".format(fr.filename))
+                    else:
+                        raise
