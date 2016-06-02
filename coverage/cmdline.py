@@ -399,6 +399,8 @@ class CoverageScript(object):
         self.coverage = None
 
         self.program_name = os.path.basename(sys.argv[0])
+        if self.program_name == '__main__.py':
+            self.program_name = 'coverage'
         if env.WINDOWS:
             # entry_points={'console_scripts':...} on Windows makes files
             # called coverage.exe, coverage3.exe, and coverage-3.5.exe. These

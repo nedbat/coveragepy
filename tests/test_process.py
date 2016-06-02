@@ -733,6 +733,15 @@ class ProcessTest(CoverageTest):
             "Coverage.py warning: Module foo was previously imported, but not measured.\n"
         )
 
+    def test_module_name(self):
+        if sys.version_info < (2, 7):
+            # Python 2.6 thinks that coverage is a package that can't be
+            # executed
+            self.skip("-m doesn't work the same < Python 2.7")
+        # https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
+        out = self.run_command("python -m coverage")
+        self.assertIn("Use 'coverage help' for help", out)
+
 
 class AliasedCommandTest(CoverageTest):
     """Tests of the version-specific command aliases."""
