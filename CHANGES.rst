@@ -15,8 +15,12 @@ Unreleased
   shows the current configuration.  Closes `issue 454`_, thanks to Matthew
   Boehm.
 
+- Running coverage as a module (``python -m coverage``) no longer shows the
+  program name as ``__main__.py``.  Fixes `issue 478`_.  Thanks, Scott Belden.
+
 .. _issue 298: https://bitbucket.org/ned/coveragepy/issues/298/show-in-html-report-that-the-columns-are
 .. _issue 454: https://bitbucket.org/ned/coveragepy/issues/454/coverage-debug-config-should-be
+.. _issue 478: https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
 
 
 Version 4.1 --- 2016-05-21
