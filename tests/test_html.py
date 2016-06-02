@@ -279,7 +279,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
             1,
             "Expected a warning to be thrown when an invalid python file is parsed")
         self.assertIn(
-            "Could not parse python file",
+            "Could not parse Python file",
             cov._warnings[0],
             "Warning message should be in 'invalid file' warning"
         )
