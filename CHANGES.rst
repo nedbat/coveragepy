@@ -9,9 +9,14 @@ Unreleased
 ----------
 
 - The HTML report has a more-visible indicator for which column is being
-  sorted.  Closes `issue 298`_, thanks karlw00t.
+  sorted.  Closes `issue 298`_, thanks to karlw00t.
+
+- A new option for ``coverage debug`` is available: ``coverage debug config``
+  shows the current configuration.  Closes `issue 454`_, thanks to Matthew
+  Boehm.
 
 .. _issue 298: https://bitbucket.org/ned/coveragepy/issues/298/show-in-html-report-that-the-columns-are
+.. _issue 454: https://bitbucket.org/ned/coveragepy/issues/454/coverage-debug-config-should-be
 
 
 Version 4.1 --- 2016-05-21
