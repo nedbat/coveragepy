@@ -325,12 +325,12 @@ td.text {
     white-space: nowrap;
     background: #eee;
     }
-#index th.headerSortDown:after { 
+#index th.headerSortDown:after {
     content: " ↓";
-} 
-#index th.headerSortUp:after { 
+}
+#index th.headerSortUp:after {
     content: " ↑";
-} 
+}
 #index td.name, #index th.name {
     text-align: left;
     width: auto;
