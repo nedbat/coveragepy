@@ -15,6 +15,10 @@ Unreleased
   suggests using the ``-i`` flag to allow the report to continue. Closes
   `issue 231`_, thanks, Nathan Land.
 
+- When reports are ignoring errors, there's now a warning if a file cannot be
+  parsed, rather than being silently ignored.  Closes `issue 396`_. Thanks,
+  Matthew Boehm.
+
 - A new option for ``coverage debug`` is available: ``coverage debug config``
   shows the current configuration.  Closes `issue 454`_, thanks to Matthew
   Boehm.
@@ -24,6 +28,7 @@ Unreleased
 
 .. _issue 231: https://bitbucket.org/ned/coveragepy/issues/231/various-default-behavior-in-report-phase
 .. _issue 298: https://bitbucket.org/ned/coveragepy/issues/298/show-in-html-report-that-the-columns-are
+.. _issue 396: https://bitbucket.org/ned/coveragepy/issues/396/coverage-xml-shouldnt-bail-out-on-parse
 .. _issue 454: https://bitbucket.org/ned/coveragepy/issues/454/coverage-debug-config-should-be
 .. _issue 478: https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
 
