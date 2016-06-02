@@ -5,6 +5,14 @@
 Change history for Coverage.py
 ==============================
 
+Unreleased
+----------
+
+- The HTML report has a more-visible indicator for which column is being
+  sorted.  Closes `issue 298`_, thanks karlw00t.
+
+.. _issue 298: https://bitbucket.org/ned/coveragepy/issues/298/show-in-html-report-that-the-columns-are
+
 
 Version 4.1 --- 2016-05-21
 --------------------------
