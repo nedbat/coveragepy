@@ -8,6 +8,15 @@ sudo: false
 python:
   - 2.7
 
+# Add 3.5 so we can run on it.
+# https://github.com/travis-ci/travis-ci/issues/4794#issuecomment-143568134
+addons:
+  apt:
+    sources:
+      - deadsnakes
+    packages:
+      - python3.5
+
 env:
   - TOXENV=py26
   - TOXENV=py27
