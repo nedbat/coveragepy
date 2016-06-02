@@ -14,7 +14,7 @@ mock==2.0.0
 PyContracts==1.7.9
 pyenchant==1.6.6
 pylint==1.4.5
-git+https://github.com/nedbat/unittest-mixins@master#egg=unittest_mixins==0.0
+unittest-mixins==1.0
 
 # for kitting.
 requests==2.10.0
