@@ -26,11 +26,15 @@ Unreleased
 - Running coverage as a module (``python -m coverage``) no longer shows the
   program name as ``__main__.py``.  Fixes `issue 478`_.  Thanks, Scott Belden.
 
+- The `test_helpers` module has been moved into a separate pip-installable
+  package: `unittest-mixins`_.
+
 .. _issue 231: https://bitbucket.org/ned/coveragepy/issues/231/various-default-behavior-in-report-phase
 .. _issue 298: https://bitbucket.org/ned/coveragepy/issues/298/show-in-html-report-that-the-columns-are
 .. _issue 396: https://bitbucket.org/ned/coveragepy/issues/396/coverage-xml-shouldnt-bail-out-on-parse
 .. _issue 454: https://bitbucket.org/ned/coveragepy/issues/454/coverage-debug-config-should-be
 .. _issue 478: https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
+.. _unittest-mixins: https://pypi.python.org/pypi/unittest-mixins
 
 
 Version 4.1 --- 2016-05-21
