@@ -290,6 +290,7 @@ class CoverageConfig(object):
         ('precision', 'report:precision', 'int'),
         ('show_missing', 'report:show_missing', 'boolean'),
         ('skip_covered', 'report:skip_covered', 'boolean'),
+        ('sort', 'report:sort'),
 
         # [html]
         ('extra_css', 'html:extra_css'),
