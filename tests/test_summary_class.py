@@ -5,17 +5,10 @@
 """Test text-based summary reporter for coverage.py"""
 
 import collections
-import unittest
 import os.path
 import sys
-if sys.version_info < (3, ):
-    try:
-        from cStringIO import StringIO
-    except ImportError:
-        from StringIO import StringIO
-else:
-    from io import StringIO
-from coverage import summary, data, control, config
+from coverage.backward import StringIO
+from coverage import backunittest, config, control, data, summary
 
 LINES_1 = {
     __file__: {-1: 1, 7: 1},
@@ -23,7 +16,7 @@ LINES_1 = {
 }
 
 
-class TestSummaryReporterConfiguration(unittest.TestCase):
+class TestSummaryReporterConfiguration(backunittest.TestCase):
     def get_coverage_data(self, lines=LINES_1):
         """Get a CoverageData object that includes the requested lines."""
         data1 = data.CoverageData()
@@ -57,10 +50,7 @@ class TestSummaryReporterConfiguration(unittest.TestCase):
         opts = config.CoverageConfig()
         opts.from_args(show_missing=True)
         report = self.get_summary_text(data, opts)
-        if sys.version_info > (2, 7):
-            self.assertIn('Missing', report)
-        else:
-            self.assertTrue('Missing' in report)
+        self.assertTrue('Missing' in report)
         self.assertNotIn('Branch', report)
 
     def test_sort_report(self):
@@ -73,7 +63,4 @@ class TestSummaryReporterConfiguration(unittest.TestCase):
         filename = os.path.splitext(os.path.basename(__file__))[0]
         location1 = report.find('helpers')
         location2 = report.find(filename)
-        if sys.version_info > (2, 7):
-            self.assertLess(location1, location2)
-        else:
-            self.assertTrue(location1 < location2)
+        self.assertTrue(location1 < location2)
