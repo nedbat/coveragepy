@@ -51,3 +51,15 @@ class TestSummaryReporterConfiguration(unittest.TestCase):
         report = self.get_summary_text(data, opts)
         self.assertIn('Missing', report)
         self.assertNotIn('Branch', report)
+
+    def test_sort_report(self):
+        """Sort the text report."""
+        data = self.get_coverage_data()
+        opts = config.CoverageConfig()
+        opts.from_args(sort='Stmts')
+        report = self.get_summary_text(data, opts)
+        # just the basename, to avoid pyc and directory name complexities
+        filename = os.path.splitext(os.path.basename(__file__))[0]
+        location1 = report.find('helpers')
+        location2 = report.find(filename)
+        self.assertLess(location1, location2)

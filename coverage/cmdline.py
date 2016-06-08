@@ -82,6 +82,14 @@ class Opts(object):
         '--skip-covered', action='store_true',
         help="Skip files with 100% coverage.",
     )
+    SORT_CHOICES = ('Name', 'Stmts', 'Miss', 'Cover')
+    sort = optparse.make_option(
+        '--sort', action='store', choices=SORT_CHOICES,
+        help=(
+              "Sort report by a column. "
+              "Valid values are: %s."
+        ) % ", ".join(SORT_CHOICES)
+    )
     omit = optparse.make_option(
         '', '--omit', action='store',
         metavar="PAT1,PAT2,...",
@@ -335,6 +343,7 @@ CMDS = {
             Opts.include,
             Opts.omit,
             Opts.show_missing,
+            Opts.sort,
             Opts.skip_covered,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
@@ -504,7 +513,8 @@ class CoverageScript(object):
         if options.action == "report":
             total = self.coverage.report(
                 show_missing=options.show_missing,
-                skip_covered=options.skip_covered, **report_args)
+                skip_covered=options.skip_covered, sort_name=options.sort,
+                **report_args)
         elif options.action == "annotate":
             self.coverage.annotate(
                 directory=options.directory, **report_args)

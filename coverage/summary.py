@@ -62,6 +62,7 @@ class SummaryReporter(Reporter):
 
         total = Numbers()
         skipped_count = 0
+        lines = []
 
         for fr in file_reporters:
             try:
@@ -90,7 +91,10 @@ class SummaryReporter(Reporter):
                                 missing_fmtd += ", "
                             missing_fmtd += branches_fmtd
                     args += (missing_fmtd,)
-                writeout(fmt_coverage % args)
+                text = fmt_coverage % args
+                # Add numeric percent coverage so that sorting makes sense
+                args += (nums.pc_covered,)
+                lines.append((text, args))
             except Exception:
                 report_it = not self.config.ignore_errors
                 if report_it:
@@ -100,7 +104,19 @@ class SummaryReporter(Reporter):
                     if typ is NotPython and not fr.should_be_python():
                         report_it = False
                 if report_it:
-                    writeout(fmt_err % (fr.relative_filename(), typ.__name__, msg))
+                    args = (fr.relative_filename(), typ.__name__, msg)
+                    lines.append((fmt_err % args, (fr.relative_filename(), 0, 0, 0, 0)))
+
+        if getattr(self.config, 'sort', None):
+            column_order = dict(Name=0,
+                                Stmts=1,
+                                Miss=2,
+                                Cover=-1,
+                                Missing=4)
+            position = column_order.get(self.config.sort)
+            lines.sort(key=lambda l: (l[1][position], l[0]))
+        for line in lines:
+            writeout(line[0])
 
         if total.n_files > 1:
             writeout(rule)

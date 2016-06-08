@@ -43,7 +43,7 @@ class BaseCmdLineTest(CoverageTest):
     )
     defaults.report(
         ignore_errors=None, include=None, omit=None, morfs=[],
-        show_missing=None, skip_covered=None
+        show_missing=None, skip_covered=None, sort_name=None
     )
     defaults.xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
@@ -340,6 +340,11 @@ class CmdLineTest(BaseCmdLineTest):
             .coverage()
             .load()
             .report(skip_covered=True)
+            """)
+        self.cmd_executes("report --sort Stmts", """\
+            .coverage()
+            .load()
+            .report(sort_name='Stmts')
             """)
 
     def test_run(self):
