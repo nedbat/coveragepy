@@ -7,10 +7,14 @@
 import collections
 import unittest
 import os.path
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+import sys
+if sys.version_info < (3, ):
+    try:
+        from cStringIO import StringIO
+    except ImportError:
+        from StringIO import StringIO
+else:
+    from io import StringIO
 from coverage import summary, data, control, config
 
 LINES_1 = {
@@ -35,6 +39,10 @@ class TestSummaryReporterConfiguration(unittest.TestCase):
         printer.report([], destination)
         return destination.getvalue()
 
+    if sys.version_info < (2, 7):
+        def assertNotIn(self, needle, haystack):
+            self.assertTrue(needle not in haystack)
+
     def test_defaults(self):
         """Run the report with no configuration options."""
         data = self.get_coverage_data()
@@ -49,7 +57,10 @@ class TestSummaryReporterConfiguration(unittest.TestCase):
         opts = config.CoverageConfig()
         opts.from_args(show_missing=True)
         report = self.get_summary_text(data, opts)
-        self.assertIn('Missing', report)
+        if sys.version_info > (2, 7):
+            self.assertIn('Missing', report)
+        else:
+            self.assertTrue('Missing' in report)
         self.assertNotIn('Branch', report)
 
     def test_sort_report(self):
@@ -62,4 +73,7 @@ class TestSummaryReporterConfiguration(unittest.TestCase):
         filename = os.path.splitext(os.path.basename(__file__))[0]
         location1 = report.find('helpers')
         location2 = report.find(filename)
-        self.assertLess(location1, location2)
+        if sys.version_info > (2, 7):
+            self.assertLess(location1, location2)
+        else:
+            self.assertTrue(location1 < location2)
