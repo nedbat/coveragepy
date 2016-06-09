@@ -21,6 +21,7 @@ Christian Heimes
 Christine Lytwynec
 Christoph Zwerschke
 Conrad Ho
+Dan Wandschneider
 Danek Duvall
 Danny Allen
 David Christian
