@@ -40,8 +40,3 @@ class TestCase(unittest.TestCase):
     if not unittest_has('assertRegex'):
         def assertRegex(self, *args, **kwargs):
             return self.assertRegexpMatches(*args, **kwargs)
-
-    if not unittest_has('assertNotIn'):
-        def assertNotIn(self, needle, haystack):
-            self.assertTrue(needle not in haystack)
-

@@ -8,6 +8,10 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- A new configuration option, ``report:sort``, controls what columns of the
+  text report is used to sort the rows.  Thanks to Dan Wandschneider, this
+  closes `issue 199`_.
+
 - The HTML report has a more-visible indicator for which column is being
   sorted.  Closes `issue 298`_, thanks to karlw00t.
 
@@ -29,6 +33,7 @@ Unreleased
 - The `test_helpers` module has been moved into a separate pip-installable
   package: `unittest-mixins`_.
 
+.. _issue 199: https://bitbucket.org/ned/coveragepy/issues/199/add-a-way-to-sort-the-text-report
 .. _issue 231: https://bitbucket.org/ned/coveragepy/issues/231/various-default-behavior-in-report-phase
 .. _issue 298: https://bitbucket.org/ned/coveragepy/issues/298/show-in-html-report-that-the-columns-are
 .. _issue 396: https://bitbucket.org/ned/coveragepy/issues/396/coverage-xml-shouldnt-bail-out-on-parse

@@ -4,11 +4,14 @@
 
 """Test text-based summary reporter for coverage.py"""
 
-import collections
 import os.path
-import sys
+
 from coverage.backward import StringIO
-from coverage import backunittest, config, control, data, summary
+from coverage.backunittest import TestCase
+from coverage.config import CoverageConfig
+from coverage.control import Coverage
+from coverage.data import CoverageData
+from coverage.summary import SummaryReporter
 
 LINES_1 = {
     __file__: {-1: 1, 7: 1},
@@ -16,38 +19,36 @@ LINES_1 = {
 }
 
 
-class TestSummaryReporterConfiguration(backunittest.TestCase):
-    def get_coverage_data(self, lines=LINES_1):
+class TestSummaryReporterConfiguration(TestCase):
+    """Tests of SummaryReporter."""
+
+    def get_coverage_data(self, lines):
         """Get a CoverageData object that includes the requested lines."""
-        data1 = data.CoverageData()
-        data1.add_lines(lines)
-        return data1
+        data = CoverageData()
+        data.add_lines(lines)
+        return data
 
     def get_summary_text(self, coverage_data, options):
         """Get text output from the SummaryReporter."""
-        cov = control.Coverage()
+        cov = Coverage()
         cov.data = coverage_data
-        printer = summary.SummaryReporter(cov, options)
+        printer = SummaryReporter(cov, options)
         destination = StringIO()
         printer.report([], destination)
         return destination.getvalue()
 
-    if sys.version_info < (2, 7):
-        def assertNotIn(self, needle, haystack):
-            self.assertTrue(needle not in haystack)
-
     def test_defaults(self):
         """Run the report with no configuration options."""
-        data = self.get_coverage_data()
-        opts = config.CoverageConfig()
+        data = self.get_coverage_data(LINES_1)
+        opts = CoverageConfig()
         report = self.get_summary_text(data, opts)
         self.assertNotIn('Missing', report)
         self.assertNotIn('Branch', report)
 
     def test_print_missing(self):
         """Run the report printing the missing lines."""
-        data = self.get_coverage_data()
-        opts = config.CoverageConfig()
+        data = self.get_coverage_data(LINES_1)
+        opts = CoverageConfig()
         opts.from_args(show_missing=True)
         report = self.get_summary_text(data, opts)
         self.assertTrue('Missing' in report)
@@ -55,8 +56,8 @@ class TestSummaryReporterConfiguration(backunittest.TestCase):
 
     def test_sort_report(self):
         """Sort the text report."""
-        data = self.get_coverage_data()
-        opts = config.CoverageConfig()
+        data = self.get_coverage_data(LINES_1)
+        opts = CoverageConfig()
         opts.from_args(sort='Stmts')
         report = self.get_summary_text(data, opts)
         # just the basename, to avoid pyc and directory name complexities
