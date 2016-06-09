@@ -46,6 +46,10 @@ class SummaryReporter(Reporter):
             fmt_coverage += u"   %s"
         rule = u"-" * len(header)
 
+        column_order = dict(name=0, stmts=1, miss=2, cover=-1)
+        if self.branches:
+            column_order.update(dict(branch=3, brpart=4))
+
         if outfile is None:
             outfile = sys.stdout
 
@@ -60,9 +64,12 @@ class SummaryReporter(Reporter):
         writeout(header)
         writeout(rule)
 
+        # `lines` is a list of pairs, (line text, line values).  The line text
+        # is what will be printed, the line values are for sorting.
+        lines = []
+
         total = Numbers()
         skipped_count = 0
-        lines = []
 
         for fr in file_reporters:
             try:
@@ -92,7 +99,7 @@ class SummaryReporter(Reporter):
                             missing_fmtd += branches_fmtd
                     args += (missing_fmtd,)
                 text = fmt_coverage % args
-                # Add numeric percent coverage so that sorting makes sense
+                # Add numeric percent coverage so that sorting makes sense.
                 args += (nums.pc_covered,)
                 lines.append((text, args))
             except Exception:
@@ -104,20 +111,17 @@ class SummaryReporter(Reporter):
                     if typ is NotPython and not fr.should_be_python():
                         report_it = False
                 if report_it:
-                    args = (fr.relative_filename(), typ.__name__, msg)
-                    lines.append((fmt_err % args, (fr.relative_filename(), 0, 0, 0, 0)))
+                    writeout(fmt_err % (fr.relative_filename(), typ.__name__, msg))
 
+        # Sort the lines and write them out.
         if getattr(self.config, 'sort', None):
-            column_order = dict(Name=0,
-                                Stmts=1,
-                                Miss=2,
-                                Cover=-1,
-                                Missing=4)
-            position = column_order.get(self.config.sort)
+            position = column_order.get(self.config.sort.lower())
             lines.sort(key=lambda l: (l[1][position], l[0]))
+
         for line in lines:
             writeout(line[0])
 
+        # Write a TOTAl line if we had more than one file.
         if total.n_files > 1:
             writeout(rule)
             args = ("TOTAL", total.n_statements, total.n_missing)
@@ -128,6 +132,7 @@ class SummaryReporter(Reporter):
                 args += ("",)
             writeout(fmt_coverage % args)
 
+        # Write other final lines.
         if not total.n_files and not skipped_count:
             raise CoverageException("No data to report.")
 
