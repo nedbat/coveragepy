@@ -218,8 +218,8 @@ missing lines.  See :ref:`cmd_summary` for more information.
 ``skip_covered`` (boolean, default False): Don't include files in the report
 that are 100% covered files. See :ref:`cmd_summary` for more information.
 
-``sort`` (string, default "Name"): Sort report by the named column. Allowed
-values: "Name", "Stmts", "Miss", or "Cover".
+``sort`` (string, default "Name"): Sort the text report by the named column.
+Allowed values are "Name", "Stmts", "Miss", "Branch", "BrPart", or "Cover".
 
 
 .. _config_html:

@@ -8,7 +8,7 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-- A new configuration option, ``report:sort``, controls what columns of the
+- A new configuration option, ``report:sort``, controls what column of the
   text report is used to sort the rows.  Thanks to Dan Wandschneider, this
   closes `issue 199`_.
 
