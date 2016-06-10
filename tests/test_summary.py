@@ -646,16 +646,19 @@ class ReportingReturnValueTest(CoverageTest):
         self.assertAlmostEqual(val, 85.7, 1)
 
 
-LINES_1 = {
-    __file__: {-1: 1, 7: 1},
-    os.path.join(os.path.dirname(__file__), 'helpers.py'): {-1: 1, 7: 1},
-}
-
-
 class TestSummaryReporterConfiguration(CoverageTest):
     """Tests of SummaryReporter."""
 
     run_in_temp_dir = False
+
+    # We just need some readable files to work with. These will do.
+    HERE = os.path.dirname(__file__)
+
+    LINES_1 = {
+        os.path.join(HERE, "test_api.py"): dict.fromkeys(range(300)),
+        os.path.join(HERE, "test_backward.py"): dict.fromkeys(range(20)),
+        os.path.join(HERE, "test_coverage.py"): dict.fromkeys(range(15)),
+    }
 
     def get_coverage_data(self, lines):
         """Get a CoverageData object that includes the requested lines."""
@@ -666,15 +669,44 @@ class TestSummaryReporterConfiguration(CoverageTest):
     def get_summary_text(self, coverage_data, options):
         """Get text output from the SummaryReporter."""
         cov = Coverage()
+        cov.start()
+        cov.stop()
         cov.data = coverage_data
         printer = SummaryReporter(cov, options)
         destination = StringIO()
         printer.report([], destination)
         return destination.getvalue()
 
+    def test_test_data(self):
+        # We use our own test files as test data. Check that our assumptions
+        # about them are still valid.  We want the three columns of numbers to
+        # sort in three different orders.
+        data = self.get_coverage_data(self.LINES_1)
+        report = self.get_summary_text(data, CoverageConfig())
+        print(report)
+        # Name                     Stmts   Miss  Cover
+        # --------------------------------------------
+        # tests/test_api.py          339    155    54%
+        # tests/test_backward.py      13      3    77%
+        # tests/test_coverage.py     234    228     3%
+        # --------------------------------------------
+        # TOTAL                      586    386    34%
+
+        lines = report.splitlines()[2:-2]
+        self.assertEqual(len(lines), 3)
+        nums = [list(map(int, l.replace('%', '').split()[1:])) for l in lines]
+        # [
+        #  [339, 155, 54], 
+        #  [ 13,   3, 77], 
+        #  [234, 228,  3]
+        # ]
+        self.assertTrue(nums[1][0] < nums[2][0] < nums[0][0])
+        self.assertTrue(nums[1][1] < nums[0][1] < nums[2][1])
+        self.assertTrue(nums[2][2] < nums[0][2] < nums[1][2])
+
     def test_defaults(self):
         """Run the report with no configuration options."""
-        data = self.get_coverage_data(LINES_1)
+        data = self.get_coverage_data(self.LINES_1)
         opts = CoverageConfig()
         report = self.get_summary_text(data, opts)
         self.assertNotIn('Missing', report)
@@ -682,21 +714,33 @@ class TestSummaryReporterConfiguration(CoverageTest):
 
     def test_print_missing(self):
         """Run the report printing the missing lines."""
-        data = self.get_coverage_data(LINES_1)
+        data = self.get_coverage_data(self.LINES_1)
         opts = CoverageConfig()
         opts.from_args(show_missing=True)
         report = self.get_summary_text(data, opts)
-        self.assertTrue('Missing' in report)
+        self.assertIn('Missing', report)
         self.assertNotIn('Branch', report)
 
-    def test_sort_report(self):
-        """Sort the text report."""
-        data = self.get_coverage_data(LINES_1)
+    def assert_ordering(self, text, *words):
+        """Assert that the `words` appear in order in `text`."""
+        indexes = list(map(text.find, words))
+        self.assertEqual(
+            indexes, sorted(indexes),
+            "The words %r don't appear in order in %r" % (words, text)
+        )
+
+    def test_sort_report_by_stmts(self):
+        # Sort the text report by the Stmts column.
+        data = self.get_coverage_data(self.LINES_1)
         opts = CoverageConfig()
         opts.from_args(sort='Stmts')
         report = self.get_summary_text(data, opts)
-        # just the basename, to avoid pyc and directory name complexities
-        filename = os.path.splitext(os.path.basename(__file__))[0]
-        location1 = report.find('helpers')
-        location2 = report.find(filename)
-        self.assertTrue(location1 < location2)
+        self.assert_ordering(report, "test_backward.py", "test_coverage.py", "test_api.py")
+
+    def test_sort_report_by_cover(self):
+        # Sort the text report by the Cover column.
+        data = self.get_coverage_data(self.LINES_1)
+        opts = CoverageConfig()
+        opts.from_args(sort='Cover')
+        report = self.get_summary_text(data, opts)
+        self.assert_ordering(report, "test_coverage.py", "test_api.py", "test_backward.py")

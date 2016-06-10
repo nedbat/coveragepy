@@ -27,7 +27,7 @@ class SummaryReporter(Reporter):
         """
         file_reporters = self.find_file_reporters(morfs)
 
-        # Prepare the formatting strings
+        # Prepare the formatting strings, header, and column sorting.
         max_name = max([len(fr.relative_filename()) for fr in file_reporters] + [5])
         fmt_name = u"%%- %ds  " % max_name
         fmt_err = u"%s   %s: %s"
@@ -65,7 +65,8 @@ class SummaryReporter(Reporter):
         writeout(rule)
 
         # `lines` is a list of pairs, (line text, line values).  The line text
-        # is what will be printed, the line values are for sorting.
+        # is a string that will be printed, and line values is a tuple of
+        # sortable values.
         lines = []
 
         total = Numbers()
