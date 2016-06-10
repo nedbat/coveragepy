@@ -17,7 +17,7 @@ from coverage.backward import StringIO
 from coverage.config import CoverageConfig
 from coverage.control import Coverage
 from coverage.data import CoverageData
-from coverage.misc import output_encoding
+from coverage.misc import CoverageException, output_encoding
 from coverage.summary import SummaryReporter
 
 from tests.coveragetest import CoverageTest
@@ -696,8 +696,8 @@ class TestSummaryReporterConfiguration(CoverageTest):
         self.assertEqual(len(lines), 3)
         nums = [list(map(int, l.replace('%', '').split()[1:])) for l in lines]
         # [
-        #  [339, 155, 54], 
-        #  [ 13,   3, 77], 
+        #  [339, 155, 54],
+        #  [ 13,   3, 77],
         #  [234, 228,  3]
         # ]
         self.assertTrue(nums[1][0] < nums[2][0] < nums[0][0])
@@ -744,3 +744,12 @@ class TestSummaryReporterConfiguration(CoverageTest):
         opts.from_args(sort='Cover')
         report = self.get_summary_text(data, opts)
         self.assert_ordering(report, "test_coverage.py", "test_api.py", "test_backward.py")
+
+    def test_sort_report_by_invalid_option(self):
+        # Sort the text report by a nonsense column.
+        data = self.get_coverage_data(self.LINES_1)
+        opts = CoverageConfig()
+        opts.from_args(sort='Xyzzy')
+        msg = "Invalid sorting option: 'Xyzzy'"
+        with self.assertRaisesRegex(CoverageException, msg):
+            self.get_summary_text(data, opts)

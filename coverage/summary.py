@@ -117,6 +117,8 @@ class SummaryReporter(Reporter):
         # Sort the lines and write them out.
         if getattr(self.config, 'sort', None):
             position = column_order.get(self.config.sort.lower())
+            if position is None:
+                raise CoverageException("Invalid sorting option: {0!r}".format(self.config.sort))
             lines.sort(key=lambda l: (l[1][position], l[0]))
 
         for line in lines:
