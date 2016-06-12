@@ -17,7 +17,7 @@ from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
 
-TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules", "process_test", "try_execfile.py")
+TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try_execfile.py")
 
 
 class ProcessTest(CoverageTest):

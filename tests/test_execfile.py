@@ -16,15 +16,14 @@ from coverage.misc import NoCode, NoSource
 
 from tests.coveragetest import CoverageTest
 
-HERE = os.path.dirname(__file__)
+TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try_execfile.py")
 
 
 class RunFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
 
     def test_run_python_file(self):
-        tryfile = os.path.join(HERE, "try_execfile.py")
-        run_python_file(tryfile, [tryfile, "arg1", "arg2"])
+        run_python_file(TRY_EXECFILE, [TRY_EXECFILE, "arg1", "arg2"])
         mod_globs = json.loads(self.stdout())
 
         # The file should think it is __main__
@@ -44,7 +43,7 @@ class RunFileTest(CoverageTest):
         self.assertEqual(mod_globs['__main__.DATA'], "xyzzy")
 
         # Argv should have the proper values.
-        self.assertEqual(mod_globs['argv'], [tryfile, "arg1", "arg2"])
+        self.assertEqual(mod_globs['argv'], [TRY_EXECFILE, "arg1", "arg2"])
 
         # __builtins__ should have the right values, like open().
         self.assertEqual(mod_globs['__builtins__.has_open'], True)
