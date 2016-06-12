@@ -123,7 +123,7 @@ class SourceEncodingTest(CoverageTest):
         if env.PYPY and env.PY3:
             # PyPy3 gets this case wrong. Not sure what I can do about it,
             # so skip the test.
-            self.skip("PyPy3 is wrong about non-comment encoding. Skip it.")
+            self.skipTest("PyPy3 is wrong about non-comment encoding. Skip it.")
         # Should not detect anything here
         source = b'def parse(src, encoding=None):\n    pass'
         self.assertEqual(source_encoding(source), DEF_ENCODING)

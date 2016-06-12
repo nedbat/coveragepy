@@ -326,7 +326,7 @@ class SimpleStatementTest(CoverageTest):
 
     def test_print(self):
         if env.PY3:         # Print statement is gone in Py3k.
-            self.skip("No more print statement in Python 3.")
+            self.skipTest("No more print statement in Python 3.")
 
         self.check_coverage("""\
             print "hello, world!"
@@ -422,7 +422,7 @@ class SimpleStatementTest(CoverageTest):
         # Peephole optimization of jumps to jumps can mean that some statements
         # never hit the line tracer.  The behavior is different in different
         # versions of Python, so don't run this test:
-        self.skip("Expected failure: peephole optimization of jumps to jumps")
+        self.skipTest("Expected failure: peephole optimization of jumps to jumps")
         self.check_coverage("""\
             a = b = c = 0
             for n in range(100):

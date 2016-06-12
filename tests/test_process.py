@@ -521,7 +521,7 @@ class ProcessTest(CoverageTest):
         if sys.version_info < (2, 7):
             # Coverage.py isn't bug-for-bug compatible in the behavior of -m for
             # Pythons < 2.7
-            self.skip("-m doesn't work the same < Python 2.7")
+            self.skipTest("-m doesn't work the same < Python 2.7")
         # https://bitbucket.org/ned/coveragepy/issue/207
         self.make_file("package/__init__.py", "print('init')")
         self.make_file("package/__main__.py", "print('main')")
@@ -531,7 +531,7 @@ class ProcessTest(CoverageTest):
 
     def test_fork(self):
         if not hasattr(os, 'fork'):
-            self.skip("Can't test os.fork since it doesn't exist.")
+            self.skipTest("Can't test os.fork since it doesn't exist.")
 
         self.make_file("fork.py", """\
             import os
@@ -670,10 +670,10 @@ class ProcessTest(CoverageTest):
 
     def test_fullcoverage(self):                        # pragma: not covered
         if env.PY2:             # This doesn't work on Python 2.
-            self.skip("fullcoverage doesn't work on Python 2.")
+            self.skipTest("fullcoverage doesn't work on Python 2.")
         # It only works with the C tracer, and if we aren't measuring ourselves.
         if not env.C_TRACER or env.METACOV:
-            self.skip("fullcoverage only works with the C tracer.")
+            self.skipTest("fullcoverage only works with the C tracer.")
 
         # fullcoverage is a trick to get stdlib modules measured from
         # the very beginning of the process. Here we import os and
@@ -737,7 +737,7 @@ class ProcessTest(CoverageTest):
         if sys.version_info < (2, 7):
             # Python 2.6 thinks that coverage is a package that can't be
             # executed
-            self.skip("-m doesn't work the same < Python 2.7")
+            self.skipTest("-m doesn't work the same < Python 2.7")
         # https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
         out = self.run_command("python -m coverage")
         self.assertIn("Use 'coverage help' for help", out)
@@ -1023,7 +1023,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
 
     def test_subprocess_with_pth_files(self):           # pragma: not covered
         if env.METACOV:
-            self.skip("Can't test sub-process pth file suppport during metacoverage")
+            self.skipTest("Can't test sub-process pth file suppport during metacoverage")
 
         # Main will run sub.py
         self.make_file("main.py", """\
@@ -1085,7 +1085,7 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
         """
         if env.METACOV:
-            self.skip("Can't test sub-process pth file suppport during metacoverage")
+            self.skipTest("Can't test sub-process pth file suppport during metacoverage")
 
         def fullname(modname):
             """What is the full module name for `modname` for this test?"""

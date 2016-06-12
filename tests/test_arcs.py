@@ -370,7 +370,7 @@ class LoopArcTest(CoverageTest):
 
     def test_other_comprehensions(self):
         if env.PYVERSION < (2, 7):
-            self.skip("Don't have set or dict comprehensions before 2.7")
+            self.skipTest("Don't have set or dict comprehensions before 2.7")
         # Set comprehension:
         self.check_coverage("""\
             o = ((1,2), (3,4))
@@ -394,7 +394,7 @@ class LoopArcTest(CoverageTest):
 
     def test_multiline_dict_comp(self):
         if env.PYVERSION < (2, 7):
-            self.skip("Don't have set or dict comprehensions before 2.7")
+            self.skipTest("Don't have set or dict comprehensions before 2.7")
         if env.PYVERSION < (3, 5):
             arcz = "-42 2B B-4   2-4"
         else:
@@ -965,7 +965,7 @@ class YieldTest(CoverageTest):
 
     def test_yield_from(self):
         if env.PYVERSION < (3, 3):
-            self.skip("Python before 3.3 doesn't have 'yield from'")
+            self.skipTest("Python before 3.3 doesn't have 'yield from'")
         self.check_coverage("""\
             def gen(inp):
                 i = 2
@@ -1036,7 +1036,7 @@ class MiscArcTest(CoverageTest):
 
     def test_unpacked_literals(self):
         if env.PYVERSION < (3, 5):
-            self.skip("Don't have unpacked literals until 3.5")
+            self.skipTest("Don't have unpacked literals until 3.5")
         self.check_coverage("""\
             d = {
                 'a': 2,
@@ -1302,7 +1302,7 @@ class AsyncTest(CoverageTest):
 
     def setUp(self):
         if env.PYVERSION < (3, 5):
-            self.skip("Async features are new in Python 3.5")
+            self.skipTest("Async features are new in Python 3.5")
         super(AsyncTest, self).setUp()
 
     def test_async(self):

@@ -509,7 +509,7 @@ class SummaryTest(CoverageTest):
 
     def test_pyw_files(self):
         if not env.WINDOWS:
-            self.skip(".pyw files are only on Windows.")
+            self.skipTest(".pyw files are only on Windows.")
 
         # https://bitbucket.org/ned/coveragepy/issue/261
         self.make_file("start.pyw", """\
@@ -550,7 +550,7 @@ class SummaryTest(CoverageTest):
     def test_missing_py_file_during_run(self):
         # PyPy2 doesn't run bare .pyc files.
         if env.PYPY and env.PY2:
-            self.skip("PyPy2 doesn't run bare .pyc files")
+            self.skipTest("PyPy2 doesn't run bare .pyc files")
 
         # Create two Python files.
         self.make_file("mod.py", "a = 1\n")

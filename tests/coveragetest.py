@@ -24,8 +24,6 @@ from coverage.backward import StringIO, import_local_file, string_class, shlex_q
 from coverage.cmdline import CoverageScript
 from coverage.debug import _TEST_NAME_FILE, DebugControl
 
-from nose.plugins.skip import SkipTest
-
 from tests.helpers import run_command
 
 
@@ -61,11 +59,6 @@ class CoverageTest(
                 f.write("%s_%s" % (
                     self.__class__.__name__, self._testMethodName,
                 ))
-
-    def skip(self, reason):
-        """Skip this test, and give a reason."""
-        self.class_behavior().skipped += 1
-        raise SkipTest(reason)
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.

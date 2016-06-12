@@ -248,7 +248,7 @@ class PluginWarningOnPyTracer(CoverageTest):
     """Test that we get a controlled exception with plugins on PyTracer."""
     def test_exception_if_plugins_on_pytracer(self):
         if env.C_TRACER:
-            self.skip("This test is only about PyTracer.")
+            self.skipTest("This test is only about PyTracer.")
 
         self.make_file("simple.py", """a = 1""")
 
@@ -268,7 +268,7 @@ class FileTracerTest(CoverageTest):
     def setUp(self):
         super(FileTracerTest, self).setUp()
         if not env.C_TRACER:
-            self.skip("Plugins are only supported with the C tracer.")
+            self.skipTest("Plugins are only supported with the C tracer.")
 
 
 class GoodPluginTest(FileTracerTest):

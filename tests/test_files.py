@@ -271,7 +271,7 @@ class WindowsFileTest(CoverageTest):
 
     def setUp(self):
         if not env.WINDOWS:
-            self.skip("Only need to run Windows tests on Windows.")
+            self.skipTest("Only need to run Windows tests on Windows.")
         super(WindowsFileTest, self).setUp()
 
     def test_actual_path(self):

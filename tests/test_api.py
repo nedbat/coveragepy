@@ -282,7 +282,7 @@ class ApiTest(CoverageTest):
         self.check_code1_code2(cov)
 
     def test_start_save_stop(self):
-        self.skip("Expected failure: https://bitbucket.org/ned/coveragepy/issue/79")
+        self.skipTest("Expected failure: https://bitbucket.org/ned/coveragepy/issue/79")
         self.make_code1_code2()
         cov = coverage.Coverage()
         cov.start()
@@ -331,7 +331,7 @@ class NamespaceModuleTest(CoverageTest):
     def setUp(self):
         super(NamespaceModuleTest, self).setUp()
         if env.PYVERSION < (3, 3):
-            self.skip("Python before 3.3 doesn't have namespace packages")
+            self.skipTest("Python before 3.3 doesn't have namespace packages")
 
     def test_explicit_namespace_module(self):
         self.make_file("namespace/package/module.py", "VAR = 1\n")
