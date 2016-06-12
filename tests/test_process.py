@@ -17,7 +17,7 @@ from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
 
-HERE = os.path.dirname(__file__)
+TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules", "process_test", "try_execfile.py")
 
 
 class ProcessTest(CoverageTest):
@@ -42,7 +42,7 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
 
     def test_environment(self):
-        # Checks that we can import modules from the test directory at all!
+        # Checks that we can import modules from the tests directory at all!
         self.make_file("mycode.py", """\
             import covmod1
             import covmodzip1
@@ -425,23 +425,27 @@ class ProcessTest(CoverageTest):
         self.assertEqual(status, status2)
         self.assertEqual(status, 0)
 
+    def assert_execfile_output(self, out):
+        """Assert that the output we got is a successful run of try_execfile.py"""
+        self.assertIn('"DATA": "xyzzy"', out)
+
     def test_coverage_run_is_like_python(self):
-        tryfile = os.path.join(HERE, "try_execfile.py")
-        with open(tryfile) as f:
+        with open(TRY_EXECFILE) as f:
             self.make_file("run_me.py", f.read())
         out_cov = self.run_command("coverage run run_me.py")
         out_py = self.run_command("python run_me.py")
         self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
 
     def test_coverage_run_dashm_is_like_python_dashm(self):
         # These -m commands assume the coverage tree is on the path.
-        out_cov = self.run_command("coverage run -m tests.try_execfile")
-        out_py = self.run_command("python -m tests.try_execfile")
+        out_cov = self.run_command("coverage run -m process_test.try_execfile")
+        out_py = self.run_command("python -m process_test.try_execfile")
         self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
 
     def test_coverage_run_dir_is_like_python_dir(self):
-        tryfile = os.path.join(HERE, "try_execfile.py")
-        with open(tryfile) as f:
+        with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
         out_cov = self.run_command("coverage run with_main")
         out_py = self.run_command("python with_main")
@@ -458,6 +462,7 @@ class ProcessTest(CoverageTest):
         out_cov = remove_matching_lines(out_cov, ignored)
         out_py = remove_matching_lines(out_py, ignored)
         self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
 
     def test_coverage_run_dashm_equal_to_doubledashsource(self):
         """regression test for #328
@@ -467,19 +472,21 @@ class ProcessTest(CoverageTest):
         """
         # These -m commands assume the coverage tree is on the path.
         out_cov = self.run_command(
-            "coverage run --source tests.try_execfile -m tests.try_execfile"
+            "coverage run --source process_test.try_execfile -m process_test.try_execfile"
         )
-        out_py = self.run_command("python -m tests.try_execfile")
+        out_py = self.run_command("python -m process_test.try_execfile")
         self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
 
     def test_coverage_run_dashm_superset_of_doubledashsource(self):
         """Edge case: --source foo -m foo.bar"""
         # These -m commands assume the coverage tree is on the path.
         out_cov = self.run_command(
-            "coverage run --source tests -m tests.try_execfile"
+            "coverage run --source process_test -m process_test.try_execfile"
         )
-        out_py = self.run_command("python -m tests.try_execfile")
+        out_py = self.run_command("python -m process_test.try_execfile")
         self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
 
         st, out = self.run_command_status("coverage report")
         self.assertEqual(st, 0)
@@ -493,15 +500,16 @@ class ProcessTest(CoverageTest):
         # keeps the test working.
         self.make_file("myscript", """\
             import sys; sys.dont_write_bytecode = True
-            import tests.try_execfile
+            import process_test.try_execfile
             """)
 
         # These -m commands assume the coverage tree is on the path.
         out_cov = self.run_command(
-            "coverage run --source tests myscript"
+            "coverage run --source process_test myscript"
         )
         out_py = self.run_command("python myscript")
         self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
 
         st, out = self.run_command_status("coverage report")
         self.assertEqual(st, 0)
@@ -509,13 +517,13 @@ class ProcessTest(CoverageTest):
 
     def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
         # https://bitbucket.org/ned/coveragepy/issue/242
-        tryfile = os.path.join(HERE, "try_execfile.py")
         self.make_file("sub/__init__.py", "")
-        with open(tryfile) as f:
+        with open(TRY_EXECFILE) as f:
             self.make_file("sub/run_me.py", f.read())
         out_cov = self.run_command("coverage run -m sub.run_me")
         out_py = self.run_command("python -m sub.run_me")
         self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
 
     def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
         if sys.version_info < (2, 7):
