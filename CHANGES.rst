@@ -13,7 +13,7 @@ Unreleased
   closes `issue 199`_.
 
 - The HTML report has a more-visible indicator for which column is being
-  sorted.  Closes `issue 298`_, thanks to karlw00t.
+  sorted.  Closes `issue 298`_, thanks to Josh Williams.
 
 - If the HTML report cannot find the source for a file, the message now
   suggests using the ``-i`` flag to allow the report to continue. Closes
