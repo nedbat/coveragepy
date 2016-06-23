@@ -157,7 +157,7 @@ class Analysis(object):
         return stats
 
 
-class Numbers(SimpleRepr, object):
+class Numbers(SimpleRepr):
     """The numerical results of measuring coverage.
 
     This holds the basic statistics from `Analysis`, and is used to roll
