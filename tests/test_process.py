@@ -1029,9 +1029,8 @@ class ProcessCoverageMixin(object):
 class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
     """Test that we can measure coverage in sub-processes."""
 
-    def test_subprocess_with_pth_files(self):           # pragma: not covered
-        if env.METACOV:
-            self.skipTest("Can't test sub-process pth file suppport during metacoverage")
+    def setUp(self):
+        super(ProcessStartupTest, self).setUp()
 
         # Main will run sub.py
         self.make_file("main.py", """\
@@ -1044,6 +1043,11 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
             with open("out.txt", "w") as f:
                 f.write("Hello, world!\\n")
             """)
+
+    def test_subprocess_with_pth_files(self):           # pragma: not covered
+        if env.METACOV:
+            self.skip("Can't test sub-process pth file suppport during metacoverage")
+
         self.make_file("coverage.ini", """\
             [run]
             data_file = .mycovdata
@@ -1059,6 +1063,28 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         data = coverage.CoverageData()
         data.read_file(".mycovdata")
         self.assertEqual(data.line_counts()['sub.py'], 2)
+
+    def test_subprocess_with_pth_files_and_parallel(self):
+        if env.METACOV:
+            self.skip("Can't test sub-process pth file suppport during metacoverage")
+
+        self.make_file("coverage.ini", """\
+            [run]
+            parallel = true
+            """)
+
+        self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
+        out = self.run_command("coverage run main.py")
+
+        with open("out.txt") as f:
+            self.assertEqual(f.read(), "Hello, world!\n")
+
+        self.run_command("coverage combine")
+        self.assert_exists(".coverage")
+        data_files = glob.glob(os.getcwd() + '/.coverage*')
+        self.assertEquals(len(data_files), 1,
+            "Expected only .coverage after combine, looks like there are " + \
+            "extra data files that were not cleaned up: %r" % data_files)
 
 
 class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
