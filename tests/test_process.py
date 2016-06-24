@@ -13,6 +13,7 @@ import textwrap
 
 import coverage
 from coverage import env, CoverageData
+from coverage.backunittest import unittest
 from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
@@ -1064,7 +1065,9 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         data.read_file(".mycovdata")
         self.assertEqual(data.line_counts()['sub.py'], 2)
 
-    def test_subprocess_with_pth_files_and_parallel(self):
+    @unittest.expectedFailure
+    def test_subprocess_with_pth_files_and_parallel(self):  # pragma: not covered
+        # https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
         if env.METACOV:
             self.skip("Can't test sub-process pth file suppport during metacoverage")
 
@@ -1074,7 +1077,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
             """)
 
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
-        out = self.run_command("coverage run main.py")
+        self.run_command("coverage run main.py")
 
         with open("out.txt") as f:
             self.assertEqual(f.read(), "Hello, world!\n")
