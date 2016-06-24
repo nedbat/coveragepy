@@ -192,6 +192,13 @@ class Coverage(object):
         # Have we measured some data and not harvested it?
         self._measured = False
 
+        # If we have sub-process measurement happening automatically, then we
+        # want any explicit creation of a Coverage object to mean, this process
+        # is already coverage-aware, so don't auto-measure it.  By now, the
+        # auto-creation of a Coverage object has already happened.  But we can
+        # find it and tell it not to save its data.
+        _prevent_sub_process_measurement()
+
     def _init(self):
         """Set all the initial state.
 
@@ -1185,15 +1192,22 @@ def process_startup():
     # https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy has more
     # details.
 
-    if hasattr(process_startup, "done"):
+    if hasattr(process_startup, "coverage"):
         # We've annotated this function before, so we must have already
         # started coverage.py in this process.  Nothing to do.
         return None
 
-    process_startup.done = True
     cov = Coverage(config_file=cps, auto_data=True)
+    process_startup.coverage = cov
     cov.start()
     cov._warn_no_data = False
     cov._warn_unimported_source = False
 
     return cov
+
+
+def _prevent_sub_process_measurement():
+    """Stop any subprocess auto-measurement from writing data."""
+    auto_created_coverage = getattr(process_startup, "coverage", None)
+    if auto_created_coverage is not None:
+        auto_created_coverage._auto_data = False

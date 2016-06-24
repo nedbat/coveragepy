@@ -13,7 +13,6 @@ import textwrap
 
 import coverage
 from coverage import env, CoverageData
-from coverage.backunittest import unittest
 from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
@@ -1065,7 +1064,6 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         data.read_file(".mycovdata")
         self.assertEqual(data.line_counts()['sub.py'], 2)
 
-    @unittest.expectedFailure
     def test_subprocess_with_pth_files_and_parallel(self):  # pragma: not covered
         # https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
         if env.METACOV:

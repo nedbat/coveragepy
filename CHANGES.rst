@@ -8,6 +8,10 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- When using `automatic subprocess measurement`_, running coverage commands
+  would create spurious data files.  This is now fixed, thanks to diagnosis and
+  testing by Dan Riti.  Closes `issue 492`_.
+
 - A new configuration option, ``report:sort``, controls what column of the
   text report is used to sort the rows.  Thanks to Dan Wandschneider, this
   closes `issue 199`_.
@@ -33,12 +37,14 @@ Unreleased
 - The `test_helpers` module has been moved into a separate pip-installable
   package: `unittest-mixins`_.
 
+.. _automatic subprocess measurement: http://coverage.readthedocs.io/en/latest/subprocess.html
 .. _issue 199: https://bitbucket.org/ned/coveragepy/issues/199/add-a-way-to-sort-the-text-report
 .. _issue 231: https://bitbucket.org/ned/coveragepy/issues/231/various-default-behavior-in-report-phase
 .. _issue 298: https://bitbucket.org/ned/coveragepy/issues/298/show-in-html-report-that-the-columns-are
 .. _issue 396: https://bitbucket.org/ned/coveragepy/issues/396/coverage-xml-shouldnt-bail-out-on-parse
 .. _issue 454: https://bitbucket.org/ned/coveragepy/issues/454/coverage-debug-config-should-be
 .. _issue 478: https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
+.. _issue 492: https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
 .. _unittest-mixins: https://pypi.python.org/pypi/unittest-mixins
 
 
