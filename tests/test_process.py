@@ -1080,7 +1080,14 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
             self.assertEqual(f.read(), "Hello, world!\n")
 
         self.run_command("coverage combine")
+
+        # assert that the combined .coverage data file is correct
         self.assert_exists(".coverage")
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.line_counts()['sub.py'], 2)
+
+        # assert that there are *no* extra data files left over after a combine
         data_files = glob.glob(os.getcwd() + '/.coverage*')
         self.assertEquals(len(data_files), 1,
             "Expected only .coverage after combine, looks like there are " + \
