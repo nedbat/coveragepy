@@ -123,6 +123,7 @@ class Coverage(object):
 
         # 2: from the rcfile, .coveragerc or setup.cfg file:
         if config_file:
+            # pylint: disable=redefined-variable-type
             did_read_rc = False
             # Some API users were specifying ".coveragerc" to mean the same as
             # True, so make it so.
@@ -322,7 +323,8 @@ class Coverage(object):
             # When testing, we use PyContracts, which should be considered
             # part of coverage.py, and it uses six. Exclude those directories
             # just as we exclude ourselves.
-            import contracts, six
+            import contracts
+            import six
             for mod in [contracts, six]:
                 self.cover_dirs.append(self._canonical_dir(mod))
 
@@ -921,6 +923,7 @@ class Coverage(object):
                 )
 
         if file_reporter == "python":
+            # pylint: disable=redefined-variable-type
             file_reporter = PythonFileReporter(morf, self)
 
         return file_reporter

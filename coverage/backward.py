@@ -6,7 +6,7 @@
 # This file does lots of tricky stuff, so disable a bunch of pylint warnings.
 # pylint: disable=redefined-builtin
 # pylint: disable=unused-import
-# pylint: disable=no-name-in-module
+# pxlint: disable=no-name-in-module
 
 import sys
 
@@ -47,7 +47,7 @@ except ImportError:
 try:
     range = xrange
 except NameError:
-    range = range
+    range = range       # pylint: disable=redefined-variable-type
 
 # shlex.quote is new, but there's an undocumented implementation in "pipes",
 # who knew!?

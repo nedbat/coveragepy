@@ -945,6 +945,7 @@ class UnicodeFilePathsTest(CoverageTest):
         )
 
         if env.PY2:
+            # pylint: disable=redefined-variable-type
             report_expected = report_expected.encode(output_encoding())
 
         out = self.run_command("coverage report")
@@ -983,6 +984,7 @@ class UnicodeFilePathsTest(CoverageTest):
         )
 
         if env.PY2:
+            # pylint: disable=redefined-variable-type
             report_expected = report_expected.encode(output_encoding())
 
         out = self.run_command("coverage report")
@@ -1053,7 +1055,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
             data_file = .mycovdata
             """)
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
-        import main             # pylint: disable=import-error,unused-variable
+        import main             # pylint: disable=import-error
 
         with open("out.txt") as f:
             self.assertEqual(f.read(), "Hello, world!\n")

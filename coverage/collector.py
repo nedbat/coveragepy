@@ -17,7 +17,7 @@ os = isolate_module(os)
 
 try:
     # Use the C extension code when we can, for speed.
-    from coverage.tracer import CTracer, CFileDisposition   # pylint: disable=no-name-in-module
+    from coverage.tracer import CTracer, CFileDisposition
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
     if os.getenv('COVERAGE_TEST_TRACER') == 'c':

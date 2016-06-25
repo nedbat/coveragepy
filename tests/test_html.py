@@ -597,7 +597,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_1")
 
         with change_dir("src"):
-            # pylint: disable=import-error, unused-variable
+            # pylint: disable=import-error
             cov = coverage.Coverage(include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -610,7 +610,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_2")
 
         with change_dir("src"):
-            # pylint: disable=import-error, unused-variable
+            # pylint: disable=import-error
             cov = coverage.Coverage(include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -623,7 +623,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_3")
 
         with change_dir("src"):
-            # pylint: disable=import-error, unused-variable
+            # pylint: disable=import-error
             cov = coverage.Coverage(include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -636,7 +636,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_4")
 
         with change_dir("src"):
-            # pylint: disable=import-error, unused-variable
+            # pylint: disable=import-error
             cov = coverage.Coverage(config_file="omit4.ini", include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -649,7 +649,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/omit_5")
 
         with change_dir("src"):
-            # pylint: disable=import-error, unused-variable
+            # pylint: disable=import-error
             cov = coverage.Coverage(config_file="omit5.ini", include=["./*"])
             cov.start()
             import main         # pragma: nested
@@ -662,7 +662,7 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/other")
 
         with change_dir("src"):
-            # pylint: disable=import-error, unused-variable
+            # pylint: disable=import-error
             sys.path.insert(0, "../othersrc")
             cov = coverage.Coverage(include=["./*", "../othersrc/*"])
             cov.start()

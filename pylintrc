@@ -18,9 +18,6 @@
 # pygtk.require().
 #init-hook=
 
-# Profiled execution.
-profile=no
-
 # Add <file or directory> to the black list. It should be a base name, not a
 # path. You may set this option multiple times.
 ignore=
@@ -69,8 +66,13 @@ disable=
 # Messages that may be silly:
     no-self-use,
     no-member,
-# formatting stuff
+    using-constant-test,
+    too-many-nested-blocks,
+# Formatting stuff
     superfluous-parens,bad-continuation,
+# I'm fine deciding my own import order,
+    wrong-import-position,
+    wrong-import-order,
 # Messages that are noisy for now, eventually maybe we'll turn them on:
     invalid-name,
     protected-access,
@@ -100,10 +102,6 @@ reports=no
 # (R0004).
 evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
 
-# Add a comment according to your evaluation note. This is used by the global
-# evaluation report (R0004).
-comment=no
-
 # Enable the report(s) with the given id(s).
 #enable-report=
 
@@ -122,9 +120,6 @@ comment=no
 # * uses of the global statement
 # 
 [BASIC]
-
-# Required attributes for module, separated by a comma
-required-attributes=
 
 # Regular expression which should only match functions or classes name which do
 # not require a docstring
@@ -184,10 +179,6 @@ ignore-mixin-members=yes
 # (useful for classes with attributes dynamicaly set).
 ignored-classes=SQLObject
 
-# When zope mode is activated, consider the acquired-members option to ignore
-# access to some undefined attributes.
-zope=no
-
 # List of members which are usually get through zope's acquisition mecanism and
 # so shouldn't trigger E0201 when accessed (need zope=yes to be considered).
 acquired-members=REQUEST,acl_users,aq_parent
@@ -221,10 +212,6 @@ additional-builtins=
 # * unreachable code
 # 
 [CLASSES]
-
-# List of interface methods to ignore, separated by a comma. This is used for
-# instance to not check methods defines in Zope's Interface base class.
-ignore-iface-methods=isImplementedBy,deferred,extends,names,namesAndDescriptions,queryDescriptionFor,getBases,getDescriptionFor,getDoc,getName,getTaggedValue,getTaggedValueTags,isEqualOrExtendedBy,setTaggedValue,isImplementedByInstancesOf,adaptWith,is_implemented_by
 
 # List of method names used to declare (i.e. assign) instance attributes.
 defining-attr-methods=__init__,__new__,setUp,reset

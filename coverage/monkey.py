@@ -64,7 +64,7 @@ def patch_multiprocessing():
     # re-applies the monkey-patch.
     # Windows only spawns, so this is needed to keep Windows working.
     try:
-        from multiprocessing import spawn           # pylint: disable=no-name-in-module
+        from multiprocessing import spawn
         original_get_preparation_data = spawn.get_preparation_data
     except (ImportError, AttributeError):
         pass
