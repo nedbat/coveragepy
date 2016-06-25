@@ -1046,7 +1046,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
 
     def test_subprocess_with_pth_files(self):           # pragma: not covered
         if env.METACOV:
-            self.skip("Can't test sub-process pth file suppport during metacoverage")
+            self.skipTest("Can't test sub-process pth file suppport during metacoverage")
 
         self.make_file("coverage.ini", """\
             [run]
@@ -1067,7 +1067,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
     def test_subprocess_with_pth_files_and_parallel(self):  # pragma: not covered
         # https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
         if env.METACOV:
-            self.skip("Can't test sub-process pth file suppport during metacoverage")
+            self.skipTest("Can't test sub-process pth file suppport during metacoverage")
 
         self.make_file("coverage.ini", """\
             [run]
