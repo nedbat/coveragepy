@@ -670,7 +670,7 @@ class TestSummaryReporterConfiguration(CoverageTest):
         """Get text output from the SummaryReporter."""
         cov = Coverage()
         cov.start()
-        cov.stop()
+        cov.stop()              # pragma: nested
         cov.data = coverage_data
         printer = SummaryReporter(cov, options)
         destination = StringIO()
