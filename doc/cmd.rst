@@ -212,6 +212,11 @@ suffix.  Here are some examples of data files that can be combined::
     .coverage.20120807T212300
     .coverage.last_good_run.ok
 
+An existing combined data file is ignored and re-written. If you want to use
+**combine** to accumulate results into the .coverage data file over a number of
+runs, use the ``--append`` switch on the **combine** command.  This behavior
+was the default before version 4.2.
+
 The ``run --parallel-mode`` switch automatically creates separate data files
 for each run which can be combined later.  The file names include the machine
 name, the process id, and a random number::

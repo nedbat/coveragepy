@@ -150,7 +150,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(self.number_of_data_files(), 2)
 
         # Combine the parallel coverage data files into .coverage .
-        self.run_command("coverage combine")
+        self.run_command("coverage combine --append")
         self.assert_exists(".coverage")
 
         # After combining, there should be only the .coverage file.

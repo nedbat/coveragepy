@@ -8,6 +8,14 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- BACKWARD INCOMPATIBILITY: the ``coverage combine`` command now ignores an
+  existing ``.coverage`` data file.  It used to include that file in its
+  combining.  This caused confusing results, and extra tox "clean" steps.  If
+  you want the old behavior, use the new ``coverage combine --append`` option.
+
+- Using ``--concurrency=multiprocessing`` now implies ``--parallel`` so that
+  the main program is measured similarly to the sub-processes.
+
 - When using `automatic subprocess measurement`_, running coverage commands
   would create spurious data files.  This is now fixed, thanks to diagnosis and
   testing by Dan Riti.  Closes `issue 492`_.

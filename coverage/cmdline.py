@@ -274,7 +274,9 @@ CMDS = {
 
     'combine': CmdOptionParser(
         "combine",
-        GLOBAL_ARGS,
+        [
+            Opts.append,
+            ] + GLOBAL_ARGS,
         usage="<path1> <path2> ... <pathN>",
         description=(
             "Combine data from multiple coverage files collected "
@@ -484,7 +486,8 @@ class CoverageScript(object):
             return self.do_run(options, args)
 
         elif options.action == "combine":
-            self.coverage.load()
+            if options.append:
+                self.coverage.load()
             data_dirs = args or None
             self.coverage.combine(data_dirs)
             self.coverage.save()

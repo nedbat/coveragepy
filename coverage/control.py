@@ -247,6 +247,9 @@ class Coverage(object):
         if concurrency == "multiprocessing":
             patch_multiprocessing()
             concurrency = None
+            # Multi-processing uses parallel for the subprocesses, so also use
+            # it for the main process.
+            self.config.parallel = True
 
         self.collector = Collector(
             should_trace=self._should_trace,
