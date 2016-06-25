@@ -170,7 +170,8 @@ class Templite(object):
                     # An expression to evaluate.
                     expr = self._expr_code(token[start:end].strip())
                     buffered.append("to_str(%s)" % expr)
-                elif token.startswith('{%'):
+                else:
+                    # token.startswith('{%')
                     # Action tag: split into words and parse further.
                     flush_output()
 
