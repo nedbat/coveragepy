@@ -3,5 +3,5 @@
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
 pyenchant==1.6.6
-sphinx==1.3.4
+sphinx==1.4.4
 sphinxcontrib-spelling==2.1.2
