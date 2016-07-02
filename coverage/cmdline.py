@@ -22,7 +22,7 @@ class Opts(object):
 
     append = optparse.make_option(
         '-a', '--append', action='store_true',
-        help="Append coverage data to .coverage, otherwise it is started clean with each run.",
+        help="Append coverage data to .coverage, otherwise it starts clean each time.",
     )
     branch = optparse.make_option(
         '', '--branch', action='store_true',
