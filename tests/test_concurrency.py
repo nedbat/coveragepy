@@ -75,7 +75,7 @@ class LineCountTest(CoverageTest):
 
 
 # The code common to all the concurrency models.
-SUM_THEM_Q = """
+SUM_RANGE_Q = """
     # Above this will be imports defining queue and threading.
 
     class Producer(threading.Thread):
@@ -104,7 +104,7 @@ SUM_THEM_Q = """
                 sum += i
             self.qresult.put(sum)
 
-    def sum_them(limit):
+    def sum_range(limit):
         q = queue.Queue()
         qresult = queue.Queue()
         c = Consumer(q, qresult)
@@ -116,11 +116,11 @@ SUM_THEM_Q = """
         c.join()
         return qresult.get()
 
-    # Below this will be something using sum_them.
+    # Below this will be something using sum_range.
     """
 
-PRINT_SUM_THEM = """
-    print(sum_them({QLIMIT}))
+PRINT_SUM_RANGE = """
+    print(sum_range({QLIMIT}))
     """
 
 # Import the things to use threads.
@@ -231,7 +231,7 @@ class ConcurrencyTest(CoverageTest):
             self.assertEqual(data.line_counts()['try_it.py'], lines)
 
     def test_threads(self):
-        code = (THREAD + SUM_THEM_Q + PRINT_SUM_THEM).format(QLIMIT=self.QLIMIT)
+        code = (THREAD + SUM_RANGE_Q + PRINT_SUM_RANGE).format(QLIMIT=self.QLIMIT)
         self.try_some_code(code, "thread", threading)
 
     def test_threads_simple_code(self):
@@ -239,7 +239,7 @@ class ConcurrencyTest(CoverageTest):
         self.try_some_code(code, "thread", threading)
 
     def test_eventlet(self):
-        code = (EVENTLET + SUM_THEM_Q + PRINT_SUM_THEM).format(QLIMIT=self.QLIMIT)
+        code = (EVENTLET + SUM_RANGE_Q + PRINT_SUM_RANGE).format(QLIMIT=self.QLIMIT)
         self.try_some_code(code, "eventlet", eventlet)
 
     def test_eventlet_simple_code(self):
@@ -247,7 +247,7 @@ class ConcurrencyTest(CoverageTest):
         self.try_some_code(code, "eventlet", eventlet)
 
     def test_gevent(self):
-        code = (GEVENT + SUM_THEM_Q + PRINT_SUM_THEM).format(QLIMIT=self.QLIMIT)
+        code = (GEVENT + SUM_RANGE_Q + PRINT_SUM_RANGE).format(QLIMIT=self.QLIMIT)
         self.try_some_code(code, "gevent", gevent)
 
     def test_gevent_simple_code(self):
@@ -305,9 +305,9 @@ SQUARE_OR_CUBE_WORK = """
         return y
     """
 
-SUM_THEM_WORK = """
+SUM_RANGE_WORK = """
     def work(x):
-        return sum_them((x+1)*100)
+        return sum_range((x+1)*100)
     """
 
 MULTI_CODE = """
@@ -390,7 +390,9 @@ class MultiprocessingTest(CoverageTest):
     def test_multiprocessing_and_gevent(self):
         nprocs = 3
         upto = 30
-        code = (SUM_THEM_WORK + EVENTLET + SUM_THEM_Q + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
+        code = (
+            SUM_RANGE_WORK + EVENTLET + SUM_RANGE_Q + MULTI_CODE
+        ).format(NPROCS=nprocs, UPTO=upto)
         total = sum(sum(range((x + 1) * 100)) for x in range(upto))
         expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
         self.try_multiprocessing_code(
