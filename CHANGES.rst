@@ -8,6 +8,8 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+Work from the PyCon 2016 Sprints!
+
 - BACKWARD INCOMPATIBILITY: the ``coverage combine`` command now ignores an
   existing ``.coverage`` data file.  It used to include that file in its
   combining.  This caused confusing results, and extra tox "clean" steps.  If
