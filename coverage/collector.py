@@ -65,6 +65,9 @@ class Collector(object):
     # the top, and resumed when they become the top again.
     _collectors = []
 
+    # The concurrency settings we support here.
+    SUPPORTED_CONCURRENCIES = set(["greenlet", "eventlet", "gevent", "thread"])
+
     def __init__(self, should_trace, check_include, timid, branch, warn, concurrency):
         """Create a collector.
 
@@ -86,9 +89,10 @@ class Collector(object):
         `warn` is a warning function, taking a single string message argument,
         to be used if a warning needs to be issued.
 
-        `concurrency` is a string indicating the concurrency library in use.
-        Valid values are "greenlet", "eventlet", "gevent", or "thread" (the
-        default).
+        `concurrency` is a list of strings indicating the concurrency libraries
+        in use.  Valid values are "greenlet", "eventlet", "gevent", or "thread"
+        (the default).  Of these four values, only one can be supplied.  Other
+        values are ignored.
 
         """
         self.should_trace = should_trace
@@ -96,21 +100,26 @@ class Collector(object):
         self.warn = warn
         self.branch = branch
         self.threading = None
-        self.concurrency = concurrency
 
         self.concur_id_func = None
 
+        # We can handle a few concurrency options here, but only one at a time.
+        these_concurrencies = self.SUPPORTED_CONCURRENCIES.intersection(concurrency)
+        if len(these_concurrencies) > 1:
+            raise CoverageException("Conflicting concurrency settings: %s" % concurrency)
+        self.concurrency = these_concurrencies.pop() if these_concurrencies else ''
+
         try:
-            if concurrency == "greenlet":
+            if self.concurrency == "greenlet":
                 import greenlet
                 self.concur_id_func = greenlet.getcurrent
-            elif concurrency == "eventlet":
+            elif self.concurrency == "eventlet":
                 import eventlet.greenthread     # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = eventlet.greenthread.getcurrent
-            elif concurrency == "gevent":
+            elif self.concurrency == "gevent":
                 import gevent                   # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = gevent.getcurrent
-            elif concurrency == "thread" or not concurrency:
+            elif self.concurrency == "thread" or not self.concurrency:
                 # It's important to import threading only if we need it.  If
                 # it's imported early, and the program being measured uses
                 # gevent, then gevent's monkey-patching won't work properly.
@@ -120,7 +129,9 @@ class Collector(object):
                 raise CoverageException("Don't understand concurrency=%s" % concurrency)
         except ImportError:
             raise CoverageException(
-                "Couldn't trace with concurrency=%s, the module isn't installed." % concurrency
+                "Couldn't trace with concurrency=%s, the module isn't installed." % (
+                    self.concurrency,
+                )
             )
 
         # Who-Tests-What is just a hack at the moment, so turn it on with an

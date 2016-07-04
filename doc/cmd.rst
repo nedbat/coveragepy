@@ -108,6 +108,10 @@ Give it a value of ``multiprocessing``, ``thread``, ``greenlet``, ``eventlet``,
 or ``gevent``.  Values other than ``thread`` require the :ref:`C extension
 <install_extension>`.
 
+If you are using ``--concurrency=multiprocessing``, you must set other options
+in the configuration file.  Other options on the command line will not be
+passed to the other processes.
+
 .. _multiprocessing: https://docs.python.org/2/library/multiprocessing.html
 .. _greenlet: http://greenlet.readthedocs.org/en/latest/
 .. _gevent: http://www.gevent.org/

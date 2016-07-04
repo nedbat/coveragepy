@@ -456,6 +456,14 @@ class CmdLineTest(BaseCmdLineTest):
         out = self.stdout()
         self.assertIn("option --concurrency: invalid choice: 'nothing'", out)
 
+    def test_no_multiple_concurrency(self):
+        # You can't use multiple concurrency values on the command line.
+        # I would like to have a better message about not allowing multiple
+        # values for this option, but optparse is not that flexible.
+        self.command_line("run --concurrency=multiprocessing,gevent foo.py", ret=ERR)
+        out = self.stdout()
+        self.assertIn("option --concurrency: invalid choice: 'multiprocessing,gevent'", out)
+
     def test_run_debug(self):
         self.cmd_executes("run --debug=opt1 foo.py", """\
             .coverage(debug=["opt1"])

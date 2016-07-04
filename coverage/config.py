@@ -191,7 +191,7 @@ class CoverageConfig(object):
         # Options for plugins
         self.plugin_options = {}
 
-    MUST_BE_LIST = ["omit", "include", "debug", "plugins"]
+    MUST_BE_LIST = ["omit", "include", "debug", "plugins", "concurrency"]
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
@@ -267,7 +267,7 @@ class CoverageConfig(object):
 
         # [run]
         ('branch', 'run:branch', 'boolean'),
-        ('concurrency', 'run:concurrency'),
+        ('concurrency', 'run:concurrency', 'list'),
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),

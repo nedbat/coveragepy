@@ -107,8 +107,8 @@ to more than one command.
 ``cover_pylib`` (boolean, default False): whether to measure the Python
 standard library.
 
-``concurrency`` (string, default "thread"): the name of the concurrency library
-in use by the product code.  If your program uses `multiprocessing`_,
+``concurrency`` (multi-string, default "thread"): the name concurrency
+libraries in use by the product code.  If your program uses `multiprocessing`_,
 `gevent`_, `greenlet`_, or `eventlet`_, you must name that library in this
 option, or coverage.py will produce very wrong results.
 
@@ -116,6 +116,8 @@ option, or coverage.py will produce very wrong results.
 .. _greenlet: http://greenlet.readthedocs.org/en/latest/
 .. _gevent: http://www.gevent.org/
 .. _eventlet: http://eventlet.net/
+
+Before version 4.2, this option only accepted a single string.
 
 .. versionadded:: 4.0
 

@@ -25,10 +25,11 @@ class ConfigTest(CoverageTest):
 
     def test_arguments(self):
         # Arguments to the constructor are applied to the configuration.
-        cov = coverage.Coverage(timid=True, data_file="fooey.dat")
+        cov = coverage.Coverage(timid=True, data_file="fooey.dat", concurrency="multiprocessing")
         self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, "fooey.dat")
+        self.assertEqual(cov.config.concurrency, ["multiprocessing"])
 
     def test_config_file(self):
         # A .coveragerc file will be read into the configuration.
@@ -300,7 +301,7 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.branch)
         self.assertTrue(cov.config.cover_pylib)
         self.assertTrue(cov.config.parallel)
-        self.assertEqual(cov.config.concurrency, "thread")
+        self.assertEqual(cov.config.concurrency, ["thread"])
         self.assertEqual(cov.config.source, ["myapp"])
 
         self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])

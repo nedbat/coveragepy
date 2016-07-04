@@ -526,7 +526,6 @@ class CoverageScript(object):
                 self.coverage.set_option("report:fail_under", options.fail_under)
 
             if self.coverage.get_option("report:fail_under"):
-
                 # Total needs to be rounded, but be careful of 0 and 100.
                 if 0 < total < 1:
                     total = 1

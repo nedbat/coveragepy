@@ -110,11 +110,15 @@ class Coverage(object):
 
         `concurrency` is a string indicating the concurrency library being used
         in the measured code.  Without this, coverage.py will get incorrect
-        results.  Valid strings are "greenlet", "eventlet", "gevent",
-        "multiprocessing", or "thread" (the default).
+        results if these libraries are in use.  Valid strings are "greenlet",
+        "eventlet", "gevent", "multiprocessing", or "thread" (the default).
+        This can also be a list of these strings.
 
         .. versionadded:: 4.0
             The `concurrency` parameter.
+
+        .. versionadded:: 4.2
+            The `concurrency` parameter can now be a list of strings.
 
         """
         # Build our configuration from a number of sources:
@@ -244,10 +248,10 @@ class Coverage(object):
         self.omit = prep_patterns(self.config.omit)
         self.include = prep_patterns(self.config.include)
 
-        concurrency = self.config.concurrency
-        if concurrency == "multiprocessing":
+        concurrency = self.config.concurrency or []
+        if "multiprocessing" in concurrency:
             patch_multiprocessing()
-            concurrency = None
+            #concurrency = None
             # Multi-processing uses parallel for the subprocesses, so also use
             # it for the main process.
             self.config.parallel = True

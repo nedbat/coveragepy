@@ -13,8 +13,15 @@ Unreleased
   combining.  This caused confusing results, and extra tox "clean" steps.  If
   you want the old behavior, use the new ``coverage combine --append`` option.
 
-- Using ``--concurrency=multiprocessing`` now implies ``--parallel`` so that
-  the main program is measured similarly to the sub-processes.
+- The ``concurrency`` option can now take multiple values, to support programs
+  using multiprocessing and another library such as eventlet.  This is only
+  possible in the configuration file, not from the command line. The
+  configuration file is the only way for sub-processes to all run with the same
+  options.  Fixes `issue 484`_.  Thanks to Josh Williams for prototyping.
+
+- Using a ``concurrency`` setting of ``multiprocessing`` now implies
+  ``--parallel`` so that the main program is measured similarly to the
+  sub-processes.
 
 - When using `automatic subprocess measurement`_, running coverage commands
   would create spurious data files.  This is now fixed, thanks to diagnosis and
@@ -52,6 +59,7 @@ Unreleased
 .. _issue 396: https://bitbucket.org/ned/coveragepy/issues/396/coverage-xml-shouldnt-bail-out-on-parse
 .. _issue 454: https://bitbucket.org/ned/coveragepy/issues/454/coverage-debug-config-should-be
 .. _issue 478: https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
+.. _issue 484: https://bitbucket.org/ned/coveragepy/issues/484/multiprocessing-greenlet-concurrency
 .. _issue 492: https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
 .. _unittest-mixins: https://pypi.python.org/pypi/unittest-mixins
 
