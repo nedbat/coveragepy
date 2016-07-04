@@ -87,7 +87,7 @@ GLOBAL OPTIONS
 COMMAND REFERENCE
 =================
 
-**annotate**
+**annotate** [ `option` ... ]
 
     Options:
 
@@ -97,7 +97,7 @@ COMMAND REFERENCE
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
-**combine** [ `PATH` ... ]
+**combine** [ `option` ... ] [ `PATH` ... ]
 
     Combine data from multiple coverage files collected with ``run -p``.
     The combined results are written to a single file representing the
