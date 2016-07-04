@@ -22,7 +22,9 @@ Documentation is on `Read the Docs <http://coverage.readthedocs.io>`_.
 Code repository and issue tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_,
 with a mirrored repository on `GitHub <https://github.com/nedbat/coveragepy>`_.
 
-**New in 4.1:** much-improved branch coverage.
+**New in 4.2:** better support for multiprocessing and combining data.
+
+New in 4.1: much-improved branch coverage.
 
 New in 4.0: ``--concurrency``, plugins for non-Python files, setup.cfg
 support, --skip-covered, HTML filtering, and more than 50 issues closed.

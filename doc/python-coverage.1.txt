@@ -106,6 +106,12 @@ COMMAND REFERENCE
     If `PATH` is specified, they are files or directories containing data to
     be combined.
 
+    Options:
+
+    \--append
+        Append coverage data to .coverage, otherwise it starts clean each
+        time.
+
 **erase**
 
     Erase previously collected coverage data.

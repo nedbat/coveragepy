@@ -5,8 +5,8 @@
 Change history for Coverage.py
 ==============================
 
-Unreleased
-----------
+Version 4.2b1 --- 2016-07-04
+----------------------------
 
 Work from the PyCon 2016 Sprints!
 
