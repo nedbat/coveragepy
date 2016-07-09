@@ -450,6 +450,14 @@ class CmdLineTest(BaseCmdLineTest):
             .stop()
             .save()
             """)
+        self.cmd_executes("run --concurrency=multiprocessing foo.py", """\
+            .coverage(concurrency='multiprocessing')
+            .erase()
+            .start()
+            .run_python_file('foo.py', ['foo.py'])
+            .stop()
+            .save()
+            """)
 
     def test_bad_concurrency(self):
         self.command_line("run --concurrency=nothing", ret=ERR)

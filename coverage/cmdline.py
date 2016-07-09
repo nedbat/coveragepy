@@ -606,7 +606,9 @@ class CoverageScript(object):
             # Can't set other run-affecting command line options with
             # multiprocessing.
             for opt_name in ['branch', 'include', 'omit', 'pylib', 'source', 'timid']:
-                if getattr(options, opt_name) != getattr(Opts, opt_name).default:
+                # As it happens, all of these options have no default, meaning
+                # they will be None if they have not been specified.
+                if getattr(options, opt_name) is not None:
                     self.help_fn(
                         "Options affecting multiprocessing must be specified "
                         "in a configuration file."
