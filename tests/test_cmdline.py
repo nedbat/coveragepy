@@ -464,6 +464,16 @@ class CmdLineTest(BaseCmdLineTest):
         out = self.stdout()
         self.assertIn("option --concurrency: invalid choice: 'multiprocessing,gevent'", out)
 
+    def test_multiprocessing_needs_config_file(self):
+        # You can't use command-line args to add options to multiprocessing
+        # runs, since they won't make it to the subprocesses. You need to use a
+        # config file.
+        self.command_line("run --concurrency=multiprocessing --branch foo.py", ret=ERR)
+        self.assertIn(
+            "Options affecting multiprocessing must be specified in a configuration file.",
+            self.stdout()
+        )
+
     def test_run_debug(self):
         self.cmd_executes("run --debug=opt1 foo.py", """\
             .coverage(debug=["opt1"])

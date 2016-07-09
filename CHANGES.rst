@@ -5,6 +5,20 @@
 Change history for Coverage.py
 ==============================
 
+Unreleased
+----------
+
+- Since ``concurrency=multiprocessing`` uses subprocesses, options specified on
+  the coverage.py command line will not be communicated down to them.  Only
+  options in the configuration file will apply to the subprocesses.
+  Previously, the options didn't apply to the subprocesses, but there was no
+  indication.  Now it is an error to use ``--concurrency=multiprocessing`` and
+  other run-affecting options on the command line.  This prevents
+  failures like those reported in `issue 495`_.
+
+.. _issue 495: https://bitbucket.org/ned/coveragepy/issues/495/branch-and-concurrency-are-conflicting
+
+
 Version 4.2b1 --- 2016-07-04
 ----------------------------
 

@@ -602,6 +602,17 @@ class CoverageScript(object):
             self.help_fn("Can't append to data files in parallel mode.")
             return ERR
 
+        if options.concurrency == "multiprocessing":
+            # Can't set other run-affecting command line options with
+            # multiprocessing.
+            for opt_name in ['branch', 'include', 'omit', 'pylib', 'source', 'timid']:
+                if getattr(options, opt_name) != getattr(Opts, opt_name).default:
+                    self.help_fn(
+                        "Options affecting multiprocessing must be specified "
+                        "in a configuration file."
+                    )
+                    return ERR
+
         if not self.coverage.get_option("run:parallel"):
             if not options.append:
                 self.coverage.erase()
