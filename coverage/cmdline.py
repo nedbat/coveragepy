@@ -447,10 +447,6 @@ class CoverageScript(object):
         if self.do_help(options, args, parser):
             return OK
 
-        # Check for conflicts and problems in the options.
-        if not self.args_ok(options, args):
-            return ERR
-
         # We need to be able to import from the current directory, because
         # plugins may try to, for example, to read Django settings.
         sys.path[0] = ''
@@ -595,20 +591,12 @@ class CoverageScript(object):
 
         return False
 
-    def args_ok(self, options, args):
-        """Check for conflicts and problems in the options.
-
-        Returns True if everything is OK, or False if not.
-
-        """
-        if options.action == "run" and not args:
-            self.help_fn("Nothing to do.")
-            return False
-
-        return True
-
     def do_run(self, options, args):
         """Implementation of 'coverage run'."""
+
+        if not args:
+            self.help_fn("Nothing to do.")
+            return ERR
 
         if options.append and self.coverage.get_option("run:parallel"):
             self.help_fn("Can't append to data files in parallel mode.")
