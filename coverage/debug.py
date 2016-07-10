@@ -111,5 +111,4 @@ def log(msg, stack=False):                                  # pragma: debugging
     with open("/tmp/covlog.txt", "a") as f:
         f.write("{pid}: {msg}\n".format(pid=os.getpid(), msg=msg))
         if stack:
-            f.write(short_stack())
-            f.write("\n")
+            dump_stack_frames(out=f)
