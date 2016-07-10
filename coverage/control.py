@@ -202,7 +202,8 @@ class Coverage(object):
         # is already coverage-aware, so don't auto-measure it.  By now, the
         # auto-creation of a Coverage object has already happened.  But we can
         # find it and tell it not to save its data.
-        _prevent_sub_process_measurement()
+        if not env.METACOV:
+            _prevent_sub_process_measurement()
 
     def _init(self):
         """Set all the initial state.
