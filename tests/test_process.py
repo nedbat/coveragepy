@@ -913,6 +913,44 @@ class FailUnderEmptyFilesTest(CoverageTest):
         self.assertEqual(st, 2)
 
 
+class FailUnder100Test(CoverageTest):
+    """Tests of the --fail-under switch."""
+
+    def test_99_8(self):
+        self.make_file("ninety_nine_eight.py",
+            "".join("v{i} = {i}\n".format(i=i) for i in range(498)) +
+            "if v0 > 498:\n    v499 = 499\n"
+            )
+        st, _ = self.run_command_status("coverage run ninety_nine_eight.py")
+        self.assertEqual(st, 0)
+        st, out = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+        self.assertEqual(
+            self.last_line_squeezed(out),
+            "ninety_nine_eight.py 500 1 99%"
+        )
+
+        st, _ = self.run_command_status("coverage report --fail-under=100")
+        self.assertEqual(st, 2)
+
+
+    def test_100(self):
+        self.make_file("one_hundred.py",
+            "".join("v{i} = {i}\n".format(i=i) for i in range(500))
+            )
+        st, _ = self.run_command_status("coverage run one_hundred.py")
+        self.assertEqual(st, 0)
+        st, out = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+        self.assertEqual(
+            self.last_line_squeezed(out),
+            "one_hundred.py 500 0 100%"
+        )
+
+        st, _ = self.run_command_status("coverage report --fail-under=100")
+        self.assertEqual(st, 0)
+
+
 class UnicodeFilePathsTest(CoverageTest):
     """Tests of using non-ascii characters in the names of files."""
 

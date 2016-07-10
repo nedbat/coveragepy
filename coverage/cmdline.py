@@ -216,7 +216,7 @@ class GlobalOptionParser(CoverageOptionParser):
 class CmdOptionParser(CoverageOptionParser):
     """Parse one of the new-style commands for coverage.py."""
 
-    def __init__(self, action, options=None, defaults=None, usage=None, description=None):
+    def __init__(self, action, options, defaults=None, usage=None, description=None):
         """Create an OptionParser for a coverage.py command.
 
         `action` is the slug to put into `options.action`.
@@ -233,8 +233,7 @@ class CmdOptionParser(CoverageOptionParser):
             description=description,
         )
         self.set_defaults(action=action, **(defaults or {}))
-        if options:
-            self.add_options(options)
+        self.add_options(options)
         self.cmd = action
 
     def __eq__(self, other):
@@ -277,7 +276,7 @@ CMDS = {
         [
             Opts.append,
             ] + GLOBAL_ARGS,
-        usage="<path1> <path2> ... <pathN>",
+        usage="[options] <path1> <path2> ... <pathN>",
         description=(
             "Combine data from multiple coverage files collected "
             "with 'run -p'.  The combined results are written to a single "
@@ -301,7 +300,6 @@ CMDS = {
 
     'erase': CmdOptionParser(
         "erase", GLOBAL_ARGS,
-        usage=" ",
         description="Erase previously collected coverage data.",
     ),
 
@@ -522,10 +520,9 @@ class CoverageScript(object):
                 self.coverage.set_option("report:fail_under", options.fail_under)
 
             if self.coverage.get_option("report:fail_under"):
-                # Total needs to be rounded, but be careful of 0 and 100.
-                if 0 < total < 1:
-                    total = 1
-                elif 99 < total < 100:
+                # Total needs to be rounded, but don't want to report 100
+                # unless it is really 100.
+                if 99 < total < 100:
                     total = 99
                 else:
                     total = round(total)

@@ -654,6 +654,11 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         self.assertIn("--timid", out)
         self.assertGreater(out.count("\n"), 10)
 
+    def test_unknown_topic(self):
+        # Should probably be an ERR return, but meh.
+        self.command_line("help foobar")
+        self.assertEqual(self.stdout(), "Don't know topic 'foobar'\n")
+
     def test_error(self):
         self.command_line("fooey kablooey", ret=ERR)
         out = self.stdout()
