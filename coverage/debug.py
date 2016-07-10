@@ -104,3 +104,12 @@ def dump_stack_frames(limit=None, out=None):                # pragma: debugging
     out = out or sys.stdout
     out.write(short_stack(limit=limit))
     out.write("\n")
+
+
+def log(msg, stack=False):                                  # pragma: debugging
+    """Write a log message as forcefully as possible."""
+    with open("/tmp/covlog.txt", "a") as f:
+        f.write("{pid}: {msg}\n".format(pid=os.getpid(), msg=msg))
+        if stack:
+            f.write(short_stack())
+            f.write("\n")
