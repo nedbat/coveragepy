@@ -24,7 +24,7 @@ from coverage.files import ModuleMatcher, abs_file
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone, isolate_module
-from coverage.monkey import patch_multiprocessing
+from coverage.multiproc import patch_multiprocessing
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
