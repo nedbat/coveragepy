@@ -324,7 +324,7 @@ MULTI_CODE = """
         ret = work(*args)
         return os.getpid(), ret
 
-    if __name__ == "__main__":
+    if __name__ == "__main__":      # pragma: no branch
         # This if is on a single line so we can get 100% coverage
         # even if we have no arguments.
         if len(sys.argv) > 1: multiprocessing.set_start_method(sys.argv[1])
@@ -372,12 +372,12 @@ class MultiprocessingTest(CoverageTest):
             else:
                 self.assertEqual(out.rstrip(), expected_out)
 
-                self.run_command("coverage combine")
+                out = self.run_command("coverage combine")
+                self.assertEqual(out, "")
                 out = self.run_command("coverage report -m")
 
                 last_line = self.squeezed_lines(out)[-1]
-                expected_report = "multi.py {lines} 0 100%".format(lines=line_count(code))
-                self.assertEqual(last_line, expected_report)
+                self.assertRegex(last_line, r"multi.py \d+ 0 100%")
 
     def test_multiprocessing(self):
         nprocs = 3
@@ -398,3 +398,39 @@ class MultiprocessingTest(CoverageTest):
         self.try_multiprocessing_code(
             code, expected_out, eventlet, concurrency="multiprocessing,eventlet"
         )
+
+    def try_multiprocessing_code_with_branching(self, code, expected_out):
+        """Run code using multiprocessing, it should produce `expected_out`."""
+        self.make_file("multi.py", code)
+        self.make_file("multi.rc", """\
+            [run]
+            concurrency = multiprocessing
+            branch = True
+            """)
+
+        if env.PYVERSION >= (3, 4):
+            start_methods = ['fork', 'spawn']
+        else:
+            start_methods = ['']
+
+        for start_method in start_methods:
+            if start_method and start_method not in multiprocessing.get_all_start_methods():
+                continue
+
+            out = self.run_command("coverage run --rcfile=multi.rc multi.py %s" % (start_method,))
+            self.assertEqual(out.rstrip(), expected_out)
+
+            out = self.run_command("coverage combine")
+            self.assertEqual(out, "")
+            out = self.run_command("coverage report -m")
+
+            last_line = self.squeezed_lines(out)[-1]
+            self.assertRegex(last_line, r"multi.py \d+ 0 \d+ 0 100%")
+
+    def test_multiprocessing_with_branching(self):
+        nprocs = 3
+        upto = 30
+        code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
+        total = sum(x*x if x%2 else x*x*x for x in range(upto))
+        expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
+        self.try_multiprocessing_code_with_branching(code, expected_out)

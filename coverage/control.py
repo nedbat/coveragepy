@@ -133,6 +133,7 @@ class Coverage(object):
             # True, so make it so.
             if config_file == ".coveragerc":
                 config_file = True
+            self.config_file = config_file
             specified_file = (config_file is not True)
             if not specified_file:
                 config_file = ".coveragerc"
@@ -251,7 +252,7 @@ class Coverage(object):
 
         concurrency = self.config.concurrency or []
         if "multiprocessing" in concurrency:
-            patch_multiprocessing()
+            patch_multiprocessing(rcfile=self.config_file)
             #concurrency = None
             # Multi-processing uses parallel for the subprocesses, so also use
             # it for the main process.

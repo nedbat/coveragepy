@@ -1,7 +1,7 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
-"""Monkey-patching to make coverage.py work right in some cases."""
+"""Monkey-patching to add multiprocessing support for coverage.py"""
 
 import multiprocessing
 import multiprocessing.process
@@ -9,22 +9,23 @@ import sys
 
 # An attribute that will be set on modules to indicate that they have been
 # monkey-patched.
-PATCHED_MARKER = "_coverage$patched"
+PATCHED_MARKER = "_coverage$rcfile"
 
 if sys.version_info >= (3, 4):
-    klass = multiprocessing.process.BaseProcess
+    OriginalProcess = multiprocessing.process.BaseProcess
 else:
-    klass = multiprocessing.Process
+    OriginalProcess = multiprocessing.Process
 
-original_bootstrap = klass._bootstrap
+original_bootstrap = OriginalProcess._bootstrap
 
 
-class ProcessWithCoverage(klass):
+class ProcessWithCoverage(OriginalProcess):
     """A replacement for multiprocess.Process that starts coverage."""
     def _bootstrap(self):
         """Wrapper around _bootstrap to start coverage."""
         from coverage import Coverage
-        cov = Coverage(data_suffix=True)
+        rcfile = getattr(multiprocessing, PATCHED_MARKER)
+        cov = Coverage(data_suffix=True, config_file=rcfile)
         cov.start()
         try:
             return original_bootstrap(self)
@@ -35,25 +36,30 @@ class ProcessWithCoverage(klass):
 
 class Stowaway(object):
     """An object to pickle, so when it is unpickled, it can apply the monkey-patch."""
+    def __init__(self, rcfile):
+        self.rcfile = rcfile
+
     def __getstate__(self):
-        return {}
+        return {'rcfile': self.rcfile}
 
-    def __setstate__(self, state_unused):
-        patch_multiprocessing()
+    def __setstate__(self, state):
+        patch_multiprocessing(state['rcfile'])
 
 
-def patch_multiprocessing():
+def patch_multiprocessing(rcfile):
     """Monkey-patch the multiprocessing module.
 
     This enables coverage measurement of processes started by multiprocessing.
-    This is wildly experimental!
+    This involves aggressive monkey-patching.
+
+    `rcfile` is the path to the rcfile being used.
 
     """
     if hasattr(multiprocessing, PATCHED_MARKER):
         return
 
     if sys.version_info >= (3, 4):
-        klass._bootstrap = ProcessWithCoverage._bootstrap
+        OriginalProcess._bootstrap = ProcessWithCoverage._bootstrap
     else:
         multiprocessing.Process = ProcessWithCoverage
 
@@ -72,9 +78,9 @@ def patch_multiprocessing():
         def get_preparation_data_with_stowaway(name):
             """Get the original preparation data, and also insert our stowaway."""
             d = original_get_preparation_data(name)
-            d['stowaway'] = Stowaway()
+            d['stowaway'] = Stowaway(rcfile)
             return d
 
         spawn.get_preparation_data = get_preparation_data_with_stowaway
 
-    setattr(multiprocessing, PATCHED_MARKER, True)
+    setattr(multiprocessing, PATCHED_MARKER, rcfile)
