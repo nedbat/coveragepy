@@ -5,11 +5,18 @@
 
 import multiprocessing
 import multiprocessing.process
+import os
 import sys
 
-# An attribute that will be set on modules to indicate that they have been
+from coverage.misc import contract
+
+# An attribute that will be set on the module to indicate that it has been
 # monkey-patched.
-PATCHED_MARKER = "_coverage$rcfile"
+PATCHED_MARKER = "_coverage$patched"
+
+# The environment variable that specifies the rcfile for subprocesses.
+COVERAGE_RCFILE_ENV = "_COVERAGE_RCFILE"
+
 
 if sys.version_info >= (3, 4):
     OriginalProcess = multiprocessing.process.BaseProcess
@@ -18,13 +25,13 @@ else:
 
 original_bootstrap = OriginalProcess._bootstrap
 
-
 class ProcessWithCoverage(OriginalProcess):
     """A replacement for multiprocess.Process that starts coverage."""
+
     def _bootstrap(self):
         """Wrapper around _bootstrap to start coverage."""
-        from coverage import Coverage
-        rcfile = getattr(multiprocessing, PATCHED_MARKER)
+        from coverage import Coverage       # avoid circular import
+        rcfile = os.environ[COVERAGE_RCFILE_ENV]
         cov = Coverage(data_suffix=True, config_file=rcfile)
         cov.start()
         try:
@@ -46,6 +53,7 @@ class Stowaway(object):
         patch_multiprocessing(state['rcfile'])
 
 
+@contract(rcfile=str)
 def patch_multiprocessing(rcfile):
     """Monkey-patch the multiprocessing module.
 
@@ -55,6 +63,7 @@ def patch_multiprocessing(rcfile):
     `rcfile` is the path to the rcfile being used.
 
     """
+
     if hasattr(multiprocessing, PATCHED_MARKER):
         return
 
@@ -62,6 +71,10 @@ def patch_multiprocessing(rcfile):
         OriginalProcess._bootstrap = ProcessWithCoverage._bootstrap
     else:
         multiprocessing.Process = ProcessWithCoverage
+
+    # Set the value in ProcessWithCoverage that will be pickled into the child
+    # process.
+    os.environ[COVERAGE_RCFILE_ENV] = rcfile
 
     # When spawning processes rather than forking them, we have no state in the
     # new process.  We sneak in there with a Stowaway: we stuff one of our own
@@ -83,4 +96,4 @@ def patch_multiprocessing(rcfile):
 
         spawn.get_preparation_data = get_preparation_data_with_stowaway
 
-    setattr(multiprocessing, PATCHED_MARKER, rcfile)
+    setattr(multiprocessing, PATCHED_MARKER, True)

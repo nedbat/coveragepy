@@ -133,10 +133,10 @@ class Coverage(object):
             # True, so make it so.
             if config_file == ".coveragerc":
                 config_file = True
-            self.config_file = config_file
             specified_file = (config_file is not True)
             if not specified_file:
                 config_file = ".coveragerc"
+            self.config_file = config_file
 
             did_read_rc = self.config.from_file(config_file)
 

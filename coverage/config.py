@@ -9,7 +9,7 @@ import re
 import sys
 
 from coverage.backward import configparser, iitems, string_class
-from coverage.misc import CoverageException, isolate_module
+from coverage.misc import contract, CoverageException, isolate_module
 
 os = isolate_module(os)
 
@@ -201,6 +201,7 @@ class CoverageConfig(object):
                     v = [v]
                 setattr(self, k, v)
 
+    @contract(filename=str)
     def from_file(self, filename, section_prefix=""):
         """Read configuration from a .rc file.
 
