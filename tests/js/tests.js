@@ -2,20 +2,20 @@
 /* For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt */
 
 // Tests of coverage.py HTML report chunk navigation.
-/*global coverage, test, module, equals, jQuery, $ */
+/*global coverage, jQuery, $ */
 
 // Test helpers
 
-function selection_is(sel) {
-    raw_selection_is(sel, true);
+function selection_is(assert, sel) {
+    raw_selection_is(assert, sel, true);
 }
 
-function raw_selection_is(sel, check_highlight) {
+function raw_selection_is(assert, sel, check_highlight) {
     var beg = sel[0], end = sel[1];
-    equals(coverage.sel_begin, beg);
-    equals(coverage.sel_end, end);
+    assert.equal(coverage.sel_begin, beg);
+    assert.equal(coverage.sel_end, end);
     if (check_highlight) {
-        equals(coverage.code_container().find(".highlight").length, end-beg);
+        assert.equal(coverage.code_container().find(".highlight").length, end-beg);
     }
 }
 
@@ -34,20 +34,21 @@ function build_fixture(spec) {
 
 // Zero-chunk tests
 
-module("Zero-chunk navigation", {
-    setup: function () {
+QUnit.module("Zero-chunk navigation", {
+    beforeEach: function () {
         build_fixture("wwww");
     }
 });
 
-test("set_sel defaults", function () {
+QUnit.test("set_sel defaults", function (assert) {
     coverage.set_sel(2);
-    equals(coverage.sel_begin, 2);
-    equals(coverage.sel_end, 3);
+    assert.equal(coverage.sel_begin, 2);
+    assert.equal(coverage.sel_end, 3);
 });
 
-test("No first chunk to select", function () {
+QUnit.test("No first chunk to select", function (assert) {
     coverage.to_first_chunk();
+    assert.expect(0);
 });
 
 // One-chunk tests
@@ -64,32 +65,32 @@ $.each([
     var id = params[0];
     var c1 = params[1];
 
-    module("One-chunk navigation - " + id, {
-        setup: function () {
+    QUnit.module("One-chunk navigation - " + id, {
+        beforeEach: function () {
             build_fixture(id);
         }
     });
 
-    test("First chunk", function () {
+    QUnit.test("First chunk", function (assert) {
         coverage.to_first_chunk();
-        selection_is(c1);
+        selection_is(assert, c1);
     });
 
-    test("Next chunk is first chunk", function () {
+    QUnit.test("Next chunk is first chunk", function (assert) {
         coverage.to_next_chunk();
-        selection_is(c1);
+        selection_is(assert, c1);
     });
 
-    test("There is no next chunk", function () {
+    QUnit.test("There is no next chunk", function (assert) {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
-        selection_is(c1);
+        selection_is(assert, c1);
     });
 
-    test("There is no prev chunk", function () {
+    QUnit.test("There is no prev chunk", function (assert) {
         coverage.to_first_chunk();
         coverage.to_prev_chunk();
-        selection_is(c1);
+        selection_is(assert, c1);
     });
 });
 
@@ -109,66 +110,66 @@ $.each([
     var c1 = params[1];
     var c2 = params[2];
 
-    module("Two-chunk navigation - " + id, {
-        setup: function () {
+    QUnit.module("Two-chunk navigation - " + id, {
+        beforeEach: function () {
             build_fixture(id);
         }
     });
 
-    test("First chunk", function () {
+    QUnit.test("First chunk", function (assert) {
         coverage.to_first_chunk();
-        selection_is(c1);
+        selection_is(assert, c1);
     });
 
-    test("Next chunk is first chunk", function () {
+    QUnit.test("Next chunk is first chunk", function (assert) {
         coverage.to_next_chunk();
-        selection_is(c1);
+        selection_is(assert, c1);
     });
 
-    test("Move to next chunk", function () {
-        coverage.to_first_chunk();
-        coverage.to_next_chunk();
-        selection_is(c2);
-    });
-
-    test("Move to first chunk", function () {
+    QUnit.test("Move to next chunk", function (assert) {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
-        coverage.to_first_chunk();
-        selection_is(c1);
+        selection_is(assert, c2);
     });
 
-    test("Move to previous chunk", function () {
+    QUnit.test("Move to first chunk", function (assert) {
+        coverage.to_first_chunk();
+        coverage.to_next_chunk();
+        coverage.to_first_chunk();
+        selection_is(assert, c1);
+    });
+
+    QUnit.test("Move to previous chunk", function (assert) {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
         coverage.to_prev_chunk();
-        selection_is(c1);
+        selection_is(assert, c1);
     });
 
-    test("Next doesn't move after last chunk", function () {
+    QUnit.test("Next doesn't move after last chunk", function (assert) {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
         coverage.to_next_chunk();
-        selection_is(c2);
+        selection_is(assert, c2);
     });
 
-    test("Prev doesn't move before first chunk", function () {
+    QUnit.test("Prev doesn't move before first chunk", function (assert) {
         coverage.to_first_chunk();
         coverage.to_next_chunk();
         coverage.to_prev_chunk();
         coverage.to_prev_chunk();
-        selection_is(c1);
+        selection_is(assert, c1);
     });
 
 });
 
-module("Miscellaneous");
+QUnit.module("Miscellaneous");
 
-test("Jump from a line selected", function () {
+QUnit.test("Jump from a line selected", function (assert) {
     build_fixture("rrwwrr");
     coverage.set_sel(3);
     coverage.to_next_chunk();
-    selection_is([5,7]);
+    selection_is(assert, [5,7]);
 });
 
 // Tests of select_line_or_chunk.
@@ -191,17 +192,17 @@ $.each([
     var id = params[0];
     var sels = params[1];
 
-    module("Select line or chunk - " + id, {
-        setup: function () {
+    QUnit.module("Select line or chunk - " + id, {
+        beforeEach: function () {
             build_fixture(id);
         }
     });
 
     $.each(sels, function (i, sel) {
         i++;
-        test("Select line " + i, function () {
+        QUnit.test("Select line " + i, function (assert) {
             coverage.select_line_or_chunk(i);
-            raw_selection_is(sel);
+            raw_selection_is(assert, sel);
         });
     });
 });
