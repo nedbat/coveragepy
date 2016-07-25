@@ -16,6 +16,8 @@ Unreleased
   other run-affecting options on the command line.  This prevents
   failures like those reported in `issue 495`_.
 
+- Filtering the HTML report is now faster, thanks to Ville Skyttä.
+
 .. _issue 495: https://bitbucket.org/ned/coveragepy/issues/495/branch-and-concurrency-are-conflicting
 
 
