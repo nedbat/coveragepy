@@ -73,30 +73,28 @@ coverage.wire_up_filter = function () {
         }
         else {
             // Filter table items by value.
-            var hide = $([]);
-            var show = $([]);
+            var hidden = 0;
+            var shown = 0;
 
-            // Compile elements to hide / show.
+            // Hide / show elements.
             $.each(table_row_names, function () {
                 var element = $(this).parents("tr");
 
                 if ($(this).text().indexOf(filter_value) === -1) {
                     // hide
-                    hide = hide.add(element);
+                    element.addClass("hidden");
+                    hidden++;
                 }
                 else {
                     // show
-                    show = show.add(element);
+                    element.removeClass("hidden");
+                    shown++;
                 }
             });
 
-            // Perform DOM manipulation.
-            hide.addClass("hidden");
-            show.removeClass("hidden");
-
             // Show placeholder if no rows will be displayed.
             if (no_rows.length > 0) {
-                if (show.length === 0) {
+                if (shown === 0) {
                     // Show placeholder, hide table.
                     no_rows.show();
                     table.hide();
@@ -109,7 +107,7 @@ coverage.wire_up_filter = function () {
             }
 
             // Manage dynamic header:
-            if (hide.length > 0) {
+            if (hidden > 0) {
                 // Calculate new dynamic sum values based on visible rows.
                 for (var column = 2; column < 20; column++) {
                     // Calculate summed value.
