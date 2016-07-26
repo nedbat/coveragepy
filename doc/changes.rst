@@ -49,6 +49,80 @@ history, see the `CHANGES.rst`_ file in the source tree.
 
 .. module:: coverage
 
+.. _changes_42:
+
+Version 4.2 --- 2016-07-26
+--------------------------
+
+Work from the PyCon 2016 Sprints!
+
+- BACKWARD INCOMPATIBILITY: the ``coverage combine`` command now ignores an
+  existing ``.coverage`` data file.  It used to include that file in its
+  combining.  This caused confusing results, and extra tox "clean" steps.  If
+  you want the old behavior, use the new ``coverage combine --append`` option.
+
+- Since ``concurrency=multiprocessing`` uses subprocesses, options specified on
+  the coverage.py command line will not be communicated down to them.  Only
+  options in the configuration file will apply to the subprocesses.
+  Previously, the options didn't apply to the subprocesses, but there was no
+  indication.  Now it is an error to use ``--concurrency=multiprocessing`` and
+  other run-affecting options on the command line.  This prevents
+  failures like those reported in `issue 495`_.
+
+- The ``concurrency`` option can now take multiple values, to support programs
+  using multiprocessing and another library such as eventlet.  This is only
+  possible in the configuration file, not from the command line. The
+  configuration file is the only way for sub-processes to all run with the same
+  options.  Fixes `issue 484`_.  Thanks to Josh Williams for prototyping.
+
+- Using a ``concurrency`` setting of ``multiprocessing`` now implies
+  ``--parallel`` so that the main program is measured similarly to the
+  sub-processes.
+
+- When using `automatic subprocess measurement`_, running coverage commands
+  would create spurious data files.  This is now fixed, thanks to diagnosis and
+  testing by Dan Riti.  Closes `issue 492`_.
+
+- A new configuration option, ``report:sort``, controls what column of the
+  text report is used to sort the rows.  Thanks to Dan Wandschneider, this
+  closes `issue 199`_.
+
+- The HTML report has a more-visible indicator for which column is being
+  sorted.  Closes `issue 298`_, thanks to Josh Williams.
+
+- Filtering the HTML report is now faster, thanks to Ville Skyttä.
+
+- If the HTML report cannot find the source for a file, the message now
+  suggests using the ``-i`` flag to allow the report to continue. Closes
+  `issue 231`_, thanks, Nathan Land.
+
+- When reports are ignoring errors, there's now a warning if a file cannot be
+  parsed, rather than being silently ignored.  Closes `issue 396`_. Thanks,
+  Matthew Boehm.
+
+- A new option for ``coverage debug`` is available: ``coverage debug config``
+  shows the current configuration.  Closes `issue 454`_, thanks to Matthew
+  Boehm.
+
+- Running coverage as a module (``python -m coverage``) no longer shows the
+  program name as ``__main__.py``.  Fixes `issue 478`_.  Thanks, Scott Belden.
+
+- The `test_helpers` module has been moved into a separate pip-installable
+  package: `unittest-mixins`_.
+
+.. _automatic subprocess measurement: http://coverage.readthedocs.io/en/latest/subprocess.html
+.. _issue 199: https://bitbucket.org/ned/coveragepy/issues/199/add-a-way-to-sort-the-text-report
+.. _issue 231: https://bitbucket.org/ned/coveragepy/issues/231/various-default-behavior-in-report-phase
+.. _issue 298: https://bitbucket.org/ned/coveragepy/issues/298/show-in-html-report-that-the-columns-are
+.. _issue 396: https://bitbucket.org/ned/coveragepy/issues/396/coverage-xml-shouldnt-bail-out-on-parse
+.. _issue 454: https://bitbucket.org/ned/coveragepy/issues/454/coverage-debug-config-should-be
+.. _issue 478: https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
+.. _issue 484: https://bitbucket.org/ned/coveragepy/issues/484/multiprocessing-greenlet-concurrency
+.. _issue 492: https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
+.. _issue 495: https://bitbucket.org/ned/coveragepy/issues/495/branch-and-concurrency-are-conflicting
+.. _unittest-mixins: https://pypi.python.org/pypi/unittest-mixins
+
+
 .. _changes_41:
 
 Version 4.1 --- 2016-05-21

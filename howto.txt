@@ -17,7 +17,7 @@ pip install -r requirements/dev.pip
 - Update README.rst, including "New in x.y:"
 - Update docs
     - Version, date, and changes in doc/changes.rst
-    - Version and date in doc/index.rst
+    - Version, date and python versions in doc/index.rst
     - Version and copyright date in doc/conf.py
     - Don't forget the man page: doc/python-coverage.1.txt
     - Check that the docs build correctly:

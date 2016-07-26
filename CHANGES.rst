@@ -5,8 +5,8 @@
 Change history for Coverage.py
 ==============================
 
-Unreleased
-----------
+Version 4.2 --- 2016-07-26
+--------------------------
 
 - Since ``concurrency=multiprocessing`` uses subprocesses, options specified on
   the coverage.py command line will not be communicated down to them.  Only
