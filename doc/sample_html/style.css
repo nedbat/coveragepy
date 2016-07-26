@@ -2,6 +2,7 @@
 /* For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt */
 
 /* CSS styles for coverage.py. */
+
 /* Page-wide styles */
 html, body, h1, h2, h3, p, table, td, th {
     margin: 0;
@@ -321,7 +322,15 @@ td.text {
     }
 #index th.headerSortDown, #index th.headerSortUp {
     border-bottom: 1px solid #000;
+    white-space: nowrap;
+    background: #eee;
     }
+#index th.headerSortDown:after {
+    content: " ↓";
+}
+#index th.headerSortUp:after {
+    content: " ↑";
+}
 #index td.name, #index th.name {
     text-align: left;
     width: auto;
