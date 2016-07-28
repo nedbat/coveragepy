@@ -5,6 +5,15 @@
 Change history for Coverage.py
 ==============================
 
+Unreleased
+----------
+
+- Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
+  Ben Finney.  Closes `issue 505`_.
+
+.. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
+
+
 Version 4.2 --- 2016-07-26
 --------------------------
 
