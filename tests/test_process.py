@@ -1088,6 +1088,13 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         if env.METACOV:
             self.skipTest("Can't test sub-process pth file suppport during metacoverage")
 
+        # An existing data file should not be read when a subprocess gets
+        # measured automatically.  Create the data file here with bogus data in
+        # it.
+        data = coverage.CoverageData()
+        data.add_lines({os.path.abspath('sub.py'): dict.fromkeys(range(100))})
+        data.write_file(".mycovdata")
+
         self.make_file("coverage.ini", """\
             [run]
             data_file = .mycovdata

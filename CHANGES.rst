@@ -8,6 +8,11 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Subprocesses that are measured with `automatic subprocess measurement`_ used
+  to read in any pre-existing data file.  This meant data would be incorrectly
+  carried forward from run to run.  Now those files are not read, so each
+  subprocess only writes its own data.
+
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
 
