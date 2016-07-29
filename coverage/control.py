@@ -164,7 +164,7 @@ class Coverage(object):
             )
 
         self._debug_file = None
-        self._auto_data = auto_data
+        self._auto_load = self._auto_save = auto_data
         self._data_suffix = data_suffix
 
         # The matchers for _should_trace.
@@ -697,7 +697,7 @@ class Coverage(object):
             # Calling start() means we're running code, so use the run_suffix
             # as the data_suffix when we eventually save the data.
             self.data_suffix = self.run_suffix
-        if self._auto_data:
+        if self._auto_load:
             self.load()
 
         self.collector.start()
@@ -714,7 +714,7 @@ class Coverage(object):
         """Clean up on process shutdown."""
         if self._started:
             self.stop()
-        if self._auto_data:
+        if self._auto_save:
             self.save()
 
     def erase(self):
@@ -1209,11 +1209,12 @@ def process_startup():
         # started coverage.py in this process.  Nothing to do.
         return None
 
-    cov = Coverage(config_file=cps, auto_data=True)
+    cov = Coverage(config_file=cps)
     process_startup.coverage = cov
     cov.start()
     cov._warn_no_data = False
     cov._warn_unimported_source = False
+    cov._auto_save = True
 
     return cov
 
@@ -1222,4 +1223,4 @@ def _prevent_sub_process_measurement():
     """Stop any subprocess auto-measurement from writing data."""
     auto_created_coverage = getattr(process_startup, "coverage", None)
     if auto_created_coverage is not None:
-        auto_created_coverage._auto_data = False
+        auto_created_coverage._auto_save = False
