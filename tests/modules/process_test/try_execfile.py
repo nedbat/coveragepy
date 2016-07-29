@@ -52,11 +52,6 @@ def without_same_files(filenames):
 
 cleaned_sys_path = [os.path.normcase(p) for p in without_same_files(sys.path)]
 
-# Eggs seems to go in different places for some reason. I'm going to assume
-# it's an OK difference.  Sort eggs to the end of the list to canonicalize
-# them.
-cleaned_sys_path = sorted(cleaned_sys_path, key=lambda p: p.endswith(".egg"))
-
 DATA = "xyzzy"
 
 import __main__
