@@ -11,12 +11,13 @@ Unreleased
 - Subprocesses that are measured with `automatic subprocess measurement`_ used
   to read in any pre-existing data file.  This meant data would be incorrectly
   carried forward from run to run.  Now those files are not read, so each
-  subprocess only writes its own data.
+  subprocess only writes its own data. Fixes `issue 510`_.
 
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
 
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
+.. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42
 
 
 Version 4.2 --- 2016-07-26
