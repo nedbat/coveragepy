@@ -419,7 +419,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
 
     def test_shining_panda_fix(self):
         # The ShiningPanda plugin looks for "status.dat" to find HTML reports.
-        # Accomodate them, but only if we are running under Jenkins.
+        # Accommodate them, but only if we are running under Jenkins.
         self.set_environ("JENKINS_URL", "Something or other")
         self.create_initial_files()
         self.run_coverage()

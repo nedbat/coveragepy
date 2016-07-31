@@ -387,7 +387,7 @@ class HtmlStatus(object):
             json.dump(status, fout)
 
         # Older versions of ShiningPanda look for the old name, status.dat.
-        # Accomodate them if we are running under Jenkins.
+        # Accommodate them if we are running under Jenkins.
         # https://issues.jenkins-ci.org/browse/JENKINS-28428
         if "JENKINS_URL" in os.environ:
             with open(os.path.join(directory, "status.dat"), "w") as dat:

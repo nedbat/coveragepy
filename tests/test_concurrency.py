@@ -311,7 +311,7 @@ SUM_RANGE_WORK = """
     """
 
 MULTI_CODE = """
-    # Above this will be a defintion of work().
+    # Above this will be a definition of work().
     import multiprocessing
     import os
     import time
