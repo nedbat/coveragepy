@@ -46,8 +46,8 @@ Coverage.py
 .. :history: 20160110T125900, updated for 4.1b1
 .. :history: 20160123T171300, updated for 4.1b2
 .. :history: 20160510T125300, updated for 4.1b3
-.. :history: 20160521T074500, udpated for 4.1
-.. :history: 20160726T161300, udpated for 4.2
+.. :history: 20160521T074500, updated for 4.1
+.. :history: 20160726T161300, updated for 4.2
 
 
 Coverage.py is a tool for measuring code coverage of Python programs. It
