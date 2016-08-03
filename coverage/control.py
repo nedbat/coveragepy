@@ -35,11 +35,20 @@ from coverage.xmlreport import XmlReporter
 os = isolate_module(os)
 
 # Pypy has some unusual stuff in the "stdlib".  Consider those locations
-# when deciding where the stdlib is.
-try:
-    import _structseq
-except ImportError:
-    _structseq = None
+# when deciding where the stdlib is.  This modules are not used for anything,
+# they are modules importable from the pypy lib directories, so that we can
+# find those directories.
+_structseq = _pypy_irc_topic = None
+if env.PYPY:
+    try:
+        import _structseq
+    except ImportError:
+        pass
+
+    try:
+        import _pypy_irc_topic
+    except ImportError:
+        pass
 
 
 class Coverage(object):
@@ -308,9 +317,10 @@ class Coverage(object):
             # environments (virtualenv, for example), these modules may be
             # spread across a few locations. Look at all the candidate modules
             # we've imported, and take all the different ones.
-            for m in (atexit, inspect, os, platform, re, _structseq, traceback):
+            for m in (atexit, inspect, os, platform, _pypy_irc_topic, re, _structseq, traceback):
                 if m is not None and hasattr(m, "__file__"):
                     self.pylib_dirs.add(self._canonical_dir(m))
+
             if _structseq and not hasattr(_structseq, '__file__'):
                 # PyPy 2.4 has no __file__ in the builtin modules, but the code
                 # objects still have the file names.  So dig into one to find

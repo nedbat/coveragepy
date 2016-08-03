@@ -16,6 +16,8 @@ Unreleased
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
 
+- Support PyPy3 5.2 alpha 1.
+
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
 .. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42
 

@@ -67,7 +67,7 @@ not.
 
     * PyPy 4.0 and 5.1.
 
-    * PyPy3 2.4.
+    * PyPy3 2.4 and 5.2
 
 .. ifconfig:: prerelease
 
@@ -78,7 +78,7 @@ not.
 
     * PyPy 4.0 and 5.1.
 
-    * PyPy3 2.4.
+    * PyPy3 2.4 and 5.2.
 
     **This is a pre-release build.  The usual warnings about possible bugs
     apply.** The latest stable version is coverage.py 4.1, `described here`_.
