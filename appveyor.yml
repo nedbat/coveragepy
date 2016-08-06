@@ -34,18 +34,6 @@ environment:
       PYTHON_VERSION: "2.7.11"
       PYTHON_ARCH: "64"
 
-    - JOB: "3.3 32-bit"
-      TOXENV: "py33"
-      PYTHON: "C:\\Python33"
-      PYTHON_VERSION: "3.3"
-      PYTHON_ARCH: "32"
-
-    - JOB: "3.3 64-bit"
-      TOXENV: "py33"
-      PYTHON: "C:\\Python33-x64"
-      PYTHON_VERSION: "3.3"
-      PYTHON_ARCH: "64"
-
     - JOB: "3.4 32-bit"
       TOXENV: "py34"
       PYTHON: "C:\\Python34"
