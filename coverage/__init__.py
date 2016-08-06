@@ -12,12 +12,16 @@ from coverage.version import __version__, __url__, version_info
 
 from coverage.control import Coverage, process_startup
 from coverage.data import CoverageData
+from coverage.debug import enable_aspectlib_maybe
 from coverage.misc import CoverageException
 from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
 from coverage.pytracer import PyTracer
 
 # Backward compatibility.
 coverage = Coverage
+
+# Possibly enable aspectlib to debug our execution.
+enable_aspectlib_maybe()
 
 # On Windows, we encode and decode deep enough that something goes wrong and
 # the encodings.utf_8 module is loaded and then unloaded, I don't know why.

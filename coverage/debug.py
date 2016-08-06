@@ -5,6 +5,7 @@
 
 import inspect
 import os
+import re
 import sys
 
 from coverage.misc import isolate_module
@@ -112,3 +113,49 @@ def log(msg, stack=False):                                  # pragma: debugging
         f.write("{pid}: {msg}\n".format(pid=os.getpid(), msg=msg))
         if stack:
             dump_stack_frames(out=f)
+
+
+def enable_aspectlib_maybe():
+    """For debugging, we can use aspectlib to trace execution.
+
+    Define COVERAGE_ASPECTLIB to enable and configure aspectlib to trace
+    execution::
+
+        COVERAGE_ASPECTLIB=covaspect.txt:coverage.Coverage:coverage.data.CoverageData program...
+
+    This will trace all the public methods on Coverage and CoverageData,
+    writing the information to covaspect.txt.
+
+    """
+    aspects = os.environ.get("COVERAGE_ASPECTLIB", "")
+    if not aspects:
+        return
+
+    import aspectlib                            # pylint: disable=import-error
+    import aspectlib.debug                      # pylint: disable=import-error
+
+    class AspectlibOutputFile(object):
+        """A file-like object that includes pid and cwd information."""
+        def __init__(self, outfile):
+            self.outfile = outfile
+            self.cwd = None
+
+        def write(self, text):
+            """Just like file.write"""
+            cwd = os.getcwd()
+            if cwd != self.cwd:
+                self._write("cwd is now {0!r}\n".format(cwd))
+                self.cwd = cwd
+            self._write(text)
+
+        def _write(self, text):
+            """The raw text-writer, so that we can use it ourselves."""
+            self.outfile.write("{0:5d}: {1}".format(os.getpid(), text))
+
+    aspects = aspects.split(':')
+    aspects_file = AspectlibOutputFile(open(aspects[0], "a"))
+    aspect_log = aspectlib.debug.log(print_to=aspects_file, use_logging=False)
+    aspects = aspects[1:]
+    public_methods = re.compile(r'^(__init__|[a-zA-Z].*)$')
+    for aspect in aspects:
+        aspectlib.weave(aspect, aspect_log, methods=public_methods)
