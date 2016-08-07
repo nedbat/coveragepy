@@ -600,7 +600,7 @@ class HtmlGoldTests(CoverageGoldTest):
             # pylint: disable=import-error
             cov = coverage.Coverage(include=["./*"])
             cov.start()
-            import main         # pragma: nested
+            import main         # pragma: nested # pylint: disable=unused-variable
             cov.stop()          # pragma: nested
             cov.html_report(directory="../out/omit_1")
 
@@ -613,7 +613,7 @@ class HtmlGoldTests(CoverageGoldTest):
             # pylint: disable=import-error
             cov = coverage.Coverage(include=["./*"])
             cov.start()
-            import main         # pragma: nested
+            import main         # pragma: nested # pylint: disable=unused-variable
             cov.stop()          # pragma: nested
             cov.html_report(directory="../out/omit_2", omit=["m1.py"])
 
@@ -626,7 +626,7 @@ class HtmlGoldTests(CoverageGoldTest):
             # pylint: disable=import-error
             cov = coverage.Coverage(include=["./*"])
             cov.start()
-            import main         # pragma: nested
+            import main         # pragma: nested # pylint: disable=unused-variable
             cov.stop()          # pragma: nested
             cov.html_report(directory="../out/omit_3", omit=["m1.py", "m2.py"])
 
@@ -639,7 +639,7 @@ class HtmlGoldTests(CoverageGoldTest):
             # pylint: disable=import-error
             cov = coverage.Coverage(config_file="omit4.ini", include=["./*"])
             cov.start()
-            import main         # pragma: nested
+            import main         # pragma: nested # pylint: disable=unused-variable
             cov.stop()          # pragma: nested
             cov.html_report(directory="../out/omit_4")
 
@@ -652,7 +652,7 @@ class HtmlGoldTests(CoverageGoldTest):
             # pylint: disable=import-error
             cov = coverage.Coverage(config_file="omit5.ini", include=["./*"])
             cov.start()
-            import main         # pragma: nested
+            import main         # pragma: nested # pylint: disable=unused-variable
             cov.stop()          # pragma: nested
             cov.html_report()
 
@@ -666,7 +666,7 @@ class HtmlGoldTests(CoverageGoldTest):
             sys.path.insert(0, "../othersrc")
             cov = coverage.Coverage(include=["./*", "../othersrc/*"])
             cov.start()
-            import here         # pragma: nested
+            import here         # pragma: nested # pylint: disable=unused-variable
             cov.stop()          # pragma: nested
             cov.html_report(directory="../out/other")
 
