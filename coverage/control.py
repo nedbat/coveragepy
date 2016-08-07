@@ -262,7 +262,6 @@ class Coverage(object):
         concurrency = self.config.concurrency or []
         if "multiprocessing" in concurrency:
             patch_multiprocessing(rcfile=self.config_file)
-            #concurrency = None
             # Multi-processing uses parallel for the subprocesses, so also use
             # it for the main process.
             self.config.parallel = True
