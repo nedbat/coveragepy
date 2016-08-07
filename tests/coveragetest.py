@@ -341,11 +341,24 @@ class CoverageTest(
         combined content of `stdout` and `stderr` output streams from the
         sub-process.
 
+        See `run_command_status` for complete semantics.
+
         Use this when you need to test the process behavior of coverage.
 
         Compare with `command_line`.
 
-        Handles the following command name specially:
+        """
+        _, output = self.run_command_status(cmd)
+        return output
+
+    def run_command_status(self, cmd):
+        """Run the command-line `cmd` in a sub-process, and print its output.
+
+        Use this when you need to test the process behavior of coverage.
+
+        Compare with `command_line`.
+
+        Handles the following command names specially:
 
         * "python" is replaced with the command name of the current
             Python interpreter.
@@ -353,7 +366,13 @@ class CoverageTest(
         * "coverage" is replaced with the command name for the main
             Coverage.py program.
 
+        Returns a pair: the process' exit status and its stdout/stderr text,
+        which are also stored as `self.last_command_status` and
+        `self.last_command_output`.
+
         """
+        # Make sure "python" and "coverage" mean specifically what we want
+        # them to mean.
         split_commandline = cmd.split(" ", 1)
         command_name = split_commandline[0]
         command_args = split_commandline[1:]
@@ -371,22 +390,8 @@ class CoverageTest(
             # actual Coverage.py main command name.
             command_name = self.coverage_command
 
-        full_commandline = " ".join([shlex_quote(command_name)] + command_args)
+        cmd = " ".join([shlex_quote(command_name)] + command_args)
 
-        _, output = self.run_command_status(full_commandline)
-        return output
-
-    def run_command_status(self, cmd):
-        """Run the command-line `cmd` in a sub-process, and print its output.
-
-        Use this when you need to test the process behavior of coverage.
-
-        Compare with `command_line`.
-
-        Returns a pair: the process' exit status and stdout text, which are
-        also stored as self.last_command_status and self.last_command_output.
-
-        """
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...
         here = os.path.dirname(self.nice_file(coverage.__file__, ".."))
