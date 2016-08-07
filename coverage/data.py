@@ -666,7 +666,7 @@ class CoverageDataFiles(object):
             filename += "." + suffix
         data.write_file(filename)
 
-    def combine_parallel_data(self, data, aliases=None, data_paths=None):
+    def combine_parallel_data(self, data, aliases=None, data_paths=None, strict=False):
         """Combine a number of data files together.
 
         Treat `self.filename` as a file prefix, and combine the data from all
@@ -686,6 +686,9 @@ class CoverageDataFiles(object):
         cannot be read, a warning will be issued, and the file will not be
         deleted.
 
+        If `strict` is true, and no files are found to combine, an error is
+        raised.
+
         """
         # Because of the os.path.abspath in the constructor, data_dir will
         # never be an empty string.
@@ -702,6 +705,9 @@ class CoverageDataFiles(object):
                 files_to_combine.extend(glob.glob(pattern))
             else:
                 raise CoverageException("Couldn't combine from non-existent path '%s'" % (p,))
+
+        if strict and not files_to_combine:
+            raise CoverageException("No data to combine")
 
         for f in files_to_combine:
             new_data = CoverageData()

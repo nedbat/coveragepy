@@ -13,13 +13,21 @@ Unreleased
   carried forward from run to run.  Now those files are not read, so each
   subprocess only writes its own data. Fixes `issue 510`_.
 
+- The ``coverage combine`` command will now fail if there are no data files to
+  combine. The combine changes in 4.2 meant that multiple combines could lose
+  data, leaving you with an empty .coverage data file. Fixes issues
+  `issue 412`_, `issue 516`_, and probably `issue 511`_.
+
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
 
 - Support PyPy3 5.2 alpha 1.
 
+.. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
 .. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42
+.. _issue 511: https://bitbucket.org/ned/coveragepy/issues/511/version-42-coverage-combine-empties
+.. _issue 516: https://bitbucket.org/ned/coveragepy/issues/516/running-coverage-combine-twice-deletes-all
 
 
 Version 4.2 --- 2016-07-26

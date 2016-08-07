@@ -190,20 +190,20 @@ class CmdLineTest(BaseCmdLineTest):
         # coverage combine with args
         self.cmd_executes("combine datadir1", """\
             .coverage()
-            .combine(["datadir1"])
+            .combine(["datadir1"], strict=True)
             .save()
             """)
         # coverage combine, appending
         self.cmd_executes("combine --append datadir1", """\
             .coverage()
             .load()
-            .combine(["datadir1"])
+            .combine(["datadir1"], strict=True)
             .save()
             """)
         # coverage combine without args
         self.cmd_executes("combine", """\
             .coverage()
-            .combine(None)
+            .combine(None, strict=True)
             .save()
             """)
 
@@ -211,12 +211,12 @@ class CmdLineTest(BaseCmdLineTest):
         # https://bitbucket.org/ned/coveragepy/issues/385/coverage-combine-doesnt-work-with-rcfile
         self.cmd_executes("combine --rcfile cov.ini", """\
             .coverage(config_file='cov.ini')
-            .combine(None)
+            .combine(None, strict=True)
             .save()
             """)
         self.cmd_executes("combine --rcfile cov.ini data1 data2/more", """\
             .coverage(config_file='cov.ini')
-            .combine(["data1", "data2/more"])
+            .combine(["data1", "data2/more"], strict=True)
             .save()
             """)
 

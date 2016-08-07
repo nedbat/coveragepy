@@ -483,7 +483,7 @@ class CoverageScript(object):
             if options.append:
                 self.coverage.load()
             data_dirs = args or None
-            self.coverage.combine(data_dirs)
+            self.coverage.combine(data_dirs, strict=True)
             self.coverage.save()
             return OK
 

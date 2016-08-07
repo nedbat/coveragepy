@@ -791,7 +791,7 @@ class Coverage(object):
         self.get_data()
         self.data_files.write(self.data, suffix=self.data_suffix)
 
-    def combine(self, data_paths=None):
+    def combine(self, data_paths=None, strict=False):
         """Combine together a number of similarly-named coverage data files.
 
         All coverage data files whose name starts with `data_file` (from the
@@ -803,8 +803,14 @@ class Coverage(object):
         directory indicated by the current data file (probably the current
         directory) will be combined.
 
+        If `strict` is true, then it is an error to attempt to combine when
+        there are no data files to combine.
+
         .. versionadded:: 4.0
             The `data_paths` parameter.
+
+        .. versionadded:: 4.3
+            The `strict` parameter.
 
         """
         self._init()
@@ -818,7 +824,9 @@ class Coverage(object):
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
 
-        self.data_files.combine_parallel_data(self.data, aliases=aliases, data_paths=data_paths)
+        self.data_files.combine_parallel_data(
+            self.data, aliases=aliases, data_paths=data_paths, strict=strict,
+        )
 
     def get_data(self):
         """Get the collected data and reset the collector.

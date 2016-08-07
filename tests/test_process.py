@@ -95,6 +95,17 @@ class ProcessTest(CoverageTest):
         data.read_file(".coverage")
         self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
+        # Running combine again should fail, because there are no parallel data
+        # files to combine.
+        status, out = self.run_command_status("coverage combine")
+        self.assertEqual(status, 1)
+        self.assertEqual(out, "No data to combine\n")
+
+        # And the originally combined data is still there.
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+
     def test_combine_parallel_data_with_a_corrupt_file(self):
         self.make_b_or_c_py()
         out = self.run_command("coverage run -p b_or_c.py b")
@@ -732,7 +743,6 @@ class ProcessTest(CoverageTest):
                 inst.start()
                 import foo
                 inst.stop()
-                inst.combine()
                 inst.save()
             """)
         out = self.run_command("python run_twice.py")

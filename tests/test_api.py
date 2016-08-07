@@ -293,8 +293,8 @@ class ApiTest(CoverageTest):
 
         self.check_code1_code2(cov)
 
-    def make_corrupt_data_files(self):
-        """Make some good and some bad data files."""
+    def make_good_data_files(self):
+        """Make some good data files."""
         self.make_code1_code2()
         cov = coverage.Coverage(data_suffix=True)
         self.start_import_stop(cov, "code1")
@@ -304,12 +304,15 @@ class ApiTest(CoverageTest):
         self.start_import_stop(cov, "code2")
         cov.save()
 
+    def make_bad_data_file(self):
+        """Make one bad data file."""
         self.make_file(".coverage.foo", """La la la, this isn't coverage data!""")
 
     def test_combining_corrupt_data(self):
         # If you combine a corrupt data file, then you will get a warning,
         # and the file will remain.
-        self.make_corrupt_data_files()
+        self.make_good_data_files()
+        self.make_bad_data_file()
         cov = coverage.Coverage()
         warning_regex = (
             r"Couldn't read data from '.*\.coverage\.foo': "
@@ -323,6 +326,27 @@ class ApiTest(CoverageTest):
 
         # The bad file still exists.
         self.assert_exists(".coverage.foo")
+
+    def test_combining_twice(self):
+        self.make_good_data_files()
+        cov1 = coverage.Coverage()
+        cov1.combine()
+        cov1.save()
+        self.check_code1_code2(cov1)
+
+        cov2 = coverage.Coverage()
+        with self.assertRaisesRegex(CoverageException, r"No data to combine"):
+            cov2.combine(strict=True)
+
+        cov3 = coverage.Coverage()
+        cov3.combine()
+        # Now the data is empty!
+        _, statements, missing, _ = cov3.analysis("code1.py")
+        self.assertEqual(statements, [1])
+        self.assertEqual(missing, [1])
+        _, statements, missing, _ = cov3.analysis("code2.py")
+        self.assertEqual(statements, [1, 2])
+        self.assertEqual(missing, [1, 2])
 
 
 class NamespaceModuleTest(CoverageTest):
@@ -342,7 +366,6 @@ class NamespaceModuleTest(CoverageTest):
 
         with self.assertRaisesRegex(CoverageException, r"Module .* has no file"):
             cov.analysis(sys.modules['namespace'])
-
 
 
 class UsingModulesMixin(object):
