@@ -2,7 +2,7 @@
 
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
-pyenchant==1.6.6
-sphinx==1.4.4
-sphinxcontrib-spelling==2.1.2
+pyenchant==1.6.7
+sphinx==1.4.5
+sphinxcontrib-spelling==2.2.0
 sphinx_rtd_theme==0.1.9
