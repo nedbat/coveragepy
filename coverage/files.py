@@ -313,8 +313,11 @@ class PathAliases(object):
         pattern += pattern_sep
 
         # Make a regex from the pattern.  fnmatch always adds a \Z to
-        # match the whole string, which we don't want.
-        regex_pat = fnmatch.translate(pattern).replace(r'\Z(', '(')
+        # match the whole string, which we don't want, so we remove the \Z.
+        # While removing it, we only replace \Z if followed by paren, or at
+        # end, to keep from destroying a literal \Z in the pattern.
+        regex_pat = fnmatch.translate(pattern)
+        regex_pat = re.sub(r'\\Z(\(|$)', r'\1', regex_pat)
 
         # We want */a/b.py to match on Windows too, so change slash to match
         # either separator.
