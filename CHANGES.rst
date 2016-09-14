@@ -18,6 +18,8 @@ Unreleased
   data, leaving you with an empty .coverage data file. Fixes issues
   `issue 412`_, `issue 516`_, and probably `issue 511`_.
 
+- Data files are now about 15% smaller.
+
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
 

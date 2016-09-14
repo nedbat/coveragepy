@@ -451,7 +451,7 @@ class CoverageData(object):
 
         # Write the data to the file.
         file_obj.write(self._GO_AWAY)
-        json.dump(file_data, file_obj)
+        json.dump(file_data, file_obj, separators=(',', ':'))
 
     def write_file(self, filename):
         """Write the coverage data to `filename`."""
