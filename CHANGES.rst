@@ -18,6 +18,11 @@ Unreleased
   data, leaving you with an empty .coverage data file. Fixes issues
   `issue 412`_, `issue 516`_, and probably `issue 511`_.
 
+- When forking subprocesses, the coverage data files would have the same random
+  number appended to the file name. This didn't cause problems, because the
+  file names had the process id also, making collisions (nearly) impossible.
+  But it was disconcerting.  This is now fixed.
+
 - Data files are now about 15% smaller.
 
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,

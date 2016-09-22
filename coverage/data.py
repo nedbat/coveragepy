@@ -657,10 +657,8 @@ class CoverageDataFiles(object):
                 with open(_TEST_NAME_FILE) as f:
                     test_name = f.read()
                 extra = "." + test_name
-            suffix = "%s%s.%s.%06d" % (
-                socket.gethostname(), extra, os.getpid(),
-                random.randint(0, 999999)
-            )
+            dice = random.Random().randint(0, 999999)
+            suffix = "%s%s.%s.%06d" % (socket.gethostname(), extra, os.getpid(), dice)
 
         if suffix:
             filename += "." + suffix

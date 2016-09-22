@@ -23,13 +23,13 @@ TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try
 class ProcessTest(CoverageTest):
     """Tests of the per-process behavior of coverage.py."""
 
+    def data_files(self):
+        """Return the names of coverage data files in this directory."""
+        return [f for f in os.listdir('.') if (f.startswith('.coverage.') or f == '.coverage')]
+
     def number_of_data_files(self):
         """Return the number of coverage data files in this directory."""
-        num = 0
-        for f in os.listdir('.'):
-            if f.startswith('.coverage.') or f == '.coverage':
-                num += 1
-        return num
+        return len(self.data_files())
 
     def test_save_on_exit(self):
         self.make_file("mycode.py", """\
@@ -576,6 +576,11 @@ class ProcessTest(CoverageTest):
         # After running the forking program, there should be two
         # .coverage.machine.123 files.
         self.assertEqual(self.number_of_data_files(), 2)
+
+        # The two data files should have different random numbers at the end of
+        # the file name.
+        nums = set(name.rpartition(".")[-1] for name in self.data_files())
+        self.assertEqual(len(nums), 2, "Same random: %s" % (self.data_files(),))
 
         # Combine the parallel coverage data files into .coverage .
         self.run_command("coverage combine")
