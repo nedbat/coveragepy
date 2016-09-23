@@ -34,12 +34,18 @@ class ProcessWithCoverage(OriginalProcess):
         rcfile = os.environ[COVERAGE_RCFILE_ENV]
         cov = Coverage(data_suffix=True, config_file=rcfile)
         cov.start()
+        debug = cov.debug
         try:
+            if debug.should("multiproc"):
+                debug.write("Calling multiprocessing bootstrap")
             return original_bootstrap(self)
         finally:
+            if debug.should("multiproc"):
+                debug.write("Finished multiprocessing bootstrap")
             cov.stop()
             cov.save()
-
+            if debug.should("multiproc"):
+                debug.write("Saved multiprocessing data")
 
 class Stowaway(object):
     """An object to pickle, so when it is unpickled, it can apply the monkey-patch."""

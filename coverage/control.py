@@ -721,6 +721,8 @@ class Coverage(object):
 
     def _atexit(self):
         """Clean up on process shutdown."""
+        if self.debug and self.debug.should('dataio'):
+            self.debug.write("Inside _atexit: self._auto_save = %r" % (self._auto_save,))
         if self._started:
             self.stop()
         if self._auto_save:

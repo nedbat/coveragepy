@@ -554,7 +554,9 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
         self.assertRegex(
             debug.get_output(),
-            r"^Writing data to '.*\.coverage'\n"
+            r"^Creating CoverageData object\n"
+            r"Writing data to '.*\.coverage'\n"
+            r"Creating CoverageData object\n"
             r"Reading data from '.*\.coverage'\n$"
         )
 
