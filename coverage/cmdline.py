@@ -241,6 +241,8 @@ class CmdOptionParser(CoverageOptionParser):
         # results, and they will compare equal to objects.
         return (other == "<CmdOptionParser:%s>" % self.cmd)
 
+    __hash__ = None     # This object doesn't need to be hashed.
+
     def get_prog_name(self):
         """Override of an undocumented function in optparse.OptionParser."""
         program_name = super(CmdOptionParser, self).get_prog_name()

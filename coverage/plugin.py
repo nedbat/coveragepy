@@ -394,3 +394,5 @@ class FileReporter(object):
 
     def __ge__(self, other):
         return self.filename >= other.filename
+
+    __hash__ = None     # This object doesn't need to be hashed.
