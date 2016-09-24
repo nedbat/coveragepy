@@ -8,7 +8,8 @@ import re
 
 import coverage
 from coverage.backward import StringIO
-from coverage.debug import info_formatter, info_header
+from coverage.debug import info_formatter, info_header, short_stack
+
 from tests.coveragetest import CoverageTest
 
 
@@ -130,6 +131,40 @@ class DebugTraceTest(CoverageTest):
                 1,
                 msg="Incorrect lines for %r" % label,
             )
+
+
+def f_one(*args, **kwargs):
+    """First of the chain of functions for testing `short_stack`."""
+    return f_two(*args, **kwargs)
+
+def f_two(*args, **kwargs):
+    """Second of the chain of functions for testing `short_stack`."""
+    return f_three(*args, **kwargs)
+
+def f_three(*args, **kwargs):
+    """Third of the chain of functions for testing `short_stack`."""
+    return short_stack(*args, **kwargs)
+
+
+class ShortStackTest(CoverageTest):
+    """Tests of coverage.debug.short_stack."""
+
+    run_in_temp_dir = False
+
+    def test_short_stack(self):
+        stack = f_one().splitlines()
+        self.assertGreater(len(stack), 10)
+        self.assertIn("f_three", stack[-1])
+        self.assertIn("f_two", stack[-2])
+        self.assertIn("f_one", stack[-3])
+
+    def test_short_stack_limit(self):
+        stack = f_one(limit=5).splitlines()
+        self.assertEqual(len(stack), 5)
+
+    def test_short_stack_skip(self):
+        stack = f_one(skip=1).splitlines()
+        self.assertIn("f_two", stack[-1])
 
 
 def lines_matching(lines, pat):

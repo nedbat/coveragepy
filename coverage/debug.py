@@ -87,7 +87,7 @@ def info_formatter(info):
             yield "%*s: %s" % (label_len, label, data)
 
 
-def short_stack(limit=None):                                # pragma: debugging
+def short_stack(limit=None, skip=0):
     """Return a string summarizing the call stack.
 
     The string is multi-line, with one line per stack frame. Each line shows
@@ -101,8 +101,11 @@ def short_stack(limit=None):                                # pragma: debugging
 
     `limit` is the number of frames to include, defaulting to all of them.
 
+    `skip` is the number of frames to skip, so that debugging functions can
+    call this and not be included in the result.
+
     """
-    stack = inspect.stack()[limit:0:-1]
+    stack = inspect.stack()[limit:skip:-1]
     return "\n".join("%30s : %s @%d" % (t[3], t[1], t[2]) for t in stack)
 
 
