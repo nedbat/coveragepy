@@ -49,7 +49,7 @@ class DebugControl(object):
             msg = "pid %5d: %s" % (os.getpid(), msg)
         self.output.write(msg+"\n")
         if callers and self.should('callers'):
-            dump_stack_frames(out=self.output)
+            dump_stack_frames(out=self.output, skip=1)
         self.output.flush()
 
     def write_formatted_info(self, header, info):
@@ -109,10 +109,10 @@ def short_stack(limit=None, skip=0):
     return "\n".join("%30s : %s @%d" % (t[3], t[1], t[2]) for t in stack)
 
 
-def dump_stack_frames(limit=None, out=None):                # pragma: debugging
+def dump_stack_frames(limit=None, out=None, skip=0):
     """Print a summary of the stack to stdout, or some place else."""
     out = out or sys.stdout
-    out.write(short_stack(limit=limit))
+    out.write(short_stack(limit=limit, skip=skip+1))
     out.write("\n")
 
 
@@ -121,7 +121,7 @@ def log(msg, stack=False):                                  # pragma: debugging
     with open("/tmp/covlog.txt", "a") as f:
         f.write("{pid}: {msg}\n".format(pid=os.getpid(), msg=msg))
         if stack:
-            dump_stack_frames(out=f)
+            dump_stack_frames(out=f, skip=1)
 
 
 def enable_aspectlib_maybe():

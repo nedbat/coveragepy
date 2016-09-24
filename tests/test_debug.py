@@ -103,6 +103,19 @@ class DebugTraceTest(CoverageTest):
         self.assertTrue(lines_matching(out_lines, pid_prefix + "Tracing "))
         self.assertTrue(lines_matching(out_lines, pid_prefix + "Not tracing "))
 
+    def test_debug_trace_callers(self):
+        out_lines = self.f1_debug_output(["trace", "callers"])
+
+        # For every "Tracing" or "Not tracing" message, there should be a stack
+        # trace with a line like "_should_trace : /Users/ned/coverage/control.py @616"
+        trace_messages = lines_matching(out_lines, r"^(T|Not t)racing ")
+        should_trace_pattern = r"\s+_should_trace : .*coverage[/\\]control.py @\d+$"
+        should_trace_frames = lines_matching(out_lines, should_trace_pattern)
+        self.assertEqual(len(trace_messages), len(should_trace_frames))
+
+        # The very last line should be a _should_trace frame.
+        self.assertRegex(out_lines[-1], should_trace_pattern)
+
     def test_debug_config(self):
         out_lines = self.f1_debug_output(["config"])
 
