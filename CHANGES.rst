@@ -30,6 +30,10 @@ Unreleased
 
 - Support PyPy3 5.2 alpha 1.
 
+- If you used the debug options "config" and "callers" together, you'd get a
+  call stack printed for every line in the multi-line config output. This is
+  now fixed.
+
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
 .. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42

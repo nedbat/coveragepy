@@ -37,8 +37,14 @@ class DebugControl(object):
         """Decide whether to output debug information in category `option`."""
         return (option in self.options or option in FORCED_DEBUG)
 
-    def write(self, msg):
-        """Write a line of debug output."""
+    def write(self, msg, callers=True):
+        """Write a line of debug output.
+
+        `msg` is the line to write. A newline will be appended.  If `callers`
+        is true, and the user has requested it, the call stack will be written
+        also.
+
+        """
         if self.should('pid'):
             msg = "pid %5d: %s" % (os.getpid(), msg)
         self.output.write(msg+"\n")
@@ -50,7 +56,7 @@ class DebugControl(object):
         """Write a sequence of (label,data) pairs nicely."""
         self.write(info_header(header))
         for line in info_formatter(info):
-            self.write(" %s" % line)
+            self.write(" %s" % line, callers=False)
 
 
 def info_header(label):
