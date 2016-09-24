@@ -48,7 +48,7 @@ class DebugControl(object):
         if self.should('pid'):
             msg = "pid %5d: %s" % (os.getpid(), msg)
         self.output.write(msg+"\n")
-        if self.should('callers'):
+        if callers and self.should('callers'):
             dump_stack_frames(out=self.output)
         self.output.flush()
 
