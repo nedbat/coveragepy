@@ -168,5 +168,5 @@ probably fine.  A pull request on Bitbucket is great, but a simple diff or
 patch is great too.
 
 
-.. _Mercurial: http://mercurial.selenic.com/
+.. _Mercurial: https://www.mercurial-scm.org/
 .. _tox: http://tox.testrun.org/

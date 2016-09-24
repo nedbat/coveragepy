@@ -1137,10 +1137,9 @@ Version 3.1 --- 2009-10-04
 - Added a ``coverage debug`` command for getting diagnostic information about
   the coverage.py installation.
 
-- Source code can now be read from eggs.  Thanks, `Ross Lawley`_.  Fixes
+- Source code can now be read from eggs.  Thanks, Ross Lawley.  Fixes
   `issue 25`_.
 
-.. _Ross Lawley: http://agileweb.org/
 .. _issue 25: http://bitbucket.org/ned/coveragepy/issue/25
 .. _issue 12: http://bitbucket.org/ned/coveragepy/issue/12
 .. _issue 13: http://bitbucket.org/ned/coveragepy/issue/13
