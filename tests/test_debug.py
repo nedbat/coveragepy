@@ -109,14 +109,14 @@ class DebugTraceTest(CoverageTest):
         print("\n".join(out_lines))
         # For every real message, there should be a stack
         # trace with a line like "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
-        real_messages = lines_matching(out_lines, r"^pid \d+: ")
+        real_messages = lines_matching(out_lines, r"^pid\s+\d+: ")
         frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py @\d+$"
         frames = lines_matching(out_lines, frame_pattern)
         self.assertEqual(len(real_messages), len(frames))
 
         # The last message should be "Writing data", and the last frame should
         # be write_file in data.py.
-        self.assertRegex(real_messages[-1], r"^pid \d+: Writing data")
+        self.assertRegex(real_messages[-1], r"^pid\s+\d+: Writing data")
         self.assertRegex(out_lines[-1], r"\s+write_file : .*coverage[/\\]data.py @\d+$")
 
     def test_debug_config(self):
