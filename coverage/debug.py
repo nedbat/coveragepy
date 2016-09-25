@@ -124,7 +124,7 @@ def log(msg, stack=False):                                  # pragma: debugging
             dump_stack_frames(out=f, skip=1)
 
 
-def enable_aspectlib_maybe():
+def enable_aspectlib_maybe():                               # pragma: debugging
     """For debugging, we can use aspectlib to trace execution.
 
     Define COVERAGE_ASPECTLIB to enable and configure aspectlib to trace

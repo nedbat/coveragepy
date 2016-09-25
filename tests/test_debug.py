@@ -68,6 +68,7 @@ class DebugTraceTest(CoverageTest):
         cov = coverage.Coverage(debug=debug)
         cov._debug_file = debug_out
         self.start_import_stop(cov, "f1")
+        cov.save()
 
         out_lines = debug_out.getvalue().splitlines()
         return out_lines
@@ -103,18 +104,20 @@ class DebugTraceTest(CoverageTest):
         self.assertTrue(lines_matching(out_lines, pid_prefix + "Tracing "))
         self.assertTrue(lines_matching(out_lines, pid_prefix + "Not tracing "))
 
-    def test_debug_trace_callers(self):
-        out_lines = self.f1_debug_output(["trace", "callers"])
+    def test_debug_callers(self):
+        out_lines = self.f1_debug_output(["pid", "dataop", "dataio", "callers"])
+        print("\n".join(out_lines))
+        # For every real message, there should be a stack
+        # trace with a line like "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
+        real_messages = lines_matching(out_lines, r"^pid \d+: ")
+        frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py @\d+$"
+        frames = lines_matching(out_lines, frame_pattern)
+        self.assertEqual(len(real_messages), len(frames))
 
-        # For every "Tracing" or "Not tracing" message, there should be a stack
-        # trace with a line like "_should_trace : /Users/ned/coverage/control.py @616"
-        trace_messages = lines_matching(out_lines, r"^(T|Not t)racing ")
-        should_trace_pattern = r"\s+_should_trace : .*coverage[/\\]control.py @\d+$"
-        should_trace_frames = lines_matching(out_lines, should_trace_pattern)
-        self.assertEqual(len(trace_messages), len(should_trace_frames))
-
-        # The very last line should be a _should_trace frame.
-        self.assertRegex(out_lines[-1], should_trace_pattern)
+        # The last message should be "Writing data", and the last frame should
+        # be write_file in data.py.
+        self.assertRegex(real_messages[-1], r"^pid \d+: Writing data")
+        self.assertRegex(out_lines[-1], r"\s+write_file : .*coverage[/\\]data.py @\d+$")
 
     def test_debug_config(self):
         out_lines = self.f1_debug_output(["config"])
