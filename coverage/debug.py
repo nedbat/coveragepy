@@ -3,6 +3,7 @@
 
 """Control of and utilities for debugging."""
 
+import contextlib
 import inspect
 import os
 import re
@@ -29,26 +30,37 @@ class DebugControl(object):
         """Configure the options and output file for debugging."""
         self.options = options
         self.output = output
+        self.suppress_callers = False
 
     def __repr__(self):
         return "<DebugControl options=%r output=%r>" % (self.options, self.output)
 
     def should(self, option):
         """Decide whether to output debug information in category `option`."""
+        if option == "callers" and self.suppress_callers:
+            return False
         return (option in self.options or option in FORCED_DEBUG)
 
-    def write(self, msg, callers=True):
+    @contextlib.contextmanager
+    def without_callers(self):
+        """A context manager to prevent call stacks from being logged."""
+        old = self.suppress_callers
+        self.suppress_callers = True
+        try:
+            yield
+        finally:
+            self.suppress_callers = old
+
+    def write(self, msg):
         """Write a line of debug output.
 
-        `msg` is the line to write. A newline will be appended.  If `callers`
-        is true, and the user has requested it, the call stack will be written
-        also.
+        `msg` is the line to write. A newline will be appended.
 
         """
         if self.should('pid'):
             msg = "pid %5d: %s" % (os.getpid(), msg)
         self.output.write(msg+"\n")
-        if callers and self.should('callers'):
+        if self.should('callers'):
             dump_stack_frames(out=self.output, skip=1)
         self.output.flush()
 
@@ -56,7 +68,7 @@ class DebugControl(object):
         """Write a sequence of (label,data) pairs nicely."""
         self.write(info_header(header))
         for line in info_formatter(info):
-            self.write(" %s" % line, callers=False)
+            self.write(" %s" % line)
 
 
 def info_header(label):

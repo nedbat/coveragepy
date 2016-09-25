@@ -366,18 +366,19 @@ class Coverage(object):
 
         # The user may want to debug things, show info if desired.
         wrote_any = False
-        if self.debug.should('config'):
-            config_info = sorted(self.config.__dict__.items())
-            self.debug.write_formatted_info("config", config_info)
-            wrote_any = True
+        with self.debug.without_callers():
+            if self.debug.should('config'):
+                config_info = sorted(self.config.__dict__.items())
+                self.debug.write_formatted_info("config", config_info)
+                wrote_any = True
 
-        if self.debug.should('sys'):
-            self.debug.write_formatted_info("sys", self.sys_info())
-            for plugin in self.plugins:
-                header = "sys: " + plugin._coverage_plugin_name
-                info = plugin.sys_info()
-                self.debug.write_formatted_info(header, info)
-            wrote_any = True
+            if self.debug.should('sys'):
+                self.debug.write_formatted_info("sys", self.sys_info())
+                for plugin in self.plugins:
+                    header = "sys: " + plugin._coverage_plugin_name
+                    info = plugin.sys_info()
+                    self.debug.write_formatted_info(header, info)
+                wrote_any = True
 
         if wrote_any:
             self.debug.write_formatted_info("end", ())
