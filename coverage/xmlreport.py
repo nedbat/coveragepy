@@ -185,7 +185,7 @@ class XmlReporter(Reporter):
                     xline.setAttribute("branch", "true")
                     xline.setAttribute(
                         "condition-coverage",
-                        "%d%% (%d/%d)" % (100*taken/total, taken, total)
+                        "%d%% (%d/%d)" % (100*taken//total, taken, total)
                         )
                 if line in missing_branch_arcs:
                     annlines = ["exit" if b < 0 else str(b) for b in missing_branch_arcs[line]]
