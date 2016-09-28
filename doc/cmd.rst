@@ -407,7 +407,7 @@ XML reporting
 The **xml** command writes coverage data to a "coverage.xml" file in a format
 compatible with `Cobertura`_.
 
-.. _Cobertura: http://cobertura.sourceforge.net
+.. _Cobertura: http://cobertura.github.io/cobertura/
 
 You can specify the name of the output file with the ``-o`` switch.
 
