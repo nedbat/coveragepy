@@ -58,9 +58,9 @@ coverage.start() before importing the modules that define your functions.
 Make sure you are using the C trace function.  Coverage.py provides two
 implementations of the trace function.  The C implementation runs much faster.
 To see what you are running, use ``coverage debug sys``.  The output contains
-details of the environment, including a line that says either ``tracer: CTracer``
-or ``tracer: PyTracer``.  If it says ``PyTracer`` then you are using the
-slow Python implementation.
+details of the environment, including a line that says either
+``tracer: CTracer`` or ``tracer: PyTracer``.  If it says ``PyTracer`` then you
+are using the slow Python implementation.
 
 Try re-installing coverage.py to see what happened and if you get the CTracer
 as you should.

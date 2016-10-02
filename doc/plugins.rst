@@ -28,8 +28,8 @@ Using plugins
 -------------
 
 To use a coverage.py plugin, you install it, and configure it.  For this
-example, let's say there's a Python package called ``something`` that provides a
-coverage.py plugin called ``something.plugin``.
+example, let's say there's a Python package called ``something`` that provides
+a coverage.py plugin called ``something.plugin``.
 
 #. Install the plugin's package as you would any other Python package::
 

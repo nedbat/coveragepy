@@ -16,7 +16,7 @@ Coverage.py command line usage
 .. :history: 20100725T211700, updated for 3.4
 .. :history: 20110827T212500, updated for 3.5.1, combining aliases
 .. :history: 20120119T075600, Added some clarification from George Paci
-.. :history: 20120504T091800, Added info about execution warnings, and 3.5.2 stuff.
+.. :history: 20120504T091800, Added info about execution warnings, and 3.5.2.
 .. :history: 20120807T211600, Clarified the combine rules.
 .. :history: 20121003T074600, Fixed an option reference, https://bitbucket.org/ned/coveragepy/issue/200/documentation-mentions-output-xml-instead
 .. :history: 20121117T091000, Added command aliases.

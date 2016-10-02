@@ -2,6 +2,7 @@
 
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
+doc8==0.7.0
 pyenchant==1.6.7
 sphinx==1.4.5
 sphinxcontrib-spelling==2.2.0

@@ -391,10 +391,11 @@ New features:
   index page, and only modules with that text in the name will be shown.
   Thanks, Danny Allen.
 
-- A new option: ``coverage report --skip-covered`` (or ``[report] skip_covered``)
-  will reduce the number of files reported by skipping files with 100%
-  coverage.  Thanks, Krystian Kichewko.  This means that empty ``__init__.py``
-  files will be skipped, since they are 100% covered.
+- A new option: ``coverage report --skip-covered``
+  (or ``[report] skip_covered``) will reduce the number of files reported by
+  skipping files with 100% coverage.  Thanks, Krystian Kichewko.  This means
+  that empty ``__init__.py`` files will be skipped, since they are 100%
+  covered.
 
 - You can now specify the ``--fail-under`` option in the ``.coveragerc`` file
   as the ``[report] fail_under`` option.
@@ -417,8 +418,9 @@ New features:
   stored in the ``runs`` section of the data file.  You can use this to
   annotate the data file with any information you like.
 
-- The COVERAGE_DEBUG environment variable can be used to set the ``[run] debug``
-  configuration option to control what internal operations are logged.
+- The COVERAGE_DEBUG environment variable can be used to set the
+  ``[run] debug`` configuration option to control what internal operations are
+  logged.
 
 - A new version identifier is available, `coverage.version_info`, a plain tuple
   of values similar to `sys.version_info`_.
@@ -913,9 +915,9 @@ Reporting
 - Partial branch warnings can now be pragma'd away.  The configuration option
   ``partial_branches`` is a list of regular expressions.  Lines matching any of
   those expressions will never be marked as a partial branch.  In addition,
-  there's a built-in list of regular expressions marking statements which should
-  never be marked as partial.  This list includes ``while True:``, ``while 1:``,
-  ``if 1:``, and ``if 0:``.
+  there's a built-in list of regular expressions marking statements which
+  should never be marked as partial.  This list includes ``while True:``,
+  ``while 1:``, ``if 1:``, and ``if 0:``.
 
 - The ``--omit`` and ``--include`` switches now interpret their values more
   usefully.  If the value starts with a wildcard character, it is used as-is.

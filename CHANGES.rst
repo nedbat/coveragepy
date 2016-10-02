@@ -522,8 +522,9 @@ Version 4.0a6 --- 2015-06-21
   persisted in pursuing this despite Ned's pessimism.  Fixes `issue 308`_ and
   `issue 324`_.
 
-- The COVERAGE_DEBUG environment variable can be used to set the ``[run] debug``
-  configuration option to control what internal operations are logged.
+- The COVERAGE_DEBUG environment variable can be used to set the
+  ``[run] debug`` configuration option to control what internal operations are
+  logged.
 
 - HTML reports were truncated at formfeed characters.  This is now fixed
   (`issue 360`_).  It's always fun when the problem is due to a `bug in the
@@ -1144,9 +1145,9 @@ Version 3.5b1 --- 2011-06-05
 - Partial branch warnings can now be pragma'd away.  The configuration option
   ``partial_branches`` is a list of regular expressions.  Lines matching any of
   those expressions will never be marked as a partial branch.  In addition,
-  there's a built-in list of regular expressions marking statements which should
-  never be marked as partial.  This list includes ``while True:``, ``while 1:``,
-  ``if 1:``, and ``if 0:``.
+  there's a built-in list of regular expressions marking statements which
+  should never be marked as partial.  This list includes ``while True:``,
+  ``while 1:``, ``if 1:``, and ``if 0:``.
 
 - The ``coverage()`` constructor accepts single strings for the ``omit=`` and
   ``include=`` arguments, adapting to a common error in programmatic use.
@@ -1635,8 +1636,8 @@ Version 2.78 --- 2007-09-30
 ---------------------------
 
 - Don't try to predict whether a file is Python source based on the extension.
-  Extension-less files are often Pythons scripts. Instead, simply parse the file
-  and catch the syntax errors. Hat tip to Ben Finney.
+  Extension-less files are often Pythons scripts. Instead, simply parse the
+  file and catch the syntax errors. Hat tip to Ben Finney.
 
 
 Version 2.77 --- 2007-07-29
