@@ -16,7 +16,7 @@ Unreleased
 - The ``coverage combine`` command will now fail if there are no data files to
   combine. The combine changes in 4.2 meant that multiple combines could lose
   data, leaving you with an empty .coverage data file. Fixes issues
-  `issue 412`_, `issue 516`_, and probably `issue 511`_.
+  `issue 525`_, `issue 412`_, `issue 516`_, and probably `issue 511`_.
 
 - When forking subprocesses, the coverage data files would have the same random
   number appended to the file name. This didn't cause problems, because the
@@ -39,6 +39,7 @@ Unreleased
 .. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42
 .. _issue 511: https://bitbucket.org/ned/coveragepy/issues/511/version-42-coverage-combine-empties
 .. _issue 516: https://bitbucket.org/ned/coveragepy/issues/516/running-coverage-combine-twice-deletes-all
+.. _issue 525: https://bitbucket.org/ned/coveragepy/issues/525/coverage-combine-when-not-in-parallel-mode
 
 
 Version 4.2 --- 2016-07-26
