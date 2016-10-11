@@ -66,11 +66,6 @@ Try re-installing coverage.py to see what happened and if you get the CTracer
 as you should.
 
 
-**Q: Does coverage.py work on Python 3.x?**
-
-Yes, Python 3 is fully supported.
-
-
 **Q: Isn't coverage testing the best thing ever?**
 
 It's good, but `it isn't perfect`__.
