@@ -225,6 +225,15 @@ class PathAliasesTest(CoverageTest):
         aliases.add(r'c:\ned\src', r'.\mysrc')
         self.assert_mapped(aliases, r'/home/ned/foo/src/sub/a.py', r'.\mysrc\sub\a.py')
 
+    def test_multiple_wildcard(self):
+        aliases = PathAliases()
+        aliases.add('/home/jenkins/*/a/*/b/*/django', './django')
+        self.assert_mapped(
+            aliases,
+            '/home/jenkins/xx/a/yy/b/zz/django/foo/bar.py',
+            './django/foo/bar.py'
+        )
+
     def test_leading_wildcard(self):
         aliases = PathAliases()
         aliases.add('*/d1', './mysrc1')
