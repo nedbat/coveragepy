@@ -118,7 +118,10 @@ class PythonFileReporter(FileReporter):
 
         if hasattr(morf, '__name__'):
             name = morf.__name__
-            name = name.replace(".", os.sep) + ".py"
+            name = name.replace(".", os.sep)
+            if filename.endswith('__init__.py'):
+                name += os.sep + '__init__'
+            name += '.py'
             name = files.unicode_filename(name)
         else:
             name = files.relative_filename(filename)
