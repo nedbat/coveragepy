@@ -3,10 +3,8 @@
 
 """Add things to old Pythons so I can pretend they are newer."""
 
-# This file does lots of tricky stuff, so disable a bunch of pylint warnings.
-# pylint: disable=redefined-builtin
+# This file does tricky stuff, so disable a pylint warning.
 # pylint: disable=unused-import
-# pxlint: disable=no-name-in-module
 
 import sys
 
@@ -45,7 +43,7 @@ except ImportError:
 
 # range or xrange?
 try:
-    range = xrange
+    range = xrange      # pylint: disable=redefined-builtin
 except NameError:
     range = range       # pylint: disable=redefined-variable-type
 
