@@ -608,15 +608,19 @@ class CoverageData(object):
 class CoverageDataFiles(object):
     """Manage the use of coverage data files."""
 
-    def __init__(self, basename=None, warn=None):
+    def __init__(self, basename=None, warn=None, debug=None):
         """Create a CoverageDataFiles to manage data files.
 
         `warn` is the warning function to use.
 
         `basename` is the name of the file to use for storing data.
 
+        `debug` is a `DebugControl` object for writing debug messages.
+
         """
         self.warn = warn
+        self.debug = debug
+
         # Construct the file name that will be used for data storage.
         self.filename = os.path.abspath(basename or ".coverage")
 
@@ -721,8 +725,8 @@ class CoverageDataFiles(object):
                     self.warn(str(exc))
             else:
                 data.update(new_data, aliases=aliases)
-                if self._debug and self._debug.should('dataio'):
-                    self._debug.write("Deleting combined data file %r" % (f,))
+                if self.debug and self.debug.should('dataio'):
+                    self.debug.write("Deleting combined data file %r" % (f,))
                 file_be_gone(f)
 
 

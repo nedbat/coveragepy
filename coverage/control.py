@@ -306,7 +306,9 @@ class Coverage(object):
         # data file will be written into the directory where the process
         # started rather than wherever the process eventually chdir'd to.
         self.data = CoverageData(debug=self.debug)
-        self.data_files = CoverageDataFiles(basename=self.config.data_file, warn=self._warn)
+        self.data_files = CoverageDataFiles(
+            basename=self.config.data_file, warn=self._warn, debug=self.debug,
+        )
 
         # The directories for files considered "installed with the interpreter".
         self.pylib_dirs = set()
