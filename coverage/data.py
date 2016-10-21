@@ -631,12 +631,16 @@ class CoverageDataFiles(object):
         basename by parallel-mode.
 
         """
+        if self.debug and self.debug.should('dataio'):
+            self.debug.write("Erasing data file %r" % (self.filename,))
         file_be_gone(self.filename)
         if parallel:
             data_dir, local = os.path.split(self.filename)
             localdot = local + '.*'
             pattern = os.path.join(os.path.abspath(data_dir), localdot)
             for filename in glob.glob(pattern):
+                if self.debug and self.debug.should('dataio'):
+                    self.debug.write("Erasing parallel data file %r" % (filename,))
                 file_be_gone(filename)
 
     def read(self, data):
