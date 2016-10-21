@@ -721,6 +721,8 @@ class CoverageDataFiles(object):
                     self.warn(str(exc))
             else:
                 data.update(new_data, aliases=aliases)
+                if self._debug and self._debug.should('dataio'):
+                    self._debug.write("Deleting combined data file %r" % (f,))
                 file_be_gone(f)
 
 
