@@ -95,6 +95,15 @@ class ConfigTest(CoverageTest):
         cov = coverage.Coverage(data_file="fromarg.dat")
         self.assertEqual(cov.config.data_file, "fromarg.dat")
 
+    def test_debug_from_environment(self):
+        self.make_file(".coveragerc", """\
+            [run]
+            debug = dataio, pids
+            """)
+        self.set_environ("COVERAGE_DEBUG", "callers, fooey")
+        cov = coverage.Coverage()
+        self.assertEqual(cov.config.debug, ["dataio", "pids", "callers", "fooey"])
+
     def test_parse_errors(self):
         # Im-parsable values raise CoverageException, with details.
         bad_configs_and_msgs = [
@@ -236,6 +245,7 @@ class ConfigFileTest(CoverageTest):
         plugins =
             plugins.a_plugin
             plugins.another
+        debug = callers, pids  ,     dataio
 
         [{section}report]
         ; these settings affect reporting.
@@ -300,6 +310,7 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.data_file, "something_or_other.dat")
         self.assertTrue(cov.config.branch)
         self.assertTrue(cov.config.cover_pylib)
+        self.assertEqual(cov.config.debug, ["callers", "pids", "dataio"])
         self.assertTrue(cov.config.parallel)
         self.assertEqual(cov.config.concurrency, ["thread"])
         self.assertEqual(cov.config.source, ["myapp"])

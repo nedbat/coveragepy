@@ -719,7 +719,7 @@ class CoverageDataFiles(object):
             raise CoverageException("No data to combine")
 
         for f in files_to_combine:
-            new_data = CoverageData()
+            new_data = CoverageData(debug=self.debug)
             try:
                 new_data.read_file(f)
             except CoverageException as exc:
