@@ -25,6 +25,9 @@ Unreleased
 
 - Data files are now about 15% smaller.
 
+- The "dataio" debug setting now also logs when data files are deleted during
+  combining.
+
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
 
