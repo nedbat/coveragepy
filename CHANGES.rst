@@ -25,17 +25,22 @@ Unreleased
 
 - Data files are now about 15% smaller.
 
-- The "dataio" debug setting now also logs when data files are deleted during
-  combining.
+- Improvements in the ``[run] debug`` setting:
+
+  - The "dataio" debug setting now also logs when data files are deleted during
+    combining or erasing.
+
+  - A new debug option, "multiproc", for logging the behavior of
+    ``concurrency=multiprocessing``.
+
+  - If you used the debug options "config" and "callers" together, you'd get a
+    call stack printed for every line in the multi-line config output. This is
+    now fixed.
 
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
 
 - Support PyPy3 5.2 alpha 1.
-
-- If you used the debug options "config" and "callers" together, you'd get a
-  call stack printed for every line in the multi-line config output. This is
-  now fixed.
 
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce

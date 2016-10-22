@@ -35,7 +35,7 @@ from coverage.xmlreport import XmlReporter
 os = isolate_module(os)
 
 # Pypy has some unusual stuff in the "stdlib".  Consider those locations
-# when deciding where the stdlib is.  This modules are not used for anything,
+# when deciding where the stdlib is.  These modules are not used for anything,
 # they are modules importable from the pypy lib directories, so that we can
 # find those directories.
 _structseq = _pypy_irc_topic = None
