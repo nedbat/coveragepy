@@ -38,6 +38,7 @@ CO_FLAGS = [
     ('CO_NOFREE',                   0x00040),
     ('CO_COROUTINE',                0x00080),
     ('CO_ITERABLE_COROUTINE',       0x00100),
+    ('CO_ASYNC_GENERATOR',          0x00200),
     ('CO_GENERATOR_ALLOWED',        0x01000),
     ('CO_FUTURE_DIVISION',          0x02000),
     ('CO_FUTURE_ABSOLUTE_IMPORT',   0x04000),
