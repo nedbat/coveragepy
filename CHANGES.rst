@@ -18,6 +18,9 @@ Unreleased
   data, leaving you with an empty .coverage data file. Fixes issues
   `issue 525`_, `issue 412`_, `issue 516`_, and probably `issue 511`_.
 
+- The ``Coverage.combine`` method has a new parameter, ``strict=False``, to
+  support failing if there are no data files to combine.
+
 - When forking subprocesses, the coverage data files would have the same random
   number appended to the file name. This didn't cause problems, because the
   file names had the process id also, making collisions (nearly) impossible.
