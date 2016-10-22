@@ -624,12 +624,12 @@ class AstArcAnalyzer(object):
                 return True
         return False
 
-    # tests to write:
-    # TODO: while EXPR:
-    # TODO: while False:
-    # TODO: listcomps hidden deep in other expressions
-    # TODO: listcomps hidden in lists: x = [[i for i in range(10)]]
-    # TODO: nested function definitions
+    # In the fullness of time, these might be good tests to write:
+    #   while EXPR:
+    #   while False:
+    #   listcomps hidden deep in other expressions
+    #   listcomps hidden in lists: x = [[i for i in range(10)]]
+    #   nested function definitions
 
     @contract(exits='ArcStarts')
     def process_break_exits(self, exits):
