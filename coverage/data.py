@@ -144,9 +144,6 @@ class CoverageData(object):
         # A list of dicts of information about the coverage.py runs.
         self._runs = []
 
-        if self._debug and self._debug.should('dataio'):
-            self._debug.write("Creating CoverageData object")
-
     def __repr__(self):
         return "<{klass} lines={lines} arcs={arcs} tracers={tracers} runs={runs}>".format(
             klass=self.__class__.__name__,
