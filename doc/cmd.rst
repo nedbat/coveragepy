@@ -449,6 +449,8 @@ to log:
 
 * ``dataop``: log when data is added to the CoverageData object.
 
+* ``multiproc``: log the start and stop of multiprocessing processes.
+
 * ``pid``: annotate all debug output with the process id.
 
 * ``plugin``: print information about plugin operations.
