@@ -39,7 +39,7 @@ spell:
 	-pylint --disable=all --enable=spelling $(LINTABLE)
 
 pep8:
-	pep8 --filename=*.py --repeat $(LINTABLE)
+	pycodestyle --filename=*.py --repeat $(LINTABLE)
 
 test:
 	tox -e py27,py35 $(ARGS)
