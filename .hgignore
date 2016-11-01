@@ -27,6 +27,7 @@ MANIFEST
 setuptools-*.egg
 .tox*
 .noseids
+.cache
 
 # Stuff in the test directory.
 zipmods.zip

@@ -353,7 +353,8 @@ class DoctestTest(CoverageTest):
         # of coverage will get.  Deleting the imported module here is
         # enough: when the test imports doctest again, it will get a fresh
         # copy without the monkeypatch.
-        del sys.modules['doctest']
+        if 'doctest' in sys.modules:
+            del sys.modules['doctest']
 
     def test_doctest(self):
         self.check_coverage('''\
