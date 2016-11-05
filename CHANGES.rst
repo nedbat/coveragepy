@@ -40,6 +40,9 @@ Unreleased
     call stack printed for every line in the multi-line config output. This is
     now fixed.
 
+- Fixed an unusual bug involving multiple coding declarations affecting code
+  containing code in multi-line strings: `issue 529`_.
+  
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
 
@@ -51,6 +54,7 @@ Unreleased
 .. _issue 511: https://bitbucket.org/ned/coveragepy/issues/511/version-42-coverage-combine-empties
 .. _issue 516: https://bitbucket.org/ned/coveragepy/issues/516/running-coverage-combine-twice-deletes-all
 .. _issue 525: https://bitbucket.org/ned/coveragepy/issues/525/coverage-combine-when-not-in-parallel-mode
+.. _issue 529: https://bitbucket.org/ned/coveragepy/issues/529/encoding-marker-may-only-appear-on-the
 
 
 Version 4.2 --- 2016-07-26

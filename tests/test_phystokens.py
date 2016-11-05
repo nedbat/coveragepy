@@ -5,6 +5,7 @@
 
 import os.path
 import re
+import textwrap
 
 from coverage import env
 from coverage.phystokens import source_token_lines, source_encoding
@@ -176,6 +177,63 @@ class NeuterEncodingDeclarationTest(CoverageTest):
                 DEF_ENCODING,
                 "Wrong encoding in %r" % neutered
             )
+
+    def test_two_encoding_declarations(self):
+        input_src = textwrap.dedent(u"""\
+            # -*- coding: ascii -*-
+            # -*- coding: utf-8 -*-
+            # -*- coding: utf-16 -*-
+            """)
+        expected_src = textwrap.dedent(u"""\
+            # (deleted declaration) -*-
+            # (deleted declaration) -*-
+            # -*- coding: utf-16 -*-
+            """)
+        output_src = neuter_encoding_declaration(input_src)
+        self.assertEqual(expected_src, output_src)
+
+    def test_one_encoding_declaration(self):
+        input_src = textwrap.dedent(u"""\
+            # -*- coding: utf-16 -*-
+            # Just a comment.
+            # -*- coding: ascii -*-
+            """)
+        expected_src = textwrap.dedent(u"""\
+            # (deleted declaration) -*-
+            # Just a comment.
+            # -*- coding: ascii -*-
+            """)
+        output_src = neuter_encoding_declaration(input_src)
+        self.assertEqual(expected_src, output_src)
+
+
+class Bug529Test(CoverageTest):
+    """Test of bug 529"""
+
+    def test_bug_529(self):
+        self.make_file("the_test.py", '''\
+            # -*- coding: utf-8 -*-
+            import unittest
+            class FailsUnderCoverageTest(unittest.TestCase):
+                def test_fails_under_coverage(self):
+                    src1 = u"""\\
+                        # -*- coding: utf-8 -*-
+                        # Just a comment.
+                        """
+                    src2 = u"""\\
+                        # -*- coding: utf-8 -*-
+                        # Just a comment.
+                        """
+                    self.assertEqual(src1, src2)
+
+            if __name__ == "__main__":
+                unittest.main()
+            ''')
+        status, out = self.run_command_status("coverage run the_test.py")
+        self.assertEqual(status, 0)
+        self.assertIn("OK", out)
+        # If this test fails, the output will be super-confusing, because it
+        # has a failing unit test contained within the failing unit test.
 
 
 class CompileUnicodeTest(CoverageTest):
