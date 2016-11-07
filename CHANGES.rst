@@ -42,7 +42,7 @@ Unreleased
 
 - Fixed an unusual bug involving multiple coding declarations affecting code
   containing code in multi-line strings: `issue 529`_.
-  
+
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
 
