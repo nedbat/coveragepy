@@ -35,10 +35,11 @@ def mk_main(file_count, call_count, line_count):
     return "\n".join(lines)
 
 
-
 class StressTest(CoverageTest):
 
     def _compute_overhead(self, file_count, call_count, line_count):
+        self.clean_local_file_imports()
+
         for idx in range(file_count):
             self.make_file('test{}.py'.format(idx), TEST_FILE)
         self.make_file('testmain.py', mk_main(file_count, call_count, line_count))
@@ -47,9 +48,7 @@ class StressTest(CoverageTest):
         self.import_local_file("testmain", None)
         baseline = time.perf_counter() - start
 
-        del sys.modules['testmain']
-        for idx in range(file_count):
-            del sys.modules['test{}'.format(idx)]
+        self.clean_local_file_imports()
 
         start = time.perf_counter()
         cov = coverage.Coverage()
