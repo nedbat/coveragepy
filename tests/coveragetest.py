@@ -21,6 +21,7 @@ from unittest_mixins import (
 import coverage
 from coverage.backunittest import TestCase
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
+from coverage.backward import invalidate_import_caches
 from coverage.cmdline import CoverageScript
 from coverage.debug import _TEST_NAME_FILE, DebugControl
 
@@ -76,6 +77,8 @@ class CoverageTest(
             os.remove(pyc)
         if os.path.exists("__pycache__"):
             shutil.rmtree("__pycache__")
+
+        invalidate_import_caches()
 
     def import_local_file(self, modname, modfile=None):
         """Import a local file as a module.
