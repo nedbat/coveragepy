@@ -21,7 +21,7 @@ class HandyConfigParser(configparser.RawConfigParser):
         configparser.RawConfigParser.__init__(self)
         self.section_prefix = section_prefix
 
-    def read(self, filename):               # pylint: disable=arguments-differ
+    def read(self, filename):
         """Read a file name as UTF-8 configuration data."""
         kwargs = {}
         if sys.version_info >= (3, 2):
