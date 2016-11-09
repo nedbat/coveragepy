@@ -17,11 +17,14 @@ try:
 except ImportError:
     from io import StringIO
 
-# In py3, ConfigParser was renamed to the more-standard configparser
+# In py3, ConfigParser was renamed to the more-standard configparser.
+# But there's a py3 backport that installs "configparser" in py2, and I don't
+# want it because it has annoying deprecation warnings. So try the real py2
+# import first.
 try:
-    import configparser
-except ImportError:
     import ConfigParser as configparser
+except ImportError:
+    import configparser
 
 # What's a string called?
 try:
