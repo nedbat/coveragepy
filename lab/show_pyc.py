@@ -17,6 +17,10 @@ def show_pyc_file(fname):
     modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
     print("magic %s" % (binascii.hexlify(magic)))
     print("moddate %s (%s)" % (binascii.hexlify(moddate), modtime))
+    if sys.version_info >= (3, 3):
+        # 3.3 added another long to the header (size).
+        size = f.read(4)
+        print("pysize %s (%d)" % (binascii.hexlify(size), struct.unpack('<L', size)[0]))
     code = marshal.load(f)
     show_code(code)
 
