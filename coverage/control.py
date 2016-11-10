@@ -696,7 +696,7 @@ class Coverage(object):
     def start(self):
         """Start measuring code coverage.
 
-        Coverage measurement actually occurs in functions called after
+        Coverage measurement only occurs in functions called after
         :meth:`start` is invoked.  Statements in the same scope as
         :meth:`start` won't be measured.
 
