@@ -2,6 +2,7 @@ import csv
 from collections import namedtuple
 import os
 import shutil
+import statistics
 import sys
 import time
 
@@ -59,17 +60,30 @@ class StressTest(CoverageTest):
         finally:                                # pragma: nested
             # Stop coverage.py.
             covered = time.perf_counter() - start
-            stats = cov.collector.tracers[0].get_stats().copy()
+            stats = cov.collector.tracers[0].get_stats()
+            if stats:
+                stats = stats.copy()
             cov.stop()
 
+        # Empirically determined to produce the same numbers as the collected
+        # stats from get_stats().
         actual_file_count = 6 + file_count
-        actual_call_count = 68 + file_count * (1 + 1 + call_count + call_count + call_count)
-        actual_line_count = 295 + file_count
+        actual_call_count = 85 + file_count * (call_count + 98)
+        actual_line_count = (
+            343 +
+            390 * file_count +
+            3 * file_count * call_count +
+            2 * file_count * call_count * line_count
+        )
 
         if stats is not None:
+            assert actual_file_count == stats['new_files']
+            assert actual_call_count == stats['calls']
+            assert actual_line_count == stats['lines']
             print("File counts", file_count, actual_file_count, stats['new_files'])
             print("Call counts", call_count, actual_call_count, stats['calls'])
             print("Line counts", line_count, actual_line_count, stats['lines'])
+            print()
 
         return StressResult(
             actual_file_count,
@@ -81,11 +95,29 @@ class StressTest(CoverageTest):
 
     def stress_test(self):
 
-        for i in range(3):
-            for j in range(3):
-                for k in range(3):
-                    self._compute_overhead(100*i+1, 100*j+1, 100*k+1)
+        # For checking the calculation of actual stats:
+        if 0:
+            for f in range(3):
+                for c in range(3):
+                    for l in range(3):
+                        self._compute_overhead(100*f+1, 100*c+1, 100*l+1)
 
+        # For checking the overhead for each component:
+        fixed = 100
+        step = 50
+
+        per_file = []
+        for runs in range(5):
+            times = []
+            for f in range(100, 1000, step):
+                print("{} files".format(f))
+                res = self._compute_overhead(f, fixed, fixed)
+                times.append(res.overhead)
+
+            per_file.extend((b-a)/step for a,b in zip(times, times[1:]))
+
+        print(per_file)
+        print("Per file: mean = {:.5}s, stddev = {:0.5}s".format(statistics.mean(per_file), statistics.stdev(per_file)))
 
         return
 
