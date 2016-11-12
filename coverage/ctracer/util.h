@@ -10,6 +10,7 @@
 #undef WHAT_LOG         /* Define to log the WHAT params in the trace function. */
 #undef TRACE_LOG        /* Define to log our bookkeeping. */
 #undef COLLECT_STATS    /* Collect counters: stats are printed when tracer is stopped. */
+#undef DO_NOTHING       /* Define this to make the tracer do nothing. */
 
 /* Py 2.x and 3.x compatibility */
 

@@ -824,6 +824,10 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 {
     int ret = RET_ERROR;
 
+    #if DO_NOTHING
+    return RET_OK;
+    #endif
+
     #if WHAT_LOG || TRACE_LOG
     PyObject * ascii = NULL;
     #endif
@@ -921,6 +925,10 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     int orig_lineno;
     PyObject *ret = NULL;
     PyObject * ascii = NULL;
+
+    #if DO_NOTHING
+    CRASH
+    #endif
 
     static char *what_names[] = {
         "call", "exception", "line", "return",
