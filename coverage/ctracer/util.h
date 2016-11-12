@@ -52,4 +52,7 @@ typedef int BOOL;
 #define FALSE   0
 #define TRUE    1
 
+/* Only for extreme machete-mode debugging! */
+#define CRASH       { printf("*** CRASH! ***\n"); *((int*)1) = 1; }
+
 #endif /* _COVERAGE_UTIL_H */
