@@ -45,18 +45,23 @@ class StressTest(CoverageTest):
             self.make_file('test{}.py'.format(idx), TEST_FILE)
         self.make_file('testmain.py', mk_main(file_count, call_count, line_count))
 
-        start = time.perf_counter()
-        self.import_local_file("testmain", None)
-        baseline = time.perf_counter() - start
-
+        # Run it once just to get the disk caches loaded up.
+        self.import_local_file("testmain")
         self.clean_local_file_imports()
 
+        # Run it to get the baseline time.
+        start = time.perf_counter()
+        self.import_local_file("testmain")
+        baseline = time.perf_counter() - start
+        self.clean_local_file_imports()
+
+        # Run it to get the covered time.
         start = time.perf_counter()
         cov = coverage.Coverage()
         cov.start()
         try:                                    # pragma: nested
             # Import the Python file, executing it.
-            mod = self.import_local_file("testmain", None)
+            mod = self.import_local_file("testmain")
         finally:                                # pragma: nested
             # Stop coverage.py.
             covered = time.perf_counter() - start
@@ -65,6 +70,7 @@ class StressTest(CoverageTest):
                 stats = stats.copy()
             cov.stop()
 
+        print("baseline = {:.2f}, covered = {:.2f}".format(baseline, covered))
         # Empirically determined to produce the same numbers as the collected
         # stats from get_stats().
         actual_file_count = 6 + file_count
@@ -103,21 +109,30 @@ class StressTest(CoverageTest):
                         self._compute_overhead(100*f+1, 100*c+1, 100*l+1)
 
         # For checking the overhead for each component:
-        fixed = 100
-        step = 50
+        fixed = 900
+        step = 500
 
-        per_file = []
-        for runs in range(5):
-            times = []
-            for f in range(100, 1000, step):
-                print("{} files".format(f))
-                res = self._compute_overhead(f, fixed, fixed)
-                times.append(res.overhead)
+        def time_thing(thing):
+            per_thing = []
+            pct_thing = []
+            for runs in range(5):
+                for n in range(100, 1000, step):
+                    kwargs = {
+                        "file_count": fixed,
+                        "call_count": fixed,
+                        "line_count": fixed,
+                    }
+                    kwargs[thing+"_count"] = n
+                    res = self._compute_overhead(**kwargs)
+                    per_thing.append(res.overhead / getattr(res, "{}s".format(thing)))
+                    pct_thing.append(res.covered / res.baseline * 100)
 
-            per_file.extend((b-a)/step for a,b in zip(times, times[1:]))
+            print("Per {}: mean = {:.5f}us, stddev = {:0.5f}us".format(thing, statistics.mean(per_thing)*1e6, statistics.stdev(per_thing)*1e6))
+            print("          pct = {:.3f}%, stddev = {:.5f}".format(statistics.mean(pct_thing), statistics.stdev(pct_thing)))
 
-        print(per_file)
-        print("Per file: mean = {:.5}s, stddev = {:0.5}s".format(statistics.mean(per_file), statistics.stdev(per_file)))
+        time_thing("file")
+        time_thing("call")
+        time_thing("line")
 
         return
 
