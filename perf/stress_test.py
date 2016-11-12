@@ -83,10 +83,10 @@ class StressTest(CoverageTest):
         )
 
         if stats is not None:
-            assert actual_file_count == stats['new_files']
+            assert actual_file_count == stats['files']
             assert actual_call_count == stats['calls']
             assert actual_line_count == stats['lines']
-            print("File counts", file_count, actual_file_count, stats['new_files'])
+            print("File counts", file_count, actual_file_count, stats['files'])
             print("Call counts", call_count, actual_call_count, stats['calls'])
             print("Line counts", line_count, actual_line_count, stats['lines'])
             print()

@@ -19,7 +19,7 @@ typedef struct Stats {
     unsigned int returns;
     unsigned int exceptions;
     unsigned int others;
-    unsigned int new_files;
+    unsigned int files;
     unsigned int missed_returns;
     unsigned int stack_reallocs;
     unsigned int errors;

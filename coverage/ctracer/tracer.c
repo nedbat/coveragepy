@@ -393,7 +393,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         if (PyErr_Occurred()) {
             goto error;
         }
-        STATS( self->stats.new_files++; )
+        STATS( self->stats.files++; )
 
         /* We've never considered this file before. */
         /* Ask should_trace about it. */
@@ -474,7 +474,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
                     if (PyErr_Occurred()) {
                         goto error;
                     }
-                    STATS( self->stats.new_files++; )
+                    STATS( self->stats.files++; )
                     STATS( self->stats.pycalls++; )
                     should_include_bool = PyObject_CallFunctionObjArgs(self->check_include, tracename, frame, NULL);
                     if (should_include_bool == NULL) {
@@ -1040,7 +1040,7 @@ CTracer_get_stats(CTracer *self)
         "returns", self->stats.returns,
         "exceptions", self->stats.exceptions,
         "others", self->stats.others,
-        "new_files", self->stats.new_files,
+        "files", self->stats.files,
         "missed_returns", self->stats.missed_returns,
         "stack_reallocs", self->stats.stack_reallocs,
         "stack_alloc", self->pdata_stack->alloc,
