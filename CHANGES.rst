@@ -44,7 +44,7 @@ Unreleased
   containing code in multi-line strings: `issue 529`_.
 
 - Prevented deprecation warnings from configparser that happened in some
-  circumstatnces, closing `issue 530`_.
+  circumstances, closing `issue 530`_.
 
 - Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
   Ben Finney.  Closes `issue 505`_.
