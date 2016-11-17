@@ -721,6 +721,23 @@ class ProcessTest(CoverageTest):
         # about 5.
         self.assertGreater(data.line_counts()['os.py'], 50)
 
+    def test_lang_c(self):
+        # LANG=C forces getfilesystemencoding on Linux to 'ascii', which causes
+        # failures with non-ascii file names. We don't want to make a real file
+        # with strange characters, though, because that gets the test runners
+        # tangled up.  This will isolate the concerns to the coverage.py code.
+        # https://bitbucket.org/ned/coveragepy/issues/533/exception-on-unencodable-file-name
+        self.make_file("weird_file.py", r"""
+            globs = {}
+            code = "a = 1\nb = 2\n"
+            exec(compile(code, "wut\xe9\xea\xeb\xec\x01\x02.py", 'exec'), globs)
+            print(globs['a'])
+            print(globs['b'])
+            """)
+        self.set_environ("LANG", "C")
+        out = self.run_command("python -m coverage run weird_file.py")
+        self.assertEqual(out, "1\n2\n")
+
     def test_deprecation_warnings(self):
         # Test that coverage doesn't trigger deprecation warnings.
         # https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module

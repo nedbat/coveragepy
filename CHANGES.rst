@@ -43,6 +43,8 @@ Unreleased
 - Fixed an unusual bug involving multiple coding declarations affecting code
   containing code in multi-line strings: `issue 529`_.
 
+- Deal properly with non-ASCII file names in an ASCII-only world, `issue 533`_.
+
 - Prevented deprecation warnings from configparser that happened in some
   circumstances, closing `issue 530`_.
 
@@ -59,6 +61,7 @@ Unreleased
 .. _issue 525: https://bitbucket.org/ned/coveragepy/issues/525/coverage-combine-when-not-in-parallel-mode
 .. _issue 529: https://bitbucket.org/ned/coveragepy/issues/529/encoding-marker-may-only-appear-on-the
 .. _issue 530: https://bitbucket.org/ned/coveragepy/issues/530/deprecationwarning-you-passed-a-bytestring
+.. _issue 533: https://bitbucket.org/ned/coveragepy/issues/533/exception-on-unencodable-file-name
 
 
 Version 4.2 --- 2016-07-26

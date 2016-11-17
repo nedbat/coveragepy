@@ -100,16 +100,6 @@ class ApiTest(CoverageTest):
         filename, _, _, _ = cov.analysis(sys.modules["mymod"])
         self.assertEqual(os.path.basename(filename), "mymod.py")
 
-    def test_unencodable_filename(self):
-        code = """a = 1\nb = 2\n"""
-        cov = coverage.Coverage()
-        cov.start()
-        globs = {}
-        exec(compile(code, "wut\xe9\xea\xeb\xec\x01\x02.py", 'exec'), globs)
-        cov.stop()
-        self.assertEqual(globs['a'], 1)
-        self.assertEqual(globs['b'], 2)
-
     def test_ignore_stdlib(self):
         self.make_file("mymain.py", """\
             import colorsys

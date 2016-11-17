@@ -63,7 +63,11 @@ def canonical_filename(filename):
                 if path is None:
                     continue
                 f = os.path.join(path, filename)
-                if os.path.exists(f):
+                try:
+                    exists = os.path.exists(f)
+                except UnicodeError:
+                    exists = False
+                if exists:
                     filename = f
                     break
         cf = abs_file(filename)
@@ -147,7 +151,11 @@ else:
 def abs_file(filename):
     """Return the absolute normalized form of `filename`."""
     path = os.path.expandvars(os.path.expanduser(filename))
-    path = os.path.abspath(os.path.realpath(path))
+    try:
+        path = os.path.realpath(path)
+    except UnicodeError:
+        pass
+    path = os.path.abspath(path)
     path = actual_path(path)
     path = unicode_filename(path)
     return path
