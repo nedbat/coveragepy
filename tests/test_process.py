@@ -735,7 +735,7 @@ class ProcessTest(CoverageTest):
             print(globs['b'])
             """)
         self.set_environ("LANG", "C")
-        out = self.run_command("python -m coverage run weird_file.py")
+        out = self.run_command("coverage run weird_file.py")
         self.assertEqual(out, "1\n2\n")
 
     def test_deprecation_warnings(self):
