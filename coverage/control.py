@@ -134,10 +134,8 @@ class Coverage(object):
         # 1: defaults:
         self.config = CoverageConfig()
 
-        # 2: from the rcfile, .coveragerc or setup.cfg file:
+        # 2: from the rcfile, .coveragerc, .tox or setup.cfg file:
         if config_file:
-            # pylint: disable=redefined-variable-type
-            did_read_rc = False
             # Some API users were specifying ".coveragerc" to mean the same as
             # True, so make it so.
             if config_file == ".coveragerc":
@@ -147,14 +145,22 @@ class Coverage(object):
                 config_file = ".coveragerc"
             self.config_file = config_file
 
-            did_read_rc = self.config.from_file(config_file)
+            for fname, prefix in [(config_file, ""),
+                                  ("setup.cfg", "coverage:"),
+                                  ("tox.ini", "coverage:")]:
+                config_read = self.config.from_file(fname,
+                                                    section_prefix=prefix)
+                print('config read?')
+                print(config_read)
+                is_config_file = fname == config_file
 
-            if not did_read_rc:
-                if specified_file:
+                if not config_read and is_config_file and specified_file:
                     raise CoverageException(
-                        "Couldn't read '%s' as a config file" % config_file
+                        "Couldn't read '%s' as a config file" % fname
                         )
-                self.config.from_file("setup.cfg", section_prefix="coverage:")
+
+                if config_read:
+                    break
 
         # 3: from environment variables:
         env_data_file = os.environ.get('COVERAGE_FILE')

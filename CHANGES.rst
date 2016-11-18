@@ -53,11 +53,16 @@ Unreleased
 
 - Support PyPy3 5.2 alpha 1.
 
+- Options are now also read from a tox.ini file, if any. Like setup.py,
+  sections are prefixed with "coverage:", so the ``[run]`` options will be read
+  from ``[coverage:run]`` section of tox.ini. Finishes `issue 519`_.
+
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
 .. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42
 .. _issue 511: https://bitbucket.org/ned/coveragepy/issues/511/version-42-coverage-combine-empties
 .. _issue 516: https://bitbucket.org/ned/coveragepy/issues/516/running-coverage-combine-twice-deletes-all
+.. _issue 519: https://bitbucket.org/ned/coveragepy/issues/519/coverage-run-sections-in-toxini-or-as
 .. _issue 525: https://bitbucket.org/ned/coveragepy/issues/525/coverage-combine-when-not-in-parallel-mode
 .. _issue 529: https://bitbucket.org/ned/coveragepy/issues/529/encoding-marker-may-only-appear-on-the
 .. _issue 530: https://bitbucket.org/ned/coveragepy/issues/530/deprecationwarning-you-passed-a-bytestring
