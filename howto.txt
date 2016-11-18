@@ -1,9 +1,3 @@
-* Making a working tree
-
-mkvirtualenv -p /usr/local/pythonz/pythons/CPython-2.7.11/bin/python coverage
-pip install -U pip
-pip install -r requirements/dev.pip
-
 * Release checklist
 
 - Version number in coverage/version.py
@@ -14,7 +8,9 @@ pip install -r requirements/dev.pip
 - Python version number in classifiers in setup.py
 - Copyright date in NOTICE.txt
 - Update CHANGES.rst, including release date.
-- Update README.rst, including "New in x.y:"
+- Update README.rst
+    - "New in x.y:"
+    - version number in the commits-since badge
 - Update docs
     - Version, date, and changes in doc/changes.rst
     - Version, date and python versions in doc/index.rst
