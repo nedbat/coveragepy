@@ -722,6 +722,9 @@ class ProcessTest(CoverageTest):
         self.assertGreater(data.line_counts()['os.py'], 50)
 
     def test_lang_c(self):
+        if env.PY3 and sys.version_info < (3, 4):
+            # Python 3.3 can't compile the non-ascii characters in the file name.
+            self.skipTest("3.3 can't handle this test")
         # LANG=C forces getfilesystemencoding on Linux to 'ascii', which causes
         # failures with non-ascii file names. We don't want to make a real file
         # with strange characters, though, because that gets the test runners
