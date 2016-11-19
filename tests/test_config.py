@@ -211,15 +211,13 @@ class ConfigTest(CoverageTest):
             _ = coverage.Coverage()
 
     def test_unknown_option_in_other_ini_file(self):
-        for fname in ["setup.cfg", "tox.ini"]:
-            self.make_file(fname, """\
-                [coverage:run]
-                huh = what?
-                """)
-            msg = (r"Unrecognized option '\[coverage:run\] huh=' in config "
-                   r"file %s" % fname)
-            with self.assertRaisesRegex(CoverageException, msg):
-                _ = coverage.Coverage()
+        self.make_file("setup.cfg", """\
+            [coverage:run]
+            huh = what?
+            """)
+        msg = (r"Unrecognized option '\[coverage:run\] huh=' in config file setup.cfg")
+        with self.assertRaisesRegex(CoverageException, msg):
+            _ = coverage.Coverage()
 
 
 class ConfigFileTest(CoverageTest):
