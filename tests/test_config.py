@@ -211,13 +211,15 @@ class ConfigTest(CoverageTest):
             _ = coverage.Coverage()
 
     def test_unknown_option_in_other_ini_file(self):
-        self.make_file("setup.cfg", """\
-            [coverage:run]
-            huh = what?
-            """)
-        msg = r"Unrecognized option '\[coverage:run\] huh=' in config file setup.cfg"
-        with self.assertRaisesRegex(CoverageException, msg):
-            _ = coverage.Coverage()
+        for fname in ["setup.cfg", "tox.ini"]:
+            self.make_file(fname, """\
+                [coverage:run]
+                huh = what?
+                """)
+            msg = (r"Unrecognized option '\[coverage:run\] huh=' in config "
+                   r"file %s" % fname)
+            with self.assertRaisesRegex(CoverageException, msg):
+                _ = coverage.Coverage()
 
 
 class ConfigFileTest(CoverageTest):
@@ -304,6 +306,18 @@ class ConfigFileTest(CoverageTest):
                     examples/
         """
 
+    # Just some sample tox.ini text from the docs.
+    TOX_INI = """\
+        [tox]
+        envlist = py{26,27,33,34,35}-{c,py}tracer
+        skip_missing_interpreters = True
+
+        [testenv]
+        commands =
+            # Create tests/zipmods.zip, install the egg1 egg
+            python igor.py zip_mods install_egg
+        """
+
     def assert_config_settings_are_correct(self, cov):
         """Check that `cov` has all the settings from LOTSA_SETTINGS."""
         self.assertTrue(cov.config.timid)
@@ -349,29 +363,44 @@ class ConfigFileTest(CoverageTest):
         cov = coverage.Coverage()
         self.assert_config_settings_are_correct(cov)
 
-    def test_config_file_settings_in_setupcfg(self):
+    def _test_config_file_settings_in_x(self, fname, contents):
         # Configuration will be read from setup.cfg from sections prefixed with
         # "coverage:"
         nested = self.LOTSA_SETTINGS.format(section="coverage:")
-        self.make_file("setup.cfg", nested + "\n" + self.SETUP_CFG)
+        fname = self.make_file(fname, nested + "\n" + contents)
         cov = coverage.Coverage()
         self.assert_config_settings_are_correct(cov)
 
-    def test_config_file_settings_in_setupcfg_if_coveragerc_specified(self):
-        # Configuration will be read from setup.cfg from sections prefixed with
-        # "coverage:", even if the API said to read from a (non-existent)
-        # .coveragerc file.
+    def test_config_file_settings_in_setupcfg(self):
+        self._test_config_file_settings_in_x("setup.cfg", self.SETUP_CFG)
+
+    def test_config_file_settings_in_toxini(self):
+        self._test_config_file_settings_in_x("tox.ini", self.TOX_INI)
+
+    def _test_config_file_settings_in_x_if_coveragerc_specified(self, fname,
+                                                                contents):
+        # Configuration will be read from a non-".coveragerc" file from
+        # sections prefixed with "coverage:", even if the API said to read from
+        # a (non-existent) .coveragerc file.
         nested = self.LOTSA_SETTINGS.format(section="coverage:")
-        self.make_file("setup.cfg", nested + "\n" + self.SETUP_CFG)
+        self.make_file(fname, nested + "\n" + contents)
         cov = coverage.Coverage(config_file=".coveragerc")
         self.assert_config_settings_are_correct(cov)
 
-    def test_setupcfg_only_if_not_coveragerc(self):
+    def test_config_file_settings_in_setupcfg_if_coveragerc_specified(self):
+        self._test_config_file_settings_in_x_if_coveragerc_specified(
+            "setup.cfg", self.SETUP_CFG)
+
+    def test_config_file_settings_in_tox_if_coveragerc_specified(self):
+        self._test_config_file_settings_in_x_if_coveragerc_specified(
+            "tox.ini", self.TOX_INI)
+
+    def _test_x_only_if_not_coveragerc(self, fname):
         self.make_file(".coveragerc", """\
             [run]
             include = foo
             """)
-        self.make_file("setup.cfg", """\
+        self.make_file(fname, """\
             [coverage:run]
             omit = bar
             branch = true
@@ -381,8 +410,14 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.omit, None)
         self.assertEqual(cov.config.branch, False)
 
-    def test_setupcfg_only_if_prefixed(self):
-        self.make_file("setup.cfg", """\
+    def test_setupcfg_only_if_not_coveragerc(self):
+        self._test_x_only_if_not_coveragerc("setup.cfg")
+
+    def test_toxini_only_if_not_coveragerc(self):
+        self._test_x_only_if_not_coveragerc("tox.ini")
+
+    def _test_x_only_if_prefixed(self, fname):
+        self.make_file(fname, """\
             [run]
             omit = bar
             branch = true
@@ -390,6 +425,12 @@ class ConfigFileTest(CoverageTest):
         cov = coverage.Coverage()
         self.assertEqual(cov.config.omit, None)
         self.assertEqual(cov.config.branch, False)
+
+    def test_setupcfg_only_if_prefixed(self):
+        self._test_x_only_if_prefixed("setup.cfg")
+
+    def test_toxini_only_if_prefixed(self):
+        self._test_x_only_if_prefixed("tox.ini")
 
     def test_non_ascii(self):
         self.make_file(".coveragerc", """\
