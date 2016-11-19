@@ -73,6 +73,7 @@ Scott Belden
 Sigve Tjora
 Stan Hu
 Stefan Behnel
+Stephen Finucane
 Steve Leonard
 Steve Peak
 Ted Wexler

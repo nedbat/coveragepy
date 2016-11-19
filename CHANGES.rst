@@ -18,6 +18,11 @@ Unreleased
   data, leaving you with an empty .coverage data file. Fixes issues
   `issue 525`_, `issue 412`_, `issue 516`_, and probably `issue 511`_.
 
+- Options can now be read from a tox.ini file, if any. Like setup.cfg, sections
+  are prefixed with "coverage:", so ``[run]`` options will be read from the
+  ``[coverage:run]`` section of tox.ini. Implements part of `issue 519`_.
+  Thanks, Stephen Finucane.
+
 - The ``Coverage.combine`` method has a new parameter, ``strict=False``, to
   support failing if there are no data files to combine.
 
@@ -52,10 +57,6 @@ Unreleased
   Ben Finney.  Closes `issue 505`_.
 
 - Support PyPy3 5.2 alpha 1.
-
-- Options are now also read from a tox.ini file, if any. Like setup.py,
-  sections are prefixed with "coverage:", so the ``[run]`` options will be read
-  from ``[coverage:run]`` section of tox.ini. Finishes `issue 519`_.
 
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
