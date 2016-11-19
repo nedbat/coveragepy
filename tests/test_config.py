@@ -377,8 +377,7 @@ class ConfigFileTest(CoverageTest):
     def test_config_file_settings_in_toxini(self):
         self._test_config_file_settings_in_x("tox.ini", self.TOX_INI)
 
-    def _test_config_file_settings_in_x_if_coveragerc_specified(self, fname,
-                                                                contents):
+    def _test_config_file_settings_in_x_if_coveragerc_specified(self, fname, contents):
         # Configuration will be read from a non-".coveragerc" file from
         # sections prefixed with "coverage:", even if the API said to read from
         # a (non-existent) .coveragerc file.
@@ -388,12 +387,10 @@ class ConfigFileTest(CoverageTest):
         self.assert_config_settings_are_correct(cov)
 
     def test_config_file_settings_in_setupcfg_if_coveragerc_specified(self):
-        self._test_config_file_settings_in_x_if_coveragerc_specified(
-            "setup.cfg", self.SETUP_CFG)
+        self._test_config_file_settings_in_x_if_coveragerc_specified("setup.cfg", self.SETUP_CFG)
 
     def test_config_file_settings_in_tox_if_coveragerc_specified(self):
-        self._test_config_file_settings_in_x_if_coveragerc_specified(
-            "tox.ini", self.TOX_INI)
+        self._test_config_file_settings_in_x_if_coveragerc_specified("tox.ini", self.TOX_INI)
 
     def _test_x_only_if_not_coveragerc(self, fname):
         self.make_file(".coveragerc", """\

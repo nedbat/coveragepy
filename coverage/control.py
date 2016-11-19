@@ -148,16 +148,11 @@ class Coverage(object):
             for fname, prefix in [(config_file, ""),
                                   ("setup.cfg", "coverage:"),
                                   ("tox.ini", "coverage:")]:
-                config_read = self.config.from_file(fname,
-                                                    section_prefix=prefix)
-                print('config read?')
-                print(config_read)
+                config_read = self.config.from_file(fname, section_prefix=prefix)
                 is_config_file = fname == config_file
 
                 if not config_read and is_config_file and specified_file:
-                    raise CoverageException(
-                        "Couldn't read '%s' as a config file" % fname
-                        )
+                    raise CoverageException("Couldn't read '%s' as a config file" % fname)
 
                 if config_read:
                     break
