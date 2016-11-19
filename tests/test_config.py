@@ -426,6 +426,15 @@ class ConfigFileTest(CoverageTest):
     def test_toxini_only_if_prefixed(self):
         self.check_other_config_need_prefixes("tox.ini")
 
+    def test_tox_ini_even_if_setup_cfg(self):
+        # There's a setup.cfg, but no coverage settings in it, so tox.ini
+        # is read.
+        nested = self.LOTSA_SETTINGS.format(section="coverage:")
+        self.make_file("tox.ini", self.TOX_INI + "\n" + nested)
+        self.make_file("setup.cfg", self.SETUP_CFG)
+        cov = coverage.Coverage()
+        self.assert_config_settings_are_correct(cov)
+
     def test_non_ascii(self):
         self.make_file(".coveragerc", """\
             [report]

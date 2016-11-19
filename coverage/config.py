@@ -207,7 +207,8 @@ class CoverageConfig(object):
 
         `filename` is a file name to read.
 
-        Returns True or False, whether the file could be read.
+        Returns True or False, whether the file could be read, and it had some
+        coverage.py settings in it.
 
         """
         self.attempted_config_files.append(filename)
@@ -222,9 +223,12 @@ class CoverageConfig(object):
 
         self.config_files.extend(files_read)
 
+        any_set = False
         try:
             for option_spec in self.CONFIG_FILE_OPTIONS:
-                self._set_attr_from_config_option(cp, *option_spec)
+                was_set = self._set_attr_from_config_option(cp, *option_spec)
+                if was_set:
+                    any_set = True
         except ValueError as err:
             raise CoverageException("Couldn't read config file %s: %s" % (filename, err))
 
@@ -249,13 +253,20 @@ class CoverageConfig(object):
         if cp.has_section('paths'):
             for option in cp.options('paths'):
                 self.paths[option] = cp.getlist('paths', option)
+                any_set = True
 
         # plugins can have options
         for plugin in self.plugins:
             if cp.has_section(plugin):
                 self.plugin_options[plugin] = cp.get_section(plugin)
+                any_set = True
 
-        return True
+        # Was this file used as a config file? If no prefix, then it was used.
+        # If a prefix, then it was only used if we found some settings in it.
+        if section_prefix:
+            return any_set
+        else:
+            return True
 
     CONFIG_FILE_OPTIONS = [
         # These are *args for _set_attr_from_config_option:
@@ -304,11 +315,17 @@ class CoverageConfig(object):
     ]
 
     def _set_attr_from_config_option(self, cp, attr, where, type_=''):
-        """Set an attribute on self if it exists in the ConfigParser."""
+        """Set an attribute on self if it exists in the ConfigParser.
+
+        Returns True if the attribute was set.
+
+        """
         section, option = where.split(":")
         if cp.has_option(section, option):
             method = getattr(cp, 'get' + type_)
             setattr(self, attr, method(section, option))
+            return True
+        return False
 
     def get_plugin_options(self, plugin):
         """Get a dictionary of options for the plugin named `plugin`."""
