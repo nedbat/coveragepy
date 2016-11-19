@@ -36,10 +36,11 @@ rather than put in your home directory.
 A different name for the configuration file can be specified with the
 ``--rcfile=FILE`` command line option.
 
-Coverage.py will read settings from a ``setup.cfg`` file if no other
-configuration file is used.  In this case, the section names have "coverage:"
+Coverage.py will read settings from other usual configuration files if no other
+configuration file is used.  It will automatically read from "setup.cfg" or
+"tox.ini" if they exist.  In this case, the section names have "coverage:"
 prefixed, so the ``[run]`` options described below will be found in the
-``[coverage:run]`` section of ``setup.cfg``.
+``[coverage:run]`` section of the file.
 
 
 Syntax

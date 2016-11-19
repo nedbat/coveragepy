@@ -101,8 +101,8 @@ class Coverage(object):
               file can't be read, it is an error.
 
             * If it is True, then a few standard files names are tried
-              (".coveragerc", "setup.cfg").  It is not an error for these files
-              to not be found.
+              (".coveragerc", "setup.cfg", "tox.ini").  It is not an error for
+              these files to not be found.
 
             * If it is False, then no configuration file is read.
 
@@ -142,7 +142,7 @@ class Coverage(object):
                 config_file = True
             specified_file = (config_file is not True)
             if not specified_file:
-                config_file = ".coveragerc"
+                config_file = ".coveragerc"         # pylint: disable=redefined-variable-type
             self.config_file = config_file
 
             for fname, prefix in [(config_file, ""),
