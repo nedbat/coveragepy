@@ -361,36 +361,34 @@ class ConfigFileTest(CoverageTest):
         cov = coverage.Coverage()
         self.assert_config_settings_are_correct(cov)
 
-    def _test_config_file_settings_in_x(self, fname, contents):
-        # Configuration will be read from setup.cfg from sections prefixed with
-        # "coverage:"
+    def check_config_file_settings_in_other_file(self, fname, contents):
+        """Check config will be read from another file, with prefixed sections."""
         nested = self.LOTSA_SETTINGS.format(section="coverage:")
         fname = self.make_file(fname, nested + "\n" + contents)
         cov = coverage.Coverage()
         self.assert_config_settings_are_correct(cov)
 
     def test_config_file_settings_in_setupcfg(self):
-        self._test_config_file_settings_in_x("setup.cfg", self.SETUP_CFG)
+        self.check_config_file_settings_in_other_file("setup.cfg", self.SETUP_CFG)
 
     def test_config_file_settings_in_toxini(self):
-        self._test_config_file_settings_in_x("tox.ini", self.TOX_INI)
+        self.check_config_file_settings_in_other_file("tox.ini", self.TOX_INI)
 
-    def _test_config_file_settings_in_x_if_coveragerc_specified(self, fname, contents):
-        # Configuration will be read from a non-".coveragerc" file from
-        # sections prefixed with "coverage:", even if the API said to read from
-        # a (non-existent) .coveragerc file.
+    def check_other_config_if_coveragerc_specified(self, fname, contents):
+        """Check that config `fname` is read if .coveragerc is missing, but specified."""
         nested = self.LOTSA_SETTINGS.format(section="coverage:")
         self.make_file(fname, nested + "\n" + contents)
         cov = coverage.Coverage(config_file=".coveragerc")
         self.assert_config_settings_are_correct(cov)
 
     def test_config_file_settings_in_setupcfg_if_coveragerc_specified(self):
-        self._test_config_file_settings_in_x_if_coveragerc_specified("setup.cfg", self.SETUP_CFG)
+        self.check_other_config_if_coveragerc_specified("setup.cfg", self.SETUP_CFG)
 
     def test_config_file_settings_in_tox_if_coveragerc_specified(self):
-        self._test_config_file_settings_in_x_if_coveragerc_specified("tox.ini", self.TOX_INI)
+        self.check_other_config_if_coveragerc_specified("tox.ini", self.TOX_INI)
 
-    def _test_x_only_if_not_coveragerc(self, fname):
+    def check_other_not_read_if_coveragerc(self, fname):
+        """Check config `fname` is not read if .coveragerc exists."""
         self.make_file(".coveragerc", """\
             [run]
             include = foo
@@ -406,12 +404,13 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.branch, False)
 
     def test_setupcfg_only_if_not_coveragerc(self):
-        self._test_x_only_if_not_coveragerc("setup.cfg")
+        self.check_other_not_read_if_coveragerc("setup.cfg")
 
     def test_toxini_only_if_not_coveragerc(self):
-        self._test_x_only_if_not_coveragerc("tox.ini")
+        self.check_other_not_read_if_coveragerc("tox.ini")
 
-    def _test_x_only_if_prefixed(self, fname):
+    def check_other_config_need_prefixes(self, fname):
+        """Check that `fname` sections won't be read if un-prefixed."""
         self.make_file(fname, """\
             [run]
             omit = bar
@@ -422,10 +421,10 @@ class ConfigFileTest(CoverageTest):
         self.assertEqual(cov.config.branch, False)
 
     def test_setupcfg_only_if_prefixed(self):
-        self._test_x_only_if_prefixed("setup.cfg")
+        self.check_other_config_need_prefixes("setup.cfg")
 
     def test_toxini_only_if_prefixed(self):
-        self._test_x_only_if_prefixed("tox.ini")
+        self.check_other_config_need_prefixes("tox.ini")
 
     def test_non_ascii(self):
         self.make_file(".coveragerc", """\
