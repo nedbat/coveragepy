@@ -382,3 +382,60 @@ class CoverageConfig(object):
 
         # If we get here, we didn't find the option.
         raise CoverageException("No such option: %r" % option_name)
+
+
+def read_coverage_config(config_file, **kwargs):
+    """Read configuration, returning a `CoverageConfig` object.
+
+    Arguments:
+        config_file: a boolean or string, see the `Coverage` class for the
+            tricky details.
+        all others: key
+
+    Returns:
+        config_file, config:
+            config_file is the value to use for config_file in other
+            invocations of coverage.
+
+            config is a CoverageConfig object read from the appropriate
+            configuration file.
+
+    """
+    # Build the configuration from a number of sources:
+    # 1) defaults:
+    config = CoverageConfig()
+
+    # 2) from a file:
+    if config_file:
+        # Some API users were specifying ".coveragerc" to mean the same as
+        # True, so make it so.
+        if config_file == ".coveragerc":
+            config_file = True
+        specified_file = (config_file is not True)
+        if not specified_file:
+            config_file = ".coveragerc"         # pylint: disable=redefined-variable-type
+
+        for fname, prefix in [(config_file, ""),
+                                ("setup.cfg", "coverage:"),
+                                ("tox.ini", "coverage:")]:
+            config_read = config.from_file(fname, section_prefix=prefix)
+            is_config_file = fname == config_file
+
+            if not config_read and is_config_file and specified_file:
+                raise CoverageException("Couldn't read '%s' as a config file" % fname)
+
+            if config_read:
+                break
+
+    # 3) from environment variables:
+    env_data_file = os.environ.get('COVERAGE_FILE')
+    if env_data_file:
+        config.data_file = env_data_file
+    debugs = os.environ.get('COVERAGE_DEBUG')
+    if debugs:
+        config.debug.extend(d.strip() for d in debugs.split(","))
+
+    # 4) from constructor arguments:
+    config.from_args(**kwargs)
+
+    return config_file, config

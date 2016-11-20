@@ -15,7 +15,7 @@ from coverage import env, files
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
 from coverage.collector import Collector
-from coverage.config import CoverageConfig
+from coverage.config import read_coverage_config
 from coverage.data import CoverageData, CoverageDataFiles
 from coverage.debug import DebugControl
 from coverage.files import TreeMatcher, FnmatchMatcher
@@ -132,41 +132,8 @@ class Coverage(object):
         """
         # Build our configuration from a number of sources:
         # 1: defaults:
-        self.config = CoverageConfig()
-
-        # 2: from the rcfile, .coveragerc, .tox or setup.cfg file:
-        if config_file:
-            # Some API users were specifying ".coveragerc" to mean the same as
-            # True, so make it so.
-            if config_file == ".coveragerc":
-                config_file = True
-            specified_file = (config_file is not True)
-            if not specified_file:
-                config_file = ".coveragerc"         # pylint: disable=redefined-variable-type
-            self.config_file = config_file
-
-            for fname, prefix in [(config_file, ""),
-                                  ("setup.cfg", "coverage:"),
-                                  ("tox.ini", "coverage:")]:
-                config_read = self.config.from_file(fname, section_prefix=prefix)
-                is_config_file = fname == config_file
-
-                if not config_read and is_config_file and specified_file:
-                    raise CoverageException("Couldn't read '%s' as a config file" % fname)
-
-                if config_read:
-                    break
-
-        # 3: from environment variables:
-        env_data_file = os.environ.get('COVERAGE_FILE')
-        if env_data_file:
-            self.config.data_file = env_data_file
-        debugs = os.environ.get('COVERAGE_DEBUG')
-        if debugs:
-            self.config.debug.extend(d.strip() for d in debugs.split(","))
-
-        # 4: from constructor arguments:
-        self.config.from_args(
+        self.config_file, self.config = read_coverage_config(
+            config_file=config_file,
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
             source=source, omit=omit, include=include, debug=debug,
