@@ -42,6 +42,8 @@ these steps:
 #.  (Optional, but recommended) Create a virtualenv to work in, and activate
     it.
 
+.. mkvirtualenv -p /usr/local/pythonz/pythons/CPython-2.7.11/bin/python coverage
+
 #.  Clone the repo::
 
         $ hg clone https://bitbucket.org/ned/coveragepy

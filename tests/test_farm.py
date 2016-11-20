@@ -1,7 +1,7 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
-"""Run tests in the farm sub-directory.  Designed for nose."""
+"""Run tests in the farm sub-directory.  Designed for pytest."""
 
 import difflib
 import filecmp
@@ -12,8 +12,6 @@ import re
 import shutil
 import sys
 import unittest
-
-from nose.plugins.skip import SkipTest
 
 from unittest_mixins import ModuleAwareMixin, SysPathAwareMixin, change_dir, saved_sys_path
 from tests.helpers import run_command
@@ -51,8 +49,7 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
     cleaning-only, or run and leave the results for debugging).
 
     This class is a unittest.TestCase so that we can use behavior-modifying
-    mixins, but it's only useful as a nose test function.  Yes, this is
-    confusing.
+    mixins, but it's only useful as a test function.  Yes, this is confusing.
 
     """
 
@@ -75,13 +72,13 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
         self.ok = True
 
     def setUp(self):
-        """Test set up, run by nose before __call__."""
+        """Test set up, run by the test runner before __call__."""
         super(FarmTestCase, self).setUp()
         # Modules should be importable from the current directory.
         sys.path.insert(0, '')
 
     def tearDown(self):
-        """Test tear down, run by nose after __call__."""
+        """Test tear down, run by the test runner after __call__."""
         # Make sure the test is cleaned up, unless we never want to, or if the
         # test failed.
         if not self.dont_clean and self.ok:         # pragma: part covered
@@ -90,8 +87,8 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
 
         super(FarmTestCase, self).tearDown()
 
-        # This object will be run by nose via the __call__ method, and nose
-        # doesn't do cleanups in that case.  Do them now.
+        # This object will be run via the __call__ method, and test runners
+        # don't do cleanups in that case.  Do them now.
         self.doCleanups()
 
     def runTest(self):
@@ -345,7 +342,7 @@ def clean(cleandir):
 
 def skip(msg=None):
     """Skip the current test."""
-    raise SkipTest(msg)
+    raise unittest.SkipTest(msg)
 
 
 # Helpers

@@ -20,6 +20,7 @@ import textwrap
 import warnings
 import zipfile
 
+import pytest
 
 # We want to see all warnings while we are running tests.  But we also need to
 # disable warnings for some of the more complex setting up of tests.
@@ -94,24 +95,15 @@ def should_skip(tracer):
     return msg
 
 
-def run_tests(tracer, *nose_args):
+def run_tests(tracer, *runner_args):
     """The actual running of tests."""
-    with ignore_warnings():
-        import nose.core
-
     if 'COVERAGE_TESTING' not in os.environ:
         os.environ['COVERAGE_TESTING'] = "True"
     print_banner(label_for_tracer(tracer))
-    if 'COVERAGE_PYTEST' in os.environ:
-        import pytest
-        runner_args = list(nose_args)
-        return pytest.main(runner_args)
-    else:
-        nose_args = ["nosetests"] + list(nose_args)
-        return nose.core.main(argv=nose_args)
+    return pytest.main(list(runner_args))
 
 
-def run_tests_with_coverage(tracer, *nose_args):
+def run_tests_with_coverage(tracer, *runner_args):
     """Run tests, but with coverage."""
 
     # Need to define this early enough that the first import of env.py sees it.
@@ -122,8 +114,7 @@ def run_tests_with_coverage(tracer, *nose_args):
     # Create the .pth file that will let us measure coverage in sub-processes.
     # The .pth file seems to have to be alphabetically after easy-install.pth
     # or the sys.path entries aren't created right?
-    import nose
-    pth_dir = os.path.dirname(os.path.dirname(nose.__file__))
+    pth_dir = os.path.dirname(pytest.__file__)
     pth_path = os.path.join(pth_dir, "zzz_metacov.pth")
     with open(pth_path, "w") as pth_file:
         pth_file.write("import coverage; coverage.process_startup()\n")
@@ -162,9 +153,9 @@ def run_tests_with_coverage(tracer, *nose_args):
         import coverage                         # pylint: disable=reimported
         sys.modules.update(covmods)
 
-        # Run nosetests, with the arguments from our command line.
+        # Run tests, with the arguments from our command line.
         try:
-            run_tests(tracer, *nose_args)
+            run_tests(tracer, *runner_args)
         except SystemExit:
             # nose3 seems to raise SystemExit, not sure why?
             pass
@@ -189,8 +180,8 @@ def do_combine_html():
     cov.xml_report()
 
 
-def do_test_with_tracer(tracer, *noseargs):
-    """Run nosetests with a particular tracer."""
+def do_test_with_tracer(tracer, *runner_args):
+    """Run tests with a particular tracer."""
     # If we should skip these tests, skip them.
     skip_msg = should_skip(tracer)
     if skip_msg:
@@ -199,9 +190,9 @@ def do_test_with_tracer(tracer, *noseargs):
 
     os.environ["COVERAGE_TEST_TRACER"] = tracer
     if os.environ.get("COVERAGE_COVERAGE", ""):
-        return run_tests_with_coverage(tracer, *noseargs)
+        return run_tests_with_coverage(tracer, *runner_args)
     else:
-        return run_tests(tracer, *noseargs)
+        return run_tests(tracer, *runner_args)
 
 
 def do_zip_mods():
