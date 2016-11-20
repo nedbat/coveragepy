@@ -385,12 +385,13 @@ class CoverageConfig(object):
 
 
 def read_coverage_config(config_file, **kwargs):
-    """Read configuration, returning a `CoverageConfig` object.
+    """Read the coverage.py configuration.
 
     Arguments:
         config_file: a boolean or string, see the `Coverage` class for the
             tricky details.
-        all others: key
+        all others: keyword arguments from the `Coverage` class, used for
+            setting values in the configuration.
 
     Returns:
         config_file, config:
