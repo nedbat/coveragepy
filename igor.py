@@ -155,11 +155,8 @@ def run_tests_with_coverage(tracer, *runner_args):
         sys.modules.update(covmods)
 
         # Run tests, with the arguments from our command line.
-        try:
-            run_tests(tracer, *runner_args)
-        except SystemExit:
-            # nose3 seems to raise SystemExit, not sure why?
-            pass
+        run_tests(tracer, *runner_args)
+
     finally:
         cov.stop()
         os.remove(pth_path)
