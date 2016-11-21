@@ -11,12 +11,12 @@ import os
 import re
 import shutil
 import sys
-import unittest
 
 from unittest_mixins import ModuleAwareMixin, SysPathAwareMixin, change_dir, saved_sys_path
 from tests.helpers import run_command
 from tests.backtest import execfile         # pylint: disable=redefined-builtin
 
+from coverage.backunittest import unittest
 from coverage.debug import _TEST_NAME_FILE
 
 
