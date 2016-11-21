@@ -10,6 +10,7 @@ Code coverage testing for Python.
 |  |license| |versions| |status| |docs|
 |  |ci-status| |win-ci-status| |codecov|
 |  |kit| |format| |commits-since|
+|  |saythanks|
 
 .. downloads badge seems to be broken... |downloads|
 
@@ -80,3 +81,8 @@ For details, see https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
     :target: http://codecov.io/github/nedbat/coveragepy?branch=master
     :alt: Coverage!
 .. |commits-since| image:: https://img.shields.io/github/commits-since/nedbat/coveragepy/coverage-4.2.svg
+    :target: https://github.com/nedbat/coveragepy/compare/coverage-4.2...master
+    :alt: See latest work
+.. |saythanks| image:: https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg
+    :target: https://saythanks.io/to/nedbat
+    :alt: Say thanks :)
