@@ -20,8 +20,6 @@ import textwrap
 import warnings
 import zipfile
 
-import pytest
-
 # We want to see all warnings while we are running tests.  But we also need to
 # disable warnings for some of the more complex setting up of tests.
 warnings.simplefilter("default")
@@ -97,6 +95,8 @@ def should_skip(tracer):
 
 def run_tests(tracer, *runner_args):
     """The actual running of tests."""
+    import pytest
+
     if 'COVERAGE_TESTING' not in os.environ:
         os.environ['COVERAGE_TESTING'] = "True"
     print_banner(label_for_tracer(tracer))
@@ -105,6 +105,7 @@ def run_tests(tracer, *runner_args):
 
 def run_tests_with_coverage(tracer, *runner_args):
     """Run tests, but with coverage."""
+    import pytest
 
     # Need to define this early enough that the first import of env.py sees it.
     os.environ['COVERAGE_TESTING'] = "True"
