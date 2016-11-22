@@ -472,6 +472,9 @@ class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
 new_contract('ArcStarts', lambda seq: all(isinstance(x, ArcStart) for x in seq))
 
 
+# Turn on AST dumps with an environment variable.
+AST_DUMP = bool(int(os.environ.get("COVERAGE_ASTDUMP", 0)))
+
 class AstArcAnalyzer(object):
     """Analyze source text with an AST to find executable code paths."""
 
@@ -482,7 +485,7 @@ class AstArcAnalyzer(object):
         self.statements = set(multiline.get(l, l) for l in statements)
         self.multiline = multiline
 
-        if int(os.environ.get("COVERAGE_ASTDUMP", 0)):      # pragma: debugging
+        if AST_DUMP:                                # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
             print("Statements: {}".format(self.statements))
             print("Multiline map: {}".format(self.multiline))
@@ -971,62 +974,64 @@ class AstArcAnalyzer(object):
         _code_object__ListComp = _make_oneline_code_method("list comprehension")
 
 
-SKIP_DUMP_FIELDS = ["ctx"]
+if AST_DUMP:            # pragma: debugging
+    # Code only used when dumping the AST for debugging.
 
-def _is_simple_value(value):
-    """Is `value` simple enough to be displayed on a single line?"""
-    return (
-        value in [None, [], (), {}, set()] or
-        isinstance(value, (string_class, int, float))
-    )
+    SKIP_DUMP_FIELDS = ["ctx"]
 
-# TODO: a test of ast_dump?
-def ast_dump(node, depth=0):
-    """Dump the AST for `node`.
+    def _is_simple_value(value):
+        """Is `value` simple enough to be displayed on a single line?"""
+        return (
+            value in [None, [], (), {}, set()] or
+            isinstance(value, (string_class, int, float))
+        )
 
-    This recursively walks the AST, printing a readable version.
+    def ast_dump(node, depth=0):
+        """Dump the AST for `node`.
 
-    """
-    indent = " " * depth
-    if not isinstance(node, ast.AST):
-        print("{0}<{1} {2!r}>".format(indent, node.__class__.__name__, node))
-        return
+        This recursively walks the AST, printing a readable version.
 
-    lineno = getattr(node, "lineno", None)
-    if lineno is not None:
-        linemark = " @ {0}".format(node.lineno)
-    else:
-        linemark = ""
-    head = "{0}<{1}{2}".format(indent, node.__class__.__name__, linemark)
+        """
+        indent = " " * depth
+        if not isinstance(node, ast.AST):
+            print("{0}<{1} {2!r}>".format(indent, node.__class__.__name__, node))
+            return
 
-    named_fields = [
-        (name, value)
-        for name, value in ast.iter_fields(node)
-        if name not in SKIP_DUMP_FIELDS
-    ]
-    if not named_fields:
-        print("{0}>".format(head))
-    elif len(named_fields) == 1 and _is_simple_value(named_fields[0][1]):
-        field_name, value = named_fields[0]
-        print("{0} {1}: {2!r}>".format(head, field_name, value))
-    else:
-        print(head)
-        if 0:
-            print("{0}# mro: {1}".format(
-                indent, ", ".join(c.__name__ for c in node.__class__.__mro__[1:]),
-            ))
-        next_indent = indent + "    "
-        for field_name, value in named_fields:
-            prefix = "{0}{1}:".format(next_indent, field_name)
-            if _is_simple_value(value):
-                print("{0} {1!r}".format(prefix, value))
-            elif isinstance(value, list):
-                print("{0} [".format(prefix))
-                for n in value:
-                    ast_dump(n, depth + 8)
-                print("{0}]".format(next_indent))
-            else:
-                print(prefix)
-                ast_dump(value, depth + 8)
+        lineno = getattr(node, "lineno", None)
+        if lineno is not None:
+            linemark = " @ {0}".format(node.lineno)
+        else:
+            linemark = ""
+        head = "{0}<{1}{2}".format(indent, node.__class__.__name__, linemark)
 
-        print("{0}>".format(indent))
+        named_fields = [
+            (name, value)
+            for name, value in ast.iter_fields(node)
+            if name not in SKIP_DUMP_FIELDS
+        ]
+        if not named_fields:
+            print("{0}>".format(head))
+        elif len(named_fields) == 1 and _is_simple_value(named_fields[0][1]):
+            field_name, value = named_fields[0]
+            print("{0} {1}: {2!r}>".format(head, field_name, value))
+        else:
+            print(head)
+            if 0:
+                print("{0}# mro: {1}".format(
+                    indent, ", ".join(c.__name__ for c in node.__class__.__mro__[1:]),
+                ))
+            next_indent = indent + "    "
+            for field_name, value in named_fields:
+                prefix = "{0}{1}:".format(next_indent, field_name)
+                if _is_simple_value(value):
+                    print("{0} {1!r}".format(prefix, value))
+                elif isinstance(value, list):
+                    print("{0} [".format(prefix))
+                    for n in value:
+                        ast_dump(n, depth + 8)
+                    print("{0}]".format(next_indent))
+                else:
+                    print(prefix)
+                    ast_dump(value, depth + 8)
+
+            print("{0}>".format(indent))
