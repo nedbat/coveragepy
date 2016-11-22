@@ -38,5 +38,5 @@ class CoverageGoldTest(CoverageTest):
         # beginning of the test.
         clean(the_dir)
 
-        if not os.environ.get("COVERAGE_KEEP_OUTPUT"):      # pragma: partial
+        if not os.environ.get("COVERAGE_KEEP_OUTPUT"):      # pragma: part covered
             self.addCleanup(clean, the_dir)
