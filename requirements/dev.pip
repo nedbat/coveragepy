@@ -13,6 +13,7 @@ mock==2.0.0
 PyContracts==1.7.9
 pyenchant==1.6.7
 pylint==1.6.4
+pytest
 unittest-mixins==1.1.1
 
 # for kitting.
