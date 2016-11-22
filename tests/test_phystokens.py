@@ -21,11 +21,25 @@ def foo():
   say('two = %d' % 2)
 """
 
+SIMPLE_TOKENS = [
+    [('com', "# yay!")],
+    [('key', 'def'), ('ws', ' '), ('nam', 'foo'), ('op', '('), ('op', ')'), ('op', ':')],
+    [('ws', '  '), ('nam', 'say'), ('op', '('),
+        ('str', "'two = %d'"), ('ws', ' '), ('op', '%'),
+        ('ws', ' '), ('num', '2'), ('op', ')')],
+]
+
 MIXED_WS = u"""\
 def hello():
         a="Hello world!"
 \tb="indented"
 """
+
+MIXED_WS_TOKENS = [
+    [('key', 'def'), ('ws', ' '), ('nam', 'hello'), ('op', '('), ('op', ')'), ('op', ':')],
+    [('ws', '        '), ('nam', 'a'), ('op', '='), ('str', '"Hello world!"')],
+    [('ws', '        '), ('nam', 'b'), ('op', '='), ('str', '"indented"')],
+]
 
 HERE = os.path.dirname(__file__)
 
@@ -53,28 +67,16 @@ class PhysTokensTest(CoverageTest):
         self.check_tokenization(get_python_source(fname))
 
     def test_simple(self):
-        self.assertEqual(list(source_token_lines(SIMPLE)),
-            [
-                [('com', "# yay!")],
-                [('key', 'def'), ('ws', ' '), ('nam', 'foo'), ('op', '('),
-                            ('op', ')'), ('op', ':')],
-                [('ws', '  '), ('nam', 'say'), ('op', '('),
-                            ('str', "'two = %d'"), ('ws', ' '), ('op', '%'),
-                            ('ws', ' '), ('num', '2'), ('op', ')')]
-            ])
+        self.assertEqual(list(source_token_lines(SIMPLE)), SIMPLE_TOKENS)
         self.check_tokenization(SIMPLE)
+
+    def test_missing_final_newline(self):
+        # We can tokenize source that is missing the final newline.
+        self.assertEqual(list(source_token_lines(SIMPLE.rstrip())), SIMPLE_TOKENS)
 
     def test_tab_indentation(self):
         # Mixed tabs and spaces...
-        self.assertEqual(list(source_token_lines(MIXED_WS)),
-            [
-                [('key', 'def'), ('ws', ' '), ('nam', 'hello'), ('op', '('),
-                            ('op', ')'), ('op', ':')],
-                [('ws', '        '), ('nam', 'a'), ('op', '='),
-                            ('str', '"Hello world!"')],
-                [('ws', '        '), ('nam', 'b'), ('op', '='),
-                            ('str', '"indented"')],
-            ])
+        self.assertEqual(list(source_token_lines(MIXED_WS)), MIXED_WS_TOKENS)
 
     def test_tokenize_real_file(self):
         # Check the tokenization of a real file (large, btw).
