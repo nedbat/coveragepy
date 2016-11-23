@@ -38,10 +38,10 @@ def download_latest_artifacts(account_project):
     """Download all the artifacts from the latest build."""
     build = get_project_build(account_project)
     jobs = build['build']['jobs']
-    print "Build {0[build][version]}, {1} jobs: {0[build][message]}".format(build, len(jobs))
+    print("Build {0[build][version]}, {1} jobs: {0[build][message]}".format(build, len(jobs)))
     for job in jobs:
         name = job['name'].partition(':')[2].split(',')[0].strip()
-        print "  {0}: {1[status]}, {1[artifactsCount]} artifacts".format(name, job)
+        print("  {0}: {1[status]}, {1[artifactsCount]} artifacts".format(name, job))
 
         url = make_url("/buildjobs/{jobid}/artifacts", jobid=job['jobId'])
         response = requests.get(url, headers=make_auth_headers())
@@ -50,7 +50,7 @@ def download_latest_artifacts(account_project):
         for artifact in artifacts:
             is_zip = artifact['type'] == "Zip"
             filename = artifact['fileName']
-            print "    {0}, {1} bytes".format(filename, artifact['size'])
+            print("    {0}, {1} bytes".format(filename, artifact['size']))
 
             url = make_url(
                 "/buildjobs/{jobid}/artifacts/{filename}",
@@ -86,7 +86,7 @@ def unpack_zipfile(filename):
     with open(filename, 'rb') as fzip:
         z = zipfile.ZipFile(fzip)
         for name in z.namelist():
-            print "      extracting {0}".format(name)
+            print("      extracting {0}".format(name))
             ensure_dirs(name)
             z.extract(name)
 
