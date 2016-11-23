@@ -12,6 +12,8 @@ import re
 import shutil
 import sys
 
+import pytest
+
 from unittest_mixins import ModuleAwareMixin, SysPathAwareMixin, change_dir, saved_sys_path
 from tests.helpers import run_command
 from tests.backtest import execfile         # pylint: disable=redefined-builtin
@@ -20,11 +22,13 @@ from coverage.backunittest import unittest
 from coverage.debug import _TEST_NAME_FILE
 
 
-def test_farm(clean_only=False):
-    """A test-generating function for nose to find and run."""
-    for fname in glob.glob("tests/farm/*/*.py"):
-        case = FarmTestCase(fname, clean_only)
-        yield (case,)
+# Look for files that become tests.
+TEST_FILES = glob.glob("tests/farm/*/*.py")
+
+
+@pytest.mark.parametrize("filename", TEST_FILES)
+def test_farm(filename):
+    FarmTestCase(filename).run_fully()
 
 
 # "rU" was deprecated in 3.4
@@ -121,7 +125,7 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
                 self.ok = False
                 raise
 
-    def run_fully(self):        # pragma: not covered
+    def run_fully(self):
         """Run as a full test case, with setUp and tearDown."""
         self.setUp()
         try:
@@ -373,7 +377,7 @@ def scrub(strdata, scrubs):
 
 
 def main():     # pragma: not covered
-    """Command-line access to test_farm.
+    """Command-line access to farm tests.
 
     Commands:
 
@@ -389,18 +393,16 @@ def main():     # pragma: not covered
 
     if op == 'run':
         # Run the test for real.
-        for test_case in sys.argv[2:]:
-            case = FarmTestCase(test_case)
-            case.run_fully()
+        for filename in sys.argv[2:]:
+            FarmTestCase(filename).run_fully()
     elif op == 'out':
         # Run the test, but don't clean up, so we can examine the output.
-        for test_case in sys.argv[2:]:
-            case = FarmTestCase(test_case, dont_clean=True)
-            case.run_fully()
+        for filename in sys.argv[2:]:
+            FarmTestCase(filename, dont_clean=True).run_fully()
     elif op == 'clean':
         # Run all the tests, but just clean.
-        for test in test_farm(clean_only=True):
-            test[0].run_fully()
+        for filename in TEST_FILES:
+            FarmTestCase(filename, clean_only=True).run_fully()
     else:
         print(main.__doc__)
 
