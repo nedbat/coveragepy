@@ -261,13 +261,13 @@ def do_check_eol():
         with open(fname, "rb") as f:
             for n, line in enumerate(f, start=1):
                 if crlf:
-                    if "\r" in line:
+                    if b"\r" in line:
                         print("%s@%d: CR found" % (fname, n))
                         return
                 if trail_white:
                     line = line[:-1]
                     if not crlf:
-                        line = line.rstrip('\r')
+                        line = line.rstrip(b'\r')
                     if line.rstrip() != line:
                         print("%s@%d: trailing whitespace found" % (fname, n))
                         return
