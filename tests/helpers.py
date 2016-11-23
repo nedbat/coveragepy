@@ -8,6 +8,7 @@ import subprocess
 import sys
 
 from coverage import env
+from coverage.backward import unicode_class
 from coverage.misc import output_encoding
 
 
@@ -17,7 +18,7 @@ def run_command(cmd):
     Returns the exit status code and the combined stdout and stderr.
 
     """
-    if env.PY2 and isinstance(cmd, unicode):
+    if env.PY2 and isinstance(cmd, unicode_class):
         cmd = cmd.encode(sys.getfilesystemencoding())
 
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of

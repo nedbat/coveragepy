@@ -11,7 +11,7 @@ import token
 import tokenize
 
 from coverage import env
-from coverage.backward import iternext
+from coverage.backward import iternext, unicode_class
 from coverage.misc import contract
 
 
@@ -281,7 +281,7 @@ def compile_unicode(source, filename, mode):
 
     """
     source = neuter_encoding_declaration(source)
-    if env.PY2 and isinstance(filename, unicode):
+    if env.PY2 and isinstance(filename, unicode_class):
         filename = filename.encode(sys.getfilesystemencoding(), "replace")
     code = compile(source, filename, mode)
     return code
