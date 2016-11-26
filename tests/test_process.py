@@ -1087,7 +1087,8 @@ class ProcessCoverageMixin(object):
         # Find a place to put a .pth file.
         pth_contents = "import coverage; coverage.process_startup()\n"
         for pth_dir in possible_pth_dirs():             # pragma: part covered
-            pth_path = os.path.join(pth_dir, "subcover.pth")
+            worker = os.environ.get('PYTEST_XDIST_WORKER', '')
+            pth_path = os.path.join(pth_dir, "subcover_{0}.pth".format(worker))
             with open(pth_path, "w") as pth:
                 try:
                     pth.write(pth_contents)

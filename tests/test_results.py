@@ -40,6 +40,8 @@ class NumbersTest(CoverageTest):
         self.assertAlmostEqual(n3.pc_covered, 86.666666666)
 
     def test_pc_covered_str(self):
+        # Numbers._precision is a global, which is bad.
+        Numbers.set_precision(0)
         n0 = Numbers(n_files=1, n_statements=1000, n_missing=0)
         n1 = Numbers(n_files=1, n_statements=1000, n_missing=1)
         n999 = Numbers(n_files=1, n_statements=1000, n_missing=999)
@@ -50,7 +52,7 @@ class NumbersTest(CoverageTest):
         self.assertEqual(n1000.pc_covered_str, "0")
 
     def test_pc_covered_str_precision(self):
-        assert Numbers._precision == 0
+        # Numbers._precision is a global, which is bad.
         Numbers.set_precision(1)
         n0 = Numbers(n_files=1, n_statements=10000, n_missing=0)
         n1 = Numbers(n_files=1, n_statements=10000, n_missing=1)
