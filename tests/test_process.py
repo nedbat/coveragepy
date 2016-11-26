@@ -1172,8 +1172,8 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
 
         # assert that there are *no* extra data files left over after a combine
         data_files = glob.glob(os.getcwd() + '/.coverage*')
-        self.assertEquals(len(data_files), 1,
-            "Expected only .coverage after combine, looks like there are " + \
+        self.assertEqual(len(data_files), 1,
+            "Expected only .coverage after combine, looks like there are "
             "extra data files that were not cleaned up: %r" % data_files)
 
 

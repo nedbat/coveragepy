@@ -284,4 +284,4 @@ class WindowsFileTest(CoverageTest):
         super(WindowsFileTest, self).setUp()
 
     def test_actual_path(self):
-        self.assertEquals(actual_path(r'c:\Windows'), actual_path(r'C:\wINDOWS'))
+        self.assertEqual(actual_path(r'c:\Windows'), actual_path(r'C:\wINDOWS'))

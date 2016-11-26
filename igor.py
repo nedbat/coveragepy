@@ -26,6 +26,9 @@ import pytest
 # disable warnings for some of the more complex setting up of tests.
 warnings.simplefilter("default")
 
+# Silence specific warnings that are not our fault.
+warnings.filterwarnings("ignore", module="xdist", message="type argument to addoption")
+
 
 @contextlib.contextmanager
 def ignore_warnings():
