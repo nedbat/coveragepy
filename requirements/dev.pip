@@ -10,12 +10,12 @@
 # for linting.
 greenlet==0.4.10
 mock==2.0.0
-PyContracts==1.7.9
-pyenchant==1.6.7
+PyContracts==1.7.12
+pyenchant==1.6.8
 pylint==1.6.4
 pytest
 unittest-mixins==1.1.1
 
 # for kitting.
-requests==2.10.0
-twine==1.7.4
+requests==2.12.1
+twine==1.8.1
