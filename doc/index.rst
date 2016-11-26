@@ -145,14 +145,15 @@ If you need more control over how your project is measured, you can use the
 :ref:`API <api>`.
 
 Some test runners provide coverage integration to make it easy to use
-coverage.py while running tests.  For example, `nose`_ has a `cover plug-in`_.
+coverage.py while running tests.  For example, `pytest`_ has the `pytest-cov`_
+plugin.
 
 You can fine-tune coverage.py's view of your code by directing it to ignore
 parts that you know aren't interesting.  See :ref:`source` and :ref:`excluding`
 for details.
 
-.. _nose:           http://nose.readthedocs.io
-.. _cover plug-in:  https://nose.readthedocs.io/en/latest/plugins/cover.html
+.. _pytest: http://doc.pytest.org
+.. _pytest-cov: http://pytest-cov.readthedocs.io
 
 
 .. _contact:
@@ -176,7 +177,7 @@ GitHub.
 `I can be reached`_ in a number of ways. I'm happy to answer questions about
 using coverage.py.
 
-.. _I can be reached:  http://nedbatchelder.com/site/aboutned.html
+.. _I can be reached: http://nedbatchelder.com/site/aboutned.html
 
 
 
