@@ -1340,7 +1340,7 @@ class AsyncTest(CoverageTest):
                 def __init__(self, obj):                # 4
                     self._it = iter(obj)
 
-                async def __aiter__(self):              # 7
+                def __aiter__(self):                    # 7
                     return self
 
                 async def __anext__(self):              # A
