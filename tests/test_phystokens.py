@@ -15,6 +15,7 @@ from coverage.python import get_python_source
 from tests.coveragetest import CoverageTest
 
 
+# A simple program and its token stream.
 SIMPLE = u"""\
 # yay!
 def foo():
@@ -29,6 +30,7 @@ SIMPLE_TOKENS = [
         ('ws', ' '), ('num', '2'), ('op', ')')],
 ]
 
+# Mixed-whitespace program, and its token stream.
 MIXED_WS = u"""\
 def hello():
         a="Hello world!"
@@ -41,6 +43,7 @@ MIXED_WS_TOKENS = [
     [('ws', '        '), ('nam', 'b'), ('op', '='), ('str', '"indented"')],
 ]
 
+# Where this file is, so we can find other files next to it.
 HERE = os.path.dirname(__file__)
 
 
@@ -100,13 +103,15 @@ else:
 
 ENCODING_DECLARATION_SOURCES = [
     # Various forms from http://www.python.org/dev/peps/pep-0263/
-    (1, b"# coding=cp850\n\n"),
-    (1, b"#!/usr/bin/python\n# -*- coding: cp850 -*-\n"),
-    (1, b"#!/usr/bin/python\n# vim: set fileencoding=cp850:\n"),
-    (1, b"# This Python file uses this encoding: cp850\n"),
-    (1, b"# This file uses a different encoding:\n# coding: cp850\n"),
-    (1, b"\n# coding=cp850\n\n"),
-    (2, b"# -*-  coding:cp850 -*-\n# vim: fileencoding=cp850\n"),
+    (1, b"# coding=cp850\n\n", "cp850"),
+    (1, b"# coding=latin-1\n", "iso-8859-1"),
+    (1, b"# coding=iso-latin-1\n", "iso-8859-1"),
+    (1, b"#!/usr/bin/python\n# -*- coding: cp850 -*-\n", "cp850"),
+    (1, b"#!/usr/bin/python\n# vim: set fileencoding=cp850:\n", "cp850"),
+    (1, b"# This Python file uses this encoding: cp850\n", "cp850"),
+    (1, b"# This file uses a different encoding:\n# coding: cp850\n", "cp850"),
+    (1, b"\n# coding=cp850\n\n", "cp850"),
+    (2, b"# -*-  coding:cp850 -*-\n# vim: fileencoding=cp850\n", "cp850"),
 ]
 
 class SourceEncodingTest(CoverageTest):
@@ -115,10 +120,10 @@ class SourceEncodingTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_detect_source_encoding(self):
-        for _, source in ENCODING_DECLARATION_SOURCES:
+        for _, source, expected in ENCODING_DECLARATION_SOURCES:
             self.assertEqual(
                 source_encoding(source),
-                'cp850',
+                expected,
                 "Wrong encoding in %r" % source
             )
 
@@ -145,9 +150,19 @@ class SourceEncodingTest(CoverageTest):
         source = b"\xEF\xBB\xBFtext = 'hello'\n"
         self.assertEqual(source_encoding(source), 'utf-8-sig')
 
-        # But it has to be the only authority.
+    def test_bom_with_encoding(self):
+        source = b"\xEF\xBB\xBF# coding: utf-8\ntext = 'hello'\n"
+        self.assertEqual(source_encoding(source), 'utf-8-sig')
+
+    def test_bom_is_wrong(self):
+        # A BOM with an explicit non-utf8 encoding is an error.
         source = b"\xEF\xBB\xBF# coding: cp850\n"
-        with self.assertRaises(SyntaxError):
+        with self.assertRaisesRegex(SyntaxError, "encoding problem: utf-8"):
+            source_encoding(source)
+
+    def test_unknown_encoding(self):
+        source = b"# coding: klingon\n"
+        with self.assertRaisesRegex(SyntaxError, "unknown encoding: klingon"):
             source_encoding(source)
 
 
@@ -157,7 +172,7 @@ class NeuterEncodingDeclarationTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_neuter_encoding_declaration(self):
-        for lines_diff_expected, source in ENCODING_DECLARATION_SOURCES:
+        for lines_diff_expected, source, _ in ENCODING_DECLARATION_SOURCES:
             neutered = neuter_encoding_declaration(source.decode("ascii"))
             neutered = neutered.encode("ascii")
 
