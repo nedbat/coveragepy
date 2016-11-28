@@ -27,6 +27,9 @@ max_line_length = 100
 [*.yml]
 indent_size = 2
 
+[*.rst]
+max_line_length = 79
+
 [Makefile]
 indent_style = tab
 indent_size = 8

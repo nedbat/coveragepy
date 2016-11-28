@@ -48,8 +48,8 @@ Unreleased
 - Fixed an unusual bug involving multiple coding declarations affecting code
   containing code in multi-line strings: `issue 529`_.
 
-- The default pragma regex changed slightly, but this will only matter to you if
-  you are deranged and use mixed-case pragmas.
+- The default pragma regex changed slightly, but this will only matter to you
+  if you are deranged and use mixed-case pragmas.
 
 - Deal properly with non-ASCII file names in an ASCII-only world, `issue 533`_.
 
