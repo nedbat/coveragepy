@@ -192,7 +192,12 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
             # and a nested exception is shown to the user.  This getattr fixes
             # it somehow? https://bitbucket.org/pypy/pypy/issue/1903
             getattr(err, '__context__', None)
-            sys.excepthook(typ, err, tb.tb_next)
+
+            # call a custom user excepthook if it is provided
+            if sys.excepthook is not sys.__excepthook__:
+                sys.excepthook(typ, err, tb.tb_next)
+            raise ExceptionDuringRun(typ, err, tb.tb_next)
+
     finally:
         # Restore the old __main__, argv, and path.
         sys.modules['__main__'] = old_main_mod
