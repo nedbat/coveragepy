@@ -129,12 +129,12 @@ def expensive(fn):
         def _wrapped(self):
             """Inner function that checks the cache."""
             if hasattr(self, attr):
-                raise Exception("Shouldn't have called %s more than once" % fn.__name__)
+                raise AssertionError("Shouldn't have called %s more than once" % fn.__name__)
             setattr(self, attr, True)
             return fn(self)
         return _wrapped
     else:
-        return fn
+        return fn                   # pragma: not covered
 
 
 def bool_or_none(b):
