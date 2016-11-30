@@ -708,7 +708,7 @@ class HtmlGoldTests(CoverageGoldTest):
 
         with change_dir("src"):
             # pylint: disable=import-error
-            cov = coverage.Coverage(branch=True)
+            cov = coverage.Coverage(config_file="partial.ini")
             cov.start()
             import partial          # pragma: nested
             cov.stop()              # pragma: nested
@@ -722,6 +722,8 @@ class HtmlGoldTests(CoverageGoldTest):
             '<p id="t14" class="stm run hide_run">',
             # The "if 0" and "if 1" statements are optimized away.
             '<p id="t17" class="pln">',
+            # The "raise AssertionError" is excluded by regex in the .ini.
+            '<p id="t24" class="exc">',
         )
         contains(
             "out/partial/index.html",
