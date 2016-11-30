@@ -754,10 +754,7 @@ def main(argv=None):
     try:
         status = CoverageScript().command_line(argv)
     except ExceptionDuringRun as err:
-        # An exception was caught while running the product code.  The
-        # sys.exc_info() return tuple is packed into an ExceptionDuringRun
-        # exception.
-        traceback.print_exception(*err.args)
+        # An exception was caught while running the product code.
         status = ERR
     except CoverageException as err:
         # A controlled error inside coverage.py: print the message to the user.

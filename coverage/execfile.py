@@ -6,6 +6,7 @@
 import marshal
 import os
 import sys
+import traceback
 import types
 
 from coverage.backward import BUILTINS
@@ -195,7 +196,13 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
 
             # call a custom user excepthook if it is provided
             if sys.excepthook is not sys.__excepthook__:
-                sys.excepthook(typ, err, tb.tb_next)
+                try:
+                    sys.excepthook(typ, err, tb.tb_next)
+                except SystemExit:
+                    raise
+                except:
+                    typ, err, tb = sys.exc_info()
+                    traceback.print_exception(typ, err, tb.tb_next)
             raise ExceptionDuringRun(typ, err, tb.tb_next)
 
     finally:
