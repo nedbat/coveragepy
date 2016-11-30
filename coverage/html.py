@@ -384,7 +384,7 @@ class HtmlStatus(object):
             'files': files,
         }
         with open(status_file, "w") as fout:
-            json.dump(status, fout)
+            json.dump(status, fout, separators=(',', ':'))
 
         # Older versions of ShiningPanda look for the old name, status.dat.
         # Accommodate them if we are running under Jenkins.
