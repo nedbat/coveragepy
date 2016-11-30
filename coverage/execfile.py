@@ -6,7 +6,6 @@
 import marshal
 import os
 import sys
-import traceback
 import types
 
 from coverage.backward import BUILTINS
