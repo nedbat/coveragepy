@@ -202,7 +202,6 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
                     raise
                 except:
                     typ, err, tb = sys.exc_info()
-                    traceback.print_exception(typ, err, tb.tb_next)
             raise ExceptionDuringRun(typ, err, tb.tb_next)
 
     finally:
