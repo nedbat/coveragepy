@@ -194,14 +194,15 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
             getattr(err, '__context__', None)
 
             # call a custom user excepthook if it is provided
-            if sys.excepthook is not sys.__excepthook__:
-                try:
-                    sys.excepthook(typ, err, tb.tb_next)
-                except SystemExit:
-                    raise
-                except:
-                    typ, err, tb = sys.exc_info()
-            raise ExceptionDuringRun(typ, err, tb.tb_next)
+            try:
+                sys.excepthook(typ, err, tb.tb_next)
+            except SystemExit:
+                raise
+            except:
+                typ, err, tb = sys.exc_info()
+                raise ExceptionDuringRun(typ, err, tb.tb_next)
+            else:
+                sys.exit(1)
 
     finally:
         # Restore the old __main__, argv, and path.

@@ -785,6 +785,66 @@ class ProcessTest(CoverageTest):
         out = self.run_command("python -m coverage")
         self.assertIn("Use 'coverage help' for help", out)
 
+    def test_excepthook(self):
+        self.make_file("test_excepthook.py", """\
+            import sys
+
+            def excepthook(*args):
+                print('in excepthook')
+
+            sys.excepthook = excepthook
+
+            raise RuntimeError('Error Outside')
+            """)
+        cov_st, cov_out = self.run_command_status("coverage run test_excepthook.py")
+        py_st, py_out = self.run_command_status("python test_excepthook.py")
+        self.assertEqual(cov_st, py_st)
+        self.assertEqual(cov_st, 1)
+
+        self.assertIn("in excepthook", py_out)
+        self.assertEqual(cov_out, py_out)
+
+    def test_excepthook_exit(self):
+        self.make_file("test_excepthook_exit.py", """\
+            import sys
+
+            def excepthook(*args):
+                print('in excepthook')
+                sys.exit(0)
+
+            sys.excepthook = excepthook
+
+            raise RuntimeError('Error Outside')
+            """)
+        cov_st, cov_out = self.run_command_status("coverage run test_excepthook_exit.py")
+        py_st, py_out = self.run_command_status("python test_excepthook_exit.py")
+        self.assertEqual(cov_st, py_st)
+        self.assertEqual(cov_st, 0)
+
+        self.assertIn("in excepthook", py_out)
+        self.assertEqual(cov_out, py_out)
+
+    def test_excepthook_throw(self):
+        self.make_file("test_excepthook_exit.py", """\
+            import sys
+
+            def excepthook(*args):
+                print('in excepthook')
+                raise RuntimeError('Error Inside')
+
+            sys.excepthook = excepthook
+
+            raise RuntimeError('Error Outside')
+            """)
+        cov_st, cov_out = self.run_command_status("coverage run test_excepthook_exit.py")
+        py_st, py_out = self.run_command_status("python test_excepthook_exit.py")
+        self.assertEqual(cov_st, py_st)
+        self.assertEqual(cov_st, 0)
+
+        self.assertIn("in excepthook", py_out)
+        self.assertEqual(cov_out, py_out)
+
+
 
 class AliasedCommandTest(CoverageTest):
     """Tests of the version-specific command aliases."""
