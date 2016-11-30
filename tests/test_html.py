@@ -6,6 +6,7 @@
 
 import datetime
 import glob
+import json
 import os
 import os.path
 import re
@@ -207,6 +208,27 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         index2 = self.get_html_index_content()
         fixed_index2 = index2.replace("XYZZY", self.real_coverage_version)
         self.assertMultiLineEqual(index1, fixed_index2)
+
+    def test_status_format_change(self):
+        self.create_initial_files()
+        self.run_coverage()
+        self.remove_html_files()
+
+        with open("htmlcov/status.json") as status_json:
+            status_data = json.load(status_json)
+
+        self.assertEqual(status_data['format'], 1)
+        status_data['format'] = 2
+        with open("htmlcov/status.json", "w") as status_json:
+            json.dump(status_data, status_json)
+
+        self.run_coverage()
+
+        # All the files have been reported again.
+        self.assert_exists("htmlcov/index.html")
+        self.assert_exists("htmlcov/helper1_py.html")
+        self.assert_exists("htmlcov/main_file_py.html")
+        self.assert_exists("htmlcov/helper2_py.html")
 
 
 class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
