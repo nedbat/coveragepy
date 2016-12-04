@@ -1079,27 +1079,39 @@ def possible_pth_dirs():
     yield distutils.sysconfig.get_python_lib()
 
 
+# Find the writable pth directory
+for pth_dir in possible_pth_dirs():             # pragma: part covered
+    try_it = os.path.join(pth_dir, "touch.it")
+    with open(try_it, "w") as f:
+        try:
+            f.write("foo")
+            PTH_DIR = pth_dir
+            break
+        except (IOError, OSError):              # pragma: not covered
+            pass
+else:                                           # pragma: not covered
+    PTH_DIR = None
+
+import filelock
+if PTH_DIR:
+    pth_lock = filelock.FileLock(os.path.join(PTH_DIR, "pth.lock"))
+
+
 class ProcessCoverageMixin(object):
     """Set up a .pth file to coverage-measure all sub-processes."""
 
     def setUp(self):
         super(ProcessCoverageMixin, self).setUp()
+        pth_lock.acquire()
         # Find a place to put a .pth file.
         pth_contents = "import coverage; coverage.process_startup()\n"
-        for pth_dir in possible_pth_dirs():             # pragma: part covered
-            worker = os.environ.get('PYTEST_XDIST_WORKER', '')
-            pth_path = os.path.join(pth_dir, "subcover_{0}.pth".format(worker))
-            with open(pth_path, "w") as pth:
-                try:
-                    pth.write(pth_contents)
-                    self.pth_path = pth_path
-                    break
-                except (IOError, OSError):              # pragma: not covered
-                    pass
-        else:                                           # pragma: not covered
-            raise Exception("Couldn't find a place for the .pth file")
+        pth_path = os.path.join(pth_dir, "subcover.pth")
+        with open(pth_path, "w") as pth:
+            pth.write(pth_contents)
+            self.pth_path = pth_path
 
         self.addCleanup(os.remove, self.pth_path)
+        self.addCleanup(pth_lock.release)
 
 
 class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
