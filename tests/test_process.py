@@ -1103,6 +1103,8 @@ class ProcessCoverageMixin(object):
     def setUp(self):
         super(ProcessCoverageMixin, self).setUp()
         pth_lock.acquire()
+        self.addCleanup(pth_lock.release)
+
         # Find a place to put a .pth file.
         pth_contents = "import coverage; coverage.process_startup()\n"
         pth_path = os.path.join(pth_dir, "subcover.pth")
@@ -1111,7 +1113,6 @@ class ProcessCoverageMixin(object):
             self.pth_path = pth_path
 
         self.addCleanup(os.remove, self.pth_path)
-        self.addCleanup(pth_lock.release)
 
 
 class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
