@@ -9,6 +9,10 @@ environment:
 
   CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\run_with_env.cmd"
 
+  # Parallel pytest gets tangled up with tests that try to create and destroy
+  # .pth files in the shared virtualenv. Disable parallel tests.
+  PYTEST_ADDOPTS: "-n 0"
+
   matrix:
     - JOB: "2.6 32-bit"
       TOXENV: "py26"
