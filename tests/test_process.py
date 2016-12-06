@@ -1092,22 +1092,18 @@ for pth_dir in possible_pth_dirs():             # pragma: part covered
 else:                                           # pragma: not covered
     PTH_DIR = None
 
-import filelock
-if PTH_DIR:
-    pth_lock = filelock.FileLock(os.path.join(PTH_DIR, "pth.lock"))
-
 
 class ProcessCoverageMixin(object):
     """Set up a .pth file to coverage-measure all sub-processes."""
 
     def setUp(self):
         super(ProcessCoverageMixin, self).setUp()
-        pth_lock.acquire()
-        self.addCleanup(pth_lock.release)
 
-        # Find a place to put a .pth file.
+        # Create the .pth file.
+        self.assert_(PTH_DIR)
         pth_contents = "import coverage; coverage.process_startup()\n"
-        pth_path = os.path.join(pth_dir, "subcover.pth")
+        worker = os.environ.get('PYTEST_XDIST_WORKER', '')
+        pth_path = os.path.join(PTH_DIR, "subcover_{0}.pth".format(worker))
         with open(pth_path, "w") as pth:
             pth.write(pth_contents)
             self.pth_path = pth_path
