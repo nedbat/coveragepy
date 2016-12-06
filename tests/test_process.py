@@ -1082,7 +1082,7 @@ def possible_pth_dirs():
 def find_writable_pth_directory():
     """Find a place to write a .pth file."""
     for pth_dir in possible_pth_dirs():             # pragma: part covered
-        try_it = os.path.join(pth_dir, "touch_{}.it".format(WORKER))
+        try_it = os.path.join(pth_dir, "touch_{0}.it".format(WORKER))
         with open(try_it, "w") as f:
             try:
                 f.write("foo")
