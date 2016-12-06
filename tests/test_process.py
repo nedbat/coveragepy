@@ -1079,18 +1079,23 @@ def possible_pth_dirs():
     yield distutils.sysconfig.get_python_lib()
 
 
-# Find the writable pth directory
-for pth_dir in possible_pth_dirs():             # pragma: part covered
-    try_it = os.path.join(pth_dir, "touch.it")
-    with open(try_it, "w") as f:
-        try:
-            f.write("foo")
-            PTH_DIR = pth_dir
-            break
-        except (IOError, OSError):              # pragma: not covered
-            pass
-else:                                           # pragma: not covered
-    PTH_DIR = None
+def find_writable_pth_directory():
+    """Find a place to write a .pth file."""
+    for pth_dir in possible_pth_dirs():             # pragma: part covered
+        try_it = os.path.join(pth_dir, "touch_{}.it".format(WORKER))
+        with open(try_it, "w") as f:
+            try:
+                f.write("foo")
+            except (IOError, OSError):              # pragma: not covered
+                continue
+
+        os.remove(try_it)
+        return pth_dir
+
+    return None
+
+WORKER = os.environ.get('PYTEST_XDIST_WORKER', '')
+PTH_DIR = find_writable_pth_directory()
 
 
 class ProcessCoverageMixin(object):
@@ -1102,8 +1107,7 @@ class ProcessCoverageMixin(object):
         # Create the .pth file.
         self.assert_(PTH_DIR)
         pth_contents = "import coverage; coverage.process_startup()\n"
-        worker = os.environ.get('PYTEST_XDIST_WORKER', '')
-        pth_path = os.path.join(PTH_DIR, "subcover_{0}.pth".format(worker))
+        pth_path = os.path.join(PTH_DIR, "subcover_{0}.pth".format(WORKER))
         with open(pth_path, "w") as pth:
             pth.write(pth_contents)
             self.pth_path = pth_path
