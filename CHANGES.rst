@@ -53,8 +53,8 @@ Unreleased
 
 - Deal properly with non-ASCII file names in an ASCII-only world, `issue 533`_.
 
-- Plugins that set Unicode configuration values could cause UnicodeErrors when
-  generating HTML reports.  This is now fixed.
+- Programs that set Unicode configuration values could cause UnicodeErrors when
+  generating HTML reports.  Pytest-cov is one example.  This is now fixed.
 
 - Prevented deprecation warnings from configparser that happened in some
   circumstances, closing `issue 530`_.
