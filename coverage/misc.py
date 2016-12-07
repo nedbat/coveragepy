@@ -12,7 +12,7 @@ import sys
 import types
 
 from coverage import env
-from coverage.backward import string_class, to_bytes, unicode_class
+from coverage.backward import to_bytes, unicode_class
 
 ISOLATED_MODULES = {}
 
@@ -179,8 +179,8 @@ class Hasher(object):
     def update(self, v):
         """Add `v` to the hash, recursively if needed."""
         self.md5.update(to_bytes(str(type(v))))
-        if isinstance(v, string_class):
-            self.md5.update(to_bytes(v))
+        if isinstance(v, unicode_class):
+            self.md5.update(v.encode('utf8'))
         elif isinstance(v, bytes):
             self.md5.update(v)
         elif v is None:

@@ -34,6 +34,13 @@ class HasherTest(CoverageTest):
         h2.update(b"Goodbye!")
         self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
 
+    def test_unicode_hashing(self):
+        h1 = Hasher()
+        h1.update(u"Hello, world! \N{SNOWMAN}")
+        h2 = Hasher()
+        h2.update(u"Goodbye!")
+        self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
+
     def test_dict_hashing(self):
         h1 = Hasher()
         h1.update({'a': 17, 'b': 23})
