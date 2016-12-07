@@ -162,7 +162,7 @@ def run_tests_with_coverage(tracer, *runner_args):
         sys.modules.update(covmods)
 
         # Run tests, with the arguments from our command line.
-        run_tests(tracer, *runner_args)
+        status = run_tests(tracer, *runner_args)
 
     finally:
         cov.stop()
@@ -170,6 +170,8 @@ def run_tests_with_coverage(tracer, *runner_args):
 
     cov.combine()
     cov.save()
+
+    return status
 
 
 def do_combine_html():
