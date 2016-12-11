@@ -8,11 +8,20 @@ sudo: false
 python:
   - 2.7
 
+addons:
+   apt:
+     sources:
+     - deadsnakes
+     packages:
+     - python3.5
+     - python3.5-dev
+
 env:
   - TOXENV=py26
   - TOXENV=py27
   - TOXENV=py33
   - TOXENV=py34
+  - TOXENV=py35
   - TOXENV=pypy
   - TOXENV=py27 COVERAGE_COVERAGE=yes
 
