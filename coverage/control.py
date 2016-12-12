@@ -961,6 +961,8 @@ class Coverage(object):
         included in the report. Files matching `omit` will not be included in
         the report.
 
+        If `skip_covered` is True, don't report on files with 100% coverage.
+
         Returns a float, the total percentage covered.
 
         """
