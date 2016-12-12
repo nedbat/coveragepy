@@ -361,6 +361,27 @@ class SummaryTest(CoverageTest):
         squeezed = self.squeezed_lines(report)
         self.assertEqual(squeezed[3], "1 file skipped due to complete coverage.")
 
+    def test_report_skip_covered_longfilename(self):
+        self.make_file("long_______________filename.py", """
+            def foo():
+                pass
+            foo()
+        """)
+        out = self.run_command("coverage run --branch long_______________filename.py")
+        self.assertEqual(out, "")
+        report = self.report_from_command("coverage report --skip-covered")
+
+        # Name    Stmts   Miss Branch BrPart  Cover
+        # -----------------------------------------
+        #
+        # 1 file skipped due to complete coverage.
+
+        self.assertEqual(self.line_count(report), 4, report)
+        lines = self.report_lines(report)
+        self.assertEqual(lines[0], "Name    Stmts   Miss Branch BrPart  Cover")
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(squeezed[3], "1 file skipped due to complete coverage.")
+
     def test_report_skip_covered_no_data(self):
         report = self.report_from_command("coverage report --skip-covered")
 
@@ -381,12 +402,12 @@ class SummaryTest(CoverageTest):
         self.make_file("mycode.py", "This isn't python at all!")
         report = self.report_from_command("coverage report mycode.py")
 
+        # mycode   NotPython: Couldn't parse '...' as Python source: 'invalid syntax' at line 1
         # Name     Stmts   Miss  Cover
         # ----------------------------
-        # mycode   NotPython: Couldn't parse '...' as Python source: 'invalid syntax' at line 1
         # No data to report.
 
-        last = self.squeezed_lines(report)[-2]
+        last = self.squeezed_lines(report)[0]
         # The actual file name varies run to run.
         last = re.sub(r"parse '.*mycode.py", "parse 'mycode.py", last)
         # The actual error message varies version to version
@@ -405,12 +426,12 @@ class SummaryTest(CoverageTest):
         self.make_file(u"accented\xe2.py", "This isn't python at all!")
         report = self.report_from_command(u"coverage report accented\xe2.py")
 
+        # xxxx   NotPython: Couldn't parse '...' as Python source: 'invalid syntax' at line 1
         # Name     Stmts   Miss  Cover
         # ----------------------------
-        # xxxx   NotPython: Couldn't parse '...' as Python source: 'invalid syntax' at line 1
         # No data to report.
 
-        last = self.squeezed_lines(report)[-2]
+        last = self.squeezed_lines(report)[0]
         # The actual file name varies run to run.
         last = re.sub(r"parse '.*(accented.*?\.py)", r"parse '\1", last)
         # The actual error message varies version to version
