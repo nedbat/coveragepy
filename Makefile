@@ -98,7 +98,7 @@ docreqs:
 	pip install -r doc/requirements.pip
 
 dochtml:
-	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
+	PYTHONPATH=$(CURDIR) $(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
 	@echo
 	@echo "Build finished. The HTML pages are in doc/_build/html."
 
