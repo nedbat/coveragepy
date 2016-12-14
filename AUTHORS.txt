@@ -51,6 +51,7 @@ Julian Berman
 Krystian Kichewko
 Leonardo Pistone
 Lex Berezhny
+Loïc Dachary
 Marc Abramowitz
 Marcus Cobden
 Mark van der Wal
