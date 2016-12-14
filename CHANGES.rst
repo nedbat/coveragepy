@@ -31,6 +31,9 @@ Unreleased
   file names had the process id also, making collisions (nearly) impossible.
   But it was disconcerting.  This is now fixed.
 
+- The text report now properly sizes headers when skipping some files, fixing
+  `issue 524`_. Thanks, Anthony Sottile and Loïc Dachary.
+
 - Data files are now about 15% smaller.
 
 - Improvements in the ``[run] debug`` setting:
@@ -72,6 +75,7 @@ Unreleased
 .. _issue 511: https://bitbucket.org/ned/coveragepy/issues/511/version-42-coverage-combine-empties
 .. _issue 516: https://bitbucket.org/ned/coveragepy/issues/516/running-coverage-combine-twice-deletes-all
 .. _issue 519: https://bitbucket.org/ned/coveragepy/issues/519/coverage-run-sections-in-toxini-or-as
+.. _issue 524: https://bitbucket.org/ned/coveragepy/issues/524/coverage-report-with-skip-covered-column
 .. _issue 525: https://bitbucket.org/ned/coveragepy/issues/525/coverage-combine-when-not-in-parallel-mode
 .. _issue 529: https://bitbucket.org/ned/coveragepy/issues/529/encoding-marker-may-only-appear-on-the
 .. _issue 530: https://bitbucket.org/ned/coveragepy/issues/530/deprecationwarning-you-passed-a-bytestring
