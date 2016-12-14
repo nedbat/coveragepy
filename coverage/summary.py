@@ -25,12 +25,50 @@ class SummaryReporter(Reporter):
         for native strings (bytes on Python 2, Unicode on Python 3).
 
         """
-        file_reporters = self.find_file_reporters(morfs)
+        if outfile is None:
+            outfile = sys.stdout
+
+        def writeout(line):
+            """Write a line to the output, adding a newline."""
+            if env.PY2:
+                line = line.encode(output_encoding())
+            outfile.write(line.rstrip())
+            outfile.write("\n")
+
+        fr_analysis = []
+        skipped_count = 0
+        total = Numbers()
+
+        fmt_err = u"%s   %s: %s"
+
+        for fr in self.find_file_reporters(morfs):
+            try:
+                analysis = self.coverage._analyze(fr)
+                nums = analysis.numbers
+                total += nums
+
+                if self.config.skip_covered:
+                    # Don't report on 100% files.
+                    no_missing_lines = (nums.n_missing == 0)
+                    no_missing_branches = (nums.n_partial_branches == 0)
+                    if no_missing_lines and no_missing_branches:
+                        skipped_count += 1
+                        continue
+                fr_analysis.append((fr, analysis))
+            except Exception:
+                report_it = not self.config.ignore_errors
+                if report_it:
+                    typ, msg = sys.exc_info()[:2]
+                    # NotPython is only raised by PythonFileReporter, which has a
+                    # should_be_python() method.
+                    if typ is NotPython and not fr.should_be_python():
+                        report_it = False
+                if report_it:
+                    writeout(fmt_err % (fr.relative_filename(), typ.__name__, msg))
 
         # Prepare the formatting strings, header, and column sorting.
-        max_name = max([len(fr.relative_filename()) for fr in file_reporters] + [5])
+        max_name = max([len(fr.relative_filename()) for (fr, analysis) in fr_analysis] + [5])
         fmt_name = u"%%- %ds  " % max_name
-        fmt_err = u"%s   %s: %s"
         fmt_skip_covered = u"\n%s file%s skipped due to complete coverage."
 
         header = (fmt_name % "Name") + u" Stmts   Miss"
@@ -50,16 +88,6 @@ class SummaryReporter(Reporter):
         if self.branches:
             column_order.update(dict(branch=3, brpart=4))
 
-        if outfile is None:
-            outfile = sys.stdout
-
-        def writeout(line):
-            """Write a line to the output, adding a newline."""
-            if env.PY2:
-                line = line.encode(output_encoding())
-            outfile.write(line.rstrip())
-            outfile.write("\n")
-
         # Write the header
         writeout(header)
         writeout(rule)
@@ -69,22 +97,9 @@ class SummaryReporter(Reporter):
         # sortable values.
         lines = []
 
-        total = Numbers()
-        skipped_count = 0
-
-        for fr in file_reporters:
+        for (fr, analysis) in fr_analysis:
             try:
-                analysis = self.coverage._analyze(fr)
                 nums = analysis.numbers
-                total += nums
-
-                if self.config.skip_covered:
-                    # Don't report on 100% files.
-                    no_missing_lines = (nums.n_missing == 0)
-                    no_missing_branches = (nums.n_partial_branches == 0)
-                    if no_missing_lines and no_missing_branches:
-                        skipped_count += 1
-                        continue
 
                 args = (fr.relative_filename(), nums.n_statements, nums.n_missing)
                 if self.branches:
