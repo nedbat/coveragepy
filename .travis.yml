@@ -23,8 +23,6 @@ env:
   - TOXENV=py34
   - TOXENV=py35
   - TOXENV=pypy
-  - TOXENV=pypy2
-  - TOXENV=pypy3
   - TOXENV=py27 COVERAGE_COVERAGE=yes
 
 sudo: false
