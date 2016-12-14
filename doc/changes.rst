@@ -322,7 +322,6 @@ Version 4.0.1 --- 2015-10-13
 Version 4.0 --- 2015-09-20
 --------------------------
 
-
 Backward incompatibilities:
 
 - Python versions supported are now:
