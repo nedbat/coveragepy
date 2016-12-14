@@ -407,13 +407,13 @@ class SummaryTest(CoverageTest):
         # ----------------------------
         # No data to report.
 
-        last = self.squeezed_lines(report)[0]
+        errmsg = self.squeezed_lines(report)[0]
         # The actual file name varies run to run.
-        last = re.sub(r"parse '.*mycode.py", "parse 'mycode.py", last)
+        errmsg = re.sub(r"parse '.*mycode.py", "parse 'mycode.py", errmsg)
         # The actual error message varies version to version
-        last = re.sub(r": '.*' at", ": 'error' at", last)
+        errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
         self.assertEqual(
-            last,
+            errmsg,
             "mycode.py NotPython: Couldn't parse 'mycode.py' as Python source: 'error' at line 1"
         )
 
@@ -431,11 +431,11 @@ class SummaryTest(CoverageTest):
         # ----------------------------
         # No data to report.
 
-        last = self.squeezed_lines(report)[0]
+        errmsg = self.squeezed_lines(report)[0]
         # The actual file name varies run to run.
-        last = re.sub(r"parse '.*(accented.*?\.py)", r"parse '\1", last)
+        errmsg = re.sub(r"parse '.*(accented.*?\.py)", r"parse '\1", errmsg)
         # The actual error message varies version to version
-        last = re.sub(r": '.*' at", ": 'error' at", last)
+        errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
         expected = (
             u"accented\xe2.py NotPython: "
             u"Couldn't parse 'accented\xe2.py' as Python source: 'error' at line 1"
@@ -443,7 +443,7 @@ class SummaryTest(CoverageTest):
         if env.PY2:
             # pylint: disable=redefined-variable-type
             expected = expected.encode(output_encoding())
-        self.assertEqual(last, expected)
+        self.assertEqual(errmsg, expected)
 
     def test_dotpy_not_python_ignored(self):
         # We run a .py file, and when reporting, we can't parse it as Python,
