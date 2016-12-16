@@ -239,7 +239,6 @@ class ConfigFileTest(CoverageTest):
         branch = 1
         cover_pylib = TRUE
         parallel = on
-        include = a/   ,    b/
         concurrency = thread
         source = myapp
         plugins =
@@ -329,7 +328,6 @@ class ConfigFileTest(CoverageTest):
 
         self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])
         self.assertTrue(cov.config.ignore_errors)
-        self.assertEqual(cov.config.include, ["a/", "b/"])
         self.assertEqual(cov.config.omit, ["one", "another", "some_more", "yet_more"])
         self.assertEqual(cov.config.precision, 3)
 
