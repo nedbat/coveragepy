@@ -16,7 +16,7 @@ import coverage.cmdline
 from coverage import env
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData, CoverageDataFiles
-from coverage.misc import ExceptionDuringRun
+from coverage.misc import CoverageException, ExceptionDuringRun
 
 from tests.coveragetest import CoverageTest, OK, ERR
 
@@ -458,6 +458,10 @@ class CmdLineTest(BaseCmdLineTest):
             .stop()
             .save()
             """)
+
+    def test_bad_run_args_with_both_source_and_include(self):
+        with self.assertRaisesRegex(CoverageException, 'mutually exclusive'):
+            self.command_line("run --include=pre1,pre2 --source=lol,wut foo.py", ret=ERR)
 
     def test_bad_concurrency(self):
         self.command_line("run --concurrency=nothing", ret=ERR)
