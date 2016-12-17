@@ -46,6 +46,11 @@ with open(cov_ver_py) as version_file:
 with open("README.rst") as readme:
     long_description = readme.read().replace("http://coverage.readthedocs.io", __url__)
 
+with open("CONTRIBUTORS.txt") as contributors:
+    paras = contributors.read().split("\n\n")
+    num_others = len(paras[-1].splitlines())
+    num_others += 1                 # Count Gareth Rees, who is mentioned in the top paragraph.
+
 classifier_list = classifiers.splitlines()
 
 if version_info[3] == 'alpha':
@@ -86,7 +91,7 @@ setup_args = dict(
     # We need to get HTML assets from our htmlfiles directory.
     zip_safe=False,
 
-    author='Ned Batchelder and others',
+    author='Ned Batchelder and {0} others'.format(num_others),
     author_email='ned@nedbatchelder.com',
     description=doc,
     long_description=long_description,

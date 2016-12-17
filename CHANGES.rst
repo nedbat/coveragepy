@@ -74,7 +74,8 @@ Unreleased
 - Switched to pytest from nose for running the coverage.py tests.
 
 - Renamed AUTHORS.txt to CONTRIBUTORS.txt, since there are other ways to
-  contribute than by writing code.
+  contribute than by writing code. Also put the count of contributors into the
+  author string in setup.py, though this might be too cute.
 
 .. _issue 265: https://bitbucket.org/ned/coveragepy/issues/265/when-using-source-include-is-silently
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
