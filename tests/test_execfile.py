@@ -145,6 +145,25 @@ class RunPycFileTest(CoverageTest):
         with self.assertRaisesRegex(NoCode, "No file to run: 'xyzzy.pyc'"):
             run_python_file("xyzzy.pyc", [])
 
+    def test_running_py_from_binary(self):
+        # Use make_file to get the bookkeeping. Ideally, it would
+        # be able to write binary files.
+        bf = self.make_file("binary")
+        with open(bf, "wb") as f:
+            f.write(b'\x7fELF\x02\x01\x01\x00\x00\x00')
+
+        msg = (
+            r"Couldn't run 'binary' as Python code: "
+            r"(TypeError|ValueError): "
+            r"("
+            r"compile\(\) expected string without null bytes"    # for py2
+            r"|"
+            r"source code string cannot contain null bytes"     # for py3
+            r")"
+        )
+        with self.assertRaisesRegex(Exception, msg):
+            run_python_file(bf, [bf])
+
 
 class RunModuleTest(CoverageTest):
     """Test run_python_module."""

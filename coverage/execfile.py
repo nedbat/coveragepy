@@ -10,7 +10,7 @@ import types
 
 from coverage.backward import BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
-from coverage.misc import ExceptionDuringRun, NoCode, NoSource, isolate_module
+from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
 from coverage.phystokens import compile_unicode
 from coverage.python import get_python_source
 
@@ -166,11 +166,17 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
     sys.path[0] = path0 if path0 is not None else my_path0
 
     try:
-        # Make a code object somehow.
-        if filename.endswith((".pyc", ".pyo")):
-            code = make_code_from_pyc(filename)
-        else:
-            code = make_code_from_py(filename)
+        try:
+            # Make a code object somehow.
+            if filename.endswith((".pyc", ".pyo")):
+                code = make_code_from_pyc(filename)
+            else:
+                code = make_code_from_py(filename)
+        except CoverageException:
+            raise
+        except Exception as exc:
+            msg = "Couldn't run {filename!r} as Python code: {exc.__class__.__name__}: {exc}"
+            raise CoverageException(msg.format(filename=filename, exc=exc))
 
         # Execute the code object.
         try:

@@ -55,6 +55,9 @@ Unreleased
 - Fixed an unusual bug involving multiple coding declarations affecting code
   containing code in multi-line strings: `issue 529`_.
 
+- If you try to run a non-Python file with coverage.py, you will now get a more
+  useful error message. `Issue 514`_.
+
 - The default pragma regex changed slightly, but this will only matter to you
   if you are deranged and use mixed-case pragmas.
 
@@ -80,6 +83,7 @@ Unreleased
 .. _issue 265: https://bitbucket.org/ned/coveragepy/issues/265/when-using-source-include-is-silently
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
+.. _issue 514: https://bitbucket.org/ned/coveragepy/issues/514/path-to-problem-file-not-reported-when
 .. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42
 .. _issue 511: https://bitbucket.org/ned/coveragepy/issues/511/version-42-coverage-combine-empties
 .. _issue 516: https://bitbucket.org/ned/coveragepy/issues/516/running-coverage-combine-twice-deletes-all

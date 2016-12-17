@@ -17,6 +17,7 @@ Calen Pennington
 Carl Gieringer
 Catherine Proulx
 Chris Adams
+Chris Jerdonek
 Chris Rose
 Christian Heimes
 Christine Lytwynec
