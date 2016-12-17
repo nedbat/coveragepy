@@ -368,7 +368,6 @@ class CoverageConfig(object):
         Returns the value of the option.
 
         """
-
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:
             attr, where = option_spec[:2]
@@ -384,10 +383,9 @@ class CoverageConfig(object):
         raise CoverageException("No such option: %r" % option_name)
 
     def sanity_check(self):
-        if ((self.source is not None) and
-            (self.include is not None)):
-            raise CoverageException(
-                "--include and --source are mutually exclusive")
+        """Check interactions among settings, and raise if there's a problem."""
+        if (self.source is not None) and (self.include is not None):
+            raise CoverageException("--include and --source are mutually exclusive")
 
 
 def read_coverage_config(config_file, **kwargs):
@@ -446,5 +444,5 @@ def read_coverage_config(config_file, **kwargs):
     config.from_args(**kwargs)
 
     config.sanity_check()
-    
+
     return config_file, config

@@ -23,6 +23,10 @@ Unreleased
   ``[coverage:run]`` section of tox.ini. Implements part of `issue 519`_.
   Thanks, Stephen Finucane.
 
+- Specifying both ``--source`` and ``--include`` no longer silently ignores the
+  include setting, instead it fails with a message. Thanks, Nathan Land and
+  Loïc Dachary. Closes `issue 265`_.
+
 - The ``Coverage.combine`` method has a new parameter, ``strict=False``, to
   support failing if there are no data files to combine.
 
@@ -69,6 +73,7 @@ Unreleased
 
 - Switched to pytest from nose for running the coverage.py tests.
 
+.. _issue 265: https://bitbucket.org/ned/coveragepy/issues/265/when-using-source-include-is-silently
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
 .. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42
