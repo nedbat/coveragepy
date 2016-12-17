@@ -3,7 +3,7 @@
 
 # MANIFEST.in file for coverage.py
 
-include AUTHORS.txt
+include CONTRIBUTING.txt
 include CHANGES.rst
 include LICENSE.txt
 include MANIFEST.in

@@ -123,4 +123,4 @@ Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
 
 .. _Gareth Rees:    http://garethrees.org/
 .. _Ned Batchelder: http://nedbatchelder.com
-.. _many others:    http://bitbucket.org/ned/coveragepy/src/tip/AUTHORS.txt
+.. _many others:    http://bitbucket.org/ned/coveragepy/src/tip/CONTRIBUTORS.txt
