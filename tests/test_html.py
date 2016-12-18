@@ -447,6 +447,24 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.run_coverage()
         self.assert_exists("htmlcov/status.dat")
 
+    def test_report_skip_covered_no_branches(self):
+        self.make_file("main.py", """
+            import not_covered
+
+            def normal():
+                print("z")
+            normal()
+        """)
+        self.make_file("not_covered.py", """
+            def not_covered():
+                print("n")
+        """)
+        self.run_command("coverage run main.py")
+        self.run_command("coverage html --skip-covered")
+        self.assert_exists("htmlcov/index.html")
+        self.assert_doesnt_exist("htmlcov/main_py.html")
+        self.assert_exists("htmlcov/not_covered_py.html")
+
 
 class HtmlStaticFileTest(CoverageTest):
     """Tests of the static file copying for the HTML report."""
