@@ -24,17 +24,16 @@ Installation
 .. :history: 20131005T210600, updated for 3.7.
 .. :history: 20131212T213500, updated for 3.7.1.
 .. :history: 20140927T102700, updated for 4.0a1.
+.. :history: 20161218T173000, remove alternate instructions w/ Distribute
 
 
 .. highlight:: console
 
 .. _coverage_pypi: http://pypi.python.org/pypi/coverage
 .. _setuptools: http://pypi.python.org/pypi/setuptools
-.. _Distribute: http://packages.python.org/distribute/
 
 
-Installing coverage.py is done in the usual ways. The simplest way is with
-pip::
+You can install coverage.py in the usual ways. The simplest way is with pip::
 
     $ pip install coverage
 
@@ -43,18 +42,6 @@ pip::
     To install a pre-release version, you will need to specify ``--pre``::
 
         $ pip install --pre coverage
-
-
-The alternate old-school technique is:
-
-#.  Install (or already have installed) `setuptools`_ or `Distribute`_.
-
-#.  Download the appropriate kit from the
-    `coverage.py page on the Python Package Index`__.
-
-#.  Run ``python setup.py install``.
-
-.. __: coverage_pypi_
 
 
 .. _install_extension:
