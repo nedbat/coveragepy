@@ -510,7 +510,9 @@ class AstArcAnalyzer(object):
 
         self.arcs = set()
 
-        # A map from arc pairs to a pair of sentence fragments: (startmsg, endmsg).
+        # A map from arc pairs to a list of pairs of sentence fragments:
+        #   { (start, end): [(startmsg, endmsg), ...], }
+        #
         # For an arc from line 17, they should be usable like:
         #    "Line 17 {endmsg}, because {startmsg}"
         self.missing_arc_fragments = collections.defaultdict(list)
@@ -587,6 +589,7 @@ class AstArcAnalyzer(object):
             # Modules have no line number, they always start at 1.
             return 1
 
+    # The node types that just flow to the next node with no complications.
     OK_TO_DEFAULT = set([
         "Assign", "Assert", "AugAssign", "Delete", "Exec", "Expr", "Global",
         "Import", "ImportFrom", "Nonlocal", "Pass", "Print",
@@ -603,11 +606,15 @@ class AstArcAnalyzer(object):
         handler = getattr(self, "_handle__" + node_name, None)
         if handler is not None:
             return handler(node)
-
-        if 0:
-            if node_name not in self.OK_TO_DEFAULT:
+        else:
+            # No handler: either it's something that's ok to default (a simple
+            # statement), or it's something we overlooked. Change this 0 to 1
+            # to see if it's overlooked.
+            if 0 and node_name not in self.OK_TO_DEFAULT:
                 print("*** Unhandled: {0}".format(node))
-        return set([ArcStart(self.line_for_node(node))])
+
+            # Default for simple statements: one exit from this node.
+            return set([ArcStart(self.line_for_node(node))])
 
     @contract(returns='ArcStarts')
     def add_body_arcs(self, body, from_start=None, prev_starts=None):
@@ -651,8 +658,8 @@ class AstArcAnalyzer(object):
     #   nested function definitions
 
 
-    ## Exit processing: process_*_exits
-
+    # Exit processing: process_*_exits
+    #
     # These functions process the four kinds of jump exits: break, continue,
     # raise, and return.  To figure out where an exit goes, we have to look at
     # the block stack context.  For example, a break will jump to the nearest
@@ -718,7 +725,11 @@ class AstArcAnalyzer(object):
                 break
 
 
-    ## Handlers: _handle__*
+    # Handlers: _handle__*
+    #
+    # Each handler deals with a specific AST node type, dispatched from
+    # add_arcs.  These functions mirror the Python semantics of each syntactic
+    # construct.
 
     @contract(returns='ArcStarts')
     def _handle__Break(self, node):
