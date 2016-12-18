@@ -842,19 +842,21 @@ class AstArcAnalyzer(object):
                 try_block.return_from           # or a `return`.
             )
 
-            exits = self.add_body_arcs(node.finalbody, prev_starts=final_from)
+            final_exits = self.add_body_arcs(node.finalbody, prev_starts=final_from)
             if try_block.break_from:
-                break_exits = self._combine_finally_starts(try_block.break_from, exits)
+                break_exits = self._combine_finally_starts(try_block.break_from, final_exits)
                 self.process_break_exits(break_exits)
             if try_block.continue_from:
-                continue_exits = self._combine_finally_starts(try_block.continue_from, exits)
+                continue_exits = self._combine_finally_starts(try_block.continue_from, final_exits)
                 self.process_continue_exits(continue_exits)
             if try_block.raise_from:
-                raise_exits = self._combine_finally_starts(try_block.raise_from, exits)
+                raise_exits = self._combine_finally_starts(try_block.raise_from, final_exits)
                 self.process_raise_exits(raise_exits)
             if try_block.return_from:
-                return_exits = self._combine_finally_starts(try_block.return_from, exits)
+                return_exits = self._combine_finally_starts(try_block.return_from, final_exits)
                 self.process_return_exits(return_exits)
+            if exits:
+                exits = final_exits
 
         return exits
 

@@ -774,6 +774,24 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 28 89 9.  -23 34 46 6-2",
         )
 
+    def test_return_finally_before_return(self):
+        self.check_coverage("""\
+            a = []
+            def check_token(data):
+                if data:
+                    try:
+                        return 1
+                    finally:
+                        a.append(1)
+                return 2
+            assert 2 == check_token(False)
+            assert [] == a
+            assert 1 == check_token(True)
+            assert [1] == a
+            """,
+            arcz=".1 12 29 9A AB BC C-1 -23 34 45 57 7-2 38 8-2",
+        )
+
     def test_except_jump_finally(self):
         self.check_coverage("""\
             def func(x):
