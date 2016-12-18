@@ -38,6 +38,9 @@ Unreleased
 - The text report now properly sizes headers when skipping some files, fixing
   `issue 524`_. Thanks, Anthony Sottile and Loïc Dachary.
 
+- Coverage.py can now search .pex files for source, just as it can .zip and
+  .egg.  Thanks, Peter Ebden.
+
 - Data files are now about 15% smaller.
 
 - Improvements in the ``[run] debug`` setting:
