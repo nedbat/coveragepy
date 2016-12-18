@@ -433,23 +433,35 @@ class ByteParser(object):
 
 class LoopBlock(object):
     """A block on the block stack representing a `for` or `while` loop."""
+    @contract(start=int)
     def __init__(self, start):
+        # The line number where the loop starts.
         self.start = start
+        # A set of ArcStarts, the arcs from break statements exiting this loop.
         self.break_exits = set()
 
 
 class FunctionBlock(object):
     """A block on the block stack representing a function definition."""
+    @contract(start=int, name=str)
     def __init__(self, start, name):
+        # The line number where the function starts.
         self.start = start
+        # The name of the function.
         self.name = name
 
 
 class TryBlock(object):
     """A block on the block stack representing a `try` block."""
-    def __init__(self, handler_start=None, final_start=None):
+    @contract(handler_start='int|None', final_start='int|None')
+    def __init__(self, handler_start, final_start):
+        # The line number of the first "except" handler, if any.
         self.handler_start = handler_start
+        # The line number of the "finally:" clause, if any.
         self.final_start = final_start
+
+        # The ArcStarts for breaks/continues/returns/raises inside the "try:"
+        # that need to route through the "finally:" clause.
         self.break_from = set()
         self.continue_from = set()
         self.return_from = set()
@@ -464,7 +476,8 @@ class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
     `cause` is an English text fragment used as the `startmsg` for
     AstArcAnalyzer.missing_arc_fragments.  It will be used to describe why an
     arc wasn't executed, so should fit well into a sentence of the form,
-    "Line 17 didn't run because {cause}."
+    "Line 17 didn't run because {cause}."  The fragment can include "{lineno}"
+    to have `lineno` interpolated into it.
 
     """
     def __new__(cls, lineno, cause=None):
@@ -592,7 +605,6 @@ class AstArcAnalyzer(object):
             return handler(node)
 
         if 0:
-            node_name = node.__class__.__name__
             if node_name not in self.OK_TO_DEFAULT:
                 print("*** Unhandled: {0}".format(node))
         return set([ArcStart(self.line_for_node(node))])
@@ -637,6 +649,15 @@ class AstArcAnalyzer(object):
     #   listcomps hidden deep in other expressions
     #   listcomps hidden in lists: x = [[i for i in range(10)]]
     #   nested function definitions
+
+
+    ## Exit processing: process_*_exits
+
+    # These functions process the four kinds of jump exits: break, continue,
+    # raise, and return.  To figure out where an exit goes, we have to look at
+    # the block stack context.  For example, a break will jump to the nearest
+    # enclosing loop block, or the nearest enclosing finally block, whichever
+    # is nearer.
 
     @contract(exits='ArcStarts')
     def process_break_exits(self, exits):
@@ -696,7 +717,8 @@ class AstArcAnalyzer(object):
                     )
                 break
 
-    ## Handlers
+
+    ## Handlers: _handle__*
 
     @contract(returns='ArcStarts')
     def _handle__Break(self, node):
@@ -753,7 +775,7 @@ class AstArcAnalyzer(object):
             else_exits = self.add_body_arcs(node.orelse, from_start=from_start)
             exits |= else_exits
         else:
-            # no else clause: exit from the for line.
+            # No else clause: exit from the for line.
             exits.add(from_start)
         return exits
 
@@ -799,7 +821,7 @@ class AstArcAnalyzer(object):
         else:
             final_start = None
 
-        try_block = TryBlock(handler_start=handler_start, final_start=final_start)
+        try_block = TryBlock(handler_start, final_start)
         self.block_stack.append(try_block)
 
         start = self.line_for_node(node)
@@ -862,6 +884,7 @@ class AstArcAnalyzer(object):
 
         return exits
 
+    @contract(returns='ArcStarts')
     def _combine_finally_starts(self, starts, exits):
         """Helper for building the cause of `finally` branches."""
         causes = []
