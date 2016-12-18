@@ -459,8 +459,12 @@ class TryBlock(object):
 class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
     """The information needed to start an arc.
 
-    `lineno` is the line number the arc starts from.  `cause` is a fragment
-    used as the startmsg for AstArcAnalyzer.missing_arc_fragments.
+    `lineno` is the line number the arc starts from.
+
+    `cause` is an English text fragment used as the `startmsg` for
+    AstArcAnalyzer.missing_arc_fragments.  It will be used to describe why an
+    arc wasn't executed, so should fit well into a sentence of the form,
+    "Line 17 didn't run because {cause}."
 
     """
     def __new__(cls, lineno, cause=None):
@@ -591,7 +595,7 @@ class AstArcAnalyzer(object):
             node_name = node.__class__.__name__
             if node_name not in self.OK_TO_DEFAULT:
                 print("*** Unhandled: {0}".format(node))
-        return set([ArcStart(self.line_for_node(node), cause=None)])
+        return set([ArcStart(self.line_for_node(node))])
 
     @contract(returns='ArcStarts')
     def add_body_arcs(self, body, from_start=None, prev_starts=None):
@@ -722,7 +726,7 @@ class AstArcAnalyzer(object):
                     self.add_arc(last, lineno)
                     last = lineno
         # The body is handled in collect_arcs.
-        return set([ArcStart(last, cause=None)])
+        return set([ArcStart(last)])
 
     _handle__ClassDef = _handle_decorated
 
@@ -799,7 +803,7 @@ class AstArcAnalyzer(object):
         self.block_stack.append(try_block)
 
         start = self.line_for_node(node)
-        exits = self.add_body_arcs(node.body, from_start=ArcStart(start, cause=None))
+        exits = self.add_body_arcs(node.body, from_start=ArcStart(start))
 
         # We're done with the `try` body, so this block no longer handles
         # exceptions. We keep the block so the `finally` clause can pick up
