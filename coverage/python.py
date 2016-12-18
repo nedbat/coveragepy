@@ -75,7 +75,7 @@ def get_zip_bytes(filename):
     an empty string if the file is empty.
 
     """
-    markers = ['.zip'+os.sep, '.egg'+os.sep]
+    markers = ['.zip'+os.sep, '.egg'+os.sep, '.pex'+os.sep]
     for marker in markers:
         if marker in filename:
             parts = filename.split(marker)
