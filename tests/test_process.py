@@ -11,6 +11,8 @@ import re
 import sys
 import textwrap
 
+import pytest
+
 import coverage
 from coverage import env, CoverageData
 from coverage.misc import output_encoding
@@ -692,6 +694,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(len(infos), 1)
         self.assertEqual(infos[0]['note'], u"These are musical notes: ♫𝅗𝅥♩")
 
+    @pytest.mark.expensive
     def test_fullcoverage(self):                        # pragma: not covered
         if env.PY2:             # This doesn't work on Python 2.
             self.skipTest("fullcoverage doesn't work on Python 2.")
