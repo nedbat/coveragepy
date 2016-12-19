@@ -880,18 +880,24 @@ class AstArcAnalyzer(object):
             )
 
             final_exits = self.add_body_arcs(node.finalbody, prev_starts=final_from)
+
             if try_block.break_from:
-                break_exits = self._combine_finally_starts(try_block.break_from, final_exits)
-                self.process_break_exits(break_exits)
+                self.process_break_exits(
+                    self._combine_finally_starts(try_block.break_from, final_exits)
+                )
             if try_block.continue_from:
-                continue_exits = self._combine_finally_starts(try_block.continue_from, final_exits)
-                self.process_continue_exits(continue_exits)
+                self.process_continue_exits(
+                    self._combine_finally_starts(try_block.continue_from, final_exits)
+                )
             if try_block.raise_from:
-                raise_exits = self._combine_finally_starts(try_block.raise_from, final_exits)
-                self.process_raise_exits(raise_exits)
+                self.process_raise_exits(
+                    self._combine_finally_starts(try_block.raise_from, final_exits)
+                )
             if try_block.return_from:
-                return_exits = self._combine_finally_starts(try_block.return_from, final_exits)
-                self.process_return_exits(return_exits)
+                self.process_return_exits(
+                    self._combine_finally_starts(try_block.return_from, final_exits)
+                )
+
             if exits:
                 # The finally clause's exits are only exits for the try block
                 # as a whole if the try block had some exits to begin with.
@@ -899,15 +905,20 @@ class AstArcAnalyzer(object):
 
         return exits
 
-    @contract(returns='ArcStarts')
+    @contract(starts='ArcStarts', exits='ArcStarts', returns='ArcStarts')
     def _combine_finally_starts(self, starts, exits):
-        """Helper for building the cause of `finally` branches."""
+        """Helper for building the cause of `finally` branches.
+
+        "finally" clauses might not execute their exits, and the causes could
+        be due to a failure to execute any of the exits in the try block. So
+        we use the causes from `starts` as the causes for `exits`.
+        """
         causes = []
-        for lineno, cause in sorted(starts):
-            if cause is not None:
-                causes.append(cause.format(lineno=lineno))
+        for start in sorted(starts):
+            if start.cause is not None:
+                causes.append(start.cause.format(lineno=start.lineno))
         cause = " or ".join(causes)
-        exits = set(ArcStart(ex.lineno, cause) for ex in exits)
+        exits = set(ArcStart(xit.lineno, cause) for xit in exits)
         return exits
 
     @contract(returns='ArcStarts')
