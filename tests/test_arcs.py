@@ -270,6 +270,22 @@ class LoopArcTest(CoverageTest):
             arcz=arcz,
         )
 
+    def test_bug_496_continue_in_constant_while(self):
+        # https://bitbucket.org/ned/coveragepy/issue/496
+        if env.PY3:
+            arcz = ".1 12     23 34 43 45 5."
+        else:
+            arcz = ".1 12 2-1 23 34 42 45 5."
+        self.check_coverage("""\
+            up = iter('ta')
+            while True:
+                char = next(up)
+                if char == 't': continue
+                break
+            """,
+            arcz=arcz
+            )
+
     def test_for_if_else_for(self):
         self.check_coverage("""\
             def branches_2(l):

@@ -952,7 +952,7 @@ class AstArcAnalyzer(object):
         start = to_top = self.line_for_node(node.test)
         if constant_test:
             to_top = self.line_for_node(node.body[0])
-        self.block_stack.append(LoopBlock(start=start))
+        self.block_stack.append(LoopBlock(start=to_top))
         from_start = ArcStart(start, cause="the condition on line {lineno} was never true")
         exits = self.add_body_arcs(node.body, from_start=from_start)
         for xit in exits:
