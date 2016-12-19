@@ -1,7 +1,8 @@
 Coverage.py was originally written by Gareth Rees, and since 2004 has been
 extended and maintained by Ned Batchelder.
 
-Other contributions have been made by:
+Other contributions, including writing code, updating docs, and submitting
+useful bug reports, have been made by:
 
 Adi Roiban
 Alex Gaynor
@@ -45,6 +46,7 @@ Imri Goldberg
 Ionel Cristian Mărieș
 JT Olds
 Jessamyn Smith
+Joe Doherty
 Jon Chappell
 Joseph Tate
 Josh Williams

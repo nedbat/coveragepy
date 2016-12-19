@@ -893,6 +893,8 @@ class AstArcAnalyzer(object):
                 return_exits = self._combine_finally_starts(try_block.return_from, final_exits)
                 self.process_return_exits(return_exits)
             if exits:
+                # The finally clause's exits are only exits for the try block
+                # as a whole if the try block had some exits to begin with.
                 exits = final_exits
 
         return exits

@@ -18,6 +18,11 @@ Unreleased
   data, leaving you with an empty .coverage data file. Fixes issues
   `issue 525`_, `issue 412`_, `issue 516`_, and probably `issue 511`_.
 
+- Branch coverage could misunderstand a finally clause on a try block that
+  never continued on to the following statement, as described in `issue 493`_.
+  This is now fixed. Thanks to Joe Doherty for the report and Loïc Dachary for
+  the fix.
+
 - Options can now be read from a tox.ini file, if any. Like setup.cfg, sections
   are prefixed with "coverage:", so ``[run]`` options will be read from the
   ``[coverage:run]`` section of tox.ini. Implements part of `issue 519`_.
@@ -85,6 +90,7 @@ Unreleased
 
 .. _issue 265: https://bitbucket.org/ned/coveragepy/issues/265/when-using-source-include-is-silently
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
+.. _issue 493: https://bitbucket.org/ned/coveragepy/issues/493/confusing-branching-failure
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
 .. _issue 514: https://bitbucket.org/ned/coveragepy/issues/514/path-to-problem-file-not-reported-when
 .. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42

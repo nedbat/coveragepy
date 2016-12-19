@@ -762,34 +762,19 @@ class ExceptionArcTest(CoverageTest):
     def test_return_finally(self):
         self.check_coverage("""\
             a = [1]
-            def func():
-                try:
-                    return 10
-                finally:
-                    a.append(6)
-
-            assert func() == 10
-            assert a == [1, 6]
-            """,
-            arcz=".1 12 28 89 9.  -23 34 46 6-2",
-        )
-
-    def test_return_finally_before_return(self):
-        self.check_coverage("""\
-            a = []
             def check_token(data):
                 if data:
                     try:
-                        return 1
+                        return 5
                     finally:
-                        a.append(1)
-                return 2
-            assert 2 == check_token(False)
-            assert [] == a
-            assert 1 == check_token(True)
-            assert [1] == a
+                        a.append(7)
+                return 8
+            assert check_token(False) == 8
+            assert a == [1]
+            assert check_token(True) == 5
+            assert a == [1, 7]
             """,
-            arcz=".1 12 29 9A AB BC C-1 -23 34 45 57 7-2 38 8-2",
+            arcz=".1 12 29 9A AB BC C-1   -23 34 45 57 7-2 38 8-2",
         )
 
     def test_except_jump_finally(self):
