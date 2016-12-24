@@ -448,7 +448,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/status.dat")
 
     def test_report_skip_covered_no_branches(self):
-        self.make_file("main.py", """
+        self.make_file("main_file.py", """
             import not_covered
 
             def normal():
@@ -459,14 +459,13 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
             def not_covered():
                 print("n")
         """)
-        self.run_command("coverage run main.py")
-        self.run_command("coverage html --skip-covered")
+        self.run_coverage(htmlargs=dict(skip_covered=True))
         self.assert_exists("htmlcov/index.html")
-        self.assert_doesnt_exist("htmlcov/main_py.html")
+        self.assert_doesnt_exist("htmlcov/main_file_py.html")
         self.assert_exists("htmlcov/not_covered_py.html")
 
     def test_report_skip_covered_branches(self):
-        self.make_file("main.py", """
+        self.make_file("main_file.py", """
             import not_covered
 
             def normal():
@@ -477,10 +476,9 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
             def not_covered():
                 print("n")
         """)
-        self.run_command("coverage run --branch main.py")
-        self.run_command("coverage html --skip-covered")
+        self.run_coverage(covargs=dict(branch=True), htmlargs=dict(skip_covered=True))
         self.assert_exists("htmlcov/index.html")
-        self.assert_doesnt_exist("htmlcov/main_py.html")
+        self.assert_doesnt_exist("htmlcov/main_file_py.html")
         self.assert_exists("htmlcov/not_covered_py.html")
 
 
