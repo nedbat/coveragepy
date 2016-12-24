@@ -33,6 +33,10 @@ Unreleased
     in a non-zero coverage report.  Artem Dayneko reported this in `issue
     502`_, and Loïc Dachary provided the fix.
 
+- The HTML report now supports a ``--skip-covered`` option like the other
+  reporting commands.  Thanks, Loïc Dachary for the implementation, closing
+  `issue 433`_.
+
 - Options can now be read from a tox.ini file, if any. Like setup.cfg, sections
   are prefixed with "coverage:", so ``[run]`` options will be read from the
   ``[coverage:run]`` section of tox.ini. Implements part of `issue 519`_.
@@ -100,6 +104,7 @@ Unreleased
 
 .. _issue 265: https://bitbucket.org/ned/coveragepy/issues/265/when-using-source-include-is-silently
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
+.. _issue 433: https://bitbucket.org/ned/coveragepy/issues/433/coverage-html-does-not-suport-skip-covered
 .. _issue 493: https://bitbucket.org/ned/coveragepy/issues/493/confusing-branching-failure
 .. _issue 496: https://bitbucket.org/ned/coveragepy/issues/496/incorrect-coverage-with-branching-and
 .. _issue 502: https://bitbucket.org/ned/coveragepy/issues/502/incorrect-coverage-report-with-cover
