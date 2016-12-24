@@ -644,11 +644,12 @@ class AstArcAnalyzer(object):
         """Is this a compile-time constant?"""
         node_name = node.__class__.__name__
         if node_name in ["NameConstant", "Num"]:
-            return True
+            return "Num"
         elif node_name == "Name":
-            if env.PY3 and node.id in ["True", "False", "None"]:
-                return True
-        return False
+            if (( env.PY3 or env.PYVERSION >= (2, 7)) and 
+                node.id in ["True", "False", "None"]):
+                return "Name"
+        return None
 
     # In the fullness of time, these might be good tests to write:
     #   while EXPR:
@@ -950,7 +951,7 @@ class AstArcAnalyzer(object):
     def _handle__While(self, node):
         constant_test = self.is_constant_expr(node.test)
         start = to_top = self.line_for_node(node.test)
-        if constant_test:
+        if constant_test and (env.PY3 or constant_test == "Num"):
             to_top = self.line_for_node(node.body[0])
         self.block_stack.append(LoopBlock(start=to_top))
         from_start = ArcStart(start, cause="the condition on line {lineno} was never true")
