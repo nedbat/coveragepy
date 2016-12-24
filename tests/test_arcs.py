@@ -253,13 +253,11 @@ class LoopArcTest(CoverageTest):
             arcz=".1 12 23 34 45 36 63 57 7.",
             )
         # With "while True", 2.x thinks it's computation,
-        # 2.7+ and 3.x thinks it's constant.
+        # 3.x thinks it's constant.
         if env.PY3:
             arcz = ".1 12 23 34 45 36 63 57 7."
-        elif env.PYVERSION >= (2, 7):
-            arcz = ".1 12 23 34 45 36 62 57 7."
         else:
-            arcz = ".1 12 23 27 34 45 36 62 57 7."
+            arcz = ".1 12 23 34 45 36 62 57 7."
         self.check_coverage("""\
             a, i = 1, 0
             while True:
@@ -272,10 +270,8 @@ class LoopArcTest(CoverageTest):
             arcz=arcz,
         )
 
-    def test_zero_coverage_and_regexps(self):
+    def test_zero_coverage_while_loop(self):
         # https://bitbucket.org/ned/coveragepy/issue/502
-        if env.PYVERSION < (2, 7):
-            self.skipTest("No node.id before 2.7")
         self.make_file("main.py", "print('done')")
         self.make_file("zero.py", """\
             def method(self):
@@ -291,11 +287,9 @@ class LoopArcTest(CoverageTest):
     def test_bug_496_continue_in_constant_while(self):
         # https://bitbucket.org/ned/coveragepy/issue/496
         if env.PY3:
-            arcz = ".1 12     23 34 45 53 46 6."
-        elif env.PYVERSION >= (2, 7):
-            arcz = ".1 12     23 34 45 52 46 6."
+            arcz = ".1 12 23 34 45 53 46 6."
         else:
-            arcz = ".1 12 2-1 23 34 45 52 46 6."
+            arcz = ".1 12 23 34 45 52 46 6."
         self.check_coverage("""\
             up = iter('ta')
             while True:

@@ -646,8 +646,7 @@ class AstArcAnalyzer(object):
         if node_name in ["NameConstant", "Num"]:
             return "Num"
         elif node_name == "Name":
-            if ((env.PY3 or env.PYVERSION >= (2, 7)) and
-                node.id in ["True", "False", "None"]):
+            if node.id in ["True", "False", "None"]:
                 return "Name"
         return None
 
