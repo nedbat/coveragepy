@@ -252,7 +252,7 @@ class LoopArcTest(CoverageTest):
             """,
             arcz=".1 12 23 34 45 36 63 57 7.",
             )
-        # With "while True", 2.x thinks it's computation, 
+        # With "while True", 2.x thinks it's computation,
         # 2.7+ and 3.x thinks it's constant.
         if env.PY3:
             arcz = ".1 12 23 34 45 36 63 57 7."
@@ -273,17 +273,20 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_zero_coverage_and_regexps(self):
-        # https://bitbucket.org/ned/coveragepy/issue/502        
+        # https://bitbucket.org/ned/coveragepy/issue/502
         if env.PYVERSION < (2, 7):
             self.skipTest("No node.id before 2.7")
-        self.clean_local_file_imports()
-        zerocoverage_path = self.nice_file(self.here(), 'tests/modules/zerocoverage')
-        out = self.run_command(
-            "coverage run --branch --source {0} -m zerocoverage".format(zerocoverage_path))
+        self.make_file("main.py", "print('done')")
+        self.make_file("zero.py", """\
+            def method(self):
+                while True:
+                    return 1
+            """)
+        out = self.run_command("coverage run --branch --source=. main.py")
         self.assertEqual(out, 'done\n')
         report = self.report_from_command("coverage report -m")
         squeezed = self.squeezed_lines(report)
-        self.assertIn("zero.py 3 3 0 0 0% 1-3", squeezed[4])
+        self.assertIn("zero.py 3 3 0 0 0% 1-3", squeezed[3])
 
     def test_bug_496_continue_in_constant_while(self):
         # https://bitbucket.org/ned/coveragepy/issue/496

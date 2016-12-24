@@ -397,8 +397,8 @@ class CoverageTest(
 
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...
-        testmods = self.nice_file(self.here(), 'tests/modules')
-        zipfile = self.nice_file(self.here(), 'tests/zipmods.zip')
+        testmods = self.nice_file(self.working_root(), 'tests/modules')
+        zipfile = self.nice_file(self.working_root(), 'tests/zipmods.zip')
         pypath = os.getenv('PYTHONPATH', '')
         if pypath:
             pypath += os.pathsep
@@ -409,9 +409,10 @@ class CoverageTest(
         print(self.last_command_output)
         return self.last_command_status, self.last_command_output
 
-    def here(self):
+    def working_root(self):
+        """Where is the root of the coverage.py working tree?"""
         return os.path.dirname(self.nice_file(coverage.__file__, ".."))
-        
+
     def report_from_command(self, cmd):
         """Return the report from the `cmd`, with some convenience added."""
         report = self.run_command(cmd).replace('\\', '/')
