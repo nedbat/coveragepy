@@ -366,6 +366,8 @@ is a data file that is used to speed up reporting the next time.  If you
 generate a new report into the same directory, coverage.py will skip
 generating unchanged pages, making the process faster.
 
+The ``--skip-covered`` switch will leave out any file with 100% coverage,
+letting you focus on the files that still need attention.
 
 .. _cmd_annotation:
 

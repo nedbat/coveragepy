@@ -320,6 +320,7 @@ CMDS = {
             Opts.include,
             Opts.omit,
             Opts.title,
+            Opts.skip_covered,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
@@ -510,7 +511,7 @@ class CoverageScript(object):
         elif options.action == "html":
             total = self.coverage.html_report(
                 directory=options.directory, title=options.title,
-                **report_args)
+                skip_covered=options.skip_covered, **report_args)
         elif options.action == "xml":
             outfile = options.outfile
             total = self.coverage.xml_report(outfile=outfile, **report_args)

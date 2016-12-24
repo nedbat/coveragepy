@@ -171,6 +171,15 @@ class HtmlReporter(Reporter):
 
     def html_file(self, fr, analysis):
         """Generate an HTML file for one source file."""
+        # Get the numbers for this file.
+        nums = analysis.numbers
+        if self.config.skip_covered:
+            # Don't report on 100% files.
+            no_missing_lines = (nums.n_missing == 0)
+            no_missing_branches = (nums.n_partial_branches == 0)
+            if no_missing_lines and no_missing_branches:
+                return
+
         source = fr.source()
 
         # Find out if the file on disk is already correct.
@@ -183,9 +192,6 @@ class HtmlReporter(Reporter):
             return
 
         self.status.set_file_hash(rootname, this_hash)
-
-        # Get the numbers for this file.
-        nums = analysis.numbers
 
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
