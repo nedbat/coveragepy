@@ -93,7 +93,7 @@ If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
 
 You can specify the code to measure with the ``--source``, ``--include``, and
-``--omit`` switches.  See :ref:`Specifying source files <source_execution>` for
+``--omit`` switches.  See :ref:`Specifying source directories <source_execution>` for
 details of their interpretation.  Remember to put options for run after "run",
 but before the program invocation::
 
