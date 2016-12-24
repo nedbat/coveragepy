@@ -240,17 +240,17 @@ class CoverageTest(
             with self.delayed_assertions():
                 self.assert_equal_args(
                     analysis.arc_possibilities(), arcs,
-                    "Possible arcs differ",
+                    "Possible arcs differ: minus is actual, plus is expected"
                 )
 
                 self.assert_equal_args(
                     analysis.arcs_missing(), arcs_missing,
-                    "Missing arcs differ"
+                    "Missing arcs differ: minus is actual, plus is expected"
                 )
 
                 self.assert_equal_args(
                     analysis.arcs_unpredicted(), arcs_unpredicted,
-                    "Unpredicted arcs differ"
+                    "Unpredicted arcs differ: minus is actual, plus is expected"
                 )
 
         if report:
