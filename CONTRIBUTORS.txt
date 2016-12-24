@@ -9,6 +9,7 @@ Alex Gaynor
 Alexander Todorov
 Anthony Sottile
 Arcadiy Ivanov
+Artem Dayneko
 Ben Finney
 Bill Hart
 Brandon Rhodes

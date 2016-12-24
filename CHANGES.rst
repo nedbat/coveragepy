@@ -25,9 +25,13 @@ Unreleased
     493`_.  This is now fixed. Thanks to Joe Doherty for the report and Loïc
     Dachary for the fix.
 
-  - A while-loop with a constant condition (while True) and a continue
+  - A while loop with a constant condition (while True) and a continue
     statement would be mis-analyzed, as described in `issue 496`_. This is now
     fixed, thanks to a bug report by Eli Skeggs and a fix by Loïc Dachary.
+
+  - While loops with constant conditions that were never executed could result
+    in a non-zero coverage report.  Artem Dayneko reported this in `issue
+    502`_, and Loïc Dachary provided the fix.
 
 - Options can now be read from a tox.ini file, if any. Like setup.cfg, sections
   are prefixed with "coverage:", so ``[run]`` options will be read from the
@@ -98,6 +102,7 @@ Unreleased
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 493: https://bitbucket.org/ned/coveragepy/issues/493/confusing-branching-failure
 .. _issue 496: https://bitbucket.org/ned/coveragepy/issues/496/incorrect-coverage-with-branching-and
+.. _issue 502: https://bitbucket.org/ned/coveragepy/issues/502/incorrect-coverage-report-with-cover
 .. _issue 505: https://bitbucket.org/ned/coveragepy/issues/505/use-canonical-filename-for-debounce
 .. _issue 514: https://bitbucket.org/ned/coveragepy/issues/514/path-to-problem-file-not-reported-when
 .. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42
