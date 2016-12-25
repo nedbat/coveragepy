@@ -8,14 +8,14 @@
 -r tox.pip
 
 # for linting.
-greenlet==0.4.10
+greenlet==0.4.11
 mock==2.0.0
-PyContracts==1.7.12
+PyContracts==1.7.15
 pyenchant==1.6.8
 pylint==1.6.4
 pytest
 unittest-mixins==1.1.1
 
 # for kitting.
-requests==2.12.1
+requests==2.12.4
 twine==1.8.1
