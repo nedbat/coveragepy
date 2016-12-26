@@ -201,6 +201,8 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
 
             # Call the excepthook.
             try:
+                if hasattr(err, "__traceback__"):
+                    err.__traceback__ = err.__traceback__.tb_next
                 sys.excepthook(typ, err, tb.tb_next)
             except SystemExit:
                 raise
