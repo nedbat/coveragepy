@@ -793,7 +793,7 @@ class ExcepthookTest(CoverageTest):
     """Tests of sys.excepthook support."""
 
     def test_excepthook(self):
-        self.make_file("test_excepthook.py", """\
+        self.make_file("excepthook.py", """\
             import sys
 
             def excepthook(*args):
@@ -803,8 +803,8 @@ class ExcepthookTest(CoverageTest):
 
             raise RuntimeError('Error Outside')
             """)
-        cov_st, cov_out = self.run_command_status("coverage run test_excepthook.py")
-        py_st, py_out = self.run_command_status("python test_excepthook.py")
+        cov_st, cov_out = self.run_command_status("coverage run excepthook.py")
+        py_st, py_out = self.run_command_status("python excepthook.py")
         self.assertEqual(cov_st, py_st)
         self.assertEqual(cov_st, 1)
 
@@ -812,7 +812,9 @@ class ExcepthookTest(CoverageTest):
         self.assertEqual(cov_out, py_out)
 
     def test_excepthook_exit(self):
-        self.make_file("test_excepthook_exit.py", """\
+        if env.PYPY:
+            self.skipTest("PyPy handles excepthook exits differently, punt for now.")
+        self.make_file("excepthook_exit.py", """\
             import sys
 
             def excepthook(*args):
@@ -823,8 +825,8 @@ class ExcepthookTest(CoverageTest):
 
             raise RuntimeError('Error Outside')
             """)
-        cov_st, cov_out = self.run_command_status("coverage run test_excepthook_exit.py")
-        py_st, py_out = self.run_command_status("python test_excepthook_exit.py")
+        cov_st, cov_out = self.run_command_status("coverage run excepthook_exit.py")
+        py_st, py_out = self.run_command_status("python excepthook_exit.py")
         self.assertEqual(cov_st, py_st)
         self.assertEqual(cov_st, 0)
 
@@ -832,7 +834,9 @@ class ExcepthookTest(CoverageTest):
         self.assertEqual(cov_out, py_out)
 
     def test_excepthook_throw(self):
-        self.make_file("test_excepthook_exit.py", """\
+        if env.PYPY:
+            self.skipTest("PyPy handles excepthook throws differently, punt for now.")
+        self.make_file("excepthook_throw.py", """\
             import sys
 
             def excepthook(*args):
@@ -846,8 +850,8 @@ class ExcepthookTest(CoverageTest):
 
             raise RuntimeError('Error Outside')
             """)
-        cov_st, cov_out = self.run_command_status("coverage run test_excepthook_exit.py")
-        py_st, py_out = self.run_command_status("python test_excepthook_exit.py")
+        cov_st, cov_out = self.run_command_status("coverage run excepthook_throw.py")
+        py_st, py_out = self.run_command_status("python excepthook_throw.py")
         self.assertEqual(cov_st, py_st)
         self.assertEqual(cov_st, 1)
 
