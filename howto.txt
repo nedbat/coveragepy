@@ -21,6 +21,7 @@
     - Done with changes to source files, check them in.
         - hg push
     - Generate new sample_html to get the latest, incl footer version number:
+        make clean
         pip install -e .
         cd ~/cog/trunk
         rm -rf htmlcov
