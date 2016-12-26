@@ -199,7 +199,17 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
             # it somehow? https://bitbucket.org/pypy/pypy/issue/1903
             getattr(err, '__context__', None)
 
-            raise ExceptionDuringRun(typ, err, tb.tb_next)
+            # call a custom user excepthook if it is provided
+            try:
+                sys.excepthook(typ, err, tb.tb_next)
+            except SystemExit:
+                raise
+            except:
+                typ, err, tb = sys.exc_info()
+                raise ExceptionDuringRun(typ, err, tb.tb_next)
+            else:
+                sys.exit(1)
+
     finally:
         # Restore the old __main__, argv, and path.
         sys.modules['__main__'] = old_main_mod
