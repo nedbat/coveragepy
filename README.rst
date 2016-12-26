@@ -25,7 +25,10 @@ Documentation is on `Read the Docs <http://coverage.readthedocs.io>`_.
 Code repository and issue tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_,
 with a mirrored repository on `GitHub <https://github.com/nedbat/coveragepy>`_.
 
-**New in 4.2:** better support for multiprocessing and combining data.
+**New in 4.3:** HTML ``--skip-covered``, sys.excepthook support, tox.ini
+support.
+
+New in 4.2: better support for multiprocessing and combining data.
 
 New in 4.1: much-improved branch coverage.
 
@@ -80,8 +83,8 @@ For details, see https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
 .. |codecov| image:: http://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master
     :target: http://codecov.io/github/nedbat/coveragepy?branch=master
     :alt: Coverage!
-.. |commits-since| image:: https://img.shields.io/github/commits-since/nedbat/coveragepy/coverage-4.2.svg
-    :target: https://github.com/nedbat/coveragepy/compare/coverage-4.2...master
+.. |commits-since| image:: https://img.shields.io/github/commits-since/nedbat/coveragepy/coverage-4.3.svg
+    :target: https://github.com/nedbat/coveragepy/compare/coverage-4.3...master
     :alt: See latest work
 .. |saythanks| image:: https://img.shields.io/badge/saythanks.io-%E2%98%BC-1EAEDB.svg
     :target: https://saythanks.io/to/nedbat

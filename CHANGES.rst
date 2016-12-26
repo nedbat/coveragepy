@@ -5,8 +5,8 @@
 Change history for Coverage.py
 ==============================
 
-Unreleased
-----------
+Version 4.3 --- 2016-12-27
+--------------------------
 
 - Subprocesses that are measured with `automatic subprocess measurement`_ used
   to read in any pre-existing data file.  This meant data would be incorrectly

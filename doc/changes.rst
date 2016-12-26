@@ -40,6 +40,7 @@ Major change history for coverage.py
 .. :history: 20160110T125800, updated for 4.1b1
 .. :history: 20160510T125200, updated for 4.1b3
 .. :history: 20160521T074300, updated for 4.1
+.. :history: 20161226T153200, updated for 4.3
 
 
 These are the major changes for coverage.py.  For a more complete change
@@ -48,6 +49,57 @@ history, see the `CHANGES.rst`_ file in the source tree.
 .. _CHANGES.rst: http://bitbucket.org/ned/coveragepy/src/tip/CHANGES.rst
 
 .. module:: coverage
+
+.. _changes_43:
+
+Version 4.3 --- 2016-12-27
+--------------------------
+
+Special thanks to **Loïc Dachary**, who took an extraordinary interest in
+coverage.py and contributed a number of improvements in this release.
+
+- The HTML report now supports a ``--skip-covered`` option like the other
+  reporting commands.  Thanks, Loïc Dachary for the implementation, closing
+  `issue 433`_.
+
+- Subprocesses that are measured with `automatic subprocess measurement`_ used
+  to read in any pre-existing data file.  This meant data would be incorrectly
+  carried forward from run to run.  Now those files are not read, so each
+  subprocess only writes its own data. Fixes `issue 510`_.
+
+- Coverage.py wouldn't execute `sys.excepthook`_ when an exception happened in
+  your program.  Now it does, thanks to Andrew Hoos.  Closes `issue 535`_.
+
+.. _sys.excepthook: https://docs.python.org/3/library/sys.html#sys.excepthook
+
+- The ``coverage combine`` command will now fail if there are no data files to
+  combine. The combine changes in 4.2 meant that multiple combines could lose
+  data, leaving you with an empty .coverage data file. Fixes issues
+  `issue 525`_, `issue 412`_, `issue 516`_, and probably `issue 511`_.
+
+- The branch coverage issues described in `issue 493`_, `issue 496`_, and
+  `issue 502`_ are now fixed, thanks to Loïc Dachary.
+
+- Options can now be read from a tox.ini file, if any. Like setup.cfg, sections
+  are prefixed with "coverage:", so ``[run]`` options will be read from the
+  ``[coverage:run]`` section of tox.ini. Implements part of `issue 519`_.
+  Thanks, Stephen Finucane.
+
+- Coverage.py can now search .pex files for source, just as it can .zip and
+  .egg.  Thanks, Peter Ebden.
+
+.. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
+.. _issue 433: https://bitbucket.org/ned/coveragepy/issues/433/coverage-html-does-not-suport-skip-covered
+.. _issue 493: https://bitbucket.org/ned/coveragepy/issues/493/confusing-branching-failure
+.. _issue 496: https://bitbucket.org/ned/coveragepy/issues/496/incorrect-coverage-with-branching-and
+.. _issue 502: https://bitbucket.org/ned/coveragepy/issues/502/incorrect-coverage-report-with-cover
+.. _issue 510: https://bitbucket.org/ned/coveragepy/issues/510/erase-still-needed-in-42
+.. _issue 511: https://bitbucket.org/ned/coveragepy/issues/511/version-42-coverage-combine-empties
+.. _issue 516: https://bitbucket.org/ned/coveragepy/issues/516/running-coverage-combine-twice-deletes-all
+.. _issue 519: https://bitbucket.org/ned/coveragepy/issues/519/coverage-run-sections-in-toxini-or-as
+.. _issue 525: https://bitbucket.org/ned/coveragepy/issues/525/coverage-combine-when-not-in-parallel-mode
+.. _issue 535: https://bitbucket.org/ned/coveragepy/issues/535/sysexcepthook-is-not-called
+
 
 .. _changes_42:
 

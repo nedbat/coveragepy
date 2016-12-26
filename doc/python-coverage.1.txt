@@ -137,6 +137,9 @@ COMMAND REFERENCE
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
+    \--skip-covered
+        Skip files with 100% coverage.
+
     \--title `TITLE`
         Use the text string `TITLE` as the title on the HTML.
 
@@ -223,7 +226,7 @@ The |command| command is a Python program which calls the ``coverage``
 Python library to do all the work.
 
 The library was originally developed by Gareth Rees, and is now developed
-by Ned Batchelder.
+by Ned Batchelder and many others.
 
 This manual page was written by |author|.
 
