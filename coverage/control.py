@@ -219,7 +219,7 @@ class Coverage(object):
         self.source = []
         self.source_pkgs = []
         for src in self.config.source or []:
-            if os.path.exists(src):
+            if os.path.isdir(src):
                 self.source.append(files.canonical_filename(src))
             else:
                 self.source_pkgs.append(src)
