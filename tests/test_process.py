@@ -788,6 +788,10 @@ class ProcessTest(CoverageTest):
         out = self.run_command("python -m coverage")
         self.assertIn("Use 'coverage help' for help", out)
 
+
+class ExcepthookTest(CoverageTest):
+    """Tests of sys.excepthook support."""
+
     def test_excepthook(self):
         self.make_file("test_excepthook.py", """\
             import sys
@@ -846,7 +850,6 @@ class ProcessTest(CoverageTest):
 
         self.assertIn("in excepthook", py_out)
         self.assertEqual(cov_out, py_out)
-
 
 
 class AliasedCommandTest(CoverageTest):
