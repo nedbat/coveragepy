@@ -836,7 +836,10 @@ class ExcepthookTest(CoverageTest):
             import sys
 
             def excepthook(*args):
-                print('in excepthook')
+                # Write this message to stderr so that we don't have to deal
+                # with interleaved stdout/stderr comparisons in the assertions
+                # in the test.
+                sys.stderr.write('in excepthook\\n')
                 raise RuntimeError('Error Inside')
 
             sys.excepthook = excepthook
@@ -846,7 +849,7 @@ class ExcepthookTest(CoverageTest):
         cov_st, cov_out = self.run_command_status("coverage run test_excepthook_exit.py")
         py_st, py_out = self.run_command_status("python test_excepthook_exit.py")
         self.assertEqual(cov_st, py_st)
-        self.assertEqual(cov_st, 0)
+        self.assertEqual(cov_st, 1)
 
         self.assertIn("in excepthook", py_out)
         self.assertEqual(cov_out, py_out)

@@ -185,7 +185,7 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
             # The user called sys.exit().  Just pass it along to the upper
             # layers, where it will be handled.
             raise
-        except:
+        except Exception:
             # Something went wrong while executing the user code.
             # Get the exc_info, and pack them into an exception that we can
             # throw up to the outer loop.  We peel one layer off the traceback
@@ -199,13 +199,21 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
             # it somehow? https://bitbucket.org/pypy/pypy/issue/1903
             getattr(err, '__context__', None)
 
-            # call a custom user excepthook if it is provided
+            # Call the excepthook.
             try:
                 sys.excepthook(typ, err, tb.tb_next)
             except SystemExit:
                 raise
-            except:
-                typ, err, tb = sys.exc_info()
+            except Exception:
+                # Getting the output right in the case of excepthook
+                # shenanigans is kind of involved.
+                sys.stderr.write("Error in sys.excepthook:\n")
+                typ2, err2, tb2 = sys.exc_info()
+                err2.__suppress_context__ = True
+                if hasattr(err2, "__traceback__"):
+                    err2.__traceback__ = err2.__traceback__.tb_next
+                sys.__excepthook__(typ2, err2, tb2.tb_next)
+                sys.stderr.write("\nOriginal exception was:\n")
                 raise ExceptionDuringRun(typ, err, tb.tb_next)
             else:
                 sys.exit(1)
