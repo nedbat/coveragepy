@@ -18,6 +18,11 @@ Unreleased
   data, leaving you with an empty .coverage data file. Fixes issues
   `issue 525`_, `issue 412`_, `issue 516`_, and probably `issue 511`_.
 
+- Coverage.py wouldn't execute `sys.excepthook`_ when an exception happened in
+  your program.  Now it does, thanks to Andrew Hoos.  Closes `issue 535`_.
+
+.. _sys.excepthook: https://docs.python.org/3/library/sys.html#sys.excepthook
+
 - Branch coverage fixes:
 
   - Branch coverage could misunderstand a finally clause on a try block that
@@ -122,6 +127,7 @@ Unreleased
 .. _issue 529: https://bitbucket.org/ned/coveragepy/issues/529/encoding-marker-may-only-appear-on-the
 .. _issue 530: https://bitbucket.org/ned/coveragepy/issues/530/deprecationwarning-you-passed-a-bytestring
 .. _issue 533: https://bitbucket.org/ned/coveragepy/issues/533/exception-on-unencodable-file-name
+.. _issue 535: https://bitbucket.org/ned/coveragepy/issues/535/sysexcepthook-is-not-called
 
 
 Version 4.2 --- 2016-07-26
