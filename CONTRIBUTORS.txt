@@ -25,6 +25,7 @@ Christian Heimes
 Christine Lytwynec
 Christoph Zwerschke
 Conrad Ho
+Cosimo Lupo
 Dan Riti
 Dan Wandschneider
 Danek Duvall

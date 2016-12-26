@@ -77,6 +77,9 @@ Unreleased
 - Fixed an unusual bug involving multiple coding declarations affecting code
   containing code in multi-line strings: `issue 529`_.
 
+- Coverage.py will no longer be misled into thinking that a plain file is a
+  package when interpreting ``--source`` options.  Thanks, Cosimo Lupo.
+
 - If you try to run a non-Python file with coverage.py, you will now get a more
   useful error message. `Issue 514`_.
 
