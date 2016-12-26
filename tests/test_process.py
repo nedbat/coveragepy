@@ -798,9 +798,12 @@ class ExcepthookTest(CoverageTest):
 
             def excepthook(*args):
                 print('in excepthook')
+                if maybe == 2:
+                    print('definitely')
 
             sys.excepthook = excepthook
 
+            maybe = 1
             raise RuntimeError('Error Outside')
             """)
         cov_st, cov_out = self.run_command_status("coverage run excepthook.py")
@@ -810,6 +813,12 @@ class ExcepthookTest(CoverageTest):
 
         self.assertIn("in excepthook", py_out)
         self.assertEqual(cov_out, py_out)
+
+        # Read the coverage file and see that excepthook.py has 7 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.line_counts()['excepthook.py'], 7)
 
     def test_excepthook_exit(self):
         if env.PYPY:
