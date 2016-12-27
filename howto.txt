@@ -23,6 +23,7 @@
     - Generate new sample_html to get the latest, incl footer version number:
         make clean
         pip install -e .
+        pip install nose
         cd ~/cog/trunk
         rm -rf htmlcov
         coverage run --branch --source=cogapp -m nose cogapp/test_cogapp.py:CogTestsInMemory
