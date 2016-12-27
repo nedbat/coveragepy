@@ -62,6 +62,18 @@ environment:
       PYTHON_VERSION: "3.5.0"
       PYTHON_ARCH: "64"
 
+    - JOB: "3.6 32-bit"
+      TOXENV: "py36"
+      PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6.0"
+      PYTHON_ARCH: "32"
+
+    - JOB: "3.6 64-bit"
+      TOXENV: "py36"
+      PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.0"
+      PYTHON_ARCH: "64"
+
     # Meta coverage
     - JOB: "Meta 2.7"
       TOXENV: "py27"
