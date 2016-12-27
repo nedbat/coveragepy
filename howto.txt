@@ -52,7 +52,6 @@
         - $ make download_appveyor
     - examine the dist directory, and remove anything that looks malformed.
 - Update PyPi:
-    - $ make pypi
     - upload kits:
         - $ make kit_upload
     - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage :
