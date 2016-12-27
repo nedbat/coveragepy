@@ -12,6 +12,7 @@ import os.path
 import random
 import re
 import socket
+import time
 
 from coverage import env
 from coverage.backward import iitems, string_class
@@ -665,6 +666,8 @@ class CoverageDataFiles(object):
                 with open(_TEST_NAME_FILE) as f:
                     test_name = f.read()
                 extra = "." + test_name
+            if env.WINDOWS:
+                time.sleep(0.001)           # Yuk: http://bugs.python.org/issue29085
             dice = random.Random().randint(0, 999999)
             suffix = "%s%s.%s.%06d" % (socket.gethostname(), extra, os.getpid(), dice)
 
