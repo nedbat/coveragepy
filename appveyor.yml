@@ -82,10 +82,10 @@ environment:
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
-    - JOB: "Meta 3.4"
-      TOXENV: "py34"
-      PYTHON: "C:\\Python34"
-      PYTHON_VERSION: "3.4"
+    - JOB: "Meta 3.5"
+      TOXENV: "py35"
+      PYTHON: "C:\\Python35"
+      PYTHON_VERSION: "3.5"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
