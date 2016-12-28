@@ -54,7 +54,7 @@
 - Update PyPi:
     - upload kits:
         - $ make kit_upload
-    - Visit http://pypi.python.org/pypi?%3Aaction=pkg_edit&name=coverage :
+    - Visit http://pypi.python.org/pypi?:action=pkg_edit&name=coverage :
         - show/hide the proper versions.
 - Tag the tree
     - hg tag -m "Coverage 3.0.1" coverage-3.0.1
@@ -64,7 +64,7 @@
     - visit https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
     - IF NOT BETA:
-        - visit https://readthedocs.org/dashboard/coverage/advanced/
+        - visit https://readthedocs.org/dashboard/coverage/versions/
         - change the default version to the new version
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
