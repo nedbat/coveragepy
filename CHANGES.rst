@@ -5,8 +5,8 @@
 Change history for Coverage.py
 ==============================
 
-Unreleased
-----------
+Version 4.3.1 --- 2016-12-28
+----------------------------
 
 - Some environments couldn't install 4.3, as described in `issue 540`_. This is
   now fixed.

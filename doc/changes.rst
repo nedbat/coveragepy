@@ -50,6 +50,24 @@ history, see the `CHANGES.rst`_ file in the source tree.
 
 .. module:: coverage
 
+
+.. _changes_431:
+
+Version 4.3.1 --- 2016-12-28
+----------------------------
+
+- Some environments couldn't install 4.3, as described in `issue 540`_. This is
+  now fixed.
+
+- The check for conflicting ``--source`` and ``--include`` was too simple in a
+  few different ways, breaking a few perfectly reasonable use cases, described
+  in `issue 541`_.  The check has been reverted while we re-think the fix for
+  `issue 265`_.
+
+.. _issue 540: https://bitbucket.org/ned/coveragepy/issues/540/cant-install-coverage-v43-into-under
+.. _issue 541: https://bitbucket.org/ned/coveragepy/issues/541/coverage-43-breaks-nosetest-with-coverage
+
+
 .. _changes_43:
 
 Version 4.3 --- 2016-12-27
@@ -85,9 +103,14 @@ coverage.py and contributed a number of improvements in this release.
   ``[coverage:run]`` section of tox.ini. Implements part of `issue 519`_.
   Thanks, Stephen Finucane.
 
+- Specifying both ``--source`` and ``--include`` no longer silently ignores the
+  include setting, instead it fails with a message. Thanks, Nathan Land and
+  Loïc Dachary. Closes `issue 265`_.
+
 - Coverage.py can now search .pex files for source, just as it can .zip and
   .egg.  Thanks, Peter Ebden.
 
+.. _issue 265: https://bitbucket.org/ned/coveragepy/issues/265/when-using-source-include-is-silently
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 433: https://bitbucket.org/ned/coveragepy/issues/433/coverage-html-does-not-suport-skip-covered
 .. _issue 493: https://bitbucket.org/ned/coveragepy/issues/493/confusing-branching-failure
