@@ -104,6 +104,11 @@ class SetupPyTest(CoverageTest):
 
     run_in_temp_dir = False
 
+    def setUp(self):
+        super(SetupPyTest, self).setUp()
+        # Force the most restrictive interpretation.
+        self.set_environ('LC_ALL', 'C')
+
     def test_metadata(self):
         status, output = self.run_command_status(
             "python setup.py --description --version --url --author"

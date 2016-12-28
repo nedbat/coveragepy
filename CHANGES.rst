@@ -8,7 +8,11 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-Nothing yet...
+- Some environments couldn't install 4.3, as described in `issue 540`_. This is
+  now fixed.
+
+.. _issue 540: https://bitbucket.org/ned/coveragepy/issues/540/cant-install-coverage-v43-into-under
+
 
 
 Version 4.3 --- 2016-12-27

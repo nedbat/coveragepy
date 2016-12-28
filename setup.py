@@ -46,8 +46,8 @@ with open(cov_ver_py) as version_file:
 with open("README.rst") as readme:
     long_description = readme.read().replace("http://coverage.readthedocs.io", __url__)
 
-with open("CONTRIBUTORS.txt") as contributors:
-    paras = contributors.read().split("\n\n")
+with open("CONTRIBUTORS.txt", "rb") as contributors:
+    paras = contributors.read().split(b"\n\n")
     num_others = len(paras[-1].splitlines())
     num_others += 1                 # Count Gareth Rees, who is mentioned in the top paragraph.
 
