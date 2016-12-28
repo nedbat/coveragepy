@@ -11,7 +11,13 @@ Unreleased
 - Some environments couldn't install 4.3, as described in `issue 540`_. This is
   now fixed.
 
+- The check for conflicting ``--source`` and ``--include`` was too simple in a
+  few different ways, breaking a few perfectly reasonable use cases, described
+  in `issue 541`_.  The check has been reverted while we re-think the fix for
+  `issue 265`_.
+
 .. _issue 540: https://bitbucket.org/ned/coveragepy/issues/540/cant-install-coverage-v43-into-under
+.. _issue 541: https://bitbucket.org/ned/coveragepy/issues/541/coverage-43-breaks-nosetest-with-coverage
 
 
 

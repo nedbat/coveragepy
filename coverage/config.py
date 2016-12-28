@@ -384,6 +384,9 @@ class CoverageConfig(object):
 
     def sanity_check(self):
         """Check interactions among settings, and raise if there's a problem."""
+        return
+        # TODO: This check was too simple, and broke a few things:
+        # https://bitbucket.org/ned/coveragepy/issues/541/coverage-43-breaks-nosetest-with-coverage
         if (self.source is not None) and (self.include is not None):
             raise CoverageException("--include and --source are mutually exclusive")
 
