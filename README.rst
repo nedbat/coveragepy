@@ -83,8 +83,8 @@ For details, see https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
 .. |codecov| image:: http://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master
     :target: http://codecov.io/github/nedbat/coveragepy?branch=master
     :alt: Coverage!
-.. |commits-since| image:: https://img.shields.io/github/commits-since/nedbat/coveragepy/coverage-4.3.svg
-    :target: https://github.com/nedbat/coveragepy/compare/coverage-4.3...master
+.. |commits-since| image:: https://img.shields.io/github/commits-since/nedbat/coveragepy/coverage-4.3.1.svg
+    :target: https://github.com/nedbat/coveragepy/compare/coverage-4.3.1...master
     :alt: See latest work
 .. |saythanks| image:: https://img.shields.io/badge/saythanks.io-%E2%98%BC-1EAEDB.svg
     :target: https://saythanks.io/to/nedbat
