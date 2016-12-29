@@ -24,6 +24,7 @@ clean:
 	-rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	-rm -rf doc/_build doc/_spell
+	-rm -rf .tox_kits
 
 sterile: clean
 	-rm -rf .tox*
