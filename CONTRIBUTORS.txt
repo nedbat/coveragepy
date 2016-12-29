@@ -6,6 +6,7 @@ useful bug reports, have been made by:
 
 Adi Roiban
 Alex Gaynor
+Alex Groce
 Alexander Todorov
 Andrew Hoos
 Anthony Sottile

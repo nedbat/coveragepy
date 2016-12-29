@@ -9,7 +9,9 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-Nothing yet.
+- If you started and stopped coverage measurement thousands of times in your
+  process, you could crash Python with a "Fatal Python error: deallocating
+  None" error.  This is now fixed.  Thanks to Alex Groce for the bug report.
 
 
 Version 4.3.1 --- 2016-12-28

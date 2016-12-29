@@ -74,6 +74,7 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     self->cur_entry.last_line = -1;
 
     self->context = Py_None;
+    Py_INCREF(self->context);
 
     ret = RET_OK;
     goto ok;
