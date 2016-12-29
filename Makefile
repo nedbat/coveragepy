@@ -76,9 +76,6 @@ kit_local:
 download_appveyor:
 	python ci/download_appveyor.py nedbat/coveragepy
 
-pypi:
-	python setup.py register
-
 build_ext:
 	python setup.py build_ext
 
