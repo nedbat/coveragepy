@@ -6,6 +6,7 @@
 import sys
 
 import coverage
+from coverage import env
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
@@ -181,6 +182,42 @@ class MemoryLeakTest(CoverageTest):
 
         if fails > 8:                                   # pragma: if failure
             self.fail("RAM grew by %d" % (ram_growth))
+
+
+class MemoryFumblingTest(CoverageTest):
+    """Test that we properly manage the None refcount."""
+
+    def test_dropping_none(self):
+        if not env.C_TRACER:
+            self.skipTest("Only the C tracer has refcounting issues")
+        # TODO: Mark this so it will only be run sometimes.
+        self.skipTest("This is too expensive for now (30s)")
+        # Start and stop coverage thousands of times to flush out bad
+        # reference counting, maybe.
+        self.make_file("the_code.py", """\
+            import random
+            def f():
+                if random.random() > .5:
+                    x = 1
+                else:
+                    x = 2
+            """)
+        self.make_file("main.py", """\
+            import coverage
+            import sys
+            from the_code import f
+            for i in range(10000):
+                cov = coverage.Coverage(branch=True)
+                cov.start()
+                f()
+                cov.stop()
+                cov.erase()
+            print("Final None refcount: %d" % (sys.getrefcount(None)))
+            """)
+        status, out = self.run_command_status("python main.py")
+        self.assertEqual(status, 0)
+        self.assertIn("Final None refcount", out)
+        self.assertNotIn("Fatal", out)
 
 
 class PyexpatTest(CoverageTest):
