@@ -15,6 +15,8 @@ addons:
      packages:
      - python3.5
      - python3.5-dev
+     - python3.6
+     - python3.6-dev
 
 env:
   - TOXENV=py26
@@ -22,8 +24,10 @@ env:
   - TOXENV=py33
   - TOXENV=py34
   - TOXENV=py35
+  - TOXENV=py36
   - TOXENV=pypy
   - TOXENV=py27 COVERAGE_COVERAGE=yes
+  - TOXENV=py36 COVERAGE_COVERAGE=yes
 
 sudo: false
 
