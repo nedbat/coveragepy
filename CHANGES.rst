@@ -13,6 +13,10 @@ Unreleased
   process, you could crash Python with a "Fatal Python error: deallocating
   None" error.  This is now fixed.  Thanks to Alex Groce for the bug report.
 
+- On PyPy, measuring coverage in subprocesses could produce a warning: "Trace
+  function changed, measurement is likely wrong: None".  This was spurious, and
+  has been suppressed.
+
 
 Version 4.3.1 --- 2016-12-28
 ----------------------------

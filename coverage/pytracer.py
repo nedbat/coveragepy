@@ -3,6 +3,7 @@
 
 """Raw data collector for coverage.py."""
 
+import atexit
 import dis
 import sys
 
@@ -51,6 +52,10 @@ class PyTracer(object):
         self.last_exc_firstlineno = 0
         self.thread = None
         self.stopped = False
+
+        self.in_atexit = False
+        # On exit, self.in_atexit = True
+        atexit.register(setattr, self, 'in_atexit', True)
 
     def __repr__(self):
         return "<PyTracer at 0x{0:0x}: {1} lines in {2} files>".format(
@@ -144,9 +149,13 @@ class PyTracer(object):
             return
 
         if self.warn:
-            if sys.gettrace() != self._trace:
-                msg = "Trace function changed, measurement is likely wrong: %r"
-                self.warn(msg % (sys.gettrace(),))
+            # PyPy clears the trace function before running atexit functions,
+            # so don't warn if we are in atexit on PyPy and the trace function
+            # has changed to None.
+            tf = sys.gettrace()
+            dont_warn = (env.PYPY and self.in_atexit and tf is None)
+            if (not dont_warn) and tf != self._trace:
+                self.warn("Trace function changed, measurement is likely wrong: %r" % (tf,))
 
         sys.settrace(None)
 
