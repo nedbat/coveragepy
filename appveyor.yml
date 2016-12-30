@@ -131,6 +131,8 @@ test_script:
 
 after_test:
   - if "%COVERAGE_COVERAGE%" == "yes" 7z a metacov-win-%TOXENV%.zip %APPVEYOR_BUILD_FOLDER%\.metacov*
+  - if "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% pip install codecov
+  - if "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% codecov
 
 artifacts:
   - path: "metacov-*.zip"
