@@ -382,14 +382,6 @@ class CoverageConfig(object):
         # If we get here, we didn't find the option.
         raise CoverageException("No such option: %r" % option_name)
 
-    def sanity_check(self):
-        """Check interactions among settings, and raise if there's a problem."""
-        return
-        # TODO: This check was too simple, and broke a few things:
-        # https://bitbucket.org/ned/coveragepy/issues/541/coverage-43-breaks-nosetest-with-coverage
-        if (self.source is not None) and (self.include is not None):
-            raise CoverageException("--include and --source are mutually exclusive")
-
 
 def read_coverage_config(config_file, **kwargs):
     """Read the coverage.py configuration.
@@ -445,7 +437,5 @@ def read_coverage_config(config_file, **kwargs):
 
     # 4) from constructor arguments:
     config.from_args(**kwargs)
-
-    config.sanity_check()
 
     return config_file, config

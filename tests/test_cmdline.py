@@ -459,13 +459,6 @@ class CmdLineTest(BaseCmdLineTest):
             .save()
             """)
 
-    def test_bad_run_args_with_both_source_and_include(self):
-        return
-        # TODO: This check was too simple, and broke a few things:
-        # https://bitbucket.org/ned/coveragepy/issues/541/coverage-43-breaks-nosetest-with-coverage
-        with self.assertRaisesRegex(CoverageException, 'mutually exclusive'):
-            self.command_line("run --include=pre1,pre2 --source=lol,wut foo.py", ret=ERR)
-
     def test_bad_concurrency(self):
         self.command_line("run --concurrency=nothing", ret=ERR)
         out = self.stdout()
