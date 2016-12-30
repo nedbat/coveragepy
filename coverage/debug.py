@@ -8,6 +8,10 @@ import inspect
 import os
 import re
 import sys
+try:
+    import _thread
+except ImportError:
+    import thread as _thread
 
 from coverage.misc import isolate_module
 
@@ -128,10 +132,17 @@ def dump_stack_frames(limit=None, out=None, skip=0):
     out.write("\n")
 
 
+LOGGED_PROCESS = False
+
 def log(msg, stack=False):                                  # pragma: debugging
     """Write a log message as forcefully as possible."""
+    global LOGGED_PROCESS
     with open("/tmp/covlog.txt", "a") as f:
-        f.write("{pid}: {msg}\n".format(pid=os.getpid(), msg=msg))
+        if not LOGGED_PROCESS:
+            LOGGED_PROCESS = True
+            cmd = " ".join(getattr(sys, 'argv', ['???']))
+            log("New process: executable %s, cmd: %s" % (sys.executable, cmd))
+        f.write("{pid}.{tid}: {msg}\n".format(pid=os.getpid(), tid=_thread.get_ident(), msg=msg))
         if stack:
             dump_stack_frames(out=f, skip=1)
 
