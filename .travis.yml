@@ -22,7 +22,6 @@ env:
   - TOXENV=py33
   - TOXENV=py34
   - TOXENV=py35
-  - TOXENV=py36
   - TOXENV=pypy
   - TOXENV=py27 COVERAGE_COVERAGE=yes
   - TOXENV=py35 COVERAGE_COVERAGE=yes
