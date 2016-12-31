@@ -7,13 +7,15 @@
 # PyPI requirements for running tests.
 -r tox.pip
 
+# for igor and linting.
+pytest==3.0.5
+
 # for linting.
 greenlet==0.4.11
 mock==2.0.0
 PyContracts==1.7.15
 pyenchant==1.6.8
 pylint==1.6.4
-pytest
 unittest-mixins==1.1.1
 
 # for kitting.

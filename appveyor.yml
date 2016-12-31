@@ -113,7 +113,7 @@ install:
   - "pip install --disable-pip-version-check --user --upgrade virtualenv"
 
   # Install requirements.
-  - "%CMD_IN_ENV% pip install -r requirements/tox.pip -r requirements/wheel.pip"
+  - "%CMD_IN_ENV% pip install -r requirements/dev.pip -r requirements/wheel.pip"
 
   # Make a python3.4.bat file in the current directory so that tox will find it
   # and python3.4 will mean what we want it to.
