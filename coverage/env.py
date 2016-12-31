@@ -12,6 +12,8 @@ LINUX = sys.platform == "linux2"
 
 # Python implementations.
 PYPY = '__pypy__' in sys.builtin_module_names
+if PYPY:
+    PYPYVERSION = sys.pypy_version_info
 
 # Python versions.
 PYVERSION = sys.version_info
