@@ -29,7 +29,7 @@ env:
 sudo: false
 
 install:
-  - pip install -r requirements/tox.pip
+  - pip install -r requirements/ci.pip
 
 script:
   - tox

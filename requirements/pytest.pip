@@ -1,0 +1,7 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
+# The pytest specifics used by coverage.py
+pytest==3.0.5
+pytest-xdist==1.15.0
+pytest-warnings==0.2.0

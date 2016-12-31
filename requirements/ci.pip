@@ -1,0 +1,7 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+
+# Things CI servers need to succeeed.
+-r tox.pip
+-r pytest.pip
+-r wheel.pip

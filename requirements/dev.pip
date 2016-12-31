@@ -6,9 +6,7 @@
 
 # PyPI requirements for running tests.
 -r tox.pip
-
-# for igor and linting.
-pytest==3.0.5
+-r pytest.pip
 
 # for linting.
 greenlet==0.4.11
