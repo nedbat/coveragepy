@@ -5,6 +5,8 @@
 
 import sys
 
+import pytest
+
 import coverage
 from coverage import env
 from coverage.files import abs_file
@@ -487,6 +489,35 @@ class GettraceTest(CoverageTest):
                 "return: coverage_test.py @ 12\n"
             ),
         )
+
+    @pytest.mark.expensive
+    def test_atexit_gettrace(self):
+        # This is not a test of coverage at all, but of our understanding
+        # of this edge-case behavior in various Pythons.
+        self.make_file("atexit_gettrace.py", """\
+            import atexit, sys
+
+            def trace_function(frame, event, arg):
+                return trace_function
+            sys.settrace(trace_function)
+
+            def show_trace_function():
+                tfn = sys.gettrace()
+                if tfn is not None:
+                    tfn = tfn.__name__
+                print(tfn)
+            atexit.register(show_trace_function)
+
+            # This will show what the trace function is at the end of the program.
+            """)
+        status, out = self.run_command_status("python atexit_gettrace.py")
+        self.assertEqual(status, 0)
+        if env.PYPY:
+            # PyPy clears the trace function before atexit runs.
+            self.assertEqual(out, "None\n")
+        else:
+            # Other Pythons leave the trace function in place.
+            self.assertEqual(out, "trace_function\n")
 
 
 class ExecTest(CoverageTest):
