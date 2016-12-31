@@ -89,10 +89,7 @@ def should_skip(tracer):
     if tracer == "py":
         skipper = os.environ.get("COVERAGE_NO_PYTRACER")
     else:
-        skipper = (
-            os.environ.get("COVERAGE_NO_EXTENSION") or
-            os.environ.get("COVERAGE_NO_CTRACER")
-        )
+        skipper = os.environ.get("COVERAGE_NO_CTRACER")
 
     if skipper:
         msg = "Skipping tests " + label_for_tracer(tracer)
