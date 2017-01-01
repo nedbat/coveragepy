@@ -141,7 +141,7 @@ class DebugOutputFile(object):                              # pragma: debugging
     SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
 
     @classmethod
-    def the_one(cls, filename):
+    def the_one(cls):
         """Get the process-wide singleton DebugOutputFile."""
         # Because of the way igor.py deletes and re-imports modules,
         # this class can be defined more than once. But we really want
@@ -149,6 +149,7 @@ class DebugOutputFile(object):                              # pragma: debugging
         # on a class attribute. Yes, this is aggressively gross.
         the_one = sys.modules.get(cls.SYS_MOD_NAME)
         if the_one is None:
+            filename = os.environ.get("COVERAGE_LOG", "/tmp/covlog.txt")
             sys.modules[cls.SYS_MOD_NAME] = the_one = cls(open(filename, "a"))
 
             cmd = " ".join(getattr(sys, 'argv', ['???']))
@@ -180,8 +181,7 @@ class DebugOutputFile(object):                              # pragma: debugging
 
 def log(msg, stack=False):                                  # pragma: debugging
     """Write a log message as forcefully as possible."""
-    filename = os.environ.get("COVERAGE_LOG", "tmp/covlog.txt")
-    DebugOutputFile.the_one(filename).write(msg+"\n", stack=stack)
+    DebugOutputFile.the_one().write(msg+"\n", stack=stack)
 
 
 def enable_aspectlib_maybe():                               # pragma: debugging
@@ -190,7 +190,8 @@ def enable_aspectlib_maybe():                               # pragma: debugging
     Define COVERAGE_ASPECTLIB to enable and configure aspectlib to trace
     execution::
 
-        COVERAGE_ASPECTLIB=covaspect.txt:coverage.Coverage:coverage.data.CoverageData program...
+        export COVERAGE_LOG=covaspect.txt
+        COVERAGE_ASPECTLIB=coverage.Coverage:coverage.data.CoverageData program...
 
     This will trace all the public methods on Coverage and CoverageData,
     writing the information to covaspect.txt.
@@ -203,9 +204,8 @@ def enable_aspectlib_maybe():                               # pragma: debugging
     import aspectlib                            # pylint: disable=import-error
     import aspectlib.debug                      # pylint: disable=import-error
 
-    aspects = aspects.split(':')
-    aspects_file = DebugOutputFile.the_one(aspects[0])
+    aspects_file = DebugOutputFile.the_one()
     aspect_log = aspectlib.debug.log(print_to=aspects_file, use_logging=False)
     public_methods = re.compile(r'^(__init__|[a-zA-Z].*)$')
-    for aspect in aspects[1:]:
+    for aspect in aspects.split(':'):
         aspectlib.weave(aspect, aspect_log, methods=public_methods)
