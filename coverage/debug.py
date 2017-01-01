@@ -132,19 +132,56 @@ def dump_stack_frames(limit=None, out=None, skip=0):
     out.write("\n")
 
 
-LOGGED_PROCESS = False
+class DebugOutputFile(object):                              # pragma: debugging
+    """A file-like object that includes pid and cwd information."""
+    def __init__(self, outfile):
+        self.outfile = outfile
+        self.cwd = None
+
+    SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
+
+    @classmethod
+    def the_one(cls, filename):
+        """Get the process-wide singleton DebugOutputFile."""
+        # Because of the way igor.py deletes and re-imports modules,
+        # this class can be defined more than once. But we really want
+        # a process-wide singleton. So stash it in sys.modules instead of
+        # on a class attribute. Yes, this is aggressively gross.
+        the_one = sys.modules.get(cls.SYS_MOD_NAME)
+        if the_one is None:
+            sys.modules[cls.SYS_MOD_NAME] = the_one = cls(open(filename, "a"))
+
+            cmd = " ".join(getattr(sys, 'argv', ['???']))
+            the_one._write("New process: executable: %s\n" % (sys.executable,))
+            the_one._write("New process: cmd: %s\n" % (cmd,))
+            if hasattr(os, 'getppid'):
+                the_one._write("New process: parent pid: %s\n" % (os.getppid(),))
+
+        return the_one
+
+    def write(self, text, stack=False):
+        """Just like file.write"""
+        cwd = os.getcwd()
+        if cwd != self.cwd:
+            self._write("cwd is now {0!r}\n".format(cwd))
+            self.cwd = cwd
+        self._write(text, stack=stack)
+
+    def _write(self, text, stack=False):
+        """The raw text-writer, so that we can use it ourselves."""
+        tid = _thread.get_ident()
+        for _ in range(4):
+            tid ^= tid >> 4
+        self.outfile.write("{0:5d}.{1:04x}: {2}".format(os.getpid(), tid & 0xFFFF, text))
+        self.outfile.flush()
+        if stack:
+            dump_stack_frames(out=self.outfile, skip=1)
+
 
 def log(msg, stack=False):                                  # pragma: debugging
     """Write a log message as forcefully as possible."""
-    global LOGGED_PROCESS
-    with open("/tmp/covlog.txt", "a") as f:
-        if not LOGGED_PROCESS:
-            LOGGED_PROCESS = True
-            cmd = " ".join(getattr(sys, 'argv', ['???']))
-            log("New process: executable %s, cmd: %s" % (sys.executable, cmd))
-        f.write("{pid}.{tid}: {msg}\n".format(pid=os.getpid(), tid=_thread.get_ident(), msg=msg))
-        if stack:
-            dump_stack_frames(out=f, skip=1)
+    filename = os.environ.get("COVERAGE_LOG", "tmp/covlog.txt")
+    DebugOutputFile.the_one(filename).write(msg+"\n", stack=stack)
 
 
 def enable_aspectlib_maybe():                               # pragma: debugging
@@ -166,28 +203,9 @@ def enable_aspectlib_maybe():                               # pragma: debugging
     import aspectlib                            # pylint: disable=import-error
     import aspectlib.debug                      # pylint: disable=import-error
 
-    class AspectlibOutputFile(object):
-        """A file-like object that includes pid and cwd information."""
-        def __init__(self, outfile):
-            self.outfile = outfile
-            self.cwd = None
-
-        def write(self, text):
-            """Just like file.write"""
-            cwd = os.getcwd()
-            if cwd != self.cwd:
-                self._write("cwd is now {0!r}\n".format(cwd))
-                self.cwd = cwd
-            self._write(text)
-
-        def _write(self, text):
-            """The raw text-writer, so that we can use it ourselves."""
-            self.outfile.write("{0:5d}: {1}".format(os.getpid(), text))
-
     aspects = aspects.split(':')
-    aspects_file = AspectlibOutputFile(open(aspects[0], "a"))
+    aspects_file = DebugOutputFile.the_one(aspects[0])
     aspect_log = aspectlib.debug.log(print_to=aspects_file, use_logging=False)
-    aspects = aspects[1:]
     public_methods = re.compile(r'^(__init__|[a-zA-Z].*)$')
-    for aspect in aspects:
+    for aspect in aspects[1:]:
         aspectlib.weave(aspect, aspect_log, methods=public_methods)
