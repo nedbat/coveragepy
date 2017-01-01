@@ -12,7 +12,6 @@
     - "New in x.y:"
     - version number in the commits-since badge
 - Update docs
-    - Version, date, and changes in doc/changes.rst
     - Version, date and python versions in doc/index.rst
     - Version and copyright date in doc/conf.py
     - Don't forget the man page: doc/python-coverage.1.txt

@@ -18,6 +18,8 @@ Unreleased
   has been suppressed.
 
 
+.. _changes_431:
+
 Version 4.3.1 --- 2016-12-28
 ----------------------------
 
@@ -33,9 +35,13 @@ Version 4.3.1 --- 2016-12-28
 .. _issue 541: https://bitbucket.org/ned/coveragepy/issues/541/coverage-43-breaks-nosetest-with-coverage
 
 
+.. _changes_43:
 
 Version 4.3 --- 2016-12-27
 --------------------------
+
+Special thanks to **Loïc Dachary**, who took an extraordinary interest in
+coverage.py and contributed a number of improvements in this release.
 
 - Subprocesses that are measured with `automatic subprocess measurement`_ used
   to read in any pre-existing data file.  This meant data would be incorrectly
@@ -49,8 +55,6 @@ Version 4.3 --- 2016-12-27
 
 - Coverage.py wouldn't execute `sys.excepthook`_ when an exception happened in
   your program.  Now it does, thanks to Andrew Hoos.  Closes `issue 535`_.
-
-.. _sys.excepthook: https://docs.python.org/3/library/sys.html#sys.excepthook
 
 - Branch coverage fixes:
 
@@ -139,6 +143,7 @@ Version 4.3 --- 2016-12-27
   contribute than by writing code. Also put the count of contributors into the
   author string in setup.py, though this might be too cute.
 
+.. _sys.excepthook: https://docs.python.org/3/library/sys.html#sys.excepthook
 .. _issue 265: https://bitbucket.org/ned/coveragepy/issues/265/when-using-source-include-is-silently
 .. _issue 412: https://bitbucket.org/ned/coveragepy/issues/412/coverage-combine-should-error-if-no
 .. _issue 433: https://bitbucket.org/ned/coveragepy/issues/433/coverage-html-does-not-suport-skip-covered
@@ -158,6 +163,8 @@ Version 4.3 --- 2016-12-27
 .. _issue 533: https://bitbucket.org/ned/coveragepy/issues/533/exception-on-unencodable-file-name
 .. _issue 535: https://bitbucket.org/ned/coveragepy/issues/535/sysexcepthook-is-not-called
 
+
+.. _changes_42:
 
 Version 4.2 --- 2016-07-26
 --------------------------
@@ -235,6 +242,8 @@ Work from the PyCon 2016 Sprints!
 .. _issue 492: https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
 .. _unittest-mixins: https://pypi.python.org/pypi/unittest-mixins
 
+
+.. _changes_41:
 
 Version 4.1 --- 2016-05-21
 --------------------------
@@ -390,6 +399,8 @@ Version 4.1b1 --- 2016-01-10
 .. _issue 461: https://bitbucket.org/ned/coveragepy/issues/461/multiline-asserts-need-too-many-pragma
 
 
+.. _changes_403:
+
 Version 4.0.3 --- 2015-11-24
 ----------------------------
 
@@ -415,6 +426,8 @@ Version 4.0.3 --- 2015-11-24
 .. _issue 445: https://bitbucket.org/ned/coveragepy/issues/445/django-app-cannot-connect-to-cassandra
 
 
+.. _changes_402:
+
 Version 4.0.2 --- 2015-11-04
 ----------------------------
 
@@ -433,6 +446,8 @@ Version 4.0.2 --- 2015-11-04
 .. _issue 432: https://bitbucket.org/ned/coveragepy/issues/432/path-with-unicode-characters-various
 .. _issue 436: https://bitbucket.org/ned/coveragepy/issues/436/disabled-coverage-ctracer-may-rise-from
 
+
+.. _changes_401:
 
 Version 4.0.1 --- 2015-10-13
 ----------------------------
@@ -480,6 +495,8 @@ Version 4.0.1 --- 2015-10-13
 .. _issue 423: https://bitbucket.org/ned/coveragepy/issues/423/skip_covered-changes-reported-total
 
 
+.. _changes_40:
+
 Version 4.0 --- 2015-09-20
 --------------------------
 
@@ -504,7 +521,6 @@ Version 4.0b3 --- 2015-09-07
 
 .. _issue 403: https://bitbucket.org/ned/coveragepy/issues/403/hasherupdate-fails-with-typeerror-nonetype
 .. _issue 404: https://bitbucket.org/ned/coveragepy/issues/404/shiningpanda-jenkins-plugin-cant-find-html
-
 
 
 Version 4.0b2 --- 2015-08-22
@@ -881,6 +897,8 @@ Version 4.0a1 --- 2014-09-27
 .. _issue 331: https://bitbucket.org/ned/coveragepy/issue/331/failure-of-encoding-detection-on-python2
 
 
+.. _changes_371:
+
 Version 3.7.1 --- 2013-12-13
 ----------------------------
 
@@ -889,6 +907,8 @@ Version 3.7.1 --- 2013-12-13
 - Fixed the mechanism for finding OS-installed static files for the HTML report
   so that it will actually find OS-installed static files.
 
+
+.. _changes_37:
 
 Version 3.7 --- 2013-10-06
 --------------------------
@@ -946,6 +966,8 @@ Version 3.7 --- 2013-10-06
 .. _issue 264: https://bitbucket.org/ned/coveragepy/issue/264/coverage-wont-run-pyc-files
 .. _issue 267: https://bitbucket.org/ned/coveragepy/issue/267/relative-path-aliases-dont-work
 
+
+.. _changes_36:
 
 Version 3.6 --- 2013-01-05
 --------------------------
@@ -1099,6 +1121,8 @@ Version 3.6b1 --- 2012-11-28
 .. _issue 214: https://bitbucket.org/ned/coveragepy/issue/214/coveragepy-measures-itself-on-precise
 
 
+.. _changes_353:
+
 Version 3.5.3 --- 2012-09-29
 ----------------------------
 
@@ -1137,6 +1161,8 @@ Version 3.5.3 --- 2012-09-29
 .. _issue 197: https://bitbucket.org/ned/coveragepy/issue/197/line-numbers-in-html-report-do-not-align
 .. _tox: http://tox.readthedocs.org/
 
+
+.. _changes_352:
 
 Version 3.5.2 --- 2012-05-04
 ----------------------------
@@ -1188,6 +1214,8 @@ Version 3.5.2b1 --- 2012-04-29
 .. _issue 173: https://bitbucket.org/ned/coveragepy/issue/173/theres-no-way-to-specify-show-missing-in
 
 
+.. _changes_351:
+
 Version 3.5.1 --- 2011-09-23
 ----------------------------
 
@@ -1234,6 +1262,8 @@ Version 3.5.1b1 --- 2011-08-28
 .. _issue 138: http://bitbucket.org/ned/coveragepy/issue/138/include-should-take-precedence-over-is
 .. _issue 144: http://bitbucket.org/ned/coveragepy/issue/144/failure-generating-html-output-for
 
+
+.. _changes_35:
 
 Version 3.5 --- 2011-06-29
 --------------------------
@@ -1322,6 +1352,8 @@ Version 3.5b1 --- 2011-06-05
 .. _issue 123: https://bitbucket.org/ned/coveragepy/issue/123/pyeval_settrace-used-in-way-that-breaks
 .. _issue 125: https://bitbucket.org/ned/coveragepy/issue/125/coverage-removes-decoratortoolss-tracing
 
+
+.. _changes_34:
 
 Version 3.4 --- 2010-09-19
 --------------------------
@@ -1450,6 +1482,8 @@ Version 3.4b1 --- 2010-08-21
 .. _issue 82: http://bitbucket.org/ned/coveragepy/issue/82/tokenerror-when-generating-html-report
 
 
+.. _changes_331:
+
 Version 3.3.1 --- 2010-03-06
 ----------------------------
 
@@ -1462,6 +1496,8 @@ Version 3.3.1 --- 2010-03-06
 .. _issue 49: http://bitbucket.org/ned/coveragepy/issue/49
 .. _issue 50: http://bitbucket.org/ned/coveragepy/issue/50
 
+
+.. _changes_33:
 
 Version 3.3 --- 2010-02-24
 --------------------------
@@ -1502,6 +1538,8 @@ Version 3.3 --- 2010-02-24
 .. _issue 47: http://bitbucket.org/ned/coveragepy/issue/47
 
 
+.. _changes_32:
+
 Version 3.2 --- 2009-12-05
 --------------------------
 
@@ -1521,7 +1559,7 @@ Version 3.2b4 --- 2009-12-01
 
 - On Python 3.x, setuptools has been replaced by `Distribute`_.
 
-.. _Distribute: http://packages.python.org/distribute/
+.. _Distribute: https://pypi.python.org/pypi/distribute
 
 
 Version 3.2b3 --- 2009-11-23
@@ -1578,6 +1616,8 @@ Version 3.2b1 --- 2009-11-10
 .. _issue 23: http://bitbucket.org/ned/coveragepy/issue/23
 
 
+.. _changes_31:
+
 Version 3.1 --- 2009-10-04
 --------------------------
 
@@ -1620,6 +1660,8 @@ Version 3.1b1 --- 2009-09-27
 .. _issue 24: http://bitbucket.org/ned/coveragepy/issue/24
 
 
+.. _changes_301:
+
 Version 3.0.1 --- 2009-07-07
 ----------------------------
 
@@ -1644,6 +1686,8 @@ Version 3.0.1 --- 2009-07-07
 .. _issue 10: http://bitbucket.org/ned/coveragepy/issue/10
 .. _issue 8: http://bitbucket.org/ned/coveragepy/issue/8
 
+
+.. _changes_30:
 
 Version 3.0 --- 2009-06-13
 --------------------------
