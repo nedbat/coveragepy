@@ -6,9 +6,11 @@
 import os
 import re
 
+import pytest
+
 import coverage
 from coverage.backward import StringIO
-from coverage.debug import info_formatter, info_header, short_stack
+from coverage.debug import info_formatter, info_header, short_id, short_stack
 
 from tests.coveragetest import CoverageTest
 
@@ -39,15 +41,23 @@ class InfoFormatterTest(CoverageTest):
         lines = list(info_formatter(('info%d' % i, i) for i in range(3)))
         self.assertEqual(lines, ['info0: 0', 'info1: 1', 'info2: 2'])
 
-    def test_info_header(self):
-        self.assertEqual(
-            info_header("x"),
-            "-- x ---------------------------------------------------------"
-        )
-        self.assertEqual(
-            info_header("hello there"),
-            "-- hello there -----------------------------------------------"
-        )
+
+@pytest.mark.parametrize("label, header", [
+    ("x",               "-- x ---------------------------------------------------------"),
+    ("hello there",     "-- hello there -----------------------------------------------"),
+])
+def test_info_header(label, header):
+    assert info_header(label) == header
+
+
+@pytest.mark.parametrize("id64, id16", [
+    (0x1234, 0x1234),
+    (0x12340000, 0x1234),
+    (0xA5A55A5A, 0xFFFF),
+    (0x1234cba956780fed, 0x8008),
+])
+def test_short_id(id64, id16):
+    assert short_id(id64) == id16
 
 
 class DebugTraceTest(CoverageTest):
