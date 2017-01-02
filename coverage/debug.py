@@ -170,10 +170,18 @@ class DebugOutputFile(object):                              # pragma: debugging
 
     def _write(self, text, stack=False):
         """The raw text-writer, so that we can use it ourselves."""
+        # Thread ids are useful, but too long. Make a shorter one.
         tid = _thread.get_ident()
-        for _ in range(4):
-            tid ^= tid >> 4
-        self.outfile.write("{0:5d}.{1:04x}: {2}".format(os.getpid(), tid & 0xFFFF, text))
+        stid = 0
+        for byte in range(4):
+            stid ^= tid >> (16 * byte)
+        stid = "{0:04x}".format(stid & 0xFFFF)
+
+        # Aspectlib prints stack traces, but includes its own frames.  Scrub those out:
+        # <<< aspectlib/__init__.py:257:function_wrapper < igor.py:143:run_tests < ...
+        text = re.sub(r"(?<= )aspectlib/[^.]+\.py:\d+:\w+ < ", "", text)
+
+        self.outfile.write("{0:5d}.{1}: {2}".format(os.getpid(), stid, text))
         self.outfile.flush()
         if stack:
             dump_stack_frames(out=self.outfile, skip=1)
@@ -205,7 +213,7 @@ def enable_aspectlib_maybe():                               # pragma: debugging
     import aspectlib.debug                      # pylint: disable=import-error
 
     aspects_file = DebugOutputFile.the_one()
-    aspect_log = aspectlib.debug.log(print_to=aspects_file, use_logging=False)
+    aspect_log = aspectlib.debug.log(print_to=aspects_file, attributes=['id'], stacktrace=30, use_logging=False)
     public_methods = re.compile(r'^(__init__|[a-zA-Z].*)$')
     for aspect in aspects.split(':'):
         aspectlib.weave(aspect, aspect_log, methods=public_methods)
