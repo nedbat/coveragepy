@@ -58,7 +58,7 @@ class PyTracer(object):
         atexit.register(setattr, self, 'in_atexit', True)
 
     def __repr__(self):
-        return "<PyTracer at 0x{0:0x}: {1} lines in {2} files>".format(
+        return "<PyTracer at {0}: {1} lines in {2} files>".format(
             id(self),
             sum(len(v) for v in self.data.values()),
             len(self.data),
@@ -133,10 +133,18 @@ class PyTracer(object):
         Return a Python function suitable for use with sys.settrace().
 
         """
-        if self.threading:
-            self.thread = self.threading.currentThread()
-        sys.settrace(self._trace)
         self.stopped = False
+        if self.threading:
+            if self.thread is None:
+                self.thread = self.threading.currentThread()
+            else:
+                if self.thread.ident != self.threading.currentThread().ident:
+                    # Re-starting from a different thread!? Don't set the trace
+                    # function, but we are marked as running again, so maybe it
+                    # will be ok?
+                    return self._trace
+
+        sys.settrace(self._trace)
         return self._trace
 
     def stop(self):
