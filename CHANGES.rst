@@ -50,7 +50,7 @@ coverage.py and contributed a number of improvements in this release.
 
 - The ``coverage combine`` command will now fail if there are no data files to
   combine. The combine changes in 4.2 meant that multiple combines could lose
-  data, leaving you with an empty .coverage data file. Fixes issues
+  data, leaving you with an empty .coverage data file. Fixes
   `issue 525`_, `issue 412`_, `issue 516`_, and probably `issue 511`_.
 
 - Coverage.py wouldn't execute `sys.excepthook`_ when an exception happened in
