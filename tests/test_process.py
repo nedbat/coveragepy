@@ -881,6 +881,7 @@ class AliasedCommandTest(CoverageTest):
 
     def test_wrong_alias_doesnt_work(self):
         # "coverage3" doesn't work on py2
+        assert sys.version_info[0] in [2, 3]    # Let us know when Python 4 is out...
         badcmd = "coverage%d" % (5 - sys.version_info[0])
         out = self.run_command(badcmd)
         self.assertNotIn("Code coverage for Python", out)

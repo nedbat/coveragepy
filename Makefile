@@ -7,6 +7,7 @@ default:
 	@echo "* No default action *"
 
 clean:
+	-pip uninstall -y coverage
 	-rm -f *.pyd */*.pyd
 	-rm -f *.so */*.so
 	-PYTHONPATH=. python tests/test_farm.py clean
