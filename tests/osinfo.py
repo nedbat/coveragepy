@@ -34,7 +34,7 @@ if env.WINDOWS:
             ctypes.byref(mem_struct),
             ctypes.sizeof(mem_struct)
         )
-        if not ret:
+        if not ret:                 # pragma: part covered
             return 0
         return mem_struct.PrivateUsage
 
@@ -50,12 +50,12 @@ elif env.LINUX:
             # Get pseudo file /proc/<pid>/status
             with open('/proc/%d/status' % os.getpid()) as t:
                 v = t.read()
-        except IOError:
+        except IOError:             # pragma: not covered
             return 0    # non-Linux?
         # Get VmKey line e.g. 'VmRSS:  9999  kB\n ...'
         i = v.index(key)
         v = v[i:].split(None, 3)
-        if len(v) < 3:
+        if len(v) < 3:              # pragma: part covered
             return 0    # Invalid format?
         # Convert Vm value to bytes.
         return int(float(v[1]) * _scale[v[2].lower()])
