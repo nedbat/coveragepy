@@ -505,6 +505,15 @@ class ProcessTest(CoverageTest):
         self.assertEqual(st, 0)
         self.assertEqual(self.line_count(out), 6, out)
 
+    def test_coverage_doubledashsource_module(self):
+        """ pkg1.sub is not a directory, verify the files it contains
+        and that were not run show in the report """
+        out = self.run_command("coverage run --source pkg1.sub -m pkg1.sub arg")
+        self.assertIn('pkg1.sub.__main__: passed', out)
+        st, out = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+        self.assertIn('runmod3.py', out)
+
     def test_coverage_run_script_imports_doubledashsource(self):
         # This file imports try_execfile, which compiles it to .pyc, so the
         # first run will have __file__ == "try_execfile.py" and the second will

@@ -159,6 +159,7 @@ class Coverage(object):
 
         # Other instance attributes, set later.
         self.omit = self.include = self.source = None
+        self.source_pkgs_unmatched = None
         self.source_pkgs = None
         self.data = self.data_files = self.collector = None
         self.plugins = None
@@ -223,6 +224,7 @@ class Coverage(object):
                 self.source.append(files.canonical_filename(src))
             else:
                 self.source_pkgs.append(src)
+        self.source_pkgs_unmatched = self.source_pkgs[:]
 
         self.omit = prep_patterns(self.config.omit)
         self.include = prep_patterns(self.config.include)
@@ -549,8 +551,8 @@ class Coverage(object):
         # stdlib and coverage.py directories.
         if self.source_match:
             if self.source_pkgs_match.match(modulename):
-                if modulename in self.source_pkgs:
-                    self.source_pkgs.remove(modulename)
+                if modulename in self.source_pkgs_unmatched:
+                    self.source_pkgs_unmatched.remove(modulename)
                 return None  # There's no reason to skip this file.
 
             if not self.source_match.match(filename):
@@ -815,10 +817,10 @@ class Coverage(object):
 
         self.collector.save_data(self.data)
 
-        # If there are still entries in the source_pkgs list, then we never
+        # If there are still entries in the source_pkgs_unmatched list, then we never
         # encountered those packages.
         if self._warn_unimported_source:
-            for pkg in self.source_pkgs:
+            for pkg in self.source_pkgs_unmatched:
                 if pkg not in sys.modules:
                     self._warn("Module %s was never imported." % pkg)
                 elif not (
@@ -833,8 +835,20 @@ class Coverage(object):
         if not self.data and self._warn_no_data:
             self._warn("No data was collected.")
 
+        src_directories = self.source[:]
+
+        for pkg in self.source_pkgs:
+            if (not pkg in sys.modules or
+                not hasattr(sys.modules[pkg], '__file__') or
+                not os.path.exists(sys.modules[pkg].__file__)):
+                continue
+            pkg_file = sys.modules[pkg].__file__
+            if not pkg_file.endswith(('__init__.py', '__init__.pyc', '__init__.pyo')):
+                continue
+            src_directories.append(self._canonical_dir(sys.modules[pkg]))
+
         # Find files that were never executed at all.
-        for src in self.source:
+        for src in src_directories:
             for py_file in find_python_files(src):
                 py_file = files.canonical_filename(py_file)
 
