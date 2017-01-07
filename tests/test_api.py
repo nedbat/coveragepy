@@ -579,6 +579,13 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
             summary[k[:-3]] = v
         return summary
 
+    def test_source_include_exclusive(self):
+        lines = self.coverage_usepkgs(source=["pkg1"], include=["pkg2"])
+        self.filenames_in(lines, "p1a p1b")
+        self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
+        out = self.stdout()
+        self.assertIn("--include is ignored", out)
+
     def test_source_package_as_dir(self):
         # pkg1 is a directory, since we cd'd into tests/modules in setUp.
         lines = self.coverage_usepkgs(source=["pkg1"])

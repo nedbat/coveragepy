@@ -54,12 +54,12 @@ class Reporter(object):
         """
         reporters = self.coverage._get_file_reporters(morfs)
 
-        if self.config.include:
-            matcher = FnmatchMatcher(prep_patterns(self.config.include))
+        if self.config.report_include:
+            matcher = FnmatchMatcher(prep_patterns(self.config.report_include))
             reporters = [fr for fr in reporters if matcher.match(fr.filename)]
 
-        if self.config.omit:
-            matcher = FnmatchMatcher(prep_patterns(self.config.omit))
+        if self.config.report_omit:
+            matcher = FnmatchMatcher(prep_patterns(self.config.report_omit))
             reporters = [fr for fr in reporters if not matcher.match(fr.filename)]
 
         self._file_reporters = sorted(reporters)

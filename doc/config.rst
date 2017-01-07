@@ -136,7 +136,8 @@ warning. See :ref:`cmd_warnings` for specific warnings.
 --debug option <cmd_run_debug>` for details.
 
 ``include`` (multi-string): a list of file name patterns, the files to include
-in measurement or reporting.  See :ref:`source` for details.
+in measurement or reporting.  Ignored if ``source`` is set.  See :ref:`source`
+for details.
 
 ``note`` (string): an arbitrary string that will be written to the data file.
 You can use the :meth:`CoverageData.run_infos` method to retrieve this string
@@ -153,7 +154,8 @@ many processes.  See :ref:`cmd_combining` for more information.
 for more information.
 
 ``source`` (multi-string): a list of packages or directories, the source to
-measure during execution.  See :ref:`source` for details.
+measure during execution.  If set, ``include`` is ignored. See :ref:`source`
+for details.
 
 ``timid`` (boolean, default False): use a simpler but slower trace method.
 This uses PyTracer instead of CTracer, and is only needed in very unusual

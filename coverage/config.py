@@ -178,6 +178,10 @@ class CoverageConfig(object):
         self.attempted_config_files = []
         self.config_files = []
 
+        # Defaults for [run] and [report]
+        self._include = None
+        self._omit = None
+
         # Defaults for [run]
         self.branch = False
         self.concurrency = None
@@ -189,14 +193,16 @@ class CoverageConfig(object):
         self.parallel = False
         self.plugins = []
         self.source = None
+        self.run_include = None
+        self.run_omit = None
         self.timid = False
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
         self.fail_under = 0
         self.ignore_errors = False
-        self.include = None
-        self.omit = None
+        self.report_include = None
+        self.report_omit = None
         self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
         self.partial_list = DEFAULT_PARTIAL[:]
         self.precision = 0
@@ -218,7 +224,8 @@ class CoverageConfig(object):
         # Options for plugins
         self.plugin_options = {}
 
-    MUST_BE_LIST = ["concurrency", "debug", "disable_warnings", "include", "omit", "plugins"]
+    MUST_BE_LIST = ["run_omit", "run_include", "report_omit", "report_include",
+                    "debug", "plugins", "concurrency"]
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
@@ -315,9 +322,9 @@ class CoverageConfig(object):
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
         ('disable_warnings', 'run:disable_warnings', 'list'),
-        ('include', 'run:include', 'list'),
+        ('_include', 'run:include', 'list'),
         ('note', 'run:note'),
-        ('omit', 'run:omit', 'list'),
+        ('_omit', 'run:omit', 'list'),
         ('parallel', 'run:parallel', 'boolean'),
         ('plugins', 'run:plugins', 'list'),
         ('source', 'run:source', 'list'),
@@ -327,8 +334,8 @@ class CoverageConfig(object):
         ('exclude_list', 'report:exclude_lines', 'regexlist'),
         ('fail_under', 'report:fail_under', 'int'),
         ('ignore_errors', 'report:ignore_errors', 'boolean'),
-        ('include', 'report:include', 'list'),
-        ('omit', 'report:omit', 'list'),
+        ('_include', 'report:include', 'list'),
+        ('_omit', 'report:omit', 'list'),
         ('partial_always_list', 'report:partial_branches_always', 'regexlist'),
         ('partial_list', 'report:partial_branches', 'regexlist'),
         ('precision', 'report:precision', 'int'),
@@ -458,6 +465,12 @@ def read_coverage_config(config_file, **kwargs):
 
             if config_read:
                 break
+
+        for attr in ('_omit', '_include'):
+            value = getattr(config, attr)
+            if value is not None:
+                for section in ('run', 'report'):
+                    setattr(config, section + attr, value)
 
     # 3) from environment variables:
     env_data_file = os.environ.get('COVERAGE_FILE')

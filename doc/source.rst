@@ -66,6 +66,9 @@ are interpreted relative to the current directory::
 The ``source``, ``include``, and ``omit`` values all work together to determine
 the source that will be measured.
 
+If both ``source`` and ``include`` are set, the ``include`` value is ignored
+and a warning is printed on the standard output.
+
 
 .. _source_reporting:
 

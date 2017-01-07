@@ -264,6 +264,8 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         cover_pylib = TRUE
         parallel = on
         concurrency = thread
+        ; this omit is overriden by the omit from [report]
+        omit = twenty
         source = myapp
         plugins =
             plugins.a_plugin
@@ -283,6 +285,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         omit =
             one, another, some_more,
                 yet_more
+        include = thirty
         precision = 3
 
         partial_branches =
@@ -354,7 +357,9 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
 
         self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])
         self.assertTrue(cov.config.ignore_errors)
-        self.assertEqual(cov.config.omit, ["one", "another", "some_more", "yet_more"])
+        self.assertEqual(cov.config.run_omit, cov.config.report_omit)
+        self.assertEqual(cov.config.report_omit, ["one", "another", "some_more", "yet_more"])
+        self.assertEqual(cov.config.report_include, ["thirty"])
         self.assertEqual(cov.config.precision, 3)
 
         self.assertEqual(cov.config.partial_list, [r"pragma:?\s+no branch"])
@@ -423,8 +428,8 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             branch = true
             """)
         cov = coverage.Coverage()
-        self.assertEqual(cov.config.include, ["foo"])
-        self.assertEqual(cov.config.omit, None)
+        self.assertEqual(cov.config.run_include, ["foo"])
+        self.assertEqual(cov.config.run_omit, None)
         self.assertEqual(cov.config.branch, False)
 
     def test_setupcfg_only_if_not_coveragerc(self):
@@ -441,7 +446,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             branch = true
             """)
         cov = coverage.Coverage()
-        self.assertEqual(cov.config.omit, None)
+        self.assertEqual(cov.config.run_omit, None)
         self.assertEqual(cov.config.branch, False)
 
     def test_setupcfg_only_if_prefixed(self):
