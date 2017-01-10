@@ -360,38 +360,6 @@ class Coverage(object):
         morf_filename = PythonFileReporter(morf, self).filename
         return os.path.split(morf_filename)[0]
 
-    def _source_for_file(self, filename):
-        """Return the source file for `filename`.
-
-        Given a file name being traced, return the best guess as to the source
-        file to attribute it to.
-
-        """
-        if filename.endswith(".py"):
-            # .py files are themselves source files.
-            return filename
-
-        elif filename.endswith((".pyc", ".pyo")):
-            # Bytecode files probably have source files near them.
-            py_filename = filename[:-1]
-            if os.path.exists(py_filename):
-                # Found a .py file, use that.
-                return py_filename
-            if env.WINDOWS:
-                # On Windows, it could be a .pyw file.
-                pyw_filename = py_filename + "w"
-                if os.path.exists(pyw_filename):
-                    return pyw_filename
-            # Didn't find source, but it's probably the .py file we want.
-            return py_filename
-
-        elif filename.endswith("$py.class"):
-            # Jython is easy to guess.
-            return filename[:-9] + ".py"
-
-        # No idea, just use the file name as-is.
-        return filename
-
     def _name_for_module(self, module_globals, filename):
         """Get the name of the module for a set of globals and file name.
 
