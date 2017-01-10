@@ -105,6 +105,7 @@ class HtmlReporter(Reporter):
         self.coverage = cov
 
         self.files = []
+        self.files_skip_covered = []
         self.has_arcs = self.coverage.data.has_arcs()
         self.status = HtmlStatus()
         self.extra_css = None
@@ -137,7 +138,7 @@ class HtmlReporter(Reporter):
         # Process all the files.
         self.report_files(self.html_file, morfs, self.config.html_dir)
 
-        if not self.files:
+        if not self.files and not self.files_skip_covered:
             raise CoverageException("No data to report.")
 
         # Write the index file.
@@ -178,6 +179,7 @@ class HtmlReporter(Reporter):
             no_missing_lines = (nums.n_missing == 0)
             no_missing_branches = (nums.n_partial_branches == 0)
             if no_missing_lines and no_missing_branches:
+                self.files_skip_covered.append(nums)
                 return
 
         source = fr.source()
@@ -292,7 +294,7 @@ class HtmlReporter(Reporter):
         """Write the index.html file for this report."""
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
 
-        self.totals = sum(f['nums'] for f in self.files)
+        self.totals = sum([f['nums'] for f in self.files] + self.files_skip_covered)
 
         html = index_tmpl.render({
             'has_arcs': self.has_arcs,
