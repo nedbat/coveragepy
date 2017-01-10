@@ -810,8 +810,8 @@ class Coverage(object):
                 not hasattr(sys.modules[pkg], '__file__') or
                 not os.path.exists(sys.modules[pkg].__file__)):
                 continue
-            pkg_file = sys.modules[pkg].__file__
-            if not pkg_file.endswith(('__init__.py', '__init__.pyc', '__init__.pyo')):
+            pkg_file = source_for_file(sys.modules[pkg].__file__)
+            if not pkg_file.endswith('__init__.py'):
                 continue
             src_directories.append(self._canonical_dir(sys.modules[pkg]))
 

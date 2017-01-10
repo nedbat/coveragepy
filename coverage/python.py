@@ -139,13 +139,7 @@ class PythonFileReporter(FileReporter):
         else:
             filename = morf
 
-        filename = files.unicode_filename(filename)
-
-        # .pyc files should always refer to a .py instead.
-        if filename.endswith(('.pyc', '.pyo')):
-            filename = filename[:-1]
-        elif filename.endswith('$py.class'):   # Jython
-            filename = filename[:-9] + ".py"
+        filename = source_for_file(files.unicode_filename(filename))
 
         super(PythonFileReporter, self).__init__(files.canonical_filename(filename))
 
