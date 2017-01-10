@@ -811,6 +811,12 @@ class Coverage(object):
                 not os.path.exists(sys.modules[pkg].__file__)):
                 continue
             pkg_file = source_for_file(sys.modules[pkg].__file__)
+            #
+            # Do not explore the souce tree of a module that is
+            # not a directory tree. For instance if
+            #    sys.modules['args'].__file__ == /lib/python2.7/site-packages/args.pyc
+            # we do not want to explore all of /lib/python2.7/site-packages
+            #
             if not pkg_file.endswith('__init__.py'):
                 continue
             src_directories.append(self._canonical_dir(sys.modules[pkg]))
