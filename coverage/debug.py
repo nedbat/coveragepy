@@ -202,8 +202,9 @@ def enable_aspectlib_maybe():                               # pragma: debugging
     Define COVERAGE_ASPECTLIB to enable and configure aspectlib to trace
     execution::
 
-        export COVERAGE_LOG=covaspect.txt
-        COVERAGE_ASPECTLIB=coverage.Coverage:coverage.data.CoverageData program...
+        $ export COVERAGE_LOG=covaspect.txt
+        $ export COVERAGE_ASPECTLIB=coverage.Coverage:coverage.data.CoverageData
+        $ coverage run blah.py ...
 
     This will trace all the public methods on Coverage and CoverageData,
     writing the information to covaspect.txt.
