@@ -149,7 +149,12 @@ The source is pylint-clean, even if it's because there are pragmas quieting
 some warnings.  Please try to keep it that way, but don't let pylint warnings
 keep you from sending patches.  I can clean them up.
 
-Lines should be kept to a 100-character maximum length.
+Lines should be kept to a 100-character maximum length.  I recommend an
+`editorconfig.org`_ plugin for your editor of choice.
+
+Other style questions are best answered by looking at the existing code.
+Formatting of docstrings, comments, long lines, and so on, should match the
+code that already exists.
 
 
 Coverage testing coverage.py
@@ -170,8 +175,9 @@ Contributing
 
 When you are ready to contribute a change, any way you can get it to me is
 probably fine.  A pull request on Bitbucket is great, but a simple diff or
-patch is great too.
+patch works too.
 
 
+.. _editorconfig.org: http://editorconfig.org
 .. _Mercurial: https://www.mercurial-scm.org/
 .. _tox: http://tox.testrun.org/
