@@ -27,7 +27,7 @@ from coverage.misc import file_be_gone, isolate_module
 from coverage.multiproc import patch_multiprocessing
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
-from coverage.python import PythonFileReporter
+from coverage.python import PythonFileReporter, source_for_file
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
@@ -422,7 +422,7 @@ class Coverage(object):
         # co_filename value.
         dunder_file = frame.f_globals.get('__file__')
         if dunder_file:
-            filename = self._source_for_file(dunder_file)
+            filename = source_for_file(dunder_file)
             if original_filename and not original_filename.startswith('<'):
                 orig = os.path.basename(original_filename)
                 if orig != os.path.basename(filename):

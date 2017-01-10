@@ -91,7 +91,7 @@ def get_zip_bytes(filename):
     return None
 
 
-def _source_for_file(self, filename):
+def source_for_file(filename):
     """Return the source file for `filename`.
 
     Given a file name being traced, return the best guess as to the source
