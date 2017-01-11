@@ -483,7 +483,8 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
                 print("z")
             normal()
         """)
-        assert self.run_coverage(covargs=dict(source="."), htmlargs=dict(skip_covered=True)) == 100.0
+        res = self.run_coverage(covargs=dict(source="."), htmlargs=dict(skip_covered=True))
+        self.assertEqual(res, 100.0)
         self.assert_doesnt_exist("htmlcov/main_file_py.html")
 
     def test_report_skip_covered_branches(self):
