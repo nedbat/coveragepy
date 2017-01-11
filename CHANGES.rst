@@ -9,6 +9,10 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Using the ``--skip-covered`` option on an HTML report with 100% coverage
+  would cause a "No data to report" error, as reported in `issue 549`_. This is
+  now fixed; thanks, Loïc Dachary.
+
 - If you started and stopped coverage measurement thousands of times in your
   process, you could crash Python with a "Fatal Python error: deallocating
   None" error.  This is now fixed.  Thanks to Alex Groce for the bug report.
@@ -16,6 +20,8 @@ Unreleased
 - On PyPy, measuring coverage in subprocesses could produce a warning: "Trace
   function changed, measurement is likely wrong: None".  This was spurious, and
   has been suppressed.
+
+.. _issue 549: https://bitbucket.org/ned/coveragepy/issues/549/skip-covered-with-100-coverage-throws-a-no
 
 
 .. _changes_431:
