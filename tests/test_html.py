@@ -47,7 +47,7 @@ class HtmlTestHelpers(CoverageTest):
         self.clean_local_file_imports()
         cov = coverage.Coverage(**(covargs or {}))
         self.start_import_stop(cov, "main_file")
-        cov.html_report(**(htmlargs or {}))
+        return cov.html_report(**(htmlargs or {}))
 
     def remove_html_files(self):
         """Remove the HTML files created as part of the HTML report."""
@@ -463,6 +463,15 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/index.html")
         self.assert_doesnt_exist("htmlcov/main_file_py.html")
         self.assert_exists("htmlcov/not_covered_py.html")
+
+    def test_report_skip_covered_100(self):
+        self.make_file("main_file.py", """
+            def normal():
+                print("z")
+            normal()
+        """)
+        assert self.run_coverage(covargs=dict(source="."), htmlargs=dict(skip_covered=True)) == 100.0
+        self.assert_doesnt_exist("htmlcov/main_file_py.html")
 
     def test_report_skip_covered_branches(self):
         self.make_file("main_file.py", """
