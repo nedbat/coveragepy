@@ -693,13 +693,9 @@ class CmdMainTest(CoverageTest):
 
     def setUp(self):
         super(CmdMainTest, self).setUp()
-        self.old_CoverageScript = coverage.cmdline.CoverageScript
+        old_CoverageScript = coverage.cmdline.CoverageScript
         coverage.cmdline.CoverageScript = self.CoverageScriptStub
-        self.addCleanup(self.cleanup_coverage_script)
-
-    def cleanup_coverage_script(self):
-        """Restore CoverageScript when the test is done."""
-        coverage.cmdline.CoverageScript = self.old_CoverageScript
+        self.addCleanup(setattr, coverage.cmdline, 'CoverageScript', old_CoverageScript)
 
     def test_normal(self):
         ret = coverage.cmdline.main(['hello'])
