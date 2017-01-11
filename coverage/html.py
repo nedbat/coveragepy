@@ -12,7 +12,7 @@ import coverage
 from coverage import env
 from coverage.backward import iitems
 from coverage.files import flat_rootname
-from coverage.misc import CoverageException, Hasher, isolate_module
+from coverage.misc import CoverageException, file_be_gone, Hasher, isolate_module
 from coverage.report import Reporter
 from coverage.results import Numbers
 from coverage.templite import Templite
@@ -172,20 +172,26 @@ class HtmlReporter(Reporter):
 
     def html_file(self, fr, analysis):
         """Generate an HTML file for one source file."""
+        rootname = flat_rootname(fr.relative_filename())
+        html_filename = rootname + ".html"
+        html_path = os.path.join(self.directory, html_filename)
+
         # Get the numbers for this file.
         nums = analysis.numbers
         self.all_files_nums.append(nums)
+
         if self.config.skip_covered:
             # Don't report on 100% files.
             no_missing_lines = (nums.n_missing == 0)
             no_missing_branches = (nums.n_partial_branches == 0)
             if no_missing_lines and no_missing_branches:
+                # If there's an existing file, remove it.
+                file_be_gone(html_path)
                 return
 
         source = fr.source()
 
         # Find out if the file on disk is already correct.
-        rootname = flat_rootname(fr.relative_filename())
         this_hash = self.file_hash(source.encode('utf-8'), fr)
         that_hash = self.status.file_hash(rootname)
         if this_hash == that_hash:
@@ -277,8 +283,6 @@ class HtmlReporter(Reporter):
             'time_stamp': self.time_stamp,
         })
 
-        html_filename = rootname + ".html"
-        html_path = os.path.join(self.directory, html_filename)
         write_html(html_path, html)
 
         # Save this file's information for the index file.

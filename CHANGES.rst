@@ -21,6 +21,12 @@ Unreleased
   function changed, measurement is likely wrong: None".  This was spurious, and
   has been suppressed.
 
+- Let's say you ran the HTML report over and over again in the same output
+  directory, with ``--skip-covered``. And imagine due to your heroic
+  test-writing efforts, a file just acheived the goal of 100% coverage. With
+  coverage.py 4.3, the old HTML file with the less-than-100% coverage would be
+  left behind.  This file is now properly deleted.
+
 .. _issue 549: https://bitbucket.org/ned/coveragepy/issues/549/skip-covered-with-100-coverage-throws-a-no
 
 
