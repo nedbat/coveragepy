@@ -14,7 +14,7 @@ import sys
 
 import pytest
 
-from unittest_mixins import ModuleAwareMixin, SysPathAwareMixin, change_dir, saved_sys_path
+from unittest_mixins import ModuleAwareMixin, SysPathAwareMixin, change_dir
 from tests.helpers import run_command
 from tests.backtest import execfile         # pylint: disable=redefined-builtin
 
@@ -295,8 +295,10 @@ def contains_any(filename, *strlist):
     for s in strlist:
         if s in text:
             return
-    else:   # pragma: only failure
-        assert False, "Missing content in %s: %r [1 of %d]" % (filename, strlist[0], len(strlist),)
+
+    assert False, (                         # pragma: only failure
+        "Missing content in %s: %r [1 of %d]" % (filename, strlist[0], len(strlist),)
+    )
 
 
 def doesnt_contain(filename, *strlist):
