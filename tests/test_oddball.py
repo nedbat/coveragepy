@@ -179,17 +179,17 @@ class MemoryLeakTest(CoverageTest):
             # Running the code 10k times shouldn't grow the ram much more than
             # running it 10 times.
             ram_growth = (ram_10k - ram_10) - (ram_10 - ram_0)
-            if ram_growth > 100000:                     # pragma: if failure
-                fails += 1
+            if ram_growth > 100000:
+                fails += 1                                  # pragma: only failure
 
-        if fails > 8:                                   # pragma: if failure
-            self.fail("RAM grew by %d" % (ram_growth))
+        if fails > 8:
+            self.fail("RAM grew by %d" % (ram_growth))      # pragma: only failure
 
 
 class MemoryFumblingTest(CoverageTest):
     """Test that we properly manage the None refcount."""
 
-    def test_dropping_none(self):
+    def test_dropping_none(self):                           # pragma: not covered
         if not env.C_TRACER:
             self.skipTest("Only the C tracer has refcounting issues")
         # TODO: Mark this so it will only be run sometimes.
@@ -491,7 +491,7 @@ class GettraceTest(CoverageTest):
         )
 
     @pytest.mark.expensive
-    def test_atexit_gettrace(self):
+    def test_atexit_gettrace(self):             # pragma: not covered
         # This is not a test of coverage at all, but of our understanding
         # of this edge-case behavior in various Pythons.
         if env.METACOV:

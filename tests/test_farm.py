@@ -85,7 +85,7 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
         """Test tear down, run by the test runner after __call__."""
         # Make sure the test is cleaned up, unless we never want to, or if the
         # test failed.
-        if not self.dont_clean and self.ok:         # pragma: part covered
+        if not self.dont_clean and self.ok:             # pragma: part covered
             self.clean_only = True
             self()
 
@@ -95,19 +95,19 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
         # don't do cleanups in that case.  Do them now.
         self.doCleanups()
 
-    def runTest(self):
+    def runTest(self):                                  # pragma: not covered
         """Here to make unittest.TestCase happy, but will never be invoked."""
         raise Exception("runTest isn't used in this class!")
 
     def __call__(self):
         """Execute the test from the run.py file."""
-        if _TEST_NAME_FILE:                                 # pragma: debugging
+        if _TEST_NAME_FILE:                             # pragma: debugging
             with open(_TEST_NAME_FILE, "w") as f:
                 f.write(self.description.replace("/", "_"))
 
         # Prepare a dictionary of globals for the run.py files to use.
         fns = """
-            copy run runfunc clean skip
+            copy run clean skip
             compare contains contains_any doesnt_contain
             """.split()
         if self.clean_only:
@@ -169,24 +169,10 @@ def run(cmds, rundir="src", outfile=None):
                 if outfile:
                     fout.write(output)
                 if retcode:
-                    raise Exception("command exited abnormally")
+                    raise Exception("command exited abnormally")    # pragma: only failure
         finally:
             if outfile:
                 fout.close()
-
-
-def runfunc(fn, rundir="src", addtopath=None):
-    """Run a function.
-
-    `fn` is a callable.
-    `rundir` is the directory in which to run the function.
-
-    """
-    with change_dir(rundir):
-        with saved_sys_path():
-            if addtopath is not None:
-                sys.path.insert(0, addtopath)
-            fn()
 
 
 def compare(
@@ -249,9 +235,9 @@ def compare(
             if (big - little) / float(little) > size_within/100.0:
                 # print "%d %d" % (big, little)
                 # print "Left: ---\n%s\n-----\n%s" % (left, right)
-                wrong_size.append("%s (%s,%s)" % (f, size_l, size_r))
+                wrong_size.append("%s (%s,%s)" % (f, size_l, size_r))   # pragma: only failure
         if wrong_size:
-            print("File sizes differ between %s and %s: %s" % (
+            print("File sizes differ between %s and %s: %s" % (         # pragma: only failure
                 dir1, dir2, ", ".join(wrong_size)
             ))
 
@@ -271,7 +257,7 @@ def compare(
             if scrubs:
                 left = scrub(left, scrubs)
                 right = scrub(right, scrubs)
-            if left != right:
+            if left != right:                           # pragma: only failure
                 text_diff.append(f)
                 left = left.splitlines()
                 right = right.splitlines()
@@ -309,7 +295,8 @@ def contains_any(filename, *strlist):
     for s in strlist:
         if s in text:
             return
-    assert False, "Missing content in %s: %r [1 of %d]" % (filename, strlist[0], len(strlist),)
+    else:   # pragma: only failure
+        assert False, "Missing content in %s: %r [1 of %d]" % (filename, strlist[0], len(strlist),)
 
 
 def doesnt_contain(filename, *strlist):
@@ -407,5 +394,5 @@ def main():     # pragma: not covered
         print(main.__doc__)
 
 # So that we can run just one farm run.py at a time.
-if __name__ == '__main__':
+if __name__ == '__main__':          # pragma: not covered
     main()
