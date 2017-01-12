@@ -30,12 +30,13 @@ clean:
 sterile: clean
 	-rm -rf .tox*
 
-LINTABLE = coverage igor.py setup.py tests ci/*.py
+LINTABLE = coverage tests igor.py setup.py __main__.py
 
 lint:
-	-pylint $(LINTABLE)
-	python -m tabnanny $(LINTABLE)
-	python igor.py check_eol
+	tox -e lint
+
+todo:
+	-grep -R --include=*.py TODO $(LINTABLE)
 
 spell:
 	-pylint --disable=all --enable=spelling $(LINTABLE)
