@@ -6,6 +6,7 @@
 import contextlib
 import datetime
 import glob
+import itertools
 import os
 import random
 import re
@@ -73,7 +74,7 @@ class CoverageTest(
         # Also have to clean out the .pyc file, since the timestamp
         # resolution is only one second, a changed file might not be
         # picked up.
-        for pyc in glob.glob('*.pyc'):
+        for pyc in itertools.chain(glob.glob('*.pyc'), glob.glob('*$py.class')):
             os.remove(pyc)
         if os.path.exists("__pycache__"):
             shutil.rmtree("__pycache__")

@@ -3,7 +3,6 @@
 
 """Tests for concurrency libraries."""
 
-import multiprocessing
 import threading
 
 import coverage
@@ -16,6 +15,11 @@ from tests.coveragetest import CoverageTest
 # These libraries aren't always available, we'll skip tests if they aren't.
 
 try:
+    import multiprocessing
+except ImportError:         # pragma: only jython
+    multiprocessing = None
+
+try:
     import eventlet
 except ImportError:
     eventlet = None
@@ -25,7 +29,10 @@ try:
 except ImportError:
     gevent = None
 
-import greenlet
+try:
+    import greenlet
+except ImportError:         # pragma: only jython
+    greenlet = None
 
 
 def measurable_line(l):
@@ -344,6 +351,11 @@ MULTI_CODE = """
 
 class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
+
+    def setUp(self):
+        if not multiprocessing:
+            self.skip("No multiprocessing in this Python")      # pragma: only jython
+        super(MultiprocessingTest, self).setUp()
 
     def try_multiprocessing_code(
         self, code, expected_out, the_module, concurrency="multiprocessing"

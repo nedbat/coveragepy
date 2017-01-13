@@ -24,13 +24,18 @@ from coverage.files import ModuleMatcher, abs_file
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone, isolate_module
-from coverage.multiproc import patch_multiprocessing
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
+
+try:
+    from coverage.multiproc import patch_multiprocessing
+except ImportError:                                         # pragma: only jython
+    # Jython has no multiprocessing module.
+    patch_multiprocessing = None
 
 os = isolate_module(os)
 
@@ -229,6 +234,10 @@ class Coverage(object):
 
         concurrency = self.config.concurrency or []
         if "multiprocessing" in concurrency:
+            if not patch_multiprocessing:
+                raise CoverageException(                    # pragma: only jython
+                    "multiprocessing is not supported on this Python"
+                )
             patch_multiprocessing(rcfile=self.config_file)
             # Multi-processing uses parallel for the subprocesses, so also use
             # it for the main process.

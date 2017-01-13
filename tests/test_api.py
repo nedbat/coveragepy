@@ -35,7 +35,7 @@ class ApiTest(CoverageTest):
     def assertFiles(self, files):
         """Assert that the files here are `files`, ignoring the usual junk."""
         here = os.listdir(".")
-        here = self.clean_files(here, ["*.pyc", "__pycache__"])
+        here = self.clean_files(here, ["*.pyc", "__pycache__", "*$py.class"])
         self.assertCountEqual(here, files)
 
     def test_unexecuted_file(self):
