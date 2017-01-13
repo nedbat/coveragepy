@@ -47,8 +47,13 @@ pep8:
 test:
 	tox -e py27,py35 $(ARGS)
 
+TOX_SMOKE_ARGS = -n 6 -m "not expensive" --maxfail=3 $(ARGS)
+
 smoke:
-	COVERAGE_NO_PYTRACER=1 tox -e py27,py35 -- -n 6 -m "not expensive" $(ARGS)
+	COVERAGE_NO_PYTRACER=1 tox -e py27,py35 -- $(TOX_SMOKE_ARGS)
+
+pysmoke:
+	COVERAGE_NO_CTRACER=1 tox -e py27,py35 -- $(TOX_SMOKE_ARGS)
 
 metacov:
 	COVERAGE_COVERAGE=yes tox $(ARGS)
