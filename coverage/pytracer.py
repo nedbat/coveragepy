@@ -116,8 +116,9 @@ class PyTracer(object):
             if self.trace_arcs and self.cur_file_dict:
                 # Record an arc leaving the function, but beware that a
                 # "return" event might just mean yielding from a generator.
-                bytecode = frame.f_code.co_code[frame.f_lasti]
-                if bytecode != YIELD_VALUE:
+                # Jython seems to have an empty co_code, so just assume return.
+                code = frame.f_code.co_code
+                if (not code) or code[frame.f_lasti] != YIELD_VALUE:
                     first = frame.f_code.co_firstlineno
                     self.cur_file_dict[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
