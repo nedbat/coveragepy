@@ -26,7 +26,7 @@ from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone, isolate_module
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
-from coverage.python import PythonFileReporter
+from coverage.python import PythonFileReporter, source_for_file
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
@@ -164,6 +164,7 @@ class Coverage(object):
 
         # Other instance attributes, set later.
         self.omit = self.include = self.source = None
+        self.source_pkgs_unmatched = None
         self.source_pkgs = None
         self.data = self.data_files = self.collector = None
         self.plugins = None
@@ -228,6 +229,7 @@ class Coverage(object):
                 self.source.append(files.canonical_filename(src))
             else:
                 self.source_pkgs.append(src)
+        self.source_pkgs_unmatched = self.source_pkgs[:]
 
         self.omit = prep_patterns(self.config.omit)
         self.include = prep_patterns(self.config.include)
@@ -367,38 +369,6 @@ class Coverage(object):
         morf_filename = PythonFileReporter(morf, self).filename
         return os.path.split(morf_filename)[0]
 
-    def _source_for_file(self, filename):
-        """Return the source file for `filename`.
-
-        Given a file name being traced, return the best guess as to the source
-        file to attribute it to.
-
-        """
-        if filename.endswith(".py"):
-            # .py files are themselves source files.
-            return filename
-
-        elif filename.endswith((".pyc", ".pyo")):
-            # Bytecode files probably have source files near them.
-            py_filename = filename[:-1]
-            if os.path.exists(py_filename):
-                # Found a .py file, use that.
-                return py_filename
-            if env.WINDOWS:
-                # On Windows, it could be a .pyw file.
-                pyw_filename = py_filename + "w"
-                if os.path.exists(pyw_filename):
-                    return pyw_filename
-            # Didn't find source, but it's probably the .py file we want.
-            return py_filename
-
-        elif filename.endswith("$py.class"):
-            # Jython is easy to guess.
-            return filename[:-9] + ".py"
-
-        # No idea, just use the file name as-is.
-        return filename
-
     def _name_for_module(self, module_globals, filename):
         """Get the name of the module for a set of globals and file name.
 
@@ -461,7 +431,7 @@ class Coverage(object):
         # co_filename value.
         dunder_file = frame.f_globals.get('__file__')
         if dunder_file:
-            filename = self._source_for_file(dunder_file)
+            filename = source_for_file(dunder_file)
             if original_filename and not original_filename.startswith('<'):
                 orig = os.path.basename(original_filename)
                 if orig != os.path.basename(filename):
@@ -558,8 +528,8 @@ class Coverage(object):
         # stdlib and coverage.py directories.
         if self.source_match:
             if self.source_pkgs_match.match(modulename):
-                if modulename in self.source_pkgs:
-                    self.source_pkgs.remove(modulename)
+                if modulename in self.source_pkgs_unmatched:
+                    self.source_pkgs_unmatched.remove(modulename)
                 return None  # There's no reason to skip this file.
 
             if not self.source_match.match(filename):
@@ -824,10 +794,10 @@ class Coverage(object):
 
         self.collector.save_data(self.data)
 
-        # If there are still entries in the source_pkgs list, then we never
+        # If there are still entries in the source_pkgs_unmatched list, then we never
         # encountered those packages.
         if self._warn_unimported_source:
-            for pkg in self.source_pkgs:
+            for pkg in self.source_pkgs_unmatched:
                 if pkg not in sys.modules:
                     self._warn("Module %s was never imported." % pkg)
                 elif not (
@@ -842,8 +812,26 @@ class Coverage(object):
         if not self.data and self._warn_no_data:
             self._warn("No data was collected.")
 
+        src_directories = self.source[:]
+
+        for pkg in self.source_pkgs:
+            if (not pkg in sys.modules or
+                not hasattr(sys.modules[pkg], '__file__') or
+                not os.path.exists(sys.modules[pkg].__file__)):
+                continue
+            pkg_file = source_for_file(sys.modules[pkg].__file__)
+            #
+            # Do not explore the souce tree of a module that is
+            # not a directory tree. For instance if
+            #    sys.modules['args'].__file__ == /lib/python2.7/site-packages/args.pyc
+            # we do not want to explore all of /lib/python2.7/site-packages
+            #
+            if not pkg_file.endswith('__init__.py'):
+                continue
+            src_directories.append(self._canonical_dir(sys.modules[pkg]))
+
         # Find files that were never executed at all.
-        for src in self.source:
+        for src in src_directories:
             for py_file in find_python_files(src):
                 py_file = files.canonical_filename(py_file)
 

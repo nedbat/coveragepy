@@ -91,6 +91,39 @@ def get_zip_bytes(filename):
     return None
 
 
+def source_for_file(filename):
+    """Return the source file for `filename`.
+
+    Given a file name being traced, return the best guess as to the source
+    file to attribute it to.
+
+    """
+    if filename.endswith(".py"):
+        # .py files are themselves source files.
+        return filename
+
+    elif filename.endswith((".pyc", ".pyo")):
+        # Bytecode files probably have source files near them.
+        py_filename = filename[:-1]
+        if os.path.exists(py_filename):
+            # Found a .py file, use that.
+            return py_filename
+        if env.WINDOWS:
+            # On Windows, it could be a .pyw file.
+            pyw_filename = py_filename + "w"
+            if os.path.exists(pyw_filename):
+                return pyw_filename
+        # Didn't find source, but it's probably the .py file we want.
+        return py_filename
+
+    elif filename.endswith("$py.class"):
+        # Jython is easy to guess.
+        return filename[:-9] + ".py"
+
+    # No idea, just use the file name as-is.
+    return filename
+
+
 class PythonFileReporter(FileReporter):
     """Report support for a Python file."""
 
@@ -106,13 +139,7 @@ class PythonFileReporter(FileReporter):
         else:
             filename = morf
 
-        filename = files.unicode_filename(filename)
-
-        # .pyc files should always refer to a .py instead.
-        if filename.endswith(('.pyc', '.pyo')):
-            filename = filename[:-1]
-        elif filename.endswith('$py.class'):   # Jython
-            filename = filename[:-9] + ".py"
+        filename = source_for_file(files.unicode_filename(filename))
 
         super(PythonFileReporter, self).__init__(files.canonical_filename(filename))
 
