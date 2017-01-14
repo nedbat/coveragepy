@@ -10,10 +10,10 @@ import locale
 import os
 import sys
 import types
-import unittest
 
 from coverage import env
 from coverage.backward import to_bytes, unicode_class
+from coverage.backunittest import unittest
 
 ISOLATED_MODULES = {}
 
