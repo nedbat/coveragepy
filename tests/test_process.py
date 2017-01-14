@@ -19,8 +19,6 @@ from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
 
-TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try_execfile.py")
-
 
 class ProcessTest(CoverageTest):
     """Tests of the per-process behavior of coverage.py."""
@@ -438,128 +436,6 @@ class ProcessTest(CoverageTest):
         self.assertEqual(status, status2)
         self.assertEqual(status, 0)
 
-    def assert_execfile_output(self, out):
-        """Assert that the output we got is a successful run of try_execfile.py"""
-        self.assertIn('"DATA": "xyzzy"', out)
-
-    def test_coverage_run_is_like_python(self):
-        with open(TRY_EXECFILE) as f:
-            self.make_file("run_me.py", f.read())
-        out_cov = self.run_command("coverage run run_me.py")
-        out_py = self.run_command("python run_me.py")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
-
-    def test_coverage_run_dashm_is_like_python_dashm(self):
-        # These -m commands assume the coverage tree is on the path.
-        out_cov = self.run_command("coverage run -m process_test.try_execfile")
-        out_py = self.run_command("python -m process_test.try_execfile")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
-
-    def test_coverage_run_dir_is_like_python_dir(self):
-        with open(TRY_EXECFILE) as f:
-            self.make_file("with_main/__main__.py", f.read())
-
-        if env.JYTHON:
-            # Jython has a different sys.argv[0].
-            self.set_environ("COVERAGE_TRY_EXECFILE_SKIPS", "argv0")
-
-        out_cov = self.run_command("coverage run with_main")
-        out_py = self.run_command("python with_main")
-
-        # The coverage.py results are not identical to the Python results, and
-        # I don't know why.  For now, ignore those failures. If someone finds
-        # a real problem with the discrepancies, we can work on it some more.
-        ignored = r"__file__|__loader__|__package__"
-        # PyPy includes the current directory in the path when running a
-        # directory, while CPython and coverage.py do not.  Exclude that from
-        # the comparison also...
-        if env.PYPY:
-            ignored += "|"+re.escape(os.getcwd())
-        out_cov = remove_matching_lines(out_cov, ignored)
-        out_py = remove_matching_lines(out_py, ignored)
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
-
-    def test_coverage_run_dashm_equal_to_doubledashsource(self):
-        """regression test for #328
-
-        When imported by -m, a module's __name__ is __main__, but we need the
-        --source machinery to know and respect the original name.
-        """
-        # These -m commands assume the coverage tree is on the path.
-        out_cov = self.run_command(
-            "coverage run --source process_test.try_execfile -m process_test.try_execfile"
-        )
-        out_py = self.run_command("python -m process_test.try_execfile")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
-
-    def test_coverage_run_dashm_superset_of_doubledashsource(self):
-        """Edge case: --source foo -m foo.bar"""
-        # These -m commands assume the coverage tree is on the path.
-        out_cov = self.run_command(
-            "coverage run --source process_test -m process_test.try_execfile"
-        )
-        out_py = self.run_command("python -m process_test.try_execfile")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
-
-        st, out = self.run_command_status("coverage report")
-        self.assertEqual(st, 0)
-        self.assertEqual(self.line_count(out), 6, out)
-
-    def test_coverage_run_script_imports_doubledashsource(self):
-        # This file imports try_execfile, which compiles it to .pyc, so the
-        # first run will have __file__ == "try_execfile.py" and the second will
-        # have __file__ == "try_execfile.pyc", which throws off the comparison.
-        # Setting dont_write_bytecode True stops the compilation to .pyc and
-        # keeps the test working.
-        self.make_file("myscript", """\
-            import sys; sys.dont_write_bytecode = True
-            import process_test.try_execfile
-            """)
-
-        # These -m commands assume the coverage tree is on the path.
-        out_cov = self.run_command(
-            "coverage run --source process_test myscript"
-        )
-        out_py = self.run_command("python myscript")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
-
-        st, out = self.run_command_status("coverage report")
-        self.assertEqual(st, 0)
-        self.assertEqual(self.line_count(out), 6, out)
-
-    def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
-        # https://bitbucket.org/ned/coveragepy/issue/242
-        self.make_file("sub/__init__.py", "")
-        with open(TRY_EXECFILE) as f:
-            self.make_file("sub/run_me.py", f.read())
-
-        if env.JYTHON:
-            # Jython has a different sys.argv[0].
-            self.set_environ("COVERAGE_TRY_EXECFILE_SKIPS", "argv0")
-
-        out_cov = self.run_command("coverage run -m sub.run_me")
-        out_py = self.run_command("python -m sub.run_me")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
-
-    def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
-        if sys.version_info < (2, 7):
-            # Coverage.py isn't bug-for-bug compatible in the behavior of -m for
-            # Pythons < 2.7
-            self.skipTest("-m doesn't work the same < Python 2.7")
-        # https://bitbucket.org/ned/coveragepy/issue/207
-        self.make_file("package/__init__.py", "print('init')")
-        self.make_file("package/__main__.py", "print('main')")
-        out_cov = self.run_command("coverage run -m package")
-        out_py = self.run_command("python -m package")
-        self.assertMultiLineEqual(out_cov, out_py)
-
     def test_fork(self):
         if not hasattr(os, 'fork'):
             self.skipTest("Can't test os.fork since it doesn't exist.")
@@ -797,6 +673,133 @@ class ProcessTest(CoverageTest):
         # https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
         out = self.run_command("python -m coverage")
         self.assertIn("Use 'coverage help' for help", out)
+
+
+TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try_execfile.py")
+
+class EnvironmentTest(CoverageTest):
+    """Tests using try_execfile.py to test the execution environment."""
+
+    def setUp(self):
+        super(EnvironmentTest, self).setUp()
+
+        if env.JYTHON:
+            # Jython has a different sys.argv[0], always skip it.
+            self.set_environ("COVERAGE_TRY_EXECFILE_SKIPS", "argv0")
+
+    def assert_execfile_output(self, out):
+        """Assert that the output we got is a successful run of try_execfile.py"""
+        self.assertIn('"DATA": "xyzzy"', out)
+
+    def test_coverage_run_is_like_python(self):
+        with open(TRY_EXECFILE) as f:
+            self.make_file("run_me.py", f.read())
+        out_cov = self.run_command("coverage run run_me.py")
+        out_py = self.run_command("python run_me.py")
+        self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
+
+    def test_coverage_run_dashm_is_like_python_dashm(self):
+        # These -m commands assume the coverage tree is on the path.
+        out_cov = self.run_command("coverage run -m process_test.try_execfile")
+        out_py = self.run_command("python -m process_test.try_execfile")
+        self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
+
+    def test_coverage_run_dir_is_like_python_dir(self):
+        with open(TRY_EXECFILE) as f:
+            self.make_file("with_main/__main__.py", f.read())
+
+        out_cov = self.run_command("coverage run with_main")
+        out_py = self.run_command("python with_main")
+
+        # The coverage.py results are not identical to the Python results, and
+        # I don't know why.  For now, ignore those failures. If someone finds
+        # a real problem with the discrepancies, we can work on it some more.
+        ignored = r"__file__|__loader__|__package__"
+        # PyPy includes the current directory in the path when running a
+        # directory, while CPython and coverage.py do not.  Exclude that from
+        # the comparison also...
+        if env.PYPY:
+            ignored += "|"+re.escape(os.getcwd())
+        out_cov = remove_matching_lines(out_cov, ignored)
+        out_py = remove_matching_lines(out_py, ignored)
+        self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
+
+    def test_coverage_run_dashm_equal_to_doubledashsource(self):
+        """regression test for #328
+
+        When imported by -m, a module's __name__ is __main__, but we need the
+        --source machinery to know and respect the original name.
+        """
+        # These -m commands assume the coverage tree is on the path.
+        out_cov = self.run_command(
+            "coverage run --source process_test.try_execfile -m process_test.try_execfile"
+        )
+        out_py = self.run_command("python -m process_test.try_execfile")
+        self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
+
+    def test_coverage_run_dashm_superset_of_doubledashsource(self):
+        """Edge case: --source foo -m foo.bar"""
+        # These -m commands assume the coverage tree is on the path.
+        out_cov = self.run_command(
+            "coverage run --source process_test -m process_test.try_execfile"
+        )
+        out_py = self.run_command("python -m process_test.try_execfile")
+        self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
+
+        st, out = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+        self.assertEqual(self.line_count(out), 6, out)
+
+    def test_coverage_run_script_imports_doubledashsource(self):
+        # This file imports try_execfile, which compiles it to .pyc, so the
+        # first run will have __file__ == "try_execfile.py" and the second will
+        # have __file__ == "try_execfile.pyc", which throws off the comparison.
+        # Setting dont_write_bytecode True stops the compilation to .pyc and
+        # keeps the test working.
+        self.make_file("myscript", """\
+            import sys; sys.dont_write_bytecode = True
+            import process_test.try_execfile
+            """)
+
+        # These -m commands assume the coverage tree is on the path.
+        out_cov = self.run_command(
+            "coverage run --source process_test myscript"
+        )
+        out_py = self.run_command("python myscript")
+        self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
+
+        st, out = self.run_command_status("coverage report")
+        self.assertEqual(st, 0)
+        self.assertEqual(self.line_count(out), 6, out)
+
+    def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
+        # https://bitbucket.org/ned/coveragepy/issue/242
+        self.make_file("sub/__init__.py", "")
+        with open(TRY_EXECFILE) as f:
+            self.make_file("sub/run_me.py", f.read())
+
+        out_cov = self.run_command("coverage run -m sub.run_me")
+        out_py = self.run_command("python -m sub.run_me")
+        self.assertMultiLineEqual(out_cov, out_py)
+        self.assert_execfile_output(out_cov)
+
+    def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
+        if sys.version_info < (2, 7):
+            # Coverage.py isn't bug-for-bug compatible in the behavior of -m for
+            # Pythons < 2.7
+            self.skipTest("-m doesn't work the same < Python 2.7")
+        # https://bitbucket.org/ned/coveragepy/issue/207
+        self.make_file("package/__init__.py", "print('init')")
+        self.make_file("package/__main__.py", "print('main')")
+        out_cov = self.run_command("coverage run -m package")
+        out_py = self.run_command("python -m package")
+        self.assertMultiLineEqual(out_cov, out_py)
 
 
 class ExcepthookTest(CoverageTest):
