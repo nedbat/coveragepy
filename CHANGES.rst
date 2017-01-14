@@ -23,7 +23,9 @@ Unreleased
 
 - Previously, coverage.py couldn't start on Jython, due to that implementation
   missing the multiprocessing module (`issue 551`_). This problem has now been
-  fixed.
+  fixed. Also, `issue 322`_ about not being able to invoke coverage
+  conveniently, seems much better: ``jython -m coverage run myprog.py`` works
+  properly.
 
 - Let's say you ran the HTML report over and over again in the same output
   directory, with ``--skip-covered``. And imagine due to your heroic
@@ -31,6 +33,7 @@ Unreleased
   coverage.py 4.3, the old HTML file with the less-than-100% coverage would be
   left behind.  This file is now properly deleted.
 
+.. _issue 322: https://bitbucket.org/ned/coveragepy/issues/322/cannot-use-coverage-with-jython
 .. _issue 549: https://bitbucket.org/ned/coveragepy/issues/549/skip-covered-with-100-coverage-throws-a-no
 .. _issue 551: https://bitbucket.org/ned/coveragepy/issues/551/coveragepy-cannot-be-imported-in-jython27
 
