@@ -821,8 +821,9 @@ class ExcepthookTest(CoverageTest):
             """)
         cov_st, cov_out = self.run_command_status("coverage run excepthook.py")
         py_st, py_out = self.run_command_status("python excepthook.py")
-        self.assertEqual(cov_st, py_st)
-        self.assertEqual(cov_st, 1)
+        if not env.JYTHON:
+            self.assertEqual(cov_st, py_st)
+            self.assertEqual(cov_st, 1)
 
         self.assertIn("in excepthook", py_out)
         self.assertEqual(cov_out, py_out)
@@ -834,8 +835,8 @@ class ExcepthookTest(CoverageTest):
         self.assertEqual(data.line_counts()['excepthook.py'], 7)
 
     def test_excepthook_exit(self):
-        if env.PYPY:
-            self.skipTest("PyPy handles excepthook exits differently, punt for now.")
+        if env.PYPY or env.JYTHON:
+            self.skipTest("non-CPython handles excepthook exits differently, punt for now.")
         self.make_file("excepthook_exit.py", """\
             import sys
 
@@ -874,8 +875,9 @@ class ExcepthookTest(CoverageTest):
             """)
         cov_st, cov_out = self.run_command_status("coverage run excepthook_throw.py")
         py_st, py_out = self.run_command_status("python excepthook_throw.py")
-        self.assertEqual(cov_st, py_st)
-        self.assertEqual(cov_st, 1)
+        if not env.JYTHON:
+            self.assertEqual(cov_st, py_st)
+            self.assertEqual(cov_st, 1)
 
         self.assertIn("in excepthook", py_out)
         self.assertEqual(cov_out, py_out)
@@ -1089,6 +1091,11 @@ class FailUnder100Test(CoverageTest):
 
 class UnicodeFilePathsTest(CoverageTest):
     """Tests of using non-ascii characters in the names of files."""
+
+    def setUp(self):
+        super(UnicodeFilePathsTest, self).setUp()
+        if env.JYTHON:
+            self.skipTest("Jython 2 doesn't like accented file names")
 
     def test_accented_dot_py(self):
         # Make a file with a non-ascii character in the filename.
