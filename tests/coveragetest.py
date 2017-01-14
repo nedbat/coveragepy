@@ -20,6 +20,7 @@ from unittest_mixins import (
 )
 
 import coverage
+from coverage import env
 from coverage.backunittest import TestCase
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.backward import invalidate_import_caches
@@ -377,7 +378,7 @@ class CoverageTest(
         """
         # Make sure "python" and "coverage" mean specifically what we want
         # them to mean.
-        split_commandline = cmd.split(" ", 1)
+        split_commandline = cmd.split()
         command_name = split_commandline[0]
         command_args = split_commandline[1:]
 
@@ -387,14 +388,26 @@ class CoverageTest(
             # get executed as "python3.3 foo.py". This is important because
             # Python 3.x doesn't install as "python", so you might get a Python
             # 2 executable instead if you don't use the executable's basename.
-            command_name = os.path.basename(sys.executable)
+            command_words = [os.path.basename(sys.executable)]
 
-        if command_name == "coverage":
-            # The invocation requests the Coverage.py program.  Substitute the
-            # actual Coverage.py main command name.
-            command_name = self.coverage_command
+        elif command_name == "coverage":
+            if env.JYTHON:
+                # Jython can't do reporting, so let's skip the test now.
+                if command_args and command_args[0] in ('report', 'html', 'xml', 'annotate'):
+                    self.skipTest("Can't run reporting commands in Jython")
+                # Jython can't run "coverage" as a command because the shebang
+                # refers to another shebang'd Python script. So run them as
+                # modules.
+                command_words = "jython -m coverage".split()
+            else:
+                # The invocation requests the Coverage.py program.  Substitute the
+                # actual Coverage.py main command name.
+                command_words = [self.coverage_command]
 
-        cmd = " ".join([shlex_quote(command_name)] + command_args)
+        else:
+            command_words = [command_name]
+
+        cmd = " ".join([shlex_quote(w) for w in command_words] + command_args)
 
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...

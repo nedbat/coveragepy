@@ -10,6 +10,7 @@ import locale
 import os
 import sys
 import types
+import unittest
 
 from coverage import env
 from coverage.backward import to_bytes, unicode_class
@@ -263,4 +264,19 @@ class ExceptionDuringRun(CoverageException):
     Construct it with three arguments, the values from `sys.exc_info`.
 
     """
+    pass
+
+
+class StopEverything(unittest.SkipTest):
+    """An exception that means everything should stop.
+
+    This derives from SkipTest so that tests that spring this trap will be
+    skipped automatically, without a lot of boilerplate all over the place.
+
+    """
+    pass
+
+
+class IncapablePython(CoverageException, StopEverything):
+    """An operation is attempted that this version of Python cannot do."""
     pass

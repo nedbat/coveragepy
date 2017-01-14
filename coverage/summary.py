@@ -8,7 +8,7 @@ import sys
 from coverage import env
 from coverage.report import Reporter
 from coverage.results import Numbers
-from coverage.misc import NotPython, CoverageException, output_encoding
+from coverage.misc import NotPython, CoverageException, output_encoding, StopEverything
 
 
 class SummaryReporter(Reporter):
@@ -55,13 +55,16 @@ class SummaryReporter(Reporter):
                         skipped_count += 1
                         continue
                 fr_analysis.append((fr, analysis))
+            except StopEverything:
+                # Don't report this on single files, it's a systemic problem.
+                raise
             except Exception:
                 report_it = not self.config.ignore_errors
                 if report_it:
                     typ, msg = sys.exc_info()[:2]
                     # NotPython is only raised by PythonFileReporter, which has a
                     # should_be_python() method.
-                    if typ is NotPython and not fr.should_be_python():
+                    if issubclass(typ, NotPython) and not fr.should_be_python():
                         report_it = False
                 if report_it:
                     writeout(fmt_err % (fr.relative_filename(), typ.__name__, msg))

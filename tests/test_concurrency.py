@@ -353,9 +353,9 @@ class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
 
     def setUp(self):
-        if not multiprocessing:
-            self.skip("No multiprocessing in this Python")      # pragma: only jython
         super(MultiprocessingTest, self).setUp()
+        if not multiprocessing:
+            self.skipTest("No multiprocessing in this Python")      # pragma: only jython
 
     def try_multiprocessing_code(
         self, code, expected_out, the_module, concurrency="multiprocessing"

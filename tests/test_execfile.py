@@ -10,6 +10,7 @@ import os.path
 import re
 import sys
 
+from coverage import env
 from coverage.backward import binary_bytes
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import NoCode, NoSource
@@ -102,6 +103,9 @@ class RunPycFileTest(CoverageTest):
 
     def make_pyc(self):
         """Create a .pyc file, and return the relative path to it."""
+        if env.JYTHON:
+            self.skipTest("Can't make .pyc files on Jython")    # pragma: only jython
+
         self.make_file("compiled.py", """\
             def doit():
                 print("I am here!")

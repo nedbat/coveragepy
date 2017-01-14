@@ -18,6 +18,7 @@ from unittest_mixins import ModuleAwareMixin, SysPathAwareMixin, change_dir
 from tests.helpers import run_command
 from tests.backtest import execfile         # pylint: disable=redefined-builtin
 
+from coverage import env
 from coverage.backunittest import unittest
 from coverage.debug import _TEST_NAME_FILE
 
@@ -28,6 +29,9 @@ TEST_FILES = glob.glob("tests/farm/*/*.py")
 
 @pytest.mark.parametrize("filename", TEST_FILES)
 def test_farm(filename):
+    if env.JYTHON:
+        # All of the farm tests use reporting, so skip them all.
+        skip("Farm tests don't run on Jython")
     FarmTestCase(filename).run_fully()
 
 

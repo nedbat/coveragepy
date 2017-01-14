@@ -4,6 +4,7 @@
 """Determine facts about the environment."""
 
 import os
+import platform
 import sys
 
 # Operating systems.
@@ -11,9 +12,11 @@ WINDOWS = sys.platform == "win32"
 LINUX = sys.platform == "linux2"
 
 # Python implementations.
-PYPY = '__pypy__' in sys.builtin_module_names
+PYPY = (platform.python_implementation() == 'PyPy')
 if PYPY:
     PYPYVERSION = sys.pypy_version_info
+
+JYTHON = (platform.python_implementation() == 'Jython')
 
 # Python versions.
 PYVERSION = sys.version_info
