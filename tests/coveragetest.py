@@ -411,13 +411,17 @@ class CoverageTest(
 
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...
+        pythonpath_name = "PYTHONPATH"
+        if env.JYTHON:
+            pythonpath_name = "JYTHONPATH"
+
         testmods = self.nice_file(self.working_root(), 'tests/modules')
         zipfile = self.nice_file(self.working_root(), 'tests/zipmods.zip')
-        pypath = os.getenv('PYTHONPATH', '')
+        pypath = os.getenv(pythonpath_name, '')
         if pypath:
             pypath += os.pathsep
         pypath += testmods + os.pathsep + zipfile
-        self.set_environ('PYTHONPATH', pypath)
+        self.set_environ(pythonpath_name, pypath)
 
         self.last_command_status, self.last_command_output = run_command(cmd)
         print(self.last_command_output)

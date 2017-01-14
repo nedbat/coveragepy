@@ -460,6 +460,11 @@ class ProcessTest(CoverageTest):
     def test_coverage_run_dir_is_like_python_dir(self):
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
+
+        if env.JYTHON:
+            # Jython has a different sys.argv[0].
+            self.set_environ("COVERAGE_TRY_EXECFILE_SKIPS", "argv0")
+
         out_cov = self.run_command("coverage run with_main")
         out_py = self.run_command("python with_main")
 
@@ -533,6 +538,11 @@ class ProcessTest(CoverageTest):
         self.make_file("sub/__init__.py", "")
         with open(TRY_EXECFILE) as f:
             self.make_file("sub/run_me.py", f.read())
+
+        if env.JYTHON:
+            # Jython has a different sys.argv[0].
+            self.set_environ("COVERAGE_TRY_EXECFILE_SKIPS", "argv0")
+
         out_cov = self.run_command("coverage run -m sub.run_me")
         out_py = self.run_command("python -m sub.run_me")
         self.assertMultiLineEqual(out_cov, out_py)
@@ -872,6 +882,11 @@ class AliasedCommandTest(CoverageTest):
     """Tests of the version-specific command aliases."""
 
     run_in_temp_dir = False
+
+    def setUp(self):
+        super(AliasedCommandTest, self).setUp()
+        if env.JYTHON:
+            self.skipTest("Coverage command names don't work on Jython")
 
     def test_major_version_works(self):
         # "coverage2" works on py2

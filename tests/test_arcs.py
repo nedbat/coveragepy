@@ -1101,6 +1101,9 @@ class MiscArcTest(CoverageTest):
         )
 
     def test_pathologically_long_code_object(self):
+        if env.JYTHON:
+            self.skipTest("Bytecode concerns are irrelevant on Jython")
+
         # https://bitbucket.org/ned/coveragepy/issue/359
         # The structure of this file is such that an EXTENDED_ARG bytecode is
         # needed to encode the jump at the end.  We weren't interpreting those
