@@ -21,6 +21,10 @@ Unreleased
   function changed, measurement is likely wrong: None".  This was spurious, and
   has been suppressed.
 
+- Previously, coverage.py couldn't start on Jython, due to that implementation
+  missing the multiprocessing module (`issue 551`_). This problem has now been
+  fixed.
+
 - Let's say you ran the HTML report over and over again in the same output
   directory, with ``--skip-covered``. And imagine due to your heroic
   test-writing efforts, a file just acheived the goal of 100% coverage. With
@@ -28,6 +32,7 @@ Unreleased
   left behind.  This file is now properly deleted.
 
 .. _issue 549: https://bitbucket.org/ned/coveragepy/issues/549/skip-covered-with-100-coverage-throws-a-no
+.. _issue 551: https://bitbucket.org/ned/coveragepy/issues/551/coveragepy-cannot-be-imported-in-jython27
 
 
 .. _changes_431:
