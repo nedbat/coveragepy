@@ -17,16 +17,16 @@ import os
 if os.environ.get('COVERAGE_COVERAGE', ''):
     skip("Can't test timid during coverage measurement.")
 
-copy("src", "out")
+copy("src", "out_timid")
 run("""
     python showtrace.py none
     coverage run showtrace.py regular
     coverage run --timid showtrace.py timid
-    """, rundir="out", outfile="showtraceout.txt")
+    """, rundir="out_timid", outfile="showtraceout.txt")
 
 # When running without coverage, no trace function
 # When running timidly, the trace function is always Python.
-contains("out/showtraceout.txt",
+contains("out_timid/showtraceout.txt",
     "none None",
     "timid PyTracer",
     )
@@ -34,10 +34,10 @@ contains("out/showtraceout.txt",
 if os.environ.get('COVERAGE_TEST_TRACER', 'c') == 'c':
     # If the C trace function is being tested, then regular running should have
     # the C function, which registers itself as f_trace.
-    contains("out/showtraceout.txt", "regular CTracer")
+    contains("out_timid/showtraceout.txt", "regular CTracer")
 else:
     # If the Python trace function is being tested, then regular running will
     # also show the Python function.
-    contains("out/showtraceout.txt", "regular PyTracer")
+    contains("out_timid/showtraceout.txt", "regular PyTracer")
 
-clean("out")
+clean("out_timid")
