@@ -461,7 +461,15 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
             summary[k[:-3]] = v
         return summary
 
-    def test_source_package_unexecuted(self):
+    def test_source_package_as_dir(self):
+        # pkg1 is a directory, since we cd'd into tests/modules in setUp.
+        lines = self.coverage_usepkgs(source=["pkg1"])
+        self.filenames_in(lines, "p1a p1b")
+        self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
+        # Because source= was specified, we do search for unexecuted files.
+        self.assertEqual(lines['p1c'], 0)
+
+    def test_source_package_as_package(self):
         lines = self.coverage_usepkgs(source=["pkg1.sub"])
         self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
         # Because source= was specified, we do search for unexecuted files.

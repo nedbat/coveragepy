@@ -5,8 +5,10 @@
 
 import os
 import sys
-from coverage import env
 
+import pytest
+
+from coverage import env
 from coverage.python import get_zip_bytes, source_for_file
 
 from tests.coveragetest import CoverageTest
@@ -30,26 +32,30 @@ class GetZipBytesTest(CoverageTest):
             # Run the code to see that we really got it encoded properly.
             __import__("encoded_"+encoding)
 
+
 def test_source_for_file(tmpdir):
     path = tmpdir.join("a.py")
     src = str(path)
-    assert src == source_for_file(src)
-    assert src == source_for_file(src + 'c')
-    assert src == source_for_file(src + 'o')
+    assert source_for_file(src) == src
+    assert source_for_file(src + 'c') == src
+    assert source_for_file(src + 'o') == src
     unknown = src + 'FOO'
-    assert unknown == source_for_file(unknown)
-    #
+    assert source_for_file(unknown) == unknown
+
+
+@pytest.mark.skipif(not env.WINDOWS, reason="not windows")
+def test_source_for_file_windows(tmpdir):
+    path = tmpdir.join("a.py")
+    src = str(path)
+
     # On windows if a pyw exists, it is an acceptable source
-    #
-    windows = env.WINDOWS
-    env.WINDOWS = True
     path_windows = tmpdir.ensure("a.pyw")
     assert str(path_windows) == source_for_file(src + 'c')
-    #
+
     # If both pyw and py exist, py is preferred
-    #
     path.ensure(file=True)
-    assert src == source_for_file(src + 'c')
-    env.WINDOWS = windows
-    jython_src = "a"
-    assert jython_src + ".py" == source_for_file(jython_src + "$py.class")
+    assert source_for_file(src + 'c') == src
+
+
+def test_source_for_file_jython():
+    assert source_for_file("a$py.class") == "a.py"

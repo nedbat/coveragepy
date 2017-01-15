@@ -794,8 +794,8 @@ class Coverage(object):
 
         self.collector.save_data(self.data)
 
-        # If there are still entries in the source_pkgs_unmatched list, then we never
-        # encountered those packages.
+        # If there are still entries in the source_pkgs_unmatched list,
+        # then we never encountered those packages.
         if self._warn_unimported_source:
             for pkg in self.source_pkgs_unmatched:
                 if pkg not in sys.modules:
@@ -812,41 +812,46 @@ class Coverage(object):
         if not self.data and self._warn_no_data:
             self._warn("No data was collected.")
 
-        src_directories = self.source[:]
-
+        # Find files that were never executed at all.
         for pkg in self.source_pkgs:
             if (not pkg in sys.modules or
                 not hasattr(sys.modules[pkg], '__file__') or
                 not os.path.exists(sys.modules[pkg].__file__)):
                 continue
             pkg_file = source_for_file(sys.modules[pkg].__file__)
-            #
-            # Do not explore the souce tree of a module that is
-            # not a directory tree. For instance if
-            #    sys.modules['args'].__file__ == /lib/python2.7/site-packages/args.pyc
-            # we do not want to explore all of /lib/python2.7/site-packages
-            #
+
             if not pkg_file.endswith('__init__.py'):
+                # We only want to explore the source tree of packages.
+                # For instance if pkg_file is /lib/python2.7/site-packages/args.pyc,
+                # we do not want to explore all of /lib/python2.7/site-packages.
                 continue
-            src_directories.append(self._canonical_dir(sys.modules[pkg]))
+            self._find_unexecuted_files(self._canonical_dir(pkg_file))
 
-        # Find files that were never executed at all.
-        for src in src_directories:
-            for py_file in find_python_files(src):
-                py_file = files.canonical_filename(py_file)
-
-                if self.omit_match and self.omit_match.match(py_file):
-                    # Turns out this file was omitted, so don't pull it back
-                    # in as unexecuted.
-                    continue
-
-                self.data.touch_file(py_file)
+        for src in self.source:
+            self._find_unexecuted_files(src)
 
         if self.config.note:
             self.data.add_run_info(note=self.config.note)
 
         self._measured = False
         return self.data
+
+    def _find_unexecuted_files(self, src_dir):
+        """Find unexecuted files in `src_dir`.
+
+        Search for files in `src_dir` that are probably importable,
+        and add them as unexecuted files in `self.data`.
+
+        """
+        for py_file in find_python_files(src_dir):
+            py_file = files.canonical_filename(py_file)
+
+            if self.omit_match and self.omit_match.match(py_file):
+                # Turns out this file was omitted, so don't pull it back
+                # in as unexecuted.
+                continue
+
+            self.data.touch_file(py_file)
 
     # Backward compatibility with version 1.
     def analysis(self, morf):

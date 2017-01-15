@@ -13,6 +13,12 @@ Unreleased
   would cause a "No data to report" error, as reported in `issue 549`_. This is
   now fixed; thanks, Loïc Dachary.
 
+- If you specified ``--source`` as a directory, then coverage.py would look for
+  importable Python files in that directory, and could identify ones that had
+  never been executed at all.  But if you specified it as a package name, that
+  detection wasn't performed.  Now it is, closing `issue 426`_. Thanks to Loïc
+  Dachary for the fix.
+
 - If you started and stopped coverage measurement thousands of times in your
   process, you could crash Python with a "Fatal Python error: deallocating
   None" error.  This is now fixed.  Thanks to Alex Groce for the bug report.
@@ -34,6 +40,7 @@ Unreleased
   left behind.  This file is now properly deleted.
 
 .. _issue 322: https://bitbucket.org/ned/coveragepy/issues/322/cannot-use-coverage-with-jython
+.. _issue 426: https://bitbucket.org/ned/coveragepy/issues/426/difference-between-coverage-results-with
 .. _issue 549: https://bitbucket.org/ned/coveragepy/issues/549/skip-covered-with-100-coverage-throws-a-no
 .. _issue 551: https://bitbucket.org/ned/coveragepy/issues/551/coveragepy-cannot-be-imported-in-jython27
 
