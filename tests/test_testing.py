@@ -13,6 +13,7 @@ from coverage.backunittest import TestCase
 from coverage.files import actual_path
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import CheckUniqueFilenames
 
 
 class TestingTest(TestCase):
@@ -138,6 +139,31 @@ class CoverageTestTest(CoverageTest):
         environ = next(l for l in out if "COV_FOOBAR" in l)         # pragma: part covered
         _, _, environ = environ.rpartition(":")
         self.assertEqual(environ.strip(), "COV_FOOBAR = XYZZY")
+
+
+class CheckUniqueFilenamesTest(CoverageTest):
+    """Tests of CheckUniqueFilenames."""
+
+    class Stub(object):
+        """A stand-in for the class we're checking."""
+        def __init__(self, x):
+            self.x = x
+
+        def method(self, filename, a=17, b="hello"):
+            """The method we'll wrap, with args to be sure args work."""
+            return (self.x, filename, a, b)
+
+    def test_detect_duplicate(self):
+        stub = self.Stub(23)
+        CheckUniqueFilenames.hook(stub, "method")
+
+        # Two method calls with different names are fine.
+        assert stub.method("file1") == (23, "file1", 17, "hello")
+        assert stub.method("file2", 1723, b="what") == (23, "file2", 1723, "what")
+
+        # A duplicate file name trips an assertion.
+        with self.assertRaises(AssertionError):
+            stub.method("file1")
 
 
 def same_python_executable(e1, e2):

@@ -54,11 +54,19 @@ class CheckUniqueFilenames(object):
         self.wrapped = wrapped
 
     @classmethod
-    def hook(cls, cov, method_name):
-        """Replace a method with our checking wrapper."""
-        method = getattr(cov, method_name)
+    def hook(cls, obj, method_name):
+        """Replace a method with our checking wrapper.
+
+        The method must take a string as a first argument. That argument
+        will be checked for uniqueness across all the calls to this method.
+
+        The values don't have to be file names actually, just strings, but
+        we only use it for filename arguments.
+
+        """
+        method = getattr(obj, method_name)
         hook = cls(method)
-        setattr(cov, method_name, hook.wrapper)
+        setattr(obj, method_name, hook.wrapper)
         return hook
 
     def wrapper(self, filename, *args, **kwargs):
