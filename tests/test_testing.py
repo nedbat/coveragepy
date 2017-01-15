@@ -144,6 +144,8 @@ class CoverageTestTest(CoverageTest):
 class CheckUniqueFilenamesTest(CoverageTest):
     """Tests of CheckUniqueFilenames."""
 
+    run_in_temp_dir = False
+
     class Stub(object):
         """A stand-in for the class we're checking."""
         def __init__(self, x):

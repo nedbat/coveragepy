@@ -1213,7 +1213,7 @@ class ProcessCoverageMixin(object):
         super(ProcessCoverageMixin, self).setUp()
 
         # Create the .pth file.
-        self.assert_(PTH_DIR)
+        self.assertTrue(PTH_DIR)
         pth_contents = "import coverage; coverage.process_startup()\n"
         pth_path = os.path.join(PTH_DIR, "subcover_{0}.pth".format(WORKER))
         with open(pth_path, "w") as pth:
