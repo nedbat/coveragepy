@@ -35,7 +35,7 @@ if env.WINDOWS:
             ctypes.sizeof(mem_struct)
         )
         if not ret:                 # pragma: part covered
-            return 0
+            return 0                # pragma: not covered
         return mem_struct.PrivateUsage
 
 elif env.LINUX:
@@ -56,7 +56,7 @@ elif env.LINUX:
         i = v.index(key)
         v = v[i:].split(None, 3)
         if len(v) < 3:              # pragma: part covered
-            return 0    # Invalid format?
+            return 0                # pragma: not covered
         # Convert Vm value to bytes.
         return int(float(v[1]) * _scale[v[2].lower()])
 
