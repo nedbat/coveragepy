@@ -685,7 +685,7 @@ class EnvironmentTest(CoverageTest):
 
         if env.JYTHON:
             # Jython has a different sys.argv[0], always skip it.
-            self.set_environ("COVERAGE_TRY_EXECFILE_SKIPS", "argv0")
+            self.set_environ("COVERAGE_TRY_EXECFILE_SKIPS", "argv0")    # pragma: only jython
 
     def assert_execfile_output(self, out):
         """Assert that the output we got is a successful run of try_execfile.py"""
@@ -891,7 +891,7 @@ class AliasedCommandTest(CoverageTest):
     def setUp(self):
         super(AliasedCommandTest, self).setUp()
         if env.JYTHON:
-            self.skipTest("Coverage command names don't work on Jython")
+            self.skipTest("Coverage command names don't work on Jython")    # pragma: only jython
 
     def test_major_version_works(self):
         # "coverage2" works on py2
@@ -1095,7 +1095,7 @@ class UnicodeFilePathsTest(CoverageTest):
     def setUp(self):
         super(UnicodeFilePathsTest, self).setUp()
         if env.JYTHON:
-            self.skipTest("Jython 2 doesn't like accented file names")
+            self.skipTest("Jython 2 doesn't like accented file names")      # pragma: only jython
 
     def test_accented_dot_py(self):
         # Make a file with a non-ascii character in the filename.

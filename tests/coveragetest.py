@@ -391,7 +391,7 @@ class CoverageTest(
             command_words = [os.path.basename(sys.executable)]
 
         elif command_name == "coverage":
-            if env.JYTHON:
+            if env.JYTHON:                  # pragma: only jython
                 # Jython can't do reporting, so let's skip the test now.
                 if command_args and command_args[0] in ('report', 'html', 'xml', 'annotate'):
                     self.skipTest("Can't run reporting commands in Jython")
@@ -413,7 +413,7 @@ class CoverageTest(
         # much path munging here, but...
         pythonpath_name = "PYTHONPATH"
         if env.JYTHON:
-            pythonpath_name = "JYTHONPATH"
+            pythonpath_name = "JYTHONPATH"          # pragma: only jython
 
         testmods = self.nice_file(self.working_root(), 'tests/modules')
         zipfile = self.nice_file(self.working_root(), 'tests/zipmods.zip')

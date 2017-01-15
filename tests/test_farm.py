@@ -31,7 +31,7 @@ TEST_FILES = glob.glob("tests/farm/*/*.py")
 def test_farm(filename):
     if env.JYTHON:
         # All of the farm tests use reporting, so skip them all.
-        skip("Farm tests don't run on Jython")
+        skip("Farm tests don't run on Jython")      # pragma: only jython
     FarmTestCase(filename).run_fully()
 
 
