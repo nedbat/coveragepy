@@ -13,6 +13,7 @@ from coverage.files import abs_file
 from tests.coveragetest import CoverageTest
 from tests.goldtest import CoverageGoldTest
 from tests.goldtest import change_dir, compare
+from tests.helpers import re_line, re_lines
 
 
 class XmlTestHelpers(CoverageTest):
@@ -194,7 +195,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         cov.xml_report(outfile="-")
         packages_and_classes = re_lines(self.stdout(), r"<package |<class ")
         scrubs = r' branch-rate="0"| complexity="0"| line-rate="[\d.]+"'
-        return clean("".join(packages_and_classes), scrubs)
+        return clean(packages_and_classes, scrubs)
 
     def assert_package_and_class_tags(self, cov, result):
         """Check the XML package and class tags from `cov` match `result`."""
@@ -280,19 +281,6 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
             <package name=".">
                 <class filename="src/mod.py" name="mod.py">
             """)
-
-
-def re_lines(text, pat):
-    """Return a list of lines that match `pat` in the string `text`."""
-    lines = [l for l in text.splitlines(True) if re.search(pat, l)]
-    return lines
-
-
-def re_line(text, pat):
-    """Return the one line in `text` that matches regex `pat`."""
-    lines = re_lines(text, pat)
-    assert len(lines) == 1
-    return lines[0]
 
 
 def clean(text, scrub=None):

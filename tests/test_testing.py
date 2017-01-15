@@ -8,12 +8,14 @@ import datetime
 import os
 import sys
 
+import pytest
+
 import coverage
 from coverage.backunittest import TestCase
 from coverage.files import actual_path
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import CheckUniqueFilenames
+from tests.helpers import CheckUniqueFilenames, re_lines, re_line
 
 
 class TestingTest(TestCase):
@@ -131,12 +133,14 @@ class CoverageTestTest(CoverageTest):
         self.assertEqual(out[2], 'XYZZY')
 
         # Try it with a "coverage debug sys" command.
-        out = self.run_command("coverage debug sys").splitlines()
-        # "environment: COV_FOOBAR = XYZZY" or "COV_FOOBAR = XYZZY"
-        executable = next(l for l in out if "executable:" in l)     # pragma: part covered
+        out = self.run_command("coverage debug sys")
+
+        executable = re_line(out, "executable:")
         executable = executable.split(":", 1)[1].strip()
-        self.assertTrue(same_python_executable(executable, sys.executable))
-        environ = next(l for l in out if "COV_FOOBAR" in l)         # pragma: part covered
+        self.assertTrue(_same_python_executable(executable, sys.executable))
+
+        # "environment: COV_FOOBAR = XYZZY" or "COV_FOOBAR = XYZZY"
+        environ = re_line(out, "COV_FOOBAR")
         _, _, environ = environ.rpartition(":")
         self.assertEqual(environ.strip(), "COV_FOOBAR = XYZZY")
 
@@ -168,7 +172,38 @@ class CheckUniqueFilenamesTest(CoverageTest):
             stub.method("file1")
 
 
-def same_python_executable(e1, e2):
+@pytest.mark.parametrize("text, pat, result", [
+    ("line1\nline2\nline3\n", "line", "line1\nline2\nline3\n"),
+    ("line1\nline2\nline3\n", "[13]", "line1\nline3\n"),
+    ("line1\nline2\nline3\n", "X", ""),
+])
+def test_re_lines(text, pat, result):
+    assert re_lines(text, pat) == result
+
+@pytest.mark.parametrize("text, pat, result", [
+    ("line1\nline2\nline3\n", "line", ""),
+    ("line1\nline2\nline3\n", "[13]", "line2\n"),
+    ("line1\nline2\nline3\n", "X", "line1\nline2\nline3\n"),
+])
+def test_re_lines_inverted(text, pat, result):
+    assert re_lines(text, pat, match=False) == result
+
+@pytest.mark.parametrize("text, pat, result", [
+    ("line1\nline2\nline3\n", "2", "line2"),
+])
+def test_re_line(text, pat, result):
+    assert re_line(text, pat) == result
+
+@pytest.mark.parametrize("text, pat", [
+    ("line1\nline2\nline3\n", "line"),      # too many matches
+    ("line1\nline2\nline3\n", "X"),         # no matches
+])
+def test_re_line_bad(text, pat):
+    with pytest.raises(AssertionError):
+        re_line(text, pat)
+
+
+def _same_python_executable(e1, e2):
     """Determine if `e1` and `e2` refer to the same Python executable.
 
     Either path could include symbolic links.  The two paths might not refer

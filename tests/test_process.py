@@ -18,6 +18,7 @@ from coverage import env, CoverageData
 from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import re_lines
 
 
 class ProcessTest(CoverageTest):
@@ -388,8 +389,7 @@ class ProcessTest(CoverageTest):
         out2 = self.run_command("python throw.py")
         if env.PYPY:
             # Pypy has an extra frame in the traceback for some reason
-            lines2 = out2.splitlines()
-            out2 = "".join(l+"\n" for l in lines2 if "toplevel" not in l)
+            out2 = re_lines(out2, "toplevel", match=False)
         self.assertMultiLineEqual(out, out2)
 
         # But also make sure that the output is what we expect.
@@ -722,8 +722,8 @@ class EnvironmentTest(CoverageTest):
         # the comparison also...
         if env.PYPY:
             ignored += "|"+re.escape(os.getcwd())
-        out_cov = remove_matching_lines(out_cov, ignored)
-        out_py = remove_matching_lines(out_py, ignored)
+        out_cov = re_lines(out_cov, ignored, match=False)
+        out_py = re_lines(out_py, ignored, match=False)
         self.assertMultiLineEqual(out_cov, out_py)
         self.assert_execfile_output(out_cov)
 
@@ -1405,9 +1405,3 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
     def test_script_pkg_sub(self):
         self.assert_pth_and_source_work_together('', 'pkg', 'sub')
-
-
-def remove_matching_lines(text, pat):
-    """Return `text` with all lines matching `pat` removed."""
-    lines = [l for l in text.splitlines(True) if not re.search(pat, l)]
-    return "".join(lines)

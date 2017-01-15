@@ -4,6 +4,7 @@
 """Helpers for coverage.py tests."""
 
 import os
+import re
 import subprocess
 import sys
 
@@ -77,3 +78,26 @@ class CheckUniqueFilenames(object):
         self.filenames.add(filename)
         ret = self.wrapped(filename, *args, **kwargs)
         return ret
+
+
+def re_lines(text, pat, match=True):
+    """Return the text of lines that match `pat` in the string `text`.
+
+    If `match` is false, the selection is inverted: only the non-matching
+    lines are included.
+
+    Returns a string, the text of only the selected lines.
+
+    """
+    return "".join(l for l in text.splitlines(True) if bool(re.search(pat, l)) == match)
+
+
+def re_line(text, pat):
+    """Return the one line in `text` that matches regex `pat`.
+
+    Raises an AssertionError if more than one, or less than one, line matches.
+
+    """
+    lines = re_lines(text, pat).splitlines()
+    assert len(lines) == 1
+    return lines[0]
