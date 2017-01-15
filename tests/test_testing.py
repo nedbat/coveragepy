@@ -117,7 +117,7 @@ class CoverageTestTest(CoverageTest):
 
     def test_sub_python_is_this_python(self):
         # Try it with a Python command.
-        os.environ['COV_FOOBAR'] = 'XYZZY'
+        self.set_environ('COV_FOOBAR', 'XYZZY')
         self.make_file("showme.py", """\
             import os, sys
             print(sys.executable)
