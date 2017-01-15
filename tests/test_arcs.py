@@ -401,7 +401,7 @@ class LoopArcTest(CoverageTest):
 
     def test_other_comprehensions(self):
         if env.PYVERSION < (2, 7):
-            self.skipTest("Don't have set or dict comprehensions before 2.7")
+            self.skipTest("No set or dict comprehensions before 2.7")       # pragma: not covered
         # Set comprehension:
         self.check_coverage("""\
             o = ((1,2), (3,4))
@@ -425,7 +425,7 @@ class LoopArcTest(CoverageTest):
 
     def test_multiline_dict_comp(self):
         if env.PYVERSION < (2, 7):
-            self.skipTest("Don't have set or dict comprehensions before 2.7")
+            self.skipTest("No set or dict comprehensions before 2.7")       # pragma: not covered
         if env.PYVERSION < (3, 5):
             arcz = "-42 2B B-4   2-4"
         else:

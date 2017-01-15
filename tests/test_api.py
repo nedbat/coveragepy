@@ -281,7 +281,7 @@ class ApiTest(CoverageTest):
         self.start_import_stop(cov, "code2")
         self.check_code1_code2(cov)
 
-    def test_start_save_stop(self):
+    def test_start_save_stop(self):             # pragma: not covered
         self.skipTest("Expected failure: https://bitbucket.org/ned/coveragepy/issue/79")
         self.make_code1_code2()
         cov = coverage.Coverage()

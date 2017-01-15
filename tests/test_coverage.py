@@ -418,7 +418,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,4,5], "4")
 
-    def test_strange_unexecuted_continue(self):
+    def test_strange_unexecuted_continue(self):     # pragma: not covered
         # Peephole optimization of jumps to jumps can mean that some statements
         # never hit the line tracer.  The behavior is different in different
         # versions of Python, so don't run this test:
