@@ -9,7 +9,7 @@ import pytest
 
 import coverage
 from coverage.version import _make_url, _make_version
-from coverage.misc import contract, file_be_gone, Hasher, one_of
+from coverage.misc import contract, dummy_decorator_with_args, file_be_gone, Hasher, one_of
 
 from tests.coveragetest import CoverageTest
 
@@ -108,6 +108,16 @@ class ContractTest(CoverageTest):
             give_me_one(a=17, b=23)
         with pytest.raises(AssertionError):
             give_me_one()
+
+    def test_dummy_decorator_with_args(self):
+        @dummy_decorator_with_args("anything", this=17, that="is fine")
+        def undecorated(a=None, b=None):                # pylint: disable=missing-docstring
+            return (a, b)
+
+        assert undecorated() == (None, None)
+        assert undecorated(17) == (17, None)
+        assert undecorated(b=23) == (None, 23)
+        assert undecorated(b=42, a=3) == (3, 42)
 
 
 class VersionTest(CoverageTest):

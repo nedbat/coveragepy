@@ -39,6 +39,13 @@ def isolate_module(mod):
 os = isolate_module(os)
 
 
+def dummy_decorator_with_args(*args_unused, **kwargs_unused):
+    """Dummy no-op implementation of a decorator with arguments."""
+    def _decorator(func):
+        return func
+    return _decorator
+
+
 # Use PyContracts for assertion testing on parameters and returns, but only if
 # we are running our own test suite.
 if env.TESTING:
@@ -70,21 +77,14 @@ if env.TESTING:
             return _wrapped
         return _decorator
 else:                                           # pragma: not covered
-    # We aren't using real PyContracts, so just define a no-op decorator as a
-    # stunt double.
-    def contract(**unused):
-        """Dummy no-op implementation of `contract`."""
-        return lambda func: func
+    # We aren't using real PyContracts, so just define our decorators as
+    # stunt-double no-ops.
+    contract = dummy_decorator_with_args
+    one_of = dummy_decorator_with_args
 
     def new_contract(*args_unused, **kwargs_unused):
         """Dummy no-op implementation of `new_contract`."""
         pass
-
-    def one_of(argnames_unused):
-        """Dummy no-op implementation of `one_of`."""
-        def _decorator(func):
-            return func
-        return _decorator
 
 
 def nice_pair(pair):
