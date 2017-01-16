@@ -102,10 +102,10 @@ class ContractTest(CoverageTest):
             return (a, b, c)
 
         assert give_me_one(a=17) == (17, None, None)
-        assert give_me_one(b=17) == (None, 17, None)
+        assert give_me_one(b=set()) == (None, set(), None)
         assert give_me_one(c=17) == (None, None, 17)
         with pytest.raises(AssertionError):
-            give_me_one(a=17, b=23)
+            give_me_one(a=17, b=set())
         with pytest.raises(AssertionError):
             give_me_one()
 

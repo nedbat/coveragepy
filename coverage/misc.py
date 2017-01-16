@@ -71,7 +71,7 @@ if env.TESTING:
         def _decorator(func):
             argnameset = set(name.strip() for name in argnames.split(","))
             def _wrapped(*args, **kwargs):
-                vals = set(kwargs.get(name) for name in argnameset)
+                vals = [kwargs.get(name) for name in argnameset]
                 assert sum(val is not None for val in vals) == 1
                 return func(*args, **kwargs)
             return _wrapped
