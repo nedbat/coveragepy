@@ -5,9 +5,11 @@
 
 import sys
 
+import pytest
+
 import coverage
 from coverage.version import _make_url, _make_version
-from coverage.misc import Hasher, file_be_gone
+from coverage.misc import contract, Hasher, file_be_gone
 
 from tests.coveragetest import CoverageTest
 
@@ -67,6 +69,32 @@ class RemoveFileTest(CoverageTest):
         # ". is a directory" on Unix, or "Access denied" on Windows
         with self.assertRaises(OSError):
             file_be_gone(".")
+
+
+class ContractTest(CoverageTest):
+    """Tests of our contract decorators."""
+
+    run_in_temp_dir = False
+
+    def test_bytes(self):
+        @contract(text='bytes|None')
+        def need_bytes(text):
+            return text
+
+        assert need_bytes(b"Hey") == b"Hey"
+        assert need_bytes(None) == None
+        with pytest.raises(Exception):
+            need_bytes(u"Oops")
+
+    def test_unicode(self):
+        @contract(text='unicode|None')
+        def need_unicode(text):
+            return text
+
+        assert need_unicode(u"Hey") == u"Hey"
+        assert need_unicode(None) == None
+        with pytest.raises(Exception):
+            need_unicode(b"Oops")
 
 
 class VersionTest(CoverageTest):
