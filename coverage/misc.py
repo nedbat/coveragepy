@@ -58,6 +58,17 @@ if env.TESTING:
     new_contract('bytes', lambda v: isinstance(v, bytes))
     if env.PY3:
         new_contract('unicode', lambda v: isinstance(v, unicode_class))
+
+    def one_of(argnames):
+        """Ensure that only one of the argnames is non-None."""
+        def _decorator(func):
+            argnameset = set(name.strip() for name in argnames.split(","))
+            def _wrapped(*args, **kwargs):
+                vals = set(kwargs.get(name) for name in argnameset)
+                assert sum(val is not None for val in vals) == 1
+                return func(*args, **kwargs)
+            return _wrapped
+        return _decorator
 else:                                           # pragma: not covered
     # We aren't using real PyContracts, so just define a no-op decorator as a
     # stunt double.
@@ -68,6 +79,12 @@ else:                                           # pragma: not covered
     def new_contract(*args_unused, **kwargs_unused):
         """Dummy no-op implementation of `new_contract`."""
         pass
+
+    def one_of(argnames_unused):
+        """Dummy no-op implementation of `one_of`."""
+        def _decorator(func):
+            return func
+        return _decorator
 
 
 def nice_pair(pair):

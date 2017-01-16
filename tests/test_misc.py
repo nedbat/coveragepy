@@ -9,7 +9,7 @@ import pytest
 
 import coverage
 from coverage.version import _make_url, _make_version
-from coverage.misc import contract, Hasher, file_be_gone
+from coverage.misc import contract, file_be_gone, Hasher, one_of
 
 from tests.coveragetest import CoverageTest
 
@@ -78,23 +78,36 @@ class ContractTest(CoverageTest):
 
     def test_bytes(self):
         @contract(text='bytes|None')
-        def need_bytes(text):
+        def need_bytes(text=None):                      # pylint: disable=missing-docstring
             return text
 
         assert need_bytes(b"Hey") == b"Hey"
-        assert need_bytes(None) == None
+        assert need_bytes() is None
         with pytest.raises(Exception):
             need_bytes(u"Oops")
 
     def test_unicode(self):
         @contract(text='unicode|None')
-        def need_unicode(text):
+        def need_unicode(text=None):                    # pylint: disable=missing-docstring
             return text
 
         assert need_unicode(u"Hey") == u"Hey"
-        assert need_unicode(None) == None
+        assert need_unicode() is None
         with pytest.raises(Exception):
             need_unicode(b"Oops")
+
+    def test_one_of(self):
+        @one_of("a, b, c")
+        def give_me_one(a=None, b=None, c=None):        # pylint: disable=missing-docstring
+            return (a, b, c)
+
+        assert give_me_one(a=17) == (17, None, None)
+        assert give_me_one(b=17) == (None, 17, None)
+        assert give_me_one(c=17) == (None, None, 17)
+        with pytest.raises(AssertionError):
+            give_me_one(a=17, b=23)
+        with pytest.raises(AssertionError):
+            give_me_one()
 
 
 class VersionTest(CoverageTest):
