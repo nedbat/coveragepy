@@ -1032,6 +1032,102 @@ class YieldTest(CoverageTest):
         )
 
 
+class OptimizedIfTest(CoverageTest):
+    """Tests of if statements being optimized away."""
+
+    def test_optimized_away_if_0(self):
+        self.check_coverage("""\
+            a = 1
+            if len([2]):
+                c = 3
+            if 0:               # this line isn't in the compiled code.
+                if len([5]):
+                    d = 6
+            else:
+                e = 8
+            f = 9
+            """,
+            lines=[1, 2, 3, 8, 9],
+            arcz=".1 12 23 28 38 89 9.",
+            arcz_missing="28",
+        )
+
+    def test_optimized_away_if_1(self):
+        self.check_coverage("""\
+            a = 1
+            if len([2]):
+                c = 3
+            if 1:               # this line isn't in the compiled code,
+                if len([5]):    # but these are.
+                    d = 6
+            else:
+                e = 8
+            f = 9
+            """,
+            lines=[1, 2, 3, 5, 6, 9],
+            arcz=".1 12 23 25 35 56 69 59 9.",
+            arcz_missing="25 59",
+        )
+        self.check_coverage("""\
+            a = 1
+            if 1:
+                b = 3
+                c = 4
+            d = 5
+            """,
+            lines=[1, 3, 4, 5],
+            arcz=".1 13 34 45 5.",
+        )
+
+    def test_optimized_nested(self):
+        self.check_coverage("""\
+            a = 1
+            if 0:
+                if 0:
+                    b = 4
+                else:
+                    c = 6
+            else:
+                if 0:
+                    d = 9
+                else:
+                    if 0: e = 11
+                    f = 12
+                    if 0: g = 13
+            h = 14
+            """,
+            lines=[1, 12, 14],
+            arcz=".1 1C CE E.",
+        )
+
+    def test_constant_if(self):
+        if env.PYPY:
+            self.skipTest("PyPy doesn't optimize away 'if __debug__:'")
+        # CPython optimizes away "if __debug__:"
+        self.check_coverage("""\
+            for value in [True, False]:
+                if value:
+                    if __debug__:
+                        x = 4
+                else:
+                    x = 6
+            """,
+            arcz=".1 12 24 41 26 61 1.",
+        )
+        # No Python optimizes away "if not __debug__:"
+        self.check_coverage("""\
+            for value in [True, False]:
+                if value:
+                    if not __debug__:
+                        x = 4
+                else:
+                    x = 6
+            """,
+            arcz=".1 12 23 31 34 41 26 61 1.",
+            arcz_missing="34 41",
+        )
+
+
 class MiscArcTest(CoverageTest):
     """Miscellaneous arc-measuring tests."""
 
@@ -1126,21 +1222,6 @@ class MiscArcTest(CoverageTest):
             arcs=[(-3, 1), (1, 4004), (4004, -3)],
             arcs_missing=[], arcs_unpredicted=[],
             )
-
-    def test_optimized_away_lines(self):
-        self.check_coverage("""\
-            a = 1
-            if len([2]):
-                c = 3
-            if 0:               # this line isn't in the compiled code.
-                if len([5]):
-                    d = 6
-            e = 7
-            """,
-            lines=[1, 2, 3, 7],
-            arcz=".1 12 23 27 37 7.",
-            arcz_missing="27",
-        )
 
     def test_partial_generators(self):
         # https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not

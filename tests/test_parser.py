@@ -193,7 +193,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
 
     def parse_text(self, source):
         """Parse Python source, and return the parser object."""
-        parser = PythonParser(textwrap.dedent(source))
+        parser = PythonParser(text=textwrap.dedent(source))
         parser.parse_source()
         return parser
 

@@ -15,7 +15,7 @@ from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints, string_class
 from coverage.bytecode import CodeObjects
 from coverage.debug import short_stack
-from coverage.misc import contract, new_contract, nice_pair, join_regex
+from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
 from coverage.misc import NoSource, IncapablePython, NotPython
 from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
 
@@ -492,6 +492,18 @@ new_contract('ArcStarts', lambda seq: all(isinstance(x, ArcStart) for x in seq))
 # Turn on AST dumps with an environment variable.
 AST_DUMP = bool(int(os.environ.get("COVERAGE_AST_DUMP", 0)))
 
+class NodeList(object):
+    """A synthetic fictitious node, containing a sequence of nodes.
+
+    This is used when collapsing optimized if-statements, to represent the
+    unconditional execution of one of the clauses.
+
+    """
+    def __init__(self, body):
+        self.body = body
+        self.lineno = body[0].lineno
+
+
 class AstArcAnalyzer(object):
     """Analyze source text with an AST to find executable code paths."""
 
@@ -586,7 +598,7 @@ class AstArcAnalyzer(object):
         if node.body:
             return self.line_for_node(node.body[0])
         else:
-            # Modules have no line number, they always start at 1.
+            # Empty modules have no line number, they always start at 1.
             return 1
 
     # The node types that just flow to the next node with no complications.
@@ -599,7 +611,17 @@ class AstArcAnalyzer(object):
     def add_arcs(self, node):
         """Add the arcs for `node`.
 
-        Return a set of ArcStarts, exits from this node to the next.
+        Return a set of ArcStarts, exits from this node to the next. Because a
+        node represents an entire sub-tree (including its children), the exits
+        from a node can be arbitrarily complex::
+
+            if something(1):
+                if other(2):
+                    doit(3)
+                else:
+                    doit(5)
+
+        There are two exits from line 1: they start at line 3 and line 5.
 
         """
         node_name = node.__class__.__name__
@@ -610,12 +632,14 @@ class AstArcAnalyzer(object):
             # No handler: either it's something that's ok to default (a simple
             # statement), or it's something we overlooked. Change this 0 to 1
             # to see if it's overlooked.
-            if 0 and node_name not in self.OK_TO_DEFAULT:
-                print("*** Unhandled: {0}".format(node))
+            if 0:
+                if node_name not in self.OK_TO_DEFAULT:
+                    print("*** Unhandled: {0}".format(node))
 
             # Default for simple statements: one exit from this node.
             return set([ArcStart(self.line_for_node(node))])
 
+    @one_of("from_start, prev_starts")
     @contract(returns='ArcStarts')
     def add_body_arcs(self, body, from_start=None, prev_starts=None):
         """Add arcs for the body of a compound statement.
@@ -634,11 +658,65 @@ class AstArcAnalyzer(object):
             lineno = self.line_for_node(body_node)
             first_line = self.multiline.get(lineno, lineno)
             if first_line not in self.statements:
-                continue
+                body_node = self.find_non_missing_node(body_node)
+                if body_node is None:
+                    continue
+                lineno = self.line_for_node(body_node)
             for prev_start in prev_starts:
                 self.add_arc(prev_start.lineno, lineno, prev_start.cause)
             prev_starts = self.add_arcs(body_node)
         return prev_starts
+
+    def find_non_missing_node(self, node):
+        """Search `node` looking for a child that has not been optimized away.
+
+        This might return the node you started with, or it will work recursively
+        to find a child node in self.statements.
+
+        Returns a node, or None if none of the node remains.
+
+        """
+        # This repeats work just done in add_body_arcs, but this duplication
+        # means we can avoid a function call in the 99.9999% case of not
+        # optimizing away statements.
+        lineno = self.line_for_node(node)
+        first_line = self.multiline.get(lineno, lineno)
+        if first_line in self.statements:
+            return node
+
+        missing_fn = getattr(self, "_missing__" + node.__class__.__name__, None)
+        if missing_fn:
+            node = missing_fn(node)
+        else:
+            node = None
+        return node
+
+    def _missing__If(self, node):
+        # If the if-node is missing, then one of its children might still be
+        # here, but not both. So return the first of the two that isn't missing.
+        # Use a NodeList to hold the clauses as a single node.
+        non_missing = self.find_non_missing_node(NodeList(node.body))
+        if non_missing:
+            return non_missing
+        if node.orelse:
+            return self.find_non_missing_node(NodeList(node.orelse))
+        return None
+
+    def _missing__NodeList(self, node):
+        # A NodeList might be a mixture of missing and present nodes. Find the
+        # ones that are present.
+        non_missing_children = []
+        for child in node.body:
+            child = self.find_non_missing_node(child)
+            if child is not None:
+                non_missing_children.append(child)
+
+        # Return the simplest representation of the present children.
+        if not non_missing_children:
+            return None
+        if len(non_missing_children) == 1:
+            return non_missing_children[0]
+        return NodeList(non_missing_children)
 
     def is_constant_expr(self, node):
         """Is this a compile-time constant?"""
@@ -646,7 +724,7 @@ class AstArcAnalyzer(object):
         if node_name in ["NameConstant", "Num"]:
             return "Num"
         elif node_name == "Name":
-            if node.id in ["True", "False", "None"]:
+            if node.id in ["True", "False", "None", "__debug__"]:
                 return "Name"
         return None
 
@@ -728,8 +806,10 @@ class AstArcAnalyzer(object):
     # Handlers: _handle__*
     #
     # Each handler deals with a specific AST node type, dispatched from
-    # add_arcs.  These functions mirror the Python semantics of each syntactic
-    # construct.
+    # add_arcs.  Each deals with a particular kind of node type, and returns
+    # the set of exits from that node. These functions mirror the Python
+    # semantics of each syntactic construct.  See the docstring for add_arcs to
+    # understand the concept of exits from a node.
 
     @contract(returns='ArcStarts')
     def _handle__Break(self, node):
@@ -802,6 +882,12 @@ class AstArcAnalyzer(object):
         exits = self.add_body_arcs(node.body, from_start=from_start)
         from_start = ArcStart(start, cause="the condition on line {lineno} was never false")
         exits |= self.add_body_arcs(node.orelse, from_start=from_start)
+        return exits
+
+    @contract(returns='ArcStarts')
+    def _handle__NodeList(self, node):
+        start = self.line_for_node(node)
+        exits = self.add_body_arcs(node.body, from_start=ArcStart(start))
         return exits
 
     @contract(returns='ArcStarts')

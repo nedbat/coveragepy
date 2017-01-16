@@ -13,6 +13,11 @@ Unreleased
   would cause a "No data to report" error, as reported in `issue 549`_. This is
   now fixed; thanks, Loïc Dachary.
 
+- If-statements can be optimized away during compilation, for example, `if 0:`
+  or `if __debug__:`.  Coverage.py had problems properly understanding these
+  statements which existed in the source, but not in the compiled bytecode.
+  This problem, reported in `issue 522`_, is now fixed.
+
 - If you specified ``--source`` as a directory, then coverage.py would look for
   importable Python files in that directory, and could identify ones that had
   never been executed at all.  But if you specified it as a package name, that
@@ -41,6 +46,7 @@ Unreleased
 
 .. _issue 322: https://bitbucket.org/ned/coveragepy/issues/322/cannot-use-coverage-with-jython
 .. _issue 426: https://bitbucket.org/ned/coveragepy/issues/426/difference-between-coverage-results-with
+.. _issue 522: https://bitbucket.org/ned/coveragepy/issues/522/incorrect-branch-reporting-with-__debug__
 .. _issue 549: https://bitbucket.org/ned/coveragepy/issues/549/skip-covered-with-100-coverage-throws-a-no
 .. _issue 551: https://bitbucket.org/ned/coveragepy/issues/551/coveragepy-cannot-be-imported-in-jython27
 
