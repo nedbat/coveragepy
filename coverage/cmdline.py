@@ -248,7 +248,7 @@ class CmdOptionParser(CoverageOptionParser):
         program_name = super(CmdOptionParser, self).get_prog_name()
 
         # Include the sub-command for this parser as part of the command.
-        return "%(command)s %(subcommand)s" % {'command': program_name, 'subcommand': self.cmd}
+        return "{command} {subcommand}".format(command=program_name, subcommand=self.cmd)
 
 
 GLOBAL_ARGS = [
