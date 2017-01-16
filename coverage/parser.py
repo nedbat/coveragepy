@@ -490,7 +490,7 @@ new_contract('ArcStarts', lambda seq: all(isinstance(x, ArcStart) for x in seq))
 
 
 # Turn on AST dumps with an environment variable.
-AST_DUMP = bool(int(os.environ.get("COVERAGE_ASTDUMP", 0)))
+AST_DUMP = bool(int(os.environ.get("COVERAGE_AST_DUMP", 0)))
 
 class AstArcAnalyzer(object):
     """Analyze source text with an AST to find executable code paths."""
@@ -504,8 +504,8 @@ class AstArcAnalyzer(object):
 
         if AST_DUMP:                                # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
-            print("Statements: {}".format(self.statements))
-            print("Multiline map: {}".format(self.multiline))
+            print("Statements: {0}".format(self.statements))
+            print("Multiline map: {0}".format(self.multiline))
             ast_dump(self.root_node)
 
         self.arcs = set()
