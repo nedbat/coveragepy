@@ -6,8 +6,10 @@ Change history for Coverage.py
 ==============================
 
 
-Unreleased
-----------
+.. _changes_432:
+
+Version 4.3.2 --- 2017-01-16
+----------------------------
 
 - Using the ``--skip-covered`` option on an HTML report with 100% coverage
   would cause a "No data to report" error, as reported in `issue 549`_. This is
