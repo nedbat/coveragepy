@@ -104,7 +104,7 @@ class RunPycFileTest(CoverageTest):
     def make_pyc(self):
         """Create a .pyc file, and return the relative path to it."""
         if env.JYTHON:
-            self.skipTest("Can't make .pyc files on Jython")    # pragma: only jython
+            self.skipTest("Can't make .pyc files on Jython")
 
         self.make_file("compiled.py", """\
             def doit():

@@ -891,7 +891,7 @@ class AliasedCommandTest(CoverageTest):
     def setUp(self):
         super(AliasedCommandTest, self).setUp()
         if env.JYTHON:
-            self.skipTest("Coverage command names don't work on Jython")    # pragma: only jython
+            self.skipTest("Coverage command names don't work on Jython")
 
     def test_major_version_works(self):
         # "coverage2" works on py2
@@ -1095,7 +1095,7 @@ class UnicodeFilePathsTest(CoverageTest):
     def setUp(self):
         super(UnicodeFilePathsTest, self).setUp()
         if env.JYTHON:
-            self.skipTest("Jython 2 doesn't like accented file names")      # pragma: only jython
+            self.skipTest("Jython 2 doesn't like accented file names")
 
     def test_accented_dot_py(self):
         # Make a file with a non-ascii character in the filename.

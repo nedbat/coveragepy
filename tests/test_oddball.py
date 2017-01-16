@@ -145,7 +145,7 @@ class MemoryLeakTest(CoverageTest):
     """
     def test_for_leaks(self):
         if env.JYTHON:
-            self.skipTest("Don't bother on Jython")             # pragma: only jython
+            self.skipTest("Don't bother on Jython")
 
         # Our original bad memory leak only happened on line numbers > 255, so
         # make a code object with more lines than that.  Ugly string mumbo
