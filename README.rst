@@ -51,8 +51,8 @@ License
 
 Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 
-.. _Apache 2.0 License: http://www.apache.org/licenses/LICENSE-2.0.
-.. _NOTICE.txt: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
+.. _Apache 2.0 License: http://www.apache.org/licenses/LICENSE-2.0
+.. _NOTICE.txt: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
 
 .. |ci-status| image:: https://travis-ci.org/nedbat/coveragepy.svg?branch=master
