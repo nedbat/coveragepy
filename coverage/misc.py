@@ -284,7 +284,7 @@ class ExceptionDuringRun(CoverageException):
     pass
 
 
-class StopEverything(unittest.SkipTest):
+class StopEverything(unittest.SkipTest if env.TESTING else object):
     """An exception that means everything should stop.
 
     This derives from SkipTest so that tests that spring this trap will be
