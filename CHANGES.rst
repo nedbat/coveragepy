@@ -6,6 +6,12 @@ Change history for Coverage.py
 ==============================
 
 
+Unreleased
+----------
+
+Nothing yet.
+
+
 .. _changes_432:
 
 Version 4.3.2 --- 2017-01-16
