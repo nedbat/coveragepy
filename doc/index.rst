@@ -62,7 +62,7 @@ not.
 
 .. ifconfig:: not prerelease
 
-    The latest version is coverage.py 4.3.2, released January 16th 2017.  It
+    The latest version is coverage.py 4.3.3, released January 17th 2017.  It
     is supported on:
 
     * Python versions 2.6, 2.7, 3.3, 3.4, 3.5, and 3.6.

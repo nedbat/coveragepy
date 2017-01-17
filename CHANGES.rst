@@ -6,10 +6,16 @@ Change history for Coverage.py
 ==============================
 
 
-Unreleased
-----------
+.. _changes_433:
 
-Nothing yet.
+Version 4.3.3 --- 2017-01-17
+----------------------------
+
+- Python 2.6 support was broken due to a testing exception imported for the
+  benefit of the coverage.py test suite.  Properly conditionalizing it fixed
+  `issue 554`_ so that Python 2.6 works again.
+
+.. _issue 554: https://bitbucket.org/ned/coveragepy/issues/554/traceback-on-python-26-starting-with-432
 
 
 .. _changes_432:
