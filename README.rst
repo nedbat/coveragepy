@@ -18,8 +18,11 @@ Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been executed.
 
-Coverage.py runs on CPython 2.6, 2.7; 3.3 through 3.6; PyPy2 5.6; and PyPy3
-5.5.
+Coverage.py runs on many versions of Python:
+
+* CPython 2.6, 2.7 and 3.3 through 3.6.
+* PyPy2 5.6 and PyPy3 5.5.
+* Jython 2.7.1, though not for reporting.
 
 Documentation is on `Read the Docs <http://coverage.readthedocs.io>`_.
 Code repository and issue tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_,
@@ -46,8 +49,10 @@ section of the docs.
 License
 -------
 
-Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0.
-For details, see https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
+Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
+
+.. _Apache 2.0 License: http://www.apache.org/licenses/LICENSE-2.0.
+.. _NOTICE.txt: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt.
 
 
 .. |ci-status| image:: https://travis-ci.org/nedbat/coveragepy.svg?branch=master
