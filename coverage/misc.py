@@ -284,7 +284,11 @@ class ExceptionDuringRun(CoverageException):
     pass
 
 
-class StopEverything(unittest.SkipTest if env.TESTING else object):
+# unittest.SkipTest doesn't exist in Python 2.6. We backport it with
+# unittest2 in the coverage.py test suite.  But for production, we don't need
+# to derive from SkipTest, so if it doesn't exist, just use object.
+
+class StopEverything(getattr(unittest, 'SkipTest', object)):
     """An exception that means everything should stop.
 
     This derives from SkipTest so that tests that spring this trap will be
