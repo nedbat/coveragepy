@@ -6,6 +6,18 @@ Change history for Coverage.py
 ==============================
 
 
+.. _changes_434:
+
+Version 4.3.4 --- 2017-01-17
+----------------------------
+
+- Fixing 2.6 in version 4.3.3 broke other things, because the too-tricky
+  exception wasn't properly derived from Exception, described in `issue 556`_.
+  A newb mistake; it hasn't been a good few days.
+
+.. _issue 556: https://bitbucket.org/ned/coveragepy/issues/556/43-fails-if-there-are-html-files-in-the
+
+
 .. _changes_433:
 
 Version 4.3.3 --- 2017-01-17
@@ -63,12 +75,6 @@ Version 4.3.2 --- 2017-01-16
 .. _issue 522: https://bitbucket.org/ned/coveragepy/issues/522/incorrect-branch-reporting-with-__debug__
 .. _issue 549: https://bitbucket.org/ned/coveragepy/issues/549/skip-covered-with-100-coverage-throws-a-no
 .. _issue 551: https://bitbucket.org/ned/coveragepy/issues/551/coveragepy-cannot-be-imported-in-jython27
-
-
-Unreleased
-----------
-
-Nothing yet.
 
 
 .. _changes_431:
