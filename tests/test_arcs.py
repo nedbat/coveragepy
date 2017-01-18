@@ -1094,10 +1094,11 @@ class OptimizedIfTest(CoverageTest):
                     if 0: e = 11
                     f = 12
                     if 0: g = 13
-            h = 14
+                    h = 14
+            i = 15
             """,
-            lines=[1, 12, 14],
-            arcz=".1 1C CE E.",
+            lines=[1, 12, 14, 15],
+            arcz=".1 1C CE EF F.",
         )
 
     def test_constant_if(self):
