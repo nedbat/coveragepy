@@ -5,6 +5,8 @@
 
 import threading
 
+from flaky import flaky
+
 import coverage
 from coverage import env
 from coverage.files import abs_file
@@ -349,6 +351,7 @@ MULTI_CODE = """
     """
 
 
+@flaky      # Sometimes a test fails due to inherent randomness. Try one more time.
 class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
 

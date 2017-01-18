@@ -28,6 +28,7 @@ warnings.simplefilter("default")
 
 # Silence specific warnings that are not our fault.
 warnings.filterwarnings("ignore", module="xdist", message="type argument to addoption")
+warnings.filterwarnings("ignore", module="flaky", message="type argument to addoption")
 warnings.filterwarnings(
     # https://github.com/pytest-dev/pytest/issues/2118
     "ignore",
