@@ -15,8 +15,6 @@ addons:
      packages:
      - python3.5
      - python3.5-dev
-     - python3.6
-     - python3.6-dev
 
 env:
   - TOXENV=py26
