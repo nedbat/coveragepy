@@ -44,8 +44,13 @@
         - Build and publish docs:
             $ make publish
 - Kits:
+    - Start fresh:
+        - $ make clean
     - Source kit and wheels:
-        - $ make clean kit wheel
+        - $ make kit wheel
+    - Linux wheels:
+        - this takes an hour... Maybe can do both flavors at once?
+        - $ make manylinux
     - Windows kits
         - wait for over an hour for Appveyor to build kits.
             - https://ci.appveyor.com/project/nedbat/coveragepy

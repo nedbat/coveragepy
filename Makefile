@@ -69,6 +69,10 @@ kit:
 wheel:
 	tox -c tox_wheels.ini $(ARGS)
 
+manylinux:
+	docker run -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 /io/ci/build_manylinux.sh
+	docker run -v `pwd`:/io quay.io/pypa/manylinux1_i686 /io/ci/build_manylinux.sh
+
 kit_upload:
 	twine upload dist/*
 
