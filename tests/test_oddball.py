@@ -506,7 +506,7 @@ class GettraceTest(CoverageTest):
         )
 
     @pytest.mark.expensive
-    def test_atexit_gettrace(self):             # pragma: not covered
+    def test_atexit_gettrace(self):             # pragma: no metacov
         # This is not a test of coverage at all, but of our understanding
         # of this edge-case behavior in various Pythons.
         if env.METACOV:

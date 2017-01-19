@@ -138,7 +138,7 @@ class PythonParser(object):
 
         tokgen = generate_tokens(self.text)
         for toktype, ttext, (slineno, _), (elineno, _), ltext in tokgen:
-            if self.show_tokens:                # pragma: not covered
+            if self.show_tokens:                # pragma: debugging
                 print("%10s %5s %-20r %r" % (
                     tokenize.tok_name.get(toktype, toktype),
                     nice_pair((slineno, elineno)), ttext, ltext

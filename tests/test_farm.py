@@ -119,7 +119,7 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
             glo['clean'] = clean
         else:
             glo = dict((fn, globals()[fn]) for fn in fns)
-            if self.dont_clean:                 # pragma: not covered
+            if self.dont_clean:                 # pragma: debugging
                 glo['clean'] = noop
 
         with change_dir(self.dir):
@@ -328,7 +328,7 @@ def clean(cleandir):
         if os.path.exists(cleandir):
             try:
                 shutil.rmtree(cleandir)
-            except OSError:         # pragma: not covered
+            except OSError:         # pragma: cant happen
                 if tries == 1:
                     raise
                 else:
@@ -369,7 +369,7 @@ def scrub(strdata, scrubs):
     return strdata
 
 
-def main():     # pragma: not covered
+def main():     # pragma: debugging
     """Command-line access to farm tests.
 
     Commands:
@@ -400,5 +400,5 @@ def main():     # pragma: not covered
         print(main.__doc__)
 
 # So that we can run just one farm run.py at a time.
-if __name__ == '__main__':          # pragma: not covered
+if __name__ == '__main__':          # pragma: debugging
     main()

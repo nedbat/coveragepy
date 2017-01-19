@@ -76,7 +76,7 @@ if env.TESTING:
                 return func(*args, **kwargs)
             return _wrapped
         return _decorator
-else:                                           # pragma: not covered
+else:                                           # pragma: not testing
     # We aren't using real PyContracts, so just define our decorators as
     # stunt-double no-ops.
     contract = dummy_decorator_with_args
@@ -152,7 +152,7 @@ def expensive(fn):
             return fn(self)
         return _wrapped
     else:
-        return fn                   # pragma: not covered
+        return fn                   # pragma: not testing
 
 
 def bool_or_none(b):

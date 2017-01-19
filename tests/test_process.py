@@ -581,7 +581,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(infos[0]['note'], u"These are musical notes: ♫𝅗𝅥♩")
 
     @pytest.mark.expensive
-    def test_fullcoverage(self):                        # pragma: not covered
+    def test_fullcoverage(self):                        # pragma: no metacov
         if env.PY2:             # This doesn't work on Python 2.
             self.skipTest("fullcoverage doesn't work on Python 2.")
         # It only works with the C tracer, and if we aren't measuring ourselves.
@@ -1193,13 +1193,13 @@ def find_writable_pth_directory():
         with open(try_it, "w") as f:
             try:
                 f.write("foo")
-            except (IOError, OSError):              # pragma: not covered
+            except (IOError, OSError):              # pragma: cant happen
                 continue
 
         os.remove(try_it)
         return pth_dir
 
-    return None
+    return None                                     # pragma: cant happen
 
 WORKER = os.environ.get('PYTEST_XDIST_WORKER', '')
 PTH_DIR = find_writable_pth_directory()
@@ -1241,7 +1241,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
             f.close()
             """)
 
-    def test_subprocess_with_pth_files(self):           # pragma: not covered
+    def test_subprocess_with_pth_files(self):           # pragma: no metacov
         if env.METACOV:
             self.skipTest("Can't test sub-process pth file suppport during metacoverage")
 
@@ -1268,7 +1268,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         data.read_file(".mycovdata")
         self.assertEqual(data.line_counts()['sub.py'], 3)
 
-    def test_subprocess_with_pth_files_and_parallel(self):  # pragma: not covered
+    def test_subprocess_with_pth_files_and_parallel(self):  # pragma: no metacov
         # https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
         if env.METACOV:
             self.skipTest("Can't test sub-process pth file suppport during metacoverage")
@@ -1315,7 +1315,7 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
     def assert_pth_and_source_work_together(
         self, dashm, package, source
-    ):                                                  # pragma: not covered
+    ):                                                  # pragma: no metacov
         """Run the test for a particular combination of factors.
 
         The arguments are all strings:
