@@ -13,6 +13,7 @@ import sys
 
 import coverage
 from coverage import env
+from coverage.backunittest import unittest
 from coverage.backward import StringIO
 from coverage.config import CoverageConfig
 from coverage.control import Coverage
@@ -418,6 +419,9 @@ class SummaryTest(CoverageTest):
         )
 
     def test_accenteddotpy_not_python(self):
+        if env.JYTHON:
+            self.skipTest("Jython doesn't like accented file names")
+
         # We run a .py file with a non-ascii name, and when reporting, we can't
         # parse it as Python.  We should get an error message in the report.
 
@@ -585,7 +589,7 @@ class SummaryTest(CoverageTest):
         # Python 3 puts the .pyc files in a __pycache__ directory, and will
         # not import from there without source.  It will import a .pyc from
         # the source location though.
-        if not os.path.exists("mod.pyc"):
+        if env.PY3 and not env.JYTHON:
             pycs = glob.glob("__pycache__/mod.*.pyc")
             self.assertEqual(len(pycs), 1)
             os.rename(pycs[0], "mod.pyc")
@@ -774,4 +778,12 @@ class TestSummaryReporterConfiguration(CoverageTest):
         opts.from_args(sort='Xyzzy')
         msg = "Invalid sorting option: 'Xyzzy'"
         with self.assertRaisesRegex(CoverageException, msg):
-            self.get_summary_text(data, opts)
+            try:
+                self.get_summary_text(data, opts)
+            except unittest.SkipTest:
+                # This is weird: it's because StopEverything derives from
+                # SkipTest and CoverageException. When we throw StopEverything,
+                # it's caught by the assertRaisesRegex, but the message is
+                # wrong.  By catching SkipTest, and raising SkipTest, we get
+                # the behavior we wanted.
+                self.skipTest("No, really, skip...")

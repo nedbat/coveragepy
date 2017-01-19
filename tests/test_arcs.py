@@ -143,10 +143,17 @@ class SimpleArcTest(CoverageTest):
             )
 
     def test_what_is_the_sound_of_no_lines_clapping(self):
+        if env.JYTHON:
+            # Jython reports no lines for an empty file.
+            arcz_missing=".1 1."                    # pragma: only jython
+        else:
+            # Other Pythons report one line.
+            arcz_missing=""
         self.check_coverage("""\
             # __init__.py
             """,
             arcz=".1 1.",
+            arcz_missing=arcz_missing,
         )
 
 

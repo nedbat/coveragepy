@@ -231,6 +231,9 @@ class PyexpatTest(CoverageTest):
     """Pyexpat screws up tracing. Make sure we've counter-defended properly."""
 
     def test_pyexpat(self):
+        if env.JYTHON:
+            self.skipTest("Pyexpat isn't a problem on Jython")
+
         # pyexpat calls the trace function explicitly (inexplicably), and does
         # it wrong for exceptions.  Parsing a DOCTYPE for some reason throws
         # an exception internally, and triggers its wrong behavior.  This test
@@ -380,6 +383,13 @@ class ExceptionTest(CoverageTest):
                 filename = callname + ".py"
                 lines = data.lines(abs_file(filename))
                 clean_lines[filename] = sorted(lines)
+
+            if env.JYTHON:                  # pragma: only jython
+                # Jython doesn't report on try or except lines, so take those
+                # out of the expected lines.
+                invisible = [202, 206, 302, 304]
+                for lines in lines_expected.values():
+                    lines[:] = [l for l in lines if l not in invisible]
 
             self.assertEqual(clean_lines, lines_expected)
 

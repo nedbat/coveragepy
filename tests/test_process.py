@@ -1095,7 +1095,7 @@ class UnicodeFilePathsTest(CoverageTest):
     def setUp(self):
         super(UnicodeFilePathsTest, self).setUp()
         if env.JYTHON:
-            self.skipTest("Jython 2 doesn't like accented file names")
+            self.skipTest("Jython doesn't like accented file names")
 
     def test_accented_dot_py(self):
         # Make a file with a non-ascii character in the filename.
@@ -1237,8 +1237,9 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
             """)
         # sub.py will write a few lines.
         self.make_file("sub.py", """\
-            with open("out.txt", "w") as f:
-                f.write("Hello, world!\\n")
+            f = open("out.txt", "w")
+            f.write("Hello, world!\\n")
+            f.close()
             """)
 
     def test_subprocess_with_pth_files(self):           # pragma: not covered
@@ -1266,7 +1267,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         self.assert_exists(".mycovdata")
         data = coverage.CoverageData()
         data.read_file(".mycovdata")
-        self.assertEqual(data.line_counts()['sub.py'], 2)
+        self.assertEqual(data.line_counts()['sub.py'], 3)
 
     def test_subprocess_with_pth_files_and_parallel(self):  # pragma: not covered
         # https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
@@ -1290,7 +1291,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         self.assert_exists(".coverage")
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['sub.py'], 2)
+        self.assertEqual(data.line_counts()['sub.py'], 3)
 
         # assert that there are *no* extra data files left over after a combine
         data_files = glob.glob(os.getcwd() + '/.coverage*')
@@ -1347,14 +1348,17 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         # Main will run sub.py.
         self.make_file(path("main.py"), """\
             import %s
-            if True: pass
+            a = 2
+            b = 3
             """ % fullname('sub'))
         if package:
             self.make_file(path("__init__.py"), "")
         # sub.py will write a few lines.
         self.make_file(path("sub.py"), """\
-            with open("out.txt", "w") as f:
-                f.write("Hello, world!")
+            # Avoid 'with' so Jython can play along.
+            f = open("out.txt", "w")
+            f.write("Hello, world!")
+            f.close()
             """)
         self.make_file("coverage.ini", """\
             [run]
@@ -1379,7 +1383,7 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         data.read_file(".coverage")
         summary = data.line_counts()
         print(summary)
-        self.assertEqual(summary[source + '.py'], 2)
+        self.assertEqual(summary[source + '.py'], 3)
         self.assertEqual(len(summary), 1)
 
     def test_dashm_main(self):

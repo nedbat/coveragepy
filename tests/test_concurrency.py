@@ -49,6 +49,9 @@ def measurable_line(l):
         return False
     if l.startswith('else:'):
         return False
+    if env.JYTHON and l.startswith(('try:', 'except:', 'except ', 'break', 'with ')):
+        # Jython doesn't measure these statements.
+        return False                    # pragma: only jython
     return True
 
 
