@@ -44,7 +44,8 @@ class RunFileTest(CoverageTest):
         self.assertEqual(mod_globs['__main__.DATA'], "xyzzy")
 
         # Argv should have the proper values.
-        self.assertEqual(mod_globs['argv'], [TRY_EXECFILE, "arg1", "arg2"])
+        self.assertEqual(mod_globs['argv0'], TRY_EXECFILE)
+        self.assertEqual(mod_globs['argv1-n'], ["arg1", "arg2"])
 
         # __builtins__ should have the right values, like open().
         self.assertEqual(mod_globs['__builtins__.has_open'], True)
