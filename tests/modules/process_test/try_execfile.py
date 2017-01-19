@@ -50,8 +50,6 @@ def without_same_files(filenames):
             reduced.append(filename)
     return reduced
 
-skips = os.getenv('COVERAGE_TRY_EXECFILE_SKIPS', '').split()
-
 cleaned_sys_path = [os.path.normcase(p) for p in without_same_files(sys.path)]
 
 DATA = "xyzzy"
@@ -67,10 +65,6 @@ FN_VAL = my_function("fooey")
 loader = globals().get('__loader__')
 fullname = getattr(loader, 'fullname', None) or getattr(loader, 'name', None)
 
-argv = sys.argv
-if 'argv0' in skips:
-    argv[0] = '*skipped*'
-
 globals_to_check = {
     '__name__': __name__,
     '__file__': __file__,
@@ -83,7 +77,8 @@ globals_to_check = {
     'DATA': DATA,
     'FN_VAL': FN_VAL,
     '__main__.DATA': getattr(__main__, "DATA", "nothing"),
-    'argv': argv,
+    'argv0': sys.argv[0],
+    'argv1-n': sys.argv[1:],
     'path': cleaned_sys_path,
 }
 

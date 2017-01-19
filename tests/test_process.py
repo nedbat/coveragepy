@@ -680,31 +680,35 @@ TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try
 class EnvironmentTest(CoverageTest):
     """Tests using try_execfile.py to test the execution environment."""
 
-    def setUp(self):
-        super(EnvironmentTest, self).setUp()
+    def assert_tryexecfile_output(self, out1, out2):
+        """Assert that the output we got is a successful run of try_execfile.py.
 
-        if env.JYTHON:
-            # Jython has a different sys.argv[0], always skip it.
-            self.set_environ("COVERAGE_TRY_EXECFILE_SKIPS", "argv0")    # pragma: only jython
+        `out1` and `out2` must be the same, modulo a few slight known platform
+        differences.
 
-    def assert_execfile_output(self, out):
-        """Assert that the output we got is a successful run of try_execfile.py"""
-        self.assertIn('"DATA": "xyzzy"', out)
+        """
+        # First, is this even credible try_execfile.py output?
+        self.assertIn('"DATA": "xyzzy"', out1)
+
+        if env.JYTHON:                  # pragma: only jython
+            # Argv0 is different for Jython, remove that from the comparison.
+            out1 = re_lines(out1, r'\s+"argv0":', match=False)
+            out2 = re_lines(out2, r'\s+"argv0":', match=False)
+
+        self.assertMultiLineEqual(out1, out2)
 
     def test_coverage_run_is_like_python(self):
         with open(TRY_EXECFILE) as f:
             self.make_file("run_me.py", f.read())
         out_cov = self.run_command("coverage run run_me.py")
         out_py = self.run_command("python run_me.py")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
+        self.assert_tryexecfile_output(out_cov, out_py)
 
     def test_coverage_run_dashm_is_like_python_dashm(self):
         # These -m commands assume the coverage tree is on the path.
         out_cov = self.run_command("coverage run -m process_test.try_execfile")
         out_py = self.run_command("python -m process_test.try_execfile")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
+        self.assert_tryexecfile_output(out_cov, out_py)
 
     def test_coverage_run_dir_is_like_python_dir(self):
         with open(TRY_EXECFILE) as f:
@@ -724,8 +728,7 @@ class EnvironmentTest(CoverageTest):
             ignored += "|"+re.escape(os.getcwd())
         out_cov = re_lines(out_cov, ignored, match=False)
         out_py = re_lines(out_py, ignored, match=False)
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
+        self.assert_tryexecfile_output(out_cov, out_py)
 
     def test_coverage_run_dashm_equal_to_doubledashsource(self):
         """regression test for #328
@@ -738,8 +741,7 @@ class EnvironmentTest(CoverageTest):
             "coverage run --source process_test.try_execfile -m process_test.try_execfile"
         )
         out_py = self.run_command("python -m process_test.try_execfile")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
+        self.assert_tryexecfile_output(out_cov, out_py)
 
     def test_coverage_run_dashm_superset_of_doubledashsource(self):
         """Edge case: --source foo -m foo.bar"""
@@ -748,8 +750,7 @@ class EnvironmentTest(CoverageTest):
             "coverage run --source process_test -m process_test.try_execfile"
         )
         out_py = self.run_command("python -m process_test.try_execfile")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
+        self.assert_tryexecfile_output(out_cov, out_py)
 
         st, out = self.run_command_status("coverage report")
         self.assertEqual(st, 0)
@@ -771,8 +772,7 @@ class EnvironmentTest(CoverageTest):
             "coverage run --source process_test myscript"
         )
         out_py = self.run_command("python myscript")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
+        self.assert_tryexecfile_output(out_cov, out_py)
 
         st, out = self.run_command_status("coverage report")
         self.assertEqual(st, 0)
@@ -786,13 +786,12 @@ class EnvironmentTest(CoverageTest):
 
         out_cov = self.run_command("coverage run -m sub.run_me")
         out_py = self.run_command("python -m sub.run_me")
-        self.assertMultiLineEqual(out_cov, out_py)
-        self.assert_execfile_output(out_cov)
+        self.assert_tryexecfile_output(out_cov, out_py)
 
     def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
         if sys.version_info < (2, 7):
-            # Coverage.py isn't bug-for-bug compatible in the behavior of -m for
-            # Pythons < 2.7
+            # Coverage.py isn't bug-for-bug compatible in the behavior
+            # of -m for Pythons < 2.7
             self.skipTest("-m doesn't work the same < Python 2.7")
         # https://bitbucket.org/ned/coveragepy/issue/207
         self.make_file("package/__init__.py", "print('init')")
