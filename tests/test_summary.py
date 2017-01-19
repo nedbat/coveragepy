@@ -786,4 +786,4 @@ class TestSummaryReporterConfiguration(CoverageTest):
                 # it's caught by the assertRaisesRegex, but the message is
                 # wrong.  By catching SkipTest, and raising SkipTest, we get
                 # the behavior we wanted.
-                self.skipTest("No, really, skip...")
+                self.skipTest("No, really, skip...")        # pragma: only jython
