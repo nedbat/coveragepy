@@ -255,8 +255,13 @@ class SimpleRepr(object):
             )
 
 
-class CoverageException(Exception):
-    """An exception specific to coverage.py."""
+class BaseCoverageException(Exception):
+    """The base of all Coverage exceptions."""
+    pass
+
+
+class CoverageException(BaseCoverageException):
+    """A run-of-the-mill exception specific to coverage.py."""
     pass
 
 
@@ -298,6 +303,11 @@ class StopEverything(getattr(unittest, 'SkipTest', Exception)):
     pass
 
 
-class IncapablePython(CoverageException, StopEverything):
-    """An operation is attempted that this version of Python cannot do."""
+class IncapablePython(BaseCoverageException, StopEverything):
+    """An operation is attempted that this version of Python cannot do.
+
+    This is derived from BaseCoverageException, not CoverageException, so that
+    it won't get caught by 'except CoverageException'.
+
+    """
     pass

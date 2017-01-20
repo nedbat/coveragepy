@@ -13,7 +13,6 @@ import sys
 
 import coverage
 from coverage import env
-from coverage.backunittest import unittest
 from coverage.backward import StringIO
 from coverage.config import CoverageConfig
 from coverage.control import Coverage
@@ -778,12 +777,4 @@ class TestSummaryReporterConfiguration(CoverageTest):
         opts.from_args(sort='Xyzzy')
         msg = "Invalid sorting option: 'Xyzzy'"
         with self.assertRaisesRegex(CoverageException, msg):
-            try:
-                self.get_summary_text(data, opts)
-            except unittest.SkipTest:
-                # This is weird: it's because StopEverything derives from
-                # SkipTest and CoverageException. When we throw StopEverything,
-                # it's caught by the assertRaisesRegex, but the message is
-                # wrong.  By catching SkipTest, and raising SkipTest, we get
-                # the behavior we wanted.
-                self.skipTest("No, really, skip...")        # pragma: only jython
+            self.get_summary_text(data, opts)

@@ -13,7 +13,7 @@ import traceback
 from coverage import env
 from coverage.collector import CTracer
 from coverage.execfile import run_python_file, run_python_module
-from coverage.misc import CoverageException, ExceptionDuringRun, NoSource
+from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.debug import info_formatter, info_header
 
 
@@ -760,7 +760,7 @@ def main(argv=None):
         # exception.
         traceback.print_exception(*err.args)
         status = ERR
-    except CoverageException as err:
+    except BaseCoverageException as err:
         # A controlled error inside coverage.py: print the message to the user.
         print(err)
         status = ERR
