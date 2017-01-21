@@ -16,7 +16,7 @@ from coverage.backward import bytes_to_ints, string_class
 from coverage.bytecode import CodeObjects
 from coverage.debug import short_stack
 from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
-from coverage.misc import NoSource, IncapablePython, NotPython
+from coverage.misc import NoSource, NotPython, StopEverything
 from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
 
 
@@ -373,7 +373,7 @@ class ByteParser(object):
         # attributes on code objects that we need to do the analysis.
         for attr in ['co_lnotab', 'co_firstlineno']:
             if not hasattr(self.code, attr):
-                raise IncapablePython(                          # pragma: only jython
+                raise StopEverything(                   # pragma: only jython
                     "This implementation of Python doesn't support code analysis.\n"
                     "Run coverage.py under another Python for this command."
                 )

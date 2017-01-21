@@ -293,21 +293,11 @@ class ExceptionDuringRun(CoverageException):
 # unittest2 in the coverage.py test suite.  But for production, we don't need
 # to derive from SkipTest, so if it doesn't exist, just use Exception.
 
-class StopEverything(getattr(unittest, 'SkipTest', Exception)):
+class StopEverything(BaseCoverageException, getattr(unittest, 'SkipTest', Exception)):
     """An exception that means everything should stop.
 
     This derives from SkipTest so that tests that spring this trap will be
     skipped automatically, without a lot of boilerplate all over the place.
-
-    """
-    pass
-
-
-class IncapablePython(BaseCoverageException, StopEverything):
-    """An operation is attempted that this version of Python cannot do.
-
-    This is derived from BaseCoverageException, not CoverageException, so that
-    it won't get caught by 'except CoverageException'.
 
     """
     pass
