@@ -119,7 +119,7 @@ class RecursionTest(CoverageTest):
 
         pytrace = (cov.collector.tracer_name() == "PyTracer")
         expected_missing = [3]
-        if pytrace:
+        if pytrace:                                 # pragma: no metacov
             expected_missing += [9, 10, 11]
 
         _, statements, missing, _ = cov.analysis("recur.py")
@@ -127,7 +127,7 @@ class RecursionTest(CoverageTest):
         self.assertEqual(missing, expected_missing)
 
         # Get a warning about the stackoverflow effect on the tracing function.
-        if pytrace:
+        if pytrace:                                 # pragma: no metacov
             self.assertEqual(cov._warnings,
                 ["Trace function changed, measurement is likely wrong: None"]
                 )
@@ -400,15 +400,11 @@ class DoctestTest(CoverageTest):
     def setUp(self):
         super(DoctestTest, self).setUp()
 
-        # Oh, the irony!  This test case exists because Python 2.4's
-        # doctest module doesn't play well with coverage.  But nose fixes
-        # the problem by monkeypatching doctest.  I want to undo the
-        # monkeypatch to be sure I'm getting the doctest module that users
-        # of coverage will get.  Deleting the imported module here is
-        # enough: when the test imports doctest again, it will get a fresh
-        # copy without the monkeypatch.
-        if 'doctest' in sys.modules:
-            del sys.modules['doctest']
+        # This test case exists because Python 2.4's doctest module didn't play
+        # well with coverage. Nose fixes the problem by monkeypatching doctest.
+        # I want to be sure there's no monkeypatch and that I'm getting the
+        # doctest module that users of coverage will get.
+        assert 'doctest' not in sys.modules
 
     def test_doctest(self):
         self.check_coverage('''\

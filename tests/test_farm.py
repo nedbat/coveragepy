@@ -147,8 +147,6 @@ def noop(*args_unused, **kwargs_unused):
 
 def copy(src, dst):
     """Copy a directory."""
-    if os.path.exists(dst):
-        shutil.rmtree(dst)
     shutil.copytree(src, dst)
 
 
@@ -179,16 +177,8 @@ def run(cmds, rundir="src", outfile=None):
                 fout.close()
 
 
-def compare(
-    dir1, dir2, file_pattern=None, size_within=0,
-    left_extra=False, right_extra=False, scrubs=None
-):
+def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scrubs=None):
     """Compare files matching `file_pattern` in `dir1` and `dir2`.
-
-    `dir2` is interpreted as a prefix, with Python version numbers appended
-    to find the actual directory to compare with. "foo" will compare
-    against "foo_v241", "foo_v24", "foo_v2", or "foo", depending on which
-    directory is found first.
 
     `size_within` is a percentage delta for the file sizes.  If non-zero,
     then the file contents are not compared (since they are expected to
@@ -197,8 +187,7 @@ def compare(
     within 10 percent of each other to compare equal.
 
     `left_extra` true means the left directory can have extra files in it
-    without triggering an assertion.  `right_extra` means the right
-    directory can.
+    without triggering an assertion.
 
     `scrubs` is a list of pairs, regexes to find and literal strings to
     replace them with to scrub the files of unimportant differences.
@@ -207,15 +196,6 @@ def compare(
     matches.
 
     """
-    # Search for a dir2 with a version suffix.
-    version_suff = ''.join(map(str, sys.version_info[:3]))
-    while version_suff:
-        trydir = dir2 + '_v' + version_suff
-        if os.path.exists(trydir):
-            dir2 = trydir
-            break
-        version_suff = version_suff[:-1]
-
     assert os.path.exists(dir1), "Left directory missing: %s" % dir1
     assert os.path.exists(dir2), "Right directory missing: %s" % dir2
 
@@ -270,8 +250,7 @@ def compare(
 
     if not left_extra:
         assert not left_only, "Files in %s only: %s" % (dir1, left_only)
-    if not right_extra:
-        assert not right_only, "Files in %s only: %s" % (dir2, right_only)
+    assert not right_only, "Files in %s only: %s" % (dir2, right_only)
 
 
 def contains(filename, *strlist):
