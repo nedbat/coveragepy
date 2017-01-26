@@ -11,10 +11,11 @@ import sys
 import pytest
 
 import coverage
-from coverage.backunittest import TestCase
+from coverage.backunittest import TestCase, unittest
 from coverage.files import actual_path
+from coverage.misc import StopEverything
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, convert_skip_exceptions
 from tests.helpers import CheckUniqueFilenames, re_lines, re_line
 
 
@@ -201,6 +202,26 @@ def test_re_line(text, pat, result):
 def test_re_line_bad(text, pat):
     with pytest.raises(AssertionError):
         re_line(text, pat)
+
+
+def test_convert_skip_exceptions():
+    @convert_skip_exceptions
+    def some_method(ret=None, exc=None):
+        """Be like a test case."""
+        if exc:
+            raise exc("yikes!")
+        return ret
+
+    # Normal flow is normal.
+    assert some_method(ret=[17, 23]) == [17, 23]
+
+    # Exceptions are raised normally.
+    with pytest.raises(ValueError):
+        some_method(exc=ValueError)
+
+    # But a StopEverything becomes a SkipTest.
+    with pytest.raises(unittest.SkipTest):
+        some_method(exc=StopEverything)
 
 
 def _same_python_executable(e1, e2):

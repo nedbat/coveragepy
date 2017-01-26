@@ -36,26 +36,27 @@ from tests.helpers import run_command
 OK, ERR = 0, 1
 
 
+def convert_skip_exceptions(method):
+    """A decorator for test methods to convert StopEverything to SkipTest."""
+    def wrapper(*args, **kwargs):
+        """Run the test method, and convert exceptions."""
+        try:
+            result = method(*args, **kwargs)
+        except StopEverything:
+            raise unittest.SkipTest("StopEverything!")
+        return result
+    return wrapper
+
+
 class SkipConvertingMetaclass(type):
     """Decorate all test methods to convert StopEverything to SkipTest."""
     def __new__(mcs, name, bases, attrs):
         for attr_name, attr_value in attrs.items():
             if attr_name.startswith('test_') and isinstance(attr_value, types.FunctionType):
-                attrs[attr_name] = mcs.convert_skip_exceptions(attr_value)
+                attrs[attr_name] = convert_skip_exceptions(attr_value)
 
         return super(SkipConvertingMetaclass, mcs).__new__(mcs, name, bases, attrs)
 
-    @classmethod
-    def convert_skip_exceptions(mcs, method):
-        """The decorator that wraps test methods."""
-        def wrapper(*args, **kwargs):
-            """Run the test method, and convert StopEverything to SkipTest."""
-            try:
-                result = method(*args, **kwargs)
-            except StopEverything:
-                raise unittest.SkipTest("StopEverything!")
-            return result
-        return wrapper
 
 CoverageTestMethodsMixin = SkipConvertingMetaclass('CoverageTestMethodsMixin', (), {})
 
