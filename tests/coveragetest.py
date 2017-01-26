@@ -13,6 +13,7 @@ import re
 import shlex
 import shutil
 import sys
+import types
 
 from unittest_mixins import (
     EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
@@ -21,11 +22,12 @@ from unittest_mixins import (
 
 import coverage
 from coverage import env
-from coverage.backunittest import TestCase
+from coverage.backunittest import TestCase, unittest
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.backward import invalidate_import_caches
 from coverage.cmdline import CoverageScript
 from coverage.debug import _TEST_NAME_FILE, DebugControl
+from coverage.misc import StopEverything
 
 from tests.helpers import run_command
 
@@ -34,12 +36,36 @@ from tests.helpers import run_command
 OK, ERR = 0, 1
 
 
+class SkipConvertingMetaclass(type):
+    """Decorate all test methods to convert StopEverything to SkipTest."""
+    def __new__(mcs, name, bases, attrs):
+        for attr_name, attr_value in attrs.items():
+            if attr_name.startswith('test_') and isinstance(attr_value, types.FunctionType):
+                attrs[attr_name] = mcs.convert_skip_exceptions(attr_value)
+
+        return super(SkipConvertingMetaclass, mcs).__new__(mcs, name, bases, attrs)
+
+    @classmethod
+    def convert_skip_exceptions(mcs, method):
+        """The decorator that wraps test methods."""
+        def wrapper(*args, **kwargs):
+            """Run the test method, and convert StopEverything to SkipTest."""
+            try:
+                result = method(*args, **kwargs)
+            except StopEverything:
+                raise unittest.SkipTest("StopEverything!")
+            return result
+        return wrapper
+
+CoverageTestMethodsMixin = SkipConvertingMetaclass('CoverageTestMethodsMixin', (), {})
+
 class CoverageTest(
     EnvironmentAwareMixin,
     StdStreamCapturingMixin,
     TempDirMixin,
     DelayedAssertionMixin,
-    TestCase
+    CoverageTestMethodsMixin,
+    TestCase,
 ):
     """A base class for coverage.py test cases."""
 

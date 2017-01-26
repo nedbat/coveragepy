@@ -13,7 +13,6 @@ import types
 
 from coverage import env
 from coverage.backward import to_bytes, unicode_class
-from coverage.backunittest import unittest
 
 ISOLATED_MODULES = {}
 
@@ -289,15 +288,11 @@ class ExceptionDuringRun(CoverageException):
     pass
 
 
-# unittest.SkipTest doesn't exist in Python 2.6. We backport it with
-# unittest2 in the coverage.py test suite.  But for production, we don't need
-# to derive from SkipTest, so if it doesn't exist, just use Exception.
-
-class StopEverything(BaseCoverageException, getattr(unittest, 'SkipTest', Exception)):
+class StopEverything(BaseCoverageException):
     """An exception that means everything should stop.
 
-    This derives from SkipTest so that tests that spring this trap will be
-    skipped automatically, without a lot of boilerplate all over the place.
+    The CoverageTest class converts these to SkipTest, so that when running
+    tests, raising this exception will automatically skip the test.
 
     """
     pass

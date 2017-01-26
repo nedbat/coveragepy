@@ -15,7 +15,7 @@ from coverage.backward import StringIO
 from coverage.misc import CoverageException
 from coverage.report import Reporter
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, CoverageTestMethodsMixin
 
 
 class ApiTest(CoverageTest):
@@ -385,7 +385,7 @@ class UsingModulesMixin(object):
         sys.path.append("../moremodules")
 
 
-class OmitIncludeTestsMixin(UsingModulesMixin):
+class OmitIncludeTestsMixin(UsingModulesMixin, CoverageTestMethodsMixin):
     """Test methods for coverage methods taking include and omit."""
 
     def filenames_in(self, summary, filenames):

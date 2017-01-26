@@ -68,6 +68,7 @@ disable=
     no-member,
     using-constant-test,
     too-many-nested-blocks,
+    too-many-ancestors,
 # Formatting stuff
     superfluous-parens,bad-continuation,
 # I'm fine deciding my own import order,
