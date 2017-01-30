@@ -1,6 +1,9 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
+# Run like this:
+#   tox -e py36 -- -n 0 -s perf/perf_measure.py
+
 import csv
 from collections import namedtuple
 import os
@@ -102,7 +105,7 @@ class StressTest(CoverageTest):
             covered,
         )
 
-    def stress_test(self):
+    def test_stress_test(self):
 
         # For checking the calculation of actual stats:
         if 0:
@@ -112,14 +115,16 @@ class StressTest(CoverageTest):
                         self._compute_overhead(100*f+1, 100*c+1, 100*l+1)
 
         # For checking the overhead for each component:
-        fixed = 900
-        step = 500
+        fixed = 100
+        numlo = 100
+        numhi = 200
+        step = 50
 
         def time_thing(thing):
             per_thing = []
             pct_thing = []
             for runs in range(5):
-                for n in range(100, 1000, step):
+                for n in range(numlo, numhi+1, step):
                     kwargs = {
                         "file_count": fixed,
                         "call_count": fixed,
