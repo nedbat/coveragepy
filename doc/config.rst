@@ -168,7 +168,7 @@ equivalent when combining data from different machines::
         c:\myproj\src
 
 The names of the entries are ignored, you may choose any name that you like.
-The value is a lists of strings.  When combining data with the ``combine``
+The value is a list of strings.  When combining data with the ``combine``
 command, two file paths will be combined if they start with paths from the same
 list.
 
