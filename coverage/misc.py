@@ -110,23 +110,28 @@ def format_lines(statements, lines):
     For example, if `statements` is [1,2,3,4,5,10,11,12,13,14] and
     `lines` is [1,2,5,10,11,13,14] then the result will be "1-2, 5-11, 13-14".
 
+    Both `lines` and `statements` can be any iterable. All of the elements of
+    `lines` must be in `statements`, and all of the values must be positive
+    integers.
+
     """
-    pairs = []
-    i = 0
-    j = 0
-    start = None
     statements = sorted(statements)
     lines = sorted(lines)
-    while i < len(statements) and j < len(lines):
-        if statements[i] == lines[j]:
-            if start is None:
-                start = lines[j]
-            end = lines[j]
-            j += 1
+
+    pairs = []
+    start = None
+    lidx = 0
+    for stmt in statements:
+        if lidx >= len(lines):
+            break
+        if stmt == lines[lidx]:
+            lidx += 1
+            if not start:
+                start = stmt
+            end = stmt
         elif start:
             pairs.append((start, end))
             start = None
-        i += 1
     if start:
         pairs.append((start, end))
     ret = ', '.join(map(nice_pair, pairs))
