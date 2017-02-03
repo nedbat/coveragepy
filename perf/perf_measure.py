@@ -44,7 +44,7 @@ def mk_main(file_count, call_count, line_count):
 
 class StressTest(CoverageTest):
 
-    def _compute_overhead(self, file_count, call_count, line_count):
+    def _run_scenario(self, file_count, call_count, line_count):
         self.clean_local_file_imports()
 
         for idx in range(file_count):
@@ -76,16 +76,21 @@ class StressTest(CoverageTest):
                 stats = stats.copy()
             cov.stop()
 
-        print("baseline = {:.2f}, covered = {:.2f}".format(baseline, covered))
+        return baseline, covered, stats
+
+    def _compute_overhead(self, file_count, call_count, line_count):
+        baseline, covered, stats = self._run_scenario(file_count, call_count, line_count)
+
+        #print("baseline = {:.2f}, covered = {:.2f}".format(baseline, covered))
         # Empirically determined to produce the same numbers as the collected
-        # stats from get_stats().
-        actual_file_count = 6 + file_count
-        actual_call_count = 85 + file_count * (call_count + 98)
+        # stats from get_stats(), with Python 3.6.
+        actual_file_count = 17 + file_count
+        actual_call_count = file_count * call_count + 156 * file_count + 85
         actual_line_count = (
-            343 +
-            390 * file_count +
+            2 * file_count * call_count * line_count +
             3 * file_count * call_count +
-            2 * file_count * call_count * line_count
+            769 * file_count +
+            345
         )
 
         if stats is not None:
@@ -105,111 +110,60 @@ class StressTest(CoverageTest):
             covered,
         )
 
-    def test_stress_test(self):
+    fixed = 200
+    numlo = 100
+    numhi = 100
+    step = 50
+    runs = 5
 
+    def test_count_operations(self):
+
+        def operations(thing):
+            for runs in range(self.runs):
+                for n in range(self.numlo, self.numhi+1, self.step):
+                    kwargs = {
+                        "file_count": self.fixed,
+                        "call_count": self.fixed,
+                        "line_count": self.fixed,
+                    }
+                    kwargs[thing+"_count"] = n
+                    yield kwargs['file_count'] * kwargs['call_count'] * kwargs['line_count']
+        ops = sum(sum(operations(thing)) for thing in ["file", "call", "line"])
+        print("{0:.1f}M operations".format(ops/1e6))
+
+    def test_coefficients(self):
         # For checking the calculation of actual stats:
-        if 0:
-            for f in range(3):
-                for c in range(3):
-                    for l in range(3):
-                        self._compute_overhead(100*f+1, 100*c+1, 100*l+1)
+        data = []
+        for f in range(1, 6):
+            for c in range(1, 6):
+                for l in range(1, 6):
+                    _, _, stats = self._run_scenario(f, c, l)
+                    data.append("{0},{1},{2},{3[files]},{3[calls]},{3[lines]}".format(f, c, l, stats))
+        print("\n".join(data))
 
+    def test_stress_test(self):
         # For checking the overhead for each component:
-        fixed = 100
-        numlo = 100
-        numhi = 200
-        step = 50
-
         def time_thing(thing):
             per_thing = []
             pct_thing = []
-            for runs in range(5):
-                for n in range(numlo, numhi+1, step):
+            for runs in range(self.runs):
+                for n in range(self.numlo, self.numhi+1, self.step):
                     kwargs = {
-                        "file_count": fixed,
-                        "call_count": fixed,
-                        "line_count": fixed,
+                        "file_count": self.fixed,
+                        "call_count": self.fixed,
+                        "line_count": self.fixed,
                     }
                     kwargs[thing+"_count"] = n
                     res = self._compute_overhead(**kwargs)
                     per_thing.append(res.overhead / getattr(res, "{}s".format(thing)))
                     pct_thing.append(res.covered / res.baseline * 100)
 
-            print("Per {}: mean = {:.5f}us, stddev = {:0.5f}us".format(thing, statistics.mean(per_thing)*1e6, statistics.stdev(per_thing)*1e6))
-            print("          pct = {:.3f}%, stddev = {:.5f}".format(statistics.mean(pct_thing), statistics.stdev(pct_thing)))
+            out = "Per {}: ".format(thing)
+            out += "mean = {:9.3f}us, stddev = {:8.3f}us, ".format(statistics.mean(per_thing)*1e6, statistics.stdev(per_thing)*1e6)
+            out += "min = {:9.3f}us, ".format(min(per_thing)*1e6)
+            out += "pct = {:6.1f}%, stddev = {:6.1f}%".format(statistics.mean(pct_thing), statistics.stdev(pct_thing))
+            print(out)
 
         time_thing("file")
         time_thing("call")
         time_thing("line")
-
-        return
-
-        line_result = self._compute_overhead(1, 1, int(1e8))
-        call_result = self._compute_overhead(1, int(1e7), 1)
-        file_result = self._compute_overhead(int(1e4), 1, 1)
-
-        line_overhead_estimate = 0
-        call_overhead_estimate = 0
-        file_overhead_estimate = 0
-
-        for i in range(20):
-            line_overhead_estimate = (
-                line_result.overhead * NANOS -
-                call_overhead_estimate * line_result.calls -
-                file_overhead_estimate * line_result.files
-            ) / line_result.lines
-
-            call_overhead_estimate = (
-                call_result.overhead * NANOS -
-                line_overhead_estimate * call_result.lines -
-                file_overhead_estimate * call_result.files
-            ) / call_result.calls
-
-            file_overhead_estimate = (
-                file_result.overhead * NANOS -
-                call_overhead_estimate * file_result.calls -
-                line_overhead_estimate * file_result.lines
-            ) / file_result.files
-
-        line_baseline_estimate = 0
-        call_baseline_estimate = 0
-        file_baseline_estimate = 0
-
-        for i in range(20):
-            line_baseline_estimate = (
-                line_result.baseline * NANOS -
-                call_baseline_estimate * line_result.calls -
-                file_baseline_estimate * line_result.files
-            ) / line_result.lines
-
-            call_baseline_estimate = (
-                call_result.baseline * NANOS -
-                line_baseline_estimate * call_result.lines -
-                file_baseline_estimate * call_result.files
-            ) / call_result.calls
-
-            file_baseline_estimate = (
-                file_result.baseline * NANOS -
-                call_baseline_estimate * file_result.calls -
-                line_baseline_estimate * file_result.lines
-            ) / file_result.files
-
-        print("Line: {:.2f} ns baseline, {:.2f} ns overhead, {:.2%} overhead".format(
-            line_baseline_estimate,
-            line_overhead_estimate,
-            line_overhead_estimate/line_baseline_estimate,
-        ))
-
-        print("Call: {:.2f} ns baseline, {:.2f} ns overhead, {:.2%} overhead".format(
-            call_baseline_estimate,
-            call_overhead_estimate,
-            call_overhead_estimate/call_baseline_estimate,
-        ))
-
-        print("File: {:.2f} ns baseline, {:.2f} ns overhead, {:.2%} overhead".format(
-            file_baseline_estimate,
-            file_overhead_estimate,
-            file_overhead_estimate/file_baseline_estimate,
-        ))
-
-        assert False
