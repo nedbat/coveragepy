@@ -135,8 +135,7 @@ class Coverage(object):
             The `concurrency` parameter can now be a list of strings.
 
         """
-        # Build our configuration from a number of sources:
-        # 1: defaults:
+        # Build our configuration from a number of sources.
         self.config_file, self.config = read_coverage_config(
             config_file=config_file,
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
