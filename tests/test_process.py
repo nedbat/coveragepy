@@ -4,6 +4,7 @@
 
 """Tests for process behavior of coverage.py."""
 
+import distutils.sysconfig          # pylint: disable=import-error
 import glob
 import os
 import os.path
@@ -1173,17 +1174,16 @@ class UnicodeFilePathsTest(CoverageTest):
 
 def possible_pth_dirs():
     """Produce a sequence of directories for trying to write .pth files."""
-    # First look through sys.path, and we find a .pth file, then it's a good
+    # First look through sys.path, and if we find a .pth file, then it's a good
     # place to put ours.
-    for d in sys.path:
-        g = glob.glob(os.path.join(d, "*.pth"))
-        if g:
-            yield d
+    for pth_dir in sys.path:                        # pragma: part covered
+        pth_files = glob.glob(os.path.join(pth_dir, "*.pth"))
+        if pth_files:
+            yield pth_dir
 
     # If we're still looking, then try the Python library directory.
     # https://bitbucket.org/ned/coveragepy/issue/339/pth-test-malfunctions
-    import distutils.sysconfig                  # pylint: disable=import-error
-    yield distutils.sysconfig.get_python_lib()
+    yield distutils.sysconfig.get_python_lib()      # pragma: cant happen
 
 
 def find_writable_pth_directory():
