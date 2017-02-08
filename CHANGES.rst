@@ -9,7 +9,9 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-Nothing yet.
+- Coverage.py has long had a special hack to support CPython's need to measure
+  the coverage of the standard library tests. This code was not installed by
+  kitted versions of coverage.py.  Now it is.
 
 
 .. _changes_434:
