@@ -8,6 +8,7 @@ import os.path
 import re
 
 import coverage
+from coverage.backward import import_local_file
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
@@ -166,8 +167,8 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         self.make_file("also/over/there/bar.py", "b = 2")
         cov = coverage.Coverage(source=["src/main", "also/over/there", "not/really"])
         cov.start()
-        mod_foo = self.import_local_file("foo", "src/main/foo.py")              # pragma: nested
-        mod_bar = self.import_local_file("bar", "also/over/there/bar.py")       # pragma: nested
+        mod_foo = import_local_file("foo", "src/main/foo.py")                   # pragma: nested
+        mod_bar = import_local_file("bar", "also/over/there/bar.py")            # pragma: nested
         cov.stop()                                                              # pragma: nested
         cov.xml_report([mod_foo, mod_bar], outfile="-")
         xml = self.stdout()

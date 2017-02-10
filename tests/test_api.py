@@ -11,7 +11,7 @@ import warnings
 
 import coverage
 from coverage import env
-from coverage.backward import StringIO
+from coverage.backward import StringIO, import_local_file
 from coverage.misc import CoverageException
 from coverage.report import Reporter
 
@@ -286,9 +286,9 @@ class ApiTest(CoverageTest):
         self.make_code1_code2()
         cov = coverage.Coverage()
         cov.start()
-        self.import_local_file("code1")
+        import_local_file("code1")
         cov.save()
-        self.import_local_file("code2")
+        import_local_file("code2")
         cov.stop()
 
         self.check_code1_code2(cov)

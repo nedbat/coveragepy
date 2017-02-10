@@ -10,6 +10,7 @@ import pytest
 
 import coverage
 from coverage import env
+from coverage.backward import import_local_file
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
@@ -333,7 +334,7 @@ class ExceptionTest(CoverageTest):
         # Import all the modules before starting coverage, so the def lines
         # won't be in all the results.
         for mod in "oops fly catch doit".split():
-            self.import_local_file(mod)
+            import_local_file(mod)
 
         # Each run nests the functions differently to get different
         # combinations of catching exceptions and letting them fly.

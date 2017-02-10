@@ -109,16 +109,6 @@ class CoverageTest(
 
         invalidate_import_caches()
 
-    def import_local_file(self, modname, modfile=None):
-        """Import a local file as a module.
-
-        Opens a file in the current directory named `modname`.py, imports it
-        as `modname`, and returns the module object. `modfile` is the file to
-        import if it isn't in the current directory.
-
-        """
-        return import_local_file(modname, modfile)
-
     def start_import_stop(self, cov, modname, modfile=None):
         """Start coverage, import a file, then stop coverage.
 
@@ -132,7 +122,7 @@ class CoverageTest(
         cov.start()
         try:                                    # pragma: nested
             # Import the Python file, executing it.
-            mod = self.import_local_file(modname, modfile)
+            mod = import_local_file(modname, modfile)
         finally:                                # pragma: nested
             # Stop coverage.py.
             cov.stop()

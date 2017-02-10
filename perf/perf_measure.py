@@ -13,6 +13,8 @@ import sys
 import time
 
 import coverage
+from coverage.backward import import_local_file
+
 from tests.coveragetest import CoverageTest
 
 
@@ -52,12 +54,12 @@ class StressTest(CoverageTest):
         self.make_file('testmain.py', mk_main(file_count, call_count, line_count))
 
         # Run it once just to get the disk caches loaded up.
-        self.import_local_file("testmain")
+        import_local_file("testmain")
         self.clean_local_file_imports()
 
         # Run it to get the baseline time.
         start = time.perf_counter()
-        self.import_local_file("testmain")
+        import_local_file("testmain")
         baseline = time.perf_counter() - start
         self.clean_local_file_imports()
 
@@ -67,7 +69,7 @@ class StressTest(CoverageTest):
         cov.start()
         try:                                    # pragma: nested
             # Import the Python file, executing it.
-            mod = self.import_local_file("testmain")
+            mod = import_local_file("testmain")
         finally:                                # pragma: nested
             # Stop coverage.py.
             covered = time.perf_counter() - start
