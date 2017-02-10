@@ -295,18 +295,20 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
     """Test the behavior when measuring unparsable files."""
 
     def test_dotpy_not_python(self):
+        self.make_file("main.py", "import innocuous")
         self.make_file("innocuous.py", "a = 1")
         cov = coverage.Coverage()
-        self.start_import_stop(cov, "innocuous")
+        self.start_import_stop(cov, "main")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         msg = "Couldn't parse '.*innocuous.py' as Python source: .* at line 1"
         with self.assertRaisesRegex(NotPython, msg):
             cov.html_report()
 
     def test_dotpy_not_python_ignored(self):
+        self.make_file("main.py", "import innocuous")
         self.make_file("innocuous.py", "a = 2")
         cov = coverage.Coverage()
-        self.start_import_stop(cov, "innocuous")
+        self.start_import_stop(cov, "main")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         cov.html_report(ignore_errors=True)
         self.assertEqual(
