@@ -12,10 +12,12 @@ import statistics
 import sys
 import time
 
+from unittest_mixins.mixins import make_file
+
 import coverage
 from coverage.backward import import_local_file
 
-from tests.coveragetest import CoverageTest
+from tests.helpers import SuperModuleCleaner
 
 
 class StressResult(namedtuple('StressResult', ['files', 'calls', 'lines', 'baseline', 'covered'])):
@@ -44,24 +46,27 @@ def mk_main(file_count, call_count, line_count):
     return "\n".join(lines)
 
 
-class StressTest(CoverageTest):
+class StressTest(object):
+
+    def __init__(self):
+        self.module_cleaner = SuperModuleCleaner()
 
     def _run_scenario(self, file_count, call_count, line_count):
-        self.clean_local_file_imports()
+        self.module_cleaner.clean_local_file_imports()
 
         for idx in range(file_count):
-            self.make_file('test{}.py'.format(idx), TEST_FILE)
-        self.make_file('testmain.py', mk_main(file_count, call_count, line_count))
+            make_file('test{}.py'.format(idx), TEST_FILE)
+        make_file('testmain.py', mk_main(file_count, call_count, line_count))
 
         # Run it once just to get the disk caches loaded up.
         import_local_file("testmain")
-        self.clean_local_file_imports()
+        self.module_cleaner.clean_local_file_imports()
 
         # Run it to get the baseline time.
         start = time.perf_counter()
         import_local_file("testmain")
         baseline = time.perf_counter() - start
-        self.clean_local_file_imports()
+        self.module_cleaner.clean_local_file_imports()
 
         # Run it to get the covered time.
         start = time.perf_counter()
@@ -118,7 +123,7 @@ class StressTest(CoverageTest):
     step = 50
     runs = 5
 
-    def test_count_operations(self):
+    def count_operations(self):
 
         def operations(thing):
             for runs in range(self.runs):
@@ -133,7 +138,7 @@ class StressTest(CoverageTest):
         ops = sum(sum(operations(thing)) for thing in ["file", "call", "line"])
         print("{0:.1f}M operations".format(ops/1e6))
 
-    def test_coefficients(self):
+    def check_coefficients(self):
         # For checking the calculation of actual stats:
         data = []
         for f in range(1, 6):
@@ -143,7 +148,7 @@ class StressTest(CoverageTest):
                     data.append("{0},{1},{2},{3[files]},{3[calls]},{3[lines]}".format(f, c, l, stats))
         print("\n".join(data))
 
-    def test_stress_test(self):
+    def stress_test(self):
         # For checking the overhead for each component:
         def time_thing(thing):
             per_thing = []
@@ -169,3 +174,7 @@ class StressTest(CoverageTest):
         time_thing("file")
         time_thing("call")
         time_thing("line")
+
+
+if __name__ == '__main__':
+    StressTest().stress_test()
