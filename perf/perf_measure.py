@@ -2,14 +2,10 @@
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
 # Run like this:
-#   tox -e py36 -- -n 0 -s perf/perf_measure.py
+#   .tox/py36/bin/python perf/perf_measure.py
 
-import csv
 from collections import namedtuple
-import os
-import shutil
 import statistics
-import sys
 import time
 
 from unittest_mixins.mixins import make_file
@@ -40,9 +36,12 @@ def child(line_count):
 
 def mk_main(file_count, call_count, line_count):
     lines = []
-    lines.extend("import test{}".format(idx) for idx in range(file_count))
-    lines.extend("test{}.parent({}, {})".format(idx, call_count, line_count) for idx in range(file_count))
-
+    lines.extend(
+        "import test{}".format(idx) for idx in range(file_count)
+    )
+    lines.extend(
+        "test{}.parent({}, {})".format(idx, call_count, line_count) for idx in range(file_count)
+    )
     return "\n".join(lines)
 
 
@@ -74,7 +73,7 @@ class StressTest(object):
         cov.start()
         try:                                    # pragma: nested
             # Import the Python file, executing it.
-            mod = import_local_file("testmain")
+            import_local_file("testmain")
         finally:                                # pragma: nested
             # Stop coverage.py.
             covered = time.perf_counter() - start
@@ -126,7 +125,7 @@ class StressTest(object):
     def count_operations(self):
 
         def operations(thing):
-            for runs in range(self.runs):
+            for _ in range(self.runs):
                 for n in range(self.numlo, self.numhi+1, self.step):
                     kwargs = {
                         "file_count": self.fixed,
@@ -145,7 +144,9 @@ class StressTest(object):
             for c in range(1, 6):
                 for l in range(1, 6):
                     _, _, stats = self._run_scenario(f, c, l)
-                    data.append("{0},{1},{2},{3[files]},{3[calls]},{3[lines]}".format(f, c, l, stats))
+                    data.append(
+                        "{0},{1},{2},{3[files]},{3[calls]},{3[lines]}".format(f, c, l, stats)
+                    )
         print("\n".join(data))
 
     def stress_test(self):
@@ -153,7 +154,7 @@ class StressTest(object):
         def time_thing(thing):
             per_thing = []
             pct_thing = []
-            for runs in range(self.runs):
+            for _ in range(self.runs):
                 for n in range(self.numlo, self.numhi+1, self.step):
                     kwargs = {
                         "file_count": self.fixed,
@@ -166,9 +167,13 @@ class StressTest(object):
                     pct_thing.append(res.covered / res.baseline * 100)
 
             out = "Per {}: ".format(thing)
-            out += "mean = {:9.3f}us, stddev = {:8.3f}us, ".format(statistics.mean(per_thing)*1e6, statistics.stdev(per_thing)*1e6)
+            out += "mean = {:9.3f}us, stddev = {:8.3f}us, ".format(
+                statistics.mean(per_thing)*1e6, statistics.stdev(per_thing)*1e6
+            )
             out += "min = {:9.3f}us, ".format(min(per_thing)*1e6)
-            out += "pct = {:6.1f}%, stddev = {:6.1f}%".format(statistics.mean(pct_thing), statistics.stdev(pct_thing))
+            out += "pct = {:6.1f}%, stddev = {:6.1f}%".format(
+                statistics.mean(pct_thing), statistics.stdev(pct_thing)
+            )
             print(out)
 
         time_thing("file")
