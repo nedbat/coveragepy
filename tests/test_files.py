@@ -38,7 +38,7 @@ class FilesTest(CoverageTest):
         a1 = self.abs_path("sub/proj1/file1.py")
         a2 = self.abs_path("sub/proj2/file2.py")
         d = os.path.normpath("sub/proj1")
-        os.chdir(d)
+        self.chdir(d)
         files.set_relative_directory()
         self.assertEqual(files.relative_filename(a1), "file1.py")
         self.assertEqual(files.relative_filename(a2), a2)

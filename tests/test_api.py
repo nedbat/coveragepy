@@ -376,9 +376,7 @@ class UsingModulesMixin(object):
     def setUp(self):
         super(UsingModulesMixin, self).setUp()
 
-        old_dir = os.getcwd()
-        os.chdir(self.nice_file(os.path.dirname(__file__), 'modules'))
-        self.addCleanup(os.chdir, old_dir)
+        self.chdir(self.nice_file(os.path.dirname(__file__), 'modules'))
 
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(".")
