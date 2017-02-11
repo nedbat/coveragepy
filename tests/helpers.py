@@ -3,13 +3,18 @@
 
 """Helpers for coverage.py tests."""
 
+import glob
+import itertools
 import os
 import re
+import shutil
 import subprocess
 import sys
 
+from unittest_mixins import ModuleCleaner
+
 from coverage import env
-from coverage.backward import unicode_class
+from coverage.backward import invalidate_import_caches, unicode_class
 from coverage.misc import output_encoding
 
 
@@ -99,3 +104,27 @@ def re_line(text, pat):
     lines = re_lines(text, pat).splitlines()
     assert len(lines) == 1
     return lines[0]
+
+
+class SuperModuleCleaner(ModuleCleaner):
+    """Remember the state of sys.modules and restore it later."""
+
+    def clean_local_file_imports(self):
+        """Clean up the results of calls to `import_local_file`.
+
+        Use this if you need to `import_local_file` the same file twice in
+        one test.
+
+        """
+        # So that we can re-import files, clean them out first.
+        self.cleanup_modules()
+
+        # Also have to clean out the .pyc file, since the timestamp
+        # resolution is only one second, a changed file might not be
+        # picked up.
+        for pyc in itertools.chain(glob.glob('*.pyc'), glob.glob('*$py.class')):
+            os.remove(pyc)
+        if os.path.exists("__pycache__"):
+            shutil.rmtree("__pycache__")
+
+        invalidate_import_caches()

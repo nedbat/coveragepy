@@ -5,13 +5,10 @@
 
 import contextlib
 import datetime
-import glob
-import itertools
 import os
 import random
 import re
 import shlex
-import shutil
 import sys
 import types
 
@@ -24,12 +21,11 @@ import coverage
 from coverage import env
 from coverage.backunittest import TestCase, unittest
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
-from coverage.backward import invalidate_import_caches
 from coverage.cmdline import CoverageScript
 from coverage.debug import _TEST_NAME_FILE, DebugControl
 from coverage.misc import StopEverything
 
-from tests.helpers import run_command
+from tests.helpers import run_command, SuperModuleCleaner
 
 
 # Status returns for the command line.
@@ -79,6 +75,8 @@ class CoverageTest(
     def setUp(self):
         super(CoverageTest, self).setUp()
 
+        self.module_cleaner = SuperModuleCleaner()
+
         # Attributes for getting info about what happened.
         self.last_command_status = None
         self.last_command_output = None
@@ -97,17 +95,7 @@ class CoverageTest(
         one test.
 
         """
-        # So that we can re-import files, clean them out first.
-        self.cleanup_modules()
-        # Also have to clean out the .pyc file, since the timestamp
-        # resolution is only one second, a changed file might not be
-        # picked up.
-        for pyc in itertools.chain(glob.glob('*.pyc'), glob.glob('*$py.class')):
-            os.remove(pyc)
-        if os.path.exists("__pycache__"):
-            shutil.rmtree("__pycache__")
-
-        invalidate_import_caches()
+        self.module_cleaner.clean_local_file_imports()
 
     def start_import_stop(self, cov, modname, modfile=None):
         """Start coverage, import a file, then stop coverage.
