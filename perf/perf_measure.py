@@ -5,7 +5,10 @@
 #   .tox/py36/bin/python perf/perf_measure.py
 
 from collections import namedtuple
+import os
 import statistics
+import sys
+import tempfile
 import time
 
 from unittest_mixins.mixins import make_file
@@ -21,8 +24,6 @@ class StressResult(namedtuple('StressResult', ['files', 'calls', 'lines', 'basel
     def overhead(self):
         return self.covered - self.baseline
 
-
-NANOS = 1e9
 
 TEST_FILE = """\
 def parent(call_count, line_count):
@@ -134,20 +135,17 @@ class StressTest(object):
                     }
                     kwargs[thing+"_count"] = n
                     yield kwargs['file_count'] * kwargs['call_count'] * kwargs['line_count']
+
         ops = sum(sum(operations(thing)) for thing in ["file", "call", "line"])
         print("{0:.1f}M operations".format(ops/1e6))
 
     def check_coefficients(self):
         # For checking the calculation of actual stats:
-        data = []
         for f in range(1, 6):
             for c in range(1, 6):
                 for l in range(1, 6):
                     _, _, stats = self._run_scenario(f, c, l)
-                    data.append(
-                        "{0},{1},{2},{3[files]},{3[calls]},{3[lines]}".format(f, c, l, stats)
-                    )
-        print("\n".join(data))
+                    print("{0},{1},{2},{3[files]},{3[calls]},{3[lines]}".format(f, c, l, stats))
 
     def stress_test(self):
         # For checking the overhead for each component:
@@ -182,4 +180,9 @@ class StressTest(object):
 
 
 if __name__ == '__main__':
-    StressTest().stress_test()
+    with tempfile.TemporaryDirectory(prefix="coverage_stress_") as tempdir:
+        print("Working in {}".format(tempdir))
+        os.chdir(tempdir)
+        sys.path.insert(0, ".")
+
+        StressTest().stress_test()
