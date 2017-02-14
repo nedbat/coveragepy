@@ -24,9 +24,13 @@ Coverage.py runs on many versions of Python:
 * PyPy2 5.6 and PyPy3 5.5.
 * Jython 2.7.1, though not for reporting.
 
-Documentation is on `Read the Docs <http://coverage.readthedocs.io>`_.
-Code repository and issue tracker are on `Bitbucket <http://bitbucket.org/ned/coveragepy>`_,
-with a mirrored repository on `GitHub <https://github.com/nedbat/coveragepy>`_.
+Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
+`Bitbucket`_, with a mirrored repository on `GitHub`_.
+
+.. _Read the Docs: http://coverage.readthedocs.io
+.. _Bitbucket: http://bitbucket.org/ned/coveragepy
+.. _GitHub: https://github.com/nedbat/coveragepy
+
 
 **New in 4.3:** HTML ``--skip-covered``, sys.excepthook support, tox.ini
 support.
