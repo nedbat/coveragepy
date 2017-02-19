@@ -45,7 +45,7 @@ class PyTracer(object):
         self.threading = None
 
         self.cur_file_dict = []
-        self.last_line = [0]
+        self.last_line = 0          # int, but uninitialized.
 
         self.data_stack = []
         self.last_exc_back = None
