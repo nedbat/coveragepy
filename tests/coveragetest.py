@@ -270,7 +270,16 @@ class CoverageTest(
 
     @contextlib.contextmanager
     def assert_warnings(self, cov, warnings):
-        """A context manager to check that particular warnings happened in `cov`."""
+        """A context manager to check that particular warnings happened in `cov`.
+
+        `cov` is a Coverage instance.  `warnings` is a list of regexes.  Every
+        regex must match a warning that was issued by `cov`.  It is OK for
+        extra warnings to be issued by `cov` that are not matched by any regex.
+
+        If `warnings` is empty, then `cov` is not allowed to issue any
+        warnings.
+
+        """
         saved_warnings = []
         def capture_warning(msg):
             """A fake implementation of Coverage._warn, to capture warnings."""
@@ -284,12 +293,18 @@ class CoverageTest(
         except:
             raise
         else:
-            for warning_regex in warnings:
-                for saved in saved_warnings:
-                    if re.search(warning_regex, saved):
-                        break
-                else:
-                    self.fail("Didn't find warning %r in %r" % (warning_regex, saved_warnings))
+            if warnings:
+                for warning_regex in warnings:
+                    for saved in saved_warnings:
+                        if re.search(warning_regex, saved):
+                            break
+                    else:
+                        self.fail("Didn't find warning %r in %r" % (warning_regex, saved_warnings))
+            else:
+                # No warnings expected. Raise if any warnings happened.
+                if saved_warnings:
+                    self.fail("Unexpected warnings: %r" % (saved_warnings,))
+        finally:
             cov._warn = original_warn
 
     def nice_file(self, *fparts):

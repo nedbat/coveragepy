@@ -119,6 +119,19 @@ class CoverageTestTest(CoverageTest):
             with self.assert_warnings(cov, ["Hello there!"]):
                 raise ZeroDivisionError("oops")
 
+    def test_assert_no_warnings(self):
+        cov = coverage.Coverage()
+
+        # Happy path: no warnings.
+        with self.assert_warnings(cov, []):
+            pass
+
+        # If you said there would be no warnings, and there were, fail!
+        warn_regex = r"Unexpected warnings: \['Watch out!'\]"
+        with self.assertRaisesRegex(AssertionError, warn_regex):
+            with self.assert_warnings(cov, []):
+                cov._warn("Watch out!")
+
     def test_sub_python_is_this_python(self):
         # Try it with a Python command.
         self.set_environ('COV_FOOBAR', 'XYZZY')
