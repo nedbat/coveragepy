@@ -191,25 +191,31 @@ def prep_patterns(patterns):
 
 
 class TreeMatcher(object):
-    """A matcher for files in a tree."""
-    def __init__(self, directories):
-        self.dirs = list(directories)
+    """A matcher for files in a tree.
+
+    Construct with a list of paths, either files or directories. Paths match
+    with the `match` method if they are one of the files, or if they are
+    somewhere in a subtree rooted at one of the directories.
+
+    """
+    def __init__(self, paths):
+        self.paths = list(paths)
 
     def __repr__(self):
-        return "<TreeMatcher %r>" % self.dirs
+        return "<TreeMatcher %r>" % self.paths
 
     def info(self):
         """A list of strings for displaying when dumping state."""
-        return self.dirs
+        return self.paths
 
     def match(self, fpath):
         """Does `fpath` indicate a file in one of our trees?"""
-        for d in self.dirs:
-            if fpath.startswith(d):
-                if fpath == d:
+        for p in self.paths:
+            if fpath.startswith(p):
+                if fpath == p:
                     # This is the same file!
                     return True
-                if fpath[len(d)] == os.sep:
+                if fpath[len(p)] == os.sep:
                     # This is a file in the directory
                     return True
         return False
