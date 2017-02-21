@@ -167,7 +167,7 @@ class Coverage(object):
         self.source_pkgs = None
         self.data = self.data_files = self.collector = None
         self.plugins = None
-        self.pylib_dirs = self.cover_dirs = None
+        self.pylib_paths = self.cover_paths = None
         self.data_suffix = self.run_suffix = None
         self._exclude_re = None
         self.debug = None
@@ -289,7 +289,7 @@ class Coverage(object):
         )
 
         # The directories for files considered "installed with the interpreter".
-        self.pylib_dirs = set()
+        self.pylib_paths = set()
         if not self.config.cover_pylib:
             # Look at where some standard modules are located. That's the
             # indication for "installed with the interpreter". In some
@@ -298,7 +298,7 @@ class Coverage(object):
             # we've imported, and take all the different ones.
             for m in (atexit, inspect, os, platform, _pypy_irc_topic, re, _structseq, traceback):
                 if m is not None and hasattr(m, "__file__"):
-                    self.pylib_dirs.add(self._canonical_dir(m))
+                    self.pylib_paths.add(self._canonical_path(m, directory=True))
 
             if _structseq and not hasattr(_structseq, '__file__'):
                 # PyPy 2.4 has no __file__ in the builtin modules, but the code
@@ -309,19 +309,22 @@ class Coverage(object):
                     structseq_file = structseq_new.func_code.co_filename
                 except AttributeError:
                     structseq_file = structseq_new.__code__.co_filename
-                self.pylib_dirs.add(self._canonical_dir(structseq_file))
+                self.pylib_paths.add(self._canonical_path(structseq_file))
 
         # To avoid tracing the coverage.py code itself, we skip anything
         # located where we are.
-        self.cover_dirs = [self._canonical_dir(__file__)]
+        self.cover_paths = [self._canonical_path(__file__, directory=True)]
         if env.TESTING:
+            # Don't include our own test code.
+            self.cover_paths.append(os.path.join(self.cover_paths[0], "tests"))
+
             # When testing, we use PyContracts, which should be considered
             # part of coverage.py, and it uses six. Exclude those directories
             # just as we exclude ourselves.
             import contracts
             import six
             for mod in [contracts, six]:
-                self.cover_dirs.append(self._canonical_dir(mod))
+                self.cover_paths.append(self._canonical_path(mod))
 
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
@@ -335,10 +338,10 @@ class Coverage(object):
             self.source_match = TreeMatcher(self.source)
             self.source_pkgs_match = ModuleMatcher(self.source_pkgs)
         else:
-            if self.cover_dirs:
-                self.cover_match = TreeMatcher(self.cover_dirs)
-            if self.pylib_dirs:
-                self.pylib_match = TreeMatcher(self.pylib_dirs)
+            if self.cover_paths:
+                self.cover_match = TreeMatcher(self.cover_paths)
+            if self.pylib_paths:
+                self.pylib_match = TreeMatcher(self.pylib_paths)
         if self.include:
             self.include_match = FnmatchMatcher(self.include)
         if self.omit:
@@ -363,10 +366,18 @@ class Coverage(object):
         if wrote_any:
             self.debug.write_formatted_info("end", ())
 
-    def _canonical_dir(self, morf):
-        """Return the canonical directory of the module or file `morf`."""
-        morf_filename = PythonFileReporter(morf, self).filename
-        return os.path.split(morf_filename)[0]
+    def _canonical_path(self, morf, directory=False):
+        """Return the canonical path of the module or file `morf`.
+
+        If the module is a package, then return its directory. If it is a
+        module, then return its file, unless `directory` is True, in which
+        case return its enclosing directory.
+
+        """
+        morf_path = PythonFileReporter(morf, self).filename
+        if morf_path.endswith("__init__.py") or directory:
+            morf_path = os.path.split(morf_path)[0]
+        return morf_path
 
     def _name_for_module(self, module_globals, filename):
         """Get the name of the module for a set of globals and file name.
@@ -818,13 +829,7 @@ class Coverage(object):
                 not os.path.exists(sys.modules[pkg].__file__)):
                 continue
             pkg_file = source_for_file(sys.modules[pkg].__file__)
-
-            if not pkg_file.endswith('__init__.py'):
-                # We only want to explore the source tree of packages.
-                # For instance if pkg_file is /lib/python2.7/site-packages/args.pyc,
-                # we do not want to explore all of /lib/python2.7/site-packages.
-                continue
-            self._find_unexecuted_files(self._canonical_dir(pkg_file))
+            self._find_unexecuted_files(self._canonical_path(pkg_file))
 
         for src in self.source:
             self._find_unexecuted_files(src)
@@ -1093,8 +1098,8 @@ class Coverage(object):
         info = [
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
-            ('cover_dirs', self.cover_dirs),
-            ('pylib_dirs', self.pylib_dirs),
+            ('cover_paths', self.cover_paths),
+            ('pylib_paths', self.pylib_paths),
             ('tracer', self.collector.tracer_name()),
             ('plugins.file_tracers', ft_plugins),
             ('config_files', self.config.attempted_config_files),

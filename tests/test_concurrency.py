@@ -371,6 +371,7 @@ class MultiprocessingTest(CoverageTest):
         self.make_file(".coveragerc", """\
             [run]
             concurrency = %s
+            source = .
             """ % concurrency)
 
         if env.PYVERSION >= (3, 4):

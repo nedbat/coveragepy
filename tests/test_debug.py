@@ -146,7 +146,7 @@ class DebugTraceTest(CoverageTest):
         out_lines = self.f1_debug_output(["sys"])
 
         labels = """
-            version coverage cover_dirs pylib_dirs tracer config_files
+            version coverage cover_paths pylib_paths tracer config_files
             configs_read data_path python platform implementation executable
             cwd path environment command_line cover_match pylib_match
             """.split()
