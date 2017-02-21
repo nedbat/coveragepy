@@ -567,7 +567,7 @@ class SimpleStatementTest(CoverageTest):
 
     def test_nonascii(self):
         self.check_coverage("""\
-            # coding: utf8
+            # coding: utf-8
             a = 2
             b = 3
             """,

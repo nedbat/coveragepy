@@ -374,7 +374,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.make_file("main.py", "import sub.not_ascii")
         self.make_file("sub/__init__.py")
         self.make_file("sub/not_ascii.py", """\
-            # coding: utf8
+            # coding: utf-8
             a = 1  # Isn't this great?!
             """)
         cov = coverage.Coverage()
@@ -383,7 +383,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         # Create the undecodable version of the file. make_file is too helpful,
         # so get down and dirty with bytes.
         with open("sub/not_ascii.py", "wb") as f:
-            f.write(b"# coding: utf8\na = 1  # Isn't this great?\xcb!\n")
+            f.write(b"# coding: utf-8\na = 1  # Isn't this great?\xcb!\n")
 
         with open("sub/not_ascii.py", "rb") as f:
             undecodable = f.read()
