@@ -54,8 +54,8 @@ typedef struct CTracer {
     int data_stacks_used;
     DataStack * pdata_stack;
 
-    /* The current file's data stack entry, copied from the stack. */
-    DataStackEntry cur_entry;
+    /* The current file's data stack entry. */
+    DataStackEntry * pcur_entry;
 
     /* The parent frame for the last exception event, to fix missing returns. */
     PyFrameObject * last_exc_back;

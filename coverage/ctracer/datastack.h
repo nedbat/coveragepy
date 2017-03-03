@@ -9,18 +9,16 @@
 
 /* An entry on the data stack.  For each call frame, we need to record all
  * the information needed for CTracer_handle_line to operate as quickly as
- * possible.  All PyObject* here are borrowed references.
+ * possible.
  */
 typedef struct DataStackEntry {
-    /* The current file_data dictionary.  Borrowed, owned by self->data. */
+    /* The current file_data dictionary. Owned. */
     PyObject * file_data;
 
-    /* The disposition object for this frame. If collector.py and control.py
-     * are working properly, this will be an instance of CFileDisposition.
-     */
+    /* The disposition object for this frame. A borrowed instance of CFileDisposition. */
     PyObject * disposition;
 
-    /* The FileTracer handling this frame, or None if it's Python. */
+    /* The FileTracer handling this frame, or None if it's Python.  Borrowed. */
     PyObject * file_tracer;
 
     /* The line number of the last line recorded, for tracing arcs.

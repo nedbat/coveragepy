@@ -4,7 +4,7 @@
 #include "util.h"
 #include "datastack.h"
 
-#define STACK_DELTA    100
+#define STACK_DELTA    20
 
 int
 DataStack_init(Stats *pstats, DataStack *pdata_stack)
@@ -18,6 +18,11 @@ DataStack_init(Stats *pstats, DataStack *pdata_stack)
 void
 DataStack_dealloc(Stats *pstats, DataStack *pdata_stack)
 {
+    int i;
+
+    for (i = 0; i < pdata_stack->alloc; i++) {
+        Py_XDECREF(pdata_stack->stack[i].file_data);
+    }
     PyMem_Free(pdata_stack->stack);
 }
 
@@ -35,6 +40,9 @@ DataStack_grow(Stats *pstats, DataStack *pdata_stack)
             pdata_stack->depth--;
             return RET_ERROR;
         }
+        /* Zero the new entries. */
+        memset(bigger_data_stack + pdata_stack->alloc, 0, STACK_DELTA * sizeof(DataStackEntry));
+
         pdata_stack->stack = bigger_data_stack;
         pdata_stack->alloc = bigger;
     }
