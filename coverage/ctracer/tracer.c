@@ -1087,7 +1087,7 @@ CTracer_members[] = {
             PyDoc_STR("Function for starting contexts.") },
 
     { "switch_context",     T_OBJECT, offsetof(CTracer, switch_context), 0,
-            PyDoc_STR("Function for switch to a new context.") },
+            PyDoc_STR("Function for switching to a new context.") },
 
     { NULL }
 };
