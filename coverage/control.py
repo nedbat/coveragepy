@@ -197,6 +197,8 @@ class Coverage(object):
         if self._inited:
             return
 
+        self._inited = True
+
         # Create and configure the debugging controller. COVERAGE_DEBUG_FILE
         # is an environment variable, the name of a file to append debug logs
         # to.
@@ -329,8 +331,6 @@ class Coverage(object):
 
         atexit.register(self._atexit)
 
-        self._inited = True
-
         # Create the matchers we need for _should_trace
         if self.source or self.source_pkgs:
             self.source_match = TreeMatcher(self.source)
@@ -346,6 +346,10 @@ class Coverage(object):
             self.omit_match = FnmatchMatcher(self.omit)
 
         # The user may want to debug things, show info if desired.
+        self._write_startup_debug()
+
+    def _write_startup_debug(self):
+        """Write out debug info at startup if needed."""
         wrote_any = False
         with self.debug.without_callers():
             if self.debug.should('config'):
