@@ -12,9 +12,10 @@ import traceback
 
 from coverage import env
 from coverage.collector import CTracer
+from coverage.debug import info_formatter, info_header
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource
-from coverage.debug import info_formatter, info_header
+from coverage.results import should_fail_under
 
 
 class Opts(object):
@@ -522,18 +523,8 @@ class CoverageScript(object):
             if options.fail_under is not None:
                 self.coverage.set_option("report:fail_under", options.fail_under)
 
-            if self.coverage.get_option("report:fail_under"):
-                # Total needs to be rounded, but don't want to report 100
-                # unless it is really 100.
-                if 99 < total < 100:
-                    total = 99
-                else:
-                    total = round(total)
-
-                if total >= self.coverage.get_option("report:fail_under"):
-                    return OK
-                else:
-                    return FAIL_UNDER
+            if should_fail_under(self.coverage, total):
+                return FAIL_UNDER
 
         return OK
 

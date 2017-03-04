@@ -269,3 +269,23 @@ class Numbers(SimpleRepr):
         if other == 0:
             return self
         return NotImplemented
+
+
+def should_fail_under(cov, total):
+    """Determine if a total should fail due to fail-under.
+
+    Returns True if the total should fail.
+
+    """
+    if cov.get_option("report:fail_under"):
+        # Total needs to be rounded, but don't want to report 100
+        # unless it is really 100.
+        if 99 < total < 100:
+            total = 99
+        else:
+            total = round(total)
+
+        if total < cov.get_option("report:fail_under"):
+            return True
+
+    return False
