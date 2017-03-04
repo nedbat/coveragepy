@@ -797,11 +797,18 @@ class Coverage(object):
         """
         self._init()
 
-        if not self.collector.activity():
-            return self.data
+        if self.collector.save_data(self.data):
+            self._post_save_work()
 
-        self.collector.save_data(self.data)
+        return self.data
 
+    def _post_save_work(self):
+        """After saving data, look for warnings, post-work, etc.
+
+        Warn about things that should have happened but didn't.
+        Look for unexecuted files.
+
+        """
         # If there are still entries in the source_pkgs_unmatched list,
         # then we never encountered those packages.
         if self._warn_unimported_source:
@@ -834,8 +841,6 @@ class Coverage(object):
 
         if self.config.note:
             self.data.add_run_info(note=self.config.note)
-
-        return self.data
 
     def _find_unexecuted_files(self, src_dir):
         """Find unexecuted files in `src_dir`.

@@ -348,7 +348,7 @@ class Collector(object):
         else:
             self._start_tracer()
 
-    def activity(self):
+    def _activity(self):
         """Has any activity been traced?
 
         Returns a boolean, True if any trace function was invoked.
@@ -365,7 +365,13 @@ class Collector(object):
             tracer.data = data
 
     def save_data(self, covdata):
-        """Save the collected data to a `CoverageData`."""
+        """Save the collected data to a `CoverageData`.
+
+        Returns True if there was data to save, False if not.
+        """
+        if not self._activity():
+            return False
+
         def abs_file_dict(d):
             """Return a dict like d, but with keys modified by `abs_file`."""
             return dict((abs_file(k), v) for k, v in iitems(d))
@@ -384,3 +390,4 @@ class Collector(object):
                 pprint.pprint(self.contexts, wtw_out)
 
         self._clear_data()
+        return True
