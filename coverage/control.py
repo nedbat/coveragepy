@@ -177,8 +177,6 @@ class Coverage(object):
         self._inited = False
         # Have we started collecting and not stopped it?
         self._started = False
-        # Have we measured some data and not harvested it?
-        self._measured = False
 
         # If we have sub-process measurement happening automatically, then we
         # want any explicit creation of a Coverage object to mean, this process
@@ -671,7 +669,6 @@ class Coverage(object):
 
         self.collector.start()
         self._started = True
-        self._measured = True
 
     def stop(self):
         """Stop measuring code coverage."""
@@ -789,7 +786,7 @@ class Coverage(object):
         )
 
     def get_data(self):
-        """Get the collected data and reset the collector.
+        """Get the collected data.
 
         Also warn about various problems collecting data.
 
@@ -799,7 +796,8 @@ class Coverage(object):
 
         """
         self._init()
-        if not self._measured:
+
+        if not self.collector.activity():
             return self.data
 
         self.collector.save_data(self.data)
@@ -837,7 +835,6 @@ class Coverage(object):
         if self.config.note:
             self.data.add_run_info(note=self.config.note)
 
-        self._measured = False
         return self.data
 
     def _find_unexecuted_files(self, src_dir):

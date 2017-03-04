@@ -281,8 +281,7 @@ class ApiTest(CoverageTest):
         self.start_import_stop(cov, "code2")
         self.check_code1_code2(cov)
 
-    def test_start_save_stop(self):             # pragma: not covered
-        self.skipTest("Expected failure: https://bitbucket.org/ned/coveragepy/issue/79")
+    def test_start_save_stop(self):
         self.make_code1_code2()
         cov = coverage.Coverage()
         cov.start()
@@ -290,8 +289,56 @@ class ApiTest(CoverageTest):
         cov.save()
         import_local_file("code2")
         cov.stop()
-
         self.check_code1_code2(cov)
+
+    def test_start_save_nostop(self):
+        self.make_code1_code2()
+        cov = coverage.Coverage()
+        cov.start()
+        import_local_file("code1")
+        cov.save()
+        import_local_file("code2")
+        self.check_code1_code2(cov)
+
+    def test_two_getdata_only_warn_once(self):
+        self.make_code1_code2()
+        cov = coverage.Coverage(source=["."], omit=["code1.py"])
+        cov.start()
+        import_local_file("code1")
+        cov.stop()
+        # We didn't collect any data, so we should get a warning.
+        with self.assert_warnings(cov, ["No data was collected"]):
+            cov.get_data()
+        # But calling get_data a second time with no intervening activity
+        # won't make another warning.
+        with self.assert_warnings(cov, []):
+            cov.get_data()
+
+    def test_two_getdata_only_warn_once_nostop(self):
+        self.make_code1_code2()
+        cov = coverage.Coverage(source=["."], omit=["code1.py"])
+        cov.start()
+        import_local_file("code1")
+        # We didn't collect any data, so we should get a warning.
+        with self.assert_warnings(cov, ["No data was collected"]):
+            cov.get_data()
+        # But calling get_data a second time with no intervening activity
+        # won't make another warning.
+        with self.assert_warnings(cov, []):
+            cov.get_data()
+
+    def test_two_getdata_warn_twice(self):
+        self.make_code1_code2()
+        cov = coverage.Coverage(source=["."], omit=["code1.py", "code2.py"])
+        cov.start()
+        import_local_file("code1")
+        # We didn't collect any data, so we should get a warning.
+        with self.assert_warnings(cov, ["No data was collected"]):
+            cov.save()
+        import_local_file("code2")
+        # Calling get_data a second time after tracing some more will warn again.
+        with self.assert_warnings(cov, ["No data was collected"]):
+            cov.get_data()
 
     def make_good_data_files(self):
         """Make some good data files."""

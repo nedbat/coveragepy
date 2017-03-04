@@ -9,9 +9,19 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- In previous versions, calling a method that used collected data would prevent
+  further collection.  For example, `save()`, `report()`, `html_report()`, and
+  others would all stop collection.  An explicit `start()` was needed to get it
+  going again.  This is no longer true.  Now you can use the collected data and
+  also continue measurement. Both `issue 79`_ and `issue 448`_ described this
+  problem, and have been fixed.
+
 - Coverage.py has long had a special hack to support CPython's need to measure
   the coverage of the standard library tests. This code was not installed by
   kitted versions of coverage.py.  Now it is.
+
+.. _issue 79: https://bitbucket.org/ned/coveragepy/issues/79/save-prevents-harvesting-on-stop
+.. _issue 448: https://bitbucket.org/ned/coveragepy/issues/448/save-and-html_report-prevent-further
 
 
 .. _changes_434:

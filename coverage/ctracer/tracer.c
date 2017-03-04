@@ -340,8 +340,8 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
     CFileDisposition * pdisp = NULL;
 
-
     STATS( self->stats.calls++; )
+    self->activity = TRUE;
 
     /* Grow the stack. */
     if (CTracer_set_pdata_stack(self) < 0) {
@@ -1034,7 +1034,25 @@ CTracer_stop(CTracer *self, PyObject *args_unused)
 }
 
 static PyObject *
-CTracer_get_stats(CTracer *self)
+CTracer_activity(CTracer *self, PyObject *args_unused)
+{
+    if (self->activity) {
+        Py_RETURN_TRUE;
+    }
+    else {
+        Py_RETURN_FALSE;
+    }
+}
+
+static PyObject *
+CTracer_reset_activity(CTracer *self, PyObject *args_unused)
+{
+    self->activity = FALSE;
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+CTracer_get_stats(CTracer *self, PyObject *args_unused)
 {
 #if COLLECT_STATS
     return Py_BuildValue(
@@ -1102,6 +1120,12 @@ CTracer_methods[] = {
 
     { "get_stats",  (PyCFunction) CTracer_get_stats,    METH_VARARGS,
             PyDoc_STR("Get statistics about the tracing") },
+
+    { "activity",   (PyCFunction) CTracer_activity,     METH_VARARGS,
+            PyDoc_STR("Has there been any activity?") },
+
+    { "reset_activity", (PyCFunction) CTracer_reset_activity, METH_VARARGS,
+            PyDoc_STR("Reset the activity flag") },
 
     { NULL }
 };

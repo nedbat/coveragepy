@@ -33,6 +33,8 @@ typedef struct CTracer {
     BOOL started;
     /* Are we tracing arcs, or just lines? */
     BOOL tracing_arcs;
+    /* Have we had any activity? */
+    BOOL activity;
 
     /*
         The data stack is a stack of dictionaries.  Each dictionary collects

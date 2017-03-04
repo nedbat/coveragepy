@@ -162,6 +162,13 @@ class Collector(object):
         """Return the class name of the tracer we're using."""
         return self._trace_class.__name__
 
+    def _clear_data(self):
+        """Clear out existing data, but stay ready for more collection."""
+        self.data.clear()
+
+        for tracer in self.tracers:
+            tracer.reset_activity()
+
     def reset(self):
         """Clear collected data, and prepare to collect more."""
         # A dictionary mapping file names to dicts with line number keys (if not
@@ -207,6 +214,8 @@ class Collector(object):
 
         # Our active Tracers.
         self.tracers = []
+
+        self._clear_data()
 
     def _start_tracer(self):
         """Start a new Tracer object, and store it in self.tracers."""
@@ -267,6 +276,8 @@ class Collector(object):
         if self._collectors:
             self._collectors[-1].pause()
 
+        self.tracers = []
+
         # Check to see whether we had a fullcoverage tracer installed. If so,
         # get the stack frames it stashed away for us.
         traces0 = []
@@ -309,7 +320,6 @@ class Collector(object):
         )
 
         self.pause()
-        self.tracers = []
 
         # Remove this Collector from the stack, and resume the one underneath
         # (if any).
@@ -338,6 +348,14 @@ class Collector(object):
         else:
             self._start_tracer()
 
+    def activity(self):
+        """Has any activity been traced?
+
+        Returns a boolean, True if any trace function was invoked.
+
+        """
+        return any(tracer.activity() for tracer in self.tracers)
+
     def switch_context(self, new_context):
         """Who-Tests-What hack: switch to a new who-context."""
         # Make a new data dict, or find the existing one, and switch all the
@@ -347,11 +365,7 @@ class Collector(object):
             tracer.data = data
 
     def save_data(self, covdata):
-        """Save the collected data to a `CoverageData`.
-
-        Also resets the collector.
-
-        """
+        """Save the collected data to a `CoverageData`."""
         def abs_file_dict(d):
             """Return a dict like d, but with keys modified by `abs_file`."""
             return dict((abs_file(k), v) for k, v in iitems(d))
@@ -369,4 +383,4 @@ class Collector(object):
             with open(out_file, "w") as wtw_out:
                 pprint.pprint(self.contexts, wtw_out)
 
-        self.reset()
+        self._clear_data()

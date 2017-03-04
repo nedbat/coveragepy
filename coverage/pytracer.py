@@ -52,6 +52,7 @@ class PyTracer(object):
         self.last_exc_firstlineno = 0
         self.thread = None
         self.stopped = False
+        self._activity = False
 
         self.in_atexit = False
         # On exit, self.in_atexit = True
@@ -82,6 +83,7 @@ class PyTracer(object):
         if event == 'call':
             # Entering a new function context.  Decide if we should trace
             # in this file.
+            self._activity = True
             self.data_stack.append((self.cur_file_dict, self.last_line))
             filename = frame.f_code.co_filename
             disp = self.should_trace_cache.get(filename)
@@ -167,6 +169,14 @@ class PyTracer(object):
                 self.warn("Trace function changed, measurement is likely wrong: %r" % (tf,))
 
         sys.settrace(None)
+
+    def activity(self):
+        """Has there been any activity?"""
+        return self._activity
+
+    def reset_activity(self):
+        """Reset the activity() flag."""
+        self._activity = False
 
     def get_stats(self):
         """Return a dictionary of statistics, or None."""
