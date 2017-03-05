@@ -274,6 +274,9 @@ class Numbers(SimpleRepr):
 def should_fail_under(cov, total):
     """Determine if a total should fail due to fail-under.
 
+    `cov` is a Coverage instance, `total` is a float, the coverage measurement
+    total.
+
     Returns True if the total should fail.
 
     """
