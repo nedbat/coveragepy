@@ -9,12 +9,14 @@ python:
   - 2.7
 
 addons:
-   apt:
-     sources:
-     - deadsnakes
-     packages:
-     - python3.5
-     - python3.5-dev
+  apt:
+    sources:
+      - deadsnakes
+    packages:
+      - python3.5
+      - python3.5-dev
+      - python3.6
+      - python3.6-dev
 
 env:
   - TOXENV=py26
@@ -39,6 +41,6 @@ install:
 
 script:
   - tox
-  - if [ $COVERAGE_COVERAGE == 'yes' ]; then python igor.py combine_html; fi
-  - if [ $COVERAGE_COVERAGE == 'yes' ]; then pip install codecov; fi
-  - if [ $COVERAGE_COVERAGE == 'yes' ]; then codecov; fi
+  - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then python igor.py combine_html; fi
+  - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then pip install codecov; fi
+  - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then codecov; fi
