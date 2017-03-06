@@ -20,7 +20,10 @@ differences and get a clean diff.
 
 """
 
-import json, os, sys
+import itertools
+import json
+import os
+import sys
 
 # sys.path varies by execution environments.  Coverage.py uses setuptools to
 # make console scripts, which means pkg_resources is imported.  pkg_resources
@@ -65,12 +68,20 @@ FN_VAL = my_function("fooey")
 loader = globals().get('__loader__')
 fullname = getattr(loader, 'fullname', None) or getattr(loader, 'name', None)
 
+# A more compact grouped-by-first-letter list of builtins.
+def word_group(w):
+    """Clump AB, CD, EF, etc."""
+    return chr((ord(w[0]) + 1) & 0xFE)
+
+builtin_dir = [" ".join(s) for _, s in itertools.groupby(dir(__builtins__), key=word_group)]
+
 globals_to_check = {
+    'os.getcwd': os.getcwd(),
     '__name__': __name__,
     '__file__': __file__,
     '__doc__': __doc__,
     '__builtins__.has_open': hasattr(__builtins__, 'open'),
-    '__builtins__.dir': dir(__builtins__),
+    '__builtins__.dir': builtin_dir,
     '__loader__ exists': loader is not None,
     '__loader__.fullname': fullname,
     '__package__': __package__,
