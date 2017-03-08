@@ -523,7 +523,8 @@ class CoverageScript(object):
             if options.fail_under is not None:
                 self.coverage.set_option("report:fail_under", options.fail_under)
 
-            if should_fail_under(self.coverage, total):
+            fail_under = self.coverage.get_option("report:fail_under")
+            if should_fail_under(total, fail_under):
                 return FAIL_UNDER
 
         return OK

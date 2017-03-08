@@ -271,16 +271,17 @@ class Numbers(SimpleRepr):
         return NotImplemented
 
 
-def should_fail_under(cov, total):
+def should_fail_under(total, fail_under):
     """Determine if a total should fail due to fail-under.
 
-    `cov` is a Coverage instance, `total` is a float, the coverage measurement
-    total.
+    `total` is a float, the coverage measurement total. `fail_under` is the
+    fail_under setting to compare with.
 
     Returns True if the total should fail.
 
     """
-    if cov.get_option("report:fail_under"):
+    # The fail_under option defaults to 0.
+    if fail_under:
         # Total needs to be rounded, but don't want to report 100
         # unless it is really 100.
         if 99 < total < 100:
@@ -288,7 +289,7 @@ def should_fail_under(cov, total):
         else:
             total = round(total)
 
-        if total < cov.get_option("report:fail_under"):
+        if total < fail_under:
             return True
 
     return False
