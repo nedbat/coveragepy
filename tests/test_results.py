@@ -3,7 +3,10 @@
 
 """Tests for coverage.py's results analysis."""
 
-from coverage.results import Numbers
+import pytest
+
+from coverage.results import Numbers, should_fail_under
+
 from tests.coveragetest import CoverageTest
 
 
@@ -73,3 +76,23 @@ class NumbersTest(CoverageTest):
             n_branches=10, n_missing_branches=3, n_partial_branches=1000,
         )
         self.assertEqual(n.ratio_covered, (160, 210))
+
+
+@pytest.mark.parametrize("total, fail_under, result", [
+    # fail_under==0 means anything is fine!
+    (0, 0, False),
+    (0.001, 0, False),
+    # very small fail_under is possible to fail.
+    (0.001, 0.01, True),
+    # Rounding should work properly.
+    (42.1, 42, False),
+    (42.1, 43, True),
+    (42.857, 42, False),
+    (42.857, 43, False),
+    (42.857, 44, True),
+    # Values near 100 should only be treated as 100 if they are 100.
+    (99.8, 100, True),
+    (100.0, 100, False),
+])
+def test_should_fail_under(total, fail_under, result):
+    assert should_fail_under(total, fail_under) == result
