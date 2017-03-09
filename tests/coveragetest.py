@@ -353,8 +353,7 @@ class CoverageTest(
         Returns None.
 
         """
-        script = CoverageScript(_covpkg=_covpkg)
-        ret_actual = script.command_line(shlex.split(args))
+        ret_actual = command_line(args, _covpkg=_covpkg)
         self.assertEqual(ret_actual, ret)
 
     coverage_command = "coverage"
@@ -485,3 +484,16 @@ class DebugControlString(DebugControl):
     def get_output(self):
         """Get the output text from the `DebugControl`."""
         return self.output.getvalue()
+
+
+def command_line(args, **kwargs):
+    """Run `args` through the CoverageScript command line.
+
+    `kwargs` are the keyword arguments to the CoverageScript constructor.
+
+    Returns the return code from CoverageScript.command_line.
+
+    """
+    script = CoverageScript(**kwargs)
+    ret = script.command_line(shlex.split(args))
+    return ret

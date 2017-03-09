@@ -5,7 +5,6 @@
 
 import pprint
 import re
-import shlex
 import sys
 import textwrap
 
@@ -18,7 +17,7 @@ from coverage.config import CoverageConfig
 from coverage.data import CoverageData, CoverageDataFiles
 from coverage.misc import ExceptionDuringRun
 
-from tests.coveragetest import CoverageTest, OK, ERR
+from tests.coveragetest import CoverageTest, OK, ERR, command_line
 
 
 class BaseCmdLineTest(CoverageTest):
@@ -73,11 +72,12 @@ class BaseCmdLineTest(CoverageTest):
         m = self.model_object()
         m.path_exists.return_value = path_exists
 
-        ret = coverage.cmdline.CoverageScript(
+        ret = command_line(
+            args,
             _covpkg=m, _run_python_file=m.run_python_file,
             _run_python_module=m.run_python_module, _help_fn=m.help_fn,
             _path_exists=m.path_exists,
-            ).command_line(shlex.split(args))
+            )
 
         return m, ret
 
