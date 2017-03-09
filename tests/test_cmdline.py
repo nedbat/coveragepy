@@ -9,6 +9,7 @@ import sys
 import textwrap
 
 import mock
+import pytest
 
 import coverage
 import coverage.cmdline
@@ -718,3 +719,61 @@ class CmdMainTest(CoverageTest):
     def test_exit(self):
         ret = coverage.cmdline.main(['exit'])
         self.assertEqual(ret, 23)
+
+
+class CoverageReportingFake(object):
+    """A fake Coverage and Coverage.coverage test double."""
+    # pylint: disable=missing-docstring
+    def __init__(self, report_result, html_result, xml_result):
+        self.report_result = report_result
+        self.html_result = html_result
+        self.xml_result = xml_result
+
+    def Coverage(self, *args_unused, **kwargs_unused):
+        return self
+
+    coverage = Coverage     # shouldn't need this...
+
+    def set_option(self, optname, optvalue):
+        setattr(self, optname, optvalue)
+
+    def get_option(self, optname):
+        return getattr(self, optname)
+
+    def load(self):
+        pass
+
+    def report(self, *args_unused, **kwargs_unused):
+        return self.report_result
+
+    def html_report(self, *args_unused, **kwargs_unused):
+        return self.html_result
+
+    def xml_report(self, *args_unused, **kwargs_unused):
+        return self.xml_result
+
+
+@pytest.mark.parametrize("results, fail_under, cmd, ret", [
+    # Command-line switch properly checks the result of reporting functions.
+    ((20, 30, 40), None, "report --fail-under=19", 0),
+    ((20, 30, 40), None, "report --fail-under=21", 2),
+    ((20, 30, 40), None, "html --fail-under=29", 0),
+    ((20, 30, 40), None, "html --fail-under=31", 2),
+    ((20, 30, 40), None, "xml --fail-under=39", 0),
+    ((20, 30, 40), None, "xml --fail-under=41", 2),
+    # Configuration file setting properly checks the result of reporting.
+    ((20, 30, 40), 19, "report", 0),
+    ((20, 30, 40), 21, "report", 2),
+    ((20, 30, 40), 29, "html", 0),
+    ((20, 30, 40), 31, "html", 2),
+    ((20, 30, 40), 39, "xml", 0),
+    ((20, 30, 40), 41, "xml", 2),
+    # Command-line overrides configuration.
+    ((20, 30, 40), 19, "report --fail-under=21", 2),
+])
+def test_fail_under(results, fail_under, cmd, ret):
+    cov = CoverageReportingFake(*results)
+    if fail_under:
+        cov.set_option("report:fail_under", fail_under)
+    ret_actual = command_line(cmd, _covpkg=cov)
+    assert ret_actual == ret

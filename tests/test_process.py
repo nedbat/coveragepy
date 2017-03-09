@@ -973,81 +973,29 @@ class FailUnderTest(CoverageTest):
         )
 
     def test_report(self):
-        st, _ = self.run_command_status("coverage report --fail-under=42")
-        self.assertEqual(st, 0)
         st, _ = self.run_command_status("coverage report --fail-under=43")
         self.assertEqual(st, 0)
         st, _ = self.run_command_status("coverage report --fail-under=44")
         self.assertEqual(st, 2)
 
-    def test_html_report(self):
-        st, _ = self.run_command_status("coverage html --fail-under=42")
-        self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage html --fail-under=43")
-        self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage html --fail-under=44")
-        self.assertEqual(st, 2)
-
-    def test_xml_report(self):
-        st, _ = self.run_command_status("coverage xml --fail-under=42")
-        self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage xml --fail-under=43")
-        self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage xml --fail-under=44")
-        self.assertEqual(st, 2)
-
-    def test_fail_under_in_config(self):
-        self.make_file(".coveragerc", "[report]\nfail_under = 43\n")
-        st, _ = self.run_command_status("coverage report")
-        self.assertEqual(st, 0)
-
-        self.make_file(".coveragerc", "[report]\nfail_under = 44\n")
-        st, _ = self.run_command_status("coverage report")
-        self.assertEqual(st, 2)
-
 
 class FailUnderNoFilesTest(CoverageTest):
     """Test that nothing to report results in an error exit status."""
-    def setUp(self):
-        super(FailUnderNoFilesTest, self).setUp()
-        self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
-
     def test_report(self):
+        self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
         st, out = self.run_command_status("coverage report")
-        self.assertIn('No data to report.', out)
-        self.assertEqual(st, 1)
-
-    def test_xml(self):
-        st, out = self.run_command_status("coverage xml")
-        self.assertIn('No data to report.', out)
-        self.assertEqual(st, 1)
-
-    def test_html(self):
-        st, out = self.run_command_status("coverage html")
         self.assertIn('No data to report.', out)
         self.assertEqual(st, 1)
 
 
 class FailUnderEmptyFilesTest(CoverageTest):
     """Test that empty files produce the proper fail_under exit status."""
-    def setUp(self):
-        super(FailUnderEmptyFilesTest, self).setUp()
-
+    def test_report(self):
         self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
         self.make_file("empty.py", "")
         st, _ = self.run_command_status("coverage run empty.py")
         self.assertEqual(st, 0)
-
-    def test_report(self):
         st, _ = self.run_command_status("coverage report")
-        self.assertEqual(st, 2)
-
-    def test_xml(self):
-        st, _ = self.run_command_status("coverage xml")
-        self.assertEqual(st, 2)
-
-    def test_html(self):
-        st, _ = self.run_command_status("coverage html")
         self.assertEqual(st, 2)
 
 
