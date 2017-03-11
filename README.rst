@@ -63,7 +63,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |ci-status| image:: https://travis-ci.org/nedbat/coveragepy.svg?branch=master
     :target: https://travis-ci.org/nedbat/coveragepy
     :alt: Build status
-.. |win-ci-status| image:: https://ci.appveyor.com/api/projects/status/bitbucket/ned/coveragepy?svg=true
+.. |win-ci-status| image:: https://ci.appveyor.com/api/projects/status/kmeqpdje7h9r6vsf/branch/master?svg=true
     :target: https://ci.appveyor.com/project/nedbat/coveragepy
     :alt: Windows build status
 .. |docs| image:: https://readthedocs.org/projects/coverage/badge/?version=latest&style=flat
