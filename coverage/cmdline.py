@@ -460,7 +460,7 @@ class CoverageScript(object):
         debug = unshell_list(options.debug)
 
         # Do something.
-        self.coverage = self.covpkg.coverage(
+        self.coverage = self.covpkg.Coverage(
             data_suffix=options.parallel_mode,
             cover_pylib=options.pylib,
             timid=options.timid,
