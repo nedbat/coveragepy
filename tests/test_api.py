@@ -299,6 +299,8 @@ class ApiTest(CoverageTest):
         cov.save()
         import_local_file("code2")
         self.check_code1_code2(cov)
+        # Then stop it, or the test suite gets out of whack.
+        cov.stop()
 
     def test_two_getdata_only_warn_once(self):
         self.make_code1_code2()
@@ -326,6 +328,8 @@ class ApiTest(CoverageTest):
         # won't make another warning.
         with self.assert_warnings(cov, []):
             cov.get_data()
+        # Then stop it, or the test suite gets out of whack.
+        cov.stop()
 
     def test_two_getdata_warn_twice(self):
         self.make_code1_code2()
@@ -339,6 +343,8 @@ class ApiTest(CoverageTest):
         # Calling get_data a second time after tracing some more will warn again.
         with self.assert_warnings(cov, ["No data was collected"]):
             cov.get_data()
+        # Then stop it, or the test suite gets out of whack.
+        cov.stop()
 
     def make_good_data_files(self):
         """Make some good data files."""

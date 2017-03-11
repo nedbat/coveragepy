@@ -307,7 +307,7 @@ class Collector(object):
             except TypeError:
                 raise Exception("fullcoverage must be run with the C trace function.")
 
-        # Install our installation tracer in threading, to jump start other
+        # Install our installation tracer in threading, to jump-start other
         # threads.
         if self.threading:
             self.threading.settrace(self._installation_trace)
