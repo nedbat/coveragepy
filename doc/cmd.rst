@@ -453,7 +453,7 @@ to log:
 
 * ``multiproc``: log the start and stop of multiprocessing processes.
 
-* ``pid``: annotate all debug output with the process id.
+* ``pid``: annotate all warnings and debug output with the process id.
 
 * ``plugin``: print information about plugin operations.
 
