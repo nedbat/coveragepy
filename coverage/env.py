@@ -17,6 +17,7 @@ if PYPY:
     PYPYVERSION = sys.pypy_version_info
 
 JYTHON = (platform.python_implementation() == 'Jython')
+IRONPYTHON = (platform.python_implementation() == 'IronPython')
 
 # Python versions.
 PYVERSION = sys.version_info

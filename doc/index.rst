@@ -82,6 +82,8 @@ not.
 
     * Jython 2.7.1, though only for running code, not reporting.
 
+    * IronPython 2.7.7, though only for running code, not reporting.
+
     **This is a pre-release build.  The usual warnings about possible bugs
     apply.** The latest stable version is coverage.py 4.2, `described here`_.
 

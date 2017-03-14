@@ -26,7 +26,13 @@ def read_python_source(filename):
 
     """
     with open(filename, "rb") as f:
-        return f.read().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+        source = f.read()
+
+    if env.IRONPYTHON:
+        # IronPython reads Unicode strings even for "rb" files.
+        source = bytes(source)
+
+    return source.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
 
 @contract(returns='unicode')

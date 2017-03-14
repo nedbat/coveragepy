@@ -16,6 +16,10 @@ Unreleased
   also continue measurement. Both `issue 79`_ and `issue 448`_ described this
   problem, and have been fixed.
 
+- Minimal IronPython support. You should be able to run IronPython programs
+  under ``coverage run``, though you will still have to do the reporting phase
+  with CPython.
+
 - Coverage.py has long had a special hack to support CPython's need to measure
   the coverage of the standard library tests. This code was not installed by
   kitted versions of coverage.py.  Now it is.

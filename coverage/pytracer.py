@@ -101,7 +101,7 @@ class PyTracer(object):
             # function calls and re-entering generators.  The f_lasti field is
             # -1 for calls, and a real offset for generators.  Use <0 as the
             # line number for calls, and the real line number for generators.
-            if frame.f_lasti < 0:
+            if getattr(frame, 'f_lasti', -1) < 0:
                 self.last_line = -frame.f_code.co_firstlineno
             else:
                 self.last_line = frame.f_lineno

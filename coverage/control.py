@@ -393,6 +393,10 @@ class Coverage(object):
         can't be determined, None is returned.
 
         """
+        if module_globals is None:          # pragma: only ironpython
+            # IronPython doesn't provide globals: https://github.com/IronLanguages/main/issues/1296
+            module_globals = {}
+
         dunder_name = module_globals.get('__name__', None)
 
         if isinstance(dunder_name, str) and dunder_name != '__main__':
@@ -441,7 +445,7 @@ class Coverage(object):
         # .pyc files can be moved after compilation (for example, by being
         # installed), we look for __file__ in the frame and prefer it to the
         # co_filename value.
-        dunder_file = frame.f_globals.get('__file__')
+        dunder_file = frame.f_globals and frame.f_globals.get('__file__')
         if dunder_file:
             filename = source_for_file(dunder_file)
             if original_filename and not original_filename.startswith('<'):
