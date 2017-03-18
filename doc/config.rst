@@ -150,7 +150,8 @@ for more information.
 measure during execution.  See :ref:`source` for details.
 
 ``timid`` (boolean, default False): use a simpler but slower trace method.
-Try this if you get seemingly impossible results.
+This uses PyTracer instead of CTracer, and is only needed in very unusual
+circumstances.  Try this if you get seemingly impossible results.
 
 
 .. _config_paths:
