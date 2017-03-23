@@ -137,7 +137,7 @@ class DebugTraceTest(CoverageTest):
 
         # The last message should be "Writing data", and the last frame should
         # be write_file in data.py.
-        self.assertRegex(real_messages[-1], r"^\d+\.\w{4}: Writing data")
+        self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Writing data")
         last_line = out_lines.splitlines()[-1]
         self.assertRegex(last_line, r"\s+write_file : .*coverage[/\\]data.py @\d+$")
 
