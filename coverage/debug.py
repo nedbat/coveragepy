@@ -40,7 +40,7 @@ class DebugControl(object):
         filters = []
         if self.should('pid'):
             filters.append(add_pid_and_tid)
-        self.output = DebugOutputFile.the_one(
+        self.output = DebugOutputFile(
             self.raw_output,
             show_process=self.should('process'),
             filters=filters,
