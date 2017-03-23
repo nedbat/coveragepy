@@ -17,7 +17,7 @@ from coverage.backward import string_class, iitems
 from coverage.collector import Collector
 from coverage.config import read_coverage_config
 from coverage.data import CoverageData, CoverageDataFiles
-from coverage.debug import DebugControl
+from coverage.debug import DebugControl, write_formatted_info
 from coverage.files import TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
 from coverage.files import ModuleMatcher, abs_file
@@ -144,7 +144,9 @@ class Coverage(object):
             concurrency=concurrency,
             )
 
+        # This is injectable by tests.
         self._debug_file = None
+
         self._auto_load = self._auto_save = auto_data
         self._data_suffix = data_suffix
 
@@ -354,19 +356,19 @@ class Coverage(object):
         with self.debug.without_callers():
             if self.debug.should('config'):
                 config_info = sorted(self.config.__dict__.items())
-                self.debug.write_formatted_info("config", config_info)
+                write_formatted_info(self.debug, "config", config_info)
                 wrote_any = True
 
             if self.debug.should('sys'):
-                self.debug.write_formatted_info("sys", self.sys_info())
+                write_formatted_info(self.debug, "sys", self.sys_info())
                 for plugin in self.plugins:
                     header = "sys: " + plugin._coverage_plugin_name
                     info = plugin.sys_info()
-                    self.debug.write_formatted_info(header, info)
+                    write_formatted_info(self.debug, header, info)
                 wrote_any = True
 
         if wrote_any:
-            self.debug.write_formatted_info("end", ())
+            write_formatted_info(self.debug, "end", ())
 
     def _canonical_path(self, morf, directory=False):
         """Return the canonical path of the module or file `morf`.
@@ -686,6 +688,8 @@ class Coverage(object):
 
     def _atexit(self):
         """Clean up on process shutdown."""
+        if self.debug.should("process"):
+            self.debug.write("atexit: {0!r}".format(self))
         if self._started:
             self.stop()
         if self._auto_save:

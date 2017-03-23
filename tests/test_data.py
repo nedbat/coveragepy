@@ -13,10 +13,11 @@ import mock
 
 from coverage.backward import StringIO
 from coverage.data import CoverageData, CoverageDataFiles, debug_main, canonicalize_json_data
+from coverage.debug import DebugControlString
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
 
-from tests.coveragetest import CoverageTest, DebugControlString
+from tests.coveragetest import CoverageTest
 
 
 LINES_1 = {

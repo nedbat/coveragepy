@@ -457,6 +457,9 @@ to log:
 
 * ``plugin``: print information about plugin operations.
 
+* ``process``: show process creation information, and changes in the current
+  directory.
+
 * ``sys``: before starting, dump all the system and environment information,
   as with :ref:`coverage debug sys <cmd_debug>`.
 
