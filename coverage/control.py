@@ -13,7 +13,7 @@ import re
 import sys
 import traceback
 
-from coverage import env, files
+from coverage import env
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
 from coverage.collector import Collector
@@ -22,6 +22,7 @@ from coverage.data import CoverageData, CoverageDataFiles
 from coverage.debug import DebugControl, write_formatted_info
 from coverage.files import TreeMatcher, FnmatchMatcher
 from coverage.files import PathAliases, find_python_files, prep_patterns
+from coverage.files import canonical_filename, set_relative_directory
 from coverage.files import ModuleMatcher, abs_file
 from coverage.html import HtmlReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
@@ -222,14 +223,14 @@ class Coverage(object):
         self._exclude_re = {}
         self._exclude_regex_stale()
 
-        files.set_relative_directory()
+        set_relative_directory()
 
         # The source argument can be directories or package names.
         self.source = []
         self.source_pkgs = []
         for src in self.config.source or []:
             if os.path.isdir(src):
-                self.source.append(files.canonical_filename(src))
+                self.source.append(canonical_filename(src))
             else:
                 self.source_pkgs.append(src)
         self.source_pkgs_unmatched = self.source_pkgs[:]
@@ -483,7 +484,7 @@ class Coverage(object):
         if filename.endswith("$py.class"):
             filename = filename[:-9] + ".py"
 
-        canonical = files.canonical_filename(filename)
+        canonical = canonical_filename(filename)
         disp.canonical_filename = canonical
 
         # Try the plugins, see if they have an opinion about the file.
@@ -501,7 +502,7 @@ class Coverage(object):
                     if file_tracer.has_dynamic_source_filename():
                         disp.has_dynamic_filename = True
                     else:
-                        disp.source_filename = files.canonical_filename(
+                        disp.source_filename = canonical_filename(
                             file_tracer.source_filename()
                         )
                     break
@@ -873,7 +874,7 @@ class Coverage(object):
         plugin_files = self._find_plugin_files(src_dir)
 
         for file_path, plugin_name in itertools.chain(py_files, plugin_files):
-            file_path = files.canonical_filename(file_path)
+            file_path = canonical_filename(file_path)
             if self.omit_match and self.omit_match.match(file_path):
                 # Turns out this file was omitted, so don't pull it back
                 # in as unexecuted.
