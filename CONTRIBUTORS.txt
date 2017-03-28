@@ -39,6 +39,7 @@ Devin Jeanpierre
 Dmitry Shishov
 Dmitry Trofimov
 Eduardo Schettino
+Emil Madsen
 Edward Loper
 Geoff Bache
 George Paci

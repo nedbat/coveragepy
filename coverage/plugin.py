@@ -89,12 +89,16 @@ class CoveragePlugin(object):
         """
         _needs_to_implement(self, "file_reporter")
 
-    def find_executable_files(self, src_dir):
-        """Yield all of the executable files in `dirname`, recursively.
+    def find_executable_files(self, src_dir):       # pylint: disable=unused-argument
+        """Yield all of the executable files in `src_dir`, recursively.
 
         Executability is a plugin-specific property, but generally means files
         which would have been considered for coverage analysis, had they been
         included automatically.
+
+        Returns or yields a sequence of strings, the paths to files that could
+        have been executed, including files that had been executed.
+
         """
         return []
 

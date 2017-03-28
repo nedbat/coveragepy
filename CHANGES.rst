@@ -16,6 +16,9 @@ Unreleased
   also continue measurement. Both `issue 79`_ and `issue 448`_ described this
   problem, and have been fixed.
 
+- Plugins can now find unexecuted files if they choose, by implementing the
+  `find_executable_files` method.  Thanks, Emil Madsen.
+
 - Minimal IronPython support. You should be able to run IronPython programs
   under ``coverage run``, though you will still have to do the reporting phase
   with CPython.
