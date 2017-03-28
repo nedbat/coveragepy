@@ -416,8 +416,12 @@ class CoverageData(object):
         self._runs[0].update(kwargs)
         self._validate()
 
-    def touch_file(self, filename):
-        """Ensure that `filename` appears in the data, empty if needed."""
+    def touch_file(self, filename, plugin_name=""):
+        """Ensure that `filename` appears in the data, empty if needed.
+
+        `plugin_name` is the name of the plugin resposible for this file. It is used
+        to associate the right filereporter, etc.
+        """
         if self._debug and self._debug.should('dataop'):
             self._debug.write("Touching %r" % (filename,))
         if not self._has_arcs() and not self._has_lines():
@@ -428,6 +432,9 @@ class CoverageData(object):
         else:
             where = self._lines
         where.setdefault(filename, [])
+        if plugin_name:
+            # Set the tracer for this file
+            self._file_tracers[filename] = plugin_name
 
         self._validate()
 

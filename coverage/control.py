@@ -3,8 +3,10 @@
 
 """Core control stuff for coverage.py."""
 
+
 import atexit
 import inspect
+import itertools
 import os
 import platform
 import re
@@ -854,6 +856,11 @@ class Coverage(object):
         if self.config.note:
             self.data.add_run_info(note=self.config.note)
 
+    def _find_plugin_files(self, src_dir):
+        for plugin in self.plugins:
+            for x_file in plugin.find_executable_files(src_dir):
+                yield x_file, plugin._coverage_plugin_name
+
     def _find_unexecuted_files(self, src_dir):
         """Find unexecuted files in `src_dir`.
 
@@ -861,15 +868,16 @@ class Coverage(object):
         and add them as unexecuted files in `self.data`.
 
         """
-        for py_file in find_python_files(src_dir):
-            py_file = files.canonical_filename(py_file)
+        py_files = ((py_file, None) for py_file in files.find_python_files(src_dir))
+        plugin_files = self._find_plugin_files(src_dir)
 
-            if self.omit_match and self.omit_match.match(py_file):
+        for file_path, plugin_name in itertools.chain(py_files, plugin_files):
+            file_path = files.canonical_filename(file_path)
+            if self.omit_match and self.omit_match.match(file_path):
                 # Turns out this file was omitted, so don't pull it back
                 # in as unexecuted.
                 continue
-
-            self.data.touch_file(py_file)
+            self.data.touch_file(file_path, plugin_name)
 
     # Backward compatibility with version 1.
     def analysis(self, morf):
