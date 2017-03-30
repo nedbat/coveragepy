@@ -24,7 +24,7 @@ class FileTracer(coverage.FileTracer):
     """A FileTracer emulating a simple static plugin."""
 
     def __init__(self, filename):
-        """Claim that xyz.py was actually sourced from ABC.zz"""
+        """Claim that */*xyz.py was actually sourced from /src/*ABC.zz"""
         self._filename = filename
         self._source_filename = os.path.join(
             "/src",

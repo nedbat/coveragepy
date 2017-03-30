@@ -333,9 +333,8 @@ class GoodPluginTest(FileTracerTest):
             # quux_5.html will be omitted from the results.
             assert render("quux_5.html", 3) == "[quux_5.html @ 3]"
 
-            # In Python 2, either kind of string should be OK.
-            if sys.version_info[0] == 2:
-                assert render(u"uni_3.html", 2) == "[uni_3.html @ 2]"
+            # For Python 2, make sure unicode is working.
+            assert render(u"uni_3.html", 2) == "[uni_3.html @ 2]"
             """)
 
         # will try to read the actual source files, so make some
@@ -372,11 +371,10 @@ class GoodPluginTest(FileTracerTest):
 
         self.assertNotIn("quux_5.html", cov.data.line_counts())
 
-        if env.PY2:
-            _, statements, missing, _ = cov.analysis("uni_3.html")
-            self.assertEqual(statements, [1, 2, 3])
-            self.assertEqual(missing, [1])
-            self.assertIn("uni_3.html", cov.data.line_counts())
+        _, statements, missing, _ = cov.analysis("uni_3.html")
+        self.assertEqual(statements, [1, 2, 3])
+        self.assertEqual(missing, [1])
+        self.assertIn("uni_3.html", cov.data.line_counts())
 
     def test_plugin2_with_branch(self):
         self.make_render_and_caller()
