@@ -72,6 +72,9 @@ class CoverageTest(
     # Tell newer unittest implementations to print long helpful messages.
     longMessage = True
 
+    # Let stderr go to stderr, pytest will capture it for us.
+    show_stderr = True
+
     def setUp(self):
         super(CoverageTest, self).setUp()
 

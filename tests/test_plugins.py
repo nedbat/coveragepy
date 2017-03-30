@@ -558,7 +558,6 @@ class BadPluginTest(FileTracerTest):
         self.run_plugin(module_name)
 
         stderr = self.stderr()
-        print(stderr)           # for diagnosing test failures.
 
         if our_error:
             errors = stderr.count("# Oh noes!")
