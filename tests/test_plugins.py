@@ -540,7 +540,7 @@ class BadPluginTest(FileTracerTest):
         self.start_import_stop(cov, "simple")
         return cov
 
-    def run_bad_plugin(self, module_name, plugin_name, our_error=True, excmsg=None):
+    def run_bad_plugin(self, module_name, plugin_name, our_error=True, excmsg=None, excmsgs=None):
         """Run a file, and see that the plugin failed.
 
         `module_name` and `plugin_name` is the module and name of the plugin to
@@ -549,7 +549,10 @@ class BadPluginTest(FileTracerTest):
         `our_error` is True if the error reported to the user will be an
         explicit error in our test code, marked with an '# Oh noes!' comment.
 
-        `excmsg`, if provided, is text that should appear in the stderr.
+        `excmsg`, if provided, is text that must appear in the stderr.
+
+        `excmsgs`, if provided, is a list of messages, one of which must
+        appear in the stderr.
 
         The plugin will be disabled, and we check that a warning is output
         explaining why.
@@ -575,6 +578,8 @@ class BadPluginTest(FileTracerTest):
 
         if excmsg:
             self.assertIn(excmsg, stderr)
+        if excmsgs:
+            self.assertTrue(any(em in stderr for em in excmsgs), "expected one of %r" % excmsgs)
 
     def test_file_tracer_has_no_file_tracer_method(self):
         self.make_file("bad_plugin.py", """\
@@ -647,7 +652,9 @@ class BadPluginTest(FileTracerTest):
             def coverage_init(reg, options):
                 reg.add_file_tracer(Plugin())
             """)
-        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
+        self.run_bad_plugin(
+            "bad_plugin", "Plugin", our_error=False, excmsg="'float' object has no attribute",
+        )
 
     def test_has_dynamic_source_filename_fails(self):
         self.make_file("bad_plugin.py", """\
@@ -695,7 +702,13 @@ class BadPluginTest(FileTracerTest):
             def coverage_init(reg, options):
                 reg.add_file_tracer(Plugin())
             """)
-        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
+        self.run_bad_plugin(
+            "bad_plugin", "Plugin", our_error=False,
+            excmsgs=[
+                "expected str, bytes or os.PathLike object, not float",
+                "'float' object has no attribute",
+            ],
+        )
 
     def test_dynamic_source_filename_fails(self):
         self.make_file("bad_plugin.py", """\
@@ -734,7 +747,9 @@ class BadPluginTest(FileTracerTest):
             def coverage_init(reg, options):
                 reg.add_file_tracer(Plugin())
             """)
-        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
+        self.run_bad_plugin(
+            "bad_plugin", "Plugin", our_error=False, excmsg="line_number_range must return 2-tuple",
+        )
 
     def test_line_number_range_returns_triple(self):
         self.make_file("bad_plugin.py", """\
@@ -754,7 +769,9 @@ class BadPluginTest(FileTracerTest):
             def coverage_init(reg, options):
                 reg.add_file_tracer(Plugin())
             """)
-        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
+        self.run_bad_plugin(
+            "bad_plugin", "Plugin", our_error=False, excmsg="line_number_range must return 2-tuple",
+        )
 
     def test_line_number_range_returns_pair_of_strings(self):
         self.make_file("bad_plugin.py", """\
@@ -774,4 +791,6 @@ class BadPluginTest(FileTracerTest):
             def coverage_init(reg, options):
                 reg.add_file_tracer(Plugin())
             """)
-        self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
+        self.run_bad_plugin(
+            "bad_plugin", "Plugin", our_error=False, excmsg="an integer is required",
+        )
