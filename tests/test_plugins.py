@@ -505,6 +505,58 @@ class GoodPluginTest(FileTracerTest):
         self.assertEqual(report, expected)
         self.assertEqual(total, 50)
 
+    def test_find_unexecuted(self):
+        self.make_file("unexecuted_plugin.py", """\
+            import os
+            import coverage.plugin
+            class Plugin(coverage.CoveragePlugin):
+                def file_tracer(self, filename):
+                    if filename.endswith("foo.py"):
+                        return MyTracer(filename)
+                def file_reporter(self, filename):
+                    return MyReporter(filename)
+                def find_executable_files(self, src_dir):
+                    # Check that src_dir is the right value
+                    files = os.listdir(src_dir)
+                    assert "foo.py" in files
+                    assert "unexecuted_plugin.py" in files
+                    return ["chimera.py"]
+
+            class MyTracer(coverage.plugin.FileTracer):
+                def __init__(self, filename):
+                    self.filename = filename
+                def source_filename(self):
+                    return self.filename
+                def line_number_range(self, frame):
+                    return (999, 999)
+
+            class MyReporter(coverage.FileReporter):
+                def lines(self):
+                    return set([99, 999, 9999])
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin())
+        """)
+        self.make_file("foo.py", "a = 1\n")
+        cov = coverage.Coverage(source=['.'])
+        cov.set_option("run:plugins", ["unexecuted_plugin"])
+        self.start_import_stop(cov, "foo")
+
+        # The file we executed claims to have run line 999.
+        _, statements, missing, _ = cov.analysis("foo.py")
+        self.assertEqual(statements, [99, 999, 9999])
+        self.assertEqual(missing, [99, 9999])
+
+        # The completely missing file is in the results.
+        _, statements, missing, _ = cov.analysis("chimera.py")
+        self.assertEqual(statements, [99, 999, 9999])
+        self.assertEqual(missing, [99, 999, 9999])
+
+        # But completely new filenames are not in the results.
+        self.assertEqual(len(cov.get_data().measured_files()), 3)
+        with self.assertRaises(CoverageException):
+            cov.analysis("fictional.py")
+
 
 class BadPluginTest(FileTracerTest):
     """Test error handling around plugins."""
