@@ -760,6 +760,7 @@ class BadPluginTest(FileTracerTest):
                 "expected str, bytes or os.PathLike object, not float",
                 "'float' object has no attribute",
                 "object of type 'float' has no len()",
+                "'float' object is unsubscriptable",
             ],
         )
 
