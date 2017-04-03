@@ -603,9 +603,14 @@ class Coverage(object):
 
         return not reason
 
-    def _warn(self, msg):
-        """Use `msg` as a warning."""
+    def _warn(self, msg, slug=None):
+        """Use `msg` as a warning.
+
+        For warning suppression, use `slug` as the shorthand.
+        """
         self._warnings.append(msg)
+        if slug:
+            msg = "%s (%s)" % (msg, slug)
         if self.debug.should('pid'):
             msg = "[%d] %s" % (os.getpid(), msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
@@ -829,18 +834,21 @@ class Coverage(object):
         if self._warn_unimported_source:
             for pkg in self.source_pkgs_unmatched:
                 if pkg not in sys.modules:
-                    self._warn("Module %s was never imported." % pkg)
+                    self._warn("Module %s was never imported." % pkg, slug="module-not-imported")
                 elif not (
                     hasattr(sys.modules[pkg], '__file__') and
                     os.path.exists(sys.modules[pkg].__file__)
                 ):
-                    self._warn("Module %s has no Python source." % pkg)
+                    self._warn("Module %s has no Python source." % pkg, slug="module-not-python")
                 else:
-                    self._warn("Module %s was previously imported, but not measured." % pkg)
+                    self._warn(
+                        "Module %s was previously imported, but not measured." % pkg,
+                        slug="module-not-measured",
+                    )
 
         # Find out if we got any data.
         if not self.data and self._warn_no_data:
-            self._warn("No data was collected.")
+            self._warn("No data was collected.", slug="no-data-collected")
 
         # Find files that were never executed at all.
         for pkg in self.source_pkgs:

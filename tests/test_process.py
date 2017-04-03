@@ -493,10 +493,10 @@ class ProcessTest(CoverageTest):
 
         self.assertIn("Hello\n", out)
         self.assertIn(textwrap.dedent("""\
-            Coverage.py warning: Module sys has no Python source.
-            Coverage.py warning: Module xyzzy was never imported.
-            Coverage.py warning: Module quux was never imported.
-            Coverage.py warning: No data was collected.
+            Coverage.py warning: Module sys has no Python source. (module-not-python)
+            Coverage.py warning: Module xyzzy was never imported. (module-not-imported)
+            Coverage.py warning: Module quux was never imported. (module-not-imported)
+            Coverage.py warning: No data was collected. (no-data-collected)
             """), out)
 
     def test_warnings_during_reporting(self):
@@ -663,7 +663,8 @@ class ProcessTest(CoverageTest):
         out = self.run_command("python run_twice.py")
         self.assertEqual(
             out,
-            "Coverage.py warning: Module foo was previously imported, but not measured.\n"
+            "Coverage.py warning: Module foo was previously imported, but not measured. "
+            "(module-not-measured)\n"
         )
 
     def test_module_name(self):

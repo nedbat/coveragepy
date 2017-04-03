@@ -166,7 +166,10 @@ class PyTracer(object):
             tf = sys.gettrace()
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
             if (not dont_warn) and tf != self._trace:
-                self.warn("Trace function changed, measurement is likely wrong: %r" % (tf,))
+                self.warn(
+                    "Trace function changed, measurement is likely wrong: %r" % (tf,),
+                    slug="trace-changed",
+                )
 
         sys.settrace(None)
 
