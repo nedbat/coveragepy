@@ -14,6 +14,9 @@ Unreleased
   takes a list of these warning names to disable. Closes both `issue 96`_ and
   `issue 355`_.
 
+- The XML report now includes attributes from version 4 of the Cobertura XML
+  format, fixing `issue 570`_.
+
 - In previous versions, calling a method that used collected data would prevent
   further collection.  For example, `save()`, `report()`, `html_report()`, and
   others would all stop collection.  An explicit `start()` was needed to get it
@@ -36,6 +39,7 @@ Unreleased
 .. _issue 96: https://bitbucket.org/ned/coveragepy/issues/96/unhelpful-warnings-produced-when-using
 .. _issue 355: https://bitbucket.org/ned/coveragepy/issues/355/warnings-should-be-suppressable
 .. _issue 448: https://bitbucket.org/ned/coveragepy/issues/448/save-and-html_report-prevent-further
+.. _issue 570: https://bitbucket.org/ned/coveragepy/issues/570/cobertura-coverage-04dtd-support
 
 
 .. _changes_434:

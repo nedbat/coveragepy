@@ -18,11 +18,7 @@ from coverage.report import Reporter
 os = isolate_module(os)
 
 
-DTD_URL = (
-    'https://raw.githubusercontent.com/cobertura/web/'
-    'f0366e5e2cf18f111cbd61fc34ef720a6584ba02'
-    '/htdocs/xml/coverage-03.dtd'
-)
+DTD_URL = 'https://raw.githubusercontent.com/cobertura/web/master/htdocs/xml/coverage-04.dtd'
 
 
 def rate(hit, num):
@@ -114,12 +110,18 @@ class XmlReporter(Reporter):
             bnum_tot += bnum
             bhits_tot += bhits
 
+        xcoverage.setAttribute("lines-valid", str(lnum_tot))
+        xcoverage.setAttribute("lines-covered", str(lhits_tot))
         xcoverage.setAttribute("line-rate", rate(lhits_tot, lnum_tot))
         if self.has_arcs:
-            branch_rate = rate(bhits_tot, bnum_tot)
+            xcoverage.setAttribute("branches-valid", str(bnum_tot))
+            xcoverage.setAttribute("branches-covered", str(bhits_tot))
+            xcoverage.setAttribute("branch-rate", rate(bhits_tot, bnum_tot))
         else:
-            branch_rate = "0"
-        xcoverage.setAttribute("branch-rate", branch_rate)
+            xcoverage.setAttribute("branches-covered", "0")
+            xcoverage.setAttribute("branches-valid", "0")
+            xcoverage.setAttribute("branch-rate", "0")
+        xcoverage.setAttribute("complexity", "0")
 
         # Use the DOM to write the output file.
         out = self.xml_out.toprettyxml()
