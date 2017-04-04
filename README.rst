@@ -23,6 +23,7 @@ Coverage.py runs on many versions of Python:
 * CPython 2.6, 2.7 and 3.3 through 3.6.
 * PyPy2 5.6 and PyPy3 5.5.
 * Jython 2.7.1, though not for reporting.
+* IronPython 2.7.7, though not for reporting.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 `Bitbucket`_, with a mirrored repository on `GitHub`_.
@@ -32,7 +33,9 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 
-**New in 4.3:** HTML ``--skip-covered``, sys.excepthook support, tox.ini
+**New in 4.4:** Suppressable warnings, continuous coverage measurement.
+
+New in 4.3: HTML ``--skip-covered``, sys.excepthook support, tox.ini
 support.
 
 New in 4.2: better support for multiprocessing and combining data.

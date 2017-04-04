@@ -6,8 +6,8 @@ Change history for Coverage.py
 ==============================
 
 
-Unreleased
-----------
+Version 4.4b1 --- 2017-04-04
+----------------------------
 
 - Some warnings can now be individually disabled.  Warnings that can be
   disabled have a short name appended.  The ``[run] disable_warnings`` setting

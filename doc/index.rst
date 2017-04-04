@@ -73,7 +73,7 @@ not.
 
 .. ifconfig:: prerelease
 
-    The latest version is coverage.py 4.3b1, released July 4th 2016.  It is
+    The latest version is coverage.py 4.4b1, released April 4th 2017.  It is
     supported on:
 
     * Python versions 2.6, 2.7, 3.3, 3.4, 3.5, and 3.6.
@@ -85,7 +85,7 @@ not.
     * IronPython 2.7.7, though only for running code, not reporting.
 
     **This is a pre-release build.  The usual warnings about possible bugs
-    apply.** The latest stable version is coverage.py 4.2, `described here`_.
+    apply.** The latest stable version is coverage.py 4.3.4, `described here`_.
 
 .. _described here: http://nedbatchelder.com/code/coverage
 
