@@ -131,39 +131,52 @@ If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate
 during measurement.  See :ref:`cmd_combining` below.
 
+
+.. _cmd_warnings:
+
+Warnings
+--------
+
 During execution, coverage.py may warn you about conditions it detects that
 could affect the measurement process.  The possible warnings include:
 
-* "Trace function changed, measurement is likely wrong: XXX"
+* "Trace function changed, measurement is likely wrong: XXX (trace-changed)"
 
   Coverage measurement depends on a Python setting called the trace function.
   Other Python code in your product might change that function, which will
-  disrupt coverage.py's measurement.  This warning indicate that has happened.
+  disrupt coverage.py's measurement.  This warning indicates that has happened.
   The XXX in the message is the new trace function value, which might provide
   a clue to the cause.
 
-* "Module XXX has no Python source"
+* "Module XXX has no Python source (module-not-python)"
 
   You asked coverage.py to measure module XXX, but once it was imported, it
   turned out not to have a corresponding .py file.  Without a .py file,
   coverage.py can't report on missing lines.
 
-* "Module XXX was never imported"
+* "Module XXX was never imported (module-not-imported)"
 
   You asked coverage.py to measure module XXX, but it was never imported by
   your program.
 
-* "No data was collected"
+* "No data was collected (no-data-collected)"
 
   Coverage.py ran your program, but didn't measure any lines as executed.
   This could be because you asked to measure only modules that never ran,
   or for other reasons.
 
-* "Module XXX was previously imported, but not measured."
+* "Module XXX was previously imported, but not measured. (module-not-measured)"
 
   You asked coverage.py to measure module XXX, but it had already been imported
   when coverage started.  This meant coverage.py couldn't monitor its
   execution.
+
+Individual warnings can be disabled with the `disable_warnings
+<config_run_disable_warnings>`_ configuration setting.  To silence "No data was
+collected," add this to your .coveragerc file::
+
+    [run]
+    disable_warnings = no-data-collected
 
 
 .. _cmd_datafile:

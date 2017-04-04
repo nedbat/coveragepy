@@ -158,6 +158,7 @@ class CoverageConfig(object):
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.debug = []
+        self.disable_warnings = []
         self.note = None
         self.parallel = False
         self.plugins = []
@@ -191,7 +192,7 @@ class CoverageConfig(object):
         # Options for plugins
         self.plugin_options = {}
 
-    MUST_BE_LIST = ["omit", "include", "debug", "plugins", "concurrency"]
+    MUST_BE_LIST = ["concurrency", "debug", "disable_warnings", "include", "omit", "plugins"]
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
@@ -283,6 +284,7 @@ class CoverageConfig(object):
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
+        ('disable_warnings', 'run:disable_warnings', 'list'),
         ('include', 'run:include', 'list'),
         ('note', 'run:note'),
         ('omit', 'run:omit', 'list'),

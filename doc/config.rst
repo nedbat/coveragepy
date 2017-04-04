@@ -126,6 +126,12 @@ Before version 4.2, this option only accepted a single string.
 for storing or reporting coverage. This value can include a path to another
 directory.
 
+.. _config_run_disable_warnings:
+
+``disable_warnings`` (multi-string): a list of warnings to disable.  Warnings
+that can be disabled include a short string at the end, the name of the
+warning. See :ref:`cmd_warnings` for specific warnings.
+
 ``debug`` (multi-string): a list of debug options.  See :ref:`the run
 --debug option <cmd_run_debug>` for details.
 

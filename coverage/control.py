@@ -608,6 +608,10 @@ class Coverage(object):
 
         For warning suppression, use `slug` as the shorthand.
         """
+        if slug in self.config.disable_warnings:
+            # Don't issue the warning
+            return
+
         self._warnings.append(msg)
         if slug:
             msg = "%s (%s)" % (msg, slug)

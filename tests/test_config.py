@@ -245,6 +245,7 @@ class ConfigFileTest(CoverageTest):
             plugins.a_plugin
             plugins.another
         debug = callers, pids  ,     dataio
+        disable_warnings =     abcd  ,  efgh
 
         [{section}report]
         ; these settings affect reporting.
@@ -325,6 +326,7 @@ class ConfigFileTest(CoverageTest):
         self.assertTrue(cov.config.parallel)
         self.assertEqual(cov.config.concurrency, ["thread"])
         self.assertEqual(cov.config.source, ["myapp"])
+        self.assertEqual(cov.config.disable_warnings, ["abcd", "efgh"])
 
         self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])
         self.assertTrue(cov.config.ignore_errors)

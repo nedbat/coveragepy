@@ -499,6 +499,24 @@ class ProcessTest(CoverageTest):
             Coverage.py warning: No data was collected. (no-data-collected)
             """), out)
 
+    def test_warnings_suppressed(self):
+        self.make_file("hello.py", """\
+            import sys, os
+            print("Hello")
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            disable_warnings = no-data-collected, module-not-imported
+            """)
+        out = self.run_command("coverage run --source=sys,xyzzy,quux hello.py")
+
+        self.assertIn("Hello\n", out)
+        self.assertIn(textwrap.dedent("""\
+            Coverage.py warning: Module sys has no Python source. (module-not-python)
+            """), out)
+        self.assertNotIn("module-not-imported", out)
+        self.assertNotIn("no-data-collected", out)
+
     def test_warnings_during_reporting(self):
         # While fixing issue #224, the warnings were being printed far too
         # often.  Make sure they're not any more.
