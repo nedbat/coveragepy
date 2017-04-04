@@ -344,7 +344,7 @@ def scrub(strdata, scrubs):
 
     """
     for rgx_find, rgx_replace in scrubs:
-        strdata = re.sub(rgx_find, re.escape(rgx_replace), strdata)
+        strdata = re.sub(rgx_find, rgx_replace.replace("\\", "\\\\"), strdata)
     return strdata
 
 
