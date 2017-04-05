@@ -13,10 +13,12 @@ action=$1
 
 if [[ $action == "build" ]]; then
     # Compile wheels
+    cd /io
     for PYBIN in /opt/python/*/bin; do
-        "$PYBIN/pip" install -r /io/requirements/wheel.pip
-        "$PYBIN/pip" wheel /io/ -w wheelhouse/
+        "$PYBIN/pip" install -r requirements/wheel.pip
+        "$PYBIN/python" setup.py bdist_wheel -d ~/wheelhouse/
     done
+    cd ~
 
     # Bundle external shared libraries into the wheels
     for whl in wheelhouse/*.whl; do

@@ -49,7 +49,6 @@
     - Source kit and wheels:
         - $ make kit wheel
     - Linux wheels:
-        - this can be fast (3min) or slow (1h45m). not sure why.
         - $ make manylinux
     - Windows kits
         - wait for over an hour for Appveyor to build kits.
