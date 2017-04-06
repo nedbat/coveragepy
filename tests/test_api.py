@@ -401,6 +401,49 @@ class ApiTest(CoverageTest):
         self.assertEqual(statements, [1, 2])
         self.assertEqual(missing, [1, 2])
 
+    def test_warnings(self):
+        self.make_file("hello.py", """\
+            import sys, os
+            print("Hello")
+            """)
+        cov = coverage.Coverage(source=["sys", "xyzzy", "quux"])
+        self.start_import_stop(cov, "hello")
+        cov.get_data()
+
+        out = self.stdout()
+        self.assertIn("Hello\n", out)
+
+        err = self.stderr()
+        self.assertIn(textwrap.dedent("""\
+            Coverage.py warning: Module sys has no Python source. (module-not-python)
+            Coverage.py warning: Module xyzzy was never imported. (module-not-imported)
+            Coverage.py warning: Module quux was never imported. (module-not-imported)
+            Coverage.py warning: No data was collected. (no-data-collected)
+            """), err)
+
+    def test_warnings_suppressed(self):
+        self.make_file("hello.py", """\
+            import sys, os
+            print("Hello")
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            disable_warnings = no-data-collected, module-not-imported
+            """)
+        cov = coverage.Coverage(source=["sys", "xyzzy", "quux"])
+        self.start_import_stop(cov, "hello")
+        cov.get_data()
+
+        out = self.stdout()
+        self.assertIn("Hello\n", out)
+
+        err = self.stderr()
+        self.assertIn(textwrap.dedent("""\
+            Coverage.py warning: Module sys has no Python source. (module-not-python)
+            """), err)
+        self.assertNotIn("module-not-imported", err)
+        self.assertNotIn("no-data-collected", err)
+
 
 class NamespaceModuleTest(CoverageTest):
     """Test PEP-420 namespace modules."""
