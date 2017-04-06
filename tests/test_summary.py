@@ -680,7 +680,7 @@ class TestSummaryReporterConfiguration(CoverageTest):
     HERE = os.path.dirname(__file__)
 
     LINES_1 = {
-        os.path.join(HERE, "test_api.py"): dict.fromkeys(range(300)),
+        os.path.join(HERE, "test_api.py"): dict.fromkeys(range(400)),
         os.path.join(HERE, "test_backward.py"): dict.fromkeys(range(20)),
         os.path.join(HERE, "test_coverage.py"): dict.fromkeys(range(15)),
     }
@@ -761,6 +761,14 @@ class TestSummaryReporterConfiguration(CoverageTest):
         opts.from_args(sort='Stmts')
         report = self.get_summary_text(data, opts)
         self.assert_ordering(report, "test_backward.py", "test_coverage.py", "test_api.py")
+
+    def test_sort_report_by_missing(self):
+        # Sort the text report by the Missing column.
+        data = self.get_coverage_data(self.LINES_1)
+        opts = CoverageConfig()
+        opts.from_args(sort='Miss')
+        report = self.get_summary_text(data, opts)
+        self.assert_ordering(report, "test_backward.py", "test_api.py", "test_coverage.py")
 
     def test_sort_report_by_cover(self):
         # Sort the text report by the Cover column.
