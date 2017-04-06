@@ -272,12 +272,16 @@ class CoverageTest(
         return cov
 
     @contextlib.contextmanager
-    def assert_warnings(self, cov, warnings):
+    def assert_warnings(self, cov, warnings, not_warnings=()):
         """A context manager to check that particular warnings happened in `cov`.
 
         `cov` is a Coverage instance.  `warnings` is a list of regexes.  Every
         regex must match a warning that was issued by `cov`.  It is OK for
         extra warnings to be issued by `cov` that are not matched by any regex.
+
+        `not_warnings` is a list of regexes that must not appear in the
+        warnings.  This is only checked if there are some positive warnings to
+        test for in `warnings`.
 
         If `warnings` is empty, then `cov` is not allowed to issue any
         warnings.
@@ -286,6 +290,8 @@ class CoverageTest(
         saved_warnings = []
         def capture_warning(msg, slug=None):            # pylint: disable=unused-argument
             """A fake implementation of Coverage._warn, to capture warnings."""
+            if slug:
+                msg = "%s (%s)" % (msg, slug)
             saved_warnings.append(msg)
 
         original_warn = cov._warn
@@ -303,6 +309,10 @@ class CoverageTest(
                             break
                     else:
                         self.fail("Didn't find warning %r in %r" % (warning_regex, saved_warnings))
+                for warning_regex in not_warnings:
+                    for saved in saved_warnings:
+                        if re.search(warning_regex, saved):
+                            self.fail("Found warning %r in %r" % (warning_regex, saved_warnings))
             else:
                 # No warnings expected. Raise if any warnings happened.
                 if saved_warnings:

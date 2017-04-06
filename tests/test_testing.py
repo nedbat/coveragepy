@@ -114,6 +114,17 @@ class CoverageTestTest(CoverageTest):
             with self.assert_warnings(cov, ["Not me"]):
                 cov._warn("Hello there!")
 
+        # Try checking a warning that shouldn't appear: happy case.
+        with self.assert_warnings(cov, ["Hi"], not_warnings=["Bye"]):
+            cov._warn("Hi")
+
+        # But it should fail if the unexpected warning does appear.
+        warn_regex = r"Found warning 'Bye' in \['Hi', 'Bye'\]"
+        with self.assertRaisesRegex(AssertionError, warn_regex):
+            with self.assert_warnings(cov, ["Hi"], not_warnings=["Bye"]):
+                cov._warn("Hi")
+                cov._warn("Bye")
+
         # assert_warnings shouldn't hide a real exception.
         with self.assertRaises(ZeroDivisionError):
             with self.assert_warnings(cov, ["Hello there!"]):
