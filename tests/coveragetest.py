@@ -278,6 +278,7 @@ class CoverageTest(
         `cov` is a Coverage instance.  `warnings` is a list of regexes.  Every
         regex must match a warning that was issued by `cov`.  It is OK for
         extra warnings to be issued by `cov` that are not matched by any regex.
+        Warnings that are disabled are still considered issued by this function.
 
         `not_warnings` is a list of regexes that must not appear in the
         warnings.  This is only checked if there are some positive warnings to
