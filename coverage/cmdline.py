@@ -3,6 +3,8 @@
 
 """Command-line support for coverage.py."""
 
+from __future__ import print_function
+
 import glob
 import optparse
 import os.path
@@ -533,8 +535,8 @@ class CoverageScript(object):
         """Display an error message, or the named topic."""
         assert error or topic or parser
         if error:
-            print(error)
-            print("Use '%s help' for help." % (self.program_name,))
+            print(error, file=sys.stderr)
+            print("Use '%s help' for help." % (self.program_name,), file=sys.stderr)
         elif parser:
             print(parser.format_help().strip())
         else:

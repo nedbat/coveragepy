@@ -462,16 +462,16 @@ class CmdLineTest(BaseCmdLineTest):
 
     def test_bad_concurrency(self):
         self.command_line("run --concurrency=nothing", ret=ERR)
-        out = self.stdout()
-        self.assertIn("option --concurrency: invalid choice: 'nothing'", out)
+        err = self.stderr()
+        self.assertIn("option --concurrency: invalid choice: 'nothing'", err)
 
     def test_no_multiple_concurrency(self):
         # You can't use multiple concurrency values on the command line.
         # I would like to have a better message about not allowing multiple
         # values for this option, but optparse is not that flexible.
         self.command_line("run --concurrency=multiprocessing,gevent foo.py", ret=ERR)
-        out = self.stdout()
-        self.assertIn("option --concurrency: invalid choice: 'multiprocessing,gevent'", out)
+        err = self.stderr()
+        self.assertIn("option --concurrency: invalid choice: 'multiprocessing,gevent'", err)
 
     def test_multiprocessing_needs_config_file(self):
         # You can't use command-line args to add options to multiprocessing
@@ -480,7 +480,7 @@ class CmdLineTest(BaseCmdLineTest):
         self.command_line("run --concurrency=multiprocessing --branch foo.py", ret=ERR)
         self.assertIn(
             "Options affecting multiprocessing must be specified in a configuration file.",
-            self.stdout()
+            self.stderr()
         )
 
     def test_run_debug(self):
@@ -530,11 +530,11 @@ class CmdLineTest(BaseCmdLineTest):
 
     def test_run_nothing(self):
         self.command_line("run", ret=ERR)
-        self.assertIn("Nothing to do", self.stdout())
+        self.assertIn("Nothing to do", self.stderr())
 
     def test_cant_append_parallel(self):
         self.command_line("run --append --parallel-mode foo.py", ret=ERR)
-        self.assertIn("Can't append to data files in parallel mode.", self.stdout())
+        self.assertIn("Can't append to data files in parallel mode.", self.stderr())
 
     def test_xml(self):
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
@@ -662,9 +662,9 @@ class CmdLineStdoutTest(BaseCmdLineTest):
 
     def test_error(self):
         self.command_line("fooey kablooey", ret=ERR)
-        out = self.stdout()
-        self.assertIn("fooey", out)
-        self.assertIn("help", out)
+        err = self.stderr()
+        self.assertIn("fooey", err)
+        self.assertIn("help", err)
 
 
 class CmdMainTest(CoverageTest):

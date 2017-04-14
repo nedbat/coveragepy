@@ -10,7 +10,8 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-- Nothing yet.
+- Errors printed by the ``coverage`` command now go to stderr instead of
+  stdout.
 
 
 Version 4.4b1 --- 2017-04-04
