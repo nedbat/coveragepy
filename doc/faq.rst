@@ -17,8 +17,40 @@ FAQ and other help
 Frequently asked questions
 --------------------------
 
-**Q: I use nose to run my tests, and its cover plugin doesn't let me create
-HTML or XML reports.  What should I do?**
+**Q: How do I use coverage.py with nose?**
+
+There are two ways to use coverage.py with `nose`_: you can run
+``nosetests --with-coverage`` to use `nose's built-in plugin`__ (deprecated),
+or you can run nose under coverage.py with ``coverage run $(which nosetests)``
+(recommended).
+
+The second approach is recommended because the nose plugin doesn't expose all
+the functionality and configurability of coverage.py, and it uses different
+command-line options from those described in coverage.py's documentation.
+Additionally nose and its coverage plugin are unmaintained at this point, so
+they aren't receiving any fixes or other updates.
+
+__ http://nose.readthedocs.io/en/latest/plugins/cover.html
+
+
+**Q: How do I run nosetests under coverage.py with tox?**
+
+Assuming you've installed tox in a virtualenv, you can do this in tox.ini::
+
+    [testenv]
+    commands = coverage run {envbindir}/nosetests
+
+If you came looking for this answer, you might have already discovered that
+coverage.py needs a path to the nosetests executable, but ``coverage run
+$(which nosetests)`` doesn't work in tox.ini because it doesn't handle the
+shell command substitution. Tox's `string substitution`__ shown above does the
+trick.
+
+__ http://tox.readthedocs.io/en/latest/config.html#substitutions
+
+
+**Q: I use nose to run my tests, and its coverage plugin doesn't let me create
+HTML or XML reports. What should I do?**
 
 First run your tests and collect coverage data with `nose`_ and its plugin.
 This will write coverage data into a .coverage file.  Then run coverage.py from
