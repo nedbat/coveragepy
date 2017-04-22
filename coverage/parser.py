@@ -106,7 +106,6 @@ class PythonParser(object):
         """
         combined = join_regex(regexes)
         if env.PY2:
-            # pylint: disable=redefined-variable-type
             combined = combined.decode("utf8")
         regex_c = re.compile(combined)
         matches = set()

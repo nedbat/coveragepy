@@ -444,7 +444,6 @@ class SummaryTest(CoverageTest):
             u"Couldn't parse 'accented\xe2.py' as Python source: 'error' at line 1"
         )
         if env.PY2:
-            # pylint: disable=redefined-variable-type
             expected = expected.encode(output_encoding())
         self.assertEqual(errmsg, expected)
 

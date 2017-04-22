@@ -286,9 +286,9 @@ def do_check_eol():
 
     def check_files(root, patterns, **kwargs):
         """Check a number of files for whitespace abuse."""
-        for root, dirs, files in os.walk(root):
+        for where, dirs, files in os.walk(root):
             for f in files:
-                fname = os.path.join(root, f)
+                fname = os.path.join(where, f)
                 for p in patterns:
                     if fnmatch.fnmatch(fname, p):
                         check_file(fname, **kwargs)

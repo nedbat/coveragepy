@@ -48,7 +48,7 @@ except ImportError:
 try:
     range = xrange      # pylint: disable=redefined-builtin
 except NameError:
-    range = range       # pylint: disable=redefined-variable-type
+    range = range
 
 # shlex.quote is new, but there's an undocumented implementation in "pipes",
 # who knew!?

@@ -99,7 +99,7 @@ class BaseCmdLineTest(CoverageTest):
         # calls them with many.  But most of them are just the defaults, which
         # we don't want to have to repeat in all tests.  For each call, apply
         # the defaults.  This lets the tests just mention the interesting ones.
-        for name, args, kwargs in m2.method_calls:
+        for name, _, kwargs in m2.method_calls:
             for k, v in self.DEFAULT_KWARGS.get(name, {}).items():
                 if k not in kwargs:
                     kwargs[k] = v

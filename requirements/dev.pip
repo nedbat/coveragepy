@@ -13,7 +13,7 @@ greenlet==0.4.11
 mock==2.0.0
 PyContracts==1.7.15
 pyenchant==1.6.8
-pylint==1.7
+pylint==1.7.1
 unittest-mixins==1.2.1
 
 # for kitting.

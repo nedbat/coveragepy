@@ -21,12 +21,12 @@ class HandyConfigParser(configparser.RawConfigParser):
         configparser.RawConfigParser.__init__(self)
         self.section_prefix = section_prefix
 
-    def read(self, filename):
+    def read(self, filenames):
         """Read a file name as UTF-8 configuration data."""
         kwargs = {}
         if sys.version_info >= (3, 2):
             kwargs['encoding'] = "utf-8"
-        return configparser.RawConfigParser.read(self, filename, **kwargs)
+        return configparser.RawConfigParser.read(self, filenames, **kwargs)
 
     def has_option(self, section, option):
         section = self.section_prefix + section
@@ -47,7 +47,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             d[opt] = self.get(section, opt)
         return d
 
-    def get(self, section, *args, **kwargs):
+    def get(self, section, *args, **kwargs):        # pylint: disable=arguments-differ
         """Get a value, replacing environment variables also.
 
         The arguments are the same as `RawConfigParser.get`, but in the found
@@ -415,7 +415,7 @@ def read_coverage_config(config_file, **kwargs):
             config_file = True
         specified_file = (config_file is not True)
         if not specified_file:
-            config_file = ".coveragerc"         # pylint: disable=redefined-variable-type
+            config_file = ".coveragerc"
 
         for fname, prefix in [(config_file, ""),
                                 ("setup.cfg", "coverage:"),

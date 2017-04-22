@@ -63,6 +63,7 @@ disable=
     bad-whitespace,
     global-statement,
     broad-except,
+    no-else-return,
 # Messages that may be silly:
     no-self-use,
     no-member,
@@ -197,8 +198,9 @@ acquired-members=REQUEST,acl_users,aq_parent
 # Tells wether we should check for unused import in __init__ files.
 init-import=no
 
-# A regular expression matching names used for dummy variables (i.e. not used).
-dummy-variables-rgx=_|dummy|unused|.*_unused
+# A regular expression matching names of unused arguments.
+ignored-argument-names=_|unused|.*_unused
+dummy-variables-rgx=_|unused|.*_unused
 
 # List of additional names supposed to be defined in builtins. Remember that
 # you should avoid to define new builtins when possible.

@@ -959,7 +959,6 @@ class Coverage(object):
                 )
 
         if file_reporter == "python":
-            # pylint: disable=redefined-variable-type
             file_reporter = PythonFileReporter(morf, self)
 
         return file_reporter

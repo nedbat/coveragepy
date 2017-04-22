@@ -1022,7 +1022,6 @@ class UnicodeFilePathsTest(CoverageTest):
         )
 
         if env.PY2:
-            # pylint: disable=redefined-variable-type
             report_expected = report_expected.encode(output_encoding())
 
         out = self.run_command("coverage report")
@@ -1061,7 +1060,6 @@ class UnicodeFilePathsTest(CoverageTest):
         )
 
         if env.PY2:
-            # pylint: disable=redefined-variable-type
             report_expected = report_expected.encode(output_encoding())
 
         out = self.run_command("coverage report")
