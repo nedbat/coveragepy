@@ -11,6 +11,7 @@ Alexander Todorov
 Andrew Hoos
 Anthony Sottile
 Arcadiy Ivanov
+Aron Griffis
 Artem Dayneko
 Ben Finney
 Bill Hart

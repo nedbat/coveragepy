@@ -7,28 +7,25 @@
 FAQ and other help
 ==================
 
-.. :history: 20090613T141800, brand new docs.
-.. :history: 20091005T073900, updated for 3.1.
-.. :history: 20091127T201500, updated for 3.2.
-.. :history: 20110605T175500, add the announcement mailing list.
-.. :history: 20121231T104700, Tweak the py3 text.
-
 
 Frequently asked questions
 --------------------------
 
 **Q: How do I use coverage.py with nose?**
 
-There are two ways to use coverage.py with `nose`_: you can run
-``nosetests --with-coverage`` to use `nose's built-in plugin`__ (deprecated),
-or you can run nose under coverage.py with ``coverage run $(which nosetests)``
-(recommended).
+The best way to use nose and coverage.py together is to run nose under
+coverage.py::
 
-The second approach is recommended because the nose plugin doesn't expose all
-the functionality and configurability of coverage.py, and it uses different
-command-line options from those described in coverage.py's documentation.
-Additionally nose and its coverage plugin are unmaintained at this point, so
-they aren't receiving any fixes or other updates.
+    coverage run $(which nosetests)
+
+You can also use ``nosetests --with-coverage`` to use `nose's built-in
+plugin`__, but it isn't recommended.
+
+The nose plugin doesn't expose all the functionality and configurability of
+coverage.py, and it uses different command-line options from those described in
+coverage.py's documentation.  Additionally nose and its coverage plugin are
+unmaintained at this point, so they aren't receiving any fixes or other
+updates.
 
 __ http://nose.readthedocs.io/en/latest/plugins/cover.html
 
@@ -40,9 +37,8 @@ Assuming you've installed tox in a virtualenv, you can do this in tox.ini::
     [testenv]
     commands = coverage run {envbindir}/nosetests
 
-If you came looking for this answer, you might have already discovered that
-coverage.py needs a path to the nosetests executable, but ``coverage run
-$(which nosetests)`` doesn't work in tox.ini because it doesn't handle the
+Coverage.py needs a path to the nosetests executable, but ``coverage run
+$(which nosetests)`` doesn't work in tox.ini because tox doesn't handle the
 shell command substitution. Tox's `string substitution`__ shown above does the
 trick.
 
