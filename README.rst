@@ -93,7 +93,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |license| image:: https://img.shields.io/pypi/l/coverage.svg
     :target: https://pypi.python.org/pypi/coverage
     :alt: License
-.. |codecov| image:: http://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master
+.. |codecov| image:: http://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master&precision=2
     :target: http://codecov.io/github/nedbat/coveragepy?branch=master
     :alt: Coverage!
 .. |commits-since| image:: https://img.shields.io/github/commits-since/nedbat/coveragepy/coverage-4.3.4.svg
