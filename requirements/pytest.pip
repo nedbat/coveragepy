@@ -2,7 +2,7 @@
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
 # The pytest specifics used by coverage.py
-pytest==3.0.5
-pytest-xdist==1.15.0
+pytest==3.0.7
+pytest-xdist==1.16.0
 pytest-warnings==0.2.0
 flaky==3.3.0
