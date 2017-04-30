@@ -13,6 +13,11 @@ Unreleased
 - Errors printed by the ``coverage`` command now go to stderr instead of
   stdout.
 
+- Running ``coverage xml`` in a directory named with non-ASCII characters would
+  fail under Python 2, as reported in `issue 573`_. This is now fixed.
+
+.. _issue 573: https://bitbucket.org/ned/coveragepy/issues/573/cant-generate-xml-report-if-some-source
+
 
 Version 4.4b1 --- 2017-04-04
 ----------------------------

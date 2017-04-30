@@ -1,3 +1,4 @@
+# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
@@ -185,6 +186,14 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
             '<class branch-rate="0" complexity="0" filename="bar.py" line-rate="1" name="bar.py">',
             xml
         )
+
+    def test_nonascii_directory(self):
+        # https://bitbucket.org/ned/coveragepy/issues/573/cant-generate-xml-report-if-some-source
+        self.make_file("테스트/program.py", "a = 1")
+        with change_dir("테스트"):
+            cov = coverage.Coverage()
+            self.start_import_stop(cov, "program")
+            cov.xml_report()
 
 
 class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):

@@ -150,7 +150,7 @@ class XmlReporter(Reporter):
         else:
             rel_name = fr.relative_filename()
 
-        dirname = os.path.dirname(rel_name) or "."
+        dirname = os.path.dirname(rel_name) or u"."
         dirname = "/".join(dirname.split("/")[:self.config.xml_package_depth])
         package_name = dirname.replace("/", ".")
 
