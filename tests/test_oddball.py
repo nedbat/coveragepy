@@ -485,8 +485,10 @@ class GettraceTest(CoverageTest):
             old = sys.gettrace()
             test_unsets_trace()
             sys.settrace(old)
+            a = 21
+            b = 22
             ''',
-            lines=[1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20],
+            lines=[1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20, 21, 22],
             missing="4-5, 11-12",
         )
 
