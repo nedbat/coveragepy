@@ -97,6 +97,9 @@ files-output=no
 # Tells wether to display a full report or only the messages
 reports=no
 
+# I don't need a score, thanks.
+score=no
+
 # Python expression which should return a note less than 10 (10 is the highest
 # note).You have access to the variables errors warning, statement which
 # respectively contain the number of errors / warnings messages and the total
