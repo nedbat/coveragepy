@@ -432,35 +432,38 @@ class DoctestTest(CoverageTest):
 
 class GettraceTest(CoverageTest):
     """Tests that we work properly with `sys.gettrace()`."""
-    def test_round_trip(self):
-        self.check_coverage('''\
+    def test_round_trip_in_untraced_function(self):
+        # https://bitbucket.org/ned/coveragepy/issues/575/running-doctest-prevents-complete-coverage
+        self.make_file("main.py", """import sample""")
+        self.make_file("sample.py", """\
+            from swap import swap_it
+            def doit():
+                print(3)
+                swap_it()
+                print(5)
+            def doit_soon():
+                print(7)
+                doit()
+                print(9)
+            print(10)
+            doit_soon()
+            print(12)
+            """)
+        self.make_file("swap.py", """\
             import sys
-            def foo(n):
-                return 3*n
-            def bar(n):
-                return 5*n
-            a = foo(6)
-            sys.settrace(sys.gettrace())
-            a = bar(8)
-            ''',
-            [1, 2, 3, 4, 5, 6, 7, 8], "")
-
-    def test_multi_layers(self):
-        self.check_coverage('''\
-            import sys
-            def level1():
-                a = 3
-                level2()
-                b = 5
-            def level2():
-                c = 7
+            def swap_it():
                 sys.settrace(sys.gettrace())
-                d = 9
-            e = 10
-            level1()
-            f = 12
-            ''',
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "")
+            """)
+
+        # Use --source=sample to prevent measurement of swap.py.
+        cov = coverage.Coverage(source=["sample"])
+        self.start_import_stop(cov, "main")
+
+        self.assertEqual(self.stdout(), "10\n7\n3\n5\n9\n12\n")
+
+        _, statements, missing, _ = cov.analysis("sample.py")
+        self.assertEqual(statements, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+        self.assertEqual(missing, [])
 
     def test_setting_new_trace_function(self):
         # https://bitbucket.org/ned/coveragepy/issues/436/disabled-coverage-ctracer-may-rise-from

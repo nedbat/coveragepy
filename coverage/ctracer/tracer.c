@@ -529,9 +529,6 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         self->pcur_entry->file_data = file_data;
         self->pcur_entry->file_tracer = file_tracer;
 
-        /* Make the frame right in case settrace(gettrace()) happens. */
-        Py_INCREF(self);
-        frame->f_trace = (PyObject*)self;
         SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "traced");
     }
     else {
@@ -542,6 +539,10 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     }
 
     self->pcur_entry->disposition = disposition;
+
+    /* Make the frame right in case settrace(gettrace()) happens. */
+    Py_INCREF(self);
+    My_XSETREF(frame->f_trace, (PyObject*)self);
 
     /* A call event is really a "start frame" event, and can happen for
      * re-entering a generator also.  f_lasti is -1 for a true call, and a

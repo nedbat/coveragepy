@@ -10,6 +10,11 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Code that uses ``sys.settrace(sys.gettrace())`` in a file that wasn't being
+  coverage-measured would prevent correct coverage measurement in following
+  code. An example of this was running doctests programmatically, as described
+  in `issue 575`_. This is now fixed.
+
 - Errors printed by the ``coverage`` command now go to stderr instead of
   stdout.
 
@@ -17,6 +22,7 @@ Unreleased
   fail under Python 2, as reported in `issue 573`_. This is now fixed.
 
 .. _issue 573: https://bitbucket.org/ned/coveragepy/issues/573/cant-generate-xml-report-if-some-source
+.. _issue 575: https://bitbucket.org/ned/coveragepy/issues/575/running-doctest-prevents-complete-coverage
 
 
 Version 4.4b1 --- 2017-04-04
