@@ -150,11 +150,10 @@ class PythonFileReporter(FileReporter):
         super(PythonFileReporter, self).__init__(files.canonical_filename(filename))
 
         if hasattr(morf, '__name__'):
-            name = morf.__name__
-            name = name.replace(".", os.sep)
-            if filename.endswith('__init__.py'):
-                name += os.sep + '__init__'
-            name += '.py'
+            name = morf.__name__.replace(".", os.sep)
+            if os.path.basename(filename).startswith('__init__.'):
+                name += os.sep + "__init__"
+            name += ".py"
             name = files.unicode_filename(name)
         else:
             name = files.relative_filename(filename)

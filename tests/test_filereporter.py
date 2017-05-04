@@ -61,9 +61,9 @@ class FileReporterTest(CoverageTest):
         acu = PythonFileReporter(aa)
         bcu = PythonFileReporter(aa.bb)
         ccu = PythonFileReporter(aa.bb.cc)
-        self.assertEqual(acu.relative_filename(), native("aa.py"))
-        self.assertEqual(bcu.relative_filename(), native("aa/bb.py"))
-        self.assertEqual(ccu.relative_filename(), native("aa/bb/cc.py"))
+        self.assertEqual(acu.relative_filename(), native("aa/__init__.py"))
+        self.assertEqual(bcu.relative_filename(), native("aa/bb/__init__.py"))
+        self.assertEqual(ccu.relative_filename(), native("aa/bb/cc/__init__.py"))
         self.assertEqual(acu.source(), "# aa\n")
         self.assertEqual(bcu.source(), "# bb\n")
         self.assertEqual(ccu.source(), "")  # yes, empty

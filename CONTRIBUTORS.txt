@@ -37,6 +37,7 @@ David Christian
 David Stanek
 Detlev Offenbach
 Devin Jeanpierre
+Dirk Thomas
 Dmitry Shishov
 Dmitry Trofimov
 Eduardo Schettino
