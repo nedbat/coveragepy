@@ -8,16 +8,15 @@ import json
 import os
 import os.path
 import re
-import sys
 
 from coverage import env
 from coverage.backward import binary_bytes
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import NoCode, NoSource
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 
-TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try_execfile.py")
+TRY_EXECFILE = os.path.join(TESTS_DIR, "modules/process_test/try_execfile.py")
 
 
 class RunFileTest(CoverageTest):
@@ -170,15 +169,10 @@ class RunPycFileTest(CoverageTest):
             run_python_file(bf, [bf])
 
 
-class RunModuleTest(CoverageTest):
+class RunModuleTest(UsingModulesMixin, CoverageTest):
     """Test run_python_module."""
 
     run_in_temp_dir = False
-
-    def setUp(self):
-        super(RunModuleTest, self).setUp()
-        # Parent class saves and restores sys.path, we can just modify it.
-        sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
 
     def test_runmod1(self):
         run_python_module("runmod1", ["runmod1", "hello"])

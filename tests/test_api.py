@@ -15,7 +15,7 @@ from coverage.backward import StringIO, import_local_file
 from coverage.misc import CoverageException
 from coverage.report import Reporter
 
-from tests.coveragetest import CoverageTest, CoverageTestMethodsMixin
+from tests.coveragetest import CoverageTest, CoverageTestMethodsMixin, TESTS_DIR, UsingModulesMixin
 
 
 class ApiTest(CoverageTest):
@@ -464,23 +464,10 @@ class NamespaceModuleTest(CoverageTest):
             cov.analysis(sys.modules['namespace'])
 
 
-class UsingModulesMixin(object):
-    """A mixin for importing modules from test/modules and test/moremodules."""
-
-    run_in_temp_dir = False
-
-    def setUp(self):
-        super(UsingModulesMixin, self).setUp()
-
-        self.chdir(self.nice_file(os.path.dirname(__file__), 'modules'))
-
-        # Parent class saves and restores sys.path, we can just modify it.
-        sys.path.append(".")
-        sys.path.append("../moremodules")
-
-
 class OmitIncludeTestsMixin(UsingModulesMixin, CoverageTestMethodsMixin):
     """Test methods for coverage methods taking include and omit."""
+
+    run_in_temp_dir = False
 
     def filenames_in(self, summary, filenames):
         """Assert the `filenames` are in the keys of `summary`."""
@@ -579,6 +566,9 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         # Used to be if you omitted something executed and inside the source,
         # then after it was executed but not recorded, it would be found in
         # the search for unexecuted files, and given a score of 0%.
+
+        # The omit arg is by path, so need to be in the modules directory.
+        self.chdir(self.nice_file(TESTS_DIR, 'modules'))
         lines = self.coverage_usepkgs(source=["pkg1"], omit=["pkg1/p1b.py"])
         self.filenames_in(lines, "p1a")
         self.filenames_not_in(lines, "p1b")

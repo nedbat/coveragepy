@@ -4,13 +4,10 @@
 
 """Test the config file handling for coverage.py"""
 
-import sys
-import os
-
 import coverage
 from coverage.misc import CoverageException
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, UsingModulesMixin
 
 
 class ConfigTest(CoverageTest):
@@ -220,14 +217,8 @@ class ConfigTest(CoverageTest):
             _ = coverage.Coverage()
 
 
-class ConfigFileTest(CoverageTest):
+class ConfigFileTest(UsingModulesMixin, CoverageTest):
     """Tests of the config file settings in particular."""
-
-    def setUp(self):
-        super(ConfigFileTest, self).setUp()
-        # Parent class saves and restores sys.path, we can just modify it.
-        # Add modules to the path so we can import plugins.
-        sys.path.append(self.nice_file(os.path.dirname(__file__), 'modules'))
 
     # This sample file tries to use lots of variation of syntax...
     # The {section} placeholder lets us nest these settings in another file.

@@ -9,7 +9,6 @@ import os
 import os.path
 import py_compile
 import re
-import sys
 
 import coverage
 from coverage import env
@@ -20,18 +19,11 @@ from coverage.data import CoverageData
 from coverage.misc import CoverageException, output_encoding
 from coverage.summary import SummaryReporter
 
-from tests.coveragetest import CoverageTest
-
-HERE = os.path.dirname(__file__)
+from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 
 
-class SummaryTest(CoverageTest):
+class SummaryTest(UsingModulesMixin, CoverageTest):
     """Tests of the text summary reporting for coverage.py."""
-
-    def setUp(self):
-        super(SummaryTest, self).setUp()
-        # Parent class saves and restores sys.path, we can just modify it.
-        sys.path.append(self.nice_file(HERE, 'modules'))
 
     def make_mycode(self):
         """Make the mycode.py file when needed."""
@@ -100,7 +92,7 @@ class SummaryTest(CoverageTest):
         # Try reporting while omitting some modules
         self.make_mycode()
         self.run_command("coverage run mycode.py")
-        report = self.report_from_command("coverage report --omit '%s/*'" % HERE)
+        report = self.report_from_command("coverage report --omit '%s/*'" % TESTS_DIR)
 
         # Name        Stmts   Miss  Cover
         # -------------------------------
@@ -604,19 +596,13 @@ class SummaryTest(CoverageTest):
         self.assertIn("mod.py 1 0 100%", report)
 
 
-class SummaryTest2(CoverageTest):
+class SummaryTest2(UsingModulesMixin, CoverageTest):
     """Another bunch of summary tests."""
     # This class exists because tests naturally clump into classes based on the
     # needs of their setUp, rather than the product features they are testing.
     # There's probably a better way to organize these.
 
     run_in_temp_dir = False
-
-    def setUp(self):
-        super(SummaryTest2, self).setUp()
-        # Parent class saves and restores sys.path, we can just modify it.
-        sys.path.append(self.nice_file(HERE, 'modules'))
-        sys.path.append(self.nice_file(HERE, 'moremodules'))
 
     def test_empty_files(self):
         # Shows that empty files like __init__.py are listed as having zero
@@ -675,13 +661,10 @@ class TestSummaryReporterConfiguration(CoverageTest):
 
     run_in_temp_dir = False
 
-    # We just need some readable files to work with. These will do.
-    HERE = os.path.dirname(__file__)
-
     LINES_1 = {
-        os.path.join(HERE, "test_api.py"): dict.fromkeys(range(400)),
-        os.path.join(HERE, "test_backward.py"): dict.fromkeys(range(20)),
-        os.path.join(HERE, "test_coverage.py"): dict.fromkeys(range(15)),
+        os.path.join(TESTS_DIR, "test_api.py"): dict.fromkeys(range(400)),
+        os.path.join(TESTS_DIR, "test_backward.py"): dict.fromkeys(range(20)),
+        os.path.join(TESTS_DIR, "test_coverage.py"): dict.fromkeys(range(15)),
     }
 
     def get_coverage_data(self, lines):

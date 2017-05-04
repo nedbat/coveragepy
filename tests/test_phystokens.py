@@ -12,7 +12,7 @@ from coverage.phystokens import source_token_lines, source_encoding
 from coverage.phystokens import neuter_encoding_declaration, compile_unicode
 from coverage.python import get_python_source
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, TESTS_DIR
 
 
 # A simple program and its token stream.
@@ -42,9 +42,6 @@ MIXED_WS_TOKENS = [
     [('ws', '        '), ('nam', 'a'), ('op', '='), ('str', '"Hello world!"')],
     [('ws', '        '), ('nam', 'b'), ('op', '='), ('str', '"indented"')],
 ]
-
-# Where this file is, so we can find other files next to it.
-HERE = os.path.dirname(__file__)
 
 
 class PhysTokensTest(CoverageTest):
@@ -83,14 +80,14 @@ class PhysTokensTest(CoverageTest):
 
     def test_tokenize_real_file(self):
         # Check the tokenization of a real file (large, btw).
-        real_file = os.path.join(HERE, "test_coverage.py")
+        real_file = os.path.join(TESTS_DIR, "test_coverage.py")
         self.check_file_tokenization(real_file)
 
     def test_stress(self):
         # Check the tokenization of a stress-test file.
-        stress = os.path.join(HERE, "stress_phystoken.tok")
+        stress = os.path.join(TESTS_DIR, "stress_phystoken.tok")
         self.check_file_tokenization(stress)
-        stress = os.path.join(HERE, "stress_phystoken_dos.tok")
+        stress = os.path.join(TESTS_DIR, "stress_phystoken_dos.tok")
         self.check_file_tokenization(stress)
 
 

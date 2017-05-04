@@ -31,6 +31,9 @@ from tests.helpers import run_command, SuperModuleCleaner
 # Status returns for the command line.
 OK, ERR = 0, 1
 
+# The coverage/tests directory, for all sorts of finding test helping things.
+TESTS_DIR = os.path.dirname(__file__)
+
 
 def convert_skip_exceptions(method):
     """A decorator for test methods to convert StopEverything to SkipTest."""
@@ -488,6 +491,17 @@ class CoverageTest(
     def last_line_squeezed(self, report):
         """Return the last line of `report` with the spaces squeezed down."""
         return self.squeezed_lines(report)[-1]
+
+
+class UsingModulesMixin(object):
+    """A mixin for importing modules from tests/modules and tests/moremodules."""
+
+    def setUp(self):
+        super(UsingModulesMixin, self).setUp()
+
+        # Parent class saves and restores sys.path, we can just modify it.
+        sys.path.append(self.nice_file(TESTS_DIR, 'modules'))
+        sys.path.append(self.nice_file(TESTS_DIR, 'moremodules'))
 
 
 def command_line(args, **kwargs):

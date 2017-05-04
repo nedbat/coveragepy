@@ -4,12 +4,11 @@
 """Tests for FileReporters"""
 
 import os
-import sys
 
 from coverage.plugin import FileReporter
 from coverage.python import PythonFileReporter
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, UsingModulesMixin
 
 # pylint: disable=import-error
 # Unable to import 'aa' (No module named aa)
@@ -20,16 +19,10 @@ def native(filename):
     return filename.replace("/", os.sep)
 
 
-class FileReporterTest(CoverageTest):
+class FileReporterTest(UsingModulesMixin, CoverageTest):
     """Tests for FileReporter classes."""
 
     run_in_temp_dir = False
-
-    def setUp(self):
-        super(FileReporterTest, self).setUp()
-        # Parent class saves and restores sys.path, we can just modify it.
-        testmods = self.nice_file(os.path.dirname(__file__), 'modules')
-        sys.path.append(testmods)
 
     def test_filenames(self):
         acu = PythonFileReporter("aa/afile.py")
