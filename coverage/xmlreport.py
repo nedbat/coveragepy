@@ -166,7 +166,7 @@ class XmlReporter(Reporter):
         xclass.appendChild(xlines)
 
         xclass.setAttribute("name", os.path.relpath(rel_name, dirname))
-        xclass.setAttribute("filename", fr.relative_filename().replace("\\", "/"))
+        xclass.setAttribute("filename", rel_name.replace("\\", "/"))
         xclass.setAttribute("complexity", "0")
 
         branch_stats = analysis.branch_stats()

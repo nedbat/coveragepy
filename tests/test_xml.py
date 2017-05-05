@@ -60,6 +60,11 @@ class XmlTestHelpers(CoverageTest):
                 filename = here("f{0}.py".format(i))
                 self.make_file(filename, "# {0}\n".format(filename))
 
+    def assert_source(self, xml, src):
+        """Assert that the XML has a <source> element with `src`."""
+        src = abs_file(src)
+        self.assertRegex(xml, r'<source>\s*{0}\s*</source>'.format(re.escape(src)))
+
 
 class XmlReportTest(XmlTestHelpers, CoverageTest):
     """Tests of the XML reports from coverage.py."""
@@ -145,11 +150,6 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         xml = self.stdout()
         init_line = re_line(xml, 'filename="sub/__init__.py"')
         self.assertIn('line-rate="1"', init_line)
-
-    def assert_source(self, xml, src):
-        """Assert that the XML has a <source> element with `src`."""
-        src = abs_file(src)
-        self.assertRegex(xml, r'<source>\s*{0}\s*</source>'.format(re.escape(src)))
 
     def test_curdir_source(self):
         # With no source= option, the XML report should explain that the source
@@ -284,13 +284,16 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
 
     def test_source_prefix(self):
         # https://bitbucket.org/ned/coveragepy/issues/465
+        # https://bitbucket.org/ned/coveragepy/issues/526/generated-xml-invalid-paths-for-cobertura
         self.make_file("src/mod.py", "print(17)")
         cov = coverage.Coverage(source=["src"])
         self.start_import_stop(cov, "mod", modfile="src/mod.py")
         self.assert_package_and_class_tags(cov, """\
             <package name=".">
-                <class filename="src/mod.py" name="mod.py">
+                <class filename="mod.py" name="mod.py">
             """)
+        xml = self.stdout()
+        self.assert_source(xml, "src")
 
 
 def clean(text, scrub=None):
