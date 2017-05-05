@@ -8,9 +8,8 @@ import types
 import zipimport
 
 from coverage import env, files
-from coverage.misc import (
-    contract, CoverageException, expensive, NoSource, join_regex, isolate_module,
-)
+from coverage.misc import contract, expensive, isolate_module, join_regex
+from coverage.misc import CoverageException, NoSource
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.plugin import FileReporter
@@ -163,6 +162,9 @@ class PythonFileReporter(FileReporter):
         self._parser = None
         self._statements = None
         self._excluded = None
+
+    def __repr__(self):
+        return "<PythonFileReporter {0!r}>".format(self.filename)
 
     @contract(returns='unicode')
     def relative_filename(self):
