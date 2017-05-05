@@ -11,8 +11,8 @@ Unreleased
 ----------
 
 - Reports could produce the wrong file names for packages, reporting ``pkg.py``
-  instead of the correct ``pkg/__init__.py``.  This is now fixed, closing
-  `issue 526`_.  Thanks, Dirk Thomas.
+  instead of the correct ``pkg/__init__.py``.  This is now fixed.  Thanks, Dirk
+  Thomas.
 
 - Namespace packages are no longer warned as having no code, as described in
   `issue 572`_.
@@ -28,7 +28,6 @@ Unreleased
 - Running ``coverage xml`` in a directory named with non-ASCII characters would
   fail under Python 2, as reported in `issue 573`_. This is now fixed.
 
-.. _issue 526: https://bitbucket.org/ned/coveragepy/issues/526/generated-xml-invalid-paths-for-cobertura
 .. _issue 572: https://bitbucket.org/ned/coveragepy/issues/572/no-python-source-warning-for-namespace
 .. _issue 573: https://bitbucket.org/ned/coveragepy/issues/573/cant-generate-xml-report-if-some-source
 .. _issue 575: https://bitbucket.org/ned/coveragepy/issues/575/running-doctest-prevents-complete-coverage
