@@ -445,7 +445,7 @@ class ApiTest(CoverageTest):
         self.assertNotIn("no-data-collected", err)
 
 
-class NamespaceModuleTest(CoverageTest):
+class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
     """Test PEP-420 namespace modules."""
 
     def setUp(self):
@@ -454,14 +454,23 @@ class NamespaceModuleTest(CoverageTest):
             self.skipTest("Python before 3.3 doesn't have namespace packages")
 
     def test_explicit_namespace_module(self):
-        self.make_file("namespace/package/module.py", "VAR = 1\n")
-        self.make_file("main.py", "import namespace\n")
+        self.make_file("main.py", "import namespace_420\n")
 
         cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
 
         with self.assertRaisesRegex(CoverageException, r"Module .* has no file"):
-            cov.analysis(sys.modules['namespace'])
+            cov.analysis(sys.modules['namespace_420'])
+
+    def test_bug_572(self):
+        self.make_file("main.py", "import namespace_420\n")
+
+        # Use source=namespace_420 to trigger the check that used to fail,
+        # and use source=main so that something is measured.
+        cov = coverage.Coverage(source=["namespace_420", "main"])
+        with self.assert_warnings(cov, []):
+            self.start_import_stop(cov, "main")
+            cov.report()
 
 
 class OmitIncludeTestsMixin(UsingModulesMixin, CoverageTestMethodsMixin):

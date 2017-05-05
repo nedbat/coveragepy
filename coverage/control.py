@@ -837,18 +837,7 @@ class Coverage(object):
         # then we never encountered those packages.
         if self._warn_unimported_source:
             for pkg in self.source_pkgs_unmatched:
-                if pkg not in sys.modules:
-                    self._warn("Module %s was never imported." % pkg, slug="module-not-imported")
-                elif not (
-                    hasattr(sys.modules[pkg], '__file__') and
-                    os.path.exists(sys.modules[pkg].__file__)
-                ):
-                    self._warn("Module %s has no Python source." % pkg, slug="module-not-python")
-                else:
-                    self._warn(
-                        "Module %s was previously imported, but not measured." % pkg,
-                        slug="module-not-measured",
-                    )
+                self._warn_about_unmeasured_code(pkg)
 
         # Find out if we got any data.
         if not self.data and self._warn_no_data:
@@ -868,6 +857,37 @@ class Coverage(object):
 
         if self.config.note:
             self.data.add_run_info(note=self.config.note)
+
+    def _warn_about_unmeasured_code(self, pkg):
+        """Warn about a package or module that we never traced.
+
+        `pkg` is a string, the name of the package or module.
+
+        """
+        mod = sys.modules.get(pkg)
+        if mod is None:
+            self._warn("Module %s was never imported." % pkg, slug="module-not-imported")
+            return
+
+        is_namespace = hasattr(mod, '__path__') and not hasattr(mod, '__file__')
+        has_file = hasattr(mod, '__file__') and os.path.exists(mod.__file__)
+
+        if is_namespace:
+            # A namespace package. It's OK for this not to have been traced,
+            # since there is no code directly in it.
+            return
+
+        if not has_file:
+            self._warn("Module %s has no Python source." % pkg, slug="module-not-python")
+            return
+
+        # The module was in sys.modules, and seems like a module with code, but
+        # we never measured it. I guess that means it was imported before
+        # coverage even started.
+        self._warn(
+            "Module %s was previously imported, but not measured." % pkg,
+            slug="module-not-measured",
+        )
 
     def _find_plugin_files(self, src_dir):
         """Get executable files from the plugins."""
