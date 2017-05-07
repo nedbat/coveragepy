@@ -15,22 +15,20 @@ Unreleased
   Thomas.
 
 - XML reports could produce ``<source>`` and ``<class>`` lines that together
-  didn't specify a valid source file path, as described in `issue 526`_.  This
-  is now fixed.
+  didn't specify a valid source file path.  This is now fixed. (`issue 526`_)
 
-- Namespace packages are no longer warned as having no code, as described in
-  `issue 572`_.
+- Namespace packages are no longer warned as having no code. (`issue 572`_)
 
 - Code that uses ``sys.settrace(sys.gettrace())`` in a file that wasn't being
   coverage-measured would prevent correct coverage measurement in following
-  code. An example of this was running doctests programmatically, as described
-  in `issue 575`_. This is now fixed.
+  code. An example of this was running doctests programmatically. This is now
+  fixed. (`issue 575`_)
 
 - Errors printed by the ``coverage`` command now go to stderr instead of
   stdout.
 
 - Running ``coverage xml`` in a directory named with non-ASCII characters would
-  fail under Python 2, as reported in `issue 573`_. This is now fixed.
+  fail under Python 2. This is now fixed. (`issue 573`_)
 
 .. _issue 526: https://bitbucket.org/ned/coveragepy/issues/526/generated-xml-invalid-paths-for-cobertura
 .. _issue 572: https://bitbucket.org/ned/coveragepy/issues/572/no-python-source-warning-for-namespace
