@@ -7,8 +7,8 @@ Change history for Coverage.py
 
 .. _changes_44:
 
-Unreleased
-----------
+Version 4.4 --- 2017-05-07
+--------------------------
 
 - Reports could produce the wrong file names for packages, reporting ``pkg.py``
   instead of the correct ``pkg/__init__.py``.  This is now fixed.  Thanks, Dirk
