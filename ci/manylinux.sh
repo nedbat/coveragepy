@@ -16,6 +16,7 @@ if [[ $action == "build" ]]; then
     cd /io
     for PYBIN in /opt/python/*/bin; do
         "$PYBIN/pip" install -r requirements/wheel.pip
+        "$PYBIN/python" setup.py clean -a
         "$PYBIN/python" setup.py bdist_wheel -d ~/wheelhouse/
     done
     cd ~
