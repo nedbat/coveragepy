@@ -7,10 +7,10 @@ Change history for Coverage.py
 
 .. _changes_441:
 
-Unreleased
-----------
+Version 4.4.1 --- 2017-05-14
+----------------------------
 
-(nothing yet)
+- No code changes: just corrected packaging for Python 2.7 Linux wheels.
 
 
 .. _changes_44:
