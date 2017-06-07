@@ -9,6 +9,8 @@ import sys
 import textwrap
 import warnings
 
+import pytest
+
 import coverage
 from coverage import env
 from coverage.backward import StringIO, import_local_file
@@ -443,6 +445,44 @@ class ApiTest(CoverageTest):
             """), err)
         self.assertNotIn("module-not-imported", err)
         self.assertNotIn("no-data-collected", err)
+
+    @pytest.mark.expensive
+    def test_bug_581(self):
+        self.skipTest("This test proves a failure, but we don't have a fix yet")
+        # Test for https://bitbucket.org/ned/coveragepy/issues/581/44b1-44-breaking-in-ci
+        # 1000 files to import
+        for i in range(1000):
+            self.make_file("m{0:03d}.py".format(i), "a = 1")
+        self.make_file("chaos.py", """\
+            import importlib
+            import random
+            import threading
+
+            import coverage
+
+            cov = None
+            run = True
+
+            def random_load():
+                while run:
+                    candidate = "m{:03d}".format(random.randint(0, 999))
+                    mod = importlib.import_module(candidate)
+
+            cov = coverage.Coverage()
+            cov.start()
+
+            for n in range(20):
+                threading.Thread(target=random_load).start()
+
+            cov.stop()
+            try:
+                cov.save()
+                print("Saved OK")
+            finally:
+                run = False
+        """)
+        out = self.run_command("python chaos.py")
+        self.assertEqual(out, "Saved OK\n")
 
 
 class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
