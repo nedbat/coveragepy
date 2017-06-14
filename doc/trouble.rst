@@ -46,10 +46,10 @@ coverage.py from working properly:
   sys.settrace, then it will conflict with coverage.py, and it won't be
   measured properly.
 
-.. _execv: http://docs.python.org/library/os#os.execl
-.. _sys.settrace: http://docs.python.org/library/sys.html#sys.settrace
-.. _thread: https://docs.python.org/2/library/thread.html
-.. _threading: http://docs.python.org/library/threading.html
+.. _execv: https://docs.python.org/3/library/os.html#os.execl
+.. _sys.settrace: https://docs.python.org/3/library/sys.html#sys.settrace
+.. _thread: https://docs.python.org/3/library/_thread.html
+.. _threading: https://docs.python.org/3/library/threading.html
 .. _issue 43: https://bitbucket.org/ned/coveragepy/issues/43/coverage-measurement-fails-on-code
 
 
@@ -64,7 +64,7 @@ timid=True`` configuration option.
   DecoratorTools fiddles with the trace function.  You  will need to use
   ``--timid``.
 
-.. _DecoratorTools: http://pypi.python.org/pypi/DecoratorTools
+.. _DecoratorTools: https://pypi.python.org/pypi/DecoratorTools
 .. _TurboGears: http://turbogears.org/
 
 

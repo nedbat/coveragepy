@@ -113,8 +113,8 @@ libraries in use by the product code.  If your program uses `multiprocessing`_,
 `gevent`_, `greenlet`_, or `eventlet`_, you must name that library in this
 option, or coverage.py will produce very wrong results.
 
-.. _multiprocessing: https://docs.python.org/2/library/multiprocessing.html
-.. _greenlet: http://greenlet.readthedocs.org/en/latest/
+.. _multiprocessing: https://docs.python.org/3/library/multiprocessing.html
+.. _greenlet: http://greenlet.readthedocs.io/en/latest/
 .. _gevent: http://www.gevent.org/
 .. _eventlet: http://eventlet.net/
 

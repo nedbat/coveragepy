@@ -56,7 +56,7 @@ file, usually named ``.coverage``.  This is a JSON-based file containing all of
 the recorded file names and line numbers executed.
 
 .. _sys.settrace: https://docs.python.org/3/library/sys.html#sys.settrace
-.. _How C trace functions really work: http://nedbatchelder.com/text/trace-function.html
+.. _How C trace functions really work: https://nedbatchelder.com/text/trace-function.html
 
 
 Analysis

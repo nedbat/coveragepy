@@ -29,7 +29,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 `Bitbucket`_, with a mirrored repository on `GitHub`_.
 
 .. _Read the Docs: http://coverage.readthedocs.io
-.. _Bitbucket: http://bitbucket.org/ned/coveragepy
+.. _Bitbucket: https://bitbucket.org/ned/coveragepy
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 

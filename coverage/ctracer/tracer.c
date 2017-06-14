@@ -812,7 +812,7 @@ CTracer_handle_exception(CTracer *self, PyFrameObject *frame)
         the bug will be fixed everywhere coverage.py is supported, and we can
         remove this missing-return detection.
 
-        More about this fix: http://nedbatchelder.com/blog/200907/a_nasty_little_bug.html
+        More about this fix: https://nedbatchelder.com/blog/200907/a_nasty_little_bug.html
     */
     STATS( self->stats.exceptions++; )
     self->last_exc_back = frame->f_back;
@@ -989,7 +989,7 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
        the new trace function before it has a chance to get called.  To
        understand why, there are three internal values to track: frame.f_trace,
        c_tracefunc, and c_traceobj.  They are explained here:
-       http://nedbatchelder.com/text/trace-function.html
+       https://nedbatchelder.com/text/trace-function.html
 
        Without the conditional on PyTrace_CALL, this is what happens:
 

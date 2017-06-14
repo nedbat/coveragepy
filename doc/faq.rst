@@ -98,7 +98,7 @@ as you should.
 
 It's good, but `it isn't perfect`__.
 
-__ http://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
+__ https://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
 
 
 ..  Other resources
@@ -109,15 +109,15 @@ __ http://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
 
     - `trialcoverage`_ is a plug-in for Twisted trial.
 
-    .. _trialcoverage: http://pypi.python.org/pypi/trialcoverage
+    .. _trialcoverage: https://pypi.python.org/pypi/trialcoverage
 
     - `pytest-coverage`_
 
-    .. _pytest-coverage: http://pypi.python.org/pypi/pytest-coverage
+    .. _pytest-coverage: https://pypi.python.org/pypi/pytest-coverage
 
     - `django-coverage`_ for use with Django.
 
-    .. _django-coverage: http://pypi.python.org/pypi/django-coverage
+    .. _django-coverage: https://pypi.python.org/pypi/django-coverage
 
 
 **Q: Where can I get more help with coverage.py?**
@@ -129,7 +129,7 @@ mailing list.
 
 Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
 
-.. _Bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
+.. _Bitbucket issue tracker: https://bitbucket.org/ned/coveragepy/issues
 
 Announcements of new coverage.py releases are sent to the
 `coveragepy-announce`_ mailing list.
@@ -139,7 +139,7 @@ Announcements of new coverage.py releases are sent to the
 `I can be reached`__ in a number of ways, I'm happy to answer questions about
 using coverage.py.
 
-__  http://nedbatchelder.com/site/aboutned.html
+__  https://nedbatchelder.com/site/aboutned.html
 
 
 History
@@ -150,5 +150,5 @@ Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
 `many others`_.  The :ref:`change history <changes>` has all the details.
 
 .. _Gareth Rees:    http://garethrees.org/
-.. _Ned Batchelder: http://nedbatchelder.com
-.. _many others:    http://bitbucket.org/ned/coveragepy/src/tip/CONTRIBUTORS.txt
+.. _Ned Batchelder: https://nedbatchelder.com
+.. _many others:    https://bitbucket.org/ned/coveragepy/src/tip/CONTRIBUTORS.txt

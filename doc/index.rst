@@ -89,7 +89,7 @@ not.
     **This is a pre-release build.  The usual warnings about possible bugs
     apply.** The latest stable version is coverage.py 4.3.4, `described here`_.
 
-.. _described here: http://nedbatchelder.com/code/coverage
+.. _described here: https://nedbatchelder.com/code/coverage
 
 
 Quick start
@@ -137,9 +137,9 @@ Getting started is easy:
         Then visit htmlcov/index.html in your browser, to see a
         `report like this one`_.
 
-.. _coverage.py page on the Python Package Index: http://pypi.python.org/pypi/coverage
-.. _report like this: http://nedbatchelder.com/files/sample_coverage_html/index.html
-.. _report like this one: http://nedbatchelder.com/files/sample_coverage_html_beta/index.html
+.. _coverage.py page on the Python Package Index: https://pypi.python.org/pypi/coverage
+.. _report like this: https://nedbatchelder.com/files/sample_coverage_html/index.html
+.. _report like this one: https://nedbatchelder.com/files/sample_coverage_html_beta/index.html
 
 
 Using coverage.py
@@ -176,14 +176,14 @@ Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
 Bitbucket also hosts the `code repository`_. There is a `mirrored repo`_ on
 GitHub.
 
-.. _Bitbucket issue tracker: http://bitbucket.org/ned/coveragepy/issues
-.. _code repository: http://bitbucket.org/ned/coveragepy
+.. _Bitbucket issue tracker: https://bitbucket.org/ned/coveragepy/issues
+.. _code repository: https://bitbucket.org/ned/coveragepy
 .. _mirrored repo: https://github.com/nedbat/coveragepy
 
 `I can be reached`_ in a number of ways. I'm happy to answer questions about
 using coverage.py.
 
-.. _I can be reached: http://nedbatchelder.com/site/aboutned.html
+.. _I can be reached: https://nedbatchelder.com/site/aboutned.html
 
 
 

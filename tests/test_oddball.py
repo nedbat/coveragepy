@@ -93,7 +93,7 @@ class RecursionTest(CoverageTest):
                 )
 
     def test_long_recursion_recovery(self):
-        # Test the core of bug 93: http://bitbucket.org/ned/coveragepy/issue/93
+        # Test the core of bug 93: https://bitbucket.org/ned/coveragepy/issue/93
         # When recovering from a stack overflow, the Python trace function is
         # disabled, but the C trace function is not.  So if we're using a
         # Python trace function, we won't trace anything after the stack

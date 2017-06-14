@@ -90,4 +90,4 @@ For example if you send SIGTERM to end the sub-process, but your sub-process
 has never registered any SIGTERM handler, then a coverage file won't be
 written.  See the `atexit`_ docs for details of when the handler isn't run.
 
-.. _atexit: https://docs.python.org/2/library/atexit.html
+.. _atexit: https://docs.python.org/3/library/atexit.html
