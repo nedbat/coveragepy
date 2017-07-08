@@ -4,5 +4,4 @@
 # The pytest specifics used by coverage.py
 pytest==3.1.3
 pytest-xdist==1.18.1
-pytest-warnings==0.3.0
 flaky==3.4.0
