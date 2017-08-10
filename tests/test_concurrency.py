@@ -3,7 +3,11 @@
 
 """Tests for concurrency libraries."""
 
+import importlib
+import random
+import sys
 import threading
+import time
 
 from flaky import flaky
 
@@ -453,3 +457,94 @@ class MultiprocessingTest(CoverageTest):
         total = sum(x*x if x%2 else x*x*x for x in range(upto))
         expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
         self.try_multiprocessing_code_with_branching(code, expected_out)
+
+
+def test_coverage_stop_in_threads():
+    has_started_coverage = []
+    has_stopped_coverage = []
+
+    def run_thread():
+        deadline = time.time() + 5
+        ident = threading.currentThread().ident
+        if sys.gettrace() is not None:
+            has_started_coverage.append(ident)
+        while sys.gettrace() is not None:
+            # Wait for coverage to stop
+            time.sleep(0.01)
+            if time.time() > deadline:
+                return
+        has_stopped_coverage.append(ident)
+
+    cov = coverage.coverage()
+    cov.start()
+
+    t = threading.Thread(target=run_thread)
+    t.start()
+
+    time.sleep(0.1)
+    cov.stop()
+    time.sleep(0.1)
+
+    assert has_started_coverage == [t.ident]
+    assert has_started_coverage == [t.ident]
+    t.join()
+
+
+def test_thread_safe_save_data(tmpdir):
+    # Non-regression test for:
+    # https://bitbucket.org/ned/coveragepy/issues/581
+
+    # Create some Python modules and put them in the path
+    modules_dir = tmpdir.mkdir('test_modules')
+    module_names = ["m{:03d}".format(i) for i in range(1000)]
+    for module_name in module_names:
+        modules_dir.join(module_name + ".py").write("def f(): pass\n")
+
+    # Shared variables for threads
+    should_run = [True]
+    imported = []
+
+    sys.path.insert(0, modules_dir.strpath)
+    try:
+        # Make sure that all dummy modules can be imported.
+        for module_name in module_names:
+            importlib.import_module(module_name)
+
+        def random_load():
+            while should_run[0]:
+                module_name = random.choice(module_names)
+                mod = importlib.import_module(module_name)
+                mod.f()
+                imported.append(mod)
+
+        # Spawn some threads with coverage enabled and attempt to read the
+        # results right after stopping coverage collection with the threads
+        #  still running.
+        duration = 0.01
+        for i in range(3):
+            cov = coverage.coverage()
+            cov.start()
+
+            threads = [threading.Thread(target=random_load) for i in range(10)]
+            should_run[0] = True
+            for t in threads:
+                t.start()
+
+            time.sleep(duration)
+
+            cov.stop()
+
+            # The following call use to crash with running background threads.
+            cov.get_data()
+
+            # Stop the threads
+            should_run[0] = False
+            for t in threads:
+                t.join()
+
+            if len(imported) == 0 and duration < 10:
+                duration *= 2
+
+    finally:
+        sys.path.remove(modules_dir.strpath)
+        should_run[0] = False

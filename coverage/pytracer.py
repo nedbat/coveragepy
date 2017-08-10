@@ -69,6 +69,9 @@ class PyTracer(object):
         """The trace function passed to sys.settrace."""
 
         if self.stopped:
+            # The PyTrace.stop() method has been called by another thread,
+            # let's deactivate ourselves now.
+            self.stop()
             return
 
         if self.last_exc_back:
