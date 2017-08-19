@@ -24,7 +24,7 @@ clean:
 	-rm -f tests/zipmods.zip
 	-rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
-	-rm -rf doc/_build doc/_spell
+	-rm -rf doc/_build doc/_spell doc/sample_html_beta
 	-rm -rf .tox_kits
 
 sterile: clean
