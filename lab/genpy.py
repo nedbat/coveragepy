@@ -101,9 +101,10 @@ def weighted_choice(rand, choices):
 
 
 class RandomAstMaker(object):
-    def __init__(self, seed):
+    def __init__(self, seed=None):
         self.r = random.Random()
-        self.r.seed(seed)
+        if seed is not None:
+            self.r.seed(seed)
         self.depth = 0
         self.bc_allowed = set()
 
@@ -252,5 +253,11 @@ def show_alternatives():
 
 
 
+def show_one():
+    maker = RandomAstMaker()
+    source = PythonSpinner.generate_python(maker.make_body("def"))
+    print(source)
+
 if __name__ == "__main__":
-    show_alternatives()
+    show_one()
+    #show_alternatives()
