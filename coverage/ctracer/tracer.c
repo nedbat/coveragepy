@@ -1035,7 +1035,10 @@ static PyObject *
 CTracer_stop(CTracer *self, PyObject *args_unused)
 {
     if (self->started) {
-        PyEval_SetTrace(NULL, NULL);
+        /* Set the started flag only. The actual call to
+           PyEval_SetTrace(NULL, NULL) is delegated to the callback
+           itself to ensure that it called from the right thread.
+           */
         self->started = FALSE;
     }
 
