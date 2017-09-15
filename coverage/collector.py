@@ -71,8 +71,8 @@ class Collector(object):
     def __init__(self, should_trace, check_include, timid, branch, warn, concurrency):
         """Create a collector.
 
-        `should_trace` is a function, taking a file name, and returning a
-        `coverage.FileDisposition object`.
+        `should_trace` is a function, taking a file name and a frame, and
+        returning a `coverage.FileDisposition object`.
 
         `check_include` is a function taking a file name and a frame. It returns
         a boolean: True if the file should be traced, False if not.
@@ -86,8 +86,9 @@ class Collector(object):
         collecting data on which statements followed each other (arcs).  Use
         `get_arc_data` to get the arc data.
 
-        `warn` is a warning function, taking a single string message argument,
-        to be used if a warning needs to be issued.
+        `warn` is a warning function, taking a single string message argument
+        and an optional slug argument which will be a string or None, to be
+        used if a warning needs to be issued.
 
         `concurrency` is a list of strings indicating the concurrency libraries
         in use.  Valid values are "greenlet", "eventlet", "gevent", or "thread"
