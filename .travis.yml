@@ -4,33 +4,19 @@
 language: python
 
 sudo: false
-
 python:
-  - 2.7
-
-addons:
-  apt:
-    sources:
-      - deadsnakes
-    packages:
-      - python3.5
-      - python3.5-dev
+  - '2.6'
+  - '2.7'
+  - '3.3'
+  - '3.4'
+  - '3.5'
+  - '3.6'
+  - 'pypy'
 
 env:
-  - TOXENV=py26
-  - TOXENV=py27
-  - TOXENV=py33
-  - TOXENV=py34
-  - TOXENV=py35
-  - TOXENV=py36
-  - TOXENV=pypy
-  - TOXENV=py26 COVERAGE_COVERAGE=yes
-  - TOXENV=py27 COVERAGE_COVERAGE=yes
-  - TOXENV=py33 COVERAGE_COVERAGE=yes
-  - TOXENV=py34 COVERAGE_COVERAGE=yes
-  - TOXENV=py35 COVERAGE_COVERAGE=yes
-  - TOXENV=py36 COVERAGE_COVERAGE=yes
-  - TOXENV=pypy COVERAGE_COVERAGE=yes
+  matrix:
+    - COVERAGE_COVERAGE=no
+    - COVERAGE_COVERAGE=yes
 
 sudo: false
 
