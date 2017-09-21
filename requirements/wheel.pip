@@ -1,3 +1,4 @@
 # Things needed to make wheels for coverage.py
 setuptools==35.0.2
-wheel==0.30.0
+# We need to stick with 0.29.0 until we drop 2.6 and 3.3
+wheel==0.29.0
