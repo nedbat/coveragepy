@@ -11,7 +11,8 @@ Code coverage testing for Python.
 |  |ci-status| |win-ci-status| |codecov|
 |  |kit| |format| |commits-since|
 |  |saythanks|
-| |codesponsor|
+
+|  |codesponsor|
 
 .. downloads badge seems to be broken... |downloads|
 
