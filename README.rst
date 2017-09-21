@@ -102,3 +102,8 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |saythanks| image:: https://img.shields.io/badge/saythanks.io-%E2%98%BC-1EAEDB.svg
     :target: https://saythanks.io/to/nedbat
     :alt: Say thanks :)
+.. |codesponsor| image:: https://app.codesponsor.io/embed/8cXmdZx1a9Mu45zuTzC5du75/nedbat/coveragepy.svg
+    :target: https://app.codesponsor.io/link/8cXmdZx1a9Mu45zuTzC5du75/nedbat/coveragepy
+    :height: 68px
+    :width: 888px
+    :alt: codesponsor.io
