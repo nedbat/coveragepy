@@ -24,6 +24,7 @@ Catherine Proulx
 Chris Adams
 Chris Jerdonek
 Chris Rose
+Chris Warrick
 Christian Heimes
 Christine Lytwynec
 Christoph Zwerschke
