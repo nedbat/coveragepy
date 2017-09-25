@@ -44,10 +44,24 @@ PyInit_tracer(void)
         return NULL;
     }
 
+    InternTableType.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&InternTableType) < 0) {
+        Py_DECREF(mod);
+        return NULL;
+    }
+
     Py_INCREF(&CTracerType);
     if (PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType) < 0) {
         Py_DECREF(mod);
         Py_DECREF(&CTracerType);
+        return NULL;
+    }
+
+    Py_INCREF(&InternTableType);
+    if (PyModule_AddObject(mod, "InternTable", (PyObject *)&InternTableType) < 0) {
+        Py_DECREF(mod);
+        Py_DECREF(&InternTableType);
+        Py_DECREF(&InternTableType);
         return NULL;
     }
 

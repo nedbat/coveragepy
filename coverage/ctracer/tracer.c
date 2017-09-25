@@ -62,6 +62,25 @@ error:
 
 static void CTracer_disable_plugin(CTracer *self, PyObject * disposition);
 
+
+static void InternTable_init_1(InternTable *table){
+    table->capacity = 32;
+    table->max_fill = 21;
+    table->current_fill = 0;
+    table->zero_value = NULL;
+    table->entries = calloc(table->capacity, sizeof(InternEntry));
+}
+
+static void InternTable_dealloc_1(InternTable *table){
+    Py_XDECREF(table->zero_value);
+    size_t j;
+    for(j = 0; j < table->capacity; j++){
+        Py_XDECREF(table->entries[j].value);
+    }
+    free(table->entries);
+}
+
+
 static int
 CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 {
@@ -76,12 +95,7 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
     self->context = Py_None;
     Py_INCREF(self->context);
 
-    self->intern_table.capacity = 32;
-    self->intern_table.max_fill = 21;
-    self->intern_table.current_fill = 0;
-    self->intern_table.zero_value = NULL;
-    self->intern_table.entries = calloc(
-        self->intern_table.capacity, sizeof(InternEntry));
+    InternTable_init_1(&self->intern_table);
 
     ret = RET_OK;
     goto ok;
@@ -97,7 +111,6 @@ static void
 CTracer_dealloc(CTracer *self)
 {
     int i;
-    size_t j;
 
     if (self->started) {
         PyEval_SetTrace(NULL, NULL);
@@ -125,11 +138,7 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->data_stack_index);
 
     Py_TYPE(self)->tp_free((PyObject*)self);
-    Py_XDECREF(self->intern_table.zero_value);
-    for(j = 0; j < self->intern_table.capacity; j++){
-        Py_XDECREF(self->intern_table.entries[j].value);
-    }
-    free(self->intern_table.entries);
+    InternTable_dealloc_1(&self->intern_table);
 }
 
 #if TRACE_LOG
@@ -241,12 +250,14 @@ static inline PyObject ** InternEntry_matches(
 
             for(i = 0; i < old_capacity; i++){
                 InternEntry *prev = old_entries + i;
+                if(!prev->key) continue;
                 if((prev->key & (old_capacity - 1)) == i){
                     *InternTable_lookup(table, prev->key) = prev->value;
                 }
             }
             for(i = 0; i < old_capacity; i++){
                 InternEntry *prev = old_entries + i;
+                if(!prev->key) continue;
                 if((prev->key & (old_capacity - 1)) != i){
                     *InternTable_lookup(table, prev->key) = prev->value;
                 }
@@ -290,7 +301,9 @@ InternTable_lookup(InternTable *table, uint64_t key){
     size_t probe = hash64(key) & (table->capacity - 1);
     for(i = 0; i < table->capacity; i++){
         PyObject ** attempt = InternEntry_matches(table, probe + i, key);
-        if(attempt != NULL) return attempt;
+        if(attempt != NULL){
+          return attempt;
+        }
     }
     assert(0);
     return NULL;
@@ -1327,6 +1340,112 @@ CTracerType = {
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
     (initproc)CTracer_init,    /* tp_init */
+    0,                         /* tp_alloc */
+    0,                         /* tp_new */
+};
+
+static Py_ssize_t InternTable_length(InternTableObject *self)
+{
+    Py_ssize_t result = self->table.current_fill;
+    if(self->table.zero_value) result++;
+    return result;
+}
+
+static int
+InternTable_init(InternTableObject *self, PyObject *args_unused, PyObject *kwds_unused)
+{
+  InternTable_init_1(&self->table);
+  return RET_OK;
+}
+
+static int
+InternTable_dealloc(InternTableObject *self)
+{
+  InternTable_dealloc_1(&self->table);
+  return RET_OK;
+}
+
+static PyObject *InternTable_getitem(InternTableObject *self, PyObject *key)
+{
+    assert(self->table.entries);
+    PyErr_Clear();
+    uint64_t int_key = PyLong_AsUnsignedLongLong(key);
+    if(PyErr_Occurred()){
+      return NULL;
+    }
+
+    PyObject **result = InternTable_lookup(&self->table, int_key);
+    if(*result == NULL){
+        return Py_None;
+    }
+    Py_INCREF(*result);
+    return *result;
+}
+
+
+static int InternTable_setitem(InternTableObject *self, PyObject *key, PyObject *value)
+{
+    assert(self->table.entries);
+
+    PyErr_Clear();
+    uint64_t int_key = PyLong_AsUnsignedLongLong(key);
+    if(PyErr_Occurred()) return RET_ERROR;
+
+    PyObject **result = InternTable_lookup(&self->table, int_key);
+    if(*result != NULL){
+        Py_XDECREF(*result);
+    }
+    if(value != NULL){
+      Py_INCREF(value);
+    }
+    *result = value;
+    return RET_OK;
+}
+
+static PyMappingMethods InternTable_as_mapping = {
+    (lenfunc)InternTable_length, /*mp_length*/
+    (binaryfunc)InternTable_getitem, /*mp_subscript*/
+    (objobjargproc)InternTable_setitem, /*mp_ass_subscript*/
+};
+
+PyTypeObject
+InternTableType = {
+    MyType_HEAD_INIT
+    "coverage.InternTable",    /*tp_name*/
+    sizeof(InternTableObject), /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)InternTable_dealloc, /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    &InternTable_as_mapping,   /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    "",                        /* tp_doc */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
+    0,                         /* tp_methods */
+    0,                         /* tp_members */
+    0,                         /* tp_getset */
+    0,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    (initproc)InternTable_init,/* tp_init */
     0,                         /* tp_alloc */
     0,                         /* tp_new */
 };

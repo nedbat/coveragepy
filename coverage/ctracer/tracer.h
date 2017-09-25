@@ -52,6 +52,16 @@ typedef struct InternTable {
     InternEntry * entries;
 } InternTable;
 
+
+/* We expose a Python interface to the InternTable, but it's purely intended for
+   purposes of testing the InternTable itself and you shouldn't use it for anything
+   else.
+*/
+typedef struct InternTableObject{
+    PyObject_HEAD;
+    InternTable table;
+} InternTableObject;
+
 /* The CTracer type. */
 
 typedef struct CTracer {
@@ -112,5 +122,6 @@ typedef struct CTracer {
 int CTracer_intern_strings(void);
 
 extern PyTypeObject CTracerType;
+extern PyTypeObject InternTableType;
 
 #endif /* _COVERAGE_TRACER_H */
