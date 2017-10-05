@@ -257,7 +257,9 @@ class FnmatchMatcher(object):
         # of treating / and \ as equivalent. But on other platforms, we need to
         # take care of that ourselves.
         fnpats = (fnmatch.translate(p) for p in pats)
-        fnpats = (p.replace(r"\/", r"[\\/]") for p in fnpats)
+        # Python3.7 fnmatch translates "/" as "/", before that, it translates as "\/",
+        # so we have to deal with maybe a backslash.
+        fnpats = (re.sub(r"\\?/", r"[\\\\/]", p) for p in fnpats)
         if env.WINDOWS:
             # Windows is also case-insensitive.  BTW: the regex docs say that
             # flags like (?i) have to be at the beginning, but fnmatch puts
