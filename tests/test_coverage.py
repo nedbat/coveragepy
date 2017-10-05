@@ -574,6 +574,29 @@ class SimpleStatementTest(CoverageTest):
             [2, 3]
         )
 
+    def test_module_docstring(self):
+        self.check_coverage("""\
+            '''I am a module docstring.'''
+            a = 2
+            b = 3
+            """,
+            [2, 3]
+        )
+        if env.PYVERSION < (3, 7):
+            # Before 3.7, module docstrings were included in the lnotab table,
+            # unless they were the first line in the file?
+            lines = [2, 3, 4]
+        else:
+            lines = [3, 4]
+        self.check_coverage("""\
+            # Start with a comment, because it changes the behavior(!?)
+            '''I am a module docstring.'''
+            a = 3
+            b = 4
+            """,
+            lines
+        )
+
 
 class CompoundStatementTest(CoverageTest):
     """Testing coverage of multi-line compound statements."""

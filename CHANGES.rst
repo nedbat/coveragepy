@@ -8,7 +8,9 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-(nothing yet)
+- Support for Python 3.7.  In some cases, class and module docstrings are no
+  longer counted in statement totals, which could slightly change your total
+  results.
 
 
 .. _changes_441:
