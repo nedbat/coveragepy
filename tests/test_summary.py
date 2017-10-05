@@ -617,7 +617,7 @@ class SummaryTest2(UsingModulesMixin, CoverageTest):
 
         report = repout.getvalue().replace('\\', '/')
         report = re.sub(r"\s+", " ", report)
-        self.assertIn("tests/modules/pkg1/__init__.py 2 0 0 0 100%", report)
+        self.assertIn("tests/modules/pkg1/__init__.py 1 0 0 0 100%", report)
         self.assertIn("tests/modules/pkg2/__init__.py 0 0 0 0 100%", report)
 
 
