@@ -180,4 +180,4 @@ patch works too.
 
 .. _editorconfig.org: http://editorconfig.org
 .. _Mercurial: https://www.mercurial-scm.org/
-.. _tox: http://tox.testrun.org/
+.. _tox: https://tox.readthedocs.io/
