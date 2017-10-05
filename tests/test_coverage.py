@@ -1124,6 +1124,11 @@ class CompoundStatementTest(CoverageTest):
             [1,10,12,13], "")
 
     def test_class_def(self):
+        if env.PYVERSION < (3, 7):
+            arcz="-22 2D DE E-2  23 36 6A A-2  -68 8-6   -AB B-A"
+        else:
+            # Python 3.7 no longer includes class docstrings in the lnotab table.
+            arcz="-22 2D DE E-2  26 6A A-2  -68 8-6   -AB B-A"
         self.check_coverage("""\
             # A comment.
             class theClass:
@@ -1141,7 +1146,7 @@ class CompoundStatementTest(CoverageTest):
             assert x == 1
             """,
             [2, 6, 8, 10, 11, 13, 14], "",
-            arcz="-22 2D DE E-2  23 36 6A A-2  -68 8-6   -AB B-A",
+            arcz=arcz,
         )
 
 
