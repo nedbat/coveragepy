@@ -22,20 +22,6 @@ import zipfile
 
 import pytest
 
-# We want to see all warnings while we are running tests.  But we also need to
-# disable warnings for some of the more complex setting up of tests.
-warnings.simplefilter("default")
-
-# Silence specific warnings that are not our fault.
-warnings.filterwarnings("ignore", module="xdist", message="type argument to addoption")
-warnings.filterwarnings("ignore", module="flaky", message="type argument to addoption")
-warnings.filterwarnings(
-    # https://github.com/pytest-dev/pytest/issues/2118
-    "ignore",
-    module="_pytest",
-    message="This usage is deprecated, please use pytest.* instead"
-)
-
 
 @contextlib.contextmanager
 def ignore_warnings():
