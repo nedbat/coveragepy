@@ -260,12 +260,11 @@ class FnmatchMatcher(object):
         # Python3.7 fnmatch translates "/" as "/", before that, it translates as "\/",
         # so we have to deal with maybe a backslash.
         fnpats = (re.sub(r"\\?/", r"[\\\\/]", p) for p in fnpats)
+        flags = 0
         if env.WINDOWS:
-            # Windows is also case-insensitive.  BTW: the regex docs say that
-            # flags like (?i) have to be at the beginning, but fnmatch puts
-            # them at the end, and having two there seems to work fine.
-            fnpats = (p + "(?i)" for p in fnpats)
-        self.re = re.compile(join_regex(fnpats))
+            # Windows is also case-insensitive, so make the regex case-insensitive.
+            flags |= re.IGNORECASE
+        self.re = re.compile(join_regex(fnpats), flags=flags)
 
     def __repr__(self):
         return "<FnmatchMatcher %r>" % self.pats
