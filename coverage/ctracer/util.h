@@ -24,6 +24,7 @@
 #define MyText_FromFormat               PyUnicode_FromFormat
 #define MyInt_FromInt(i)                PyLong_FromLong((long)i)
 #define MyInt_AsInt(o)                  (int)PyLong_AsLong(o)
+#define MyInt_AsLongLong(o)             PyLong_AsUnsignedLongLong(o)
 #define MyText_InternFromString(s)      PyUnicode_InternFromString(s)
 
 #define MyType_HEAD_INIT                PyVarObject_HEAD_INIT(NULL, 0)
@@ -37,6 +38,7 @@
 #define MyText_AsString(o)              PyString_AsString(o)
 #define MyText_FromFormat               PyUnicode_FromFormat
 #define MyInt_FromInt(i)                PyInt_FromLong((long)i)
+#define MyInt_AsLongLong(o)             PyInt_AsUnsignedLongLongMask(o)
 #define MyInt_AsInt(o)                  (int)PyInt_AsLong(o)
 #define MyText_InternFromString(s)      PyString_InternFromString(s)
 

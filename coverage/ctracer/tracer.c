@@ -1369,7 +1369,7 @@ static PyObject *InternTable_getitem(InternTableObject *self, PyObject *key)
 {
     assert(self->table.entries);
     PyErr_Clear();
-    uint64_t int_key = PyLong_AsUnsignedLongLong(key);
+    uint64_t int_key = MyInt_AsLongLong(key);
     if(PyErr_Occurred()){
       return NULL;
     }
@@ -1388,7 +1388,7 @@ static int InternTable_setitem(InternTableObject *self, PyObject *key, PyObject 
     assert(self->table.entries);
 
     PyErr_Clear();
-    uint64_t int_key = PyLong_AsUnsignedLongLong(key);
+    uint64_t int_key = MyInt_AsLongLong(key);
     if(PyErr_Occurred()) return RET_ERROR;
 
     PyObject **result = InternTable_lookup(&self->table, int_key);
