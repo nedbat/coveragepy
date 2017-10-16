@@ -72,8 +72,8 @@ static void InternTable_init_1(InternTable *table){
 }
 
 static void InternTable_dealloc_1(InternTable *table){
-    Py_XDECREF(table->zero_value);
     size_t j;
+    Py_XDECREF(table->zero_value);
     for(j = 0; j < table->capacity; j++){
         Py_XDECREF(table->entries[j].value);
     }
@@ -290,15 +290,17 @@ populate the cell with the newly created object.
 static PyObject **
 InternTable_lookup(InternTable *table, PY_LONG_LONG key){
     size_t i;
+    PyObject ** initial_attempt;
+    size_t probe;
 
     if(key == 0){
         return &(table->zero_value);
     }
-    PyObject ** initial_attempt = InternEntry_matches(table, key, key);
+    initial_attempt = InternEntry_matches(table, key, key);
     if(initial_attempt != NULL){
         return initial_attempt;
     }
-    size_t probe = hash64(key) & (table->capacity - 1);
+    probe = hash64(key) & (table->capacity - 1);
     for(i = 0; i < table->capacity; i++){
         PyObject ** attempt = InternEntry_matches(table, probe + i, key);
         if(attempt != NULL){
@@ -1367,14 +1369,17 @@ InternTable_dealloc(InternTableObject *self)
 
 static PyObject *InternTable_getitem(InternTableObject *self, PyObject *key)
 {
+    PY_LONG_LONG int_key;
+    PyObject **result;
+
     assert(self->table.entries);
     PyErr_Clear();
-    PY_LONG_LONG int_key = MyInt_AsLongLong(key);
+    int_key = MyInt_AsLongLong(key);
     if(PyErr_Occurred()){
       return NULL;
     }
 
-    PyObject **result = InternTable_lookup(&self->table, int_key);
+    result = InternTable_lookup(&self->table, int_key);
     if(*result == NULL){
         return Py_None;
     }
@@ -1385,13 +1390,16 @@ static PyObject *InternTable_getitem(InternTableObject *self, PyObject *key)
 
 static int InternTable_setitem(InternTableObject *self, PyObject *key, PyObject *value)
 {
+    PY_LONG_LONG int_key;
+    PyObject **result;
+
     assert(self->table.entries);
 
     PyErr_Clear();
-    PY_LONG_LONG int_key = MyInt_AsLongLong(key);
+    int_key = MyInt_AsLongLong(key);
     if(PyErr_Occurred()) return RET_ERROR;
 
-    PyObject **result = InternTable_lookup(&self->table, int_key);
+    result = InternTable_lookup(&self->table, int_key);
     if(*result != NULL){
         Py_XDECREF(*result);
     }
