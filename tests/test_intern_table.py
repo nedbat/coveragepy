@@ -14,6 +14,9 @@ if env.C_TRACER:
 
 @pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
 class TestInternTable(CoverageTest):
+
+    run_in_temp_dir = False
+
     @example([0])
     @given(st.lists(st.integers(0, 2 ** 64 - 1), unique=True))
     def test_interns_as_none_by_default(self, ls):
