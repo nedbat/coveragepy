@@ -58,7 +58,7 @@ typedef struct InternTable {
    else.
 */
 typedef struct InternTableObject{
-    PyObject_HEAD;
+    PyObject_HEAD
     InternTable table;
 } InternTableObject;
 
