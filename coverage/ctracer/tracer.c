@@ -223,7 +223,7 @@ InternTable_lookup(InternTable *table, PY_LONG_LONG key);
  returns a value pointer for the key.
 
 */
-static inline PyObject ** InternEntry_matches(
+static PyObject ** InternEntry_matches(
     InternTable *table, size_t location, PY_LONG_LONG key
 ){
     size_t index = location & (table->capacity - 1);
