@@ -263,7 +263,7 @@ static inline PyObject ** InternEntry_matches(
                 }
             }
             free(old_entries);
-            assert(table->current_fill == old_fill);
+            assert(table->current_fill == old_fill); (void)(old_fill);
 
             /* The shape of the table has changed and the caller doesn't know
                about that, so we just recurse and look up the key in the new
