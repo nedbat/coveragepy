@@ -8,7 +8,6 @@
 #include "structmember.h"
 #include "frameobject.h"
 #include "opcode.h"
-#include <stdint.h>
 
 #include "datastack.h"
 
@@ -31,7 +30,7 @@ typedef struct InternEntry {
 
 typedef struct InternTable {
     /* Store the value keyed off zero separately. This allows us to use a key
-       of zero as a not-set indicator. */ 
+       of zero as a not-set indicator. */
     PyObject * zero_value;
 
     /* The number of elements in our entries array (including absent elements).
