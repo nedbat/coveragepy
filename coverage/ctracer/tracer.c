@@ -194,7 +194,7 @@ static const char * what_sym[] = {"CALL", "EXC ", "LINE", "RET "};
 
 // From http://www.cris.com/~Ttwang/tech/inthash.htm via
 // https://chromium.googlesource.com/chromium/blink/+/master/Source/wtf/HashFunctions.h
-static uint64_t hash64(uint64_t key){
+static PY_LONG_LONG hash64(PY_LONG_LONG key){
     key += ~(key << 32);
     key ^= (key >> 22);
     key += ~(key << 13);
@@ -211,7 +211,7 @@ static uint64_t hash64(uint64_t key){
     InternTable_lookup
 */
 static PyObject **
-InternTable_lookup(InternTable *table, uint64_t key);
+InternTable_lookup(InternTable *table, PY_LONG_LONG key);
 
 /*
  Core implementation of the InternTable hash table.
@@ -224,7 +224,7 @@ InternTable_lookup(InternTable *table, uint64_t key);
 
 */
 static inline PyObject ** InternEntry_matches(
-    InternTable *table, size_t location, uint64_t key
+    InternTable *table, size_t location, PY_LONG_LONG key
 ){
     size_t index = location & (table->capacity - 1);
     InternEntry *entry = table->entries + index;
@@ -288,7 +288,7 @@ a freshly created key it will be a pointer to null. The caller should then
 populate the cell with the newly created object.
 */
 static PyObject **
-InternTable_lookup(InternTable *table, uint64_t key){
+InternTable_lookup(InternTable *table, PY_LONG_LONG key){
     size_t i;
 
     if(key == 0){
@@ -316,7 +316,7 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
     int ret = RET_ERROR;
 
     /*
-    We combine the two int values into a uint64_t in a slightly odd way: Rather
+    We combine the two int values into a PY_LONG_LONG in a slightly odd way: Rather
     than just concatenate them, we xor them together for the low bits. The
     reason for this is that it allows us to trigger our no-hash lookup in the
     table more often, because it ensures a reasonable range of diversity in the
@@ -324,9 +324,9 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
     u2 = ((uint32_t)u1) ^ ((uint32_t)key), so this still maps the tuple to a
     unique key.
     */
-    uint64_t u1 = (uint32_t)l1;
-    uint64_t u2 = (uint32_t)l2;
-    uint64_t key = (u1 << 32) | (u1 ^ u2);
+    PY_LONG_LONG u1 = (PY_UINT32_T)l1;
+    PY_LONG_LONG u2 = (PY_UINT32_T)l2;
+    PY_LONG_LONG key = (u1 << 32) | (u1 ^ u2);
 
     PyObject ** container = InternTable_lookup(
         &self->intern_table, key);
@@ -355,7 +355,7 @@ static int
 CTracer_record_int(CTracer *self, int lineno_from){
 
     PyObject ** container = InternTable_lookup(
-        &self->intern_table, (uint64_t)lineno_from);
+        &self->intern_table, (PY_LONG_LONG)lineno_from);
 
     PyObject * this_line = *container;
     if (this_line == NULL) {
@@ -1369,7 +1369,7 @@ static PyObject *InternTable_getitem(InternTableObject *self, PyObject *key)
 {
     assert(self->table.entries);
     PyErr_Clear();
-    uint64_t int_key = MyInt_AsLongLong(key);
+    PY_LONG_LONG int_key = MyInt_AsLongLong(key);
     if(PyErr_Occurred()){
       return NULL;
     }
@@ -1388,7 +1388,7 @@ static int InternTable_setitem(InternTableObject *self, PyObject *key, PyObject 
     assert(self->table.entries);
 
     PyErr_Clear();
-    uint64_t int_key = MyInt_AsLongLong(key);
+    PY_LONG_LONG int_key = MyInt_AsLongLong(key);
     if(PyErr_Occurred()) return RET_ERROR;
 
     PyObject **result = InternTable_lookup(&self->table, int_key);
