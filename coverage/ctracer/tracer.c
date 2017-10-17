@@ -72,8 +72,8 @@ static void InternTable_init_1(InternTable *table){
 }
 
 static void InternTable_dealloc_1(InternTable *table){
-    Py_XDECREF(table->zero_value);
     size_t j;
+    Py_XDECREF(table->zero_value);
     for(j = 0; j < table->capacity; j++){
         Py_XDECREF(table->entries[j].value);
     }
@@ -194,7 +194,7 @@ static const char * what_sym[] = {"CALL", "EXC ", "LINE", "RET "};
 
 // From http://www.cris.com/~Ttwang/tech/inthash.htm via
 // https://chromium.googlesource.com/chromium/blink/+/master/Source/wtf/HashFunctions.h
-static uint64_t hash64(uint64_t key){
+static PY_LONG_LONG hash64(PY_LONG_LONG key){
     key += ~(key << 32);
     key ^= (key >> 22);
     key += ~(key << 13);
@@ -211,7 +211,7 @@ static uint64_t hash64(uint64_t key){
     InternTable_lookup
 */
 static PyObject **
-InternTable_lookup(InternTable *table, uint64_t key);
+InternTable_lookup(InternTable *table, PY_LONG_LONG key);
 
 /*
  Core implementation of the InternTable hash table.
@@ -223,8 +223,8 @@ InternTable_lookup(InternTable *table, uint64_t key);
  returns a value pointer for the key.
 
 */
-static inline PyObject ** InternEntry_matches(
-    InternTable *table, size_t location, uint64_t key
+static PyObject ** InternEntry_matches(
+    InternTable *table, size_t location, PY_LONG_LONG key
 ){
     size_t index = location & (table->capacity - 1);
     InternEntry *entry = table->entries + index;
@@ -263,7 +263,7 @@ static inline PyObject ** InternEntry_matches(
                 }
             }
             free(old_entries);
-            assert(table->current_fill == old_fill);
+            assert(table->current_fill == old_fill); (void)(old_fill);
 
             /* The shape of the table has changed and the caller doesn't know
                about that, so we just recurse and look up the key in the new
@@ -288,17 +288,19 @@ a freshly created key it will be a pointer to null. The caller should then
 populate the cell with the newly created object.
 */
 static PyObject **
-InternTable_lookup(InternTable *table, uint64_t key){
+InternTable_lookup(InternTable *table, PY_LONG_LONG key){
     size_t i;
+    PyObject ** initial_attempt;
+    size_t probe;
 
     if(key == 0){
         return &(table->zero_value);
     }
-    PyObject ** initial_attempt = InternEntry_matches(table, key, key);
+    initial_attempt = InternEntry_matches(table, key, key);
     if(initial_attempt != NULL){
         return initial_attempt;
     }
-    size_t probe = hash64(key) & (table->capacity - 1);
+    probe = hash64(key) & (table->capacity - 1);
     for(i = 0; i < table->capacity; i++){
         PyObject ** attempt = InternEntry_matches(table, probe + i, key);
         if(attempt != NULL){
@@ -316,7 +318,7 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
     int ret = RET_ERROR;
 
     /*
-    We combine the two int values into a uint64_t in a slightly odd way: Rather
+    We combine the two int values into a PY_LONG_LONG in a slightly odd way: Rather
     than just concatenate them, we xor them together for the low bits. The
     reason for this is that it allows us to trigger our no-hash lookup in the
     table more often, because it ensures a reasonable range of diversity in the
@@ -324,9 +326,9 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
     u2 = ((uint32_t)u1) ^ ((uint32_t)key), so this still maps the tuple to a
     unique key.
     */
-    uint64_t u1 = (uint32_t)l1;
-    uint64_t u2 = (uint32_t)l2;
-    uint64_t key = (u1 << 32) | (u1 ^ u2);
+    PY_LONG_LONG u1 = (PY_UINT32_T)l1;
+    PY_LONG_LONG u2 = (PY_UINT32_T)l2;
+    PY_LONG_LONG key = (u1 << 32) | (u1 ^ u2);
 
     PyObject ** container = InternTable_lookup(
         &self->intern_table, key);
@@ -355,7 +357,7 @@ static int
 CTracer_record_int(CTracer *self, int lineno_from){
 
     PyObject ** container = InternTable_lookup(
-        &self->intern_table, (uint64_t)lineno_from);
+        &self->intern_table, (PY_LONG_LONG)lineno_from);
 
     PyObject * this_line = *container;
     if (this_line == NULL) {
@@ -1367,14 +1369,17 @@ InternTable_dealloc(InternTableObject *self)
 
 static PyObject *InternTable_getitem(InternTableObject *self, PyObject *key)
 {
+    PY_LONG_LONG int_key;
+    PyObject **result;
+
     assert(self->table.entries);
     PyErr_Clear();
-    uint64_t int_key = PyLong_AsUnsignedLongLong(key);
+    int_key = MyInt_AsLongLong(key);
     if(PyErr_Occurred()){
       return NULL;
     }
 
-    PyObject **result = InternTable_lookup(&self->table, int_key);
+    result = InternTable_lookup(&self->table, int_key);
     if(*result == NULL){
         return Py_None;
     }
@@ -1385,13 +1390,16 @@ static PyObject *InternTable_getitem(InternTableObject *self, PyObject *key)
 
 static int InternTable_setitem(InternTableObject *self, PyObject *key, PyObject *value)
 {
+    PY_LONG_LONG int_key;
+    PyObject **result;
+
     assert(self->table.entries);
 
     PyErr_Clear();
-    uint64_t int_key = PyLong_AsUnsignedLongLong(key);
+    int_key = MyInt_AsLongLong(key);
     if(PyErr_Occurred()) return RET_ERROR;
 
-    PyObject **result = InternTable_lookup(&self->table, int_key);
+    result = InternTable_lookup(&self->table, int_key);
     if(*result != NULL){
         Py_XDECREF(*result);
     }

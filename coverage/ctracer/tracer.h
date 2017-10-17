@@ -8,7 +8,6 @@
 #include "structmember.h"
 #include "frameobject.h"
 #include "opcode.h"
-#include <stdint.h>
 
 #include "datastack.h"
 
@@ -25,13 +24,13 @@ that in the common case where the tracer has already seen the key somewhere we
 don't need to allocate a new one. This can significantly speed up tracing.
 */
 typedef struct InternEntry {
-    uint64_t key;
+    PY_LONG_LONG key;
     PyObject *value;
 } InternEntry;
 
 typedef struct InternTable {
     /* Store the value keyed off zero separately. This allows us to use a key
-       of zero as a not-set indicator. */ 
+       of zero as a not-set indicator. */
     PyObject * zero_value;
 
     /* The number of elements in our entries array (including absent elements).
@@ -46,7 +45,7 @@ typedef struct InternTable {
        the same fraction of capacity. */
     size_t max_fill;
 
-    /* Essentially (key, value) tuples where keys are uint64_t and values are
+    /* Essentially (key, value) tuples where keys are PY_LONG_LONG and values are
       *PyObject. Values are owned by the tracer and will have their refcount
       decremented appropriately on release.*/
     InternEntry * entries;
@@ -58,7 +57,7 @@ typedef struct InternTable {
    else.
 */
 typedef struct InternTableObject{
-    PyObject_HEAD;
+    PyObject_HEAD
     InternTable table;
 } InternTableObject;
 

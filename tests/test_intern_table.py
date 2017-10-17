@@ -1,12 +1,22 @@
+import sys
+
 from tests.coveragetest import CoverageTest
 
 from hypothesis import given, example
 import hypothesis.strategies as st
-from coverage.tracer import InternTable
-import sys
+import pytest
+
+from coverage import env
+
+if env.C_TRACER:
+    from coverage.tracer import InternTable
 
 
+@pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
 class TestInternTable(CoverageTest):
+
+    run_in_temp_dir = False
+
     @example([0])
     @given(st.lists(st.integers(0, 2 ** 64 - 1), unique=True))
     def test_interns_as_none_by_default(self, ls):
