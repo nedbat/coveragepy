@@ -643,27 +643,28 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         self.assertLess(out.count("\n"), 4)
 
     def test_help_contains_command_name(self):
-        """ Command name should be present in help output. """
+        # Command name should be present in help output.
         fake_command_path = "lorem/ipsum/dolor"
         expected_command_name = "dolor"
         fake_argv = [fake_command_path, "sit", "amet"]
         with mock.patch.object(sys, 'argv', new=fake_argv):
             self.command_line("help")
+        out = self.stdout()
         self.assertIn(expected_command_name, out)
 
     def test_help_contains_command_name_from_package(self):
-        """
-        Command package name should be present in help output.
+        # Command package name should be present in help output.
+        #
+        # When the main module is actually a package's `__main__` module, the resulting command line
+        # has the `__main__.py` file's patch as the command name. Instead, the command name should
+        # be derived from the package name.
 
-        When the main module is actually a package's `__main__` module, the resulting command line
-        has the `__main__.py` file's patch as the command name. Instead, the command name should be
-        derived from the package name.
-        """
         fake_command_path = "lorem/ipsum/dolor/__main__.py"
         expected_command_name = "dolor"
         fake_argv = [fake_command_path, "sit", "amet"]
         with mock.patch.object(sys, 'argv', new=fake_argv):
             self.command_line("help")
+        out = self.stdout()
         self.assertIn(expected_command_name, out)
 
     def test_help(self):

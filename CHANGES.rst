@@ -12,6 +12,11 @@ Unreleased
   longer counted in statement totals, which could slightly change your total
   results.
 
+- Be more flexible about the command name displayed by help, fixing
+  `issue 600`_. Thanks, Ben Finney.
+
+.. _issue 600: https://bitbucket.org/ned/coveragepy/issues/600/get-program-name-from-command-line-when
+
 
 .. _changes_441:
 
