@@ -459,6 +459,13 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage()
         self.assert_config_settings_are_correct(cov)
 
+    def test_read_prefixed_sections_from_explicit_file(self):
+        # You can point to a tox.ini, and it will find [coverage:run] sections
+        nested = self.LOTSA_SETTINGS.format(section="coverage:")
+        self.make_file("tox.ini", self.TOX_INI + "\n" + nested)
+        cov = coverage.Coverage(config_file="tox.ini")
+        self.assert_config_settings_are_correct(cov)
+
     def test_non_ascii(self):
         self.make_file(".coveragerc", """\
             [report]
