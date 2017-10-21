@@ -4,6 +4,8 @@
 
 """Test the config file handling for coverage.py"""
 
+import mock
+
 import coverage
 from coverage.misc import CoverageException
 
@@ -150,8 +152,39 @@ class ConfigTest(CoverageTest):
             ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
         )
 
+    def test_tilde_in_config(self):
+        # Config entries that are file paths can be tilde-expanded.
+        self.make_file(".coveragerc", """\
+            [run]
+            data_file = ~/data.file
+
+            [html]
+            directory = ~joe/html_dir
+
+            [xml]
+            output = ~/somewhere/xml.out
+
+            [report]
+            # Strings that aren't file paths are not tilde-expanded.
+            exclude_lines =
+                ~/data.file
+                ~joe/html_dir
+            """)
+        def expanduser(s):
+            """Fake tilde expansion"""
+            s = s.replace("~/", "/Users/me/")
+            s = s.replace("~joe/", "/Users/joe/")
+            return s
+
+        with mock.patch.object(coverage.config.os.path, 'expanduser', new=expanduser):
+            cov = coverage.Coverage()
+        self.assertEqual(cov.config.data_file, "/Users/me/data.file")
+        self.assertEqual(cov.config.html_dir, "/Users/joe/html_dir")
+        self.assertEqual(cov.config.xml_output, "/Users/me/somewhere/xml.out")
+        self.assertEqual(cov.config.exclude_list, ["~/data.file", "~joe/html_dir"])
+
     def test_tweaks_after_constructor(self):
-        # Arguments to the constructor are applied to the configuration.
+        # set_option can be used after construction to affect the config.
         cov = coverage.Coverage(timid=True, data_file="fooey.dat")
         cov.set_option("run:timid", False)
 

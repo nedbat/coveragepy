@@ -440,4 +440,10 @@ def read_coverage_config(config_file, **kwargs):
     # 4) from constructor arguments:
     config.from_args(**kwargs)
 
+    # Once all the config has been collected, there's a little post-processing
+    # to do.
+    config.data_file = os.path.expanduser(config.data_file)
+    config.html_dir = os.path.expanduser(config.html_dir)
+    config.xml_output = os.path.expanduser(config.xml_output)
+
     return config_file, config
