@@ -375,7 +375,10 @@ class Collector(object):
 
         def abs_file_dict(d):
             """Return a dict like d, but with keys modified by `abs_file`."""
-            return dict((abs_file(k), v) for k, v in iitems(d))
+            # The call to list() ensures that the GIL protects the dictionary
+            # iterator against concurrent modifications by tracers running
+            # in other threads.
+            return dict((abs_file(k), v) for k, v in list(iitems(d)))
 
         if self.branch:
             covdata.add_arcs(abs_file_dict(self.data))

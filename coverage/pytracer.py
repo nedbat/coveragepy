@@ -68,7 +68,10 @@ class PyTracer(object):
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
 
-        if self.stopped:
+        if (self.stopped and sys.gettrace() == self._trace):
+            # The PyTrace.stop() method has been called, possibly by another
+            # thread, let's deactivate ourselves now.
+            sys.settrace(None)
             return
 
         if self.last_exc_back:
@@ -152,7 +155,15 @@ class PyTracer(object):
 
     def stop(self):
         """Stop this Tracer."""
+        # Get the activate tracer callback before setting the stop flag to be
+        # able to detect if the tracer was changed prior to stopping it.
+        tf = sys.gettrace()
+
+        # Set the stop flag. The actual call to sys.settrace(None) will happen
+        # in the self._trace callback itself to make sure to call it from the
+        # right thread.
         self.stopped = True
+
         if self.threading and self.thread.ident != self.threading.currentThread().ident:
             # Called on a different thread than started us: we can't unhook
             # ourselves, but we've set the flag that we should stop, so we
@@ -163,15 +174,12 @@ class PyTracer(object):
             # PyPy clears the trace function before running atexit functions,
             # so don't warn if we are in atexit on PyPy and the trace function
             # has changed to None.
-            tf = sys.gettrace()
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
             if (not dont_warn) and tf != self._trace:
                 self.warn(
                     "Trace function changed, measurement is likely wrong: %r" % (tf,),
                     slug="trace-changed",
                 )
-
-        sys.settrace(None)
 
     def activity(self):
         """Has there been any activity?"""

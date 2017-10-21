@@ -833,6 +833,14 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     return RET_OK;
     #endif
 
+    if (!self->started) {
+        /* If CTracer.stop() has been called from another thread, the tracer
+           is still active in the current thread. Let's deactivate ourselves
+           now. */
+        PyEval_SetTrace(NULL, NULL);
+        return RET_OK;
+    }
+
     #if WHAT_LOG || TRACE_LOG
     PyObject * ascii = NULL;
     #endif
@@ -1027,7 +1035,10 @@ static PyObject *
 CTracer_stop(CTracer *self, PyObject *args_unused)
 {
     if (self->started) {
-        PyEval_SetTrace(NULL, NULL);
+        /* Set the started flag only. The actual call to
+           PyEval_SetTrace(NULL, NULL) is delegated to the callback
+           itself to ensure that it called from the right thread.
+           */
         self->started = FALSE;
     }
 
