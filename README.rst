@@ -51,17 +51,17 @@ support, --skip-covered, HTML filtering, and more than 50 issues closed.
 Getting Started
 ---------------
 
-See the `Quick Start`_ section of the docs.
+See the `Quick Start section`_ of the docs.
 
-.. _Quick Start: http://coverage.readthedocs.io/#quick-start
+.. _Quick Start section: http://coverage.readthedocs.io/#quick-start
 
 
 Contributing
 ------------
 
-See the `Contributing`_ section of the docs.
+See the `Contributing section`_ of the docs.
 
-.. _Contributing: http://coverage.readthedocs.io/en/latest/contributing.html
+.. _Contributing section: http://coverage.readthedocs.io/en/latest/contributing.html
 
 
 License
