@@ -645,6 +645,8 @@ class CmdLineStdoutTest(BaseCmdLineTest):
 
     def test_help_contains_command_name(self):
         # Command name should be present in help output.
+        if env.JYTHON:
+            self.skipTest("Jython gets mad if you patch sys.argv")
         fake_command_path = "lorem/ipsum/dolor".replace("/", os.sep)
         expected_command_name = "dolor"
         fake_argv = [fake_command_path, "sit", "amet"]
@@ -660,6 +662,8 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         # has the `__main__.py` file's patch as the command name. Instead, the command name should
         # be derived from the package name.
 
+        if env.JYTHON:
+            self.skipTest("Jython gets mad if you patch sys.argv")
         fake_command_path = "lorem/ipsum/dolor/__main__.py".replace("/", os.sep)
         expected_command_name = "dolor"
         fake_argv = [fake_command_path, "sit", "amet"]
