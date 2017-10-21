@@ -12,12 +12,19 @@ Unreleased
   longer counted in statement totals, which could slightly change your total
   results.
 
+- Fixed a race condition when saving data and multiple threads are tracing
+  (`issue 581`_). It could produce a "dictionary changed size during iteration"
+  RuntimeError.  I believe this fix mostly but not entirely fixes the race
+  condition.  A true fix would likely be too expensive.  Thanks, Peter Baughman
+  for the debugging, and Olivier Grisel for the fix with tests.
+
 - Configuration values which are file paths will now apply tilde-expansion,
   closing `issue 589`_.
 
 - Be more flexible about the command name displayed by help, fixing
   `issue 600`_. Thanks, Ben Finney.
 
+.. _issue 581: https://bitbucket.org/ned/coveragepy/issues/581/race-condition-when-saving-data-under
 .. _issue 589: https://bitbucket.org/ned/coveragepy/issues/589/allow-expansion-in-coveragerc
 .. _issue 600: https://bitbucket.org/ned/coveragepy/issues/600/get-program-name-from-command-line-when
 

@@ -3,7 +3,7 @@
 
 """Tests for concurrency libraries."""
 
-import importlib
+import os
 import random
 import sys
 import threading
@@ -13,6 +13,7 @@ from flaky import flaky
 
 import coverage
 from coverage import env
+from coverage.backward import import_local_file
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
@@ -464,6 +465,7 @@ def test_coverage_stop_in_threads():
     has_stopped_coverage = []
 
     def run_thread():
+        """Check that coverage is stopping properly in threads."""
         deadline = time.time() + 5
         ident = threading.currentThread().ident
         if sys.gettrace() is not None:
@@ -496,7 +498,7 @@ def test_thread_safe_save_data(tmpdir):
 
     # Create some Python modules and put them in the path
     modules_dir = tmpdir.mkdir('test_modules')
-    module_names = ["m{:03d}".format(i) for i in range(1000)]
+    module_names = ["m{0:03d}".format(i) for i in range(1000)]
     for module_name in module_names:
         modules_dir.join(module_name + ".py").write("def f(): pass\n")
 
@@ -504,16 +506,19 @@ def test_thread_safe_save_data(tmpdir):
     should_run = [True]
     imported = []
 
-    sys.path.insert(0, modules_dir.strpath)
+    #sys.path.insert(0, modules_dir.strpath)
+    old_dir = os.getcwd()
+    os.chdir(modules_dir.strpath)
     try:
         # Make sure that all dummy modules can be imported.
         for module_name in module_names:
-            importlib.import_module(module_name)
+            import_local_file(module_name)
 
         def random_load():
+            """Import modules randomly to stress coverage."""
             while should_run[0]:
                 module_name = random.choice(module_names)
-                mod = importlib.import_module(module_name)
+                mod = import_local_file(module_name)
                 mod.f()
                 imported.append(mod)
 
@@ -542,9 +547,9 @@ def test_thread_safe_save_data(tmpdir):
             for t in threads:
                 t.join()
 
-            if len(imported) == 0 and duration < 10:
+            if (not imported) and duration < 10:
                 duration *= 2
 
     finally:
-        sys.path.remove(modules_dir.strpath)
+        os.chdir(old_dir)
         should_run[0] = False
