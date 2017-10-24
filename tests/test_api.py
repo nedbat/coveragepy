@@ -9,8 +9,6 @@ import sys
 import textwrap
 import warnings
 
-import pytest
-
 import coverage
 from coverage import env
 from coverage.backward import StringIO, import_local_file
