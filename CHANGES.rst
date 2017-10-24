@@ -12,9 +12,13 @@ Unreleased
   longer counted in statement totals, which could slightly change your total
   results.
 
+- Specifying both ``--source`` and ``--include`` no longer silently ignores the
+  include setting, instead it displays a warning. Thanks, Loïc Dachary.  Closes
+  `issue 265`_ and `issue 101`_.
+
 - Fixed a race condition when saving data and multiple threads are tracing
   (`issue 581`_). It could produce a "dictionary changed size during iteration"
-  RuntimeError.  I believe this fix mostly but not entirely fixes the race
+  RuntimeError.  I believe this mostly but not entirely fixes the race
   condition.  A true fix would likely be too expensive.  Thanks, Peter Baughman
   for the debugging, and Olivier Grisel for the fix with tests.
 
@@ -28,6 +32,7 @@ Unreleased
 - Be more flexible about the command name displayed by help, fixing
   `issue 600`_. Thanks, Ben Finney.
 
+.. _issue 101: https://bitbucket.org/ned/coveragepy/issues/101/settings-under-report-affect-running
 .. _issue 581: https://bitbucket.org/ned/coveragepy/issues/581/race-condition-when-saving-data-under
 .. _issue 588: https://bitbucket.org/ned/coveragepy/issues/588/using-rcfile-path-to-toxini-uses-run
 .. _issue 589: https://bitbucket.org/ned/coveragepy/issues/589/allow-expansion-in-coveragerc
