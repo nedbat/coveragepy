@@ -165,11 +165,17 @@ could affect the measurement process.  The possible warnings include:
   This could be because you asked to measure only modules that never ran,
   or for other reasons.
 
-* "Module XXX was previously imported, but not measured. (module-not-measured)"
+* "Module XXX was previously imported, but not measured (module-not-measured)"
 
   You asked coverage.py to measure module XXX, but it had already been imported
   when coverage started.  This meant coverage.py couldn't monitor its
   execution.
+
+* "--include is ignored because --source is set (include-ignored)"
+
+  Both ``--include`` and ``--source`` were specified while running code.  Both
+  are meant to focus measurement on a particular part of your source code, so
+  ``--include`` is ignored in favor of ``--source``.
 
 Individual warnings can be disabled with the `disable_warnings
 <config_run_disable_warnings>`_ configuration setting.  To silence "No data was

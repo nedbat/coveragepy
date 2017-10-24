@@ -651,7 +651,7 @@ class ProcessTest(CoverageTest):
         out = self.run_command("python run_twice.py")
         self.assertEqual(
             out,
-            "Coverage.py warning: Module foo was previously imported, but not measured. "
+            "Coverage.py warning: Module foo was previously imported, but not measured "
             "(module-not-measured)\n"
         )
 

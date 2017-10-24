@@ -889,7 +889,7 @@ class Coverage(object):
         # we never measured it. I guess that means it was imported before
         # coverage even started.
         self._warn(
-            "Module %s was previously imported, but not measured." % pkg,
+            "Module %s was previously imported, but not measured" % pkg,
             slug="module-not-measured",
         )
 
