@@ -446,6 +446,32 @@ class ApiTest(CoverageTest):
         self.assertNotIn("module-not-imported", err)
         self.assertNotIn("no-data-collected", err)
 
+    def test_source_and_include_dont_conflict(self):
+        # A bad fix made this case fail: https://bitbucket.org/ned/coveragepy/issues/541
+        self.make_file("a.py", "import b\na = 1")
+        self.make_file("b.py", "b = 1")
+        self.make_file(".coveragerc", """\
+            [run]
+            source = .
+            """)
+
+        # Just like: coverage run a.py
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "a")
+        cov.save()
+
+        # Run the equivalent of: coverage report --include=b.py
+        cov = coverage.Coverage(include=["b.py"])
+        cov.load()
+        # There should be no exception. At one point, report() threw:
+        # CoverageException: --include and --source are mutually exclusive
+        cov.report()
+        self.assertEqual(self.stdout(), textwrap.dedent("""\
+            Name    Stmts   Miss  Cover
+            ---------------------------
+            b.py        1      0   100%
+            """))
+
 
 class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
     """Test PEP-420 namespace modules."""
