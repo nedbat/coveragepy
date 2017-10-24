@@ -685,7 +685,7 @@ class Coverage(object):
         self._init()
         if self.include:
             if self.source or self.source_pkgs:
-                print("--include is ignored because --source is set")
+                self._warn("--include is ignored because --source is set", slug="include-ignored")
         if self.run_suffix:
             # Calling start() means we're running code, so use the run_suffix
             # as the data_suffix when we eventually save the data.
