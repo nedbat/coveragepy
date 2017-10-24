@@ -347,8 +347,6 @@ class Coverage(object):
             if self.pylib_paths:
                 self.pylib_match = TreeMatcher(self.pylib_paths)
         if self.include:
-            if self.source or self.source_pkgs:
-                print("--include is ignored because --source is set")
             self.include_match = FnmatchMatcher(self.include)
         if self.omit:
             self.omit_match = FnmatchMatcher(self.omit)
@@ -685,6 +683,9 @@ class Coverage(object):
 
         """
         self._init()
+        if self.include:
+            if self.source or self.source_pkgs:
+                print("--include is ignored because --source is set")
         if self.run_suffix:
             # Calling start() means we're running code, so use the run_suffix
             # as the data_suffix when we eventually save the data.
