@@ -10,6 +10,7 @@
 set -e -x
 
 action=$1
+shift
 
 if [[ $action == "build" ]]; then
     # Compile wheels
@@ -27,19 +28,19 @@ if [[ $action == "build" ]]; then
     done
 
 elif [[ $action == "test" ]]; then
+    # Create "pythonX.Y" links
+    for PYBIN in /opt/python/*/bin/; do
+        PYNAME=$("$PYBIN/python" -c "import sys; print('python{0[0]}.{0[1]}'.format(sys.version_info))")
+        ln -sf "$PYBIN/$PYNAME" /usr/local/bin/$PYNAME
+    done
+
     # Install packages and test
     TOXBIN=/opt/python/cp27-cp27m/bin
     "$TOXBIN/pip" install -r /io/requirements/ci.pip
 
-    for PYBIN in /opt/python/*/bin/; do
-        PYNAME=$("$PYBIN/python" -c "import sys; print('python{0[0]}.{0[1]}'.format(sys.version_info))")
-        TOXENV=$("$PYBIN/python" -c "import sys; print('py{0[0]}{0[1]}'.format(sys.version_info))")
-        ln -s "$PYBIN/$PYNAME" /usr/local/bin/$PYNAME
-        "$TOXBIN/tox" -e $TOXENV
-        rm -f /usr/local/bin/$PYNAME
-        #"${PYBIN}/pip" install python-manylinux-demo --no-index -f /io/dist
-        #(cd "$HOME"; "${PYBIN}/nosetests" pymanylinuxdemo)
-    done
+    cd /io
+    TOXWORKDIR=.tox_linux "$TOXBIN/tox" "$@" || true
+    cd ~
 
 else
     echo "Need an action to perform!"

@@ -92,6 +92,9 @@
     - pip install -r requirements/dev.pip
     - $ tox
 
+- Testing on Linux:
+    - $ docker run --rm -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 /io/ci/manylinux.sh test
+
 - For complete coverage testing:
 
     $ make metacov
