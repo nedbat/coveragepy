@@ -161,6 +161,9 @@ class PathAliasesTest(CoverageTest):
         canonicalized paths.
 
         """
+        aliases.pprint()
+        print(inp)
+        print(out)
         self.assertEqual(aliases.map(inp), files.canonical_filename(out))
 
     def assert_unchanged(self, aliases, inp):
@@ -242,7 +245,7 @@ class PathAliasesTest(CoverageTest):
         self.assert_mapped(aliases, '/foo/bar/d2/y.py', './mysrc2/y.py')
 
     def test_dot(self):
-        for d in ('.', '..', '../other', '~'):
+        for d in ('.', '..', '../other', '~', '/'):
             aliases = PathAliases()
             aliases.add(d, '/the/source')
             the_file = os.path.join(d, 'a.py')
