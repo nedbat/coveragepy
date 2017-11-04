@@ -8,6 +8,7 @@ import sys
 
 from coverage import env
 from coverage.backward import iitems
+from coverage.debug import short_stack
 from coverage.files import abs_file
 from coverage.misc import CoverageException, isolate_module
 from coverage.pytracer import PyTracer
@@ -101,6 +102,8 @@ class Collector(object):
         self.warn = warn
         self.branch = branch
         self.threading = None
+
+        self.origin = short_stack()
 
         self.concur_id_func = None
 
@@ -316,6 +319,10 @@ class Collector(object):
     def stop(self):
         """Stop collecting trace information."""
         assert self._collectors
+        if self._collectors[-1] is not self:
+            print("self._collectors:")
+            for c in self._collectors:
+                print("  {!r}\n{}".format(c, c.origin))
         assert self._collectors[-1] is self, (
             "Expected current collector to be %r, but it's %r" % (self, self._collectors[-1])
         )
