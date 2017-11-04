@@ -53,7 +53,7 @@ class EnvironmentAwareMixin(unittest.TestCase):
 
     def del_environ(self, name):
         """Delete an environment variable, unless we set it."""
-        if name not in self._environ_undos:
+        if name not in self._environ_undos and name in os.environ:
             self._environ_undos[name] = os.environ.get(name)
             del os.environ[name]
 
