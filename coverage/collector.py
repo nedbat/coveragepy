@@ -7,7 +7,7 @@ import os
 import sys
 
 from coverage import env
-from coverage.backward import iitems
+from coverage.backward import litems, range     # pylint: disable=redefined-builtin
 from coverage.debug import short_stack
 from coverage.files import abs_file
 from coverage.misc import CoverageException, isolate_module
@@ -382,10 +382,22 @@ class Collector(object):
 
         def abs_file_dict(d):
             """Return a dict like d, but with keys modified by `abs_file`."""
-            # The call to list() ensures that the GIL protects the dictionary
+            # The call to litems() ensures that the GIL protects the dictionary
             # iterator against concurrent modifications by tracers running
-            # in other threads.
-            return dict((abs_file(k), v) for k, v in list(iitems(d)))
+            # in other threads. We try three times in case of concurrent
+            # access, hoping to get a clean copy.
+            runtime_err = None
+            for _ in range(3):
+                try:
+                    items = litems(d)
+                except RuntimeError as ex:
+                    runtime_err = ex
+                else:
+                    break
+            else:
+                raise runtime_err       # pylint: disable=raising-bad-type
+
+            return dict((abs_file(k), v) for k, v in items)
 
         if self.branch:
             covdata.add_arcs(abs_file_dict(self.data))
