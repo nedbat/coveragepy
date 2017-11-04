@@ -14,18 +14,6 @@ environment:
   PYTEST_ADDOPTS: "-n 0"
 
   matrix:
-    - JOB: "2.6 32-bit"
-      TOXENV: "py26"
-      PYTHON: "C:\\Python26.6"
-      PYTHON_VERSION: "2.6.6"
-      PYTHON_ARCH: "32"
-
-    - JOB: "2.6 64-bit"
-      TOXENV: "py26"
-      PYTHON: "C:\\Python26.6-x64"
-      PYTHON_VERSION: "2.6.6"
-      PYTHON_ARCH: "64"
-
     - JOB: "2.7 32-bit"
       TOXENV: "py27"
       PYTHON: "C:\\Python27.11"
