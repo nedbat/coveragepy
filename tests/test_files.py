@@ -245,7 +245,12 @@ class PathAliasesTest(CoverageTest):
         self.assert_mapped(aliases, '/foo/bar/d2/y.py', './mysrc2/y.py')
 
     def test_dot(self):
-        for d in ('.', '..', '../other', '~', '/'):
+        cases = ['.', '..', '../other', '~']
+        if not env.WINDOWS:
+            # The root test case was added for the manylinux Docker images,
+            # and I'm not sure how it should work on Windows, so skip it.
+            cases += ['/']
+        for d in cases:
             aliases = PathAliases()
             aliases.add(d, '/the/source')
             the_file = os.path.join(d, 'a.py')
