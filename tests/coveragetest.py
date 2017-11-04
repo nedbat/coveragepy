@@ -28,44 +28,6 @@ from coverage.misc import StopEverything
 
 from tests.helpers import run_command, SuperModuleCleaner
 
-# TEMPORARY to see if it helps.
-class EnvironmentAwareMixin(unittest.TestCase):
-    """A test case mixin that isolates changes to the environment."""
-
-    def setUp(self):
-        super(EnvironmentAwareMixin, self).setUp()
-
-        # Record environment variables that we changed with set_environ.
-        self._environ_undos = {}
-
-        self.addCleanup(self._cleanup_environ)
-
-    def set_environ(self, name, value):
-        """Set an environment variable `name` to be `value`.
-
-        The environment variable is set, and record is kept that it was set,
-        so that `cleanup_environ` can restore its original value.
-
-        """
-        if name not in self._environ_undos:
-            self._environ_undos[name] = os.environ.get(name)
-        os.environ[name] = value
-
-    def del_environ(self, name):
-        """Delete an environment variable, unless we set it."""
-        if name not in self._environ_undos and name in os.environ:
-            self._environ_undos[name] = os.environ.get(name)
-            del os.environ[name]
-
-    def _cleanup_environ(self):
-        """Undo all the changes made by `set_environ`."""
-        for name, value in self._environ_undos.items():
-            if value is None:
-                del os.environ[name]
-            else:
-                os.environ[name] = value
-
-
 
 # Status returns for the command line.
 OK, ERR = 0, 1
@@ -499,6 +461,10 @@ class CoverageTest(
         pypath += testmods + os.pathsep + zipfile
         self.set_environ(pythonpath_name, pypath)
 
+        # There are environment variables that we set when we are running the
+        # coverage test suite under coverage.  We don't want these environment
+        # variables to leak into subprocesses we start for a test. Delete them
+        # before running the subprocess command.
         self.del_environ("COVERAGE_COVERAGE")
         self.del_environ("COVERAGE_PROCESS_START")
 
