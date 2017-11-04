@@ -581,6 +581,7 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         cov = coverage.Coverage(source=["pkg1"], include=["pkg2"])
         with self.assert_warnings(cov, ["--include is ignored because --source is set"]):
             cov.start()
+        cov.stop()
 
     def test_source_package_as_dir(self):
         # pkg1 is a directory, since we cd'd into tests/modules in setUp.
