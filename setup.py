@@ -104,7 +104,7 @@ setup_args = dict(
     keywords='code coverage testing',
     license='Apache 2.0',
     classifiers=classifier_list,
-    url=__url__,
+    url="https://bitbucket.org/ned/coveragepy",
 )
 
 # A replacement for the build_ext command which raises a single exception
