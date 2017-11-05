@@ -5,8 +5,8 @@
 Change history for Coverage.py
 ==============================
 
-Unreleased
-----------
+Version 4.4.2 --- 2017-11-05
+----------------------------
 
 - Support for Python 3.7.  In some cases, class and module docstrings are no
   longer counted in statement totals, which could slightly change your total
