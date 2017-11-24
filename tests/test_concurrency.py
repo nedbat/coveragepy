@@ -506,7 +506,6 @@ def test_thread_safe_save_data(tmpdir):
     should_run = [True]
     imported = []
 
-    #sys.path.insert(0, modules_dir.strpath)
     old_dir = os.getcwd()
     os.chdir(modules_dir.strpath)
     try:
@@ -539,7 +538,7 @@ def test_thread_safe_save_data(tmpdir):
 
             cov.stop()
 
-            # The following call use to crash with running background threads.
+            # The following call used to crash with running background threads.
             cov.get_data()
 
             # Stop the threads

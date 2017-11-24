@@ -44,8 +44,9 @@ class PyTracer(object):
         # The threading module to use, if any.
         self.threading = None
 
-        self.cur_file_dict = []
+        self.cur_file_dict = None
         self.last_line = 0          # int, but uninitialized.
+        self.cur_file_name = None
 
         self.data_stack = []
         self.last_exc_back = None
@@ -65,12 +66,27 @@ class PyTracer(object):
             len(self.data),
         )
 
+    def log(self, marker, *args):
+        """For hard-core logging of what this tracer is doing."""
+        with open("/tmp/debug_trace.txt", "a") as f:
+            f.write("{} {:x}.{:x}[{}] {:x} {}\n".format(
+                marker,
+                id(self),
+                self.thread.ident,
+                len(self.data_stack),
+                self.threading.currentThread().ident,
+                " ".join(map(str, args))
+            ))
+
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
+
+        #self.log(":", frame.f_code.co_filename, frame.f_lineno, event)
 
         if (self.stopped and sys.gettrace() == self._trace):
             # The PyTrace.stop() method has been called, possibly by another
             # thread, let's deactivate ourselves now.
+            #self.log("X", frame.f_code.co_filename, frame.f_lineno)
             sys.settrace(None)
             return
 
@@ -80,15 +96,16 @@ class PyTracer(object):
                 if self.trace_arcs and self.cur_file_dict:
                     pair = (self.last_line, -self.last_exc_firstlineno)
                     self.cur_file_dict[pair] = None
-                self.cur_file_dict, self.last_line = self.data_stack.pop()
+                self.cur_file_dict, self.cur_file_name, self.last_line = self.data_stack.pop()
             self.last_exc_back = None
 
         if event == 'call':
             # Entering a new function context.  Decide if we should trace
             # in this file.
             self._activity = True
-            self.data_stack.append((self.cur_file_dict, self.last_line))
+            self.data_stack.append((self.cur_file_dict, self.cur_file_name, self.last_line))
             filename = frame.f_code.co_filename
+            self.cur_file_name = filename
             disp = self.should_trace_cache.get(filename)
             if disp is None:
                 disp = self.should_trace(filename, frame)
@@ -112,6 +129,8 @@ class PyTracer(object):
             # Record an executed line.
             if self.cur_file_dict is not None:
                 lineno = frame.f_lineno
+                #if frame.f_code.co_filename != self.cur_file_name:
+                #    self.log("*", frame.f_code.co_filename, self.cur_file_name, lineno)
                 if self.trace_arcs:
                     self.cur_file_dict[(self.last_line, lineno)] = None
                 else:
@@ -127,7 +146,7 @@ class PyTracer(object):
                     first = frame.f_code.co_firstlineno
                     self.cur_file_dict[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
-            self.cur_file_dict, self.last_line = self.data_stack.pop()
+            self.cur_file_dict, self.cur_file_name, self.last_line = self.data_stack.pop()
         elif event == 'exception':
             self.last_exc_back = frame.f_back
             self.last_exc_firstlineno = frame.f_code.co_firstlineno
@@ -148,6 +167,7 @@ class PyTracer(object):
                     # Re-starting from a different thread!? Don't set the trace
                     # function, but we are marked as running again, so maybe it
                     # will be ok?
+                    #self.log("~", "starting on different threads")
                     return self._trace
 
         sys.settrace(self._trace)
@@ -168,6 +188,7 @@ class PyTracer(object):
             # Called on a different thread than started us: we can't unhook
             # ourselves, but we've set the flag that we should stop, so we
             # won't do any more tracing.
+            #self.log("~", "stopping on different threads")
             return
 
         if self.warn:
