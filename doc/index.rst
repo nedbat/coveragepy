@@ -105,6 +105,12 @@ Getting started is easy:
 
     .. code-block:: console
 
+        # if you usually do:
+        #
+        #   $ python my_program.py arg1 arg2
+        #
+        # then instead do:
+
         $ coverage run my_program.py arg1 arg2
         blah blah ..your program's output.. blah blah
 
