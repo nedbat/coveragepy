@@ -219,10 +219,8 @@ class Coverage(object):
         # Load plugins
         self.plugins = Plugins.load_plugins(self.config.plugins, self.config, self.debug)
 
-        # _exclude_re is a dict that maps exclusion list names to compiled
-        # regexes.
+        # _exclude_re is a dict that maps exclusion list names to compiled regexes.
         self._exclude_re = {}
-        self._exclude_regex_stale()
 
         set_relative_directory()
 
