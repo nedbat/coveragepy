@@ -101,7 +101,7 @@ class RunFileTest(CoverageTest):
 class RunPycFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
 
-    def make_pyc(self):
+    def make_pyc(self):                     # pylint: disable=inconsistent-return-statements
         """Create a .pyc file, and return the relative path to it."""
         if env.JYTHON:
             self.skipTest("Can't make .pyc files on Jython")

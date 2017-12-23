@@ -43,6 +43,7 @@ def should_start_context(frame):
     fn_name = frame.f_code.co_name
     if fn_name.startswith("test"):
         return fn_name
+    return None
 
 
 class Collector(object):

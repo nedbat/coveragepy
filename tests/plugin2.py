@@ -13,6 +13,7 @@ class Plugin(coverage.CoveragePlugin):
     def file_tracer(self, filename):
         if "render.py" in filename:
             return RenderFileTracer()
+        return None
 
     def file_reporter(self, filename):
         return FileReporter(filename)

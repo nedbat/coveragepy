@@ -15,6 +15,7 @@ class Plugin(coverage.CoveragePlugin):
         """Trace only files named xyz.py"""
         if "xyz.py" in filename:
             return FileTracer(filename)
+        return None
 
     def file_reporter(self, filename):
         return FileReporter(filename)

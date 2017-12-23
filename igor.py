@@ -177,7 +177,7 @@ def do_test_with_tracer(tracer, *runner_args):
     skip_msg = should_skip(tracer)
     if skip_msg:
         print(skip_msg)
-        return
+        return None
 
     os.environ["COVERAGE_TEST_TRACER"] = tracer
     if os.environ.get("COVERAGE_COVERAGE", ""):
@@ -376,6 +376,7 @@ def main(args):
         # If a handler returns a failure-like value, stop.
         if ret:
             return ret
+    return 0
 
 
 if __name__ == '__main__':

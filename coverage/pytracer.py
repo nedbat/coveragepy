@@ -88,7 +88,7 @@ class PyTracer(object):
             # thread, let's deactivate ourselves now.
             #self.log("X", frame.f_code.co_filename, frame.f_lineno)
             sys.settrace(None)
-            return
+            return None
 
         if self.last_exc_back:
             if frame == self.last_exc_back:
