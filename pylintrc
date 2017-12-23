@@ -32,6 +32,8 @@ cache-size=500
 # usually to register additional checkers.
 load-plugins=
 
+extension-pkg-whitelist=
+    greenlet
 
 [MESSAGES CONTROL]
 
