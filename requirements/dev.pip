@@ -11,8 +11,8 @@
 # for linting.
 greenlet==0.4.12
 mock==2.0.0
-PyContracts==1.7.15
-pyenchant==1.6.11
+PyContracts==1.8.0
+pyenchant==2.0.0
 pylint==1.8.1
 unittest-mixins==1.4
 

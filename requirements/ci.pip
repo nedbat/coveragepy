@@ -5,4 +5,4 @@
 -r tox.pip
 -r pytest.pip
 -r wheel.pip
-tox-travis==0.8
+tox-travis==0.10
