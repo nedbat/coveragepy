@@ -28,7 +28,7 @@ class Plugins(object):
     def load_plugins(cls, modules, config, debug=None):
         """Load plugins from `modules`.
 
-        Returns a list of loaded and configured plugins.
+        Returns a Plugins object with the loaded and configured plugins.
 
         """
         plugins = cls()
