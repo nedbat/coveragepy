@@ -271,8 +271,8 @@ class FileTracerTest(CoverageTest):
             self.skipTest("Plugins are only supported with the C tracer.")
 
 
-class GoodPluginTest(FileTracerTest):
-    """Tests of plugin happy paths."""
+class GoodFileTracerTest(FileTracerTest):
+    """Tests of file tracer plugin happy paths."""
 
     def test_plugin1(self):
         self.make_file("simple.py", """\
@@ -558,8 +558,8 @@ class GoodPluginTest(FileTracerTest):
             cov.analysis("fictional.py")
 
 
-class BadPluginTest(FileTracerTest):
-    """Test error handling around plugins."""
+class BadFileTracerTest(FileTracerTest):
+    """Test error handling around file tracer plugins."""
 
     def run_plugin(self, module_name):
         """Run a plugin with the given module_name.
