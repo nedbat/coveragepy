@@ -596,7 +596,7 @@ CTracer_disable_plugin(CTracer *self, PyObject * disposition)
         goto error;
     }
     msg = MyText_FromFormat(
-        "Disabling plugin '%s' due to previous exception",
+        "Disabling plug-in '%s' due to previous exception",
         MyText_AsString(plugin_name)
         );
     if (msg == NULL) {
@@ -622,7 +622,7 @@ error:
     /* This function doesn't return a status, so if an error happens, print it,
      * but don't interrupt the flow. */
     /* PySys_WriteStderr is nicer, but is not in the public API. */
-    fprintf(stderr, "Error occurred while disabling plugin:\n");
+    fprintf(stderr, "Error occurred while disabling plug-in:\n");
     PyErr_Print();
 
 ok:

@@ -621,10 +621,10 @@ class BadFileTracerTest(FileTracerTest):
 
         # There should be a warning explaining what's happening, but only one.
         # The message can be in two forms:
-        #   Disabling plugin '...' due to previous exception
+        #   Disabling plug-in '...' due to previous exception
         # or:
-        #   Disabling plugin '...' due to an exception:
-        msg = "Disabling plugin '%s.%s' due to " % (module_name, plugin_name)
+        #   Disabling plug-in '...' due to an exception:
+        msg = "Disabling plug-in '%s.%s' due to " % (module_name, plugin_name)
         warnings = stderr.count(msg)
         self.assertEqual(warnings, 1)
 
@@ -848,3 +848,16 @@ class BadFileTracerTest(FileTracerTest):
         self.run_bad_plugin(
             "bad_plugin", "Plugin", our_error=False, excmsg="an integer is required",
         )
+
+
+class ConfigurerPluginTest(CoverageTest):
+    """Test configuring plugins."""
+
+    def test_configurer_plugin(self):
+        cov = coverage.Coverage()
+        cov.set_option("run:plugins", ["tests.plugin_config"])
+        cov.start()
+        cov.stop()      # pragma: nested
+        excluded = cov.get_option("report:exclude_lines")
+        self.assertIn("pragma: custom", excluded)
+        self.assertIn("pragma: or whatever", excluded)

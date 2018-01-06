@@ -5,10 +5,15 @@
 Change history for Coverage.py
 ==============================
 
-Unreleases
+Unreleased
 ----------
 
-None yet.
+- A new kind of plugin is supported: configurators are invoked at start-up to
+  allow more complex configuration than the .coveragerc file can easily do.
+  See :ref:`api_plugin` for details.  This solves the complex configuration
+  problem described in `issue 563`_.
+
+.. _issue 563: https://bitbucket.org/ned/coveragepy/issues/563/platform-specific-configuration
 
 
 .. _changes_442:

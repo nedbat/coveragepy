@@ -3,74 +3,72 @@
 
 .. _plugins:
 
-=======
-Plugins
-=======
+========
+Plug-ins
+========
 
 .. :history: 20150124T143000, new page.
 .. :history: 20150802T174600, updated for 4.0b1
+.. :history: 20171228T213800, updated for configurer plugins
 
 
-Coverage.py's behavior can be extended with third-party plugins.  A plugin is a
+Coverage.py's behavior can be extended with third-party plug-ins.  A plug-in is a
 separately installed Python class that you register in your .coveragerc.
-Plugins can be used to implement coverage measurement for non-Python files.
+Plugins can alter a number of aspects of coverage.py's behavior, including
+implementing coverage measurement for non-Python files.
 
-Plugins are only supported with the :ref:`C extension <install_extension>`,
-which must be installed for plugins to work.
-
-Information about using plugins is on this page.  To write a plugin, see
+Information about using plug-ins is on this page.  To write a plug-in, see
 :ref:`api_plugin`.
 
 .. versionadded:: 4.0
 
 
-Using plugins
--------------
+Using plug-ins
+--------------
 
-To use a coverage.py plugin, you install it, and configure it.  For this
+To use a coverage.py plug-in, you install it and configure it.  For this
 example, let's say there's a Python package called ``something`` that provides
-a coverage.py plugin called ``something.plugin``.
+a coverage.py plug-in called ``something.plugin``.
 
-#. Install the plugin's package as you would any other Python package::
+#. Install the plug-in's package as you would any other Python package::
 
     pip install something
 
-#. Configure coverage.py to use the plugin.  You do this by editing (or
+#. Configure coverage.py to use the plug-in.  You do this by editing (or
    creating) your .coveragerc file, as described in :ref:`config`.  The
-   ``plugins`` setting indicates your plugin.  It's a list of importable module
-   names of plugins::
+   ``plugins`` setting indicates your plug-in.  It's a list of importable module
+   names of plug-ins::
 
     [run]
     plugins =
         something.plugin
 
-#. If the plugin needs its own configuration, you can add those settings in
-   the .coveragerc file in a section named for the plugin::
+#. If the plug-in needs its own configuration, you can add those settings in
+   the .coveragerc file in a section named for the plug-in::
 
     [something.plugin]
     option1 = True
     option2 = abc.foo
 
-   Check the documentation for the plugin to see if it takes any options, and
-   what they are.
+   Check the documentation for the plug-in for details on the options it takes.
 
 #. Run your tests with coverage.py as you usually would.  If you get a message
    like "Plugin file tracers (something.plugin) aren't supported with
    PyTracer," then you don't have the :ref:`C extension <install_extension>`
-   installed.
+   installed.  The C extension is needed for certain plug-ins.
 
 
-Available plugins
------------------
+Available plug-ins
+------------------
 
-Some coverage.py plugins you might find useful:
+Some coverage.py plug-ins you might find useful:
 
-* `Django template coverage.py plugin`__: for measuring coverage in Django
+* `Django template coverage.py plug-in`__: for measuring coverage in Django
   templates.
 
   .. __: https://pypi.python.org/pypi/django_coverage_plugin
 
-* `Mako template coverage plugin`__: for measuring coverage in Mako templates.
+* `Mako template coverage plug-in`__: for measuring coverage in Mako templates.
   Doesn't work yet, probably needs some changes in Mako itself.
 
   .. __: https://bitbucket.org/ned/coverage-mako-plugin

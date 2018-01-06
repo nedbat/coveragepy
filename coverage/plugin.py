@@ -1,70 +1,105 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
-"""Plugin interfaces for coverage.py"""
+"""
+Plug-in interfaces for coverage.py.
+
+Coverage.py supports a few different kinds of plug-ins that change its
+behavior:
+
+* File tracers implement tracing of non-Python file types.
+
+* Configurers add custom configuration, using Python code to change the
+  configuration.
+
+To write a coverage.py plug-in, create a module with a subclass of
+:class:`~coverage.CoveragePlugin`.  You will override methods in your class to
+participate in various aspects of coverage.py's processing.
+Different types of plug-ins have to override different methods.
+
+Any plug-in can optionally implement :meth:`~coverage.CoveragePlugin.sys_info`
+to provide debugging information about their operation.
+
+Your module must also contain a ``coverage_init`` function that registers an
+instance of your plug-in class::
+
+    import coverage
+
+    class MyPlugin(coverage.CoveragePlugin):
+        ...
+
+    def coverage_init(reg, options):
+        reg.add_file_tracer(MyPlugin())
+
+You use the `reg` parameter passed to your ``coverage_init`` function to
+register your plug-in object.  The registration method you call depends on
+what kind of plug-in it is.
+
+If your plug-in takes options, the `options` parameter is a dictionary of your
+plug-in's options from the coverage.py configuration file.  Use them however
+you want to configure your object before registering it.
+
+Coverage.py will store its own information on your plug-in object, using
+attributes whose names start with ``_coverage_``.  Don't be startled.
+
+
+File Tracers
+============
+
+File tracers implement measurement support for non-Python files.  File tracers
+implement the :meth:`~coverage.CoveragePlugin.file_tracer` method to claim
+files and the :meth:`~coverage.CoveragePlugin.file_reporter` method to report
+on those files.
+
+In your ``coverage_init`` function, use the ``add_file_tracer`` method to
+register your file tracer.
+
+
+Configurers
+===========
+
+Configurers modify the configuration of coverage.py during start-up.
+Configurers implement the :meth:`~coverage.CoveragePlugin.configure` method to
+change the configuration.
+
+In your ``coverage_init`` function, use the ``add_configurer`` method to
+register your configurer.
+
+"""
 
 from coverage import files
 from coverage.misc import contract, _needs_to_implement
 
 
 class CoveragePlugin(object):
-    """Base class for coverage.py plugins.
-
-    To write a coverage.py plugin, create a module with a subclass of
-    :class:`CoveragePlugin`.  You will override methods in your class to
-    participate in various aspects of coverage.py's processing.
-
-    Currently the only plugin type is a file tracer, for implementing
-    measurement support for non-Python files.  File tracer plugins implement
-    the :meth:`file_tracer` method to claim files and the :meth:`file_reporter`
-    method to report on those files.
-
-    Any plugin can optionally implement :meth:`sys_info` to provide debugging
-    information about their operation.
-
-    Coverage.py will store its own information on your plugin object, using
-    attributes whose names start with ``_coverage_``.  Don't be startled.
-
-    To register your plugin, define a function called `coverage_init` in your
-    module::
-
-        def coverage_init(reg, options):
-            reg.add_file_tracer(MyPlugin())
-
-    You use the `reg` parameter passed to your `coverage_init` function to
-    register your plugin object.  It has one method, `add_file_tracer`, which
-    takes a newly created instance of your plugin.
-
-    If your plugin takes options, the `options` parameter is a dictionary of
-    your plugin's options from the coverage.py configuration file.  Use them
-    however you want to configure your object before registering it.
-
-    """
+    """Base class for coverage.py plug-ins."""
 
     def file_tracer(self, filename):        # pylint: disable=unused-argument
         """Get a :class:`FileTracer` object for a file.
 
-        Every Python source file is offered to the plugin to give it a chance
-        to take responsibility for tracing the file.  If your plugin can handle
-        the file, then return a :class:`FileTracer` object.  Otherwise return
-        None.
+        Plug-in type: file tracer.
 
-        There is no way to register your plugin for particular files.  Instead,
-        this method is invoked for all files, and the plugin decides whether it
-        can trace the file or not.  Be prepared for `filename` to refer to all
-        kinds of files that have nothing to do with your plugin.
+        Every Python source file is offered to your plug-in to give it a chance
+        to take responsibility for tracing the file.  If your plug-in can
+        handle the file, then return a :class:`FileTracer` object.  Otherwise
+        return None.
+
+        There is no way to register your plug-in for particular files.
+        Instead, this method is invoked for all files, and the plug-in decides
+        whether it can trace the file or not.  Be prepared for `filename` to
+        refer to all kinds of files that have nothing to do with your plug-in.
 
         The file name will be a Python file being executed.  There are two
-        broad categories of behavior for a plugin, depending on the kind of
-        files your plugin supports:
+        broad categories of behavior for a plug-in, depending on the kind of
+        files your plug-in supports:
 
         * Static file names: each of your original source files has been
-          converted into a distinct Python file.  Your plugin is invoked with
+          converted into a distinct Python file.  Your plug-in is invoked with
           the Python file name, and it maps it back to its original source
           file.
 
         * Dynamic file names: all of your source files are executed by the same
-          Python file.  In this case, your plugin implements
+          Python file.  In this case, your plug-in implements
           :meth:`FileTracer.dynamic_source_filename` to provide the actual
           source file for each execution frame.
 
@@ -73,13 +108,15 @@ class CoveragePlugin(object):
         paths, be sure to take this into account.
 
         Returns a :class:`FileTracer` object to use to trace `filename`, or
-        None if this plugin cannot trace this file.
+        None if this plug-in cannot trace this file.
 
         """
         return None
 
     def file_reporter(self, filename):      # pylint: disable=unused-argument
         """Get the :class:`FileReporter` class to use for a file.
+
+        Plug-in type: file tracer.
 
         This will only be invoked if `filename` returns non-None from
         :meth:`file_tracer`.  It's an error to return None from this method.
@@ -92,7 +129,9 @@ class CoveragePlugin(object):
     def find_executable_files(self, src_dir):       # pylint: disable=unused-argument
         """Yield all of the executable files in `src_dir`, recursively.
 
-        Executability is a plugin-specific property, but generally means files
+        Plug-in type: file tracer.
+
+        Executability is a plug-in-specific property, but generally means files
         which would have been considered for coverage analysis, had they been
         included automatically.
 
@@ -102,11 +141,27 @@ class CoveragePlugin(object):
         """
         return []
 
+    def configure(self, config):
+        """Modify the configuration of coverage.py.
+
+        Plug-in type: configurer.
+
+        This method is called during coverage.py start-up, to give your plug-in
+        a change to change the configuration.  The `config` parameter is an
+        object with :meth:`~coverage.Coverage.get_option` and
+        :meth:`~coverage.Coverage.set_option` methods.  Do not call any other
+        methods on the `config` object.
+
+        """
+        pass
+
     def sys_info(self):
         """Get a list of information useful for debugging.
 
+        Plug-in type: any.
+
         This method will be invoked for ``--debug=sys``.  Your
-        plugin can return any information it wants to be displayed.
+        plug-in can return any information it wants to be displayed.
 
         Returns a list of pairs: `[(name, value), ...]`.
 
@@ -116,6 +171,9 @@ class CoveragePlugin(object):
 
 class FileTracer(object):
     """Support needed for files during the execution phase.
+
+    File tracer plug-ins implement subclasses of FileTracer to return from
+    their :meth:`~CoveragePlugin.file_tracer` method.
 
     You may construct this object from :meth:`CoveragePlugin.file_tracer` any
     way you like.  A natural choice would be to pass the file name given to
@@ -131,7 +189,7 @@ class FileTracer(object):
     def source_filename(self):
         """The source file name for this file.
 
-        This may be any file name you like.  A key responsibility of a plugin
+        This may be any file name you like.  A key responsibility of a plug-in
         is to own the mapping from Python execution back to whatever source
         file name was originally the source of the code.
 
@@ -164,7 +222,7 @@ class FileTracer(object):
     def dynamic_source_filename(self, filename, frame):     # pylint: disable=unused-argument
         """Get a dynamically computed source file name.
 
-        Some plugins need to compute the source file name dynamically for each
+        Some plug-ins need to compute the source file name dynamically for each
         frame.
 
         This function will not be invoked if
@@ -197,13 +255,13 @@ class FileTracer(object):
 class FileReporter(object):
     """Support needed for files during the analysis and reporting phases.
 
-    See :ref:`howitworks` for details of the different coverage.py phases.
-
-    `FileReporter` objects should only be created in the
-    :meth:`CoveragePlugin.file_reporter` method.
+    File tracer plug-ins implement a subclass of `FileReporter`, and return
+    instances from their :meth:`CoveragePlugin.file_reporter` method.
 
     There are many methods here, but only :meth:`lines` is required, to provide
     the set of executable lines in the file.
+
+    See :ref:`howitworks` for details of the different coverage.py phases.
 
     """
 
@@ -248,7 +306,7 @@ class FileReporter(object):
     def lines(self):
         """Get the executable lines in this file.
 
-        Your plugin must determine which lines in the file were possibly
+        Your plug-in must determine which lines in the file were possibly
         executable.  This method returns a set of those line numbers.
 
         Returns a set of line numbers.
@@ -259,7 +317,7 @@ class FileReporter(object):
     def excluded_lines(self):
         """Get the excluded executable lines in this file.
 
-        Your plugin can use any method it likes to allow the user to exclude
+        Your plug-in can use any method it likes to allow the user to exclude
         executable lines from consideration.
 
         Returns a set of line numbers.
@@ -277,8 +335,8 @@ class FileReporter(object):
         multi-line statement, but reports are nicer if they mention the first
         line.
 
-        Your plugin can optionally define this method to perform these kinds of
-        adjustment.
+        Your plug-in can optionally define this method to perform these kinds
+        of adjustment.
 
         `lines` is a sequence of integers, the recorded line numbers.
 
@@ -292,7 +350,7 @@ class FileReporter(object):
     def arcs(self):
         """Get the executable arcs in this file.
 
-        To support branch coverage, your plugin needs to be able to indicate
+        To support branch coverage, your plug-in needs to be able to indicate
         possible execution paths, as a set of line number pairs.  Each pair is
         a `(prev, next)` pair indicating that execution can transition from the
         `prev` line number to the `next` line number.
@@ -306,7 +364,7 @@ class FileReporter(object):
     def no_branch_lines(self):
         """Get the lines excused from branch coverage in this file.
 
-        Your plugin can use any method it likes to allow the user to exclude
+        Your plug-in can use any method it likes to allow the user to exclude
         lines from consideration of branch coverage.
 
         Returns a set of line numbers.
@@ -337,7 +395,7 @@ class FileReporter(object):
         executable line number to a count of how many exits it has.
 
         To be honest, this feels wrong, and should be refactored.  Let me know
-        if you attempt to implement this method in your plugin...
+        if you attempt to implement this method in your plug-in...
 
         """
         return {}

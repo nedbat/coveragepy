@@ -20,6 +20,7 @@ class Plugins(object):
         self.order = []
         self.names = {}
         self.file_tracers = []
+        self.configurers = []
 
         self.current_module = None
         self.debug = None
@@ -59,6 +60,15 @@ class Plugins(object):
 
         """
         self._add_plugin(plugin, self.file_tracers)
+
+    def add_configurer(self, plugin):
+        """Add a configuring plugin.
+
+        `plugin` is an instance of a third-party plugin class. It must
+        implement the :meth:`CoveragePlugin.configure` method.
+
+        """
+        self._add_plugin(plugin, self.configurers)
 
     def add_noop(self, plugin):
         """Add a plugin that does nothing.

@@ -11,6 +11,7 @@ import os
 import platform
 import re
 import sys
+import time
 import traceback
 
 from coverage import env
@@ -216,13 +217,21 @@ class Coverage(object):
                 self._debug_file = sys.stderr
         self.debug = DebugControl(self.config.debug, self._debug_file)
 
-        # Load plugins
-        self.plugins = Plugins.load_plugins(self.config.plugins, self.config, self.debug)
-
         # _exclude_re is a dict that maps exclusion list names to compiled regexes.
         self._exclude_re = {}
 
         set_relative_directory()
+
+        # Load plugins
+        self.plugins = Plugins.load_plugins(self.config.plugins, self.config, self.debug)
+
+        # Run configuring plugins.
+        for plugin in self.plugins.configurers:
+            # We need an object with set_option and get_option. Either self or
+            # self.config will do. Choosing randomly stops people from doing
+            # other things with those objects, against the public API.  Yes,
+            # this is a bit childish. :)
+            plugin.configure([self, self.config][int(time.time()) % 2])
 
         # The source argument can be directories or package names.
         self.source = []
@@ -507,7 +516,7 @@ class Coverage(object):
                     break
             except Exception:
                 self._warn(
-                    "Disabling plugin %r due to an exception:" % (
+                    "Disabling plug-in %r due to an exception:" % (
                         plugin._coverage_plugin_name
                     )
                 )
@@ -639,8 +648,8 @@ class Coverage(object):
         option name.  For example, the ``branch`` option in the ``[run]``
         section of the config file would be indicated with ``"run:branch"``.
 
-        `value` is the new value for the option.  This should be a Python
-        value where appropriate.  For example, use True for booleans, not the
+        `value` is the new value for the option.  This should be an
+        appropriate Python value.  For example, use True for booleans, not the
         string ``"True"``.
 
         As an example, calling::
