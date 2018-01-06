@@ -165,7 +165,7 @@ parts that you know aren't interesting.  See :ref:`source` and :ref:`excluding`
 for details.
 
 .. _pytest: http://doc.pytest.org
-.. _pytest-cov: http://pytest-cov.readthedocs.io
+.. _pytest-cov: https://pytest-cov.readthedocs.io/
 
 
 .. _contact:

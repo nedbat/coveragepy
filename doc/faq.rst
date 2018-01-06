@@ -27,7 +27,7 @@ coverage.py's documentation.  Additionally nose and its coverage plugin are
 unmaintained at this point, so they aren't receiving any fixes or other
 updates.
 
-__ http://nose.readthedocs.io/en/latest/plugins/cover.html
+__ https://nose.readthedocs.io/en/latest/plugins/cover.html
 
 
 **Q: How do I run nosetests under coverage.py with tox?**
@@ -42,7 +42,7 @@ $(which nosetests)`` doesn't work in tox.ini because tox doesn't handle the
 shell command substitution. Tox's `string substitution`__ shown above does the
 trick.
 
-__ http://tox.readthedocs.io/en/latest/config.html#substitutions
+__ https://tox.readthedocs.io/en/latest/config.html#substitutions
 
 
 **Q: I use nose to run my tests, and its coverage plugin doesn't let me create
@@ -52,7 +52,7 @@ First run your tests and collect coverage data with `nose`_ and its plugin.
 This will write coverage data into a .coverage file.  Then run coverage.py from
 the :ref:`command line <cmd>` to create the reports you need from that data.
 
-.. _nose: http://nose.readthedocs.io
+.. _nose: https://nose.readthedocs.io/
 
 
 **Q: Why do unexecutable lines show up as executed?**

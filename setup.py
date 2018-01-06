@@ -50,7 +50,7 @@ with open(cov_ver_py) as version_file:
     exec(compile(version_file.read(), cov_ver_py, 'exec'))
 
 with open("README.rst") as readme:
-    long_description = readme.read().replace("http://coverage.readthedocs.io", __url__)
+    long_description = readme.read().replace("https://coverage.readthedocs.io", __url__)
 
 with open("CONTRIBUTORS.txt", "rb") as contributors:
     paras = contributors.read().split(b"\n\n")

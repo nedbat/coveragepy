@@ -114,7 +114,7 @@ libraries in use by the product code.  If your program uses `multiprocessing`_,
 option, or coverage.py will produce very wrong results.
 
 .. _multiprocessing: https://docs.python.org/3/library/multiprocessing.html
-.. _greenlet: http://greenlet.readthedocs.io/en/latest/
+.. _greenlet: https://greenlet.readthedocs.io/
 .. _gevent: http://www.gevent.org/
 .. _eventlet: http://eventlet.net/
 

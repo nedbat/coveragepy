@@ -411,7 +411,7 @@ Work from the PyCon 2016 Sprints!
 - The `test_helpers` module has been moved into a separate pip-installable
   package: `unittest-mixins`_.
 
-.. _automatic subprocess measurement: http://coverage.readthedocs.io/en/latest/subprocess.html
+.. _automatic subprocess measurement: https://coverage.readthedocs.io/en/latest/subprocess.html
 .. _issue 199: https://bitbucket.org/ned/coveragepy/issues/199/add-a-way-to-sort-the-text-report
 .. _issue 231: https://bitbucket.org/ned/coveragepy/issues/231/various-default-behavior-in-report-phase
 .. _issue 298: https://bitbucket.org/ned/coveragepy/issues/298/show-in-html-report-that-the-columns-are
@@ -1339,7 +1339,7 @@ Version 3.5.3 --- 2012-09-29
 .. _issue 194: https://bitbucket.org/ned/coveragepy/issues/194/filelocatorrelative_filename-could-mangle
 .. _issue 195: https://bitbucket.org/ned/coveragepy/issues/195/pyo-file-handling-in-codeunit
 .. _issue 197: https://bitbucket.org/ned/coveragepy/issues/197/line-numbers-in-html-report-do-not-align
-.. _tox: http://tox.readthedocs.io/
+.. _tox: https://tox.readthedocs.io/
 
 
 .. _changes_352:
