@@ -114,7 +114,7 @@ the processes that multiprocessing creates.  Best practice is to use the
 configuration file for all options.
 
 .. _multiprocessing: https://docs.python.org/3/library/multiprocessing.html
-.. _greenlet: http://greenlet.readthedocs.io/en/latest/
+.. _greenlet: https://greenlet.readthedocs.io/
 .. _gevent: http://www.gevent.org/
 .. _eventlet: http://eventlet.net/
 

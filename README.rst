@@ -27,7 +27,7 @@ Coverage.py runs on many versions of Python:
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 `Bitbucket`_, with a mirrored repository on `GitHub`_.
 
-.. _Read the Docs: http://coverage.readthedocs.io
+.. _Read the Docs: https://coverage.readthedocs.io/
 .. _Bitbucket: https://bitbucket.org/ned/coveragepy
 .. _GitHub: https://github.com/nedbat/coveragepy
 
@@ -50,7 +50,7 @@ Getting Started
 
 See the `Quick Start section`_ of the docs.
 
-.. _Quick Start section: http://coverage.readthedocs.io/#quick-start
+.. _Quick Start section: https://coverage.readthedocs.io/#quick-start
 
 
 Contributing
@@ -58,7 +58,7 @@ Contributing
 
 See the `Contributing section`_ of the docs.
 
-.. _Contributing section: http://coverage.readthedocs.io/en/latest/contributing.html
+.. _Contributing section: https://coverage.readthedocs.io/en/latest/contributing.html
 
 
 License
@@ -77,7 +77,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
     :target: https://ci.appveyor.com/project/nedbat/coveragepy
     :alt: Windows build status
 .. |docs| image:: https://readthedocs.org/projects/coverage/badge/?version=latest&style=flat
-    :target: http://coverage.readthedocs.io
+    :target: https://coverage.readthedocs.io/
     :alt: Documentation
 .. |reqs| image:: https://requires.io/github/nedbat/coveragepy/requirements.svg?branch=master
     :target: https://requires.io/github/nedbat/coveragepy/requirements/?branch=master
