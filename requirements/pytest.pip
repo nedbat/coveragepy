@@ -2,6 +2,8 @@
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
 # The pytest specifics used by coverage.py
-pytest==3.3.1
+
+# Keep pytest at 3.2.x until we are done with Python 2.6 and 3.3
+pytest==3.2.5
 pytest-xdist==1.20.1
 flaky==3.4.0
