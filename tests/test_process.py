@@ -552,6 +552,9 @@ class ProcessTest(CoverageTest):
         self.assertIn("Trace function changed", out)
 
     def test_note(self):
+        if env.PYPY and env.PYPYVERSION[:2] == (5, 10):
+            # https://bitbucket.org/pypy/pypy/issues/2729/pypy3-510-incorrectly-decodes-astral-plane
+            self.skipTest("Avoid incorrect decoding astral plane JSON chars")
         self.make_file(".coveragerc", """\
             [run]
             data_file = mydata.dat
@@ -564,7 +567,8 @@ class ProcessTest(CoverageTest):
         data.read_file("mydata.dat")
         infos = data.run_infos()
         self.assertEqual(len(infos), 1)
-        self.assertEqual(infos[0]['note'], u"These are musical notes: ♫𝅗𝅥♩")
+        expected = u"These are musical notes: ♫𝅗𝅥♩"
+        self.assertEqual(infos[0]['note'], expected)
 
     @pytest.mark.expensive
     def test_fullcoverage(self):                        # pragma: no metacov
