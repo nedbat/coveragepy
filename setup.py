@@ -106,6 +106,8 @@ setup_args = dict(
     license='Apache 2.0',
     classifiers=classifier_list,
     url="https://bitbucket.org/ned/coveragepy",
+
+    python_requires=">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
 )
 
 # A replacement for the build_ext command which raises a single exception
