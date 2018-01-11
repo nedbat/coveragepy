@@ -12,8 +12,8 @@ Plug-ins
 .. :history: 20171228T213800, updated for configurer plugins
 
 
-Coverage.py's behavior can be extended with third-party plug-ins.  A plug-in is a
-separately installed Python class that you register in your .coveragerc.
+Coverage.py's behavior can be extended with third-party plug-ins.  A plug-in is
+a separately installed Python class that you register in your .coveragerc.
 Plugins can alter a number of aspects of coverage.py's behavior, including
 implementing coverage measurement for non-Python files.
 
@@ -36,8 +36,8 @@ a coverage.py plug-in called ``something.plugin``.
 
 #. Configure coverage.py to use the plug-in.  You do this by editing (or
    creating) your .coveragerc file, as described in :ref:`config`.  The
-   ``plugins`` setting indicates your plug-in.  It's a list of importable module
-   names of plug-ins::
+   ``plugins`` setting indicates your plug-in.  It's a list of importable
+   module names of plug-ins::
 
     [run]
     plugins =
