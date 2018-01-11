@@ -13,14 +13,25 @@ import types
 def show_pyc_file(fname):
     f = open(fname, "rb")
     magic = f.read(4)
-    moddate = f.read(4)
-    modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
     print("magic %s" % (binascii.hexlify(magic)))
-    print("moddate %s (%s)" % (binascii.hexlify(moddate), modtime))
-    if sys.version_info >= (3, 3):
-        # 3.3 added another long to the header (size).
-        size = f.read(4)
-        print("pysize %s (%d)" % (binascii.hexlify(size), struct.unpack('<L', size)[0]))
+    read_date_and_size = True
+    if sys.version_info >= (3, 7):
+        # 3.7 added a flags word
+        flags = struct.unpack('<L', f.read(4))[0]
+        hash_based = flags & 0x01
+        check_source = flags & 0x02
+        print("flags 0x%08x" % (flags,))
+        if hash_based:
+            source_hash = f.read(8)
+            read_date_and_size = False
+    if read_date_and_size:
+        moddate = f.read(4)
+        modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
+        print("moddate %s (%s)" % (binascii.hexlify(moddate), modtime))
+        if sys.version_info >= (3, 3):
+            # 3.3 added another long to the header (size).
+            size = f.read(4)
+            print("pysize %s (%d)" % (binascii.hexlify(size), struct.unpack('<L', size)[0]))
     code = marshal.load(f)
     show_code(code)
 

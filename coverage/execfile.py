@@ -5,6 +5,7 @@
 
 import marshal
 import os
+import struct
 import sys
 import types
 
@@ -253,11 +254,19 @@ def make_code_from_pyc(filename):
         if magic != PYC_MAGIC_NUMBER:
             raise NoCode("Bad magic number in .pyc file")
 
-        # Skip the junk in the header that we don't need.
-        fpyc.read(4)            # Skip the moddate.
-        if sys.version_info >= (3, 3):
-            # 3.3 added another long to the header (size), skip it.
-            fpyc.read(4)
+        date_based = True
+        if sys.version_info >= (3, 7):
+            flags = struct.unpack('<L', fpyc.read(4))[0]
+            hash_based = flags & 0x01
+            if hash_based:
+                fpyc.read(8)    # Skip the hash.
+                date_based = False
+        if date_based:
+            # Skip the junk in the header that we don't need.
+            fpyc.read(4)            # Skip the moddate.
+            if sys.version_info >= (3, 3):
+                # 3.3 added another long to the header (size), skip it.
+                fpyc.read(4)
 
         # The rest of the file is the code object we want.
         code = marshal.load(fpyc)
