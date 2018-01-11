@@ -1122,7 +1122,13 @@ class OptimizedIfTest(CoverageTest):
             """,
             arcz=".1 12 24 41 26 61 1.",
         )
-        # No Python optimizes away "if not __debug__:"
+        # Before 3.7, no Python optimized away "if not __debug__:"
+        if env.PYVERSION < (3, 7):
+            arcz = ".1 12 23 31 34 41 26 61 1."
+            arcz_missing = "34 41"
+        else:
+            arcz = ".1 12 23 31 26 61 1."
+            arcz_missing = ""
         self.check_coverage("""\
             for value in [True, False]:
                 if value:
@@ -1131,8 +1137,8 @@ class OptimizedIfTest(CoverageTest):
                 else:
                     x = 6
             """,
-            arcz=".1 12 23 31 34 41 26 61 1.",
-            arcz_missing="34 41",
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
 
 
