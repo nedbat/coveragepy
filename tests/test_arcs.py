@@ -1123,7 +1123,7 @@ class OptimizedIfTest(CoverageTest):
             arcz=".1 12 24 41 26 61 1.",
         )
         # Before 3.7, no Python optimized away "if not __debug__:"
-        if env.PYVERSION < (3, 7):
+        if env.PYVERSION < (3, 7, 0, 'alpha', 4):
             arcz = ".1 12 23 31 34 41 26 61 1."
             arcz_missing = "34 41"
         else:

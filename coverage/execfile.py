@@ -255,7 +255,7 @@ def make_code_from_pyc(filename):
             raise NoCode("Bad magic number in .pyc file")
 
         date_based = True
-        if sys.version_info >= (3, 7):
+        if sys.version_info > (3, 7, 0, 'alpha', 2):
             flags = struct.unpack('<L', fpyc.read(4))[0]
             hash_based = flags & 0x01
             if hash_based:
