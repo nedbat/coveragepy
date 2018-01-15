@@ -552,7 +552,7 @@ class ProcessTest(CoverageTest):
         self.assertIn("Trace function changed", out)
 
     def test_note(self):
-        if env.PYPY and env.PYPYVERSION[:2] == (5, 10):
+        if env.PYPY and env.PY3 and env.PYPYVERSION[:3] == (5, 10, 0):
             # https://bitbucket.org/pypy/pypy/issues/2729/pypy3-510-incorrectly-decodes-astral-plane
             self.skipTest("Avoid incorrect decoding astral plane JSON chars")
         self.make_file(".coveragerc", """\
