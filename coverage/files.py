@@ -3,6 +3,7 @@
 
 """File wrangling."""
 
+import hashlib
 import fnmatch
 import ntpath
 import os
@@ -75,6 +76,9 @@ def canonical_filename(filename):
     return CANONICAL_FILENAME_CACHE[filename]
 
 
+MAX_FLAT = 200
+
+@contract(filename='unicode', returns='unicode')
 def flat_rootname(filename):
     """A base for a flat file name to correspond to this file.
 
@@ -86,7 +90,11 @@ def flat_rootname(filename):
 
     """
     name = ntpath.splitdrive(filename)[1]
-    return re.sub(r"[\\/.:]", "_", name)
+    name = re.sub(r"[\\/.:]", "_", name)
+    if len(name) > MAX_FLAT:
+        h = hashlib.sha1(name.encode('UTF-8')).hexdigest()
+        name = name[-(MAX_FLAT-len(h)-1):] + '_' + h
+    return name
 
 
 if env.WINDOWS:

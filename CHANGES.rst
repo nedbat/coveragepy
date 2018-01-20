@@ -13,7 +13,13 @@ Unreleased
   See :ref:`api_plugin` for details.  This solves the complex configuration
   problem described in `issue 563`_.
 
+- On Windows, the HTML report could fail when source trees are deeply nested,
+  due to attempting to create HTML filenames longer than the 250-character
+  maximum.  Now filenames will never exceed 200 characters, fixing `issue
+  627`_.  Thanks to Alex Sandro for helping with the fix.
+
 .. _issue 563: https://bitbucket.org/ned/coveragepy/issues/563/platform-specific-configuration
+.. _issue 627: https://bitbucket.org/ned/coveragepy/issues/627/failure-generating-html-reports-when-the
 
 
 .. _changes_442:

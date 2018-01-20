@@ -1,3 +1,4 @@
+# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
@@ -5,6 +6,8 @@
 
 import os
 import os.path
+
+import pytest
 
 from coverage import files
 from coverage.files import (
@@ -54,9 +57,24 @@ class FilesTest(CoverageTest):
         rel = os.path.join('sub', trick, 'file1.py')
         self.assertEqual(files.relative_filename(abs_file(rel)), rel)
 
-    def test_flat_rootname(self):
-        self.assertEqual(flat_rootname("a/b/c.py"), "a_b_c_py")
-        self.assertEqual(flat_rootname(r"c:\foo\bar.html"), "_foo_bar_html")
+
+@pytest.mark.parametrize("original, flat", [
+    (u"a/b/c.py", u"a_b_c_py"),
+    (u"c:\\foo\\bar.html", u"_foo_bar_html"),
+    (u"Montréal/☺/conf.py", u"Montréal_☺_conf_py"),
+    ( # original:
+        u"c:\\lorem\\ipsum\\quia\\dolor\\sit\\amet\\consectetur\\adipisci\\velit\\sed\\quia\\non"
+        u"\\numquam\\eius\\modi\\tempora\\incidunt\\ut\\labore\\et\\dolore\\magnam\\aliquam"
+        u"\\quaerat\\voluptatem\\ut\\enim\\ad\\minima\\veniam\\quis\\nostrum\\exercitationem"
+        u"\\ullam\\corporis\\suscipit\\laboriosam\\Montréal\\☺\\my_program.py",
+        # flat:
+        u"re_et_dolore_magnam_aliquam_quaerat_voluptatem_ut_enim_ad_minima_veniam_quis_"
+        u"nostrum_exercitationem_ullam_corporis_suscipit_laboriosam_Montréal_☺_my_program_py_"
+        u"97eaca41b860faaa1a21349b1f3009bb061cf0a8"
+     ),
+])
+def test_flat_rootname(original, flat):
+    assert flat_rootname(original) == flat
 
 
 class MatcherTest(CoverageTest):
