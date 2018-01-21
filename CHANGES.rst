@@ -24,15 +24,21 @@ Unreleased
   the other.  This is now corrected, fixing `issue 621`_ and `issue 622`_.
   Thanks to Daniel Hahler for seeing more clearly than I could.
 
+- The ``coverage combine`` command used to always overwrite the data file, even
+  when no data had been read from apparently combinable files.  Now, an error
+  is raised if we thought there were files to combine, but in fact none of them
+  could be used.  Fixes `issue 629`_.
+
 - On Windows, the HTML report could fail when source trees are deeply nested,
   due to attempting to create HTML filenames longer than the 250-character
-  maximum.  Now filenames will never exceed 200 characters, fixing `issue
-  627`_.  Thanks to Alex Sandro for helping with the fix.
+  maximum.  Now filenames will never get much larger than 200 characters,
+  fixing `issue 627`_.  Thanks to Alex Sandro for helping with the fix.
 
 .. _issue 563: https://bitbucket.org/ned/coveragepy/issues/563/platform-specific-configuration
 .. _issue 621: https://bitbucket.org/ned/coveragepy/issues/621/include-ignored-warning-when-using
 .. _issue 622: https://bitbucket.org/ned/coveragepy/issues/622/report-omit-overwrites-run-omit
 .. _issue 627: https://bitbucket.org/ned/coveragepy/issues/627/failure-generating-html-reports-when-the
+.. _issue 629: https://bitbucket.org/ned/coveragepy/issues/629/multiple-use-of-combine-leads-to-empty
 .. _issue 631: https://bitbucket.org/ned/coveragepy/issues/631/precise-coverage-percentage-value
 
 

@@ -144,6 +144,40 @@ class ProcessTest(CoverageTest):
         data.read_file(".coverage")
         self.assertEqual(data.line_counts()['b_or_c.py'], 7)
 
+    def test_combine_no_usable_files(self):
+        # https://bitbucket.org/ned/coveragepy/issues/629/multiple-use-of-combine-leads-to-empty
+        self.make_b_or_c_py()
+        out = self.run_command("coverage run b_or_c.py b")
+        self.assertEqual(out, 'done\n')
+        self.assert_exists(".coverage")
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        # Make bogus data files.
+        self.make_file(".coverage.bad1", "This isn't a coverage data file.")
+        self.make_file(".coverage.bad2", "This isn't a coverage data file.")
+
+        # Combine the parallel coverage data files into .coverage, but nothing is readable.
+        status, out = self.run_command_status("coverage combine")
+        self.assertEqual(status, 1)
+
+        for n in "12":
+            self.assert_exists(".coverage.bad{0}".format(n))
+            warning_regex = (
+                r"Coverage.py warning: Couldn't read data from '.*\.coverage\.bad{0}': "
+                r"CoverageException: Doesn't seem to be a coverage\.py data file".format(n)
+            )
+            self.assertRegex(out, warning_regex)
+        self.assertRegex(out, r"No usable data files")
+
+        # After combining, we should have a main file and two parallel files.
+        self.assertEqual(self.number_of_data_files(), 3)
+
+        # Read the coverage file and see that b_or_c.py has 6 lines
+        # executed (we only did b, not c).
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.line_counts()['b_or_c.py'], 6)
+
     def test_combine_parallel_data_in_two_steps(self):
         self.make_b_or_c_py()
 

@@ -722,6 +722,7 @@ class CoverageDataFiles(object):
         if strict and not files_to_combine:
             raise CoverageException("No data to combine")
 
+        files_combined = 0
         for f in files_to_combine:
             new_data = CoverageData(debug=self.debug)
             try:
@@ -733,9 +734,13 @@ class CoverageDataFiles(object):
                     self.warn(str(exc))
             else:
                 data.update(new_data, aliases=aliases)
+                files_combined += 1
                 if self.debug and self.debug.should('dataio'):
                     self.debug.write("Deleting combined data file %r" % (f,))
                 file_be_gone(f)
+
+        if strict and not files_combined:
+            raise CoverageException("No usable data files")
 
 
 def canonicalize_json_data(data):
