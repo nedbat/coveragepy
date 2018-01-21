@@ -122,6 +122,41 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.assertIn("mycode.py ", report)
         self.assertEqual(self.last_line_squeezed(report), "mycode.py 4 0 100%")
 
+    def test_run_source_vs_report_include(self):
+        # https://bitbucket.org/ned/coveragepy/issues/621/include-ignored-warning-when-using
+        self.make_file(".coveragerc", """\
+            [run]
+            source = .
+
+            [report]
+            include = mod/*,tests/*
+            """)
+        # It should be OK to use that configuration.
+        cov = coverage.Coverage()
+        with self.assert_warnings(cov, []):
+            cov.start()
+            cov.stop()                                                  # pragma: nested
+
+    def test_run_omit_vs_report_omit(self):
+        # https://bitbucket.org/ned/coveragepy/issues/622/report-omit-overwrites-run-omit
+        # report:omit shouldn't clobber run:omit.
+        self.make_mycode()
+        self.make_file(".coveragerc", """\
+            [run]
+            omit = */covmodzip1.py
+
+            [report]
+            omit = */covmod1.py
+            """)
+        self.run_command("coverage run mycode.py")
+
+        # Read the data written, to see that the right files have been omitted from running.
+        covdata = CoverageData()
+        covdata.read_file(".coverage")
+        files = [os.path.basename(p) for p in covdata.measured_files()]
+        self.assertIn("covmod1.py", files)
+        self.assertNotIn("covmodzip1.py", files)
+
     def test_report_branches(self):
         self.make_file("mybranch.py", """\
             def branch(x):

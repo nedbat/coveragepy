@@ -34,6 +34,7 @@ Cosimo Lupo
 Dan Riti
 Dan Wandschneider
 Danek Duvall
+Daniel Hahler
 Danny Allen
 David Christian
 David MacIver

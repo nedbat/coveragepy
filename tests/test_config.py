@@ -357,7 +357,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
 
         self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])
         self.assertTrue(cov.config.ignore_errors)
-        self.assertEqual(cov.config.run_omit, cov.config.report_omit)
+        self.assertEqual(cov.config.run_omit, ["twenty"])
         self.assertEqual(cov.config.report_omit, ["one", "another", "some_more", "yet_more"])
         self.assertEqual(cov.config.report_include, ["thirty"])
         self.assertEqual(cov.config.precision, 3)

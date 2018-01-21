@@ -325,11 +325,11 @@ class CoverageConfig(object):
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
         ('disable_warnings', 'run:disable_warnings', 'list'),
-        ('_include', 'run:include', 'list'),
         ('note', 'run:note'),
-        ('_omit', 'run:omit', 'list'),
         ('parallel', 'run:parallel', 'boolean'),
         ('plugins', 'run:plugins', 'list'),
+        ('run_include', 'run:include', 'list'),
+        ('run_omit', 'run:omit', 'list'),
         ('source', 'run:source', 'list'),
         ('timid', 'run:timid', 'boolean'),
 
@@ -337,11 +337,11 @@ class CoverageConfig(object):
         ('exclude_list', 'report:exclude_lines', 'regexlist'),
         ('fail_under', 'report:fail_under', 'int'),
         ('ignore_errors', 'report:ignore_errors', 'boolean'),
-        ('_include', 'report:include', 'list'),
-        ('_omit', 'report:omit', 'list'),
         ('partial_always_list', 'report:partial_branches_always', 'regexlist'),
         ('partial_list', 'report:partial_branches', 'regexlist'),
         ('precision', 'report:precision', 'int'),
+        ('report_include', 'report:include', 'list'),
+        ('report_omit', 'report:omit', 'list'),
         ('show_missing', 'report:show_missing', 'boolean'),
         ('skip_covered', 'report:skip_covered', 'boolean'),
         ('sort', 'report:sort'),
@@ -468,12 +468,6 @@ def read_coverage_config(config_file, **kwargs):
 
             if config_read:
                 break
-
-        for attr in ('_omit', '_include'):
-            value = getattr(config, attr)
-            if value is not None:
-                for section in ('run', 'report'):
-                    setattr(config, section + attr, value)
 
     # 3) from environment variables:
     env_data_file = os.environ.get('COVERAGE_FILE')
