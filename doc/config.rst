@@ -202,8 +202,11 @@ reported as missing.  More details are in :ref:`excluding`.  If you use this
 option, you are replacing all the exclude regexes, so you'll need to also
 supply the "pragma: no cover" regex if you still want to use it.
 
-``fail_under`` (integer): a target coverage percentage. If the total coverage
-measurement is under this value, then exit with a status code of 2.
+``fail_under`` (float): a target coverage percentage. If the total coverage
+measurement is under this value, then exit with a status code of 2.  If you
+specify a non-integral value, you must also set ``[report] precision`` properly
+to make use of the decimal places.  A setting of 100 will fail any value under
+100, regardless of the number of decimal places of precision.
 
 ``ignore_errors`` (boolean, default False): ignore source code that can't be
 found, emitting a warning instead of an exception.
@@ -222,7 +225,8 @@ supply the "pragma: no branch" regex if you still want to use it.
 
 ``precision`` (integer): the number of digits after the decimal point to
 display for reported coverage percentages.  The default is 0, displaying for
-example "87%".  A value of 2 will display percentages like "87.32%".
+example "87%".  A value of 2 will display percentages like "87.32%".  This
+setting also affects the interpretation of the ``fail_under`` setting.
 
 ``show_missing`` (boolean, default False): when running a summary report, show
 missing lines.  See :ref:`cmd_summary` for more information.

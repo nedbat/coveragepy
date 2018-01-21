@@ -63,6 +63,11 @@ class BaseCmdLineTest(CoverageTest):
         config = CoverageConfig()
         mk.get_option = config.get_option
 
+        # Get the type right for the result of reporting.
+        mk.report.return_value = 50.0
+        mk.html_report.return_value = 50.0
+        mk.xml_report.return_value = 50.0
+
         return mk
 
     def mock_command_line(self, args, path_exists=None):
@@ -755,6 +760,7 @@ class CoverageReportingFake(object):
     """A fake Coverage and Coverage.coverage test double."""
     # pylint: disable=missing-docstring
     def __init__(self, report_result, html_result, xml_result):
+        self.config = CoverageConfig()
         self.report_result = report_result
         self.html_result = html_result
         self.xml_result = xml_result
@@ -763,10 +769,10 @@ class CoverageReportingFake(object):
         return self
 
     def set_option(self, optname, optvalue):
-        setattr(self, optname, optvalue)
+        self.config.set_option(optname, optvalue)
 
     def get_option(self, optname):
-        return getattr(self, optname)
+        return self.config.get_option(optname)
 
     def load(self):
         pass
@@ -801,7 +807,7 @@ class CoverageReportingFake(object):
 ])
 def test_fail_under(results, fail_under, cmd, ret):
     cov = CoverageReportingFake(*results)
-    if fail_under:
+    if fail_under is not None:
         cov.set_option("report:fail_under", fail_under)
     ret_actual = command_line(cmd, _covpkg=cov)
     assert ret_actual == ret

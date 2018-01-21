@@ -199,7 +199,7 @@ class CoverageConfig(object):
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
-        self.fail_under = 0
+        self.fail_under = 0.0
         self.ignore_errors = False
         self.report_include = None
         self.report_omit = None
@@ -335,7 +335,7 @@ class CoverageConfig(object):
 
         # [report]
         ('exclude_list', 'report:exclude_lines', 'regexlist'),
-        ('fail_under', 'report:fail_under', 'int'),
+        ('fail_under', 'report:fail_under', 'float'),
         ('ignore_errors', 'report:ignore_errors', 'boolean'),
         ('partial_always_list', 'report:partial_branches_always', 'regexlist'),
         ('partial_list', 'report:partial_branches', 'regexlist'),

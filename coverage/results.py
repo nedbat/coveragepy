@@ -6,7 +6,7 @@
 import collections
 
 from coverage.backward import iitems
-from coverage.misc import format_lines, SimpleRepr
+from coverage.misc import contract, format_lines, SimpleRepr
 
 
 class Analysis(object):
@@ -271,25 +271,19 @@ class Numbers(SimpleRepr):
         return NotImplemented
 
 
-def should_fail_under(total, fail_under):
+@contract(total='number', fail_under='number', precision=int, returns=bool)
+def should_fail_under(total, fail_under, precision):
     """Determine if a total should fail due to fail-under.
 
     `total` is a float, the coverage measurement total. `fail_under` is the
-    fail_under setting to compare with.
+    fail_under setting to compare with. `precision` is the number of digits
+    to consider after the decimal point.
 
     Returns True if the total should fail.
 
     """
-    # The fail_under option defaults to 0.
-    if fail_under:
-        # Total needs to be rounded, but don't want to report 100
-        # unless it is really 100.
-        if 99 < total < 100:
-            total = 99
-        else:
-            total = round(total)
+    # Special case for fail_under=100, it must really be 100.
+    if fail_under == 100.0 and total != 100.0:
+        return True
 
-        if total < fail_under:
-            return True
-
-    return False
+    return round(total, precision) < fail_under

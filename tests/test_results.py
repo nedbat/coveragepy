@@ -78,21 +78,30 @@ class NumbersTest(CoverageTest):
         self.assertEqual(n.ratio_covered, (160, 210))
 
 
-@pytest.mark.parametrize("total, fail_under, result", [
+@pytest.mark.parametrize("total, fail_under, precision, result", [
     # fail_under==0 means anything is fine!
-    (0, 0, False),
-    (0.001, 0, False),
+    (0, 0, 0, False),
+    (0.001, 0, 0, False),
     # very small fail_under is possible to fail.
-    (0.001, 0.01, True),
+    (0.001, 0.01, 0, True),
     # Rounding should work properly.
-    (42.1, 42, False),
-    (42.1, 43, True),
-    (42.857, 42, False),
-    (42.857, 43, False),
-    (42.857, 44, True),
+    (42.1, 42, 0, False),
+    (42.1, 43, 0, True),
+    (42.857, 42, 0, False),
+    (42.857, 43, 0, False),
+    (42.857, 44, 0, True),
+    (42.857, 42.856, 3, False),
+    (42.857, 42.858, 3, True),
+    # If you don't specify precision, your fail-under is rounded.
+    (42.857, 42.856, 0, False),
     # Values near 100 should only be treated as 100 if they are 100.
-    (99.8, 100, True),
-    (100.0, 100, False),
+    (99.8, 100, 0, True),
+    (100.0, 100, 0, False),
+    (99.8, 99.7, 1, False),
+    (99.88, 99.90, 2, True),
+    (99.999, 100, 1, True),
+    (99.999, 100, 2, True),
+    (99.999, 100, 3, True),
 ])
-def test_should_fail_under(total, fail_under, result):
-    assert should_fail_under(total, fail_under) == result
+def test_should_fail_under(total, fail_under, precision, result):
+    assert should_fail_under(float(total), float(fail_under), precision) == result

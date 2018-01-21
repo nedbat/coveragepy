@@ -65,6 +65,7 @@ Josh Williams
 Julian Berman
 Krystian Kichewko
 Kyle Altendorf
+Lars Hupfeldt Nielsen
 Leonardo Pistone
 Lex Berezhny
 Loïc Dachary

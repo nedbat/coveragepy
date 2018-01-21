@@ -960,18 +960,22 @@ class FailUnderTest(CoverageTest):
             """)
         st, _ = self.run_command_status("coverage run forty_two_plus.py")
         self.assertEqual(st, 0)
-        st, out = self.run_command_status("coverage report")
-        self.assertEqual(st, 0)
-        self.assertEqual(
-            self.last_line_squeezed(out),
-            "forty_two_plus.py 7 4 43%"
-        )
 
-    def test_report(self):
-        st, _ = self.run_command_status("coverage report --fail-under=43")
+    def test_report_43_is_ok(self):
+        st, out = self.run_command_status("coverage report --fail-under=43")
         self.assertEqual(st, 0)
-        st, _ = self.run_command_status("coverage report --fail-under=44")
+        self.assertEqual(self.last_line_squeezed(out), "forty_two_plus.py 7 4 43%")
+
+    def test_report_43_is_not_ok(self):
+        st, out = self.run_command_status("coverage report --fail-under=44")
         self.assertEqual(st, 2)
+        self.assertEqual(self.last_line_squeezed(out), "forty_two_plus.py 7 4 43%")
+
+    def test_report_42p86_is_not_ok(self):
+        self.make_file(".coveragerc", "[report]\nprecision = 2")
+        st, out = self.run_command_status("coverage report --fail-under=42.88")
+        self.assertEqual(st, 2)
+        self.assertEqual(self.last_line_squeezed(out), "forty_two_plus.py 7 4 42.86%")
 
 
 class FailUnderNoFilesTest(CoverageTest):

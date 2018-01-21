@@ -51,7 +51,7 @@ class Opts(object):
         help="Write the output files to DIR.",
     )
     fail_under = optparse.make_option(
-        '', '--fail-under', action='store', metavar="MIN", type="int",
+        '', '--fail-under', action='store', metavar="MIN", type="float",
         help="Exit with a status of 2 if the total coverage is less than MIN.",
     )
     help = optparse.make_option(
@@ -528,7 +528,8 @@ class CoverageScript(object):
                 self.coverage.set_option("report:fail_under", options.fail_under)
 
             fail_under = self.coverage.get_option("report:fail_under")
-            if should_fail_under(total, fail_under):
+            precision = self.coverage.get_option("report:precision")
+            if should_fail_under(total, fail_under, precision):
                 return FAIL_UNDER
 
         return OK

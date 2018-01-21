@@ -13,6 +13,11 @@ Unreleased
   See :ref:`api_plugin` for details.  This solves the complex configuration
   problem described in `issue 563`_.
 
+- The ``fail_under`` option can now be a float.  Note that you must specify the
+  ``[report] precision`` configuration option for the fractional part to be
+  used.  Thanks to Lars Hupfeldt Nielsen for help with the implementation.
+  Fixes `issue 631`_.
+
 - The ``include`` and ``omit`` options can be specified for both the ``[run]``
   and ``[report]`` phases of execution.  4.4.2 introduced some incorrect
   interations between those phases, where the options for one were confused for
@@ -28,6 +33,7 @@ Unreleased
 .. _issue 621: https://bitbucket.org/ned/coveragepy/issues/621/include-ignored-warning-when-using
 .. _issue 622: https://bitbucket.org/ned/coveragepy/issues/622/report-omit-overwrites-run-omit
 .. _issue 627: https://bitbucket.org/ned/coveragepy/issues/627/failure-generating-html-reports-when-the
+.. _issue 631: https://bitbucket.org/ned/coveragepy/issues/631/precise-coverage-percentage-value
 
 
 .. _changes_442:
