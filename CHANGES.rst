@@ -20,8 +20,8 @@ Unreleased
 
 - The ``include`` and ``omit`` options can be specified for both the ``[run]``
   and ``[report]`` phases of execution.  4.4.2 introduced some incorrect
-  interations between those phases, where the options for one were confused for
-  the other.  This is now corrected, fixing `issue 621`_ and `issue 622`_.
+  interactions between those phases, where the options for one were confused
+  for the other.  This is now corrected, fixing `issue 621`_ and `issue 622`_.
   Thanks to Daniel Hahler for seeing more clearly than I could.
 
 - The ``coverage combine`` command used to always overwrite the data file, even
@@ -213,7 +213,7 @@ Version 4.3.2 --- 2017-01-16
 
 - Let's say you ran the HTML report over and over again in the same output
   directory, with ``--skip-covered``. And imagine due to your heroic
-  test-writing efforts, a file just acheived the goal of 100% coverage. With
+  test-writing efforts, a file just achieved the goal of 100% coverage. With
   coverage.py 4.3, the old HTML file with the less-than-100% coverage would be
   left behind.  This file is now properly deleted.
 
