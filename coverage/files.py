@@ -381,8 +381,7 @@ class PathAliases(object):
             m = regex.match(path)
             if m:
                 new = path.replace(m.group(0), result)
-                if pattern_sep != result_sep:
-                    new = new.replace(pattern_sep, result_sep)
+                new = new.replace(sep(path), result_sep)
                 new = canonical_filename(new)
                 return new
         return path

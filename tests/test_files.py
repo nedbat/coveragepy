@@ -246,6 +246,38 @@ class PathAliasesTest(CoverageTest):
         aliases.add(r'c:\ned\src', r'.\mysrc')
         self.assert_mapped(aliases, r'/home/ned/foo/src/sub/a.py', r'.\mysrc\sub\a.py')
 
+    def test_windows_on_linux(self):
+        # https://bitbucket.org/ned/coveragepy/issues/618/problem-when-combining-windows-generated
+        lin = "*/project/module/"
+        win = "*\\project\\module\\"
+
+        # Try the paths in both orders.
+        for paths in [[lin, win], [win, lin]]:
+            aliases = PathAliases()
+            for path in paths:
+                aliases.add(path, "project/module")
+            self.assert_mapped(
+                aliases,
+                "C:\\a\\path\\somewhere\\coveragepy_test\\project\\module\\tests\\file.py",
+                "project/module/tests/file.py"
+            )
+
+    def test_linux_on_windows(self):
+        # https://bitbucket.org/ned/coveragepy/issues/618/problem-when-combining-windows-generated
+        lin = "*/project/module/"
+        win = "*\\project\\module\\"
+
+        # Try the paths in both orders.
+        for paths in [[lin, win], [win, lin]]:
+            aliases = PathAliases()
+            for path in paths:
+                aliases.add(path, "project\\module")
+            self.assert_mapped(
+                aliases,
+                "C:/a/path/somewhere/coveragepy_test/project/module/tests/file.py",
+                "project\\module\\tests\\file.py"
+            )
+
     def test_multiple_wildcard(self):
         aliases = PathAliases()
         aliases.add('/home/jenkins/*/a/*/b/*/django', './django')
