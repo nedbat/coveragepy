@@ -312,7 +312,7 @@ class PathAliases(object):
 
     def pprint(self):       # pragma: debugging
         """Dump the important parts of the PathAliases, for debugging."""
-        for regex, result, _, _ in self.aliases:
+        for regex, result in self.aliases:
             print("{0!r} --> {1!r}".format(regex.pattern, result))
 
     def add(self, pattern, result):
@@ -359,7 +359,7 @@ class PathAliases(object):
         # Normalize the result: it must end with a path separator.
         result_sep = sep(result)
         result = result.rstrip(r"\/") + result_sep
-        self.aliases.append((regex, result, pattern_sep, result_sep))
+        self.aliases.append((regex, result))
 
     def map(self, path):
         """Map `path` through the aliases.
@@ -377,11 +377,11 @@ class PathAliases(object):
         of `path` unchanged.
 
         """
-        for regex, result, pattern_sep, result_sep in self.aliases:
+        for regex, result in self.aliases:
             m = regex.match(path)
             if m:
                 new = path.replace(m.group(0), result)
-                new = new.replace(sep(path), result_sep)
+                new = new.replace(sep(path), sep(result))
                 new = canonical_filename(new)
                 return new
         return path
