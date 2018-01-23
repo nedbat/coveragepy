@@ -67,7 +67,7 @@ not.
 
     * Python versions 2.6, 2.7, 3.3, 3.4, 3.5, 3.6, and 3.7.
 
-    * PyPy2 5.9 and PyPy3 5.9.
+    * PyPy2 5.10 and PyPy3 5.10.
 
     * Jython 2.7.1, though only for running code, not reporting.
 
