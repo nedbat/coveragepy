@@ -853,6 +853,8 @@ class BadFileTracerTest(FileTracerTest):
 class ConfigurerPluginTest(CoverageTest):
     """Test configuring plugins."""
 
+    run_in_temp_dir = False
+
     def test_configurer_plugin(self):
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ["tests.plugin_config"])
