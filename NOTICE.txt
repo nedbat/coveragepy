@@ -1,5 +1,5 @@
 Copyright 2001 Gareth Rees.  All rights reserved.
-Copyright 2004-2017 Ned Batchelder.  All rights reserved.
+Copyright 2004-2018 Ned Batchelder.  All rights reserved.
 
 Except where noted otherwise, this software is licensed under the Apache
 License, Version 2.0 (the "License"); you may not use this work except in

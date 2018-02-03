@@ -32,7 +32,9 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 
-**New in 4.4:** Suppressable warnings, continuous coverage measurement.
+**New in 4.5:** Configurator plug-ins.
+
+New in 4.4: Suppressable warnings, continuous coverage measurement.
 
 New in 4.3: HTML ``--skip-covered``, sys.excepthook support, tox.ini
 support.

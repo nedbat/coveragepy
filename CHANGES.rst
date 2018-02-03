@@ -5,8 +5,8 @@
 Change history for Coverage.py
 ==============================
 
-Unreleased
-----------
+Version 4.5 --- 2018-02-03
+--------------------------
 
 - A new kind of plugin is supported: configurators are invoked at start-up to
   allow more complex configuration than the .coveragerc file can easily do.
