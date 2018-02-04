@@ -147,7 +147,7 @@ class CoveragePlugin(object):
         Plug-in type: configurer.
 
         This method is called during coverage.py start-up, to give your plug-in
-        a change to change the configuration.  The `config` parameter is an
+        a chance to change the configuration.  The `config` parameter is an
         object with :meth:`~coverage.Coverage.get_option` and
         :meth:`~coverage.Coverage.set_option` methods.  Do not call any other
         methods on the `config` object.
