@@ -187,6 +187,23 @@ class PythonParserTest(CoverageTest):
         self.assertEqual(parser.raw_statements, set([1, 2, 3, 5, 6, 7, 8]))
         self.assertEqual(parser.statements, set([1, 2, 3]))
 
+    def test_empty_decorated_function(self):
+        parser = self.parse_source("""\
+            def decorator(func):
+                return func
+
+            @decorator
+            def foo(self):
+                '''Docstring'''
+
+            @decorator
+            def bar(self):
+                pass
+            """)
+        self.assertEqual(parser.statements, set([1, 2, 4, 8, 10]))
+        self.assertEqual(parser.arcs(), set(self.arcz_to_arcs(".1 14 48 8.  .2 2.  -8A A-8")))
+        self.assertEqual(parser.exit_counts(), {1: 1, 2: 1, 4: 1, 8: 1, 10: 1})
+
 
 class ParserMissingArcDescriptionTest(CoverageTest):
     """Tests for PythonParser.missing_arc_description."""

@@ -19,7 +19,11 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-(none yet)
+- On Python 3.7, reporting about a decorated function with no body other than a
+  docstring would crash coverage.py with an IndexError (`issue 640`_).  This is
+  now fixed.
+
+.. _issue 640: https://bitbucket.org/ned/coveragepy/issues/640/indexerror-reporting-on-an-empty-decorated
 
 
 .. _changes_45:

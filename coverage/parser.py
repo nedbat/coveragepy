@@ -831,12 +831,13 @@ class AstArcAnalyzer(object):
             # in `self.statements`.  For some constructs, `line_for_node` is
             # not what we'd think of as the first line in the statement, so map
             # it to the first one.
-            body_start = self.line_for_node(node.body[0])
-            body_start = self.multiline.get(body_start, body_start)
-            for lineno in range(last+1, body_start):
-                if lineno in self.statements:
-                    self.add_arc(last, lineno)
-                    last = lineno
+            if node.body:
+                body_start = self.line_for_node(node.body[0])
+                body_start = self.multiline.get(body_start, body_start)
+                for lineno in range(last+1, body_start):
+                    if lineno in self.statements:
+                        self.add_arc(last, lineno)
+                        last = lineno
         # The body is handled in collect_arcs.
         return set([ArcStart(last)])
 
