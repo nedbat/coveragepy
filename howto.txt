@@ -74,13 +74,17 @@
 - Update readthedocs
     - visit https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
+        - keep just the latest version of each x.y release, make the rest inactive.
     - IF NOT BETA:
+        - visit https://readthedocs.org/projects/coverage/builds/
+        - wait for the new tag build to finish successfully.
         - visit https://readthedocs.org/dashboard/coverage/versions/
         - change the default version to the new version
 - Update bitbucket:
     - Issue tracker should get new version number in picker.
     # Note: don't delete old version numbers: it marks changes on the tickets
     # with that number.
+- Visit the fixed issues on bitbucket and mention the version it was fixed in.
 - Announce on coveragepy-announce@googlegroups.com .
 - Announce on TIP.
 
