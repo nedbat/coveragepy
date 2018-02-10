@@ -559,9 +559,7 @@ class Coverage(object):
             if self.source_pkgs_match.match(modulename):
                 if modulename in self.source_pkgs_unmatched:
                     self.source_pkgs_unmatched.remove(modulename)
-                return None  # There's no reason to skip this file.
-
-            if not self.source_match.match(filename):
+            elif not self.source_match.match(filename):
                 return "falls outside the --source trees"
         elif self.include_match:
             if not self.include_match.match(filename):

@@ -19,10 +19,16 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Now that 4.5 properly separated the ``[run] omit`` and ``[report] omit``
+  settings, and old bug has become apparent.  If you specified a package name
+  for ``[run] source``, then omit patterns weren't matched inside that package.
+  This bug (`issue 638`_) is now fixed.
+
 - On Python 3.7, reporting about a decorated function with no body other than a
   docstring would crash coverage.py with an IndexError (`issue 640`_).  This is
   now fixed.
 
+.. _issue 638: https://bitbucket.org/ned/coveragepy/issues/638/run-omit-is-ignored-since-45
 .. _issue 640: https://bitbucket.org/ned/coveragepy/issues/640/indexerror-reporting-on-an-empty-decorated
 
 

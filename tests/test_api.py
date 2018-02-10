@@ -615,6 +615,13 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         self.filenames_not_in(lines, "p1b")
         self.assertEqual(lines['p1c'], 0)
 
+    def test_source_package_as_package_part_omitted(self):
+        # https://bitbucket.org/ned/coveragepy/issues/638/run-omit-is-ignored-since-45
+        lines = self.coverage_usepkgs(source=["pkg1"], omit=["*/p1b.py"])
+        self.filenames_in(lines, "p1a")
+        self.filenames_not_in(lines, "p1b")
+        self.assertEqual(lines['p1c'], 0)
+
 
 class ReportIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
     """Tests of the report include/omit functionality."""
