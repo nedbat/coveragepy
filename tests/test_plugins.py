@@ -183,7 +183,7 @@ class PluginTest(CoverageTest):
                     return [("hello", "world")]
 
             def coverage_init(reg, options):
-                reg.add_noop(Plugin())
+                reg.add_file_tracer(Plugin())
             """)
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
@@ -191,10 +191,11 @@ class PluginTest(CoverageTest):
         cov.set_option("run:plugins", ["plugin_sys_info"])
         cov.load()
 
-        out_lines = debug_out.getvalue().splitlines()
+        out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
+        self.assertIn('plugins.file_tracers: plugin_sys_info.Plugin', out_lines)
         expected_end = [
             "-- sys: plugin_sys_info.Plugin -------------------------------",
-            " hello: world",
+            "hello: world",
             "-- end -------------------------------------------------------",
             ]
         self.assertEqual(expected_end, out_lines[-len(expected_end):])
@@ -207,7 +208,7 @@ class PluginTest(CoverageTest):
                 pass
 
             def coverage_init(reg, options):
-                reg.add_noop(Plugin())
+                reg.add_configurer(Plugin())
             """)
         debug_out = StringIO()
         cov = coverage.Coverage(debug=["sys"])
@@ -215,7 +216,8 @@ class PluginTest(CoverageTest):
         cov.set_option("run:plugins", ["plugin_no_sys_info"])
         cov.load()
 
-        out_lines = debug_out.getvalue().splitlines()
+        out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
+        self.assertIn('plugins.configurers: plugin_no_sys_info.Plugin', out_lines)
         expected_end = [
             "-- sys: plugin_no_sys_info.Plugin ----------------------------",
             "-- end -------------------------------------------------------",

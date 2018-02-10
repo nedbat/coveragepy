@@ -1152,12 +1152,15 @@ class Coverage(object):
 
         self._init()
 
-        ft_plugins = []
-        for ft in self.plugins.file_tracers:
-            ft_name = ft._coverage_plugin_name
-            if not ft._coverage_enabled:
-                ft_name += " (disabled)"
-            ft_plugins.append(ft_name)
+        def plugin_info(plugins):
+            """Make an entry for the sys_info from a list of plug-ins."""
+            entries = []
+            for plugin in plugins:
+                entry = plugin._coverage_plugin_name
+                if not plugin._coverage_enabled:
+                    entry += " (disabled)"
+                entries.append(entry)
+            return entries
 
         info = [
             ('version', covmod.__version__),
@@ -1165,7 +1168,8 @@ class Coverage(object):
             ('cover_paths', self.cover_paths),
             ('pylib_paths', self.pylib_paths),
             ('tracer', self.collector.tracer_name()),
-            ('plugins.file_tracers', ft_plugins),
+            ('plugins.file_tracers', plugin_info(self.plugins.file_tracers)),
+            ('plugins.configurers', plugin_info(self.plugins.configurers)),
             ('config_files', self.config.attempted_config_files),
             ('configs_read', self.config.config_files),
             ('data_path', self.data_files.filename),
