@@ -9,8 +9,6 @@ Plug-in classes
 
 .. :history: 20150815T132400, new doc for 4.0b2
 
-.. versionadded:: 4.0
-
 .. automodule:: coverage.plugin
 
 

@@ -2,6 +2,8 @@
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
 """
+.. versionadded:: 4.0
+
 Plug-in interfaces for coverage.py.
 
 Coverage.py supports a few different kinds of plug-ins that change its
@@ -42,6 +44,12 @@ you want to configure your object before registering it.
 Coverage.py will store its own information on your plug-in object, using
 attributes whose names start with ``_coverage_``.  Don't be startled.
 
+.. warning::
+    Plug-ins are imported by coverage.py before it begins measuring code.
+    If you write a plugin in your own project, it might import your product
+    code before coverage.py can start measuring.  This can result in your
+    own code being reported as missing.
+
 
 File Tracers
 ============
@@ -57,6 +65,8 @@ register your file tracer.
 
 Configurers
 ===========
+
+.. versionadded:: 4.5
 
 Configurers modify the configuration of coverage.py during start-up.
 Configurers implement the :meth:`~coverage.CoveragePlugin.configure` method to
