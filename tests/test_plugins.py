@@ -192,7 +192,11 @@ class PluginTest(CoverageTest):
         cov.load()
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
-        self.assertIn('plugins.file_tracers: plugin_sys_info.Plugin', out_lines)
+        if env.C_TRACER:
+            self.assertIn('plugins.file_tracers: plugin_sys_info.Plugin', out_lines)
+        else:
+            self.assertIn('plugins.file_tracers: plugin_sys_info.Plugin (disabled)', out_lines)
+        self.assertIn('plugins.configurers: -none-', out_lines)
         expected_end = [
             "-- sys: plugin_sys_info.Plugin -------------------------------",
             "hello: world",
@@ -217,6 +221,7 @@ class PluginTest(CoverageTest):
         cov.load()
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
+        self.assertIn('plugins.file_tracers: -none-', out_lines)
         self.assertIn('plugins.configurers: plugin_no_sys_info.Plugin', out_lines)
         expected_end = [
             "-- sys: plugin_no_sys_info.Plugin ----------------------------",
