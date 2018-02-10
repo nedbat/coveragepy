@@ -50,6 +50,9 @@ attributes whose names start with ``_coverage_``.  Don't be startled.
     code before coverage.py can start measuring.  This can result in your
     own code being reported as missing.
 
+    One solution is to put your plugins in your project tree, but not in
+    your importable Python package.
+
 
 File Tracers
 ============
