@@ -900,7 +900,7 @@ class Coverage(object):
 
     def _find_plugin_files(self, src_dir):
         """Get executable files from the plugins."""
-        for plugin in self.plugins:
+        for plugin in self.plugins.file_tracers:
             for x_file in plugin.find_executable_files(src_dir):
                 yield x_file, plugin._coverage_plugin_name
 
