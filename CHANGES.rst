@@ -16,8 +16,10 @@ Change history for Coverage.py
     ..  ----------------------------
 
 
-Unreleased
-----------
+.. _changes_451:
+
+Version 4.5.1 --- 2018-02-10
+----------------------------
 
 - Now that 4.5 properly separated the ``[run] omit`` and ``[report] omit``
   settings, an old bug has become apparent.  If you specified a package name
@@ -28,7 +30,7 @@ Unreleased
   docstring would crash coverage.py with an IndexError (`issue 640`_).  This is
   now fixed.
 
-- Configurer plugins are now being reported in the output of ``--debug=sys``.
+- Configurer plugins are now reported in the output of ``--debug=sys``.
 
 .. _issue 638: https://bitbucket.org/ned/coveragepy/issues/638/run-omit-is-ignored-since-45
 .. _issue 640: https://bitbucket.org/ned/coveragepy/issues/640/indexerror-reporting-on-an-empty-decorated
