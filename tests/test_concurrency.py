@@ -335,7 +335,7 @@ MULTI_CODE = """
     import sys
 
     def process_worker_main(args):
-        # Need to pause, or the tasks go too quick, and some processes
+        # Need to pause, or the tasks go too quickly, and some processes
         # in the pool don't get any work, and then don't record data.
         time.sleep(0.02)
         ret = work(*args)
@@ -359,7 +359,7 @@ MULTI_CODE = """
     """
 
 
-@flaky(max_runs=10)         # Sometimes a test fails due to inherent randomness. Try one more time.
+@flaky(max_runs=10)         # Sometimes a test fails due to inherent randomness. Try more times.
 class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
 
@@ -403,7 +403,7 @@ class MultiprocessingTest(CoverageTest):
                 last_line = self.squeezed_lines(out)[-1]
                 self.assertRegex(last_line, r"multi.py \d+ 0 100%")
 
-    def test_multiprocessing(self):
+    def test_multiprocessing_simple(self):
         nprocs = 3
         upto = 30
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
