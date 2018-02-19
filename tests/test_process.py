@@ -676,9 +676,11 @@ class ProcessTest(CoverageTest):
                 pass
             """)
         self.make_file("run_twice.py", """\
+            import sys
             import coverage
 
-            for _ in [1, 2]:
+            for i in [1, 2]:
+                sys.stderr.write("Run %s\\n" % i)
                 inst = coverage.Coverage(source=['foo'])
                 inst.load()
                 inst.start()
@@ -689,6 +691,8 @@ class ProcessTest(CoverageTest):
         out = self.run_command("python run_twice.py")
         self.assertEqual(
             out,
+            "Run 1\n"
+            "Run 2\n"
             "Coverage.py warning: Module foo was previously imported, but not measured "
             "(module-not-measured)\n"
         )
