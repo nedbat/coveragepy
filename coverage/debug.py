@@ -215,7 +215,7 @@ class DebugOutputFile(object):                              # pragma: debugging
             self.write("New process: executable: %s\n" % (sys.executable,))
             self.write("New process: cmd: %s\n" % (cmd,))
             if hasattr(os, 'getppid'):
-                self.write("New process: parent pid: %s\n" % (os.getppid(),))
+                self.write("New process: pid: %s, parent pid: %s\n" % (os.getpid(), os.getppid()))
 
     SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
 
@@ -234,7 +234,8 @@ class DebugOutputFile(object):                              # pragma: debugging
         # on a class attribute. Yes, this is aggressively gross.
         the_one = sys.modules.get(cls.SYS_MOD_NAME)
         if the_one is None:
-            assert fileobj is not None
+            if fileobj is None:
+                fileobj = open("/tmp/debug_log.txt", "a")
             sys.modules[cls.SYS_MOD_NAME] = the_one = cls(fileobj, show_process, filters)
         return the_one
 
