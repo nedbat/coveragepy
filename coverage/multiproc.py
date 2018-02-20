@@ -33,6 +33,7 @@ class ProcessWithCoverage(OriginalProcess):
         from coverage import Coverage       # avoid circular import
         rcfile = os.environ[COVERAGE_RCFILE_ENV]
         cov = Coverage(data_suffix=True, config_file=rcfile)
+        cov._warn_preimported_source = False
         cov.start()
         debug = cov.debug
         try:

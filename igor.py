@@ -122,11 +122,8 @@ def run_tests_with_coverage(tracer, *runner_args):
 
     import coverage
     cov = coverage.Coverage(config_file="metacov.ini", data_suffix=False)
-    # Cheap trick: the coverage.py code itself is excluded from measurement,
-    # but if we clobber the cover_prefix in the coverage object, we can defeat
-    # the self-detection.
-    cov.cover_prefix = "Please measure coverage.py!"
     cov._warn_unimported_source = False
+    cov._warn_preimported_source = False
     cov.start()
 
     try:

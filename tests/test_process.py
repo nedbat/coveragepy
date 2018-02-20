@@ -585,6 +585,30 @@ class ProcessTest(CoverageTest):
 
         self.assertIn("Trace function changed", out)
 
+    def test_warn_preimported(self):
+        self.make_file("hello.py", """\
+            import goodbye
+            import coverage
+            cov = coverage.Coverage(include=["good*"])
+            cov.start()
+            print(goodbye.f())
+            cov.stop()
+            """)
+        self.make_file("goodbye.py", """\
+            def f():
+                return "Goodbye!"
+            """)
+        goodbye_path = os.path.abspath("goodbye.py")
+
+        out = self.run_command("python hello.py")
+        self.assertIn("Goodbye!", out)
+
+        msg = (
+            "Coverage.py warning: "
+            "Already imported a file that will be measured: {0} "
+            "(already-imported)").format(goodbye_path)
+        self.assertIn(msg, out)
+
     def test_note(self):
         if env.PYPY and env.PY3 and env.PYPYVERSION[:3] == (5, 10, 0):
             # https://bitbucket.org/pypy/pypy/issues/2729/pypy3-510-incorrectly-decodes-astral-plane

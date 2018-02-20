@@ -5,6 +5,7 @@
 
 import fnmatch
 import os
+import os.path
 import sys
 import textwrap
 import warnings

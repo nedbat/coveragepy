@@ -74,6 +74,10 @@ class Coverage(object):
         cov.html_report(directory='covhtml')
 
     """
+    # A global to know if we have ever checked for files imported before
+    # coverage has been started.
+    _checked_preimported = False
+
     def __init__(
         self, data_file=None, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
@@ -164,6 +168,7 @@ class Coverage(object):
         # Is it ok for no data to be collected?
         self._warn_no_data = True
         self._warn_unimported_source = True
+        self._warn_preimported_source = True
 
         # A record of all the warnings that have been issued.
         self._warnings = []
@@ -434,7 +439,7 @@ class Coverage(object):
         else:
             return dunder_name
 
-    def _should_trace_internal(self, filename, frame):
+    def _should_trace_internal(self, filename, frame=None):
         """Decide whether to trace execution in `filename`, with a reason.
 
         This function is called from the trace function.  As each new file name
@@ -452,22 +457,23 @@ class Coverage(object):
             disp.reason = reason
             return disp
 
-        # Compiled Python files have two file names: frame.f_code.co_filename is
-        # the file name at the time the .pyc was compiled.  The second name is
-        # __file__, which is where the .pyc was actually loaded from.  Since
-        # .pyc files can be moved after compilation (for example, by being
-        # installed), we look for __file__ in the frame and prefer it to the
-        # co_filename value.
-        dunder_file = frame.f_globals and frame.f_globals.get('__file__')
-        if dunder_file:
-            filename = source_for_file(dunder_file)
-            if original_filename and not original_filename.startswith('<'):
-                orig = os.path.basename(original_filename)
-                if orig != os.path.basename(filename):
-                    # Files shouldn't be renamed when moved. This happens when
-                    # exec'ing code.  If it seems like something is wrong with
-                    # the frame's file name, then just use the original.
-                    filename = original_filename
+        if frame is not None:
+            # Compiled Python files have two file names: frame.f_code.co_filename is
+            # the file name at the time the .pyc was compiled.  The second name is
+            # __file__, which is where the .pyc was actually loaded from.  Since
+            # .pyc files can be moved after compilation (for example, by being
+            # installed), we look for __file__ in the frame and prefer it to the
+            # co_filename value.
+            dunder_file = frame.f_globals and frame.f_globals.get('__file__')
+            if dunder_file:
+                filename = source_for_file(dunder_file)
+                if original_filename and not original_filename.startswith('<'):
+                    orig = os.path.basename(original_filename)
+                    if orig != os.path.basename(filename):
+                        # Files shouldn't be renamed when moved. This happens when
+                        # exec'ing code.  If it seems like something is wrong with
+                        # the frame's file name, then just use the original.
+                        filename = original_filename
 
         if not filename:
             # Empty string is pretty useless.
@@ -534,22 +540,21 @@ class Coverage(object):
                     "Plugin %r didn't set source_filename for %r" %
                     (plugin, disp.original_filename)
                 )
-            reason = self._check_include_omit_etc_internal(
-                disp.source_filename, frame,
-            )
+            module_globals = frame.f_globals if frame is not None else {}
+            reason = self._check_include_omit_etc_internal(disp.source_filename, module_globals)
             if reason:
                 nope(disp, reason)
 
         return disp
 
-    def _check_include_omit_etc_internal(self, filename, frame):
+    def _check_include_omit_etc_internal(self, filename, module_globals):
         """Check a file name against the include, omit, etc, rules.
 
         Returns a string or None.  String means, don't trace, and is the reason
         why.  None means no reason found to not trace.
 
         """
-        modulename = self._name_for_module(frame.f_globals, filename)
+        modulename = self._name_for_module(module_globals, filename)
 
         # If the user specified source or include, then that's authoritative
         # about the outer bound of what to measure and we don't have to apply
@@ -599,7 +604,8 @@ class Coverage(object):
         Returns a boolean: True if the file should be traced, False if not.
 
         """
-        reason = self._check_include_omit_etc_internal(filename, frame)
+        module_globals = frame.f_globals if frame is not None else {}
+        reason = self._check_include_omit_etc_internal(filename, module_globals)
         if self.debug.should('trace'):
             if not reason:
                 msg = "Including %r" % (filename,)
@@ -698,8 +704,30 @@ class Coverage(object):
         if self._auto_load:
             self.load()
 
+        # See if we think some code that would eventually be measured has already been imported.
+        if not Coverage._checked_preimported and self._warn_preimported_source:
+            if self.include or self.source or self.source_pkgs:
+                self._check_for_already_imported_files()
+                Coverage._checked_preimported = True
+
         self.collector.start()
         self._started = True
+
+    def _check_for_already_imported_files(self):
+        """Examine sys.modules looking for files that will be measured."""
+        warned = set()
+        for mod in list(sys.modules.values()):
+            filename = getattr(mod, "__file__", None)
+            if filename is None:
+                continue
+            if filename in warned:
+                continue
+
+            disp = self._should_trace_internal(filename)
+            if disp.trace:
+                msg = "Already imported a file that will be measured: {0}".format(filename)
+                self._warn(msg, slug="already-imported")
+                warned.add(filename)
 
     def stop(self):
         """Stop measuring code coverage."""
@@ -1277,10 +1305,11 @@ def process_startup():
 
     cov = Coverage(config_file=cps)
     process_startup.coverage = cov
-    cov.start()
     cov._warn_no_data = False
     cov._warn_unimported_source = False
+    cov._warn_preimported_source = False
     cov._auto_save = True
+    cov.start()
 
     return cov
 

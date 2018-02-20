@@ -18,7 +18,9 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-None yet
+- A new warning (already-imported) is issued if measurable files have already
+  been imported before coverage.py started measurement.  See
+  :ref:`cmd_warnings` for more information.
 
 
 .. _changes_451:
