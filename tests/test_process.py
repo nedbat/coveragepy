@@ -767,7 +767,7 @@ class EnvironmentTest(CoverageTest):
         self.assert_tryexecfile_output(out_cov, out_py)
 
     def test_coverage_run_dir_is_like_python_dir(self):
-        if sys.version_info == (3, 5, 4, 'final', 0):
+        if sys.version_info == (3, 5, 4, 'final', 0):       # pragma: not covered
             self.skipTest("3.5.4 broke this: https://bugs.python.org/issue32551")
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
