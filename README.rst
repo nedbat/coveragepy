@@ -102,8 +102,8 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |license| image:: https://img.shields.io/pypi/l/coverage.svg
     :target: https://pypi.python.org/pypi/coverage
     :alt: License
-.. |codecov| image:: http://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master&precision=2
-    :target: http://codecov.io/github/nedbat/coveragepy?branch=master
+.. |codecov| image:: https://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master&precision=2
+    :target: https://codecov.io/github/nedbat/coveragepy?branch=master
     :alt: Coverage!
 .. |saythanks| image:: https://img.shields.io/badge/saythanks.io-%E2%98%BC-1EAEDB.svg
     :target: https://saythanks.io/to/nedbat
