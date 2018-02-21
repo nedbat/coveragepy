@@ -5,6 +5,9 @@ version: '{branch}-{build}'
 
 shallow_clone: true
 
+cache:
+  - '%LOCALAPPDATA%\pip\Cache'
+
 environment:
 
   CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\run_with_env.cmd"
