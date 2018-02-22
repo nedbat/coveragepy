@@ -610,7 +610,7 @@ class ProcessTest(CoverageTest):
         self.assertIn(msg, out)
 
     def test_note(self):
-        if env.PYPY and env.PY3 and env.PYPYVERSION[:3] == (5, 10, 0):
+        if env.PYPY and env.PY3 and env.PYPYVERSION[:3] == (5, 10, 0):      # pragma: obscure
             # https://bitbucket.org/pypy/pypy/issues/2729/pypy3-510-incorrectly-decodes-astral-plane
             self.skipTest("Avoid incorrect decoding astral plane JSON chars")
         self.make_file(".coveragerc", """\
@@ -767,7 +767,7 @@ class EnvironmentTest(CoverageTest):
         self.assert_tryexecfile_output(out_cov, out_py)
 
     def test_coverage_run_dir_is_like_python_dir(self):
-        if sys.version_info == (3, 5, 4, 'final', 0):       # pragma: not covered
+        if sys.version_info == (3, 5, 4, 'final', 0):       # pragma: obscure
             self.skipTest("3.5.4 broke this: https://bugs.python.org/issue32551")
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())

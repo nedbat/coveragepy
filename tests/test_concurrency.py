@@ -464,7 +464,7 @@ def test_coverage_stop_in_threads():
     has_started_coverage = []
     has_stopped_coverage = []
 
-    def run_thread():
+    def run_thread():           # pragma: nested
         """Check that coverage is stopping properly in threads."""
         deadline = time.time() + 5
         ident = threading.currentThread().ident
@@ -480,11 +480,11 @@ def test_coverage_stop_in_threads():
     cov = coverage.coverage()
     cov.start()
 
-    t = threading.Thread(target=run_thread)
-    t.start()
+    t = threading.Thread(target=run_thread)             # pragma: nested
+    t.start()                                           # pragma: nested
 
-    time.sleep(0.1)
-    cov.stop()
+    time.sleep(0.1)                                     # pragma: nested
+    cov.stop()                                          # pragma: nested
     time.sleep(0.1)
 
     assert has_started_coverage == [t.ident]
@@ -513,7 +513,7 @@ def test_thread_safe_save_data(tmpdir):
         for module_name in module_names:
             import_local_file(module_name)
 
-        def random_load():
+        def random_load():                              # pragma: nested
             """Import modules randomly to stress coverage."""
             while should_run[0]:
                 module_name = random.choice(module_names)
@@ -529,12 +529,12 @@ def test_thread_safe_save_data(tmpdir):
             cov = coverage.coverage()
             cov.start()
 
-            threads = [threading.Thread(target=random_load) for _ in range(10)]
-            should_run[0] = True
-            for t in threads:
+            threads = [threading.Thread(target=random_load) for _ in range(10)]     # pragma: nested
+            should_run[0] = True                    # pragma: nested
+            for t in threads:                       # pragma: nested
                 t.start()
 
-            time.sleep(duration)
+            time.sleep(duration)                    # pragma: nested
 
             cov.stop()
 
@@ -546,7 +546,7 @@ def test_thread_safe_save_data(tmpdir):
             for t in threads:
                 t.join()
 
-            if (not imported) and duration < 10:
+            if (not imported) and duration < 10:    # pragma: only failure
                 duration *= 2
 
     finally:
