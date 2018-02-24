@@ -30,7 +30,7 @@ from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone, isolate_module
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
-from coverage.python import PythonFileReporter, source_for_file
+from coverage.python import PythonFileReporter, source_for_file, source_for_morf
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
@@ -344,11 +344,6 @@ class Coverage(object):
             for mod in [contracts, six]:
                 self.cover_paths.append(self._canonical_path(mod))
 
-        # Set the reporting precision.
-        Numbers.set_precision(self.config.precision)
-
-        atexit.register(self._atexit)
-
         # Create the matchers we need for _should_trace
         if self.source or self.source_pkgs:
             self.source_match = TreeMatcher(self.source)
@@ -362,6 +357,11 @@ class Coverage(object):
             self.include_match = FnmatchMatcher(self.include)
         if self.omit:
             self.omit_match = FnmatchMatcher(self.omit)
+
+        # Set the reporting precision.
+        Numbers.set_precision(self.config.precision)
+
+        atexit.register(self._atexit)
 
         # The user may want to debug things, show info if desired.
         self._write_startup_debug()
@@ -394,7 +394,7 @@ class Coverage(object):
         case return its enclosing directory.
 
         """
-        morf_path = PythonFileReporter(morf, self).filename
+        morf_path = canonical_filename(source_for_morf(morf))
         if morf_path.endswith("__init__.py") or directory:
             morf_path = os.path.split(morf_path)[0]
         return morf_path
