@@ -134,7 +134,8 @@ class CoveragePlugin(object):
         This will only be invoked if `filename` returns non-None from
         :meth:`file_tracer`.  It's an error to return None from this method.
 
-        Returns a :class:`FileReporter` object to use to report on `filename`.
+        Returns a :class:`FileReporter` object to use to report on `filename`,
+        or the string `"python"` to have coverage.py treat the file as Python.
 
         """
         _needs_to_implement(self, "file_reporter")
