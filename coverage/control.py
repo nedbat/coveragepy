@@ -314,8 +314,7 @@ class Coverage(object):
         Returns a boolean: True if the file should be traced, False if not.
 
         """
-        module_globals = frame.f_globals if frame is not None else {}
-        reason = self.inorout.check_include_omit_etc(filename, module_globals)
+        reason = self.inorout.check_include_omit_etc(filename, frame)
         if self.debug.should('trace'):
             if not reason:
                 msg = "Including %r" % (filename,)

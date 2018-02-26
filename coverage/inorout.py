@@ -52,8 +52,8 @@ def canonical_path(morf, directory=False):
     return morf_path
 
 
-def name_for_module(module_globals, filename):
-    """Get the name of the module for a set of globals and file name.
+def name_for_module(filename, frame):
+    """Get the name of the module for a filename and frame.
 
     For configurability's sake, we allow __main__ modules to be matched by
     their importable name.
@@ -64,6 +64,7 @@ def name_for_module(module_globals, filename):
     can't be determined, None is returned.
 
     """
+    module_globals = frame.f_globals if frame is not None else {}
     if module_globals is None:          # pragma: only ironpython
         # IronPython doesn't provide globals: https://github.com/IronLanguages/main/issues/1296
         module_globals = {}
@@ -273,21 +274,20 @@ class InOrOut(object):
                     "Plugin %r didn't set source_filename for %r" %
                     (plugin, disp.original_filename)
                 )
-            module_globals = frame.f_globals if frame is not None else {}
-            reason = self.check_include_omit_etc(disp.source_filename, module_globals)
+            reason = self.check_include_omit_etc(disp.source_filename, frame)
             if reason:
                 nope(disp, reason)
 
         return disp
 
-    def check_include_omit_etc(self, filename, module_globals):
+    def check_include_omit_etc(self, filename, frame):
         """Check a file name against the include, omit, etc, rules.
 
         Returns a string or None.  String means, don't trace, and is the reason
         why.  None means no reason found to not trace.
 
         """
-        modulename = name_for_module(module_globals, filename)
+        modulename = name_for_module(filename, frame)
 
         # If the user specified source or include, then that's authoritative
         # about the outer bound of what to measure and we don't have to apply
