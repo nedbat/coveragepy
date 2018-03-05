@@ -149,7 +149,8 @@ class Coverage(object):
         # Other instance attributes, set later.
         self.data = self.data_files = self.collector = None
         self.plugins = None
-        self.inorout = None
+        self._inorout = None
+        self._inorout_class = InOrOut
         self.data_suffix = self.run_suffix = None
         self._exclude_re = None
         self.debug = None
@@ -243,10 +244,10 @@ class Coverage(object):
                 plugin._coverage_enabled = False
 
         # Create the file classifying substructure.
-        self.inorout = InOrOut(warn=self._warn)
-        self.inorout.configure(self.config)
-        self.inorout.plugins = self.plugins
-        self.inorout.disp_class = self.collector.file_disposition_class
+        self._inorout = self._inorout_class(warn=self._warn)
+        self._inorout.configure(self.config)
+        self._inorout.plugins = self.plugins
+        self._inorout.disp_class = self.collector.file_disposition_class
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
         # collecting data, not when combining data.  So we save it as
@@ -303,7 +304,7 @@ class Coverage(object):
         Calls `_should_trace_internal`, and returns the FileDisposition.
 
         """
-        disp = self.inorout.should_trace(filename, frame)
+        disp = self._inorout.should_trace(filename, frame)
         if self.debug.should('trace'):
             self.debug.write(disposition_debug_msg(disp))
         return disp
@@ -314,7 +315,7 @@ class Coverage(object):
         Returns a boolean: True if the file should be traced, False if not.
 
         """
-        reason = self.inorout.check_include_omit_etc(filename, frame)
+        reason = self._inorout.check_include_omit_etc(filename, frame)
         if self.debug.should('trace'):
             if not reason:
                 msg = "Including %r" % (filename,)
@@ -403,7 +404,7 @@ class Coverage(object):
 
         """
         self._init()
-        self.inorout.warn_conflicting_settings()
+        self._inorout.warn_conflicting_settings()
 
         if self.run_suffix:
             # Calling start() means we're running code, so use the run_suffix
@@ -414,7 +415,7 @@ class Coverage(object):
 
         # See if we think some code that would eventually be measured has already been imported.
         if not Coverage._checked_preimported and self._warn_preimported_source:
-            Coverage._checked_preimported = self.inorout.warn_already_imported_files()
+            Coverage._checked_preimported = self._inorout.warn_already_imported_files()
 
         self.collector.start()
         self._started = True
@@ -563,14 +564,14 @@ class Coverage(object):
         # If there are still entries in the source_pkgs_unmatched list,
         # then we never encountered those packages.
         if self._warn_unimported_source:
-            self.inorout.warn_unimported_source()
+            self._inorout.warn_unimported_source()
 
         # Find out if we got any data.
         if not self.data and self._warn_no_data:
             self._warn("No data was collected.", slug="no-data-collected")
 
         # Find files that were never executed at all.
-        for file_path, plugin_name in self.inorout.find_unexecuted_files():
+        for file_path, plugin_name in self._inorout.find_unexecuted_files():
             self.data.touch_file(file_path, plugin_name)
 
         if self.config.note:
@@ -839,7 +840,7 @@ class Coverage(object):
             ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
             ]
 
-        info.extend(self.inorout.sys_info())
+        info.extend(self._inorout.sys_info())
 
         return info
 
