@@ -5,14 +5,10 @@
 
 
 import atexit
-import inspect
-import itertools
 import os
 import platform
-import re
 import sys
 import time
-import traceback
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
@@ -21,16 +17,15 @@ from coverage.collector import Collector
 from coverage.config import read_coverage_config
 from coverage.data import CoverageData, CoverageDataFiles
 from coverage.debug import DebugControl, write_formatted_info
-from coverage.files import TreeMatcher, FnmatchMatcher
-from coverage.files import PathAliases, find_python_files, prep_patterns
-from coverage.files import canonical_filename, set_relative_directory
-from coverage.files import ModuleMatcher, abs_file
+from coverage.disposition import disposition_debug_msg
+from coverage.files import PathAliases, set_relative_directory, abs_file
 from coverage.html import HtmlReporter
+from coverage.inorout import InOrOut
 from coverage.misc import CoverageException, bool_or_none, join_regex
 from coverage.misc import file_be_gone, isolate_module
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
-from coverage.python import PythonFileReporter, source_for_file, source_for_morf
+from coverage.python import PythonFileReporter
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
@@ -42,22 +37,6 @@ except ImportError:                                         # pragma: only jytho
     patch_multiprocessing = None
 
 os = isolate_module(os)
-
-# Pypy has some unusual stuff in the "stdlib".  Consider those locations
-# when deciding where the stdlib is.  These modules are not used for anything,
-# they are modules importable from the pypy lib directories, so that we can
-# find those directories.
-_structseq = _pypy_irc_topic = None
-if env.PYPY:
-    try:
-        import _structseq
-    except ImportError:
-        pass
-
-    try:
-        import _pypy_irc_topic
-    except ImportError:
-        pass
 
 
 class Coverage(object):
@@ -159,12 +138,6 @@ class Coverage(object):
         self._auto_load = self._auto_save = auto_data
         self._data_suffix = data_suffix
 
-        # The matchers for _should_trace.
-        self.source_match = None
-        self.source_pkgs_match = None
-        self.pylib_match = self.cover_match = None
-        self.include_match = self.omit_match = None
-
         # Is it ok for no data to be collected?
         self._warn_no_data = True
         self._warn_unimported_source = True
@@ -174,12 +147,10 @@ class Coverage(object):
         self._warnings = []
 
         # Other instance attributes, set later.
-        self.omit = self.include = self.source = None
-        self.source_pkgs_unmatched = None
-        self.source_pkgs = None
         self.data = self.data_files = self.collector = None
         self.plugins = None
-        self.pylib_paths = self.cover_paths = None
+        self._inorout = None
+        self._inorout_class = InOrOut
         self.data_suffix = self.run_suffix = None
         self._exclude_re = None
         self.debug = None
@@ -238,19 +209,6 @@ class Coverage(object):
             # this is a bit childish. :)
             plugin.configure([self, self.config][int(time.time()) % 2])
 
-        # The source argument can be directories or package names.
-        self.source = []
-        self.source_pkgs = []
-        for src in self.config.source or []:
-            if os.path.isdir(src):
-                self.source.append(canonical_filename(src))
-            else:
-                self.source_pkgs.append(src)
-        self.source_pkgs_unmatched = self.source_pkgs[:]
-
-        self.omit = prep_patterns(self.config.run_omit)
-        self.include = prep_patterns(self.config.run_include)
-
         concurrency = self.config.concurrency or []
         if "multiprocessing" in concurrency:
             if not patch_multiprocessing:
@@ -285,6 +243,12 @@ class Coverage(object):
             for plugin in self.plugins.file_tracers:
                 plugin._coverage_enabled = False
 
+        # Create the file classifying substructure.
+        self._inorout = self._inorout_class(warn=self._warn)
+        self._inorout.configure(self.config)
+        self._inorout.plugins = self.plugins
+        self._inorout.disp_class = self.collector.file_disposition_class
+
         # Suffixes are a bit tricky.  We want to use the data suffix only when
         # collecting data, not when combining data.  So we save it as
         # `self.run_suffix` now, and promote it to `self.data_suffix` if we
@@ -305,58 +269,6 @@ class Coverage(object):
         self.data_files = CoverageDataFiles(
             basename=self.config.data_file, warn=self._warn, debug=self.debug,
         )
-
-        # The directories for files considered "installed with the interpreter".
-        self.pylib_paths = set()
-        if not self.config.cover_pylib:
-            # Look at where some standard modules are located. That's the
-            # indication for "installed with the interpreter". In some
-            # environments (virtualenv, for example), these modules may be
-            # spread across a few locations. Look at all the candidate modules
-            # we've imported, and take all the different ones.
-            for m in (atexit, inspect, os, platform, _pypy_irc_topic, re, _structseq, traceback):
-                if m is not None and hasattr(m, "__file__"):
-                    self.pylib_paths.add(self._canonical_path(m, directory=True))
-
-            if _structseq and not hasattr(_structseq, '__file__'):
-                # PyPy 2.4 has no __file__ in the builtin modules, but the code
-                # objects still have the file names.  So dig into one to find
-                # the path to exclude.
-                structseq_new = _structseq.structseq_new
-                try:
-                    structseq_file = structseq_new.func_code.co_filename
-                except AttributeError:
-                    structseq_file = structseq_new.__code__.co_filename
-                self.pylib_paths.add(self._canonical_path(structseq_file))
-
-        # To avoid tracing the coverage.py code itself, we skip anything
-        # located where we are.
-        self.cover_paths = [self._canonical_path(__file__, directory=True)]
-        if env.TESTING:
-            # Don't include our own test code.
-            self.cover_paths.append(os.path.join(self.cover_paths[0], "tests"))
-
-            # When testing, we use PyContracts, which should be considered
-            # part of coverage.py, and it uses six. Exclude those directories
-            # just as we exclude ourselves.
-            import contracts
-            import six
-            for mod in [contracts, six]:
-                self.cover_paths.append(self._canonical_path(mod))
-
-        # Create the matchers we need for _should_trace
-        if self.source or self.source_pkgs:
-            self.source_match = TreeMatcher(self.source)
-            self.source_pkgs_match = ModuleMatcher(self.source_pkgs)
-        else:
-            if self.cover_paths:
-                self.cover_match = TreeMatcher(self.cover_paths)
-            if self.pylib_paths:
-                self.pylib_match = TreeMatcher(self.pylib_paths)
-        if self.include:
-            self.include_match = FnmatchMatcher(self.include)
-        if self.omit:
-            self.omit_match = FnmatchMatcher(self.omit)
 
         # Set the reporting precision.
         Numbers.set_precision(self.config.precision)
@@ -386,216 +298,15 @@ class Coverage(object):
         if wrote_any:
             write_formatted_info(self.debug, "end", ())
 
-    def _canonical_path(self, morf, directory=False):
-        """Return the canonical path of the module or file `morf`.
-
-        If the module is a package, then return its directory. If it is a
-        module, then return its file, unless `directory` is True, in which
-        case return its enclosing directory.
-
-        """
-        morf_path = canonical_filename(source_for_morf(morf))
-        if morf_path.endswith("__init__.py") or directory:
-            morf_path = os.path.split(morf_path)[0]
-        return morf_path
-
-    def _name_for_module(self, module_globals, filename):
-        """Get the name of the module for a set of globals and file name.
-
-        For configurability's sake, we allow __main__ modules to be matched by
-        their importable name.
-
-        If loaded via runpy (aka -m), we can usually recover the "original"
-        full dotted module name, otherwise, we resort to interpreting the
-        file name to get the module's name.  In the case that the module name
-        can't be determined, None is returned.
-
-        """
-        if module_globals is None:          # pragma: only ironpython
-            # IronPython doesn't provide globals: https://github.com/IronLanguages/main/issues/1296
-            module_globals = {}
-
-        dunder_name = module_globals.get('__name__', None)
-
-        if isinstance(dunder_name, str) and dunder_name != '__main__':
-            # This is the usual case: an imported module.
-            return dunder_name
-
-        loader = module_globals.get('__loader__', None)
-        for attrname in ('fullname', 'name'):   # attribute renamed in py3.2
-            if hasattr(loader, attrname):
-                fullname = getattr(loader, attrname)
-            else:
-                continue
-
-            if isinstance(fullname, str) and fullname != '__main__':
-                # Module loaded via: runpy -m
-                return fullname
-
-        # Script as first argument to Python command line.
-        inspectedname = inspect.getmodulename(filename)
-        if inspectedname is not None:
-            return inspectedname
-        else:
-            return dunder_name
-
-    def _should_trace_internal(self, filename, frame=None):
-        """Decide whether to trace execution in `filename`, with a reason.
-
-        This function is called from the trace function.  As each new file name
-        is encountered, this function determines whether it is traced or not.
-
-        Returns a FileDisposition object.
-
-        """
-        original_filename = filename
-        disp = _disposition_init(self.collector.file_disposition_class, filename)
-
-        def nope(disp, reason):
-            """Simple helper to make it easy to return NO."""
-            disp.trace = False
-            disp.reason = reason
-            return disp
-
-        if frame is not None:
-            # Compiled Python files have two file names: frame.f_code.co_filename is
-            # the file name at the time the .pyc was compiled.  The second name is
-            # __file__, which is where the .pyc was actually loaded from.  Since
-            # .pyc files can be moved after compilation (for example, by being
-            # installed), we look for __file__ in the frame and prefer it to the
-            # co_filename value.
-            dunder_file = frame.f_globals and frame.f_globals.get('__file__')
-            if dunder_file:
-                filename = source_for_file(dunder_file)
-                if original_filename and not original_filename.startswith('<'):
-                    orig = os.path.basename(original_filename)
-                    if orig != os.path.basename(filename):
-                        # Files shouldn't be renamed when moved. This happens when
-                        # exec'ing code.  If it seems like something is wrong with
-                        # the frame's file name, then just use the original.
-                        filename = original_filename
-
-        if not filename:
-            # Empty string is pretty useless.
-            return nope(disp, "empty string isn't a file name")
-
-        if filename.startswith('memory:'):
-            return nope(disp, "memory isn't traceable")
-
-        if filename.startswith('<'):
-            # Lots of non-file execution is represented with artificial
-            # file names like "<string>", "<doctest readme.txt[0]>", or
-            # "<exec_function>".  Don't ever trace these executions, since we
-            # can't do anything with the data later anyway.
-            return nope(disp, "not a real file name")
-
-        # pyexpat does a dumb thing, calling the trace function explicitly from
-        # C code with a C file name.
-        if re.search(r"[/\\]Modules[/\\]pyexpat.c", filename):
-            return nope(disp, "pyexpat lies about itself")
-
-        # Jython reports the .class file to the tracer, use the source file.
-        if filename.endswith("$py.class"):
-            filename = filename[:-9] + ".py"
-
-        canonical = canonical_filename(filename)
-        disp.canonical_filename = canonical
-
-        # Try the plugins, see if they have an opinion about the file.
-        plugin = None
-        for plugin in self.plugins.file_tracers:
-            if not plugin._coverage_enabled:
-                continue
-
-            try:
-                file_tracer = plugin.file_tracer(canonical)
-                if file_tracer is not None:
-                    file_tracer._coverage_plugin = plugin
-                    disp.trace = True
-                    disp.file_tracer = file_tracer
-                    if file_tracer.has_dynamic_source_filename():
-                        disp.has_dynamic_filename = True
-                    else:
-                        disp.source_filename = canonical_filename(
-                            file_tracer.source_filename()
-                        )
-                    break
-            except Exception:
-                self._warn(
-                    "Disabling plug-in %r due to an exception:" % (
-                        plugin._coverage_plugin_name
-                    )
-                )
-                traceback.print_exc()
-                plugin._coverage_enabled = False
-                continue
-        else:
-            # No plugin wanted it: it's Python.
-            disp.trace = True
-            disp.source_filename = canonical
-
-        if not disp.has_dynamic_filename:
-            if not disp.source_filename:
-                raise CoverageException(
-                    "Plugin %r didn't set source_filename for %r" %
-                    (plugin, disp.original_filename)
-                )
-            module_globals = frame.f_globals if frame is not None else {}
-            reason = self._check_include_omit_etc_internal(disp.source_filename, module_globals)
-            if reason:
-                nope(disp, reason)
-
-        return disp
-
-    def _check_include_omit_etc_internal(self, filename, module_globals):
-        """Check a file name against the include, omit, etc, rules.
-
-        Returns a string or None.  String means, don't trace, and is the reason
-        why.  None means no reason found to not trace.
-
-        """
-        modulename = self._name_for_module(module_globals, filename)
-
-        # If the user specified source or include, then that's authoritative
-        # about the outer bound of what to measure and we don't have to apply
-        # any canned exclusions. If they didn't, then we have to exclude the
-        # stdlib and coverage.py directories.
-        if self.source_match:
-            if self.source_pkgs_match.match(modulename):
-                if modulename in self.source_pkgs_unmatched:
-                    self.source_pkgs_unmatched.remove(modulename)
-            elif not self.source_match.match(filename):
-                return "falls outside the --source trees"
-        elif self.include_match:
-            if not self.include_match.match(filename):
-                return "falls outside the --include trees"
-        else:
-            # If we aren't supposed to trace installed code, then check if this
-            # is near the Python standard library and skip it if so.
-            if self.pylib_match and self.pylib_match.match(filename):
-                return "is in the stdlib"
-
-            # We exclude the coverage.py code itself, since a little of it
-            # will be measured otherwise.
-            if self.cover_match and self.cover_match.match(filename):
-                return "is part of coverage.py"
-
-        # Check the file against the omit pattern.
-        if self.omit_match and self.omit_match.match(filename):
-            return "is inside an --omit pattern"
-
-        # No reason found to skip this file.
-        return None
-
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.
 
         Calls `_should_trace_internal`, and returns the FileDisposition.
 
         """
-        disp = self._should_trace_internal(filename, frame)
+        disp = self._inorout.should_trace(filename, frame)
         if self.debug.should('trace'):
-            self.debug.write(_disposition_debug_msg(disp))
+            self.debug.write(disposition_debug_msg(disp))
         return disp
 
     def _check_include_omit_etc(self, filename, frame):
@@ -604,8 +315,7 @@ class Coverage(object):
         Returns a boolean: True if the file should be traced, False if not.
 
         """
-        module_globals = frame.f_globals if frame is not None else {}
-        reason = self._check_include_omit_etc_internal(filename, module_globals)
+        reason = self._inorout.check_include_omit_etc(filename, frame)
         if self.debug.should('trace'):
             if not reason:
                 msg = "Including %r" % (filename,)
@@ -694,9 +404,8 @@ class Coverage(object):
 
         """
         self._init()
-        if self.include:
-            if self.source or self.source_pkgs:
-                self._warn("--include is ignored because --source is set", slug="include-ignored")
+        self._inorout.warn_conflicting_settings()
+
         if self.run_suffix:
             # Calling start() means we're running code, so use the run_suffix
             # as the data_suffix when we eventually save the data.
@@ -706,28 +415,10 @@ class Coverage(object):
 
         # See if we think some code that would eventually be measured has already been imported.
         if not Coverage._checked_preimported and self._warn_preimported_source:
-            if self.include or self.source or self.source_pkgs:
-                self._check_for_already_imported_files()
-                Coverage._checked_preimported = True
+            Coverage._checked_preimported = self._inorout.warn_already_imported_files()
 
         self.collector.start()
         self._started = True
-
-    def _check_for_already_imported_files(self):
-        """Examine sys.modules looking for files that will be measured."""
-        warned = set()
-        for mod in list(sys.modules.values()):
-            filename = getattr(mod, "__file__", None)
-            if filename is None:
-                continue
-            if filename in warned:
-                continue
-
-            disp = self._should_trace_internal(filename)
-            if disp.trace:
-                msg = "Already imported a file that will be measured: {0}".format(filename)
-                self._warn(msg, slug="already-imported")
-                warned.add(filename)
 
     def stop(self):
         """Stop measuring code coverage."""
@@ -873,82 +564,18 @@ class Coverage(object):
         # If there are still entries in the source_pkgs_unmatched list,
         # then we never encountered those packages.
         if self._warn_unimported_source:
-            for pkg in self.source_pkgs_unmatched:
-                self._warn_about_unmeasured_code(pkg)
+            self._inorout.warn_unimported_source()
 
         # Find out if we got any data.
         if not self.data and self._warn_no_data:
             self._warn("No data was collected.", slug="no-data-collected")
 
         # Find files that were never executed at all.
-        for pkg in self.source_pkgs:
-            if (not pkg in sys.modules or
-                not hasattr(sys.modules[pkg], '__file__') or
-                not os.path.exists(sys.modules[pkg].__file__)):
-                continue
-            pkg_file = source_for_file(sys.modules[pkg].__file__)
-            self._find_unexecuted_files(self._canonical_path(pkg_file))
-
-        for src in self.source:
-            self._find_unexecuted_files(src)
+        for file_path, plugin_name in self._inorout.find_unexecuted_files():
+            self.data.touch_file(file_path, plugin_name)
 
         if self.config.note:
             self.data.add_run_info(note=self.config.note)
-
-    def _warn_about_unmeasured_code(self, pkg):
-        """Warn about a package or module that we never traced.
-
-        `pkg` is a string, the name of the package or module.
-
-        """
-        mod = sys.modules.get(pkg)
-        if mod is None:
-            self._warn("Module %s was never imported." % pkg, slug="module-not-imported")
-            return
-
-        is_namespace = hasattr(mod, '__path__') and not hasattr(mod, '__file__')
-        has_file = hasattr(mod, '__file__') and os.path.exists(mod.__file__)
-
-        if is_namespace:
-            # A namespace package. It's OK for this not to have been traced,
-            # since there is no code directly in it.
-            return
-
-        if not has_file:
-            self._warn("Module %s has no Python source." % pkg, slug="module-not-python")
-            return
-
-        # The module was in sys.modules, and seems like a module with code, but
-        # we never measured it. I guess that means it was imported before
-        # coverage even started.
-        self._warn(
-            "Module %s was previously imported, but not measured" % pkg,
-            slug="module-not-measured",
-        )
-
-    def _find_plugin_files(self, src_dir):
-        """Get executable files from the plugins."""
-        for plugin in self.plugins.file_tracers:
-            for x_file in plugin.find_executable_files(src_dir):
-                yield x_file, plugin._coverage_plugin_name
-
-    def _find_unexecuted_files(self, src_dir):
-        """Find unexecuted files in `src_dir`.
-
-        Search for files in `src_dir` that are probably importable,
-        and add them as unexecuted files in `self.data`.
-
-        """
-        py_files = ((py_file, None) for py_file in find_python_files(src_dir))
-        plugin_files = self._find_plugin_files(src_dir)
-
-        for file_path, plugin_name in itertools.chain(py_files, plugin_files):
-            file_path = canonical_filename(file_path)
-            if self.omit_match and self.omit_match.match(file_path):
-                # Turns out this file was omitted, so don't pull it back
-                # in as unexecuted.
-                continue
-            self.data.touch_file(file_path, plugin_name)
 
     # Backward compatibility with version 1.
     def analysis(self, morf):
@@ -1193,8 +820,6 @@ class Coverage(object):
         info = [
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
-            ('cover_paths', self.cover_paths),
-            ('pylib_paths', self.pylib_paths),
             ('tracer', self.collector.tracer_name()),
             ('plugins.file_tracers', plugin_info(self.plugins.file_tracers)),
             ('plugins.configurers', plugin_info(self.plugins.configurers)),
@@ -1215,49 +840,9 @@ class Coverage(object):
             ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
             ]
 
-        matcher_names = [
-            'source_match', 'source_pkgs_match',
-            'include_match', 'omit_match',
-            'cover_match', 'pylib_match',
-            ]
-
-        for matcher_name in matcher_names:
-            matcher = getattr(self, matcher_name)
-            if matcher:
-                matcher_info = matcher.info()
-            else:
-                matcher_info = '-none-'
-            info.append((matcher_name, matcher_info))
+        info.extend(self._inorout.sys_info())
 
         return info
-
-
-# FileDisposition "methods": FileDisposition is a pure value object, so it can
-# be implemented in either C or Python.  Acting on them is done with these
-# functions.
-
-def _disposition_init(cls, original_filename):
-    """Construct and initialize a new FileDisposition object."""
-    disp = cls()
-    disp.original_filename = original_filename
-    disp.canonical_filename = original_filename
-    disp.source_filename = None
-    disp.trace = False
-    disp.reason = ""
-    disp.file_tracer = None
-    disp.has_dynamic_filename = False
-    return disp
-
-
-def _disposition_debug_msg(disp):
-    """Make a nice debug message of what the FileDisposition is doing."""
-    if disp.trace:
-        msg = "Tracing %r" % (disp.original_filename,)
-        if disp.file_tracer:
-            msg += ": will be traced by %r" % disp.file_tracer
-    else:
-        msg = "Not tracing %r: %s" % (disp.original_filename, disp.reason)
-    return msg
 
 
 def process_startup():
