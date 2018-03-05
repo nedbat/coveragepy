@@ -131,7 +131,7 @@ def source_for_file(filename):
 
 def source_for_morf(morf):
     """Get the source filename for the module-or-file `morf`."""
-    if hasattr(morf, '__file__'):
+    if hasattr(morf, '__file__') and morf.__file__:
         filename = morf.__file__
     elif isinstance(morf, types.ModuleType):
         # A module should have had .__file__, otherwise we can't use it.

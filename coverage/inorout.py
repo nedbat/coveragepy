@@ -94,6 +94,19 @@ def name_for_module(filename, frame):
         return dunder_name
 
 
+def module_is_namespace(mod):
+    """Is the module object `mod` a PEP420 namespace module?"""
+    return hasattr(mod, '__path__') and getattr(mod, '__file__', None) is None
+
+
+def module_has_file(mod):
+    """Does the module object `mod` have an existing __file__ ?"""
+    mod__file__ = getattr(mod, '__file__', None)
+    if mod__file__ is None:
+        return False
+    return os.path.exists(mod__file__)
+
+
 class InOrOut(object):
     def __init__(self, warn):
         self.warn = warn
@@ -359,15 +372,12 @@ class InOrOut(object):
             self.warn("Module %s was never imported." % pkg, slug="module-not-imported")
             return
 
-        is_namespace = hasattr(mod, '__path__') and not hasattr(mod, '__file__')
-        has_file = hasattr(mod, '__file__') and os.path.exists(mod.__file__)
-
-        if is_namespace:
+        if module_is_namespace(mod):
             # A namespace package. It's OK for this not to have been traced,
             # since there is no code directly in it.
             return
 
-        if not has_file:
+        if not module_has_file(mod):
             self.warn("Module %s has no Python source." % pkg, slug="module-not-python")
             return
 
@@ -382,8 +392,7 @@ class InOrOut(object):
     def find_unexecuted_files(self):
         for pkg in self.source_pkgs:
             if (not pkg in sys.modules or
-                not hasattr(sys.modules[pkg], '__file__') or
-                not os.path.exists(sys.modules[pkg].__file__)):
+                not module_has_file(sys.modules[pkg])):
                 continue
             pkg_file = source_for_file(sys.modules[pkg].__file__)
             for ret in self._find_unexecuted_files(canonical_path(pkg_file)):
