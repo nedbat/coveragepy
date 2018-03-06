@@ -589,7 +589,7 @@ class ProcessTest(CoverageTest):
         self.make_file("hello.py", """\
             import goodbye
             import coverage
-            cov = coverage.Coverage(include=["good*"])
+            cov = coverage.Coverage(include=["good*"], check_preimported=True)
             cov.start()
             print(goodbye.f())
             cov.stop()

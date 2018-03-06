@@ -53,15 +53,12 @@ class Coverage(object):
         cov.html_report(directory='covhtml')
 
     """
-    # A global to know if we have ever checked for files imported before
-    # coverage has been started.
-    _checked_preimported = False
 
     def __init__(
         self, data_file=None, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
         source=None, omit=None, include=None, debug=None,
-        concurrency=None,
+        concurrency=None, check_preimported=False,
     ):
         """
         `data_file` is the base name of the data file to use, defaulting to
@@ -115,11 +112,19 @@ class Coverage(object):
         "eventlet", "gevent", "multiprocessing", or "thread" (the default).
         This can also be a list of these strings.
 
+        If `check_preimported` is true, then when coverage is started, the
+        aleady-imported files will be checked to see if they should be measured
+        by coverage.  Importing measured files before coverage is started can
+        mean that code is missed.
+
         .. versionadded:: 4.0
             The `concurrency` parameter.
 
         .. versionadded:: 4.2
             The `concurrency` parameter can now be a list of strings.
+
+        .. versionadded:: 4.6
+            The `check_preimported` parameter.
 
         """
         # Build our configuration from a number of sources.
@@ -141,7 +146,7 @@ class Coverage(object):
         # Is it ok for no data to be collected?
         self._warn_no_data = True
         self._warn_unimported_source = True
-        self._warn_preimported_source = True
+        self._warn_preimported_source = check_preimported
 
         # A record of all the warnings that have been issued.
         self._warnings = []
@@ -414,8 +419,8 @@ class Coverage(object):
             self.load()
 
         # See if we think some code that would eventually be measured has already been imported.
-        if not Coverage._checked_preimported and self._warn_preimported_source:
-            Coverage._checked_preimported = self._inorout.warn_already_imported_files()
+        if self._warn_preimported_source:
+            self._inorout.warn_already_imported_files()
 
         self.collector.start()
         self._started = True

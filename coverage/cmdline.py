@@ -475,6 +475,7 @@ class CoverageScript(object):
             include=include,
             debug=debug,
             concurrency=options.concurrency,
+            check_preimported=True,
             )
 
         if options.action == "debug":

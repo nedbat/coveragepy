@@ -354,9 +354,6 @@ class InOrOut(object):
                     self.warn(msg, slug="already-imported")
                     warned.add(filename)
 
-            return True
-        return False
-
     def warn_unimported_source(self):
         for pkg in self.source_pkgs_unmatched:
             self.warn_about_unmeasured_code(pkg)
