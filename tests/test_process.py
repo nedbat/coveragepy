@@ -666,6 +666,11 @@ class ProcessTest(CoverageTest):
             import coverage
             print("No warnings!")
             """)
+
+        # Some of our testing infrastructure can issue warnings.
+        # Turn it all off for the sub-process.
+        self.del_environ("COVERAGE_TESTING")
+
         out = self.run_command("python allok.py")
         self.assertEqual(out, "No warnings!\n")
 
