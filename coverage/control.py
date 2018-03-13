@@ -153,7 +153,7 @@ class Coverage(object):
 
         # Other instance attributes, set later.
         self.data = self._data_files = self._collector = None
-        self.plugins = None
+        self._plugins = None
         self._inorout = None
         self._inorout_class = InOrOut
         self._data_suffix = self._run_suffix = None
@@ -204,10 +204,10 @@ class Coverage(object):
         set_relative_directory()
 
         # Load plugins
-        self.plugins = Plugins.load_plugins(self.config.plugins, self.config, self.debug)
+        self._plugins = Plugins.load_plugins(self.config.plugins, self.config, self.debug)
 
         # Run configuring plugins.
-        for plugin in self.plugins.configurers:
+        for plugin in self._plugins.configurers:
             # We need an object with set_option and get_option. Either self or
             # self.config will do. Choosing randomly stops people from doing
             # other things with those objects, against the public API.  Yes,
@@ -235,23 +235,23 @@ class Coverage(object):
             )
 
         # Early warning if we aren't going to be able to support plugins.
-        if self.plugins.file_tracers and not self._collector.supports_plugins:
+        if self._plugins.file_tracers and not self._collector.supports_plugins:
             self._warn(
                 "Plugin file tracers (%s) aren't supported with %s" % (
                     ", ".join(
                         plugin._coverage_plugin_name
-                            for plugin in self.plugins.file_tracers
+                            for plugin in self._plugins.file_tracers
                         ),
                     self._collector.tracer_name(),
                     )
                 )
-            for plugin in self.plugins.file_tracers:
+            for plugin in self._plugins.file_tracers:
                 plugin._coverage_enabled = False
 
         # Create the file classifying substructure.
         self._inorout = self._inorout_class(warn=self._warn)
         self._inorout.configure(self.config)
-        self._inorout.plugins = self.plugins
+        self._inorout.plugins = self._plugins
         self._inorout.disp_class = self._collector.file_disposition_class
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
@@ -294,7 +294,7 @@ class Coverage(object):
 
             if self.debug.should('sys'):
                 write_formatted_info(self.debug, "sys", self.sys_info())
-                for plugin in self.plugins:
+                for plugin in self._plugins:
                     header = "sys: " + plugin._coverage_plugin_name
                     info = plugin.sys_info()
                     write_formatted_info(self.debug, header, info)
@@ -636,7 +636,7 @@ class Coverage(object):
             abs_morf = abs_file(morf)
             plugin_name = self.data.file_tracer(abs_morf)
             if plugin_name:
-                plugin = self.plugins.get(plugin_name)
+                plugin = self._plugins.get(plugin_name)
 
         if plugin:
             file_reporter = plugin.file_reporter(abs_morf)
@@ -826,8 +826,8 @@ class Coverage(object):
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
             ('tracer', self._collector.tracer_name()),
-            ('plugins.file_tracers', plugin_info(self.plugins.file_tracers)),
-            ('plugins.configurers', plugin_info(self.plugins.configurers)),
+            ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
+            ('plugins.configurers', plugin_info(self._plugins.configurers)),
             ('config_files', self.config.attempted_config_files),
             ('configs_read', self.config.config_files),
             ('data_path', self._data_files.filename),
