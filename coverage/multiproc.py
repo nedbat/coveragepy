@@ -35,7 +35,7 @@ class ProcessWithCoverage(OriginalProcess):
         cov = Coverage(data_suffix=True, config_file=rcfile)
         cov._warn_preimported_source = False
         cov.start()
-        debug = cov.debug
+        debug = cov._debug
         try:
             if debug.should("multiproc"):
                 debug.write("Calling multiprocessing bootstrap")

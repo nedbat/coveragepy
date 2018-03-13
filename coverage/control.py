@@ -158,7 +158,7 @@ class Coverage(object):
         self._inorout_class = InOrOut
         self._data_suffix = self._run_suffix = None
         self._exclude_re = None
-        self.debug = None
+        self._debug = None
 
         # State machine variables:
         # Have we initialized everything?
@@ -196,7 +196,7 @@ class Coverage(object):
                 self._debug_file = open(debug_file_name, "a")
             else:
                 self._debug_file = sys.stderr
-        self.debug = DebugControl(self.config.debug, self._debug_file)
+        self._debug = DebugControl(self.config.debug, self._debug_file)
 
         # _exclude_re is a dict that maps exclusion list names to compiled regexes.
         self._exclude_re = {}
@@ -204,7 +204,7 @@ class Coverage(object):
         set_relative_directory()
 
         # Load plugins
-        self._plugins = Plugins.load_plugins(self.config.plugins, self.config, self.debug)
+        self._plugins = Plugins.load_plugins(self.config.plugins, self.config, self._debug)
 
         # Run configuring plugins.
         for plugin in self._plugins.configurers:
@@ -270,9 +270,9 @@ class Coverage(object):
         # Create the data file.  We do this at construction time so that the
         # data file will be written into the directory where the process
         # started rather than wherever the process eventually chdir'd to.
-        self.data = CoverageData(debug=self.debug)
+        self.data = CoverageData(debug=self._debug)
         self._data_files = CoverageDataFiles(
-            basename=self.config.data_file, warn=self._warn, debug=self.debug,
+            basename=self.config.data_file, warn=self._warn, debug=self._debug,
         )
 
         # Set the reporting precision.
@@ -286,22 +286,22 @@ class Coverage(object):
     def _write_startup_debug(self):
         """Write out debug info at startup if needed."""
         wrote_any = False
-        with self.debug.without_callers():
-            if self.debug.should('config'):
+        with self._debug.without_callers():
+            if self._debug.should('config'):
                 config_info = sorted(self.config.__dict__.items())
-                write_formatted_info(self.debug, "config", config_info)
+                write_formatted_info(self._debug, "config", config_info)
                 wrote_any = True
 
-            if self.debug.should('sys'):
-                write_formatted_info(self.debug, "sys", self.sys_info())
+            if self._debug.should('sys'):
+                write_formatted_info(self._debug, "sys", self.sys_info())
                 for plugin in self._plugins:
                     header = "sys: " + plugin._coverage_plugin_name
                     info = plugin.sys_info()
-                    write_formatted_info(self.debug, header, info)
+                    write_formatted_info(self._debug, header, info)
                 wrote_any = True
 
         if wrote_any:
-            write_formatted_info(self.debug, "end", ())
+            write_formatted_info(self._debug, "end", ())
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.
@@ -310,8 +310,8 @@ class Coverage(object):
 
         """
         disp = self._inorout.should_trace(filename, frame)
-        if self.debug.should('trace'):
-            self.debug.write(disposition_debug_msg(disp))
+        if self._debug.should('trace'):
+            self._debug.write(disposition_debug_msg(disp))
         return disp
 
     def _check_include_omit_etc(self, filename, frame):
@@ -321,12 +321,12 @@ class Coverage(object):
 
         """
         reason = self._inorout.check_include_omit_etc(filename, frame)
-        if self.debug.should('trace'):
+        if self._debug.should('trace'):
             if not reason:
                 msg = "Including %r" % (filename,)
             else:
                 msg = "Not including %r: %s" % (filename, reason)
-            self.debug.write(msg)
+            self._debug.write(msg)
 
         return not reason
 
@@ -342,7 +342,7 @@ class Coverage(object):
         self._warnings.append(msg)
         if slug:
             msg = "%s (%s)" % (msg, slug)
-        if self.debug.should('pid'):
+        if self._debug.should('pid'):
             msg = "[%d] %s" % (os.getpid(), msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
 
@@ -433,8 +433,8 @@ class Coverage(object):
 
     def _atexit(self):
         """Clean up on process shutdown."""
-        if self.debug.should("process"):
-            self.debug.write("atexit: {0!r}".format(self))
+        if self._debug.should("process"):
+            self._debug.write("atexit: {0!r}".format(self))
         if self._started:
             self.stop()
         if self._auto_save:
