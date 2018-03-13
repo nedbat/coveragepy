@@ -141,7 +141,7 @@ class Coverage(object):
         self._debug_file = None
 
         self._auto_load = self._auto_save = auto_data
-        self._data_suffix = data_suffix
+        self._data_suffix_specified = data_suffix
 
         # Is it ok for no data to be collected?
         self._warn_no_data = True
@@ -156,7 +156,7 @@ class Coverage(object):
         self.plugins = None
         self._inorout = None
         self._inorout_class = InOrOut
-        self.data_suffix = self.run_suffix = None
+        self._data_suffix = self._run_suffix = None
         self._exclude_re = None
         self.debug = None
 
@@ -256,16 +256,16 @@ class Coverage(object):
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
         # collecting data, not when combining data.  So we save it as
-        # `self.run_suffix` now, and promote it to `self.data_suffix` if we
+        # `self._run_suffix` now, and promote it to `self._data_suffix` if we
         # find that we are collecting data later.
-        if self._data_suffix or self.config.parallel:
-            if not isinstance(self._data_suffix, string_class):
+        if self._data_suffix_specified or self.config.parallel:
+            if not isinstance(self._data_suffix_specified, string_class):
                 # if data_suffix=True, use .machinename.pid.random
-                self._data_suffix = True
+                self._data_suffix_specified = True
         else:
-            self._data_suffix = None
-        self.data_suffix = None
-        self.run_suffix = self._data_suffix
+            self._data_suffix_specified = None
+        self._data_suffix = None
+        self._run_suffix = self._data_suffix_specified
 
         # Create the data file.  We do this at construction time so that the
         # data file will be written into the directory where the process
@@ -411,10 +411,10 @@ class Coverage(object):
         self._init()
         self._inorout.warn_conflicting_settings()
 
-        if self.run_suffix:
+        if self._run_suffix:
             # Calling start() means we're running code, so use the run_suffix
             # as the data_suffix when we eventually save the data.
-            self.data_suffix = self.run_suffix
+            self._data_suffix = self._run_suffix
         if self._auto_load:
             self.load()
 
@@ -503,7 +503,7 @@ class Coverage(object):
         """Save the collected coverage data to the data file."""
         self._init()
         self.get_data()
-        self._data_files.write(self.data, suffix=self.data_suffix)
+        self._data_files.write(self.data, suffix=self._data_suffix)
 
     def combine(self, data_paths=None, strict=False):
         """Combine together a number of similarly-named coverage data files.
