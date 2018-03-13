@@ -108,6 +108,8 @@ def module_has_file(mod):
 
 
 class InOrOut(object):
+    """Machinery for determining what files to measure."""
+
     def __init__(self, warn):
         self.warn = warn
 
@@ -123,9 +125,11 @@ class InOrOut(object):
         # The source argument can be directories or package names.
         self.source = []
         self.source_pkgs = []
+        self.source_pkgs_unmatched = []
         self.omit = self.include = None
 
     def configure(self, config):
+        """Apply the configuration to get ready for decision-time."""
         for src in config.source or []:
             if os.path.isdir(src):
                 self.source.append(canonical_filename(src))
@@ -334,11 +338,13 @@ class InOrOut(object):
         return None
 
     def warn_conflicting_settings(self):
+        """Warn if there are settings that conflict."""
         if self.include:
             if self.source or self.source_pkgs:
                 self.warn("--include is ignored because --source is set", slug="include-ignored")
 
     def warn_already_imported_files(self):
+        """Warn if files have already been imported that we will be measuring."""
         if self.include or self.source or self.source_pkgs:
             warned = set()
             for mod in list(sys.modules.values()):
@@ -355,10 +361,11 @@ class InOrOut(object):
                     warned.add(filename)
 
     def warn_unimported_source(self):
+        """Warn about source packages that were of interest, but never traced."""
         for pkg in self.source_pkgs_unmatched:
-            self.warn_about_unmeasured_code(pkg)
+            self._warn_about_unmeasured_code(pkg)
 
-    def warn_about_unmeasured_code(self, pkg):
+    def _warn_about_unmeasured_code(self, pkg):
         """Warn about a package or module that we never traced.
 
         `pkg` is a string, the name of the package or module.
@@ -387,6 +394,10 @@ class InOrOut(object):
         )
 
     def find_unexecuted_files(self):
+        """Find files in the areas of interest that weren't traced.
+
+        Yields pairs: file path, and responsible plug-in name.
+        """
         for pkg in self.source_pkgs:
             if (not pkg in sys.modules or
                 not module_has_file(sys.modules[pkg])):
@@ -424,6 +435,10 @@ class InOrOut(object):
             yield file_path, plugin_name
 
     def sys_info(self):
+        """Our information for Coverage.sys_info.
+
+        Returns a list of (key, value) pairs.
+        """
         info = [
             ('cover_paths', self.cover_paths),
             ('pylib_paths', self.pylib_paths),
