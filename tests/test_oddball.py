@@ -118,7 +118,7 @@ class RecursionTest(CoverageTest):
         cov = coverage.Coverage()
         self.start_import_stop(cov, "recur")
 
-        pytrace = (cov.collector.tracer_name() == "PyTracer")
+        pytrace = (cov._collector.tracer_name() == "PyTracer")
         expected_missing = [3]
         if pytrace:                                 # pragma: no metacov
             expected_missing += [9, 10, 11]

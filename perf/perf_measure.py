@@ -78,7 +78,7 @@ class StressTest(object):
         finally:                                # pragma: nested
             # Stop coverage.py.
             covered = time.perf_counter() - start
-            stats = cov.collector.tracers[0].get_stats()
+            stats = cov._collector.tracers[0].get_stats()
             if stats:
                 stats = stats.copy()
             cov.stop()

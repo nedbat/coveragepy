@@ -152,7 +152,7 @@ class Coverage(object):
         self._warnings = []
 
         # Other instance attributes, set later.
-        self.data = self.data_files = self.collector = None
+        self.data = self._data_files = self._collector = None
         self.plugins = None
         self._inorout = None
         self._inorout_class = InOrOut
@@ -225,7 +225,7 @@ class Coverage(object):
             # it for the main process.
             self.config.parallel = True
 
-        self.collector = Collector(
+        self._collector = Collector(
             should_trace=self._should_trace,
             check_include=self._check_include_omit_etc,
             timid=self.config.timid,
@@ -235,14 +235,14 @@ class Coverage(object):
             )
 
         # Early warning if we aren't going to be able to support plugins.
-        if self.plugins.file_tracers and not self.collector.supports_plugins:
+        if self.plugins.file_tracers and not self._collector.supports_plugins:
             self._warn(
                 "Plugin file tracers (%s) aren't supported with %s" % (
                     ", ".join(
                         plugin._coverage_plugin_name
                             for plugin in self.plugins.file_tracers
                         ),
-                    self.collector.tracer_name(),
+                    self._collector.tracer_name(),
                     )
                 )
             for plugin in self.plugins.file_tracers:
@@ -252,7 +252,7 @@ class Coverage(object):
         self._inorout = self._inorout_class(warn=self._warn)
         self._inorout.configure(self.config)
         self._inorout.plugins = self.plugins
-        self._inorout.disp_class = self.collector.file_disposition_class
+        self._inorout.disp_class = self._collector.file_disposition_class
 
         # Suffixes are a bit tricky.  We want to use the data suffix only when
         # collecting data, not when combining data.  So we save it as
@@ -271,7 +271,7 @@ class Coverage(object):
         # data file will be written into the directory where the process
         # started rather than wherever the process eventually chdir'd to.
         self.data = CoverageData(debug=self.debug)
-        self.data_files = CoverageDataFiles(
+        self._data_files = CoverageDataFiles(
             basename=self.config.data_file, warn=self._warn, debug=self.debug,
         )
 
@@ -394,8 +394,8 @@ class Coverage(object):
     def load(self):
         """Load previously-collected coverage data from the data file."""
         self._init()
-        self.collector.reset()
-        self.data_files.read(self.data)
+        self._collector.reset()
+        self._data_files.read(self.data)
 
     def start(self):
         """Start measuring code coverage.
@@ -422,13 +422,13 @@ class Coverage(object):
         if self._warn_preimported_source:
             self._inorout.warn_already_imported_files()
 
-        self.collector.start()
+        self._collector.start()
         self._started = True
 
     def stop(self):
         """Stop measuring code coverage."""
         if self._started:
-            self.collector.stop()
+            self._collector.stop()
         self._started = False
 
     def _atexit(self):
@@ -448,9 +448,9 @@ class Coverage(object):
 
         """
         self._init()
-        self.collector.reset()
+        self._collector.reset()
         self.data.erase()
-        self.data_files.erase(parallel=self.config.parallel)
+        self._data_files.erase(parallel=self.config.parallel)
 
     def clear_exclude(self, which='exclude'):
         """Clear the exclude list."""
@@ -503,7 +503,7 @@ class Coverage(object):
         """Save the collected coverage data to the data file."""
         self._init()
         self.get_data()
-        self.data_files.write(self.data, suffix=self.data_suffix)
+        self._data_files.write(self.data, suffix=self.data_suffix)
 
     def combine(self, data_paths=None, strict=False):
         """Combine together a number of similarly-named coverage data files.
@@ -538,7 +538,7 @@ class Coverage(object):
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
 
-        self.data_files.combine_parallel_data(
+        self._data_files.combine_parallel_data(
             self.data, aliases=aliases, data_paths=data_paths, strict=strict,
         )
 
@@ -554,7 +554,7 @@ class Coverage(object):
         """
         self._init()
 
-        if self.collector.save_data(self.data):
+        if self._collector.save_data(self.data):
             self._post_save_work()
 
         return self.data
@@ -825,12 +825,12 @@ class Coverage(object):
         info = [
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
-            ('tracer', self.collector.tracer_name()),
+            ('tracer', self._collector.tracer_name()),
             ('plugins.file_tracers', plugin_info(self.plugins.file_tracers)),
             ('plugins.configurers', plugin_info(self.plugins.configurers)),
             ('config_files', self.config.attempted_config_files),
             ('configs_read', self.config.config_files),
-            ('data_path', self.data_files.filename),
+            ('data_path', self._data_files.filename),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('implementation', platform.python_implementation()),
