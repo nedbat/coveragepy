@@ -128,7 +128,7 @@ class Coverage(object):
 
         """
         # Build our configuration from a number of sources.
-        self._config_file, self.config = read_coverage_config(
+        self.config = read_coverage_config(
             config_file=config_file,
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
@@ -220,7 +220,7 @@ class Coverage(object):
                 raise CoverageException(                    # pragma: only jython
                     "multiprocessing is not supported on this Python"
                 )
-            patch_multiprocessing(rcfile=self._config_file)
+            patch_multiprocessing(rcfile=self.config.config_file)
             # Multi-processing uses parallel for the subprocesses, so also use
             # it for the main process.
             self.config.parallel = True
@@ -828,8 +828,9 @@ class Coverage(object):
             ('tracer', self._collector.tracer_name()),
             ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
             ('plugins.configurers', plugin_info(self._plugins.configurers)),
-            ('config_files', self.config.attempted_config_files),
-            ('configs_read', self.config.config_files),
+            ('configs_attempted', self.config.attempted_config_files),
+            ('configs_read', self.config.config_files_read),
+            ('config_file', self.config.config_file),
             ('data_path', self._data_files.filename),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),

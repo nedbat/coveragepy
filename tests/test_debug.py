@@ -145,7 +145,7 @@ class DebugTraceTest(CoverageTest):
         out_lines = self.f1_debug_output(["config"])
 
         labels = """
-            attempted_config_files branch config_files cover_pylib data_file
+            attempted_config_files branch config_files_read config_file cover_pylib data_file
             debug exclude_list extra_css html_dir html_title ignore_errors
             run_include run_omit parallel partial_always_list partial_list paths
             precision show_missing source timid xml_output
@@ -162,7 +162,7 @@ class DebugTraceTest(CoverageTest):
         out_lines = self.f1_debug_output(["sys"])
 
         labels = """
-            version coverage cover_paths pylib_paths tracer config_files
+            version coverage cover_paths pylib_paths tracer configs_attempted config_file
             configs_read data_path python platform implementation executable
             cwd path environment command_line cover_match pylib_match
             """.split()
