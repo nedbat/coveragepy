@@ -68,10 +68,15 @@ FN_VAL = my_function("fooey")
 loader = globals().get('__loader__')
 fullname = getattr(loader, 'fullname', None) or getattr(loader, 'name', None)
 
-# A more compact grouped-by-first-letter list of builtins.
+# A more compact ad-hoc grouped-by-first-letter list of builtins.
+CLUMPS = "ABC,DEF,GHI,JKLMN,OPQR,ST,U,VWXYZ_,ab,cd,efg,hij,lmno,pqr,stuvwxyz".split(",")
+
 def word_group(w):
-    """Clump AB, CD, EF, etc."""
-    return chr((ord(w[0]) + 1) & 0xFE)
+    """Figure out which CLUMP the first letter of w is in."""
+    for i, clump in enumerate(CLUMPS):
+        if w[0] in clump:
+            return i
+    return 99
 
 builtin_dir = [" ".join(s) for _, s in itertools.groupby(dir(__builtins__), key=word_group)]
 
