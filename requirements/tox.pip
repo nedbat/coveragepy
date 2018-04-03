@@ -1,4 +1,4 @@
 # The version of tox used by coverage.py
-tox==2.9.1
+tox==3.0.0
 # Adds env recreation on requirements file changes.
 tox-battery==0.5
