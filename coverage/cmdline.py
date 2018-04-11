@@ -115,7 +115,10 @@ class Opts(object):
     )
     rcfile = optparse.make_option(
         '', '--rcfile', action='store',
-        help="Specify configuration file.  Defaults to '.coveragerc'",
+        help=(
+            "Specify configuration file.  "
+            "By default '.coveragerc', 'setup.cfg' and 'tox.ini' are tried."
+        ),
     )
     source = optparse.make_option(
         '', '--source', action='store', metavar="SRC1,SRC2,...",
