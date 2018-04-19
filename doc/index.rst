@@ -145,7 +145,7 @@ Getting started is easy:
         Then visit htmlcov/index.html in your browser, to see a
         `report like this one`_.
 
-.. _coverage.py page on the Python Package Index: https://pypi.python.org/pypi/coverage
+.. _coverage.py page on the Python Package Index: https://pypi.org/project/coverage/
 .. _report like this: https://nedbatchelder.com/files/sample_coverage_html/index.html
 .. _report like this one: https://nedbatchelder.com/files/sample_coverage_html_beta/index.html
 

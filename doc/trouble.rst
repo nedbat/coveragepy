@@ -64,7 +64,7 @@ timid=True`` configuration option.
   DecoratorTools fiddles with the trace function.  You  will need to use
   ``--timid``.
 
-.. _DecoratorTools: https://pypi.python.org/pypi/DecoratorTools
+.. _DecoratorTools: https://pypi.org/project/DecoratorTools/
 .. _TurboGears: http://turbogears.org/
 
 

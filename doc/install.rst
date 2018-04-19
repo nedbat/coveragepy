@@ -29,8 +29,8 @@ Installation
 
 .. highlight:: console
 
-.. _coverage_pypi: https://pypi.python.org/pypi/coverage
-.. _setuptools: https://pypi.python.org/pypi/setuptools
+.. _coverage_pypi: https://pypi.org/project/coverage/
+.. _setuptools: https://pypi.org/project/setuptools/
 
 
 You can install coverage.py in the usual ways. The simplest way is with pip::

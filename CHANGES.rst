@@ -492,7 +492,7 @@ Work from the PyCon 2016 Sprints!
 .. _issue 478: https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
 .. _issue 484: https://bitbucket.org/ned/coveragepy/issues/484/multiprocessing-greenlet-concurrency
 .. _issue 492: https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
-.. _unittest-mixins: https://pypi.python.org/pypi/unittest-mixins
+.. _unittest-mixins: https://pypi.org/project/unittest-mixins/
 
 
 .. _changes_41:
@@ -1811,7 +1811,7 @@ Version 3.2b4 --- 2009-12-01
 
 - On Python 3.x, setuptools has been replaced by `Distribute`_.
 
-.. _Distribute: https://pypi.python.org/pypi/distribute
+.. _Distribute: https://pypi.org/project/distribute/
 
 
 Version 3.2b3 --- 2009-11-23

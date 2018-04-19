@@ -109,15 +109,15 @@ __ https://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
 
     - `trialcoverage`_ is a plug-in for Twisted trial.
 
-    .. _trialcoverage: https://pypi.python.org/pypi/trialcoverage
+    .. _trialcoverage: https://pypi.org/project/trialcoverage/
 
     - `pytest-coverage`_
 
-    .. _pytest-coverage: https://pypi.python.org/pypi/pytest-coverage
+    .. _pytest-coverage: https://pypi.org/project/pytest-coverage/
 
     - `django-coverage`_ for use with Django.
 
-    .. _django-coverage: https://pypi.python.org/pypi/django-coverage
+    .. _django-coverage: https://pypi.org/project/django-coverage/
 
 
 **Q: Where can I get more help with coverage.py?**

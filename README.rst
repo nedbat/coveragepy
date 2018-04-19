@@ -85,22 +85,22 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
     :target: https://requires.io/github/nedbat/coveragepy/requirements/?branch=master
     :alt: Requirements status
 .. |kit| image:: https://badge.fury.io/py/coverage.svg
-    :target: https://pypi.python.org/pypi/coverage
+    :target: https://pypi.org/project/coverage/
     :alt: PyPI status
 .. |format| image:: https://img.shields.io/pypi/format/coverage.svg
-    :target: https://pypi.python.org/pypi/coverage
+    :target: https://pypi.org/project/coverage/
     :alt: Kit format
 .. |downloads| image:: https://img.shields.io/pypi/dw/coverage.svg
-    :target: https://pypi.python.org/pypi/coverage
+    :target: https://pypi.org/project/coverage/
     :alt: Weekly PyPI downloads
 .. |versions| image:: https://img.shields.io/pypi/pyversions/coverage.svg
-    :target: https://pypi.python.org/pypi/coverage
+    :target: https://pypi.org/project/coverage/
     :alt: Python versions supported
 .. |status| image:: https://img.shields.io/pypi/status/coverage.svg
-    :target: https://pypi.python.org/pypi/coverage
+    :target: https://pypi.org/project/coverage/
     :alt: Package stability
 .. |license| image:: https://img.shields.io/pypi/l/coverage.svg
-    :target: https://pypi.python.org/pypi/coverage
+    :target: https://pypi.org/project/coverage/
     :alt: License
 .. |codecov| image:: https://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master&precision=2
     :target: https://codecov.io/github/nedbat/coveragepy?branch=master

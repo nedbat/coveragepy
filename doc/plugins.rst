@@ -66,7 +66,7 @@ Some coverage.py plug-ins you might find useful:
 * `Django template coverage.py plug-in`__: for measuring coverage in Django
   templates.
 
-  .. __: https://pypi.python.org/pypi/django_coverage_plugin
+  .. __: https://pypi.org/project/django_coverage_plugin/
 
 * `Mako template coverage plug-in`__: for measuring coverage in Mako templates.
   Doesn't work yet, probably needs some changes in Mako itself.
