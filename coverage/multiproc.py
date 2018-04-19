@@ -14,9 +14,6 @@ from coverage.misc import contract
 # monkey-patched.
 PATCHED_MARKER = "_coverage$patched"
 
-# The environment variable that specifies the rcfile for subprocesses.
-COVERAGE_RCFILE_ENV = "_COVERAGE_RCFILE"
-
 
 if sys.version_info >= (3, 4):
     OriginalProcess = multiprocessing.process.BaseProcess
@@ -31,8 +28,7 @@ class ProcessWithCoverage(OriginalProcess):
     def _bootstrap(self):
         """Wrapper around _bootstrap to start coverage."""
         from coverage import Coverage       # avoid circular import
-        rcfile = os.environ[COVERAGE_RCFILE_ENV]
-        cov = Coverage(data_suffix=True, config_file=rcfile)
+        cov = Coverage(data_suffix=True)
         cov._warn_preimported_source = False
         cov.start()
         debug = cov._debug
@@ -81,7 +77,7 @@ def patch_multiprocessing(rcfile):
 
     # Set the value in ProcessWithCoverage that will be pickled into the child
     # process.
-    os.environ[COVERAGE_RCFILE_ENV] = rcfile
+    os.environ["COVERAGE_RCFILE"] = rcfile
 
     # When spawning processes rather than forking them, we have no state in the
     # new process.  We sneak in there with a Stowaway: we stuff one of our own
