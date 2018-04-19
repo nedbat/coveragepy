@@ -11,12 +11,11 @@ Change history for Coverage.py
     ..
     ..  .. _changes_781:
     ..
-    ..
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+Unreleased (might become 4.6)
+-----------------------------
 
 - A new warning (already-imported) is issued if measurable files have already
   been imported before coverage.py started measurement.  See
