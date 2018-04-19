@@ -33,8 +33,9 @@ configuration file are tied to your source code and how it should be measured,
 so it should be stored with your source, and checked into source control,
 rather than put in your home directory.
 
-A different name for the configuration file can be specified with the
-``--rcfile=FILE`` command line option.
+A different location for the configuration file can be specified with the
+``--rcfile=FILE`` command line option or with the ``COVERAGE_RCFILE``
+environment variable.
 
 Coverage.py will read settings from other usual configuration files if no other
 configuration file is used.  It will automatically read from "setup.cfg" or

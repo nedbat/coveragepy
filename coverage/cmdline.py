@@ -44,7 +44,7 @@ class Opts(object):
     )
     debug = optparse.make_option(
         '', '--debug', action='store', metavar="OPTS",
-        help="Debug options, separated by commas",
+        help="Debug options, separated by commas. [env: COVERAGE_DEBUG]",
     )
     directory = optparse.make_option(
         '-d', '--directory', action='store', metavar="DIR",
@@ -116,8 +116,9 @@ class Opts(object):
     rcfile = optparse.make_option(
         '', '--rcfile', action='store',
         help=(
-            "Specify configuration file.  "
-            "By default '.coveragerc', 'setup.cfg' and 'tox.ini' are tried."
+            "Specify configuration file. "
+            "By default '.coveragerc', 'setup.cfg' and 'tox.ini' are tried. "
+            "[env: COVERAGE_RCFILE]"
         ),
     )
     source = optparse.make_option(
@@ -127,7 +128,7 @@ class Opts(object):
     timid = optparse.make_option(
         '', '--timid', action='store_true',
         help=(
-            "Use a simpler but slower trace method.  Try this if you get "
+            "Use a simpler but slower trace method. Try this if you get "
             "seemingly impossible results!"
         ),
     )

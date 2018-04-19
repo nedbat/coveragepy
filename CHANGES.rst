@@ -18,7 +18,7 @@ Unreleased (might become 4.6)
 -----------------------------
 
 - The location of the configuration file can now be specified with a
-  `COVERAGE_RCFILE` environment variable, as requested in `issue 650`_.
+  ``COVERAGE_RCFILE`` environment variable, as requested in `issue 650`_.
 
 - A new warning (already-imported) is issued if measurable files have already
   been imported before coverage.py started measurement.  See
