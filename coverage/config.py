@@ -447,6 +447,12 @@ def config_files_to_try(config_file):
         config_file = True
     specified_file = (config_file is not True)
     if not specified_file:
+        # No file was specified. Check COVERAGE_RCFILE.
+        config_file = os.environ.get('COVERAGE_RCFILE')
+        if config_file:
+            specified_file = True
+    if not specified_file:
+        # Still no file specified. Default to .coveragerc
         config_file = ".coveragerc"
     files_to_try = [
         (config_file, True, specified_file),
@@ -483,7 +489,7 @@ def read_coverage_config(config_file, **kwargs):
             config_read = config.from_file(fname, our_file=our_file)
             if config_read:
                 break
-            if our_file and specified_file:
+            if specified_file:
                 raise CoverageException("Couldn't read '%s' as a config file" % fname)
 
     # 3) from environment variables:
