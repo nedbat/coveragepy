@@ -14,7 +14,7 @@ Change history for Coverage.py
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased (might become 4.6)
+Unreleased (might become 5.0)
 -----------------------------
 
 - The location of the configuration file can now be specified with a
