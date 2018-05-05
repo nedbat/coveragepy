@@ -727,10 +727,6 @@ class ProcessTest(CoverageTest):
         )
 
     def test_module_name(self):
-        if sys.version_info < (2, 7):
-            # Python 2.6 thinks that coverage is a package that can't be
-            # executed
-            self.skipTest("-m doesn't work the same < Python 2.7")
         # https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
         out = self.run_command("python -m coverage")
         self.assertIn("Use 'coverage help' for help", out)
@@ -852,10 +848,6 @@ class EnvironmentTest(CoverageTest):
         self.assert_tryexecfile_output(out_cov, out_py)
 
     def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
-        if sys.version_info < (2, 7):
-            # Coverage.py isn't bug-for-bug compatible in the behavior
-            # of -m for Pythons < 2.7
-            self.skipTest("-m doesn't work the same < Python 2.7")
         # https://bitbucket.org/ned/coveragepy/issue/207
         self.make_file("package/__init__.py", "print('init')")
         self.make_file("package/__main__.py", "print('main')")

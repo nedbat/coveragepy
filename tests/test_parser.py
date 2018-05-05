@@ -260,10 +260,6 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         )
 
     def test_missing_arc_descriptions_for_small_callables(self):
-        # We use 2.7 features here, so just skip this test on 2.6
-        if env.PYVERSION < (2, 7):
-            self.skipTest("No dict or set comps in 2.6")
-
         parser = self.parse_text(u"""\
             callables = [
                 lambda: 2,
