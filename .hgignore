@@ -28,6 +28,7 @@ setuptools-*.egg
 .tox*
 .noseids
 .cache
+.pytest_cache
 .hypothesis
 
 # Stuff in the test directory.
