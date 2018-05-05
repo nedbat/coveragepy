@@ -26,6 +26,7 @@ clean:
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	-rm -rf doc/_build doc/_spell doc/sample_html_beta
 	-rm -rf .tox_kits
+	-rm -rf .cache .pytest_cache
 
 sterile: clean
 	-rm -rf .tox*
