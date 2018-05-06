@@ -17,6 +17,8 @@ Change history for Coverage.py
 Unreleased (might become 5.0)
 -----------------------------
 
+- Coverage.py no longer supports Python 2.6 or 3.3.
+
 - The location of the configuration file can now be specified with a
   ``COVERAGE_RCFILE`` environment variable, as requested in `issue 650`_.
 
