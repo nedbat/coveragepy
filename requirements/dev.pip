@@ -15,6 +15,7 @@ PyContracts==1.8.3
 pyenchant==2.0.0
 pylint==1.8.4
 unittest-mixins==1.4
+check-manifest==0.37
 
 # for kitting.
 requests==2.18.4
