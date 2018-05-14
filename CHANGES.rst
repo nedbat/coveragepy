@@ -26,6 +26,10 @@ Unreleased (might become 5.0)
   been imported before coverage.py started measurement.  See
   :ref:`cmd_warnings` for more information.
 
+- Running coverage many times for small runs in a single process should be
+  faster, closing `issue 625`_.  Thanks, David MacIver.
+
+.. _issue 625: https://bitbucket.org/ned/coveragepy/issues/625/lstat-dominates-in-the-case-of-small
 .. _issue 650: https://bitbucket.org/ned/coveragepy/issues/650/allow-setting-configuration-file-location
 
 
