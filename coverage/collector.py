@@ -103,6 +103,7 @@ class Collector(object):
         self.origin = short_stack()
 
         self.concur_id_func = None
+        self.abs_file_cache = {}
 
         # We can handle a few concurrency options here, but only one at a time.
         these_concurrencies = self.SUPPORTED_CONCURRENCIES.intersection(concurrency)
@@ -369,6 +370,13 @@ class Collector(object):
         for tracer in self.tracers:
             tracer.data = data
 
+    def cached_abs_file(self, filename):
+        key = (type(filename), filename)
+        try:
+            return self.abs_file_cache[key]
+        except KeyError:
+            return self.abs_file_cache.setdefault(key, abs_file(filename))
+
     def save_data(self, covdata):
         """Save the collected data to a `CoverageData`.
 
@@ -394,7 +402,7 @@ class Collector(object):
             else:
                 raise runtime_err       # pylint: disable=raising-bad-type
 
-            return dict((abs_file(k), v) for k, v in items)
+            return dict((self.cached_abs_file(k), v) for k, v in items)
 
         if self.branch:
             covdata.add_arcs(abs_file_dict(self.data))
