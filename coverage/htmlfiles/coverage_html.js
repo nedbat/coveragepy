@@ -555,11 +555,14 @@ coverage.resize_scroll_markers = function () {
 
     var previous_line = -99,
         last_mark,
-        last_top;
+        last_top,
+        offsets = {};
 
+    // Calculate line offsets outside loop to prevent relayouts
+    c.missed_lines.each(function(){offsets[this.id] = $(this).offset().top});
     c.missed_lines.each(function () {
-        var line_top = Math.round($(this).offset().top * marker_scale),
-            id_name = $(this).attr('id'),
+        var id_name = $(this).attr('id'),
+            line_top = Math.round(offsets[id_name] * marker_scale),
             line_number = parseInt(id_name.substring(1, id_name.length));
 
         if (line_number === previous_line + 1) {
