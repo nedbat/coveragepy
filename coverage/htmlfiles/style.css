@@ -365,6 +365,7 @@ td.text {
     height: 100%;
     background: white;
     border-left: 1px solid #eee;
+    will-change: transform; /* for faster scrolling of fixed element in Chrome */
     }
 
 #scroll_marker .marker {
