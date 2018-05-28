@@ -10,6 +10,7 @@
 - Update CHANGES.rst, including release date.
 - Update README.rst
     - "New in x.y:"
+    - Python versions supported
 - Update docs
     - Version, date and python versions in doc/index.rst
     - Version and copyright date in doc/conf.py

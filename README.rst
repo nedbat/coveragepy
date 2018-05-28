@@ -20,7 +20,7 @@ library to determine which lines are executable, and which have been executed.
 Coverage.py runs on many versions of Python:
 
 * CPython 2.7 and 3.4 through 3.7.
-* PyPy2 5.10 and PyPy3 5.10.
+* PyPy2 6.0 and PyPy3 6.0.
 * Jython 2.7.1, though not for reporting.
 * IronPython 2.7.7, though not for reporting.
 
@@ -32,7 +32,9 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 
-**New in 4.5:** Configurator plug-ins.
+**New in 5.0:** Dropped support for Python 2.6 and 3.3.
+
+New in 4.5: Configurator plug-ins.
 
 New in 4.4: Suppressable warnings, continuous coverage measurement.
 
