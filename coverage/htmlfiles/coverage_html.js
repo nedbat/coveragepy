@@ -559,7 +559,9 @@ coverage.resize_scroll_markers = function () {
         offsets = {};
 
     // Calculate line offsets outside loop to prevent relayouts
-    c.missed_lines.each(function(){offsets[this.id] = $(this).offset().top});
+    c.missed_lines.each(function() {
+        offsets[this.id] = $(this).offset().top;
+    });
     c.missed_lines.each(function () {
         var id_name = $(this).attr('id'),
             line_top = Math.round(offsets[id_name] * marker_scale),
