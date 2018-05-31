@@ -371,6 +371,7 @@ class Collector(object):
             tracer.data = data
 
     def cached_abs_file(self, filename):
+        """A locally cached version of `abs_file`."""
         key = (type(filename), filename)
         try:
             return self.abs_file_cache[key]

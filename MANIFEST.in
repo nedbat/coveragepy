@@ -14,7 +14,6 @@ include TODO.txt
 include __main__.py
 include .travis.yml
 include appveyor.yml
-include circle.yml
 include howto.txt
 include igor.py
 include metacov.ini

@@ -103,7 +103,7 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
         """Here to make unittest.TestCase happy, but will never be invoked."""
         raise Exception("runTest isn't used in this class!")
 
-    def __call__(self):
+    def __call__(self):                                 # pylint: disable=arguments-differ
         """Execute the test from the run.py file."""
         if _TEST_NAME_FILE:                             # pragma: debugging
             with open(_TEST_NAME_FILE, "w") as f:
