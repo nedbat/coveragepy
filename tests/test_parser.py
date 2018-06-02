@@ -165,11 +165,7 @@ class PythonParserTest(CoverageTest):
             def func(x=25):
                 return 26
             """)
-        if env.PYVERSION < (3, 7):
-            raw_statements = set([3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26])
-        else:
-            # Python 3.7 no longer includes class docstrings in the lnotab table.
-            raw_statements = set([3, 4, 5, 6, 8, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26])
+        raw_statements = set([3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26])
         self.assertEqual(parser.raw_statements, raw_statements)
         self.assertEqual(parser.statements, set([8]))
 

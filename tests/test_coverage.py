@@ -582,12 +582,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [2, 3]
         )
-        if env.PYVERSION < (3, 7):
-            # Before 3.7, module docstrings were included in the lnotab table,
-            # unless they were the first line in the file?
-            lines = [2, 3, 4]
-        else:
-            lines = [3, 4]
+        lines = [2, 3, 4]
         self.check_coverage("""\
             # Start with a comment, because it changes the behavior(!?)
             '''I am a module docstring.'''
@@ -1147,11 +1142,7 @@ class CompoundStatementTest(CoverageTest):
             [1,10,12,13], "")
 
     def test_class_def(self):
-        if env.PYVERSION < (3, 7):
-            arcz="-22 2D DE E-2  23 36 6A A-2  -68 8-6   -AB B-A"
-        else:
-            # Python 3.7 no longer includes class docstrings in the lnotab table.
-            arcz="-22 2D DE E-2  26 6A A-2  -68 8-6   -AB B-A"
+        arcz="-22 2D DE E-2  23 36 6A A-2  -68 8-6   -AB B-A"
         self.check_coverage("""\
             # A comment.
             class theClass:
