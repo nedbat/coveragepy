@@ -16,7 +16,7 @@ Change history for Coverage.py
 
 .. _changes_50a1:
 
-Version 5.0a1 --- 2018-05-28
+Version 5.0a1 --- 2018-06-05
 ----------------------------
 
 - Coverage.py no longer supports Python 2.6 or 3.3.
