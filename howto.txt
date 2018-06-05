@@ -58,7 +58,8 @@
 - Update PyPi:
     - upload kits:
         - $ make kit_upload
-    - Visit https://pypi.python.org/pypi?:action=pkg_edit&name=coverage :
+    - DON'T NEED TO DO THIS ANY MORE?
+        - Visit https://pypi.python.org/pypi?:action=pkg_edit&name=coverage :
         - show/hide the proper versions.
 - Tag the tree
     - hg tag -m "Coverage 3.0.1" coverage-3.0.1
