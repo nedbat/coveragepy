@@ -35,7 +35,7 @@ Version 5.0a1 --- 2018-06-05
 - Running coverage many times for small runs in a single process should be
   faster, closing `issue 625`_.  Thanks, David MacIver.
 
-- Large HTML report pages load faster.  Thanks, pankajp.
+- Large HTML report pages load faster.  Thanks, Pankaj Pandey.
 
 .. _issue 625: https://bitbucket.org/ned/coveragepy/issues/625/lstat-dominates-in-the-case-of-small
 .. _issue 650: https://bitbucket.org/ned/coveragepy/issues/650/allow-setting-configuration-file-location
