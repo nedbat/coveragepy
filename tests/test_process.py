@@ -659,7 +659,7 @@ class ProcessTest(CoverageTest):
         self.assertGreater(data.line_counts()['os.py'], 50)
 
     def test_lang_c(self):
-        if env.PY3 and sys.version_info < (3, 4):
+        if env.PY3 and env.PYVERSION < (3, 4):
             # Python 3.3 can't compile the non-ascii characters in the file name.
             self.skipTest("3.3 can't handle this test")
         if env.JYTHON:
@@ -768,7 +768,7 @@ class EnvironmentTest(CoverageTest):
         self.assert_tryexecfile_output(out_cov, out_py)
 
     def test_coverage_run_dir_is_like_python_dir(self):
-        if sys.version_info == (3, 5, 4, 'final', 0):       # pragma: obscure
+        if env.PYVERSION == (3, 5, 4, 'final', 0):       # pragma: obscure
             self.skipTest("3.5.4 broke this: https://bugs.python.org/issue32551")
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())

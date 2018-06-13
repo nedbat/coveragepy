@@ -200,7 +200,7 @@ class PythonParserTest(CoverageTest):
         expected_arcs = set(self.arcz_to_arcs(".1 14 48 8.  .2 2.  -8A A-8"))
         expected_exits = {1: 1, 2: 1, 4: 1, 8: 1, 10: 1}
         if env.PYVERSION >= (3, 7, 0, 'beta', 5):
-            # 3.7 changed how functions with only docstrings were numbered.
+            # 3.7 changed how functions with only docstrings are numbered.
             expected_arcs.update(set(self.arcz_to_arcs("-46 6-4")))
             expected_exits.update({6: 1})
         self.assertEqual(parser.arcs(), expected_arcs)

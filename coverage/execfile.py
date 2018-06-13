@@ -9,6 +9,7 @@ import struct
 import sys
 import types
 
+from coverage import env
 from coverage.backward import BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
 from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
@@ -115,7 +116,7 @@ def run_python_module(modulename, args):
     # used to be an empty string (meaning the current directory). It changed
     # to be the actual path to the current directory, so that os.chdir wouldn't
     # affect the outcome.
-    if sys.version_info >= (3, 7, 0, 'beta', 3):
+    if env.PYVERSION >= (3, 7, 0, 'beta', 3):
         path0 = os.getcwd()
     else:
         path0 = ""
@@ -136,7 +137,7 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
     function will decide on a value.
 
     """
-    if modulename is None and sys.version_info >= (3, 3):
+    if modulename is None and env.PYVERSION >= (3, 3):
         modulename = '__main__'
 
     # Create a module to serve as __main__
@@ -263,7 +264,7 @@ def make_code_from_pyc(filename):
             raise NoCode("Bad magic number in .pyc file")
 
         date_based = True
-        if sys.version_info >= (3, 7, 0, 'alpha', 4):
+        if env.PYVERSION >= (3, 7, 0, 'alpha', 4):
             flags = struct.unpack('<L', fpyc.read(4))[0]
             hash_based = flags & 0x01
             if hash_based:
@@ -272,7 +273,7 @@ def make_code_from_pyc(filename):
         if date_based:
             # Skip the junk in the header that we don't need.
             fpyc.read(4)            # Skip the moddate.
-            if sys.version_info >= (3, 3):
+            if env.PYVERSION >= (3, 3):
                 # 3.3 added another long to the header (size), skip it.
                 fpyc.read(4)
 

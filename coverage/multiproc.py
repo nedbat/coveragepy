@@ -6,8 +6,8 @@
 import multiprocessing
 import multiprocessing.process
 import os
-import sys
 
+from coverage import env
 from coverage.misc import contract
 
 # An attribute that will be set on the module to indicate that it has been
@@ -15,7 +15,7 @@ from coverage.misc import contract
 PATCHED_MARKER = "_coverage$patched"
 
 
-if sys.version_info >= (3, 4):
+if env.PYVERSION >= (3, 4):
     OriginalProcess = multiprocessing.process.BaseProcess
 else:
     OriginalProcess = multiprocessing.Process
@@ -70,7 +70,7 @@ def patch_multiprocessing(rcfile):
     if hasattr(multiprocessing, PATCHED_MARKER):
         return
 
-    if sys.version_info >= (3, 4):
+    if env.PYVERSION >= (3, 4):
         OriginalProcess._bootstrap = ProcessWithCoverage._bootstrap
     else:
         multiprocessing.Process = ProcessWithCoverage

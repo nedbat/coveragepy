@@ -36,7 +36,7 @@ def test_farm(filename):
 
 
 # "rU" was deprecated in 3.4
-READ_MODE = "rU" if sys.version_info < (3, 4) else "r"
+READ_MODE = "rU" if env.PYVERSION < (3, 4) else "r"
 
 
 class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):

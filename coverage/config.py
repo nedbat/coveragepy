@@ -6,8 +6,8 @@
 import collections
 import os
 import re
-import sys
 
+from coverage import env
 from coverage.backward import configparser, iitems, string_class
 from coverage.misc import contract, CoverageException, isolate_module
 
@@ -33,7 +33,7 @@ class HandyConfigParser(configparser.RawConfigParser):
     def read(self, filenames):
         """Read a file name as UTF-8 configuration data."""
         kwargs = {}
-        if sys.version_info >= (3, 2):
+        if env.PYVERSION >= (3, 2):
             kwargs['encoding'] = "utf-8"
         return configparser.RawConfigParser.read(self, filenames, **kwargs)
 
