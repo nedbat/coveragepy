@@ -197,8 +197,14 @@ class PythonParserTest(CoverageTest):
                 pass
             """)
         self.assertEqual(parser.statements, set([1, 2, 4, 8, 10]))
-        self.assertEqual(parser.arcs(), set(self.arcz_to_arcs(".1 14 48 8.  .2 2.  -8A A-8")))
-        self.assertEqual(parser.exit_counts(), {1: 1, 2: 1, 4: 1, 8: 1, 10: 1})
+        expected_arcs = set(self.arcz_to_arcs(".1 14 48 8.  .2 2.  -8A A-8"))
+        expected_exits = {1: 1, 2: 1, 4: 1, 8: 1, 10: 1}
+        if env.PYVERSION >= (3, 7, 0, 'beta', 5):
+            # 3.7 changed how functions with only docstrings were numbered.
+            expected_arcs.update(set(self.arcz_to_arcs("-46 6-4")))
+            expected_exits.update({6: 1})
+        self.assertEqual(parser.arcs(), expected_arcs)
+        self.assertEqual(parser.exit_counts(), expected_exits)
 
 
 class ParserMissingArcDescriptionTest(CoverageTest):
