@@ -117,7 +117,7 @@ the second uses the C implementation.
 
 To limit tox to just a few versions of Python, use the ``-e`` switch::
 
-    $ tox -e py27,py33
+    $ tox -e py27,py37
 
 To run just a few tests, you can use `pytest test selectors`_::
 

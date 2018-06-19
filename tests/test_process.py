@@ -659,9 +659,6 @@ class ProcessTest(CoverageTest):
         self.assertGreater(data.line_counts()['os.py'], 50)
 
     def test_lang_c(self):
-        if env.PY3 and env.PYVERSION < (3, 4):
-            # Python 3.3 can't compile the non-ascii characters in the file name.
-            self.skipTest("3.3 can't handle this test")
         if env.JYTHON:
             # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
             self.skipTest("Jython can't handle this test")
