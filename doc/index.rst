@@ -180,13 +180,11 @@ coverage.py or get help using it on the `Testing In Python`_ mailing list.
 
 .. _Testing In Python: http://lists.idyll.org/listinfo/testing-in-python
 
-Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
-Bitbucket also hosts the `code repository`_. There is a `mirrored repo`_ on
-GitHub.
+Bug reports are gladly accepted at the `GitHub issue tracker`_.
+GitHub also hosts the `code repository`_.
 
-.. _Bitbucket issue tracker: https://bitbucket.org/ned/coveragepy/issues
-.. _code repository: https://bitbucket.org/ned/coveragepy
-.. _mirrored repo: https://github.com/nedbat/coveragepy
+.. _GitHub issue tracker: https://github.com/nedbat/coveragepy/issues
+.. _code repository: https://github.com/nedbat/coveragepy
 
 `I can be reached`_ in a number of ways. I'm happy to answer questions about
 using coverage.py.

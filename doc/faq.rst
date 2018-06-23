@@ -127,14 +127,9 @@ mailing list.
 
 .. _Testing In Python: http://lists.idyll.org/listinfo/testing-in-python
 
-Bug reports are gladly accepted at the `Bitbucket issue tracker`_.
+Bug reports are gladly accepted at the `GitHub issue tracker`_.
 
-.. _Bitbucket issue tracker: https://bitbucket.org/ned/coveragepy/issues
-
-Announcements of new coverage.py releases are sent to the
-`coveragepy-announce`_ mailing list.
-
-.. _coveragepy-announce: http://groups.google.com/group/coveragepy-announce
+.. _GitHub issue tracker: https://github.com/nedbat/coveragepy/issues
 
 `I can be reached`__ in a number of ways, I'm happy to answer questions about
 using coverage.py.
@@ -151,4 +146,4 @@ Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
 
 .. _Gareth Rees:    http://garethrees.org/
 .. _Ned Batchelder: https://nedbatchelder.com
-.. _many others:    https://bitbucket.org/ned/coveragepy/src/tip/CONTRIBUTORS.txt
+.. _many others:    https://github.com/nedbat/coveragepy/blob/master/CONTRIBUTORS.txt
