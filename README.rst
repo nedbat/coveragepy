@@ -25,10 +25,9 @@ Coverage.py runs on many versions of Python:
 * IronPython 2.7.7, though not for reporting.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
-`Bitbucket`_, with a mirrored repository on `GitHub`_.
+`GitHub`_.
 
 .. _Read the Docs: https://coverage.readthedocs.io/
-.. _Bitbucket: https://bitbucket.org/ned/coveragepy
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 
@@ -71,7 +70,7 @@ License
 Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 
 .. _Apache 2.0 License: http://www.apache.org/licenses/LICENSE-2.0
-.. _NOTICE.txt: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+.. _NOTICE.txt: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 
 .. |ci-status| image:: https://travis-ci.org/nedbat/coveragepy.svg?branch=master
