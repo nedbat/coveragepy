@@ -1,5 +1,5 @@
 ﻿# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-# For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 # A Python source file in utf-8, with BOM.
 math = "3×4 = 12, ÷2 = 6±0"
