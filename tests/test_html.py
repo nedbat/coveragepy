@@ -640,6 +640,12 @@ class HtmlGoldTests(CoverageGoldTest):
         self.output_dir("out/bom")
 
         with change_dir("src"):
+            # It's important that the source file really have a BOM, which can
+            # get lost, so check that it's really there.
+            with open("bom.py", "rb") as f:
+                first_three = f.read(3)
+                assert first_three == b"\xef\xbb\xbf"
+
             # pylint: disable=import-error
             cov = coverage.Coverage()
             cov.start()
