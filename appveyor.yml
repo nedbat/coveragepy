@@ -99,9 +99,9 @@ install:
 
   # Upgrade to the latest version of pip to avoid it displaying warnings
   # about it being out of date.
-  - "python -m pip install --disable-pip-version-check --user pip==10.0.1"
+  - "python -m pip install --disable-pip-version-check --upgrade pip"
   # And upgrade virtualenv to get the latest pip inside .tox virtualenvs.
-  - "python -m pip install --disable-pip-version-check --user --upgrade virtualenv"
+  - "python -m pip install --disable-pip-version-check --upgrade virtualenv"
 
   # Install requirements.
   - "%CMD_IN_ENV% pip install -r requirements/ci.pip"
