@@ -28,7 +28,7 @@ class SetupPyTest(CoverageTest):
         out = output.splitlines()
         self.assertIn("measurement", out[0])
         self.assertEqual(coverage.__version__, out[1])
-        self.assertIn("bitbucket.org/ned/coveragepy", out[2])
+        self.assertIn("github.com/nedbat/coveragepy", out[2])
         self.assertIn("Ned Batchelder", out[3])
 
     def test_more_metadata(self):
