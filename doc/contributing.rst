@@ -19,7 +19,7 @@ One source of history or ideas are the `bug reports`_ against coverage.py.
 There you can find ideas for requested features, or the remains of rejected
 ideas.
 
-.. _bug reports: https://bitbucket.org/ned/coveragepy/issues?status=new&status=open
+.. _bug reports: https://github.com/nedbat/coveragepy/issues
 
 
 Before you begin
@@ -35,8 +35,8 @@ you frustration.
 Getting the code
 ----------------
 
-The coverage.py code is hosted on a `Mercurial`_ repository at
-https://bitbucket.org/ned/coveragepy.  To get a working environment, follow
+The coverage.py code is hosted on a GitHub repo at
+https://github.com/nedbat/coveragepy.  To get a working environment, follow
 these steps:
 
 #.  (Optional, but recommended) Create a virtualenv to work in, and activate
@@ -47,7 +47,7 @@ these steps:
 
 #.  Clone the repo::
 
-        $ hg clone https://bitbucket.org/ned/coveragepy
+        $ git clone https://github.com/nedbat/coveragepy
         $ cd coveragepy
 
 #.  Install the requirements::
@@ -174,10 +174,9 @@ Contributing
 ------------
 
 When you are ready to contribute a change, any way you can get it to me is
-probably fine.  A pull request on Bitbucket is great, but a simple diff or
+probably fine.  A pull request on GitHub is great, but a simple diff or
 patch works too.
 
 
 .. _editorconfig.org: http://editorconfig.org
-.. _Mercurial: https://www.mercurial-scm.org/
 .. _tox: https://tox.readthedocs.io/

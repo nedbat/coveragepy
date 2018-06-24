@@ -23,7 +23,7 @@ working properly.
 If your problem isn't discussed here, you can of course search the `coverage.py
 bug tracker`_ directly to see if there is some mention of it.
 
-.. _coverage.py bug tracker: https://bitbucket.org/ned/coveragepy/issues?status=new&status=open
+.. _coverage.py bug tracker: https://github.com/nedbat/coveragepy/issues
 
 
 Things that don't work
