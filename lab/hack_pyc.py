@@ -9,6 +9,12 @@ import marshal, new, opcode, sys, types
 
 from lnotab import lnotab_numbers, lnotab_string
 
+try:
+    basestring            # Python 2
+except NameError:
+    basestring = (str, )  # Python 3
+
+
 class PycFile:
     def read(self, f):
         if isinstance(f, basestring):
