@@ -13,11 +13,11 @@ def my_function(x):
 
     i = 0
     while True:
-        print "In while True"
+        print("In while True")
         if i > 0:
             break
         i += 1
-    print "Left the True loop"
+    print("Left the True loop")
 
     # Notice that "while 1" also has this problem.  Even though the compiler
     # knows there's no computation at the top of the loop, it's still expressed
@@ -25,11 +25,11 @@ def my_function(x):
 
     i = 0
     while 1:
-        print "In while 1"
+        print("In while 1")
         if i > 0:
             break
         i += 1
-    print "Left the 1 loop"
+    print("Left the 1 loop")
 
     # Coverage.py lets developers exclude lines that they know will not be
     # executed.  So far, the branch coverage doesn't use all that information
@@ -40,9 +40,9 @@ def my_function(x):
 
     if x < 1000:
         # This branch is always taken
-        print "x is reasonable"
+        print("x is reasonable")
     else:   # pragma: nocover
-        print "this never happens"
+        print("this never happens")
 
     # try-except structures are complex branches.  An except clause with a
     # type is a three-way branch: there could be no exception, there could be
@@ -57,9 +57,9 @@ def my_function(x):
             if y % 2:
                 raise ValueError("y is odd!")
         except ValueError:
-            print "y must have been odd"
-        print "done with y"
-    print "done with 1, 2"
+            print("y must have been odd")
+        print("done with y")
+    print("done with 1, 2")
 
     # Another except clause, but this time all three cases are executed.  No
     # partial lines are shown:
@@ -71,11 +71,11 @@ def my_function(x):
             if y == 0:
                 raise Exception("zero!")
         except ValueError:
-            print "y must have been odd"
+            print("y must have been odd")
         except:
-            print "y is something else"
-        print "done with y"
-    print "done with 0, 1, 2"
+            print("y is something else")
+        print("done with y")
+    print("done with 0, 1, 2")
 
 
 my_function(1)

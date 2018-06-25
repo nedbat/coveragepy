@@ -14,13 +14,13 @@ def trace(frame, event, arg):
         # This can happen when Python is shutting down.
         return None
 
-    print "%s%s %s %d @%d" % (
+    print("%s%s %s %d @%d" % (
         "    " * nest,
         event,
         os.path.basename(frame.f_code.co_filename),
         frame.f_lineno,
         frame.f_lasti,
-        )
+        ))
 
     if event == 'call':
         nest += 1
