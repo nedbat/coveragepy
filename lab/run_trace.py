@@ -32,4 +32,5 @@ def trace(frame, event, arg):
 the_program = sys.argv[1]
 
 sys.settrace(trace)
-execfile(the_program)
+with open(the_program) as in_file:
+    exec(in_file.read())
