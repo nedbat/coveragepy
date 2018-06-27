@@ -30,10 +30,10 @@
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
 
         <h2 class="stats">
-            8 statements &nbsp;
-            <span class="run hide_run shortkey_r button_toggle_run">8 run</span>
+            9 statements &nbsp;
+            <span class="run hide_run shortkey_r button_toggle_run">9 run</span>
             <span class="mis shortkey_m button_toggle_mis">0 missing</span>
-            <span class="exc shortkey_x button_toggle_exc">0 excluded</span>
+            <span class="exc shortkey_x button_toggle_exc">1 excluded</span>
 
             
                 <span class="par run hide_run shortkey_p button_toggle_par">0 partial</span>
@@ -44,22 +44,22 @@
 
 <div class="help_panel">
     <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
-<p class="legend">Hot-keys on this page</p>
+    <p class="legend">Hot-keys on this page</p>
     <div>
-<p class="keyhelp">
+    <p class="keyhelp">
         <span class="key">r</span>
         <span class="key">m</span>
         <span class="key">x</span>
         <span class="key">p</span> &nbsp; toggle line displays
     </p>
-<p class="keyhelp">
+    <p class="keyhelp">
         <span class="key">j</span>
         <span class="key">k</span> &nbsp; next/prev highlighted chunk
     </p>
-<p class="keyhelp">
+    <p class="keyhelp">
         <span class="key">0</span> &nbsp; (zero) top of page
     </p>
-<p class="keyhelp">
+    <p class="keyhelp">
         <span class="key">1</span> &nbsp; (one) first highlighted chunk
     </p>
     </div>
@@ -90,31 +90,37 @@
 <p id="n19" class="pln"><a href="#n19">19</a></p>
 <p id="n20" class="pln"><a href="#n20">20</a></p>
 <p id="n21" class="stm run hide_run"><a href="#n21">21</a></p>
-                
+<p id="n22" class="pln"><a href="#n22">22</a></p>
+<p id="n23" class="stm run hide_run"><a href="#n23">23</a></p>
+<p id="n24" class="exc"><a href="#n24">24</a></p>
+
             </td>
             <td class="text">
 <p id="t1" class="pln"><span class="com"># Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0</span><span class="strut">&nbsp;</span></p>
 <p id="t2" class="pln"><span class="com"># For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt</span><span class="strut">&nbsp;</span></p>
 <p id="t3" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t4" class="pln"><span class="com"># partial branches</span><span class="strut">&nbsp;</span></p>
+<p id="t4" class="pln"><span class="com"># partial branches and excluded lines</span><span class="strut">&nbsp;</span></p>
 <p id="t5" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t6" class="stm run hide_run"><span class="nam">a</span> <span class="op">=</span> <span class="num">3</span><span class="strut">&nbsp;</span></p>
+<p id="t6" class="stm run hide_run"><span class="nam">a</span> <span class="op">=</span> <span class="num">6</span><span class="strut">&nbsp;</span></p>
 <p id="t7" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t8" class="stm run hide_run"><span class="key">while</span> <span class="nam">True</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t9" class="stm run hide_run">&nbsp; &nbsp; <span class="key">break</span><span class="strut">&nbsp;</span></p>
+<p id="t8" class="stm run hide_run"><span class="key">while</span> <span class="key">True</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t9" class="stm run hide_run">    <span class="key">break</span><span class="strut">&nbsp;</span></p>
 <p id="t10" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t11" class="stm run hide_run"><span class="key">while</span> <span class="num">1</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t12" class="stm run hide_run">&nbsp; &nbsp; <span class="key">break</span><span class="strut">&nbsp;</span></p>
+<p id="t12" class="stm run hide_run">    <span class="key">break</span><span class="strut">&nbsp;</span></p>
 <p id="t13" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t14" class="stm run hide_run"><span class="key">while</span> <span class="nam">a</span><span class="op">:</span>&nbsp; &nbsp; &nbsp; &nbsp; <span class="com"># pragma: no branch</span><span class="strut">&nbsp;</span></p>
-<p id="t15" class="stm run hide_run">&nbsp; &nbsp; <span class="key">break</span><span class="strut">&nbsp;</span></p>
+<p id="t14" class="stm run hide_run"><span class="key">while</span> <span class="nam">a</span><span class="op">:</span>        <span class="com"># pragma: no branch</span><span class="strut">&nbsp;</span></p>
+<p id="t15" class="stm run hide_run">    <span class="key">break</span><span class="strut">&nbsp;</span></p>
 <p id="t16" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t17" class="pln"><span class="key">if</span> <span class="num">0</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t18" class="pln">&nbsp; &nbsp; <span class="nam">never_happen</span><span class="op">(</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t18" class="pln">    <span class="nam">never_happen</span><span class="op">(</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t19" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t20" class="pln"><span class="key">if</span> <span class="num">1</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t21" class="stm run hide_run">&nbsp; &nbsp; <span class="nam">a</span> <span class="op">=</span> <span class="num">13</span><span class="strut">&nbsp;</span></p>
-                
+<p id="t21" class="stm run hide_run">    <span class="nam">a</span> <span class="op">=</span> <span class="num">21</span><span class="strut">&nbsp;</span></p>
+<p id="t22" class="pln"><span class="strut">&nbsp;</span></p>
+<p id="t23" class="stm run hide_run"><span class="key">if</span> <span class="nam">a</span> <span class="op">==</span> <span class="num">23</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t24" class="exc">    <span class="key">raise</span> <span class="nam">AssertionError</span><span class="op">(</span><span class="str">"Can't"</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+
             </td>
         </tr>
     </table>
@@ -123,8 +129,8 @@
 <div id="footer">
     <div class="content">
         <p>
-            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/coverage-4.0a7">coverage.py v4.0a7</a>,
-            created at 2015-07-24 09:04
+            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/coverage-5.0a2">coverage.py v5.0a2</a>,
+            created at 2018-06-27 09:21
         </p>
     </div>
 </div>

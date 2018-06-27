@@ -44,22 +44,22 @@
 
 <div class="help_panel">
     <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
-<p class="legend">Hot-keys on this page</p>
+    <p class="legend">Hot-keys on this page</p>
     <div>
-<p class="keyhelp">
+    <p class="keyhelp">
         <span class="key">r</span>
         <span class="key">m</span>
         <span class="key">x</span>
         <span class="key">p</span> &nbsp; toggle line displays
     </p>
-<p class="keyhelp">
+    <p class="keyhelp">
         <span class="key">j</span>
         <span class="key">k</span> &nbsp; next/prev highlighted chunk
     </p>
-<p class="keyhelp">
+    <p class="keyhelp">
         <span class="key">0</span> &nbsp; (zero) top of page
     </p>
-<p class="keyhelp">
+    <p class="keyhelp">
         <span class="key">1</span> &nbsp; (one) first highlighted chunk
     </p>
     </div>
@@ -101,7 +101,7 @@
 <p id="n30" class="stm run hide_run"><a href="#n30">30</a></p>
 <p id="n31" class="pln"><a href="#n31">31</a></p>
 <p id="n32" class="stm run hide_run"><a href="#n32">32</a></p>
-                
+
             </td>
             <td class="text">
 <p id="t1" class="pln"><span class="com"># Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0</span><span class="strut">&nbsp;</span></p>
@@ -110,33 +110,33 @@
 <p id="t4" class="pln"><span class="com"># A test file for HTML reporting by coverage.py.</span><span class="strut">&nbsp;</span></p>
 <p id="t5" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t6" class="stm run hide_run"><span class="key">def</span> <span class="nam">one</span><span class="op">(</span><span class="nam">x</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t7" class="pln">&nbsp; &nbsp; <span class="com"># This will be a branch that misses the else.</span><span class="strut">&nbsp;</span></p>
-<p id="t8" class="stm par run hide_run"><span class="annotate" title="no jump to this line number">11</span>&nbsp; &nbsp; <span class="key">if</span> <span class="nam">x</span> <span class="op">&lt;</span> <span class="num">2</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t9" class="stm run hide_run">&nbsp; &nbsp; &nbsp; &nbsp; <span class="nam">a</span> <span class="op">=</span> <span class="num">3</span><span class="strut">&nbsp;</span></p>
-<p id="t10" class="pln">&nbsp; &nbsp; <span class="key">else</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t11" class="stm mis">&nbsp; &nbsp; &nbsp; &nbsp; <span class="nam">a</span> <span class="op">=</span> <span class="num">4</span><span class="strut">&nbsp;</span></p>
+<p id="t7" class="pln">    <span class="com"># This will be a branch that misses the else.</span><span class="strut">&nbsp;</span></p>
+<p id="t8" class="stm par run hide_run"><span class="annotate short">8&#x202F;&#x219B;&#x202F;11</span><span class="annotate long">line 8 didn't jump to line 11, because the condition on line 8 was never false</span>    <span class="key">if</span> <span class="nam">x</span> <span class="op">&lt;</span> <span class="num">2</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t9" class="stm run hide_run">        <span class="nam">a</span> <span class="op">=</span> <span class="num">3</span><span class="strut">&nbsp;</span></p>
+<p id="t10" class="pln">    <span class="key">else</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t11" class="stm mis">        <span class="nam">a</span> <span class="op">=</span> <span class="num">4</span><span class="strut">&nbsp;</span></p>
 <p id="t12" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t13" class="stm run hide_run"><span class="nam">one</span><span class="op">(</span><span class="num">1</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t14" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t15" class="stm run hide_run"><span class="key">def</span> <span class="nam">two</span><span class="op">(</span><span class="nam">x</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t16" class="pln">&nbsp; &nbsp; <span class="com"># A missed else that branches to &quot;exit&quot;</span><span class="strut">&nbsp;</span></p>
-<p id="t17" class="stm par run hide_run"><span class="annotate" title="no jump to this line number">exit</span>&nbsp; &nbsp; <span class="key">if</span> <span class="nam">x</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t18" class="stm run hide_run">&nbsp; &nbsp; &nbsp; &nbsp; <span class="nam">a</span> <span class="op">=</span> <span class="num">5</span><span class="strut">&nbsp;</span></p>
+<p id="t16" class="pln">    <span class="com"># A missed else that branches to "exit"</span><span class="strut">&nbsp;</span></p>
+<p id="t17" class="stm par run hide_run"><span class="annotate short">17&#x202F;&#x219B;&#x202F;exit</span><span class="annotate long">line 17 didn't return from function 'two', because the condition on line 17 was never false</span>    <span class="key">if</span> <span class="nam">x</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t18" class="stm run hide_run">        <span class="nam">a</span> <span class="op">=</span> <span class="num">5</span><span class="strut">&nbsp;</span></p>
 <p id="t19" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t20" class="stm run hide_run"><span class="nam">two</span><span class="op">(</span><span class="num">1</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t21" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t22" class="stm run hide_run"><span class="key">def</span> <span class="nam">three</span><span class="op">(</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t23" class="stm run hide_run">&nbsp; &nbsp; <span class="key">try</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t24" class="pln">&nbsp; &nbsp; &nbsp; &nbsp; <span class="com"># This if has two branches, *neither* one taken.</span><span class="strut">&nbsp;</span></p>
-<p id="t25" class="stm par run hide_run"><span class="annotate" title="no jumps to these line numbers">26&nbsp;&nbsp; 28</span>&nbsp; &nbsp; &nbsp; &nbsp; <span class="key">if</span> <span class="nam">name_error_this_variable_doesnt_exist</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t26" class="stm mis">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="nam">a</span> <span class="op">=</span> <span class="num">1</span><span class="strut">&nbsp;</span></p>
-<p id="t27" class="pln">&nbsp; &nbsp; &nbsp; &nbsp; <span class="key">else</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t28" class="stm mis">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="nam">a</span> <span class="op">=</span> <span class="num">2</span><span class="strut">&nbsp;</span></p>
-<p id="t29" class="stm run hide_run">&nbsp; &nbsp; <span class="key">except</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t30" class="stm run hide_run">&nbsp; &nbsp; &nbsp; &nbsp; <span class="key">pass</span><span class="strut">&nbsp;</span></p>
+<p id="t23" class="stm run hide_run">    <span class="key">try</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t24" class="pln">        <span class="com"># This if has two branches, *neither* one taken.</span><span class="strut">&nbsp;</span></p>
+<p id="t25" class="stm par run hide_run"><span class="annotate short">25&#x202F;&#x219B;&#x202F;26,&nbsp;&nbsp; 25&#x202F;&#x219B;&#x202F;28</span><span class="annotate long">2 missed branches: 1) line 25 didn't jump to line 26, because the condition on line 25 was never true, 2) line 25 didn't jump to line 28, because the condition on line 25 was never false</span>        <span class="key">if</span> <span class="nam">name_error_this_variable_doesnt_exist</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t26" class="stm mis">            <span class="nam">a</span> <span class="op">=</span> <span class="num">1</span><span class="strut">&nbsp;</span></p>
+<p id="t27" class="pln">        <span class="key">else</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t28" class="stm mis">            <span class="nam">a</span> <span class="op">=</span> <span class="num">2</span><span class="strut">&nbsp;</span></p>
+<p id="t29" class="stm run hide_run">    <span class="key">except</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t30" class="stm run hide_run">        <span class="key">pass</span><span class="strut">&nbsp;</span></p>
 <p id="t31" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t32" class="stm run hide_run"><span class="nam">three</span><span class="op">(</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
-                
+
             </td>
         </tr>
     </table>
@@ -145,8 +145,8 @@
 <div id="footer">
     <div class="content">
         <p>
-            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/coverage-4.0a7">coverage.py v4.0a7</a>,
-            created at 2015-07-24 09:04
+            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/coverage-5.0a2">coverage.py v5.0a2</a>,
+            created at 2018-06-27 09:27
         </p>
     </div>
 </div>
