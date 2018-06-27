@@ -249,7 +249,9 @@ def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scru
                 text_diff.append('%s != %s' % (left_file, right_file))
                 left = left.splitlines()
                 right = right.splitlines()
+                print(":::: diff {!r} and {!r}".format(left_file, right_file))
                 print("\n".join(difflib.Differ().compare(left, right)))
+                print(":::: end diff {!r} and {!r}".format(left_file, right_file))
         assert not text_diff, "Files differ: %s" % '\n'.join(text_diff)
 
     if not left_extra:
