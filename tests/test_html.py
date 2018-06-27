@@ -14,6 +14,7 @@ import sys
 
 import coverage
 from coverage.backward import unicode_class
+from coverage import env
 from coverage.files import flat_rootname
 import coverage.html
 from coverage.misc import CoverageException, NotPython, NoSource
@@ -579,6 +580,9 @@ def compare_html(dir1, dir2):
         (flat_rootname(unicode_class(TESTS_DIR)), '_TESTS_DIR'),
         (flat_rootname(u'/Users/ned/coverage/trunk/tests'), '_TESTS_DIR'),
     ]
+    if env.WINDOWS:
+        # For file paths...
+        scrubs += [(r"\\", "/")]
     return compare(dir1, dir2, file_pattern="*.html", scrubs=scrubs)
 
 
