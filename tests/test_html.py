@@ -13,11 +13,12 @@ import re
 import sys
 
 import coverage
-import coverage.files
+from coverage.backward import unicode_class
+from coverage.files import flat_rootname
 import coverage.html
 from coverage.misc import CoverageException, NotPython, NoSource
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import CoverageGoldTest
 from tests.goldtest import change_dir, compare, contains, doesnt_contain, contains_any
 
@@ -572,6 +573,11 @@ def compare_html(dir1, dir2):
         (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d', 'created at DATE'),
         # Some words are identifiers in one version, keywords in another.
         (r'<span class="(nam|key)">(print|True|False)</span>', '<span class="nam">XXX</span>'),
+        # Occasionally an absolute path is in the HTML report.
+        (TESTS_DIR, 'TESTS_DIR'),
+        (r'/Users/ned/coverage/trunk/tests', 'TESTS_DIR'),
+        (flat_rootname(unicode_class(TESTS_DIR)), '_TESTS_DIR'),
+        (flat_rootname(u'/Users/ned/coverage/trunk/tests'), '_TESTS_DIR'),
     ]
     return compare(dir1, dir2, file_pattern="*.html", scrubs=scrubs)
 
