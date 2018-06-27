@@ -564,6 +564,18 @@ class HtmlStaticFileTest(CoverageTest):
             cov.html_report()
 
 
+def compare_html(dir1, dir2):
+    """Specialized compare function for HTML files."""
+    scrubs = [
+        (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
+        (r'coverage.py v[\d.abc]+', 'coverage.py vVER'),
+        (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d', 'created at DATE'),
+        # Some words are identifiers in one version, keywords in another.
+        (r'<span class="(nam|key)">(print|True|False)</span>', '<span class="nam">XXX</span>'),
+    ]
+    return compare(dir1, dir2, file_pattern="*.html", scrubs=scrubs)
+
+
 class HtmlGoldTests(CoverageGoldTest):
     """Tests of HTML reporting that use gold files."""
 
@@ -580,7 +592,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()          # pragma: nested
             cov.html_report(a, directory='../out/a')
 
-        compare("gold_a", "out/a", size_within=10, file_pattern="*.html")
+        compare_html("gold_a", "out/a")
         contains(
             "out/a/a_py.html",
             ('<span class="key">if</span> <span class="num">1</span> '
@@ -607,7 +619,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()          # pragma: nested
             cov.html_report(b, directory="../out/b_branch")
 
-        compare("gold_b_branch", "out/b_branch", size_within=10, file_pattern="*.html")
+        compare_html("gold_b_branch", "out/b_branch")
         contains(
             "out/b_branch/b_py.html",
             ('<span class="key">if</span> <span class="nam">x</span> '
@@ -653,7 +665,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()          # pragma: nested
             cov.html_report(bom, directory="../out/bom")
 
-        compare("gold_bom", "out/bom", size_within=10, file_pattern="*.html")
+        compare_html("gold_bom", "out/bom")
         contains(
             "out/bom/bom_py.html",
             '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
@@ -670,7 +682,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()                  # pragma: nested
             cov.html_report(isolatin1, directory="../out/isolatin1")
 
-        compare("gold_isolatin1", "out/isolatin1", size_within=10, file_pattern="*.html")
+        compare_html("gold_isolatin1", "out/isolatin1")
         contains(
             "out/isolatin1/isolatin1_py.html",
             '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
@@ -687,7 +699,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()          # pragma: nested
             cov.html_report(directory="../out/omit_1")
 
-        compare("gold_omit_1", "out/omit_1", size_within=10, file_pattern="*.html")
+        compare_html("gold_omit_1", "out/omit_1")
 
     def test_omit_2(self):
         self.output_dir("out/omit_2")
@@ -700,7 +712,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()          # pragma: nested
             cov.html_report(directory="../out/omit_2", omit=["m1.py"])
 
-        compare("gold_omit_2", "out/omit_2", size_within=10, file_pattern="*.html")
+        compare_html("gold_omit_2", "out/omit_2")
 
     def test_omit_3(self):
         self.output_dir("out/omit_3")
@@ -713,7 +725,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()          # pragma: nested
             cov.html_report(directory="../out/omit_3", omit=["m1.py", "m2.py"])
 
-        compare("gold_omit_3", "out/omit_3", size_within=10, file_pattern="*.html")
+        compare_html("gold_omit_3", "out/omit_3")
 
     def test_omit_4(self):
         self.output_dir("out/omit_4")
@@ -726,7 +738,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()          # pragma: nested
             cov.html_report(directory="../out/omit_4")
 
-        compare("gold_omit_4", "out/omit_4", size_within=10, file_pattern="*.html")
+        compare_html("gold_omit_4", "out/omit_4")
 
     def test_omit_5(self):
         self.output_dir("out/omit_5")
@@ -739,7 +751,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()          # pragma: nested
             cov.html_report()
 
-        compare("gold_omit_5", "out/omit_5", size_within=10, file_pattern="*.html")
+        compare_html("gold_omit_5", "out/omit_5")
 
     def test_other(self):
         self.output_dir("out/other")
@@ -757,7 +769,7 @@ class HtmlGoldTests(CoverageGoldTest):
         for p in glob.glob("out/other/*_other_py.html"):
             os.rename(p, "out/other/blah_blah_other_py.html")
 
-        compare("gold_other", "out/other", size_within=10, file_pattern="*.html")
+        compare_html("gold_other", "out/other")
         contains(
             "out/other/index.html",
             '<a href="here_py.html">here.py</a>',
@@ -775,7 +787,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()              # pragma: nested
             cov.html_report(partial, directory="../out/partial")
 
-        compare("gold_partial", "out/partial", size_within=10, file_pattern="*.html")
+        compare_html("gold_partial", "out/partial")
         contains(
             "out/partial/partial_py.html",
             '<p id="t8" class="stm run hide_run">',
@@ -806,7 +818,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()          # pragma: nested
             cov.html_report(a, directory="../out/styled", extra_css="extra.css")
 
-        compare("gold_styled", "out/styled", size_within=10, file_pattern="*.html")
+        compare_html("gold_styled", "out/styled")
         compare("gold_styled", "out/styled", size_within=10, file_pattern="*.css")
         contains(
             "out/styled/a_py.html",
@@ -859,7 +871,7 @@ class HtmlGoldTests(CoverageGoldTest):
             cov.stop()              # pragma: nested
             cov.html_report(unicode, directory="../out/unicode")
 
-        compare("gold_unicode", "out/unicode", size_within=10, file_pattern="*.html")
+        compare_html("gold_unicode", "out/unicode")
         contains(
             "out/unicode/unicode_py.html",
             '<span class="str">"&#654;d&#729;&#477;b&#592;&#633;&#477;&#652;o&#596;"</span>',
