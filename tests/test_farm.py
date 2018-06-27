@@ -179,8 +179,36 @@ def run(cmds, rundir="src", outfile=None):
                 fout.close()
 
 
+def versioned_directory(d):
+    """Find a subdirectory of d specific to the Python version.
+
+    For example, on Python 3.6.4 rc 1, it returns the first of these
+    directories that exists::
+
+        d/3.6.4.candidate.1
+        d/3.6.4.candidate
+        d/3.6.4
+        d/3.6
+        d/3
+        d
+
+    Returns: a string, the path to an existing directory.
+
+    """
+    ver_parts = list(map(str, sys.version_info))
+    for nparts in range(len(ver_parts), -1, -1):
+        version = ".".join(ver_parts[:nparts])
+        subdir = os.path.join(d, version)
+        if os.path.exists(subdir):
+            return subdir
+    raise Exception("Directory missing: {}".format(d))                  # pragma: only failure
+
+
 def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scrubs=None):
     """Compare files matching `file_pattern` in `dir1` and `dir2`.
+
+    A version-specific subdirectory of `dir1` or `dir2` will be used if
+    it exists.
 
     `size_within` is a percentage delta for the file sizes.  If non-zero,
     then the file contents are not compared (since they are expected to
@@ -198,8 +226,8 @@ def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scru
     matches.
 
     """
-    assert os.path.exists(dir1), "Left directory missing: %s" % dir1
-    assert os.path.exists(dir2), "Right directory missing: %s" % dir2
+    dir1 = versioned_directory(dir1)
+    dir2 = versioned_directory(dir2)
 
     dc = filecmp.dircmp(dir1, dir2)
     diff_files = fnmatch_list(dc.diff_files, file_pattern)
