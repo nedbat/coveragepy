@@ -219,8 +219,8 @@ def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scru
     `left_extra` true means the left directory can have extra files in it
     without triggering an assertion.
 
-    `scrubs` is a list of pairs, regexes to find and literal strings to
-    replace them with to scrub the files of unimportant differences.
+    `scrubs` is a list of pairs, regexes to find and replace to scrub the
+    files of unimportant differences.
 
     An assertion will be raised if the directories fail one of their
     matches.
@@ -378,7 +378,7 @@ def scrub(strdata, scrubs):
 
     """
     for rgx_find, rgx_replace in scrubs:
-        strdata = re.sub(rgx_find, rgx_replace.replace("\\", "\\\\"), strdata)
+        strdata = re.sub(rgx_find, rgx_replace, strdata)
     return strdata
 
 

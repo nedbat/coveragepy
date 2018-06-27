@@ -572,7 +572,7 @@ def compare_html(dir1, dir2):
         (r'coverage.py v[\d.abc]+', 'coverage.py vVER'),
         (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d', 'created at DATE'),
         # Some words are identifiers in one version, keywords in another.
-        (r'<span class="(nam|key)">(print|True|False)</span>', '<span class="nam">XXX</span>'),
+        (r'<span class="(nam|key)">(print|True|False)</span>', r'<span class="nam">\2</span>'),
         # Occasionally an absolute path is in the HTML report.
         (TESTS_DIR, 'TESTS_DIR'),
         (r'/Users/ned/coverage/trunk/tests', 'TESTS_DIR'),
