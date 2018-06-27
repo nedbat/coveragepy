@@ -104,7 +104,7 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
         raise Exception("runTest isn't used in this class!")
 
     def __call__(self):                                 # pylint: disable=arguments-differ
-        """Execute the test from the run.py file."""
+        """Execute the test from the runpy file."""
         if _TEST_NAME_FILE:                             # pragma: debugging
             with open(_TEST_NAME_FILE, "w") as f:
                 f.write(self.description.replace("/", "_"))
@@ -147,6 +147,8 @@ def noop(*args_unused, **kwargs_unused):
 
 def copy(src, dst):
     """Copy a directory."""
+    if os.path.exists(dst):
+        pytest.fail('%s already exists.' % os.path.join(os.getcwd(), dst))
     shutil.copytree(src, dst)
 
 
@@ -234,19 +236,21 @@ def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scru
         # ourselves.
         text_diff = []
         for f in diff_files:
-            with open(os.path.join(dir1, f), READ_MODE) as fobj:
+            left_file = os.path.join(dir1, f)
+            right_file = os.path.join(dir2, f)
+            with open(left_file, READ_MODE) as fobj:
                 left = fobj.read()
-            with open(os.path.join(dir2, f), READ_MODE) as fobj:
+            with open(right_file, READ_MODE) as fobj:
                 right = fobj.read()
             if scrubs:
                 left = scrub(left, scrubs)
                 right = scrub(right, scrubs)
             if left != right:                           # pragma: only failure
-                text_diff.append(f)
+                text_diff.append('%s != %s' % (left_file, right_file))
                 left = left.splitlines()
                 right = right.splitlines()
                 print("\n".join(difflib.Differ().compare(left, right)))
-        assert not text_diff, "Files differ: %s" % text_diff
+        assert not text_diff, "Files differ: %s" % '\n'.join(text_diff)
 
     if not left_extra:
         assert not left_only, "Files in %s only: %s" % (dir1, left_only)
