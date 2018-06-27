@@ -294,7 +294,6 @@ def do_check_eol():
     check_file("setup.py")
     check_file("igor.py")
     check_file("Makefile")
-    check_file(".hgignore")
     check_file(".travis.yml")
     check_files(".", ["*.rst", "*.txt"])
     check_files(".", ["*.pip"])
