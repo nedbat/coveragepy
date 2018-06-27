@@ -148,7 +148,7 @@ def noop(*args_unused, **kwargs_unused):
 def copy(src, dst):
     """Copy a directory."""
     if os.path.exists(dst):
-        pytest.fail('%s already exists.' % os.path.join(os.getcwd(), dst))
+        pytest.fail('%s already exists.' % os.path.join(os.getcwd(), dst))  # pragma: only failure
     shutil.copytree(src, dst)
 
 
