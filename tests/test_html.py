@@ -574,7 +574,7 @@ def compare_html(dir1, dir2):
         # Some words are identifiers in one version, keywords in another.
         (r'<span class="(nam|key)">(print|True|False)</span>', r'<span class="nam">\2</span>'),
         # Occasionally an absolute path is in the HTML report.
-        (TESTS_DIR, 'TESTS_DIR'),
+        (re.escape(TESTS_DIR), 'TESTS_DIR'),
         (r'/Users/ned/coverage/trunk/tests', 'TESTS_DIR'),
         (flat_rootname(unicode_class(TESTS_DIR)), '_TESTS_DIR'),
         (flat_rootname(u'/Users/ned/coverage/trunk/tests'), '_TESTS_DIR'),
