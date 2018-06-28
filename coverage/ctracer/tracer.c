@@ -8,6 +8,8 @@
 #include "filedisp.h"
 #include "tracer.h"
 
+#include <assert.h>
+
 /* Python C API helpers. */
 
 static int
@@ -60,6 +62,25 @@ error:
 
 static void CTracer_disable_plugin(CTracer *self, PyObject * disposition);
 
+
+static void InternTable_init_1(InternTable *table){
+    table->capacity = 32;
+    table->max_fill = 21;
+    table->current_fill = 0;
+    table->zero_value = NULL;
+    table->entries = calloc(table->capacity, sizeof(InternEntry));
+}
+
+static void InternTable_dealloc_1(InternTable *table){
+    size_t j;
+    Py_XDECREF(table->zero_value);
+    for(j = 0; j < table->capacity; j++){
+        Py_XDECREF(table->entries[j].value);
+    }
+    free(table->entries);
+}
+
+
 static int
 CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 {
@@ -73,6 +94,8 @@ CTracer_init(CTracer *self, PyObject *args_unused, PyObject *kwds_unused)
 
     self->context = Py_None;
     Py_INCREF(self->context);
+
+    InternTable_init_1(&self->intern_table);
 
     ret = RET_OK;
     goto ok;
@@ -115,6 +138,7 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->data_stack_index);
 
     Py_TYPE(self)->tp_free((PyObject*)self);
+    InternTable_dealloc_1(&self->intern_table);
 }
 
 #if TRACE_LOG
@@ -167,17 +191,155 @@ showlog(int depth, int lineno, PyObject * filename, const char * msg)
 static const char * what_sym[] = {"CALL", "EXC ", "LINE", "RET "};
 #endif
 
+
+// From http://www.cris.com/~Ttwang/tech/inthash.htm via
+// https://chromium.googlesource.com/chromium/blink/+/master/Source/wtf/HashFunctions.h
+static PY_LONG_LONG hash64(PY_LONG_LONG key){
+    key += ~(key << 32);
+    key ^= (key >> 22);
+    key += ~(key << 13);
+    key ^= (key >> 8);
+    key += (key << 3);
+    key ^= (key >> 15);
+    key += ~(key << 27);
+    key ^= (key >> 31);
+    return key;
+}
+
+/*
+    Needs to be predeclared because this function is mutally recursive with
+    InternTable_lookup
+*/
+static PyObject **
+InternTable_lookup(InternTable *table, PY_LONG_LONG key);
+
+/*
+ Core implementation of the InternTable hash table.
+
+ This attempts to look up a key at a particular point in the table. If the key
+ is present there, it returns the corresponding value pointer. If another key
+ is present there, it returns NULL. If no key is present there, it inserts the
+ key (mapping to NULL) at that point, possible grows the hash table, and
+ returns a value pointer for the key.
+
+*/
+static PyObject ** InternEntry_matches(
+    InternTable *table, size_t location, PY_LONG_LONG key
+){
+    size_t index = location & (table->capacity - 1);
+    InternEntry *entry = table->entries + index;
+    size_t i;
+    if(!entry->key){
+        entry->key = key;
+        table->current_fill += 1;
+        if(table->current_fill > table->max_fill){
+            size_t old_capacity = table->capacity;
+            size_t old_fill = table->current_fill;
+            InternEntry *old_entries = table->entries;
+            table->capacity *= 2;
+            table->max_fill *= 2;
+            table->current_fill = 0;
+            table->entries = calloc(table->capacity, sizeof(InternEntry));
+
+            /* Copy the existing entries to the new table. We start by copying
+               entries that can be successfully looked up without hashing
+               because they're at the right point in the table, then we copy
+               the rest. This ensures that table lookups should get faster as
+               we grow, because the number of keys we can look up without
+               hashing cannot decrease and will often increase. */
+
+            for(i = 0; i < old_capacity; i++){
+                InternEntry *prev = old_entries + i;
+                if(!prev->key) continue;
+                if((prev->key & (old_capacity - 1)) == i){
+                    *InternTable_lookup(table, prev->key) = prev->value;
+                }
+            }
+            for(i = 0; i < old_capacity; i++){
+                InternEntry *prev = old_entries + i;
+                if(!prev->key) continue;
+                if((prev->key & (old_capacity - 1)) != i){
+                    *InternTable_lookup(table, prev->key) = prev->value;
+                }
+            }
+            free(old_entries);
+            assert(table->current_fill == old_fill); (void)(old_fill);
+
+            /* The shape of the table has changed and the caller doesn't know
+               about that, so we just recurse and look up the key in the new
+               shape. This recursion is always sharply bounded, because we've
+               ensured that the key is in the table already so this call cannot
+               cause the table size to grow further. */
+            return InternTable_lookup(table, key);
+        } else {
+            return &entry->value;
+        }
+    }
+    if(entry->key == key){
+        return &entry->value;
+    }
+    return NULL;
+}
+
+/*
+Look up a key in the table, returning a pointer to a *PyObject where the
+corresponding object will be stored. This will always return non-null, but for
+a freshly created key it will be a pointer to null. The caller should then
+populate the cell with the newly created object.
+*/
+static PyObject **
+InternTable_lookup(InternTable *table, PY_LONG_LONG key){
+    size_t i;
+    PyObject ** initial_attempt;
+    size_t probe;
+
+    if(key == 0){
+        return &(table->zero_value);
+    }
+    initial_attempt = InternEntry_matches(table, key, key);
+    if(initial_attempt != NULL){
+        return initial_attempt;
+    }
+    probe = hash64(key) & (table->capacity - 1);
+    for(i = 0; i < table->capacity; i++){
+        PyObject ** attempt = InternEntry_matches(table, probe + i, key);
+        if(attempt != NULL){
+          return attempt;
+        }
+    }
+    assert(0);
+    return NULL;
+}
+
 /* Record a pair of integers in self->pcur_entry->file_data. */
 static int
 CTracer_record_pair(CTracer *self, int l1, int l2)
 {
     int ret = RET_ERROR;
 
-    PyObject * t = NULL;
+    /*
+    We combine the two int values into a PY_LONG_LONG in a slightly odd way: Rather
+    than just concatenate them, we xor them together for the low bits. The
+    reason for this is that it allows us to trigger our no-hash lookup in the
+    table more often, because it ensures a reasonable range of diversity in the
+    low bits. We can recreate the original key as u1 = key >> 32,
+    u2 = ((uint32_t)u1) ^ ((uint32_t)key), so this still maps the tuple to a
+    unique key.
+    */
+    PY_LONG_LONG u1 = (PY_UINT32_T)l1;
+    PY_LONG_LONG u2 = (PY_UINT32_T)l2;
+    PY_LONG_LONG key = (u1 << 32) | (u1 ^ u2);
 
-    t = Py_BuildValue("(ii)", l1, l2);
-    if (t == NULL) {
-        goto error;
+    PyObject ** container = InternTable_lookup(
+        &self->intern_table, key);
+
+    PyObject *t = *container;
+    if(t == NULL){
+        t = Py_BuildValue("(ii)", l1, l2);
+        if (t == NULL) {
+            goto error;
+        }
+        *container = t;
     }
 
     if (PyDict_SetItem(self->pcur_entry->file_data, t, Py_None) < 0) {
@@ -185,11 +347,29 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
     }
 
     ret = RET_OK;
-
 error:
-    Py_XDECREF(t);
-
     return ret;
+}
+
+
+/* Record a single integer in self->pcur_entry->file_data. */
+static int
+CTracer_record_int(CTracer *self, int lineno_from){
+
+    PyObject ** container = InternTable_lookup(
+        &self->intern_table, (PY_LONG_LONG)lineno_from);
+
+    PyObject * this_line = *container;
+    if (this_line == NULL) {
+        this_line = MyInt_FromInt(lineno_from);
+        *container = this_line;
+    }
+
+    if (this_line == NULL) {
+        return RET_ERROR;
+    }
+
+    return PyDict_SetItem(self->pcur_entry->file_data, this_line, Py_None);
 }
 
 /* Set self->pdata_stack to the proper data_stack to use. */
@@ -708,14 +888,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
                         }
                     }
                     else {
-                        /* Tracing lines: key is simply this_line. */
-                        PyObject * this_line = MyInt_FromInt(lineno_from);
-                        if (this_line == NULL) {
-                            goto error;
-                        }
-
-                        ret2 = PyDict_SetItem(self->pcur_entry->file_data, this_line, Py_None);
-                        Py_DECREF(this_line);
+                        ret2 = CTracer_record_int(self, lineno_from);
                         if (ret2 < 0) {
                             goto error;
                         }
@@ -1180,6 +1353,118 @@ CTracerType = {
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
     (initproc)CTracer_init,    /* tp_init */
+    0,                         /* tp_alloc */
+    0,                         /* tp_new */
+};
+
+static Py_ssize_t InternTable_length(InternTableObject *self)
+{
+    Py_ssize_t result = self->table.current_fill;
+    if(self->table.zero_value) result++;
+    return result;
+}
+
+static int
+InternTable_init(InternTableObject *self, PyObject *args_unused, PyObject *kwds_unused)
+{
+  InternTable_init_1(&self->table);
+  return RET_OK;
+}
+
+static int
+InternTable_dealloc(InternTableObject *self)
+{
+  InternTable_dealloc_1(&self->table);
+  return RET_OK;
+}
+
+static PyObject *InternTable_getitem(InternTableObject *self, PyObject *key)
+{
+    PY_LONG_LONG int_key;
+    PyObject **result;
+
+    assert(self->table.entries);
+    PyErr_Clear();
+    int_key = MyInt_AsLongLong(key);
+    if(PyErr_Occurred()){
+      return NULL;
+    }
+
+    result = InternTable_lookup(&self->table, int_key);
+    if(*result == NULL){
+        return Py_None;
+    }
+    Py_INCREF(*result);
+    return *result;
+}
+
+
+static int InternTable_setitem(InternTableObject *self, PyObject *key, PyObject *value)
+{
+    PY_LONG_LONG int_key;
+    PyObject **result;
+
+    assert(self->table.entries);
+
+    PyErr_Clear();
+    int_key = MyInt_AsLongLong(key);
+    if(PyErr_Occurred()) return RET_ERROR;
+
+    result = InternTable_lookup(&self->table, int_key);
+    if(*result != NULL){
+        Py_XDECREF(*result);
+    }
+    if(value != NULL){
+      Py_INCREF(value);
+    }
+    *result = value;
+    return RET_OK;
+}
+
+static PyMappingMethods InternTable_as_mapping = {
+    (lenfunc)InternTable_length, /*mp_length*/
+    (binaryfunc)InternTable_getitem, /*mp_subscript*/
+    (objobjargproc)InternTable_setitem, /*mp_ass_subscript*/
+};
+
+PyTypeObject
+InternTableType = {
+    MyType_HEAD_INIT
+    "coverage.InternTable",    /*tp_name*/
+    sizeof(InternTableObject), /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)InternTable_dealloc, /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    &InternTable_as_mapping,   /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    "",                        /* tp_doc */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
+    0,                         /* tp_methods */
+    0,                         /* tp_members */
+    0,                         /* tp_getset */
+    0,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    (initproc)InternTable_init,/* tp_init */
     0,                         /* tp_alloc */
     0,                         /* tp_new */
 };

@@ -11,6 +11,56 @@
 
 #include "datastack.h"
 
+
+/*
+We use normal Python objects as keys for writing into the file_data
+dictionaries.
+
+This ends up creating the same duplicate objects over and over again inside the
+hot loop of the trace function, which is not ideal!
+
+In order to avoid that, we intern our keys global to the tracer. This means
+that in the common case where the tracer has already seen the key somewhere we
+don't need to allocate a new one. This can significantly speed up tracing.
+*/
+typedef struct InternEntry {
+    PY_LONG_LONG key;
+    PyObject *value;
+} InternEntry;
+
+typedef struct InternTable {
+    /* Store the value keyed off zero separately. This allows us to use a key
+       of zero as a not-set indicator. */
+    PyObject * zero_value;
+
+    /* The number of elements in our entries array (including absent elements).
+       Always a power of two. */
+    size_t capacity;
+
+    /* The number of entries which have a key set. Always strictly less than
+       capacity. Does not count the zero key. */
+    size_t current_fill;
+
+    /* When the fill exceeds this value, increase the capacity. Always roughly
+       the same fraction of capacity. */
+    size_t max_fill;
+
+    /* Essentially (key, value) tuples where keys are PY_LONG_LONG and values are
+      *PyObject. Values are owned by the tracer and will have their refcount
+      decremented appropriately on release.*/
+    InternEntry * entries;
+} InternTable;
+
+
+/* We expose a Python interface to the InternTable, but it's purely intended for
+   purposes of testing the InternTable itself and you shouldn't use it for anything
+   else.
+*/
+typedef struct InternTableObject{
+    PyObject_HEAD
+    InternTable table;
+} InternTableObject;
+
 /* The CTracer type. */
 
 typedef struct CTracer {
@@ -64,10 +114,13 @@ typedef struct CTracer {
     int last_exc_firstlineno;
 
     Stats stats;
+
+    InternTable intern_table;
 } CTracer;
 
 int CTracer_intern_strings(void);
 
 extern PyTypeObject CTracerType;
+extern PyTypeObject InternTableType;
 
 #endif /* _COVERAGE_TRACER_H */
