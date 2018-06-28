@@ -3,6 +3,6 @@
 
 # The pytest specifics used by coverage.py
 
-pytest==3.6.0
+pytest==3.6.2
 pytest-xdist==1.22.2
 flaky==3.4.0
