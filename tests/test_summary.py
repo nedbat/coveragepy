@@ -275,11 +275,11 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             def normal():
                 print("z")
             normal()
-        """)
+            """)
         self.make_file("not_covered.py", """
             def not_covered():
                 print("n")
-        """)
+            """)
         self.omit_site_packages()
         out = self.run_command("coverage run main.py")
         self.assertEqual(out, "z\n")
@@ -309,18 +309,18 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                     print("z")
             normal(True)
             normal(False)
-        """)
+            """)
         self.make_file("not_covered.py", """
             def not_covered(n):
                 if n:
                     print("n")
             not_covered(True)
-        """)
+            """)
         self.make_file("covered.py", """
             def foo():
                 pass
             foo()
-        """)
+            """)
         self.omit_site_packages()
         out = self.run_command("coverage run --branch main.py")
         self.assertEqual(out, "n\nz\n")
@@ -350,13 +350,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                     print("z")
             normal(True)
             normal(False)
-        """)
+            """)
         self.make_file("not_covered.py", """
             def not_covered(n):
                 if n:
                     print("n")
             not_covered(True)
-        """)
+            """)
         self.make_file("also_not_run.py", """
             def does_not_appear_in_this_film(ni):
                 print("Ni!")
@@ -387,7 +387,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             def foo():
                 pass
             foo()
-        """)
+            """)
         out = self.run_command("coverage run --branch main.py")
         self.assertEqual(out, "")
         report = self.report_from_command("coverage report --skip-covered")
@@ -406,7 +406,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             def foo():
                 pass
             foo()
-        """)
+            """)
         out = self.run_command("coverage run --branch long_______________filename.py")
         self.assertEqual(out, "")
         report = self.report_from_command("coverage report --skip-covered")
@@ -447,18 +447,18 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                     print("z")
             normal(True)
             normal(False)
-        """)
+            """)
         self.make_file("not_covered.py", """
             def not_covered(n):
                 if n:
                     print("n")
             not_covered(True)
-        """)
+            """)
         self.make_file("covered.py", """
             def foo():
                 pass
             foo()
-        """)
+            """)
         out = self.run_command("coverage run --branch main.py")
         self.assertEqual(out, "n\nz\n")
         report = self.report_from_command("coverage report")
