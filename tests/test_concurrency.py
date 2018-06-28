@@ -430,6 +430,7 @@ class MultiprocessingTest(CoverageTest):
             [run]
             concurrency = multiprocessing
             branch = True
+            omit = */site-packages/*
             """)
 
         if env.PYVERSION >= (3, 4):
