@@ -17,6 +17,11 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Development moved from `Bitbucket`_ to `GitHub`_.
+
+.. _Bitbucket: https://bitbucket.org/ned/coveragepy
+.. _GitHub: https://github.com/nedbat/coveragepy
+
 
 .. _changes_50a1:
 
