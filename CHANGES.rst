@@ -19,6 +19,8 @@ Unreleased
 
 - Development moved from `Bitbucket`_ to `GitHub`_.
 
+- HTML files no longer have trailing and extra whitespace.
+
 .. _Bitbucket: https://bitbucket.org/ned/coveragepy
 .. _GitHub: https://github.com/nedbat/coveragepy
 

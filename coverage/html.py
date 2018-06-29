@@ -6,6 +6,7 @@
 import datetime
 import json
 import os
+import re
 import shutil
 
 import coverage
@@ -66,6 +67,7 @@ def read_data(fname):
 
 def write_html(fname, html):
     """Write `html` to `fname`, properly encoded."""
+    html = re.sub(r"(\A\s+)|(\s+$)", "", html, flags=re.MULTILINE)
     with open(fname, "wb") as fout:
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
