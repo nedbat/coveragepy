@@ -40,7 +40,5 @@ recursive-include tests/farm */gold*/*.* */gold*/*/*.*
 recursive-include tests/farm/*/src * *.*
 recursive-include tests js/*.* qunit/*.*
 prune tests/eggsrc/build
-prune tests/eggsrc/dist
-prune tests/eggsrc/*.egg-info
 
 global-exclude *.py[co]
