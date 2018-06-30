@@ -29,4 +29,6 @@ def set_warnings():
         message="The value of convert_charrefs will become True in 3.5.",
         )
     if env.PYPY and env.PY3:
+        # pypy3 warns about unclosed files a lot.
+        # pylint: disable=undefined-variable
         warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
