@@ -327,13 +327,3 @@ ignore-comments=yes
 
 # Ignore docstrings when computing similarities.
 ignore-docstrings=yes
-
-#
-# SPELLING
-#
-
-spelling-dict=en_US
-# pylint doesn't strip the words, so insert a dummy x at the beginning to make
-# the other words work properly.
-# https://bitbucket.org/logilab/pylint/issue/398/spelling-words-need-to-be-stripped-or-the
-spelling-private-dict-file=doc/dict.txt

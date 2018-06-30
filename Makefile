@@ -39,9 +39,6 @@ lint:
 todo:
 	-grep -R --include=*.py TODO $(LINTABLE)
 
-spell:
-	-pylint --disable=all --enable=spelling $(LINTABLE)
-
 pep8:
 	pycodestyle --filename=*.py --repeat $(LINTABLE)
 

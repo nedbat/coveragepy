@@ -12,7 +12,6 @@
 greenlet==0.4.13
 mock==2.0.0
 PyContracts==1.8.3
-pyenchant==2.0.0
 pylint==1.9.2
 unittest-mixins==1.4
 check-manifest==0.37
