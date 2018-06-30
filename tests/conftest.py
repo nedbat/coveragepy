@@ -28,5 +28,5 @@ def set_warnings():
         category=DeprecationWarning,
         message="The value of convert_charrefs will become True in 3.5.",
         )
-    if env.PYPY:
+    if env.PYPY and env.PY3:
         warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
