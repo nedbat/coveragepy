@@ -21,6 +21,8 @@ Unreleased
 
 - HTML files no longer have trailing and extra whitespace.
 
+- pickle2json has been removed.
+
 .. _Bitbucket: https://bitbucket.org/ned/coveragepy
 .. _GitHub: https://github.com/nedbat/coveragepy
 
