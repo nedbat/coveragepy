@@ -21,7 +21,7 @@ Unreleased
 
 - HTML files no longer have trailing and extra whitespace.
 
-- pickle2json has been removed.
+- pickle2json, for converting v3 data files to v4 data files, has been removed.
 
 .. _Bitbucket: https://bitbucket.org/ned/coveragepy
 .. _GitHub: https://github.com/nedbat/coveragepy
@@ -37,8 +37,8 @@ Version 5.0a1 --- 2018-06-05
 - The location of the configuration file can now be specified with a
   ``COVERAGE_RCFILE`` environment variable, as requested in `issue 650`_.
 
-- A new warning (already-imported) is issued if measurable files have already
-  been imported before coverage.py started measurement.  See
+- A new warning (``already-imported``) is issued if measurable files have
+  already been imported before coverage.py started measurement.  See
   :ref:`cmd_warnings` for more information.
 
 - Running coverage many times for small runs in a single process should be
