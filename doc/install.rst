@@ -95,36 +95,19 @@ Checking the installation
 If all went well, you should be able to open a command prompt, and see
 coverage.py installed properly:
 
-.. ifconfig:: not prerelease
+.. In the output below, the URL should actually have the release in it for
+   pre-release, but Sphinx couldn't make a URL like that, so whatever.
 
-    .. parsed-literal::
+.. parsed-literal::
 
-        $ coverage --version
-        Coverage.py, version |release| with C extension
-        Documentation at https://coverage.readthedocs.io
-
-.. ifconfig:: prerelease
-
-    .. parsed-literal::
-
-        $ coverage --version
-        Coverage.py, version |release| with C extension
-        Documentation at https://coverage.readthedocs.io/en/coverage-|release|
+    $ coverage --version
+    Coverage.py, version |release| with C extension
+    Documentation at https://coverage.readthedocs.io
 
 You can also invoke coverage.py as a module:
 
-.. ifconfig:: not prerelease
+.. parsed-literal::
 
-    .. parsed-literal::
-
-        $ python -m coverage --version
-        Coverage.py, version |release| with C extension
-        Documentation at https://coverage.readthedocs.io
-
-.. ifconfig:: prerelease
-
-    .. parsed-literal::
-
-        $ python -m coverage --version
-        Coverage.py, version |release| with C extension
-        Documentation at https://coverage.readthedocs.io/en/coverage-|release|
+    $ python -m coverage --version
+    Coverage.py, version |release| with C extension
+    Documentation at https://coverage.readthedocs.io
