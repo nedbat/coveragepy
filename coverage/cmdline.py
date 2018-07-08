@@ -659,7 +659,7 @@ class CoverageScript(object):
                     print(" %s" % line)
             elif info == 'data':
                 self.coverage.load()
-                data = self.coverage.data
+                data = self.coverage.get_data()
                 print(info_header("data"))
                 print("path: %s" % self.coverage._data_files.filename)
                 if data:

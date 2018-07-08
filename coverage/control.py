@@ -152,7 +152,7 @@ class Coverage(object):
         self._warnings = []
 
         # Other instance attributes, set later.
-        self.data = self._data_files = self._collector = None
+        self._data = self._data_files = self._collector = None
         self._plugins = None
         self._inorout = None
         self._inorout_class = InOrOut
@@ -270,7 +270,7 @@ class Coverage(object):
         # Create the data file.  We do this at construction time so that the
         # data file will be written into the directory where the process
         # started rather than wherever the process eventually chdir'd to.
-        self.data = CoverageData(debug=self._debug)
+        self._data = CoverageData(debug=self._debug)
         self._data_files = CoverageDataFiles(
             basename=self.config.data_file, warn=self._warn, debug=self._debug,
         )
@@ -395,7 +395,7 @@ class Coverage(object):
         """Load previously-collected coverage data from the data file."""
         self._init()
         self._collector.reset()
-        self._data_files.read(self.data)
+        self._data_files.read(self._data)
 
     def start(self):
         """Start measuring code coverage.
@@ -449,7 +449,7 @@ class Coverage(object):
         """
         self._init()
         self._collector.reset()
-        self.data.erase()
+        self._data.erase()
         self._data_files.erase(parallel=self.config.parallel)
 
     def clear_exclude(self, which='exclude'):
@@ -502,8 +502,8 @@ class Coverage(object):
     def save(self):
         """Save the collected coverage data to the data file."""
         self._init()
-        self.get_data()
-        self._data_files.write(self.data, suffix=self._data_suffix)
+        data = self.get_data()
+        self._data_files.write(data, suffix=self._data_suffix)
 
     def combine(self, data_paths=None, strict=False):
         """Combine together a number of similarly-named coverage data files.
@@ -539,7 +539,7 @@ class Coverage(object):
                     aliases.add(pattern, result)
 
         self._data_files.combine_parallel_data(
-            self.data, aliases=aliases, data_paths=data_paths, strict=strict,
+            self._data, aliases=aliases, data_paths=data_paths, strict=strict,
         )
 
     def get_data(self):
@@ -554,10 +554,10 @@ class Coverage(object):
         """
         self._init()
 
-        if self._collector.save_data(self.data):
+        if self._collector.save_data(self._data):
             self._post_save_work()
 
-        return self.data
+        return self._data
 
     def _post_save_work(self):
         """After saving data, look for warnings, post-work, etc.
@@ -572,15 +572,15 @@ class Coverage(object):
             self._inorout.warn_unimported_source()
 
         # Find out if we got any data.
-        if not self.data and self._warn_no_data:
+        if not self._data and self._warn_no_data:
             self._warn("No data was collected.", slug="no-data-collected")
 
         # Find files that were never executed at all.
         for file_path, plugin_name in self._inorout.find_unexecuted_files():
-            self.data.touch_file(file_path, plugin_name)
+            self._data.touch_file(file_path, plugin_name)
 
         if self.config.note:
-            self.data.add_run_info(note=self.config.note)
+            self._data.add_run_info(note=self.config.note)
 
     # Backward compatibility with version 1.
     def analysis(self, morf):
@@ -621,11 +621,11 @@ class Coverage(object):
         Returns an `Analysis` object.
 
         """
-        self.get_data()
+        data = self.get_data()
         if not isinstance(it, FileReporter):
             it = self._get_file_reporter(it)
 
-        return Analysis(self.data, it)
+        return Analysis(data, it)
 
     def _get_file_reporter(self, morf):
         """Get a FileReporter for a module or file name."""
@@ -634,7 +634,7 @@ class Coverage(object):
 
         if isinstance(morf, string_class):
             abs_morf = abs_file(morf)
-            plugin_name = self.data.file_tracer(abs_morf)
+            plugin_name = self._data.file_tracer(abs_morf)
             if plugin_name:
                 plugin = self._plugins.get(plugin_name)
 
@@ -664,7 +664,7 @@ class Coverage(object):
 
         """
         if not morfs:
-            morfs = self.data.measured_files()
+            morfs = self._data.measured_files()
 
         # Be sure we have a list.
         if not isinstance(morfs, (list, tuple)):
@@ -696,7 +696,6 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
-        self.get_data()
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
@@ -718,7 +717,6 @@ class Coverage(object):
         See :meth:`report` for other arguments.
 
         """
-        self.get_data()
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include
             )
@@ -745,7 +743,6 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
-        self.get_data()
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
@@ -770,7 +767,6 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
-        self.get_data()
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             xml_output=outfile,

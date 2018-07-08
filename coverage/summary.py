@@ -16,7 +16,8 @@ class SummaryReporter(Reporter):
 
     def __init__(self, coverage, config):
         super(SummaryReporter, self).__init__(coverage, config)
-        self.branches = coverage.data.has_arcs()
+        data = coverage.get_data()
+        self.branches = data.has_arcs()
 
     def report(self, morfs, outfile=None):
         """Writes a report summarizing coverage statistics per module.

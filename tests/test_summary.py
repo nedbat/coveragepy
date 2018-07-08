@@ -771,7 +771,7 @@ class TestSummaryReporterConfiguration(CoverageTest):
         cov = Coverage()
         cov.start()
         cov.stop()              # pragma: nested
-        cov.data = coverage_data
+        cov._data = coverage_data
         printer = SummaryReporter(cov, options)
         destination = StringIO()
         printer.report([], destination)

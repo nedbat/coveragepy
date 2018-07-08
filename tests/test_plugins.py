@@ -369,19 +369,19 @@ class GoodFileTracerTest(FileTracerTest):
         _, statements, missing, _ = cov.analysis("foo_7.html")
         self.assertEqual(statements, [1, 2, 3, 4, 5, 6, 7])
         self.assertEqual(missing, [1, 2, 3, 6, 7])
-        self.assertIn("foo_7.html", cov.data.line_counts())
+        self.assertIn("foo_7.html", cov.get_data().line_counts())
 
         _, statements, missing, _ = cov.analysis("bar_4.html")
         self.assertEqual(statements, [1, 2, 3, 4])
         self.assertEqual(missing, [1, 4])
-        self.assertIn("bar_4.html", cov.data.line_counts())
+        self.assertIn("bar_4.html", cov.get_data().line_counts())
 
-        self.assertNotIn("quux_5.html", cov.data.line_counts())
+        self.assertNotIn("quux_5.html", cov.get_data().line_counts())
 
         _, statements, missing, _ = cov.analysis("uni_3.html")
         self.assertEqual(statements, [1, 2, 3])
         self.assertEqual(missing, [1])
-        self.assertIn("uni_3.html", cov.data.line_counts())
+        self.assertIn("uni_3.html", cov.get_data().line_counts())
 
     def test_plugin2_with_branch(self):
         self.make_render_and_caller()

@@ -104,11 +104,11 @@ class HtmlReporter(Reporter):
         }
         self.source_tmpl = Templite(read_data("pyfile.html"), self.template_globals)
 
-        self.coverage = cov
+        self.data = cov.get_data()
 
         self.files = []
         self.all_files_nums = []
-        self.has_arcs = self.coverage.data.has_arcs()
+        self.has_arcs = self.data.has_arcs()
         self.status = HtmlStatus()
         self.extra_css = None
         self.totals = Numbers()
@@ -169,7 +169,7 @@ class HtmlReporter(Reporter):
         """Compute a hash that changes if the file needs to be re-reported."""
         m = Hasher()
         m.update(source)
-        self.coverage.data.add_to_hash(fr.filename, m)
+        self.data.add_to_hash(fr.filename, m)
         return m.hexdigest()
 
     def html_file(self, fr, analysis):

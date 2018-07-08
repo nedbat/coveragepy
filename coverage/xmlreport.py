@@ -42,7 +42,8 @@ class XmlReporter(Reporter):
                     self.source_paths.add(files.canonical_filename(src))
         self.packages = {}
         self.xml_out = None
-        self.has_arcs = coverage.data.has_arcs()
+        self.data = coverage.get_data()
+        self.has_arcs = self.data.has_arcs()
 
     def report(self, morfs, outfile=None):
         """Generate a Cobertura-compatible XML report for `morfs`.
