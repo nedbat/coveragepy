@@ -16,7 +16,7 @@ import coverage
 import coverage.cmdline
 from coverage import env
 from coverage.config import CoverageConfig
-from coverage.data import CoverageData, CoverageDataFiles
+from coverage.data import CoverageData
 from coverage.misc import ExceptionDuringRun
 
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
@@ -605,8 +605,7 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
             "file2.py": dict.fromkeys(range(1, 24)),
         })
         data.add_file_tracers({"file1.py": "a_plugin"})
-        data_files = CoverageDataFiles()
-        data_files.write(data)
+        data.write()
 
         self.command_line("debug data")
         self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
@@ -617,16 +616,16 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
             2 files:
             file1.py: 17 lines [a_plugin]
             file2.py: 23 lines
-            """).replace("FILENAME", data_files.filename))
+            """).replace("FILENAME", data.filename))
 
     def test_debug_data_with_no_data(self):
-        data_files = CoverageDataFiles()
+        data = CoverageData()
         self.command_line("debug data")
         self.assertMultiLineEqual(self.stdout(), textwrap.dedent("""\
             -- data ------------------------------------------------------
             path: FILENAME
             No data collected
-            """).replace("FILENAME", data_files.filename))
+            """).replace("FILENAME", data.filename))
 
 
 class CmdLineStdoutTest(BaseCmdLineTest):

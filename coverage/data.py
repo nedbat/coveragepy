@@ -57,8 +57,7 @@ class CoverageData(object):
     names in this API are case-sensitive, even on platforms with
     case-insensitive file systems.
 
-    To read a coverage.py data file, use :meth:`read_file`, or
-    :meth:`read_fileobj` if you have an already-opened file.  You can then
+    To read a coverage.py data file, use :meth:`read_file`.  You can then
     access the line, arc, or file tracer data with :meth:`lines`, :meth:`arcs`,
     or :meth:`file_tracer`.  Run information is available with
     :meth:`run_infos`.
@@ -78,8 +77,7 @@ class CoverageData(object):
 
     To add a file without any measured data, use :meth:`touch_file`.
 
-    You write to a named file with :meth:`write_file`, or to an already opened
-    file with :meth:`write_fileobj`.
+    You write to a named file with :meth:`write_file`.
 
     You can clear the data in memory with :meth:`erase`.  Two data collections
     can be combined by using :meth:`update` on one :class:`CoverageData`,
@@ -112,13 +110,19 @@ class CoverageData(object):
     # line data is easily recovered from the arcs: it is all the first elements
     # of the pairs that are greater than zero.
 
-    def __init__(self, debug=None):
+    def __init__(self, basename=None, warn=None, debug=None):
         """Create a CoverageData.
+
+        `warn` is the warning function to use.
+
+        `basename` is the name of the file to use for storing data.
 
         `debug` is a `DebugControl` object for writing debug messages.
 
         """
+        self._warn = warn
         self._debug = debug
+        self.filename = os.path.abspath(basename or ".coverage")
 
         # A map from canonical Python source file name to a dictionary in
         # which there's an entry for each line number that has been
@@ -262,7 +266,12 @@ class CoverageData(object):
 
     __bool__ = __nonzero__
 
-    def read_fileobj(self, file_obj):
+    def read(self):
+        """Read the coverage data."""
+        if os.path.exists(self.filename):
+            self.read_file(self.filename)
+
+    def _read_fileobj(self, file_obj):
         """Read the coverage data from the given file object.
 
         Should only be used on an empty CoverageData object.
@@ -290,7 +299,7 @@ class CoverageData(object):
             self._debug.write("Reading data from %r" % (filename,))
         try:
             with self._open_for_reading(filename) as f:
-                self.read_fileobj(f)
+                self._read_fileobj(f)
         except Exception as exc:
             raise CoverageException(
                 "Couldn't read data from '%s': %s: %s" % (
@@ -438,7 +447,34 @@ class CoverageData(object):
 
         self._validate()
 
-    def write_fileobj(self, file_obj):
+    def write(self, suffix=None):
+        """Write the collected coverage data to a file.
+
+        `suffix` is a suffix to append to the base file name. This can be used
+        for multiple or parallel execution, so that many coverage data files
+        can exist simultaneously.  A dot will be used to join the base name and
+        the suffix.
+
+        """
+        filename = self.filename
+        if suffix is True:
+            # If data_suffix was a simple true value, then make a suffix with
+            # plenty of distinguishing information.  We do this here in
+            # `save()` at the last minute so that the pid will be correct even
+            # if the process forks.
+            extra = ""
+            if _TEST_NAME_FILE:                             # pragma: debugging
+                with open(_TEST_NAME_FILE) as f:
+                    test_name = f.read()
+                extra = "." + test_name
+            dice = random.Random(os.urandom(8)).randint(0, 999999)
+            suffix = "%s%s.%s.%06d" % (socket.gethostname(), extra, os.getpid(), dice)
+
+        if suffix:
+            filename += "." + suffix
+        self.write_file(filename)
+
+    def _write_fileobj(self, file_obj):
         """Write the coverage data to `file_obj`."""
 
         # Create the file data.
@@ -465,15 +501,32 @@ class CoverageData(object):
         if self._debug and self._debug.should('dataio'):
             self._debug.write("Writing data to %r" % (filename,))
         with open(filename, 'w') as fdata:
-            self.write_fileobj(fdata)
+            self._write_fileobj(fdata)
 
-    def erase(self):
-        """Erase the data in this object."""
+    def erase(self, parallel=False):
+        """Erase the data in this object.
+
+        If `parallel` is true, then also deletes data files created from the
+        basename by parallel-mode.
+
+        """
         self._lines = None
         self._arcs = None
         self._file_tracers = {}
         self._runs = []
         self._validate()
+
+        if self._debug and self._debug.should('dataio'):
+            self._debug.write("Erasing data file %r" % (self.filename,))
+        file_be_gone(self.filename)
+        if parallel:
+            data_dir, local = os.path.split(self.filename)
+            localdot = local + '.*'
+            pattern = os.path.join(os.path.abspath(data_dir), localdot)
+            for filename in glob.glob(pattern):
+                if self._debug and self._debug.should('dataio'):
+                    self._debug.write("Erasing parallel data file %r" % (filename,))
+                file_be_gone(filename)
 
     def update(self, other_data, aliases=None):
         """Update this data with data from another `CoverageData`.
@@ -534,6 +587,69 @@ class CoverageData(object):
                 self._arcs[filename] = file_arcs
 
         self._validate()
+
+    def combine_parallel_data(self, aliases=None, data_paths=None, strict=False):
+        """Combine a number of data files together.
+
+        Treat `self.filename` as a file prefix, and combine the data from all
+        of the data files starting with that prefix plus a dot.
+
+        If `aliases` is provided, it's a `PathAliases` object that is used to
+        re-map paths to match the local machine's.
+
+        If `data_paths` is provided, it is a list of directories or files to
+        combine.  Directories are searched for files that start with
+        `self.filename` plus dot as a prefix, and those files are combined.
+
+        If `data_paths` is not provided, then the directory portion of
+        `self.filename` is used as the directory to search for data files.
+
+        Every data file found and combined is then deleted from disk. If a file
+        cannot be read, a warning will be issued, and the file will not be
+        deleted.
+
+        If `strict` is true, and no files are found to combine, an error is
+        raised.
+
+        """
+        # Because of the os.path.abspath in the constructor, data_dir will
+        # never be an empty string.
+        data_dir, local = os.path.split(self.filename)
+        localdot = local + '.*'
+
+        data_paths = data_paths or [data_dir]
+        files_to_combine = []
+        for p in data_paths:
+            if os.path.isfile(p):
+                files_to_combine.append(os.path.abspath(p))
+            elif os.path.isdir(p):
+                pattern = os.path.join(os.path.abspath(p), localdot)
+                files_to_combine.extend(glob.glob(pattern))
+            else:
+                raise CoverageException("Couldn't combine from non-existent path '%s'" % (p,))
+
+        if strict and not files_to_combine:
+            raise CoverageException("No data to combine")
+
+        files_combined = 0
+        for f in files_to_combine:
+            new_data = CoverageData(debug=self._debug)
+            try:
+                new_data.read_file(f)
+            except CoverageException as exc:
+                if self._warn:
+                    # The CoverageException has the file name in it, so just
+                    # use the message as the warning.
+                    self._warn(str(exc))
+            else:
+                self.update(new_data, aliases=aliases)
+                files_combined += 1
+                if self._debug and self._debug.should('dataio'):
+                    self._debug.write("Deleting combined data file %r" % (f,))
+                file_be_gone(f)
+
+        if strict and not files_combined:
+            raise CoverageException("No usable data files")
 
     ##
     ## Miscellaneous
@@ -607,140 +723,6 @@ class CoverageData(object):
     def _has_arcs(self):
         """Do we have data in self._arcs?"""
         return self._arcs is not None
-
-
-class CoverageDataFiles(object):
-    """Manage the use of coverage data files."""
-
-    def __init__(self, basename=None, warn=None, debug=None):
-        """Create a CoverageDataFiles to manage data files.
-
-        `warn` is the warning function to use.
-
-        `basename` is the name of the file to use for storing data.
-
-        `debug` is a `DebugControl` object for writing debug messages.
-
-        """
-        self.warn = warn
-        self.debug = debug
-
-        # Construct the file name that will be used for data storage.
-        self.filename = os.path.abspath(basename or ".coverage")
-
-    def erase(self, parallel=False):
-        """Erase the data from the file storage.
-
-        If `parallel` is true, then also deletes data files created from the
-        basename by parallel-mode.
-
-        """
-        if self.debug and self.debug.should('dataio'):
-            self.debug.write("Erasing data file %r" % (self.filename,))
-        file_be_gone(self.filename)
-        if parallel:
-            data_dir, local = os.path.split(self.filename)
-            localdot = local + '.*'
-            pattern = os.path.join(os.path.abspath(data_dir), localdot)
-            for filename in glob.glob(pattern):
-                if self.debug and self.debug.should('dataio'):
-                    self.debug.write("Erasing parallel data file %r" % (filename,))
-                file_be_gone(filename)
-
-    def read(self, data):
-        """Read the coverage data."""
-        if os.path.exists(self.filename):
-            data.read_file(self.filename)
-
-    def write(self, data, suffix=None):
-        """Write the collected coverage data to a file.
-
-        `suffix` is a suffix to append to the base file name. This can be used
-        for multiple or parallel execution, so that many coverage data files
-        can exist simultaneously.  A dot will be used to join the base name and
-        the suffix.
-
-        """
-        filename = self.filename
-        if suffix is True:
-            # If data_suffix was a simple true value, then make a suffix with
-            # plenty of distinguishing information.  We do this here in
-            # `save()` at the last minute so that the pid will be correct even
-            # if the process forks.
-            extra = ""
-            if _TEST_NAME_FILE:                             # pragma: debugging
-                with open(_TEST_NAME_FILE) as f:
-                    test_name = f.read()
-                extra = "." + test_name
-            dice = random.Random(os.urandom(8)).randint(0, 999999)
-            suffix = "%s%s.%s.%06d" % (socket.gethostname(), extra, os.getpid(), dice)
-
-        if suffix:
-            filename += "." + suffix
-        data.write_file(filename)
-
-    def combine_parallel_data(self, data, aliases=None, data_paths=None, strict=False):
-        """Combine a number of data files together.
-
-        Treat `self.filename` as a file prefix, and combine the data from all
-        of the data files starting with that prefix plus a dot.
-
-        If `aliases` is provided, it's a `PathAliases` object that is used to
-        re-map paths to match the local machine's.
-
-        If `data_paths` is provided, it is a list of directories or files to
-        combine.  Directories are searched for files that start with
-        `self.filename` plus dot as a prefix, and those files are combined.
-
-        If `data_paths` is not provided, then the directory portion of
-        `self.filename` is used as the directory to search for data files.
-
-        Every data file found and combined is then deleted from disk. If a file
-        cannot be read, a warning will be issued, and the file will not be
-        deleted.
-
-        If `strict` is true, and no files are found to combine, an error is
-        raised.
-
-        """
-        # Because of the os.path.abspath in the constructor, data_dir will
-        # never be an empty string.
-        data_dir, local = os.path.split(self.filename)
-        localdot = local + '.*'
-
-        data_paths = data_paths or [data_dir]
-        files_to_combine = []
-        for p in data_paths:
-            if os.path.isfile(p):
-                files_to_combine.append(os.path.abspath(p))
-            elif os.path.isdir(p):
-                pattern = os.path.join(os.path.abspath(p), localdot)
-                files_to_combine.extend(glob.glob(pattern))
-            else:
-                raise CoverageException("Couldn't combine from non-existent path '%s'" % (p,))
-
-        if strict and not files_to_combine:
-            raise CoverageException("No data to combine")
-
-        files_combined = 0
-        for f in files_to_combine:
-            new_data = CoverageData(debug=self.debug)
-            try:
-                new_data.read_file(f)
-            except CoverageException as exc:
-                if self.warn:
-                    # The CoverageException has the file name in it, so just
-                    # use the message as the warning.
-                    self.warn(str(exc))
-            else:
-                data.update(new_data, aliases=aliases)
-                files_combined += 1
-                if self.debug and self.debug.should('dataio'):
-                    self.debug.write("Deleting combined data file %r" % (f,))
-                file_be_gone(f)
-
-        if strict and not files_combined:
-            raise CoverageException("No usable data files")
 
 
 def canonicalize_json_data(data):

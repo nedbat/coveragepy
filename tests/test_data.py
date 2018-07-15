@@ -11,8 +11,7 @@ import re
 
 import mock
 
-from coverage.backward import StringIO
-from coverage.data import CoverageData, CoverageDataFiles, debug_main, canonicalize_json_data
+from coverage.data import CoverageData, debug_main, canonicalize_json_data
 from coverage.debug import DebugControlString
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
@@ -420,12 +419,10 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
     def test_read_and_write_are_opposites(self):
         covdata1 = CoverageData()
         covdata1.add_arcs(ARCS_3)
-        stringio = StringIO()
-        covdata1.write_fileobj(stringio)
+        covdata1.write()
 
-        stringio.seek(0)
         covdata2 = CoverageData()
-        covdata2.read_fileobj(stringio)
+        covdata2.read()
         self.assert_arcs3_data(covdata2)
 
 
@@ -518,27 +515,23 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
 
 
 class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
-    """Tests of CoverageDataFiles."""
+    """Tests of CoverageData file handling."""
 
     no_files_in_temp_dir = True
-
-    def setUp(self):
-        super(CoverageDataFilesTest, self).setUp()
-        self.data_files = CoverageDataFiles()
 
     def test_reading_missing(self):
         self.assert_doesnt_exist(".coverage")
         covdata = CoverageData()
-        self.data_files.read(covdata)
+        covdata.read()
         self.assert_line_counts(covdata, {})
 
     def test_writing_and_reading(self):
         covdata1 = CoverageData()
         covdata1.add_lines(LINES_1)
-        self.data_files.write(covdata1)
+        covdata1.write()
 
         covdata2 = CoverageData()
-        self.data_files.read(covdata2)
+        covdata2.read()
         self.assert_line_counts(covdata2, SUMMARY_1)
 
     def test_debug_output_with_debug_option(self):
@@ -547,10 +540,10 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         debug = DebugControlString(options=["dataio"])
         covdata1 = CoverageData(debug=debug)
         covdata1.add_lines(LINES_1)
-        self.data_files.write(covdata1)
+        covdata1.write()
 
         covdata2 = CoverageData(debug=debug)
-        self.data_files.read(covdata2)
+        covdata2.read()
         self.assert_line_counts(covdata2, SUMMARY_1)
 
         self.assertRegex(
@@ -565,10 +558,10 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         debug = DebugControlString(options=[])
         covdata1 = CoverageData(debug=debug)
         covdata1.add_lines(LINES_1)
-        self.data_files.write(covdata1)
+        covdata1.write()
 
         covdata2 = CoverageData(debug=debug)
-        self.data_files.read(covdata2)
+        covdata2.read()
         self.assert_line_counts(covdata2, SUMMARY_1)
 
         self.assertEqual(debug.get_output(), "")
@@ -577,7 +570,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_doesnt_exist(".coverage.SUFFIX")
         covdata = CoverageData()
         covdata.add_lines(LINES_1)
-        self.data_files.write(covdata, suffix='SUFFIX')
+        covdata.write(suffix='SUFFIX')
         self.assert_exists(".coverage.SUFFIX")
         self.assert_doesnt_exist(".coverage")
 
@@ -587,7 +580,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         # suffix=True will make a randomly named data file.
         covdata1 = CoverageData()
         covdata1.add_lines(LINES_1)
-        self.data_files.write(covdata1, suffix=True)
+        covdata1.write(suffix=True)
         self.assert_doesnt_exist(".coverage")
         data_files1 = glob.glob(".coverage.*")
         self.assertEqual(len(data_files1), 1)
@@ -595,7 +588,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         # Another suffix=True will choose a different name.
         covdata2 = CoverageData()
         covdata2.add_lines(LINES_1)
-        self.data_files.write(covdata2, suffix=True)
+        covdata2.write(suffix=True)
         self.assert_doesnt_exist(".coverage")
         data_files2 = glob.glob(".coverage.*")
         self.assertEqual(len(data_files2), 2)
@@ -609,17 +602,17 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
         covdata1 = CoverageData()
         covdata1.add_lines(LINES_1)
-        self.data_files.write(covdata1, suffix='1')
+        covdata1.write(suffix='1')
         self.assert_exists(".coverage.1")
         self.assert_doesnt_exist(".coverage.2")
 
         covdata2 = CoverageData()
         covdata2.add_lines(LINES_2)
-        self.data_files.write(covdata2, suffix='2')
+        covdata2.write(suffix='2')
         self.assert_exists(".coverage.2")
 
         covdata3 = CoverageData()
-        self.data_files.combine_parallel_data(covdata3)
+        covdata3.combine_parallel_data()
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
         self.assert_doesnt_exist(".coverage.1")
@@ -628,22 +621,21 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
     def test_erasing(self):
         covdata1 = CoverageData()
         covdata1.add_lines(LINES_1)
-        self.data_files.write(covdata1)
+        covdata1.write()
 
         covdata1.erase()
         self.assert_line_counts(covdata1, {})
 
-        self.data_files.erase()
         covdata2 = CoverageData()
-        self.data_files.read(covdata2)
+        covdata2.read()
         self.assert_line_counts(covdata2, {})
 
     def test_erasing_parallel(self):
         self.make_file("datafile.1")
         self.make_file("datafile.2")
         self.make_file(".coverage")
-        data_files = CoverageDataFiles("datafile")
-        data_files.erase(parallel=True)
+        data = CoverageData("datafile")
+        data.erase(parallel=True)
         self.assert_doesnt_exist("datafile.1")
         self.assert_doesnt_exist("datafile.2")
         self.assert_exists(".coverage")
@@ -659,7 +651,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         # Write with CoverageData, then read the JSON explicitly.
         covdata = CoverageData()
         covdata.add_lines(LINES_1)
-        self.data_files.write(covdata)
+        covdata.write()
 
         data = self.read_json_data_file(".coverage")
 
@@ -676,7 +668,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         # Write with CoverageData, then read the JSON explicitly.
         covdata = CoverageData()
         covdata.add_arcs(ARCS_3)
-        self.data_files.write(covdata)
+        covdata.write()
 
         data = self.read_json_data_file(".coverage")
 
@@ -689,14 +681,13 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertNotIn('file_tracers', data)
 
     def test_writing_to_other_file(self):
-        data_files = CoverageDataFiles(".otherfile")
-        covdata = CoverageData()
+        covdata = CoverageData(".otherfile")
         covdata.add_lines(LINES_1)
-        data_files.write(covdata)
+        covdata.write()
         self.assert_doesnt_exist(".coverage")
         self.assert_exists(".otherfile")
 
-        data_files.write(covdata, suffix="extra")
+        covdata.write(suffix="extra")
         self.assert_exists(".otherfile.extra")
         self.assert_doesnt_exist(".coverage")
 
@@ -710,20 +701,20 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata1.add_file_tracers({
             '/home/ned/proj/src/template.html': 'html.plugin',
         })
-        self.data_files.write(covdata1, suffix='1')
+        covdata1.write(suffix='1')
 
         covdata2 = CoverageData()
         covdata2.add_lines({
             r'c:\ned\test\a.py': {4: None, 5: None},
             r'c:\ned\test\sub\b.py': {3: None, 6: None},
         })
-        self.data_files.write(covdata2, suffix='2')
+        covdata2.write(suffix='2')
 
         covdata3 = CoverageData()
         aliases = PathAliases()
         aliases.add("/home/ned/proj/src/", "./")
         aliases.add(r"c:\ned\test", "./")
-        self.data_files.combine_parallel_data(covdata3, aliases=aliases)
+        covdata3.combine_parallel_data(aliases=aliases)
 
         apy = canonical_filename('./a.py')
         sub_bpy = canonical_filename('./sub/b.py')
@@ -750,7 +741,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata_xxx.write_file('.coverage.xxx')
 
         covdata3 = CoverageData()
-        self.data_files.combine_parallel_data(covdata3, data_paths=['cov1', 'cov2'])
+        covdata3.combine_parallel_data(data_paths=['cov1', 'cov2'])
 
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
@@ -776,7 +767,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata_xxx.write_file('cov2/.coverage.xxx')
 
         covdata3 = CoverageData()
-        self.data_files.combine_parallel_data(covdata3, data_paths=['cov1', 'cov2/.coverage.2'])
+        covdata3.combine_parallel_data(data_paths=['cov1', 'cov2/.coverage.2'])
 
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
@@ -789,4 +780,4 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         msg = "Couldn't combine from non-existent path 'xyzzy'"
         with self.assertRaisesRegex(CoverageException, msg):
-            self.data_files.combine_parallel_data(covdata, data_paths=['xyzzy'])
+            covdata.combine_parallel_data(data_paths=['xyzzy'])
