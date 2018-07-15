@@ -161,7 +161,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
         # Read the data written, to see that the right files have been omitted from running.
         covdata = CoverageData()
-        covdata.read_file(".coverage")
+        covdata.read()
         files = [os.path.basename(p) for p in covdata.measured_files()]
         self.assertIn("covmod1.py", files)
         self.assertNotIn("covmodzip1.py", files)

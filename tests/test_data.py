@@ -430,59 +430,58 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
     """Tests of CoverageData that need a temporary directory to make files."""
 
     def test_read_write_lines(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData("lines.dat")
         covdata1.add_lines(LINES_1)
-        covdata1.write_file("lines.dat")
+        covdata1.write()
 
-        covdata2 = CoverageData()
-        covdata2.read_file("lines.dat")
+        covdata2 = CoverageData("lines.dat")
+        covdata2.read()
         self.assert_lines1_data(covdata2)
 
     def test_read_write_arcs(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData("arcs.dat")
         covdata1.add_arcs(ARCS_3)
-        covdata1.write_file("arcs.dat")
+        covdata1.write()
 
-        covdata2 = CoverageData()
-        covdata2.read_file("arcs.dat")
+        covdata2 = CoverageData("arcs.dat")
+        covdata2.read()
         self.assert_arcs3_data(covdata2)
 
     def test_read_errors(self):
-        covdata = CoverageData()
+        msg = r"Couldn't read data from '.*[/\\]{0}': \S+"
 
-        msg = r"Couldn't read data from '{0}': \S+"
         self.make_file("xyzzy.dat", "xyzzy")
         with self.assertRaisesRegex(CoverageException, msg.format("xyzzy.dat")):
-            covdata.read_file("xyzzy.dat")
+            covdata = CoverageData("xyzzy.dat")
+            covdata.read()
+        self.assertFalse(covdata)
 
         self.make_file("empty.dat", "")
         with self.assertRaisesRegex(CoverageException, msg.format("empty.dat")):
-            covdata.read_file("empty.dat")
-
-        with self.assertRaisesRegex(CoverageException, msg.format("nonexistent.dat")):
-            covdata.read_file("nonexistent.dat")
+            covdata = CoverageData("empty.dat")
+            covdata.read()
+        self.assertFalse(covdata)
 
         self.make_file("misleading.dat", CoverageData._GO_AWAY + " this isn't JSON")
         with self.assertRaisesRegex(CoverageException, msg.format("misleading.dat")):
-            covdata.read_file("misleading.dat")
-
-        # After all that, no data should be in our CoverageData.
+            covdata = CoverageData("misleading.dat")
+            covdata.read()
         self.assertFalse(covdata)
 
     def test_debug_main(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData(".coverage")
         covdata1.add_lines(LINES_1)
-        covdata1.write_file(".coverage")
+        covdata1.write()
         debug_main([])
 
-        covdata2 = CoverageData()
+        covdata2 = CoverageData("arcs.dat")
         covdata2.add_arcs(ARCS_3)
         covdata2.add_file_tracers({"y.py": "magic_plugin"})
         covdata2.add_run_info(version="v3.14", chunks=["z", "a"])
-        covdata2.write_file("arcs.dat")
+        covdata2.write()
 
-        covdata3 = CoverageData()
-        covdata3.write_file("empty.dat")
+        covdata3 = CoverageData("empty.dat")
+        covdata3.write()
         debug_main(["arcs.dat", "empty.dat"])
 
         expected = {
@@ -725,20 +724,20 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata3.file_tracer(template_html), 'html.plugin')
 
     def test_combining_from_different_directories(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData('cov1/.coverage.1')
         covdata1.add_lines(LINES_1)
         os.makedirs('cov1')
-        covdata1.write_file('cov1/.coverage.1')
+        covdata1.write()
 
-        covdata2 = CoverageData()
+        covdata2 = CoverageData('cov2/.coverage.2')
         covdata2.add_lines(LINES_2)
         os.makedirs('cov2')
-        covdata2.write_file('cov2/.coverage.2')
+        covdata2.write()
 
         # This data won't be included.
-        covdata_xxx = CoverageData()
+        covdata_xxx = CoverageData('.coverage.xxx')
         covdata_xxx.add_arcs(ARCS_3)
-        covdata_xxx.write_file('.coverage.xxx')
+        covdata_xxx.write()
 
         covdata3 = CoverageData()
         covdata3.combine_parallel_data(data_paths=['cov1', 'cov2'])
@@ -750,21 +749,24 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_exists(".coverage.xxx")
 
     def test_combining_from_files(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData('cov1/.coverage.1')
         covdata1.add_lines(LINES_1)
         os.makedirs('cov1')
-        covdata1.write_file('cov1/.coverage.1')
+        covdata1.write()
 
-        covdata2 = CoverageData()
+        covdata2 = CoverageData('cov2/.coverage.2')
         covdata2.add_lines(LINES_2)
         os.makedirs('cov2')
-        covdata2.write_file('cov2/.coverage.2')
+        covdata2.write()
 
         # This data won't be included.
-        covdata_xxx = CoverageData()
+        covdata_xxx = CoverageData('.coverage.xxx')
         covdata_xxx.add_arcs(ARCS_3)
-        covdata_xxx.write_file('.coverage.xxx')
-        covdata_xxx.write_file('cov2/.coverage.xxx')
+        covdata_xxx.write()
+
+        covdata_2xxx = CoverageData('cov2/.coverage.xxx')
+        covdata_2xxx.add_arcs(ARCS_3)
+        covdata_2xxx.write()
 
         covdata3 = CoverageData()
         covdata3.combine_parallel_data(data_paths=['cov1', 'cov2/.coverage.2'])

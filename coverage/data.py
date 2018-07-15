@@ -57,7 +57,10 @@ class CoverageData(object):
     names in this API are case-sensitive, even on platforms with
     case-insensitive file systems.
 
-    To read a coverage.py data file, use :meth:`read_file`.  You can then
+    A data file is associated with the data when the :class:`CoverageData`
+    is created.
+
+    To read a coverage.py data file, use :meth:`read`.  You can then
     access the line, arc, or file tracer data with :meth:`lines`, :meth:`arcs`,
     or :meth:`file_tracer`.  Run information is available with
     :meth:`run_infos`.
@@ -68,16 +71,15 @@ class CoverageData(object):
     most Python containers, you can determine if there is any data at all by
     using this object as a boolean value.
 
-
     Most data files will be created by coverage.py itself, but you can use
     methods here to create data files if you like.  The :meth:`add_lines`,
     :meth:`add_arcs`, and :meth:`add_file_tracers` methods add data, in ways
     that are convenient for coverage.py.  The :meth:`add_run_info` method adds
     key-value pairs to the run information.
 
-    To add a file without any measured data, use :meth:`touch_file`.
+    To add a source file without any measured data, use :meth:`touch_file`.
 
-    You write to a named file with :meth:`write_file`.
+    Write the data to its file with :meth:`write`.
 
     You can clear the data in memory with :meth:`erase`.  Two data collections
     can be combined by using :meth:`update` on one :class:`CoverageData`,
@@ -267,9 +269,13 @@ class CoverageData(object):
     __bool__ = __nonzero__
 
     def read(self):
-        """Read the coverage data."""
+        """Read the coverage data.
+
+        It is fine for the file to not exist, in which case no data is read.
+
+        """
         if os.path.exists(self.filename):
-            self.read_file(self.filename)
+            self._read_file(self.filename)
 
     def _read_fileobj(self, file_obj):
         """Read the coverage data from the given file object.
@@ -293,7 +299,7 @@ class CoverageData(object):
 
         self._validate()
 
-    def read_file(self, filename):
+    def _read_file(self, filename):
         """Read the coverage data from `filename` into this object."""
         if self._debug and self._debug.should('dataio'):
             self._debug.write("Reading data from %r" % (filename,))
@@ -472,7 +478,7 @@ class CoverageData(object):
 
         if suffix:
             filename += "." + suffix
-        self.write_file(filename)
+        self._write_file(filename)
 
     def _write_fileobj(self, file_obj):
         """Write the coverage data to `file_obj`."""
@@ -496,7 +502,7 @@ class CoverageData(object):
         file_obj.write(self._GO_AWAY)
         json.dump(file_data, file_obj, separators=(',', ':'))
 
-    def write_file(self, filename):
+    def _write_file(self, filename):
         """Write the coverage data to `filename`."""
         if self._debug and self._debug.should('dataio'):
             self._debug.write("Writing data to %r" % (filename,))
@@ -635,7 +641,7 @@ class CoverageData(object):
         for f in files_to_combine:
             new_data = CoverageData(debug=self._debug)
             try:
-                new_data.read_file(f)
+                new_data._read_file(f)
             except CoverageException as exc:
                 if self._warn:
                     # The CoverageException has the file name in it, so just
