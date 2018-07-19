@@ -30,6 +30,8 @@ clean:
 
 sterile: clean
 	-rm -rf .tox*
+	-docker image rm quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
+
 
 LINTABLE = coverage tests igor.py setup.py __main__.py
 
@@ -66,9 +68,6 @@ kit:
 
 wheel:
 	tox -c tox_wheels.ini $(ARGS)
-
-manylinux_clean:
-	docker image rm quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
 
 manylinux:
 	docker run -it --init --rm -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 /io/ci/manylinux.sh build
