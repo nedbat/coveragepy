@@ -69,6 +69,9 @@ kit:
 wheel:
 	tox -c tox_wheels.ini $(ARGS)
 
+manylinux_clean:
+	docker image rm quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
+
 manylinux:
 	docker run -it --init --rm -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 /io/ci/manylinux.sh build
 	docker run -it --init --rm -v `pwd`:/io quay.io/pypa/manylinux1_i686 /io/ci/manylinux.sh build
