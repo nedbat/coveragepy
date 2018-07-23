@@ -59,6 +59,9 @@ class ProcessTest(CoverageTest):
 
     def make_b_or_c_py(self):
         """Create b_or_c.py, used in a few of these tests."""
+        # "b_or_c.py b" will run 6 lines.
+        # "b_or_c.py c" will run 7 lines.
+        # Together, they run 8 lines.
         self.make_file("b_or_c.py", """\
             import sys
             a = 1
@@ -66,6 +69,7 @@ class ProcessTest(CoverageTest):
                 b = 1
             else:
                 c = 1
+                c2 = 2
             d = 1
             print('done')
             """)
@@ -91,11 +95,11 @@ class ProcessTest(CoverageTest):
         # After combining, there should be only the .coverage file.
         self.assertEqual(self.number_of_data_files(), 1)
 
-        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
 
         # Running combine again should fail, because there are no parallel data
         # files to combine.
@@ -106,7 +110,7 @@ class ProcessTest(CoverageTest):
         # And the originally combined data is still there.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
 
     def test_combine_parallel_data_with_a_corrupt_file(self):
         self.make_b_or_c_py()
@@ -138,11 +142,11 @@ class ProcessTest(CoverageTest):
         # After combining, those two should be the only data files.
         self.assertEqual(self.number_of_data_files(), 2)
 
-        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
 
     def test_combine_no_usable_files(self):
         # https://bitbucket.org/ned/coveragepy/issues/629/multiple-use-of-combine-leads-to-empty
@@ -203,8 +207,40 @@ class ProcessTest(CoverageTest):
         # After combining, there should be only the .coverage file.
         self.assertEqual(self.number_of_data_files(), 1)
 
-        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
+        data = coverage.CoverageData()
+        data.read_file(".coverage")
+        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
+
+    def test_combine_parallel_data_no_append(self):
+        self.make_b_or_c_py()
+
+        out = self.run_command("coverage run -p b_or_c.py b")
+        self.assertEqual(out, 'done\n')
+        self.assert_doesnt_exist(".coverage")
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        # Combine the (one) parallel coverage data file into .coverage .
+        self.run_command("coverage combine")
+        self.assert_exists(".coverage")
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        out = self.run_command("coverage run -p b_or_c.py c")
+        self.assertEqual(out, 'done\n')
+        self.assert_exists(".coverage")
+        self.assertEqual(self.number_of_data_files(), 2)
+
+        # Combine the parallel coverage data files into .coverage, but don't
+        # use the data in .coverage already.
+        self.run_command("coverage combine")
+        self.assert_exists(".coverage")
+
+        # After combining, there should be only the .coverage file.
+        self.assertEqual(self.number_of_data_files(), 1)
+
+        # Read the coverage file and see that b_or_c.py has only 7 lines
+        # because we didn't keep the data from running b.
         data = coverage.CoverageData()
         data.read_file(".coverage")
         self.assertEqual(data.line_counts()['b_or_c.py'], 7)
@@ -222,11 +258,11 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
         self.assertEqual(self.number_of_data_files(), 1)
 
-        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
 
     def test_append_data_with_different_file(self):
         self.make_b_or_c_py()
@@ -246,11 +282,11 @@ class ProcessTest(CoverageTest):
         self.assert_doesnt_exist(".coverage")
         self.assert_exists(".mycovdata")
 
-        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
         data.read_file(".mycovdata")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
 
     def test_append_can_create_a_data_file(self):
         self.make_b_or_c_py()
@@ -293,18 +329,18 @@ class ProcessTest(CoverageTest):
         # After combining, there should be only the .coverage file.
         self.assertEqual(self.number_of_data_files(), 1)
 
-        # Read the coverage file and see that b_or_c.py has all 7 lines
+        # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
 
         # Reporting should still work even with the .rc file
         out = self.run_command("coverage report")
         self.assertMultiLineEqual(out, textwrap.dedent("""\
             Name        Stmts   Miss  Cover
             -------------------------------
-            b_or_c.py       7      0   100%
+            b_or_c.py       8      0   100%
             """))
 
     def test_combine_with_aliases(self):
@@ -512,8 +548,6 @@ class ProcessTest(CoverageTest):
         # After combining, there should be only the .coverage file.
         self.assertEqual(self.number_of_data_files(), 1)
 
-        # Read the coverage file and see that b_or_c.py has all 7 lines
-        # executed.
         data = coverage.CoverageData()
         data.read_file(".coverage")
         self.assertEqual(data.line_counts()['fork.py'], 9)
