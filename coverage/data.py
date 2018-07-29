@@ -12,6 +12,7 @@ import os.path
 import random
 import re
 import socket
+import sqlite3
 
 from coverage import env
 from coverage.backward import iitems, string_class
@@ -729,6 +730,126 @@ class CoverageData(object):
     def _has_arcs(self):
         """Do we have data in self._arcs?"""
         return self._arcs is not None
+
+
+SCHEMA = """
+create table schema (
+    version integer
+);
+
+insert into schema (version) values (1);
+
+create table file (
+    id integer primary key,
+    path text,
+    tracer text,
+    unique(path)
+);
+
+create table line (
+    file_id integer,
+    lineno integer,
+    unique(file_id, lineno)
+);
+"""
+
+def _create_db(filename):
+    con = sqlite3.connect(filename)
+    with con:
+        for stmt in SCHEMA.split(';'):
+            con.execute(stmt.strip())
+    con.close()
+
+
+class CoverageDataSqlite(object):
+    def __init__(self, basename=None, warn=None, debug=None):
+        self.filename = os.path.abspath(basename or ".coverage")
+        self._warn = warn
+        self._debug = debug
+
+        self._file_map = {}
+        self._db = None
+
+    def _reset(self):
+        self._file_map = {}
+        if self._db is not None:
+            self._db.close()
+        self._db = None
+
+    def _connect(self):
+        if self._db is None:
+            if not os.path.exists(self.filename):
+                if self._debug and self._debug.should('dataio'):
+                    self._debug.write("Creating data file %r" % (self.filename,))
+                _create_db(self.filename)
+            self._db = sqlite3.connect(self.filename)
+            for path, id in self._db.execute("select path, id from file"):
+                self._file_map[path] = id
+        return self._db
+
+    def _file_id(self, filename):
+        if filename not in self._file_map:
+            with self._connect() as con:
+                cur = con.cursor()
+                cur.execute("insert into file (path) values (?)", (filename,))
+                self._file_map[filename] = cur.lastrowid
+        return self._file_map[filename]
+
+    def add_lines(self, line_data):
+        """Add measured line data.
+
+        `line_data` is a dictionary mapping file names to dictionaries::
+
+            { filename: { lineno: None, ... }, ...}
+
+        """
+        with self._connect() as con:
+            for filename, linenos in iitems(line_data):
+                file_id = self._file_id(filename)
+                for lineno in linenos:
+                    con.execute(
+                        "insert or ignore into line (file_id, lineno) values (?, ?)",
+                        (file_id, lineno),
+                    )
+
+    def add_file_tracers(self, file_tracers):
+        """Add per-file plugin information.
+
+        `file_tracers` is { filename: plugin_name, ... }
+
+        """
+        with self._connect() as con:
+            for filename, tracer in iitems(file_tracers):
+                con.execute(
+                    "insert into file (path, tracer) values (?, ?) on duplicate key update",
+                    (filename, tracer),
+                )
+
+    def erase(self, parallel=False):
+        """Erase the data in this object.
+
+        If `parallel` is true, then also deletes data files created from the
+        basename by parallel-mode.
+
+        """
+        self._reset()
+        if self._debug and self._debug.should('dataio'):
+            self._debug.write("Erasing data file %r" % (self.filename,))
+        file_be_gone(self.filename)
+        if parallel:
+            data_dir, local = os.path.split(self.filename)
+            localdot = local + '.*'
+            pattern = os.path.join(os.path.abspath(data_dir), localdot)
+            for filename in glob.glob(pattern):
+                if self._debug and self._debug.should('dataio'):
+                    self._debug.write("Erasing parallel data file %r" % (filename,))
+                file_be_gone(filename)
+
+    def write(self, suffix=None):
+        """Write the collected coverage data to a file."""
+        pass
+
+CoverageData = CoverageDataSqlite
 
 
 def canonicalize_json_data(data):
