@@ -141,6 +141,7 @@ class CoverageDataSqlite(object):
                 file_be_gone(filename)
 
     def read(self):
+        self._connect()     # TODO: doesn't look right
         self._have_read = True
 
     def write(self, suffix=None):
@@ -157,7 +158,6 @@ class CoverageDataSqlite(object):
 
     def measured_files(self):
         """A list of all files that had been measured."""
-        self._connect()
         return list(self._file_map)
 
     def file_tracer(self, filename):
@@ -168,5 +168,9 @@ class CoverageDataSqlite(object):
         was not measured, then None is returned.
 
         """
+        return ""    # TODO
+
+    def lines(self, filename):
         with self._connect() as con:
-            pass
+            file_id = self._file_id(filename)
+            return [lineno for lineno, in con.execute("select lineno from line where file_id = ?", (file_id,))]
