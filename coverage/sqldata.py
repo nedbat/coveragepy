@@ -44,6 +44,7 @@ create table arc (
 );
 """
 
+APP_ID = 0x0c07ea6e     # Kind of looks like "coverage"
 
 
 class CoverageSqliteData(object):
@@ -69,12 +70,18 @@ class CoverageSqliteData(object):
                     self._debug.write("Creating data file %r" % (self.filename,))
                 self._db = Sqlite(self.filename, self._debug)
                 with self._db:
+                    self._db.execute("pragma application_id = {}".format(APP_ID))
                     for stmt in SCHEMA.split(';'):
                         stmt = stmt.strip()
                         if stmt:
                             self._db.execute(stmt)
             else:
                 self._db = Sqlite(self.filename, self._debug)
+                with self._db:
+                    for app_id, in self._db.execute("pragma application_id"):
+                        app_id = int(app_id)
+                        if app_id != APP_ID:
+                            raise Exception("Doesn't look like a coverage data file: 0x{:08x} != 0x{:08x}".format(app_id, APP_ID))
             for path, id in self._db.execute("select path, id from file"):
                 self._file_map[path] = id
         return self._db
