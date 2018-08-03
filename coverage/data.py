@@ -22,7 +22,7 @@ from coverage.misc import CoverageException, file_be_gone, isolate_module
 os = isolate_module(os)
 
 
-class CoverageData(object):
+class CoverageJsonData(object):
     """Manages collected coverage data, including file storage.
 
     This class is the public supported API to the data coverage.py collects
@@ -731,8 +731,8 @@ class CoverageData(object):
         return self._arcs is not None
 
 
-from coverage.sqldata import CoverageDataSqlite
-CoverageData = CoverageDataSqlite
+from coverage.sqldata import CoverageSqliteData
+CoverageData = CoverageSqliteData
 
 
 def canonicalize_json_data(data):

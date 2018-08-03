@@ -46,7 +46,7 @@ create table arc (
 
 
 
-class CoverageDataSqlite(object):
+class CoverageSqliteData(object):
     def __init__(self, basename=None, warn=None, debug=None):
         self.filename = os.path.abspath(basename or ".coverage")
         self._warn = warn
@@ -99,11 +99,11 @@ class CoverageDataSqlite(object):
         with self._connect() as con:
             for filename, linenos in iitems(line_data):
                 file_id = self._file_id(filename)
-                for lineno in linenos:
-                    con.execute(
-                        "insert or ignore into line (file_id, lineno) values (?, ?)",
-                        (file_id, lineno),
-                    )
+                data = [(file_id, lineno) for lineno in linenos]
+                con.executemany(
+                    "insert or ignore into line (file_id, lineno) values (?, ?)",
+                    data,
+                )
 
     def add_file_tracers(self, file_tracers):
         """Add per-file plugin information.
@@ -177,10 +177,15 @@ class CoverageDataSqlite(object):
 
 class Sqlite(object):
     def __init__(self, filename, debug):
-        self.debug = debug if debug.should('sql') else None
+        self.debug = debug if (debug and debug.should('sql')) else None
         if self.debug:
             self.debug.write("Connecting to {!r}".format(filename))
         self.con = sqlite3.connect(filename)
+
+        # This pragma makes writing faster. It disables rollbacks, but we never need them.
+        self.con.execute("pragma journal_mode=off")
+        # This pragma makes writing faster.
+        self.con.execute("pragma synchronous=off")
 
     def close(self):
         self.con.close()
@@ -196,5 +201,9 @@ class Sqlite(object):
         if self.debug:
             tail = " with {!r}".format(parameters) if parameters else ""
             self.debug.write("Executing {!r}{}".format(sql, tail))
-        cur = self.con.execute(sql, parameters)
-        return cur
+        return self.con.execute(sql, parameters)
+
+    def executemany(self, sql, data):
+        if self.debug:
+            self.debug.write("Executing many {!r}".format(sql))
+        return self.con.executemany(sql, data)
