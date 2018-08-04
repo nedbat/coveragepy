@@ -18,9 +18,8 @@ create table schema (
 insert into schema (version) values (1);
 
 create table meta (
-    name text,
-    value text,
-    unique(name)
+    has_lines boolean,
+    has_arcs boolean
 );
 
 create table file (
@@ -44,8 +43,9 @@ create table arc (
 );
 """
 
-APP_ID = 0x0c07ea6e     # Kind of looks like "coverage"
-
+# >>> struct.unpack(">i", b"\xc0\x7e\x8a\x6e")      # "coverage", kind of.
+# (-1065448850,)
+APP_ID = -1065448850
 
 class CoverageSqliteData(object):
     def __init__(self, basename=None, warn=None, debug=None):
@@ -55,35 +55,58 @@ class CoverageSqliteData(object):
 
         self._file_map = {}
         self._db = None
+        # Are we in sync with the data file?
         self._have_read = False
+
+        self._has_lines = False
+        self._has_arcs = False
 
     def _reset(self):
         self._file_map = {}
         if self._db is not None:
             self._db.close()
         self._db = None
+        self._have_read = False
+
+    def _create_db(self):
+        if self._debug and self._debug.should('dataio'):
+            self._debug.write("Creating data file {!r}".format(self.filename))
+        self._db = Sqlite(self.filename, self._debug)
+        with self._db:
+            self._db.execute("pragma application_id = {}".format(APP_ID))
+            for stmt in SCHEMA.split(';'):
+                stmt = stmt.strip()
+                if stmt:
+                    self._db.execute(stmt)
+            self._db.execute(
+                "insert into meta (has_lines, has_arcs) values (?, ?)",
+                (self._has_lines, self._has_arcs)
+            )
+
+    def _open_db(self):
+        if self._debug and self._debug.should('dataio'):
+            self._debug.write("Opening data file {!r}".format(self.filename))
+        self._db = Sqlite(self.filename, self._debug)
+        with self._db:
+            for app_id, in self._db.execute("pragma application_id"):
+                app_id = int(app_id)
+                if app_id != APP_ID:
+                    raise CoverageException(
+                        "File {!r} doesn't look like a coverage data file: "
+                        "0x{:08x} != 0x{:08x}".format(self.filename, app_id, APP_ID)
+                    )
+        for row in self._db.execute("select has_lines, has_arcs from meta"):
+            self._has_lines, self._has_arcs = row
+
+        for path, id in self._db.execute("select path, id from file"):
+            self._file_map[path] = id
 
     def _connect(self):
         if self._db is None:
-            if not os.path.exists(self.filename):
-                if self._debug and self._debug.should('dataio'):
-                    self._debug.write("Creating data file %r" % (self.filename,))
-                self._db = Sqlite(self.filename, self._debug)
-                with self._db:
-                    self._db.execute("pragma application_id = {}".format(APP_ID))
-                    for stmt in SCHEMA.split(';'):
-                        stmt = stmt.strip()
-                        if stmt:
-                            self._db.execute(stmt)
+            if os.path.exists(self.filename):
+                self._open_db()
             else:
-                self._db = Sqlite(self.filename, self._debug)
-                with self._db:
-                    for app_id, in self._db.execute("pragma application_id"):
-                        app_id = int(app_id)
-                        if app_id != APP_ID:
-                            raise Exception("Doesn't look like a coverage data file: 0x{:08x} != 0x{:08x}".format(app_id, APP_ID))
-            for path, id in self._db.execute("select path, id from file"):
-                self._file_map[path] = id
+                self._create_db()
         return self._db
 
     def _file_id(self, filename):
@@ -103,6 +126,7 @@ class CoverageSqliteData(object):
 
         """
         self._start_writing()
+        self._choose_lines_or_arcs(lines=True)
         with self._connect() as con:
             for filename, linenos in iitems(line_data):
                 file_id = self._file_id(filename)
@@ -112,6 +136,36 @@ class CoverageSqliteData(object):
                     data,
                 )
 
+    def add_arcs(self, arc_data):
+        """Add measured arc data.
+
+        `arc_data` is a dictionary mapping file names to dictionaries::
+
+            { filename: { (l1,l2): None, ... }, ...}
+
+        """
+        self._start_writing()
+        self._choose_lines_or_arcs(arcs=True)
+        with self._connect() as con:
+            for filename, arcs in iitems(arc_data):
+                file_id = self._file_id(filename)
+                data = [(file_id, fromno, tono) for fromno, tono in arcs]
+                con.executemany(
+                    "insert or ignore into arc (file_id, fromno, tono) values (?, ?, ?)",
+                    data,
+                )
+
+    def _choose_lines_or_arcs(self, lines=False, arcs=False):
+        if lines and self._has_arcs:
+            raise CoverageException("Can't add lines to existing arc data")
+        if arcs and self._has_lines:
+            raise CoverageException("Can't add arcs to existing line data")
+        if not self._has_arcs and not self._has_lines:
+            self._has_lines = lines
+            self._has_arcs = arcs
+            with self._connect() as con:
+                con.execute("update meta set has_lines = ?, has_arcs = ?", (lines, arcs))
+
     def add_file_tracers(self, file_tracers):
         """Add per-file plugin information.
 
@@ -120,10 +174,11 @@ class CoverageSqliteData(object):
         """
         self._start_writing()
         with self._connect() as con:
-            for filename, tracer in iitems(file_tracers):
-                con.execute(
+            data = list(iitems(file_tracers))
+            if data:
+                con.executemany(
                     "insert into file (path, tracer) values (?, ?) on duplicate key update",
-                    (filename, tracer),
+                    data,
                 )
 
     def erase(self, parallel=False):
@@ -135,7 +190,7 @@ class CoverageSqliteData(object):
         """
         self._reset()
         if self._debug and self._debug.should('dataio'):
-            self._debug.write("Erasing data file %r" % (self.filename,))
+            self._debug.write("Erasing data file {!r}".format(self.filename))
         file_be_gone(self.filename)
         if parallel:
             data_dir, local = os.path.split(self.filename)
@@ -143,7 +198,7 @@ class CoverageSqliteData(object):
             pattern = os.path.join(os.path.abspath(data_dir), localdot)
             for filename in glob.glob(pattern):
                 if self._debug and self._debug.should('dataio'):
-                    self._debug.write("Erasing parallel data file %r" % (filename,))
+                    self._debug.write("Erasing parallel data file {!r}".format(filename))
                 file_be_gone(filename)
 
     def read(self):
@@ -160,7 +215,7 @@ class CoverageSqliteData(object):
         self._have_read = True
 
     def has_arcs(self):
-        return False    # TODO!
+        return self._has_arcs
 
     def measured_files(self):
         """A list of all files that had been measured."""
@@ -180,6 +235,11 @@ class CoverageSqliteData(object):
         with self._connect() as con:
             file_id = self._file_id(filename)
             return [lineno for lineno, in con.execute("select lineno from line where file_id = ?", (file_id,))]
+
+    def arcs(self, filename):
+        with self._connect() as con:
+            file_id = self._file_id(filename)
+            return [pair for pair in con.execute("select fromno, tono from arc where file_id = ?", (file_id,))]
 
 
 class Sqlite(object):
