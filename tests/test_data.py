@@ -11,7 +11,7 @@ import re
 
 import mock
 
-from coverage.data import CoverageData, debug_main, canonicalize_json_data
+from coverage.data import CoverageData, debug_main, canonicalize_json_data, combine_parallel_data
 from coverage.debug import DebugControlString
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
@@ -611,7 +611,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_exists(".coverage.2")
 
         covdata3 = CoverageData()
-        covdata3.combine_parallel_data()
+        combine_parallel_data(covdata3)
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
         self.assert_doesnt_exist(".coverage.1")
@@ -713,7 +713,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         aliases = PathAliases()
         aliases.add("/home/ned/proj/src/", "./")
         aliases.add(r"c:\ned\test", "./")
-        covdata3.combine_parallel_data(aliases=aliases)
+        combine_parallel_data(covdata3, aliases=aliases)
 
         apy = canonical_filename('./a.py')
         sub_bpy = canonical_filename('./sub/b.py')
@@ -740,7 +740,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata_xxx.write()
 
         covdata3 = CoverageData()
-        covdata3.combine_parallel_data(data_paths=['cov1', 'cov2'])
+        combine_parallel_data(covdata3, data_paths=['cov1', 'cov2'])
 
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
@@ -769,7 +769,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata_2xxx.write()
 
         covdata3 = CoverageData()
-        covdata3.combine_parallel_data(data_paths=['cov1', 'cov2/.coverage.2'])
+        combine_parallel_data(covdata3, data_paths=['cov1', 'cov2/.coverage.2'])
 
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
@@ -782,4 +782,4 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         msg = "Couldn't combine from non-existent path 'xyzzy'"
         with self.assertRaisesRegex(CoverageException, msg):
-            covdata.combine_parallel_data(data_paths=['xyzzy'])
+            combine_parallel_data(covdata, data_paths=['xyzzy'])

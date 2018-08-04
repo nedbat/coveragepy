@@ -594,69 +594,6 @@ class CoverageJsonData(object):
 
         self._validate()
 
-    def combine_parallel_data(self, aliases=None, data_paths=None, strict=False):
-        """Combine a number of data files together.
-
-        Treat `self.filename` as a file prefix, and combine the data from all
-        of the data files starting with that prefix plus a dot.
-
-        If `aliases` is provided, it's a `PathAliases` object that is used to
-        re-map paths to match the local machine's.
-
-        If `data_paths` is provided, it is a list of directories or files to
-        combine.  Directories are searched for files that start with
-        `self.filename` plus dot as a prefix, and those files are combined.
-
-        If `data_paths` is not provided, then the directory portion of
-        `self.filename` is used as the directory to search for data files.
-
-        Every data file found and combined is then deleted from disk. If a file
-        cannot be read, a warning will be issued, and the file will not be
-        deleted.
-
-        If `strict` is true, and no files are found to combine, an error is
-        raised.
-
-        """
-        # Because of the os.path.abspath in the constructor, data_dir will
-        # never be an empty string.
-        data_dir, local = os.path.split(self.filename)
-        localdot = local + '.*'
-
-        data_paths = data_paths or [data_dir]
-        files_to_combine = []
-        for p in data_paths:
-            if os.path.isfile(p):
-                files_to_combine.append(os.path.abspath(p))
-            elif os.path.isdir(p):
-                pattern = os.path.join(os.path.abspath(p), localdot)
-                files_to_combine.extend(glob.glob(pattern))
-            else:
-                raise CoverageException("Couldn't combine from non-existent path '%s'" % (p,))
-
-        if strict and not files_to_combine:
-            raise CoverageException("No data to combine")
-
-        files_combined = 0
-        for f in files_to_combine:
-            new_data = CoverageData(debug=self._debug)
-            try:
-                new_data._read_file(f)
-            except CoverageException as exc:
-                if self._warn:
-                    # The CoverageException has the file name in it, so just
-                    # use the message as the warning.
-                    self._warn(str(exc))
-            else:
-                self.update(new_data, aliases=aliases)
-                files_combined += 1
-                if self._debug and self._debug.should('dataio'):
-                    self._debug.write("Deleting combined data file %r" % (f,))
-                file_be_gone(f)
-
-        if strict and not files_combined:
-            raise CoverageException("No usable data files")
-
     ##
     ## Miscellaneous
     ##
@@ -731,9 +668,76 @@ class CoverageJsonData(object):
         return self._arcs is not None
 
 
-from coverage.sqldata import CoverageSqliteData
-CoverageData = CoverageSqliteData
+which = os.environ.get("COV_STORAGE", "json")
+if which == "json":
+    CoverageData = CoverageJsonData
+elif which == "sql":
+    from coverage.sqldata import CoverageSqliteData
+    CoverageData = CoverageSqliteData
 
+
+def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
+    """Combine a number of data files together.
+
+    Treat `data.filename` as a file prefix, and combine the data from all
+    of the data files starting with that prefix plus a dot.
+
+    If `aliases` is provided, it's a `PathAliases` object that is used to
+    re-map paths to match the local machine's.
+
+    If `data_paths` is provided, it is a list of directories or files to
+    combine.  Directories are searched for files that start with
+    `data.filename` plus dot as a prefix, and those files are combined.
+
+    If `data_paths` is not provided, then the directory portion of
+    `data.filename` is used as the directory to search for data files.
+
+    Every data file found and combined is then deleted from disk. If a file
+    cannot be read, a warning will be issued, and the file will not be
+    deleted.
+
+    If `strict` is true, and no files are found to combine, an error is
+    raised.
+
+    """
+    # Because of the os.path.abspath in the constructor, data_dir will
+    # never be an empty string.
+    data_dir, local = os.path.split(data.filename)
+    localdot = local + '.*'
+
+    data_paths = data_paths or [data_dir]
+    files_to_combine = []
+    for p in data_paths:
+        if os.path.isfile(p):
+            files_to_combine.append(os.path.abspath(p))
+        elif os.path.isdir(p):
+            pattern = os.path.join(os.path.abspath(p), localdot)
+            files_to_combine.extend(glob.glob(pattern))
+        else:
+            raise CoverageException("Couldn't combine from non-existent path '%s'" % (p,))
+
+    if strict and not files_to_combine:
+        raise CoverageException("No data to combine")
+
+    files_combined = 0
+    for f in files_to_combine:
+        try:
+            new_data = CoverageData(f, debug=data._debug)
+            new_data.read()
+        except CoverageException as exc:
+            if data._warn:
+                # The CoverageException has the file name in it, so just
+                # use the message as the warning.
+                data._warn(str(exc))
+        else:
+            data.update(new_data, aliases=aliases)
+            files_combined += 1
+            if data._debug and data._debug.should('dataio'):
+                data._debug.write("Deleting combined data file %r" % (f,))
+            file_be_gone(f)
+
+    if strict and not files_combined:
+        raise CoverageException("No usable data files")
 
 def canonicalize_json_data(data):
     """Canonicalize our JSON data so it can be compared."""

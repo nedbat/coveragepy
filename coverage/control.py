@@ -15,7 +15,7 @@ from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
 from coverage.collector import Collector
 from coverage.config import read_coverage_config
-from coverage.data import CoverageData
+from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import DebugControl, write_formatted_info
 from coverage.disposition import disposition_debug_msg
 from coverage.files import PathAliases, set_relative_directory, abs_file
@@ -536,7 +536,7 @@ class Coverage(object):
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
 
-        self._data.combine_parallel_data(aliases=aliases, data_paths=data_paths, strict=strict)
+        combine_parallel_data(self._data, aliases=aliases, data_paths=data_paths, strict=strict)
 
     def get_data(self):
         """Get the collected data.
