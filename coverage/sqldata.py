@@ -7,6 +7,7 @@ import os
 import sqlite3
 
 from coverage.backward import iitems
+from coverage.debug import SimpleRepr
 from coverage.misc import CoverageException, file_be_gone
 
 
@@ -47,7 +48,7 @@ create table arc (
 # (-1065448850,)
 APP_ID = -1065448850
 
-class CoverageSqliteData(object):
+class CoverageSqliteData(SimpleRepr):
     def __init__(self, basename=None, warn=None, debug=None):
         self.filename = os.path.abspath(basename or ".coverage")
         self._warn = warn
@@ -125,6 +126,10 @@ class CoverageSqliteData(object):
             { filename: { lineno: None, ... }, ...}
 
         """
+        if self._debug and self._debug.should('dataop'):
+            self._debug.write("Adding lines: %d files, %d lines total" % (
+                len(line_data), sum(len(lines) for lines in line_data.values())
+            ))
         self._start_writing()
         self._choose_lines_or_arcs(lines=True)
         with self._connect() as con:
@@ -144,6 +149,10 @@ class CoverageSqliteData(object):
             { filename: { (l1,l2): None, ... }, ...}
 
         """
+        if self._debug and self._debug.should('dataop'):
+            self._debug.write("Adding arcs: %d files, %d arcs total" % (
+                len(arc_data), sum(len(arcs) for arcs in arc_data.values())
+            ))
         self._start_writing()
         self._choose_lines_or_arcs(arcs=True)
         with self._connect() as con:
@@ -242,7 +251,7 @@ class CoverageSqliteData(object):
             return [pair for pair in con.execute("select fromno, tono from arc where file_id = ?", (file_id,))]
 
 
-class Sqlite(object):
+class Sqlite(SimpleRepr):
     def __init__(self, filename, debug):
         self.debug = debug if (debug and debug.should('sql')) else None
         if self.debug:
@@ -250,9 +259,9 @@ class Sqlite(object):
         self.con = sqlite3.connect(filename)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
-        self.con.execute("pragma journal_mode=off")
+        self.execute("pragma journal_mode=off")
         # This pragma makes writing faster.
-        self.con.execute("pragma synchronous=off")
+        self.execute("pragma synchronous=off")
 
     def close(self):
         self.con.close()
@@ -272,5 +281,5 @@ class Sqlite(object):
 
     def executemany(self, sql, data):
         if self.debug:
-            self.debug.write("Executing many {!r}".format(sql))
+            self.debug.write("Executing many {!r} with {} rows".format(sql, len(data)))
         return self.con.executemany(sql, data)
