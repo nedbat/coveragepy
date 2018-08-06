@@ -385,12 +385,6 @@ class Coverage(object):
         """
         self.config.set_option(option_name, value)
 
-    def use_cache(self, usecache):
-        """Obsolete method."""
-        self._init()
-        if not usecache:
-            self._warn("use_cache(False) is no longer supported.")
-
     def load(self):
         """Load previously-collected coverage data from the data file."""
         self._init()
