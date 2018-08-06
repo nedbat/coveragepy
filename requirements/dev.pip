@@ -11,7 +11,7 @@ pip==18.0.0
 -r pytest.pip
 
 # for linting.
-greenlet==0.4.13
+greenlet==0.4.14
 mock==2.0.0
 PyContracts==1.8.3
 pylint==1.9.2
