@@ -390,8 +390,10 @@ OK, ERR, FAIL_UNDER = 0, 1, 2
 class CoverageScript(object):
     """The command-line interface to coverage.py."""
 
-    def __init__(self, _covpkg=None, _run_python_file=None,
-                 _run_python_module=None, _help_fn=None, _path_exists=None):
+    def __init__(
+        self, _covpkg=None, _run_python_file=None,
+        _run_python_module=None, _help_fn=None, _path_exists=None,
+    ):
         # _covpkg is for dependency injection, so we can test this code.
         if _covpkg:
             self.covpkg = _covpkg
