@@ -582,7 +582,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_doesnt_exist(".coverage")
 
     def test_true_suffix(self):
-        self.assertEqual(glob.glob(".coverage.*"), [])
+        self.assert_file_count(".coverage.*", 0)
 
         # suffix=True will make a randomly named data file.
         covdata1 = CoverageData()

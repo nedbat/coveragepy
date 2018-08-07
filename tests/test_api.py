@@ -357,6 +357,7 @@ class ApiTest(CoverageTest):
         cov = coverage.Coverage(data_suffix=True)
         self.start_import_stop(cov, "code2")
         cov.save()
+        self.assert_file_count(".coverage.*", 2)
 
     def make_bad_data_file(self):
         """Make one bad data file."""
@@ -387,6 +388,8 @@ class ApiTest(CoverageTest):
         cov1.combine()
         cov1.save()
         self.check_code1_code2(cov1)
+        self.assert_file_count(".coverage.*", 0)
+        self.assert_exists(".coverage")
 
         cov2 = coverage.Coverage()
         with self.assertRaisesRegex(CoverageException, r"No data to combine"):

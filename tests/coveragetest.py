@@ -6,6 +6,7 @@
 import contextlib
 import datetime
 import functools
+import glob
 import os
 import random
 import re
@@ -346,6 +347,13 @@ class CoverageTest(
         """Assert that `fname` is a file that doesn't exist."""
         msg = "File %r shouldn't exist" % fname
         self.assertTrue(not os.path.exists(fname), msg)
+
+    def assert_file_count(self, pattern, count):
+        """Assert that there are `count` files matching `pattern`."""
+        files = glob.glob(pattern)
+        msg = "There should be {} files matching {!r}, but there are these: {}"
+        msg = msg.format(count, pattern, files)
+        self.assertEqual(len(files), count, msg)
 
     def assert_starts_with(self, s, prefix, msg=None):
         """Assert that `s` starts with `prefix`."""
