@@ -20,6 +20,7 @@ env:
 
 install:
   - pip install -r requirements/ci.pip
+  - pip freeze
 
 script:
   - tox
