@@ -12,7 +12,7 @@ The Coverage class
 
 .. autoclass:: Coverage
     :members:
-    :exclude-members: use_cache, sys_info
+    :exclude-members: sys_info
     :special-members: __init__
 
 

@@ -51,6 +51,23 @@ class CoverageTestTest(CoverageTest):
         with self.assertRaises(AssertionError):
             self.assert_exists("shadow.txt")
 
+    def test_file_count(self):
+        self.make_file("abcde.txt", "abcde")
+        self.make_file("axczz.txt", "axczz")
+        self.make_file("afile.txt", "afile")
+        self.assert_file_count("a*.txt", 3)
+        self.assert_file_count("*c*.txt", 2)
+        self.assert_file_count("afile.*", 1)
+        self.assert_file_count("*.q", 0)
+        with self.assertRaises(AssertionError):
+            self.assert_file_count("a*.txt", 13)
+        with self.assertRaises(AssertionError):
+            self.assert_file_count("*c*.txt", 12)
+        with self.assertRaises(AssertionError):
+            self.assert_file_count("afile.*", 11)
+        with self.assertRaises(AssertionError):
+            self.assert_file_count("*.q", 10)
+
     def test_assert_startwith(self):
         self.assert_starts_with("xyzzy", "xy")
         self.assert_starts_with("xyz\nabc", "xy")

@@ -357,6 +357,7 @@ class ApiTest(CoverageTest):
         cov = coverage.Coverage(data_suffix=True)
         self.start_import_stop(cov, "code2")
         cov.save()
+        self.assert_file_count(".coverage.*", 2)
 
     def make_bad_data_file(self):
         """Make one bad data file."""
@@ -378,8 +379,9 @@ class ApiTest(CoverageTest):
         # We got the results from code1 and code2 properly.
         self.check_code1_code2(cov)
 
-        # The bad file still exists.
+        # The bad file still exists, but it's the only parallel data file left.
         self.assert_exists(".coverage.foo")
+        self.assert_file_count(".coverage.*", 1)
 
     def test_combining_twice(self):
         self.make_good_data_files()
@@ -387,6 +389,8 @@ class ApiTest(CoverageTest):
         cov1.combine()
         cov1.save()
         self.check_code1_code2(cov1)
+        self.assert_file_count(".coverage.*", 0)
+        self.assert_exists(".coverage")
 
         cov2 = coverage.Coverage()
         with self.assertRaisesRegex(CoverageException, r"No data to combine"):

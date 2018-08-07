@@ -6,6 +6,7 @@
 import contextlib
 import datetime
 import functools
+import glob
 import os
 import random
 import re
@@ -347,6 +348,13 @@ class CoverageTest(
         msg = "File %r shouldn't exist" % fname
         self.assertTrue(not os.path.exists(fname), msg)
 
+    def assert_file_count(self, pattern, count):
+        """Assert that there are `count` files matching `pattern`."""
+        files = glob.glob(pattern)
+        msg = "There should be {} files matching {!r}, but there are these: {}"
+        msg = msg.format(count, pattern, files)
+        self.assertEqual(len(files), count, msg)
+
     def assert_starts_with(self, s, prefix, msg=None):
         """Assert that `s` starts with `prefix`."""
         if not s.startswith(prefix):
@@ -355,10 +363,8 @@ class CoverageTest(
     def assert_recent_datetime(self, dt, seconds=10, msg=None):
         """Assert that `dt` marks a time at most `seconds` seconds ago."""
         age = datetime.datetime.now() - dt
-        # Python2.6 doesn't have total_seconds :(
-        self.assertEqual(age.days, 0, msg)
-        self.assertGreaterEqual(age.seconds, 0, msg)
-        self.assertLessEqual(age.seconds, seconds, msg)
+        self.assertGreaterEqual(age.total_seconds(), 0, msg)
+        self.assertLessEqual(age.total_seconds(), seconds, msg)
 
     def command_line(self, args, ret=OK, _covpkg=None):
         """Run `args` through the command line.

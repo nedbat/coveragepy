@@ -574,7 +574,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_doesnt_exist(".coverage")
 
     def test_true_suffix(self):
-        self.assertEqual(glob.glob(".coverage.*"), [])
+        self.assert_file_count(".coverage.*", 0)
 
         # suffix=True will make a randomly named data file.
         covdata1 = CoverageData()
@@ -596,26 +596,25 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertTrue(all(str(os.getpid()) in fn for fn in data_files2))
 
     def test_combining(self):
-        self.assert_doesnt_exist(".coverage.1")
-        self.assert_doesnt_exist(".coverage.2")
+        self.assert_file_count(".coverage.*", 0)
 
         covdata1 = CoverageData()
         covdata1.add_lines(LINES_1)
         covdata1.write(suffix='1')
         self.assert_exists(".coverage.1")
-        self.assert_doesnt_exist(".coverage.2")
+        self.assert_file_count(".coverage.*", 1)
 
         covdata2 = CoverageData()
         covdata2.add_lines(LINES_2)
         covdata2.write(suffix='2')
         self.assert_exists(".coverage.2")
+        self.assert_file_count(".coverage.*", 2)
 
         covdata3 = CoverageData()
         combine_parallel_data(covdata3)
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
-        self.assert_doesnt_exist(".coverage.1")
-        self.assert_doesnt_exist(".coverage.2")
+        self.assert_file_count(".coverage.*", 0)
 
     def test_erasing(self):
         covdata1 = CoverageData()
@@ -635,8 +634,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.make_file(".coverage")
         data = CoverageData("datafile")
         data.erase(parallel=True)
-        self.assert_doesnt_exist("datafile.1")
-        self.assert_doesnt_exist("datafile.2")
+        self.assert_file_count("datafile.*", 0)
         self.assert_exists(".coverage")
 
     def read_json_data_file(self, fname):
@@ -709,11 +707,16 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         })
         covdata2.write(suffix='2')
 
+        self.assert_file_count(".coverage.*", 2)
+
         covdata3 = CoverageData()
         aliases = PathAliases()
         aliases.add("/home/ned/proj/src/", "./")
         aliases.add(r"c:\ned\test", "./")
         combine_parallel_data(covdata3, aliases=aliases)
+        self.assert_file_count(".coverage.*", 0)
+        # covdata3 hasn't been written yet. Should this file exist or not?
+        #self.assert_exists(".coverage")
 
         apy = canonical_filename('./a.py')
         sub_bpy = canonical_filename('./sub/b.py')

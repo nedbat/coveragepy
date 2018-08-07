@@ -3,9 +3,9 @@
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
 pyenchant==2.0.0
-sphinx==1.7.5
+sphinx==1.7.6
 sphinxcontrib-spelling==4.2.0
-sphinx_rtd_theme==0.4.0
+sphinx_rtd_theme==0.4.1
 
 # A version of doc8 with a -q flag.
 git+https://github.com/nedbat/doc8.git#egg=doc8==0.0
