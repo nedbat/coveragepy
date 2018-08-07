@@ -379,8 +379,9 @@ class ApiTest(CoverageTest):
         # We got the results from code1 and code2 properly.
         self.check_code1_code2(cov)
 
-        # The bad file still exists.
+        # The bad file still exists, but it's the only parallel data file left.
         self.assert_exists(".coverage.foo")
+        self.assert_file_count(".coverage.*", 1)
 
     def test_combining_twice(self):
         self.make_good_data_files()
