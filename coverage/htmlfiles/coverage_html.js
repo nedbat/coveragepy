@@ -169,22 +169,13 @@ coverage.wire_up_filter = function () {
 
 // Loaded on index.html
 coverage.index_ready = function ($) {
-    // Look for a cookie containing previous sort settings:
+    // Look for a localStorage item containing previous sort settings:
     var sort_list = [];
-    var cookie_name = "COVERAGE_INDEX_SORT";
-    var i;
+    var storage_name = "COVERAGE_INDEX_SORT";
+    var stored_list = localStorage.getItem(storage_name);
 
-    // This almost makes it worth installing the jQuery cookie plugin:
-    if (document.cookie.indexOf(cookie_name) > -1) {
-        var cookies = document.cookie.split(";");
-        for (i = 0; i < cookies.length; i++) {
-            var parts = cookies[i].split("=");
-
-            if ($.trim(parts[0]) === cookie_name && parts[1]) {
-                sort_list = eval("[[" + parts[1] + "]]");
-                break;
-            }
-        }
+    if (stored_list) {
+        sort_list = JSON.parse('[[' + stored_list + ']]');
     }
 
     // Create a new widget which exists only to save and restore
@@ -231,7 +222,7 @@ coverage.index_ready = function ($) {
 
     // Watch for page unload events so we can save the final sort settings:
     $(window).unload(function () {
-        document.cookie = cookie_name + "=" + sort_list.toString() + "; path=/";
+        localStorage.setItem(storage_name, sort_list.toString())
     });
 };
 
