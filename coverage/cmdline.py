@@ -619,10 +619,6 @@ class CoverageScript(object):
                     )
                     return ERR
 
-        if not self.coverage.get_option("run:parallel"):
-            if not options.append:
-                self.coverage.erase()
-
         # Run the script.
         self.coverage.start()
         code_ran = True

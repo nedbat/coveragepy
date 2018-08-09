@@ -358,7 +358,6 @@ class CmdLineTest(BaseCmdLineTest):
         # run calls coverage.erase first.
         self.cmd_executes("run foo.py", """\
             .Coverage()
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -386,7 +385,6 @@ class CmdLineTest(BaseCmdLineTest):
         # --timid sets a flag, and program arguments get passed through.
         self.cmd_executes("run --timid foo.py abc 123", """\
             .Coverage(timid=True)
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py', 'abc', '123'])
             .stop()
@@ -395,7 +393,6 @@ class CmdLineTest(BaseCmdLineTest):
         # -L sets a flag, and flags for the program don't confuse us.
         self.cmd_executes("run -p -L foo.py -a -b", """\
             .Coverage(cover_pylib=True, data_suffix=True)
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py', '-a', '-b'])
             .stop()
@@ -403,7 +400,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --branch foo.py", """\
             .Coverage(branch=True)
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -411,7 +407,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --rcfile=myrc.rc foo.py", """\
             .Coverage(config_file="myrc.rc")
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -419,7 +414,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --include=pre1,pre2 foo.py", """\
             .Coverage(include=["pre1", "pre2"])
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -427,7 +421,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --omit=opre1,opre2 foo.py", """\
             .Coverage(omit=["opre1", "opre2"])
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -435,7 +428,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --include=pre1,pre2 --omit=opre1,opre2 foo.py", """\
             .Coverage(include=["pre1", "pre2"], omit=["opre1", "opre2"])
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -443,7 +435,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --source=quux,hi.there,/home/bar foo.py", """\
             .Coverage(source=["quux", "hi.there", "/home/bar"])
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -451,7 +442,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --concurrency=gevent foo.py", """\
             .Coverage(concurrency='gevent')
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -459,7 +449,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --concurrency=multiprocessing foo.py", """\
             .Coverage(concurrency='multiprocessing')
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -492,7 +481,6 @@ class CmdLineTest(BaseCmdLineTest):
     def test_run_debug(self):
         self.cmd_executes("run --debug=opt1 foo.py", """\
             .Coverage(debug=["opt1"])
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -500,7 +488,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --debug=opt1,opt2 foo.py", """\
             .Coverage(debug=["opt1","opt2"])
-            .erase()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
@@ -510,7 +497,6 @@ class CmdLineTest(BaseCmdLineTest):
     def test_run_module(self):
         self.cmd_executes("run -m mymodule", """\
             .Coverage()
-            .erase()
             .start()
             .run_python_module('mymodule', ['mymodule'])
             .stop()
@@ -518,7 +504,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run -m mymodule -qq arg1 arg2", """\
             .Coverage()
-            .erase()
             .start()
             .run_python_module('mymodule', ['mymodule', '-qq', 'arg1', 'arg2'])
             .stop()
@@ -526,7 +511,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --branch -m mymodule", """\
             .Coverage(branch=True)
-            .erase()
             .start()
             .run_python_module('mymodule', ['mymodule'])
             .stop()
