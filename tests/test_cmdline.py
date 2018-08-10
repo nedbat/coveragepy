@@ -70,34 +70,31 @@ class BaseCmdLineTest(CoverageTest):
 
         return mk
 
-    def mock_command_line(self, args, path_exists=None):
+    def mock_command_line(self, args):
         """Run `args` through the command line, with a Mock.
 
         Returns the Mock it used and the status code returned.
 
         """
         m = self.model_object()
-        m.path_exists.return_value = path_exists
 
         ret = command_line(
             args,
             _covpkg=m, _run_python_file=m.run_python_file,
             _run_python_module=m.run_python_module, _help_fn=m.help_fn,
-            _path_exists=m.path_exists,
             )
 
         return m, ret
 
-    def cmd_executes(self, args, code, ret=OK, path_exists=None):
+    def cmd_executes(self, args, code, ret=OK):
         """Assert that the `args` end up executing the sequence in `code`."""
-        m1, r1 = self.mock_command_line(args, path_exists=path_exists)
+        m1, r1 = self.mock_command_line(args)
         self.assertEqual(r1, ret, "Wrong status: got %r, wanted %r" % (r1, ret))
 
         # Remove all indentation, and change ".foo()" to "m2.foo()".
         code = re.sub(r"(?m)^\s+", "", code)
         code = re.sub(r"(?m)^\.", "m2.", code)
         m2 = self.model_object()
-        m2.path_exists.return_value = path_exists
         code_obj = compile(code, "<code>", "exec")
         eval(code_obj, globals(), {'m2': m2})       # pylint: disable=eval-used
 
@@ -366,22 +363,21 @@ class CmdLineTest(BaseCmdLineTest):
         # run -a combines with an existing data file before saving.
         self.cmd_executes("run -a foo.py", """\
             .Coverage()
+            .load()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
-            .path_exists('.coverage')
-            .combine(data_paths=['.coverage'])
             .save()
-            """, path_exists=True)
+            """)
         # run -a doesn't combine anything if the data file doesn't exist.
         self.cmd_executes("run -a foo.py", """\
             .Coverage()
+            .load()
             .start()
             .run_python_file('foo.py', ['foo.py'])
             .stop()
-            .path_exists('.coverage')
             .save()
-            """, path_exists=False)
+            """)
         # --timid sets a flag, and program arguments get passed through.
         self.cmd_executes("run --timid foo.py abc 123", """\
             .Coverage(timid=True)
