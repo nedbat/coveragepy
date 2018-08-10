@@ -3,6 +3,7 @@
 
 """Sqlite coverage data."""
 
+import glob
 import os
 import sqlite3
 
