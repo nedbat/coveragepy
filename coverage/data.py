@@ -641,20 +641,6 @@ class CoverageJsonData(object):
             for key in val:
                 assert isinstance(key, string_class), "Key in _runs shouldn't be %r" % (key,)
 
-    def add_to_hash(self, filename, hasher):
-        """Contribute `filename`'s data to the `hasher`.
-
-        `hasher` is a `coverage.misc.Hasher` instance to be updated with
-        the file's data.  It should only get the results data, not the run
-        data.
-
-        """
-        if self._has_arcs():
-            hasher.update(sorted(self.arcs(filename) or []))
-        else:
-            hasher.update(sorted(self.lines(filename) or []))
-        hasher.update(self.file_tracer(filename))
-
     ##
     ## Internal
     ##
@@ -674,6 +660,21 @@ if which == "json":
 elif which == "sql":
     from coverage.sqldata import CoverageSqliteData
     CoverageData = CoverageSqliteData
+
+
+def add_data_to_hash(data, filename, hasher):
+    """Contribute `filename`'s data to the `hasher`.
+
+    `hasher` is a `coverage.misc.Hasher` instance to be updated with
+    the file's data.  It should only get the results data, not the run
+    data.
+
+    """
+    if data.has_arcs():
+        hasher.update(sorted(data.arcs(filename) or []))
+    else:
+        hasher.update(sorted(data.lines(filename) or []))
+    hasher.update(data.file_tracer(filename))
 
 
 def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):

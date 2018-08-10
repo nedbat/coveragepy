@@ -12,6 +12,7 @@ import re
 import mock
 
 from coverage.data import CoverageData, debug_main, canonicalize_json_data, combine_parallel_data
+from coverage.data import add_data_to_hash
 from coverage.debug import DebugControlString
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
@@ -364,7 +365,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         covdata.add_lines(LINES_1)
         hasher = mock.Mock()
-        covdata.add_to_hash("a.py", hasher)
+        add_data_to_hash(covdata, "a.py", hasher)
         self.assertEqual(hasher.method_calls, [
             mock.call.update([1, 2]),   # lines
             mock.call.update(""),       # file_tracer name
@@ -375,7 +376,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.add_arcs(ARCS_3)
         covdata.add_file_tracers({"y.py": "hologram_plugin"})
         hasher = mock.Mock()
-        covdata.add_to_hash("y.py", hasher)
+        add_data_to_hash(covdata, "y.py", hasher)
         self.assertEqual(hasher.method_calls, [
             mock.call.update([(-1, 17), (17, 23), (23, -1)]),   # arcs
             mock.call.update("hologram_plugin"),                # file_tracer name
@@ -386,7 +387,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         covdata.add_lines(LINES_1)
         hasher = mock.Mock()
-        covdata.add_to_hash("missing.py", hasher)
+        add_data_to_hash(covdata, "missing.py", hasher)
         self.assertEqual(hasher.method_calls, [
             mock.call.update([]),
             mock.call.update(None),
@@ -398,7 +399,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.add_arcs(ARCS_3)
         covdata.add_file_tracers({"y.py": "hologram_plugin"})
         hasher = mock.Mock()
-        covdata.add_to_hash("missing.py", hasher)
+        add_data_to_hash(covdata, "missing.py", hasher)
         self.assertEqual(hasher.method_calls, [
             mock.call.update([]),
             mock.call.update(None),

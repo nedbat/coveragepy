@@ -242,6 +242,13 @@ class CoverageSqliteData(SimpleRepr):
         return ""    # TODO
 
     def lines(self, filename):
+        if self.has_arcs():
+            arcs = self.arcs(filename)
+            if arcs is not None:
+                import itertools
+                all_lines = itertools.chain.from_iterable(arcs)
+                return list(set(l for l in all_lines if l > 0))
+
         with self._connect() as con:
             file_id = self._file_id(filename)
             return [lineno for lineno, in con.execute("select lineno from line where file_id = ?", (file_id,))]

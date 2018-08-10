@@ -12,6 +12,7 @@ import shutil
 import coverage
 from coverage import env
 from coverage.backward import iitems
+from coverage.data import add_data_to_hash
 from coverage.files import flat_rootname
 from coverage.misc import CoverageException, file_be_gone, Hasher, isolate_module
 from coverage.report import Reporter
@@ -169,7 +170,7 @@ class HtmlReporter(Reporter):
         """Compute a hash that changes if the file needs to be re-reported."""
         m = Hasher()
         m.update(source)
-        self.data.add_to_hash(fr.filename, m)
+        add_data_to_hash(self.data, fr.filename, m)
         return m.hexdigest()
 
     def html_file(self, fr, analysis):
