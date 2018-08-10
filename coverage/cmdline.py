@@ -392,7 +392,7 @@ class CoverageScript(object):
 
     def __init__(
         self, _covpkg=None, _run_python_file=None,
-        _run_python_module=None, _help_fn=None, _path_exists=None,
+        _run_python_module=None, _help_fn=None,
     ):
         # _covpkg is for dependency injection, so we can test this code.
         if _covpkg:
@@ -405,7 +405,6 @@ class CoverageScript(object):
         self.run_python_file = _run_python_file or run_python_file
         self.run_python_module = _run_python_module or run_python_module
         self.help_fn = _help_fn or self.help
-        self.path_exists = _path_exists or os.path.exists
         self.global_option = False
 
         self.coverage = None
@@ -619,6 +618,9 @@ class CoverageScript(object):
                     )
                     return ERR
 
+        if options.append:
+            self.coverage.load()
+
         # Run the script.
         self.coverage.start()
         code_ran = True
@@ -634,10 +636,6 @@ class CoverageScript(object):
         finally:
             self.coverage.stop()
             if code_ran:
-                if options.append:
-                    data_file = self.coverage.get_option("run:data_file")
-                    if self.path_exists(data_file):
-                        self.coverage.combine(data_paths=[data_file])
                 self.coverage.save()
 
         return OK
