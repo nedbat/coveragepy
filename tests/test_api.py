@@ -13,6 +13,7 @@ import warnings
 import coverage
 from coverage import env
 from coverage.backward import StringIO, import_local_file
+from coverage.data import line_counts
 from coverage.misc import CoverageException
 from coverage.report import Reporter
 
@@ -576,7 +577,7 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         import usepkgs  # pragma: nested   # pylint: disable=import-error, unused-variable
         cov.stop()      # pragma: nested
         data = cov.get_data()
-        summary = data.line_counts()
+        summary = line_counts(data)
         for k, v in list(summary.items()):
             assert k.endswith(".py")
             summary[k[:-3]] = v

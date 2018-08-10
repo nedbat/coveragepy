@@ -14,6 +14,7 @@ import traceback
 
 from coverage import env
 from coverage.collector import CTracer
+from coverage.data import line_counts
 from coverage.debug import info_formatter, info_header
 from coverage.execfile import run_python_file, run_python_module
 from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource
@@ -660,7 +661,7 @@ class CoverageScript(object):
                 print("path: %s" % self.coverage.get_data().filename)
                 if data:
                     print("has_arcs: %r" % data.has_arcs())
-                    summary = data.line_counts(fullpath=True)
+                    summary = line_counts(data, fullpath=True)
                     filenames = sorted(summary.keys())
                     print("\n%d files:" % len(filenames))
                     for f in filenames:

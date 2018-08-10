@@ -12,7 +12,7 @@ import re
 import mock
 
 from coverage.data import CoverageData, debug_main, canonicalize_json_data, combine_parallel_data
-from coverage.data import add_data_to_hash
+from coverage.data import add_data_to_hash, line_counts
 from coverage.debug import DebugControlString
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
@@ -74,9 +74,9 @@ MEASURED_FILES_3_4 = ['x.py', 'y.py', 'z.py']
 class DataTestHelpers(CoverageTest):
     """Test helpers for data tests."""
 
-    def assert_line_counts(self, covdata, line_counts, fullpath=False):
-        """Check that the line_counts of `covdata` is `line_counts`."""
-        self.assertEqual(covdata.line_counts(fullpath), line_counts)
+    def assert_line_counts(self, covdata, counts, fullpath=False):
+        """Check that the line_counts of `covdata` is `counts`."""
+        self.assertEqual(line_counts(covdata, fullpath), counts)
 
     def assert_measured_files(self, covdata, measured):
         """Check that `covdata`'s measured files are `measured`."""

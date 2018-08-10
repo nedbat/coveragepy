@@ -14,6 +14,7 @@ from flaky import flaky
 import coverage
 from coverage import env
 from coverage.backward import import_local_file
+from coverage.data import line_counts
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
@@ -245,7 +246,7 @@ class ConcurrencyTest(CoverageTest):
             print_simple_annotation(code, linenos)
 
             lines = line_count(code)
-            self.assertEqual(data.line_counts()['try_it.py'], lines)
+            self.assertEqual(line_counts(data)['try_it.py'], lines)
 
     def test_threads(self):
         code = (THREAD + SUM_RANGE_Q + PRINT_SUM_RANGE).format(QLIMIT=self.QLIMIT)

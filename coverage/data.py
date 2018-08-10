@@ -244,25 +244,6 @@ class CoverageJsonData(object):
         """A list of all files that had been measured."""
         return list(self._arcs or self._lines or {})
 
-    def line_counts(self, fullpath=False):
-        """Return a dict summarizing the line coverage data.
-
-        Keys are based on the file names, and values are the number of executed
-        lines.  If `fullpath` is true, then the keys are the full pathnames of
-        the files, otherwise they are the basenames of the files.
-
-        Returns a dict mapping file names to counts of lines.
-
-        """
-        summ = {}
-        if fullpath:
-            filename_fn = lambda f: f
-        else:
-            filename_fn = os.path.basename
-        for filename in self.measured_files():
-            summ[filename_fn(filename)] = len(self.lines(filename))
-        return summ
-
     def __nonzero__(self):
         return bool(self._lines or self._arcs)
 
@@ -660,6 +641,26 @@ if which == "json":
 elif which == "sql":
     from coverage.sqldata import CoverageSqliteData
     CoverageData = CoverageSqliteData
+
+
+def line_counts(data, fullpath=False):
+    """Return a dict summarizing the line coverage data.
+
+    Keys are based on the file names, and values are the number of executed
+    lines.  If `fullpath` is true, then the keys are the full pathnames of
+    the files, otherwise they are the basenames of the files.
+
+    Returns a dict mapping file names to counts of lines.
+
+    """
+    summ = {}
+    if fullpath:
+        filename_fn = lambda f: f
+    else:
+        filename_fn = os.path.basename
+    for filename in data.measured_files():
+        summ[filename_fn(filename)] = len(data.lines(filename))
+    return summ
 
 
 def add_data_to_hash(data, filename, hasher):
