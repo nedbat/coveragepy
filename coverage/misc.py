@@ -226,6 +226,7 @@ class Hasher(object):
                     continue
                 self.update(k)
                 self.update(a)
+        self.md5.update(b'.')
 
     def hexdigest(self):
         """Retrieve the hex digest of the hash."""

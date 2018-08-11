@@ -47,6 +47,13 @@ class HasherTest(CoverageTest):
         h2.update({'b': 23, 'a': 17})
         self.assertEqual(h1.hexdigest(), h2.hexdigest())
 
+    def test_dict_collision(self):
+        h1 = Hasher()
+        h1.update({'a': 17, 'b': {'c': 1, 'd': 2}})
+        h2 = Hasher()
+        h2.update({'a': 17, 'b': {'c': 1}, 'd': 2})
+        self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
+
 
 class RemoveFileTest(CoverageTest):
     """Tests of misc.file_be_gone."""
