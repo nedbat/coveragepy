@@ -635,10 +635,10 @@ class CoverageJsonData(object):
         return self._arcs is not None
 
 
-which = os.environ.get("COVERAGE_STORAGE", "json")
-if which == "json":
+STORAGE = os.environ.get("COVERAGE_STORAGE", "json")
+if STORAGE == "json":
     CoverageData = CoverageJsonData
-elif which == "sql":
+elif STORAGE == "sql":
     from coverage.sqldata import CoverageSqliteData
     CoverageData = CoverageSqliteData
 

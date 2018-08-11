@@ -6,6 +6,7 @@
 import glob
 import os
 import sqlite3
+import struct
 
 from coverage.backward import iitems
 from coverage.debug import SimpleRepr
@@ -45,9 +46,13 @@ create table arc (
 );
 """
 
-# >>> struct.unpack(">i", b"\xc0\x7e\x8a\x6e")      # "coverage", kind of.
-# (-1065448850,)
-APP_ID = -1065448850
+APP_ID = 0xc07e8a6e         # "coverage", kind of.
+
+def unsigned_to_signed(val):
+    return struct.unpack('>i', struct.pack('>I', val))[0]
+
+def signed_to_unsigned(val):
+    return struct.unpack('>I', struct.pack('>i', val))[0]
 
 class CoverageSqliteData(SimpleRepr):
     def __init__(self, basename=None, warn=None, debug=None):
@@ -75,7 +80,7 @@ class CoverageSqliteData(SimpleRepr):
             self._debug.write("Creating data file {!r}".format(self.filename))
         self._db = Sqlite(self.filename, self._debug)
         with self._db:
-            self._db.execute("pragma application_id = {}".format(APP_ID))
+            self._db.execute("pragma application_id = {}".format(unsigned_to_signed(APP_ID)))
             for stmt in SCHEMA.split(';'):
                 stmt = stmt.strip()
                 if stmt:
@@ -91,10 +96,10 @@ class CoverageSqliteData(SimpleRepr):
         self._db = Sqlite(self.filename, self._debug)
         with self._db:
             for app_id, in self._db.execute("pragma application_id"):
-                app_id = int(app_id)
+                app_id = signed_to_unsigned(int(app_id))
                 if app_id != APP_ID:
                     raise CoverageException(
-                        "File {!r} doesn't look like a coverage data file: "
+                        "Couldn't use {!r}: wrong application_id: "
                         "0x{:08x} != 0x{:08x}".format(self.filename, app_id, APP_ID)
                     )
         for row in self._db.execute("select has_lines, has_arcs from meta"):
@@ -110,6 +115,19 @@ class CoverageSqliteData(SimpleRepr):
             else:
                 self._create_db()
         return self._db
+
+    def __nonzero__(self):
+        try:
+            with self._connect() as con:
+                if self.has_arcs():
+                    rows = con.execute("select * from arc limit 1")
+                else:
+                    rows = con.execute("select * from line limit 1")
+                return bool(list(rows))
+        except CoverageException:
+            return False
+
+    __bool__ = __nonzero__
 
     def _file_id(self, filename):
         self._start_writing()
@@ -184,12 +202,27 @@ class CoverageSqliteData(SimpleRepr):
         """
         self._start_writing()
         with self._connect() as con:
-            data = list(iitems(file_tracers))
-            if data:
-                con.executemany(
-                    "insert into file (path, tracer) values (?, ?) on duplicate key update",
-                    data,
+            for filename, plugin_name in iitems(file_tracers):
+                con.execute(
+                    "update file set tracer = ? where path = ?",
+                    (plugin_name, filename)
                 )
+
+    def touch_file(self, filename, plugin_name=""):
+        """Ensure that `filename` appears in the data, empty if needed.
+
+        `plugin_name` is the name of the plugin resposible for this file. It is used
+        to associate the right filereporter, etc.
+        """
+        if self._debug and self._debug.should('dataop'):
+            self._debug.write("Touching %r" % (filename,))
+        if not self._has_arcs and not self._has_lines:
+            raise CoverageException("Can't touch files in an empty CoverageSqliteData")
+
+        file_id = self._file_id(filename)
+        if plugin_name:
+            # Set the tracer for this file
+            self.add_file_tracers({filename: plugin_name})
 
     def erase(self, parallel=False):
         """Erase the data in this object.
@@ -239,7 +272,10 @@ class CoverageSqliteData(SimpleRepr):
         was not measured, then None is returned.
 
         """
-        return ""    # TODO
+        with self._connect() as con:
+            for tracer, in con.execute("select tracer from file where path = ?", (filename,)):
+                return tracer or ""
+        return None
 
     def lines(self, filename):
         if self.has_arcs():
@@ -258,13 +294,17 @@ class CoverageSqliteData(SimpleRepr):
             file_id = self._file_id(filename)
             return [pair for pair in con.execute("select fromno, tono from arc where file_id = ?", (file_id,))]
 
+    def run_infos(self):
+        return []   # TODO
+
 
 class Sqlite(SimpleRepr):
     def __init__(self, filename, debug):
         self.debug = debug if (debug and debug.should('sql')) else None
         if self.debug:
             self.debug.write("Connecting to {!r}".format(filename))
-        self.con = sqlite3.connect(filename)
+        self.filename = filename
+        self.con = sqlite3.connect(self.filename)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
         self.execute("pragma journal_mode=off")
@@ -285,7 +325,10 @@ class Sqlite(SimpleRepr):
         if self.debug:
             tail = " with {!r}".format(parameters) if parameters else ""
             self.debug.write("Executing {!r}{}".format(sql, tail))
-        return self.con.execute(sql, parameters)
+        try:
+            return self.con.execute(sql, parameters)
+        except sqlite3.Error as exc:
+            raise CoverageException("Couldn't use data file {!r}: {}".format(self.filename, exc))
 
     def executemany(self, sql, data):
         if self.debug:

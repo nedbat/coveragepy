@@ -12,7 +12,7 @@ import re
 import mock
 
 from coverage.data import CoverageData, debug_main, canonicalize_json_data, combine_parallel_data
-from coverage.data import add_data_to_hash, line_counts
+from coverage.data import add_data_to_hash, line_counts, STORAGE
 from coverage.debug import DebugControlString
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
@@ -105,7 +105,7 @@ class DataTestHelpers(CoverageTest):
 class CoverageDataTest(DataTestHelpers, CoverageTest):
     """Test cases for CoverageData."""
 
-    run_in_temp_dir = False
+    run_in_temp_dir = STORAGE == "sql"
 
     def test_empty_data_is_false(self):
         covdata = CoverageData()
@@ -449,7 +449,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         self.assert_arcs3_data(covdata2)
 
     def test_read_errors(self):
-        msg = r"Couldn't read data from '.*[/\\]{0}': \S+"
+        msg = r"Couldn't .* '.*[/\\]{0}': \S+"
 
         self.make_file("xyzzy.dat", "xyzzy")
         with self.assertRaisesRegex(CoverageException, msg.format("xyzzy.dat")):
@@ -463,11 +463,12 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
             covdata.read()
         self.assertFalse(covdata)
 
-        self.make_file("misleading.dat", CoverageData._GO_AWAY + " this isn't JSON")
-        with self.assertRaisesRegex(CoverageException, msg.format("misleading.dat")):
-            covdata = CoverageData("misleading.dat")
-            covdata.read()
-        self.assertFalse(covdata)
+        if STORAGE == "json":
+            self.make_file("misleading.dat", CoverageData._GO_AWAY + " this isn't JSON")
+            with self.assertRaisesRegex(CoverageException, msg.format("misleading.dat")):
+                covdata = CoverageData("misleading.dat")
+                covdata.read()
+            self.assertFalse(covdata)
 
     def test_debug_main(self):
         covdata1 = CoverageData(".coverage")
@@ -640,6 +641,8 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
     def read_json_data_file(self, fname):
         """Read a JSON data file for testing the JSON directly."""
+        if STORAGE != "json":
+            self.skipTest("Not using JSON for data storage")
         with open(fname, 'r') as fdata:
             go_away = fdata.read(len(CoverageData._GO_AWAY))
             self.assertEqual(go_away, CoverageData._GO_AWAY)
