@@ -763,14 +763,14 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_exists(".coverage.xxx")
 
     def test_combining_from_files(self):
+        os.makedirs('cov1')
         covdata1 = CoverageData('cov1/.coverage.1')
         covdata1.add_lines(LINES_1)
-        os.makedirs('cov1')
         covdata1.write()
 
+        os.makedirs('cov2')
         covdata2 = CoverageData('cov2/.coverage.2')
         covdata2.add_lines(LINES_2)
-        os.makedirs('cov2')
         covdata2.write()
 
         # This data won't be included.

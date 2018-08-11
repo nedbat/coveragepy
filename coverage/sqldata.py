@@ -226,7 +226,7 @@ class CoverageSqliteData(SimpleRepr):
         if not self._has_arcs and not self._has_lines:
             raise CoverageException("Can't touch files in an empty CoverageSqliteData")
 
-        file_id = self._file_id(filename, add=True)
+        self._file_id(filename, add=True)
         if plugin_name:
             # Set the tracer for this file
             self.add_file_tracers({filename: plugin_name})
