@@ -14,6 +14,7 @@ import struct
 
 from coverage.backward import iitems
 from coverage.debug import SimpleRepr
+from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
 
 
@@ -249,6 +250,37 @@ class CoverageSqliteData(SimpleRepr):
         if plugin_name:
             # Set the tracer for this file
             self.add_file_tracers({filename: plugin_name})
+
+    def update(self, other_data, aliases=None):
+        if self._has_lines and other_data._has_arcs:
+            raise CoverageException("Can't combine arc data with line data")
+        if self._has_arcs and other_data._has_lines:
+            raise CoverageException("Can't combine line data with arc data")
+
+        aliases = aliases or PathAliases()
+
+        # lines
+        if other_data._has_lines:
+            for filename in other_data.measured_files():
+                lines = set(other_data.lines(filename))
+                filename = aliases.map(filename)
+                lines.update(self.lines(filename) or ())
+                self.add_lines({filename: lines})
+
+        # arcs
+        if other_data._has_arcs:
+            for filename in other_data.measured_files():
+                arcs = set(other_data.arcs(filename))
+                filename = aliases.map(filename)
+                arcs.update(self.arcs(filename) or ())
+                self.add_arcs({filename: arcs})
+
+        # file_tracers
+        for filename in other_data.measured_files():
+            other_plugin = other_data.file_tracer(filename)
+            filename = aliases.map(filename)
+            self.add_file_tracers({filename: other_plugin})
+
 
     def erase(self, parallel=False):
         """Erase the data in this object.
