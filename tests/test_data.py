@@ -361,6 +361,13 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         with self.assertRaisesRegex(CoverageException, msg):
             covdata2.update(covdata1)
 
+    def test_asking_isnt_measuring(self):
+        # Asking about an unmeasured file shouldn't make it seem measured.
+        covdata = CoverageData()
+        self.assert_measured_files(covdata, [])
+        self.assertEqual(covdata.arcs("missing.py"), None)
+        self.assert_measured_files(covdata, [])
+
     def test_add_to_hash_with_lines(self):
         covdata = CoverageData()
         covdata.add_lines(LINES_1)

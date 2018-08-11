@@ -114,6 +114,7 @@ class CoverageSqliteData(SimpleRepr):
                 self._open_db()
             else:
                 self._create_db()
+            self._have_read = True
         return self._db
 
     def __nonzero__(self):
@@ -129,13 +130,19 @@ class CoverageSqliteData(SimpleRepr):
 
     __bool__ = __nonzero__
 
-    def _file_id(self, filename):
-        self._start_writing()
+    def _file_id(self, filename, add=False):
+        """Get the file id for `filename`.
+
+        If filename is not in the database yet, add if it `add` is True.
+        If `add` is not True, return None.
+        """
         if filename not in self._file_map:
-            with self._connect() as con:
-                cur = con.execute("insert into file (path) values (?)", (filename,))
-                self._file_map[filename] = cur.lastrowid
-        return self._file_map[filename]
+            if add:
+                self._start_writing()
+                with self._connect() as con:
+                    cur = con.execute("insert into file (path) values (?)", (filename,))
+                    self._file_map[filename] = cur.lastrowid
+        return self._file_map.get(filename)
 
     def add_lines(self, line_data):
         """Add measured line data.
@@ -153,7 +160,7 @@ class CoverageSqliteData(SimpleRepr):
         self._choose_lines_or_arcs(lines=True)
         with self._connect() as con:
             for filename, linenos in iitems(line_data):
-                file_id = self._file_id(filename)
+                file_id = self._file_id(filename, add=True)
                 data = [(file_id, lineno) for lineno in linenos]
                 con.executemany(
                     "insert or ignore into line (file_id, lineno) values (?, ?)",
@@ -176,7 +183,7 @@ class CoverageSqliteData(SimpleRepr):
         self._choose_lines_or_arcs(arcs=True)
         with self._connect() as con:
             for filename, arcs in iitems(arc_data):
-                file_id = self._file_id(filename)
+                file_id = self._file_id(filename, add=True)
                 data = [(file_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany(
                     "insert or ignore into arc (file_id, fromno, tono) values (?, ?, ?)",
@@ -219,7 +226,7 @@ class CoverageSqliteData(SimpleRepr):
         if not self._has_arcs and not self._has_lines:
             raise CoverageException("Can't touch files in an empty CoverageSqliteData")
 
-        file_id = self._file_id(filename)
+        file_id = self._file_id(filename, add=True)
         if plugin_name:
             # Set the tracer for this file
             self.add_file_tracers({filename: plugin_name})
@@ -287,12 +294,20 @@ class CoverageSqliteData(SimpleRepr):
 
         with self._connect() as con:
             file_id = self._file_id(filename)
-            return [lineno for lineno, in con.execute("select lineno from line where file_id = ?", (file_id,))]
+            if file_id is None:
+                return None
+            else:
+                linenos = con.execute("select lineno from line where file_id = ?", (file_id,))
+                return [lineno for lineno, in linenos]
 
     def arcs(self, filename):
         with self._connect() as con:
             file_id = self._file_id(filename)
-            return [pair for pair in con.execute("select fromno, tono from arc where file_id = ?", (file_id,))]
+            if file_id is None:
+                return None
+            else:
+                arcs = con.execute("select fromno, tono from arc where file_id = ?", (file_id,))
+                return [pair for pair in arcs]
 
     def run_infos(self):
         return []   # TODO
