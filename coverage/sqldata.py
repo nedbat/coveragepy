@@ -3,6 +3,10 @@
 
 """Sqlite coverage data."""
 
+# TODO: check the schema
+# TODO: factor out dataop debugging to a wrapper class?
+# TODO: make sure all dataop debugging is in place somehow
+
 import glob
 import os
 import sqlite3
@@ -210,6 +214,21 @@ class CoverageSqliteData(SimpleRepr):
         self._start_writing()
         with self._connect() as con:
             for filename, plugin_name in iitems(file_tracers):
+                file_id = self._file_id(filename)
+                if file_id is None:
+                    raise CoverageException(
+                        "Can't add file tracer data for unmeasured file '%s'" % (filename,)
+                    )
+
+                cur = con.execute("select tracer from file where id = ?", (file_id,))
+                [existing_plugin] = cur.fetchone()
+                if existing_plugin is not None and existing_plugin != plugin_name:
+                    raise CoverageException(
+                        "Conflicting file tracer name for '%s': %r vs %r" % (
+                            filename, existing_plugin, plugin_name,
+                        )
+                    )
+
                 con.execute(
                     "update file set tracer = ? where path = ?",
                     (plugin_name, filename)
