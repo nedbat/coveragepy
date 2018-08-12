@@ -39,6 +39,52 @@ except ImportError:                                         # pragma: only jytho
 os = isolate_module(os)
 
 
+# I wanted to know all the different sequences of calling Coverage methods.
+import itertools
+nums = itertools.count()
+calls = itertools.count()
+
+def show_call(func):
+    def meth(self, *args, **kwargs):
+        id = getattr(self, "$", None)
+        if id is None:
+            id = "{:08d} {:04d}".format(os.getpid(), next(nums))
+            setattr(self, "$", id)
+        with open("/tmp/calls.txt", "a") as f:
+            # if 1 or func.__name__ == "__init__":
+            #     from coverage.debug import short_stack
+            #     #ss = "; ".join(l.partition(':')[0].strip() for l in short_stack().splitlines())
+            #     ss = "; ".join(l.strip() for l in short_stack().splitlines())
+            #     #boring, _, interesting = ss.partition("runtest; __call__; run;")
+            #     interesting = ss
+            f.write("{} {:04d} {}\n".format(id, next(calls), func.__name__))
+        return func(self, *args, **kwargs)
+    return meth
+
+if 0:
+    # collate.py for looking at the results of the above.
+    import collections
+    objs = collections.defaultdict(list)
+
+    with open("/tmp/calls.txt") as f:
+        for line in f:
+            pid, oid, callid, func = line.split()
+            objs[pid+oid].append(func)
+
+    def simplify(s):
+        while "get_data,get_data" in s:
+            s = s.replace("get_data,get_data", "get_data")
+        return s
+
+    counted = collections.Counter()
+    for funcs in objs.values():
+        s = ",".join(funcs)
+        counted[simplify(s)] += 1
+
+    for seq in sorted(counted):
+        print("{:4d}: {}".format(counted[seq], seq))
+
+
 class Coverage(object):
     """Programmatic access to coverage.py.
 
@@ -54,6 +100,7 @@ class Coverage(object):
 
     """
 
+    @show_call
     def __init__(
         self, data_file=None, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
@@ -325,6 +372,7 @@ class Coverage(object):
         """
         self.config.set_option(option_name, value)
 
+    @show_call
     def load(self):
         """Load previously-collected coverage data from the data file."""
         self._init()
@@ -404,6 +452,7 @@ class Coverage(object):
                 debug=self._debug,
             )
 
+    @show_call
     def start(self):
         """Start measuring code coverage.
 
@@ -435,6 +484,7 @@ class Coverage(object):
         self._collector.start()
         self._started = True
 
+    @show_call
     def stop(self):
         """Stop measuring code coverage."""
         if self._started:
@@ -450,6 +500,7 @@ class Coverage(object):
         if self._auto_save:
             self.save()
 
+    @show_call
     def erase(self):
         """Erase previously-collected coverage data.
 
@@ -465,12 +516,14 @@ class Coverage(object):
         self._data.erase(parallel=self.config.parallel)
         self._data = None
 
+    @show_call
     def clear_exclude(self, which='exclude'):
         """Clear the exclude list."""
         self._init()
         setattr(self.config, which + "_list", [])
         self._exclude_regex_stale()
 
+    @show_call
     def exclude(self, regex, which='exclude'):
         """Exclude source lines from execution consideration.
 
@@ -502,6 +555,7 @@ class Coverage(object):
             self._exclude_re[which] = join_regex(excl_list)
         return self._exclude_re[which]
 
+    @show_call
     def get_exclude_list(self, which='exclude'):
         """Return a list of excluded regex patterns.
 
@@ -512,11 +566,13 @@ class Coverage(object):
         self._init()
         return getattr(self.config, which + "_list")
 
+    @show_call
     def save(self):
         """Save the collected coverage data to the data file."""
         data = self.get_data()
         data.write()
 
+    @show_call
     def combine(self, data_paths=None, strict=False):
         """Combine together a number of similarly-named coverage data files.
 
@@ -554,6 +610,7 @@ class Coverage(object):
 
         combine_parallel_data(self._data, aliases=aliases, data_paths=data_paths, strict=strict)
 
+    @show_call
     def get_data(self):
         """Get the collected data.
 
@@ -602,6 +659,7 @@ class Coverage(object):
         f, s, _, m, mf = self.analysis2(morf)
         return f, s, m, mf
 
+    @show_call
     def analysis2(self, morf):
         """Analyze a module.
 
@@ -695,6 +753,7 @@ class Coverage(object):
 
         return file_reporters
 
+    @show_call
     def report(
         self, morfs=None, show_missing=None, ignore_errors=None,
         file=None,                  # pylint: disable=redefined-builtin
@@ -721,6 +780,7 @@ class Coverage(object):
         reporter = SummaryReporter(self, self.config)
         return reporter.report(morfs, outfile=file)
 
+    @show_call
     def annotate(
         self, morfs=None, directory=None, ignore_errors=None,
         omit=None, include=None,
@@ -741,6 +801,7 @@ class Coverage(object):
         reporter = AnnotateReporter(self, self.config)
         reporter.report(morfs, directory=directory)
 
+    @show_call
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
                     omit=None, include=None, extra_css=None, title=None,
                     skip_covered=None):
@@ -769,6 +830,7 @@ class Coverage(object):
         reporter = HtmlReporter(self, self.config)
         return reporter.report(morfs)
 
+    @show_call
     def xml_report(
         self, morfs=None, outfile=None, ignore_errors=None,
         omit=None, include=None,
@@ -819,6 +881,7 @@ class Coverage(object):
                 if delete_file:
                     file_be_gone(self.config.xml_output)
 
+    @show_call
     def sys_info(self):
         """Return a list of (key, value) pairs showing internal information."""
 
