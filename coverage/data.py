@@ -112,7 +112,7 @@ class CoverageJsonData(object):
     # line data is easily recovered from the arcs: it is all the first elements
     # of the pairs that are greater than zero.
 
-    def __init__(self, basename=None, warn=None, debug=None):
+    def __init__(self, basename=None, suffix=None, warn=None, debug=None):
         """Create a CoverageData.
 
         `warn` is the warning function to use.
@@ -125,6 +125,7 @@ class CoverageJsonData(object):
         self._warn = warn
         self._debug = debug
         self.filename = os.path.abspath(basename or ".coverage")
+        self.suffix = suffix
 
         # A map from canonical Python source file name to a dictionary in
         # which there's an entry for each line number that has been
@@ -434,7 +435,7 @@ class CoverageJsonData(object):
 
         self._validate()
 
-    def write(self, suffix=None):
+    def write(self):
         """Write the collected coverage data to a file.
 
         `suffix` is a suffix to append to the base file name. This can be used
@@ -444,6 +445,7 @@ class CoverageJsonData(object):
 
         """
         filename = self.filename
+        suffix = self.suffix
         if suffix is True:
             # If data_suffix was a simple true value, then make a suffix with
             # plenty of distinguishing information.  We do this here in
