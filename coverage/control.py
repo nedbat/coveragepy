@@ -84,6 +84,58 @@ if 0:
     for seq in sorted(counted):
         print("{:4d}: {}".format(counted[seq], seq))
 
+"""
+The output was:
+
+  41: __init__
+   1: __init__,clear_exclude,clear_exclude,exclude,get_exclude_list,get_exclude_list,exclude,get_exclude_list,get_exclude_list,exclude,exclude,get_exclude_list,get_exclude_list,clear_exclude,get_exclude_list,get_exclude_list,clear_exclude,get_exclude_list,get_exclude_list
+   2: __init__,clear_exclude,get_exclude_list,exclude,get_exclude_list,exclude,get_exclude_list,clear_exclude,get_exclude_list
+   3: __init__,combine,get_data
+   2: __init__,combine,get_data,analysis2,get_data,analysis2,get_data
+   1: __init__,combine,get_data,erase,load,start,stop,combine,get_data,save,get_data,report,get_data
+  15: __init__,combine,get_data,save,get_data
+   1: __init__,combine,get_data,save,get_data,analysis2,get_data,analysis2,get_data
+   1: __init__,erase
+   1: __init__,erase,exclude,exclude,start,stop,get_data
+  31: __init__,erase,exclude,start,stop,get_data
+   1: __init__,erase,report,get_data
+   1: __init__,erase,start,stop
+   1: __init__,erase,start,stop,analysis2,get_data,analysis2,get_data
+ 222: __init__,erase,start,stop,get_data
+   6: __init__,erase,start,stop,get_data,report,get_data
+   7: __init__,get_exclude_list
+   1: __init__,load,annotate
+   4: __init__,load,annotate,get_data
+   1: __init__,load,combine,get_data,save,get_data
+   2: __init__,load,get_data
+   9: __init__,load,html_report,get_data
+  40: __init__,load,report,get_data
+   1: __init__,load,start,stop,combine,get_data,save,get_data,report,get_data
+   5: __init__,load,start,stop,save,get_data
+   2: __init__,load,sys_info
+   8: __init__,load,xml_report,get_data
+   1: __init__,start,get_data,stop
+   1: __init__,start,save,get_data,analysis2,get_data,analysis2,get_data,stop
+   1: __init__,start,save,get_data,stop
+   1: __init__,start,save,get_data,stop,analysis2,get_data,analysis2,get_data
+  25: __init__,start,stop
+   4: __init__,start,stop,analysis2,get_data
+   5: __init__,start,stop,analysis2,get_data,analysis2,get_data
+   2: __init__,start,stop,analysis2,get_data,analysis2,get_data,analysis2,get_data
+   2: __init__,start,stop,analysis2,get_data,analysis2,get_data,analysis2,get_data,analysis2,get_data
+  33: __init__,start,stop,get_data
+   1: __init__,start,stop,html_report
+  48: __init__,start,stop,html_report,get_data
+  19: __init__,start,stop,report,get_data
+ 141: __init__,start,stop,save,get_data
+   1: __init__,start,stop,save,get_data,start,stop,analysis2,get_data,analysis2,get_data
+   1: __init__,start,stop,stop,save,save,get_data
+  24: __init__,start,stop,xml_report,get_data
+   1: __init__,start,stop,xml_report,get_data,xml_report,get_data,xml_report,get_data
+   1: __init__,start,sys_info,stop,save,get_data
+   2: __init__,sys_info
+
+"""
 
 class Coverage(object):
     """Programmatic access to coverage.py.
