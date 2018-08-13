@@ -606,7 +606,7 @@ Version 4.1b2 --- 2016-01-23
   - Class docstrings were considered executable.  Now they no longer are.
 
   - ``yield from`` and ``await`` were considered returns from functions, since
-    they could tranfer control to the caller.  This produced unhelpful "missing
+    they could transfer control to the caller.  This produced unhelpful "missing
     branch" reports in a number of circumstances.  Now they no longer are
     considered returns.
 
