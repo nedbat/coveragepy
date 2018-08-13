@@ -44,20 +44,30 @@ import itertools
 nums = itertools.count()
 calls = itertools.count()
 
+def DEBUG(msg):
+    with open("/tmp/calls.txt", "a") as f:
+        f.write(msg+"\n")
+        f.flush()
+
+def clean_stack_line(s):
+    s = s.strip()
+    s = s.replace('/Users/ned/coverage/trunk/coverage/', '')
+    s = s.replace('/usr/local/pyenv/versions/3.6.6/lib/python3.6/', '')
+    s = s.replace('/Users/ned/coverage/trunk/.tox/py36/', '')
+    return s
+
 def show_call(func):
     def meth(self, *args, **kwargs):
         id = getattr(self, "$", None)
         if id is None:
             id = "{:08d} {:04d}".format(os.getpid(), next(nums))
             setattr(self, "$", id)
-        with open("/tmp/calls.txt", "a") as f:
-            # if 1 or func.__name__ == "__init__":
-            #     from coverage.debug import short_stack
-            #     #ss = "; ".join(l.partition(':')[0].strip() for l in short_stack().splitlines())
-            #     ss = "; ".join(l.strip() for l in short_stack().splitlines())
-            #     #boring, _, interesting = ss.partition("runtest; __call__; run;")
-            #     interesting = ss
-            f.write("{} {:04d} {}\n".format(id, next(calls), func.__name__))
+        if 1 or func.__name__ == "__init__":
+            from coverage.debug import short_stack
+            #ss = "; ".join(l.partition(':')[0].strip() for l in short_stack().splitlines())
+            ss = "; ".join(clean_stack_line(l) for l in short_stack().splitlines())
+            #boring, _, interesting = ss.partition("runtest; __call__; run;")
+        DEBUG("{} {:04d} {:<15s} {}".format(id, next(calls), func.__name__, ss))
         return func(self, *args, **kwargs)
     return meth
 
