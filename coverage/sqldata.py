@@ -60,7 +60,7 @@ def signed_to_unsigned(val):
     return struct.unpack('>I', struct.pack('>i', val))[0]
 
 class CoverageSqliteData(SimpleRepr):
-    def __init__(self, basename=None, warn=None, debug=None):
+    def __init__(self, basename=None, suffix=None, warn=None, debug=None):
         self.filename = os.path.abspath(basename or ".coverage")
         self._warn = warn
         self._debug = debug
@@ -306,7 +306,7 @@ class CoverageSqliteData(SimpleRepr):
         self._connect()     # TODO: doesn't look right
         self._have_read = True
 
-    def write(self, suffix=None):
+    def write(self):
         """Write the collected coverage data to a file."""
         pass
 
