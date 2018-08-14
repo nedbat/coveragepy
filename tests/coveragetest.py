@@ -24,7 +24,6 @@ from coverage import env
 from coverage.backunittest import TestCase, unittest
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
-from coverage.debug import _TEST_NAME_FILE
 from coverage.misc import StopEverything
 
 from tests.helpers import run_command, SuperModuleCleaner
@@ -90,12 +89,6 @@ class CoverageTest(
         self.last_command_status = None
         self.last_command_output = None
         self.last_module_name = None
-
-        if _TEST_NAME_FILE:                                 # pragma: debugging
-            with open(_TEST_NAME_FILE, "w") as f:
-                f.write("%s_%s" % (
-                    self.__class__.__name__, self._testMethodName,
-                ))
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.

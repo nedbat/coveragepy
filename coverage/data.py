@@ -15,7 +15,6 @@ import socket
 
 from coverage import env
 from coverage.backward import iitems, string_class
-from coverage.debug import _TEST_NAME_FILE
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone, isolate_module
 
@@ -451,13 +450,8 @@ class CoverageJsonData(object):
             # plenty of distinguishing information.  We do this here in
             # `save()` at the last minute so that the pid will be correct even
             # if the process forks.
-            extra = ""
-            if _TEST_NAME_FILE:                             # pragma: debugging
-                with open(_TEST_NAME_FILE) as f:
-                    test_name = f.read()
-                extra = "." + test_name
             dice = random.Random(os.urandom(8)).randint(0, 999999)
-            suffix = "%s%s.%s.%06d" % (socket.gethostname(), extra, os.getpid(), dice)
+            suffix = "%s.%s.%06d" % (socket.gethostname(), os.getpid(), dice)
 
         if suffix:
             filename += "." + suffix

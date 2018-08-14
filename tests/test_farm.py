@@ -20,7 +20,6 @@ from tests.backtest import execfile         # pylint: disable=redefined-builtin
 
 from coverage import env
 from coverage.backunittest import unittest
-from coverage.debug import _TEST_NAME_FILE
 
 
 # Look for files that become tests.
@@ -105,10 +104,6 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
 
     def __call__(self):                                 # pylint: disable=arguments-differ
         """Execute the test from the runpy file."""
-        if _TEST_NAME_FILE:                             # pragma: debugging
-            with open(_TEST_NAME_FILE, "w") as f:
-                f.write(self.description.replace("/", "_"))
-
         # Prepare a dictionary of globals for the run.py files to use.
         fns = """
             copy run clean skip
