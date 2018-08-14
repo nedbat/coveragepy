@@ -163,8 +163,11 @@ class Coverage(object):
         # State machine variables:
         # Have we initialized everything?
         self._inited = False
+        self._inited_for_start = False
         # Have we started collecting and not stopped it?
         self._started = False
+        # Have we written --debug output?
+        self._wrote_debug = False
 
         # If we have sub-process measurement happening automatically, then we
         # want any explicit creation of a Coverage object to mean, this process
@@ -214,73 +217,11 @@ class Coverage(object):
             # this is a bit childish. :)
             plugin.configure([self, self.config][int(time.time()) % 2])
 
-        concurrency = self.config.concurrency or []
-        if "multiprocessing" in concurrency:
-            if not patch_multiprocessing:
-                raise CoverageException(                    # pragma: only jython
-                    "multiprocessing is not supported on this Python"
-                )
-            patch_multiprocessing(rcfile=self.config.config_file)
-            # Multi-processing uses parallel for the subprocesses, so also use
-            # it for the main process.
-            self.config.parallel = True
-
-        self._collector = Collector(
-            should_trace=self._should_trace,
-            check_include=self._check_include_omit_etc,
-            timid=self.config.timid,
-            branch=self.config.branch,
-            warn=self._warn,
-            concurrency=concurrency,
-            )
-
-        # Early warning if we aren't going to be able to support plugins.
-        if self._plugins.file_tracers and not self._collector.supports_plugins:
-            self._warn(
-                "Plugin file tracers (%s) aren't supported with %s" % (
-                    ", ".join(
-                        plugin._coverage_plugin_name
-                            for plugin in self._plugins.file_tracers
-                        ),
-                    self._collector.tracer_name(),
-                    )
-                )
-            for plugin in self._plugins.file_tracers:
-                plugin._coverage_enabled = False
-
-        # Create the file classifying substructure.
-        self._inorout = self._inorout_class(warn=self._warn)
-        self._inorout.configure(self.config)
-        self._inorout.plugins = self._plugins
-        self._inorout.disp_class = self._collector.file_disposition_class
-
-        # Suffixes are a bit tricky.  We want to use the data suffix only when
-        # collecting data, not when combining data.  So we save it as
-        # `self._run_suffix` now, and promote it to `self._data_suffix` if we
-        # find that we are collecting data later.
-        if self._data_suffix_specified or self.config.parallel:
-            if not isinstance(self._data_suffix_specified, string_class):
-                # if data_suffix=True, use .machinename.pid.random
-                self._data_suffix_specified = True
-        else:
-            self._data_suffix_specified = None
-        self._data_suffix = None
-        self._run_suffix = self._data_suffix_specified
-
-        # Create the data file.  We do this at construction time so that the
-        # data file will be written into the directory where the process
-        # started rather than wherever the process eventually chdir'd to.
-        self._data = CoverageData(
-            basename=self.config.data_file, warn=self._warn, debug=self._debug,
-        )
-
-        # Set the reporting precision.
-        Numbers.set_precision(self.config.precision)
-
-        atexit.register(self._atexit)
-
-        # The user may want to debug things, show info if desired.
-        self._write_startup_debug()
+    def _post_init(self):
+        """Stuff to do after everything is initialized."""
+        if not self._wrote_debug:
+            self._wrote_debug = True
+            self._write_startup_debug()
 
     def _write_startup_debug(self):
         """Write out debug info at startup if needed."""
@@ -387,8 +328,78 @@ class Coverage(object):
     def load(self):
         """Load previously-collected coverage data from the data file."""
         self._init()
-        self._collector.reset()
+        if self._collector:
+            self._collector.reset()
+        self._init_data(suffix=None)
+        self._post_init()
         self._data.read()
+
+    def _init_for_start(self):
+        """Initialization for start()"""
+        concurrency = self.config.concurrency or []
+        if "multiprocessing" in concurrency:
+            if not patch_multiprocessing:
+                raise CoverageException(                    # pragma: only jython
+                    "multiprocessing is not supported on this Python"
+                )
+            patch_multiprocessing(rcfile=self.config.config_file)
+            # Multi-processing uses parallel for the subprocesses, so also use
+            # it for the main process.
+            self.config.parallel = True
+
+        self._collector = Collector(
+            should_trace=self._should_trace,
+            check_include=self._check_include_omit_etc,
+            timid=self.config.timid,
+            branch=self.config.branch,
+            warn=self._warn,
+            concurrency=concurrency,
+            )
+
+        suffix = self._data_suffix_specified
+        if suffix or self.config.parallel:
+            if not isinstance(suffix, string_class):
+                # if data_suffix=True, use .machinename.pid.random
+                suffix = True
+        else:
+            suffix = None
+
+        self._init_data(suffix)
+
+        # Early warning if we aren't going to be able to support plugins.
+        if self._plugins.file_tracers and not self._collector.supports_plugins:
+            self._warn(
+                "Plugin file tracers (%s) aren't supported with %s" % (
+                    ", ".join(
+                        plugin._coverage_plugin_name
+                            for plugin in self._plugins.file_tracers
+                        ),
+                    self._collector.tracer_name(),
+                    )
+                )
+            for plugin in self._plugins.file_tracers:
+                plugin._coverage_enabled = False
+
+        # Create the file classifying substructure.
+        self._inorout = self._inorout_class(warn=self._warn)
+        self._inorout.configure(self.config)
+        self._inorout.plugins = self._plugins
+        self._inorout.disp_class = self._collector.file_disposition_class
+
+        atexit.register(self._atexit)
+
+    def _init_data(self, suffix):
+        """Create a data file if we don't have one yet."""
+        if self._data is None:
+            # Create the data file.  We do this at construction time so that the
+            # data file will be written into the directory where the process
+            # started rather than wherever the process eventually chdir'd to.
+            self._data = CoverageData(
+                basename=self.config.data_file,
+                suffix=suffix,
+                warn=self._warn,
+                debug=self._debug,
+            )
 
     def start(self):
         """Start measuring code coverage.
@@ -402,18 +413,21 @@ class Coverage(object):
 
         """
         self._init()
+        if not self._inited_for_start:
+            self._inited_for_start = True
+            self._init_for_start()
+        self._post_init()
+
+        # Issue warnings for possible problems.
         self._inorout.warn_conflicting_settings()
 
-        if self._run_suffix:
-            # Calling start() means we're running code, so use the run_suffix
-            # as the data_suffix when we eventually save the data.
-            self._data_suffix = self._run_suffix
-        if self._auto_load:
-            self.load()
-
-        # See if we think some code that would eventually be measured has already been imported.
+        # See if we think some code that would eventually be measured has
+        # already been imported.
         if self._warn_preimported_source:
             self._inorout.warn_already_imported_files()
+
+        if self._auto_load:
+            self.load()
 
         self._collector.start()
         self._started = True
@@ -441,7 +455,10 @@ class Coverage(object):
 
         """
         self._init()
-        self._collector.reset()
+        self._post_init()
+        if self._collector:
+            self._collector.reset()
+        self._init_data(suffix=None)
         self._data.erase(parallel=self.config.parallel)
 
     def clear_exclude(self, which='exclude'):
@@ -493,9 +510,8 @@ class Coverage(object):
 
     def save(self):
         """Save the collected coverage data to the data file."""
-        self._init()
         data = self.get_data()
-        data.write(suffix=self._data_suffix)
+        data.write()
 
     def combine(self, data_paths=None, strict=False):
         """Combine together a number of similarly-named coverage data files.
@@ -520,6 +536,8 @@ class Coverage(object):
 
         """
         self._init()
+        self._init_data(suffix=None)
+        self._post_init()
         self.get_data()
 
         aliases = None
@@ -544,7 +562,7 @@ class Coverage(object):
         """
         self._init()
 
-        if self._collector.save_data(self._data):
+        if self._collector and self._collector.save_data(self._data):
             self._post_save_work()
 
         return self._data
@@ -595,7 +613,6 @@ class Coverage(object):
         coverage data.
 
         """
-        self._init()
         analysis = self._analyze(morf)
         return (
             analysis.filename,
@@ -611,6 +628,11 @@ class Coverage(object):
         Returns an `Analysis` object.
 
         """
+        # All reporting comes through here, so do reporting initialization.
+        self._init()
+        Numbers.set_precision(self.config.precision)
+        self._post_init()
+
         data = self.get_data()
         if not isinstance(it, FileReporter):
             it = self._get_file_reporter(it)
@@ -797,6 +819,7 @@ class Coverage(object):
         import coverage as covmod
 
         self._init()
+        self._post_init()
 
         def plugin_info(plugins):
             """Make an entry for the sys_info from a list of plug-ins."""
@@ -811,13 +834,13 @@ class Coverage(object):
         info = [
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
-            ('tracer', self._collector.tracer_name()),
+            ('tracer', self._collector.tracer_name() if self._collector else "-none-"),
             ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
             ('plugins.configurers', plugin_info(self._plugins.configurers)),
             ('configs_attempted', self.config.attempted_config_files),
             ('configs_read', self.config.config_files_read),
             ('config_file', self.config.config_file),
-            ('data_path', self._data.filename),
+            ('data_path', self._data.filename if self._data else "-none-"),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('implementation', platform.python_implementation()),
@@ -832,7 +855,8 @@ class Coverage(object):
             ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
             ]
 
-        info.extend(self._inorout.sys_info())
+        if self._inorout:
+            info.extend(self._inorout.sys_info())
 
         return info
 
