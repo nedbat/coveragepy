@@ -128,8 +128,8 @@ class DebugTraceTest(CoverageTest):
     def test_debug_callers(self):
         out_lines = self.f1_debug_output(["pid", "dataop", "dataio", "callers"])
         print(out_lines)
-        # For every real message, there should be a stack
-        # trace with a line like "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
+        # For every real message, there should be a stack trace with a line like
+        #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
         real_messages = re_lines(out_lines, r" @\d+", match=False).splitlines()
         frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py @\d+$"
         frames = re_lines(out_lines, frame_pattern).splitlines()
@@ -137,9 +137,14 @@ class DebugTraceTest(CoverageTest):
 
         # The last message should be "Writing data", and the last frame should
         # be _write_file in data.py.
-        self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Writing data")
         last_line = out_lines.splitlines()[-1]
-        self.assertRegex(last_line, r"\s+_write_file : .*coverage[/\\]data.py @\d+$")
+        from coverage.data import STORAGE
+        if STORAGE == "json":
+            self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Writing data")
+            self.assertRegex(last_line, r"\s+_write_file : .*coverage[/\\]data.py @\d+$")
+        else:
+            self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Creating data file")
+            self.assertRegex(last_line, r"\s+_create_db : .*coverage[/\\]sqldata.py @\d+$")
 
     def test_debug_config(self):
         out_lines = self.f1_debug_output(["config"])

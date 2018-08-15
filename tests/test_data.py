@@ -559,8 +559,14 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
         self.assertRegex(
             debug.get_output(),
+            r"("    # JSON output:
             r"^Writing data to '.*\.coverage'\n"
             r"Reading data from '.*\.coverage'\n$"
+            r"|"    # SQL output:
+            r"Erasing data file '.*\.coverage'\n"
+            r"Creating data file '.*\.coverage'\n"
+            r"Opening data file '.*\.coverage'\n$"
+            r")"
         )
 
     def test_debug_output_without_debug_option(self):
@@ -741,14 +747,14 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata3.file_tracer(template_html), 'html.plugin')
 
     def test_combining_from_different_directories(self):
+        os.makedirs('cov1')
         covdata1 = CoverageData('cov1/.coverage.1')
         covdata1.add_lines(LINES_1)
-        os.makedirs('cov1')
         covdata1.write()
 
+        os.makedirs('cov2')
         covdata2 = CoverageData('cov2/.coverage.2')
         covdata2.add_lines(LINES_2)
-        os.makedirs('cov2')
         covdata2.write()
 
         # This data won't be included.

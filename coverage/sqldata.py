@@ -4,11 +4,14 @@
 """Sqlite coverage data."""
 
 # TODO: get rid of skip_unless_data_storage_is_json
+# TODO: get rid of "JSON message" and "SQL message" in the tests
 # TODO: check the schema
+# TODO: get rid of the application_id?
 # TODO: factor out dataop debugging to a wrapper class?
 # TODO: make sure all dataop debugging is in place somehow
 # TODO: should writes be batched?
 # TODO: settle the os.fork question
+# TODO: run_info
 
 import glob
 import os
@@ -323,7 +326,7 @@ class CoverageSqliteData(SimpleRepr):
         self._have_read = True
 
     def has_arcs(self):
-        return self._has_arcs
+        return bool(self._has_arcs)
 
     def measured_files(self):
         """A list of all files that had been measured."""
