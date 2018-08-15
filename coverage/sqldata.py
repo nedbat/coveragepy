@@ -13,6 +13,7 @@ import sqlite3
 import struct
 
 from coverage.backward import iitems
+from coverage.data import filename_suffix
 from coverage.debug import SimpleRepr
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
@@ -62,6 +63,9 @@ def signed_to_unsigned(val):
 class CoverageSqliteData(SimpleRepr):
     def __init__(self, basename=None, suffix=None, warn=None, debug=None):
         self.filename = os.path.abspath(basename or ".coverage")
+        suffix = filename_suffix(suffix)
+        if suffix:
+            self.filename += "." + suffix
         self._warn = warn
         self._debug = debug
 

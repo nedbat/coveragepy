@@ -21,6 +21,17 @@ from coverage.misc import CoverageException, file_be_gone, isolate_module
 os = isolate_module(os)
 
 
+def filename_suffix(suffix):
+    if suffix is True:
+        # If data_suffix was a simple true value, then make a suffix with
+        # plenty of distinguishing information.  We do this here in
+        # `save()` at the last minute so that the pid will be correct even
+        # if the process forks.
+        dice = random.Random(os.urandom(8)).randint(0, 999999)
+        suffix = "%s.%s.%06d" % (socket.gethostname(), os.getpid(), dice)
+    return suffix
+
+
 class CoverageJsonData(object):
     """Manages collected coverage data, including file storage.
 
@@ -444,15 +455,7 @@ class CoverageJsonData(object):
 
         """
         filename = self.filename
-        suffix = self.suffix
-        if suffix is True:
-            # If data_suffix was a simple true value, then make a suffix with
-            # plenty of distinguishing information.  We do this here in
-            # `save()` at the last minute so that the pid will be correct even
-            # if the process forks.
-            dice = random.Random(os.urandom(8)).randint(0, 999999)
-            suffix = "%s.%s.%06d" % (socket.gethostname(), os.getpid(), dice)
-
+        suffix = filename_suffix(self.suffix)
         if suffix:
             filename += "." + suffix
         self._write_file(filename)
