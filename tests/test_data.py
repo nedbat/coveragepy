@@ -187,6 +187,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertIsNone(covdata.lines('no_such_file.py'))
 
     def test_run_info(self):
+        self.skip_unless_data_storage_is_json()
         covdata = CoverageData()
         self.assertEqual(covdata.run_infos(), [])
         covdata.add_run_info(hello="there")
@@ -265,6 +266,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata3.run_infos(), [])
 
     def test_update_run_info(self):
+        self.skip_unless_data_storage_is_json()
         covdata1 = CoverageData()
         covdata1.add_arcs(ARCS_3)
         covdata1.add_run_info(hello="there", count=17)
@@ -478,6 +480,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
             self.assertFalse(covdata)
 
     def test_debug_main(self):
+        self.skip_unless_data_storage_is_json()
         covdata1 = CoverageData(".coverage")
         covdata1.add_lines(LINES_1)
         covdata1.write()
@@ -648,8 +651,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
     def read_json_data_file(self, fname):
         """Read a JSON data file for testing the JSON directly."""
-        if STORAGE != "json":
-            self.skipTest("Not using JSON for data storage")
+        self.skip_unless_data_storage_is_json()
         with open(fname, 'r') as fdata:
             go_away = fdata.read(len(CoverageData._GO_AWAY))
             self.assertEqual(go_away, CoverageData._GO_AWAY)

@@ -24,6 +24,7 @@ from coverage import env
 from coverage.backunittest import TestCase, unittest
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
+from coverage.data import STORAGE
 from coverage.misc import StopEverything
 
 from tests.helpers import run_command, SuperModuleCleaner
@@ -89,6 +90,11 @@ class CoverageTest(
         self.last_command_status = None
         self.last_command_output = None
         self.last_module_name = None
+
+    def skip_unless_data_storage_is_json(self):
+        if STORAGE != "json":
+            self.skipTest("Not using JSON for data storage")
+
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.

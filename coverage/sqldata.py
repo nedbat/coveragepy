@@ -3,9 +3,12 @@
 
 """Sqlite coverage data."""
 
+# TODO: get rid of skip_unless_data_storage_is_json
 # TODO: check the schema
 # TODO: factor out dataop debugging to a wrapper class?
 # TODO: make sure all dataop debugging is in place somehow
+# TODO: should writes be batched?
+# TODO: settle the os.fork question
 
 import glob
 import os
