@@ -348,11 +348,11 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             covdata2.update(covdata1)
 
     def test_update_file_tracer_vs_no_file_tracer(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData(suffix="1")
         covdata1.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata1.add_file_tracers({"p1.html": "html.plugin"})
 
-        covdata2 = CoverageData()
+        covdata2 = CoverageData(suffix="2")
         covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
 
         msg = "Conflicting file tracer name for 'p1.html': 'html.plugin' vs ''"

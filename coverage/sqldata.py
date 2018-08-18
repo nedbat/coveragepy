@@ -40,7 +40,6 @@ create table meta (
 create table file (
     id integer primary key,
     path text,
-    tracer text,
     unique(path)
 );
 
@@ -55,6 +54,11 @@ create table arc (
     fromno integer,
     tono integer,
     unique(file_id, fromno, tono)
+);
+
+create table tracer (
+    file_id integer primary key,
+    tracer text
 );
 """
 
@@ -78,7 +82,7 @@ class CoverageSqliteData(SimpleRepr):
         self._file_map = {}
         self._db = None
         # Are we in sync with the data file?
-        self._have_read = False
+        self._have_used = False
 
         self._has_lines = False
         self._has_arcs = False
@@ -88,7 +92,7 @@ class CoverageSqliteData(SimpleRepr):
         if self._db is not None:
             self._db.close()
         self._db = None
-        self._have_read = False
+        self._have_used = False
 
     def _create_db(self):
         if self._debug and self._debug.should('dataio'):
@@ -129,7 +133,6 @@ class CoverageSqliteData(SimpleRepr):
                 self._open_db()
             else:
                 self._create_db()
-            self._have_read = True
         return self._db
 
     def __nonzero__(self):
@@ -153,7 +156,6 @@ class CoverageSqliteData(SimpleRepr):
         """
         if filename not in self._file_map:
             if add:
-                self._start_writing()
                 with self._connect() as con:
                     cur = con.execute("insert into file (path) values (?)", (filename,))
                     self._file_map[filename] = cur.lastrowid
@@ -171,7 +173,7 @@ class CoverageSqliteData(SimpleRepr):
             self._debug.write("Adding lines: %d files, %d lines total" % (
                 len(line_data), sum(len(lines) for lines in line_data.values())
             ))
-        self._start_writing()
+        self._start_using()
         self._choose_lines_or_arcs(lines=True)
         with self._connect() as con:
             for filename, linenos in iitems(line_data):
@@ -194,7 +196,7 @@ class CoverageSqliteData(SimpleRepr):
             self._debug.write("Adding arcs: %d files, %d arcs total" % (
                 len(arc_data), sum(len(arcs) for arcs in arc_data.values())
             ))
-        self._start_writing()
+        self._start_using()
         self._choose_lines_or_arcs(arcs=True)
         with self._connect() as con:
             for filename, arcs in iitems(arc_data):
@@ -222,7 +224,7 @@ class CoverageSqliteData(SimpleRepr):
         `file_tracers` is { filename: plugin_name, ... }
 
         """
-        self._start_writing()
+        self._start_using()
         with self._connect() as con:
             for filename, plugin_name in iitems(file_tracers):
                 file_id = self._file_id(filename)
@@ -231,19 +233,19 @@ class CoverageSqliteData(SimpleRepr):
                         "Can't add file tracer data for unmeasured file '%s'" % (filename,)
                     )
 
-                cur = con.execute("select tracer from file where id = ?", (file_id,))
-                [existing_plugin] = cur.fetchone()
-                if existing_plugin is not None and existing_plugin != plugin_name:
-                    raise CoverageException(
-                        "Conflicting file tracer name for '%s': %r vs %r" % (
-                            filename, existing_plugin, plugin_name,
+                existing_plugin = self.file_tracer(filename)
+                if existing_plugin:
+                    if existing_plugin != plugin_name:
+                        raise CoverageException(
+                            "Conflicting file tracer name for '%s': %r vs %r" % (
+                                filename, existing_plugin, plugin_name,
+                            )
                         )
+                elif plugin_name:
+                    con.execute(
+                        "insert into tracer (file_id, tracer) values (?, ?)",
+                        (file_id, plugin_name)
                     )
-
-                con.execute(
-                    "update file set tracer = ? where path = ?",
-                    (plugin_name, filename)
-                )
 
     def touch_file(self, filename, plugin_name=""):
         """Ensure that `filename` appears in the data, empty if needed.
@@ -251,6 +253,7 @@ class CoverageSqliteData(SimpleRepr):
         `plugin_name` is the name of the plugin resposible for this file. It is used
         to associate the right filereporter, etc.
         """
+        self._start_using()
         if self._debug and self._debug.should('dataop'):
             self._debug.write("Touching %r" % (filename,))
         if not self._has_arcs and not self._has_lines:
@@ -268,6 +271,9 @@ class CoverageSqliteData(SimpleRepr):
             raise CoverageException("Can't combine line data with arc data")
 
         aliases = aliases or PathAliases()
+
+        # See what we had already measured, for accurate conflict reporting.
+        this_measured = set(self.measured_files())
 
         # lines
         if other_data._has_lines:
@@ -289,8 +295,18 @@ class CoverageSqliteData(SimpleRepr):
         for filename in other_data.measured_files():
             other_plugin = other_data.file_tracer(filename)
             filename = aliases.map(filename)
-            self.add_file_tracers({filename: other_plugin})
-
+            if filename in this_measured:
+                this_plugin = self.file_tracer(filename)
+            else:
+                this_plugin = None
+            if this_plugin is None:
+                self.add_file_tracers({filename: other_plugin})
+            elif this_plugin != other_plugin:
+                raise CoverageException(
+                    "Conflicting file tracer name for '%s': %r vs %r" % (
+                        filename, this_plugin, other_plugin,
+                    )
+                )
 
     def erase(self, parallel=False):
         """Erase the data in this object.
@@ -314,16 +330,16 @@ class CoverageSqliteData(SimpleRepr):
 
     def read(self):
         self._connect()     # TODO: doesn't look right
-        self._have_read = True
+        self._have_used = True
 
     def write(self):
         """Write the collected coverage data to a file."""
         pass
 
-    def _start_writing(self):
-        if not self._have_read:
+    def _start_using(self):
+        if not self._have_used:
             self.erase()
-        self._have_read = True
+        self._have_used = True
 
     def has_arcs(self):
         return bool(self._has_arcs)
@@ -340,12 +356,18 @@ class CoverageSqliteData(SimpleRepr):
         was not measured, then None is returned.
 
         """
+        self._start_using()
         with self._connect() as con:
-            for tracer, in con.execute("select tracer from file where path = ?", (filename,)):
-                return tracer or ""
-        return None
+            file_id = self._file_id(filename)
+            if file_id is None:
+                return None
+            row = con.execute("select tracer from tracer where file_id = ?", (file_id,)).fetchone()
+            if row is not None:
+                return row[0] or ""
+            return ""   # File was measured, but no tracer associated.
 
     def lines(self, filename):
+        self._start_using()
         if self.has_arcs():
             arcs = self.arcs(filename)
             if arcs is not None:
@@ -362,6 +384,7 @@ class CoverageSqliteData(SimpleRepr):
                 return [lineno for lineno, in linenos]
 
     def arcs(self, filename):
+        self._start_using()
         with self._connect() as con:
             file_id = self._file_id(filename)
             if file_id is None:
