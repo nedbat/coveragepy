@@ -1,3 +1,5 @@
+# Run some timing tests of JsonData vs SqliteData.
+
 import random
 import time
 
@@ -16,7 +18,7 @@ def gen_data(cdata):
 
     start = time.time()
     for i in range(NUM_FILES):
-        filename = f"/src/foo/project/file{i}.py"
+        filename = "/src/foo/project/file{i}.py".format(i=i)
         line_data = { filename: dict.fromkeys(linenos(NUM_LINES, .6)) }
         cdata.add_lines(line_data)
 
@@ -34,7 +36,7 @@ class DummyData:
 overhead = gen_data(DummyData())
 jtime = gen_data(CoverageJsonData("gendata.json")) - overhead
 stime = gen_data(CoverageSqliteData("gendata.db")) - overhead
-print(f"Overhead: {overhead:.3f}s")
-print(f"JSON: {jtime:.3f}s")
-print(f"SQLite: {stime:.3f}s")
-print(f"{stime / jtime:.3f}x slower")
+print("Overhead: {overhead:.3f}s".format(overhead=overhead))
+print("JSON: {jtime:.3f}s".format(jtime=jtime))
+print("SQLite: {stime:.3f}s".format(stime=stime))
+print("{slower:.3f}x slower".format(slower=stime/jtime))
