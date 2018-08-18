@@ -138,10 +138,7 @@ class CoverageSqliteData(SimpleRepr):
     def __nonzero__(self):
         try:
             with self._connect() as con:
-                if self.has_arcs():
-                    rows = con.execute("select * from arc limit 1")
-                else:
-                    rows = con.execute("select * from line limit 1")
+                rows = con.execute("select * from file limit 1")
                 return bool(list(rows))
         except CoverageException:
             return False
