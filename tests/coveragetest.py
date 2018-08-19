@@ -95,7 +95,6 @@ class CoverageTest(
         if STORAGE != "json":
             self.skipTest("Not using JSON for data storage")
 
-
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
 

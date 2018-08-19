@@ -3,6 +3,7 @@
 
 """Sqlite coverage data."""
 
+# TODO: get sys_info for data class, so we can see sqlite version etc
 # TODO: get rid of skip_unless_data_storage_is_json
 # TODO: get rid of "JSON message" and "SQL message" in the tests
 # TODO: check the schema
@@ -403,9 +404,11 @@ class Sqlite(SimpleRepr):
         self.con = sqlite3.connect(self.filename)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
-        self.execute("pragma journal_mode=off")
+        # PyPy needs the .close() calls here, or sqlite gets twisted up:
+        # https://bitbucket.org/pypy/pypy/issues/2872/default-isolation-mode-is-different-on
+        self.execute("pragma journal_mode=off").close()
         # This pragma makes writing faster.
-        self.execute("pragma synchronous=off")
+        self.execute("pragma synchronous=off").close()
 
     def close(self):
         self.con.close()
