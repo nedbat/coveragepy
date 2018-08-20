@@ -12,8 +12,7 @@ import coverage
 from coverage.backward import import_local_file
 from coverage.files import abs_file
 
-from tests.coveragetest import CoverageTest
-from tests.goldtest import CoverageGoldTest
+from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import change_dir, compare
 from tests.helpers import re_line, re_lines
 
@@ -310,25 +309,34 @@ def clean(text, scrub=None):
     return text
 
 
-class XmlGoldTest(CoverageGoldTest):
+def farm_dir(path):
+    return os.path.join(TESTS_DIR, "farm", path)
+
+class XmlGoldTest(CoverageTest):
     """Tests of XML reporting that use gold files."""
 
-    # TODO: this should move out of html.
-    root_dir = 'tests/farm/html'
-
     def test_a_xml_1(self):
-        self.output_dir("out/xml_1")
+        self.make_file("a.py", """\
+            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage()
-            cov.start()
-            import a            # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.xml_report(a, outfile="../out/xml_1/coverage.xml")
-            source_path = coverage.files.relative_directory().rstrip(r"\/")
+            # A test file for HTML reporting by coverage.py.
 
-        compare("gold_x_xml", "out/xml_1", scrubs=[
+            if 1 < 2:
+                # Needed a < to look at HTML entities.
+                a = 3
+            else:
+                a = 4
+            """)
+
+        cov = coverage.Coverage()
+        cov.start()
+        import a            # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.xml_report(a, outfile="coverage.xml")
+        source_path = coverage.files.relative_directory().rstrip(r"\/")
+
+        compare(".", farm_dir("html/gold_x_xml"), left_extra=True, scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
@@ -336,18 +344,33 @@ class XmlGoldTest(CoverageGoldTest):
         ])
 
     def test_a_xml_2(self):
-        self.output_dir("out/xml_2")
+        self.make_file("a.py", """\
+            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(config_file="run_a_xml_2.ini")
-            cov.start()
-            import a            # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.xml_report(a)
-            source_path = coverage.files.relative_directory().rstrip(r"\/")
+            # A test file for HTML reporting by coverage.py.
 
-        compare("gold_x_xml", "out/xml_2", scrubs=[
+            if 1 < 2:
+                # Needed a < to look at HTML entities.
+                a = 3
+            else:
+                a = 4
+            """)
+
+        self.make_file("run_a_xml_2.ini", """\
+            # Put all the XML output in xml_2
+            [xml]
+            output = xml_2/coverage.xml
+            """)
+
+        cov = coverage.Coverage(config_file="run_a_xml_2.ini")
+        cov.start()
+        import a            # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.xml_report(a)
+        source_path = coverage.files.relative_directory().rstrip(r"\/")
+
+        compare("xml_2", farm_dir("html/gold_x_xml"), scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
@@ -355,18 +378,29 @@ class XmlGoldTest(CoverageGoldTest):
         ])
 
     def test_y_xml_branch(self):
-        self.output_dir("out/y_xml_branch")
+        self.make_file("y.py", """\
+            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(branch=True)
-            cov.start()
-            import y            # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.xml_report(y, outfile="../out/y_xml_branch/coverage.xml")
-            source_path = coverage.files.relative_directory().rstrip(r"\/")
+            # A test file for XML reporting by coverage.py.
 
-        compare("gold_y_xml_branch", "out/y_xml_branch", scrubs=[
+            def choice(x):
+                if x < 2:
+                    return 3
+                else:
+                    return 4
+
+            assert choice(1) == 3
+            """)
+
+        cov = coverage.Coverage(branch=True)
+        cov.start()
+        import y            # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.xml_report(y, outfile="y_xml_branch/coverage.xml")
+        source_path = coverage.files.relative_directory().rstrip(r"\/")
+
+        compare("y_xml_branch", farm_dir("html/gold_y_xml_branch"), scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
