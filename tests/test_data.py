@@ -108,6 +108,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
     # SQL data storage always has files on disk, even without .write().
     # We need to separate the tests so they don't clobber each other.
     run_in_temp_dir = STORAGE == "sql"
+    no_files_in_temp_dir = True
 
     def test_empty_data_is_false(self):
         covdata = CoverageData()
