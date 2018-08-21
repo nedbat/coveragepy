@@ -81,6 +81,12 @@ class CoverageTest(
     # Let stderr go to stderr, pytest will capture it for us.
     show_stderr = True
 
+    # Temp dirs go to $TMPDIR/coverage_test/*
+    temp_dir_prefix = "coverage_test/"
+
+    # Keep the temp directories if the env says to.
+    keep_temp_dir = bool(int(os.getenv("COVERAGE_KEEP_TMP", 0)))
+
     def setUp(self):
         super(CoverageTest, self).setUp()
 
