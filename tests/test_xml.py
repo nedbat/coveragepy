@@ -317,11 +317,6 @@ class XmlGoldTest(CoverageTest):
 
     def test_a_xml_1(self):
         self.make_file("a.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
-            # A test file for HTML reporting by coverage.py.
-
             if 1 < 2:
                 # Needed a < to look at HTML entities.
                 a = 3
@@ -345,11 +340,6 @@ class XmlGoldTest(CoverageTest):
 
     def test_a_xml_2(self):
         self.make_file("a.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
-            # A test file for HTML reporting by coverage.py.
-
             if 1 < 2:
                 # Needed a < to look at HTML entities.
                 a = 3
@@ -379,11 +369,6 @@ class XmlGoldTest(CoverageTest):
 
     def test_y_xml_branch(self):
         self.make_file("y.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
-            # A test file for XML reporting by coverage.py.
-
             def choice(x):
                 if x < 2:
                     return 3
