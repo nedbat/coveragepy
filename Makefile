@@ -31,7 +31,7 @@ clean:
 
 sterile: clean
 	-rm -rf .tox*
-	-docker image rm quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
+	-docker image rm -f quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
 
 
 LINTABLE = coverage tests igor.py setup.py __main__.py
