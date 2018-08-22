@@ -579,8 +579,11 @@ def compare_html(dir1, dir2):
         (r'/Users/ned/coverage/trunk/tests', 'TESTS_DIR'),
         (flat_rootname(unicode_class(TESTS_DIR)), '_TESTS_DIR'),
         (flat_rootname(u'/Users/ned/coverage/trunk/tests'), '_TESTS_DIR'),
+        # The temp dir the tests make.
         (re.escape(os.getcwd()), 'TEST_TMPDIR'),
         (flat_rootname(unicode_class(os.getcwd())), '_TEST_TMPDIR'),
+        (r'/private/var/folders/[\w/]{35}/coverage_test/tests_test_html_\w+_\d{8}', 'TEST_TMPDIR'),
+        (r'_private_var_folders_\w{35}_coverage_test_tests_test_html_\w+_\d{8}', '_TEST_TMPDIR'),
     ]
     if env.WINDOWS:
         # For file paths...
@@ -898,15 +901,15 @@ assert len(math) == 18
             cov.start()
             import here         # pragma: nested # pylint: disable=unused-variable, import-error
             cov.stop()          # pragma: nested
-            cov.html_report(directory="../out/other")
+            cov.html_report(directory="../out")
 
         # Different platforms will name the "other" file differently. Rename it
-        for p in glob.glob("out/other/*_other_py.html"):
-            os.rename(p, "out/other/blah_blah_other_py.html")
+        for p in glob.glob("out/*_other_py.html"):
+            os.rename(p, "out/blah_blah_other_py.html")
 
-        compare_html("out/other", gold_path("html/gold_other"))
+        compare_html("out", gold_path("html/gold_other"))
         contains(
-            "out/other/index.html",
+            "out/index.html",
             '<a href="here_py.html">here.py</a>',
             'other_py.html">', 'other.py</a>',
         )
