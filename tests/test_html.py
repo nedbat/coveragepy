@@ -596,11 +596,6 @@ class HtmlGoldTests(CoverageTest):
 
     def test_a(self):
         self.make_file("a.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
-            # A test file for HTML reporting by coverage.py.
-
             if 1 < 2:
                 # Needed a < to look at HTML entities.
                 a = 3
@@ -632,11 +627,6 @@ class HtmlGoldTests(CoverageTest):
 
     def test_b_branch(self):
         self.make_file("b.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
-            # A test file for HTML reporting by coverage.py.
-
             def one(x):
                 # This will be a branch that misses the else.
                 if x < 2:
@@ -680,19 +670,20 @@ class HtmlGoldTests(CoverageTest):
             ('    <span class="nam">a</span> <span class="op">=</span> '
              '<span class="num">3</span>'),
             '<span class="pc_cov">70%</span>',
-            ('<span class="annotate short">8&#x202F;&#x219B;&#x202F;11</span>'
-             '<span class="annotate long">line 8 didn\'t jump to line 11, '
-                            'because the condition on line 8 was never false</span>'),
-            ('<span class="annotate short">17&#x202F;&#x219B;&#x202F;exit</span>'
-             '<span class="annotate long">line 17 didn\'t return from function \'two\', '
-                            'because the condition on line 17 was never false</span>'),
-            ('<span class="annotate short">25&#x202F;&#x219B;&#x202F;26,&nbsp;&nbsp; '
-                            '25&#x202F;&#x219B;&#x202F;28</span>'
+
+            ('<span class="annotate short">3&#x202F;&#x219B;&#x202F;6</span>'
+             '<span class="annotate long">line 3 didn\'t jump to line 6, '
+                            'because the condition on line 3 was never false</span>'),
+            ('<span class="annotate short">12&#x202F;&#x219B;&#x202F;exit</span>'
+             '<span class="annotate long">line 12 didn\'t return from function \'two\', '
+                            'because the condition on line 12 was never false</span>'),
+            ('<span class="annotate short">20&#x202F;&#x219B;&#x202F;21,&nbsp;&nbsp; '
+                            '20&#x202F;&#x219B;&#x202F;23</span>'
              '<span class="annotate long">2 missed branches: '
-                            '1) line 25 didn\'t jump to line 26, '
-                                'because the condition on line 25 was never true, '
-                            '2) line 25 didn\'t jump to line 28, '
-                                'because the condition on line 25 was never false</span>'),
+                            '1) line 20 didn\'t jump to line 21, '
+                                'because the condition on line 20 was never true, '
+                            '2) line 20 didn\'t jump to line 23, '
+                                'because the condition on line 20 was never false</span>'),
         )
         contains(
             "out/index.html",
@@ -703,10 +694,7 @@ class HtmlGoldTests(CoverageTest):
 
     def test_bom(self):
         self.make_file("bom.py", bytes=b"""\
-\xef\xbb\xbf# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
-# A Python source file in utf-8, with BOM.
+\xef\xbb\xbf# A Python source file in utf-8, with BOM.
 math = "3\xc3\x974 = 12, \xc3\xb72 = 6\xc2\xb10"
 
 import sys
@@ -725,7 +713,7 @@ else:
         with open("bom.py", "rb") as f:
             data = f.read()
             assert data[:3] == b"\xef\xbb\xbf"
-            assert data.count(b"\r\n") == 14
+            assert data.count(b"\r\n") == 11
 
         cov = coverage.Coverage()
         cov.start()
@@ -742,9 +730,6 @@ else:
     def test_isolatin1(self):
         self.make_file("isolatin1.py", bytes=b"""\
 # -*- coding: iso8859-1 -*-
-# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
 # A Python source file in another encoding.
 
 math = "3\xd74 = 12, \xf72 = 6\xb10"
@@ -765,9 +750,6 @@ assert len(math) == 18
 
     def make_main_etc(self):
         self.make_file("main.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             import m1
             import m2
             import m3
@@ -780,23 +762,14 @@ assert len(math) == 18
             assert m3.m3a == 1
             """)
         self.make_file("m1.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             m1a = 1
             m1b = 2
             """)
         self.make_file("m2.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             m2a = 1
             m2b = 2
             """)
         self.make_file("m3.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             m3a = 1
             m3b = 2
             """)
@@ -872,11 +845,6 @@ assert len(math) == 18
 
     def test_other(self):
         self.make_file("src/here.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
-            # A test file for HTML reporting by coverage.py.
-
             import other
 
             if 1 < 2:
@@ -885,9 +853,6 @@ assert len(math) == 18
                 h = 4
             """)
         self.make_file("othersrc/other.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             # A file in another directory.  We're checking that it ends up in the
             # HTML report.
 
@@ -916,11 +881,7 @@ assert len(math) == 18
 
     def test_partial(self):
         self.make_file("partial.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             # partial branches and excluded lines
-
             a = 6
 
             while True:
@@ -942,9 +903,6 @@ assert len(math) == 18
                 raise AssertionError("Can't")
             """)
         self.make_file("partial.ini", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             [run]
             branch = True
 
@@ -962,13 +920,13 @@ assert len(math) == 18
         compare_html("out", gold_path("html/gold_partial"))
         contains(
             "out/partial_py.html",
-            '<p id="t8" class="stm run hide_run">',
-            '<p id="t11" class="stm run hide_run">',
-            '<p id="t14" class="stm run hide_run">',
+            '<p id="t4" class="stm run hide_run">',
+            '<p id="t7" class="stm run hide_run">',
+            '<p id="t10" class="stm run hide_run">',
             # The "if 0" and "if 1" statements are optimized away.
-            '<p id="t17" class="pln">',
+            '<p id="t13" class="pln">',
             # The "raise AssertionError" is excluded by regex in the .ini.
-            '<p id="t24" class="exc">',
+            '<p id="t20" class="exc">',
         )
         contains(
             "out/index.html",
@@ -981,11 +939,6 @@ assert len(math) == 18
 
     def test_styled(self):
         self.make_file("a.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
-            # A test file for HTML reporting by coverage.py.
-
             if 1 < 2:
                 # Needed a < to look at HTML entities.
                 a = 3
@@ -1058,9 +1011,6 @@ assert len(math) == 18
     def test_unicode(self):
         self.make_file("unicode.py", """\
             # -*- coding: utf-8 -*-
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             # A Python source file with exotic characters.
 
             upside_down = "ʎd˙ǝbɐɹǝʌoɔ"
