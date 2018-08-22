@@ -68,7 +68,7 @@ def read_data(fname):
 
 def write_html(fname, html):
     """Write `html` to `fname`, properly encoded."""
-    html = re.sub(r"(\A\s+)|(\s+$)", "", html, flags=re.MULTILINE)
+    html = re.sub(r"(\A\s+)|(\s+$)", "", html, flags=re.MULTILINE) #+ "\n"
     with open(fname, "wb") as fout:
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 

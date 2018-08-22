@@ -8,12 +8,16 @@ import sys
 
 from unittest_mixins import change_dir    # pylint: disable=unused-import
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.test_farm import clean
 # Import helpers, eventually test_farm.py will go away.
 from tests.test_farm import (       # pylint: disable=unused-import
     compare, contains, doesnt_contain, contains_any,
 )
+
+def gold_path(path):
+    """Get a path to a gold file for comparison."""
+    return os.path.join(TESTS_DIR, "farm", path)
 
 
 class CoverageGoldTest(CoverageTest):

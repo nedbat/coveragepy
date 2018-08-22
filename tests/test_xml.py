@@ -12,8 +12,8 @@ import coverage
 from coverage.backward import import_local_file
 from coverage.files import abs_file
 
-from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.goldtest import change_dir, compare
+from tests.coveragetest import CoverageTest
+from tests.goldtest import change_dir, compare, gold_path
 from tests.helpers import re_line, re_lines
 
 
@@ -309,9 +309,6 @@ def clean(text, scrub=None):
     return text
 
 
-def farm_dir(path):
-    return os.path.join(TESTS_DIR, "farm", path)
-
 class XmlGoldTest(CoverageTest):
     """Tests of XML reporting that use gold files."""
 
@@ -331,7 +328,7 @@ class XmlGoldTest(CoverageTest):
         cov.xml_report(a, outfile="coverage.xml")
         source_path = coverage.files.relative_directory().rstrip(r"\/")
 
-        compare(".", farm_dir("html/gold_x_xml"), left_extra=True, scrubs=[
+        compare(".", gold_path("html/gold_x_xml"), left_extra=True, scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
@@ -360,7 +357,7 @@ class XmlGoldTest(CoverageTest):
         cov.xml_report(a)
         source_path = coverage.files.relative_directory().rstrip(r"\/")
 
-        compare("xml_2", farm_dir("html/gold_x_xml"), scrubs=[
+        compare("xml_2", gold_path("html/gold_x_xml"), scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
@@ -385,7 +382,7 @@ class XmlGoldTest(CoverageTest):
         cov.xml_report(y, outfile="y_xml_branch/coverage.xml")
         source_path = coverage.files.relative_directory().rstrip(r"\/")
 
-        compare("y_xml_branch", farm_dir("html/gold_y_xml_branch"), scrubs=[
+        compare("y_xml_branch", gold_path("html/gold_y_xml_branch"), scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
