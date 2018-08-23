@@ -40,6 +40,9 @@ os = isolate_module(os)
 
 
 # I wanted to know all the different sequences of calling Coverage methods.
+SHOW_STACK = 1
+SHOW_ARGS = 1
+
 import itertools
 nums = itertools.count()
 calls = itertools.count()
@@ -52,7 +55,7 @@ def DEBUG(msg):
 def clean_stack_line(s):
     s = s.strip()
     s = s.replace('/Users/ned/coverage/trunk/coverage/', '')
-    s = s.replace('/usr/local/pyenv/versions/3.6.6/lib/python3.6/', '')
+    s = s.replace(os.path.dirname(os.__file__) + '/', '')
     s = s.replace('/Users/ned/coverage/trunk/.tox/py36/', '')
     return s
 
@@ -62,12 +65,14 @@ def show_call(func):
         if id is None:
             id = "{:08d} {:04d}".format(os.getpid(), next(nums))
             setattr(self, "$", id)
-        if 1 or func.__name__ == "__init__":
+        extra = ""
+        if SHOW_STACK:
             from coverage.debug import short_stack
-            #ss = "; ".join(l.partition(':')[0].strip() for l in short_stack().splitlines())
-            ss = "; ".join(clean_stack_line(l) for l in short_stack().splitlines())
-            #boring, _, interesting = ss.partition("runtest; __call__; run;")
-        DEBUG("{} {:04d} {:<15s} {}".format(id, next(calls), func.__name__, ss))
+            extra += " "
+            extra += "; ".join(clean_stack_line(l) for l in short_stack().splitlines())
+        if SHOW_ARGS:
+            extra += ", args: {!r}, kwrgs: {!r}".format(args, kwargs)
+        DEBUG("{} {:04d} {:<15s}{}".format(id, next(calls), func.__name__, extra))
         return func(self, *args, **kwargs)
     return meth
 
