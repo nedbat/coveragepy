@@ -634,7 +634,7 @@ class CoverageJsonData(object):
         return self._arcs is not None
 
 
-STORAGE = os.environ.get("COVERAGE_STORAGE", "json")
+STORAGE = os.environ.get("COVERAGE_STORAGE", "sql")
 if STORAGE == "json":
     CoverageData = CoverageJsonData
 elif STORAGE == "sql":
