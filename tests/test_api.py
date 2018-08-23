@@ -512,8 +512,6 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
 class OmitIncludeTestsMixin(UsingModulesMixin, CoverageTestMethodsMixin):
     """Test methods for coverage methods taking include and omit."""
 
-    run_in_temp_dir = False
-
     def filenames_in(self, summary, filenames):
         """Assert the `filenames` are in the keys of `summary`."""
         for filename in filenames.split():
