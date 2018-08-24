@@ -10,7 +10,6 @@ include MANIFEST.in
 include Makefile
 include NOTICE.txt
 include README.rst
-include TODO.txt
 include __main__.py
 include .travis.yml
 include appveyor.yml
