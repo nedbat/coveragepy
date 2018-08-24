@@ -17,6 +17,15 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Coverage's data storage has changed.  In version 4.x, .coverage files were
+  basically JSON.  Now, they are SQLite databases.  This means the data file
+  can be created earlier than it used to.  A large amount of code was
+  refactored to support this change.
+
+- The old data format is still available (for now) by setting the environment
+  variable COVERAGE_STORAGE=json. Please tell me if you think you need to keep
+  the JSON format.
+
 - Development moved from `Bitbucket`_ to `GitHub`_.
 
 - HTML files no longer have trailing and extra whitespace.
