@@ -13,8 +13,7 @@ from coverage.backward import import_local_file
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
-from tests.goldtest import CoverageGoldTest
-from tests.goldtest import change_dir, compare
+from tests.goldtest import change_dir, compare, gold_path
 from tests.helpers import re_line, re_lines
 
 
@@ -310,25 +309,26 @@ def clean(text, scrub=None):
     return text
 
 
-class XmlGoldTest(CoverageGoldTest):
+class XmlGoldTest(CoverageTest):
     """Tests of XML reporting that use gold files."""
 
-    # TODO: this should move out of html.
-    root_dir = 'tests/farm/html'
-
     def test_a_xml_1(self):
-        self.output_dir("out/xml_1")
+        self.make_file("a.py", """\
+            if 1 < 2:
+                # Needed a < to look at HTML entities.
+                a = 3
+            else:
+                a = 4
+            """)
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage()
-            cov.start()
-            import a            # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.xml_report(a, outfile="../out/xml_1/coverage.xml")
-            source_path = coverage.files.relative_directory().rstrip(r"\/")
+        cov = coverage.Coverage()
+        cov.start()
+        import a            # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.xml_report(a, outfile="coverage.xml")
+        source_path = coverage.files.relative_directory().rstrip(r"\/")
 
-        compare("gold_x_xml", "out/xml_1", scrubs=[
+        compare(".", gold_path("html/gold_x_xml"), left_extra=True, scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
@@ -336,18 +336,28 @@ class XmlGoldTest(CoverageGoldTest):
         ])
 
     def test_a_xml_2(self):
-        self.output_dir("out/xml_2")
+        self.make_file("a.py", """\
+            if 1 < 2:
+                # Needed a < to look at HTML entities.
+                a = 3
+            else:
+                a = 4
+            """)
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(config_file="run_a_xml_2.ini")
-            cov.start()
-            import a            # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.xml_report(a)
-            source_path = coverage.files.relative_directory().rstrip(r"\/")
+        self.make_file("run_a_xml_2.ini", """\
+            # Put all the XML output in xml_2
+            [xml]
+            output = xml_2/coverage.xml
+            """)
 
-        compare("gold_x_xml", "out/xml_2", scrubs=[
+        cov = coverage.Coverage(config_file="run_a_xml_2.ini")
+        cov.start()
+        import a            # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.xml_report(a)
+        source_path = coverage.files.relative_directory().rstrip(r"\/")
+
+        compare("xml_2", gold_path("html/gold_x_xml"), scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
@@ -355,18 +365,24 @@ class XmlGoldTest(CoverageGoldTest):
         ])
 
     def test_y_xml_branch(self):
-        self.output_dir("out/y_xml_branch")
+        self.make_file("y.py", """\
+            def choice(x):
+                if x < 2:
+                    return 3
+                else:
+                    return 4
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(branch=True)
-            cov.start()
-            import y            # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.xml_report(y, outfile="../out/y_xml_branch/coverage.xml")
-            source_path = coverage.files.relative_directory().rstrip(r"\/")
+            assert choice(1) == 3
+            """)
 
-        compare("gold_y_xml_branch", "out/y_xml_branch", scrubs=[
+        cov = coverage.Coverage(branch=True)
+        cov.start()
+        import y            # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.xml_report(y, outfile="y_xml_branch/coverage.xml")
+        source_path = coverage.files.relative_directory().rstrip(r"\/")
+
+        compare("y_xml_branch", gold_path("html/gold_y_xml_branch"), scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
             (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),

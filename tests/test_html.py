@@ -20,7 +20,7 @@ import coverage.html
 from coverage.misc import CoverageException, NotPython, NoSource
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.goldtest import CoverageGoldTest
+from tests.goldtest import gold_path
 from tests.goldtest import change_dir, compare, contains, doesnt_contain, contains_any
 
 
@@ -579,6 +579,11 @@ def compare_html(dir1, dir2):
         (r'/Users/ned/coverage/trunk/tests', 'TESTS_DIR'),
         (flat_rootname(unicode_class(TESTS_DIR)), '_TESTS_DIR'),
         (flat_rootname(u'/Users/ned/coverage/trunk/tests'), '_TESTS_DIR'),
+        # The temp dir the tests make.
+        (re.escape(os.getcwd()), 'TEST_TMPDIR'),
+        (flat_rootname(unicode_class(os.getcwd())), '_TEST_TMPDIR'),
+        (r'/private/var/folders/[\w/]{35}/coverage_test/tests_test_html_\w+_\d{8}', 'TEST_TMPDIR'),
+        (r'_private_var_folders_\w{35}_coverage_test_tests_test_html_\w+_\d{8}', '_TEST_TMPDIR'),
     ]
     if env.WINDOWS:
         # For file paths...
@@ -586,25 +591,27 @@ def compare_html(dir1, dir2):
     return compare(dir1, dir2, file_pattern="*.html", scrubs=scrubs)
 
 
-class HtmlGoldTests(CoverageGoldTest):
+class HtmlGoldTests(CoverageTest):
     """Tests of HTML reporting that use gold files."""
 
-    root_dir = 'tests/farm/html'
-
     def test_a(self):
-        self.output_dir("out/a")
+        self.make_file("a.py", """\
+            if 1 < 2:
+                # Needed a < to look at HTML entities.
+                a = 3
+            else:
+                a = 4
+            """)
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage()
-            cov.start()
-            import a            # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.html_report(a, directory='../out/a')
+        cov = coverage.Coverage()
+        cov.start()
+        import a            # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.html_report(a, directory='out')
 
-        compare_html("gold_a", "out/a")
+        compare_html("out", gold_path("html/gold_a"))
         contains(
-            "out/a/a_py.html",
+            "out/a_py.html",
             ('<span class="key">if</span> <span class="num">1</span> '
              '<span class="op">&lt;</span> <span class="num">2</span>'),
             ('    <span class="nam">a</span> '
@@ -612,226 +619,345 @@ class HtmlGoldTests(CoverageGoldTest):
             '<span class="pc_cov">67%</span>',
         )
         contains(
-            "out/a/index.html",
+            "out/index.html",
             '<a href="a_py.html">a.py</a>',
             '<span class="pc_cov">67%</span>',
             '<td class="right" data-ratio="2 3">67%</td>',
         )
 
     def test_b_branch(self):
-        self.output_dir("out/b_branch")
+        self.make_file("b.py", """\
+            def one(x):
+                # This will be a branch that misses the else.
+                if x < 2:
+                    a = 3
+                else:
+                    a = 4
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(branch=True)
-            cov.start()
-            import b            # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.html_report(b, directory="../out/b_branch")
+            one(1)
 
-        compare_html("gold_b_branch", "out/b_branch")
+            def two(x):
+                # A missed else that branches to "exit"
+                if x:
+                    a = 5
+
+            two(1)
+
+            def three():
+                try:
+                    # This if has two branches, *neither* one taken.
+                    if name_error_this_variable_doesnt_exist:
+                        a = 1
+                    else:
+                        a = 2
+                except:
+                    pass
+
+            three()
+            """)
+
+        cov = coverage.Coverage(branch=True)
+        cov.start()
+        import b            # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.html_report(b, directory="out")
+
+        compare_html("out", gold_path("html/gold_b_branch"))
         contains(
-            "out/b_branch/b_py.html",
+            "out/b_py.html",
             ('<span class="key">if</span> <span class="nam">x</span> '
              '<span class="op">&lt;</span> <span class="num">2</span>'),
             ('    <span class="nam">a</span> <span class="op">=</span> '
              '<span class="num">3</span>'),
             '<span class="pc_cov">70%</span>',
-            ('<span class="annotate short">8&#x202F;&#x219B;&#x202F;11</span>'
-             '<span class="annotate long">line 8 didn\'t jump to line 11, '
-                            'because the condition on line 8 was never false</span>'),
-            ('<span class="annotate short">17&#x202F;&#x219B;&#x202F;exit</span>'
-             '<span class="annotate long">line 17 didn\'t return from function \'two\', '
-                            'because the condition on line 17 was never false</span>'),
-            ('<span class="annotate short">25&#x202F;&#x219B;&#x202F;26,&nbsp;&nbsp; '
-                            '25&#x202F;&#x219B;&#x202F;28</span>'
+
+            ('<span class="annotate short">3&#x202F;&#x219B;&#x202F;6</span>'
+             '<span class="annotate long">line 3 didn\'t jump to line 6, '
+                            'because the condition on line 3 was never false</span>'),
+            ('<span class="annotate short">12&#x202F;&#x219B;&#x202F;exit</span>'
+             '<span class="annotate long">line 12 didn\'t return from function \'two\', '
+                            'because the condition on line 12 was never false</span>'),
+            ('<span class="annotate short">20&#x202F;&#x219B;&#x202F;21,&nbsp;&nbsp; '
+                            '20&#x202F;&#x219B;&#x202F;23</span>'
              '<span class="annotate long">2 missed branches: '
-                            '1) line 25 didn\'t jump to line 26, '
-                                'because the condition on line 25 was never true, '
-                            '2) line 25 didn\'t jump to line 28, '
-                                'because the condition on line 25 was never false</span>'),
+                            '1) line 20 didn\'t jump to line 21, '
+                                'because the condition on line 20 was never true, '
+                            '2) line 20 didn\'t jump to line 23, '
+                                'because the condition on line 20 was never false</span>'),
         )
         contains(
-            "out/b_branch/index.html",
+            "out/index.html",
             '<a href="b_py.html">b.py</a>',
             '<span class="pc_cov">70%</span>',
             '<td class="right" data-ratio="16 23">70%</td>',
         )
 
     def test_bom(self):
-        self.output_dir("out/bom")
+        self.make_file("bom.py", bytes=b"""\
+\xef\xbb\xbf# A Python source file in utf-8, with BOM.
+math = "3\xc3\x974 = 12, \xc3\xb72 = 6\xc2\xb10"
 
-        with change_dir("src"):
-            # It's important that the source file really have a BOM, which can
-            # get lost, so check that it's really there.
-            with open("bom.py", "rb") as f:
-                first_three = f.read(3)
-                assert first_three == b"\xef\xbb\xbf"
+import sys
 
-            # pylint: disable=import-error
-            cov = coverage.Coverage()
-            cov.start()
-            import bom          # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.html_report(bom, directory="../out/bom")
+if sys.version_info >= (3, 0):
+    assert len(math) == 18
+    assert len(math.encode('utf-8')) == 21
+else:
+    assert len(math) == 21
+    assert len(math.decode('utf-8')) == 18
+""".replace(b"\n", b"\r\n"))
 
-        compare_html("gold_bom", "out/bom")
+        # It's important that the source file really have a BOM, which can
+        # get lost, so check that it's really there, and that we have \r\n
+        # line endings.
+        with open("bom.py", "rb") as f:
+            data = f.read()
+            assert data[:3] == b"\xef\xbb\xbf"
+            assert data.count(b"\r\n") == 11
+
+        cov = coverage.Coverage()
+        cov.start()
+        import bom          # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.html_report(bom, directory="out")
+
+        compare_html("out", gold_path("html/gold_bom"))
         contains(
-            "out/bom/bom_py.html",
+            "out/bom_py.html",
             '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
         )
 
     def test_isolatin1(self):
-        self.output_dir("out/isolatin1")
+        self.make_file("isolatin1.py", bytes=b"""\
+# -*- coding: iso8859-1 -*-
+# A Python source file in another encoding.
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage()
-            cov.start()
-            import isolatin1            # pragma: nested
-            cov.stop()                  # pragma: nested
-            cov.html_report(isolatin1, directory="../out/isolatin1")
+math = "3\xd74 = 12, \xf72 = 6\xb10"
+assert len(math) == 18
+""")
 
-        compare_html("gold_isolatin1", "out/isolatin1")
+        cov = coverage.Coverage()
+        cov.start()
+        import isolatin1            # pragma: nested # pylint: disable=import-error
+        cov.stop()                  # pragma: nested
+        cov.html_report(isolatin1, directory="out")
+
+        compare_html("out", gold_path("html/gold_isolatin1"))
         contains(
-            "out/isolatin1/isolatin1_py.html",
+            "out/isolatin1_py.html",
             '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
         )
 
+    def make_main_etc(self):
+        self.make_file("main.py", """\
+            import m1
+            import m2
+            import m3
+
+            a = 5
+            b = 6
+
+            assert m1.m1a == 1
+            assert m2.m2a == 1
+            assert m3.m3a == 1
+            """)
+        self.make_file("m1.py", """\
+            m1a = 1
+            m1b = 2
+            """)
+        self.make_file("m2.py", """\
+            m2a = 1
+            m2b = 2
+            """)
+        self.make_file("m3.py", """\
+            m3a = 1
+            m3b = 2
+            """)
+
     def test_omit_1(self):
-        self.output_dir("out/omit_1")
+        self.make_main_etc()
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(include=["./*"])
-            cov.start()
-            import main         # pragma: nested # pylint: disable=unused-variable
-            cov.stop()          # pragma: nested
-            cov.html_report(directory="../out/omit_1")
+        cov = coverage.Coverage(include=["./*"])
+        cov.start()
+        import main         # pragma: nested # pylint: disable=unused-variable, import-error
+        cov.stop()          # pragma: nested
+        cov.html_report(directory="out")
 
-        compare_html("gold_omit_1", "out/omit_1")
+        compare_html("out", gold_path("html/gold_omit_1"))
 
     def test_omit_2(self):
-        self.output_dir("out/omit_2")
+        self.make_main_etc()
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(include=["./*"])
-            cov.start()
-            import main         # pragma: nested # pylint: disable=unused-variable
-            cov.stop()          # pragma: nested
-            cov.html_report(directory="../out/omit_2", omit=["m1.py"])
+        cov = coverage.Coverage(include=["./*"])
+        cov.start()
+        import main         # pragma: nested # pylint: disable=unused-variable, import-error
+        cov.stop()          # pragma: nested
+        cov.html_report(directory="out", omit=["m1.py"])
 
-        compare_html("gold_omit_2", "out/omit_2")
+        compare_html("out", gold_path("html/gold_omit_2"))
 
     def test_omit_3(self):
-        self.output_dir("out/omit_3")
+        self.make_main_etc()
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(include=["./*"])
-            cov.start()
-            import main         # pragma: nested # pylint: disable=unused-variable
-            cov.stop()          # pragma: nested
-            cov.html_report(directory="../out/omit_3", omit=["m1.py", "m2.py"])
+        cov = coverage.Coverage(include=["./*"])
+        cov.start()
+        import main         # pragma: nested # pylint: disable=unused-variable, import-error
+        cov.stop()          # pragma: nested
+        cov.html_report(directory="out", omit=["m1.py", "m2.py"])
 
-        compare_html("gold_omit_3", "out/omit_3")
+        compare_html("out", gold_path("html/gold_omit_3"))
 
     def test_omit_4(self):
-        self.output_dir("out/omit_4")
+        self.make_main_etc()
+        self.make_file("omit4.ini", """\
+            [report]
+            omit = m2.py
+            """)
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(config_file="omit4.ini", include=["./*"])
-            cov.start()
-            import main         # pragma: nested # pylint: disable=unused-variable
-            cov.stop()          # pragma: nested
-            cov.html_report(directory="../out/omit_4")
+        cov = coverage.Coverage(config_file="omit4.ini", include=["./*"])
+        cov.start()
+        import main         # pragma: nested # pylint: disable=unused-variable, import-error
+        cov.stop()          # pragma: nested
+        cov.html_report(directory="out")
 
-        compare_html("gold_omit_4", "out/omit_4")
+        compare_html("out", gold_path("html/gold_omit_4"))
 
     def test_omit_5(self):
-        self.output_dir("out/omit_5")
+        self.make_main_etc()
+        self.make_file("omit5.ini", """\
+            [report]
+            omit =
+                fooey
+                gooey, m[23]*, kablooey
+                helloworld
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(config_file="omit5.ini", include=["./*"])
-            cov.start()
-            import main         # pragma: nested # pylint: disable=unused-variable
-            cov.stop()          # pragma: nested
-            cov.html_report()
+            [html]
+            directory = out/omit_5
+            """)
 
-        compare_html("gold_omit_5", "out/omit_5")
+        cov = coverage.Coverage(config_file="omit5.ini", include=["./*"])
+        cov.start()
+        import main         # pragma: nested # pylint: disable=unused-variable, import-error
+        cov.stop()          # pragma: nested
+        cov.html_report()
+
+        compare_html("out/omit_5", gold_path("html/gold_omit_5"))
 
     def test_other(self):
-        self.output_dir("out/other")
+        self.make_file("src/here.py", """\
+            import other
+
+            if 1 < 2:
+                h = 3
+            else:
+                h = 4
+            """)
+        self.make_file("othersrc/other.py", """\
+            # A file in another directory.  We're checking that it ends up in the
+            # HTML report.
+
+            print("This is the other src!")
+            """)
 
         with change_dir("src"):
-            # pylint: disable=import-error
+            sys.path.insert(0, "")          # pytest sometimes has this, sometimes not!?
             sys.path.insert(0, "../othersrc")
             cov = coverage.Coverage(include=["./*", "../othersrc/*"])
             cov.start()
-            import here         # pragma: nested # pylint: disable=unused-variable
+            import here         # pragma: nested # pylint: disable=unused-variable, import-error
             cov.stop()          # pragma: nested
-            cov.html_report(directory="../out/other")
+            cov.html_report(directory="../out")
 
         # Different platforms will name the "other" file differently. Rename it
-        for p in glob.glob("out/other/*_other_py.html"):
-            os.rename(p, "out/other/blah_blah_other_py.html")
+        for p in glob.glob("out/*_other_py.html"):
+            os.rename(p, "out/blah_blah_other_py.html")
 
-        compare_html("gold_other", "out/other")
+        compare_html("out", gold_path("html/gold_other"))
         contains(
-            "out/other/index.html",
+            "out/index.html",
             '<a href="here_py.html">here.py</a>',
             'other_py.html">', 'other.py</a>',
         )
 
     def test_partial(self):
-        self.output_dir("out/partial")
+        self.make_file("partial.py", """\
+            # partial branches and excluded lines
+            a = 6
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage(config_file="partial.ini")
-            cov.start()
-            import partial          # pragma: nested
-            cov.stop()              # pragma: nested
-            cov.html_report(partial, directory="../out/partial")
+            while True:
+                break
 
-        compare_html("gold_partial", "out/partial")
+            while 1:
+                break
+
+            while a:        # pragma: no branch
+                break
+
+            if 0:
+                never_happen()
+
+            if 1:
+                a = 21
+
+            if a == 23:
+                raise AssertionError("Can't")
+            """)
+        self.make_file("partial.ini", """\
+            [run]
+            branch = True
+
+            [report]
+            exclude_lines =
+                raise AssertionError
+            """)
+
+        cov = coverage.Coverage(config_file="partial.ini")
+        cov.start()
+        import partial          # pragma: nested # pylint: disable=import-error
+        cov.stop()              # pragma: nested
+        cov.html_report(partial, directory="out")
+
+        compare_html("out", gold_path("html/gold_partial"))
         contains(
-            "out/partial/partial_py.html",
-            '<p id="t8" class="stm run hide_run">',
-            '<p id="t11" class="stm run hide_run">',
-            '<p id="t14" class="stm run hide_run">',
+            "out/partial_py.html",
+            '<p id="t4" class="stm run hide_run">',
+            '<p id="t7" class="stm run hide_run">',
+            '<p id="t10" class="stm run hide_run">',
             # The "if 0" and "if 1" statements are optimized away.
-            '<p id="t17" class="pln">',
+            '<p id="t13" class="pln">',
             # The "raise AssertionError" is excluded by regex in the .ini.
-            '<p id="t24" class="exc">',
+            '<p id="t20" class="exc">',
         )
         contains(
-            "out/partial/index.html",
+            "out/index.html",
             '<a href="partial_py.html">partial.py</a>',
         )
         contains(
-            "out/partial/index.html",
+            "out/index.html",
             '<span class="pc_cov">100%</span>'
         )
 
     def test_styled(self):
-        self.output_dir("out/styled")
+        self.make_file("a.py", """\
+            if 1 < 2:
+                # Needed a < to look at HTML entities.
+                a = 3
+            else:
+                a = 4
+            """)
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage()
-            cov.start()
-            import a            # pragma: nested
-            cov.stop()          # pragma: nested
-            cov.html_report(a, directory="../out/styled", extra_css="extra.css")
+        self.make_file("extra.css", "/* Doesn't matter what goes in here, it gets copied. */")
 
-        compare_html("gold_styled", "out/styled")
-        compare("gold_styled", "out/styled", size_within=10, file_pattern="*.css")
+        cov = coverage.Coverage()
+        cov.start()
+        import a            # pragma: nested # pylint: disable=import-error
+        cov.stop()          # pragma: nested
+        cov.html_report(a, directory="out", extra_css="extra.css")
+
+        compare_html("out", gold_path("html/gold_styled"))
+        compare("out", gold_path("html/gold_styled"), size_within=10, file_pattern="*.css")
         contains(
-            "out/styled/a_py.html",
+            "out/a_py.html",
             '<link rel="stylesheet" href="extra.css" type="text/css">',
             ('<span class="key">if</span> <span class="num">1</span> '
              '<span class="op">&lt;</span> <span class="num">2</span>'),
@@ -840,55 +966,72 @@ class HtmlGoldTests(CoverageGoldTest):
             '<span class="pc_cov">67%</span>'
         )
         contains(
-            "out/styled/index.html",
+            "out/index.html",
             '<link rel="stylesheet" href="extra.css" type="text/css">',
             '<a href="a_py.html">a.py</a>',
             '<span class="pc_cov">67%</span>'
         )
 
     def test_tabbed(self):
-        self.output_dir("out/tabbed")
+        # The file contents would look like this with 8-space tabs:
+        #   x = 1
+        #   if x:
+        #           a = "tabbed"                            # aligned comments
+        #           if x:                                   # look nice
+        #                   b = "no spaces"                 # when they
+        #           c = "done"                              # line up.
+        self.make_file("tabbed.py", """\
+            x = 1
+            if x:
+            \ta = "Tabbed"\t\t\t\t# Aligned comments
+            \tif x:\t\t\t\t\t# look nice
+            \t\tb = "No spaces"\t\t\t# when they
+            \tc = "Done"\t\t\t\t# line up.
+            """)
 
-        with change_dir("src"):
-            # pylint: disable=import-error
-            cov = coverage.Coverage()
-            cov.start()
-            import tabbed           # pragma: nested
-            cov.stop()              # pragma: nested
-            cov.html_report(tabbed, directory="../out/tabbed")
+        cov = coverage.Coverage()
+        cov.start()
+        import tabbed           # pragma: nested # pylint: disable=import-error
+        cov.stop()              # pragma: nested
+        cov.html_report(tabbed, directory="out")
 
         # Editors like to change things, make sure our source file still has tabs.
-        contains("src/tabbed.py", "\tif x:\t\t\t\t\t# look nice")
+        contains("tabbed.py", "\tif x:\t\t\t\t\t# look nice")
 
         contains(
-            "out/tabbed/tabbed_py.html",
+            "out/tabbed_py.html",
             '>        <span class="key">if</span> '
             '<span class="nam">x</span><span class="op">:</span>'
             '                                   '
             '<span class="com"># look nice</span>'
         )
 
-        doesnt_contain("out/tabbed/tabbed_py.html", "\t")
+        doesnt_contain("out/tabbed_py.html", "\t")
 
     def test_unicode(self):
-        self.output_dir("out/unicode")
+        self.make_file("unicode.py", """\
+            # -*- coding: utf-8 -*-
+            # A Python source file with exotic characters.
 
-        with change_dir("src"):
-            # pylint: disable=import-error, redefined-builtin
-            cov = coverage.Coverage()
-            cov.start()
-            import unicode          # pragma: nested
-            cov.stop()              # pragma: nested
-            cov.html_report(unicode, directory="../out/unicode")
+            upside_down = "ʎd˙ǝbɐɹǝʌoɔ"
+            surrogate = "db40,dd00: x󠄀"
+            """)
 
-        compare_html("gold_unicode", "out/unicode")
+        # pylint: disable=import-error, redefined-builtin
+        cov = coverage.Coverage()
+        cov.start()
+        import unicode          # pragma: nested
+        cov.stop()              # pragma: nested
+        cov.html_report(unicode, directory="out")
+
+        compare_html("out", gold_path("html/gold_unicode"))
         contains(
-            "out/unicode/unicode_py.html",
+            "out/unicode_py.html",
             '<span class="str">"&#654;d&#729;&#477;b&#592;&#633;&#477;&#652;o&#596;"</span>',
         )
 
         contains_any(
-            "out/unicode/unicode_py.html",
+            "out/unicode_py.html",
             '<span class="str">"db40,dd00: x&#56128;&#56576;"</span>',
             '<span class="str">"db40,dd00: x&#917760;"</span>',
         )

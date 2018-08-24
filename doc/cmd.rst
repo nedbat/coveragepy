@@ -486,6 +486,8 @@ to log:
 * ``process``: show process creation information, and changes in the current
   directory.
 
+* ``self``: annotate each debug message with the object printing the message.
+
 * ``sys``: before starting, dump all the system and environment information,
   as with :ref:`coverage debug sys <cmd_debug>`.
 

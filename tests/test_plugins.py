@@ -8,6 +8,7 @@ import os.path
 import coverage
 from coverage import env
 from coverage.backward import StringIO
+from coverage.data import line_counts
 from coverage.control import Plugins
 from coverage.misc import CoverageException
 
@@ -189,7 +190,8 @@ class PluginTest(CoverageTest):
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_sys_info"])
-        cov.load()
+        cov.start()
+        cov.stop()
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
         if env.C_TRACER:
@@ -218,7 +220,8 @@ class PluginTest(CoverageTest):
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_no_sys_info"])
-        cov.load()
+        cov.start()
+        cov.stop()
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
         self.assertIn('plugins.file_tracers: -none-', out_lines)
@@ -369,19 +372,19 @@ class GoodFileTracerTest(FileTracerTest):
         _, statements, missing, _ = cov.analysis("foo_7.html")
         self.assertEqual(statements, [1, 2, 3, 4, 5, 6, 7])
         self.assertEqual(missing, [1, 2, 3, 6, 7])
-        self.assertIn("foo_7.html", cov.get_data().line_counts())
+        self.assertIn("foo_7.html", line_counts(cov.get_data()))
 
         _, statements, missing, _ = cov.analysis("bar_4.html")
         self.assertEqual(statements, [1, 2, 3, 4])
         self.assertEqual(missing, [1, 4])
-        self.assertIn("bar_4.html", cov.get_data().line_counts())
+        self.assertIn("bar_4.html", line_counts(cov.get_data()))
 
-        self.assertNotIn("quux_5.html", cov.get_data().line_counts())
+        self.assertNotIn("quux_5.html", line_counts(cov.get_data()))
 
         _, statements, missing, _ = cov.analysis("uni_3.html")
         self.assertEqual(statements, [1, 2, 3])
         self.assertEqual(missing, [1])
-        self.assertIn("uni_3.html", cov.get_data().line_counts())
+        self.assertIn("uni_3.html", line_counts(cov.get_data()))
 
     def test_plugin2_with_branch(self):
         self.make_render_and_caller()

@@ -21,6 +21,7 @@ clean:
 	-rm -f coverage/*,cover
 	-rm -f MANIFEST
 	-rm -f .coverage .coverage.* coverage.xml .metacov*
+	-rm -f */.coverage */*/.coverage */*/*/.coverage */*/*/*/.coverage */*/*/*/*/.coverage */*/*/*/*/*/.coverage
 	-rm -f tests/zipmods.zip
 	-rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
 	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
@@ -30,7 +31,7 @@ clean:
 
 sterile: clean
 	-rm -rf .tox*
-	-docker image rm quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
+	-docker image rm -f quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
 
 
 LINTABLE = coverage tests igor.py setup.py __main__.py
@@ -47,13 +48,13 @@ pep8:
 test:
 	tox -e py27,py35 $(ARGS)
 
-TOX_SMOKE_ARGS = -n 6 -m "not expensive" --maxfail=3 $(ARGS)
+PYTEST_SMOKE_ARGS = -n 6 -m "not expensive" --maxfail=3 $(ARGS)
 
 smoke:
-	COVERAGE_NO_PYTRACER=1 tox -e py27,py34 -- $(TOX_SMOKE_ARGS)
+	COVERAGE_NO_PYTRACER=1 tox -q -e py27,py34 -- $(PYTEST_SMOKE_ARGS)
 
 pysmoke:
-	COVERAGE_NO_CTRACER=1 tox -e py27,py34 -- $(TOX_SMOKE_ARGS)
+	COVERAGE_NO_CTRACER=1 tox -q -e py27,py34 -- $(PYTEST_SMOKE_ARGS)
 
 metacov:
 	COVERAGE_COVERAGE=yes tox $(ARGS)

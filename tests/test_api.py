@@ -13,6 +13,7 @@ import warnings
 import coverage
 from coverage import env
 from coverage.backward import StringIO, import_local_file
+from coverage.data import line_counts
 from coverage.misc import CoverageException
 from coverage.report import Reporter
 
@@ -370,8 +371,12 @@ class ApiTest(CoverageTest):
         self.make_bad_data_file()
         cov = coverage.Coverage()
         warning_regex = (
+            r"("    # JSON message:
             r"Couldn't read data from '.*\.coverage\.foo': "
             r"CoverageException: Doesn't seem to be a coverage\.py data file"
+            r"|"    # SQL message:
+            r"Couldn't use data file '.*\.coverage\.foo': file is encrypted or is not a database"
+            r")"
         )
         with self.assert_warnings(cov, [warning_regex]):
             cov.combine()
@@ -507,8 +512,6 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
 class OmitIncludeTestsMixin(UsingModulesMixin, CoverageTestMethodsMixin):
     """Test methods for coverage methods taking include and omit."""
 
-    run_in_temp_dir = False
-
     def filenames_in(self, summary, filenames):
         """Assert the `filenames` are in the keys of `summary`."""
         for filename in filenames.split():
@@ -576,7 +579,7 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         import usepkgs  # pragma: nested   # pylint: disable=import-error, unused-variable
         cov.stop()      # pragma: nested
         data = cov.get_data()
-        summary = data.line_counts()
+        summary = line_counts(data)
         for k, v in list(summary.items()):
             assert k.endswith(".py")
             summary[k[:-3]] = v
@@ -701,8 +704,6 @@ class TestRunnerPluginTest(CoverageTest):
     """
     def pretend_to_be_nose_with_cover(self, erase):
         """This is what the nose --with-cover plugin does."""
-        cov = coverage.Coverage()
-
         self.make_file("no_biggie.py", """\
             a = 1
             b = 2
@@ -710,6 +711,7 @@ class TestRunnerPluginTest(CoverageTest):
                 c = 4
             """)
 
+        cov = coverage.Coverage()
         if erase:
             cov.combine()
             cov.erase()
@@ -729,6 +731,34 @@ class TestRunnerPluginTest(CoverageTest):
 
     def test_nose_plugin_with_erase(self):
         self.pretend_to_be_nose_with_cover(erase=True)
+
+    def test_pytestcov_parallel(self):
+        self.make_file("prog.py", """\
+            a = 1
+            b = 2
+            if b == 1:
+                c = 4
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            parallel = True
+            source = .
+            """)
+
+        cov = coverage.Coverage(source=None, branch=None, config_file='.coveragerc')
+        cov.erase()
+        self.start_import_stop(cov, "prog")
+        cov.combine()
+        cov.save()
+        report = StringIO()
+        cov.report(show_missing=None, ignore_errors=True, file=report, skip_covered=None)
+        self.assertEqual(report.getvalue(), textwrap.dedent("""\
+            Name      Stmts   Miss  Cover
+            -----------------------------
+            prog.py       4      1    75%
+            """))
+        self.assert_file_count(".coverage", 0)
+        self.assert_file_count(".coverage.*", 1)
 
 
 class ReporterDeprecatedAttributeTest(CoverageTest):

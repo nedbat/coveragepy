@@ -24,12 +24,11 @@ os = isolate_module(os)
 # This is a list of forced debugging options.
 FORCED_DEBUG = []
 
-# A hack for debugging testing in sub-processes.
-_TEST_NAME_FILE = ""    # "/tmp/covtest.txt"
-
 
 class DebugControl(object):
     """Control and output for debugging."""
+
+    show_repr_attr = False      # For SimpleRepr
 
     def __init__(self, options, output):
         """Configure the options and output file for debugging."""
@@ -71,6 +70,10 @@ class DebugControl(object):
         `msg` is the line to write. A newline will be appended.
 
         """
+        if self.should('self'):
+            caller_self = inspect.stack()[1][0].f_locals.get('self')
+            if caller_self is not None:
+                msg = "[self: {!r}] {}".format(caller_self, msg)
         self.output.write(msg+"\n")
         if self.should('callers'):
             dump_stack_frames(out=self.output, skip=1)
@@ -165,6 +168,17 @@ def add_pid_and_tid(text):
     tid = "{0:04x}".format(short_id(_thread.get_ident()))
     text = "{0:5d}.{1}: {2}".format(os.getpid(), tid, text)
     return text
+
+
+class SimpleRepr(object):
+    """A mixin implementing a simple __repr__."""
+    def __repr__(self):
+        show_attrs = ((k, v) for k, v in self.__dict__.items() if getattr(v, "show_repr_attr", True))
+        return "<{klass} @0x{id:x} {attrs}>".format(
+            klass=self.__class__.__name__,
+            id=id(self),
+            attrs=" ".join("{}={!r}".format(k, v) for k, v in show_attrs),
+            )
 
 
 def filter_text(text, filters):

@@ -24,7 +24,7 @@ from coverage import env
 from coverage.backunittest import TestCase, unittest
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
-from coverage.debug import _TEST_NAME_FILE
+from coverage.data import STORAGE
 from coverage.misc import StopEverything
 
 from tests.helpers import run_command, SuperModuleCleaner
@@ -81,6 +81,12 @@ class CoverageTest(
     # Let stderr go to stderr, pytest will capture it for us.
     show_stderr = True
 
+    # Temp dirs go to $TMPDIR/coverage_test/*
+    temp_dir_prefix = "coverage_test/"
+
+    # Keep the temp directories if the env says to.
+    keep_temp_dir = bool(int(os.getenv("COVERAGE_KEEP_TMP", 0)))
+
     def setUp(self):
         super(CoverageTest, self).setUp()
 
@@ -91,11 +97,9 @@ class CoverageTest(
         self.last_command_output = None
         self.last_module_name = None
 
-        if _TEST_NAME_FILE:                                 # pragma: debugging
-            with open(_TEST_NAME_FILE, "w") as f:
-                f.write("%s_%s" % (
-                    self.__class__.__name__, self._testMethodName,
-                ))
+    def skip_unless_data_storage_is_json(self):
+        if STORAGE != "json":
+            self.skipTest("Not using JSON for data storage")
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.

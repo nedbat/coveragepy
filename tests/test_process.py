@@ -16,6 +16,7 @@ import pytest
 
 import coverage
 from coverage import env, CoverageData
+from coverage.data import line_counts
 from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
@@ -90,8 +91,8 @@ class ProcessTest(CoverageTest):
         # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 8)
 
         # Running combine again should fail, because there are no parallel data
         # files to combine.
@@ -101,8 +102,8 @@ class ProcessTest(CoverageTest):
 
         # And the originally combined data is still there.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 8)
 
     def test_combine_parallel_data_with_a_corrupt_file(self):
         self.make_b_or_c_py()
@@ -126,8 +127,13 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
         self.assert_exists(".coverage.bad")
         warning_regex = (
+            r"("    # JSON message:
             r"Coverage.py warning: Couldn't read data from '.*\.coverage\.bad': "
             r"CoverageException: Doesn't seem to be a coverage\.py data file"
+            r"|"    # SQL message:
+            r"Coverage.py warning: Couldn't use data file '.*\.coverage\.bad': "
+            r"file is encrypted or is not a database"
+            r")"
         )
         self.assertRegex(out, warning_regex)
 
@@ -137,8 +143,8 @@ class ProcessTest(CoverageTest):
         # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 8)
 
     def test_combine_no_usable_files(self):
         # https://bitbucket.org/ned/coveragepy/issues/629/multiple-use-of-combine-leads-to-empty
@@ -159,8 +165,14 @@ class ProcessTest(CoverageTest):
         for n in "12":
             self.assert_exists(".coverage.bad{0}".format(n))
             warning_regex = (
+                r"("    # JSON message:
                 r"Coverage.py warning: Couldn't read data from '.*\.coverage\.bad{0}': "
-                r"CoverageException: Doesn't seem to be a coverage\.py data file".format(n)
+                r"CoverageException: Doesn't seem to be a coverage\.py data file"
+                r"|"    # SQL message:
+                r"Coverage.py warning: Couldn't use data file '.*\.coverage.bad{0}': "
+                r"file is encrypted or is not a database"
+                r")"
+                .format(n)
             )
             self.assertRegex(out, warning_regex)
         self.assertRegex(out, r"No usable data files")
@@ -172,8 +184,8 @@ class ProcessTest(CoverageTest):
         # Read the coverage file and see that b_or_c.py has 6 lines
         # executed (we only did b, not c).
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 6)
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 6)
 
     def test_combine_parallel_data_in_two_steps(self):
         self.make_b_or_c_py()
@@ -203,8 +215,8 @@ class ProcessTest(CoverageTest):
         # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 8)
 
     def test_combine_parallel_data_no_append(self):
         self.make_b_or_c_py()
@@ -235,8 +247,8 @@ class ProcessTest(CoverageTest):
         # Read the coverage file and see that b_or_c.py has only 7 lines
         # because we didn't keep the data from running b.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 7)
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 7)
 
     def test_append_data(self):
         self.make_b_or_c_py()
@@ -254,8 +266,8 @@ class ProcessTest(CoverageTest):
         # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 8)
 
     def test_append_data_with_different_file(self):
         self.make_b_or_c_py()
@@ -277,9 +289,9 @@ class ProcessTest(CoverageTest):
 
         # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
-        data = coverage.CoverageData()
-        data.read_file(".mycovdata")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
+        data = coverage.CoverageData(".mycovdata")
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 8)
 
     def test_append_can_create_a_data_file(self):
         self.make_b_or_c_py()
@@ -292,8 +304,8 @@ class ProcessTest(CoverageTest):
         # Read the coverage file and see that b_or_c.py has only 6 lines
         # executed.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 6)
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 6)
 
     def test_combine_with_rc(self):
         self.make_b_or_c_py()
@@ -325,8 +337,8 @@ class ProcessTest(CoverageTest):
         # Read the coverage file and see that b_or_c.py has all 8 lines
         # executed.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['b_or_c.py'], 8)
+        data.read()
+        self.assertEqual(line_counts(data)['b_or_c.py'], 8)
 
         # Reporting should still work even with the .rc file
         out = self.run_command("coverage report")
@@ -379,8 +391,8 @@ class ProcessTest(CoverageTest):
         # Read the coverage data file and see that the two different x.py
         # files have been combined together.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        summary = data.line_counts(fullpath=True)
+        data.read()
+        summary = line_counts(data, fullpath=True)
         self.assertEqual(len(summary), 1)
         actual = os.path.normcase(os.path.abspath(list(summary.keys())[0]))
         expected = os.path.normcase(os.path.abspath('src/x.py'))
@@ -503,6 +515,8 @@ class ProcessTest(CoverageTest):
     def test_fork(self):
         if not hasattr(os, 'fork'):
             self.skipTest("Can't test os.fork since it doesn't exist.")
+        # See https://nedbatchelder.com/blog/201808/sqlite_data_storage_for_coveragepy.html
+        self.skip_unless_data_storage_is_json()
 
         self.make_file("fork.py", """\
             import os
@@ -543,8 +557,8 @@ class ProcessTest(CoverageTest):
         self.assert_file_count(".coverage.*", 0)
 
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['fork.py'], 9)
+        data.read()
+        self.assertEqual(line_counts(data)['fork.py'], 9)
 
     def test_warnings_during_reporting(self):
         # While fixing issue #224, the warnings were being printed far too
@@ -641,6 +655,8 @@ class ProcessTest(CoverageTest):
         if env.PYPY and env.PY3 and env.PYPYVERSION[:3] == (5, 10, 0):      # pragma: obscure
             # https://bitbucket.org/pypy/pypy/issues/2729/pypy3-510-incorrectly-decodes-astral-plane
             self.skipTest("Avoid incorrect decoding astral plane JSON chars")
+        self.skip_unless_data_storage_is_json()
+
         self.make_file(".coveragerc", """\
             [run]
             data_file = mydata.dat
@@ -649,8 +665,8 @@ class ProcessTest(CoverageTest):
         self.make_file("simple.py", """print('hello')""")
         self.run_command("coverage run simple.py")
 
-        data = CoverageData()
-        data.read_file("mydata.dat")
+        data = CoverageData("mydata.dat")
+        data.read()
         infos = data.run_infos()
         self.assertEqual(len(infos), 1)
         expected = u"These are musical notes: ♫𝅗𝅥♩"
@@ -680,11 +696,11 @@ class ProcessTest(CoverageTest):
         out = self.run_command("python -m coverage run -L getenv.py")
         self.assertEqual(out, "FOOEY == BOO\n")
         data = coverage.CoverageData()
-        data.read_file(".coverage")
+        data.read()
         # The actual number of executed lines in os.py when it's
         # imported is 120 or so.  Just running os.getenv executes
         # about 5.
-        self.assertGreater(data.line_counts()['os.py'], 50)
+        self.assertGreater(line_counts(data)['os.py'], 50)
 
     def test_lang_c(self):
         if env.JYTHON:
@@ -910,8 +926,8 @@ class ExcepthookTest(CoverageTest):
         # Read the coverage file and see that excepthook.py has 7 lines
         # executed.
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['excepthook.py'], 7)
+        data.read()
+        self.assertEqual(line_counts(data)['excepthook.py'], 7)
 
     def test_excepthook_exit(self):
         if env.PYPY or env.JYTHON:
@@ -1239,9 +1255,9 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         # An existing data file should not be read when a subprocess gets
         # measured automatically.  Create the data file here with bogus data in
         # it.
-        data = coverage.CoverageData()
+        data = coverage.CoverageData(".mycovdata")
         data.add_lines({os.path.abspath('sub.py'): dict.fromkeys(range(100))})
-        data.write_file(".mycovdata")
+        data.write()
 
         self.make_file("coverage.ini", """\
             [run]
@@ -1255,9 +1271,9 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
 
         # Read the data from .coverage
         self.assert_exists(".mycovdata")
-        data = coverage.CoverageData()
-        data.read_file(".mycovdata")
-        self.assertEqual(data.line_counts()['sub.py'], 3)
+        data = coverage.CoverageData(".mycovdata")
+        data.read()
+        self.assertEqual(line_counts(data)['sub.py'], 3)
 
     def test_subprocess_with_pth_files_and_parallel(self):  # pragma: no metacov
         # https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
@@ -1280,8 +1296,8 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         # assert that the combined .coverage data file is correct
         self.assert_exists(".coverage")
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        self.assertEqual(data.line_counts()['sub.py'], 3)
+        data.read()
+        self.assertEqual(line_counts(data)['sub.py'], 3)
 
         # assert that there are *no* extra data files left over after a combine
         data_files = glob.glob(os.getcwd() + '/.coverage*')
@@ -1370,8 +1386,8 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         # Read the data from .coverage
         self.assert_exists(".coverage")
         data = coverage.CoverageData()
-        data.read_file(".coverage")
-        summary = data.line_counts()
+        data.read()
+        summary = line_counts(data)
         print(summary)
         self.assertEqual(summary[source + '.py'], 3)
         self.assertEqual(len(summary), 1)

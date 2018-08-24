@@ -6,7 +6,8 @@
 import collections
 
 from coverage.backward import iitems
-from coverage.misc import contract, format_lines, SimpleRepr
+from coverage.debug import SimpleRepr
+from coverage.misc import contract, format_lines
 
 
 class Analysis(object):
