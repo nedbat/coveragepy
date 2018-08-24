@@ -460,6 +460,7 @@ class Coverage(object):
             self._collector.reset()
         self._init_data(suffix=None)
         self._data.erase(parallel=self.config.parallel)
+        self._data = None
 
     def clear_exclude(self, which='exclude'):
         """Clear the exclude list."""
@@ -561,6 +562,8 @@ class Coverage(object):
 
         """
         self._init()
+        self._init_data(suffix=None)
+        self._post_init()
 
         if self._collector and self._collector.save_data(self._data):
             self._post_save_work()
