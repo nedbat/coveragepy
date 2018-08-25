@@ -733,6 +733,12 @@ class TestRunnerPluginTest(CoverageTest):
         self.pretend_to_be_nose_with_cover(erase=True)
 
     def test_pytestcov_parallel(self):
+        self.pretend_to_be_pytestcov(append=False)
+
+    def test_pytestcov_parallel_append(self):
+        self.pretend_to_be_pytestcov(append=True)
+
+    def pretend_to_be_pytestcov(self, append):
         self.make_file("prog.py", """\
             a = 1
             b = 2
@@ -746,7 +752,10 @@ class TestRunnerPluginTest(CoverageTest):
             """)
 
         cov = coverage.Coverage(source=None, branch=None, config_file='.coveragerc')
-        cov.erase()
+        if append:
+            cov.load()
+        else:
+            cov.erase()
         self.start_import_stop(cov, "prog")
         cov.combine()
         cov.save()
