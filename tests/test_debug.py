@@ -168,8 +168,8 @@ class DebugTraceTest(CoverageTest):
 
         labels = """
             version coverage cover_paths pylib_paths tracer configs_attempted config_file
-            configs_read data_path python platform implementation executable
-            cwd path environment command_line cover_match pylib_match
+            configs_read data_file python platform implementation executable
+            pid cwd path environment command_line cover_match pylib_match
             """.split()
         for label in labels:
             label_pat = r"^\s*%s: " % label

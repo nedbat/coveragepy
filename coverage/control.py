@@ -846,17 +846,18 @@ class Coverage(object):
             ('configs_attempted', self.config.attempted_config_files),
             ('configs_read', self.config.config_files_read),
             ('config_file', self.config.config_file),
-            ('data_path', self._data.filename if self._data else "-none-"),
+            ('data_file', self._data.filename if self._data else "-none-"),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('implementation', platform.python_implementation()),
             ('executable', sys.executable),
+            ('pid', os.getpid()),
             ('cwd', os.getcwd()),
             ('path', sys.path),
             ('environment', sorted(
                 ("%s = %s" % (k, v))
                 for k, v in iitems(os.environ)
-                if k.startswith(("COV", "PY"))
+                if any(slug in k for slug in ("COV", "PY"))
             )),
             ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
             ]

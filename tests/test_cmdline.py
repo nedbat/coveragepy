@@ -232,7 +232,7 @@ class CmdLineTest(BaseCmdLineTest):
         self.command_line("debug sys")
         out = self.stdout()
         self.assertIn("version:", out)
-        self.assertIn("data_path:", out)
+        self.assertIn("data_file:", out)
 
     def test_debug_config(self):
         self.command_line("debug config")
