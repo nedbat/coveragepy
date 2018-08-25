@@ -330,9 +330,12 @@ class Coverage(object):
         self._init()
         if self._collector:
             self._collector.reset()
-        self._init_data(suffix=None)
+        should_skip = self.config.parallel and not os.path.exists(self.config.data_file)
+        if not should_skip:
+            self._init_data(suffix=None)
         self._post_init()
-        self._data.read()
+        if not should_skip:
+            self._data.read()
 
     def _init_for_start(self):
         """Initialization for start()"""
