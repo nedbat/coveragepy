@@ -8,6 +8,7 @@ import json
 import os
 import os.path
 import re
+import sqlite3
 
 import mock
 
@@ -190,7 +191,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertIsNone(covdata.lines('no_such_file.py'))
 
     def test_run_info(self):
-        self.skip_unless_data_storage_is_json()
+        self.skip_unless_data_storage_is("json")
         covdata = CoverageData()
         self.assertEqual(covdata.run_infos(), [])
         covdata.add_run_info(hello="there")
@@ -269,7 +270,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata3.run_infos(), [])
 
     def test_update_run_info(self):
-        self.skip_unless_data_storage_is_json()
+        self.skip_unless_data_storage_is("json")
         covdata1 = CoverageData()
         covdata1.add_arcs(ARCS_3)
         covdata1.add_run_info(hello="there", count=17)
@@ -475,15 +476,36 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
             covdata.read()
         self.assertFalse(covdata)
 
-        if STORAGE == "json":
-            self.make_file("misleading.dat", CoverageData._GO_AWAY + " this isn't JSON")
-            with self.assertRaisesRegex(CoverageException, msg.format("misleading.dat")):
-                covdata = CoverageData("misleading.dat")
-                covdata.read()
-            self.assertFalse(covdata)
+    def test_read_json_errors(self):
+        self.skip_unless_data_storage_is("json")
+        self.make_file("misleading.dat", CoverageData._GO_AWAY + " this isn't JSON")
+        msg = r"Couldn't .* '.*[/\\]{0}': \S+"
+        with self.assertRaisesRegex(CoverageException, msg.format("misleading.dat")):
+            covdata = CoverageData("misleading.dat")
+            covdata.read()
+        self.assertFalse(covdata)
+
+    def test_read_sql_errors(self):
+        self.skip_unless_data_storage_is("sql")
+        with sqlite3.connect("wrong_schema.db") as con:
+            con.execute("create table coverage_schema (version integer)")
+            con.execute("insert into coverage_schema (version) values (99)")
+        msg = r"Couldn't .* '.*[/\\]{0}': wrong schema: 99 instead of \d+".format("wrong_schema.db")
+        with self.assertRaisesRegex(CoverageException, msg):
+            covdata = CoverageData("wrong_schema.db")
+            covdata.read()
+        self.assertFalse(covdata)
+
+        with sqlite3.connect("no_schema.db") as con:
+            con.execute("create table foobar (baz text)")
+        msg = r"Couldn't .* '.*[/\\]{0}': \S+".format("no_schema.db")
+        with self.assertRaisesRegex(CoverageException, msg):
+            covdata = CoverageData("no_schema.db")
+            covdata.read()
+        self.assertFalse(covdata)
 
     def test_debug_main(self):
-        self.skip_unless_data_storage_is_json()
+        self.skip_unless_data_storage_is("json")
         covdata1 = CoverageData(".coverage")
         covdata1.add_lines(LINES_1)
         covdata1.write()
@@ -660,7 +682,7 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
     def read_json_data_file(self, fname):
         """Read a JSON data file for testing the JSON directly."""
-        self.skip_unless_data_storage_is_json()
+        self.skip_unless_data_storage_is("json")
         with open(fname, 'r') as fdata:
             go_away = fdata.read(len(CoverageData._GO_AWAY))
             self.assertEqual(go_away, CoverageData._GO_AWAY)

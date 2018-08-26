@@ -4,10 +4,8 @@
 """Sqlite coverage data."""
 
 # TODO: get sys_info for data class, so we can see sqlite version etc
-# TODO: get rid of skip_unless_data_storage_is_json
+# TODO: get rid of skip_unless_data_storage_is
 # TODO: get rid of "JSON message" and "SQL message" in the tests
-# TODO: check the schema
-# TODO: get rid of the application_id?
 # TODO: factor out dataop debugging to a wrapper class?
 # TODO: make sure all dataop debugging is in place somehow
 # TODO: should writes be batched?
@@ -17,7 +15,6 @@
 import glob
 import os
 import sqlite3
-import struct
 
 from coverage.backward import iitems
 from coverage.data import filename_suffix
@@ -26,12 +23,12 @@ from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
 
 
+SCHEMA_VERSION = 1
+
 SCHEMA = """
-create table schema (
+create table coverage_schema (
     version integer
 );
-
-insert into schema (version) values (1);
 
 create table meta (
     has_lines boolean,
@@ -63,13 +60,6 @@ create table tracer (
 );
 """
 
-APP_ID = 0xc07e8a6e         # "coverage", kind of.
-
-def unsigned_to_signed(val):
-    return struct.unpack('>i', struct.pack('>I', val))[0]
-
-def signed_to_unsigned(val):
-    return struct.unpack('>I', struct.pack('>i', val))[0]
 
 class CoverageSqliteData(SimpleRepr):
     def __init__(self, basename=None, suffix=None, warn=None, debug=None):
@@ -100,11 +90,11 @@ class CoverageSqliteData(SimpleRepr):
             self._debug.write("Creating data file {!r}".format(self.filename))
         self._db = Sqlite(self.filename, self._debug)
         with self._db:
-            self._db.execute("pragma application_id = {}".format(unsigned_to_signed(APP_ID)))
             for stmt in SCHEMA.split(';'):
                 stmt = stmt.strip()
                 if stmt:
                     self._db.execute(stmt)
+            self._db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
             self._db.execute(
                 "insert into meta (has_lines, has_arcs) values (?, ?)",
                 (self._has_lines, self._has_arcs)
@@ -115,12 +105,20 @@ class CoverageSqliteData(SimpleRepr):
             self._debug.write("Opening data file {!r}".format(self.filename))
         self._db = Sqlite(self.filename, self._debug)
         with self._db:
-            for app_id, in self._db.execute("pragma application_id"):
-                app_id = signed_to_unsigned(int(app_id))
-                if app_id != APP_ID:
+            try:
+                schema_version, = self._db.execute("select version from coverage_schema").fetchone()
+            except Exception as exc:
+                raise CoverageException(
+                    "Data file {!r} doesn't seem to be a coverage data file: {}".format(
+                        self.filename, exc
+                    )
+                )
+            else:
+                if schema_version != SCHEMA_VERSION:
                     raise CoverageException(
-                        "Couldn't use {!r}: wrong application_id: "
-                        "0x{:08x} != 0x{:08x}".format(self.filename, app_id, APP_ID)
+                        "Couldn't use data file {!r}: wrong schema: {} instead of {}".format(
+                            self.filename, schema_version, SCHEMA_VERSION
+                        )
                     )
         for row in self._db.execute("select has_lines, has_arcs from meta"):
             self._has_lines, self._has_arcs = row
