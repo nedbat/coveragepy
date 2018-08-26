@@ -28,6 +28,7 @@ clean:
 	-rm -rf doc/_build doc/_spell doc/sample_html_beta
 	-rm -rf .tox_kits
 	-rm -rf .cache .pytest_cache
+	-rm -rf $$TMPDIR/coverage_test
 
 sterile: clean
 	-rm -rf .tox*
