@@ -35,17 +35,17 @@ class DebugControl(object):
     def __init__(self, options, output):
         """Configure the options and output file for debugging."""
         self.options = list(options) + FORCED_DEBUG
-        self.raw_output = output
         self.suppress_callers = False
 
         filters = []
         if self.should('pid'):
             filters.append(add_pid_and_tid)
-        self.output = DebugOutputFile(
-            self.raw_output,
+        self.output = DebugOutputFile.the_one(
+            output,
             show_process=self.should('process'),
             filters=filters,
         )
+        self.raw_output = self.output.outfile
 
     def __repr__(self):
         return "<DebugControl options=%r raw_output=%r>" % (self.options, self.raw_output)
@@ -253,10 +253,12 @@ class DebugOutputFile(object):                              # pragma: debugging
         # on a class attribute. Yes, this is aggressively gross.
         the_one = sys.modules.get(cls.SYS_MOD_NAME)
         if the_one is None:
-            with open("/tmp/where.txt", "a") as f:
-                f.write("Starting with {}\n".format(fileobj))
             if fileobj is None:
-                fileobj = open("/tmp/debug_log.txt", "a")
+                debug_file_name = os.environ.get("COVERAGE_DEBUG_FILE")
+                if debug_file_name:
+                    fileobj = open(debug_file_name, "a")
+                else:
+                    fileobj = sys.stderr
             sys.modules[cls.SYS_MOD_NAME] = the_one = cls(fileobj, show_process, filters)
         return the_one
 
