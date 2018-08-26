@@ -4,7 +4,7 @@
 """Sqlite coverage data."""
 
 # TODO: get sys_info for data class, so we can see sqlite version etc
-# TODO: get rid of skip_unless_data_storage_is_json
+# TODO: get rid of skip_unless_data_storage_is
 # TODO: get rid of "JSON message" and "SQL message" in the tests
 # TODO: factor out dataop debugging to a wrapper class?
 # TODO: make sure all dataop debugging is in place somehow
@@ -107,7 +107,7 @@ class CoverageSqliteData(SimpleRepr):
         with self._db:
             try:
                 schema_version, = self._db.execute("select version from coverage_schema").fetchone()
-            except (TypeError, sqlite3.Error) as exc:
+            except Exception as exc:
                 raise CoverageException(
                     "Data file {!r} doesn't seem to be a coverage data file: {}".format(
                         self.filename, exc
@@ -116,7 +116,7 @@ class CoverageSqliteData(SimpleRepr):
             else:
                 if schema_version != SCHEMA_VERSION:
                     raise CoverageException(
-                        "Data file {!r} is wrong schema: {} instead of {}".format(
+                        "Couldn't use data file {!r}: wrong schema: {} instead of {}".format(
                             self.filename, schema_version, SCHEMA_VERSION
                         )
                     )

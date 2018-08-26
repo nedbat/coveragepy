@@ -516,7 +516,7 @@ class ProcessTest(CoverageTest):
         if not hasattr(os, 'fork'):
             self.skipTest("Can't test os.fork since it doesn't exist.")
         # See https://nedbatchelder.com/blog/201808/sqlite_data_storage_for_coveragepy.html
-        self.skip_unless_data_storage_is_json()
+        self.skip_unless_data_storage_is("json")
 
         self.make_file("fork.py", """\
             import os
@@ -655,7 +655,7 @@ class ProcessTest(CoverageTest):
         if env.PYPY and env.PY3 and env.PYPYVERSION[:3] == (5, 10, 0):      # pragma: obscure
             # https://bitbucket.org/pypy/pypy/issues/2729/pypy3-510-incorrectly-decodes-astral-plane
             self.skipTest("Avoid incorrect decoding astral plane JSON chars")
-        self.skip_unless_data_storage_is_json()
+        self.skip_unless_data_storage_is("json")
 
         self.make_file(".coveragerc", """\
             [run]
