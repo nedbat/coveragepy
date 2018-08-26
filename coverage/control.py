@@ -39,10 +39,6 @@ except ImportError:                                         # pragma: only jytho
 os = isolate_module(os)
 
 
-if 1:
-    from coverage.debug import decorate_methods, break_in_pudb, show_calls
-
-#@decorate_methods(show_calls(show_args=True), butnot=['get_data'])
 class Coverage(object):
     """Programmatic access to coverage.py.
 
@@ -864,6 +860,13 @@ class Coverage(object):
             info.extend(self._inorout.sys_info())
 
         return info
+
+
+# Mega debugging...
+if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):
+    from coverage.debug import decorate_methods, show_calls
+
+    Coverage = decorate_methods(show_calls(show_args=True), butnot=['get_data'])(Coverage)
 
 
 def process_startup():
