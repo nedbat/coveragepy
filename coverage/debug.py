@@ -4,7 +4,9 @@
 """Control of and utilities for debugging."""
 
 import contextlib
+import functools
 import inspect
+import itertools
 import os
 import re
 import sys
@@ -173,7 +175,10 @@ def add_pid_and_tid(text):
 class SimpleRepr(object):
     """A mixin implementing a simple __repr__."""
     def __repr__(self):
-        show_attrs = ((k, v) for k, v in self.__dict__.items() if getattr(v, "show_repr_attr", True))
+        show_attrs = (
+            (k, v) for k, v in self.__dict__.items()
+            if getattr(v, "show_repr_attr", True)
+        )
         return "<{klass} @0x{id:x} {attrs}>".format(
             klass=self.__class__.__name__,
             id=id(self),
@@ -248,6 +253,8 @@ class DebugOutputFile(object):                              # pragma: debugging
         # on a class attribute. Yes, this is aggressively gross.
         the_one = sys.modules.get(cls.SYS_MOD_NAME)
         if the_one is None:
+            with open("/tmp/where.txt", "a") as f:
+                f.write("Starting with {}\n".format(fileobj))
             if fileobj is None:
                 fileobj = open("/tmp/debug_log.txt", "a")
             sys.modules[cls.SYS_MOD_NAME] = the_one = cls(fileobj, show_process, filters)
@@ -269,6 +276,71 @@ def log(msg, stack=False):                                  # pragma: debugging
     out.write(msg+"\n")
     if stack:
         dump_stack_frames(out=out, skip=1)
+
+
+def decorate_methods(decorator, butnot=()):                 # pragma: debugging
+    """A class decorator to apply a decorator to public methods."""
+    def _decorator(cls):
+        for name, meth in inspect.getmembers(cls, inspect.isroutine):
+            public = name == '__init__' or not name.startswith("_")
+            decorate_it = public and name not in butnot
+            if decorate_it:
+                setattr(cls, name, decorator(meth))
+        return cls
+    return _decorator
+
+
+def break_in_pudb(func):                                    # pragma: debugging
+    """A function decorator to stop in the debugger for each call."""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        import pudb                 # pylint: disable=import-error
+        sys.stdout = sys.__stdout__
+        pudb.set_trace()
+        return func(*args, **kwargs)
+    return wrapper
+
+
+OBJ_IDS = itertools.count()
+CALLS = itertools.count()
+OBJ_ID_ATTR = "$coverage.object_id"
+
+def show_calls(show_args=True, show_stack=False):           # pragma: debugging
+    """A method decorator to debug-log each call to the function."""
+    def _decorator(func):
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            oid = getattr(self, OBJ_ID_ATTR, None)
+            if oid is None:
+                oid = "{:08d} {:04d}".format(os.getpid(), next(OBJ_IDS))
+                setattr(self, OBJ_ID_ATTR, oid)
+            extra = ""
+            if show_args:
+                eargs = ", ".join(map(repr, args))
+                ekwargs = ", ".join("{}={!r}".format(*item) for item in kwargs.items())
+                extra += "("
+                extra += eargs
+                if eargs and ekwargs:
+                    extra += ", "
+                extra += ekwargs
+                extra += ")"
+            if show_stack:
+                extra += " @ "
+                extra += "; ".join(_clean_stack_line(l) for l in short_stack().splitlines())
+            msg = "{} {:04d} {}{}\n".format(oid, next(CALLS), func.__name__, extra)
+            DebugOutputFile.the_one().write(msg)
+            return func(self, *args, **kwargs)
+        return wrapper
+    return _decorator
+
+
+def _clean_stack_line(s):                                   # pragma: debugging
+    """Simplify some paths in a stack trace, for compactness."""
+    s = s.strip()
+    s = s.replace(os.path.dirname(__file__) + '/', '')
+    s = s.replace(os.path.dirname(os.__file__) + '/', '')
+    s = s.replace(sys.prefix + '/', '')
+    return s
 
 
 def filter_aspectlib_frames(text):                          # pragma: debugging
