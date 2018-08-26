@@ -56,7 +56,7 @@ def clean_stack_line(s):
     s = s.strip()
     s = s.replace('/Users/ned/coverage/trunk/coverage/', '')
     s = s.replace(os.path.dirname(os.__file__) + '/', '')
-    s = s.replace('/Users/ned/coverage/trunk/.tox/py36/', '')
+    s = s.replace(sys.prefix + '/', '')
     return s
 
 def show_call(func):
