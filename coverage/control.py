@@ -853,7 +853,7 @@ class Coverage(object):
                 for k, v in iitems(os.environ)
                 if any(slug in k for slug in ("COV", "PY"))
             )),
-            ('command_line', " ".join(getattr(sys, 'argv', ['???']))),
+            ('command_line', " ".join(getattr(sys, 'argv', ['-none-']))),
             ]
 
         if self._inorout:
