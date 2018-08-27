@@ -515,8 +515,6 @@ class ProcessTest(CoverageTest):
     def test_fork(self):
         if not hasattr(os, 'fork'):
             self.skipTest("Can't test os.fork since it doesn't exist.")
-        # See https://nedbatchelder.com/blog/201808/sqlite_data_storage_for_coveragepy.html
-        self.skip_unless_data_storage_is("json")
 
         self.make_file("fork.py", """\
             import os

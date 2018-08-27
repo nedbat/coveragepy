@@ -9,7 +9,6 @@
 # TODO: factor out dataop debugging to a wrapper class?
 # TODO: make sure all dataop debugging is in place somehow
 # TODO: should writes be batched?
-# TODO: settle the os.fork question
 # TODO: run_info
 
 import glob
@@ -63,20 +62,27 @@ create table tracer (
 
 class CoverageSqliteData(SimpleRepr):
     def __init__(self, basename=None, suffix=None, warn=None, debug=None):
-        self.filename = os.path.abspath(basename or ".coverage")
-        suffix = filename_suffix(suffix)
-        if suffix:
-            self.filename += "." + suffix
+        self._basename = os.path.abspath(basename or ".coverage")
+        self._suffix = suffix
         self._warn = warn
         self._debug = debug
 
+        self._choose_filename()
         self._file_map = {}
         self._db = None
+        self._pid = os.getpid()
+
         # Are we in sync with the data file?
         self._have_used = False
 
         self._has_lines = False
         self._has_arcs = False
+
+    def _choose_filename(self):
+        self.filename = self._basename
+        suffix = filename_suffix(self._suffix)
+        if suffix:
+            self.filename += "." + suffix
 
     def _reset(self):
         self._file_map = {}
@@ -333,6 +339,11 @@ class CoverageSqliteData(SimpleRepr):
         pass
 
     def _start_using(self):
+        if self._pid != os.getpid():
+            # Looks like we forked! Have to start a new data file.
+            self._reset()
+            self._choose_filename()
+            self._pid = os.getpid()
         if not self._have_used:
             self.erase()
         self._have_used = True
