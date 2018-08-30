@@ -331,7 +331,7 @@ class XmlGoldTest(CoverageTest):
         compare(".", gold_path("html/gold_x_xml"), left_extra=True, scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
-            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
+            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % re.escape(source_path)),
             (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
         ])
 
@@ -360,7 +360,7 @@ class XmlGoldTest(CoverageTest):
         compare("xml_2", gold_path("html/gold_x_xml"), scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
-            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
+            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % re.escape(source_path)),
             (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
         ])
 
@@ -385,6 +385,6 @@ class XmlGoldTest(CoverageTest):
         compare("y_xml_branch", gold_path("html/gold_y_xml_branch"), scrubs=[
             (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
             (r' version="[-.\w]+"', ' version="VERSION"'),
-            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % source_path),
+            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % re.escape(source_path)),
             (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
         ])
