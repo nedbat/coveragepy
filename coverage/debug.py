@@ -40,7 +40,7 @@ class DebugControl(object):
         filters = []
         if self.should('pid'):
             filters.append(add_pid_and_tid)
-        self.output = DebugOutputFile.the_one(
+        self.output = DebugOutputFile.get_one(
             output,
             show_process=self.should('process'),
             filters=filters,
@@ -239,14 +239,23 @@ class DebugOutputFile(object):                              # pragma: debugging
     SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
 
     @classmethod
-    def the_one(cls, fileobj=None, show_process=True, filters=()):
-        """Get the process-wide singleton DebugOutputFile.
+    def get_one(cls, fileobj=None, show_process=True, filters=()):
+        """Get a DebugOutputFile.
 
-        If it doesn't exist yet, then create it as a wrapper around the file
-        object `fileobj`. `show_process` controls whether the debug file adds
-        process-level information.
+        If `fileobj` is provided, then a new DebugOutputFile is made with it.
+
+        If `fileobj` isn't provided, then a file is chosen
+        (COVERAGE_DEBUG_FILE, or stderr), and a process-wide singleton
+        DebugOutputFile is made.
+
+        `show_process` controls whether the debug file adds process-level
+        information, and filters is a list of other message filters to apply.
 
         """
+        if fileobj is not None:
+            # Make DebugOutputFile around the fileobj passed.
+            return cls(fileobj, show_process, filters)
+
         # Because of the way igor.py deletes and re-imports modules,
         # this class can be defined more than once. But we really want
         # a process-wide singleton. So stash it in sys.modules instead of
@@ -274,7 +283,7 @@ class DebugOutputFile(object):                              # pragma: debugging
 
 def log(msg, stack=False):                                  # pragma: debugging
     """Write a log message as forcefully as possible."""
-    out = DebugOutputFile.the_one()
+    out = DebugOutputFile.get_one()
     out.write(msg+"\n")
     if stack:
         dump_stack_frames(out=out, skip=1)
@@ -330,7 +339,7 @@ def show_calls(show_args=True, show_stack=False):           # pragma: debugging
                 extra += " @ "
                 extra += "; ".join(_clean_stack_line(l) for l in short_stack().splitlines())
             msg = "{} {:04d} {}{}\n".format(oid, next(CALLS), func.__name__, extra)
-            DebugOutputFile.the_one().write(msg)
+            DebugOutputFile.get_one().write(msg)
             return func(self, *args, **kwargs)
         return wrapper
     return _decorator
@@ -358,7 +367,6 @@ def enable_aspectlib_maybe():                               # pragma: debugging
     Define COVERAGE_ASPECTLIB to enable and configure aspectlib to trace
     execution::
 
-        $ export COVERAGE_LOG=covaspect.txt
         $ export COVERAGE_ASPECTLIB=coverage.Coverage:coverage.data.CoverageData
         $ coverage run blah.py ...
 
@@ -373,9 +381,8 @@ def enable_aspectlib_maybe():                               # pragma: debugging
     import aspectlib                            # pylint: disable=import-error
     import aspectlib.debug                      # pylint: disable=import-error
 
-    filename = os.environ.get("COVERAGE_LOG", "/tmp/covlog.txt")
     filters = [add_pid_and_tid, filter_aspectlib_frames]
-    aspects_file = DebugOutputFile.the_one(open(filename, "a"), show_process=True, filters=filters)
+    aspects_file = DebugOutputFile.get_one(None, show_process=True, filters=filters)
     aspect_log = aspectlib.debug.log(
         print_to=aspects_file, attributes=['id'], stacktrace=30, use_logging=False
     )
