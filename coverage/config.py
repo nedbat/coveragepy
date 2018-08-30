@@ -181,6 +181,7 @@ class CoverageConfig(object):
         self.config_files_read = []
         # The file that gave us our configuration.
         self.config_file = None
+        self._config_contents = None
 
         # Defaults for [run] and [report]
         self._include = None
@@ -315,6 +316,8 @@ class CoverageConfig(object):
 
         if used:
             self.config_file = filename
+            with open(filename) as f:
+                self._config_contents = f.read()
 
         return used
 

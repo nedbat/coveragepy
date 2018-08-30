@@ -223,6 +223,7 @@ class Coverage(object):
         with self._debug.without_callers():
             if self._debug.should('config'):
                 config_info = sorted(self.config.__dict__.items())
+                config_info = [(k, v) for k, v in config_info if not k.startswith('_')]
                 write_formatted_info(self._debug, "config", config_info)
                 wrote_any = True
 
@@ -840,6 +841,11 @@ class Coverage(object):
             ('configs_attempted', self.config.attempted_config_files),
             ('configs_read', self.config.config_files_read),
             ('config_file', self.config.config_file),
+            ('config_contents',
+                repr(self.config._config_contents)
+                if self.config._config_contents
+                else '-none-'
+            ),
             ('data_file', self._data.filename if self._data else "-none-"),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
