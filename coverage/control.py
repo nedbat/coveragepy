@@ -13,7 +13,7 @@ import time
 from coverage import env
 from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
-from coverage.collector import Collector
+from coverage.collector import Collector, CTracer
 from coverage.config import read_coverage_config
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import DebugControl, write_formatted_info
@@ -836,6 +836,7 @@ class Coverage(object):
             ('version', covmod.__version__),
             ('coverage', covmod.__file__),
             ('tracer', self._collector.tracer_name() if self._collector else "-none-"),
+            ('CTracer', 'available' if CTracer else "unavailable"),
             ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
             ('plugins.configurers', plugin_info(self._plugins.configurers)),
             ('configs_attempted', self.config.attempted_config_files),

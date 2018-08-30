@@ -10,9 +10,10 @@ import pytest
 import coverage
 from coverage.backward import StringIO
 from coverage.debug import filter_text, info_formatter, info_header, short_id, short_stack
+from coverage.env import C_TRACER
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import re_lines
+from tests.helpers import re_line, re_lines
 
 
 class InfoFormatterTest(CoverageTest):
@@ -160,7 +161,8 @@ class DebugTraceTest(CoverageTest):
             label_pat = r"^\s*%s: " % label
             self.assertEqual(
                 len(re_lines(out_lines, label_pat).splitlines()),
-                1
+                1,
+                msg="Incorrect lines for %r" % label,
             )
 
     def test_debug_sys(self):
@@ -178,6 +180,15 @@ class DebugTraceTest(CoverageTest):
                 1,
                 msg="Incorrect lines for %r" % label,
             )
+
+    def test_debug_sys_ctracer(self):
+        out_lines = self.f1_debug_output(["sys"])
+        tracer_line = re_line(out_lines, r"CTracer:").strip()
+        if C_TRACER:
+            expected = "CTracer: available"
+        else:
+            expected = "CTracer: unavailable"
+        self.assertEqual(tracer_line, expected)
 
 
 def f_one(*args, **kwargs):
