@@ -30,6 +30,9 @@ Unreleased
 
 - HTML files no longer have trailing and extra whitespace.
 
+- The sort order in the HTML report is stored in local storage rather than
+  cookies.  Thanks, Federico Bond.
+
 - pickle2json, for converting v3 data files to v4 data files, has been removed.
 
 .. _Bitbucket: https://bitbucket.org/ned/coveragepy

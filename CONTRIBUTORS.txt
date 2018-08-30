@@ -47,6 +47,7 @@ Dmitry Trofimov
 Eduardo Schettino
 Emil Madsen
 Edward Loper
+Federico Bond
 Geoff Bache
 George Paci
 George Song
