@@ -240,13 +240,13 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             covdata.add_file_tracers({"p1.foo": "p1.plugin.foo"})
 
     def test_update_lines(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData(suffix='1')
         covdata1.add_lines(LINES_1)
 
-        covdata2 = CoverageData()
+        covdata2 = CoverageData(suffix='2')
         covdata2.add_lines(LINES_2)
 
-        covdata3 = CoverageData()
+        covdata3 = CoverageData(suffix='3')
         covdata3.update(covdata1)
         covdata3.update(covdata2)
 
@@ -255,13 +255,13 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata3.run_infos(), [])
 
     def test_update_arcs(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData(suffix='1')
         covdata1.add_arcs(ARCS_3)
 
-        covdata2 = CoverageData()
+        covdata2 = CoverageData(suffix='2')
         covdata2.add_arcs(ARCS_4)
 
-        covdata3 = CoverageData()
+        covdata3 = CoverageData(suffix='3')
         covdata3.update(covdata1)
         covdata3.update(covdata2)
 
@@ -289,10 +289,10 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         ])
 
     def test_update_cant_mix_lines_and_arcs(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData(suffix='1')
         covdata1.add_lines(LINES_1)
 
-        covdata2 = CoverageData()
+        covdata2 = CoverageData(suffix='2')
         covdata2.add_arcs(ARCS_3)
 
         with self.assertRaisesRegex(CoverageException, "Can't combine arc data with line data"):
@@ -302,7 +302,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             covdata2.update(covdata1)
 
     def test_update_file_tracers(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData(suffix='1')
         covdata1.add_lines({
             "p1.html": dict.fromkeys([1, 2, 3, 4]),
             "p2.html": dict.fromkeys([5, 6, 7]),
@@ -313,7 +313,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             "p2.html": "html.plugin2",
         })
 
-        covdata2 = CoverageData()
+        covdata2 = CoverageData(suffix='2')
         covdata2.add_lines({
             "p1.html": dict.fromkeys([3, 4, 5, 6]),
             "p2.html": dict.fromkeys([7, 8, 9]),
@@ -326,7 +326,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             "p3.foo": "foo_plugin",
         })
 
-        covdata3 = CoverageData()
+        covdata3 = CoverageData(suffix='3')
         covdata3.update(covdata1)
         covdata3.update(covdata2)
         self.assertEqual(covdata3.file_tracer("p1.html"), "html.plugin")
@@ -335,11 +335,11 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata3.file_tracer("main.py"), "")
 
     def test_update_conflicting_file_tracers(self):
-        covdata1 = CoverageData()
+        covdata1 = CoverageData(suffix='1')
         covdata1.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata1.add_file_tracers({"p1.html": "html.plugin"})
 
-        covdata2 = CoverageData()
+        covdata2 = CoverageData(suffix='2')
         covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata2.add_file_tracers({"p1.html": "html.other_plugin"})
 
