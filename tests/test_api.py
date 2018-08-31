@@ -375,7 +375,7 @@ class ApiTest(CoverageTest):
             r"Couldn't read data from '.*\.coverage\.foo': "
             r"CoverageException: Doesn't seem to be a coverage\.py data file"
             r"|"    # SQL message:
-            r"Couldn't use data file '.*\.coverage\.foo': file is encrypted or is not a database"
+            r"Couldn't use data file '.*\.coverage\.foo': file (is encrypted or )?is not a database"
             r")"
         )
         with self.assert_warnings(cov, [warning_regex]):

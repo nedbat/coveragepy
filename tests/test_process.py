@@ -132,7 +132,7 @@ class ProcessTest(CoverageTest):
             r"CoverageException: Doesn't seem to be a coverage\.py data file"
             r"|"    # SQL message:
             r"Coverage.py warning: Couldn't use data file '.*\.coverage\.bad': "
-            r"file is encrypted or is not a database"
+            r"file (is encrypted or )?is not a database"
             r")"
         )
         self.assertRegex(out, warning_regex)
@@ -170,7 +170,7 @@ class ProcessTest(CoverageTest):
                 r"CoverageException: Doesn't seem to be a coverage\.py data file"
                 r"|"    # SQL message:
                 r"Coverage.py warning: Couldn't use data file '.*\.coverage.bad{0}': "
-                r"file is encrypted or is not a database"
+                r"file (is encrypted or )?is not a database"
                 r")"
                 .format(n)
             )
