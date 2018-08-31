@@ -85,10 +85,10 @@ class CoverageSqliteData(SimpleRepr):
             self.filename += "." + suffix
 
     def _reset(self):
-        self._file_map = {}
         if self._db is not None:
             self._db.close()
         self._db = None
+        self._file_map = {}
         self._have_used = False
 
     def _create_db(self):
@@ -126,11 +126,12 @@ class CoverageSqliteData(SimpleRepr):
                             self.filename, schema_version, SCHEMA_VERSION
                         )
                     )
-        for row in self._db.execute("select has_lines, has_arcs from meta"):
-            self._has_lines, self._has_arcs = row
 
-        for path, id in self._db.execute("select path, id from file"):
-            self._file_map[path] = id
+            for row in self._db.execute("select has_lines, has_arcs from meta"):
+                self._has_lines, self._has_arcs = row
+
+            for path, id in self._db.execute("select path, id from file"):
+                self._file_map[path] = id
 
     def _connect(self):
         if self._db is None:
@@ -331,8 +332,8 @@ class CoverageSqliteData(SimpleRepr):
                 file_be_gone(filename)
 
     def read(self):
-        self._connect()     # TODO: doesn't look right
-        self._have_used = True
+        with self._connect():       # TODO: doesn't look right
+            self._have_used = True
 
     def write(self):
         """Write the collected coverage data to a file."""
@@ -410,6 +411,9 @@ class Sqlite(SimpleRepr):
         if self.debug:
             self.debug.write("Connecting to {!r}".format(filename))
         self.filename = filename
+        self.nest = 0
+
+    def connect(self):
         self.con = sqlite3.connect(self.filename)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
@@ -423,11 +427,17 @@ class Sqlite(SimpleRepr):
         self.con.close()
 
     def __enter__(self):
-        self.con.__enter__()
+        if self.nest == 0:
+            self.connect()
+            self.con.__enter__()
+        self.nest += 1
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        return self.con.__exit__(exc_type, exc_value, traceback)
+        self.nest -= 1
+        if self.nest == 0:
+            self.con.__exit__(exc_type, exc_value, traceback)
+            self.close()
 
     def execute(self, sql, parameters=()):
         if self.debug:
