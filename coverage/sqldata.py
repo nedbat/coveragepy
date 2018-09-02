@@ -414,7 +414,11 @@ class Sqlite(SimpleRepr):
         self.nest = 0
 
     def connect(self):
-        self.con = sqlite3.connect(self.filename)
+        # SQLite on Windows on py2 won't open a file if the filename argument
+        # has non-ascii characters in it.  Opening a relative file name avoids
+        # a problem if the current directory has non-ascii.
+        filename = os.path.relpath(self.filename)
+        self.con = sqlite3.connect(filename)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
         # PyPy needs the .close() calls here, or sqlite gets twisted up:
