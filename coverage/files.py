@@ -260,19 +260,8 @@ class ModuleMatcher(object):
 class FnmatchMatcher(object):
     """A matcher for files by file name pattern."""
     def __init__(self, pats):
-        self.pats = pats[:]
-        # fnmatch is platform-specific. On Windows, it does the Windows thing
-        # of treating / and \ as equivalent. But on other platforms, we need to
-        # take care of that ourselves.
-        fnpats = (fnmatch.translate(p) for p in pats)
-        # Python3.7 fnmatch translates "/" as "/", before that, it translates as "\/",
-        # so we have to deal with maybe a backslash.
-        fnpats = (re.sub(r"\\?/", r"[\\\\/]", p) for p in fnpats)
-        flags = 0
-        if env.WINDOWS:
-            # Windows is also case-insensitive, so make the regex case-insensitive.
-            flags |= re.IGNORECASE
-        self.re = re.compile(join_regex(fnpats), flags=flags)
+        self.pats = list(pats)
+        self.re = fnmatches_to_regex(self.pats, case_insensitive=env.WINDOWS)
 
     def __repr__(self):
         return "<FnmatchMatcher %r>" % self.pats
@@ -294,6 +283,39 @@ def sep(s):
     else:
         the_sep = os.sep
     return the_sep
+
+
+def fnmatches_to_regex(patterns, case_insensitive=False, partial=False):
+    """Convert fnmatch patterns to a compiled regex that matches any of them.
+
+    Slashes are always converted to match either slash or backslash, for
+    Windows support, even when running elsewhere.
+
+    If `partial` is true, then the pattern will match if the target string
+    starts with the pattern. Otherwise, it must match the entire string.
+
+    Returns: a compiled regex object.  Use the .match method to compare target
+    strings.
+
+    """
+    regexes = (fnmatch.translate(pattern) for pattern in patterns)
+    # Python3.7 fnmatch translates "/" as "/". Before that, it translates as "\/",
+    # so we have to deal with maybe a backslash.
+    regexes = (re.sub(r"\\?/", r"[\\\\/]", regex) for regex in regexes)
+
+    if partial:
+        # fnmatch always adds a \Z to match the whole string, which we don't
+        # want, so we remove the \Z.  While removing it, we only replace \Z if
+        # followed by paren (introducing flags), or at end, to keep from
+        # destroying a literal \Z in the pattern.
+        regexes = (re.sub(r'\\Z(\(\?|$)', r'\1', regex) for regex in regexes)
+
+    flags = 0
+    if case_insensitive:
+        flags |= re.IGNORECASE
+    compiled = re.compile(join_regex(regexes), flags=flags)
+
+    return compiled
 
 
 class PathAliases(object):
@@ -343,18 +365,8 @@ class PathAliases(object):
         if not pattern.endswith(pattern_sep):
             pattern += pattern_sep
 
-        # Make a regex from the pattern.  fnmatch always adds a \Z to
-        # match the whole string, which we don't want, so we remove the \Z.
-        # While removing it, we only replace \Z if followed by paren, or at
-        # end, to keep from destroying a literal \Z in the pattern.
-        regex_pat = fnmatch.translate(pattern)
-        regex_pat = re.sub(r'\\Z(\(|$)', r'\1', regex_pat)
-
-        # We want */a/b.py to match on Windows too, so change slash to match
-        # either separator.
-        regex_pat = regex_pat.replace(r"\/", r"[\\/]")
-        # We want case-insensitive matching, so add that flag.
-        regex = re.compile(r"(?i)" + regex_pat)
+        # Make a regex from the pattern.
+        regex = fnmatches_to_regex([pattern], case_insensitive=True, partial=True)
 
         # Normalize the result: it must end with a path separator.
         result_sep = sep(result)
