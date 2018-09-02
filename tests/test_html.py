@@ -565,6 +565,15 @@ class HtmlStaticFileTest(CoverageTest):
         with self.assertRaisesRegex(CoverageException, msg):
             cov.html_report()
 
+def filepath_to_regex(path):
+    """Create a regex for scrubbing a file path."""
+    regex = re.escape(path)
+    # If there's a backslash, let it match either slash.
+    regex = regex.replace(r"\\", r"[\\/]")
+    if env.WINDOWS:
+        regex = "(?i)" + regex
+    return regex
+
 
 def compare_html(dir1, dir2):
     """Specialized compare function for HTML files."""
@@ -575,13 +584,13 @@ def compare_html(dir1, dir2):
         # Some words are identifiers in one version, keywords in another.
         (r'<span class="(nam|key)">(print|True|False)</span>', r'<span class="nam">\2</span>'),
         # Occasionally an absolute path is in the HTML report.
-        (re.escape(TESTS_DIR), 'TESTS_DIR'),
+        (filepath_to_regex(TESTS_DIR), 'TESTS_DIR'),
         (r'/Users/ned/coverage/trunk/tests', 'TESTS_DIR'),
-        (flat_rootname(unicode_class(TESTS_DIR)), '_TESTS_DIR'),
+        (filepath_to_regex(flat_rootname(unicode_class(TESTS_DIR))), '_TESTS_DIR'),
         (flat_rootname(u'/Users/ned/coverage/trunk/tests'), '_TESTS_DIR'),
         # The temp dir the tests make.
-        (re.escape(os.getcwd()), 'TEST_TMPDIR'),
-        (flat_rootname(unicode_class(os.getcwd())), '_TEST_TMPDIR'),
+        (filepath_to_regex(os.getcwd()), 'TEST_TMPDIR'),
+        (filepath_to_regex(flat_rootname(unicode_class(os.getcwd()))), '_TEST_TMPDIR'),
         (r'/private/var/folders/[\w/]{35}/coverage_test/tests_test_html_\w+_\d{8}', 'TEST_TMPDIR'),
         (r'_private_var_folders_\w{35}_coverage_test_tests_test_html_\w+_\d{8}', '_TEST_TMPDIR'),
     ]
