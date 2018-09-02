@@ -12,7 +12,7 @@ import pytest
 from coverage import files
 from coverage.files import (
     TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
-    find_python_files, abs_file, actual_path, flat_rootname,
+    find_python_files, abs_file, actual_path, flat_rootname, fnmatches_to_regex,
 )
 from coverage.misc import CoverageException
 from coverage import env
@@ -75,6 +75,55 @@ class FilesTest(CoverageTest):
 ])
 def test_flat_rootname(original, flat):
     assert flat_rootname(original) == flat
+
+
+@pytest.mark.parametrize(
+        "patterns, case_insensitive, partial,"
+            "matches,"
+            "nomatches",
+[
+    (
+        ["abc", "xyz"], False, False,
+            ["abc", "xyz"],
+            ["ABC", "xYz", "abcx", "xabc", "axyz", "xyza"],
+    ),
+    (
+        ["abc", "xyz"], True, False,
+            ["abc", "xyz", "Abc", "XYZ", "AbC"],
+            ["abcx", "xabc", "axyz", "xyza"],
+    ),
+    (
+        ["abc/hi.py"], True, False,
+            ["abc/hi.py", "ABC/hi.py", r"ABC\hi.py"],
+            ["abc_hi.py", "abc/hi.pyc"],
+    ),
+    (
+        [r"abc\hi.py"], True, False,
+            [r"abc\hi.py", r"ABC\hi.py"],
+            ["abc/hi.py", "ABC/hi.py", "abc_hi.py", "abc/hi.pyc"],
+    ),
+    (
+        ["abc/*/hi.py"], True, False,
+            ["abc/foo/hi.py", "ABC/foo/bar/hi.py", r"ABC\foo/bar/hi.py"],
+            ["abc/hi.py", "abc/hi.pyc"],
+    ),
+    (
+        ["abc/[a-f]*/hi.py"], True, False,
+            ["abc/foo/hi.py", "ABC/foo/bar/hi.py", r"ABC\foo/bar/hi.py"],
+            ["abc/zoo/hi.py", "abc/hi.py", "abc/hi.pyc"],
+    ),
+    (
+        ["abc/"], True, True,
+            ["abc/foo/hi.py", "ABC/foo/bar/hi.py", r"ABC\foo/bar/hi.py"],
+            ["abcd/foo.py", "xabc/hi.py"],
+    ),
+])
+def test_fnmatches_to_regex(patterns, case_insensitive, partial, matches, nomatches):
+    regex = fnmatches_to_regex(patterns, case_insensitive=case_insensitive, partial=partial)
+    for s in matches:
+        assert regex.match(s)
+    for s in nomatches:
+        assert not regex.match(s)
 
 
 class MatcherTest(CoverageTest):
