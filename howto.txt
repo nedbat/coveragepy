@@ -58,11 +58,9 @@
 - Update PyPi:
     - upload kits:
         - $ make kit_upload
-    - DON'T NEED TO DO THIS ANY MORE?
-        - Visit https://pypi.python.org/pypi?:action=pkg_edit&name=coverage :
-        - show/hide the proper versions.
 - Tag the tree
     - git tag coverage-3.0.1
+    - git push --tags
 - Bump version:
     - coverage/version.py
         - increment version number
