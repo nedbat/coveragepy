@@ -31,7 +31,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 
-**New in 5.0:** Dropped support for Python 2.6 and 3.3.
+**New in 5.0:** SQLite data storage, dropped support for Python 2.6 and 3.3.
 
 New in 4.5: Configurator plug-ins.
 

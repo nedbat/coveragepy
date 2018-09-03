@@ -14,8 +14,10 @@ Change history for Coverage.py
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+.. _changes_50a2:
+
+Version 5.0a2 --- 2018-09-03
+----------------------------
 
 - Coverage's data storage has changed.  In version 4.x, .coverage files were
   basically JSON.  Now, they are SQLite databases.  This means the data file
