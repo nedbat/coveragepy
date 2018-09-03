@@ -22,9 +22,16 @@ Unreleased
   can be created earlier than it used to.  A large amount of code was
   refactored to support this change.
 
-- The old data format is still available (for now) by setting the environment
-  variable COVERAGE_STORAGE=json. Please tell me if you think you need to keep
-  the JSON format.
+  - Because the data file is created differently than previous releases, you
+    may need ``parallel=true`` where you didn't before.
+
+  - The old data format is still available (for now) by setting the environment
+    variable COVERAGE_STORAGE=json. Please tell me if you think you need to
+    keep the JSON format.
+
+  - The database schema is guaranteed to change in the future, to support new
+    features.  I'm looking for opinions about making the schema part of the
+    public API to coverage.py or not.
 
 - Development moved from `Bitbucket`_ to `GitHub`_.
 
