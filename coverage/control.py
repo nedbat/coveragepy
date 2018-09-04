@@ -870,7 +870,7 @@ class Coverage(object):
 
 
 # Mega debugging...
-if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):
+if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):              # pragma: debugging
     from coverage.debug import decorate_methods, show_calls
 
     Coverage = decorate_methods(show_calls(show_args=True), butnot=['get_data'])(Coverage)
