@@ -141,6 +141,14 @@ class TOMLConfigParser:
                     .format(option, section, value))
         return value
 
+    def getfloat(self, section, option):
+        value = self.get(section, option)
+        if not isinstance(value, float):
+            raise ValueError(
+                'Option {!r} in section {!r} is not a float: {!r}'
+                    .format(option, section, value))
+        return value
+
 class HandyConfigParser(configparser.RawConfigParser):
     """Our specialization of ConfigParser."""
 
