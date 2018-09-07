@@ -3,9 +3,9 @@
 
 # The pytest specifics used by coverage.py
 
-pytest==3.7.1
+pytest==3.8.0
 pluggy>=0.7         # pytest needs this, but pip doesn't understand
-pytest-xdist==1.22.5
+pytest-xdist==1.23.0
 flaky==3.4.0
 mock==2.0.0
 PyContracts==1.8.3
