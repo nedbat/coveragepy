@@ -59,10 +59,17 @@ or ``0`` and are case-insensitive.
 
 Environment variables can be substituted in by using dollar signs: ``$WORD``
 or ``${WORD}`` will be replaced with the value of ``WORD`` in the environment.
-A dollar sign can be inserted with ``$$``.  If you want to raise an error if
-an environment variable is undefined, use a question mark suffix: ``${WORD?}``.
-Otherwise, missing environment variables will result in empty strings with no
-error.
+A dollar sign can be inserted with ``$$``.  Special forms can be used to
+control what happens if the variable isn't defined in the environment:
+
+- If you want to raise an error if an environment variable is undefined, use a
+  question mark suffix: ``${WORD?}``.
+
+- If you want to provide a default for missing variables, use a dash with a
+  default value: ``${WORD-default value}``.
+
+- Otherwise, missing environment variables will result in empty strings with no
+  error.
 
 Many sections and values correspond roughly to commands and options in
 the :ref:`command-line interface <cmd>`.

@@ -258,7 +258,8 @@ def substitute_variables(text, variables=os.environ):
 
         $VAR
         ${VAR}
-        ${VAR?}     strict: an error if VAR isn't defined.
+        ${VAR?}             strict: an error if VAR isn't defined.
+        ${VAR-missing}      defaulted: "missing" if VAR isn't defined.
 
     A dollar can be inserted with ``$$``.
 
@@ -280,16 +281,20 @@ def substitute_variables(text, variables=os.environ):
                 if word not in variables:
                     msg = "Variable {} is undefined: {}".format(word, text)
                     raise CoverageException(msg)
-            return variables.get(word, '')
+            return variables.get(word, m.group('defval') or '')
 
     dollar_pattern = r"""(?x)   # Use extended regex syntax
         \$(?:                   # A dollar sign, then
         (?P<v1>\w+) |           #   a plain word,
+        (?P<char>\$) |          #   or a dollar sign.
         {                       #   or a {-wrapped word,
             (?P<v2>\w+)
-            (?P<strict>\??)     # with maybe a strict marker
-        } |
-        (?P<char>[$])           #   or a dollar sign.
+            (?:
+            (?P<strict>\?)      #       with a strict marker
+            |
+            -(?P<defval>[^}]*)  #       or a default value
+            )?
+        }
         )
         """
     text = re.sub(dollar_pattern, dollar_replace, text)
