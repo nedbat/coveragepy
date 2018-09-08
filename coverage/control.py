@@ -3,7 +3,6 @@
 
 """Core control stuff for coverage.py."""
 
-
 import atexit
 import os
 import platform

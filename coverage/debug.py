@@ -8,7 +8,6 @@ import functools
 import inspect
 import itertools
 import os
-import re
 import sys
 try:
     import _thread
