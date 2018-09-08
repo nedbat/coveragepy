@@ -10,6 +10,7 @@ import re
 from coverage import env
 from coverage.backward import configparser, iitems, string_class
 from coverage.misc import contract, CoverageException, isolate_module
+from coverage.misc import substitute_variables
 
 os = isolate_module(os)
 
@@ -85,23 +86,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             raise configparser.NoOptionError
 
         v = configparser.RawConfigParser.get(self, real_section, option, *args, **kwargs)
-        def dollar_replace(m):
-            """Called for each $replacement."""
-            # Only one of the groups will have matched, just get its text.
-            word = next(w for w in m.groups() if w is not None)     # pragma: part covered
-            if word == "$":
-                return "$"
-            else:
-                return os.environ.get(word, '')
-
-        dollar_pattern = r"""(?x)   # Use extended regex syntax
-            \$(?:                   # A dollar sign, then
-            (?P<v1>\w+) |           #   a plain word,
-            {(?P<v2>\w+)} |         #   or a {-wrapped word,
-            (?P<char>[$])           #   or a dollar sign.
-            )
-            """
-        v = re.sub(dollar_pattern, dollar_replace, v)
+        v = substitute_variables(v)
         return v
 
     def getlist(self, section, option):

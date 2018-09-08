@@ -6,7 +6,7 @@
 import pytest
 
 from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
-from coverage.misc import format_lines, Hasher, one_of
+from coverage.misc import format_lines, Hasher, one_of, substitute_variables
 
 from tests.coveragetest import CoverageTest
 
@@ -135,3 +135,19 @@ class ContractTest(CoverageTest):
 ])
 def test_format_lines(statements, lines, result):
     assert format_lines(statements, lines) == result
+
+
+@pytest.mark.parametrize("before, after", [
+    ("Nothing to do", "Nothing to do"),
+    ("Dollar: $$", "Dollar: $"),
+    ("Simple: $FOO is fooey", "Simple: fooey is fooey"),
+    ("Braced: X${FOO}X.", "Braced: XfooeyX."),
+    ("Missing: x$NOTHING is x", "Missing: x is x"),
+    ("Multiple: $$ $FOO $BAR ${FOO}", "Multiple: $ fooey xyzzy fooey"),
+])
+def test_substitute_variables(before, after):
+    variables = {
+        'FOO': 'fooey',
+        'BAR': 'xyzzy',
+    }
+    assert substitute_variables(before, variables) == after

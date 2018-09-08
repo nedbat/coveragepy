@@ -8,6 +8,7 @@ import hashlib
 import inspect
 import locale
 import os
+import re
 import sys
 import types
 
@@ -248,6 +249,42 @@ def _needs_to_implement(that, func_name):
             thing=thing, name=name, func_name=func_name
             )
         )
+
+
+def substitute_variables(text, variables=os.environ):
+    """Substitute ``${VAR}`` variables in `text` with their values.
+
+    Variables in the text can take a number of shell-inspired forms::
+
+        $VAR
+        ${VAR}
+
+    A dollar can be inserted with ``$$``.
+
+    `variables` is a dictionary of variable values, defaulting to the
+    environment variables.
+
+    Returns the resulting text with values substituted.
+
+    """
+    def dollar_replace(m):
+        """Called for each $replacement."""
+        # Only one of the groups will have matched, just get its text.
+        word = next(w for w in m.groups() if w is not None)     # pragma: part covered
+        if word == "$":
+            return "$"
+        else:
+            return variables.get(word, '')
+
+    dollar_pattern = r"""(?x)   # Use extended regex syntax
+        \$(?:                   # A dollar sign, then
+        (?P<v1>\w+) |           #   a plain word,
+        {(?P<v2>\w+)} |         #   or a {-wrapped word,
+        (?P<char>[$])           #   or a dollar sign.
+        )
+        """
+    text = re.sub(dollar_pattern, dollar_replace, text)
+    return text
 
 
 class BaseCoverageException(Exception):
