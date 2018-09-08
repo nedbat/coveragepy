@@ -271,7 +271,7 @@ def substitute_variables(text, variables=os.environ):
     def dollar_replace(m):
         """Called for each $replacement."""
         # Only one of the groups will have matched, just get its text.
-        word = m.expand(r"\g<v1>\g<v2>\g<char>")
+        word = ''.join(m.group(name) or '' for name in ['v1', 'v2', 'char'])
         if word == "$":
             return "$"
         else:
