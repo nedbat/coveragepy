@@ -695,16 +695,26 @@ class Coverage(object):
         file=None,                  # pylint: disable=redefined-builtin
         omit=None, include=None, skip_covered=None,
     ):
-        """Write a summary report to `file`.
+        """Write a textual summary report to `file`.
 
         Each module in `morfs` is listed, with counts of statements, executed
         statements, missing statements, and a list of lines missed.
+
+        If `show_missing` is true, then details of which lines or branches are
+        missing will be included in the report.  If `ignore_errors` is true,
+        then a failure while reporting a single file will not stop the entire
+        report.
+
+        `file` is a file-like object, suitable for writing.
 
         `include` is a list of file name patterns.  Files that match will be
         included in the report. Files matching `omit` will not be included in
         the report.
 
-        If `skip_covered` is True, don't report on files with 100% coverage.
+        If `skip_covered` is true, don't report on files with 100% coverage.
+
+        All of the arguments default to the settings read from the
+        :ref:`configuration file <config>`.
 
         Returns a float, the total percentage covered.
 
