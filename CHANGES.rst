@@ -17,7 +17,9 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-- nothing yet.
+- Environment variable substitution in configuration files can now be strict:
+  using a question mark suffix like ``${VARNAME?}`` will raise an error if
+  ``VARNAME`` is not defined as an environment variable.
 
 
 .. _changes_50a2:

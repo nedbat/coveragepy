@@ -7,6 +7,7 @@ import pytest
 
 from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
 from coverage.misc import format_lines, Hasher, one_of, substitute_variables
+from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
 
@@ -137,17 +138,29 @@ def test_format_lines(statements, lines, result):
     assert format_lines(statements, lines) == result
 
 
+VARS = {
+    'FOO': 'fooey',
+    'BAR': 'xyzzy',
+}
+
 @pytest.mark.parametrize("before, after", [
     ("Nothing to do", "Nothing to do"),
     ("Dollar: $$", "Dollar: $"),
     ("Simple: $FOO is fooey", "Simple: fooey is fooey"),
     ("Braced: X${FOO}X.", "Braced: XfooeyX."),
-    ("Missing: x$NOTHING is x", "Missing: x is x"),
+    ("Missing: x${NOTHING}y is xy", "Missing: xy is xy"),
     ("Multiple: $$ $FOO $BAR ${FOO}", "Multiple: $ fooey xyzzy fooey"),
+    ("Ill-formed: ${%5} ${{HI}} ${", "Ill-formed: ${%5} ${{HI}} ${"),
+    ("Strict: ${FOO?} is there", "Strict: fooey is there"),
 ])
 def test_substitute_variables(before, after):
-    variables = {
-        'FOO': 'fooey',
-        'BAR': 'xyzzy',
-    }
-    assert substitute_variables(before, variables) == after
+    assert substitute_variables(before, VARS) == after
+
+@pytest.mark.parametrize("text", [
+    "Strict: ${NOTHING?} is an error",
+])
+def test_substitute_variables_errors(text):
+    with pytest.raises(CoverageException) as exc_info:
+        substitute_variables(text, VARS)
+    assert text in str(exc_info.value)
+    assert "Variable NOTHING is undefined" in str(exc_info.value)

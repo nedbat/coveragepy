@@ -258,6 +258,7 @@ def substitute_variables(text, variables=os.environ):
 
         $VAR
         ${VAR}
+        ${VAR?}     strict: an error if VAR isn't defined.
 
     A dollar can be inserted with ``$$``.
 
@@ -270,16 +271,24 @@ def substitute_variables(text, variables=os.environ):
     def dollar_replace(m):
         """Called for each $replacement."""
         # Only one of the groups will have matched, just get its text.
-        word = next(w for w in m.groups() if w is not None)     # pragma: part covered
+        word = m.expand(r"\g<v1>\g<v2>\g<char>")
         if word == "$":
             return "$"
         else:
+            strict = bool(m.group('strict'))
+            if strict:
+                if word not in variables:
+                    msg = "Variable {} is undefined: {}".format(word, text)
+                    raise CoverageException(msg)
             return variables.get(word, '')
 
     dollar_pattern = r"""(?x)   # Use extended regex syntax
         \$(?:                   # A dollar sign, then
         (?P<v1>\w+) |           #   a plain word,
-        {(?P<v2>\w+)} |         #   or a {-wrapped word,
+        {                       #   or a {-wrapped word,
+            (?P<v2>\w+)
+            (?P<strict>\??)     # with maybe a strict marker
+        } |
         (?P<char>[$])           #   or a dollar sign.
         )
         """
