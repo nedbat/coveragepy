@@ -335,6 +335,7 @@ class Coverage(object):
 
     def _init_for_start(self):
         """Initialization for start()"""
+        # Construct the collector.
         concurrency = self.config.concurrency or []
         if "multiprocessing" in concurrency:
             if not patch_multiprocessing:
@@ -399,6 +400,9 @@ class Coverage(object):
                 warn=self._warn,
                 debug=self._debug,
             )
+
+        if self._collector is not None:
+            self._collector.use_data(self._data)
 
     def start(self):
         """Start measuring code coverage.
@@ -564,7 +568,7 @@ class Coverage(object):
         self._init_data(suffix=None)
         self._post_init()
 
-        if self._collector and self._collector.save_data(self._data):
+        if self._collector and self._collector.flush_data():
             self._post_save_work()
 
         return self._data

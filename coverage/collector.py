@@ -99,6 +99,7 @@ class Collector(object):
         self.warn = warn
         self.branch = branch
         self.threading = None
+        self.covdata = None
 
         self.origin = short_stack()
 
@@ -159,6 +160,10 @@ class Collector(object):
 
     def __repr__(self):
         return "<Collector at 0x%x: %s>" % (id(self), self.tracer_name())
+
+    def use_data(self, covdata):
+        """Use `covdata` for recording data."""
+        self.covdata = covdata
 
     def tracer_name(self):
         """Return the class name of the tracer we're using."""
@@ -378,8 +383,11 @@ class Collector(object):
         except KeyError:
             return self.abs_file_cache.setdefault(key, abs_file(filename))
 
-    def save_data(self, covdata):
-        """Save the collected data to a `CoverageData`.
+    def flush_data(self):
+        """Save the collected data to our associated `CoverageData`.
+
+        Data may have also been saved along the way. This forces the
+        last of the data to be saved.
 
         Returns True if there was data to save, False if not.
         """
@@ -406,10 +414,10 @@ class Collector(object):
             return dict((self.cached_abs_file(k), v) for k, v in items)
 
         if self.branch:
-            covdata.add_arcs(abs_file_dict(self.data))
+            self.covdata.add_arcs(abs_file_dict(self.data))
         else:
-            covdata.add_lines(abs_file_dict(self.data))
-        covdata.add_file_tracers(abs_file_dict(self.file_tracers))
+            self.covdata.add_lines(abs_file_dict(self.data))
+        self.covdata.add_file_tracers(abs_file_dict(self.file_tracers))
 
         if self.wtw:
             # Just a hack, so just hack it.
