@@ -29,7 +29,7 @@ FORCED_DEBUG = []
 class DebugControl(object):
     """Control and output for debugging."""
 
-    show_repr_attr = False      # For SimpleRepr
+    show_repr_attr = False      # For SimpleReprMixin
 
     def __init__(self, options, output):
         """Configure the options and output file for debugging."""
@@ -171,7 +171,7 @@ def add_pid_and_tid(text):
     return text
 
 
-class SimpleRepr(object):
+class SimpleReprMixin(object):
     """A mixin implementing a simple __repr__."""
     def __repr__(self):
         show_attrs = (

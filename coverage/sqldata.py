@@ -17,7 +17,7 @@ import sqlite3
 
 from coverage.backward import iitems
 from coverage.data import filename_suffix
-from coverage.debug import SimpleRepr
+from coverage.debug import SimpleReprMixin
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
 
@@ -60,7 +60,7 @@ create table tracer (
 """
 
 
-class CoverageSqliteData(SimpleRepr):
+class CoverageSqliteData(SimpleReprMixin):
     def __init__(self, basename=None, suffix=None, warn=None, debug=None):
         self._basename = os.path.abspath(basename or ".coverage")
         self._suffix = suffix
@@ -405,7 +405,7 @@ class CoverageSqliteData(SimpleRepr):
         return []   # TODO
 
 
-class Sqlite(SimpleRepr):
+class Sqlite(SimpleReprMixin):
     def __init__(self, filename, debug):
         self.debug = debug if (debug and debug.should('sql')) else None
         if self.debug:

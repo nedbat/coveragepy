@@ -6,7 +6,7 @@
 import collections
 
 from coverage.backward import iitems
-from coverage.debug import SimpleRepr
+from coverage.debug import SimpleReprMixin
 from coverage.misc import contract, format_lines
 
 
@@ -158,7 +158,7 @@ class Analysis(object):
         return stats
 
 
-class Numbers(SimpleRepr):
+class Numbers(SimpleReprMixin):
     """The numerical results of measuring coverage.
 
     This holds the basic statistics from `Analysis`, and is used to roll
