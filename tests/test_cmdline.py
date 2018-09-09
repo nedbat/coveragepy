@@ -33,7 +33,7 @@ class BaseCmdLineTest(CoverageTest):
     defaults.Coverage(
         cover_pylib=None, data_suffix=None, timid=None, branch=None,
         config_file=True, source=None, include=None, omit=None, debug=None,
-        concurrency=None, check_preimported=True,
+        concurrency=None, check_preimported=True, context=None,
     )
     defaults.annotate(
         directory=None, ignore_errors=None, include=None, omit=None, morfs=[],

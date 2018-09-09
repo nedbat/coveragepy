@@ -57,7 +57,7 @@ class Coverage(object):
         self, data_file=None, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
         source=None, omit=None, include=None, debug=None,
-        concurrency=None, check_preimported=False,
+        concurrency=None, check_preimported=False, context=None,
     ):
         """
         `data_file` is the base name of the data file to use, defaulting to
@@ -116,6 +116,8 @@ class Coverage(object):
         by coverage.  Importing measured files before coverage is started can
         mean that code is missed.
 
+        `context` is a string to use as the context label for collected data.
+
         .. versionadded:: 4.0
             The `concurrency` parameter.
 
@@ -133,7 +135,7 @@ class Coverage(object):
             branch=branch, parallel=bool_or_none(data_suffix),
             source=source, run_omit=omit, run_include=include, debug=debug,
             report_omit=omit, report_include=include,
-            concurrency=concurrency,
+            concurrency=concurrency, context=context,
             )
 
         # This is injectable by tests.
