@@ -40,14 +40,13 @@ TESTS_DIR = os.path.dirname(__file__)
 def convert_skip_exceptions(method):
     """A decorator for test methods to convert StopEverything to SkipTest."""
     @functools.wraps(method)
-    def wrapper(*args, **kwargs):
-        """Run the test method, and convert exceptions."""
+    def _wrapper(*args, **kwargs):
         try:
             result = method(*args, **kwargs)
         except StopEverything:
             raise unittest.SkipTest("StopEverything!")
         return result
-    return wrapper
+    return _wrapper
 
 
 class SkipConvertingMetaclass(type):

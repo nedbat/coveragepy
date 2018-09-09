@@ -70,11 +70,11 @@ if env.TESTING:
         """Ensure that only one of the argnames is non-None."""
         def _decorator(func):
             argnameset = set(name.strip() for name in argnames.split(","))
-            def _wrapped(*args, **kwargs):
+            def _wrapper(*args, **kwargs):
                 vals = [kwargs.get(name) for name in argnameset]
                 assert sum(val is not None for val in vals) == 1
                 return func(*args, **kwargs)
-            return _wrapped
+            return _wrapper
         return _decorator
 else:                                           # pragma: not testing
     # We aren't using real PyContracts, so just define our decorators as
@@ -149,13 +149,12 @@ def expensive(fn):
     if env.TESTING:
         attr = "_once_" + fn.__name__
 
-        def _wrapped(self):
-            """Inner function that checks the cache."""
+        def _wrapper(self):
             if hasattr(self, attr):
                 raise AssertionError("Shouldn't have called %s more than once" % fn.__name__)
             setattr(self, attr, True)
             return fn(self)
-        return _wrapped
+        return _wrapper
     else:
         return fn                   # pragma: not testing
 

@@ -303,12 +303,12 @@ def decorate_methods(decorator, butnot=()):                 # pragma: debugging
 def break_in_pudb(func):                                    # pragma: debugging
     """A function decorator to stop in the debugger for each call."""
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def _wrapper(*args, **kwargs):
         import pudb                 # pylint: disable=import-error
         sys.stdout = sys.__stdout__
         pudb.set_trace()
         return func(*args, **kwargs)
-    return wrapper
+    return _wrapper
 
 
 OBJ_IDS = itertools.count()
@@ -319,7 +319,7 @@ def show_calls(show_args=True, show_stack=False):           # pragma: debugging
     """A method decorator to debug-log each call to the function."""
     def _decorator(func):
         @functools.wraps(func)
-        def wrapper(self, *args, **kwargs):
+        def _wrapper(self, *args, **kwargs):
             oid = getattr(self, OBJ_ID_ATTR, None)
             if oid is None:
                 oid = "{:08d} {:04d}".format(os.getpid(), next(OBJ_IDS))
@@ -340,7 +340,7 @@ def show_calls(show_args=True, show_stack=False):           # pragma: debugging
             msg = "{} {:04d} {}{}\n".format(oid, next(CALLS), func.__name__, extra)
             DebugOutputFile.get_one().write(msg)
             return func(self, *args, **kwargs)
-        return wrapper
+        return _wrapper
     return _decorator
 
 
