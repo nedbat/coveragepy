@@ -106,6 +106,12 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.real_coverage_version = coverage.__version__
         self.addCleanup(setattr, coverage, "__version__", self.real_coverage_version)
 
+    def run_coverage(self, covargs=None, htmlargs=None):
+        """For the delta tests, we always want source=. """
+        covargs = covargs or {}
+        covargs['source'] = "."
+        super(HtmlDeltaTest, self).run_coverage(covargs=covargs, htmlargs=htmlargs)
+
     def test_html_created(self):
         # Test basic HTML generation: files should be created.
         self.create_initial_files()
