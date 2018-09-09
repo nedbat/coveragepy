@@ -22,7 +22,11 @@ from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
 
 
-SCHEMA_VERSION = 1
+# Schema versions:
+# 1: Released in 5.0a2
+# 2: Added contexts
+
+SCHEMA_VERSION = 2
 
 SCHEMA = """
 create table coverage_schema (
@@ -40,17 +44,25 @@ create table file (
     unique(path)
 );
 
+create table context (
+    id integer primary key,
+    context text,
+    unique(context)
+);
+
 create table line (
     file_id integer,
+    context_id integer,
     lineno integer,
-    unique(file_id, lineno)
+    unique(file_id, context_id, lineno)
 );
 
 create table arc (
     file_id integer,
+    context_id integer,
     fromno integer,
     tono integer,
-    unique(file_id, fromno, tono)
+    unique(file_id, context_id, fromno, tono)
 );
 
 create table tracer (
@@ -77,6 +89,8 @@ class CoverageSqliteData(SimpleRepr):
 
         self._has_lines = False
         self._has_arcs = False
+
+        self._context_id = 0
 
     def _choose_filename(self):
         self.filename = self._basename
@@ -181,9 +195,9 @@ class CoverageSqliteData(SimpleRepr):
         with self._connect() as con:
             for filename, linenos in iitems(line_data):
                 file_id = self._file_id(filename, add=True)
-                data = [(file_id, lineno) for lineno in linenos]
+                data = [(file_id, self._context_id, lineno) for lineno in linenos]
                 con.executemany(
-                    "insert or ignore into line (file_id, lineno) values (?, ?)",
+                    "insert or ignore into line (file_id, context_id, lineno) values (?, ?, ?)",
                     data,
                 )
 
@@ -204,9 +218,9 @@ class CoverageSqliteData(SimpleRepr):
         with self._connect() as con:
             for filename, arcs in iitems(arc_data):
                 file_id = self._file_id(filename, add=True)
-                data = [(file_id, fromno, tono) for fromno, tono in arcs]
+                data = [(file_id, self._context_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany(
-                    "insert or ignore into arc (file_id, fromno, tono) values (?, ?, ?)",
+                    "insert or ignore into arc (file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
                     data,
                 )
 
