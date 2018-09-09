@@ -122,7 +122,9 @@ if env.WINDOWS:
             else:
                 try:
                     files = os.listdir(head)
-                except OSError:
+                except Exception:
+                    # This will raise OSError, or this bizarre TypeError:
+                    # https://bugs.python.org/issue1776160
                     files = []
                 _ACTUAL_PATH_LIST_CACHE[head] = files
             normtail = os.path.normcase(tail)
