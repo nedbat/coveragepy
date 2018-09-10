@@ -178,6 +178,20 @@ class CoverageSqliteData(SimpleRepr):
                     self._file_map[filename] = cur.lastrowid
         return self._file_map.get(filename)
 
+    def set_context(self, context):
+        """Get the context id for `context`."""
+        self._start_using()
+        if not context:
+            self._context_id = 0
+        else:
+            with self._connect() as con:
+                row = con.execute("select id from context where context = ?", (context,)).fetchone()
+                if row is not None:
+                    self._context_id = row[0]
+                else:
+                    cur = con.execute("insert into context (context) values (?)", (context,))
+                    self._context_id = cur.lastrowid
+
     def add_lines(self, line_data):
         """Add measured line data.
 
