@@ -22,7 +22,7 @@ except ImportError:
 os = isolate_module(os)
 
 
-class TOMLConfigParser:
+class TomlConfigParser:
     def __init__(self, our_file):
         self.getters = [lambda obj: obj['tool']['coverage']]
         if our_file:
@@ -392,7 +392,7 @@ class CoverageConfig(object):
         if ext == '.toml':
             if toml is None:
                 return False
-            cp = TOMLConfigParser(our_file)
+            cp = TomlConfigParser(our_file)
         else:
             cp = HandyConfigParser(our_file)
 
