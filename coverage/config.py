@@ -143,6 +143,8 @@ class TomlConfigParser:
 
     def getfloat(self, section, option):
         value = self.get(section, option)
+        if isinstance(value, int):
+            value = float(value)
         if not isinstance(value, float):
             raise ValueError(
                 'Option {!r} in section {!r} is not a float: {!r}'
