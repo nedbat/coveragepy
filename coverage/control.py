@@ -366,6 +366,8 @@ class Coverage(object):
 
         self._init_data(suffix)
 
+        self._collector.use_data(self._data, self.config.context)
+
         # Early warning if we aren't going to be able to support plugins.
         if self._plugins.file_tracers and not self._collector.supports_plugins:
             self._warn(
@@ -400,9 +402,6 @@ class Coverage(object):
                 warn=self._warn,
                 debug=self._debug,
             )
-
-        if self._collector is not None:
-            self._collector.use_data(self._data)
 
     def start(self):
         """Start measuring code coverage.

@@ -111,7 +111,7 @@ class CoverageSqliteData(SimpleRepr):
         self._db = Sqlite(self.filename, self._debug)
         with self._db:
             for stmt in SCHEMA.split(';'):
-                stmt = stmt.strip()
+                stmt = " ".join(stmt.strip().split())
                 if stmt:
                     self._db.execute(stmt)
             self._db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))

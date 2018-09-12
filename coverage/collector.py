@@ -101,6 +101,8 @@ class Collector(object):
         self.threading = None
         self.covdata = None
 
+        self.static_context = None
+
         self.origin = short_stack()
 
         self.concur_id_func = None
@@ -161,9 +163,11 @@ class Collector(object):
     def __repr__(self):
         return "<Collector at 0x%x: %s>" % (id(self), self.tracer_name())
 
-    def use_data(self, covdata):
+    def use_data(self, covdata, context):
         """Use `covdata` for recording data."""
         self.covdata = covdata
+        self.static_context = context
+        self.covdata.set_context(self.static_context)
 
     def tracer_name(self):
         """Return the class name of the tracer we're using."""
