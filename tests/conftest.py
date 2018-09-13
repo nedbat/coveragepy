@@ -7,8 +7,9 @@ Pytest auto configuration.
 This module is run automatically by pytest, to define and enable fixtures.
 """
 
-import pytest
 import warnings
+
+import pytest
 
 from coverage import env
 
