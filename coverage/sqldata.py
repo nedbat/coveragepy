@@ -304,7 +304,7 @@ class CoverageSqliteData(SimpleRepr):
         aliases = aliases or PathAliases()
 
         # See what we had already measured, for accurate conflict reporting.
-        this_measured = set(self.measured_files())
+        this_measured = self.measured_files()
 
         # lines
         if other_data._has_lines:
@@ -381,8 +381,8 @@ class CoverageSqliteData(SimpleRepr):
         return bool(self._has_arcs)
 
     def measured_files(self):
-        """A list of all files that had been measured."""
-        return list(self._file_map)
+        """A set of all files that had been measured."""
+        return set(self._file_map)
 
     def file_tracer(self, filename):
         """Get the plugin name of the file tracer for a file.

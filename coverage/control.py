@@ -683,15 +683,11 @@ class Coverage(object):
         if not morfs:
             morfs = self._data.measured_files()
 
-        # Be sure we have a list.
-        if not isinstance(morfs, (list, tuple)):
+        # Be sure we have a collection.
+        if not isinstance(morfs, (list, tuple, set)):
             morfs = [morfs]
 
-        file_reporters = []
-        for morf in morfs:
-            file_reporter = self._get_file_reporter(morf)
-            file_reporters.append(file_reporter)
-
+        file_reporters = [self._get_file_reporter(morf) for morf in morfs]
         return file_reporters
 
     def report(

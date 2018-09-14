@@ -252,8 +252,8 @@ class CoverageJsonData(object):
         return self._runs
 
     def measured_files(self):
-        """A list of all files that had been measured."""
-        return list(self._arcs or self._lines or {})
+        """A set of all files that had been measured."""
+        return set(self._arcs or self._lines or {})
 
     def __nonzero__(self):
         return bool(self._lines or self._arcs)
