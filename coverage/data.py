@@ -445,6 +445,11 @@ class CoverageJsonData(object):
 
         self._validate()
 
+    def set_context(self, context):
+        """Set the context. Not implemented for JSON storage."""
+        if context:
+            raise CoverageException("JSON storage doesn't support contexts")
+
     def write(self):
         """Write the collected coverage data to a file.
 

@@ -144,8 +144,8 @@ class DebugTraceTest(CoverageTest):
             self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Writing data")
             self.assertRegex(last_line, r"\s+_write_file : .*coverage[/\\]data.py @\d+$")
         else:
-            self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Creating data file")
-            self.assertRegex(last_line, r"\s+_create_db : .*coverage[/\\]sqldata.py @\d+$")
+            self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Adding lines")
+            self.assertRegex(last_line, r"\s+add_lines : .*coverage[/\\]sqldata.py @\d+$")
 
     def test_debug_config(self):
         out_lines = self.f1_debug_output(["config"])

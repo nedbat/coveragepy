@@ -179,18 +179,16 @@ class CoverageSqliteData(SimpleRepr):
         return self._file_map.get(filename)
 
     def set_context(self, context):
-        """Get the context id for `context`."""
+        """Set the current context for future `add_lines` etc."""
         self._start_using()
-        if not context:
-            self._context_id = 0
-        else:
-            with self._connect() as con:
-                row = con.execute("select id from context where context = ?", (context,)).fetchone()
-                if row is not None:
-                    self._context_id = row[0]
-                else:
-                    cur = con.execute("insert into context (context) values (?)", (context,))
-                    self._context_id = cur.lastrowid
+        context = context or ""
+        with self._connect() as con:
+            row = con.execute("select id from context where context = ?", (context,)).fetchone()
+            if row is not None:
+                self._context_id = row[0]
+            else:
+                cur = con.execute("insert into context (context) values (?)", (context,))
+                self._context_id = cur.lastrowid
 
     def add_lines(self, line_data):
         """Add measured line data.
@@ -383,6 +381,13 @@ class CoverageSqliteData(SimpleRepr):
     def measured_files(self):
         """A set of all files that had been measured."""
         return set(self._file_map)
+
+    def measured_contexts(self):
+        """A set of all contexts that have been measured."""
+        self._start_using()
+        with self._connect() as con:
+            contexts = set(row[0] for row in con.execute("select distinct(context) from context"))
+        return contexts
 
     def file_tracer(self, filename):
         """Get the plugin name of the file tracer for a file.
