@@ -55,7 +55,7 @@
             - https://ci.appveyor.com/project/nedbat/coveragepy
         - $ make download_appveyor
     - examine the dist directory, and remove anything that looks malformed.
-- Update PyPi:
+- Update PyPI:
     - upload kits:
         - $ make kit_upload
 - Tag the tree
