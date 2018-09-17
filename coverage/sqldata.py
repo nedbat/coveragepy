@@ -158,6 +158,8 @@ class CoverageSqliteData(SimpleReprMixin):
         return self._db
 
     def __nonzero__(self):
+        if self._db is None and not os.path.exists(self.filename):
+            return False
         try:
             with self._connect() as con:
                 rows = con.execute("select * from file limit 1")
