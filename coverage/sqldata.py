@@ -12,6 +12,7 @@
 # TODO: run_info
 
 import glob
+import itertools
 import os
 import sqlite3
 
@@ -90,7 +91,7 @@ class CoverageSqliteData(SimpleRepr):
         self._has_lines = False
         self._has_arcs = False
 
-        self._context_id = 0
+        self._current_context_id = None
 
     def _choose_filename(self):
         self.filename = self._basename
@@ -104,6 +105,7 @@ class CoverageSqliteData(SimpleRepr):
         self._db = None
         self._file_map = {}
         self._have_used = False
+        self._current_context_id = None
 
     def _create_db(self):
         if self._debug and self._debug.should('dataio'):
@@ -178,6 +180,17 @@ class CoverageSqliteData(SimpleRepr):
                     self._file_map[filename] = cur.lastrowid
         return self._file_map.get(filename)
 
+    def _context_id(self, context):
+        """Get the id for a context."""
+        assert context is not None
+        self._start_using()
+        with self._connect() as con:
+            row = con.execute("select id from context where context = ?", (context,)).fetchone()
+            if row is not None:
+                return row[0]
+            else:
+                return None
+
     def set_context(self, context):
         """Set the current context for future `add_lines` etc."""
         self._start_using()
@@ -185,10 +198,10 @@ class CoverageSqliteData(SimpleRepr):
         with self._connect() as con:
             row = con.execute("select id from context where context = ?", (context,)).fetchone()
             if row is not None:
-                self._context_id = row[0]
+                self._current_context_id = row[0]
             else:
                 cur = con.execute("insert into context (context) values (?)", (context,))
-                self._context_id = cur.lastrowid
+                self._current_context_id = cur.lastrowid
 
     def add_lines(self, line_data):
         """Add measured line data.
@@ -204,10 +217,12 @@ class CoverageSqliteData(SimpleRepr):
             ))
         self._start_using()
         self._choose_lines_or_arcs(lines=True)
+        if self._current_context_id is None:
+            self.set_context("")
         with self._connect() as con:
             for filename, linenos in iitems(line_data):
                 file_id = self._file_id(filename, add=True)
-                data = [(file_id, self._context_id, lineno) for lineno in linenos]
+                data = [(file_id, self._current_context_id, lineno) for lineno in linenos]
                 con.executemany(
                     "insert or ignore into line (file_id, context_id, lineno) values (?, ?, ?)",
                     data,
@@ -227,10 +242,12 @@ class CoverageSqliteData(SimpleRepr):
             ))
         self._start_using()
         self._choose_lines_or_arcs(arcs=True)
+        if self._current_context_id is None:
+            self.set_context("")
         with self._connect() as con:
             for filename, arcs in iitems(arc_data):
                 file_id = self._file_id(filename, add=True)
-                data = [(file_id, self._context_id, fromno, tono) for fromno, tono in arcs]
+                data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany(
                     "insert or ignore into arc (file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
                     data,
@@ -306,19 +323,23 @@ class CoverageSqliteData(SimpleRepr):
 
         # lines
         if other_data._has_lines:
-            for filename in other_data.measured_files():
-                lines = set(other_data.lines(filename))
-                filename = aliases.map(filename)
-                lines.update(self.lines(filename) or ())
-                self.add_lines({filename: lines})
+            for context in other_data.measured_contexts():
+                self.set_context(context)
+                for filename in other_data.measured_files():
+                    lines = set(other_data.lines(filename, context=context))
+                    filename = aliases.map(filename)
+                    lines.update(self.lines(filename, context=context) or ())
+                    self.add_lines({filename: lines})
 
         # arcs
         if other_data._has_arcs:
-            for filename in other_data.measured_files():
-                arcs = set(other_data.arcs(filename))
-                filename = aliases.map(filename)
-                arcs.update(self.arcs(filename) or ())
-                self.add_arcs({filename: arcs})
+            for context in other_data.measured_contexts():
+                self.set_context(context)
+                for filename in other_data.measured_files():
+                    arcs = set(other_data.arcs(filename, context=context))
+                    filename = aliases.map(filename)
+                    arcs.update(self.arcs(filename, context=context) or ())
+                    self.add_arcs({filename: arcs})
 
         # file_tracers
         for filename in other_data.measured_files():
@@ -407,12 +428,11 @@ class CoverageSqliteData(SimpleRepr):
                 return row[0] or ""
             return ""   # File was measured, but no tracer associated.
 
-    def lines(self, filename):
+    def lines(self, filename, context=None):
         self._start_using()
         if self.has_arcs():
-            arcs = self.arcs(filename)
+            arcs = self.arcs(filename, context=context)
             if arcs is not None:
-                import itertools
                 all_lines = itertools.chain.from_iterable(arcs)
                 return list(set(l for l in all_lines if l > 0))
 
@@ -421,18 +441,28 @@ class CoverageSqliteData(SimpleRepr):
             if file_id is None:
                 return None
             else:
-                linenos = con.execute("select lineno from line where file_id = ?", (file_id,))
+                query = "select lineno from line where file_id = ?"
+                data = [file_id]
+                if context is not None:
+                    query += " and context_id = ?"
+                    data += [self._context_id(context)]
+                linenos = con.execute(query, data)
                 return [lineno for lineno, in linenos]
 
-    def arcs(self, filename):
+    def arcs(self, filename, context=None):
         self._start_using()
         with self._connect() as con:
             file_id = self._file_id(filename)
             if file_id is None:
                 return None
             else:
-                arcs = con.execute("select fromno, tono from arc where file_id = ?", (file_id,))
-                return [pair for pair in arcs]
+                query = "select fromno, tono from arc where file_id = ?"
+                data = [file_id]
+                if context is not None:
+                    query += " and context_id = ?"
+                    data += [self._context_id(context)]
+                arcs = con.execute(query, data)
+                return list(arcs)
 
     def run_infos(self):
         return []   # TODO
