@@ -470,7 +470,7 @@ class CmdLineTest(BaseCmdLineTest):
         # config file.
         self.command_line("run --concurrency=multiprocessing --branch foo.py", ret=ERR)
         self.assertIn(
-            "Options affecting multiprocessing must be specified in a configuration file.",
+            "Options affecting multiprocessing must only be specified in a configuration file.",
             self.stderr()
         )
 

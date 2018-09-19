@@ -614,7 +614,7 @@ class CoverageScript(object):
                 # they will be None if they have not been specified.
                 if getattr(options, opt_name) is not None:
                     self.help_fn(
-                        "Options affecting multiprocessing must be specified "
+                        "Options affecting multiprocessing must only be specified "
                         "in a configuration file."
                     )
                     return ERR
