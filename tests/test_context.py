@@ -6,7 +6,7 @@
 import os.path
 
 import coverage
-from coverage.data import CoverageData, combine_parallel_data
+from coverage.data import CoverageData
 
 from tests.coveragetest import CoverageTest
 
@@ -32,58 +32,73 @@ class GlobalContextTest(CoverageTest):
         data = cov.get_data()
         self.assertCountEqual(data.measured_contexts(), ["gooey"])
 
+    SOURCE = """\
+        a = 1
+        if a > 2:
+            a = 3
+        assert a == 1
+        """
+
+    LINES = [1, 2, 4]
+    ARCS = [(-1, 1), (1, 2), (2, 4), (4, -1)]
+
     def run_red_blue(self, **options):
-        self.make_file("red.py", """\
-            a = 1
-            if a > 2:
-                a = 3
-            assert a == 1
-            """)
+        """Run red.py and blue.py, and return their CoverageData objects."""
+        self.make_file("red.py", self.SOURCE)
         red_cov = coverage.Coverage(context="red", data_suffix="r", source=["."], **options)
         self.start_import_stop(red_cov, "red")
         red_cov.save()
+        red_data = red_cov.get_data()
 
-        self.make_file("blue.py", """\
-            b = 1
-            if b > 2:
-                b = 3
-            assert b == 1
-            """)
+        self.make_file("blue.py", self.SOURCE)
         blue_cov = coverage.Coverage(context="blue", data_suffix="b", source=["."], **options)
         self.start_import_stop(blue_cov, "blue")
         blue_cov.save()
+        blue_data = blue_cov.get_data()
+
+        return red_data, blue_data
 
     def test_combining_line_contexts(self):
-        self.run_red_blue()
-        combined = CoverageData()
-        combine_parallel_data(combined)
+        red_data, blue_data = self.run_red_blue()
+        for datas in [[red_data, blue_data], [blue_data, red_data]]:
+            combined = CoverageData(suffix="combined")
+            for data in datas:
+                combined.update(data)
 
-        self.assertEqual(combined.measured_contexts(), {'red', 'blue'})
+            self.assertEqual(combined.measured_contexts(), {'red', 'blue'})
 
-        full_names = {os.path.basename(f): f for f in combined.measured_files()}
-        self.assertCountEqual(full_names, ['red.py', 'blue.py'])
+            full_names = {os.path.basename(f): f for f in combined.measured_files()}
+            self.assertCountEqual(full_names, ['red.py', 'blue.py'])
 
-        self.assertEqual(combined.lines(full_names['red.py'], context='red'), [1, 2, 4])
-        self.assertEqual(combined.lines(full_names['red.py'], context='blue'), [])
-        self.assertEqual(combined.lines(full_names['blue.py'], context='red'), [])
-        self.assertEqual(combined.lines(full_names['blue.py'], context='blue'), [1, 2, 4])
+            fred = full_names['red.py']
+            fblue = full_names['blue.py']
+
+            self.assertEqual(combined.lines(fred, context='red'), self.LINES)
+            self.assertEqual(combined.lines(fred, context='blue'), [])
+            self.assertEqual(combined.lines(fblue, context='red'), [])
+            self.assertEqual(combined.lines(fblue, context='blue'), self.LINES)
 
     def test_combining_arc_contexts(self):
-        self.run_red_blue(branch=True)
-        combined = CoverageData()
-        combine_parallel_data(combined)
+        red_data, blue_data = self.run_red_blue(branch=True)
+        for datas in [[red_data, blue_data], [blue_data, red_data]]:
+            combined = CoverageData(suffix="combined")
+            for data in datas:
+                combined.update(data)
 
-        self.assertEqual(combined.measured_contexts(), {'red', 'blue'})
+            self.assertEqual(combined.measured_contexts(), {'red', 'blue'})
 
-        full_names = {os.path.basename(f): f for f in combined.measured_files()}
-        self.assertCountEqual(full_names, ['red.py', 'blue.py'])
+            full_names = {os.path.basename(f): f for f in combined.measured_files()}
+            self.assertCountEqual(full_names, ['red.py', 'blue.py'])
 
-        self.assertEqual(combined.lines(full_names['red.py'], context='red'), [1, 2, 4])
-        self.assertEqual(combined.lines(full_names['red.py'], context='blue'), [])
-        self.assertEqual(combined.lines(full_names['blue.py'], context='red'), [])
-        self.assertEqual(combined.lines(full_names['blue.py'], context='blue'), [1, 2, 4])
+            fred = full_names['red.py']
+            fblue = full_names['blue.py']
 
-        self.assertEqual(combined.arcs(full_names['red.py'], context='red'), [(-1, 1), (1, 2), (2, 4), (4, -1)])
-        self.assertEqual(combined.arcs(full_names['red.py'], context='blue'), [])
-        self.assertEqual(combined.arcs(full_names['blue.py'], context='red'), [])
-        self.assertEqual(combined.arcs(full_names['blue.py'], context='blue'), [(-1, 1), (1, 2), (2, 4), (4, -1)])
+            self.assertEqual(combined.lines(fred, context='red'), self.LINES)
+            self.assertEqual(combined.lines(fred, context='blue'), [])
+            self.assertEqual(combined.lines(fblue, context='red'), [])
+            self.assertEqual(combined.lines(fblue, context='blue'), self.LINES)
+
+            self.assertEqual(combined.arcs(fred, context='red'), self.ARCS)
+            self.assertEqual(combined.arcs(fred, context='blue'), [])
+            self.assertEqual(combined.arcs(fblue, context='red'), [])
+            self.assertEqual(combined.arcs(fblue, context='blue'), self.ARCS)
