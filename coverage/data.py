@@ -727,6 +727,8 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
 
     files_combined = 0
     for f in files_to_combine:
+        if data._debug and data._debug.should('dataio'):
+            data._debug.write("Combining data file %r" % (f,))
         try:
             new_data = CoverageData(f, debug=data._debug)
             new_data.read()

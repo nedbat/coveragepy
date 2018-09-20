@@ -167,6 +167,12 @@ class CoverageSqliteData(SimpleRepr):
 
     __bool__ = __nonzero__
 
+    def dump(self):                                         # pragma: debugging
+        """Write a dump of the database."""
+        if self._debug:
+            with self._connect() as con:
+                self._debug.write(con.dump())
+
     def _file_id(self, filename, add=False):
         """Get the file id for `filename`.
 
@@ -519,3 +525,7 @@ class Sqlite(SimpleRepr):
         if self.debug:
             self.debug.write("Executing many {!r} with {} rows".format(sql, len(data)))
         return self.con.executemany(sql, data)
+
+    def dump(self):                                         # pragma: debugging
+        """Return a multi-line string, the dump of the database."""
+        return "\n".join(self.con.iterdump())
