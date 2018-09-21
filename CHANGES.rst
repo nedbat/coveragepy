@@ -17,6 +17,11 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Context support: static contexts let you specify a label for a coverage run,
+  which is recorded in the data, and retained when you combine files.  See
+  :ref:`contexts` for more information.  Currently, only static contexts are
+  supported, with no reporting features.
+
 - Environment variable substitution in configuration files now supports two
   syntaxes for controlling the behavior of undefined variables: if ``VARNAME``
   is not defined, ``${VARNAME?}`` will raise an error, and ``${VARNAME-default
