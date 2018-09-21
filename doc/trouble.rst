@@ -53,21 +53,6 @@ coverage.py from working properly:
 .. _issue 43: https://bitbucket.org/ned/coveragepy/issues/43/coverage-measurement-fails-on-code
 
 
-Things that require --timid
----------------------------
-
-Some packages interfere with coverage measurement, but you might be able to
-make it work by using the ``--timid`` command-line switch, or the ``[run]
-timid=True`` configuration option.
-
-* `DecoratorTools`_, or any package which uses it, notably `TurboGears`_.
-  DecoratorTools fiddles with the trace function.  You  will need to use
-  ``--timid``.
-
-.. _DecoratorTools: https://pypi.org/project/DecoratorTools/
-.. _TurboGears: http://turbogears.org/
-
-
 Still having trouble?
 ---------------------
 

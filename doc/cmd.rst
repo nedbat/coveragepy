@@ -124,8 +124,7 @@ code as well as your own, add the ``-L`` (or ``--pylib``) flag.
 
 If your coverage results seem to be overlooking code that you know has been
 executed, try running coverage.py again with the ``--timid`` flag.  This uses a
-simpler but slower trace method.  Projects that use DecoratorTools, including
-TurboGears, will need to use ``--timid`` to get correct results.
+simpler but slower trace method, and might be needed in rare cases.
 
 If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate
