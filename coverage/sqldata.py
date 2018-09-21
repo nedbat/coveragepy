@@ -12,6 +12,7 @@
 # TODO: run_info
 
 import glob
+import itertools
 import os
 import sqlite3
 
@@ -22,7 +23,11 @@ from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
 
 
-SCHEMA_VERSION = 1
+# Schema versions:
+# 1: Released in 5.0a2
+# 2: Added contexts
+
+SCHEMA_VERSION = 2
 
 SCHEMA = """
 create table coverage_schema (
@@ -40,17 +45,25 @@ create table file (
     unique(path)
 );
 
+create table context (
+    id integer primary key,
+    context text,
+    unique(context)
+);
+
 create table line (
     file_id integer,
+    context_id integer,
     lineno integer,
-    unique(file_id, lineno)
+    unique(file_id, context_id, lineno)
 );
 
 create table arc (
     file_id integer,
+    context_id integer,
     fromno integer,
     tono integer,
-    unique(file_id, fromno, tono)
+    unique(file_id, context_id, fromno, tono)
 );
 
 create table tracer (
@@ -78,6 +91,8 @@ class CoverageSqliteData(SimpleReprMixin):
         self._has_lines = False
         self._has_arcs = False
 
+        self._current_context_id = None
+
     def _choose_filename(self):
         self.filename = self._basename
         suffix = filename_suffix(self._suffix)
@@ -90,6 +105,7 @@ class CoverageSqliteData(SimpleReprMixin):
         self._db = None
         self._file_map = {}
         self._have_used = False
+        self._current_context_id = None
 
     def _create_db(self):
         if self._debug and self._debug.should('dataio'):
@@ -97,7 +113,7 @@ class CoverageSqliteData(SimpleReprMixin):
         self._db = Sqlite(self.filename, self._debug)
         with self._db:
             for stmt in SCHEMA.split(';'):
-                stmt = stmt.strip()
+                stmt = " ".join(stmt.strip().split())
                 if stmt:
                     self._db.execute(stmt)
             self._db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
@@ -151,6 +167,12 @@ class CoverageSqliteData(SimpleReprMixin):
 
     __bool__ = __nonzero__
 
+    def dump(self):                                         # pragma: debugging
+        """Write a dump of the database."""
+        if self._debug:
+            with self._connect() as con:
+                self._debug.write(con.dump())
+
     def _file_id(self, filename, add=False):
         """Get the file id for `filename`.
 
@@ -163,6 +185,29 @@ class CoverageSqliteData(SimpleReprMixin):
                     cur = con.execute("insert into file (path) values (?)", (filename,))
                     self._file_map[filename] = cur.lastrowid
         return self._file_map.get(filename)
+
+    def _context_id(self, context):
+        """Get the id for a context."""
+        assert context is not None
+        self._start_using()
+        with self._connect() as con:
+            row = con.execute("select id from context where context = ?", (context,)).fetchone()
+            if row is not None:
+                return row[0]
+            else:
+                return None
+
+    def set_context(self, context):
+        """Set the current context for future `add_lines` etc."""
+        self._start_using()
+        context = context or ""
+        with self._connect() as con:
+            row = con.execute("select id from context where context = ?", (context,)).fetchone()
+            if row is not None:
+                self._current_context_id = row[0]
+            else:
+                cur = con.execute("insert into context (context) values (?)", (context,))
+                self._current_context_id = cur.lastrowid
 
     def add_lines(self, line_data):
         """Add measured line data.
@@ -178,12 +223,14 @@ class CoverageSqliteData(SimpleReprMixin):
             ))
         self._start_using()
         self._choose_lines_or_arcs(lines=True)
+        if self._current_context_id is None:
+            self.set_context("")
         with self._connect() as con:
             for filename, linenos in iitems(line_data):
                 file_id = self._file_id(filename, add=True)
-                data = [(file_id, lineno) for lineno in linenos]
+                data = [(file_id, self._current_context_id, lineno) for lineno in linenos]
                 con.executemany(
-                    "insert or ignore into line (file_id, lineno) values (?, ?)",
+                    "insert or ignore into line (file_id, context_id, lineno) values (?, ?, ?)",
                     data,
                 )
 
@@ -201,12 +248,14 @@ class CoverageSqliteData(SimpleReprMixin):
             ))
         self._start_using()
         self._choose_lines_or_arcs(arcs=True)
+        if self._current_context_id is None:
+            self.set_context("")
         with self._connect() as con:
             for filename, arcs in iitems(arc_data):
                 file_id = self._file_id(filename, add=True)
-                data = [(file_id, fromno, tono) for fromno, tono in arcs]
+                data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany(
-                    "insert or ignore into arc (file_id, fromno, tono) values (?, ?, ?)",
+                    "insert or ignore into arc (file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
                     data,
                 )
 
@@ -276,23 +325,27 @@ class CoverageSqliteData(SimpleReprMixin):
         aliases = aliases or PathAliases()
 
         # See what we had already measured, for accurate conflict reporting.
-        this_measured = set(self.measured_files())
+        this_measured = self.measured_files()
 
         # lines
         if other_data._has_lines:
-            for filename in other_data.measured_files():
-                lines = set(other_data.lines(filename))
-                filename = aliases.map(filename)
-                lines.update(self.lines(filename) or ())
-                self.add_lines({filename: lines})
+            for context in other_data.measured_contexts():
+                self.set_context(context)
+                for filename in other_data.measured_files():
+                    lines = set(other_data.lines(filename, context=context))
+                    filename = aliases.map(filename)
+                    lines.update(self.lines(filename, context=context) or ())
+                    self.add_lines({filename: lines})
 
         # arcs
         if other_data._has_arcs:
-            for filename in other_data.measured_files():
-                arcs = set(other_data.arcs(filename))
-                filename = aliases.map(filename)
-                arcs.update(self.arcs(filename) or ())
-                self.add_arcs({filename: arcs})
+            for context in other_data.measured_contexts():
+                self.set_context(context)
+                for filename in other_data.measured_files():
+                    arcs = set(other_data.arcs(filename, context=context))
+                    filename = aliases.map(filename)
+                    arcs.update(self.arcs(filename, context=context) or ())
+                    self.add_arcs({filename: arcs})
 
         # file_tracers
         for filename in other_data.measured_files():
@@ -353,8 +406,15 @@ class CoverageSqliteData(SimpleReprMixin):
         return bool(self._has_arcs)
 
     def measured_files(self):
-        """A list of all files that had been measured."""
-        return list(self._file_map)
+        """A set of all files that had been measured."""
+        return set(self._file_map)
+
+    def measured_contexts(self):
+        """A set of all contexts that have been measured."""
+        self._start_using()
+        with self._connect() as con:
+            contexts = set(row[0] for row in con.execute("select distinct(context) from context"))
+        return contexts
 
     def file_tracer(self, filename):
         """Get the plugin name of the file tracer for a file.
@@ -374,12 +434,11 @@ class CoverageSqliteData(SimpleReprMixin):
                 return row[0] or ""
             return ""   # File was measured, but no tracer associated.
 
-    def lines(self, filename):
+    def lines(self, filename, context=None):
         self._start_using()
         if self.has_arcs():
-            arcs = self.arcs(filename)
+            arcs = self.arcs(filename, context=context)
             if arcs is not None:
-                import itertools
                 all_lines = itertools.chain.from_iterable(arcs)
                 return list(set(l for l in all_lines if l > 0))
 
@@ -388,18 +447,28 @@ class CoverageSqliteData(SimpleReprMixin):
             if file_id is None:
                 return None
             else:
-                linenos = con.execute("select lineno from line where file_id = ?", (file_id,))
+                query = "select lineno from line where file_id = ?"
+                data = [file_id]
+                if context is not None:
+                    query += " and context_id = ?"
+                    data += [self._context_id(context)]
+                linenos = con.execute(query, data)
                 return [lineno for lineno, in linenos]
 
-    def arcs(self, filename):
+    def arcs(self, filename, context=None):
         self._start_using()
         with self._connect() as con:
             file_id = self._file_id(filename)
             if file_id is None:
                 return None
             else:
-                arcs = con.execute("select fromno, tono from arc where file_id = ?", (file_id,))
-                return [pair for pair in arcs]
+                query = "select fromno, tono from arc where file_id = ?"
+                data = [file_id]
+                if context is not None:
+                    query += " and context_id = ?"
+                    data += [self._context_id(context)]
+                arcs = con.execute(query, data)
+                return list(arcs)
 
     def run_infos(self):
         return []   # TODO
@@ -456,3 +525,7 @@ class Sqlite(SimpleReprMixin):
         if self.debug:
             self.debug.write("Executing many {!r} with {} rows".format(sql, len(data)))
         return self.con.executemany(sql, data)
+
+    def dump(self):                                         # pragma: debugging
+        """Return a multi-line string, the dump of the database."""
+        return "\n".join(self.con.iterdump())

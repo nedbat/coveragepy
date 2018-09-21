@@ -175,6 +175,7 @@ class CoverageConfig(object):
         # Defaults for [run]
         self.branch = False
         self.concurrency = None
+        self.context = None
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.debug = []
@@ -318,6 +319,7 @@ class CoverageConfig(object):
         # [run]
         ('branch', 'run:branch', 'boolean'),
         ('concurrency', 'run:concurrency', 'list'),
+        ('context', 'run:context'),
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),

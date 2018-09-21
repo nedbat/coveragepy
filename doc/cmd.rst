@@ -69,7 +69,7 @@ control, and can provide options that other invocation techniques (like test
 runner plugins) may not offer. See :ref:`config` for more details.
 
 
-.. _cmd_execution:
+.. _cmd_run:
 
 Execution
 ---------
@@ -121,6 +121,10 @@ configuration file for all options.
 If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate
 during measurement.  See :ref:`cmd_combining` below.
+
+You can specify a :ref:`static context <contexts>` for a coverage run with
+``--context``.  This can be any label you want, and will be recorded with the
+data.  See :ref:`contexts` for more information.
 
 By default, coverage.py does not measure code installed with the Python
 interpreter, for example, the standard library. If you want to measure that

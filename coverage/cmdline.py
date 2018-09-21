@@ -43,6 +43,10 @@ class Opts(object):
             "Valid values are: %s."
         ) % ", ".join(CONCURRENCY_CHOICES),
     )
+    context = optparse.make_option(
+        '', '--context', action='store', metavar="LABEL",
+        help="The context label to record for this coverage run",
+    )
     debug = optparse.make_option(
         '', '--debug', action='store', metavar="OPTS",
         help="Debug options, separated by commas. [env: COVERAGE_DEBUG]",
@@ -160,6 +164,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             append=None,
             branch=None,
             concurrency=None,
+            context=None,
             debug=None,
             directory=None,
             fail_under=None,
@@ -358,6 +363,7 @@ CMDS = {
             Opts.append,
             Opts.branch,
             Opts.concurrency,
+            Opts.context,
             Opts.include,
             Opts.module,
             Opts.omit,
@@ -482,6 +488,7 @@ class CoverageScript(object):
             debug=debug,
             concurrency=options.concurrency,
             check_preimported=True,
+            context=options.context,
             )
 
         if options.action == "debug":

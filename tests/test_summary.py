@@ -750,24 +750,31 @@ class ReportingReturnValueTest(CoverageTest):
 class TestSummaryReporterConfiguration(CoverageTest):
     """Tests of SummaryReporter."""
 
-    LINES_1 = {
-        os.path.join(TESTS_DIR, "test_api.py"): dict.fromkeys(range(400)),
-        os.path.join(TESTS_DIR, "test_backward.py"): dict.fromkeys(range(20)),
-        os.path.join(TESTS_DIR, "test_coverage.py"): dict.fromkeys(range(15)),
-    }
+    def make_rigged_file(self, filename, stmts, miss):
+        """Create a file that will have specific results.
 
-    def get_coverage_data(self, lines):
-        """Get a CoverageData object that includes the requested lines."""
-        data = CoverageData()
-        data.add_lines(lines)
-        return data
+        `stmts` and `miss` are ints, the number of statements, and
+        missed statements that should result.
+        """
+        run = stmts - miss - 1
+        dont_run = miss
+        source = ""
+        source += "a = 1\n" * run
+        source += "if a == 99:\n"
+        source += "    a = 2\n" * dont_run
+        self.make_file(filename, source)
 
-    def get_summary_text(self, coverage_data, options):
+    def get_summary_text(self, options):
         """Get text output from the SummaryReporter."""
-        cov = Coverage()
+        self.make_rigged_file("file1.py", 339, 155)
+        self.make_rigged_file("file2.py", 13, 3)
+        self.make_rigged_file("file3.py", 234, 228)
+        self.make_file("doit.py", "import file1, file2, file3")
+
+        cov = Coverage(source=["."], omit=["doit.py"])
         cov.start()
+        import doit             # pragma: nested # pylint: disable=import-error, unused-variable
         cov.stop()              # pragma: nested
-        cov._data = coverage_data
         printer = SummaryReporter(cov, options)
         destination = StringIO()
         printer.report([], destination)
@@ -777,8 +784,7 @@ class TestSummaryReporterConfiguration(CoverageTest):
         # We use our own test files as test data. Check that our assumptions
         # about them are still valid.  We want the three columns of numbers to
         # sort in three different orders.
-        data = self.get_coverage_data(self.LINES_1)
-        report = self.get_summary_text(data, CoverageConfig())
+        report = self.get_summary_text(CoverageConfig())
         print(report)
         # Name                     Stmts   Miss  Cover
         # --------------------------------------------
@@ -802,18 +808,16 @@ class TestSummaryReporterConfiguration(CoverageTest):
 
     def test_defaults(self):
         """Run the report with no configuration options."""
-        data = self.get_coverage_data(self.LINES_1)
         opts = CoverageConfig()
-        report = self.get_summary_text(data, opts)
+        report = self.get_summary_text(opts)
         self.assertNotIn('Missing', report)
         self.assertNotIn('Branch', report)
 
     def test_print_missing(self):
         """Run the report printing the missing lines."""
-        data = self.get_coverage_data(self.LINES_1)
         opts = CoverageConfig()
         opts.from_args(show_missing=True)
-        report = self.get_summary_text(data, opts)
+        report = self.get_summary_text(opts)
         self.assertIn('Missing', report)
         self.assertNotIn('Branch', report)
 
@@ -827,33 +831,29 @@ class TestSummaryReporterConfiguration(CoverageTest):
 
     def test_sort_report_by_stmts(self):
         # Sort the text report by the Stmts column.
-        data = self.get_coverage_data(self.LINES_1)
         opts = CoverageConfig()
         opts.from_args(sort='Stmts')
-        report = self.get_summary_text(data, opts)
+        report = self.get_summary_text(opts)
         self.assert_ordering(report, "test_backward.py", "test_coverage.py", "test_api.py")
 
     def test_sort_report_by_missing(self):
         # Sort the text report by the Missing column.
-        data = self.get_coverage_data(self.LINES_1)
         opts = CoverageConfig()
         opts.from_args(sort='Miss')
-        report = self.get_summary_text(data, opts)
+        report = self.get_summary_text(opts)
         self.assert_ordering(report, "test_backward.py", "test_api.py", "test_coverage.py")
 
     def test_sort_report_by_cover(self):
         # Sort the text report by the Cover column.
-        data = self.get_coverage_data(self.LINES_1)
         opts = CoverageConfig()
         opts.from_args(sort='Cover')
-        report = self.get_summary_text(data, opts)
+        report = self.get_summary_text(opts)
         self.assert_ordering(report, "test_coverage.py", "test_api.py", "test_backward.py")
 
     def test_sort_report_by_invalid_option(self):
         # Sort the text report by a nonsense column.
-        data = self.get_coverage_data(self.LINES_1)
         opts = CoverageConfig()
         opts.from_args(sort='Xyzzy')
         msg = "Invalid sorting option: 'Xyzzy'"
         with self.assertRaisesRegex(CoverageException, msg):
-            self.get_summary_text(data, opts)
+            self.get_summary_text(opts)

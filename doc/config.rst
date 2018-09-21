@@ -132,6 +132,11 @@ Before version 4.2, this option only accepted a single string.
 
 .. versionadded:: 4.0
 
+``context`` (string): the static context to record for this coverage run. See
+:ref:`contexts` for more information
+
+.. versionadded:: 5.0
+
 ``data_file`` (string, default ".coverage"): the name of the data file to use
 for storing or reporting coverage. This value can include a path to another
 directory.

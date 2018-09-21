@@ -252,8 +252,8 @@ class CoverageJsonData(object):
         return self._runs
 
     def measured_files(self):
-        """A list of all files that had been measured."""
-        return list(self._arcs or self._lines or {})
+        """A set of all files that had been measured."""
+        return set(self._arcs or self._lines or {})
 
     def __nonzero__(self):
         return bool(self._lines or self._arcs)
@@ -444,6 +444,11 @@ class CoverageJsonData(object):
             self._file_tracers[filename] = plugin_name
 
         self._validate()
+
+    def set_context(self, context):
+        """Set the context. Not implemented for JSON storage."""
+        if context:
+            raise CoverageException("JSON storage doesn't support contexts")
 
     def write(self):
         """Write the collected coverage data to a file.
@@ -722,6 +727,8 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
 
     files_combined = 0
     for f in files_to_combine:
+        if data._debug and data._debug.should('dataio'):
+            data._debug.write("Combining data file %r" % (f,))
         try:
             new_data = CoverageData(f, debug=data._debug)
             new_data.read()

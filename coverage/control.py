@@ -57,7 +57,7 @@ class Coverage(object):
         self, data_file=None, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
         source=None, omit=None, include=None, debug=None,
-        concurrency=None, check_preimported=False,
+        concurrency=None, check_preimported=False, context=None,
     ):
         """
         `data_file` is the base name of the data file to use, defaulting to
@@ -116,6 +116,8 @@ class Coverage(object):
         by coverage.  Importing measured files before coverage is started can
         mean that code is missed.
 
+        `context` is a string to use as the context label for collected data.
+
         .. versionadded:: 4.0
             The `concurrency` parameter.
 
@@ -133,7 +135,7 @@ class Coverage(object):
             branch=branch, parallel=bool_or_none(data_suffix),
             source=source, run_omit=omit, run_include=include, debug=debug,
             report_omit=omit, report_include=include,
-            concurrency=concurrency,
+            concurrency=concurrency, context=context,
             )
 
         # This is injectable by tests.
@@ -333,6 +335,7 @@ class Coverage(object):
 
     def _init_for_start(self):
         """Initialization for start()"""
+        # Construct the collector.
         concurrency = self.config.concurrency or []
         if "multiprocessing" in concurrency:
             if not patch_multiprocessing:
@@ -362,6 +365,8 @@ class Coverage(object):
             suffix = None
 
         self._init_data(suffix)
+
+        self._collector.use_data(self._data, self.config.context)
 
         # Early warning if we aren't going to be able to support plugins.
         if self._plugins.file_tracers and not self._collector.supports_plugins:
@@ -562,7 +567,7 @@ class Coverage(object):
         self._init_data(suffix=None)
         self._post_init()
 
-        if self._collector and self._collector.save_data(self._data):
+        if self._collector and self._collector.flush_data():
             self._post_save_work()
 
         return self._data
@@ -678,15 +683,11 @@ class Coverage(object):
         if not morfs:
             morfs = self._data.measured_files()
 
-        # Be sure we have a list.
-        if not isinstance(morfs, (list, tuple)):
+        # Be sure we have a collection.
+        if not isinstance(morfs, (list, tuple, set)):
             morfs = [morfs]
 
-        file_reporters = []
-        for morf in morfs:
-            file_reporter = self._get_file_reporter(morf)
-            file_reporters.append(file_reporter)
-
+        file_reporters = [self._get_file_reporter(morf) for morf in morfs]
         return file_reporters
 
     def report(
