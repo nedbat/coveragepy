@@ -93,6 +93,11 @@ not.
 
 .. _described here: http://coverage.readthedocs.io/
 
+Professional support for coverage.py is available as part of the `Tidelift
+Subscription`_.
+
+.. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=docs
+
 
 Quick start
 -----------

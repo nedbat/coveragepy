@@ -10,11 +10,16 @@ Code coverage testing for Python.
 |  |license| |versions| |status|
 |  |ci-status| |win-ci-status| |docs| |codecov|
 |  |kit| |format| |repos|
-|  |saythanks|
+|  |tidelift| |saythanks|
 
 Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been executed.
+
+Professional support for coverage.py is available as part of the `Tidelift
+Subscription`_.
+
+.. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
 
 Coverage.py runs on many versions of Python:
 
@@ -113,3 +118,6 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |saythanks| image:: https://img.shields.io/badge/saythanks.io-%E2%98%BC-1EAEDB.svg
     :target: https://saythanks.io/to/nedbat
     :alt: Say thanks :)
+.. |tidelift| image:: https://tidelift.com/badges/github/nedbat/coveragepy
+    :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
+    :alt: Tidelift
