@@ -7,12 +7,10 @@ Coverage.py
 
 Code coverage testing for Python.
 
-|  |license| |versions| |status| |docs|
-|  |ci-status| |win-ci-status| |codecov|
+|  |license| |versions| |status|
+|  |ci-status| |win-ci-status| |docs| |codecov|
 |  |kit| |format| |repos|
 |  |saythanks|
-
-.. downloads badge seems to be broken... |downloads|
 
 Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
