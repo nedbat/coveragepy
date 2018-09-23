@@ -9,7 +9,8 @@ Code coverage testing for Python.
 
 |  |license| |versions| |status| |docs|
 |  |ci-status| |win-ci-status| |codecov|
-|  |kit| |format| |saythanks|
+|  |kit| |format| |repos|
+|  |saythanks|
 
 .. downloads badge seems to be broken... |downloads|
 
@@ -105,6 +106,9 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |codecov| image:: http://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master&precision=2
     :target: http://codecov.io/github/nedbat/coveragepy?branch=master
     :alt: Coverage!
+.. |repos| image:: https://repology.org/badge/tiny-repos/python:coverage.svg
+    :target: https://repology.org/metapackage/python:coverage/versions
+    :alt: Packaging status
 .. |saythanks| image:: https://img.shields.io/badge/saythanks.io-%E2%98%BC-1EAEDB.svg
     :target: https://saythanks.io/to/nedbat
     :alt: Say thanks :)
