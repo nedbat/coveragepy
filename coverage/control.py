@@ -124,8 +124,8 @@ class Coverage(object):
         .. versionadded:: 4.2
             The `concurrency` parameter can now be a list of strings.
 
-        .. versionadded:: 4.6
-            The `check_preimported` parameter.
+        .. versionadded:: 5.0
+            The `check_preimported` and `context` parameters.
 
         """
         # Build our configuration from a number of sources.
