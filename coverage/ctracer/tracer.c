@@ -341,7 +341,6 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     CFileDisposition * pdisp = NULL;
 
     STATS( self->stats.calls++; )
-    self->activity = TRUE;
 
     /* Grow the stack. */
     if (CTracer_set_pdata_stack(self) < 0) {
@@ -353,7 +352,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
 
     /* See if this frame begins a new context. */
-    if (self->should_start_context && self->context == Py_None) {
+    if (self->should_start_context != Py_None && self->context == Py_None) {
         PyObject * context;
         /* We're looking for our context, ask should_start_context if this is the start. */
         STATS( self->stats.start_context_calls++; )
@@ -865,6 +864,8 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     if (CTracer_check_missing_return(self, frame) < 0) {
         goto error;
     }
+
+    self->activity = TRUE;
 
     switch (what) {
     case PyTrace_CALL:
