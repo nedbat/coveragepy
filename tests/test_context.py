@@ -11,11 +11,11 @@ from coverage.data import CoverageData
 from tests.coveragetest import CoverageTest
 
 
-class GlobalContextTest(CoverageTest):
-    """Tests of the global context."""
+class StaticContextTest(CoverageTest):
+    """Tests of the static context."""
 
     def setUp(self):
-        super(GlobalContextTest, self).setUp()
+        super(StaticContextTest, self).setUp()
         self.skip_unless_data_storage_is("sql")
 
     def test_no_context(self):
@@ -25,7 +25,7 @@ class GlobalContextTest(CoverageTest):
         data = cov.get_data()
         self.assertCountEqual(data.measured_contexts(), [""])
 
-    def test_global_context(self):
+    def test_static_context(self):
         self.make_file("main.py", "a = 1")
         cov = coverage.Coverage(context="gooey")
         self.start_import_stop(cov, "main")
