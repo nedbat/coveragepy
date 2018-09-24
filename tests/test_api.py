@@ -420,6 +420,21 @@ class ApiTest(CoverageTest):
         self.assertEqual(statements, [1, 2])
         self.assertEqual(missing, [1, 2])
 
+    def test_combining_with_a_used_coverage(self):
+        # Can you use a coverage object to run one shard of a parallel suite,
+        # and then also combine the data?
+        self.make_code1_code2()
+        cov = coverage.Coverage(data_suffix=True)
+        self.start_import_stop(cov, "code1")
+        cov.save()
+
+        cov = coverage.Coverage(data_suffix=True)
+        self.start_import_stop(cov, "code2")
+        cov.save()
+
+        cov.combine()
+        self.check_code1_code2(cov)
+
     def test_warnings(self):
         self.make_file("hello.py", """\
             import sys, os
