@@ -19,8 +19,27 @@ Unreleased
 
 - Context support: static contexts let you specify a label for a coverage run,
   which is recorded in the data, and retained when you combine files.  See
-  :ref:`contexts` for more information.  Currently, only static contexts are
-  supported, with no reporting features.
+  :ref:`contexts` for more information.
+
+- Dynamic contexts: specifying ``[run] dynamic_context = test_function`` in the
+  config file will record the test function name as a dynamic context during
+  execution.  This is the core of "Who Tests What" (`issue 170`_).  Things to
+  note:
+
+  - There is no reporting support yet.  Use SQLite to query the .coverage file
+    for information.  Ideas are welcome about how reporting could be extended
+    to use this data.
+
+  - There's a noticeable slow-down before any test is run.
+
+  - Data files will now be roughly N times larger, where N is the number of
+    tests you have.  Combining data files is therefore also N times slower.
+
+  - No other values for ``dynamic_context`` are recognized yet.  Let me know
+    what else would be useful.  I'd like to use a pytest plugin to get better
+    information directly from pytest, for example.
+
+.. _issue 170: https://github.com/nedbat/coveragepy/issues/170
 
 - Environment variable substitution in configuration files now supports two
   syntaxes for controlling the behavior of undefined variables: if ``VARNAME``
