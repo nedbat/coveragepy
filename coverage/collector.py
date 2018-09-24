@@ -373,7 +373,13 @@ class Collector(object):
     def switch_context(self, new_context):
         """Switch to a new dynamic context."""
         self.flush_data()
-        self.covdata.set_context(new_context)
+        if self.static_context:
+            context = self.static_context
+            if new_context:
+                context += ":" + new_context
+        else:
+            context = new_context
+        self.covdata.set_context(context)
 
     def cached_abs_file(self, filename):
         """A locally cached version of `abs_file`."""

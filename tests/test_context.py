@@ -115,29 +115,35 @@ class DynamicContextTest(CoverageTest):
         if not env.C_TRACER:
             self.skipTest("Only the C tracer supports dynamic contexts")
 
-    def test_simple(self):
-        self.make_file("two_tests.py", """\
-            def helper(lineno):
-                x = 2
+    SOURCE = """\
+        def helper(lineno):
+            x = 2
 
-            def test_one():
-                a = 5
-                helper(6)
+        def test_one():
+            a = 5
+            helper(6)
 
-            def test_two():
-                a = 9
-                b = 10
-                if a > 11:
-                    b = 12
-                assert a == (13-4)
-                assert b == (14-4)
-                helper(15)
+        def test_two():
+            a = 9
+            b = 10
+            if a > 11:
+                b = 12
+            assert a == (13-4)
+            assert b == (14-4)
+            helper(15)
 
-            test_one()
-            x = 18
-            helper(19)
-            test_two()
-            """)
+        test_one()
+        x = 18
+        helper(19)
+        test_two()
+        """
+
+    OUTER_LINES = [1, 4, 8, 17, 18, 19, 2, 20]
+    TEST_ONE_LINES = [5, 6, 2]
+    TEST_TWO_LINES = [9, 10, 11, 13, 14, 15, 2]
+
+    def test_dynamic_alone(self):
+        self.make_file("two_tests.py", self.SOURCE)
         cov = coverage.Coverage(source=["."])
         cov.set_option("run:dynamic_context", "test_function")
         self.start_import_stop(cov, "two_tests")
@@ -145,9 +151,22 @@ class DynamicContextTest(CoverageTest):
 
         fname = os.path.abspath("two_tests.py")
         self.assertCountEqual(data.measured_contexts(), ["", "test_one", "test_two"])
-        self.assertCountEqual(data.lines(fname, ""), [1, 4, 8, 17, 18, 19, 2, 20])
-        self.assertCountEqual(data.lines(fname, "test_one"), [5, 6, 2])
-        self.assertCountEqual(data.lines(fname, "test_two"), [9, 10, 11, 13, 14, 15, 2])
+        self.assertCountEqual(data.lines(fname, ""), self.OUTER_LINES)
+        self.assertCountEqual(data.lines(fname, "test_one"), self.TEST_ONE_LINES)
+        self.assertCountEqual(data.lines(fname, "test_two"), self.TEST_TWO_LINES)
+
+    def test_static_and_dynamic(self):
+        self.make_file("two_tests.py", self.SOURCE)
+        cov = coverage.Coverage(context="stat", source=["."])
+        cov.set_option("run:dynamic_context", "test_function")
+        self.start_import_stop(cov, "two_tests")
+        data = cov.get_data()
+
+        fname = os.path.abspath("two_tests.py")
+        self.assertCountEqual(data.measured_contexts(), ["stat", "stat:test_one", "stat:test_two"])
+        self.assertCountEqual(data.lines(fname, "stat"), self.OUTER_LINES)
+        self.assertCountEqual(data.lines(fname, "stat:test_one"), self.TEST_ONE_LINES)
+        self.assertCountEqual(data.lines(fname, "stat:test_two"), self.TEST_TWO_LINES)
 
 
 class DynamicContextWithPythonTracerTest(CoverageTest):
