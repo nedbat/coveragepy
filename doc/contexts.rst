@@ -16,9 +16,8 @@ in which it was run.  This can provide more information to help you understand
 the behavior of your tests.
 
 There are two kinds of context: static and dynamic.  Static contexts are fixed
-for an entire run, and are set explicitly with an option.
-
-Dynamic contexts are coming soon.
+for an entire run, and are set explicitly with an option.  Dynamic contexts
+change over the course of a single run.
 
 
 Static contexts
@@ -39,7 +38,18 @@ A static context is specified with the ``--context=CONTEXT`` option to
 Dynamic contexts
 ----------------
 
-Not implemented yet.
+Dynamic contexts are found during execution.  There is currently support for
+one kind: test function names.  Set the ``dynamic_context`` option to
+``test_function`` in the configuration file::
+
+    [run]
+    dynamic_context = test_function
+
+Each test function you run will be considered a separate dynamic context, and
+coverage data will be segregated for each.  A test function is any function
+whose names starts with "test".
+
+Ideas are welcome for other dynamic contexts that would be useful.
 
 
 Context reporting

@@ -347,9 +347,19 @@ class Coverage(object):
             # it for the main process.
             self.config.parallel = True
 
+        if self.config.dynamic_context is None:
+            should_start_context = None
+        elif self.config.dynamic_context == "test_function":
+            should_start_context = should_start_context_test_function
+        else:
+            raise CoverageException(
+                "Don't understand dynamic_context setting: {!r}".format(self.config.dynamic_context)
+            )
+
         self._collector = Collector(
             should_trace=self._should_trace,
             check_include=self._check_include_omit_etc,
+            should_start_context=should_start_context,
             timid=self.config.timid,
             branch=self.config.branch,
             warn=self._warn,
@@ -884,6 +894,16 @@ if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):              # pragma: debugg
     from coverage.debug import decorate_methods, show_calls
 
     Coverage = decorate_methods(show_calls(show_args=True), butnot=['get_data'])(Coverage)
+
+
+def should_start_context_test_function(frame):
+    """Who-Tests-What hack: Determine whether this frame begins a new who-context."""
+    with open("/tmp/ssc.txt", "a") as f:
+        f.write("hello\n")
+    fn_name = frame.f_code.co_name
+    if fn_name.startswith("test"):
+        return fn_name
+    return None
 
 
 def process_startup():

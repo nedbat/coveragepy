@@ -34,14 +34,6 @@ except ImportError:
     CTracer = None
 
 
-def should_start_context(frame):
-    """Who-Tests-What hack: Determine whether this frame begins a new who-context."""
-    fn_name = frame.f_code.co_name
-    if fn_name.startswith("test"):
-        return fn_name
-    return None
-
-
 class Collector(object):
     """Collects trace data.
 
@@ -66,7 +58,10 @@ class Collector(object):
     # The concurrency settings we support here.
     SUPPORTED_CONCURRENCIES = set(["greenlet", "eventlet", "gevent", "thread"])
 
-    def __init__(self, should_trace, check_include, timid, branch, warn, concurrency):
+    def __init__(
+        self, should_trace, check_include, should_start_context,
+        timid, branch, warn, concurrency,
+    ):
         """Create a collector.
 
         `should_trace` is a function, taking a file name and a frame, and
@@ -74,6 +69,11 @@ class Collector(object):
 
         `check_include` is a function taking a file name and a frame. It returns
         a boolean: True if the file should be traced, False if not.
+
+        `should_start_context` is a function taking a frame, and returning a
+        string. If the frame should be the start of a new context, the string
+        is the new context. If the frame should not be the start of a new
+        context, return None.
 
         If `timid` is true, then a slower simpler trace function will be
         used.  This is important for some environments where manipulation of
@@ -96,6 +96,7 @@ class Collector(object):
         """
         self.should_trace = should_trace
         self.check_include = check_include
+        self.should_start_context = should_start_context
         self.warn = warn
         self.branch = branch
         self.threading = None
@@ -139,10 +140,6 @@ class Collector(object):
                 )
             )
 
-        # Who-Tests-What is just a hack at the moment, so turn it on with an
-        # environment variable.
-        self.wtw = int(os.getenv('COVERAGE_WTW', 0))
-
         self.reset()
 
         if timid:
@@ -175,7 +172,11 @@ class Collector(object):
 
     def _clear_data(self):
         """Clear out existing data, but stay ready for more collection."""
-        self.data.clear()
+        # We used to used self.data.clear(), but that would remove filename
+        # keys and data values that were still in use higher up the stack
+        # when we are called as part of switch_context.
+        for d in self.data.values():
+            d.clear()
 
         for tracer in self.tracers:
             tracer.reset_activity()
@@ -186,10 +187,6 @@ class Collector(object):
         # branch coverage), or mapping file names to dicts with line number
         # pairs as keys (if branch coverage).
         self.data = {}
-
-        # A dict mapping contexts to data dictionaries.
-        self.contexts = {}
-        self.contexts[None] = self.data
 
         # A dictionary mapping file names to file tracer plugin names that will
         # handle them.
@@ -252,11 +249,13 @@ class Collector(object):
             tracer.threading = self.threading
         if hasattr(tracer, 'check_include'):
             tracer.check_include = self.check_include
-        if self.wtw:
-            if hasattr(tracer, 'should_start_context'):
-                tracer.should_start_context = should_start_context
-            if hasattr(tracer, 'switch_context'):
-                tracer.switch_context = self.switch_context
+        if hasattr(tracer, 'should_start_context'):
+            tracer.should_start_context = self.should_start_context
+            tracer.switch_context = self.switch_context
+        elif self.should_start_context:
+            raise CoverageException(
+                "Can't support dynamic contexts with {}".format(self.tracer_name())
+            )
 
         fn = tracer.start()
         self.tracers.append(tracer)
@@ -372,12 +371,15 @@ class Collector(object):
         return any(tracer.activity() for tracer in self.tracers)
 
     def switch_context(self, new_context):
-        """Who-Tests-What hack: switch to a new who-context."""
-        # Make a new data dict, or find the existing one, and switch all the
-        # tracers to use it.
-        data = self.contexts.setdefault(new_context, {})
-        for tracer in self.tracers:
-            tracer.data = data
+        """Switch to a new dynamic context."""
+        self.flush_data()
+        if self.static_context:
+            context = self.static_context
+            if new_context:
+                context += ":" + new_context
+        else:
+            context = new_context
+        self.covdata.set_context(context)
 
     def cached_abs_file(self, filename):
         """A locally cached version of `abs_file`."""
@@ -415,20 +417,13 @@ class Collector(object):
             else:
                 raise runtime_err       # pylint: disable=raising-bad-type
 
-            return dict((self.cached_abs_file(k), v) for k, v in items)
+            return dict((self.cached_abs_file(k), v) for k, v in items if v)
 
         if self.branch:
             self.covdata.add_arcs(abs_file_dict(self.data))
         else:
             self.covdata.add_lines(abs_file_dict(self.data))
         self.covdata.add_file_tracers(abs_file_dict(self.file_tracers))
-
-        if self.wtw:
-            # Just a hack, so just hack it.
-            import pprint
-            out_file = "coverage_wtw_{:06}.py".format(os.getpid())
-            with open(out_file, "w") as wtw_out:
-                pprint.pprint(self.contexts, wtw_out)
 
         self._clear_data()
         return True

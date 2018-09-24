@@ -199,6 +199,8 @@ class CoverageSqliteData(SimpleReprMixin):
 
     def set_context(self, context):
         """Set the current context for future `add_lines` etc."""
+        if self._debug and self._debug.should('dataop'):
+            self._debug.write("Setting context: %r" % (context,))
         self._start_using()
         context = context or ""
         with self._connect() as con:

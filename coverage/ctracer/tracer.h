@@ -27,7 +27,6 @@ typedef struct CTracer {
     PyObject * trace_arcs;
     PyObject * should_start_context;
     PyObject * switch_context;
-    PyObject * context;
 
     /* Has the tracer been started? */
     BOOL started;
@@ -35,6 +34,8 @@ typedef struct CTracer {
     BOOL tracing_arcs;
     /* Have we had any activity? */
     BOOL activity;
+    /* The current dynamic context. */
+    PyObject * context;
 
     /*
         The data stack is a stack of dictionaries.  Each dictionary collects

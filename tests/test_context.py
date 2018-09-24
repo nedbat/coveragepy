@@ -6,16 +6,18 @@
 import os.path
 
 import coverage
+from coverage import env
 from coverage.data import CoverageData
+from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
 
 
-class GlobalContextTest(CoverageTest):
-    """Tests of the global context."""
+class StaticContextTest(CoverageTest):
+    """Tests of the static context."""
 
     def setUp(self):
-        super(GlobalContextTest, self).setUp()
+        super(StaticContextTest, self).setUp()
         self.skip_unless_data_storage_is("sql")
 
     def test_no_context(self):
@@ -25,7 +27,7 @@ class GlobalContextTest(CoverageTest):
         data = cov.get_data()
         self.assertCountEqual(data.measured_contexts(), [""])
 
-    def test_global_context(self):
+    def test_static_context(self):
         self.make_file("main.py", "a = 1")
         cov = coverage.Coverage(context="gooey")
         self.start_import_stop(cov, "main")
@@ -102,3 +104,81 @@ class GlobalContextTest(CoverageTest):
             self.assertEqual(combined.arcs(fred, context='blue'), [])
             self.assertEqual(combined.arcs(fblue, context='red'), [])
             self.assertEqual(combined.arcs(fblue, context='blue'), self.ARCS)
+
+
+class DynamicContextTest(CoverageTest):
+    """Tests of dynamically changing contexts."""
+
+    def setUp(self):
+        super(DynamicContextTest, self).setUp()
+        self.skip_unless_data_storage_is("sql")
+        if not env.C_TRACER:
+            self.skipTest("Only the C tracer supports dynamic contexts")
+
+    SOURCE = """\
+        def helper(lineno):
+            x = 2
+
+        def test_one():
+            a = 5
+            helper(6)
+
+        def test_two():
+            a = 9
+            b = 10
+            if a > 11:
+                b = 12
+            assert a == (13-4)
+            assert b == (14-4)
+            helper(15)
+
+        test_one()
+        x = 18
+        helper(19)
+        test_two()
+        """
+
+    OUTER_LINES = [1, 4, 8, 17, 18, 19, 2, 20]
+    TEST_ONE_LINES = [5, 6, 2]
+    TEST_TWO_LINES = [9, 10, 11, 13, 14, 15, 2]
+
+    def test_dynamic_alone(self):
+        self.make_file("two_tests.py", self.SOURCE)
+        cov = coverage.Coverage(source=["."])
+        cov.set_option("run:dynamic_context", "test_function")
+        self.start_import_stop(cov, "two_tests")
+        data = cov.get_data()
+
+        fname = os.path.abspath("two_tests.py")
+        self.assertCountEqual(data.measured_contexts(), ["", "test_one", "test_two"])
+        self.assertCountEqual(data.lines(fname, ""), self.OUTER_LINES)
+        self.assertCountEqual(data.lines(fname, "test_one"), self.TEST_ONE_LINES)
+        self.assertCountEqual(data.lines(fname, "test_two"), self.TEST_TWO_LINES)
+
+    def test_static_and_dynamic(self):
+        self.make_file("two_tests.py", self.SOURCE)
+        cov = coverage.Coverage(context="stat", source=["."])
+        cov.set_option("run:dynamic_context", "test_function")
+        self.start_import_stop(cov, "two_tests")
+        data = cov.get_data()
+
+        fname = os.path.abspath("two_tests.py")
+        self.assertCountEqual(data.measured_contexts(), ["stat", "stat:test_one", "stat:test_two"])
+        self.assertCountEqual(data.lines(fname, "stat"), self.OUTER_LINES)
+        self.assertCountEqual(data.lines(fname, "stat:test_one"), self.TEST_ONE_LINES)
+        self.assertCountEqual(data.lines(fname, "stat:test_two"), self.TEST_TWO_LINES)
+
+
+class DynamicContextWithPythonTracerTest(CoverageTest):
+    """The Python tracer doesn't do dynamic contexts at all."""
+
+    run_in_temp_dir = False
+
+    def test_python_tracer_fails_properly(self):
+        if env.C_TRACER:
+            self.skipTest("This test is specifically about the Python tracer.")
+        cov = coverage.Coverage()
+        cov.set_option("run:dynamic_context", "test_function")
+        msg = r"Can't support dynamic contexts with PyTracer"
+        with self.assertRaisesRegex(CoverageException, msg):
+            cov.start()

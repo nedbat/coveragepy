@@ -180,6 +180,7 @@ class CoverageConfig(object):
         self.data_file = ".coverage"
         self.debug = []
         self.disable_warnings = []
+        self.dynamic_context = None
         self.note = None
         self.parallel = False
         self.plugins = []
@@ -324,6 +325,7 @@ class CoverageConfig(object):
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
         ('disable_warnings', 'run:disable_warnings', 'list'),
+        ('dynamic_context', 'run:dynamic_context'),
         ('note', 'run:note'),
         ('parallel', 'run:parallel', 'boolean'),
         ('plugins', 'run:plugins', 'list'),
