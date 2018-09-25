@@ -622,7 +622,8 @@ class CoverageScript(object):
                 if getattr(options, opt_name) is not None:
                     self.help_fn(
                         "Options affecting multiprocessing must only be specified "
-                        "in a configuration file."
+                        "in a configuration file.\n"
+                        "Remove --{} from the command line.".format(opt_name)
                     )
                     return ERR
 

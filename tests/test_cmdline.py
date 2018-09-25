@@ -473,6 +473,10 @@ class CmdLineTest(BaseCmdLineTest):
             "Options affecting multiprocessing must only be specified in a configuration file.",
             self.stderr()
         )
+        self.assertIn(
+            "Remove --branch from the command line.",
+            self.stderr()
+        )
 
     def test_run_debug(self):
         self.cmd_executes("run --debug=opt1 foo.py", """\
