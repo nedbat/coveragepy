@@ -93,6 +93,11 @@ not.
 
 .. _described here: https://nedbatchelder.com/code/coverage
 
+Professional support for coverage.py is available as part of the `Tidelift
+Subscription`_.
+
+.. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=docs
+
 
 Quick start
 -----------
@@ -185,6 +190,9 @@ GitHub also hosts the `code repository`_.
 
 .. _GitHub issue tracker: https://github.com/nedbat/coveragepy/issues
 .. _code repository: https://github.com/nedbat/coveragepy
+
+Professional support for coverage.py is available as part of the `Tidelift
+Subscription`_.
 
 `I can be reached`_ in a number of ways. I'm happy to answer questions about
 using coverage.py.
