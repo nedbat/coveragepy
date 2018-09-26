@@ -98,6 +98,20 @@ Subscription`_.
 
 .. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=docs
 
+.. image:: media/Tidelift_Logos_RGB_Tidelift_Shorthand_On-White.png
+   :width: 75
+   :alt: Tidelift
+   :align: left
+   :class: tideliftlogo
+
+Professional support for coverage.py is available as part of the `Tidelift
+Subscription`_.  Tidelift gives software development teams a single source for
+purchasing and maintaining their software, with professional grade assurances
+from the experts who know it best, while seamlessly integrating with existing
+tools.
+
+.. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=docs
+
 
 Quick start
 -----------
@@ -190,6 +204,9 @@ GitHub also hosts the `code repository`_.
 
 .. _GitHub issue tracker: https://github.com/nedbat/coveragepy/issues
 .. _code repository: https://github.com/nedbat/coveragepy
+
+Professional support for coverage.py is available as part of the `Tidelift
+Subscription`_.
 
 `I can be reached`_ in a number of ways. I'm happy to answer questions about
 using coverage.py.
