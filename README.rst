@@ -18,8 +18,19 @@ Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been executed.
 
-Professional support for coverage.py is available as part of the `Tidelift
-Subscription`_.
+.. |tideliftlogo| image:: doc/media/Tidelift_Logos_RGB_Tidelift_Shorthand_On-White_small.png
+   :width: 75
+   :alt: Tidelift
+
+.. list-table::
+   :widths: 10 100
+
+   * - |tideliftlogo|
+     - Professional support for coverage.py is available as part of the `Tidelift
+       Subscription`_.  Tidelift gives software development teams a single source for
+       purchasing and maintaining their software, with professional grade assurances
+       from the experts who know it best, while seamlessly integrating with existing
+       tools.
 
 .. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
 
