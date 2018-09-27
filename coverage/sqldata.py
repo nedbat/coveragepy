@@ -331,15 +331,19 @@ class CoverageSqliteData(SimpleReprMixin):
         # See what we had already measured, for accurate conflict reporting.
         this_measured = self.measured_files()
 
+        other_files = set()
+
         # lines
         if other_data._has_lines:
             for context in other_data.measured_contexts():
                 self.set_context(context)
                 for filename in other_data.measured_files():
                     lines = set(other_data.lines(filename, context=context))
-                    filename = aliases.map(filename)
-                    lines.update(self.lines(filename, context=context) or ())
-                    self.add_lines({filename: lines})
+                    if lines:
+                        other_files.add(filename)
+                        filename = aliases.map(filename)
+                        lines.update(self.lines(filename, context=context) or ())
+                        self.add_lines({filename: lines})
 
         # arcs
         if other_data._has_arcs:
@@ -347,12 +351,14 @@ class CoverageSqliteData(SimpleReprMixin):
                 self.set_context(context)
                 for filename in other_data.measured_files():
                     arcs = set(other_data.arcs(filename, context=context))
-                    filename = aliases.map(filename)
-                    arcs.update(self.arcs(filename, context=context) or ())
-                    self.add_arcs({filename: arcs})
+                    if arcs:
+                        other_files.add(filename)
+                        filename = aliases.map(filename)
+                        arcs.update(self.arcs(filename, context=context) or ())
+                        self.add_arcs({filename: arcs})
 
         # file_tracers
-        for filename in other_data.measured_files():
+        for filename in other_files:
             other_plugin = other_data.file_tracer(filename)
             filename = aliases.map(filename)
             if filename in this_measured:
