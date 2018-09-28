@@ -898,8 +898,6 @@ if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):              # pragma: debugg
 
 def should_start_context_test_function(frame):
     """Who-Tests-What hack: Determine whether this frame begins a new who-context."""
-    with open("/tmp/ssc.txt", "a") as f:
-        f.write("hello\n")
     fn_name = frame.f_code.co_name
     if fn_name.startswith("test"):
         return fn_name
