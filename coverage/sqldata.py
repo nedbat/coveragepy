@@ -15,6 +15,7 @@ import glob
 import itertools
 import os
 import sqlite3
+import sys
 
 from coverage.backward import iitems
 from coverage.data import filename_suffix
@@ -36,7 +37,8 @@ create table coverage_schema (
 
 create table meta (
     has_lines boolean,
-    has_arcs boolean
+    has_arcs boolean,
+    sys_argv text
 );
 
 create table file (
@@ -118,8 +120,8 @@ class CoverageSqliteData(SimpleReprMixin):
                     self._db.execute(stmt)
             self._db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
             self._db.execute(
-                "insert into meta (has_lines, has_arcs) values (?, ?)",
-                (self._has_lines, self._has_arcs)
+                "insert into meta (has_lines, has_arcs, sys_argv) values (?, ?, ?)",
+                (self._has_lines, self._has_arcs, str(getattr(sys, 'argv', None)))
             )
 
     def _open_db(self):
