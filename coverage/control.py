@@ -14,6 +14,7 @@ from coverage.annotate import AnnotateReporter
 from coverage.backward import string_class, iitems
 from coverage.collector import Collector, CTracer
 from coverage.config import read_coverage_config
+from coverage.context import should_start_context_test_function
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import DebugControl, write_formatted_info
 from coverage.disposition import disposition_debug_msg
@@ -894,14 +895,6 @@ if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):              # pragma: debugg
     from coverage.debug import decorate_methods, show_calls
 
     Coverage = decorate_methods(show_calls(show_args=True), butnot=['get_data'])(Coverage)
-
-
-def should_start_context_test_function(frame):
-    """Who-Tests-What hack: Determine whether this frame begins a new who-context."""
-    fn_name = frame.f_code.co_name
-    if fn_name.startswith("test"):
-        return fn_name
-    return None
 
 
 def process_startup():
