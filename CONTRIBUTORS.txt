@@ -5,6 +5,7 @@ Other contributions, including writing code, updating docs, and submitting
 useful bug reports, have been made by:
 
 Adi Roiban
+Aleksi Torhamo
 Alex Gaynor
 Alex Groce
 Alex Sandro
