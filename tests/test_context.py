@@ -3,10 +3,12 @@
 
 """Tests for context support."""
 
+import inspect
 import os.path
 
 import coverage
 from coverage import env
+from coverage.context import qualname_from_frame
 from coverage.data import CoverageData
 from coverage.misc import CoverageException
 
@@ -182,3 +184,44 @@ class DynamicContextWithPythonTracerTest(CoverageTest):
         msg = r"Can't support dynamic contexts with PyTracer"
         with self.assertRaisesRegex(CoverageException, msg):
             cov.start()
+
+
+def get_qualname():
+    """Helper to return qualname_from_frame for the caller."""
+    caller_frame = inspect.stack()[1][0]
+    return qualname_from_frame(caller_frame)
+
+
+class Parent(object):                           # pylint: disable=missing-docstring
+    def meth(self):
+        return get_qualname()
+
+class Child(Parent):                            # pylint: disable=missing-docstring
+    pass
+
+class SomethingElse(object):                    # pylint: disable=missing-docstring
+    pass
+
+class MultiChild(SomethingElse, Child):         # pylint: disable=missing-docstring
+    pass
+
+def fake_out(self):                             # pylint: disable=missing-docstring
+    return get_qualname()
+
+
+class QualnameTest(CoverageTest):
+    """Tests of qualname_from_frame."""
+
+    run_in_temp_dir = False
+
+    def test_method(self):
+        self.assertEqual(Parent().meth(), "Parent.meth")
+
+    def test_inherited_method(self):
+        self.assertEqual(Child().meth(), "Parent.meth")
+
+    def test_mi_inherited_method(self):
+        self.assertEqual(MultiChild().meth(), "Parent.meth")
+
+    def test_fake_out(self):
+        self.assertEqual(fake_out(0), "fake_out")
