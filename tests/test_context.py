@@ -188,12 +188,21 @@ class DynamicContextWithPythonTracerTest(CoverageTest):
 
 def get_qualname():
     """Helper to return qualname_from_frame for the caller."""
-    caller_frame = inspect.stack()[1][0]
+    stack = inspect.stack()[1:]
+    if any(sinfo[0].f_code.co_name == "get_qualname" for sinfo in stack):
+        # We're calling outselves recursively, maybe because we're testing
+        # properties. Return an int to try to get back on track.
+        return 17
+    caller_frame = stack[0][0]
     return qualname_from_frame(caller_frame)
 
 
 class Parent(object):                           # pylint: disable=missing-docstring
     def meth(self):
+        return get_qualname()
+
+    @property
+    def a_property(self):
         return get_qualname()
 
 class Child(Parent):                            # pylint: disable=missing-docstring
@@ -225,3 +234,7 @@ class QualnameTest(CoverageTest):
 
     def test_fake_out(self):
         self.assertEqual(fake_out(0), "fake_out")
+
+    def test_property(self):
+        # I'd like this to be "Parent.a_property", but this might be ok too.
+        self.assertEqual(Parent().a_property, "a_property")

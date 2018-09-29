@@ -31,7 +31,10 @@ def qualname_from_frame(frame):
     if method is None:
         return fname
 
-    func = method.__func__
+    func = getattr(method, '__func__', None)
+    if func is None:
+        return fname
+
     if hasattr(func, '__qualname__'):
         qname = func.__qualname__
     else:
