@@ -28,7 +28,7 @@ exclude ci/appveyor.token
 recursive-include coverage/fullcoverage *.py
 recursive-include coverage/ctracer *.c *.h
 
-recursive-include doc conf.py *.pip *.rst *.txt
+recursive-include doc conf.py *.pip *.rst *.txt *.png
 recursive-include doc/_static *.*
 prune doc/_build
 
