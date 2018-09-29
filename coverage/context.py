@@ -5,8 +5,7 @@
 
 def should_start_context_test_function(frame):
     """Is this frame calling a test_* function?"""
-    fn_name = frame.f_code.co_name
-    if fn_name.startswith("test"):
+    if frame.f_code.co_name.startswith("test"):
         return qualname_from_frame(frame)
     return None
 
@@ -18,12 +17,9 @@ def qualname_from_frame(frame):
     if not co.co_varnames:
         return fname
 
-    locs = frame.f_locals
     first_arg = co.co_varnames[0]
     if co.co_argcount and first_arg == "self":
-        self = locs["self"]
-    #elif co.co_flags & 0x04:    # *args syntax
-    #    self = locs[first_arg][0]
+        self = frame.f_locals["self"]
     else:
         return fname
 
