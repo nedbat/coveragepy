@@ -198,11 +198,11 @@ def get_qualname():
 
 
 class Parent(object):                           # pylint: disable=missing-docstring
-    def meth(self):
+    def meth(self):                             # pylint: disable=missing-docstring
         return get_qualname()
 
     @property
-    def a_property(self):
+    def a_property(self):                       # pylint: disable=missing-docstring
         return get_qualname()
 
 class Child(Parent):                            # pylint: disable=missing-docstring
@@ -214,7 +214,7 @@ class SomethingElse(object):                    # pylint: disable=missing-docstr
 class MultiChild(SomethingElse, Child):         # pylint: disable=missing-docstring
     pass
 
-def fake_out(self):                             # pylint: disable=missing-docstring
+def fake_out(self):                     # pylint: disable=missing-docstring, unused-argument
     return get_qualname()
 
 
