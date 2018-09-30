@@ -214,9 +214,17 @@ class SomethingElse(object):                    # pylint: disable=missing-docstr
 class MultiChild(SomethingElse, Child):         # pylint: disable=missing-docstring
     pass
 
+def no_arguments():                     # pylint: disable=missing-docstring
+    return get_qualname()
+
+def plain_old_function(a, b):           # pylint: disable=missing-docstring, unused-argument
+    return get_qualname()
+
 def fake_out(self):                     # pylint: disable=missing-docstring, unused-argument
     return get_qualname()
 
+def meth(self):
+    return get_qualname()
 
 class QualnameTest(CoverageTest):
     """Tests of qualname_from_frame."""
@@ -232,9 +240,20 @@ class QualnameTest(CoverageTest):
     def test_mi_inherited_method(self):
         self.assertEqual(MultiChild().meth(), "Parent.meth")
 
+    def test_no_arguments(self):
+        self.assertEqual(no_arguments(), "no_arguments")
+
+    def test_plain_old_function(self):
+        self.assertEqual(plain_old_function(0, 1), "plain_old_function")
+
     def test_fake_out(self):
         self.assertEqual(fake_out(0), "fake_out")
 
     def test_property(self):
         # I'd like this to be "Parent.a_property", but this might be ok too.
         self.assertEqual(Parent().a_property, "a_property")
+
+    def test_changeling(self):
+        c = Child()
+        c.meth = meth
+        self.assertEqual(c.meth(c), "meth")
