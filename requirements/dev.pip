@@ -5,6 +5,7 @@
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
 pip==18.0.0
+virtualenv==16.0.0
 
 # PyPI requirements for running tests.
 -r tox.pip
