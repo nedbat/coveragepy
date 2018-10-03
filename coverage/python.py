@@ -135,7 +135,7 @@ class PythonFileReporter(FileReporter):
     def __init__(self, morf, coverage=None):
         self.coverage = coverage
 
-        if hasattr(morf, '__file__'):
+        if hasattr(morf, '__file__') and morf.__file__:
             filename = morf.__file__
         elif isinstance(morf, types.ModuleType):
             # A module should have had .__file__, otherwise we can't use it.

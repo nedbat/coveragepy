@@ -855,8 +855,7 @@ class Coverage(object):
         # Find files that were never executed at all.
         for pkg in self.source_pkgs:
             if (not pkg in sys.modules or
-                not hasattr(sys.modules[pkg], '__file__') or
-                not os.path.exists(sys.modules[pkg].__file__)):
+                not module_has_file(sys.modules[pkg])):
                 continue
             pkg_file = source_for_file(sys.modules[pkg].__file__)
             self._find_unexecuted_files(self._canonical_path(pkg_file))
@@ -878,15 +877,12 @@ class Coverage(object):
             self._warn("Module %s was never imported." % pkg, slug="module-not-imported")
             return
 
-        is_namespace = hasattr(mod, '__path__') and not hasattr(mod, '__file__')
-        has_file = hasattr(mod, '__file__') and os.path.exists(mod.__file__)
-
-        if is_namespace:
+        if module_is_namespace(mod):
             # A namespace package. It's OK for this not to have been traced,
             # since there is no code directly in it.
             return
 
-        if not has_file:
+        if not module_has_file(mod):
             self._warn("Module %s has no Python source." % pkg, slug="module-not-python")
             return
 
@@ -1202,6 +1198,19 @@ class Coverage(object):
             info.append((matcher_name, matcher_info))
 
         return info
+
+
+def module_is_namespace(mod):
+    """Is the module object `mod` a PEP420 namespace module?"""
+    return hasattr(mod, '__path__') and getattr(mod, '__file__', None) is None
+
+
+def module_has_file(mod):
+    """Does the module object `mod` have an existing __file__ ?"""
+    mod__file__ = getattr(mod, '__file__', None)
+    if mod__file__ is None:
+        return False
+    return os.path.exists(mod__file__)
 
 
 # FileDisposition "methods": FileDisposition is a pure value object, so it can
