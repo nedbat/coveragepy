@@ -4,6 +4,10 @@
 # Requirements for doing local development work on coverage.py.
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
+# Pin these so that 2.6 keeps working
+pip==9.0.1
+virtualenv==15.2.0
+
 # PyPI requirements for running tests.
 -r tox.pip
 -r pytest.pip
