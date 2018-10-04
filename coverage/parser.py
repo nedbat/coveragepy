@@ -722,7 +722,7 @@ class AstArcAnalyzer(object):
     def is_constant_expr(self, node):
         """Is this a compile-time constant?"""
         node_name = node.__class__.__name__
-        if node_name in ["NameConstant", "Num"]:
+        if node_name in ["Constant", "NameConstant", "Num"]:
             return "Num"
         elif node_name == "Name":
             if node.id in ["True", "False", "None", "__debug__"]:
