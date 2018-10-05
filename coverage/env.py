@@ -24,6 +24,16 @@ PYVERSION = sys.version_info
 PY2 = PYVERSION < (3, 0)
 PY3 = PYVERSION >= (3, 0)
 
+# Python behavior
+class PYBEHAVIOR(object):
+    """Flags indicating this Python's behavior."""
+
+    # When a break/continue/return statement in a try block jumps to a finally
+    # block, does the finally block do the break/continue/return (pre-3.8), or
+    # does the finally jump back to the break/continue/return (3.8) to do the
+    # work?
+    finally_jumps_back = (PYVERSION >= (3, 8))
+
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?

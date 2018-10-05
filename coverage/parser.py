@@ -505,6 +505,10 @@ class NodeList(object):
         self.lineno = body[0].lineno
 
 
+# TODO: some add_arcs methods here don't add arcs, they return them. Rename them.
+# TODO: the cause messages have too many commas.
+# TODO: Shouldn't the cause messages join with "and" instead of "or"?
+
 class AstArcAnalyzer(object):
     """Analyze source text with an AST to find executable code paths."""
 
@@ -546,6 +550,7 @@ class AstArcAnalyzer(object):
             if code_object_handler is not None:
                 code_object_handler(node)
 
+    @contract(start=int, end=int)
     def add_arc(self, start, end, smsg=None, emsg=None):
         """Add an arc, including message fragments to use if it is missing."""
         if self.debug:                      # pragma: debugging
@@ -970,21 +975,45 @@ class AstArcAnalyzer(object):
             final_exits = self.add_body_arcs(node.finalbody, prev_starts=final_from)
 
             if try_block.break_from:
-                self.process_break_exits(
-                    self._combine_finally_starts(try_block.break_from, final_exits)
-                )
+                if env.PYBEHAVIOR.finally_jumps_back:
+                    for break_line in try_block.break_from:
+                        lineno = break_line.lineno
+                        cause = break_line.cause.format(lineno=lineno)
+                        for final_exit in final_exits:
+                            self.add_arc(final_exit.lineno, lineno, cause)
+                    breaks = try_block.break_from
+                else:
+                    breaks = self._combine_finally_starts(try_block.break_from, final_exits)
+                self.process_break_exits(breaks)
+
             if try_block.continue_from:
-                self.process_continue_exits(
-                    self._combine_finally_starts(try_block.continue_from, final_exits)
-                )
+                if env.PYBEHAVIOR.finally_jumps_back:
+                    for continue_line in try_block.continue_from:
+                        lineno = continue_line.lineno
+                        cause = continue_line.cause.format(lineno=lineno)
+                        for final_exit in final_exits:
+                            self.add_arc(final_exit.lineno, lineno, cause)
+                    continues = try_block.continue_from
+                else:
+                    continues = self._combine_finally_starts(try_block.continue_from, final_exits)
+                self.process_continue_exits(continues)
+
             if try_block.raise_from:
                 self.process_raise_exits(
                     self._combine_finally_starts(try_block.raise_from, final_exits)
                 )
+
             if try_block.return_from:
-                self.process_return_exits(
-                    self._combine_finally_starts(try_block.return_from, final_exits)
-                )
+                if env.PYBEHAVIOR.finally_jumps_back:
+                    for return_line in try_block.return_from:
+                        lineno = return_line.lineno
+                        cause = return_line.cause.format(lineno=lineno)
+                        for final_exit in final_exits:
+                            self.add_arc(final_exit.lineno, lineno, cause)
+                    returns = try_block.return_from
+                else:
+                    returns = self._combine_finally_starts(try_block.return_from, final_exits)
+                self.process_return_exits(returns)
 
             if exits:
                 # The finally clause's exits are only exits for the try block
