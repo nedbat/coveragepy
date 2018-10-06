@@ -15,6 +15,20 @@ Change history for Coverage.py
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
+Unreleased
+----------
+
+- Tentative support for Python 3.8, which has not yet released an alpha. Fixes
+  `issue 707` and `issue 714`_.
+
+.. _issue 707: https://github.com/nedbat/coveragepy/issues/707
+.. _issue 714: https://github.com/nedbat/coveragepy/issues/714
+
+- Development moved from `Bitbucket`_ to `GitHub`_.
+
+.. _Bitbucket: https://bitbucket.org/ned/coveragepy
+.. _GitHub: https://github.com/nedbat/coveragepy
+
 
 .. _changes_451:
 
