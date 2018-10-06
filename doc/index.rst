@@ -5,55 +5,6 @@
 Coverage.py
 ===========
 
-.. :history: 20090524T134300, brand new docs.
-.. :history: 20090613T164000, final touches for 3.0
-.. :history: 20090618T195900, minor tweaks
-.. :history: 20090707T205200, changes for 3.0.1
-.. :history: 20090913T084400, new command line syntax
-.. :history: 20091004T211900, version 3.1
-.. :history: 20091127T155100, version 3.2
-.. :history: 20091205T161429, version 3.2 for real.
-.. :history: 20100224T204700, version 3.3
-.. :history: 20100306T181500, version 3.3.1
-.. :history: 20100725T211700, updated for 3.4.
-.. :history: 20100820T151500, updated for 3.4b1.
-.. :history: 20100906T134700, updated for 3.4b2.
-.. :history: 20100919T163500, updated for 3.4 release.
-.. :history: 20110213T081200, claim true 3.2 compatibility.
-.. :history: 20110604T114800, update for 3.5b1
-.. :history: 20110629T082300, update for 3.5
-.. :history: 20110827T221800, update for 3.5.1b1
-.. :history: 20110923T081800, update for 3.5.1
-.. :history: 20120429T162100, updated for 3.5.2b1
-.. :history: 20120503T233800, updated for 3.5.2
-.. :history: 20120929T093500, updated for 3.5.3
-.. :history: 20121117T094900, Change from easy_install to pip.
-.. :history: 20121128T203700, Updated for 3.6b1.
-.. :history: 20121223T180600, Updated for 3.6b2.
-.. :history: 20121229T112300, Updated for 3.6b3.
-.. :history: 20130105T174000, Updated for 3.6
-.. :history: 20131005T210000, Updated for 3.7
-.. :history: 20131212T213300, Updated for 3.7.1
-.. :history: 20140924T073000, Updated for 4.0a1
-.. :history: 20150124T023900, Updated for 4.0a4
-.. :history: 20150216T201000, Updated for 4.0a5
-.. :history: 20150802T160200, Updated for 4.0b1
-.. :history: 20150822T092900, Updated for 4.0b2
-.. :history: 20150918T072700, Updated for 4.0
-.. :history: 20151013T103200, Updated for 4.0.1
-.. :history: 20151104T050900, updated for 4.0.2
-.. :history: 20151124T065900, updated for 4.0.3
-.. :history: 20160110T125900, updated for 4.1b1
-.. :history: 20160123T171300, updated for 4.1b2
-.. :history: 20160510T125300, updated for 4.1b3
-.. :history: 20160521T074500, updated for 4.1
-.. :history: 20160726T161300, updated for 4.2
-.. :history: 20161226T160400, updated for 4.3
-.. :history: 20170116T180100, updated for 4.3.2
-.. :history: 20180203T130300, updated for 4.5
-.. :history: 20180210T125300, updated for 4.5.1
-
-
 Coverage.py is a tool for measuring code coverage of Python programs. It
 monitors your program, noting which parts of the code have been executed, then
 analyzes the source to identify code that could have been executed but was not.
@@ -77,7 +28,7 @@ not.
 
 .. ifconfig:: prerelease
 
-    The latest version is coverage.py 5.0a2, released September 3rd 2018.
+    The latest version is coverage.py 5.0a3, released October 6th 2018.
     It is supported on:
 
     * Python versions 2.7, 3.4, 3.5, 3.6, 3.7, and pre-alpha 3.8.

@@ -14,8 +14,10 @@ Change history for Coverage.py
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+.. _changes_50a3:
+
+Version 5.0a3 --- 2018-10-06
+----------------------------
 
 - Context support: static contexts let you specify a label for a coverage run,
   which is recorded in the data, and retained when you combine files.  See
@@ -41,16 +43,16 @@ Unreleased
 
 .. _issue 170: https://github.com/nedbat/coveragepy/issues/170
 
+- Environment variable substitution in configuration files now supports two
+  syntaxes for controlling the behavior of undefined variables: if ``VARNAME``
+  is not defined, ``${VARNAME?}`` will raise an error, and ``${VARNAME-default
+  value}`` will use "default value".
+
 - Tentative support for Python 3.8, which has not yet released an alpha. Fixes
   `issue 707` and `issue 714`_.
 
 .. _issue 707: https://github.com/nedbat/coveragepy/issues/707
 .. _issue 714: https://github.com/nedbat/coveragepy/issues/714
-
-- Environment variable substitution in configuration files now supports two
-  syntaxes for controlling the behavior of undefined variables: if ``VARNAME``
-  is not defined, ``${VARNAME?}`` will raise an error, and ``${VARNAME-default
-  value}`` will use "default value".
 
 
 .. _changes_50a2:
