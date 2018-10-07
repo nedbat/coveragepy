@@ -186,13 +186,9 @@ spelling_show_suggestions = False
 # into the class docs.
 autoclass_content = "class"
 
-
-
-
-
 prerelease = bool(max(release).isalpha())
 
 def setup(app):
     app.add_stylesheet('coverage.css')
     app.add_config_value('prerelease', False, 'env')
-    app.info("** Prerelease = %r" % prerelease)
+    print("** Prerelease = %r" % prerelease)
