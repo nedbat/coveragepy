@@ -4,7 +4,7 @@
 # Requirements for doing local development work on coverage.py.
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
-pip==18.0.0
+pip==18.1
 virtualenv==16.0.0
 
 # PyPI requirements for running tests.
@@ -12,11 +12,11 @@ virtualenv==16.0.0
 -r pytest.pip
 
 # for linting.
-greenlet==0.4.14
+greenlet==0.4.15
 pylint==1.9.2
 check-manifest==0.37
-readme_renderer==21.0
+readme_renderer==22.0
 
 # for kitting.
 requests==2.19.1
-twine==1.11.0
+twine==1.12.1

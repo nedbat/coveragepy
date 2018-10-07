@@ -1,4 +1,7 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
 # The version of tox used by coverage.py
-tox==3.2.1
+tox==3.4.0
 # Adds env recreation on requirements file changes.
 tox-battery==0.5.1
