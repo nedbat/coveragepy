@@ -186,8 +186,18 @@ class CoverageSqliteData(SimpleReprMixin):
         if filename not in self._file_map:
             if add:
                 with self._connect() as con:
-                    cur = con.execute("insert into file (path) values (?)", (filename,))
-                    self._file_map[filename] = cur.lastrowid
+                    # insert and fetch in two steps to avoid races
+                    # in case another process may have created the row
+                    # since we initially populated _file_map
+                    con.execute(
+                        "insert or ignore into file (path) values (?)",
+                        (filename,)
+                    )
+                    row = con.execute(
+                        "select id from file where path = ? limit 1",
+                        (filename,)
+                    ).fetchone()
+                    self._file_map[filename] = row[0]
         return self._file_map.get(filename)
 
     def _context_id(self, context):
