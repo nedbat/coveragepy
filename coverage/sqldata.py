@@ -489,10 +489,10 @@ class CoverageSqliteData(SimpleReprMixin):
 class Sqlite(SimpleReprMixin):
     def __init__(self, filename, debug):
         self.debug = debug if (debug and debug.should('sql')) else None
-        if self.debug:
-            self.debug.write("Connecting to {!r}".format(filename))
         self.filename = filename
         self.nest = 0
+        if self.debug:
+            self.debug.write("Connecting to {!r}".format(filename))
 
     def connect(self):
         # SQLite on Windows on py2 won't open a file if the filename argument

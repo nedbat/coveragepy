@@ -177,6 +177,7 @@ class SimpleReprMixin(object):
         show_attrs = (
             (k, v) for k, v in self.__dict__.items()
             if getattr(v, "show_repr_attr", True)
+            and not callable(v)
         )
         return "<{klass} @0x{id:x} {attrs}>".format(
             klass=self.__class__.__name__,
@@ -229,11 +230,10 @@ class DebugOutputFile(object):                              # pragma: debugging
 
         if self.show_process:
             self.filters.append(CwdTracker().filter)
-            cmd = " ".join(getattr(sys, 'argv', ['???']))
-            self.write("New process: executable: %s\n" % (sys.executable,))
-            self.write("New process: cmd: %s\n" % (cmd,))
+            self.write("New process: executable: %r\n" % (sys.executable,))
+            self.write("New process: cmd: %r\n" % (getattr(sys, 'argv', None),))
             if hasattr(os, 'getppid'):
-                self.write("New process: pid: %s, parent pid: %s\n" % (os.getpid(), os.getppid()))
+                self.write("New process: pid: %r, parent pid: %r\n" % (os.getpid(), os.getppid()))
 
     SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
 
