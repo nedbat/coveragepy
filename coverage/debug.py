@@ -91,6 +91,12 @@ class DebugControlString(DebugControl):
         return self.raw_output.getvalue()
 
 
+class NoDebugging(object):
+    """A replacement for DebugControl that will never try to do anything."""
+    def should(self, option):
+        return False
+
+
 def info_header(label):
     """Make a nice header string."""
     return "--{0:-<60s}".format(" "+label+" ")

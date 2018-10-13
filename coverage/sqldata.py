@@ -19,7 +19,7 @@ import sys
 
 from coverage.backward import iitems
 from coverage.data import filename_suffix
-from coverage.debug import SimpleReprMixin
+from coverage.debug import NoDebugging, SimpleReprMixin
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
 
@@ -80,7 +80,7 @@ class CoverageSqliteData(SimpleReprMixin):
         self._basename = os.path.abspath(basename or ".coverage")
         self._suffix = suffix
         self._warn = warn
-        self._debug = debug
+        self._debug = debug or NoDebugging()
 
         self._choose_filename()
         self._file_map = {}
@@ -110,7 +110,7 @@ class CoverageSqliteData(SimpleReprMixin):
         self._current_context_id = None
 
     def _create_db(self):
-        if self._debug and self._debug.should('dataio'):
+        if self._debug.should('dataio'):
             self._debug.write("Creating data file {!r}".format(self.filename))
         self._db = Sqlite(self.filename, self._debug)
         with self._db:
@@ -125,7 +125,7 @@ class CoverageSqliteData(SimpleReprMixin):
             )
 
     def _open_db(self):
-        if self._debug and self._debug.should('dataio'):
+        if self._debug.should('dataio'):
             self._debug.write("Opening data file {!r}".format(self.filename))
         self._db = Sqlite(self.filename, self._debug)
         with self._db:
@@ -203,7 +203,7 @@ class CoverageSqliteData(SimpleReprMixin):
 
     def set_context(self, context):
         """Set the current context for future `add_lines` etc."""
-        if self._debug and self._debug.should('dataop'):
+        if self._debug.should('dataop'):
             self._debug.write("Setting context: %r" % (context,))
         self._start_using()
         context = context or ""
@@ -223,7 +223,7 @@ class CoverageSqliteData(SimpleReprMixin):
             { filename: { lineno: None, ... }, ...}
 
         """
-        if self._debug and self._debug.should('dataop'):
+        if self._debug.should('dataop'):
             self._debug.write("Adding lines: %d files, %d lines total" % (
                 len(line_data), sum(len(lines) for lines in line_data.values())
             ))
@@ -248,7 +248,7 @@ class CoverageSqliteData(SimpleReprMixin):
             { filename: { (l1,l2): None, ... }, ...}
 
         """
-        if self._debug and self._debug.should('dataop'):
+        if self._debug.should('dataop'):
             self._debug.write("Adding arcs: %d files, %d arcs total" % (
                 len(arc_data), sum(len(arcs) for arcs in arc_data.values())
             ))
@@ -312,7 +312,7 @@ class CoverageSqliteData(SimpleReprMixin):
         to associate the right filereporter, etc.
         """
         self._start_using()
-        if self._debug and self._debug.should('dataop'):
+        if self._debug.should('dataop'):
             self._debug.write("Touching %r" % (filename,))
         if not self._has_arcs and not self._has_lines:
             raise CoverageException("Can't touch files in an empty CoverageSqliteData")
@@ -384,7 +384,7 @@ class CoverageSqliteData(SimpleReprMixin):
 
         """
         self._reset()
-        if self._debug and self._debug.should('dataio'):
+        if self._debug.should('dataio'):
             self._debug.write("Erasing data file {!r}".format(self.filename))
         file_be_gone(self.filename)
         if parallel:
@@ -392,7 +392,7 @@ class CoverageSqliteData(SimpleReprMixin):
             localdot = local + '.*'
             pattern = os.path.join(os.path.abspath(data_dir), localdot)
             for filename in glob.glob(pattern):
-                if self._debug and self._debug.should('dataio'):
+                if self._debug.should('dataio'):
                     self._debug.write("Erasing parallel data file {!r}".format(filename))
                 file_be_gone(filename)
 
@@ -488,7 +488,7 @@ class CoverageSqliteData(SimpleReprMixin):
 
 class Sqlite(SimpleReprMixin):
     def __init__(self, filename, debug):
-        self.debug = debug if (debug and debug.should('sql')) else None
+        self.debug = debug if debug.should('sql') else None
         self.filename = filename
         self.nest = 0
         if self.debug:

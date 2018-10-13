@@ -15,6 +15,7 @@ import socket
 
 from coverage import env
 from coverage.backward import iitems, string_class
+from coverage.debug import NoDebugging
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone, isolate_module
 
@@ -133,7 +134,7 @@ class CoverageJsonData(object):
 
         """
         self._warn = warn
-        self._debug = debug
+        self._debug = debug or NoDebugging()
         self.filename = os.path.abspath(basename or ".coverage")
         self.suffix = suffix
 
@@ -293,7 +294,7 @@ class CoverageJsonData(object):
 
     def _read_file(self, filename):
         """Read the coverage data from `filename` into this object."""
-        if self._debug and self._debug.should('dataio'):
+        if self._debug.should('dataio'):
             self._debug.write("Reading data from %r" % (filename,))
         try:
             with self._open_for_reading(filename) as f:
@@ -338,7 +339,7 @@ class CoverageJsonData(object):
             { filename: { lineno: None, ... }, ...}
 
         """
-        if self._debug and self._debug.should('dataop'):
+        if self._debug.should('dataop'):
             self._debug.write("Adding lines: %d files, %d lines total" % (
                 len(line_data), sum(len(lines) for lines in line_data.values())
             ))
@@ -364,7 +365,7 @@ class CoverageJsonData(object):
             { filename: { (l1,l2): None, ... }, ...}
 
         """
-        if self._debug and self._debug.should('dataop'):
+        if self._debug.should('dataop'):
             self._debug.write("Adding arcs: %d files, %d arcs total" % (
                 len(arc_data), sum(len(arcs) for arcs in arc_data.values())
             ))
@@ -388,7 +389,7 @@ class CoverageJsonData(object):
         `file_tracers` is { filename: plugin_name, ... }
 
         """
-        if self._debug and self._debug.should('dataop'):
+        if self._debug.should('dataop'):
             self._debug.write("Adding file tracers: %d files" % (len(file_tracers),))
 
         existing_files = self._arcs or self._lines or {}
@@ -416,7 +417,7 @@ class CoverageJsonData(object):
         but repeated keywords overwrite each other.
 
         """
-        if self._debug and self._debug.should('dataop'):
+        if self._debug.should('dataop'):
             self._debug.write("Adding run info: %r" % (kwargs,))
         if not self._runs:
             self._runs = [{}]
@@ -429,7 +430,7 @@ class CoverageJsonData(object):
         `plugin_name` is the name of the plugin resposible for this file. It is used
         to associate the right filereporter, etc.
         """
-        if self._debug and self._debug.should('dataop'):
+        if self._debug.should('dataop'):
             self._debug.write("Touching %r" % (filename,))
         if not self._has_arcs() and not self._has_lines():
             raise CoverageException("Can't touch files in an empty CoverageData")
@@ -489,7 +490,7 @@ class CoverageJsonData(object):
 
     def _write_file(self, filename):
         """Write the coverage data to `filename`."""
-        if self._debug and self._debug.should('dataio'):
+        if self._debug.should('dataio'):
             self._debug.write("Writing data to %r" % (filename,))
         with open(filename, 'w') as fdata:
             self._write_fileobj(fdata)
@@ -507,7 +508,7 @@ class CoverageJsonData(object):
         self._runs = []
         self._validate()
 
-        if self._debug and self._debug.should('dataio'):
+        if self._debug.should('dataio'):
             self._debug.write("Erasing data file %r" % (self.filename,))
         file_be_gone(self.filename)
         if parallel:
@@ -515,7 +516,7 @@ class CoverageJsonData(object):
             localdot = local + '.*'
             pattern = os.path.join(os.path.abspath(data_dir), localdot)
             for filename in glob.glob(pattern):
-                if self._debug and self._debug.should('dataio'):
+                if self._debug.should('dataio'):
                     self._debug.write("Erasing parallel data file %r" % (filename,))
                 file_be_gone(filename)
 
@@ -727,7 +728,7 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
 
     files_combined = 0
     for f in files_to_combine:
-        if data._debug and data._debug.should('dataio'):
+        if data._debug.should('dataio'):
             data._debug.write("Combining data file %r" % (f,))
         try:
             new_data = CoverageData(f, debug=data._debug)
@@ -740,7 +741,7 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
         else:
             data.update(new_data, aliases=aliases)
             files_combined += 1
-            if data._debug and data._debug.should('dataio'):
+            if data._debug.should('dataio'):
                 data._debug.write("Deleting combined data file %r" % (f,))
             file_be_gone(f)
 
