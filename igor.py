@@ -179,7 +179,7 @@ def do_test_with_tracer(tracer, *runner_args):
         return None
 
     os.environ["COVERAGE_TEST_TRACER"] = tracer
-    if os.environ.get("COVERAGE_COVERAGE", ""):
+    if os.environ.get("COVERAGE_COVERAGE", "no") == "yes":
         return run_tests_with_coverage(tracer, *runner_args)
     else:
         return run_tests(tracer, *runner_args)
