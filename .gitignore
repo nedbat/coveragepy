@@ -39,3 +39,6 @@ sample_html_beta
 
 # Stuff in the ci directory.
 *.token
+
+# OS junk
+.DS_Store
