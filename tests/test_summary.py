@@ -174,7 +174,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 return x
             branch(1)
             """)
-        out = self.run_command("coverage run --branch mybranch.py")
+        out = self.run_command("coverage run --source=. --branch mybranch.py")
         self.assertEqual(out, 'x\n')
         report = self.report_from_command("coverage report")
 
@@ -203,7 +203,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 return x
             missing(0, 1)
             """)
-        out = self.run_command("coverage run mymissing.py")
+        out = self.run_command("coverage run --source=. mymissing.py")
         self.assertEqual(out, 'y\nz\n')
         report = self.report_from_command("coverage report --show-missing")
 
@@ -389,7 +389,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 pass
             foo()
             """)
-        out = self.run_command("coverage run --branch main.py")
+        out = self.run_command("coverage run --source=. --branch main.py")
         self.assertEqual(out, "")
         report = self.report_from_command("coverage report --skip-covered")
 
@@ -408,7 +408,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 pass
             foo()
             """)
-        out = self.run_command("coverage run --branch long_______________filename.py")
+        out = self.run_command("coverage run --source=. --branch long_______________filename.py")
         self.assertEqual(out, "")
         report = self.report_from_command("coverage report --skip-covered")
 

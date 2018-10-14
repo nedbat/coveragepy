@@ -343,7 +343,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
 
         # Run an "HTML" file
         self.make_file("innocuous.html", "a = 3")
-        self.run_command("coverage run innocuous.html")
+        self.run_command("coverage run --source=. innocuous.html")
         # Before reporting, change it to be an HTML file.
         self.make_file("innocuous.html", "<h1>This isn't python at all!</h1>")
         output = self.run_command("coverage html")

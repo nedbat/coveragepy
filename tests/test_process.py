@@ -312,6 +312,7 @@ class ProcessTest(CoverageTest):
 
         self.make_file(".coveragerc", """\
             [run]
+            source = .
             parallel = true
             """)
 
@@ -366,6 +367,7 @@ class ProcessTest(CoverageTest):
 
         self.make_file(".coveragerc", """\
             [run]
+            source = .
             parallel = True
 
             [paths]
@@ -1056,7 +1058,7 @@ class FailUnderTest(CoverageTest):
                 d = 6
                 e = 7
             """)
-        st, _ = self.run_command_status("coverage run forty_two_plus.py")
+        st, _ = self.run_command_status("coverage run --source=. forty_two_plus.py")
         self.assertEqual(st, 0)
 
     def test_report_43_is_ok(self):
@@ -1107,7 +1109,7 @@ class UnicodeFilePathsTest(CoverageTest):
     def test_accented_dot_py(self):
         # Make a file with a non-ascii character in the filename.
         self.make_file(u"h\xe2t.py", "print('accented')")
-        out = self.run_command(u"coverage run h\xe2t.py")
+        out = self.run_command(u"coverage run --source=. h\xe2t.py")
         self.assertEqual(out, "accented\n")
 
         # The HTML report uses ascii-encoded HTML entities.
@@ -1141,7 +1143,7 @@ class UnicodeFilePathsTest(CoverageTest):
     def test_accented_directory(self):
         # Make a file with a non-ascii character in the directory name.
         self.make_file(u"\xe2/accented.py", "print('accented')")
-        out = self.run_command(u"coverage run \xe2/accented.py")
+        out = self.run_command(u"coverage run --source=. \xe2/accented.py")
         self.assertEqual(out, "accented\n")
 
         # The HTML report uses ascii-encoded HTML entities.
