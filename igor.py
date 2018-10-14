@@ -118,7 +118,6 @@ def run_tests_with_coverage(tracer, *runner_args):
         version += "_%s%s" % sys.pypy_version_info[:2]
     suffix = "%s%s_%s_%s" % (impl, version, tracer, platform.platform())
 
-    os.environ['COVERAGE_PYVERSION'] = version
     os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov."+suffix)
 
     import coverage
@@ -160,7 +159,6 @@ def do_combine_html():
     """Combine data from a meta-coverage run, and make the HTML and XML reports."""
     import coverage
     os.environ['COVERAGE_HOME'] = os.getcwd()
-    os.environ['COVERAGE_PYVERSION'] = ''
     os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov")
     cov = coverage.Coverage(config_file="metacov.ini")
     cov.load()
