@@ -93,6 +93,7 @@ class CoverageSqliteData(SimpleReprMixin):
         self._has_lines = False
         self._has_arcs = False
 
+        self._current_context = None
         self._current_context_id = None
 
     def _choose_filename(self):
@@ -205,13 +206,17 @@ class CoverageSqliteData(SimpleReprMixin):
         """Set the current context for future `add_lines` etc."""
         if self._debug.should('dataop'):
             self._debug.write("Setting context: %r" % (context,))
-        self._start_using()
-        context = context or ""
-        with self._connect() as con:
-            row = con.execute("select id from context where context = ?", (context,)).fetchone()
-            if row is not None:
-                self._current_context_id = row[0]
-            else:
+        self._current_context = context
+        self._current_context_id = None
+
+    def _set_context_id(self):
+        """Use the _current_context to set _current_context_id."""
+        context = self._current_context or ""
+        context_id = self._context_id(context)
+        if context_id is not None:
+            self._current_context_id = context_id
+        else:
+            with self._connect() as con:
                 cur = con.execute("insert into context (context) values (?)", (context,))
                 self._current_context_id = cur.lastrowid
 
@@ -229,8 +234,7 @@ class CoverageSqliteData(SimpleReprMixin):
             ))
         self._start_using()
         self._choose_lines_or_arcs(lines=True)
-        if self._current_context_id is None:
-            self.set_context("")
+        self._set_context_id()
         with self._connect() as con:
             for filename, linenos in iitems(line_data):
                 file_id = self._file_id(filename, add=True)
@@ -254,8 +258,7 @@ class CoverageSqliteData(SimpleReprMixin):
             ))
         self._start_using()
         self._choose_lines_or_arcs(arcs=True)
-        if self._current_context_id is None:
-            self.set_context("")
+        self._set_context_id()
         with self._connect() as con:
             for filename, arcs in iitems(arc_data):
                 file_id = self._file_id(filename, add=True)

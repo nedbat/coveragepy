@@ -17,7 +17,9 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-Nothing yet.
+- Bug fixes to context support: `issue 716`_.
+
+.. _issue 716: https://github.com/nedbat/coveragepy/issues/716
 
 
 .. _changes_50a3:
