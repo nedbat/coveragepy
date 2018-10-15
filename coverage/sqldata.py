@@ -338,46 +338,52 @@ class CoverageSqliteData(SimpleReprMixin):
 
         other_files = set()
 
-        # lines
-        if other_data._has_lines:
-            for context in other_data.measured_contexts():
-                self.set_context(context)
-                for filename in other_data.measured_files():
-                    lines = set(other_data.lines(filename, context=context))
-                    if lines:
-                        other_files.add(filename)
-                        filename = aliases.map(filename)
-                        lines.update(self.lines(filename, context=context) or ())
-                        self.add_lines({filename: lines})
+        # Force the database we're writing to to exist before we start nesting
+        # contexts.
+        self._start_using()
 
-        # arcs
-        if other_data._has_arcs:
-            for context in other_data.measured_contexts():
-                self.set_context(context)
-                for filename in other_data.measured_files():
-                    arcs = set(other_data.arcs(filename, context=context))
-                    if arcs:
-                        other_files.add(filename)
-                        filename = aliases.map(filename)
-                        arcs.update(self.arcs(filename, context=context) or ())
-                        self.add_arcs({filename: arcs})
+        # Start a single transaction in each file.
+        with self._connect(), other_data._connect():
+            # lines
+            if other_data._has_lines:
+                for context in other_data.measured_contexts():
+                    self.set_context(context)
+                    for filename in other_data.measured_files():
+                        lines = set(other_data.lines(filename, context=context))
+                        if lines:
+                            other_files.add(filename)
+                            filename = aliases.map(filename)
+                            lines.update(self.lines(filename, context=context) or ())
+                            self.add_lines({filename: lines})
 
-        # file_tracers
-        for filename in other_files:
-            other_plugin = other_data.file_tracer(filename)
-            filename = aliases.map(filename)
-            if filename in this_measured:
-                this_plugin = self.file_tracer(filename)
-            else:
-                this_plugin = None
-            if this_plugin is None:
-                self.add_file_tracers({filename: other_plugin})
-            elif this_plugin != other_plugin:
-                raise CoverageException(
-                    "Conflicting file tracer name for '%s': %r vs %r" % (
-                        filename, this_plugin, other_plugin,
+            # arcs
+            if other_data._has_arcs:
+                for context in other_data.measured_contexts():
+                    self.set_context(context)
+                    for filename in other_data.measured_files():
+                        arcs = set(other_data.arcs(filename, context=context))
+                        if arcs:
+                            other_files.add(filename)
+                            filename = aliases.map(filename)
+                            arcs.update(self.arcs(filename, context=context) or ())
+                            self.add_arcs({filename: arcs})
+
+            # file_tracers
+            for filename in other_files:
+                other_plugin = other_data.file_tracer(filename)
+                filename = aliases.map(filename)
+                if filename in this_measured:
+                    this_plugin = self.file_tracer(filename)
+                else:
+                    this_plugin = None
+                if this_plugin is None:
+                    self.add_file_tracers({filename: other_plugin})
+                elif this_plugin != other_plugin:
+                    raise CoverageException(
+                        "Conflicting file tracer name for '%s': %r vs %r" % (
+                            filename, this_plugin, other_plugin,
+                        )
                     )
-                )
 
     def erase(self, parallel=False):
         """Erase the data in this object.

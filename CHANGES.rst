@@ -17,7 +17,11 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-- Bug fixes to context support: `issue 716`_.
+- Improvements to context support:
+
+  - The "no such table: meta" error is fixed.: `issue 716`_.
+
+  - Combining data files now goes much faster.
 
 .. _issue 716: https://github.com/nedbat/coveragepy/issues/716
 
