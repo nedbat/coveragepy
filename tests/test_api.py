@@ -732,13 +732,8 @@ class TestRunnerPluginTest(CoverageTest):
     def test_nose_plugin_with_erase(self):
         self.pretend_to_be_nose_with_cover(erase=True)
 
-    def test_pytestcov_parallel(self):
-        self.pretend_to_be_pytestcov(append=False)
-
-    def test_pytestcov_parallel_append(self):
-        self.pretend_to_be_pytestcov(append=True)
-
     def pretend_to_be_pytestcov(self, append):
+        """Act like pytest-cov."""
         self.make_file("prog.py", """\
             a = 1
             b = 2
@@ -768,6 +763,12 @@ class TestRunnerPluginTest(CoverageTest):
             """))
         self.assert_file_count(".coverage", 0)
         self.assert_file_count(".coverage.*", 1)
+
+    def test_pytestcov_parallel(self):
+        self.pretend_to_be_pytestcov(append=False)
+
+    def test_pytestcov_parallel_append(self):
+        self.pretend_to_be_pytestcov(append=True)
 
 
 class ReporterDeprecatedAttributeTest(CoverageTest):
