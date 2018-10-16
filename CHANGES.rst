@@ -93,12 +93,14 @@ Version 5.0a2 --- 2018-09-03
 - HTML files no longer have trailing and extra whitespace.
 
 - The sort order in the HTML report is stored in local storage rather than
-  cookies.  Thanks, Federico Bond.
+  cookies, closing `issue 611`_.  Thanks, Federico Bond.
 
 - pickle2json, for converting v3 data files to v4 data files, has been removed.
 
 .. _Bitbucket: https://bitbucket.org/ned/coveragepy
 .. _GitHub: https://github.com/nedbat/coveragepy
+
+.. _issue 611: https://github.com/nedbat/coveragepy/issues/611
 
 
 .. _changes_50a1:
