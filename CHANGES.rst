@@ -17,12 +17,16 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Coverage commands no longer clobber the first entry in sys.path, fixing
+  `issue 715`_.
+
 - Improvements to context support:
 
   - The "no such table: meta" error is fixed.: `issue 716`_.
 
   - Combining data files now goes much faster.
 
+.. _issue 715: https://github.com/nedbat/coveragepy/issues/715
 .. _issue 716: https://github.com/nedbat/coveragepy/issues/716
 
 
