@@ -244,7 +244,7 @@ class DebugOutputFile(object):                              # pragma: debugging
     SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
 
     @classmethod
-    def get_one(cls, fileobj=None, show_process=True, filters=()):
+    def get_one(cls, fileobj=None, show_process=True, filters=(), interim=False):
         """Get a DebugOutputFile.
 
         If `fileobj` is provided, then a new DebugOutputFile is made with it.
@@ -256,6 +256,11 @@ class DebugOutputFile(object):                              # pragma: debugging
         `show_process` controls whether the debug file adds process-level
         information, and filters is a list of other message filters to apply.
 
+        `filters` are the text filters to apply to the stream to annotate with
+        pids, etc.
+
+        If `interim` is true, then a future `get_one` can replace this one.
+
         """
         if fileobj is not None:
             # Make DebugOutputFile around the fileobj passed.
@@ -265,15 +270,16 @@ class DebugOutputFile(object):                              # pragma: debugging
         # this class can be defined more than once. But we really want
         # a process-wide singleton. So stash it in sys.modules instead of
         # on a class attribute. Yes, this is aggressively gross.
-        the_one = sys.modules.get(cls.SYS_MOD_NAME)
-        if the_one is None:
+        the_one, is_interim = sys.modules.get(cls.SYS_MOD_NAME, (None, True))
+        if the_one is None or is_interim:
             if fileobj is None:
                 debug_file_name = os.environ.get("COVERAGE_DEBUG_FILE")
                 if debug_file_name:
                     fileobj = open(debug_file_name, "a")
                 else:
                     fileobj = sys.stderr
-            sys.modules[cls.SYS_MOD_NAME] = the_one = cls(fileobj, show_process, filters)
+            the_one = cls(fileobj, show_process, filters)
+            sys.modules[cls.SYS_MOD_NAME] = (the_one, interim)
         return the_one
 
     def write(self, text):
@@ -288,7 +294,7 @@ class DebugOutputFile(object):                              # pragma: debugging
 
 def log(msg, stack=False):                                  # pragma: debugging
     """Write a log message as forcefully as possible."""
-    out = DebugOutputFile.get_one()
+    out = DebugOutputFile.get_one(interim=True)
     out.write(msg+"\n")
     if stack:
         dump_stack_frames(out=out, skip=1)
@@ -344,7 +350,7 @@ def show_calls(show_args=True, show_stack=False):           # pragma: debugging
                 extra += " @ "
                 extra += "; ".join(_clean_stack_line(l) for l in short_stack().splitlines())
             msg = "{} {:04d} {}{}\n".format(oid, next(CALLS), func.__name__, extra)
-            DebugOutputFile.get_one().write(msg)
+            DebugOutputFile.get_one(interim=True).write(msg)
             return func(self, *args, **kwargs)
         return _wrapper
     return _decorator
