@@ -831,3 +831,15 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         msg = "Couldn't combine from non-existent path 'xyzzy'"
         with self.assertRaisesRegex(CoverageException, msg):
             combine_parallel_data(covdata, data_paths=['xyzzy'])
+
+    def test_interleaved_erasing_bug716(self):
+        # pytest-cov could produce this scenario. #716
+        covdata1 = CoverageData()
+        covdata2 = CoverageData()
+        # this used to create the .coverage database file..
+        covdata2.set_context("")
+        # then this would erase it all..
+        covdata1.erase()
+        # then this would try to use tables that no longer exist.
+        # "no such table: meta"
+        covdata2.add_lines(LINES_1)
