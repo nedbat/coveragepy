@@ -225,11 +225,14 @@ def plain_old_function(a, b):           # pylint: disable=missing-docstring, unu
 def fake_out(self):                     # pylint: disable=missing-docstring, unused-argument
     return get_qualname()
 
-def meth(self):
+def patch_meth(self):                   # pylint: disable=missing-docstring, unused-argument
     return get_qualname()
 
 class QualnameTest(CoverageTest):
     """Tests of qualname_from_frame."""
+
+    # Pylint gets confused about meth() below.
+    # pylint: disable=no-value-for-parameter
 
     run_in_temp_dir = False
 
@@ -257,5 +260,5 @@ class QualnameTest(CoverageTest):
 
     def test_changeling(self):
         c = Child()
-        c.meth = meth
-        self.assertEqual(c.meth(c), "meth")
+        c.meth = patch_meth
+        self.assertEqual(c.meth(c), "patch_meth")

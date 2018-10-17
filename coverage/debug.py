@@ -93,7 +93,8 @@ class DebugControlString(DebugControl):
 
 class NoDebugging(object):
     """A replacement for DebugControl that will never try to do anything."""
-    def should(self, option):
+    def should(self, option):               # pylint: disable=unused-argument
+        """Should we write debug messages?  Never."""
         return False
 
 
