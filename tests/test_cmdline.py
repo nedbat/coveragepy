@@ -104,8 +104,7 @@ class BaseCmdLineTest(CoverageTest):
         # the defaults.  This lets the tests just mention the interesting ones.
         for name, _, kwargs in m2.method_calls:
             for k, v in self.DEFAULT_KWARGS.get(name, {}).items():
-                if k not in kwargs:
-                    kwargs[k] = v
+                kwargs.setdefault(k, v)
         self.assert_same_method_calls(m1, m2)
 
     def cmd_executes_same(self, args1, args2):
