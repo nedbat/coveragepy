@@ -115,6 +115,13 @@ to more than one command.
 ``branch`` (boolean, default False): whether to measure
 :ref:`branch coverage <branch>` in addition to statement coverage.
 
+``command_line`` (string): the command-line to run your program.  This will be
+used if you run ``coverage run`` with no further arguments.  Coverage.py
+options cannot be specified here, other than ``-m`` to indicate the module to
+run.
+
+.. versionadded:: 5.0
+
 ``concurrency`` (multi-string, default "thread"): the name concurrency
 libraries in use by the product code.  If your program uses `multiprocessing`_,
 `gevent`_, `greenlet`_, or `eventlet`_, you must name that library in this

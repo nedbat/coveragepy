@@ -8,6 +8,7 @@ from __future__ import print_function
 import glob
 import optparse
 import os.path
+import shlex
 import sys
 import textwrap
 import traceback
@@ -601,6 +602,13 @@ class CoverageScript(object):
     def do_run(self, options, args):
         """Implementation of 'coverage run'."""
 
+        if not args:
+            command_line = self.coverage.get_option("run:command_line")
+            if command_line is not None:
+                args = shlex.split(command_line)
+                if args and args[0] == "-m":
+                    options.module = True
+                    args = args[1:]
         if not args:
             self.help_fn("Nothing to do.")
             return ERR

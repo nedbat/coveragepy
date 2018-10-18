@@ -17,6 +17,9 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- You can specify the command line to run your program with the ``[run]
+  command_line`` configuration setting. `issue 695`_.
+
 - Coverage commands no longer clobber the first entry in sys.path, fixing
   `issue 715`_.
 
@@ -26,6 +29,7 @@ Unreleased
 
   - Combining data files now goes much faster.
 
+.. _issue 695: https://github.com/nedbat/coveragepy/issues/695
 .. _issue 715: https://github.com/nedbat/coveragepy/issues/715
 .. _issue 716: https://github.com/nedbat/coveragepy/issues/716
 

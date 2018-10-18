@@ -59,9 +59,10 @@ class BaseCmdLineTest(CoverageTest):
         # same object as the resulting coverage object.
         mk.Coverage.return_value = mk
 
-        # The mock needs to get options, but shouldn't need to set them.
+        # The mock needs options.
         config = CoverageConfig()
         mk.get_option = config.get_option
+        mk.set_option = config.set_option
 
         # Get the type right for the result of reporting.
         mk.report.return_value = 50.0
@@ -70,13 +71,18 @@ class BaseCmdLineTest(CoverageTest):
 
         return mk
 
-    def mock_command_line(self, args):
+    def mock_command_line(self, args, options=None):
         """Run `args` through the command line, with a Mock.
+
+        `options` is a dict of names and values to pass to `set_option`.
 
         Returns the Mock it used and the status code returned.
 
         """
         m = self.model_object()
+
+        for name, value in (options or {}).items():
+            m.set_option(name, value)
 
         ret = command_line(
             args,
@@ -86,9 +92,9 @@ class BaseCmdLineTest(CoverageTest):
 
         return m, ret
 
-    def cmd_executes(self, args, code, ret=OK):
+    def cmd_executes(self, args, code, ret=OK, options=None):
         """Assert that the `args` end up executing the sequence in `code`."""
-        m1, r1 = self.mock_command_line(args)
+        m1, r1 = self.mock_command_line(args, options=options)
         self.assertEqual(r1, ret, "Wrong status: got %r, wanted %r" % (r1, ret))
 
         # Remove all indentation, and change ".foo()" to "m2.foo()".
@@ -520,6 +526,39 @@ class CmdLineTest(BaseCmdLineTest):
     def test_run_nothing(self):
         self.command_line("run", ret=ERR)
         self.assertIn("Nothing to do", self.stderr())
+
+    def test_run_from_config(self):
+        options = {"run:command_line": "myprog.py a 123 'a quoted thing' xyz"}
+        self.cmd_executes("run", """\
+            .Coverage()
+            .start()
+            .run_python_file('myprog.py', ['myprog.py', 'a', '123', 'a quoted thing', 'xyz'])
+            .stop()
+            .save()
+            """,
+            options=options,
+            )
+
+    def test_run_module_from_config(self):
+        options = {"run:command_line": "-m mymodule thing1 thing2"}
+        self.cmd_executes("run", """\
+            .Coverage()
+            .start()
+            .run_python_module('mymodule', ['mymodule', 'thing1', 'thing2'])
+            .stop()
+            .save()
+            """,
+            options=options,
+            )
+
+    def test_run_from_config_but_empty(self):
+        self.cmd_executes("run", """\
+            .Coverage()
+            .help_fn('Nothing to do.')
+            """,
+            ret=1,
+            options={"run:command_line": ""},
+            )
 
     def test_cant_append_parallel(self):
         self.command_line("run --append --parallel-mode foo.py", ret=ERR)
