@@ -369,7 +369,7 @@ class CoverageTest(
         self.assertGreaterEqual(age.total_seconds(), 0, msg)
         self.assertLessEqual(age.total_seconds(), seconds, msg)
 
-    def command_line(self, args, ret=OK, _covpkg=None):
+    def command_line(self, args, ret=OK):
         """Run `args` through the command line.
 
         Use this when you want to run the full coverage machinery, but in the
@@ -381,7 +381,7 @@ class CoverageTest(
         Returns None.
 
         """
-        ret_actual = command_line(args, _covpkg=_covpkg)
+        ret_actual = command_line(args)
         self.assertEqual(ret_actual, ret)
 
     coverage_command = "coverage"
