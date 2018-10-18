@@ -115,9 +115,6 @@ to more than one command.
 ``branch`` (boolean, default False): whether to measure
 :ref:`branch coverage <branch>` in addition to statement coverage.
 
-``cover_pylib`` (boolean, default False): whether to measure the Python
-standard library.
-
 ``concurrency`` (multi-string, default "thread"): the name concurrency
 libraries in use by the product code.  If your program uses `multiprocessing`_,
 `gevent`_, `greenlet`_, or `eventlet`_, you must name that library in this
@@ -136,6 +133,9 @@ Before version 4.2, this option only accepted a single string.
 :ref:`contexts` for more information
 
 .. versionadded:: 5.0
+
+``cover_pylib`` (boolean, default False): whether to measure the Python
+standard library.
 
 ``data_file`` (string, default ".coverage"): the name of the data file to use
 for storing or reporting coverage. This value can include a path to another
