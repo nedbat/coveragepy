@@ -603,6 +603,10 @@ class CoverageScript(object):
         """Implementation of 'coverage run'."""
 
         if not args:
+            if options.module:
+                # Specified -m with nothing else.
+                self.help_fn("No module specified for -m")
+                return ERR
             command_line = self.coverage.get_option("run:command_line")
             if command_line is not None:
                 args = shlex.split(command_line)

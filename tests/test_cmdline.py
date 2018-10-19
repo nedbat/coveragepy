@@ -540,7 +540,6 @@ class CmdLineTest(BaseCmdLineTest):
             )
 
     def test_run_module_from_config(self):
-        options = {"run:command_line": "-m mymodule thing1 thing2"}
         self.cmd_executes("run", """\
             .Coverage()
             .start()
@@ -548,7 +547,7 @@ class CmdLineTest(BaseCmdLineTest):
             .stop()
             .save()
             """,
-            options=options,
+            options={"run:command_line": "-m mymodule thing1 thing2"},
             )
 
     def test_run_from_config_but_empty(self):
@@ -556,8 +555,23 @@ class CmdLineTest(BaseCmdLineTest):
             .Coverage()
             .help_fn('Nothing to do.')
             """,
-            ret=1,
+            ret=ERR,
             options={"run:command_line": ""},
+            )
+
+    def test_run_dashm_only(self):
+        self.cmd_executes("run -m", """\
+            .Coverage()
+            .help_fn('No module specified for -m')
+            """,
+            ret=ERR,
+            )
+        self.cmd_executes("run -m", """\
+            .Coverage()
+            .help_fn('No module specified for -m')
+            """,
+            ret=ERR,
+            options={"run:command_line": "myprog.py"}
             )
 
     def test_cant_append_parallel(self):
