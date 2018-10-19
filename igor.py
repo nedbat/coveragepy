@@ -106,6 +106,7 @@ def run_tests_with_coverage(tracer, *runner_args):
     # Create the .pth file that will let us measure coverage in sub-processes.
     # The .pth file seems to have to be alphabetically after easy-install.pth
     # or the sys.path entries aren't created right?
+    # There's an entry in "make clean" to get rid of this file.
     pth_dir = os.path.dirname(pytest.__file__)
     pth_path = os.path.join(pth_dir, "zzz_metacov.pth")
     with open(pth_path, "w") as pth_file:

@@ -21,6 +21,7 @@ clean:
 	-rm -f coverage/*,cover
 	-rm -f MANIFEST
 	-rm -f .coverage .coverage.* coverage.xml .metacov*
+	-rm -f .tox/*/lib/*/site-packages/zzz_metacov.pth
 	-rm -f */.coverage */*/.coverage */*/*/.coverage */*/*/*/.coverage */*/*/*/*/.coverage */*/*/*/*/*/.coverage
 	-rm -f tests/zipmods.zip
 	-rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
