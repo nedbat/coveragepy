@@ -408,6 +408,7 @@ class Coverage(object):
             # Create the data file.  We do this at construction time so that the
             # data file will be written into the directory where the process
             # started rather than wherever the process eventually chdir'd to.
+            ensure_dir_for_file(self.config.data_file)
             self._data = CoverageData(
                 basename=self.config.data_file,
                 suffix=suffix,

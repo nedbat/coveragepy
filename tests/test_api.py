@@ -250,6 +250,15 @@ class ApiTest(CoverageTest):
         cov.save()
         self.assertFiles(["datatest4.py", ".coveragerc", "mydata.dat"])
 
+    def test_deep_datafile(self):
+        self.make_file("datatest5.py", "fooey = 17")
+        self.assertFiles(["datatest5.py"])
+        cov = coverage.Coverage(data_file="deep/sub/cov.data")
+        self.start_import_stop(cov, "datatest5")
+        cov.save()
+        self.assertFiles(["datatest5.py", "deep"])
+        self.assert_exists("deep/sub/cov.data")
+
     def test_empty_reporting(self):
         # empty summary reports raise exception, just like the xml report
         cov = coverage.Coverage()
