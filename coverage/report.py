@@ -7,7 +7,7 @@ import os
 import warnings
 
 from coverage.files import prep_patterns, FnmatchMatcher
-from coverage.misc import CoverageException, NoSource, NotPython, isolate_module
+from coverage.misc import CoverageException, NoSource, NotPython, ensure_dir, isolate_module
 
 os = isolate_module(os)
 
@@ -83,8 +83,7 @@ class Reporter(object):
             raise CoverageException("No data to report.")
 
         self.directory = directory
-        if self.directory and not os.path.exists(self.directory):
-            os.makedirs(self.directory)
+        ensure_dir(self.directory)
 
         for fr in file_reporters:
             try:

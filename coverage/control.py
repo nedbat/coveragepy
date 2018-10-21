@@ -5,6 +5,7 @@
 
 import atexit
 import os
+import os.path
 import platform
 import sys
 import time
@@ -22,7 +23,7 @@ from coverage.files import PathAliases, set_relative_directory, abs_file
 from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
 from coverage.misc import CoverageException, bool_or_none, join_regex
-from coverage.misc import file_be_gone, isolate_module
+from coverage.misc import ensure_dir_for_file, file_be_gone, isolate_module
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
@@ -815,9 +816,7 @@ class Coverage(object):
                 # because this report pre-opens the output file.
                 # HTMLReport does this using the Report plumbing because
                 # its task is more complex, being multiple files.
-                output_dir = os.path.dirname(self.config.xml_output)
-                if output_dir and not os.path.isdir(output_dir):
-                    os.makedirs(output_dir)
+                ensure_dir_for_file(self.config.xml_output)
                 open_kwargs = {}
                 if env.PY3:
                     open_kwargs['encoding'] = 'utf8'

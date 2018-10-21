@@ -8,6 +8,7 @@ import hashlib
 import inspect
 import locale
 import os
+import os.path
 import re
 import sys
 import types
@@ -179,6 +180,20 @@ def file_be_gone(path):
     except OSError as e:
         if e.errno != errno.ENOENT:
             raise
+
+
+def ensure_dir(directory):
+    """Make sure the directory exists.
+
+    If `directory` is None or empty, do nothing.
+    """
+    if directory and not os.path.isdir(directory):
+        os.makedirs(directory)
+
+
+def ensure_dir_for_file(path):
+    """Make sure the directory for the path exists."""
+    ensure_dir(os.path.dirname(path))
 
 
 def output_encoding(outfile=None):
