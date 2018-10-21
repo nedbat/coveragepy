@@ -548,23 +548,27 @@ class CoverageScript(object):
     def help(self, error=None, topic=None, parser=None):
         """Display an error message, or the named topic."""
         assert error or topic or parser
+
+        help_params = dict(self.covpkg.__dict__)
+        help_params['program_name'] = self.program_name
+        if CTracer is not None:
+            help_params['extension_modifier'] = 'with C extension'
+        else:
+            help_params['extension_modifier'] = 'without C extension'
+
         if error:
             print(error, file=sys.stderr)
             print("Use '%s help' for help." % (self.program_name,), file=sys.stderr)
         elif parser:
             print(parser.format_help().strip())
+            print()
         else:
-            help_params = dict(self.covpkg.__dict__)
-            help_params['program_name'] = self.program_name
-            if CTracer is not None:
-                help_params['extension_modifier'] = 'with C extension'
-            else:
-                help_params['extension_modifier'] = 'without C extension'
             help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
             if help_msg:
                 print(help_msg.format(**help_params))
             else:
                 print("Don't know topic %r" % topic)
+        print("Full documentation is at {__url__}".format(**help_params))
 
     def do_help(self, options, args, parser):
         """Deal with help requests.
@@ -744,7 +748,6 @@ HELP_TOPICS = {
             xml         Create an XML report of coverage results.
 
         Use "{program_name} help <command>" for detailed help on any command.
-        For full documentation, see {__url__}
     """,
 
     'minimum_help': """\
@@ -753,7 +756,6 @@ HELP_TOPICS = {
 
     'version': """\
         Coverage.py, version {__version__} {extension_modifier}
-        Documentation at {__url__}
     """,
 }
 

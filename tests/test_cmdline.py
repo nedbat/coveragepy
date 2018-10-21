@@ -18,6 +18,7 @@ from coverage import env
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
 from coverage.misc import ExceptionDuringRun
+from coverage.version import __url__
 
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
 
@@ -714,27 +715,34 @@ class CmdLineStdoutTest(BaseCmdLineTest):
 
     def test_help(self):
         self.command_line("help")
-        out = self.stdout()
-        self.assertIn("readthedocs.io", out)
-        self.assertGreater(out.count("\n"), 10)
+        lines = self.stdout().splitlines()
+        self.assertGreater(len(lines), 10)
+        self.assertEqual(lines[-1], "Full documentation is at {}".format(__url__))
 
     def test_cmd_help(self):
         self.command_line("help run")
         out = self.stdout()
-        self.assertIn("<pyfile>", out)
+        lines = out.splitlines()
+        self.assertIn("<pyfile>", lines[0])
         self.assertIn("--timid", out)
-        self.assertGreater(out.count("\n"), 10)
+        self.assertGreater(len(lines), 30)
+        self.assertEqual(lines[-1], "Full documentation is at {}".format(__url__))
 
     def test_unknown_topic(self):
         # Should probably be an ERR return, but meh.
         self.command_line("help foobar")
-        self.assertEqual(self.stdout(), "Don't know topic 'foobar'\n")
+        lines = self.stdout().splitlines()
+        self.assertEqual(lines[0], "Don't know topic 'foobar'")
+        self.assertEqual(lines[-1], "Full documentation is at {}".format(__url__))
 
     def test_error(self):
         self.command_line("fooey kablooey", ret=ERR)
         err = self.stderr()
         self.assertIn("fooey", err)
         self.assertIn("help", err)
+
+    def test_doc_url(self):
+        self.assertTrue(__url__.startswith("https://coverage.readthedocs.io"))
 
 
 class CmdMainTest(CoverageTest):
