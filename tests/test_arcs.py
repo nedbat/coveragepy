@@ -1488,7 +1488,7 @@ class AsyncTest(CoverageTest):
                 )
                 print("%s + %s = %s" % (x, y, result))
 
-            loop = asyncio.get_event_loop()                 # E
+            loop = asyncio.new_event_loop()                 # E
             loop.run_until_complete(print_sum(1, 2))
             loop.close()                                    # G
             """,
@@ -1522,7 +1522,7 @@ class AsyncTest(CoverageTest):
                     print(letter)
                 print(".")
 
-            loop = asyncio.get_event_loop()             # L
+            loop = asyncio.new_event_loop()             # L
             loop.run_until_complete(doit())
             loop.close()
             """,
