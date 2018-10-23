@@ -181,13 +181,13 @@ class CoverageSqliteData(SimpleReprMixin):
     def _file_id(self, filename, add=False):
         """Get the file id for `filename`.
 
-        If filename is not in the database yet, add if it `add` is True.
+        If filename is not in the database yet, add it if `add` is True.
         If `add` is not True, return None.
         """
         if filename not in self._file_map:
             if add:
                 with self._connect() as con:
-                    cur = con.execute("insert into file (path) values (?)", (filename,))
+                    cur = con.execute("insert or replace into file (path) values (?)", (filename,))
                     self._file_map[filename] = cur.lastrowid
         return self._file_map.get(filename)
 
