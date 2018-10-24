@@ -16,67 +16,84 @@ environment:
   # .pth files in the shared virtualenv. Disable parallel tests.
   PYTEST_ADDOPTS: "-n 0"
 
+  # Note: There is logic to install Python version $PYTHON_VERSION if the
+  # $PYTHON directory doesn't exist.  Last I tried (Oct 2018), that installation
+  # failed, and I don't know why. $PYTHON_VERSION is visible in the job
+  # descriptions, but can be wrong in the minor version, since we use the
+  # version pre-installed on AppVeyor.
   matrix:
     - JOB: "2.7 32-bit"
       TOXENV: "py27"
-      PYTHON: "C:\\Python27.11"
-      PYTHON_VERSION: "2.7.11"
+      PYTHON: "C:\\Python27"
+      PYTHON_VERSION: "2.7.15"
       PYTHON_ARCH: "32"
 
     - JOB: "2.7 64-bit"
       TOXENV: "py27"
-      PYTHON: "C:\\Python27.11-x64"
-      PYTHON_VERSION: "2.7.11"
+      PYTHON: "C:\\Python27-x64"
+      PYTHON_VERSION: "2.7.15"
       PYTHON_ARCH: "64"
 
     - JOB: "3.4 32-bit"
       TOXENV: "py34"
       PYTHON: "C:\\Python34"
-      PYTHON_VERSION: "3.4"
+      PYTHON_VERSION: "3.4.4"
       PYTHON_ARCH: "32"
 
     - JOB: "3.4 64-bit"
       TOXENV: "py34"
       PYTHON: "C:\\Python34-x64"
-      PYTHON_VERSION: "3.4"
+      PYTHON_VERSION: "3.4.4"
       PYTHON_ARCH: "64"
 
     - JOB: "3.5 32-bit"
       TOXENV: "py35"
       PYTHON: "C:\\Python35"
-      PYTHON_VERSION: "3.5.0"
+      PYTHON_VERSION: "3.5.4"
       PYTHON_ARCH: "32"
 
     - JOB: "3.5 64-bit"
       TOXENV: "py35"
       PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.0"
+      PYTHON_VERSION: "3.5.4"
       PYTHON_ARCH: "64"
 
     - JOB: "3.6 32-bit"
       TOXENV: "py36"
       PYTHON: "C:\\Python36"
-      PYTHON_VERSION: "3.6.0"
+      PYTHON_VERSION: "3.6.7"
       PYTHON_ARCH: "32"
 
     - JOB: "3.6 64-bit"
       TOXENV: "py36"
       PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.0"
+      PYTHON_VERSION: "3.6.7"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.7 32-bit"
+      TOXENV: "py37"
+      PYTHON: "C:\\Python37"
+      PYTHON_VERSION: "3.7.1"
+      PYTHON_ARCH: "32"
+
+    - JOB: "3.7 64-bit"
+      TOXENV: "py37"
+      PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7.1"
       PYTHON_ARCH: "64"
 
     # Meta coverage
     - JOB: "Meta 2.7"
       TOXENV: "py27"
       PYTHON: "C:\\Python27"
-      PYTHON_VERSION: "2.7"
+      PYTHON_VERSION: "2.7.15"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
-    - JOB: "Meta 3.5"
-      TOXENV: "py35"
-      PYTHON: "C:\\Python35"
-      PYTHON_VERSION: "3.5"
+    - JOB: "Meta 3.6"
+      TOXENV: "py36"
+      PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6.7"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
@@ -125,6 +142,11 @@ after_test:
   - if "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% %PYTHON%\python igor.py combine_html
   - if "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% pip install codecov
   - if "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% codecov -X gcov --file coverage.xml
+
+# Uncomment this to enable RDP access to the build when done.
+# https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
+# on_finish:
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 artifacts:
   - path: "metacov-*.zip"
