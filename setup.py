@@ -186,13 +186,6 @@ if compile_extension:
         },
     ))
 
-# Py3.x-specific details.
-
-if sys.version_info >= (3, 0):
-    setup_args.update(dict(
-        use_2to3=False,
-    ))
-
 
 def main():
     """Actually invoke setup() with the arguments we built above."""
