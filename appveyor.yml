@@ -5,6 +5,9 @@ version: '{branch}-{build}'
 
 shallow_clone: true
 
+cache:
+  - '%LOCALAPPDATA%\pip\Cache'
+
 environment:
 
   CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\run_with_env.cmd"
@@ -13,67 +16,84 @@ environment:
   # .pth files in the shared virtualenv. Disable parallel tests.
   PYTEST_ADDOPTS: "-n 0"
 
+  # Note: There is logic to install Python version $PYTHON_VERSION if the
+  # $PYTHON directory doesn't exist.  Last I tried (Oct 2018), that installation
+  # failed, and I don't know why. $PYTHON_VERSION is visible in the job
+  # descriptions, but can be wrong in the minor version, since we use the
+  # version pre-installed on AppVeyor.
   matrix:
     - JOB: "2.7 32-bit"
       TOXENV: "py27"
-      PYTHON: "C:\\Python27.11"
-      PYTHON_VERSION: "2.7.11"
+      PYTHON: "C:\\Python27"
+      PYTHON_VERSION: "2.7.15"
       PYTHON_ARCH: "32"
 
     - JOB: "2.7 64-bit"
       TOXENV: "py27"
-      PYTHON: "C:\\Python27.11-x64"
-      PYTHON_VERSION: "2.7.11"
+      PYTHON: "C:\\Python27-x64"
+      PYTHON_VERSION: "2.7.15"
       PYTHON_ARCH: "64"
 
     - JOB: "3.4 32-bit"
       TOXENV: "py34"
       PYTHON: "C:\\Python34"
-      PYTHON_VERSION: "3.4"
+      PYTHON_VERSION: "3.4.4"
       PYTHON_ARCH: "32"
 
     - JOB: "3.4 64-bit"
       TOXENV: "py34"
       PYTHON: "C:\\Python34-x64"
-      PYTHON_VERSION: "3.4"
+      PYTHON_VERSION: "3.4.4"
       PYTHON_ARCH: "64"
 
     - JOB: "3.5 32-bit"
       TOXENV: "py35"
       PYTHON: "C:\\Python35"
-      PYTHON_VERSION: "3.5.0"
+      PYTHON_VERSION: "3.5.4"
       PYTHON_ARCH: "32"
 
     - JOB: "3.5 64-bit"
       TOXENV: "py35"
       PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.0"
+      PYTHON_VERSION: "3.5.4"
       PYTHON_ARCH: "64"
 
     - JOB: "3.6 32-bit"
       TOXENV: "py36"
       PYTHON: "C:\\Python36"
-      PYTHON_VERSION: "3.6.0"
+      PYTHON_VERSION: "3.6.7"
       PYTHON_ARCH: "32"
 
     - JOB: "3.6 64-bit"
       TOXENV: "py36"
       PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.0"
+      PYTHON_VERSION: "3.6.7"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.7 32-bit"
+      TOXENV: "py37"
+      PYTHON: "C:\\Python37"
+      PYTHON_VERSION: "3.7.1"
+      PYTHON_ARCH: "32"
+
+    - JOB: "3.7 64-bit"
+      TOXENV: "py37"
+      PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7.1"
       PYTHON_ARCH: "64"
 
     # Meta coverage
     - JOB: "Meta 2.7"
       TOXENV: "py27"
       PYTHON: "C:\\Python27"
-      PYTHON_VERSION: "2.7"
+      PYTHON_VERSION: "2.7.15"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
-    - JOB: "Meta 3.5"
-      TOXENV: "py35"
-      PYTHON: "C:\\Python35"
-      PYTHON_VERSION: "3.5"
+    - JOB: "Meta 3.6"
+      TOXENV: "py36"
+      PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6.7"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
@@ -91,21 +111,20 @@ install:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
 
   # Check that we have the expected version and architecture for Python
-  - "python --version"
-  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+  - "python -c \"import struct, sys; print('{}\\n{}-bit'.format(sys.version, struct.calcsize('P') * 8))\""
 
   # Upgrade to the latest version of pip to avoid it displaying warnings
   # about it being out of date.
-  - "pip install --disable-pip-version-check --user --upgrade pip"
+  - "python -m pip install --disable-pip-version-check --upgrade pip"
   # And upgrade virtualenv to get the latest pip inside .tox virtualenvs.
-  - "pip install --disable-pip-version-check --user --upgrade virtualenv"
+  - "python -m pip install --disable-pip-version-check --upgrade virtualenv"
 
   # Install requirements.
   - "%CMD_IN_ENV% pip install -r requirements/ci.pip"
 
   # Make a python3.4.bat file in the current directory so that tox will find it
   # and python3.4 will mean what we want it to.
-  - "python -c \"import os; open('python{0}.{1}.bat'.format(*os.environ['TOXENV'][2:]), 'w').write('@{0}\\\\python \\x25*\\n'.format(os.environ['PYTHON']))\""
+  - "python -c \"import os; open('python{}.{}.bat'.format(*os.environ['TOXENV'][2:]), 'w').write('@{}\\\\python \\x25*\\n'.format(os.environ['PYTHON']))\""
 
 build_script:
   # If not a metacov job, then build wheels and .exe installers.
@@ -122,6 +141,11 @@ after_test:
   - if "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% %PYTHON%\python igor.py combine_html
   - if "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% pip install codecov
   - if "%COVERAGE_COVERAGE%" == "yes" %CMD_IN_ENV% codecov -X gcov --file coverage.xml
+
+# Uncomment this to enable RDP access to the build when done.
+# https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
+# on_finish:
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 artifacts:
   - path: "metacov-*.zip"
