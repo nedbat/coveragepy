@@ -1,4 +1,6 @@
 # Things needed to make wheels for coverage.py
+# 36.8.0 is last version supporting 2.6
+# but we use 35.0.2 in tox.ini, so stick with that here too.
 setuptools==35.0.2
 # We need to stick with 0.29.0 until we drop 2.6 and 3.3
 wheel==0.29.0
