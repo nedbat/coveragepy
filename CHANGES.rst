@@ -72,7 +72,7 @@ Version 5.0a3 --- 2018-10-06
   is not defined, ``${VARNAME?}`` will raise an error, and ``${VARNAME-default
   value}`` will use "default value".
 
-- Tentative support for Python 3.8, which has not yet released an alpha. Fixes
+- Partial support for Python 3.8, which has not yet released an alpha. Fixes
   `issue 707` and `issue 714`_.
 
 .. _issue 707: https://github.com/nedbat/coveragepy/issues/707
