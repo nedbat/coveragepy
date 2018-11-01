@@ -18,7 +18,7 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-- Tentative support for Python 3.8, which has not yet released an alpha. Fixes
+- Partial support for Python 3.8, which has not yet released an alpha. Fixes
   `issue 707` and `issue 714`_.
 
 .. _issue 707: https://github.com/nedbat/coveragepy/issues/707
