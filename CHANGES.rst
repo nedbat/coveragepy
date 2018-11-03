@@ -125,6 +125,9 @@ Version 5.0a1 --- 2018-06-05
 - The location of the configuration file can now be specified with a
   ``COVERAGE_RCFILE`` environment variable, as requested in `issue 650`_.
 
+- Namespace packages are supported on Python 3.7, where they used to cause
+  TypeErrors about path being None. Fixes `issue 700`_.
+
 - A new warning (``already-imported``) is issued if measurable files have
   already been imported before coverage.py started measurement.  See
   :ref:`cmd_warnings` for more information.
@@ -136,7 +139,7 @@ Version 5.0a1 --- 2018-06-05
 
 .. _issue 625: https://bitbucket.org/ned/coveragepy/issues/625/lstat-dominates-in-the-case-of-small
 .. _issue 650: https://bitbucket.org/ned/coveragepy/issues/650/allow-setting-configuration-file-location
-
+.. _issue 700: https://github.com/nedbat/coveragepy/issues/700
 
 .. _changes_451:
 
