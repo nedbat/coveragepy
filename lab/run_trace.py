@@ -31,5 +31,6 @@ def trace(frame, event, arg):
 
 the_program = sys.argv[1]
 
+code = open(the_program).read()
 sys.settrace(trace)
-execfile(the_program)
+exec(code)
