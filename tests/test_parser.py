@@ -166,6 +166,8 @@ class PythonParserTest(CoverageTest):
                 return 26
             """)
         raw_statements = set([3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26])
+        if env.PYBEHAVIOR.trace_decorated_def:
+            raw_statements.update([11, 19, 25])
         self.assertEqual(parser.raw_statements, raw_statements)
         self.assertEqual(parser.statements, set([8]))
 
@@ -196,13 +198,22 @@ class PythonParserTest(CoverageTest):
             def bar(self):
                 pass
             """)
-        self.assertEqual(parser.statements, set([1, 2, 4, 8, 10]))
-        expected_arcs = set(self.arcz_to_arcs(".1 14 48 8.  .2 2.  -8A A-8"))
-        expected_exits = {1: 1, 2: 1, 4: 1, 8: 1, 10: 1}
+
+        if env.PYBEHAVIOR.trace_decorated_def:
+            expected_statements = {1, 2, 4, 5, 8, 9, 10}
+            expected_arcs = set(self.arcz_to_arcs(".1 14 45 58 89 9.  .2 2.  -8A A-8"))
+            expected_exits = {1: 1, 2: 1, 4: 1, 5: 1, 8: 1, 9: 1, 10: 1}
+        else:
+            expected_statements = {1, 2, 4, 8, 10}
+            expected_arcs = set(self.arcz_to_arcs(".1 14 48 8.  .2 2.  -8A A-8"))
+            expected_exits = {1: 1, 2: 1, 4: 1, 8: 1, 10: 1}
+
         if env.PYVERSION >= (3, 7, 0, 'beta', 5):
             # 3.7 changed how functions with only docstrings are numbered.
             expected_arcs.update(set(self.arcz_to_arcs("-46 6-4")))
             expected_exits.update({6: 1})
+
+        self.assertEqual(parser.statements, expected_statements)
         self.assertEqual(parser.arcs(), expected_arcs)
         self.assertEqual(parser.exit_counts(), expected_exits)
 

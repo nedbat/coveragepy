@@ -34,6 +34,12 @@ class PYBEHAVIOR(object):
     # work?
     finally_jumps_back = (PYVERSION >= (3, 8))
 
+    # When a function is decorated, does the trace function get called for the
+    # @-line and also the def-line (new behavior in 3.8)? Or just the @-line
+    # (old behavior)?
+    trace_decorated_def = (PYVERSION >= (3, 8))
+
+
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?
