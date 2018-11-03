@@ -200,11 +200,11 @@ class PythonParserTest(CoverageTest):
             """)
 
         if env.PYBEHAVIOR.trace_decorated_def:
-            expected_statements = {1, 2, 4, 5, 8, 9, 10}
+            expected_statements = set([1, 2, 4, 5, 8, 9, 10])
             expected_arcs = set(self.arcz_to_arcs(".1 14 45 58 89 9.  .2 2.  -8A A-8"))
             expected_exits = {1: 1, 2: 1, 4: 1, 5: 1, 8: 1, 9: 1, 10: 1}
         else:
-            expected_statements = {1, 2, 4, 8, 10}
+            expected_statements = set([1, 2, 4, 8, 10])
             expected_arcs = set(self.arcz_to_arcs(".1 14 48 8.  .2 2.  -8A A-8"))
             expected_exits = {1: 1, 2: 1, 4: 1, 8: 1, 10: 1}
 
