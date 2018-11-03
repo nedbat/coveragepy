@@ -18,13 +18,17 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Namespace packages are supported on Python 3.7, where they used to cause
+  TypeErrors about path being None. Fixes `issue 700`_.
+
 - Partial support for Python 3.8, which has not yet released an alpha. Fixes
   `issue 707` and `issue 714`_.
 
+- Development moved from `Bitbucket`_ to `GitHub`_.
+
+.. _issue 700: https://github.com/nedbat/coveragepy/issues/700
 .. _issue 707: https://github.com/nedbat/coveragepy/issues/707
 .. _issue 714: https://github.com/nedbat/coveragepy/issues/714
-
-- Development moved from `Bitbucket`_ to `GitHub`_.
 
 .. _Bitbucket: https://bitbucket.org/ned/coveragepy
 .. _GitHub: https://github.com/nedbat/coveragepy
