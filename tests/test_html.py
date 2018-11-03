@@ -764,6 +764,7 @@ assert len(math) == 18
         )
 
     def make_main_etc(self):
+        """Make main.py and m1-m3.py for other tests."""
         self.make_file("main.py", """\
             import m1
             import m2

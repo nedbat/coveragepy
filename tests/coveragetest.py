@@ -97,6 +97,7 @@ class CoverageTest(
         self.last_module_name = None
 
     def skip_unless_data_storage_is(self, storage):
+        """Skip a test for tests that are particular about the storage implementation."""
         if STORAGE != storage:
             self.skipTest("Not using {} for data storage".format(storage))
 
