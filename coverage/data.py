@@ -640,6 +640,7 @@ class CoverageJsonData(object):
         return self._arcs is not None
 
 
+# $set_env.py: COVERAGE_STORAGE - The storage implementation to use: sql (default), or json.
 STORAGE = os.environ.get("COVERAGE_STORAGE", "sql")
 if STORAGE == "json":
     CoverageData = CoverageJsonData

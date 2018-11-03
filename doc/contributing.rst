@@ -137,7 +137,7 @@ these as 1 to use them:
 - COVERAGE_NO_CTRACER disables the C tracer if you only want to run the
   PyTracer tests.
 
-- COVEGE_AST_DUMP will dump the AST tree as it is being used during code
+- COVERAGE_AST_DUMP will dump the AST tree as it is being used during code
   parsing.
 
 - COVERAGE_KEEP_TMP keeps the temporary directories in which tests are run.

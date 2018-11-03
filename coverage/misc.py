@@ -49,6 +49,7 @@ def dummy_decorator_with_args(*args_unused, **kwargs_unused):
 
 # Environment COVERAGE_NO_CONTRACTS=1 can turn off contracts while debugging
 # tests to remove noise from stack traces.
+# $set_env.py: COVERAGE_NO_CONTRACTS - Disable PyContracts to simplify stack traces.
 USE_CONTRACTS = env.TESTING and not bool(int(os.environ.get("COVERAGE_NO_CONTRACTS", 0)))
 
 # Use PyContracts for assertion testing on parameters and returns, but only if

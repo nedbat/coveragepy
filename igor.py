@@ -74,8 +74,10 @@ def label_for_tracer(tracer):
 def should_skip(tracer):
     """Is there a reason to skip these tests?"""
     if tracer == "py":
+        # $set_env.py: COVERAGE_NO_PYTRACER - Don't run the tests under the Python tracer.
         skipper = os.environ.get("COVERAGE_NO_PYTRACER")
     else:
+        # $set_env.py: COVERAGE_NO_CTRACER - Don't run the tests under the C tracer.
         skipper = os.environ.get("COVERAGE_NO_CTRACER")
 
     if skipper:

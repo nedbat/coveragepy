@@ -491,6 +491,7 @@ new_contract('ArcStarts', lambda seq: all(isinstance(x, ArcStart) for x in seq))
 
 
 # Turn on AST dumps with an environment variable.
+# $set_env.py: COVERAGE_AST_DUMP - Dump the AST nodes when parsing code.
 AST_DUMP = bool(int(os.environ.get("COVERAGE_AST_DUMP", 0)))
 
 class NodeList(object):
@@ -535,6 +536,7 @@ class AstArcAnalyzer(object):
         self.missing_arc_fragments = collections.defaultdict(list)
         self.block_stack = []
 
+        # $set_env.py: COVERAGE_TRACK_ARCS - Trace every arc added while parsing code.
         self.debug = bool(int(os.environ.get("COVERAGE_TRACK_ARCS", 0)))
 
     def analyze(self):
