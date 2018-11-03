@@ -1579,6 +1579,9 @@ class Py24Test(CoverageTest):
     """Tests of new syntax in Python 2.4."""
 
     def test_function_decorators(self):
+        lines = [1, 2, 3, 4, 6, 8, 10, 12]
+        if env.PYBEHAVIOR.trace_decorated_def:
+            lines = sorted(lines + [9])
         self.check_coverage("""\
             def require_int(func):
                 def wrapper(arg):
@@ -1593,9 +1596,12 @@ class Py24Test(CoverageTest):
 
             assert p1(10) == 20
             """,
-            [1,2,3,4,6,8,10,12], "")
+            lines, "")
 
     def test_function_decorators_with_args(self):
+        lines = [1, 2, 3, 4, 5, 6, 8, 10, 12]
+        if env.PYBEHAVIOR.trace_decorated_def:
+            lines = sorted(lines + [9])
         self.check_coverage("""\
             def boost_by(extra):
                 def decorator(func):
@@ -1610,9 +1616,12 @@ class Py24Test(CoverageTest):
 
             assert boosted(10) == 200
             """,
-            [1,2,3,4,5,6,8,10,12], "")
+            lines, "")
 
     def test_double_function_decorators(self):
+        lines = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 17, 19, 21, 22, 24, 26]
+        if env.PYBEHAVIOR.trace_decorated_def:
+            lines = sorted(lines + [16, 23])
         self.check_coverage("""\
             def require_int(func):
                 def wrapper(arg):
@@ -1641,8 +1650,7 @@ class Py24Test(CoverageTest):
 
             assert boosted2(10) == 200
             """,
-            ([1,2,3,4,5,7,8,9,10,11,12,14,15,17,19,21,22,24,26],
-             [1,2,3,4,5,7,8,9,10,11,12,14,   17,19,21,   24,26]), "")
+            lines, "")
 
 
 class Py25Test(CoverageTest):

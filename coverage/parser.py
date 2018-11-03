@@ -579,8 +579,18 @@ class AstArcAnalyzer(object):
         else:
             return node.lineno
 
+    def _line_decorated(self, node):
+        """Compute first line number for things that can be decorated (classes and functions)."""
+        lineno = node.lineno
+        if env.PYBEHAVIOR.trace_decorated_def:
+            if node.decorator_list:
+                lineno = node.decorator_list[0].lineno
+        return lineno
+
     def _line__Assign(self, node):
         return self.line_for_node(node.value)
+
+    _line__ClassDef = _line_decorated
 
     def _line__Dict(self, node):
         # Python 3.5 changed how dict literals are made.
@@ -593,6 +603,8 @@ class AstArcAnalyzer(object):
                 return node.values[0].lineno
         else:
             return node.lineno
+
+    _line__FunctionDef = _line_decorated
 
     def _line__List(self, node):
         if node.elts:
@@ -812,10 +824,10 @@ class AstArcAnalyzer(object):
     # Handlers: _handle__*
     #
     # Each handler deals with a specific AST node type, dispatched from
-    # add_arcs.  Each deals with a particular kind of node type, and returns
-    # the set of exits from that node. These functions mirror the Python
-    # semantics of each syntactic construct.  See the docstring for add_arcs to
-    # understand the concept of exits from a node.
+    # add_arcs.  Handlers return the set of exits from that node, and can
+    # also call self.add_arc to record arcs they find.  These functions mirror
+    # the Python semantics of each syntactic construct.  See the docstring
+    # for add_arcs to understand the concept of exits from a node.
 
     @contract(returns='ArcStarts')
     def _handle__Break(self, node):
@@ -827,13 +839,18 @@ class AstArcAnalyzer(object):
     @contract(returns='ArcStarts')
     def _handle_decorated(self, node):
         """Add arcs for things that can be decorated (classes and functions)."""
-        last = self.line_for_node(node)
+        main_line = last = node.lineno
         if node.decorator_list:
+            if env.PYBEHAVIOR.trace_decorated_def:
+                last = None
             for dec_node in node.decorator_list:
                 dec_start = self.line_for_node(dec_node)
-                if dec_start != last:
+                if last is not None and dec_start != last:
                     self.add_arc(last, dec_start)
-                    last = dec_start
+                last = dec_start
+            if env.PYBEHAVIOR.trace_decorated_def:
+                self.add_arc(last, main_line)
+                last = main_line
             # The definition line may have been missed, but we should have it
             # in `self.statements`.  For some constructs, `line_for_node` is
             # not what we'd think of as the first line in the statement, so map
