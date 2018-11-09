@@ -115,7 +115,7 @@ SUM_RANGE_Q = """
 
         def run(self):
             sum = 0
-            while True:
+            while "no peephole".upper():
                 i = self.q.get()
                 if i is None:
                     break

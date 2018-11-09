@@ -711,6 +711,13 @@ class AstArcAnalyzer(object):
             node = None
         return node
 
+    # Missing nodes: _missing__*
+    #
+    # Entire statements can be optimized away by Python. They will appear in
+    # the AST, but not the bytecode.  These functions are called (by
+    # find_non_missing_node) to find a node to use instead of the missing
+    # node.  They can return None if the node should truly be gone.
+
     def _missing__If(self, node):
         # If the if-node is missing, then one of its children might still be
         # here, but not both. So return the first of the two that isn't missing.
@@ -737,6 +744,20 @@ class AstArcAnalyzer(object):
         if len(non_missing_children) == 1:
             return non_missing_children[0]
         return NodeList(non_missing_children)
+
+    def _missing__While(self, node):
+        body_nodes = self.find_non_missing_node(NodeList(node.body))
+        if not body_nodes:
+            return None
+        # Make a synthetic While-true node.
+        new_while = ast.While()
+        new_while.lineno = body_nodes.lineno
+        new_while.test = ast.Name()
+        new_while.test.lineno = body_nodes.lineno
+        new_while.test.id = "True"
+        new_while.body = body_nodes.body
+        new_while.orelse = None
+        return new_while
 
     def is_constant_expr(self, node):
         """Is this a compile-time constant?"""
