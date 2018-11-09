@@ -39,6 +39,8 @@ class PYBEHAVIOR(object):
     # (old behavior)?
     trace_decorated_def = (PYVERSION >= (3, 8))
 
+    # Are while-true loops optimized into absolute jumps with no loop setup?
+    nix_while_true = (PYVERSION >= (3, 8))
 
 # Coverage.py specifics.
 

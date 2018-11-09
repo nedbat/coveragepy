@@ -248,6 +248,10 @@ class LoopArcTest(CoverageTest):
 
     def test_while_true(self):
         # With "while 1", the loop knows it's constant.
+        if env.PYBEHAVIOR.nix_while_true:
+            arcz = ".1 13 34 45 36 63 57 7."
+        else:
+            arcz = ".1 12 23 34 45 36 63 57 7."
         self.check_coverage("""\
             a, i = 1, 0
             while 1:
@@ -257,11 +261,13 @@ class LoopArcTest(CoverageTest):
                 i += 1
             assert a == 4 and i == 3
             """,
-            arcz=".1 12 23 34 45 36 63 57 7.",
+            arcz=arcz,
             )
         # With "while True", 2.x thinks it's computation,
         # 3.x thinks it's constant.
-        if env.PY3:
+        if env.PYBEHAVIOR.nix_while_true:
+            arcz = ".1 13 34 45 36 63 57 7."
+        elif env.PY3:
             arcz = ".1 12 23 34 45 36 63 57 7."
         else:
             arcz = ".1 12 23 34 45 36 62 57 7."
@@ -287,22 +293,31 @@ class LoopArcTest(CoverageTest):
             """)
         out = self.run_command("coverage run --branch --source=. main.py")
         self.assertEqual(out, 'done\n')
+        if env.PYBEHAVIOR.nix_while_true:
+            num_stmts = 2
+        else:
+            num_stmts = 3
+        expected = "zero.py {n} {n} 0 0 0% 1-3".format(n=num_stmts)
         report = self.report_from_command("coverage report -m")
         squeezed = self.squeezed_lines(report)
-        self.assertIn("zero.py 3 3 0 0 0% 1-3", squeezed[3])
+        self.assertIn(expected, squeezed[3])
 
     def test_bug_496_continue_in_constant_while(self):
         # https://bitbucket.org/ned/coveragepy/issue/496
-        if env.PY3:
-            arcz = ".1 12 23 34 45 53 46 6."
+        # A continue in a while-true needs to jump to the right place.
+        if env.PYBEHAVIOR.nix_while_true:
+            arcz = ".1 13 34 45 53 46 67 7."
+        elif env.PY3:
+            arcz = ".1 12 23 34 45 53 46 67 7."
         else:
-            arcz = ".1 12 23 34 45 52 46 6."
+            arcz = ".1 12 23 34 45 52 46 67 7."
         self.check_coverage("""\
             up = iter('ta')
             while True:
                 char = next(up)
                 if char == 't':
                     continue
+                i = "line 6"
                 break
             """,
             arcz=arcz
@@ -689,10 +704,12 @@ class ExceptionArcTest(CoverageTest):
 
     def test_bug_212(self):
         # "except Exception as e" is crucial here.
+        # Bug 212 said that the "if exc" line was incorrectly marked as only
+        # partially covered.
         self.check_coverage("""\
             def b(exc):
                 try:
-                    while 1:
+                    while "no peephole".upper():
                         raise Exception(exc)    # 4
                 except Exception as e:
                     if exc != 'expected':
@@ -705,8 +722,10 @@ class ExceptionArcTest(CoverageTest):
             except:
                 pass
             """,
-            arcz=".1 .2 1A 23 34 45 56 67 68 7. 8. AB BC C. DE E.",
-            arcz_missing="C.", arcz_unpredicted="CD")
+            arcz=".1 .2 1A 23 34 3. 45 56 67 68 7. 8. AB BC C. DE E.",
+            arcz_missing="3. C.",
+            arcz_unpredicted="CD",
+        )
 
     def test_except_finally(self):
         self.check_coverage("""\
