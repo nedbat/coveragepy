@@ -52,6 +52,7 @@ def set_by_num(values, n, value):
     setting_name = SETTINGS[int(n)-1][0]
     values[setting_name] = value
 
+PROMPT = "(<N> val | x <N> | q) ::> "
 def get_new_values(values):
     show = True
     while True:
@@ -59,10 +60,10 @@ def get_new_values(values):
             show_them(values)
             show = False
             pstderr("")
-        pstderr("> ", end='')
+        pstderr(PROMPT, end='')
         sys.stderr.flush()
         try:
-            cmd = input("").strip().split(None, 1)
+            cmd = input("").strip().split()
         except EOFError:
             pstderr("\n")
             break
@@ -71,14 +72,29 @@ def get_new_values(values):
         if cmd[0] == 'q':
             break
         if cmd[0] == 'x':
-            set_by_num(values, cmd[1], None)
+            if len(cmd) < 2:
+                pstderr("Need numbers of entries to delete")
+                continue
+            try:
+                nums = map(int, cmd[1:])
+            except ValueError:
+                pstderr("Need numbers of entries to delete")
+                continue
+            else:
+                for num in nums:
+                    set_by_num(values, num, None)
         else:
             try:
-                nsetting = int(cmd[0])
+                num = int(cmd[0])
             except ValueError:
-                pass
+                pstderr("Don't understand option {!r}".format(cmd[0]))
+                continue
             else:
-                set_by_num(values, nsetting, cmd[1])
+                if len(cmd) >= 2:
+                    set_by_num(values, num, " ".join(cmd[1:]))
+                else:
+                    pstderr("Need a value to set")
+                    continue
         show = True
 
     return values
