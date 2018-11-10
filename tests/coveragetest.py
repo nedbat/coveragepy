@@ -81,7 +81,7 @@ class CoverageTest(
     show_stderr = True
 
     # Temp dirs go to $TMPDIR/coverage_test/*
-    temp_dir_prefix = "coverage_test/"
+    temp_dir_prefix = "coverage_test/{}/".format(os.getenv('COVERAGE_ENV_ID', 'x'))
 
     # Keep the temp directories if the env says to.
     # $set_env.py: COVERAGE_KEEP_TMP - Keep the temp directories made by tests.

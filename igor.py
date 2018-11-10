@@ -90,10 +90,21 @@ def should_skip(tracer):
     return msg
 
 
+def make_env_id(tracer):
+    """An environment id that will keep all the test runs distinct."""
+    impl = platform.python_implementation().lower()
+    version = "%s%s" % sys.version_info[:2]
+    if '__pypy__' in sys.builtin_module_names:
+        version += "_%s%s" % sys.pypy_version_info[:2]
+    env_id = "%s%s_%s" % (impl, version, tracer)
+    return env_id
+
+
 def run_tests(tracer, *runner_args):
     """The actual running of tests."""
     if 'COVERAGE_TESTING' not in os.environ:
         os.environ['COVERAGE_TESTING'] = "True"
+    os.environ['COVERAGE_ENV_ID'] = make_env_id(tracer)
     print_banner(label_for_tracer(tracer))
     return pytest.main(list(runner_args))
 
@@ -114,13 +125,7 @@ def run_tests_with_coverage(tracer, *runner_args):
     with open(pth_path, "w") as pth_file:
         pth_file.write("import coverage; coverage.process_startup()\n")
 
-    # Make names for the data files that keep all the test runs distinct.
-    impl = platform.python_implementation().lower()
-    version = "%s%s" % sys.version_info[:2]
-    if '__pypy__' in sys.builtin_module_names:
-        version += "_%s%s" % sys.pypy_version_info[:2]
-    suffix = "%s%s_%s_%s" % (impl, version, tracer, platform.platform())
-
+    suffix = "%s_%s" % (make_env_id(tracer), platform.platform())
     os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov."+suffix)
 
     import coverage
