@@ -581,8 +581,8 @@ def filepath_to_regex(path):
     return regex
 
 
-def compare_html(dir1, dir2):
-    """Specialized compare function for HTML files."""
+def compare_html(expected, actual):
+    """Specialized compare function for our HTML files."""
     scrubs = [
         (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
         (r'coverage.py v[\d.abc]+', 'coverage.py vVER'),
@@ -603,7 +603,7 @@ def compare_html(dir1, dir2):
     if env.WINDOWS:
         # For file paths...
         scrubs += [(r"\\", "/")]
-    return compare(dir1, dir2, file_pattern="*.html", scrubs=scrubs)
+    compare(expected, actual, file_pattern="*.html", scrubs=scrubs)
 
 
 class HtmlGoldTests(CoverageTest):
@@ -624,7 +624,7 @@ class HtmlGoldTests(CoverageTest):
         cov.stop()          # pragma: nested
         cov.html_report(a, directory='out')
 
-        compare_html("out", gold_path("html/gold_a"))
+        compare_html(gold_path("html/gold_a"), "out")
         contains(
             "out/a_py.html",
             ('<span class="key">if</span> <span class="num">1</span> '
@@ -677,7 +677,7 @@ class HtmlGoldTests(CoverageTest):
         cov.stop()          # pragma: nested
         cov.html_report(b, directory="out")
 
-        compare_html("out", gold_path("html/gold_b_branch"))
+        compare_html(gold_path("html/gold_b_branch"), "out")
         contains(
             "out/b_py.html",
             ('<span class="key">if</span> <span class="nam">x</span> '
@@ -736,7 +736,7 @@ else:
         cov.stop()          # pragma: nested
         cov.html_report(bom, directory="out")
 
-        compare_html("out", gold_path("html/gold_bom"))
+        compare_html(gold_path("html/gold_bom"), "out")
         contains(
             "out/bom_py.html",
             '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
@@ -757,7 +757,7 @@ assert len(math) == 18
         cov.stop()                  # pragma: nested
         cov.html_report(isolatin1, directory="out")
 
-        compare_html("out", gold_path("html/gold_isolatin1"))
+        compare_html(gold_path("html/gold_isolatin1"), "out")
         contains(
             "out/isolatin1_py.html",
             '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
@@ -799,7 +799,7 @@ assert len(math) == 18
         cov.stop()          # pragma: nested
         cov.html_report(directory="out")
 
-        compare_html("out", gold_path("html/gold_omit_1"))
+        compare_html(gold_path("html/gold_omit_1"), "out")
 
     def test_omit_2(self):
         self.make_main_etc()
@@ -810,7 +810,7 @@ assert len(math) == 18
         cov.stop()          # pragma: nested
         cov.html_report(directory="out", omit=["m1.py"])
 
-        compare_html("out", gold_path("html/gold_omit_2"))
+        compare_html(gold_path("html/gold_omit_2"), "out")
 
     def test_omit_3(self):
         self.make_main_etc()
@@ -821,7 +821,7 @@ assert len(math) == 18
         cov.stop()          # pragma: nested
         cov.html_report(directory="out", omit=["m1.py", "m2.py"])
 
-        compare_html("out", gold_path("html/gold_omit_3"))
+        compare_html(gold_path("html/gold_omit_3"), "out")
 
     def test_omit_4(self):
         self.make_main_etc()
@@ -836,7 +836,7 @@ assert len(math) == 18
         cov.stop()          # pragma: nested
         cov.html_report(directory="out")
 
-        compare_html("out", gold_path("html/gold_omit_4"))
+        compare_html(gold_path("html/gold_omit_4"), "out")
 
     def test_omit_5(self):
         self.make_main_etc()
@@ -857,7 +857,7 @@ assert len(math) == 18
         cov.stop()          # pragma: nested
         cov.html_report()
 
-        compare_html("out/omit_5", gold_path("html/gold_omit_5"))
+        compare_html(gold_path("html/gold_omit_5"), "out/omit_5")
 
     def test_other(self):
         self.make_file("src/here.py", """\
@@ -888,7 +888,7 @@ assert len(math) == 18
         for p in glob.glob("out/*_other_py.html"):
             os.rename(p, "out/blah_blah_other_py.html")
 
-        compare_html("out", gold_path("html/gold_other"))
+        compare_html(gold_path("html/gold_other"), "out")
         contains(
             "out/index.html",
             '<a href="here_py.html">here.py</a>',
@@ -933,7 +933,7 @@ assert len(math) == 18
         cov.stop()              # pragma: nested
         cov.html_report(partial, directory="out")
 
-        compare_html("out", gold_path("html/gold_partial"))
+        compare_html(gold_path("html/gold_partial"), "out")
         contains(
             "out/partial_py.html",
             '<p id="t4" class="stm run hide_run">',
@@ -970,8 +970,8 @@ assert len(math) == 18
         cov.stop()          # pragma: nested
         cov.html_report(a, directory="out", extra_css="extra.css")
 
-        compare_html("out", gold_path("html/gold_styled"))
-        compare("out", gold_path("html/gold_styled"), size_within=10, file_pattern="*.css")
+        compare_html(gold_path("html/gold_styled"), "out")
+        compare(gold_path("html/gold_styled"), "out", size_within=10, file_pattern="*.css")
         contains(
             "out/a_py.html",
             '<link rel="stylesheet" href="extra.css" type="text/css">',
@@ -1040,7 +1040,7 @@ assert len(math) == 18
         cov.stop()              # pragma: nested
         cov.html_report(unicode, directory="out")
 
-        compare_html("out", gold_path("html/gold_unicode"))
+        compare_html(gold_path("html/gold_unicode"), "out")
         contains(
             "out/unicode_py.html",
             '<span class="str">"&#654;d&#729;&#477;b&#592;&#633;&#477;&#652;o&#596;"</span>',
