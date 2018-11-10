@@ -48,7 +48,7 @@ class FarmTestCase(ModuleAwareMixin, SysPathAwareMixin, unittest.TestCase):
             coverage run white.py
             coverage annotate white.py
             ''', rundir="out")
-        compare("out", "gold", "*,cover")
+        compare("gold", "out", "*,cover")
         clean("out")
 
     Verbs (copy, run, compare, clean) are methods in this class.  FarmTestCase
@@ -199,10 +199,13 @@ def versioned_directory(d):
     raise Exception("Directory missing: {}".format(d))                  # pragma: only failure
 
 
-def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scrubs=None):
-    """Compare files matching `file_pattern` in `dir1` and `dir2`.
+def compare(
+        expected_dir, actual_dir, file_pattern=None, size_within=0,
+        actual_extra=False, scrubs=None,
+        ):
+    """Compare files matching `file_pattern` in `expected_dir` and `actual_dir`.
 
-    A version-specific subdirectory of `dir1` or `dir2` will be used if
+    A version-specific subdirectory of `expected_dir` will be used if
     it exists.
 
     `size_within` is a percentage delta for the file sizes.  If non-zero,
@@ -211,23 +214,22 @@ def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scru
     For example, size_within=10 means that the two files' sizes must be
     within 10 percent of each other to compare equal.
 
-    `left_extra` true means the left directory can have extra files in it
+    `actual_extra` true means `actual_dir` can have extra files in it
     without triggering an assertion.
 
-    `scrubs` is a list of pairs, regexes to find and replace to scrub the
+    `scrubs` is a list of pairs: regexes to find and replace to scrub the
     files of unimportant differences.
 
     An assertion will be raised if the directories fail one of their
     matches.
 
     """
-    dir1 = versioned_directory(dir1)
-    dir2 = versioned_directory(dir2)
+    expected_dir = versioned_directory(expected_dir)
 
-    dc = filecmp.dircmp(dir1, dir2)
+    dc = filecmp.dircmp(expected_dir, actual_dir)
     diff_files = fnmatch_list(dc.diff_files, file_pattern)
-    left_only = fnmatch_list(dc.left_only, file_pattern)
-    right_only = fnmatch_list(dc.right_only, file_pattern)
+    expected_only = fnmatch_list(dc.left_only, file_pattern)
+    actual_only = fnmatch_list(dc.right_only, file_pattern)
     show_diff = True
 
     if size_within:
@@ -235,19 +237,19 @@ def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scru
         # guide for size comparison.
         wrong_size = []
         for f in diff_files:
-            with open(os.path.join(dir1, f), "rb") as fobj:
-                left = fobj.read()
-            with open(os.path.join(dir2, f), "rb") as fobj:
-                right = fobj.read()
-            size_l, size_r = len(left), len(right)
-            big, little = max(size_l, size_r), min(size_l, size_r)
+            with open(os.path.join(expected_dir, f), "rb") as fobj:
+                expected = fobj.read()
+            with open(os.path.join(actual_dir, f), "rb") as fobj:
+                actual = fobj.read()
+            size_e, size_a = len(expected), len(actual)
+            big, little = max(size_e, size_a), min(size_e, size_a)
             if (big - little) / float(little) > size_within/100.0:
                 # print "%d %d" % (big, little)
-                # print "Left: ---\n%s\n-----\n%s" % (left, right)
-                wrong_size.append("%s (%s,%s)" % (f, size_l, size_r))   # pragma: only failure
+                # print "expected: ---\n%s\n-----\n%s" % (expected, actual)
+                wrong_size.append("%s (%s,%s)" % (f, size_e, size_a))   # pragma: only failure
         if wrong_size:
             print("File sizes differ between %s and %s: %s" % (         # pragma: only failure
-                dir1, dir2, ", ".join(wrong_size)
+                expected_dir, actual_dir, ", ".join(wrong_size)
             ))
 
         # We'll show the diff iff the files differed enough in size.
@@ -259,27 +261,27 @@ def compare(dir1, dir2, file_pattern=None, size_within=0, left_extra=False, scru
         # ourselves.
         text_diff = []
         for f in diff_files:
-            left_file = os.path.join(dir1, f)
-            right_file = os.path.join(dir2, f)
-            with open(left_file, READ_MODE) as fobj:
-                left = fobj.read()
-            with open(right_file, READ_MODE) as fobj:
-                right = fobj.read()
+            expected_file = os.path.join(expected_dir, f)
+            actual_file = os.path.join(actual_dir, f)
+            with open(expected_file, READ_MODE) as fobj:
+                expected = fobj.read()
+            with open(actual_file, READ_MODE) as fobj:
+                actual = fobj.read()
             if scrubs:
-                left = scrub(left, scrubs)
-                right = scrub(right, scrubs)
-            if left != right:                           # pragma: only failure
-                text_diff.append('%s != %s' % (left_file, right_file))
-                left = left.splitlines()
-                right = right.splitlines()
-                print(":::: diff {!r} and {!r}".format(left_file, right_file))
-                print("\n".join(difflib.Differ().compare(left, right)))
-                print(":::: end diff {!r} and {!r}".format(left_file, right_file))
+                expected = scrub(expected, scrubs)
+                actual = scrub(actual, scrubs)
+            if expected != actual:                              # pragma: only failure
+                text_diff.append('%s != %s' % (expected_file, actual_file))
+                expected = expected.splitlines()
+                actual = actual.splitlines()
+                print(":::: diff {!r} and {!r}".format(expected_file, actual_file))
+                print("\n".join(difflib.Differ().compare(expected, actual)))
+                print(":::: end diff {!r} and {!r}".format(expected_file, actual_file))
         assert not text_diff, "Files differ: %s" % '\n'.join(text_diff)
 
-    if not left_extra:
-        assert not left_only, "Files in %s only: %s" % (dir1, left_only)
-    assert not right_only, "Files in %s only: %s" % (dir2, right_only)
+    assert not expected_only, "Files in %s only: %s" % (expected_dir, expected_only)
+    if not actual_extra:
+        assert not actual_only, "Files in %s only: %s" % (actual_dir, actual_only)
 
 
 def contains(filename, *strlist):

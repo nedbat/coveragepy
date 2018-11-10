@@ -6,5 +6,5 @@ run("""
     coverage run utf8.py
     coverage annotate utf8.py
     """, rundir="out_encodings")
-compare("out_encodings", "gold_encodings", "*,cover")
+compare("gold_encodings", "out_encodings", "*,cover")
 clean("out_encodings")

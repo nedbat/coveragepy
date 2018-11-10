@@ -6,5 +6,5 @@ run("""
     coverage run white.py
     coverage annotate white.py
     """, rundir="out")
-compare("out", "gold", "*,cover")
+compare("gold", "out", "*,cover")
 clean("out")

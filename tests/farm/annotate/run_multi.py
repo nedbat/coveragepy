@@ -6,5 +6,5 @@ run("""
     coverage run multi.py
     coverage annotate
     """, rundir="out_multi")
-compare("out_multi", "gold_multi", "*,cover")
+compare("gold_multi", "out_multi", "*,cover")
 clean("out_multi")
