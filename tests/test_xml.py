@@ -309,6 +309,19 @@ def clean(text, scrub=None):
     return text
 
 
+def compare_xml(expected, actual, **kwargs):
+    """Specialized compare function for our XML files."""
+    source_path = coverage.files.relative_directory().rstrip(r"\/")
+
+    scrubs=[
+        (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
+        (r' version="[-.\w]+"', ' version="VERSION"'),
+        (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % re.escape(source_path)),
+        (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
+    ]
+    compare(expected, actual, scrubs=scrubs, **kwargs)
+
+
 class XmlGoldTest(CoverageTest):
     """Tests of XML reporting that use gold files."""
 
@@ -326,14 +339,8 @@ class XmlGoldTest(CoverageTest):
         import a            # pragma: nested # pylint: disable=import-error
         cov.stop()          # pragma: nested
         cov.xml_report(a, outfile="coverage.xml")
-        source_path = coverage.files.relative_directory().rstrip(r"\/")
 
-        compare(".", gold_path("html/gold_x_xml"), left_extra=True, scrubs=[
-            (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
-            (r' version="[-.\w]+"', ' version="VERSION"'),
-            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % re.escape(source_path)),
-            (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
-        ])
+        compare_xml(gold_path("html/gold_x_xml"), ".", actual_extra=True)
 
     def test_a_xml_2(self):
         self.make_file("a.py", """\
@@ -355,14 +362,7 @@ class XmlGoldTest(CoverageTest):
         import a            # pragma: nested # pylint: disable=import-error
         cov.stop()          # pragma: nested
         cov.xml_report(a)
-        source_path = coverage.files.relative_directory().rstrip(r"\/")
-
-        compare("xml_2", gold_path("html/gold_x_xml"), scrubs=[
-            (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
-            (r' version="[-.\w]+"', ' version="VERSION"'),
-            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % re.escape(source_path)),
-            (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
-        ])
+        compare_xml(gold_path("html/gold_x_xml"), "xml_2")
 
     def test_y_xml_branch(self):
         self.make_file("y.py", """\
@@ -380,11 +380,4 @@ class XmlGoldTest(CoverageTest):
         import y            # pragma: nested # pylint: disable=import-error
         cov.stop()          # pragma: nested
         cov.xml_report(y, outfile="y_xml_branch/coverage.xml")
-        source_path = coverage.files.relative_directory().rstrip(r"\/")
-
-        compare("y_xml_branch", gold_path("html/gold_y_xml_branch"), scrubs=[
-            (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
-            (r' version="[-.\w]+"', ' version="VERSION"'),
-            (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % re.escape(source_path)),
-            (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
-        ])
+        compare_xml(gold_path("html/gold_y_xml_branch"), "y_xml_branch")
