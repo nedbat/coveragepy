@@ -1,3 +1,4 @@
+# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://bitbucket.org/ned/coveragepy/src/default/NOTICE.txt
 
@@ -5,6 +6,7 @@
 
 import os
 import os.path
+import re
 import sys
 import time
 import xml.dom.minidom
@@ -123,11 +125,8 @@ class XmlReporter(Reporter):
             xcoverage.setAttribute("branch-rate", "0")
         xcoverage.setAttribute("complexity", "0")
 
-        # Use the DOM to write the output file.
-        out = self.xml_out.toprettyxml()
-        if env.PY2:
-            out = out.encode("utf8")
-        outfile.write(out)
+        # Write the output file.
+        outfile.write(serialize_xml(self.xml_out))
 
         # Return the total percentage.
         denom = lnum_tot + bnum_tot
@@ -218,3 +217,23 @@ class XmlReporter(Reporter):
         package[2] += class_lines
         package[3] += class_br_hits
         package[4] += class_branches
+
+
+def serialize_xml(dom):
+    """Serialize a minidom node to XML."""
+    out = dom.toprettyxml()
+    if env.PY2:
+        out = out.encode("utf8")
+    # In Python 3.8, minidom lost the sorting of attributes: https://bugs.python.org/issue34160
+    # For the limited kinds of XML we produce, this re-sorts them.
+    if env.PYVERSION >= (3, 8):
+        rx_attr = r' [\w-]+="[^"]*"'
+        rx_attrs = r'(' + rx_attr + ')+'
+        fixed_lines = []
+        for line in out.splitlines(True):
+            hollow_line = re.sub(rx_attrs, u"☺", line)
+            attrs = sorted(re.findall(rx_attr, line))
+            new_line = hollow_line.replace(u"☺", "".join(attrs))
+            fixed_lines.append(new_line)
+        out = "".join(fixed_lines)
+    return out
