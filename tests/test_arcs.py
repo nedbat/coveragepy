@@ -1376,6 +1376,10 @@ class DecoratorArcTest(CoverageTest):
     def test_bug_466(self):
         # A bad interaction between decorators and multi-line list assignments,
         # believe it or not...!
+        if env.PYBEHAVIOR.trace_decorated_def:
+            arcz = ".1 1A A.  13 34 4.  -35 58 8-3"
+        else:
+            arcz = ".1 1A A.  13 3.     -35 58 8-3"
         self.check_coverage("""\
             class Parser(object):
 
@@ -1388,8 +1392,12 @@ class DecoratorArcTest(CoverageTest):
 
             Parser.parse()
             """,
-            arcz=".1 1A A.  13 3.  -35 58 8-3",
+            arcz=arcz,
         )
+        if env.PYBEHAVIOR.trace_decorated_def:
+            arcz = ".1 1A A.  13 34 4.  -35 58 8-3"
+        else:
+            arcz = ".1 1A A.  13 3.     -35 58 8-3"
         self.check_coverage("""\
             class Parser(object):
 
@@ -1402,7 +1410,7 @@ class DecoratorArcTest(CoverageTest):
 
             Parser.parse()
             """,
-            arcz=".1 1A A.  13 3.  -35 58 8-3",
+            arcz=arcz,
         )
 
 
