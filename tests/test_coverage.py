@@ -88,6 +88,23 @@ class TestCoverageTest(CoverageTest):
                 missing=("37", "4-10"),
             )
 
+    def test_exceptions_really_fail(self):
+        # An assert in the checked code will really raise up to us.
+        with self.assertRaisesRegex(AssertionError, "This is bad"):
+            self.check_coverage("""\
+                a = 1
+                assert a == 99, "This is bad"
+                """
+                )
+        # Other exceptions too.
+        with self.assertRaisesRegex(ZeroDivisionError, "division"):
+            self.check_coverage("""\
+                a = 1
+                assert a == 1, "This is good"
+                a/0
+                """
+                )
+
 
 class BasicCoverageTest(CoverageTest):
     """The simplest tests, for quick smoke testing of fundamental changes."""
