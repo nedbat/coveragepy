@@ -900,10 +900,7 @@ assert len(math) == 18
             # partial branches and excluded lines
             a = 6
 
-            while True:
-                break
-
-            while 1:
+            while "no peephole".upper():        # t4
                 break
 
             while a:        # pragma: no branch
@@ -936,13 +933,12 @@ assert len(math) == 18
         compare_html(gold_path("html/gold_partial"), "out")
         contains(
             "out/partial_py.html",
-            '<p id="t4" class="stm run hide_run">',
+            '<p id="t4" class="stm par run hide_run">',
             '<p id="t7" class="stm run hide_run">',
-            '<p id="t10" class="stm run hide_run">',
             # The "if 0" and "if 1" statements are optimized away.
-            '<p id="t13" class="pln">',
+            '<p id="t10" class="pln">',
             # The "raise AssertionError" is excluded by regex in the .ini.
-            '<p id="t20" class="exc">',
+            '<p id="t17" class="exc">',
         )
         contains(
             "out/index.html",
@@ -950,7 +946,7 @@ assert len(math) == 18
         )
         contains(
             "out/index.html",
-            '<span class="pc_cov">100%</span>'
+            '<span class="pc_cov">91%</span>'
         )
 
     def test_styled(self):
