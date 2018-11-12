@@ -30,7 +30,7 @@ Version 4.5.2 --- 2018-11-12
 - Namespace packages are supported on Python 3.7, where they used to cause
   TypeErrors about path being None. Fixes `issue 700`_.
 
-- Python 3.8 (as of today!) passes all tests.  Fixes `issue 707` and
+- Python 3.8 (as of today!) passes all tests.  Fixes `issue 707`_ and
   `issue 714`_.
 
 - Development moved from `Bitbucket`_ to `GitHub`_.
