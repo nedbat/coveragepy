@@ -772,13 +772,12 @@ class HtmlGoldTests(CoverageGoldTest):
         compare("gold_partial", "out/partial", size_within=10, file_pattern="*.html")
         contains(
             "out/partial/partial_py.html",
-            '<p id="t8" class="stm run hide_run">',
+            '<p id="t8" class="stm par run hide_run">',
             '<p id="t11" class="stm run hide_run">',
-            '<p id="t14" class="stm run hide_run">',
             # The "if 0" and "if 1" statements are optimized away.
-            '<p id="t17" class="pln">',
+            '<p id="t14" class="pln">',
             # The "raise AssertionError" is excluded by regex in the .ini.
-            '<p id="t24" class="exc">',
+            '<p id="t21" class="exc">',
         )
         contains(
             "out/partial/index.html",
@@ -786,7 +785,7 @@ class HtmlGoldTests(CoverageGoldTest):
         )
         contains(
             "out/partial/index.html",
-            '<span class="pc_cov">100%</span>'
+            '<span class="pc_cov">91%</span>'
         )
 
     def test_styled(self):

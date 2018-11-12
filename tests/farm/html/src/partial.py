@@ -5,10 +5,7 @@
 
 a = 6
 
-while True:
-    break
-
-while 1:
+while "no peephole".upper():
     break
 
 while a:        # pragma: no branch
