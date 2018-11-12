@@ -32,6 +32,8 @@ Unreleased
 
   - Combining data files now goes much faster.
 
+- Python 3.8 (as of today!) passes all tests.
+
 .. _issue 695: https://github.com/nedbat/coveragepy/issues/695
 .. _issue 715: https://github.com/nedbat/coveragepy/issues/715
 .. _issue 716: https://github.com/nedbat/coveragepy/issues/716
