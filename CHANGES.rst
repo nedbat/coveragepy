@@ -15,8 +15,11 @@ Change history for Coverage.py
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+
+.. _changes_452:
+
+Version 4.5.2 --- 2018-11-12
+----------------------------
 
 - Namespace packages are supported on Python 3.7, where they used to cause
   TypeErrors about path being None. Fixes `issue 700`_.

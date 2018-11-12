@@ -17,8 +17,7 @@
     - Don't forget the man page: doc/python-coverage.1.txt
     - Check that the docs build correctly:
         $ tox -e doc
-    - Done with changes to source files, check them in.
-        - hg push
+    - Done with changes to source files, check them in and push them.
     - Generate new sample_html to get the latest, incl footer version number:
         make clean
         pip install -e .
@@ -60,7 +59,7 @@
     - Visit https://pypi.python.org/pypi?:action=pkg_edit&name=coverage :
         - show/hide the proper versions.
 - Tag the tree
-    - hg tag -m "Coverage 3.0.1" coverage-3.0.1
+    - git tag coverage-3.0.1
 - Bump version:
     - coverage/version.py
         - increment version number
@@ -68,7 +67,7 @@
             - set to alpha-0 if just released
     - CHANGES.rst
         - add an "Unreleased" section to the top.
-- push hg changes
+- push git changes
 - Update nedbatchelder.com
     - Blog post?
 - Update readthedocs
