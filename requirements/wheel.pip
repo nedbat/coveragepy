@@ -2,5 +2,5 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 # Things needed to make wheels for coverage.py
-setuptools==40.4.3
-wheel==0.32.1
+setuptools==40.5.0
+wheel==0.32.2
