@@ -75,7 +75,7 @@ Version 5.0a3 --- 2018-10-06
   value}`` will use "default value".
 
 - Partial support for Python 3.8, which has not yet released an alpha. Fixes
-  `issue 707` and `issue 714`_.
+  `issue 707`_ and `issue 714`_.
 
 .. _issue 707: https://github.com/nedbat/coveragepy/issues/707
 .. _issue 714: https://github.com/nedbat/coveragepy/issues/714
