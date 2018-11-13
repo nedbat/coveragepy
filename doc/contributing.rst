@@ -68,7 +68,7 @@ The tests are written as standard unittest-style tests, and are run with
 
     $ tox
     py27 develop-inst-noop: /Users/ned/coverage/trunk
-    py27 installed: apipkg==1.4,-e hg+ssh://hg@bitbucket.org/ned/coveragepy@6664140e34beddd6fee99b729bb9f4545a429c12#egg=coverage,covtestegg1==0.0.0,decorator==4.0.10,eventlet==0.19.0,execnet==1.4.1,funcsigs==1.0.2,gevent==1.1.2,greenlet==0.4.10,mock==2.0.0,pbr==1.10.0,py==1.4.31,PyContracts==1.7.12,pyparsing==2.1.10,pytest==3.0.5.dev0,pytest-warnings==0.2.0,pytest-xdist==1.15.0,six==1.10.0,unittest-mixins==1.1.1
+    py27 installed: apipkg==1.4,-e git+git@github.com:nedbat/coveragepy.git@6664140e34beddd6fee99b729bb9f4545a429c12#egg=coverage,covtestegg1==0.0.0,decorator==4.0.10,eventlet==0.19.0,execnet==1.4.1,funcsigs==1.0.2,gevent==1.1.2,greenlet==0.4.10,mock==2.0.0,pbr==1.10.0,py==1.4.31,PyContracts==1.7.12,pyparsing==2.1.10,pytest==3.0.5.dev0,pytest-warnings==0.2.0,pytest-xdist==1.15.0,six==1.10.0,unittest-mixins==1.1.1
     py27 runtests: PYTHONHASHSEED='4113423111'
     py27 runtests: commands[0] | python setup.py --quiet clean develop
     no previously-included directories found matching 'tests/eggsrc/dist'
@@ -88,7 +88,7 @@ The tests are written as standard unittest-style tests, and are run with
     ............ss................................................................................s..s.....s......s.........................s..........................................................................................s............................................................................................................s............................................................................................................................s...................................................................s........................................................................s............................................................................
     667 passed, 12 skipped in 41.87 seconds
     py35 develop-inst-noop: /Users/ned/coverage/trunk
-    py35 installed: apipkg==1.4,-e hg+ssh://hg@bitbucket.org/ned/coveragepy@6664140e34beddd6fee99b729bb9f4545a429c12#egg=coverage,covtestegg1==0.0.0,decorator==4.0.10,eventlet==0.19.0,execnet==1.4.1,gevent==1.1.2,greenlet==0.4.10,mock==2.0.0,pbr==1.10.0,py==1.4.31,PyContracts==1.7.12,pyparsing==2.1.10,pytest==3.0.5.dev0,pytest-warnings==0.2.0,pytest-xdist==1.15.0,six==1.10.0,unittest-mixins==1.1.1
+    py35 installed: apipkg==1.4,-e git+git@github.com@6664140e34beddd6fee99b729bb9f4545a429c12#egg=coverage,covtestegg1==0.0.0,decorator==4.0.10,eventlet==0.19.0,execnet==1.4.1,gevent==1.1.2,greenlet==0.4.10,mock==2.0.0,pbr==1.10.0,py==1.4.31,PyContracts==1.7.12,pyparsing==2.1.10,pytest==3.0.5.dev0,pytest-warnings==0.2.0,pytest-xdist==1.15.0,six==1.10.0,unittest-mixins==1.1.1
     py35 runtests: PYTHONHASHSEED='4113423111'
     py35 runtests: commands[0] | python setup.py --quiet clean develop
     no previously-included directories found matching 'tests/eggsrc/dist'
