@@ -1336,7 +1336,7 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
         """
         if env.METACOV:
-            self.skipTest("Can't test sub-process pth file suppport during metacoverage")
+            self.skipTest("Can't test sub-process pth file support during metacoverage")
 
         def fullname(modname):
             """What is the full module name for `modname` for this test?"""
