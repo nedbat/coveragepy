@@ -42,10 +42,9 @@ Coverage.py runs on many versions of Python:
 * IronPython 2.7.7, though not for reporting.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
-`Bitbucket`_, with a mirrored repository on `GitHub`_.
+`GitHub`_.
 
 .. _Read the Docs: https://coverage.readthedocs.io/
-.. _Bitbucket: https://bitbucket.org/ned/coveragepy
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 

@@ -106,7 +106,7 @@ setup_args = dict(
     keywords='code coverage testing',
     license='Apache 2.0',
     classifiers=classifier_list,
-    url="https://bitbucket.org/ned/coveragepy",
+    url="https://github.com/nedbat/coveragepy",
 
     python_requires=">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, <4",
 )
