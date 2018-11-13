@@ -778,35 +778,35 @@ TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try
 class EnvironmentTest(CoverageTest):
     """Tests using try_execfile.py to test the execution environment."""
 
-    def assert_tryexecfile_output(self, out1, out2):
+    def assert_tryexecfile_output(self, expected, actual):
         """Assert that the output we got is a successful run of try_execfile.py.
 
-        `out1` and `out2` must be the same, modulo a few slight known platform
-        differences.
+        `expected` and `actual` must be the same, modulo a few slight known
+        platform differences.
 
         """
         # First, is this even credible try_execfile.py output?
-        self.assertIn('"DATA": "xyzzy"', out1)
+        self.assertIn('"DATA": "xyzzy"', actual)
 
         if env.JYTHON:                  # pragma: only jython
             # Argv0 is different for Jython, remove that from the comparison.
-            out1 = re_lines(out1, r'\s+"argv0":', match=False)
-            out2 = re_lines(out2, r'\s+"argv0":', match=False)
+            expected = re_lines(expected, r'\s+"argv0":', match=False)
+            actual = re_lines(actual, r'\s+"argv0":', match=False)
 
-        self.assertMultiLineEqual(out1, out2)
+        self.assertMultiLineEqual(expected, actual)
 
     def test_coverage_run_is_like_python(self):
         with open(TRY_EXECFILE) as f:
             self.make_file("run_me.py", f.read())
-        out_cov = self.run_command("coverage run run_me.py")
-        out_py = self.run_command("python run_me.py")
-        self.assert_tryexecfile_output(out_cov, out_py)
+        expected = self.run_command("python run_me.py")
+        actual = self.run_command("coverage run run_me.py")
+        self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_is_like_python_dashm(self):
         # These -m commands assume the coverage tree is on the path.
-        out_cov = self.run_command("coverage run -m process_test.try_execfile")
-        out_py = self.run_command("python -m process_test.try_execfile")
-        self.assert_tryexecfile_output(out_cov, out_py)
+        expected = self.run_command("python -m process_test.try_execfile")
+        actual = self.run_command("coverage run -m process_test.try_execfile")
+        self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dir_is_like_python_dir(self):
         if env.PYVERSION == (3, 5, 4, 'final', 0):       # pragma: obscure
@@ -814,8 +814,8 @@ class EnvironmentTest(CoverageTest):
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
 
-        out_cov = self.run_command("coverage run with_main")
-        out_py = self.run_command("python with_main")
+        expected = self.run_command("python with_main")
+        actual = self.run_command("coverage run with_main")
 
         # The coverage.py results are not identical to the Python results, and
         # I don't know why.  For now, ignore those failures. If someone finds
@@ -826,9 +826,9 @@ class EnvironmentTest(CoverageTest):
         # the comparison also...
         if env.PYPY:
             ignored += "|"+re.escape(os.getcwd())
-        out_cov = re_lines(out_cov, ignored, match=False)
-        out_py = re_lines(out_py, ignored, match=False)
-        self.assert_tryexecfile_output(out_cov, out_py)
+        expected = re_lines(expected, ignored, match=False)
+        actual = re_lines(actual, ignored, match=False)
+        self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_equal_to_doubledashsource(self):
         """regression test for #328
@@ -837,20 +837,20 @@ class EnvironmentTest(CoverageTest):
         --source machinery to know and respect the original name.
         """
         # These -m commands assume the coverage tree is on the path.
-        out_cov = self.run_command(
+        expected = self.run_command("python -m process_test.try_execfile")
+        actual = self.run_command(
             "coverage run --source process_test.try_execfile -m process_test.try_execfile"
         )
-        out_py = self.run_command("python -m process_test.try_execfile")
-        self.assert_tryexecfile_output(out_cov, out_py)
+        self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_superset_of_doubledashsource(self):
         """Edge case: --source foo -m foo.bar"""
         # These -m commands assume the coverage tree is on the path.
-        out_cov = self.run_command(
+        expected = self.run_command("python -m process_test.try_execfile")
+        actual = self.run_command(
             "coverage run --source process_test -m process_test.try_execfile"
         )
-        out_py = self.run_command("python -m process_test.try_execfile")
-        self.assert_tryexecfile_output(out_cov, out_py)
+        self.assert_tryexecfile_output(expected, actual)
 
         st, out = self.run_command_status("coverage report")
         self.assertEqual(st, 0)
@@ -868,11 +868,9 @@ class EnvironmentTest(CoverageTest):
             """)
 
         # These -m commands assume the coverage tree is on the path.
-        out_cov = self.run_command(
-            "coverage run --source process_test myscript"
-        )
-        out_py = self.run_command("python myscript")
-        self.assert_tryexecfile_output(out_cov, out_py)
+        expected = self.run_command("python myscript")
+        actual = self.run_command("coverage run --source process_test myscript")
+        self.assert_tryexecfile_output(expected, actual)
 
         st, out = self.run_command_status("coverage report")
         self.assertEqual(st, 0)
@@ -884,9 +882,9 @@ class EnvironmentTest(CoverageTest):
         with open(TRY_EXECFILE) as f:
             self.make_file("sub/run_me.py", f.read())
 
-        out_cov = self.run_command("coverage run -m sub.run_me")
-        out_py = self.run_command("python -m sub.run_me")
-        self.assert_tryexecfile_output(out_cov, out_py)
+        expected = self.run_command("python -m sub.run_me")
+        actual = self.run_command("coverage run -m sub.run_me")
+        self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
         # https://bitbucket.org/ned/coveragepy/issue/207
