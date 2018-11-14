@@ -958,7 +958,7 @@ assert len(math) == 18
                 a = 4
             """)
 
-        self.make_file("extra.css", "/* Doesn't matter what goes in here, it gets copied. */")
+        self.make_file("extra.css", "/* Doesn't matter what goes in here, it gets copied. */\n")
 
         cov = coverage.Coverage()
         cov.start()
@@ -967,7 +967,7 @@ assert len(math) == 18
         cov.html_report(a, directory="out", extra_css="extra.css")
 
         compare_html(gold_path("html/gold_styled"), "out")
-        compare(gold_path("html/gold_styled"), "out", size_within=10, file_pattern="*.css")
+        compare(gold_path("html/gold_styled"), "out", file_pattern="*.css")
         contains(
             "out/a_py.html",
             '<link rel="stylesheet" href="extra.css" type="text/css">',
