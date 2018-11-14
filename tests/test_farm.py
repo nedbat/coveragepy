@@ -200,19 +200,13 @@ def versioned_directory(d):
 
 
 def compare(
-        expected_dir, actual_dir, file_pattern=None, size_within=0,
+        expected_dir, actual_dir, file_pattern=None,
         actual_extra=False, scrubs=None,
         ):
     """Compare files matching `file_pattern` in `expected_dir` and `actual_dir`.
 
     A version-specific subdirectory of `expected_dir` will be used if
     it exists.
-
-    `size_within` is a percentage delta for the file sizes.  If non-zero,
-    then the file contents are not compared (since they are expected to
-    often be different), but the file sizes must be within this amount.
-    For example, size_within=10 means that the two files' sizes must be
-    within 10 percent of each other to compare equal.
 
     `actual_extra` true means `actual_dir` can have extra files in it
     without triggering an assertion.
@@ -230,54 +224,29 @@ def compare(
     diff_files = fnmatch_list(dc.diff_files, file_pattern)
     expected_only = fnmatch_list(dc.left_only, file_pattern)
     actual_only = fnmatch_list(dc.right_only, file_pattern)
-    show_diff = True
 
-    if size_within:
-        # The files were already compared, use the diff_files list as a
-        # guide for size comparison.
-        wrong_size = []
-        for f in diff_files:
-            with open(os.path.join(expected_dir, f), "rb") as fobj:
-                expected = fobj.read()
-            with open(os.path.join(actual_dir, f), "rb") as fobj:
-                actual = fobj.read()
-            size_e, size_a = len(expected), len(actual)
-            big, little = max(size_e, size_a), min(size_e, size_a)
-            if (big - little) / float(little) > size_within/100.0:
-                # print "%d %d" % (big, little)
-                # print "expected: ---\n%s\n-----\n%s" % (expected, actual)
-                wrong_size.append("%s (%s,%s)" % (f, size_e, size_a))   # pragma: only failure
-        if wrong_size:
-            print("File sizes differ between %s and %s: %s" % (         # pragma: only failure
-                expected_dir, actual_dir, ", ".join(wrong_size)
-            ))
-
-        # We'll show the diff iff the files differed enough in size.
-        show_diff = bool(wrong_size)
-
-    if show_diff:
-        # filecmp only compares in binary mode, but we want text mode.  So
-        # look through the list of different files, and compare them
-        # ourselves.
-        text_diff = []
-        for f in diff_files:
-            expected_file = os.path.join(expected_dir, f)
-            actual_file = os.path.join(actual_dir, f)
-            with open(expected_file, READ_MODE) as fobj:
-                expected = fobj.read()
-            with open(actual_file, READ_MODE) as fobj:
-                actual = fobj.read()
-            if scrubs:
-                expected = scrub(expected, scrubs)
-                actual = scrub(actual, scrubs)
-            if expected != actual:                              # pragma: only failure
-                text_diff.append('%s != %s' % (expected_file, actual_file))
-                expected = expected.splitlines()
-                actual = actual.splitlines()
-                print(":::: diff {!r} and {!r}".format(expected_file, actual_file))
-                print("\n".join(difflib.Differ().compare(expected, actual)))
-                print(":::: end diff {!r} and {!r}".format(expected_file, actual_file))
-        assert not text_diff, "Files differ: %s" % '\n'.join(text_diff)
+    # filecmp only compares in binary mode, but we want text mode.  So
+    # look through the list of different files, and compare them
+    # ourselves.
+    text_diff = []
+    for f in diff_files:
+        expected_file = os.path.join(expected_dir, f)
+        actual_file = os.path.join(actual_dir, f)
+        with open(expected_file, READ_MODE) as fobj:
+            expected = fobj.read()
+        with open(actual_file, READ_MODE) as fobj:
+            actual = fobj.read()
+        if scrubs:
+            expected = scrub(expected, scrubs)
+            actual = scrub(actual, scrubs)
+        if expected != actual:                              # pragma: only failure
+            text_diff.append('%s != %s' % (expected_file, actual_file))
+            expected = expected.splitlines()
+            actual = actual.splitlines()
+            print(":::: diff {!r} and {!r}".format(expected_file, actual_file))
+            print("\n".join(difflib.Differ().compare(expected, actual)))
+            print(":::: end diff {!r} and {!r}".format(expected_file, actual_file))
+    assert not text_diff, "Files differ: %s" % '\n'.join(text_diff)
 
     assert not expected_only, "Files in %s only: %s" % (expected_dir, expected_only)
     if not actual_extra:
