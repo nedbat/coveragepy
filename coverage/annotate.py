@@ -49,6 +49,7 @@ class AnnotateReporter(Reporter):
         See `coverage.report()` for arguments.
 
         """
+        self.coverage.get_data()
         self.report_files(self.annotate_file, morfs, directory)
 
     def annotate_file(self, fr, analysis):
