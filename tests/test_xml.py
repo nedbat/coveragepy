@@ -335,11 +335,8 @@ class XmlGoldTest(CoverageTest):
             """)
 
         cov = coverage.Coverage()
-        cov.start()
-        import a            # pragma: nested # pylint: disable=import-error
-        cov.stop()          # pragma: nested
+        a = self.start_import_stop(cov, "a")
         cov.xml_report(a, outfile="coverage.xml")
-
         compare_xml(gold_path("html/gold_x_xml"), ".", actual_extra=True)
 
     def test_a_xml_2(self):
@@ -358,9 +355,7 @@ class XmlGoldTest(CoverageTest):
             """)
 
         cov = coverage.Coverage(config_file="run_a_xml_2.ini")
-        cov.start()
-        import a            # pragma: nested # pylint: disable=import-error
-        cov.stop()          # pragma: nested
+        a = self.start_import_stop(cov, "a")
         cov.xml_report(a)
         compare_xml(gold_path("html/gold_x_xml"), "xml_2")
 
@@ -376,8 +371,6 @@ class XmlGoldTest(CoverageTest):
             """)
 
         cov = coverage.Coverage(branch=True)
-        cov.start()
-        import y            # pragma: nested # pylint: disable=import-error
-        cov.stop()          # pragma: nested
+        y = self.start_import_stop(cov, "y")
         cov.xml_report(y, outfile="y_xml_branch/coverage.xml")
         compare_xml(gold_path("html/gold_y_xml_branch"), "y_xml_branch")

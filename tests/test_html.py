@@ -619,9 +619,7 @@ class HtmlGoldTests(CoverageTest):
             """)
 
         cov = coverage.Coverage()
-        cov.start()
-        import a            # pragma: nested # pylint: disable=import-error
-        cov.stop()          # pragma: nested
+        a = self.start_import_stop(cov, "a")
         cov.html_report(a, directory='out')
 
         compare_html(gold_path("html/gold_a"), "out")
@@ -672,9 +670,7 @@ class HtmlGoldTests(CoverageTest):
             """)
 
         cov = coverage.Coverage(branch=True)
-        cov.start()
-        import b            # pragma: nested # pylint: disable=import-error
-        cov.stop()          # pragma: nested
+        b = self.start_import_stop(cov, "b")
         cov.html_report(b, directory="out")
 
         compare_html(gold_path("html/gold_b_branch"), "out")
@@ -731,9 +727,7 @@ else:
             assert data.count(b"\r\n") == 11
 
         cov = coverage.Coverage()
-        cov.start()
-        import bom          # pragma: nested # pylint: disable=import-error
-        cov.stop()          # pragma: nested
+        bom = self.start_import_stop(cov, "bom")
         cov.html_report(bom, directory="out")
 
         compare_html(gold_path("html/gold_bom"), "out")
@@ -752,9 +746,7 @@ assert len(math) == 18
 """)
 
         cov = coverage.Coverage()
-        cov.start()
-        import isolatin1            # pragma: nested # pylint: disable=import-error
-        cov.stop()                  # pragma: nested
+        isolatin1 = self.start_import_stop(cov, "isolatin1")
         cov.html_report(isolatin1, directory="out")
 
         compare_html(gold_path("html/gold_isolatin1"), "out")
@@ -792,35 +784,23 @@ assert len(math) == 18
 
     def test_omit_1(self):
         self.make_main_etc()
-
         cov = coverage.Coverage(include=["./*"])
-        cov.start()
-        import main         # pragma: nested # pylint: disable=unused-variable, import-error
-        cov.stop()          # pragma: nested
+        self.start_import_stop(cov, "main")
         cov.html_report(directory="out")
-
         compare_html(gold_path("html/gold_omit_1"), "out")
 
     def test_omit_2(self):
         self.make_main_etc()
-
         cov = coverage.Coverage(include=["./*"])
-        cov.start()
-        import main         # pragma: nested # pylint: disable=unused-variable, import-error
-        cov.stop()          # pragma: nested
+        self.start_import_stop(cov, "main")
         cov.html_report(directory="out", omit=["m1.py"])
-
         compare_html(gold_path("html/gold_omit_2"), "out")
 
     def test_omit_3(self):
         self.make_main_etc()
-
         cov = coverage.Coverage(include=["./*"])
-        cov.start()
-        import main         # pragma: nested # pylint: disable=unused-variable, import-error
-        cov.stop()          # pragma: nested
+        self.start_import_stop(cov, "main")
         cov.html_report(directory="out", omit=["m1.py", "m2.py"])
-
         compare_html(gold_path("html/gold_omit_3"), "out")
 
     def test_omit_4(self):
@@ -831,11 +811,8 @@ assert len(math) == 18
             """)
 
         cov = coverage.Coverage(config_file="omit4.ini", include=["./*"])
-        cov.start()
-        import main         # pragma: nested # pylint: disable=unused-variable, import-error
-        cov.stop()          # pragma: nested
+        self.start_import_stop(cov, "main")
         cov.html_report(directory="out")
-
         compare_html(gold_path("html/gold_omit_4"), "out")
 
     def test_omit_5(self):
@@ -852,11 +829,8 @@ assert len(math) == 18
             """)
 
         cov = coverage.Coverage(config_file="omit5.ini", include=["./*"])
-        cov.start()
-        import main         # pragma: nested # pylint: disable=unused-variable, import-error
-        cov.stop()          # pragma: nested
+        self.start_import_stop(cov, "main")
         cov.html_report()
-
         compare_html(gold_path("html/gold_omit_5"), "out/omit_5")
 
     def test_other(self):
@@ -879,9 +853,7 @@ assert len(math) == 18
             sys.path.insert(0, "")          # pytest sometimes has this, sometimes not!?
             sys.path.insert(0, "../othersrc")
             cov = coverage.Coverage(include=["./*", "../othersrc/*"])
-            cov.start()
-            import here         # pragma: nested # pylint: disable=unused-variable, import-error
-            cov.stop()          # pragma: nested
+            self.start_import_stop(cov, "here")
             cov.html_report(directory="../out")
 
         # Different platforms will name the "other" file differently. Rename it
@@ -925,9 +897,7 @@ assert len(math) == 18
             """)
 
         cov = coverage.Coverage(config_file="partial.ini")
-        cov.start()
-        import partial          # pragma: nested # pylint: disable=import-error
-        cov.stop()              # pragma: nested
+        partial = self.start_import_stop(cov, "partial")
         cov.html_report(partial, directory="out")
 
         compare_html(gold_path("html/gold_partial"), "out")
@@ -961,9 +931,7 @@ assert len(math) == 18
         self.make_file("extra.css", "/* Doesn't matter what goes in here, it gets copied. */\n")
 
         cov = coverage.Coverage()
-        cov.start()
-        import a            # pragma: nested # pylint: disable=import-error
-        cov.stop()          # pragma: nested
+        a = self.start_import_stop(cov, "a")
         cov.html_report(a, directory="out", extra_css="extra.css")
 
         compare_html(gold_path("html/gold_styled"), "out")
@@ -1002,9 +970,7 @@ assert len(math) == 18
             """)
 
         cov = coverage.Coverage()
-        cov.start()
-        import tabbed           # pragma: nested # pylint: disable=import-error
-        cov.stop()              # pragma: nested
+        tabbed = self.start_import_stop(cov, "tabbed")
         cov.html_report(tabbed, directory="out")
 
         # Editors like to change things, make sure our source file still has tabs.
@@ -1031,9 +997,7 @@ assert len(math) == 18
 
         # pylint: disable=import-error, redefined-builtin
         cov = coverage.Coverage()
-        cov.start()
-        import unicode          # pragma: nested
-        cov.stop()              # pragma: nested
+        unicode = self.start_import_stop(cov, "unicode")
         cov.html_report(unicode, directory="out")
 
         compare_html(gold_path("html/gold_unicode"), "out")
