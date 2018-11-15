@@ -520,14 +520,18 @@ class CoverageScript(object):
         if options.action == "report":
             total = self.coverage.report(
                 show_missing=options.show_missing,
-                skip_covered=options.skip_covered, **report_args)
+                skip_covered=options.skip_covered,
+                **report_args
+                )
         elif options.action == "annotate":
-            self.coverage.annotate(
-                directory=options.directory, **report_args)
+            self.coverage.annotate(directory=options.directory, **report_args)
         elif options.action == "html":
             total = self.coverage.html_report(
-                directory=options.directory, title=options.title,
-                skip_covered=options.skip_covered, **report_args)
+                directory=options.directory,
+                title=options.title,
+                skip_covered=options.skip_covered,
+                **report_args
+                )
         elif options.action == "xml":
             outfile = options.outfile
             total = self.coverage.xml_report(outfile=outfile, **report_args)
