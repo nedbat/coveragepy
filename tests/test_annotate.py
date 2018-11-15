@@ -14,9 +14,6 @@ class AnnotationGoldTest1(CoverageTest):
 
     def make_multi(self):
         self.make_file("multi.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             import a.a
             import b.b
 
@@ -25,9 +22,6 @@ class AnnotationGoldTest1(CoverageTest):
             """)
         self.make_file("a/__init__.py")
         self.make_file("a/a.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             def a(x):
                 if x == 1:
                     print("x is 1")
@@ -36,9 +30,6 @@ class AnnotationGoldTest1(CoverageTest):
             """)
         self.make_file("b/__init__.py")
         self.make_file("b/b.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             def b(x):
                 msg = "x is %s" % x
                 print(msg)
@@ -63,9 +54,6 @@ class AnnotationGoldTest1(CoverageTest):
     def test_encoding(self):
         self.make_file("utf8.py", """\
             # -*- coding: utf-8 -*-
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             # This comment has an accent: é
 
             print("spam eggs")
@@ -77,9 +65,6 @@ class AnnotationGoldTest1(CoverageTest):
 
     def test_white(self):
         self.make_file("white.py", """\
-            # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-            # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
-
             # A test case sent to me by Steve White
 
             def f(self):
