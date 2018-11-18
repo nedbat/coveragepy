@@ -564,6 +564,22 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.assertEqual(self.line_count(report), 3)
         self.assertIn('No data to report.', report)
 
+    def test_report_no_extension(self):
+        self.make_file("xxx", """\
+            # This is a python file though it doesn't look like it, like a main script.
+            a = b = c = d = 0
+            a = 3
+            b = 4
+            if not b:
+                c = 6
+            d = 7
+            print("xxx: %r %r %r %r" % (a, b, c, d))
+            """)
+        out = self.run_command("coverage run xxx")
+        self.assertEqual(out, "xxx: 3 4 0 7\n")
+        report = self.report_from_command("coverage report")
+        self.assertEqual(self.last_line_squeezed(report), "xxx 7 1 86%")
+
     def get_report(self, cov):
         """Get the report from `cov`, and canonicalize it."""
         repout = StringIO()
