@@ -627,6 +627,65 @@ class ProcessTest(CoverageTest):
 
         self.assertIn("Trace function changed", out)
 
+    def test_timid(self):
+        # Test that the --timid command line argument properly swaps the tracer
+        # function for a simpler one.
+        #
+        # This is complicated by the fact that the tests are run twice for each
+        # version: once with a compiled C-based trace function, and once without
+        # it, to also test the Python trace function.  So this test has to examine
+        # an environment variable set in igor.py to know whether to expect to see
+        # the C trace function or not.
+
+        # When meta-coverage testing, this test doesn't work, because it finds
+        # coverage.py's own trace function.
+        if os.environ.get('COVERAGE_COVERAGE', ''):
+            self.skipTest("Can't test timid during coverage measurement.")
+
+        self.make_file("showtrace.py", """\
+            # Show the current frame's trace function, so that we can test what the
+            # command-line options do to the trace function used.
+
+            import sys
+
+            # Show what the trace function is.  If a C-based function is used, then f_trace
+            # may be None.
+            trace_fn = sys._getframe(0).f_trace
+            if trace_fn is None:
+                trace_name = "None"
+            else:
+                # Get the name of the tracer class.  Py3k has a different way to get it.
+                try:
+                    trace_name = trace_fn.im_class.__name__
+                except AttributeError:
+                    try:
+                        trace_name = trace_fn.__self__.__class__.__name__
+                    except AttributeError:
+                        # A C-based function could also manifest as an f_trace value
+                        # which doesn't have im_class or __self__.
+                        trace_name = trace_fn.__class__.__name__
+
+            print(trace_name)
+            """)
+
+        # When running without coverage, no trace function
+        py_out = self.run_command("python showtrace.py")
+        self.assertEqual(py_out, "None\n")
+
+        cov_out = self.run_command("coverage run showtrace.py")
+        if os.environ.get('COVERAGE_TEST_TRACER', 'c') == 'c':
+            # If the C trace function is being tested, then regular running should have
+            # the C function, which registers itself as f_trace.
+            self.assertEqual(cov_out, "CTracer\n")
+        else:
+            # If the Python trace function is being tested, then regular running will
+            # also show the Python function.
+            self.assertEqual(cov_out, "PyTracer\n")
+
+        # When running timidly, the trace function is always Python.
+        timid_out = self.run_command("coverage run --timid showtrace.py")
+        self.assertEqual(timid_out, "PyTracer\n")
+
     def test_warn_preimported(self):
         self.make_file("hello.py", """\
             import goodbye
