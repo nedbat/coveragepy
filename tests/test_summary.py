@@ -580,6 +580,20 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report = self.report_from_command("coverage report")
         self.assertEqual(self.last_line_squeezed(report), "xxx 7 1 86%")
 
+    def test_report_with_chdir(self):
+        self.make_file("chdir.py", """\
+            import os
+            print("Line One")
+            os.chdir("subdir")
+            print("Line Two")
+            print(open("something").read())
+            """)
+        self.make_file("subdir/something", "hello")
+        out = self.run_command("coverage run chdir.py")
+        self.assertEqual(out, "Line One\nLine Two\nhello\n")
+        report = self.report_from_command("coverage report")
+        self.assertEqual(self.last_line_squeezed(report), "chdir.py 5 0 100%")
+
     def get_report(self, cov):
         """Get the report from `cov`, and canonicalize it."""
         repout = StringIO()
