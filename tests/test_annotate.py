@@ -11,8 +11,10 @@ from tests.goldtest import compare, gold_path
 
 
 class AnnotationGoldTest1(CoverageTest):
+    """Test the annotate feature with gold files."""
 
     def make_multi(self):
+        """Make a few source files we need for the tests."""
         self.make_file("multi.py", """\
             import a.a
             import b.b

@@ -995,10 +995,9 @@ assert len(math) == 18
             surrogate = "db40,dd00: x󠄀"
             """)
 
-        # pylint: disable=import-error, redefined-builtin
         cov = coverage.Coverage()
-        unicode = self.start_import_stop(cov, "unicode")
-        cov.html_report(unicode, directory="out")
+        unimod = self.start_import_stop(cov, "unicode")
+        cov.html_report(unimod, directory="out")
 
         compare_html(gold_path("html/unicode"), "out")
         contains(
