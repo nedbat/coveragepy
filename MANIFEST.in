@@ -36,7 +36,6 @@ recursive-include requirements *.pip
 
 recursive-include tests *.py *.tok
 recursive-include tests/farm */gold*/*.* */gold*/*/*.*
-recursive-include tests/farm/*/src * *.*
 recursive-include tests js/*.* qunit/*.*
 prune tests/eggsrc/build
 

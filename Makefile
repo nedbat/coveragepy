@@ -10,8 +10,6 @@ clean:
 	-pip uninstall -y coverage
 	-rm -f *.pyd */*.pyd
 	-rm -f *.so */*.so
-	-PYTHONPATH=. python tests/test_farm.py clean
-	-rm -rf tests/farm/*/out
 	-rm -rf build coverage.egg-info dist htmlcov
 	-rm -rf __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__ */*/*/*/__pycache__ */*/*/*/*/__pycache__
 	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
