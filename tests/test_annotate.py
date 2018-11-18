@@ -41,7 +41,7 @@ class AnnotationGoldTest1(CoverageTest):
         self.start_import_stop(cov, "multi")
         cov.annotate()
 
-        compare(gold_path("annotate/gold_multi"), ".", "*,cover")
+        compare(gold_path("annotate/multi"), ".", "*,cover")
 
     def test_annotate_dir(self):
         self.make_multi()
@@ -49,7 +49,7 @@ class AnnotationGoldTest1(CoverageTest):
         self.start_import_stop(cov, "multi")
         cov.annotate(directory="out_anno_dir")
 
-        compare(gold_path("annotate/gold_anno_dir"), "out_anno_dir", "*,cover")
+        compare(gold_path("annotate/anno_dir"), "out_anno_dir", "*,cover")
 
     def test_encoding(self):
         self.make_file("utf8.py", """\
@@ -61,7 +61,7 @@ class AnnotationGoldTest1(CoverageTest):
         cov = coverage.Coverage()
         self.start_import_stop(cov, "utf8")
         cov.annotate()
-        compare(gold_path("annotate/gold_encodings"), ".", "*,cover")
+        compare(gold_path("annotate/encodings"), ".", "*,cover")
 
     def test_white(self):
         self.make_file("white.py", """\
@@ -103,4 +103,4 @@ class AnnotationGoldTest1(CoverageTest):
         cov = coverage.Coverage()
         self.start_import_stop(cov, "white")
         cov.annotate()
-        compare(gold_path("annotate/gold"), ".", "*,cover")
+        compare(gold_path("annotate/annotate"), ".", "*,cover")

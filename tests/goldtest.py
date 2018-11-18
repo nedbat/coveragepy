@@ -20,7 +20,7 @@ from tests.coveragetest import TESTS_DIR
 
 def gold_path(path):
     """Get a path to a gold file for comparison."""
-    return os.path.join(TESTS_DIR, "farm", path)
+    return os.path.join(TESTS_DIR, "gold", path)
 
 
 # "rU" was deprecated in 3.4

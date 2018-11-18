@@ -337,7 +337,7 @@ class XmlGoldTest(CoverageTest):
         cov = coverage.Coverage()
         a = self.start_import_stop(cov, "a")
         cov.xml_report(a, outfile="coverage.xml")
-        compare_xml(gold_path("html/gold_x_xml"), ".", actual_extra=True)
+        compare_xml(gold_path("xml/x_xml"), ".", actual_extra=True)
 
     def test_a_xml_2(self):
         self.make_file("a.py", """\
@@ -357,7 +357,7 @@ class XmlGoldTest(CoverageTest):
         cov = coverage.Coverage(config_file="run_a_xml_2.ini")
         a = self.start_import_stop(cov, "a")
         cov.xml_report(a)
-        compare_xml(gold_path("html/gold_x_xml"), "xml_2")
+        compare_xml(gold_path("xml/x_xml"), "xml_2")
 
     def test_y_xml_branch(self):
         self.make_file("y.py", """\
@@ -373,4 +373,4 @@ class XmlGoldTest(CoverageTest):
         cov = coverage.Coverage(branch=True)
         y = self.start_import_stop(cov, "y")
         cov.xml_report(y, outfile="y_xml_branch/coverage.xml")
-        compare_xml(gold_path("html/gold_y_xml_branch"), "y_xml_branch")
+        compare_xml(gold_path("xml/y_xml_branch"), "y_xml_branch")
