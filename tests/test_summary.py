@@ -575,7 +575,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             d = 7
             print("xxx: %r %r %r %r" % (a, b, c, d))
             """)
-        out = self.run_command("coverage run xxx")
+        out = self.run_command("coverage run --source=. xxx")
         self.assertEqual(out, "xxx: 3 4 0 7\n")
         report = self.report_from_command("coverage report")
         self.assertEqual(self.last_line_squeezed(report), "xxx 7 1 86%")
@@ -589,7 +589,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             print(open("something").read())
             """)
         self.make_file("subdir/something", "hello")
-        out = self.run_command("coverage run chdir.py")
+        out = self.run_command("coverage run --source=. chdir.py")
         self.assertEqual(out, "Line One\nLine Two\nhello\n")
         report = self.report_from_command("coverage report")
         self.assertEqual(self.last_line_squeezed(report), "chdir.py 5 0 100%")
