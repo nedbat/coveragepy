@@ -155,13 +155,15 @@ class InOrOut(object):
             if _structseq and not hasattr(_structseq, '__file__'):
                 # PyPy 2.4 has no __file__ in the builtin modules, but the code
                 # objects still have the file names.  So dig into one to find
-                # the path to exclude.
+                # the path to exclude.  The "filename" might be synthetic,
+                # don't be fooled by those.
                 structseq_new = _structseq.structseq_new
                 try:
                     structseq_file = structseq_new.func_code.co_filename
                 except AttributeError:
                     structseq_file = structseq_new.__code__.co_filename
-                self.pylib_paths.add(canonical_path(structseq_file))
+                if not structseq_file.startswith("<"):
+                    self.pylib_paths.add(canonical_path(structseq_file))
 
         # To avoid tracing the coverage.py code itself, we skip anything
         # located where we are.
