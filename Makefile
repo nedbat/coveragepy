@@ -65,7 +65,7 @@ metahtml:
 # Kitting
 
 kit:
-	python setup.py sdist --formats=gztar
+	python setup.py sdist
 
 wheel:
 	tox -c tox_wheels.ini $(ARGS)
