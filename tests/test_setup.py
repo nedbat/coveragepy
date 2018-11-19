@@ -40,6 +40,8 @@ class SetupPyTest(CoverageTest):
         classifiers = setup_args['classifiers']
         self.assertGreater(len(classifiers), 7)
         self.assert_starts_with(classifiers[-1], "Development Status ::")
+        self.assertIn("Programming Language :: Python :: %d" % sys.version_info[:1], classifiers)
+        self.assertIn("Programming Language :: Python :: %d.%d" % sys.version_info[:2], classifiers)
 
         long_description = setup_args['long_description'].splitlines()
         self.assertGreater(len(long_description), 7)
