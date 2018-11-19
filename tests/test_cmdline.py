@@ -71,7 +71,7 @@ class BaseCmdLineTest(CoverageTest):
         return mk
 
     # Global names in cmdline.py that will be mocked during the tests.
-    MOCK_GLOBALS = ['Coverage', 'run_python_file', 'run_python_module']
+    MOCK_GLOBALS = ['Coverage', 'PyRunner']
 
     def mock_command_line(self, args, options=None):
         """Run `args` through the command line, with a Mock.
@@ -371,98 +371,113 @@ class CmdLineTest(BaseCmdLineTest):
         # run calls coverage.erase first.
         self.cmd_executes("run foo.py", """\
             cov = Coverage()
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         # run -a combines with an existing data file before saving.
         self.cmd_executes("run -a foo.py", """\
             cov = Coverage()
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.load()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
-            cov.stop()
-            cov.save()
-            """)
-        # run -a doesn't combine anything if the data file doesn't exist.
-        self.cmd_executes("run -a foo.py", """\
-            cov = Coverage()
-            cov.load()
-            cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         # --timid sets a flag, and program arguments get passed through.
         self.cmd_executes("run --timid foo.py abc 123", """\
             cov = Coverage(timid=True)
+            runner = PyRunner(['foo.py', 'abc', '123'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py', 'abc', '123'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         # -L sets a flag, and flags for the program don't confuse us.
         self.cmd_executes("run -p -L foo.py -a -b", """\
             cov = Coverage(cover_pylib=True, data_suffix=True)
+            runner = PyRunner(['foo.py', '-a', '-b'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py', '-a', '-b'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --branch foo.py", """\
             cov = Coverage(branch=True)
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --rcfile=myrc.rc foo.py", """\
             cov = Coverage(config_file="myrc.rc")
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --include=pre1,pre2 foo.py", """\
             cov = Coverage(include=["pre1", "pre2"])
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --omit=opre1,opre2 foo.py", """\
             cov = Coverage(omit=["opre1", "opre2"])
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --include=pre1,pre2 --omit=opre1,opre2 foo.py", """\
             cov = Coverage(include=["pre1", "pre2"], omit=["opre1", "opre2"])
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --source=quux,hi.there,/home/bar foo.py", """\
             cov = Coverage(source=["quux", "hi.there", "/home/bar"])
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --concurrency=gevent foo.py", """\
             cov = Coverage(concurrency='gevent')
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --concurrency=multiprocessing foo.py", """\
             cov = Coverage(concurrency='multiprocessing')
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
@@ -497,15 +512,19 @@ class CmdLineTest(BaseCmdLineTest):
     def test_run_debug(self):
         self.cmd_executes("run --debug=opt1 foo.py", """\
             cov = Coverage(debug=["opt1"])
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --debug=opt1,opt2 foo.py", """\
             cov = Coverage(debug=["opt1","opt2"])
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('foo.py', ['foo.py'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
@@ -513,22 +532,28 @@ class CmdLineTest(BaseCmdLineTest):
     def test_run_module(self):
         self.cmd_executes("run -m mymodule", """\
             cov = Coverage()
+            runner = PyRunner(['mymodule'], as_module=True)
+            runner.prepare()
             cov.start()
-            run_python_module('mymodule', ['mymodule'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run -m mymodule -qq arg1 arg2", """\
             cov = Coverage()
+            runner = PyRunner(['mymodule', '-qq', 'arg1', 'arg2'], as_module=True)
+            runner.prepare()
             cov.start()
-            run_python_module('mymodule', ['mymodule', '-qq', 'arg1', 'arg2'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
         self.cmd_executes("run --branch -m mymodule", """\
             cov = Coverage(branch=True)
+            runner = PyRunner(['mymodule'], as_module=True)
+            runner.prepare()
             cov.start()
-            run_python_module('mymodule', ['mymodule'])
+            runner.run()
             cov.stop()
             cov.save()
             """)
@@ -542,8 +567,10 @@ class CmdLineTest(BaseCmdLineTest):
         options = {"run:command_line": "myprog.py a 123 'a quoted thing' xyz"}
         self.cmd_executes("run", """\
             cov = Coverage()
+            runner = PyRunner(['myprog.py', 'a', '123', 'a quoted thing', 'xyz'], as_module=False)
+            runner.prepare()
             cov.start()
-            run_python_file('myprog.py', ['myprog.py', 'a', '123', 'a quoted thing', 'xyz'])
+            runner.run()
             cov.stop()
             cov.save()
             """,
@@ -553,8 +580,10 @@ class CmdLineTest(BaseCmdLineTest):
     def test_run_module_from_config(self):
         self.cmd_executes("run", """\
             cov = Coverage()
+            runner = PyRunner(['mymodule', 'thing1', 'thing2'], as_module=True)
+            runner.prepare()
             cov.start()
-            run_python_module('mymodule', ['mymodule', 'thing1', 'thing2'])
+            runner.run()
             cov.stop()
             cov.save()
             """,

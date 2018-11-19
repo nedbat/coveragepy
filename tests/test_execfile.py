@@ -23,7 +23,7 @@ class RunFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
 
     def test_run_python_file(self):
-        run_python_file(TRY_EXECFILE, [TRY_EXECFILE, "arg1", "arg2"])
+        run_python_file([TRY_EXECFILE, "arg1", "arg2"])
         mod_globs = json.loads(self.stdout())
 
         # The file should think it is __main__
@@ -56,7 +56,7 @@ class RunFileTest(CoverageTest):
             """)
 
         self.assertEqual(os.listdir("."), ["xxx"])
-        run_python_file("xxx", ["xxx"])
+        run_python_file(["xxx"])
         self.assertEqual(os.listdir("."), ["xxx"])
 
     def test_universal_newlines(self):
@@ -65,7 +65,7 @@ class RunFileTest(CoverageTest):
         for nl in ('\n', '\r\n', '\r'):
             with open('nl.py', 'wb') as fpy:
                 fpy.write(nl.join(pylines).encode('utf-8'))
-            run_python_file('nl.py', ['nl.py'])
+            run_python_file(['nl.py'])
         self.assertEqual(self.stdout(), "Hello, world!\n"*3)
 
     def test_missing_final_newline(self):
@@ -78,24 +78,24 @@ class RunFileTest(CoverageTest):
         with open("abrupt.py") as f:
             abrupt = f.read()
         self.assertEqual(abrupt[-1], '#')
-        run_python_file("abrupt.py", ["abrupt.py"])
+        run_python_file(["abrupt.py"])
         self.assertEqual(self.stdout(), "a is 1\n")
 
     def test_no_such_file(self):
         with self.assertRaises(NoSource):
-            run_python_file("xyzzy.py", [])
+            run_python_file(["xyzzy.py"])
 
     def test_directory_with_main(self):
         self.make_file("with_main/__main__.py", """\
             print("I am __main__")
             """)
-        run_python_file("with_main", ["with_main"])
+        run_python_file(["with_main"])
         self.assertEqual(self.stdout(), "I am __main__\n")
 
     def test_directory_without_main(self):
         self.make_file("without_main/__init__.py", "")
         with self.assertRaisesRegex(NoSource, "Can't find '__main__' module in 'without_main'"):
-            run_python_file("without_main", ["without_main"])
+            run_python_file(["without_main"])
 
 
 class RunPycFileTest(CoverageTest):
@@ -123,7 +123,7 @@ class RunPycFileTest(CoverageTest):
 
     def test_running_pyc(self):
         pycfile = self.make_pyc()
-        run_python_file(pycfile, [pycfile])
+        run_python_file([pycfile])
         self.assertEqual(self.stdout(), "I am here!\n")
 
     def test_running_pyo(self):
@@ -131,7 +131,7 @@ class RunPycFileTest(CoverageTest):
         pyofile = re.sub(r"[.]pyc$", ".pyo", pycfile)
         self.assertNotEqual(pycfile, pyofile)
         os.rename(pycfile, pyofile)
-        run_python_file(pyofile, [pyofile])
+        run_python_file([pyofile])
         self.assertEqual(self.stdout(), "I am here!\n")
 
     def test_running_pyc_from_wrong_python(self):
@@ -143,11 +143,11 @@ class RunPycFileTest(CoverageTest):
             fpyc.write(binary_bytes([0x2a, 0xeb, 0x0d, 0x0a]))
 
         with self.assertRaisesRegex(NoCode, "Bad magic number in .pyc file"):
-            run_python_file(pycfile, [pycfile])
+            run_python_file([pycfile])
 
     def test_no_such_pyc_file(self):
         with self.assertRaisesRegex(NoCode, "No file to run: 'xyzzy.pyc'"):
-            run_python_file("xyzzy.pyc", [])
+            run_python_file(["xyzzy.pyc"])
 
     def test_running_py_from_binary(self):
         # Use make_file to get the bookkeeping. Ideally, it would
@@ -166,7 +166,7 @@ class RunPycFileTest(CoverageTest):
             r")"
         )
         with self.assertRaisesRegex(Exception, msg):
-            run_python_file(bf, [bf])
+            run_python_file([bf])
 
 
 class RunModuleTest(UsingModulesMixin, CoverageTest):
@@ -175,43 +175,43 @@ class RunModuleTest(UsingModulesMixin, CoverageTest):
     run_in_temp_dir = False
 
     def test_runmod1(self):
-        run_python_module("runmod1", ["runmod1", "hello"])
+        run_python_module(["runmod1", "hello"])
         self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "runmod1: passed hello\n")
 
     def test_runmod2(self):
-        run_python_module("pkg1.runmod2", ["runmod2", "hello"])
+        run_python_module(["pkg1.runmod2", "hello"])
         self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "pkg1.__init__: pkg1\nrunmod2: passed hello\n")
 
     def test_runmod3(self):
-        run_python_module("pkg1.sub.runmod3", ["runmod3", "hello"])
+        run_python_module(["pkg1.sub.runmod3", "hello"])
         self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "pkg1.__init__: pkg1\nrunmod3: passed hello\n")
 
     def test_pkg1_main(self):
-        run_python_module("pkg1", ["pkg1", "hello"])
+        run_python_module(["pkg1", "hello"])
         self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "pkg1.__init__: pkg1\npkg1.__main__: passed hello\n")
 
     def test_pkg1_sub_main(self):
-        run_python_module("pkg1.sub", ["pkg1.sub", "hello"])
+        run_python_module(["pkg1.sub", "hello"])
         self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "pkg1.__init__: pkg1\npkg1.sub.__main__: passed hello\n")
 
     def test_pkg1_init(self):
-        run_python_module("pkg1.__init__", ["pkg1.__init__", "wut?"])
+        run_python_module(["pkg1.__init__", "wut?"])
         self.assertEqual(self.stderr(), "")
         self.assertEqual(self.stdout(), "pkg1.__init__: pkg1\npkg1.__init__: __main__\n")
 
     def test_no_such_module(self):
         with self.assertRaises(NoSource):
-            run_python_module("i_dont_exist", [])
+            run_python_module(["i_dont_exist"])
         with self.assertRaises(NoSource):
-            run_python_module("i.dont_exist", [])
+            run_python_module(["i.dont_exist"])
         with self.assertRaises(NoSource):
-            run_python_module("i.dont.exist", [])
+            run_python_module(["i.dont.exist"])
 
     def test_no_main(self):
         with self.assertRaises(NoSource):
-            run_python_module("pkg2", ["pkg2", "hi"])
+            run_python_module(["pkg2", "hi"])

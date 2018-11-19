@@ -861,6 +861,13 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
 
+    def test_coverage_run_far_away_is_like_python(self):
+        with open(TRY_EXECFILE) as f:
+            self.make_file("sub/overthere/prog.py", f.read())
+        expected = self.run_command("python sub/overthere/prog.py")
+        actual = self.run_command("coverage run sub/overthere/prog.py")
+        self.assert_tryexecfile_output(expected, actual)
+
     def test_coverage_run_dashm_is_like_python_dashm(self):
         # These -m commands assume the coverage tree is on the path.
         expected = self.run_command("python -m process_test.try_execfile")
@@ -904,6 +911,17 @@ class EnvironmentTest(CoverageTest):
 
     def test_coverage_run_dashm_superset_of_doubledashsource(self):
         """Edge case: --source foo -m foo.bar"""
+        # Ugh: without this config file, we'll get a warning about
+        #   Coverage.py warning: Module process_test was previously imported,
+        #   but not measured (module-not-measured)
+        #
+        # This is because process_test/__init__.py is imported while looking
+        # for process_test.try_execfile.  That import happens while setting
+        # sys.path before start() is called.
+        self.make_file(".coveragerc", """\
+            [run]
+            disable_warnings = module-not-measured
+            """)
         # These -m commands assume the coverage tree is on the path.
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(

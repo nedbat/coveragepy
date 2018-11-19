@@ -19,7 +19,7 @@ from coverage import env
 from coverage.collector import CTracer
 from coverage.data import line_counts
 from coverage.debug import info_formatter, info_header
-from coverage.execfile import run_python_file, run_python_module
+from coverage.execfile import PyRunner
 from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.results import should_fail_under
 
@@ -504,6 +504,10 @@ class CoverageScript(object):
             include=include,
             )
 
+        # We need to be able to import from the current directory, because
+        # plugins may try to, for example, to read Django settings.
+        sys.path.insert(0, '')
+
         self.coverage.load()
 
         total = None
@@ -633,6 +637,9 @@ class CoverageScript(object):
                     )
                     return ERR
 
+        runner = PyRunner(args, as_module=bool(options.module))
+        runner.prepare()
+
         if options.append:
             self.coverage.load()
 
@@ -640,10 +647,7 @@ class CoverageScript(object):
         self.coverage.start()
         code_ran = True
         try:
-            if options.module:
-                run_python_module(args[0], args)
-            else:
-                run_python_file(args[0], args)
+            runner.run()
         except NoSource:
             code_ran = False
             raise

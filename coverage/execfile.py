@@ -3,6 +3,7 @@
 
 """Execute files of Python code."""
 
+import inspect
 import marshal
 import os
 import struct
@@ -100,93 +101,99 @@ else:
         return pathname, packagename
 
 
-def run_python_module(modulename, args):
-    """Run a Python module, as though with ``python -m name args...``.
+class PyRunner(object):
+    """Multi-stage execution of Python code.
 
-    `modulename` is the name of the module, possibly a dot-separated name.
-    `args` is the argument array to present as sys.argv, including the first
-    element naming the module being executed.
+    This is meant to emulate real Python execution as closely as possible.
 
     """
-    pathname, packagename = find_module(modulename)
+    def __init__(self, args, as_module=False):
+        self.args = args
+        self.as_module = as_module
 
-    pathname = os.path.abspath(pathname)
-    args[0] = pathname
-    # Python 3.7.0b3 changed the behavior of the sys.path[0] entry for -m. It
-    # used to be an empty string (meaning the current directory). It changed
-    # to be the actual path to the current directory, so that os.chdir wouldn't
-    # affect the outcome.
-    if env.PYVERSION >= (3, 7, 0, 'beta', 3):
-        path0 = os.getcwd()
-    else:
-        path0 = ""
-    run_python_file(pathname, args, package=packagename, modulename=modulename, path0=path0)
+        self.arg0 = args[0]
+        self.package = self.modulename = self.pathname = None
 
+    def prepare(self):
+        """Do initial preparation to run Python code.
 
-def run_python_file(filename, args, package=None, modulename=None, path0=None):
-    """Run a Python file as if it were the main program on the command line.
+        Includes finding the module to run, adjusting sys.argv[0], and changing
+        sys.path to match what Python does.
 
-    `filename` is the path to the file to execute, it need not be a .py file.
-    `args` is the argument array to present as sys.argv, including the first
-    element naming the file being executed.  `package` is the name of the
-    enclosing package, if any.
+        """
+        should_update_sys_path = True
 
-    `modulename` is the name of the module the file was run as.
-
-    `path0` is the value to put into sys.path[0].  If it's None, then this
-    function will decide on a value.
-
-    """
-    if modulename is None and env.PYVERSION >= (3, 3):
-        modulename = '__main__'
-
-    # Create a module to serve as __main__
-    old_main_mod = sys.modules['__main__']
-    main_mod = types.ModuleType('__main__')
-    sys.modules['__main__'] = main_mod
-    main_mod.__file__ = filename
-    if package:
-        main_mod.__package__ = package
-    if modulename:
-        main_mod.__loader__ = DummyLoader(modulename)
-
-    main_mod.__builtins__ = BUILTINS
-
-    # Set sys.argv properly.
-    old_argv = sys.argv
-    sys.argv = args
-
-    if os.path.isdir(filename):
-        # Running a directory means running the __main__.py file in that
-        # directory.
-        my_path0 = filename
-
-        for ext in [".py", ".pyc", ".pyo"]:
-            try_filename = os.path.join(filename, "__main__" + ext)
-            if os.path.exists(try_filename):
-                filename = try_filename
-                break
+        if self.as_module:
+            # Python 3.7.0b3 changed the behavior of the sys.path[0] entry for -m. It
+            # used to be an empty string (meaning the current directory). It changed
+            # to be the actual path to the current directory, so that os.chdir wouldn't
+            # affect the outcome.
+            if env.PYVERSION >= (3, 7, 0, 'beta', 3):
+                path0 = os.getcwd()
+            else:
+                path0 = ""
+            sys.path[0] = path0
+            should_update_sys_path = False
+            self.modulename = self.arg0
+            pathname, self.package = find_module(self.modulename)
+            self.pathname = os.path.abspath(pathname)
+            self.args[0] = self.arg0 = self.pathname
+        elif os.path.isdir(self.arg0):
+            # Running a directory means running the __main__.py file in that
+            # directory.
+            path0 = self.arg0
+            for ext in [".py", ".pyc", ".pyo"]:
+                try_filename = os.path.join(self.arg0, "__main__" + ext)
+                if os.path.exists(try_filename):
+                    self.arg0 = try_filename
+                    break
+            else:
+                raise NoSource("Can't find '__main__' module in '%s'" % self.arg0)
         else:
-            raise NoSource("Can't find '__main__' module in '%s'" % filename)
-    else:
-        my_path0 = os.path.abspath(os.path.dirname(filename))
+            path0 = os.path.abspath(os.path.dirname(self.arg0))
 
-    # Set sys.path correctly.
-    old_path0 = sys.path[0]
-    sys.path[0] = path0 if path0 is not None else my_path0
+        if self.modulename is None and env.PYVERSION >= (3, 3):
+            self.modulename = '__main__'
 
-    try:
+        if should_update_sys_path:
+            # sys.path fakery.  If we are being run as a command, then sys.path[0]
+            # is the directory of the "coverage" script.  If this is so, replace
+            # sys.path[0] with the directory of the file we're running, or the
+            # current directory when running modules.  If it isn't so, then we
+            # don't know what's going on, and just leave it alone.
+            top_file = inspect.stack()[-1][0].f_code.co_filename
+            if os.path.abspath(sys.path[0]) == os.path.abspath(os.path.dirname(top_file)):
+                # Set sys.path correctly.
+                sys.path[0] = path0
+
+    def run(self):
+        """Run the Python code!"""
+
+        # Create a module to serve as __main__
+        main_mod = types.ModuleType('__main__')
+        sys.modules['__main__'] = main_mod
+        main_mod.__file__ = self.arg0
+        if self.package:
+            main_mod.__package__ = self.package
+        if self.modulename:
+            main_mod.__loader__ = DummyLoader(self.modulename)
+
+        main_mod.__builtins__ = BUILTINS
+
+        # Set sys.argv properly.
+        sys.argv = self.args
+
         try:
             # Make a code object somehow.
-            if filename.endswith((".pyc", ".pyo")):
-                code = make_code_from_pyc(filename)
+            if self.arg0.endswith((".pyc", ".pyo")):
+                code = make_code_from_pyc(self.arg0)
             else:
-                code = make_code_from_py(filename)
+                code = make_code_from_py(self.arg0)
         except CoverageException:
             raise
         except Exception as exc:
             msg = "Couldn't run {filename!r} as Python code: {exc.__class__.__name__}: {exc}"
-            raise CoverageException(msg.format(filename=filename, exc=exc))
+            raise CoverageException(msg.format(filename=self.arg0, exc=exc))
 
         # Execute the code object.
         try:
@@ -230,11 +237,30 @@ def run_python_file(filename, args, package=None, modulename=None, path0=None):
             else:
                 sys.exit(1)
 
-    finally:
-        # Restore the old __main__, argv, and path.
-        sys.modules['__main__'] = old_main_mod
-        sys.argv = old_argv
-        sys.path[0] = old_path0
+
+def run_python_module(args):
+    """Run a Python module, as though with ``python -m name args...``.
+
+    `args` is the argument array to present as sys.argv, including the first
+    element naming the module being executed.
+
+    """
+    runner = PyRunner(args, as_module=True)
+    runner.prepare()
+    runner.run()
+
+
+def run_python_file(args):
+    """Run a Python file as if it were the main program on the command line.
+
+    `args` is the argument array to present as sys.argv, including the first
+    element naming the file being executed.  `package` is the name of the
+    enclosing package, if any.
+
+    """
+    runner = PyRunner(args, as_module=False)
+    runner.prepare()
+    runner.run()
 
 
 def make_code_from_py(filename):
