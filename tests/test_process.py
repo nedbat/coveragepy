@@ -953,6 +953,39 @@ class EnvironmentTest(CoverageTest):
         out_py = self.run_command("python -m package")
         self.assertMultiLineEqual(out_cov, out_py)
 
+    def test_coverage_custom_script(self):
+        # https://github.com/nedbat/coveragepy/issues/678
+        # If sys.path[0] isn't the Python default, then coverage.py won't
+        # fiddle with it.
+        self.make_file("a/b/c/thing.py", """\
+            SOMETHING = "hello-xyzzy"
+            """)
+        abc = os.path.abspath("a/b/c")
+        self.make_file("run_coverage.py", """\
+            import sys
+            sys.path[0:0] = [
+                r'{abc}',
+                '/Users/somebody/temp/something/eggs/something-4.5.1-py2.7-xxx-10.13-x86_64.egg',
+                ]
+
+            import coverage.cmdline
+
+            if __name__ == '__main__':
+                sys.exit(coverage.cmdline.main())
+            """.format(abc=abc))
+        self.make_file("how_is_it.py", """\
+            import pprint, sys
+            pprint.pprint(sys.path)
+            import thing
+            print(thing.SOMETHING)
+            """)
+        # If this test fails, it will be with "can't import thing".
+        out = self.run_command("python run_coverage.py run how_is_it.py")
+        self.assertIn("hello-xyzzy", out)
+
+        out = self.run_command("python -m run_coverage run how_is_it.py")
+        self.assertIn("hello-xyzzy", out)
+
 
 class ExcepthookTest(CoverageTest):
     """Tests of sys.excepthook support."""
