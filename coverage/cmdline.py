@@ -13,6 +13,8 @@ import sys
 import textwrap
 import traceback
 
+import coverage
+from coverage import Coverage
 from coverage import env
 from coverage.collector import CTracer
 from coverage.data import line_counts
@@ -398,20 +400,8 @@ OK, ERR, FAIL_UNDER = 0, 1, 2
 class CoverageScript(object):
     """The command-line interface to coverage.py."""
 
-    def __init__(
-        self, _covpkg=None, _run_python_file=None,
-        _run_python_module=None, _help_fn=None,
-    ):
-        # _covpkg is for dependency injection, so we can test this code.
-        if _covpkg:
-            self.covpkg = _covpkg
-        else:
-            import coverage
-            self.covpkg = coverage
-
+    def __init__(self, _help_fn=None):
         # For dependency injection:
-        self.run_python_file = _run_python_file or run_python_file
-        self.run_python_module = _run_python_module or run_python_module
         self.help_fn = _help_fn or self.help
         self.global_option = False
 
@@ -473,7 +463,7 @@ class CoverageScript(object):
         debug = unshell_list(options.debug)
 
         # Do something.
-        self.coverage = self.covpkg.Coverage(
+        self.coverage = Coverage(
             data_suffix=options.parallel_mode,
             cover_pylib=options.pylib,
             timid=options.timid,
@@ -553,7 +543,7 @@ class CoverageScript(object):
         """Display an error message, or the named topic."""
         assert error or topic or parser
 
-        help_params = dict(self.covpkg.__dict__)
+        help_params = dict(coverage.__dict__)
         help_params['program_name'] = self.program_name
         if CTracer is not None:
             help_params['extension_modifier'] = 'with C extension'
@@ -651,9 +641,9 @@ class CoverageScript(object):
         code_ran = True
         try:
             if options.module:
-                self.run_python_module(args[0], args)
+                run_python_module(args[0], args)
             else:
-                self.run_python_file(args[0], args)
+                run_python_file(args[0], args)
         except NoSource:
             code_ran = False
             raise
