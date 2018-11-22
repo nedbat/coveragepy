@@ -967,9 +967,9 @@ class EnvironmentTest(CoverageTest):
         # https://bitbucket.org/ned/coveragepy/issue/207
         self.make_file("package/__init__.py", "print('init')")
         self.make_file("package/__main__.py", "print('main')")
-        out_cov = self.run_command("coverage run -m package")
-        out_py = self.run_command("python -m package")
-        self.assertMultiLineEqual(out_cov, out_py)
+        expected = self.run_command("python -m package")
+        actual = self.run_command("coverage run -m package")
+        self.assertMultiLineEqual(expected, actual)
 
     def test_coverage_custom_script(self):
         # https://github.com/nedbat/coveragepy/issues/678
