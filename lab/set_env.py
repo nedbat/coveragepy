@@ -12,24 +12,28 @@ import os
 import re
 import sys
 
+# Some other environment variables that could be useful:
+# $set_env.py: PYTEST_ADDOPTS - Extra arguments to pytest.
+
 pstderr = functools.partial(print, file=sys.stderr)
 
 SETTINGS = []
 
-line_pattern = r"\$set_env.py: (\w+) - (.*)"
-globs = "*/*.py *.py"
+def find_settings():
+    line_pattern = r"\$set_env.py: (\w+) - (.*)"
+    globs = "*/*.py *.py"
 
-filenames = itertools.chain.from_iterable(glob.glob(g) for g in globs.split())
-files = 0
-for filename in filenames:
-    files += 1
-    with open(filename) as f:
-        for line in f:
-            m = re.search(line_pattern, line)
-            if m:
-                SETTINGS.append(m.groups())
-pstderr("Read {} files".format(files))
-
+    filenames = itertools.chain.from_iterable(glob.glob(g) for g in globs.split())
+    files = 0
+    for filename in filenames:
+        files += 1
+        with open(filename) as f:
+            for line in f:
+                m = re.search(line_pattern, line)
+                if m:
+                    SETTINGS.append(m.groups())
+    SETTINGS.sort()
+    pstderr("Read {} files".format(files))
 
 def read_them():
     values = {}
@@ -52,7 +56,8 @@ def set_by_num(values, n, value):
     setting_name = SETTINGS[int(n)-1][0]
     values[setting_name] = value
 
-PROMPT = "(<N> val | x <N> | q) ::> "
+PROMPT = "(# value | x # | q) ::> "
+
 def get_new_values(values):
     show = True
     while True:
@@ -108,4 +113,9 @@ def as_exports(values):
             exports.append("export {}={!r}".format(name, value))
     return "eval " + "; ".join(exports)
 
-print(as_exports(get_new_values(read_them())))
+def main():
+    find_settings()
+    print(as_exports(get_new_values(read_them())))
+
+if __name__ == '__main__':
+    main()
