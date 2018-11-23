@@ -944,7 +944,6 @@ class EnvironmentTest(CoverageTest):
             import process_test.try_execfile
             """)
 
-        # These -m commands assume the coverage tree is on the path.
         expected = self.run_command("python myscript")
         actual = self.run_command("coverage run --source process_test myscript")
         self.assert_tryexecfile_output(expected, actual)
