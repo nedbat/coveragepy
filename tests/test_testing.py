@@ -19,6 +19,12 @@ from tests.coveragetest import CoverageTest, convert_skip_exceptions
 from tests.helpers import CheckUniqueFilenames, re_lines, re_line
 
 
+def test_xdist_sys_path_nuttiness_is_fixed():
+    # See conftest.py:fix_xdist_sys_path
+    assert sys.path[1] != ''
+    assert os.environ.get('PYTHONPATH') is None
+
+
 class TestingTest(TestCase):
     """Tests of helper methods on `backunittest.TestCase`."""
 

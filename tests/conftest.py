@@ -7,6 +7,8 @@ Pytest auto configuration.
 This module is run automatically by pytest, to define and enable fixtures.
 """
 
+import os
+import sys
 import warnings
 
 import pytest
@@ -33,3 +35,36 @@ def set_warnings():
         # pypy3 warns about unclosed files a lot.
         # pylint: disable=undefined-variable
         warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
+
+
+@pytest.fixture(autouse=True)
+def reset_sys_path():
+    """Clean up sys.path changes around every test."""
+    sys_path = list(sys.path)
+    yield
+    sys.path[:] = sys_path
+
+
+@pytest.fixture(autouse=True)
+def fix_xdist_sys_path():
+    """Prevent xdist from polluting the Python path.
+
+    We run tests that care a lot about the contents of sys.path.  Pytest-xdist
+    changes sys.path, so running with xdist, vs without xdist, sets sys.path
+    differently.  With xdist, sys.path[1] is an empty string, without xdist,
+    it's the virtualenv bin directory.  We don't want the empty string, so
+    clobber that entry.
+
+    See: https://github.com/pytest-dev/pytest-xdist/issues/376
+
+    """
+    if os.environ.get('PYTEST_XDIST_WORKER', ''):
+        # We are running in an xdist worker.
+        if sys.path[1] == '':
+            # xdist has set sys.path[1] to ''.  Clobber it.
+            del sys.path[1]
+        # Also, don't let it sneak stuff in via PYTHONPATH.
+        try:
+            del os.environ['PYTHONPATH']
+        except KeyError:
+            pass
