@@ -29,17 +29,17 @@
         coverage run --branch --source=cogapp -m nose cogapp/test_cogapp.py:CogTestsInMemory
         coverage combine
         coverage html
-        - IF BETA:
+        - IF PRE-RELEASE:
             rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
-        - IF NOT BETA:
+        - IF NOT PRE-RELEASE:
             rm -f ~/coverage/trunk/doc/sample_html/*.*
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
         cd ~/coverage/trunk
-        - IF NOT BETA:
+        - IF NOT PRE-RELEASE:
             check in the new sample html
     - Build and publish docs:
-        - IF BETA:
+        - IF PRE-RELEASE:
             $ make publishbeta
         - ELSE:
             $ make publish
@@ -64,7 +64,7 @@
 - Bump version:
     - coverage/version.py
         - increment version number
-        - IF NOT BETA:
+        - IF NOT PRE-RELEASE:
             - set to alpha-0 if just released
     - CHANGES.rst
         - add an "Unreleased" section to the top.
@@ -75,7 +75,7 @@
     - visit https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
         - keep just the latest version of each x.y release, make the rest inactive.
-    - IF NOT BETA:
+    - IF NOT PRE-RELEASE:
         - visit https://readthedocs.org/projects/coverage/builds/
         - wait for the new tag build to finish successfully.
         - visit https://readthedocs.org/dashboard/coverage/versions/
