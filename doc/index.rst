@@ -15,12 +15,12 @@ not.
 
 .. ifconfig:: not prerelease
 
-    The latest version is coverage.py 4.5.1, released February 10th 2018.  It
+    The latest version is coverage.py 4.5.2, released November 12th 2018.  It
     is supported on:
 
-    * Python versions 2.6, 2.7, 3.3, 3.4, 3.5, 3.6, and 3.7.
+    * Python versions 2.6, 2.7, 3.3, 3.4, 3.5, 3.6, 3.7, and pre-alpha 3.8.
 
-    * PyPy2 5.10 and PyPy3 5.10.
+    * PyPy2 6.0 and PyPy3 6.0.
 
     * Jython 2.7.1, though only for running code, not reporting.
 
@@ -28,7 +28,7 @@ not.
 
 .. ifconfig:: prerelease
 
-    The latest version is coverage.py 5.0a3, released October 6th 2018.
+    The latest version is coverage.py 5.0a4, released November 25, 2018.
     It is supported on:
 
     * Python versions 2.7, 3.4, 3.5, 3.6, 3.7, and pre-alpha 3.8.
@@ -40,11 +40,9 @@ not.
     * IronPython 2.7.7, though only for running code, not reporting.
 
     **This is a pre-release build.  The usual warnings about possible bugs
-    apply.** The latest stable version is coverage.py 4.5.1, `described here`_.
+    apply.** The latest stable version is coverage.py 4.5.2, `described here`_.
 
 .. _described here: http://coverage.readthedocs.io/
-
-.. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=docs
 
 .. image:: media/Tidelift_Logos_RGB_Tidelift_Shorthand_On-White.png
    :width: 75

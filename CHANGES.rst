@@ -14,8 +14,10 @@ Change history for Coverage.py
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+.. _changes_50a4:
+
+Version 5.0a4 --- 2018-11-25
+----------------------------
 
 - You can specify the command line to run your program with the ``[run]
   command_line`` configuration setting. `issue 695`_.
