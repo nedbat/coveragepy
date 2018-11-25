@@ -8,11 +8,16 @@ Change history for Coverage.py
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
-    ..
     ..  .. _changes_781:
     ..
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
+
+Unreleased
+----------
+
+Nothing yet.
+
 
 .. _changes_50a4:
 
