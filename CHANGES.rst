@@ -23,8 +23,10 @@ Unreleased
 - Coverage will create directories as needed for the data file if they don't
   exist, closing `issue 721`_.
 
-- Coverage commands no longer clobber the first entry in sys.path, fixing
-  `issue 715`_.
+- The ``coverage run`` command has always adjusted the first entry in sys.path,
+  to properly emulate how Python runs your program.  Now this adjustment is
+  skipped if sys.path[0] is already different than Python's default.  This
+  fixes `issue 715`_.
 
 - Improvements to context support:
 
