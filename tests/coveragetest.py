@@ -526,14 +526,12 @@ class UsingModulesMixin(object):
         sys.path.append(self.nice_file(TESTS_DIR, 'moremodules'))
 
 
-def command_line(args, **kwargs):
+def command_line(args):
     """Run `args` through the CoverageScript command line.
-
-    `kwargs` are the keyword arguments to the CoverageScript constructor.
 
     Returns the return code from CoverageScript.command_line.
 
     """
-    script = CoverageScript(**kwargs)
+    script = CoverageScript()
     ret = script.command_line(shlex.split(args))
     return ret
