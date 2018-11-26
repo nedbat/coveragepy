@@ -71,7 +71,7 @@ class BaseCmdLineTest(CoverageTest):
         return mk
 
     # Global names in cmdline.py that will be mocked during the tests.
-    MOCK_GLOBALS = ['Coverage', 'PyRunner']
+    MOCK_GLOBALS = ['Coverage', 'PyRunner', 'show_help']
 
     def mock_command_line(self, args, options=None):
         """Run `args` through the command line, with a Mock.
@@ -94,7 +94,7 @@ class BaseCmdLineTest(CoverageTest):
         for patcher in patchers:
             patcher.start()
         try:
-            ret = command_line(args, _help_fn=mk.help_fn)
+            ret = command_line(args)
         finally:
             for patcher in patchers:
                 patcher.stop()
@@ -110,7 +110,6 @@ class BaseCmdLineTest(CoverageTest):
         code = textwrap.dedent(code)
         expected = self.model_object()
         globs = {n: getattr(expected, n) for n in self.MOCK_GLOBALS}
-        globs['self'] = expected
         code_obj = compile(code, "<code>", "exec")
         eval(code_obj, globs, {})                           # pylint: disable=eval-used
 
@@ -151,9 +150,9 @@ class BaseCmdLineTest(CoverageTest):
         mk, status = self.mock_command_line(args)
         self.assertEqual(status, ret, "Wrong status: got %s, wanted %s" % (status, ret))
         if help_msg:
-            self.assertEqual(mk.mock_calls[-1], ('help_fn', (help_msg,), {}))
+            self.assertEqual(mk.mock_calls[-1], ('show_help', (help_msg,), {}))
         else:
-            self.assertEqual(mk.mock_calls[-1], ('help_fn', (), {'topic': topic}))
+            self.assertEqual(mk.mock_calls[-1], ('show_help', (), {'topic': topic}))
 
 
 class BaseCmdLineTestTest(BaseCmdLineTest):
@@ -273,10 +272,10 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_help("--help", topic="help", ret=OK)
 
     def test_help_command(self):
-        self.cmd_executes("help", "self.help_fn(topic='help')")
+        self.cmd_executes("help", "show_help(topic='help')")
 
     def test_cmd_help(self):
-        self.cmd_executes("run --help", "self.help_fn(parser='<CmdOptionParser:run>')")
+        self.cmd_executes("run --help", "show_help(parser='<CmdOptionParser:run>')")
         self.cmd_executes_same("help run", "run --help")
 
     def test_html(self):
@@ -593,7 +592,7 @@ class CmdLineTest(BaseCmdLineTest):
     def test_run_from_config_but_empty(self):
         self.cmd_executes("run", """\
             cov = Coverage()
-            self.help_fn('Nothing to do.')
+            show_help('Nothing to do.')
             """,
             ret=ERR,
             options={"run:command_line": ""},
@@ -602,13 +601,13 @@ class CmdLineTest(BaseCmdLineTest):
     def test_run_dashm_only(self):
         self.cmd_executes("run -m", """\
             cov = Coverage()
-            self.help_fn('No module specified for -m')
+            show_help('No module specified for -m')
             """,
             ret=ERR,
             )
         self.cmd_executes("run -m", """\
             cov = Coverage()
-            self.help_fn('No module specified for -m')
+            show_help('No module specified for -m')
             """,
             ret=ERR,
             options={"run:command_line": "myprog.py"}

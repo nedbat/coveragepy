@@ -188,11 +188,6 @@ class CoverageOptionParser(optparse.OptionParser, object):
             )
 
         self.disable_interspersed_args()
-        self.help_fn = self.help_noop
-
-    def help_noop(self, error=None, topic=None, parser=None):
-        """No-op help function."""
-        pass
 
     class OptionParserError(Exception):
         """Used to stop the optparse error handler ending the process."""
@@ -213,7 +208,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
 
     def error(self, msg):
         """Override optparse.error so sys.exit doesn't get called."""
-        self.help_fn(msg)
+        show_help(msg)
         raise self.OptionParserError
 
 
@@ -394,33 +389,56 @@ CMDS = {
 }
 
 
+def show_help(error=None, topic=None, parser=None):
+    """Display an error message, or the named topic."""
+    assert error or topic or parser
+
+    program_path = sys.argv[0]
+    if program_path.endswith(os.path.sep + '__main__.py'):
+        # The path is the main module of a package; get that path instead.
+        program_path = os.path.dirname(program_path)
+    program_name = os.path.basename(program_path)
+    if env.WINDOWS:
+        # entry_points={'console_scripts':...} on Windows makes files
+        # called coverage.exe, coverage3.exe, and coverage-3.5.exe. These
+        # invoke coverage-script.py, coverage3-script.py, and
+        # coverage-3.5-script.py.  argv[0] is the .py file, but we want to
+        # get back to the original form.
+        auto_suffix = "-script.py"
+        if program_name.endswith(auto_suffix):
+            program_name = program_name[:-len(auto_suffix)]
+
+    help_params = dict(coverage.__dict__)
+    help_params['program_name'] = program_name
+    if CTracer is not None:
+        help_params['extension_modifier'] = 'with C extension'
+    else:
+        help_params['extension_modifier'] = 'without C extension'
+
+    if error:
+        print(error, file=sys.stderr)
+        print("Use '%s help' for help." % (program_name,), file=sys.stderr)
+    elif parser:
+        print(parser.format_help().strip())
+        print()
+    else:
+        help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
+        if help_msg:
+            print(help_msg.format(**help_params))
+        else:
+            print("Don't know topic %r" % topic)
+    print("Full documentation is at {__url__}".format(**help_params))
+
+
 OK, ERR, FAIL_UNDER = 0, 1, 2
 
 
 class CoverageScript(object):
     """The command-line interface to coverage.py."""
 
-    def __init__(self, _help_fn=None):
-        # For dependency injection:
-        self.help_fn = _help_fn or self.help
+    def __init__(self):
         self.global_option = False
-
         self.coverage = None
-
-        program_path = sys.argv[0]
-        if program_path.endswith(os.path.sep + '__main__.py'):
-            # The path is the main module of a package; get that path instead.
-            program_path = os.path.dirname(program_path)
-        self.program_name = os.path.basename(program_path)
-        if env.WINDOWS:
-            # entry_points={'console_scripts':...} on Windows makes files
-            # called coverage.exe, coverage3.exe, and coverage-3.5.exe. These
-            # invoke coverage-script.py, coverage3-script.py, and
-            # coverage-3.5-script.py.  argv[0] is the .py file, but we want to
-            # get back to the original form.
-            auto_suffix = "-script.py"
-            if self.program_name.endswith(auto_suffix):
-                self.program_name = self.program_name[:-len(auto_suffix)]
 
     def command_line(self, argv):
         """The bulk of the command line interface to coverage.py.
@@ -432,7 +450,7 @@ class CoverageScript(object):
         """
         # Collect the command-line options.
         if not argv:
-            self.help_fn(topic='minimum_help')
+            show_help(topic='minimum_help')
             return OK
 
         # The command syntax we parse depends on the first argument.  Global
@@ -443,11 +461,10 @@ class CoverageScript(object):
         else:
             parser = CMDS.get(argv[0])
             if not parser:
-                self.help_fn("Unknown command: '%s'" % argv[0])
+                show_help("Unknown command: '%s'" % argv[0])
                 return ERR
             argv = argv[1:]
 
-        parser.help_fn = self.help_fn
         ok, options, args = parser.parse_args_ok(argv)
         if not ok:
             return ERR
@@ -543,31 +560,6 @@ class CoverageScript(object):
 
         return OK
 
-    def help(self, error=None, topic=None, parser=None):
-        """Display an error message, or the named topic."""
-        assert error or topic or parser
-
-        help_params = dict(coverage.__dict__)
-        help_params['program_name'] = self.program_name
-        if CTracer is not None:
-            help_params['extension_modifier'] = 'with C extension'
-        else:
-            help_params['extension_modifier'] = 'without C extension'
-
-        if error:
-            print(error, file=sys.stderr)
-            print("Use '%s help' for help." % (self.program_name,), file=sys.stderr)
-        elif parser:
-            print(parser.format_help().strip())
-            print()
-        else:
-            help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
-            if help_msg:
-                print(help_msg.format(**help_params))
-            else:
-                print("Don't know topic %r" % topic)
-        print("Full documentation is at {__url__}".format(**help_params))
-
     def do_help(self, options, args, parser):
         """Deal with help requests.
 
@@ -577,9 +569,9 @@ class CoverageScript(object):
         # Handle help.
         if options.help:
             if self.global_option:
-                self.help_fn(topic='help')
+                show_help(topic='help')
             else:
-                self.help_fn(parser=parser)
+                show_help(parser=parser)
             return True
 
         if options.action == "help":
@@ -587,16 +579,16 @@ class CoverageScript(object):
                 for a in args:
                     parser = CMDS.get(a)
                     if parser:
-                        self.help_fn(parser=parser)
+                        show_help(parser=parser)
                     else:
-                        self.help_fn(topic=a)
+                        show_help(topic=a)
             else:
-                self.help_fn(topic='help')
+                show_help(topic='help')
             return True
 
         # Handle version.
         if options.version:
-            self.help_fn(topic='version')
+            show_help(topic='version')
             return True
 
         return False
@@ -607,7 +599,7 @@ class CoverageScript(object):
         if not args:
             if options.module:
                 # Specified -m with nothing else.
-                self.help_fn("No module specified for -m")
+                show_help("No module specified for -m")
                 return ERR
             command_line = self.coverage.get_option("run:command_line")
             if command_line is not None:
@@ -616,11 +608,11 @@ class CoverageScript(object):
                     options.module = True
                     args = args[1:]
         if not args:
-            self.help_fn("Nothing to do.")
+            show_help("Nothing to do.")
             return ERR
 
         if options.append and self.coverage.get_option("run:parallel"):
-            self.help_fn("Can't append to data files in parallel mode.")
+            show_help("Can't append to data files in parallel mode.")
             return ERR
 
         if options.concurrency == "multiprocessing":
@@ -630,7 +622,7 @@ class CoverageScript(object):
                 # As it happens, all of these options have no default, meaning
                 # they will be None if they have not been specified.
                 if getattr(options, opt_name) is not None:
-                    self.help_fn(
+                    show_help(
                         "Options affecting multiprocessing must only be specified "
                         "in a configuration file.\n"
                         "Remove --{} from the command line.".format(opt_name)
@@ -662,7 +654,7 @@ class CoverageScript(object):
         """Implementation of 'coverage debug'."""
 
         if not args:
-            self.help_fn("What information would you like: config, data, sys?")
+            show_help("What information would you like: config, data, sys?")
             return ERR
 
         for info in args:
@@ -695,7 +687,7 @@ class CoverageScript(object):
                 for line in info_formatter(config_info):
                     print(" %s" % line)
             else:
-                self.help_fn("Don't know what you mean by %r" % info)
+                show_help("Don't know what you mean by %r" % info)
                 return ERR
 
         return OK
