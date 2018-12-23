@@ -26,6 +26,7 @@ def set_warnings():
     #   setuptools/py33compat.py:54: DeprecationWarning: The value of convert_charrefs will become
     #   True in 3.5. You are encouraged to set the value explicitly.
     #       unescape = getattr(html, 'unescape', html_parser.HTMLParser().unescape)
+    # How come this warning is successfully suppressed here, but not in setup.cfg??
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
