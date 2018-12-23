@@ -873,6 +873,8 @@ class Coverage(object):
             ('platform', platform.platform()),
             ('implementation', platform.python_implementation()),
             ('executable', sys.executable),
+            ('def_encoding', sys.getdefaultencoding()),
+            ('fs_encoding', sys.getfilesystemencoding()),
             ('pid', os.getpid()),
             ('cwd', os.getcwd()),
             ('path', sys.path),
