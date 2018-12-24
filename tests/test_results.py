@@ -105,3 +105,8 @@ class NumbersTest(CoverageTest):
 ])
 def test_should_fail_under(total, fail_under, precision, result):
     assert should_fail_under(float(total), float(fail_under), precision) == result
+
+
+def test_should_fail_under_invalid_value():
+    with pytest.raises(ValueError):
+        should_fail_under(100.0, 101, 0)

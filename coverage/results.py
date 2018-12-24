@@ -283,6 +283,10 @@ def should_fail_under(total, fail_under, precision):
     Returns True if the total should fail.
 
     """
+    # We can never achieve higher than 100% coverage
+    if fail_under > 100.0:
+        raise ValueError("`fail_under` is greater than 100. Please use 100 or lower.")
+
     # Special case for fail_under=100, it must really be 100.
     if fail_under == 100.0 and total != 100.0:
         return True

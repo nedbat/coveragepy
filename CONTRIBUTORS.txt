@@ -81,6 +81,7 @@ Matthew Desmarais
 Max Linke
 Michał Bultrowicz
 Mickie Betz
+Mike Fiedler
 Nathan Land
 Noel O'Boyle
 Olivier Grisel
