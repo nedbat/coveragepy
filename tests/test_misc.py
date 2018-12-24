@@ -6,7 +6,7 @@
 import pytest
 
 from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
-from coverage.misc import format_lines, Hasher, one_of, substitute_variables
+from coverage.misc import Hasher, one_of, substitute_variables
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
@@ -123,19 +123,6 @@ class ContractTest(CoverageTest):
         assert undecorated(17) == (17, None)
         assert undecorated(b=23) == (None, 23)
         assert undecorated(b=42, a=3) == (3, 42)
-
-
-@pytest.mark.parametrize("statements, lines, result", [
-    (set([1,2,3,4,5,10,11,12,13,14]), set([1,2,5,10,11,13,14]), "1-2, 5-11, 13-14"),
-    ([1,2,3,4,5,10,11,12,13,14,98,99], [1,2,5,10,11,13,14,99], "1-2, 5-11, 13-14, 99"),
-    ([1,2,3,4,98,99,100,101,102,103,104], [1,2,99,102,103,104], "1-2, 99, 102-104"),
-    ([17], [17], "17"),
-    ([90,91,92,93,94,95], [90,91,92,93,94,95], "90-95"),
-    ([1, 2, 3, 4, 5], [], ""),
-    ([1, 2, 3, 4, 5], [4], "4"),
-])
-def test_format_lines(statements, lines, result):
-    assert format_lines(statements, lines) == result
 
 
 VARS = {

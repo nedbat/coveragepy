@@ -7,7 +7,7 @@ import collections
 
 from coverage.backward import iitems
 from coverage.debug import SimpleReprMixin
-from coverage.misc import contract, format_lines, CoverageException
+from coverage.misc import contract, CoverageException, nice_pair
 
 
 class Analysis(object):
@@ -270,6 +270,44 @@ class Numbers(SimpleReprMixin):
         if other == 0:
             return self
         return NotImplemented
+
+
+def format_lines(statements, lines):
+    """Nicely format a list of line numbers.
+
+    Format a list of line numbers for printing by coalescing groups of lines as
+    long as the lines represent consecutive statements.  This will coalesce
+    even if there are gaps between statements.
+
+    For example, if `statements` is [1,2,3,4,5,10,11,12,13,14] and
+    `lines` is [1,2,5,10,11,13,14] then the result will be "1-2, 5-11, 13-14".
+
+    Both `lines` and `statements` can be any iterable. All of the elements of
+    `lines` must be in `statements`, and all of the values must be positive
+    integers.
+
+    """
+    statements = sorted(statements)
+    lines = sorted(lines)
+
+    pairs = []
+    start = None
+    lidx = 0
+    for stmt in statements:
+        if lidx >= len(lines):
+            break
+        if stmt == lines[lidx]:
+            lidx += 1
+            if not start:
+                start = stmt
+            end = stmt
+        elif start:
+            pairs.append((start, end))
+            start = None
+    if start:
+        pairs.append((start, end))
+    ret = ', '.join(map(nice_pair, pairs))
+    return ret
 
 
 @contract(total='number', fail_under='number', precision=int, returns=bool)
