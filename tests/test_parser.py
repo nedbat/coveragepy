@@ -213,9 +213,9 @@ class PythonParserTest(CoverageTest):
             expected_arcs.update(set(self.arcz_to_arcs("-46 6-4")))
             expected_exits.update({6: 1})
 
-        self.assertEqual(parser.statements, expected_statements)
-        self.assertEqual(parser.arcs(), expected_arcs)
-        self.assertEqual(parser.exit_counts(), expected_exits)
+        self.assertEqual(expected_statements, parser.statements)
+        self.assertEqual(expected_arcs, parser.arcs())
+        self.assertEqual(expected_exits, parser.exit_counts())
 
 
 class ParserMissingArcDescriptionTest(CoverageTest):

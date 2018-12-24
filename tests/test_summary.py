@@ -267,7 +267,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             '---------------------------------------------------------',
             'TOTAL            11      2      8      3    63%',
         ]
-        self.assertEqual(report_lines, expected)
+        self.assertEqual(expected, report_lines)
 
     def test_report_skip_covered_no_branches(self):
         self.make_file("main.py", """
@@ -530,7 +530,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         )
         if env.PY2:
             expected = expected.encode(output_encoding())
-        self.assertEqual(errmsg, expected)
+        self.assertEqual(expected, errmsg)
 
     def test_dotpy_not_python_ignored(self):
         # We run a .py file, and when reporting, we can't parse it as Python,

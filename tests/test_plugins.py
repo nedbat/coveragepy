@@ -426,7 +426,7 @@ class GoodFileTracerTest(FileTracerTest):
             '--------------------------------------------------------',
             'TOTAL           11      7      0      0    36%',
             ]
-        self.assertEqual(report, expected)
+        self.assertEqual(expected, report)
         self.assertAlmostEqual(total, 36.36, places=2)
 
     def test_plugin2_with_html_report(self):
@@ -512,7 +512,7 @@ class GoodFileTracerTest(FileTracerTest):
             '-----------------------------------------------',
             'unsuspecting.py       6      3    50%   2, 4, 6',
             ]
-        self.assertEqual(report, expected)
+        self.assertEqual(expected, report)
         self.assertEqual(total, 50)
 
     def test_find_unexecuted(self):

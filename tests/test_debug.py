@@ -188,7 +188,7 @@ class DebugTraceTest(CoverageTest):
             expected = "CTracer: available"
         else:
             expected = "CTracer: unavailable"
-        self.assertEqual(tracer_line, expected)
+        self.assertEqual(expected, tracer_line)
 
 
 def f_one(*args, **kwargs):

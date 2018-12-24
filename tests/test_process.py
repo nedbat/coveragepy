@@ -398,7 +398,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(len(summary), 1)
         actual = os.path.normcase(os.path.abspath(list(summary.keys())[0]))
         expected = os.path.normcase(os.path.abspath('src/x.py'))
-        self.assertEqual(actual, expected)
+        self.assertEqual(expected, actual)
         self.assertEqual(list(summary.values())[0], 6)
 
     def test_erase_parallel(self):
@@ -729,7 +729,7 @@ class ProcessTest(CoverageTest):
         infos = data.run_infos()
         self.assertEqual(len(infos), 1)
         expected = u"These are musical notes: ♫𝅗𝅥♩"
-        self.assertEqual(infos[0]['note'], expected)
+        self.assertEqual(expected, infos[0]['note'])
 
     @pytest.mark.expensive
     def test_fullcoverage(self):                        # pragma: no metacov

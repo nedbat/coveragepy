@@ -125,7 +125,7 @@ class RecursionTest(CoverageTest):
 
         _, statements, missing, _ = cov.analysis("recur.py")
         self.assertEqual(statements, [1, 2, 3, 5, 7, 8, 9, 10, 11])
-        self.assertEqual(missing, expected_missing)
+        self.assertEqual(expected_missing, missing)
 
         # Get a warning about the stackoverflow effect on the tracing function.
         if pytrace:                                 # pragma: no metacov
