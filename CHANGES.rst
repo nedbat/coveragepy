@@ -16,7 +16,10 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-Nothing yet.
+- ``fail_under`` values more than 100 are reported as errors.  Thanks to Mike
+  Fiedler for closing `issue 746`_.
+
+.. _issue 746: https://github.com/nedbat/coveragepy/issues/746
 
 
 .. _changes_50a4:

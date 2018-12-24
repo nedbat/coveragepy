@@ -7,7 +7,7 @@ import collections
 
 from coverage.backward import iitems
 from coverage.debug import SimpleReprMixin
-from coverage.misc import contract, format_lines
+from coverage.misc import contract, format_lines, CoverageException
 
 
 class Analysis(object):
@@ -283,9 +283,10 @@ def should_fail_under(total, fail_under, precision):
     Returns True if the total should fail.
 
     """
-    # We can never achieve higher than 100% coverage
-    if fail_under > 100.0:
-        raise ValueError("`fail_under` is greater than 100. Please use 100 or lower.")
+    # We can never achieve higher than 100% coverage, or less than zero.
+    if not (0 <= fail_under <= 100.0):
+        msg = "fail_under={} is invalid. Must be between 0 and 100.".format(fail_under)
+        raise CoverageException(msg)
 
     # Special case for fail_under=100, it must really be 100.
     if fail_under == 100.0 and total != 100.0:
