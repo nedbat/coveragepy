@@ -49,13 +49,20 @@ class Analysis(object):
             n_missing_branches=n_missing_branches,
         )
 
-    def missing_formatted(self):
+    def missing_formatted(self, branches=False):
         """The missing line numbers, formatted nicely.
 
         Returns a string like "1-2, 5-11, 13-14".
 
+        If `branches` is true, includes the missing branch arcs also.
+
         """
-        return format_lines(self.statements, self.missing)
+        if branches and self.has_arcs():
+            arcs = iitems(self.missing_branch_arcs())
+        else:
+            arcs = None
+
+        return format_lines(self.statements, self.missing, arcs=arcs)
 
     def has_arcs(self):
         """Were arcs measured in this result?"""
@@ -81,24 +88,6 @@ class Analysis(object):
                     and p[0] not in self.no_branch
         )
         return sorted(missing)
-
-    def arcs_missing_formatted(self):
-        """The missing branch arcs, formatted nicely.
-
-        Returns a string like "1->2, 1->3, 16->20". Omits any mention of
-        branches from missing lines, so if line 17 is missing, then 17->18
-        won't be included.
-
-        """
-        arcs = self.missing_branch_arcs()
-        missing = self.missing
-        line_exits = sorted(iitems(arcs))
-        pairs = []
-        for line, exits in line_exits:
-            for ex in sorted(exits):
-                if line not in missing:
-                    pairs.append("%d->%s" % (line, (ex if ex > 0 else "exit")))
-        return ', '.join(pairs)
 
     def arcs_unpredicted(self):
         """Returns a sorted list of the executed arcs missing from the code."""
@@ -272,21 +261,8 @@ class Numbers(SimpleReprMixin):
         return NotImplemented
 
 
-def format_lines(statements, lines):
-    """Nicely format a list of line numbers.
-
-    Format a list of line numbers for printing by coalescing groups of lines as
-    long as the lines represent consecutive statements.  This will coalesce
-    even if there are gaps between statements.
-
-    For example, if `statements` is [1,2,3,4,5,10,11,12,13,14] and
-    `lines` is [1,2,5,10,11,13,14] then the result will be "1-2, 5-11, 13-14".
-
-    Both `lines` and `statements` can be any iterable. All of the elements of
-    `lines` must be in `statements`, and all of the values must be positive
-    integers.
-
-    """
+def _line_ranges(statements, lines):
+    """Produce a list of ranges for `format_lines`."""
     statements = sorted(statements)
     lines = sorted(lines)
 
@@ -306,7 +282,37 @@ def format_lines(statements, lines):
             start = None
     if start:
         pairs.append((start, end))
-    ret = ', '.join(map(nice_pair, pairs))
+    return pairs
+
+
+def format_lines(statements, lines, arcs=None):
+    """Nicely format a list of line numbers.
+
+    Format a list of line numbers for printing by coalescing groups of lines as
+    long as the lines represent consecutive statements.  This will coalesce
+    even if there are gaps between statements.
+
+    For example, if `statements` is [1,2,3,4,5,10,11,12,13,14] and
+    `lines` is [1,2,5,10,11,13,14] then the result will be "1-2, 5-11, 13-14".
+
+    Both `lines` and `statements` can be any iterable. All of the elements of
+    `lines` must be in `statements`, and all of the values must be positive
+    integers.
+
+    If `arcs` is provided, they are (start,[end,end,end]) pairs that will be
+    included in the output as long as start isn't in `lines`.
+
+    """
+    line_items = [(pair[0], 0, nice_pair(pair)) for pair in _line_ranges(statements, lines)]
+    if arcs:
+        line_exits = sorted(arcs)
+        for line, exits in line_exits:
+            for ex in sorted(exits):
+                if line not in lines:
+                    dest = (ex if ex > 0 else "exit")
+                    line_items.append((line, 1, "%d->%s" % (line, dest)))
+
+    ret = ', '.join(t[-1] for t in sorted(line_items))
     return ret
 
 

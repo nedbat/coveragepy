@@ -19,6 +19,10 @@ Unreleased
 - ``fail_under`` values more than 100 are reported as errors.  Thanks to Mike
   Fiedler for closing `issue 746`_.
 
+- The "missing" values in the text output are now sorted by line number, so
+  that missing branches are reported near the other lines they affect. The
+  values used to show all missing lines, and then all missing branches.
+
 .. _issue 746: https://github.com/nedbat/coveragepy/issues/746
 
 

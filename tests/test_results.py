@@ -124,3 +124,27 @@ def test_should_fail_under_invalid_value():
 ])
 def test_format_lines(statements, lines, result):
     assert format_lines(statements, lines) == result
+
+
+@pytest.mark.parametrize("statements, lines, arcs, result", [
+    (
+        set([1,2,3,4,5,10,11,12,13,14]),
+        set([1,2,5,10,11,13,14]),
+        (),
+        "1-2, 5-11, 13-14"
+        ),
+    (
+        [1,2,3,4,5,10,11,12,13,14,98,99],
+        [1,2,5,10,11,13,14,99],
+        [(3, [4]), (98, [100, -1])],
+        "1-2, 3->4, 5-11, 13-14, 98->100, 98->exit, 99"
+        ),
+    (
+        [1,2,3,4,98,99,100,101,102,103,104],
+        [1,2,99,102,103,104],
+        [(3, [4]), (104, [-1])],
+        "1-2, 3->4, 99, 102-104"
+        ),
+])
+def test_format_lines_with_arcs(statements, lines, arcs, result):
+    assert format_lines(statements, lines, arcs) == result

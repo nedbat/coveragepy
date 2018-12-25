@@ -110,14 +110,7 @@ class SummaryReporter(Reporter):
                     args += (nums.n_branches, nums.n_partial_branches)
                 args += (nums.pc_covered_str,)
                 if self.config.show_missing:
-                    missing_fmtd = analysis.missing_formatted()
-                    if self.branches:
-                        branches_fmtd = analysis.arcs_missing_formatted()
-                        if branches_fmtd:
-                            if missing_fmtd:
-                                missing_fmtd += ", "
-                            missing_fmtd += branches_fmtd
-                    args += (missing_fmtd,)
+                    args += (analysis.missing_formatted(branches=True),)
                 text = fmt_coverage % args
                 # Add numeric percent coverage so that sorting makes sense.
                 args += (nums.pc_covered,)

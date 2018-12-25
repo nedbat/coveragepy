@@ -677,7 +677,7 @@ class CompoundStatementTest(CoverageTest):
                 z = 7
             assert x == 3
             """,
-            [1,2,3,4,5,7,8], "4-7", report="7 3 4 1 45% 4-7, 2->4",
+            [1,2,3,4,5,7,8], "4-7", report="7 3 4 1 45% 2->4, 4-7",
         )
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
@@ -689,7 +689,7 @@ class CompoundStatementTest(CoverageTest):
                 z = 7
             assert y == 5
             """,
-            [1,2,3,4,5,7,8], "3, 7", report="7 2 4 2 64% 3, 7, 2->3, 4->7",
+            [1,2,3,4,5,7,8], "3, 7", report="7 2 4 2 64% 2->3, 3, 4->7, 7",
         )
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
@@ -701,7 +701,7 @@ class CompoundStatementTest(CoverageTest):
                 z = 7
             assert z == 7
             """,
-            [1,2,3,4,5,7,8], "3, 5", report="7 2 4 2 64% 3, 5, 2->3, 4->5",
+            [1,2,3,4,5,7,8], "3, 5", report="7 2 4 2 64% 2->3, 3, 4->5, 5",
         )
 
     def test_elif_no_else(self):
@@ -713,7 +713,7 @@ class CompoundStatementTest(CoverageTest):
                 y = 5
             assert x == 3
             """,
-            [1,2,3,4,5,6], "4-5", report="6 2 4 1 50% 4-5, 2->4",
+            [1,2,3,4,5,6], "4-5", report="6 2 4 1 50% 2->4, 4-5",
         )
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
@@ -723,7 +723,7 @@ class CompoundStatementTest(CoverageTest):
                 y = 5
             assert y == 5
             """,
-            [1,2,3,4,5,6], "3", report="6 1 4 2 70% 3, 2->3, 4->6",
+            [1,2,3,4,5,6], "3", report="6 1 4 2 70% 2->3, 3, 4->6",
         )
 
     def test_elif_bizarre(self):
