@@ -175,7 +175,7 @@ class CoverageTest(
             arcs.append((asgn * self._arcz_map[a], bsgn * self._arcz_map[b]))
         return sorted(arcs)
 
-    def assert_equal_args(self, a1, a2, msg=None):
+    def assert_equal_arcs(self, a1, a2, msg=None):
         """Assert that the arc lists `a1` and `a2` are equal."""
         # Make them into multi-line strings so we can see what's going wrong.
         s1 = "\n".join(repr(a) for a in a1) + "\n"
@@ -261,17 +261,17 @@ class CoverageTest(
 
         if arcs is not None:
             with self.delayed_assertions():
-                self.assert_equal_args(
+                self.assert_equal_arcs(
                     arcs, analysis.arc_possibilities(),
                     "Possible arcs differ: minus is expected, plus is actual"
                 )
 
-                self.assert_equal_args(
+                self.assert_equal_arcs(
                     arcs_missing, analysis.arcs_missing(),
                     "Missing arcs differ: minus is expected, plus is actual"
                 )
 
-                self.assert_equal_args(
+                self.assert_equal_arcs(
                     arcs_unpredicted, analysis.arcs_unpredicted(),
                     "Unpredicted arcs differ: minus is expected, plus is actual"
                 )
