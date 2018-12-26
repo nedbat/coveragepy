@@ -29,7 +29,7 @@ class Analysis(object):
             self._arc_possibilities = sorted(self.file_reporter.arcs())
             self.exit_counts = self.file_reporter.exit_counts()
             self.no_branch = self.file_reporter.no_branch_lines()
-            n_branches = self.total_branches()
+            n_branches = self._total_branches()
             mba = self.missing_branch_arcs()
             n_partial_branches = sum(len(v) for k,v in iitems(mba) if k not in self.missing)
             n_missing_branches = sum(len(v) for k,v in iitems(mba))
@@ -68,16 +68,19 @@ class Analysis(object):
         """Were arcs measured in this result?"""
         return self.data.has_arcs()
 
+    @contract(returns='list(tuple(int, int))')
     def arc_possibilities(self):
         """Returns a sorted list of the arcs in the code."""
         return self._arc_possibilities
 
+    @contract(returns='list(tuple(int, int))')
     def arcs_executed(self):
         """Returns a sorted list of the arcs actually executed in the code."""
         executed = self.data.arcs(self.filename) or []
         executed = self.file_reporter.translate_arcs(executed)
         return sorted(executed)
 
+    @contract(returns='list(tuple(int, int))')
     def arcs_missing(self):
         """Returns a sorted list of the arcs in the code not executed."""
         possible = self.arc_possibilities()
@@ -89,6 +92,7 @@ class Analysis(object):
         )
         return sorted(missing)
 
+    @contract(returns='list(tuple(int, int))')
     def arcs_unpredicted(self):
         """Returns a sorted list of the executed arcs missing from the code."""
         possible = self.arc_possibilities()
@@ -106,14 +110,15 @@ class Analysis(object):
         )
         return sorted(unpredicted)
 
-    def branch_lines(self):
+    def _branch_lines(self):
         """Returns a list of line numbers that have more than one exit."""
         return [l1 for l1,count in iitems(self.exit_counts) if count > 1]
 
-    def total_branches(self):
+    def _total_branches(self):
         """How many total branches are there?"""
         return sum(count for count in self.exit_counts.values() if count > 1)
 
+    @contract(returns='dict(int: list(int))')
     def missing_branch_arcs(self):
         """Return arcs that weren't executed from branch lines.
 
@@ -121,13 +126,14 @@ class Analysis(object):
 
         """
         missing = self.arcs_missing()
-        branch_lines = set(self.branch_lines())
+        branch_lines = set(self._branch_lines())
         mba = collections.defaultdict(list)
         for l1, l2 in missing:
             if l1 in branch_lines:
                 mba[l1].append(l2)
         return mba
 
+    @contract(returns='dict(int: tuple(int, int))')
     def branch_stats(self):
         """Get stats about branches.
 
@@ -137,7 +143,7 @@ class Analysis(object):
 
         missing_arcs = self.missing_branch_arcs()
         stats = {}
-        for lnum in self.branch_lines():
+        for lnum in self._branch_lines():
             exits = self.exit_counts[lnum]
             try:
                 missing = len(missing_arcs[lnum])
