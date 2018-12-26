@@ -303,14 +303,14 @@ def format_lines(statements, lines, arcs=None):
     included in the output as long as start isn't in `lines`.
 
     """
-    line_items = [(pair[0], 0, nice_pair(pair)) for pair in _line_ranges(statements, lines)]
+    line_items = [(pair[0], nice_pair(pair)) for pair in _line_ranges(statements, lines)]
     if arcs:
         line_exits = sorted(arcs)
         for line, exits in line_exits:
             for ex in sorted(exits):
                 if line not in lines:
                     dest = (ex if ex > 0 else "exit")
-                    line_items.append((line, 1, "%d->%s" % (line, dest)))
+                    line_items.append((line, "%d->%s" % (line, dest)))
 
     ret = ', '.join(t[-1] for t in sorted(line_items))
     return ret
