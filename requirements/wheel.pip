@@ -2,6 +2,6 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 # Things needed to make wheels for coverage.py
-setuptools==40.5.0
+setuptools==40.6.3
 # pin so auditwheel will work: https://github.com/pypa/auditwheel/issues/102
 wheel==0.31.1
