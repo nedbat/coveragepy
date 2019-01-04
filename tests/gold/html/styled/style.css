@@ -205,15 +205,15 @@ h2.stats {
     padding: 0 .5em;
     color: #999999;
     font-family: verdana, sans-serif;
-    font-size: .625em;   /* 10/16 */
-    line-height: 1.6em;  /* 16/10 */
-    }
+}
 .linenos p.highlight {
     background: #ffdd00;
     }
 .linenos p a {
     text-decoration: none;
     color: #999999;
+    font-size: .8333em;   /* 10/12 */
+    line-height: 1em;
     }
 .linenos p a:hover {
     text-decoration: underline;
