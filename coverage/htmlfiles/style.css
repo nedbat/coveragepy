@@ -205,8 +205,6 @@ h2.stats {
     padding: 0 .5em;
     color: #999999;
     font-family: verdana, sans-serif;
-    font-size: .625em;   /* 10/16 */
-    line-height: 1.6em;  /* 16/10 */
     }
 .linenos p.highlight {
     background: #ffdd00;
