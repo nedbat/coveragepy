@@ -36,3 +36,9 @@ indent_size = 8
 
 [*,cover]
 trim_trailing_whitespace = false
+
+[*.diff]
+trim_trailing_whitespace = false
+
+[.git/*]
+trim_trailing_whitespace = false
