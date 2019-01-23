@@ -563,10 +563,10 @@ class CoverageSqliteData(SimpleReprMixin):
             with self._connect() as con:
                 # Context entries can be globs, so convert '*' with '%'.
                 context_selectors = [context.replace('*', '%') for context in contexts]
-                context_clause = ' or '.join(['contenxt like ?']*len(contexts))
-                con.execute(
+                context_clause = ' or '.join(['context like ?']*len(contexts))
+                cur = con.execute(
                     "select id from context where " + context_clause, context_selectors)
-                return [row[0] for row in con.fetchall()]
+                return [row[0] for row in cur.fetchall()]
         elif self._query_contexts is not None:
             return self._query_context_ids
         return None
@@ -574,7 +574,7 @@ class CoverageSqliteData(SimpleReprMixin):
     def lines(self, filename, contexts=None):
         self._start_using()
         if self.has_arcs():
-            arcs = self.arcs(filename, context=context)
+            arcs = self.arcs(filename, contexts=contexts)
             if arcs is not None:
                 all_lines = itertools.chain.from_iterable(arcs)
                 return list(set(l for l in all_lines if l > 0))
@@ -588,8 +588,9 @@ class CoverageSqliteData(SimpleReprMixin):
                 data = [file_id]
                 context_ids = self._get_query_context_ids(contexts)
                 if context_ids is not None:
-                    query += " and context_id IN ?"
-                    data += [context_ids]
+                    ids_array = ', '.join('?'*len(context_ids))
+                    query += " and context_id in (" + ids_array + ")"
+                    data += context_ids
                 linenos = con.execute(query, data)
                 return [lineno for lineno, in linenos]
 
@@ -604,8 +605,9 @@ class CoverageSqliteData(SimpleReprMixin):
                 data = [file_id]
                 context_ids = self._get_query_context_ids(contexts)
                 if context_ids is not None:
-                    query += " and context_id IN ?"
-                    data += [context_ids]
+                    ids_array = ', '.join('?'*len(context_ids))
+                    query += " and context_id in (" + ids_array + ")"
+                    data += context_ids
                 arcs = con.execute(query, data)
                 return list(arcs)
 
