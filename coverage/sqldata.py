@@ -546,7 +546,30 @@ class CoverageSqliteData(SimpleReprMixin):
                 return row[0] or ""
             return ""   # File was measured, but no tracer associated.
 
-    def lines(self, filename, context=None):
+
+    def set_query_contexts(self, contexts=None):
+        """Set query contexts for future `lines`, `arcs` etc. calls."""
+        self._query_context_ids = self._get_query_context_ids(contexts) \
+            if contexts is not None else None
+        self._query_contexts = contexts
+
+    def _get_query_context_ids(self, contexts=None):
+        if contexts is not None:
+            if not len(contexts):
+                return None
+            self._start_using()
+            with self._connect() as con:
+                # Context entries can be globs, so convert '*' with '%'.
+                context_selectors = [context.replace('*', '%') for context in contexts]
+                context_clause = ' or '.join(['contenxt like ?']*len(contexts))
+                con.execute(
+                    "select id from context where " + context_clause, context_selectors)
+                return [row[0] for row in con.fetchall()]
+        elif self._query_contexts is not None:
+            return self._query_context_ids
+        return None
+
+    def lines(self, filename, contexts=None):
         self._start_using()
         if self.has_arcs():
             arcs = self.arcs(filename, context=context)
@@ -561,13 +584,14 @@ class CoverageSqliteData(SimpleReprMixin):
             else:
                 query = "select distinct lineno from line where file_id = ?"
                 data = [file_id]
-                if context is not None:
-                    query += " and context_id = ?"
-                    data += [self._context_id(context)]
+                context_ids = self._get_query_context_ids(contexts)
+                if context_ids is not None:
+                    query += " and context_id IN ?"
+                    data += [context_ids]
                 linenos = con.execute(query, data)
                 return [lineno for lineno, in linenos]
 
-    def arcs(self, filename, context=None):
+    def arcs(self, filename, contexts=None):
         self._start_using()
         with self._connect() as con:
             file_id = self._file_id(filename)
@@ -576,9 +600,10 @@ class CoverageSqliteData(SimpleReprMixin):
             else:
                 query = "select distinct fromno, tono from arc where file_id = ?"
                 data = [file_id]
-                if context is not None:
-                    query += " and context_id = ?"
-                    data += [self._context_id(context)]
+                context_ids = self._get_query_context_ids(contexts)
+                if context_ids is not None:
+                    query += " and context_id IN ?"
+                    data += [context_ids]
                 arcs = con.execute(query, data)
                 return list(arcs)
 

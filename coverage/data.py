@@ -175,6 +175,13 @@ class CoverageJsonData(object):
     ## Reading data
     ##
 
+    def set_query_contexts(self, contexts=None):
+        """Set the query contexts.
+
+        No-op, since contexts are not supported for this data format.
+        """
+        pass
+
     def has_arcs(self):
         """Does this data have arcs?
 
@@ -186,7 +193,7 @@ class CoverageJsonData(object):
         """
         return self._has_arcs()
 
-    def lines(self, filename):
+    def lines(self, filename, contexts=None):
         """Get the list of lines executed for a file.
 
         If the file was not measured, returns None.  A file might be measured,
@@ -195,6 +202,8 @@ class CoverageJsonData(object):
         If the file was executed, returns a list of integers, the line numbers
         executed in the file. The list is in no particular order.
 
+        `contexts` is ignored, since contexts are not supported for this data
+        format.
         """
         if self._arcs is not None:
             arcs = self._arcs.get(filename)
@@ -205,7 +214,7 @@ class CoverageJsonData(object):
             return self._lines.get(filename)
         return None
 
-    def arcs(self, filename):
+    def arcs(self, filename, contexts=None):
         """Get the list of arcs executed for a file.
 
         If the file was not measured, returns None.  A file might be measured,
@@ -221,6 +230,8 @@ class CoverageJsonData(object):
         If the ending ling number is -N, it's an exit from the code object that
         starts at line N.
 
+        `contexts` is ignored, since contexts are not supported for this data
+        format.
         """
         if self._arcs is not None:
             if filename in self._arcs:
