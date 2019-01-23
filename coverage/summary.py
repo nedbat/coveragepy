@@ -42,6 +42,7 @@ class SummaryReporter(Reporter):
 
         fmt_err = u"%s   %s: %s"
 
+        self.coverage.get_data().set_query_contexts(self.config.query_contexts)
         for fr in self.find_file_reporters(morfs):
             try:
                 analysis = self.coverage._analyze(fr)
