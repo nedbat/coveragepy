@@ -153,10 +153,15 @@ class DynamicContextTest(CoverageTest):
 
         full_names = {os.path.basename(f): f for f in data.measured_files()}
         fname = full_names["two_tests.py"]
-        self.assertCountEqual(data.measured_contexts(), ["", "test_one", "test_two"])
+        self.assertCountEqual(
+            data.measured_contexts(),
+            ["", "two_tests.test_one", "two_tests.test_two"])
         self.assertCountEqual(data.lines(fname, [""]), self.OUTER_LINES)
-        self.assertCountEqual(data.lines(fname, ["test_one"]), self.TEST_ONE_LINES)
-        self.assertCountEqual(data.lines(fname, ["test_two"]), self.TEST_TWO_LINES)
+        self.assertCountEqual(
+            data.lines(fname, ["two_tests.test_one"]),
+            self.TEST_ONE_LINES)
+        self.assertCountEqual(
+            data.lines(fname, ["two_tests.test_two"]), self.TEST_TWO_LINES)
 
     def test_static_and_dynamic(self):
         self.make_file("two_tests.py", self.SOURCE)
@@ -248,34 +253,35 @@ class QualnameTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_method(self):
-        self.assertEqual(Parent().meth(), "Parent.meth")
+        self.assertEqual(Parent().meth(), "tests.test_context.Parent.meth")
 
     def test_inherited_method(self):
-        self.assertEqual(Child().meth(), "Parent.meth")
+        self.assertEqual(Child().meth(), "tests.test_context.Parent.meth")
 
     def test_mi_inherited_method(self):
-        self.assertEqual(MultiChild().meth(), "Parent.meth")
+        self.assertEqual(MultiChild().meth(), "tests.test_context.Parent.meth")
 
     def test_no_arguments(self):
-        self.assertEqual(no_arguments(), "no_arguments")
+        self.assertEqual(no_arguments(), "tests.test_context.no_arguments")
 
     def test_plain_old_function(self):
-        self.assertEqual(plain_old_function(0, 1), "plain_old_function")
+        self.assertEqual(
+            plain_old_function(0, 1), "tests.test_context.plain_old_function")
 
     def test_fake_out(self):
-        self.assertEqual(fake_out(0), "fake_out")
+        self.assertEqual(fake_out(0), "tests.test_context.fake_out")
 
     def test_property(self):
-        # I'd like this to be "Parent.a_property", but this might be ok too.
-        self.assertEqual(Parent().a_property, "a_property")
+        self.assertEqual(
+            Parent().a_property, "tests.test_context.Parent.a_property")
 
     def test_changeling(self):
         c = Child()
         c.meth = patch_meth
-        self.assertEqual(c.meth(c), "patch_meth")
+        self.assertEqual(c.meth(c), "tests.test_context.patch_meth")
 
     def test_oldstyle(self):
         if not env.PY2:
             self.skipTest("Old-style classes are only in Python 2")
-        self.assertEqual(OldStyle().meth(), "meth")
-        self.assertEqual(OldChild().meth(), "meth")
+        self.assertEqual(OldStyle().meth(), "tests.test_context.OldStyle.meth")
+        self.assertEqual(OldChild().meth(), "tests.test_context.OldChild.meth")

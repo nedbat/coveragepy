@@ -46,32 +46,36 @@ def qualname_from_frame(frame):
     co = frame.f_code
     fname = co.co_name
     if not co.co_varnames:
-        return fname
+        func = frame.f_globals[fname]
+        return func.__module__ + '.' + fname
 
     first_arg = co.co_varnames[0]
     if co.co_argcount and first_arg == "self":
         self = frame.f_locals["self"]
     else:
-        return fname
+        func = frame.f_globals[fname]
+        return func.__module__ + '.' + fname
 
     method = getattr(self, fname, None)
     if method is None:
-        return fname
+        func = frame.f_globals[fname]
+        return func.__module__ + '.' + fname
 
     func = getattr(method, '__func__', None)
     if func is None:
-        return fname
+        cls = self.__class__
+        return cls.__module__ + '.' + cls.__name__ + "." + fname
 
     if hasattr(func, '__qualname__'):
-        qname = func.__qualname__
+        qname = func.__module__ + '.' + func.__qualname__
     else:
         for cls in getattr(self.__class__, '__mro__', ()):
             f = cls.__dict__.get(fname, None)
             if f is None:
                 continue
             if f is func:
-                qname = cls.__name__ + "." + fname
+                qname = cls.__module__ + '.' + cls.__name__ + "." + fname
                 break
         else:
-            qname = fname
+            qname = func.__module__ + '.' + fname
     return qname
