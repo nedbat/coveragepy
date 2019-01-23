@@ -177,6 +177,7 @@ class CoverageConfig(object):
         self.command_line = None
         self.concurrency = None
         self.context = None
+        self.query_contexts = None
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.debug = []
