@@ -95,6 +95,8 @@ class CoverageSqliteData(SimpleReprMixin):
 
         self._current_context = None
         self._current_context_id = None
+        self._query_contexts = None
+        self._query_context_ids = None
 
     def _choose_filename(self):
         self._filename = self._basename
