@@ -77,10 +77,10 @@ class StaticContextTest(CoverageTest):
             fred = full_names['red.py']
             fblue = full_names['blue.py']
 
-            self.assertEqual(combined.lines(fred, context='red'), self.LINES)
-            self.assertEqual(combined.lines(fred, context='blue'), [])
-            self.assertEqual(combined.lines(fblue, context='red'), [])
-            self.assertEqual(combined.lines(fblue, context='blue'), self.LINES)
+            self.assertEqual(combined.lines(fred, contexts=['red']), self.LINES)
+            self.assertEqual(combined.lines(fred, contexts=['blue']), [])
+            self.assertEqual(combined.lines(fblue, contexts=['red']), [])
+            self.assertEqual(combined.lines(fblue, contexts=['blue']), self.LINES)
 
     def test_combining_arc_contexts(self):
         red_data, blue_data = self.run_red_blue(branch=True)
@@ -97,15 +97,15 @@ class StaticContextTest(CoverageTest):
             fred = full_names['red.py']
             fblue = full_names['blue.py']
 
-            self.assertEqual(combined.lines(fred, context='red'), self.LINES)
-            self.assertEqual(combined.lines(fred, context='blue'), [])
-            self.assertEqual(combined.lines(fblue, context='red'), [])
-            self.assertEqual(combined.lines(fblue, context='blue'), self.LINES)
+            self.assertEqual(combined.lines(fred, contexts=['red']), self.LINES)
+            self.assertEqual(combined.lines(fred, contexts=['blue']), [])
+            self.assertEqual(combined.lines(fblue, contexts=['red']), [])
+            self.assertEqual(combined.lines(fblue, contexts=['blue']), self.LINES)
 
-            self.assertEqual(combined.arcs(fred, context='red'), self.ARCS)
-            self.assertEqual(combined.arcs(fred, context='blue'), [])
-            self.assertEqual(combined.arcs(fblue, context='red'), [])
-            self.assertEqual(combined.arcs(fblue, context='blue'), self.ARCS)
+            self.assertEqual(combined.arcs(fred, contexts=['red']), self.ARCS)
+            self.assertEqual(combined.arcs(fred, contexts=['blue']), [])
+            self.assertEqual(combined.arcs(fblue, contexts=['red']), [])
+            self.assertEqual(combined.arcs(fblue, contexts=['blue']), self.ARCS)
 
 
 class DynamicContextTest(CoverageTest):
@@ -154,9 +154,9 @@ class DynamicContextTest(CoverageTest):
         full_names = {os.path.basename(f): f for f in data.measured_files()}
         fname = full_names["two_tests.py"]
         self.assertCountEqual(data.measured_contexts(), ["", "test_one", "test_two"])
-        self.assertCountEqual(data.lines(fname, ""), self.OUTER_LINES)
-        self.assertCountEqual(data.lines(fname, "test_one"), self.TEST_ONE_LINES)
-        self.assertCountEqual(data.lines(fname, "test_two"), self.TEST_TWO_LINES)
+        self.assertCountEqual(data.lines(fname, [""]), self.OUTER_LINES)
+        self.assertCountEqual(data.lines(fname, ["test_one"]), self.TEST_ONE_LINES)
+        self.assertCountEqual(data.lines(fname, ["test_two"]), self.TEST_TWO_LINES)
 
     def test_static_and_dynamic(self):
         self.make_file("two_tests.py", self.SOURCE)
