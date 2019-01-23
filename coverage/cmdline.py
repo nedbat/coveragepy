@@ -101,6 +101,14 @@ class Opts(object):
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
+    contexts = optparse.make_option(
+        '', '--contexts', action='store',
+        metavar="PAT1,PAT2,...",
+        help=(
+            "Only count the lines covered in given contexts. "
+            "Accepts shell-style wildcards, which must be quoted."
+        ),
+    )
     output_xml = optparse.make_option(
         '-o', '', action='store', dest="outfile",
         metavar="OUTFILE",
@@ -176,6 +184,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             include=None,
             module=None,
             omit=None,
+            contexts=None,
             parallel_mode=None,
             pylib=None,
             rcfile=True,
@@ -348,6 +357,7 @@ CMDS = {
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
+            Opts.contexts,
             Opts.show_missing,
             Opts.skip_covered,
             ] + GLOBAL_ARGS,
@@ -478,6 +488,7 @@ class CoverageScript(object):
         omit = unshell_list(options.omit)
         include = unshell_list(options.include)
         debug = unshell_list(options.debug)
+        contexts = unshell_list(options.contexts)
 
         # Do something.
         self.coverage = Coverage(
@@ -519,6 +530,7 @@ class CoverageScript(object):
             ignore_errors=options.ignore_errors,
             omit=omit,
             include=include,
+            contexts=contexts,
             )
 
         # We need to be able to import from the current directory, because

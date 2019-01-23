@@ -32,17 +32,19 @@ class BaseCmdLineTest(CoverageTest):
     _defaults = mock.Mock()
     _defaults.Coverage().annotate(
         directory=None, ignore_errors=None, include=None, omit=None, morfs=[],
+        contexts=None,
     )
     _defaults.Coverage().html_report(
         directory=None, ignore_errors=None, include=None, omit=None, morfs=[],
-        skip_covered=None, title=None
+        skip_covered=None, title=None, contexts=None,
     )
     _defaults.Coverage().report(
         ignore_errors=None, include=None, omit=None, morfs=[],
-        show_missing=None, skip_covered=None
+        show_missing=None, skip_covered=None, contexts=None,
     )
     _defaults.Coverage().xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
+        contexts=None,
     )
     _defaults.Coverage(
         cover_pylib=None, data_suffix=None, timid=None, branch=None,
@@ -362,6 +364,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.load()
             cov.report(skip_covered=True)
+            """)
+        self.cmd_executes("report --contexts=foo,bar", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(contexts=["foo", "bar"])
             """)
 
     def test_run(self):
