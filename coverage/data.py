@@ -253,6 +253,9 @@ class CoverageJsonData(object):
             return self._file_tracers.get(filename, "")
         return None
 
+    def contexts_by_lineno(self, filename):
+        return collections.defaultdict(list)
+
     def run_infos(self):
         """Return the list of dicts of run information.
 
