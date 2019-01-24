@@ -662,7 +662,12 @@ class Sqlite(SimpleReprMixin):
         # has non-ascii characters in it.  Opening a relative file name avoids
         # a problem if the current directory has non-ascii.
         filename = os.path.relpath(self.filename)
-        self.con = sqlite3.connect(filename)
+        # It can happen that Python switches threads while the tracer writes
+        # data. The second thread will also try to write to the data,
+        # effectively causing a nested context. However, given the indempotent
+        # nature of the tracer operations, sharing a conenction among threads
+        # is not a problem.
+        self.con = sqlite3.connect(filename, check_same_thread=False)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
         # PyPy needs the .close() calls here, or sqlite gets twisted up:
