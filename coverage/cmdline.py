@@ -93,6 +93,10 @@ class Opts(object):
         '--skip-covered', action='store_true',
         help="Skip files with 100% coverage.",
     )
+    show_contexts = optparse.make_option(
+        '--show-contexts', action='store_true',
+        help="Show contexts for covered lines.",
+    )
     omit = optparse.make_option(
         '', '--omit', action='store',
         metavar="PAT1,PAT2,...",
@@ -190,6 +194,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             rcfile=True,
             show_missing=None,
             skip_covered=None,
+            show_contexts=None,
             source=None,
             timid=None,
             title=None,
@@ -341,6 +346,7 @@ CMDS = {
             Opts.omit,
             Opts.title,
             Opts.skip_covered,
+            Opts.show_contexts
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
@@ -553,6 +559,7 @@ class CoverageScript(object):
                 directory=options.directory,
                 title=options.title,
                 skip_covered=options.skip_covered,
+                show_contexts=options.show_contexts,
                 **report_args
                 )
         elif options.action == "xml":

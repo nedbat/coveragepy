@@ -202,6 +202,7 @@ class CoverageConfig(object):
         self.precision = 0
         self.show_missing = False
         self.skip_covered = False
+        self.show_contexts = False
 
         # Defaults for [html]
         self.extra_css = None

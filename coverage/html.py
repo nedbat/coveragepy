@@ -214,6 +214,9 @@ class HtmlReporter(Reporter):
         c_mis = "mis"
         c_par = "par " + c_run
 
+        # Lookup line number contexts.
+        contexts_by_lineno = analysis.data.contexts_by_lineno(fr.filename)
+
         lines = []
 
         for lineno, line in enumerate(fr.source_token_lines(), start=1):
@@ -268,6 +271,7 @@ class HtmlReporter(Reporter):
                 'html': ''.join(html),
                 'number': lineno,
                 'class': ' '.join(line_class) or "pln",
+                'contexts': sorted(filter(None, contexts_by_lineno[lineno])) or None,
                 'annotate': annotate_html,
                 'annotate_long': annotate_long,
             })
@@ -279,6 +283,7 @@ class HtmlReporter(Reporter):
             'c_par': c_par,
             'c_run': c_run,
             'has_arcs': self.has_arcs,
+            'show_contexts': self.config.show_contexts,
             'extra_css': self.extra_css,
             'fr': fr,
             'nums': nums,
