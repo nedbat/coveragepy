@@ -297,6 +297,7 @@ td.text {
     color: #000080;
     }
 
+/* Line contexts */
 td.contexts p {
     margin: 0;
     padding: 0 .5em;
@@ -305,15 +306,12 @@ td.contexts p {
     white-space: nowrap;
     position: relative;
     }
-
 td.contexts p:hover {
     background: #eee;
     }
-
 td.contexts p span.context-list {
     display: none;
     }
-
 td.contexts p:hover span.context-list {
     display: block;
     min-width: 30em;
@@ -332,11 +330,9 @@ td.contexts p:hover span.context-list {
     border-radius: .2em;
     box-shadow: #cccccc .2em .2em .2em;
     }
-
 span.context-list span.context-line {
-  display: block;
-}
-
+    display: block;
+    }
 td.contexts p span.context-button {
     display: inline-block;
     cursor: pointer;

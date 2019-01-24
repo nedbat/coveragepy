@@ -297,6 +297,49 @@ td.text {
     color: #000080;
     }
 
+/* Line contexts */
+td.contexts p {
+    margin: 0;
+    padding: 0 .5em;
+    color: #999999;
+    font-family: verdana, sans-serif;
+    white-space: nowrap;
+    position: relative;
+    }
+td.contexts p:hover {
+    background: #eee;
+    }
+td.contexts p span.context-list {
+    display: none;
+    }
+td.contexts p:hover span.context-list {
+    display: block;
+    min-width: 30em;
+    //max-width: 50%;
+    white-space: normal;
+    float: right;
+    position: absolute;
+    top: 1.75em;
+    right: 1em;
+    height: auto;
+    color: #333;
+    background: #ffffcc;
+    border: 1px solid #888;
+    padding: .25em .5em;
+    z-index: 999;
+    border-radius: .2em;
+    box-shadow: #cccccc .2em .2em .2em;
+    }
+span.context-list span.context-line {
+    display: block;
+    }
+td.contexts p span.context-button {
+    display: inline-block;
+    cursor: pointer;
+    font-size: .8333em;   /* 10/12 */
+    line-height: 1em;
+    }
+
 /* index styles */
 #index td, #index th {
     text-align: right;
