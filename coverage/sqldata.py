@@ -11,6 +11,7 @@
 # TODO: should writes be batched?
 # TODO: run_info
 
+import collections
 import glob
 import itertools
 import os
@@ -76,6 +77,7 @@ create table tracer (
 
 
 class CoverageSqliteData(SimpleReprMixin):
+
     def __init__(self, basename=None, suffix=None, warn=None, debug=None):
         self._basename = os.path.abspath(basename or ".coverage")
         self._suffix = suffix
@@ -610,6 +612,38 @@ class CoverageSqliteData(SimpleReprMixin):
                     data += context_ids
                 arcs = con.execute(query, data)
                 return list(arcs)
+
+    def contexts_by_lineno(self, filename):
+        lineno_contexts_map = collections.defaultdict(list)
+        self._start_using()
+        with self._connect() as con:
+            file_id = self._file_id(filename)
+            if file_id is None:
+                return lineno_contexts_map
+            if self.has_arcs():
+                query = (
+                    "select arc.fromno, arc.tono, context.context "
+                    "from arc, context "
+                    "where arc.file_id = ? and arc.context_id = context.id"
+                )
+                data = [file_id]
+                for fromno, tono, context in con.execute(query, data):
+                    if context not in lineno_contexts_map[fromno]:
+                        lineno_contexts_map[fromno].append(context)
+                    if context not in lineno_contexts_map[tono]:
+                        lineno_contexts_map[tono].append(context)
+                return lineno_contexts_map
+
+            query = (
+                "select line.lineno, context.context "
+                "from line, context "
+                "where line.file_id = ? and line.context_id = context.id"
+            )
+            data = [file_id]
+            for lineno, context in con.execute(query, data):
+                if context not in lineno_contexts_map[lineno]:
+                    lineno_contexts_map[lineno].append(context)
+            return lineno_contexts_map
 
     def run_infos(self):
         return []   # TODO
