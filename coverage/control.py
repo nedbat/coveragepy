@@ -787,7 +787,7 @@ class Coverage(object):
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
                     omit=None, include=None, extra_css=None, title=None,
-                    skip_covered=None, contexts=None):
+                    skip_covered=None, show_contexts=None, contexts=None):
         """Generate an HTML report.
 
         The HTML is written to `directory`.  The file "index.html" is the
@@ -814,7 +814,7 @@ class Coverage(object):
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
-            skip_covered=skip_covered, query_contexts=contexts,
+            skip_covered=skip_covered, show_contexts=show_contexts, query_contexts=contexts,
             )
         reporter = HtmlReporter(self, self.config)
         return reporter.report(morfs)

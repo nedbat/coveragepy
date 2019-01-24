@@ -88,6 +88,23 @@
     </p>
 {% endfor %}
             </td>
+            {% if show_contexts -%}
+            <td class="contexts">
+              {% for line in lines -%}
+                <p>{#-#}
+                  {% if line.contexts -%}
+                    <span class="context-button">ctx</span>{#-#}
+                    <span class="context-list">
+                      {% for context in line.contexts -%}
+                      <span class="context-line">{{context}}</span>{#-#}
+                      {% endfor -%}
+                    </span>{#-#}
+                  {% endif -%}
+                  &nbsp;
+                </p>{#-#}
+              {% endfor %}
+            </td>
+            {% endif -%}
         </tr>
     </table>
 </div>
