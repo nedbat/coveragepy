@@ -36,7 +36,7 @@ class BaseCmdLineTest(CoverageTest):
     )
     _defaults.Coverage().html_report(
         directory=None, ignore_errors=None, include=None, omit=None, morfs=[],
-        skip_covered=None, title=None, contexts=None,
+        skip_covered=None, show_contexts=None, title=None, contexts=None,
     )
     _defaults.Coverage().report(
         ignore_errors=None, include=None, omit=None, morfs=[],
