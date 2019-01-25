@@ -16,6 +16,7 @@ import itertools
 import os
 import sqlite3
 import sys
+import threading
 
 from coverage.backward import iitems
 from coverage.data import filename_suffix
@@ -84,7 +85,7 @@ class CoverageSqliteData(SimpleReprMixin):
 
         self._choose_filename()
         self._file_map = {}
-        self._db = None
+        self._dbs = {}
         self._pid = os.getpid()
 
         # Are we in sync with the data file?
@@ -103,9 +104,10 @@ class CoverageSqliteData(SimpleReprMixin):
             self.filename += "." + suffix
 
     def _reset(self):
-        if self._db is not None:
-            self._db.close()
-        self._db = None
+        if self._dbs:
+            for db in self._dbs.values():
+                db.close()
+        self._dbs = {}
         self._file_map = {}
         self._have_used = False
         self._current_context_id = None
@@ -113,14 +115,14 @@ class CoverageSqliteData(SimpleReprMixin):
     def _create_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Creating data file {!r}".format(self.filename))
-        self._db = Sqlite(self.filename, self._debug)
-        with self._db:
+        self._dbs[threading.get_ident()] = Sqlite(self.filename, self._debug)
+        with self._dbs[threading.get_ident()] as db:
             for stmt in SCHEMA.split(';'):
                 stmt = " ".join(stmt.strip().split())
                 if stmt:
-                    self._db.execute(stmt)
-            self._db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
-            self._db.execute(
+                    db.execute(stmt)
+            db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
+            db.execute(
                 "insert into meta (has_lines, has_arcs, sys_argv) values (?, ?, ?)",
                 (self._has_lines, self._has_arcs, str(getattr(sys, 'argv', None)))
             )
@@ -128,10 +130,10 @@ class CoverageSqliteData(SimpleReprMixin):
     def _open_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Opening data file {!r}".format(self.filename))
-        self._db = Sqlite(self.filename, self._debug)
-        with self._db:
+        self._dbs[threading.get_ident()] = Sqlite(self.filename, self._debug)
+        with self._dbs[threading.get_ident()] as db:
             try:
-                schema_version, = self._db.execute("select version from coverage_schema").fetchone()
+                schema_version, = db.execute("select version from coverage_schema").fetchone()
             except Exception as exc:
                 raise CoverageException(
                     "Data file {!r} doesn't seem to be a coverage data file: {}".format(
@@ -146,22 +148,22 @@ class CoverageSqliteData(SimpleReprMixin):
                         )
                     )
 
-            for row in self._db.execute("select has_lines, has_arcs from meta"):
+            for row in db.execute("select has_lines, has_arcs from meta"):
                 self._has_lines, self._has_arcs = row
 
-            for path, id in self._db.execute("select path, id from file"):
+            for path, id in db.execute("select path, id from file"):
                 self._file_map[path] = id
 
     def _connect(self):
-        if self._db is None:
+        if threading.get_ident() not in self._dbs:
             if os.path.exists(self.filename):
                 self._open_db()
             else:
                 self._create_db()
-        return self._db
+        return self._dbs[threading.get_ident()]
 
     def __nonzero__(self):
-        if self._db is None and not os.path.exists(self.filename):
+        if threading.get_ident() not in self._dbs and not os.path.exists(self.filename):
             return False
         try:
             with self._connect() as con:
