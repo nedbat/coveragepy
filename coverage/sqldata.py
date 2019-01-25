@@ -326,6 +326,12 @@ class CoverageSqliteData(SimpleReprMixin):
             self.add_file_tracers({filename: plugin_name})
 
     def update(self, other_data, aliases=None):
+        """Update this data with data from several other `CoverageData`
+        instances.
+
+        If `aliases` is provided, it's a `PathAliases` object that is used to
+        re-map paths to match the local machine's.
+        """
         if self._has_lines and other_data._has_arcs:
             raise CoverageException("Can't combine arc data with line data")
         if self._has_arcs and other_data._has_lines:
@@ -333,57 +339,135 @@ class CoverageSqliteData(SimpleReprMixin):
 
         aliases = aliases or PathAliases()
 
-        # See what we had already measured, for accurate conflict reporting.
-        this_measured = self.measured_files()
-
-        other_files = set()
-
         # Force the database we're writing to to exist before we start nesting
         # contexts.
         self._start_using()
 
-        # Start a single transaction in each file.
-        with self._connect(), other_data._connect():
-            # lines
-            if other_data._has_lines:
-                for context in other_data.measured_contexts():
-                    self.set_context(context)
-                    for filename in other_data.measured_files():
-                        lines = set(other_data.lines(filename, context=context))
-                        if lines:
-                            other_files.add(filename)
-                            filename = aliases.map(filename)
-                            lines.update(self.lines(filename, context=context) or ())
-                            self.add_lines({filename: lines})
+        # Collector for all arcs, lines and tracers
+        files = []
+        contexts = []
+        arcs = []
+        lines = []
+        tracers = {}
+        other_data.read()
+        with other_data._connect() as conn:
+            # Get files data.
+            cur = conn.execute('select path from file')
+            files.extend(aliases.map(path) for (path, ) in cur)
+            cur.close()
 
-            # arcs
-            if other_data._has_arcs:
-                for context in other_data.measured_contexts():
-                    self.set_context(context)
-                    for filename in other_data.measured_files():
-                        arcs = set(other_data.arcs(filename, context=context))
-                        if arcs:
-                            other_files.add(filename)
-                            filename = aliases.map(filename)
-                            arcs.update(self.arcs(filename, context=context) or ())
-                            self.add_arcs({filename: arcs})
+            # Get contexts data.
+            cur = conn.execute('select context from context')
+            contexts.extend(context for (context, ) in cur)
+            cur.close()
 
-            # file_tracers
-            for filename in other_files:
-                other_plugin = other_data.file_tracer(filename)
-                filename = aliases.map(filename)
-                if filename in this_measured:
-                    this_plugin = self.file_tracer(filename)
-                else:
-                    this_plugin = None
-                if this_plugin is None:
-                    self.add_file_tracers({filename: other_plugin})
-                elif this_plugin != other_plugin:
+            # Get arc data.
+            cur = conn.execute(
+                'select file.path, context.context, arc.fromno, arc.tono '
+                'from arc '
+                'inner join file on file.id = arc.file_id '
+                'inner join context on context.id = arc.context_id ')
+            arcs.extend(
+                (aliases.map(path), context, fromno, tono)
+                for (path, context, fromno, tono) in cur)
+            cur.close()
+
+            # Get line data.
+            cur = conn.execute(
+                'select file.path, context.context, line.lineno '
+                'from line '
+                'inner join file on file.id = line.file_id '
+                'inner join context on context.id = line.context_id ')
+            lines.extend(
+                (aliases.map(path), context, lineno)
+                for (path, context, lineno) in cur)
+            cur.close()
+
+            # Get tracer data.
+            cur = conn.execute(
+                'select file.path, tracer '
+                'from tracer '
+                'inner join file on file.id = tracer.file_id')
+            tracers.update(dict(
+                (aliases.map(path), tracer)
+                for (path, tracer) in cur))
+            cur.close()
+
+        with self._connect() as conn:
+            conn.isolation_level = 'IMMEDIATE'
+
+            # Get all tracers in the DB. Files not in the tracers are assumed
+            # to have an empty string tracer. Since Sqlite does not support
+            # full outer joins, we have to make two queries to fill the
+            # dictionary.
+            this_tracers = {
+                path: ''
+                for path, in conn.execute('select path from file')}
+            this_tracers.update({
+                aliases.map(path): tracer
+                for path, tracer in conn.execute(
+                        'select file.path, tracer from tracer '
+                        'inner join file on file.id = tracer.file_id')})
+
+            # Create all file and context rows in the DB.
+            conn.executemany(
+                'insert or ignore into file (path) values (?)',
+                ((file,) for file in files))
+            file_ids = {
+                path: id
+                for id, path in conn.execute('select id, path from file')}
+            conn.executemany(
+                'insert or ignore into context (context) values (?)',
+                ((context,) for context in contexts))
+            context_ids = {
+                context: id
+                for id, context in conn.execute(
+                        'select id, context from context')}
+
+            # Prepare tracers and fail, if a conflict is found.
+            # tracer_paths is used to ensure consistency over the tracer data
+            # and tracer_map tracks the tracers to be inserted.
+            tracer_map = {}
+            for path in files:
+                this_tracer = this_tracers.get(path)
+                other_tracer = tracers.get(path, '')
+                # If there is no tracer, there is always the None tracer.
+                if this_tracer is not None and this_tracer != other_tracer:
                     raise CoverageException(
                         "Conflicting file tracer name for '%s': %r vs %r" % (
-                            filename, this_plugin, other_plugin,
-                        )
-                    )
+                            path, this_tracer, other_tracer))
+                tracer_map[path] = other_tracer
+
+            # Prepare arc and line rows to be inserted by converting the file
+            # and context strings with integer ids. Then use the efficient
+            # `executemany()` to insert all rows at once.
+            arc_rows = list(
+                (file_ids[file], context_ids[context], fromno, tono)
+                for file, context, fromno, tono in arcs)
+            line_rows = list(
+                (file_ids[file], context_ids[context], lineno)
+                for file, context, lineno in lines)
+
+            self._choose_lines_or_arcs(arcs=bool(arcs), lines=bool(lines))
+
+            conn.executemany(
+                'insert or ignore into arc '
+                '(file_id, context_id, fromno, tono) values (?, ?, ?, ?)',
+                ((file_ids[file], context_ids[context], fromno, tono)
+                 for file, context, fromno, tono in arcs))
+            conn.executemany(
+                'insert or ignore into line '
+                '(file_id, context_id, lineno) values (?, ?, ?)',
+                ((file_ids[file], context_ids[context], lineno)
+                 for file, context, lineno in lines))
+            conn.executemany(
+                'insert or ignore into tracer (file_id, tracer) values (?, ?)',
+                ((file_ids[filename], tracer)
+                 for filename, tracer in tracer_map.items()))
+
+        # Update all internal cache data.
+        self._reset()
+        self.read()
 
     def erase(self, parallel=False):
         """Erase the data in this object.
