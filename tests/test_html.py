@@ -95,6 +95,30 @@ class HtmlTestHelpers(CoverageTest):
         )
 
 
+class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
+    """Tests of the HTML reports with shown contexts."""
+
+    def setUp(self):
+        super(HtmlWithContextsTest, self).setUp()
+
+        # At least one of our tests monkey-patches the version of coverage.py,
+        # so grab it here to restore it later.
+        self.real_coverage_version = coverage.__version__
+        self.addCleanup(setattr, coverage, "__version__", self.real_coverage_version)
+
+    def test_html_created(self):
+        # Test basic HTML generation: files should be created.
+        self.create_initial_files()
+        self.run_coverage(htmlargs={'show_contexts': True})
+
+        self.assert_exists("htmlcov/index.html")
+        self.assert_exists("htmlcov/main_file_py.html")
+        self.assert_exists("htmlcov/helper1_py.html")
+        self.assert_exists("htmlcov/helper2_py.html")
+        self.assert_exists("htmlcov/style.css")
+        self.assert_exists("htmlcov/coverage_html.js")
+
+
 class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML delta speed-ups."""
 

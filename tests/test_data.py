@@ -184,12 +184,40 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.touch_file('zzz.py')
         self.assert_measured_files(covdata, MEASURED_FILES_3 + ['zzz.py'])
 
+    def test_set_query_contexts(self):
+        self.skip_unless_data_storage_is("sql")
+        covdata = CoverageData()
+        covdata.set_context('test_a')
+        covdata.add_lines(LINES_1)
+        covdata.set_query_contexts(['test_*'])
+        self.assertEqual(covdata.lines('a.py'), [1, 2])
+        covdata.set_query_contexts(['other*'])
+        self.assertEqual(covdata.lines('a.py'), [])
+
     def test_no_lines_vs_unmeasured_file(self):
         covdata = CoverageData()
         covdata.add_lines(LINES_1)
         covdata.touch_file('zzz.py')
         self.assertEqual(covdata.lines('zzz.py'), [])
         self.assertIsNone(covdata.lines('no_such_file.py'))
+
+    def test_lines_with_contexts(self):
+        self.skip_unless_data_storage_is("sql")
+        covdata = CoverageData()
+        covdata.set_context('test_a')
+        covdata.add_lines(LINES_1)
+        self.assertEqual(covdata.lines('a.py'), [1, 2])
+        self.assertEqual(covdata.lines('a.py', contexts=['test*']), [1, 2])
+        self.assertEqual(covdata.lines('a.py', contexts=['other*']), [])
+
+    def test_contexts_by_lineno_with_lines(self):
+        self.skip_unless_data_storage_is("sql")
+        covdata = CoverageData()
+        covdata.set_context('test_a')
+        covdata.add_lines(LINES_1)
+        self.assertDictEqual(
+            covdata.contexts_by_lineno('a.py'),
+            {1: ['test_a'], 2: ['test_a']})
 
     def test_run_info(self):
         self.skip_unless_data_storage_is("json")
@@ -224,6 +252,32 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertIsNone(covdata.lines('no_such_file.py'))
         self.assertEqual(covdata.arcs('zzz.py'), [])
         self.assertIsNone(covdata.arcs('no_such_file.py'))
+
+    def test_arcs_with_contexts(self):
+        self.skip_unless_data_storage_is("sql")
+        covdata = CoverageData()
+        covdata.set_context('test_x')
+        covdata.add_arcs(ARCS_3)
+        self.assertEqual(
+            covdata.arcs('x.py'), [(-1, 1), (1, 2), (2, 3), (3, -1)])
+        self.assertEqual(covdata.arcs(
+            'x.py', contexts=['test*']), [(-1, 1), (1, 2), (2, 3), (3, -1)])
+        self.assertEqual(covdata.arcs('x.py', contexts=['other*']), [])
+
+    def test_contexts_by_lineno_with_arcs(self):
+        self.skip_unless_data_storage_is("sql")
+        covdata = CoverageData()
+        covdata.set_context('test_x')
+        covdata.add_arcs(ARCS_3)
+        self.assertDictEqual(
+            covdata.contexts_by_lineno('x.py'),
+            {-1: ['test_x'], 1: ['test_x'], 2: ['test_x'], 3: ['test_x']})
+
+    def test_contexts_by_lineno_with_unknown_file(self):
+        self.skip_unless_data_storage_is("sql")
+        covdata = CoverageData()
+        self.assertDictEqual(
+            covdata.contexts_by_lineno('xyz.py'), {})
 
     def test_file_tracer_name(self):
         covdata = CoverageData()
