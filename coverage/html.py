@@ -3,6 +3,7 @@
 
 """HTML reporting for coverage.py."""
 
+import collections
 import datetime
 import json
 import os
@@ -214,8 +215,10 @@ class HtmlReporter(Reporter):
         c_mis = "mis"
         c_par = "par " + c_run
 
-        # Lookup line number contexts.
-        contexts_by_lineno = analysis.data.contexts_by_lineno(fr.filename)
+        contexts_by_lineno = collections.defaultdict(list)
+        if self.config.show_contexts:
+            # Lookup line number contexts.
+            contexts_by_lineno = analysis.data.contexts_by_lineno(fr.filename)
 
         lines = []
 
@@ -271,7 +274,9 @@ class HtmlReporter(Reporter):
                 'html': ''.join(html),
                 'number': lineno,
                 'class': ' '.join(line_class) or "pln",
-                'contexts': sorted(filter(None, contexts_by_lineno[lineno])) or None,
+                'contexts': \
+                    (sorted(filter(None, contexts_by_lineno[lineno])) or None)
+                    if self.config.show_contexts else None,
                 'annotate': annotate_html,
                 'annotate_long': annotate_long,
             })
