@@ -16,13 +16,18 @@ import itertools
 import os
 import sqlite3
 import sys
-import threading
 
+from coverage import env
 from coverage.backward import iitems
 from coverage.data import filename_suffix
 from coverage.debug import NoDebugging, SimpleReprMixin
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
+
+if env.PY2:
+    from thread import get_ident as get_thread_id
+else:
+    from threading import get_ident as get_thread_id
 
 
 # Schema versions:
@@ -115,8 +120,8 @@ class CoverageSqliteData(SimpleReprMixin):
     def _create_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Creating data file {!r}".format(self.filename))
-        self._dbs[threading.get_ident()] = Sqlite(self.filename, self._debug)
-        with self._dbs[threading.get_ident()] as db:
+        self._dbs[get_thread_id()] = Sqlite(self.filename, self._debug)
+        with self._dbs[get_thread_id()] as db:
             for stmt in SCHEMA.split(';'):
                 stmt = " ".join(stmt.strip().split())
                 if stmt:
@@ -130,8 +135,8 @@ class CoverageSqliteData(SimpleReprMixin):
     def _open_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Opening data file {!r}".format(self.filename))
-        self._dbs[threading.get_ident()] = Sqlite(self.filename, self._debug)
-        with self._dbs[threading.get_ident()] as db:
+        self._dbs[get_thread_id()] = Sqlite(self.filename, self._debug)
+        with self._dbs[get_thread_id()] as db:
             try:
                 schema_version, = db.execute("select version from coverage_schema").fetchone()
             except Exception as exc:
@@ -155,15 +160,16 @@ class CoverageSqliteData(SimpleReprMixin):
                 self._file_map[path] = id
 
     def _connect(self):
-        if threading.get_ident() not in self._dbs:
+        if get_thread_id() not in self._dbs:
             if os.path.exists(self.filename):
                 self._open_db()
             else:
                 self._create_db()
-        return self._dbs[threading.get_ident()]
+        return self._dbs[get_thread_id()]
 
     def __nonzero__(self):
-        if threading.get_ident() not in self._dbs and not os.path.exists(self.filename):
+        if (get_thread_id() not in self._dbs and
+                not os.path.exists(self.filename)):
             return False
         try:
             with self._connect() as con:
