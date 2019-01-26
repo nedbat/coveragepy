@@ -3,6 +3,7 @@
 
 """Coverage data for coverage.py."""
 
+import collections
 import glob
 import itertools
 import json
