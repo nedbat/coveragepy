@@ -199,6 +199,22 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.add_run_info(count=17)
         self.assertEqual(covdata.run_infos(), [{"hello": "there", "count": 17}])
 
+    def test_no_duplicate_lines(self):
+        covdata = CoverageData()
+        covdata.set_context("context1")
+        covdata.add_lines(LINES_1)
+        covdata.set_context("context2")
+        covdata.add_lines(LINES_1)
+        self.assertEqual(covdata.lines('a.py'), A_PY_LINES_1)
+
+    def test_no_duplicate_arcs(self):
+        covdata = CoverageData()
+        covdata.set_context("context1")
+        covdata.add_arcs(ARCS_3)
+        covdata.set_context("context2")
+        covdata.add_arcs(ARCS_3)
+        self.assertEqual(covdata.arcs('x.py'), X_PY_ARCS_3)
+
     def test_no_arcs_vs_unmeasured_file(self):
         covdata = CoverageData()
         covdata.add_arcs(ARCS_3)
