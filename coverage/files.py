@@ -59,6 +59,7 @@ def canonical_filename(filename):
 
     """
     if filename not in CANONICAL_FILENAME_CACHE:
+        cf = filename
         if not os.path.isabs(filename):
             for path in [os.curdir] + sys.path:
                 if path is None:
@@ -69,9 +70,9 @@ def canonical_filename(filename):
                 except UnicodeError:
                     exists = False
                 if exists:
-                    filename = f
+                    cf = f
                     break
-        cf = abs_file(filename)
+        cf = abs_file(cf)
         CANONICAL_FILENAME_CACHE[filename] = cf
     return CANONICAL_FILENAME_CACHE[filename]
 

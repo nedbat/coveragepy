@@ -57,6 +57,19 @@ class FilesTest(CoverageTest):
         rel = os.path.join('sub', trick, 'file1.py')
         self.assertEqual(files.relative_filename(abs_file(rel)), rel)
 
+    def test_canonical_filename_ensure_cache_hit(self):
+        self.make_file("sub/proj1/file1.py")
+        d = os.path.normpath("sub/proj1")
+        self.chdir(d)
+        files.set_relative_directory()
+        canonical_path = files.canonical_filename('sub/proj1/file1.py')
+        self.assertEqual(canonical_path, self.abs_path('file1.py'))
+        # After the filename has been converted, it should be in the cache.
+        self.assertIn('sub/proj1/file1.py', files.CANONICAL_FILENAME_CACHE)
+        self.assertEqual(
+            files.canonical_filename('sub/proj1/file1.py'),
+            self.abs_path('file1.py'))
+
 
 @pytest.mark.parametrize("original, flat", [
     (u"a/b/c.py", u"a_b_c_py"),
