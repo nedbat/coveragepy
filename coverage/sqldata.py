@@ -344,21 +344,16 @@ class CoverageSqliteData(SimpleReprMixin):
         self._start_using()
 
         # Collector for all arcs, lines and tracers
-        files = []
-        contexts = []
-        arcs = []
-        lines = []
-        tracers = {}
         other_data.read()
         with other_data._connect() as conn:
             # Get files data.
             cur = conn.execute('select path from file')
-            files.extend(aliases.map(path) for (path, ) in cur)
+            files = {path: aliases.map(path) for (path,) in cur}
             cur.close()
 
             # Get contexts data.
             cur = conn.execute('select context from context')
-            contexts.extend(context for (context, ) in cur)
+            contexts = [context for (context,) in cur]
             cur.close()
 
             # Get arc data.
@@ -367,9 +362,9 @@ class CoverageSqliteData(SimpleReprMixin):
                 'from arc '
                 'inner join file on file.id = arc.file_id '
                 'inner join context on context.id = arc.context_id ')
-            arcs.extend(
-                (aliases.map(path), context, fromno, tono)
-                for (path, context, fromno, tono) in cur)
+            arcs = [
+                (files[path], context, fromno, tono)
+                for (path, context, fromno, tono) in cur]
             cur.close()
 
             # Get line data.
@@ -378,9 +373,9 @@ class CoverageSqliteData(SimpleReprMixin):
                 'from line '
                 'inner join file on file.id = line.file_id '
                 'inner join context on context.id = line.context_id ')
-            lines.extend(
-                (aliases.map(path), context, lineno)
-                for (path, context, lineno) in cur)
+            lines = [
+                (files[path], context, lineno)
+                for (path, context, lineno) in cur]
             cur.close()
 
             # Get tracer data.
@@ -388,9 +383,7 @@ class CoverageSqliteData(SimpleReprMixin):
                 'select file.path, tracer '
                 'from tracer '
                 'inner join file on file.id = tracer.file_id')
-            tracers.update(dict(
-                (aliases.map(path), tracer)
-                for (path, tracer) in cur))
+            tracers = {files[path]: tracer for (path, tracer) in cur}
             cur.close()
 
         with self._connect() as conn:
@@ -412,7 +405,7 @@ class CoverageSqliteData(SimpleReprMixin):
             # Create all file and context rows in the DB.
             conn.executemany(
                 'insert or ignore into file (path) values (?)',
-                ((file,) for file in files))
+                ((file,) for file in files.values()))
             file_ids = {
                 path: id
                 for id, path in conn.execute('select id, path from file')}
@@ -428,7 +421,7 @@ class CoverageSqliteData(SimpleReprMixin):
             # tracer_paths is used to ensure consistency over the tracer data
             # and tracer_map tracks the tracers to be inserted.
             tracer_map = {}
-            for path in files:
+            for path in files.values():
                 this_tracer = this_tracers.get(path)
                 other_tracer = tracers.get(path, '')
                 # If there is no tracer, there is always the None tracer.
