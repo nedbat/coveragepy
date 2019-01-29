@@ -59,7 +59,7 @@ class FilesTest(CoverageTest):
 
     def test_canonical_filename_ensure_cache_hit(self):
         self.make_file("sub/proj1/file1.py")
-        d = os.path.normpath("sub/proj1")
+        d = actual_path(self.abs_path("sub/proj1"))
         self.chdir(d)
         files.set_relative_directory()
         canonical_path = files.canonical_filename('sub/proj1/file1.py')
