@@ -207,7 +207,7 @@ can include a path to another directory.
 By default, each run of your program starts with an empty data set. If you need
 to run your program multiple times to get complete data (for example, because
 you need to supply disjoint options), you can accumulate data across runs with
-the ``-a`` flag on the **run** command.
+the ``--append`` flag on the **run** command.
 
 To erase the collected data, use the **erase** command::
 
