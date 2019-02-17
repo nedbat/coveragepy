@@ -101,6 +101,7 @@ Scott Belden
 Sigve Tjora
 Stan Hu
 Stefan Behnel
+Stephan Richter
 Stephen Finucane
 Steve Leonard
 Steve Peak
