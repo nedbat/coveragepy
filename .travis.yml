@@ -1,6 +1,7 @@
 # Tell Travis what to do
 # https://travis-ci.com/nedbat/coveragepy
 
+dist: xenial
 language: python
 
 cache: pip
@@ -9,8 +10,8 @@ python:
   - '3.4'
   - '3.5'
   - '3.6'
-  - 'pypy'
-  - 'pypy3.5'
+  - 'pypy2.7-6.0'
+  - 'pypy3.5-6.0'
 
 env:
   matrix:
