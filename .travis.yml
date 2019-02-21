@@ -24,7 +24,6 @@ install:
 
 script:
   - tox
-  - pip freeze
   - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then python igor.py combine_html; fi
   - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then pip install codecov; fi
   - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then codecov -X gcov --file coverage.xml; fi
