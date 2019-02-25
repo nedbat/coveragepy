@@ -9,6 +9,7 @@ import os
 import os.path
 import re
 import sqlite3
+import threading
 
 import mock
 
@@ -454,6 +455,21 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata2 = CoverageData()
         covdata2.read()
         self.assert_arcs3_data(covdata2)
+
+    def test_thread_stress(self):
+        covdata = CoverageData()
+
+        def thread_main():
+            """Every thread will try to add the same data."""
+            covdata.add_lines(LINES_1)
+
+        threads = [threading.Thread(target=thread_main) for _ in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        self.assert_lines1_data(covdata)
 
 
 class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
