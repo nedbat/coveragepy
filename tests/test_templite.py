@@ -252,13 +252,23 @@ class TempliteTest(CoverageTest):
             "@{% for n in nums -%}\n"
             " {% for a in abc -%}\n"
             "  {# this disappears completely -#}\n"
-            "  {{a -}}\n"
+            "  {{a-}}\n"
             "  {{n -}}\n"
+            "  {{n    -}}\n"
             " {% endfor %}\n"
             "{% endfor %}!\n",
             {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
-            "@a0b0c0\na1b1c1\na2b2c2\n!\n"
+            "@a00b00c00\na11b11c11\na22b22c22\n!\n"
             )
+        self.try_render(
+            "@{% for n in nums -%}\n"
+            "  {{n -}}\n"
+            "  x\n"
+            "{% endfor %}!\n",
+            {'nums': [0, 1, 2]},
+            "@0x\n1x\n2x\n!\n"
+            )
+        self.try_render("  hello  ", {}, "  hello  ")
 
     def test_non_ascii(self):
         self.try_render(
@@ -269,8 +279,8 @@ class TempliteTest(CoverageTest):
 
     def test_exception_during_evaluation(self):
         # TypeError: Couldn't evaluate {{ foo.bar.baz }}:
-        msg = "Couldn't evaluate None.bar"
-        with self.assertRaisesRegex(TempliteValueError, msg):
+        regex = "^Couldn't evaluate None.bar$"
+        with self.assertRaisesRegex(TempliteValueError, regex):
             self.try_render(
                 "Hey {{foo.bar.baz}} there", {'foo': None}, "Hey ??? there"
             )
