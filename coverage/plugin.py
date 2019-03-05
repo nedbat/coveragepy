@@ -78,6 +78,26 @@ change the configuration.
 In your ``coverage_init`` function, use the ``add_configurer`` method to
 register your configurer.
 
+Dynamic Contexts
+================
+
+.. versionadded:: 5.0
+
+Context plugins implement the :meth:`~coverage.CoveragePlugin.dynamic_context` method
+to dynamically compute the context label for each measured frame.
+
+Computed context labels are useful when you want to group measured data without
+modifying the source code.
+
+For example, you could write a plugin that inspects `frame.f_code` to get the
+the currently executed method, and set label to a fully qualified method
+name if it's an instance method of unittest.TestCase and method name starts
+with 'test_'.  Such plugin would provide basic coverage grouping by unit
+test for test runners that have no built-in support for coveragepy.
+
+In your ``coverage_init`` function, use the ``add_dynamic_context`` method to
+register your file tracer.
+
 """
 
 from coverage import files
@@ -139,6 +159,17 @@ class CoveragePlugin(object):
 
         """
         _needs_to_implement(self, "file_reporter")
+
+    def dynamic_context(self, frame):       # pylint: disable=unused-argument
+        """Get dynamically computed context label for collected data.
+
+        Plug-in type: dynamic context.
+
+        This method is invoked for each frame.  If it returns a string,
+        a new context label is set for this and deeper frames.
+
+        """
+        return None
 
     def find_executable_files(self, src_dir):       # pylint: disable=unused-argument
         """Yield all of the executable files in `src_dir`, recursively.

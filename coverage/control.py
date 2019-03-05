@@ -335,6 +335,34 @@ class Coverage(object):
         if not should_skip:
             self._data.read()
 
+    def _combine_context_switchers(self, context_switchers):
+        """Create a single context switcher from multiple switchers.
+
+        `context_switchers` is a list of methods that take a frame
+        as an argument and return a string to use as the new context label.
+
+        Returns a method that composits `context_switchers` methods, or None
+        if `context_switchers` is an empty list.
+
+        When invoked, the combined switcher calls `context_switchers` one-by-one
+        until a string is returned.  Combined switcher returns None if all
+        `context_switchers` return None.
+        """
+        if not context_switchers:
+            return None
+
+        if len(context_switchers) == 1:
+            return context_switchers[0]
+
+        def should_start_context(frame):
+            for switcher in context_switchers:
+                new_context = switcher(frame)
+                if new_context is not None:
+                    return new_context
+            return None
+
+        return should_start_context
+
     def _init_for_start(self):
         """Initialization for start()"""
         # Construct the collector.
@@ -350,13 +378,20 @@ class Coverage(object):
             self.config.parallel = True
 
         if self.config.dynamic_context is None:
-            should_start_context = None
+            context_switchers = []
         elif self.config.dynamic_context == "test_function":
-            should_start_context = should_start_context_test_function
+            context_switchers = [should_start_context_test_function]
         else:
             raise CoverageException(
                 "Don't understand dynamic_context setting: {!r}".format(self.config.dynamic_context)
             )
+
+        context_switchers.extend([
+            plugin.dynamic_context
+            for plugin in self._plugins.context_switchers
+            ])
+
+        should_start_context = self._combine_context_switchers(context_switchers)
 
         self._collector = Collector(
             should_trace=self._should_trace,

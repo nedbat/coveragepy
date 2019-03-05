@@ -21,6 +21,7 @@ class Plugins(object):
         self.names = {}
         self.file_tracers = []
         self.configurers = []
+        self.context_switchers = []
 
         self.current_module = None
         self.debug = None
@@ -69,6 +70,15 @@ class Plugins(object):
 
         """
         self._add_plugin(plugin, self.configurers)
+
+    def add_dynamic_context(self, plugin):
+        """Add a dynamic context plugin.
+
+        `plugin` is an instance of a third-party plugin class.  It must
+        implement the :meth:`CoveragePlugin.dynamic_context` method.
+
+        """
+        self._add_plugin(plugin, self.context_switchers)
 
     def add_noop(self, plugin):
         """Add a plugin that does nothing.
