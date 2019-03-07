@@ -89,11 +89,11 @@ to dynamically compute the context label for each measured frame.
 Computed context labels are useful when you want to group measured data without
 modifying the source code.
 
-For example, you could write a plugin that inspects `frame.f_code` to get the
+For example, you could write a plugin that check `frame.f_code` to inspect
 the currently executed method, and set label to a fully qualified method
-name if it's an instance method of unittest.TestCase and method name starts
-with 'test_'.  Such plugin would provide basic coverage grouping by unit
-test for test runners that have no built-in support for coveragepy.
+name if it's an instance method of `unittest.TestCase` and the method name
+starts with 'test'.  Such plugin would provide basic coverage grouping by test
+and could be used with test runners that have no built-in coveragepy support.
 
 In your ``coverage_init`` function, use the ``add_dynamic_context`` method to
 register your file tracer.
