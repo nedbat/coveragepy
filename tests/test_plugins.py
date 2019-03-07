@@ -916,7 +916,7 @@ class DynamicContextPluginTest(CoverageTest):
 
     def make_testsuite(self):
         filenames = []
-        filename_rendering = self.make_file("rendering.py", """\
+        self.make_file("rendering.py", """\
             def html_tag(tag, content):
                 return '<%s>%s</%s>' % (tag, content, tag)
 
@@ -930,7 +930,7 @@ class DynamicContextPluginTest(CoverageTest):
                 return html_tag('b', text)
                 """)
 
-        filename_testsuite = self.make_file("testsuite.py", """\
+        self.make_file("testsuite.py", """\
             import rendering
 
             def test_html_tag():
@@ -953,11 +953,6 @@ class DynamicContextPluginTest(CoverageTest):
                 return html
             """)
 
-        return {
-            filename: os.path.abspath(filename)
-            for filename in [filename_rendering, filename_testsuite]
-            }
-
     def run_testsuite(self, coverage, suite_name):
         coverage.start()
         suite = import_local_file(suite_name)
@@ -973,7 +968,7 @@ class DynamicContextPluginTest(CoverageTest):
 
     def test_plugin_standalone(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
-        filenames = self.make_testsuite()
+        self.make_testsuite()
 
         # Enable dynamic context plugin
         cov = coverage.Coverage()
@@ -984,6 +979,7 @@ class DynamicContextPluginTest(CoverageTest):
 
         # Labeled coverage is collected
         data = cov.get_data()
+        filenames = self.get_measured_filenames(data)
         self.assertEqual(
             sorted(data.measured_contexts()),
             ['', 'doctest:HTML_TAG', 'test:HTML_TAG', 'test:RENDERERS'])
@@ -999,7 +995,7 @@ class DynamicContextPluginTest(CoverageTest):
 
     def test_static_context(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
-        filenames = self.make_testsuite()
+        self.make_testsuite()
 
         # Enable dynamic context plugin for coverage with named context
         cov = coverage.Coverage(context='mytests')
@@ -1010,6 +1006,7 @@ class DynamicContextPluginTest(CoverageTest):
 
         # Static context prefix is preserved
         data = cov.get_data()
+        filenames = self.get_measured_filenames(data)
         self.assertEqual(
             sorted(data.measured_contexts()),
             ['mytests',
@@ -1019,7 +1016,7 @@ class DynamicContextPluginTest(CoverageTest):
 
     def test_plugin_with_test_function(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
-        filenames = self.make_testsuite()
+        self.make_testsuite()
 
         # Enable both a plugin and test_function dynamic context
         cov = coverage.Coverage()
@@ -1033,6 +1030,7 @@ class DynamicContextPluginTest(CoverageTest):
         # functions that are not labeled by test_function are
         # labeled by plugin_tests.
         data = cov.get_data()
+        filenames = self.get_measured_filenames(data)
         self.assertEqual(
             sorted(data.measured_contexts()),
             ['', 'doctest:HTML_TAG', 'test_html_tag', 'test_renderers'])
@@ -1049,7 +1047,7 @@ class DynamicContextPluginTest(CoverageTest):
     def test_multiple_plugins(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
         self.make_plugin_track_render('plugin_renderers.py')
-        filenames = self.make_testsuite()
+        self.make_testsuite()
 
         # Enable two plugins
         cov = coverage.Coverage()
@@ -1065,6 +1063,7 @@ class DynamicContextPluginTest(CoverageTest):
         # render_paragraph and render_span (lines 5, 8) are directly called by
         # testsuite.build_full_html, so they get labeled by renderers plugin.
         data = cov.get_data()
+        filenames = self.get_measured_filenames(data)
         self.assertEqual(
             sorted(data.measured_contexts()),
             ['',
