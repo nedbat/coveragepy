@@ -484,6 +484,8 @@ class Coverage(object):
         for collected data.
 
         Coverage collection must be started already.
+
+        .. versionadded:: 5.0
         """
         if not self._started:
             raise CoverageException(                    # pragma: only jython
