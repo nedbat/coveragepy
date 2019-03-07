@@ -3,11 +3,12 @@
 
 """Tests for plugins."""
 
+import inspect
 import os.path
 
 import coverage
 from coverage import env
-from coverage.backward import StringIO
+from coverage.backward import StringIO, import_local_file
 from coverage.data import line_counts
 from coverage.control import Plugins
 from coverage.misc import CoverageException
@@ -871,3 +872,249 @@ class ConfigurerPluginTest(CoverageTest):
         excluded = cov.get_option("report:exclude_lines")
         self.assertIn("pragma: custom", excluded)
         self.assertIn("pragma: or whatever", excluded)
+
+
+class DynamicContextPluginTest(CoverageTest):
+    """Tests of plugins that implement `dynamic_context`."""
+
+    def setUp(self):
+        super(DynamicContextPluginTest, self).setUp()
+        if not env.C_TRACER:
+            self.skipTest("Plugins are only supported with the C tracer.")
+
+    def make_plugin_capitalized_testnames(self, filename):
+        self.make_file(filename, """\
+            from coverage import CoveragePlugin
+
+            class Plugin(CoveragePlugin):
+                def dynamic_context(self, frame):
+                    name = frame.f_code.co_name
+                    if (name.startswith("test_")
+                            or name.startswith("doctest_")):
+                        parts = name.split("_", 1)
+                        return "%s:%s" % (parts[0], parts[1].upper())
+                    return None
+
+            def coverage_init(reg, options):
+                reg.add_dynamic_context(Plugin())
+            """)
+
+    def make_plugin_track_render(self, filename):
+        self.make_file(filename, """\
+            from coverage import CoveragePlugin
+
+            class Plugin(CoveragePlugin):
+                def dynamic_context(self, frame):
+                    name = frame.f_code.co_name
+                    if name.startswith("render_"):
+                        return 'renderer:' + name[7:]
+                    return None
+
+            def coverage_init(reg, options):
+                reg.add_dynamic_context(Plugin())
+            """)
+
+    def make_testsuite(self):
+        filenames = []
+        filename_rendering = self.make_file("rendering.py", """\
+            def html_tag(tag, content):
+                return '<%s>%s</%s>' % (tag, content, tag)
+
+            def render_paragraph(text):
+                return html_tag('p', text)
+
+            def render_span(text):
+                return html_tag('span', text)
+
+            def render_bold(text):
+                return html_tag('b', text)
+                """)
+
+        filename_testsuite = self.make_file("testsuite.py", """\
+            import rendering
+
+            def test_html_tag():
+                assert rendering.html_tag('b', 'hello') == '<b>hello</b>'
+
+            def doctest_html_tag():
+                assert eval('''
+                    rendering.html_tag('i', 'text') == '<i>text</i>'
+                    '''.strip())
+
+            def test_renderers():
+                assert rendering.render_paragraph('hello') == '<p>hello</p>'
+                assert rendering.render_bold('wide') == '<b>wide</b>'
+                assert rendering.render_span('world') == '<span>world</span>'
+
+            def build_full_html():
+                html = '<html><body>%s</body></html>' % (
+                   rendering.render_paragraph(
+                      rendering.render_span('hello')))
+                return html
+            """)
+
+        return {
+            filename: os.path.abspath(filename)
+            for filename in [filename_rendering, filename_testsuite]
+            }
+
+    def run_testsuite(self, coverage, suite_name):
+        coverage.start()
+        suite = import_local_file(suite_name)
+        try:
+            # Call all functions in this module
+            for name in dir(suite):
+                variable = getattr(suite, name)
+                if inspect.isfunction(variable):
+                    variable()
+        finally:
+            coverage.stop()
+        return suite
+
+    def test_plugin_standalone(self):
+        self.make_plugin_capitalized_testnames('plugin_tests.py')
+        filenames = self.make_testsuite()
+
+        # Enable dynamic context plugin
+        cov = coverage.Coverage()
+        cov.set_option("run:plugins", ['plugin_tests'])
+
+        # Run the tests
+        suite = self.run_testsuite(cov, 'testsuite')
+
+        # Labeled coverage is collected
+        data = cov.get_data()
+        self.assertEqual(
+            sorted(data.measured_contexts()),
+            ['', 'doctest:HTML_TAG', 'test:HTML_TAG', 'test:RENDERERS'])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="doctest:HTML_TAG"),
+            [2])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="test:HTML_TAG"),
+            [2])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="test:RENDERERS"),
+            [2, 5, 8, 11])
+
+    def test_static_context(self):
+        self.make_plugin_capitalized_testnames('plugin_tests.py')
+        filenames = self.make_testsuite()
+
+        # Enable dynamic context plugin for coverage with named context
+        cov = coverage.Coverage(context='mytests')
+        cov.set_option("run:plugins", ['plugin_tests'])
+
+        # Run the tests
+        suite = self.run_testsuite(cov, 'testsuite')
+
+        # Static context prefix is preserved
+        data = cov.get_data()
+        self.assertEqual(
+            sorted(data.measured_contexts()),
+            ['mytests',
+             'mytests:doctest:HTML_TAG',
+             'mytests:test:HTML_TAG',
+             'mytests:test:RENDERERS'])
+
+    def test_plugin_with_test_function(self):
+        self.make_plugin_capitalized_testnames('plugin_tests.py')
+        filenames = self.make_testsuite()
+
+        # Enable both a plugin and test_function dynamic context
+        cov = coverage.Coverage()
+        cov.set_option("run:plugins", ['plugin_tests'])
+        cov.set_option("run:dynamic_context", "test_function")
+
+        # Run the tests
+        suite = self.run_testsuite(cov, 'testsuite')
+
+        # test_function takes precedence over plugins - only
+        # functions that are not labeled by test_function are
+        # labeled by plugin_tests.
+        data = cov.get_data()
+        self.assertEqual(
+            sorted(data.measured_contexts()),
+            ['', 'doctest:HTML_TAG', 'test_html_tag', 'test_renderers'])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="doctest:HTML_TAG"),
+            [2])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="test_html_tag"),
+            [2])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="test_renderers"),
+            [2, 5, 8, 11])
+
+    def test_multiple_plugins(self):
+        self.make_plugin_capitalized_testnames('plugin_tests.py')
+        self.make_plugin_track_render('plugin_renderers.py')
+        filenames = self.make_testsuite()
+
+        # Enable two plugins
+        cov = coverage.Coverage()
+        cov.set_option("run:plugins", ['plugin_renderers', 'plugin_tests'])
+
+        suite = self.run_testsuite(cov, 'testsuite')
+
+        # It is important to note, that line 11 (render_bold function) is never
+        # labeled as renderer:bold context, because it is only called from
+        # test_renderers function - so it already falls under test:RENDERERS
+        # context.
+        #
+        # render_paragraph and render_span (lines 5, 8) are directly called by
+        # testsuite.build_full_html, so they get labeled by renderers plugin.
+        data = cov.get_data()
+        self.assertEqual(
+            sorted(data.measured_contexts()),
+            ['',
+             'doctest:HTML_TAG',
+             'renderer:paragraph',
+             'renderer:span',
+             'test:HTML_TAG',
+             'test:RENDERERS'])
+
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="test:HTML_TAG"),
+            [2])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="test:RENDERERS"),
+            [2, 5, 8, 11])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="doctest:HTML_TAG"),
+            [2])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="renderer:paragraph"),
+            [2, 5])
+        self.assertEqual(
+            data.lines(filenames['rendering.py'], context="renderer:span"),
+            [2, 8])
+
+
+class DynamicContextPluginOtherTracersTest(CoverageTest):
+    """Tests of plugins that implement `dynamic_context`."""
+
+    def setUp(self):
+        super(DynamicContextPluginOtherTracersTest, self).setUp()
+        if env.C_TRACER:
+            self.skipTest("These tests are for tracers not implemented in C.")
+
+    def test_other_tracer_support(self):
+        self.make_file("context_plugin.py", """\
+            from coverage import CoveragePlugin
+
+            class Plugin(CoveragePlugin):
+                def dynamic_context(self, frame):
+                    return frame.f_code.co_name
+
+            def coverage_init(reg, options):
+                reg.add_dynamic_context(Plugin())
+            """)
+
+        cov = coverage.Coverage()
+        cov.set_option("run:plugins", ['context_plugin'])
+
+        with self.assertRaises(CoverageException):
+            cov.start()
+
+        cov.stop()
