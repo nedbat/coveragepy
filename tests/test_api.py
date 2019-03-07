@@ -494,7 +494,7 @@ class ApiTest(CoverageTest):
 
         Returns absolute path to the file.
         """
-        filename = self.make_file("testsuite.py", """\
+        self.make_file("testsuite.py", """\
             def timestwo(x):
                 return x*2
 
@@ -504,12 +504,11 @@ class ApiTest(CoverageTest):
             def test_multiply_six():
                 assert timestwo(6) == 12
             """)
-        return os.path.abspath(filename)
 
     def test_switch_context_testrunner(self):
         # This test simulates a coverage-aware test runner,
         # measuring labeled coverage via public API
-        suite_filename = self.make_testsuite()
+        self.make_testsuite()
 
         # Test runner starts
         cov = coverage.Coverage()
@@ -536,6 +535,9 @@ class ApiTest(CoverageTest):
             sorted(data.measured_contexts()),
             [u'', u'multiply_six', u'multiply_zero'])
 
+        filenames = self.get_measured_filenames(data)
+        suite_filename = filenames['testsuite.py']
+
         self.assertEqual(
             data.lines(suite_filename, context="multiply_six"),
             [2, 8])
@@ -547,7 +549,7 @@ class ApiTest(CoverageTest):
         # This test simulates a coverage-aware test runner,
         # measuring labeled coverage via public API,
         # with static label prefix.
-        suite_filename = self.make_testsuite()
+        self.make_testsuite()
 
         # Test runner starts
         cov = coverage.Coverage(context="mysuite")
@@ -573,6 +575,9 @@ class ApiTest(CoverageTest):
         self.assertEqual(
             sorted(data.measured_contexts()),
             [u'mysuite', u'mysuite:multiply_six', u'mysuite:multiply_zero'])
+
+        filenames = self.get_measured_filenames(data)
+        suite_filename = filenames['testsuite.py']
 
         self.assertEqual(
             data.lines(suite_filename, context="mysuite:multiply_six"),
