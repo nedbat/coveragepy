@@ -16,10 +16,12 @@ Change history for Coverage.py
     ..  ----------------------------
 
 
-Unreleased
-----------
+.. _changes_453:
 
-Nothing yet.
+Version 4.5.3 -- 2019-03-09
+---------------------------
+
+- Only packaging metadata changes.
 
 
 .. _changes_452:
