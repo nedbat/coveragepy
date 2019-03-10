@@ -27,17 +27,17 @@
         coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory
         coverage combine
         coverage html
-        - IF BETA:
+        - IF PRE-RELEASE:
             rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
-        - IF NOT BETA:
+        - IF NOT PRE-RELEASE:
             rm -f ~/coverage/trunk/doc/sample_html/*.*
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
         cd ~/coverage/trunk
-        - IF NOT BETA:
+        - IF NOT PRE-RELEASE:
             check in the new sample html
     - Build and publish docs:
-        - IF BETA:
+        - IF PRE-RELEASE:
             $ make publishbeta
         - ELSE:
             $ make publish
@@ -53,17 +53,18 @@
             - https://ci.appveyor.com/project/nedbat/coveragepy
         - $ make download_appveyor
     - examine the dist directory, and remove anything that looks malformed.
-- Update PyPi:
+- Update PyPI:
     - upload kits:
         - $ make kit_upload
-    - Visit https://pypi.python.org/pypi?:action=pkg_edit&name=coverage :
-        - show/hide the proper versions.
 - Tag the tree
     - git tag coverage-3.0.1
+    - git push
+    - git push --tags
+
 - Bump version:
     - coverage/version.py
         - increment version number
-        - IF NOT BETA:
+        - IF NOT PRE-RELEASE:
             - set to alpha-0 if just released
     - CHANGES.rst
         - add an "Unreleased" section to the top.
@@ -73,13 +74,13 @@
 - Update readthedocs
     - visit https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
-    - IF NOT BETA:
+        - keep just the latest version of each x.y release, make the rest inactive.
+    - IF NOT PRE-RELEASE:
+        - visit https://readthedocs.org/projects/coverage/builds/
+        - wait for the new tag build to finish successfully.
         - visit https://readthedocs.org/dashboard/coverage/versions/
         - change the default version to the new version
-- Update bitbucket:
-    - Issue tracker should get new version number in picker.
-    # Note: don't delete old version numbers: it marks changes on the tickets
-    # with that number.
+- Visit the fixed issues on GitHub and mention the version it was fixed in.
 - Announce on coveragepy-announce@googlegroups.com .
 - Announce on TIP.
 
