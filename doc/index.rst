@@ -31,7 +31,7 @@ not.
     The latest version is coverage.py 5.0a4, released November 25, 2018.
     It is supported on:
 
-    * Python versions 2.7, 3.4, 3.5, 3.6, 3.7, and pre-alpha 3.8.
+    * Python versions 2.7, 3.5, 3.6, 3.7, and pre-alpha 3.8.
 
     * PyPy2 6.0 and PyPy3 6.0.
 

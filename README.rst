@@ -35,7 +35,7 @@ library to determine which lines are executable, and which have been executed.
 Coverage.py runs on many versions of Python:
 
 * CPython 2.7.
-* CPython 3.4 through pre-alpha 3.8.
+* CPython 3.5 through pre-alpha 3.8.
 * PyPy2 6.0 and PyPy3 6.0.
 * Jython 2.7.1, though not for reporting.
 * IronPython 2.7.7, though not for reporting.
