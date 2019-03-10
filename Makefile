@@ -51,10 +51,12 @@ test:
 PYTEST_SMOKE_ARGS = -n 6 -m "not expensive" --maxfail=3 $(ARGS)
 
 smoke:
-	COVERAGE_NO_PYTRACER=1 tox -q -e py27,py34 -- $(PYTEST_SMOKE_ARGS)
+	# Run tests with the C tracer in the lowest supported Python versions.
+	COVERAGE_NO_PYTRACER=1 tox -q -e py27,py35 -- $(PYTEST_SMOKE_ARGS)
 
 pysmoke:
-	COVERAGE_NO_CTRACER=1 tox -q -e py27,py34 -- $(PYTEST_SMOKE_ARGS)
+	# Run tests with the Python tracer in the lowest supported Python versions.
+	COVERAGE_NO_CTRACER=1 tox -q -e py27,py35 -- $(PYTEST_SMOKE_ARGS)
 
 metacov:
 	COVERAGE_COVERAGE=yes tox $(ARGS)

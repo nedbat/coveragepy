@@ -28,7 +28,6 @@ Programming Language :: Python
 Programming Language :: Python :: 2
 Programming Language :: Python :: 2.7
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.4
 Programming Language :: Python :: 3.5
 Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7
@@ -103,11 +102,19 @@ setup_args = dict(
     author_email='ned@nedbatchelder.com',
     description=doc,
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     keywords='code coverage testing',
     license='Apache 2.0',
     classifiers=classifier_list,
     url="https://github.com/nedbat/coveragepy",
-
+    project_urls={
+        'Documentation': __url__,
+        'Funding': (
+            'https://tidelift.com/subscription/pkg/pypi-coverage'
+            '?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=pypi'
+        ),
+        'Issues': 'https://github.com/nedbat/coveragepy/issues',
+    },
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4",
 )
 
