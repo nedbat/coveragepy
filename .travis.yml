@@ -1,6 +1,7 @@
 # Tell Travis what to do
 # https://travis-ci.com/nedbat/coveragepy
 
+dist: xenial
 language: python
 
 cache: pip
@@ -9,8 +10,8 @@ python:
   - '3.5'
   - '3.6'
   - '3.7'
-  - 'pypy'
-  - 'pypy3.5'
+  - 'pypy2.7-6.0'
+  - 'pypy3.5-6.0'
 
 env:
   matrix:
@@ -23,7 +24,6 @@ install:
 
 script:
   - tox
-  - pip freeze
   - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then python igor.py combine_html; fi
   - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then pip install codecov; fi
   - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then codecov -X gcov --file coverage.xml; fi
