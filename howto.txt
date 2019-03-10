@@ -1,5 +1,6 @@
 * Release checklist
 
+- Check that the current virtualenv matches the current coverage branch.
 - Version number in coverage/version.py
         version_info = (4, 0, 2, 'alpha', 1)
         version_info = (4, 0, 2, 'beta', 1)
@@ -21,10 +22,9 @@
     - Generate new sample_html to get the latest, incl footer version number:
         make clean
         pip install -e .
-        pip install nose
         cd ~/cog/trunk
         rm -rf htmlcov
-        coverage run --branch --source=cogapp -m nose cogapp/test_cogapp.py:CogTestsInMemory
+        coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory
         coverage combine
         coverage html
         - IF BETA:
@@ -43,7 +43,7 @@
             $ make publish
 - Kits:
     - Start fresh:
-        - $ make clean
+        - $ make sterile
     - Source kit and wheels:
         - $ make kit wheel
     - Linux wheels:
