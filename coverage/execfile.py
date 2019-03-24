@@ -290,7 +290,7 @@ def make_code_from_pyc(filename):
             raise NoCode("Bad magic number in .pyc file")
 
         date_based = True
-        if env.PYVERSION >= (3, 7, 0, 'alpha', 4):
+        if env.PYBEHAVIOR.hashed_pyc_pep552:
             flags = struct.unpack('<L', fpyc.read(4))[0]
             hash_based = flags & 0x01
             if hash_based:
@@ -299,7 +299,7 @@ def make_code_from_pyc(filename):
         if date_based:
             # Skip the junk in the header that we don't need.
             fpyc.read(4)            # Skip the moddate.
-            if env.PYVERSION >= (3, 3):
+            if env.PYBEHAVIOR.size_in_pyc:
                 # 3.3 added another long to the header (size), skip it.
                 fpyc.read(4)
 

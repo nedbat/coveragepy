@@ -28,6 +28,12 @@ PY3 = PYVERSION >= (3, 0)
 class PYBEHAVIOR(object):
     """Flags indicating this Python's behavior."""
 
+    # Do .pyc files have the source file size recorded in them?
+    size_in_pyc = (PYVERSION >= (3, 3))
+
+    # Do .pyc files conform to PEP 552? Hash-based pyc's.
+    hashed_pyc_pep552 = (PYVERSION >= (3, 7, 0, 'alpha', 4))
+
     # When a break/continue/return statement in a try block jumps to a finally
     # block, does the finally block do the break/continue/return (pre-3.8), or
     # does the finally jump back to the break/continue/return (3.8) to do the
