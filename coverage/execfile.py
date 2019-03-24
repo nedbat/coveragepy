@@ -124,11 +124,7 @@ class PyRunner(object):
         should_update_sys_path = True
 
         if self.as_module:
-            # Python 3.7.0b3 changed the behavior of the sys.path[0] entry for -m. It
-            # used to be an empty string (meaning the current directory). It changed
-            # to be the actual path to the current directory, so that os.chdir wouldn't
-            # affect the outcome.
-            if env.PYVERSION >= (3, 7, 0, 'beta', 3):
+            if env.PYBEHAVIOR.actual_syspath0_dash_m:
                 path0 = os.getcwd()
             else:
                 path0 = ""

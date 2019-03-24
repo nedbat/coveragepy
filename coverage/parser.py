@@ -409,7 +409,7 @@ class ByteParser(object):
                     yield (byte_num, line_num)
                     last_line_num = line_num
                 byte_num += byte_incr
-            if env.PYVERSION >= (3, 6) and line_incr >= 0x80:
+            if env.PYBEHAVIOR.negative_lnotab and line_incr >= 0x80:
                 line_incr -= 0x100
             line_num += line_incr
         if line_num != last_line_num:

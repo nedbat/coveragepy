@@ -495,7 +495,7 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
 
     def setUp(self):
         super(NamespaceModuleTest, self).setUp()
-        if env.PYVERSION < (3, 3):
+        if not env.PYBEHAVIOR.namespaces_pep420:
             self.skipTest("Python before 3.3 doesn't have namespace packages")
 
     def test_explicit_namespace_module(self):

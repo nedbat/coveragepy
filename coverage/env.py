@@ -28,11 +28,38 @@ PY3 = PYVERSION >= (3, 0)
 class PYBEHAVIOR(object):
     """Flags indicating this Python's behavior."""
 
+    # Is "if __debug__" optimized away?
+    optimize_if_debug = (not PYPY)
+
+    # If "if not __debug__" optimized away?
+    optimize_if_not_debug = (not PYPY) and (PYVERSION >= (3, 7, 0, 'alpha', 4))
+
+    # Do we have yield-from?
+    yield_from = (PYVERSION >= (3, 3))
+
+    # Do we have PEP 420 namespace packages?
+    namespaces_pep420 = (PYVERSION >= (3, 3))
+
     # Do .pyc files have the source file size recorded in them?
     size_in_pyc = (PYVERSION >= (3, 3))
 
+    # Do we have async and await syntax?
+    async_syntax = (PYVERSION >= (3, 5))
+
+    # PEP 448 defined additional unpacking generalizations
+    unpackings_pep448 = (PYVERSION >= (3, 5))
+
+    # Can co_lnotab have negative deltas?
+    negative_lnotab = (PYVERSION >= (3, 6))
+
     # Do .pyc files conform to PEP 552? Hash-based pyc's.
     hashed_pyc_pep552 = (PYVERSION >= (3, 7, 0, 'alpha', 4))
+
+    # Python 3.7.0b3 changed the behavior of the sys.path[0] entry for -m. It
+    # used to be an empty string (meaning the current directory). It changed
+    # to be the actual path to the current directory, so that os.chdir wouldn't
+    # affect the outcome.
+    actual_syspath0_dash_m = (PYVERSION >= (3, 7, 0, 'beta', 3))
 
     # When a break/continue/return statement in a try block jumps to a finally
     # block, does the finally block do the break/continue/return (pre-3.8), or

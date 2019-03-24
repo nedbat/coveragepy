@@ -1056,7 +1056,7 @@ class YieldTest(CoverageTest):
         self.assertEqual(self.stdout(), "20\n12\n")
 
     def test_yield_from(self):
-        if env.PYVERSION < (3, 3):
+        if not env.PYBEHAVIOR.yield_from:
             self.skipTest("Python before 3.3 doesn't have 'yield from'")
         self.check_coverage("""\
             def gen(inp):
@@ -1159,8 +1159,8 @@ class OptimizedIfTest(CoverageTest):
             arcz=".1 1C CE EF F.",
         )
 
-    def test_constant_if(self):
-        if env.PYPY:
+    def test_if_debug(self):
+        if not env.PYBEHAVIOR.optimize_if_debug:
             self.skipTest("PyPy doesn't optimize away 'if __debug__:'")
         # CPython optimizes away "if __debug__:"
         self.check_coverage("""\
@@ -1173,13 +1173,17 @@ class OptimizedIfTest(CoverageTest):
             """,
             arcz=".1 12 24 41 26 61 1.",
         )
+
+    def test_if_not_debug(self):
         # Before 3.7, no Python optimized away "if not __debug__:"
-        if env.PYVERSION < (3, 7, 0, 'alpha', 4):
-            arcz = ".1 12 23 31 34 41 26 61 1."
-            arcz_missing = "34 41"
-        else:
+        if not env.PYBEHAVIOR.optimize_if_debug:
+            self.skipTest("PyPy doesn't optimize away 'if __debug__:'")
+        elif env.PYBEHAVIOR.optimize_if_not_debug:
             arcz = ".1 12 23 31 26 61 1."
             arcz_missing = ""
+        else:
+            arcz = ".1 12 23 31 34 41 26 61 1."
+            arcz_missing = "34 41"
         self.check_coverage("""\
             for value in [True, False]:
                 if value:
@@ -1230,7 +1234,7 @@ class MiscArcTest(CoverageTest):
         )
 
     def test_unpacked_literals(self):
-        if env.PYVERSION < (3, 5):
+        if not env.PYBEHAVIOR.unpackings_pep448:
             self.skipTest("Don't have unpacked literals until 3.5")
         self.check_coverage("""\
             d = {
@@ -1492,7 +1496,7 @@ class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
 
     def setUp(self):
-        if env.PYVERSION < (3, 5):
+        if not env.PYBEHAVIOR.async_syntax:
             self.skipTest("Async features are new in Python 3.5")
         super(AsyncTest, self).setUp()
 
