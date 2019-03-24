@@ -6,7 +6,6 @@
 
 import os
 import os.path
-import re
 import sys
 import time
 import xml.dom.minidom
@@ -225,16 +224,4 @@ def serialize_xml(dom):
     out = dom.toprettyxml()
     if env.PY2:
         out = out.encode("utf8")
-    # In Python 3.8, minidom lost the sorting of attributes: https://bugs.python.org/issue34160
-    # For the limited kinds of XML we produce, this re-sorts them.
-    if env.PYVERSION >= (3, 8):
-        rx_attr = r' [\w-]+="[^"]*"'
-        rx_attrs = r'(' + rx_attr + ')+'
-        fixed_lines = []
-        for line in out.splitlines(True):
-            hollow_line = re.sub(rx_attrs, u"☺", line)
-            attrs = sorted(re.findall(rx_attr, line))
-            new_line = hollow_line.replace(u"☺", "".join(attrs))
-            fixed_lines.append(new_line)
-        out = "".join(fixed_lines)
     return out

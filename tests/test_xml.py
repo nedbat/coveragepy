@@ -7,6 +7,7 @@
 import os
 import os.path
 import re
+from xml.etree import ElementTree
 
 import coverage
 from coverage.backward import import_local_file
@@ -14,7 +15,6 @@ from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
 from tests.goldtest import change_dir, compare, gold_path
-from tests.helpers import re_line, re_lines
 
 
 class XmlTestHelpers(CoverageTest):
@@ -30,7 +30,7 @@ class XmlTestHelpers(CoverageTest):
         self.make_file("sub/__init__.py")
         self.make_file("sub/doit.py", "print('doit!')")
         self.make_file("main.py", "import sub.doit")
-        cov = coverage.Coverage()
+        cov = coverage.Coverage(source=["."])
         self.start_import_stop(cov, "main")
         return cov
 
@@ -59,10 +59,36 @@ class XmlTestHelpers(CoverageTest):
                 filename = here("f{0}.py".format(i))
                 self.make_file(filename, "# {0}\n".format(filename))
 
-    def assert_source(self, xml, src):
+    def assert_source(self, xmldom, src):
         """Assert that the XML has a <source> element with `src`."""
         src = abs_file(src)
-        self.assertRegex(xml, r'<source>\s*{0}\s*</source>'.format(re.escape(src)))
+        elts = xmldom.findall(".//sources/source")
+        assert any(elt.text == src for elt in elts)
+
+
+class XmlTestHelpersTest(XmlTestHelpers, CoverageTest):
+    """Tests of methods in XmlTestHelpers."""
+
+    def test_assert_source(self):
+        dom = ElementTree.fromstring("""\
+            <doc>
+                <src>foo</src>
+                <sources>
+                    <source>{cwd}something</source>
+                    <source>{cwd}another</source>
+                </sources>
+            </doc>
+            """.format(cwd=abs_file(".")+os.sep))
+
+        self.assert_source(dom, "something")
+        self.assert_source(dom, "another")
+
+        with self.assertRaises(AssertionError):
+            self.assert_source(dom, "hello")
+        with self.assertRaises(AssertionError):
+            self.assert_source(dom, "foo")
+        with self.assertRaises(AssertionError):
+            self.assert_source(dom, "thing")
 
 
 class XmlReportTest(XmlTestHelpers, CoverageTest):
@@ -110,25 +136,28 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
 
     def test_filename_format_showing_everything(self):
         cov = self.run_doit()
-        cov.xml_report(outfile="-")
-        xml = self.stdout()
-        doit_line = re_line(xml, "class.*doit")
-        self.assertIn('filename="sub/doit.py"', doit_line)
+        cov.xml_report()
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//class[@name='doit.py']")
+        assert len(elts) == 1
+        assert elts[0].get('filename') == "sub/doit.py"
 
     def test_filename_format_including_filename(self):
         cov = self.run_doit()
-        cov.xml_report(["sub/doit.py"], outfile="-")
-        xml = self.stdout()
-        doit_line = re_line(xml, "class.*doit")
-        self.assertIn('filename="sub/doit.py"', doit_line)
+        cov.xml_report(["sub/doit.py"])
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//class[@name='doit.py']")
+        assert len(elts) == 1
+        assert elts[0].get('filename') == "sub/doit.py"
 
     def test_filename_format_including_module(self):
         cov = self.run_doit()
         import sub.doit                         # pylint: disable=import-error
-        cov.xml_report([sub.doit], outfile="-")
-        xml = self.stdout()
-        doit_line = re_line(xml, "class.*doit")
-        self.assertIn('filename="sub/doit.py"', doit_line)
+        cov.xml_report([sub.doit])
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//class[@name='doit.py']")
+        assert len(elts) == 1
+        assert elts[0].get('filename') == "sub/doit.py"
 
     def test_reporting_on_nothing(self):
         # Used to raise a zero division error:
@@ -136,28 +165,31 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         self.make_file("empty.py", "")
         cov = coverage.Coverage()
         empty = self.start_import_stop(cov, "empty")
-        cov.xml_report([empty], outfile="-")
-        xml = self.stdout()
-        empty_line = re_line(xml, "class.*empty")
-        self.assertIn('filename="empty.py"', empty_line)
-        self.assertIn('line-rate="1"', empty_line)
+        cov.xml_report([empty])
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//class[@name='empty.py']")
+        assert len(elts) == 1
+        assert elts[0].get('filename') == "empty.py"
+        assert elts[0].get('line-rate') == '1'
 
     def test_empty_file_is_100_not_0(self):
         # https://bitbucket.org/ned/coveragepy/issue/345
         cov = self.run_doit()
-        cov.xml_report(outfile="-")
-        xml = self.stdout()
-        init_line = re_line(xml, 'filename="sub/__init__.py"')
-        self.assertIn('line-rate="1"', init_line)
+        cov.xml_report()
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//class[@name='__init__.py']")
+        assert len(elts) == 1
+        assert elts[0].get('line-rate') == '1'
 
     def test_curdir_source(self):
         # With no source= option, the XML report should explain that the source
         # is in the current directory.
         cov = self.run_doit()
-        cov.xml_report(outfile="-")
-        xml = self.stdout()
-        self.assert_source(xml, ".")
-        self.assertEqual(xml.count('<source>'), 1)
+        cov.xml_report()
+        dom = ElementTree.parse("coverage.xml")
+        self.assert_source(dom, ".")
+        sources = dom.findall(".//source")
+        assert len(sources) == 1
 
     def test_deep_source(self):
         # When using source=, the XML report needs to mention those directories
@@ -170,21 +202,33 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         mod_foo = import_local_file("foo", "src/main/foo.py")                   # pragma: nested
         mod_bar = import_local_file("bar", "also/over/there/bar.py")            # pragma: nested
         cov.stop()                                                              # pragma: nested
-        cov.xml_report([mod_foo, mod_bar], outfile="-")
-        xml = self.stdout()
+        cov.xml_report([mod_foo, mod_bar])
+        dom = ElementTree.parse("coverage.xml")
 
-        self.assert_source(xml, "src/main")
-        self.assert_source(xml, "also/over/there")
-        self.assertEqual(xml.count('<source>'), 2)
+        self.assert_source(dom, "src/main")
+        self.assert_source(dom, "also/over/there")
+        sources = dom.findall(".//source")
+        assert len(sources) == 2
 
-        self.assertIn(
-            '<class branch-rate="0" complexity="0" filename="foo.py" line-rate="1" name="foo.py">',
-            xml
-        )
-        self.assertIn(
-            '<class branch-rate="0" complexity="0" filename="bar.py" line-rate="1" name="bar.py">',
-            xml
-        )
+        foo_class = dom.findall(".//class[@name='foo.py']")
+        assert len(foo_class) == 1
+        assert foo_class[0].attrib == {
+            'branch-rate': '0',
+            'complexity': '0',
+            'filename': 'foo.py',
+            'line-rate': '1',
+            'name': 'foo.py',
+        }
+
+        bar_class = dom.findall(".//class[@name='bar.py']")
+        assert len(bar_class) == 1
+        assert bar_class[0].attrib == {
+            'branch-rate': '0',
+            'complexity': '0',
+            'filename': 'bar.py',
+            'line-rate': '1',
+            'name': 'bar.py',
+        }
 
     def test_nonascii_directory(self):
         # https://bitbucket.org/ned/coveragepy/issues/573/cant-generate-xml-report-if-some-source
@@ -195,22 +239,33 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
             cov.xml_report()
 
 
+def unbackslash(v):
+    """Find strings in `v`, and replace backslashes with slashes throughout."""
+    if isinstance(v, (tuple, list)):
+        return [unbackslash(vv) for vv in v]
+    elif isinstance(v, dict):
+        return {k: unbackslash(vv) for k, vv in v.items()}
+    else:
+        assert isinstance(v, str)
+        return v.replace("\\", "/")
+
+
 class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
     """Tests about the package structure reported in the coverage.xml file."""
 
     def package_and_class_tags(self, cov):
         """Run an XML report on `cov`, and get the package and class tags."""
-        self.captured_stdout.truncate(0)
-        cov.xml_report(outfile="-")
-        packages_and_classes = re_lines(self.stdout(), r"<package |<class ")
-        scrubs = r' branch-rate="0"| complexity="0"| line-rate="[\d.]+"'
-        return clean(packages_and_classes, scrubs)
+        cov.xml_report()
+        dom = ElementTree.parse("coverage.xml")
+        for node in dom.iter():
+            if node.tag in ('package', 'class'):
+                yield (node.tag, {a:v for a,v in node.items() if a in ('name', 'filename')})
 
     def assert_package_and_class_tags(self, cov, result):
         """Check the XML package and class tags from `cov` match `result`."""
-        self.assertMultiLineEqual(
-            self.package_and_class_tags(cov),
-            clean(result)
+        self.assertEqual(
+            unbackslash(list(self.package_and_class_tags(cov))),
+            unbackslash(result),
             )
 
     def test_package_names(self):
@@ -220,18 +275,18 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
             """)
         cov = coverage.Coverage(source=".")
         self.start_import_stop(cov, "main")
-        self.assert_package_and_class_tags(cov, """\
-            <package name=".">
-               <class filename="main.py" name="main.py">
-            <package name="d0">
-               <class filename="d0/__init__.py" name="__init__.py">
-               <class filename="d0/f0.py" name="f0.py">
-            <package name="d0.d0">
-               <class filename="d0/d0/__init__.py" name="__init__.py">
-               <class filename="d0/d0/f0.py" name="f0.py">
-            """)
+        self.assert_package_and_class_tags(cov, [
+            ('package', {'name': "."}),
+            ('class', {'filename': "main.py", 'name': "main.py"}),
+            ('package', {'name': "d0"}),
+            ('class', {'filename': "d0/__init__.py", 'name': "__init__.py"}),
+            ('class', {'filename': "d0/f0.py", 'name': "f0.py"}),
+            ('package', {'name': "d0.d0"}),
+            ('class', {'filename': "d0/d0/__init__.py", 'name': "__init__.py"}),
+            ('class', {'filename': "d0/d0/f0.py", 'name': "f0.py"}),
+            ])
 
-    def test_package_depth(self):
+    def test_package_depth_1(self):
         self.make_tree(width=1, depth=4)
         self.make_file("main.py", """\
             from d0.d0 import f0
@@ -240,46 +295,62 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         self.start_import_stop(cov, "main")
 
         cov.set_option("xml:package_depth", 1)
-        self.assert_package_and_class_tags(cov, """\
-            <package name=".">
-               <class filename="main.py" name="main.py">
-            <package name="d0">
-               <class filename="d0/__init__.py" name="__init__.py">
-               <class filename="d0/d0/__init__.py" name="d0/__init__.py">
-               <class filename="d0/d0/d0/__init__.py" name="d0/d0/__init__.py">
-               <class filename="d0/d0/d0/f0.py" name="d0/d0/f0.py">
-               <class filename="d0/d0/f0.py" name="d0/f0.py">
-               <class filename="d0/f0.py" name="f0.py">
+        self.assert_package_and_class_tags(cov, [
+            ('package', {'name': "."}),
+            ('class', {'filename': "main.py", 'name': "main.py"}),
+            ('package', {'name': "d0"}),
+            ('class', {'filename': "d0/__init__.py", 'name': "__init__.py"}),
+            ('class', {'filename': "d0/d0/__init__.py", 'name': "d0/__init__.py"}),
+            ('class', {'filename': "d0/d0/d0/__init__.py", 'name': "d0/d0/__init__.py"}),
+            ('class', {'filename': "d0/d0/d0/f0.py", 'name': "d0/d0/f0.py"}),
+            ('class', {'filename': "d0/d0/f0.py", 'name': "d0/f0.py"}),
+            ('class', {'filename': "d0/f0.py", 'name': "f0.py"}),
+            ])
+
+    def test_package_depth_2(self):
+        self.make_tree(width=1, depth=4)
+        self.make_file("main.py", """\
+            from d0.d0 import f0
             """)
+        cov = coverage.Coverage(source=".")
+        self.start_import_stop(cov, "main")
 
         cov.set_option("xml:package_depth", 2)
-        self.assert_package_and_class_tags(cov, """\
-            <package name=".">
-               <class filename="main.py" name="main.py">
-            <package name="d0">
-               <class filename="d0/__init__.py" name="__init__.py">
-               <class filename="d0/f0.py" name="f0.py">
-            <package name="d0.d0">
-               <class filename="d0/d0/__init__.py" name="__init__.py">
-               <class filename="d0/d0/d0/__init__.py" name="d0/__init__.py">
-               <class filename="d0/d0/d0/f0.py" name="d0/f0.py">
-               <class filename="d0/d0/f0.py" name="f0.py">
+        self.assert_package_and_class_tags(cov, [
+            ('package', {'name': "."}),
+            ('class', {'filename': "main.py", 'name': "main.py"}),
+            ('package', {'name': "d0"}),
+            ('class', {'filename': "d0/__init__.py", 'name': "__init__.py"}),
+            ('class', {'filename': "d0/f0.py", 'name': "f0.py"}),
+            ('package', {'name': "d0.d0"}),
+            ('class', {'filename': "d0/d0/__init__.py", 'name': "__init__.py"}),
+            ('class', {'filename': "d0/d0/d0/__init__.py", 'name': "d0/__init__.py"}),
+            ('class', {'filename': "d0/d0/d0/f0.py", 'name': "d0/f0.py"}),
+            ('class', {'filename': "d0/d0/f0.py", 'name': "f0.py"}),
+            ])
+
+    def test_package_depth_3(self):
+        self.make_tree(width=1, depth=4)
+        self.make_file("main.py", """\
+            from d0.d0 import f0
             """)
+        cov = coverage.Coverage(source=".")
+        self.start_import_stop(cov, "main")
 
         cov.set_option("xml:package_depth", 3)
-        self.assert_package_and_class_tags(cov, """\
-            <package name=".">
-               <class filename="main.py" name="main.py">
-            <package name="d0">
-               <class filename="d0/__init__.py" name="__init__.py">
-               <class filename="d0/f0.py" name="f0.py">
-            <package name="d0.d0">
-               <class filename="d0/d0/__init__.py" name="__init__.py">
-               <class filename="d0/d0/f0.py" name="f0.py">
-            <package name="d0.d0.d0">
-               <class filename="d0/d0/d0/__init__.py" name="__init__.py">
-               <class filename="d0/d0/d0/f0.py" name="f0.py">
-            """)
+        self.assert_package_and_class_tags(cov, [
+            ('package', {'name': "."}),
+            ('class', {'filename': "main.py", 'name': "main.py"}),
+            ('package', {'name': "d0"}),
+            ('class', {'filename': "d0/__init__.py", 'name': "__init__.py"}),
+            ('class', {'filename': "d0/f0.py", 'name': "f0.py"}),
+            ('package', {'name': "d0.d0"}),
+            ('class', {'filename': "d0/d0/__init__.py", 'name': "__init__.py"}),
+            ('class', {'filename': "d0/d0/f0.py", 'name': "f0.py"}),
+            ('package', {'name': "d0.d0.d0"}),
+            ('class', {'filename': "d0/d0/d0/__init__.py", 'name': "__init__.py"}),
+            ('class', {'filename': "d0/d0/d0/f0.py", 'name': "f0.py"}),
+            ])
 
     def test_source_prefix(self):
         # https://bitbucket.org/ned/coveragepy/issues/465
@@ -287,26 +358,13 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         self.make_file("src/mod.py", "print(17)")
         cov = coverage.Coverage(source=["src"])
         self.start_import_stop(cov, "mod", modfile="src/mod.py")
-        self.assert_package_and_class_tags(cov, """\
-            <package name=".">
-                <class filename="mod.py" name="mod.py">
-            """)
-        xml = self.stdout()
-        self.assert_source(xml, "src")
 
-
-def clean(text, scrub=None):
-    """Clean text to prepare it for comparison.
-
-    Remove text matching `scrub`, and leading whitespace. Convert backslashes
-    to forward slashes.
-
-    """
-    if scrub:
-        text = re.sub(scrub, "", text)
-    text = re.sub(r"(?m)^\s+", "", text)
-    text = re.sub(r"\\", "/", text)
-    return text
+        self.assert_package_and_class_tags(cov, [
+            ('package', {'name': "."}),
+            ('class', {'filename': "mod.py", 'name': "mod.py"}),
+            ])
+        dom = ElementTree.parse("coverage.xml")
+        self.assert_source(dom, "src")
 
 
 def compare_xml(expected, actual, **kwargs):

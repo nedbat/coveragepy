@@ -11,6 +11,7 @@ import os.path
 import re
 import sys
 import textwrap
+from xml.etree import ElementTree
 
 import pytest
 
@@ -1266,12 +1267,18 @@ class UnicodeFilePathsTest(CoverageTest):
         self.assertEqual(out, "")
         with open("coverage.xml", "rb") as xmlf:
             xml = xmlf.read()
-        self.assertIn(u' filename="\xe2/accented.py"'.encode('utf8'), xml)
-        self.assertIn(u' name="accented.py"'.encode('utf8'), xml)
-        self.assertIn(
-            u'<package branch-rate="0" complexity="0" line-rate="1" name="\xe2">'.encode('utf8'),
-            xml
-        )
+        self.assertIn(b' filename="\xc3\xa2/accented.py"', xml)
+        self.assertIn(b' name="accented.py"', xml)
+
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(u".//package[@name='â']")
+        assert len(elts) == 1
+        assert elts[0].attrib == {
+            "branch-rate": u"0",
+            "complexity": u"0",
+            "line-rate": u"1",
+            "name": u"â",
+        }
 
         report_expected = (
             u"Name            Stmts   Miss  Cover\n"

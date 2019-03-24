@@ -4,6 +4,7 @@
 """Tests for plugins."""
 
 import os.path
+from xml.etree import ElementTree
 
 import coverage
 from coverage import env
@@ -455,14 +456,25 @@ class GoodFileTracerTest(FileTracerTest):
         total = cov.xml_report(include=["*.html"], omit=["uni*.html"])
         self.assertAlmostEqual(total, 36.36, places=2)
 
-        with open("coverage.xml") as fxml:
-            xml = fxml.read()
+        dom = ElementTree.parse("coverage.xml")
+        classes = {}
+        for elt in dom.findall(".//class"):
+            classes[elt.get('name')] = elt
 
-        for snip in [
-            'filename="bar_4.html" line-rate="0.5" name="bar_4.html"',
-            'filename="foo_7.html" line-rate="0.2857" name="foo_7.html"',
-        ]:
-            self.assertIn(snip, xml)
+        assert classes['bar_4.html'].attrib == {
+            'branch-rate': '1',
+            'complexity': '0',
+            'filename': 'bar_4.html',
+            'line-rate': '0.5',
+            'name': 'bar_4.html',
+        }
+        assert classes['foo_7.html'].attrib == {
+            'branch-rate': '1',
+            'complexity': '0',
+            'filename': 'foo_7.html',
+            'line-rate': '0.2857',
+            'name': 'foo_7.html',
+        }
 
     def test_defer_to_python(self):
         # A plugin that measures, but then wants built-in python reporting.

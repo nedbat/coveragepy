@@ -10,6 +10,7 @@ import os
 import os.path
 import re
 import sys
+import xml.etree.ElementTree
 
 from unittest_mixins import change_dir    # pylint: disable=unused-import
 
@@ -79,12 +80,19 @@ def compare(
     # ourselves.
     text_diff = []
     for f in diff_files:
+
         expected_file = os.path.join(expected_dir, f)
-        actual_file = os.path.join(actual_dir, f)
         with open(expected_file, READ_MODE) as fobj:
             expected = fobj.read()
+        if expected_file.endswith(".xml"):
+            expected = canonicalize_xml(expected)
+
+        actual_file = os.path.join(actual_dir, f)
         with open(actual_file, READ_MODE) as fobj:
             actual = fobj.read()
+        if actual_file.endswith(".xml"):
+            actual = canonicalize_xml(actual)
+
         if scrubs:
             expected = scrub(expected, scrubs)
             actual = scrub(actual, scrubs)
@@ -100,6 +108,15 @@ def compare(
     assert not expected_only, "Files in %s only: %s" % (expected_dir, expected_only)
     if not actual_extra:
         assert not actual_only, "Files in %s only: %s" % (actual_dir, actual_only)
+
+
+def canonicalize_xml(xtext):
+    """Canonicalize some XML text."""
+    root = xml.etree.ElementTree.fromstring(xtext)
+    for node in root.iter():
+        node.attrib = dict(sorted(node.items()))
+    xtext = xml.etree.ElementTree.tostring(root)
+    return xtext.decode('utf8')
 
 
 def contains(filename, *strlist):
