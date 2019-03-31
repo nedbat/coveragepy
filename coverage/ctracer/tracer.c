@@ -382,7 +382,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         self->pcur_entry->started_context = FALSE;
     }
 
-    /* Check if we should trace this line. */
+    /* Check if we should trace this code block. */
     filename = frame->f_code->co_filename;
     disposition = PyDict_GetItem(self->should_trace_cache, filename);
     if (disposition == NULL) {
@@ -535,6 +535,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         self->pcur_entry->file_data = NULL;
         self->pcur_entry->file_tracer = Py_None;
         SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "skipped");
+        frame->f_trace_lines = 0;
     }
 
     self->pcur_entry->disposition = disposition;

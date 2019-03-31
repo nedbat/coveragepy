@@ -117,6 +117,8 @@ class PyTracer(object):
                 if tracename not in self.data:
                     self.data[tracename] = {}
                 self.cur_file_dict = self.data[tracename]
+            else:
+                frame.f_trace_lines = False
             # The call event is really a "start frame" event, and happens for
             # function calls and re-entering generators.  The f_lasti field is
             # -1 for calls, and a real offset for generators.  Use <0 as the
