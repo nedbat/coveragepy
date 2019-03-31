@@ -27,5 +27,6 @@ after_script:
   - |
     if [[ $COVERAGE_COVERAGE == 'yes' ]]; then
       python igor.py combine_html
-      bash <(curl -s https://codecov.io/bash) -Z -X gcov -X coveragepy -X search -X xcode -X gcovout -X fix -f coverage.xml -n $TOXENV
+      pip install codecov
+      codecov -X gcov coveragepy search xcode fix -f coverage.xml -n $TOXENV
     fi
