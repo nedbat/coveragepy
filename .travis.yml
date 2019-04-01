@@ -1,3 +1,6 @@
+# Tell Travis what to do
+# https://travis-ci.com/nedbat/coveragepy
+
 dist: xenial
 language: python
 
