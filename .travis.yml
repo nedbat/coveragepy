@@ -31,5 +31,5 @@ after_script:
     if [[ $COVERAGE_COVERAGE == 'yes' ]]; then
       python igor.py combine_html
       pip install codecov
-      codecov -X gcov coveragepy search xcode fix -f coverage.xml -n $TOXENV
+      codecov -X gcov --file coverage.xml
     fi
