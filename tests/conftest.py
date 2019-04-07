@@ -16,6 +16,9 @@ import pytest
 from coverage import env
 
 
+# Pytest can take additional options:
+# $set_env.py: PYTEST_ADDOPTS - Extra arguments to pytest.
+
 @pytest.fixture(autouse=True)
 def set_warnings():
     """Enable DeprecationWarnings during all tests."""
