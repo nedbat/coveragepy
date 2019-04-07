@@ -541,7 +541,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
     /* Make the frame right in case settrace(gettrace()) happens. */
     Py_INCREF(self);
-    My_XSETREF(frame->f_trace, (PyObject*)self);
+    Py_XSETREF(frame->f_trace, (PyObject*)self);
 
     /* A call event is really a "start frame" event, and can happen for
      * re-entering a generator also.  f_lasti is -1 for a true call, and a
