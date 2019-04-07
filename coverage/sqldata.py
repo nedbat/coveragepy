@@ -326,8 +326,7 @@ class CoverageSqliteData(SimpleReprMixin):
             self.add_file_tracers({filename: plugin_name})
 
     def update(self, other_data, aliases=None):
-        """Update this data with data from several other `CoverageData`
-        instances.
+        """Update this data with data from several other `CoverageData` instances.
 
         If `aliases` is provided, it's a `PathAliases` object that is used to
         re-map paths to match the local machine's.
@@ -361,10 +360,9 @@ class CoverageSqliteData(SimpleReprMixin):
                 'select file.path, context.context, arc.fromno, arc.tono '
                 'from arc '
                 'inner join file on file.id = arc.file_id '
-                'inner join context on context.id = arc.context_id ')
-            arcs = [
-                (files[path], context, fromno, tono)
-                for (path, context, fromno, tono) in cur]
+                'inner join context on context.id = arc.context_id'
+            )
+            arcs = [(files[path], context, fromno, tono) for (path, context, fromno, tono) in cur]
             cur.close()
 
             # Get line data.
@@ -372,17 +370,17 @@ class CoverageSqliteData(SimpleReprMixin):
                 'select file.path, context.context, line.lineno '
                 'from line '
                 'inner join file on file.id = line.file_id '
-                'inner join context on context.id = line.context_id ')
-            lines = [
-                (files[path], context, lineno)
-                for (path, context, lineno) in cur]
+                'inner join context on context.id = line.context_id'
+            )
+            lines = [(files[path], context, lineno) for (path, context, lineno) in cur]
             cur.close()
 
             # Get tracer data.
             cur = conn.execute(
                 'select file.path, tracer '
                 'from tracer '
-                'inner join file on file.id = tracer.file_id')
+                'inner join file on file.id = tracer.file_id'
+            )
             tracers = {files[path]: tracer for (path, tracer) in cur}
             cur.close()
 
@@ -393,29 +391,32 @@ class CoverageSqliteData(SimpleReprMixin):
             # to have an empty string tracer. Since Sqlite does not support
             # full outer joins, we have to make two queries to fill the
             # dictionary.
-            this_tracers = {
-                path: ''
-                for path, in conn.execute('select path from file')}
+            this_tracers = {path: '' for path, in conn.execute('select path from file')}
             this_tracers.update({
                 aliases.map(path): tracer
                 for path, tracer in conn.execute(
-                        'select file.path, tracer from tracer '
-                        'inner join file on file.id = tracer.file_id')})
+                    'select file.path, tracer from tracer '
+                    'inner join file on file.id = tracer.file_id'
+                )
+            })
 
             # Create all file and context rows in the DB.
             conn.executemany(
                 'insert or ignore into file (path) values (?)',
-                ((file,) for file in files.values()))
+                ((file,) for file in files.values())
+            )
             file_ids = {
                 path: id
-                for id, path in conn.execute('select id, path from file')}
+                for id, path in conn.execute('select id, path from file')
+            }
             conn.executemany(
                 'insert or ignore into context (context) values (?)',
-                ((context,) for context in contexts))
+                ((context,) for context in contexts)
+            )
             context_ids = {
                 context: id
-                for id, context in conn.execute(
-                        'select id, context from context')}
+                for id, context in conn.execute('select id, context from context')
+            }
 
             # Prepare tracers and fail, if a conflict is found.
             # tracer_paths is used to ensure consistency over the tracer data
@@ -428,18 +429,22 @@ class CoverageSqliteData(SimpleReprMixin):
                 if this_tracer is not None and this_tracer != other_tracer:
                     raise CoverageException(
                         "Conflicting file tracer name for '%s': %r vs %r" % (
-                            path, this_tracer, other_tracer))
+                            path, this_tracer, other_tracer
+                        )
+                    )
                 tracer_map[path] = other_tracer
 
             # Prepare arc and line rows to be inserted by converting the file
             # and context strings with integer ids. Then use the efficient
             # `executemany()` to insert all rows at once.
-            arc_rows = list(
+            arc_rows = [
                 (file_ids[file], context_ids[context], fromno, tono)
-                for file, context, fromno, tono in arcs)
-            line_rows = list(
+                for file, context, fromno, tono in arcs
+            ]
+            line_rows = [
                 (file_ids[file], context_ids[context], lineno)
-                for file, context, lineno in lines)
+                for file, context, lineno in lines
+            ]
 
             self._choose_lines_or_arcs(arcs=bool(arcs), lines=bool(lines))
 
@@ -447,16 +452,17 @@ class CoverageSqliteData(SimpleReprMixin):
                 'insert or ignore into arc '
                 '(file_id, context_id, fromno, tono) values (?, ?, ?, ?)',
                 ((file_ids[file], context_ids[context], fromno, tono)
-                 for file, context, fromno, tono in arcs))
+                 for file, context, fromno, tono in arcs)
+            )
             conn.executemany(
                 'insert or ignore into line '
                 '(file_id, context_id, lineno) values (?, ?, ?)',
-                ((file_ids[file], context_ids[context], lineno)
-                 for file, context, lineno in lines))
+                ((file_ids[file], context_ids[context], lineno) for file, context, lineno in lines)
+            )
             conn.executemany(
                 'insert or ignore into tracer (file_id, tracer) values (?, ?)',
-                ((file_ids[filename], tracer)
-                 for filename, tracer in tracer_map.items()))
+                ((file_ids[filename], tracer) for filename, tracer in tracer_map.items())
+            )
 
         # Update all internal cache data.
         self._reset()
