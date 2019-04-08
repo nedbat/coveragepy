@@ -17,17 +17,11 @@ import os
 import sqlite3
 import sys
 
-from coverage import env
-from coverage.backward import iitems
+from coverage.backward import get_thread_id, iitems
 from coverage.data import filename_suffix
 from coverage.debug import NoDebugging, SimpleReprMixin
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
-
-if env.PY2:
-    from thread import get_ident as get_thread_id
-else:
-    from threading import get_ident as get_thread_id
 
 
 # Schema versions:
@@ -168,8 +162,7 @@ class CoverageSqliteData(SimpleReprMixin):
         return self._dbs[get_thread_id()]
 
     def __nonzero__(self):
-        if (get_thread_id() not in self._dbs and
-                not os.path.exists(self.filename)):
+        if (get_thread_id() not in self._dbs and not os.path.exists(self.filename)):
             return False
         try:
             with self._connect() as con:

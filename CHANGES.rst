@@ -23,12 +23,16 @@ Unreleased
   that missing branches are reported near the other lines they affect. The
   values used to show all missing lines, and then all missing branches.
 
+- Access to the SQLite database used for data storage is now thread-safe.
+  Thanks, Stephan Richter. This closes `issue 702`_.
+
 - Combining data stored in SQLite now goes about twice as fast, fixing `issue
   761`_.  Thanks, Stephan Richter.
 
 - Line numbers in the HTML report now align properly with source lines, even
   when Chrome's minimum font size is set, fixing `issue 748`_.  Thanks Wen Ye.
 
+.. _issue 702: https://github.com/nedbat/coveragepy/issues/702
 .. _issue 746: https://github.com/nedbat/coveragepy/issues/746
 .. _issue 748: https://github.com/nedbat/coveragepy/issues/748
 .. _issue 761: https://github.com/nedbat/coveragepy/issues/761

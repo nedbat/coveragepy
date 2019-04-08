@@ -44,6 +44,12 @@ try:
 except NameError:
     range = range
 
+# Where do we get the thread id from?
+try:
+    from thread import get_ident as get_thread_id
+except ImportError:
+    from threading import get_ident as get_thread_id
+
 # shlex.quote is new, but there's an undocumented implementation in "pipes",
 # who knew!?
 try:
