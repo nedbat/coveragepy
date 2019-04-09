@@ -438,27 +438,26 @@ class CoverageSqliteData(SimpleReprMixin):
             # Prepare arc and line rows to be inserted by converting the file
             # and context strings with integer ids. Then use the efficient
             # `executemany()` to insert all rows at once.
-            arc_rows = [
+            arc_rows = (
                 (file_ids[file], context_ids[context], fromno, tono)
                 for file, context, fromno, tono in arcs
-            ]
-            line_rows = [
+            )
+            line_rows = (
                 (file_ids[file], context_ids[context], lineno)
                 for file, context, lineno in lines
-            ]
+            )
 
             self._choose_lines_or_arcs(arcs=bool(arcs), lines=bool(lines))
 
             conn.executemany(
                 'insert or ignore into arc '
                 '(file_id, context_id, fromno, tono) values (?, ?, ?, ?)',
-                ((file_ids[file], context_ids[context], fromno, tono)
-                 for file, context, fromno, tono in arcs)
+                arc_rows
             )
             conn.executemany(
                 'insert or ignore into line '
                 '(file_id, context_id, lineno) values (?, ?, ?)',
-                ((file_ids[file], context_ids[context], lineno) for file, context, lineno in lines)
+                line_rows
             )
             conn.executemany(
                 'insert or ignore into tracer (file_id, tracer) values (?, ?)',
