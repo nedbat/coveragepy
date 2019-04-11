@@ -3,6 +3,11 @@
 
 # MANIFEST.in file for coverage.py
 
+# This file includes everything needed to recreate the entire project, even
+# though many of these files are not installed by setup.py.  Unpacking the
+# .tar.gz source distribution would give you everything needed to continue
+# developing the project.  "pip install" will not install many of these files.
+
 include CONTRIBUTORS.txt
 include CHANGES.rst
 include LICENSE.txt
