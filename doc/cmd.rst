@@ -219,8 +219,24 @@ To erase the collected data, use the **erase** command::
 Combining data files
 --------------------
 
-If you need to collect coverage data from different machines or processes,
-coverage.py can combine multiple files into one for reporting.
+Often test suites are run under different conditions, for example, with
+different versions of Python, or dependencies, or on different operating
+systems.  In these cases, you can collect coverage data for each test run, and
+then combine all the separate data files into one combined file for reporting.
+
+The **combine** command knows how to read a number of separate data files,
+match the data by source file name, and write a combined data file with all of
+the data.
+
+Coverage normally writes data to a filed named ".coverage".  The ``run
+--parallel-mode`` switch (or ``[run] parallel=True`` configuration option)
+tells coverage to expand the file name to include machine name, process id, and
+a random number so that every data file is distinct::
+
+    .coverage.Neds-MacBook-Pro.local.88335.316857
+    .coverage.Geometer.8044.799674
+
+You can also define a new data file name with the ``[run] data_file`` option.
 
 Once you have created a number of these files, you can copy them all to a
 single directory, and use the **combine** command to combine them into one
@@ -237,10 +253,9 @@ current directory isn't searched if you use command-line arguments.  If you
 also want data from the current directory, name it explicitly on the command
 line.
 
-When coverage.py looks in directories for data files to combine, even the
-current directory, it only reads files with certain names.  It looks for files
-named the same as the data file (defaulting to ".coverage"), with a dotted
-suffix.  Here are some examples of data files that can be combined::
+When coverage.py combines data file, it looks for files named the same as the
+data file (defaulting to ".coverage"), with a dotted suffix.  Here are some
+examples of data files that can be combined::
 
     .coverage.machine1
     .coverage.20120807T212300
@@ -251,20 +266,19 @@ An existing combined data file is ignored and re-written. If you want to use
 runs, use the ``--append`` switch on the **combine** command.  This behavior
 was the default before version 4.2.
 
-The ``run --parallel-mode`` switch automatically creates separate data files
-for each run which can be combined later.  The file names include the machine
-name, the process id, and a random number::
+To combine data for a source file, coverage has to find its data
+in each of the data files.  Different test runs may run the same source file
+from different locations. For example, different operating systems will use
+different paths for the same file, or perhaps each Python version is run from a
+different subdirectory.  Coverage needs to know that different file paths are
+actually the same source file for reporting purposes.
 
-    .coverage.Neds-MacBook-Pro.local.88335.316857
-    .coverage.Geometer.8044.799674
+You can tell coverage.py how different source locations relate with a
+``[paths]`` section in your configuration file.  See :ref:`config_paths` for
+details.
 
-If the different machines run your code from different places in their file
-systems, coverage.py won't know how to combine the data.  You can tell
-coverage.py how the different locations correlate with a ``[paths]`` section in
-your configuration file.  See :ref:`config_paths` for details.
-
-If any data files can't be read, coverage.py will print a warning indicating
-the file and the problem.
+If any of the data files can't be read, coverage.py will print a warning
+indicating the file and the problem.
 
 
 .. _cmd_reporting:

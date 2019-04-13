@@ -198,15 +198,19 @@ equivalent when combining data from different machines::
         /jenkins/build/*/src
         c:\myproj\src
 
-The names of the entries are ignored, you may choose any name that you like.
-The value is a list of strings.  When combining data with the ``combine``
-command, two file paths will be combined if they start with paths from the same
-list.
+The names of the entries ("source" in this example) are ignored, you may choose
+any name that you like.  The value is a list of strings.  When combining data
+with the ``combine`` command, two file paths will be combined if they start
+with paths from the same list.
 
 The first value must be an actual file path on the machine where the reporting
 will happen, so that source code can be found.  The other values can be file
 patterns to match against the paths of collected data, or they can be absolute
 or relative file paths on the current machine.
+
+In this example, data collected for "/jenkins/build/1234/src/module.py" will be
+combined with data for "c:\myproj\src\module.py", and will be reported against
+the source file found at "src/module.py".
 
 See :ref:`cmd_combining` for more information.
 
