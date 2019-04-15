@@ -710,7 +710,7 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
     """
     # Because of the os.path.abspath in the constructor, data_dir will
     # never be an empty string.
-    data_dir, local = os.path.split(data.filename)
+    data_dir, local = os.path.split(data.base_filename())
     localdot = local + '.*'
 
     data_paths = data_paths or [data_dir]
@@ -729,6 +729,12 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
 
     files_combined = 0
     for f in files_to_combine:
+        if f == data.filename():
+            # Sometimes we are combining into a file which is one of the
+            # parallel files.  Skip that file.
+            if data._debug.should('dataio'):
+                data._debug.write("Skipping combining ourself: %r" % (f,))
+            continue
         if data._debug.should('dataio'):
             data._debug.write("Combining data file %r" % (f,))
         try:

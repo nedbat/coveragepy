@@ -97,10 +97,10 @@ class CoverageSqliteData(SimpleReprMixin):
         self._current_context_id = None
 
     def _choose_filename(self):
-        self.filename = self._basename
+        self._filename = self._basename
         suffix = filename_suffix(self._suffix)
         if suffix:
-            self.filename += "." + suffix
+            self._filename += "." + suffix
 
     def _reset(self):
         if self._dbs:
@@ -113,8 +113,8 @@ class CoverageSqliteData(SimpleReprMixin):
 
     def _create_db(self):
         if self._debug.should('dataio'):
-            self._debug.write("Creating data file {!r}".format(self.filename))
-        self._dbs[get_thread_id()] = Sqlite(self.filename, self._debug)
+            self._debug.write("Creating data file {!r}".format(self._filename))
+        self._dbs[get_thread_id()] = Sqlite(self._filename, self._debug)
         with self._dbs[get_thread_id()] as db:
             for stmt in SCHEMA.split(';'):
                 stmt = " ".join(stmt.strip().split())
@@ -128,22 +128,22 @@ class CoverageSqliteData(SimpleReprMixin):
 
     def _open_db(self):
         if self._debug.should('dataio'):
-            self._debug.write("Opening data file {!r}".format(self.filename))
-        self._dbs[get_thread_id()] = Sqlite(self.filename, self._debug)
+            self._debug.write("Opening data file {!r}".format(self._filename))
+        self._dbs[get_thread_id()] = Sqlite(self._filename, self._debug)
         with self._dbs[get_thread_id()] as db:
             try:
                 schema_version, = db.execute("select version from coverage_schema").fetchone()
             except Exception as exc:
                 raise CoverageException(
                     "Data file {!r} doesn't seem to be a coverage data file: {}".format(
-                        self.filename, exc
+                        self._filename, exc
                     )
                 )
             else:
                 if schema_version != SCHEMA_VERSION:
                     raise CoverageException(
                         "Couldn't use data file {!r}: wrong schema: {} instead of {}".format(
-                            self.filename, schema_version, SCHEMA_VERSION
+                            self._filename, schema_version, SCHEMA_VERSION
                         )
                     )
 
@@ -155,14 +155,14 @@ class CoverageSqliteData(SimpleReprMixin):
 
     def _connect(self):
         if get_thread_id() not in self._dbs:
-            if os.path.exists(self.filename):
+            if os.path.exists(self._filename):
                 self._open_db()
             else:
                 self._create_db()
         return self._dbs[get_thread_id()]
 
     def __nonzero__(self):
-        if (get_thread_id() not in self._dbs and not os.path.exists(self.filename)):
+        if (get_thread_id() not in self._dbs and not os.path.exists(self._filename)):
             return False
         try:
             with self._connect() as con:
@@ -220,6 +220,14 @@ class CoverageSqliteData(SimpleReprMixin):
             with self._connect() as con:
                 cur = con.execute("insert into context (context) values (?)", (context,))
                 self._current_context_id = cur.lastrowid
+
+    def base_filename(self):
+        """The base filename for storing data."""
+        return self._basename
+
+    def filename(self):
+        """Where is the data stored?"""
+        return self._filename
 
     def add_lines(self, line_data):
         """Add measured line data.
@@ -477,10 +485,10 @@ class CoverageSqliteData(SimpleReprMixin):
         """
         self._reset()
         if self._debug.should('dataio'):
-            self._debug.write("Erasing data file {!r}".format(self.filename))
-        file_be_gone(self.filename)
+            self._debug.write("Erasing data file {!r}".format(self._filename))
+        file_be_gone(self._filename)
         if parallel:
-            data_dir, local = os.path.split(self.filename)
+            data_dir, local = os.path.split(self._filename)
             localdot = local + '.*'
             pattern = os.path.join(os.path.abspath(data_dir), localdot)
             for filename in glob.glob(pattern):

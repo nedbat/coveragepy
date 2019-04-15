@@ -691,7 +691,7 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
             2 files:
             file1.py: 17 lines [a_plugin]
             file2.py: 23 lines
-            """).replace("FILENAME", data.filename))
+            """).replace("FILENAME", data.filename()))
 
     def test_debug_data_with_no_data(self):
         data = CoverageData()
@@ -700,7 +700,7 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
             -- data ------------------------------------------------------
             path: FILENAME
             No data collected
-            """).replace("FILENAME", data.filename))
+            """).replace("FILENAME", data.filename()))
 
 
 class CmdLineStdoutTest(BaseCmdLineTest):

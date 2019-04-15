@@ -29,10 +29,17 @@ Unreleased
 - Combining data stored in SQLite now goes about twice as fast, fixing `issue
   761`_.  Thanks, Stephan Richter.
 
+- The ``filename`` attribute on `CoverageData` object has been made private.
+  You can use the ``filename`` method to get the actual file name being used
+  to store data, and the ``base_filename`` method to get the original filename
+  before parallelizing suffixes were added.  This is part of fixing `issue
+  708`_.
+
 - Line numbers in the HTML report now align properly with source lines, even
   when Chrome's minimum font size is set, fixing `issue 748`_.  Thanks Wen Ye.
 
 .. _issue 702: https://github.com/nedbat/coveragepy/issues/702
+.. _issue 708: https://github.com/nedbat/coveragepy/issues/708
 .. _issue 746: https://github.com/nedbat/coveragepy/issues/746
 .. _issue 748: https://github.com/nedbat/coveragepy/issues/748
 .. _issue 761: https://github.com/nedbat/coveragepy/issues/761
