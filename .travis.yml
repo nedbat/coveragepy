@@ -10,6 +10,7 @@ python:
   - '3.5'
   - '3.6'
   - '3.7'
+  - '3.8-dev'
   - 'pypy2.7-6.0'
   - 'pypy3.5-6.0'
 
@@ -24,6 +25,11 @@ install:
 
 script:
   - tox
-  - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then python igor.py combine_html; fi
-  - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then pip install codecov; fi
-  - if [[ $COVERAGE_COVERAGE == 'yes' ]]; then codecov -X gcov --file coverage.xml; fi
+
+after_script:
+  - |
+    if [[ $COVERAGE_COVERAGE == 'yes' ]]; then
+      python igor.py combine_html
+      pip install codecov
+      codecov -X gcov --file coverage.xml
+    fi
