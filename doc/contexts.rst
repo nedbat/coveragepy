@@ -4,7 +4,7 @@
 .. _contexts:
 
 ====================
-Measurement Contexts
+Measurement contexts
 ====================
 
 .. :history: 20180921T085400, new for 5.0
@@ -32,15 +32,28 @@ have differing contexts.  All of the information is retained, so that the
 different contexts are correctly recorded in the combined file.
 
 A static context is specified with the ``--context=CONTEXT`` option to
-:ref:`coverage run <cmd_run>`.
+:ref:`the coverage run command <cmd_run>`, or the ``[run] context`` setting in
+the configuration file.
 
 
 Dynamic contexts
 ----------------
 
-Dynamic contexts are found during execution.  There is currently support for
-one kind: test function names.  Set the ``dynamic_context`` option to
-``test_function`` in the configuration file::
+Dynamic contexts are found during execution.  They started from the question,
+"what test ran this line?," but have been generalized to allow any kind of
+context tracking.  As execution proceeds, the dynamic context changes
+to record the context of execution.  Separate data is recorded for each
+context, so that it can be analyzed later.
+
+There are two ways to enable dynamic contexts:
+
+* you can set the ``[run] dynamic_context`` option in your .coveragerc file, or
+
+* you can enable a :ref:`dynamic context switcher <dynamic_context_plugins>`
+  plugin.
+
+The ``[run] dynamic_context`` setting has only one option now.  Set it to
+``test_function`` to start a new dynamic context for every test function::
 
     [run]
     dynamic_context = test_function
