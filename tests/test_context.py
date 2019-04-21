@@ -112,10 +112,10 @@ class DynamicContextTest(CoverageTest):
     """Tests of dynamically changing contexts."""
 
     def setUp(self):
-        super(DynamicContextTest, self).setUp()
-        self.skip_unless_data_storage_is("sql")
         if not env.C_TRACER:
             self.skipTest("Only the C tracer supports dynamic contexts")
+        super(DynamicContextTest, self).setUp()
+        self.skip_unless_data_storage_is("sql")
 
     SOURCE = """\
         def helper(lineno):

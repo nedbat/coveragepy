@@ -278,9 +278,9 @@ class FileTracerTest(CoverageTest):
     """Tests of plugins that implement file_tracer."""
 
     def setUp(self):
-        super(FileTracerTest, self).setUp()
         if not env.C_TRACER:
             self.skipTest("Plugins are only supported with the C tracer.")
+        super(FileTracerTest, self).setUp()
 
 
 class GoodFileTracerTest(FileTracerTest):
@@ -890,9 +890,9 @@ class DynamicContextPluginTest(CoverageTest):
     """Tests of plugins that implement `dynamic_context`."""
 
     def setUp(self):
-        super(DynamicContextPluginTest, self).setUp()
         if not env.C_TRACER:
             self.skipTest("Plugins are only supported with the C tracer.")
+        super(DynamicContextPluginTest, self).setUp()
 
     def make_plugin_capitalized_testnames(self, filename):
         self.make_file(filename, """\
@@ -1106,9 +1106,9 @@ class DynamicContextPluginOtherTracersTest(CoverageTest):
     """Tests of plugins that implement `dynamic_context`."""
 
     def setUp(self):
-        super(DynamicContextPluginOtherTracersTest, self).setUp()
         if env.C_TRACER:
             self.skipTest("These tests are for tracers not implemented in C.")
+        super(DynamicContextPluginOtherTracersTest, self).setUp()
 
     def test_other_tracer_support(self):
         self.make_file("context_plugin.py", """\

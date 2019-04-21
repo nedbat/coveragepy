@@ -509,9 +509,9 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
     """Test PEP-420 namespace modules."""
 
     def setUp(self):
-        super(NamespaceModuleTest, self).setUp()
         if not env.PYBEHAVIOR.namespaces_pep420:
             self.skipTest("Python before 3.3 doesn't have namespace packages")
+        super(NamespaceModuleTest, self).setUp()
 
     def test_explicit_namespace_module(self):
         self.make_file("main.py", "import namespace_420\n")
