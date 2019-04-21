@@ -8,6 +8,7 @@ import datetime
 import functools
 import glob
 import os
+import os.path
 import random
 import re
 import shlex
@@ -513,6 +514,15 @@ class CoverageTest(
     def last_line_squeezed(self, report):
         """Return the last line of `report` with the spaces squeezed down."""
         return self.squeezed_lines(report)[-1]
+
+    def get_measured_filenames(self, coverage_data):
+        """Get paths to measured files.
+
+        Returns a dict of {filename: absolute path to file}
+        for given CoverageData.
+        """
+        return {os.path.basename(filename): filename
+                for filename in coverage_data.measured_files()}
 
 
 class UsingModulesMixin(object):
