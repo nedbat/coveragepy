@@ -927,7 +927,6 @@ class DynamicContextPluginTest(CoverageTest):
             """)
 
     def make_testsuite(self):
-        filenames = []
         self.make_file("rendering.py", """\
             def html_tag(tag, content):
                 return '<%s>%s</%s>' % (tag, content, tag)
@@ -965,8 +964,8 @@ class DynamicContextPluginTest(CoverageTest):
                 return html
             """)
 
-    def run_testsuite(self, coverage, suite_name):
-        coverage.start()
+    def run_testsuite(self, cov, suite_name):
+        cov.start()
         suite = import_local_file(suite_name)
         try:
             # Call all functions in this module
@@ -975,8 +974,7 @@ class DynamicContextPluginTest(CoverageTest):
                 if inspect.isfunction(variable):
                     variable()
         finally:
-            coverage.stop()
-        return suite
+            cov.stop()
 
     def test_plugin_standalone(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
@@ -987,7 +985,7 @@ class DynamicContextPluginTest(CoverageTest):
         cov.set_option("run:plugins", ['plugin_tests'])
 
         # Run the tests
-        suite = self.run_testsuite(cov, 'testsuite')
+        self.run_testsuite(cov, 'testsuite')
 
         # Labeled coverage is collected
         data = cov.get_data()
@@ -1018,11 +1016,10 @@ class DynamicContextPluginTest(CoverageTest):
         cov.set_option("run:plugins", ['plugin_tests'])
 
         # Run the tests
-        suite = self.run_testsuite(cov, 'testsuite')
+        self.run_testsuite(cov, 'testsuite')
 
         # Static context prefix is preserved
         data = cov.get_data()
-        filenames = self.get_measured_filenames(data)
         expected = [
             'mytests',
             'mytests:doctest:HTML_TAG',
@@ -1041,7 +1038,7 @@ class DynamicContextPluginTest(CoverageTest):
         cov.set_option("run:dynamic_context", "test_function")
 
         # Run the tests
-        suite = self.run_testsuite(cov, 'testsuite')
+        self.run_testsuite(cov, 'testsuite')
 
         # test_function takes precedence over plugins - only
         # functions that are not labeled by test_function are
@@ -1074,7 +1071,7 @@ class DynamicContextPluginTest(CoverageTest):
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ['plugin_renderers', 'plugin_tests'])
 
-        suite = self.run_testsuite(cov, 'testsuite')
+        self.run_testsuite(cov, 'testsuite')
 
         # It is important to note, that line 11 (render_bold function) is never
         # labeled as renderer:bold context, because it is only called from
