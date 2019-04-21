@@ -940,7 +940,7 @@ class DynamicContextPluginTest(CoverageTest):
 
             def render_bold(text):
                 return html_tag('b', text)
-                """)
+            """)
 
         self.make_file("testsuite.py", """\
             import rendering
@@ -993,17 +993,21 @@ class DynamicContextPluginTest(CoverageTest):
         data = cov.get_data()
         filenames = self.get_measured_filenames(data)
         self.assertEqual(
+            ['', 'doctest:HTML_TAG', 'test:HTML_TAG', 'test:RENDERERS'],
             sorted(data.measured_contexts()),
-            ['', 'doctest:HTML_TAG', 'test:HTML_TAG', 'test:RENDERERS'])
+        )
         self.assertEqual(
+            [2],
             data.lines(filenames['rendering.py'], context="doctest:HTML_TAG"),
-            [2])
+        )
         self.assertEqual(
+            [2],
             data.lines(filenames['rendering.py'], context="test:HTML_TAG"),
-            [2])
+        )
         self.assertEqual(
+            [2, 5, 8, 11],
             data.lines(filenames['rendering.py'], context="test:RENDERERS"),
-            [2, 5, 8, 11])
+        )
 
     def test_static_context(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
@@ -1019,12 +1023,13 @@ class DynamicContextPluginTest(CoverageTest):
         # Static context prefix is preserved
         data = cov.get_data()
         filenames = self.get_measured_filenames(data)
-        self.assertEqual(
-            sorted(data.measured_contexts()),
-            ['mytests',
-             'mytests:doctest:HTML_TAG',
-             'mytests:test:HTML_TAG',
-             'mytests:test:RENDERERS'])
+        expected = [
+            'mytests',
+            'mytests:doctest:HTML_TAG',
+            'mytests:test:HTML_TAG',
+            'mytests:test:RENDERERS',
+        ]
+        self.assertEqual(expected, sorted(data.measured_contexts()))
 
     def test_plugin_with_test_function(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
@@ -1044,17 +1049,21 @@ class DynamicContextPluginTest(CoverageTest):
         data = cov.get_data()
         filenames = self.get_measured_filenames(data)
         self.assertEqual(
+            ['', 'doctest:HTML_TAG', 'test_html_tag', 'test_renderers'],
             sorted(data.measured_contexts()),
-            ['', 'doctest:HTML_TAG', 'test_html_tag', 'test_renderers'])
+        )
         self.assertEqual(
+            [2],
             data.lines(filenames['rendering.py'], context="doctest:HTML_TAG"),
-            [2])
+        )
         self.assertEqual(
+            [2],
             data.lines(filenames['rendering.py'], context="test_html_tag"),
-            [2])
+        )
         self.assertEqual(
+            [2, 5, 8, 11],
             data.lines(filenames['rendering.py'], context="test_renderers"),
-            [2, 5, 8, 11])
+        )
 
     def test_multiple_plugins(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
@@ -1076,30 +1085,35 @@ class DynamicContextPluginTest(CoverageTest):
         # testsuite.build_full_html, so they get labeled by renderers plugin.
         data = cov.get_data()
         filenames = self.get_measured_filenames(data)
+        expected = [
+            '',
+            'doctest:HTML_TAG',
+            'renderer:paragraph',
+            'renderer:span',
+            'test:HTML_TAG',
+            'test:RENDERERS',
+        ]
+        self.assertEqual(expected, sorted(data.measured_contexts()))
         self.assertEqual(
-            sorted(data.measured_contexts()),
-            ['',
-             'doctest:HTML_TAG',
-             'renderer:paragraph',
-             'renderer:span',
-             'test:HTML_TAG',
-             'test:RENDERERS'])
-
-        self.assertEqual(
+            [2],
             data.lines(filenames['rendering.py'], context="test:HTML_TAG"),
-            [2])
+        )
         self.assertEqual(
+            [2, 5, 8, 11],
             data.lines(filenames['rendering.py'], context="test:RENDERERS"),
-            [2, 5, 8, 11])
+        )
         self.assertEqual(
+            [2],
             data.lines(filenames['rendering.py'], context="doctest:HTML_TAG"),
-            [2])
+        )
         self.assertEqual(
+            [2, 5],
             data.lines(filenames['rendering.py'], context="renderer:paragraph"),
-            [2, 5])
+        )
         self.assertEqual(
+            [2, 8],
             data.lines(filenames['rendering.py'], context="renderer:span"),
-            [2, 8])
+        )
 
 
 class DynamicContextPluginOtherTracersTest(CoverageTest):
