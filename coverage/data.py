@@ -729,7 +729,7 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
 
     files_combined = 0
     for f in files_to_combine:
-        if f == data.filename():
+        if f == data.data_filename():
             # Sometimes we are combining into a file which is one of the
             # parallel files.  Skip that file.
             if data._debug.should('dataio'):

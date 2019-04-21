@@ -225,7 +225,7 @@ class CoverageSqliteData(SimpleReprMixin):
         """The base filename for storing data."""
         return self._basename
 
-    def filename(self):
+    def data_filename(self):
         """Where is the data stored?"""
         return self._filename
 
