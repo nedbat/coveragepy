@@ -16,6 +16,9 @@ Change history for Coverage.py
 Unreleased
 ----------
 
+- Dynamic contexts can now be determined by third-party code in a plugin.
+  Thanks, Justas Sadzevičius.
+
 - ``fail_under`` values more than 100 are reported as errors.  Thanks to Mike
   Fiedler for closing `issue 746`_.
 
