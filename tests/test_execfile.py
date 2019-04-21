@@ -82,7 +82,7 @@ class RunFileTest(CoverageTest):
         self.assertEqual(self.stdout(), "a is 1\n")
 
     def test_no_such_file(self):
-        with self.assertRaises(NoSource):
+        with self.assertRaisesRegex(NoSource, "No file to run: 'xyzzy.py'"):
             run_python_file(["xyzzy.py"])
 
     def test_directory_with_main(self):
@@ -205,11 +205,11 @@ class RunModuleTest(UsingModulesMixin, CoverageTest):
         self.assertEqual(self.stdout(), "pkg1.__init__: pkg1\npkg1.__init__: __main__\n")
 
     def test_no_such_module(self):
-        with self.assertRaises(NoSource):
+        with self.assertRaisesRegex(NoSource, "No module named '?i_dont_exist'?"):
             run_python_module(["i_dont_exist"])
-        with self.assertRaises(NoSource):
+        with self.assertRaisesRegex(NoSource, "No module named '?i'?"):
             run_python_module(["i.dont_exist"])
-        with self.assertRaises(NoSource):
+        with self.assertRaisesRegex(NoSource, "No module named '?i'?"):
             run_python_module(["i.dont.exist"])
 
     def test_no_main(self):

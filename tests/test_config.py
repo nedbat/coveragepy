@@ -214,13 +214,13 @@ class ConfigTest(CoverageTest):
     def test_tweak_error_checking(self):
         # Trying to set an unknown config value raises an error.
         cov = coverage.Coverage()
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "No such option: 'run:xyzzy'"):
             cov.set_option("run:xyzzy", 12)
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "No such option: 'xyzzy:foo'"):
             cov.set_option("xyzzy:foo", 12)
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "No such option: 'run:xyzzy'"):
             _ = cov.get_option("run:xyzzy")
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "No such option: 'xyzzy:foo'"):
             _ = cov.get_option("xyzzy:foo")
 
     def test_tweak_plugin_options(self):
@@ -229,12 +229,12 @@ class ConfigTest(CoverageTest):
         cov.set_option("run:plugins", ["fooey.plugin", "xyzzy.coverage.plugin"])
         cov.set_option("fooey.plugin:xyzzy", 17)
         cov.set_option("xyzzy.coverage.plugin:plugh", ["a", "b"])
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "No such option: 'no_such.plugin:foo'"):
             cov.set_option("no_such.plugin:foo", 23)
 
         self.assertEqual(cov.get_option("fooey.plugin:xyzzy"), 17)
         self.assertEqual(cov.get_option("xyzzy.coverage.plugin:plugh"), ["a", "b"])
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, "No such option: 'no_such.plugin:foo'"):
             _ = cov.get_option("no_such.plugin:foo")
 
     def test_unknown_option(self):

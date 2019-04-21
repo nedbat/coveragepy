@@ -358,7 +358,7 @@ class CoverageTest(
 
     def assert_file_count(self, pattern, count):
         """Assert that there are `count` files matching `pattern`."""
-        files = glob.glob(pattern)
+        files = sorted(glob.glob(pattern))
         msg = "There should be {} files matching {!r}, but there are these: {}"
         msg = msg.format(count, pattern, files)
         self.assertEqual(len(files), count, msg)

@@ -121,7 +121,7 @@ class LoadPluginsTest(CoverageTest):
         self.assertEqual(plugins[1].options, {'a': 'second'})
 
     def test_cant_import(self):
-        with self.assertRaises(ImportError):
+        with self.assertRaisesRegex(ImportError, "No module named '?plugin_not_there'?"):
             _ = Plugins.load_plugins(["plugin_not_there"], None)
 
     def test_plugin_must_define_coverage_init(self):
@@ -160,7 +160,7 @@ class PluginTest(CoverageTest):
 
     def test_missing_plugin_raises_import_error(self):
         # Prove that a missing plugin will raise an ImportError.
-        with self.assertRaises(ImportError):
+        with self.assertRaisesRegex(ImportError, "No module named '?does_not_exist_woijwoicweo'?"):
             cov = coverage.Coverage()
             cov.set_option("run:plugins", ["does_not_exist_woijwoicweo"])
             cov.start()
@@ -1137,7 +1137,8 @@ class DynamicContextPluginOtherTracersTest(CoverageTest):
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ['context_plugin'])
 
-        with self.assertRaises(CoverageException):
+        msg = "Can't support dynamic contexts with PyTracer"
+        with self.assertRaisesRegex(CoverageException, msg):
             cov.start()
 
         cov.stop()      # pragma: nested

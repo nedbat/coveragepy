@@ -6,6 +6,7 @@
 
 import datetime
 import os
+import re
 import sys
 
 import pytest
@@ -52,9 +53,11 @@ class CoverageTestTest(CoverageTest):
         self.make_file("whoville.txt", "We are here!")
         self.assert_exists("whoville.txt")
         self.assert_doesnt_exist("shadow.txt")
-        with self.assertRaises(AssertionError):
+        msg = "False is not true : File 'whoville.txt' shouldn't exist"
+        with self.assertRaisesRegex(AssertionError, msg):
             self.assert_doesnt_exist("whoville.txt")
-        with self.assertRaises(AssertionError):
+        msg = "False is not true : File 'shadow.txt' should exist"
+        with self.assertRaisesRegex(AssertionError, msg):
             self.assert_exists("shadow.txt")
 
     def test_file_count(self):
@@ -65,22 +68,39 @@ class CoverageTestTest(CoverageTest):
         self.assert_file_count("*c*.txt", 2)
         self.assert_file_count("afile.*", 1)
         self.assert_file_count("*.q", 0)
-        with self.assertRaises(AssertionError):
+        msg = re.escape(
+            "3 != 13 : There should be 13 files matching 'a*.txt', but there are these: "
+            "['abcde.txt', 'afile.txt', 'axczz.txt']"
+        )
+        with self.assertRaisesRegex(AssertionError, msg):
             self.assert_file_count("a*.txt", 13)
-        with self.assertRaises(AssertionError):
+        msg = re.escape(
+            "2 != 12 : There should be 12 files matching '*c*.txt', but there are these: "
+            "['abcde.txt', 'axczz.txt']"
+        )
+        with self.assertRaisesRegex(AssertionError, msg):
             self.assert_file_count("*c*.txt", 12)
-        with self.assertRaises(AssertionError):
+        msg = re.escape(
+            "1 != 11 : There should be 11 files matching 'afile.*', but there are these: "
+            "['afile.txt']"
+        )
+        with self.assertRaisesRegex(AssertionError, msg):
             self.assert_file_count("afile.*", 11)
-        with self.assertRaises(AssertionError):
+        msg = re.escape(
+            "0 != 10 : There should be 10 files matching '*.q', but there are these: []"
+        )
+        with self.assertRaisesRegex(AssertionError, msg):
             self.assert_file_count("*.q", 10)
 
     def test_assert_startwith(self):
         self.assert_starts_with("xyzzy", "xy")
         self.assert_starts_with("xyz\nabc", "xy")
         self.assert_starts_with("xyzzy", ("x", "z"))
-        with self.assertRaises(AssertionError):
+        msg = re.escape("'xyz' doesn't start with 'a'")
+        with self.assertRaisesRegex(AssertionError, msg):
             self.assert_starts_with("xyz", "a")
-        with self.assertRaises(AssertionError):
+        msg = re.escape("'xyz\\nabc' doesn't start with 'a'")
+        with self.assertRaisesRegex(AssertionError, msg):
             self.assert_starts_with("xyz\nabc", "a")
 
     def test_assert_recent_datetime(self):
@@ -149,7 +169,7 @@ class CoverageTestTest(CoverageTest):
                 cov._warn("Bye")
 
         # assert_warnings shouldn't hide a real exception.
-        with self.assertRaises(ZeroDivisionError):
+        with self.assertRaisesRegex(ZeroDivisionError, "oops"):
             with self.assert_warnings(cov, ["Hello there!"]):
                 raise ZeroDivisionError("oops")
 

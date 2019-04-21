@@ -64,7 +64,7 @@ class TempliteTest(CoverageTest):
 
     def test_undefined_variables(self):
         # Using undefined names is an error.
-        with self.assertRaises(Exception):
+        with self.assertRaisesRegex(Exception, "'name'"):
             self.try_render("Hi, {{name}}!")
 
     def test_pipes(self):

@@ -263,7 +263,8 @@ class ApiTest(CoverageTest):
         # empty summary reports raise exception, just like the xml report
         cov = coverage.Coverage()
         cov.erase()
-        self.assertRaises(CoverageException, cov.report)
+        with self.assertRaisesRegex(CoverageException, "No data to report."):
+            cov.report()
 
     def make_code1_code2(self):
         """Create the code1.py and code2.py files."""
