@@ -168,9 +168,7 @@ class PluginTest(CoverageTest):
 
     def test_bad_plugin_isnt_hidden(self):
         # Prove that a plugin with an error in it will raise the error.
-        self.make_file("plugin_over_zero.py", """\
-            1/0
-            """)
+        self.make_file("plugin_over_zero.py", "1/0")
         with self.assertRaises(ZeroDivisionError):
             cov = coverage.Coverage()
             cov.set_option("run:plugins", ["plugin_over_zero"])
@@ -193,7 +191,7 @@ class PluginTest(CoverageTest):
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_sys_info"])
         cov.start()
-        cov.stop()
+        cov.stop()      # pragma: nested
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
         if env.C_TRACER:
@@ -223,7 +221,7 @@ class PluginTest(CoverageTest):
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_no_sys_info"])
         cov.start()
-        cov.stop()
+        cov.stop()      # pragma: nested
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
         self.assertIn('plugins.file_tracers: -none-', out_lines)
@@ -262,7 +260,7 @@ class PluginWarningOnPyTracer(CoverageTest):
         if env.C_TRACER:
             self.skipTest("This test is only about PyTracer.")
 
-        self.make_file("simple.py", """a = 1""")
+        self.make_file("simple.py", "a = 1")
 
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ["tests.plugin1"])
@@ -560,7 +558,7 @@ class GoodFileTracerTest(FileTracerTest):
             def coverage_init(reg, options):
                 reg.add_file_tracer(Plugin())
         """)
-        self.make_file("foo.py", "a = 1\n")
+        self.make_file("foo.py", "a = 1")
         cov = coverage.Coverage(source=['.'])
         cov.set_option("run:plugins", ["unexecuted_plugin"])
         self.start_import_stop(cov, "foo")
@@ -895,14 +893,14 @@ class DynamicContextPluginTest(CoverageTest):
         super(DynamicContextPluginTest, self).setUp()
 
     def make_plugin_capitalized_testnames(self, filename):
+        """Create a dynamic context plugin that capitalizes the part after 'test_'."""
         self.make_file(filename, """\
             from coverage import CoveragePlugin
 
             class Plugin(CoveragePlugin):
                 def dynamic_context(self, frame):
                     name = frame.f_code.co_name
-                    if (name.startswith("test_")
-                            or name.startswith("doctest_")):
+                    if name.startswith(("test_", "doctest_")):
                         parts = name.split("_", 1)
                         return "%s:%s" % (parts[0], parts[1].upper())
                     return None
@@ -912,6 +910,7 @@ class DynamicContextPluginTest(CoverageTest):
             """)
 
     def make_plugin_track_render(self, filename):
+        """Make a dynamic context plugin that tracks 'render_' functions."""
         self.make_file(filename, """\
             from coverage import CoveragePlugin
 
@@ -927,6 +926,7 @@ class DynamicContextPluginTest(CoverageTest):
             """)
 
     def make_testsuite(self):
+        """Make some files to use while testing dynamic context plugins."""
         self.make_file("rendering.py", """\
             def html_tag(tag, content):
                 return '<%s>%s</%s>' % (tag, content, tag)
@@ -964,7 +964,8 @@ class DynamicContextPluginTest(CoverageTest):
                 return html
             """)
 
-    def run_testsuite(self, cov, suite_name):
+    def run_all_functions(self, cov, suite_name):           # pragma: nested
+        """Run all functions in `suite_name` under coverage."""
         cov.start()
         suite = import_local_file(suite_name)
         try:
@@ -985,7 +986,7 @@ class DynamicContextPluginTest(CoverageTest):
         cov.set_option("run:plugins", ['plugin_tests'])
 
         # Run the tests
-        self.run_testsuite(cov, 'testsuite')
+        self.run_all_functions(cov, 'testsuite')
 
         # Labeled coverage is collected
         data = cov.get_data()
@@ -1016,7 +1017,7 @@ class DynamicContextPluginTest(CoverageTest):
         cov.set_option("run:plugins", ['plugin_tests'])
 
         # Run the tests
-        self.run_testsuite(cov, 'testsuite')
+        self.run_all_functions(cov, 'testsuite')
 
         # Static context prefix is preserved
         data = cov.get_data()
@@ -1038,7 +1039,7 @@ class DynamicContextPluginTest(CoverageTest):
         cov.set_option("run:dynamic_context", "test_function")
 
         # Run the tests
-        self.run_testsuite(cov, 'testsuite')
+        self.run_all_functions(cov, 'testsuite')
 
         # test_function takes precedence over plugins - only
         # functions that are not labeled by test_function are
@@ -1071,7 +1072,7 @@ class DynamicContextPluginTest(CoverageTest):
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ['plugin_renderers', 'plugin_tests'])
 
-        self.run_testsuite(cov, 'testsuite')
+        self.run_all_functions(cov, 'testsuite')
 
         # It is important to note, that line 11 (render_bold function) is never
         # labeled as renderer:bold context, because it is only called from
@@ -1139,4 +1140,4 @@ class DynamicContextPluginOtherTracersTest(CoverageTest):
         with self.assertRaises(CoverageException):
             cov.start()
 
-        cov.stop()
+        cov.stop()      # pragma: nested
