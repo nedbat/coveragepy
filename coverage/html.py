@@ -195,14 +195,18 @@ class HtmlReporter(Reporter):
         source = fr.source()
 
         # Find out if the file on disk is already correct.
-        this_hash = self.file_hash(source.encode('utf-8'), fr)
-        that_hash = self.status.file_hash(rootname)
-        if this_hash == that_hash:
-            # Nothing has changed to require the file to be reported again.
-            self.files.append(self.status.index_info(rootname))
-            return
+        if os.path.isfile(html_path):
+            this_hash = ""
+            with open(html_path, "r", encoding="utf-8") as f:
+                hasher = Hasher()
+                hasher.update(f.read())
+                this_hash = hasher.hexdigest()
+            that_hash = self.status.file_hash(rootname)
 
-        self.status.set_file_hash(rootname, this_hash)
+            if this_hash == that_hash:
+                # Nothing has changed to require the file to be reported again.
+                self.files.append(self.status.index_info(rootname))
+                return
 
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
@@ -287,6 +291,12 @@ class HtmlReporter(Reporter):
         })
 
         write_html(html_path, html)
+
+        with open(html_path, "r", encoding="utf-8") as f:
+            hasher = Hasher()
+            hasher.update(f.read())
+            this_hash = hasher.hexdigest()
+            self.status.set_file_hash(rootname, this_hash)
 
         # Save this file's information for the index file.
         index_info = {
