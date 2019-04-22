@@ -197,9 +197,9 @@ class HtmlReporter(Reporter):
         # Find out if the file on disk is already correct.
         if os.path.isfile(html_path):
             this_hash = ""
-            with open(html_path, "r", encoding="utf-8") as f:
+            with open(html_path, "rb") as f:
                 hasher = Hasher()
-                hasher.update(f.read())
+                hasher.update(f.read().decode("UTF-8"))
                 this_hash = hasher.hexdigest()
             that_hash = self.status.file_hash(rootname)
 
@@ -292,9 +292,9 @@ class HtmlReporter(Reporter):
 
         write_html(html_path, html)
 
-        with open(html_path, "r", encoding="utf-8") as f:
+        with open(html_path, "rb") as f:
             hasher = Hasher()
-            hasher.update(f.read())
+            hasher.update(f.read().decode("UTF-8"))
             this_hash = hasher.hexdigest()
             self.status.set_file_hash(rootname, this_hash)
 
