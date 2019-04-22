@@ -141,11 +141,11 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
 
         self.run_coverage()
 
-        # Only the changed files should have been created.
+        # Deleted files should be recreated
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/helper1_py.html")
-        self.assert_doesnt_exist("htmlcov/main_file_py.html")
-        self.assert_doesnt_exist("htmlcov/helper2_py.html")
+        self.assert_exists("htmlcov/main_file_py.html")
+        self.assert_exists("htmlcov/helper2_py.html")
         index2 = self.get_html_index_content()
         self.assertMultiLineEqual(index1, index2)
 
@@ -165,11 +165,11 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
 
         self.run_coverage()
 
-        # Only the changed files should have been created.
+        # Deleted files should be recreated
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/helper1_py.html")
         self.assert_exists("htmlcov/main_file_py.html")
-        self.assert_doesnt_exist("htmlcov/helper2_py.html")
+        self.assert_exists("htmlcov/helper2_py.html")
 
     def test_html_delta_from_settings_change(self):
         # HTML generation can create only the files that have changed.
