@@ -198,37 +198,36 @@ def get_qualname():
     caller_frame = stack[0][0]
     return qualname_from_frame(caller_frame)
 
+# pylint: disable=missing-docstring, unused-argument
 
-class Parent(object):                           # pylint: disable=missing-docstring
-    def meth(self):                             # pylint: disable=missing-docstring
+class Parent(object):
+    def meth(self):
         return get_qualname()
 
     @property
-    def a_property(self):                       # pylint: disable=missing-docstring
+    def a_property(self):
         return get_qualname()
 
-class Child(Parent):                            # pylint: disable=missing-docstring
+class Child(Parent):
     pass
 
-class SomethingElse(object):                    # pylint: disable=missing-docstring
+class SomethingElse(object):
     pass
 
-class MultiChild(SomethingElse, Child):         # pylint: disable=missing-docstring
+class MultiChild(SomethingElse, Child):
     pass
 
-def no_arguments():                     # pylint: disable=missing-docstring
+def no_arguments():
     return get_qualname()
 
-def plain_old_function(a, b):           # pylint: disable=missing-docstring, unused-argument
+def plain_old_function(a, b):
     return get_qualname()
 
-def fake_out(self):                     # pylint: disable=missing-docstring, unused-argument
+def fake_out(self):
     return get_qualname()
 
-def patch_meth(self):                   # pylint: disable=missing-docstring, unused-argument
+def patch_meth(self):
     return get_qualname()
-
-# pylint: disable=missing-docstring
 
 class OldStyle:                         # pylint: disable=old-style-class
     def meth(self):
@@ -237,7 +236,7 @@ class OldStyle:                         # pylint: disable=old-style-class
 class OldChild(OldStyle):
     pass
 
-# pylint: enable=missing-docstring
+# pylint: enable=missing-docstring, unused-argument
 
 
 class QualnameTest(CoverageTest):
