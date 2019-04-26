@@ -65,7 +65,7 @@ def qualname_from_frame(frame):
     if hasattr(func, '__qualname__'):
         qname = func.__qualname__
     else:
-        for cls in self.__class__.__mro__:
+        for cls in getattr(self.__class__, '__mro__', ()):
             f = cls.__dict__.get(fname, None)
             if f is None:
                 continue

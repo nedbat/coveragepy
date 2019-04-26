@@ -228,6 +228,18 @@ def fake_out(self):                     # pylint: disable=missing-docstring, unu
 def patch_meth(self):                   # pylint: disable=missing-docstring, unused-argument
     return get_qualname()
 
+# pylint: disable=missing-docstring
+
+class OldStyle:                         # pylint: disable=old-style-class
+    def meth(self):
+        return get_qualname()
+
+class OldChild(OldStyle):
+    pass
+
+# pylint: enable=missing-docstring
+
+
 class QualnameTest(CoverageTest):
     """Tests of qualname_from_frame."""
 
@@ -262,3 +274,9 @@ class QualnameTest(CoverageTest):
         c = Child()
         c.meth = patch_meth
         self.assertEqual(c.meth(c), "patch_meth")
+
+    def test_oldstyle(self):
+        if not env.PY2:
+            self.skipTest("Old-style classes are only in Python 2")
+        self.assertEqual(OldStyle().meth(), "meth")
+        self.assertEqual(OldChild().meth(), "meth")

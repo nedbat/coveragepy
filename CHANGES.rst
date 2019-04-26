@@ -19,6 +19,10 @@ Unreleased
 - Dynamic contexts can now be determined by third-party code in a plugin.
   Thanks, Justas Sadzevičius.
 
+- the ``dynamic_context = test_function`` setting now works with Python 2
+  old-style classes, though it only reports the method name, not the class it
+  was defined on.  Closes `issue 797`_.
+
 - ``fail_under`` values more than 100 are reported as errors.  Thanks to Mike
   Fiedler for closing `issue 746`_.
 
@@ -46,6 +50,7 @@ Unreleased
 .. _issue 746: https://github.com/nedbat/coveragepy/issues/746
 .. _issue 748: https://github.com/nedbat/coveragepy/issues/748
 .. _issue 761: https://github.com/nedbat/coveragepy/issues/761
+.. _issue 797: https://github.com/nedbat/coveragepy/issues/797
 
 
 .. _changes_50a4:
