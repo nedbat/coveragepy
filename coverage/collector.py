@@ -376,7 +376,7 @@ class Collector(object):
         if self.static_context:
             context = self.static_context
             if new_context:
-                context += ":" + new_context
+                context += "|" + new_context
         else:
             context = new_context
         self.covdata.set_context(context)

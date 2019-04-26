@@ -1023,9 +1023,9 @@ class DynamicContextPluginTest(CoverageTest):
         data = cov.get_data()
         expected = [
             'mytests',
-            'mytests:doctest:HTML_TAG',
-            'mytests:test:HTML_TAG',
-            'mytests:test:RENDERERS',
+            'mytests|doctest:HTML_TAG',
+            'mytests|test:HTML_TAG',
+            'mytests|test:RENDERERS',
         ]
         self.assertEqual(expected, sorted(data.measured_contexts()))
 

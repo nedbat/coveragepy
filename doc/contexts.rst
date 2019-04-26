@@ -62,7 +62,8 @@ Each test function you run will be considered a separate dynamic context, and
 coverage data will be segregated for each.  A test function is any function
 whose names starts with "test".
 
-Ideas are welcome for other dynamic contexts that would be useful.
+If you have both a static context and a dynamic context, they are joined with a
+pipe symbol to be recorded as a single string.
 
 
 Context reporting
