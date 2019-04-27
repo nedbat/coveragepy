@@ -19,7 +19,7 @@ Unreleased
 - Dynamic contexts can now be determined by third-party code in a plugin.
   Thanks, Justas Sadzevičius.
 
-- the ``dynamic_context = test_function`` setting now works with Python 2
+- The ``dynamic_context = test_function`` setting now works with Python 2
   old-style classes, though it only reports the method name, not the class it
   was defined on.  Closes `issue 797`_.
 

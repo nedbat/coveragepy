@@ -479,7 +479,7 @@ def test_coverage_stop_in_threads():
                 return
         has_stopped_coverage.append(ident)
 
-    cov = coverage.coverage()
+    cov = coverage.Coverage()
     cov.start()
 
     t = threading.Thread(target=run_thread)             # pragma: nested
@@ -528,7 +528,7 @@ def test_thread_safe_save_data(tmpdir):
         #  still running.
         duration = 0.01
         for _ in range(3):
-            cov = coverage.coverage()
+            cov = coverage.Coverage()
             cov.start()
 
             threads = [threading.Thread(target=random_load) for _ in range(10)]     # pragma: nested
