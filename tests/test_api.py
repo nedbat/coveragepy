@@ -499,13 +499,14 @@ class ApiTest(CoverageTest):
         # There should be no exception. At one point, report() threw:
         # CoverageException: --include and --source are mutually exclusive
         cov.report()
-        self.assertEqual(self.stdout(), textwrap.dedent("""\
+        expected = textwrap.dedent("""\
             Name    Stmts   Miss  Cover
             ---------------------------
             b.py        1      0   100%
-            """))
+            """)
+        self.assertEqual(expected, self.stdout())
 
-    def make_testsuite(self):
+    def make_test_files(self):
         """Create a simple file representing a method with two tests.
 
         Returns absolute path to the file.
@@ -524,7 +525,7 @@ class ApiTest(CoverageTest):
     def test_switch_context_testrunner(self):
         # This test simulates a coverage-aware test runner,
         # measuring labeled coverage via public API
-        self.make_testsuite()
+        self.make_test_files()
 
         # Test runner starts
         cov = coverage.Coverage()
@@ -548,24 +549,21 @@ class ApiTest(CoverageTest):
         # Labeled data is collected
         data = cov.get_data()
         self.assertEqual(
-            sorted(data.measured_contexts()),
-            [u'', u'multiply_six', u'multiply_zero'])
+            [u'', u'multiply_six', u'multiply_zero'],
+            sorted(data.measured_contexts())
+        )
 
         filenames = self.get_measured_filenames(data)
         suite_filename = filenames['testsuite.py']
 
-        self.assertEqual(
-            data.lines(suite_filename, context="multiply_six"),
-            [2, 8])
-        self.assertEqual(
-            data.lines(suite_filename, context="multiply_zero"),
-            [2, 5])
+        self.assertEqual([2, 8], data.lines(suite_filename, context="multiply_six"))
+        self.assertEqual([2, 5], data.lines(suite_filename, context="multiply_zero"))
 
     def test_switch_context_with_static(self):
         # This test simulates a coverage-aware test runner,
         # measuring labeled coverage via public API,
         # with static label prefix.
-        self.make_testsuite()
+        self.make_test_files()
 
         # Test runner starts
         cov = coverage.Coverage(context="mysuite")
@@ -589,31 +587,28 @@ class ApiTest(CoverageTest):
         # Labeled data is collected
         data = cov.get_data()
         self.assertEqual(
+            [u'mysuite', u'mysuite|multiply_six', u'mysuite|multiply_zero'],
             sorted(data.measured_contexts()),
-            [u'mysuite', u'mysuite:multiply_six', u'mysuite:multiply_zero'])
+            )
 
         filenames = self.get_measured_filenames(data)
         suite_filename = filenames['testsuite.py']
 
-        self.assertEqual(
-            data.lines(suite_filename, context="mysuite:multiply_six"),
-            [2, 8])
-        self.assertEqual(
-            data.lines(suite_filename, context="mysuite:multiply_zero"),
-            [2, 5])
+        self.assertEqual([2, 8], data.lines(suite_filename, context="mysuite|multiply_six"))
+        self.assertEqual([2, 5], data.lines(suite_filename, context="mysuite|multiply_zero"))
 
     def test_switch_context_unstarted(self):
         # Coverage must be started to switch context
-
+        msg = "Cannot switch context, coverage is not started"
         cov = coverage.Coverage()
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, msg):
             cov.switch_context("test1")
 
         cov.start()
         cov.switch_context("test2")
 
         cov.stop()
-        with self.assertRaises(CoverageException):
+        with self.assertRaisesRegex(CoverageException, msg):
             cov.switch_context("test3")
 
 

@@ -925,7 +925,7 @@ class DynamicContextPluginTest(CoverageTest):
                 reg.add_dynamic_context(Plugin())
             """)
 
-    def make_testsuite(self):
+    def make_test_files(self):
         """Make some files to use while testing dynamic context plugins."""
         self.make_file("rendering.py", """\
             def html_tag(tag, content):
@@ -979,7 +979,7 @@ class DynamicContextPluginTest(CoverageTest):
 
     def test_plugin_standalone(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
-        self.make_testsuite()
+        self.make_test_files()
 
         # Enable dynamic context plugin
         cov = coverage.Coverage()
@@ -1010,7 +1010,7 @@ class DynamicContextPluginTest(CoverageTest):
 
     def test_static_context(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
-        self.make_testsuite()
+        self.make_test_files()
 
         # Enable dynamic context plugin for coverage with named context
         cov = coverage.Coverage(context='mytests')
@@ -1031,7 +1031,7 @@ class DynamicContextPluginTest(CoverageTest):
 
     def test_plugin_with_test_function(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
-        self.make_testsuite()
+        self.make_test_files()
 
         # Enable both a plugin and test_function dynamic context
         cov = coverage.Coverage()
@@ -1066,7 +1066,7 @@ class DynamicContextPluginTest(CoverageTest):
     def test_multiple_plugins(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
         self.make_plugin_track_render('plugin_renderers.py')
-        self.make_testsuite()
+        self.make_test_files()
 
         # Enable two plugins
         cov = coverage.Coverage()
