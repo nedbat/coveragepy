@@ -11,6 +11,8 @@ Measurement contexts
 
 .. versionadded:: 5.0
 
+.. module:: coverage
+
 Coverage.py measures whether code was run, but it can also record the context
 in which it was run.  This can provide more information to help you understand
 the behavior of your tests.
@@ -19,6 +21,7 @@ There are two kinds of context: static and dynamic.  Static contexts are fixed
 for an entire run, and are set explicitly with an option.  Dynamic contexts
 change over the course of a single run.
 
+.. _static_contexts:
 
 Static contexts
 ---------------
@@ -36,6 +39,8 @@ A static context is specified with the ``--context=CONTEXT`` option to
 the configuration file.
 
 
+.. _dynamic_contexts:
+
 Dynamic contexts
 ----------------
 
@@ -45,12 +50,15 @@ context tracking.  As execution proceeds, the dynamic context changes
 to record the context of execution.  Separate data is recorded for each
 context, so that it can be analyzed later.
 
-There are two ways to enable dynamic contexts:
+There are three ways to enable dynamic contexts:
 
 * you can set the ``[run] dynamic_context`` option in your .coveragerc file, or
 
 * you can enable a :ref:`dynamic context switcher <dynamic_context_plugins>`
-  plugin.
+  plugin, or
+
+* another tool (such as a test runner) can call the
+  :meth:`Coverage.switch_context` method to set the context explicitly.
 
 The ``[run] dynamic_context`` setting has only one option now.  Set it to
 ``test_function`` to start a new dynamic context for every test function::

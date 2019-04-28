@@ -16,8 +16,15 @@ Change history for Coverage.py
 Unreleased
 ----------
 
-- Dynamic contexts can now be determined by third-party code in a plugin.
-  Thanks, Justas Sadzevičius.
+- Dynamic contexts can now be set two new ways, both thanks to Justas
+  Sadzevičius.
+
+  - A plugin can implement a ``dynamic_context`` method to check frames for
+    whether a new context should be started.  See
+    :ref:`dynamic_context_plugins` for more details.
+
+  - Another tool (such as a test runner) can use the new
+    :meth:`Coverage.switch_context` method to explicitly change the context.
 
 - The ``dynamic_context = test_function`` setting now works with Python 2
   old-style classes, though it only reports the method name, not the class it

@@ -487,7 +487,9 @@ class Coverage(object):
         """Switch to a new dynamic context.
 
         `new_context` is a string to use as the context label
-        for collected data.
+        for collected data.  If a :ref:`static context <static_contexts>` is in
+        use, the static and dynamic context labels will be joined together with
+        a pipe character.
 
         Coverage collection must be started already.
 
