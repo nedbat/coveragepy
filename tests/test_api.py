@@ -505,6 +505,117 @@ class ApiTest(CoverageTest):
             b.py        1      0   100%
             """))
 
+    def make_testsuite(self):
+        """Create a simple file representing a method with two tests.
+
+        Returns absolute path to the file.
+        """
+        self.make_file("testsuite.py", """\
+            def timestwo(x):
+                return x*2
+
+            def test_multiply_zero():
+                assert timestwo(0) == 0
+
+            def test_multiply_six():
+                assert timestwo(6) == 12
+            """)
+
+    def test_switch_context_testrunner(self):
+        # This test simulates a coverage-aware test runner,
+        # measuring labeled coverage via public API
+        self.make_testsuite()
+
+        # Test runner starts
+        cov = coverage.Coverage()
+        cov.start()
+
+        # Imports the test suite
+        suite = import_local_file("testsuite")
+
+        # Measures test case 1
+        cov.switch_context('multiply_zero')
+        suite.test_multiply_zero()
+
+        # Measures test case 2
+        cov.switch_context('multiply_six')
+        suite.test_multiply_six()
+
+        # Runner finishes
+        cov.save()
+        cov.stop()
+
+        # Labeled data is collected
+        data = cov.get_data()
+        self.assertEqual(
+            sorted(data.measured_contexts()),
+            [u'', u'multiply_six', u'multiply_zero'])
+
+        filenames = self.get_measured_filenames(data)
+        suite_filename = filenames['testsuite.py']
+
+        self.assertEqual(
+            data.lines(suite_filename, context="multiply_six"),
+            [2, 8])
+        self.assertEqual(
+            data.lines(suite_filename, context="multiply_zero"),
+            [2, 5])
+
+    def test_switch_context_with_static(self):
+        # This test simulates a coverage-aware test runner,
+        # measuring labeled coverage via public API,
+        # with static label prefix.
+        self.make_testsuite()
+
+        # Test runner starts
+        cov = coverage.Coverage(context="mysuite")
+        cov.start()
+
+        # Imports the test suite
+        suite = import_local_file("testsuite")
+
+        # Measures test case 1
+        cov.switch_context('multiply_zero')
+        suite.test_multiply_zero()
+
+        # Measures test case 2
+        cov.switch_context('multiply_six')
+        suite.test_multiply_six()
+
+        # Runner finishes
+        cov.save()
+        cov.stop()
+
+        # Labeled data is collected
+        data = cov.get_data()
+        self.assertEqual(
+            sorted(data.measured_contexts()),
+            [u'mysuite', u'mysuite:multiply_six', u'mysuite:multiply_zero'])
+
+        filenames = self.get_measured_filenames(data)
+        suite_filename = filenames['testsuite.py']
+
+        self.assertEqual(
+            data.lines(suite_filename, context="mysuite:multiply_six"),
+            [2, 8])
+        self.assertEqual(
+            data.lines(suite_filename, context="mysuite:multiply_zero"),
+            [2, 5])
+
+    def test_switch_context_unstarted(self):
+        # Coverage must be started to switch context
+
+        cov = coverage.Coverage()
+        with self.assertRaises(CoverageException):
+            cov.switch_context("test1")
+
+        cov.start()
+        cov.switch_context("test2")
+
+        cov.stop()
+        with self.assertRaises(CoverageException):
+            cov.switch_context("test3")
+
 
 class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
     """Test PEP-420 namespace modules."""

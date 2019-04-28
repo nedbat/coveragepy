@@ -483,6 +483,22 @@ class Coverage(object):
         self._data.erase(parallel=self.config.parallel)
         self._data = None
 
+    def switch_context(self, new_context):
+        """Switch to a new dynamic context.
+
+        `new_context` is a string to use as the context label
+        for collected data.
+
+        Coverage collection must be started already.
+
+        .. versionadded:: 5.0
+        """
+        if not self._started:
+            raise CoverageException(                    # pragma: only jython
+                "Cannot switch context, coverage is not started"
+                )
+        self._collector.switch_context(new_context)
+
     def clear_exclude(self, which='exclude'):
         """Clear the exclude list."""
         self._init()
