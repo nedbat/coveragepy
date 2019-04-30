@@ -538,7 +538,7 @@ def test_thread_safe_save_data(tmpdir):
 
             time.sleep(duration)                    # pragma: nested
 
-            cov.stop()
+            cov.stop()                              # pragma: nested
 
             # The following call used to crash with running background threads.
             cov.get_data()
