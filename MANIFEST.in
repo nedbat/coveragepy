@@ -26,6 +26,7 @@ include setup.py
 include tox.ini
 include tox_wheels.ini
 include .editorconfig
+include .readthedocs.yml
 
 recursive-include ci *.*
 exclude ci/appveyor.token
