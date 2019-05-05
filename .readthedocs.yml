@@ -16,7 +16,7 @@ formats: []
 python:
   version: 3.7
   install:
-    - requirements: doc/requirements.pip
+    - requirements: docxx/requirements.pip
     - method: pip
       path: .
   system_packages: false
