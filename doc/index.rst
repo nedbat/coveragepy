@@ -28,12 +28,12 @@ not.
 
 .. ifconfig:: prerelease
 
-    The latest version is coverage.py 5.0a4, released November 25, 2018.
+    The latest version is coverage.py 5.0a5, released May 7, 2019.
     It is supported on:
 
-    * Python versions 2.7, 3.5, 3.6, 3.7, and pre-alpha 3.8.
+    * Python versions 2.7, 3.5, 3.6, 3.7, and alpha 3.8.
 
-    * PyPy2 6.0 and PyPy3 6.0.
+    * PyPy2 7.0 and PyPy3 7.0.
 
     * Jython 2.7.1, though only for running code, not reporting.
 
@@ -102,12 +102,12 @@ Getting started is easy:
 
     .. ifconfig:: not prerelease
 
-        Then visit htmlcov/index.html in your browser, to see a
+        Then open htmlcov/index.html in your browser, to see a
         `report like this`_.
 
     .. ifconfig:: prerelease
 
-        Then visit htmlcov/index.html in your browser, to see a
+        Then open htmlcov/index.html in your browser, to see a
         `report like this one`_.
 
 .. _coverage.py page on the Python Package Index: https://pypi.org/project/coverage/
