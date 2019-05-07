@@ -73,6 +73,12 @@ whose names starts with "test".
 If you have both a static context and a dynamic context, they are joined with a
 pipe symbol to be recorded as a single string.
 
+Initially, when your program starts running, the dynamic context is an empty
+string.  Any code measured before a dynamic context is set will be recorded in
+this empty context.  For example, if you are recording test names as contexts,
+then the code run by the test runner before (and between) tests will be in the
+empty context.
+
 
 Context reporting
 -----------------
