@@ -13,6 +13,12 @@ Change history for Coverage.py
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
+Unreleased
+----------
+
+- Nothing yet.
+
+
 .. _changes_50a5:
 
 Version 5.0a5 --- 2019-05-07
