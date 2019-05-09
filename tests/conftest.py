@@ -35,6 +35,11 @@ def set_warnings():
         category=DeprecationWarning,
         message="The value of convert_charrefs will become True in 3.5.",
         )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message=".* instead of inspect.getfullargspec",
+        )
     if env.PYPY and env.PY3:
         # pypy3 warns about unclosed files a lot.
         # pylint: disable=undefined-variable

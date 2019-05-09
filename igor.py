@@ -351,7 +351,9 @@ def analyze_args(function):
         getargspec = inspect.getfullargspec
     except AttributeError:
         getargspec = inspect.getargspec
-    argspec = getargspec(function)
+    with ignore_warnings():
+        # DeprecationWarning: Use inspect.signature() instead of inspect.getfullargspec()
+        argspec = getargspec(function)
     return bool(argspec[1]), len(argspec[0])
 
 
