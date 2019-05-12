@@ -616,7 +616,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             """)
         cov = coverage.Coverage(branch=True, source=["."])
         cov.start()
-        import main     # pragma: nested # pylint: disable=import-error, unused-variable
+        import main     # pragma: nested # pylint: disable=unused-import
         cov.stop()      # pragma: nested
         report = self.get_report(cov).splitlines()
         self.assertIn("mybranch.py 5 5 2 0 0%", report)
@@ -625,7 +625,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         """A helper for the next few tests."""
         cov = coverage.Coverage()
         cov.start()
-        import TheCode  # pragma: nested # pylint: disable=import-error, unused-variable
+        import TheCode  # pragma: nested # pylint: disable=import-error, unused-import
         cov.stop()      # pragma: nested
         return self.get_report(cov)
 
@@ -660,7 +660,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             """)
         cov = coverage.Coverage()
         cov.start()
-        import start    # pragma: nested # pylint: disable=import-error, unused-variable
+        import start    # pragma: nested # pylint: disable=import-error, unused-import
         cov.stop()      # pragma: nested
 
         report = self.get_report(cov)
@@ -680,7 +680,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # Run the program.
         cov = coverage.Coverage()
         cov.start()
-        import main     # pragma: nested # pylint: disable=import-error, unused-variable
+        import main     # pragma: nested # pylint: disable=unused-import
         cov.stop()      # pragma: nested
 
         report = self.get_report(cov).splitlines()
@@ -710,7 +710,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # Run the program.
         cov = coverage.Coverage()
         cov.start()
-        import main     # pragma: nested # pylint: disable=import-error, unused-variable
+        import main     # pragma: nested # pylint: disable=unused-import
         cov.stop()      # pragma: nested
 
         # Put back the missing Python file.
@@ -730,7 +730,7 @@ class SummaryTest2(UsingModulesMixin, CoverageTest):
         # statements, not one statement.
         cov = coverage.Coverage(branch=True)
         cov.start()
-        import usepkgs  # pragma: nested # pylint: disable=import-error, unused-variable
+        import usepkgs  # pragma: nested # pylint: disable=import-error, unused-import
         cov.stop()      # pragma: nested
 
         repout = StringIO()
@@ -803,7 +803,7 @@ class TestSummaryReporterConfiguration(CoverageTest):
 
         cov = Coverage(source=["."], omit=["doit.py"])
         cov.start()
-        import doit             # pragma: nested # pylint: disable=import-error, unused-variable
+        import doit             # pragma: nested # pylint: disable=import-error, unused-import
         cov.stop()              # pragma: nested
         printer = SummaryReporter(cov, options)
         destination = StringIO()

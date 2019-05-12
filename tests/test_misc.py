@@ -83,7 +83,7 @@ class ContractTest(CoverageTest):
 
     def test_bytes(self):
         @contract(text='bytes|None')
-        def need_bytes(text=None):                      # pylint: disable=missing-docstring
+        def need_bytes(text=None):
             return text
 
         assert need_bytes(b"Hey") == b"Hey"
@@ -93,7 +93,7 @@ class ContractTest(CoverageTest):
 
     def test_unicode(self):
         @contract(text='unicode|None')
-        def need_unicode(text=None):                    # pylint: disable=missing-docstring
+        def need_unicode(text=None):
             return text
 
         assert need_unicode(u"Hey") == u"Hey"
@@ -103,7 +103,7 @@ class ContractTest(CoverageTest):
 
     def test_one_of(self):
         @one_of("a, b, c")
-        def give_me_one(a=None, b=None, c=None):        # pylint: disable=missing-docstring
+        def give_me_one(a=None, b=None, c=None):
             return (a, b, c)
 
         assert give_me_one(a=17) == (17, None, None)
@@ -116,7 +116,7 @@ class ContractTest(CoverageTest):
 
     def test_dummy_decorator_with_args(self):
         @dummy_decorator_with_args("anything", this=17, that="is fine")
-        def undecorated(a=None, b=None):                # pylint: disable=missing-docstring
+        def undecorated(a=None, b=None):
             return (a, b)
 
         assert undecorated() == (None, None)

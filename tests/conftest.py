@@ -42,7 +42,6 @@ def set_warnings():
         )
     if env.PYPY and env.PY3:
         # pypy3 warns about unclosed files a lot.
-        # pylint: disable=undefined-variable
         warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
 
 

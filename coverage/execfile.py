@@ -194,7 +194,7 @@ class PyRunner(object):
         # Execute the code object.
         try:
             exec(code, main_mod.__dict__)
-        except SystemExit:
+        except SystemExit:                          # pylint: disable=try-except-raise
             # The user called sys.exit().  Just pass it along to the upper
             # layers, where it will be handled.
             raise
@@ -217,7 +217,7 @@ class PyRunner(object):
                 if hasattr(err, "__traceback__"):
                     err.__traceback__ = err.__traceback__.tb_next
                 sys.excepthook(typ, err, tb.tb_next)
-            except SystemExit:
+            except SystemExit:                      # pylint: disable=try-except-raise
                 raise
             except Exception:
                 # Getting the output right in the case of excepthook

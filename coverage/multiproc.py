@@ -22,7 +22,7 @@ else:
 
 original_bootstrap = OriginalProcess._bootstrap
 
-class ProcessWithCoverage(OriginalProcess):
+class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-method
     """A replacement for multiprocess.Process that starts coverage."""
 
     def _bootstrap(self):

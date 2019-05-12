@@ -229,7 +229,7 @@ def fake_out(self):
 def patch_meth(self):
     return get_qualname()
 
-class OldStyle:                         # pylint: disable=old-style-class
+class OldStyle:
     def meth(self):
         return get_qualname()
 

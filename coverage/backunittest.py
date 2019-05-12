@@ -18,7 +18,7 @@ class TestCase(unittest.TestCase):
     `unittest` doesn't have them.
 
     """
-    # pylint: disable=missing-docstring
+    # pylint: disable=arguments-differ, deprecated-method
 
     if not unittest_has('assertCountEqual'):
         def assertCountEqual(self, *args, **kwargs):

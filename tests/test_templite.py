@@ -10,7 +10,7 @@ from coverage.templite import Templite, TempliteSyntaxError, TempliteValueError
 
 from tests.coveragetest import CoverageTest
 
-# pylint: disable=unused-variable
+# pylint: disable=possibly-unused-variable
 
 class AnyOldObject(object):
     """Simple testing object.
