@@ -52,12 +52,12 @@ def convert_skip_exceptions(method):
 
 class SkipConvertingMetaclass(type):
     """Decorate all test methods to convert StopEverything to SkipTest."""
-    def __new__(mcs, name, bases, attrs):
+    def __new__(cls, name, bases, attrs):
         for attr_name, attr_value in attrs.items():
             if attr_name.startswith('test_') and isinstance(attr_value, types.FunctionType):
                 attrs[attr_name] = convert_skip_exceptions(attr_value)
 
-        return super(SkipConvertingMetaclass, mcs).__new__(mcs, name, bases, attrs)
+        return super(SkipConvertingMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
 CoverageTestMethodsMixin = SkipConvertingMetaclass('CoverageTestMethodsMixin', (), {})
@@ -88,7 +88,7 @@ class CoverageTest(
 
     # Keep the temp directories if the env says to.
     # $set_env.py: COVERAGE_KEEP_TMP - Keep the temp directories made by tests.
-    keep_temp_dir = bool(int(os.getenv("COVERAGE_KEEP_TMP", 0)))
+    keep_temp_dir = bool(int(os.getenv("COVERAGE_KEEP_TMP", "0")))
 
     def setUp(self):
         super(CoverageTest, self).setUp()
@@ -314,7 +314,7 @@ class CoverageTest(
 
         try:
             yield
-        except:
+        except:                     # pylint: disable=try-except-raise
             raise
         else:
             if warnings:

@@ -177,6 +177,7 @@ def import_local_file(modname, modfile=None):
     if modfile is None:
         modfile = modname + '.py'
     if SourceFileLoader:
+        # pylint: disable=no-value-for-parameter, deprecated-method
         mod = SourceFileLoader(modname, modfile).load_module()
     else:
         for suff in imp.get_suffixes():                 # pragma: part covered

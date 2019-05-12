@@ -415,7 +415,7 @@ class Collector(object):
                 else:
                     break
             else:
-                raise runtime_err       # pylint: disable=raising-bad-type
+                raise runtime_err
 
             return dict((self.cached_abs_file(k), v) for k, v in items if v)
 

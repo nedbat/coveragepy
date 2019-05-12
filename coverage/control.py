@@ -729,8 +729,7 @@ class Coverage(object):
 
     def report(
         self, morfs=None, show_missing=None, ignore_errors=None,
-        file=None,                  # pylint: disable=redefined-builtin
-        omit=None, include=None, skip_covered=None,
+        file=None, omit=None, include=None, skip_covered=None,
     ):
         """Write a textual summary report to `file`.
 
