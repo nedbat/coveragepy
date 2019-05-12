@@ -997,15 +997,15 @@ class DynamicContextPluginTest(CoverageTest):
         )
         self.assertEqual(
             [2],
-            data.lines(filenames['rendering.py'], context="doctest:HTML_TAG"),
+            data.lines(filenames['rendering.py'], contexts=["doctest:HTML_TAG"]),
         )
         self.assertEqual(
             [2],
-            data.lines(filenames['rendering.py'], context="test:HTML_TAG"),
+            data.lines(filenames['rendering.py'], contexts=["test:HTML_TAG"]),
         )
         self.assertEqual(
             [2, 5, 8, 11],
-            data.lines(filenames['rendering.py'], context="test:RENDERERS"),
+            data.lines(filenames['rendering.py'], contexts=["test:RENDERERS"]),
         )
 
     def test_static_context(self):
@@ -1047,20 +1047,20 @@ class DynamicContextPluginTest(CoverageTest):
         data = cov.get_data()
         filenames = self.get_measured_filenames(data)
         self.assertEqual(
-            ['', 'doctest:HTML_TAG', 'test_html_tag', 'test_renderers'],
+            ['', 'doctest:HTML_TAG', 'testsuite.test_html_tag', 'testsuite.test_renderers'],
             sorted(data.measured_contexts()),
         )
         self.assertEqual(
             [2],
-            data.lines(filenames['rendering.py'], context="doctest:HTML_TAG"),
+            data.lines(filenames['rendering.py'], contexts=["doctest:HTML_TAG"]),
         )
         self.assertEqual(
             [2],
-            data.lines(filenames['rendering.py'], context="test_html_tag"),
+            data.lines(filenames['rendering.py'], contexts=["testsuite.test_html_tag"]),
         )
         self.assertEqual(
             [2, 5, 8, 11],
-            data.lines(filenames['rendering.py'], context="test_renderers"),
+            data.lines(filenames['rendering.py'], contexts=["testsuite.test_renderers"]),
         )
 
     def test_multiple_plugins(self):
@@ -1094,23 +1094,23 @@ class DynamicContextPluginTest(CoverageTest):
         self.assertEqual(expected, sorted(data.measured_contexts()))
         self.assertEqual(
             [2],
-            data.lines(filenames['rendering.py'], context="test:HTML_TAG"),
+            data.lines(filenames['rendering.py'], contexts=["test:HTML_TAG"]),
         )
         self.assertEqual(
             [2, 5, 8, 11],
-            data.lines(filenames['rendering.py'], context="test:RENDERERS"),
+            data.lines(filenames['rendering.py'], contexts=["test:RENDERERS"]),
         )
         self.assertEqual(
             [2],
-            data.lines(filenames['rendering.py'], context="doctest:HTML_TAG"),
+            data.lines(filenames['rendering.py'], contexts=["doctest:HTML_TAG"]),
         )
         self.assertEqual(
             [2, 5],
-            data.lines(filenames['rendering.py'], context="renderer:paragraph"),
+            data.lines(filenames['rendering.py'], contexts=["renderer:paragraph"]),
         )
         self.assertEqual(
             [2, 8],
-            data.lines(filenames['rendering.py'], context="renderer:span"),
+            data.lines(filenames['rendering.py'], contexts=["renderer:span"]),
         )
 
 
