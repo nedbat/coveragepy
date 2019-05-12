@@ -172,10 +172,15 @@ class DynamicContextTest(CoverageTest):
 
         full_names = {os.path.basename(f): f for f in data.measured_files()}
         fname = full_names["two_tests.py"]
-        self.assertCountEqual(data.measured_contexts(), ["stat", "stat|test_one", "stat|test_two"])
-        self.assertCountEqual(data.lines(fname, "stat"), self.OUTER_LINES)
-        self.assertCountEqual(data.lines(fname, "stat|test_one"), self.TEST_ONE_LINES)
-        self.assertCountEqual(data.lines(fname, "stat|test_two"), self.TEST_TWO_LINES)
+        self.assertCountEqual(
+            data.measured_contexts(),
+            ["stat", "stat|two_tests.test_one", "stat|two_tests.test_two"])
+        self.assertCountEqual(
+            data.lines(fname, ["stat"]), self.OUTER_LINES)
+        self.assertCountEqual(
+            data.lines(fname, ["stat|two_tests.test_one"]), self.TEST_ONE_LINES)
+        self.assertCountEqual(
+            data.lines(fname, ["stat|two_tests.test_two"]), self.TEST_TWO_LINES)
 
 
 class DynamicContextWithPythonTracerTest(CoverageTest):
