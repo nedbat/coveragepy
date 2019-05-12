@@ -4,6 +4,6 @@
 
 doc8==0.8.0
 pyenchant==2.0.0
-sphinx==1.8.4
-sphinxcontrib-spelling==4.2.0
+sphinx==2.0.1
+sphinxcontrib-spelling==4.2.1
 sphinx_rtd_theme==0.4.3
