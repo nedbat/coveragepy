@@ -284,4 +284,4 @@ class QualnameTest(CoverageTest):
         if not env.PY2:
             self.skipTest("Old-style classes are only in Python 2")
         self.assertEqual(OldStyle().meth(), "tests.test_context.OldStyle.meth")
-        self.assertEqual(OldChild().meth(), "tests.test_context.OldChild.meth")
+        self.assertEqual(OldChild().meth(), "tests.test_context.OldStyle.meth")

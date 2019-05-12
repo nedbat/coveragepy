@@ -78,5 +78,19 @@ def qualname_from_frame(frame):
                 qname = cls.__module__ + '.' + cls.__name__ + "." + fname
                 break
         else:
-            qname = func.__module__ + '.' + fname
+            # Support for old-style classes.
+            def mro(bases):
+                for base in bases:
+                    f = base.__dict__.get(fname, None)
+                    if f is func:
+                        return base.__module__ + '.' + base.__name__ + "." + fname
+                for base in bases:
+                    qname = mro(base.__bases__)
+                    if qname is not None:
+                        return qname
+                return None
+            qname = mro([self.__class__])
+            if qname is None:
+                qname = func.__module__ + '.' + fname
+
     return qname
