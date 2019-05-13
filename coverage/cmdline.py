@@ -107,7 +107,7 @@ class Opts(object):
         help="Write the XML report to this file. Defaults to 'coverage.xml'",
     )
     parallel_mode = optparse.make_option(
-        '-p', '--parallel-mode', action='store_true',
+        '-p', '--parallel-mode', action='store',
         help=(
             "Append the machine name, process id and random number to the "
             ".coverage data file name to simplify collecting data from "
