@@ -47,8 +47,8 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 
-**New in 5.0:** SQLite data storage, contexts, dropped support for Python 2.6
-and 3.3.
+**New in 5.0:** SQLite data storage, contexts, dropped support for Python 2.6,
+3.3 and 3.4.
 
 
 Getting Started
