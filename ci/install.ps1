@@ -66,35 +66,10 @@ function ParsePythonVersion ($python_version) {
 function DownloadPython ($python_version, $platform_suffix) {
     $major, $minor, $micro, $prerelease = ParsePythonVersion $python_version
 
-    if (($major -le 2 -and $micro -eq 0) `
-        -or ($major -eq 3 -and $minor -le 2 -and $micro -eq 0) `
-        ) {
-        $dir = "$major.$minor"
-        $python_version = "$major.$minor$prerelease"
-    } else {
-        $dir = "$major.$minor.$micro"
-    }
-
-    if ($prerelease) {
-        if (($major -le 2) `
-            -or ($major -eq 3 -and $minor -eq 1) `
-            -or ($major -eq 3 -and $minor -eq 2) `
-            -or ($major -eq 3 -and $minor -eq 3) `
-            ) {
-            $dir = "$dir/prev"
-        }
-    }
-
-    if (($major -le 2) -or ($major -le 3 -and $minor -le 4)) {
-        $ext = "msi"
-        if ($platform_suffix) {
-            $platform_suffix = ".$platform_suffix"
-        }
-    } else {
-        $ext = "exe"
-        if ($platform_suffix) {
-            $platform_suffix = "-$platform_suffix"
-        }
+    $dir = "$major.$minor.$micro"
+    $ext = "exe"
+    if ($platform_suffix) {
+        $platform_suffix = "-$platform_suffix"
     }
 
     $filename = "python-$python_version$platform_suffix.$ext"
@@ -173,11 +148,7 @@ function InstallPip ($python_home) {
 
 
 function DownloadMiniconda ($python_version, $platform_suffix) {
-    if ($python_version -eq "3.4") {
-        $filename = "Miniconda3-3.5.5-Windows-" + $platform_suffix + ".exe"
-    } else {
-        $filename = "Miniconda-3.5.5-Windows-" + $platform_suffix + ".exe"
-    }
+    $filename = "Miniconda-3.5.5-Windows-" + $platform_suffix + ".exe"
     $url = $MINICONDA_URL + $filename
     $filepath = Download $filename $url
     return $filepath
