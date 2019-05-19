@@ -29,7 +29,7 @@ include .editorconfig
 include .readthedocs.yml
 
 recursive-include ci *.*
-exclude ci/appveyor.token
+exclude ci/*.token
 
 recursive-include coverage/fullcoverage *.py
 recursive-include coverage/ctracer *.c *.h
