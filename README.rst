@@ -19,6 +19,7 @@ library to determine which lines are executable, and which have been executed.
 .. |tideliftlogo| image:: https://nedbatchelder.com/pix/Tidelift_Logos_RGB_Tidelift_Shorthand_On-White_small.png
    :width: 75
    :alt: Tidelift
+   :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
 
 .. list-table::
    :widths: 10 100
