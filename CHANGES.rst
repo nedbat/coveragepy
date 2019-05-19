@@ -443,7 +443,7 @@ Version 4.3.2 --- 2017-01-16
 
 .. _issue 322: https://bitbucket.org/ned/coveragepy/issues/322/cannot-use-coverage-with-jython
 .. _issue 426: https://bitbucket.org/ned/coveragepy/issues/426/difference-between-coverage-results-with
-.. _issue 522: https://bitbucket.org/ned/coveragepy/issues/522/incorrect-branch-reporting-with-__debug__
+.. _issue 522: https://bitbucket.org/ned/coveragepy/issues/522/incorrect-branch-reporting
 .. _issue 549: https://bitbucket.org/ned/coveragepy/issues/549/skip-covered-with-100-coverage-throws-a-no
 .. _issue 551: https://bitbucket.org/ned/coveragepy/issues/551/coveragepy-cannot-be-imported-in-jython27
 
