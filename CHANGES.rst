@@ -5,6 +5,10 @@
 Change history for Coverage.py
 ==============================
 
+These changes are listed in decreasing version number order. Note this can be
+different from a strict chronological order when there are two branches in
+development at the same time, like 4.5.x and 5.0.
+
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
@@ -68,14 +72,6 @@ Version 5.0a5 --- 2019-05-07
 .. _issue 797: https://github.com/nedbat/coveragepy/issues/797
 
 
-.. _changes_453:
-
-Version 4.5.3 -- 2019-03-09
----------------------------
-
-- Only packaging metadata changes.
-
-
 .. _changes_50a4:
 
 Version 5.0a4 --- 2018-11-25
@@ -104,27 +100,6 @@ Version 5.0a4 --- 2018-11-25
 .. _issue 715: https://github.com/nedbat/coveragepy/issues/715
 .. _issue 716: https://github.com/nedbat/coveragepy/issues/716
 .. _issue 721: https://github.com/nedbat/coveragepy/issues/721
-
-
-.. _changes_452:
-
-Version 4.5.2 --- 2018-11-12
-----------------------------
-
-- Namespace packages are supported on Python 3.7, where they used to cause
-  TypeErrors about path being None. Fixes `issue 700`_.
-
-- Python 3.8 (as of today!) passes all tests.  Fixes `issue 707`_ and
-  `issue 714`_.
-
-- Development moved from `Bitbucket`_ to `GitHub`_.
-
-.. _issue 700: https://github.com/nedbat/coveragepy/issues/700
-.. _issue 707: https://github.com/nedbat/coveragepy/issues/707
-.. _issue 714: https://github.com/nedbat/coveragepy/issues/714
-
-.. _Bitbucket: https://bitbucket.org/ned/coveragepy
-.. _GitHub: https://github.com/nedbat/coveragepy
 
 
 .. _changes_50a3:
@@ -229,6 +204,36 @@ Version 5.0a1 --- 2018-06-05
 .. _issue 625: https://bitbucket.org/ned/coveragepy/issues/625/lstat-dominates-in-the-case-of-small
 .. _issue 650: https://bitbucket.org/ned/coveragepy/issues/650/allow-setting-configuration-file-location
 .. _issue 700: https://github.com/nedbat/coveragepy/issues/700
+
+
+.. _changes_453:
+
+Version 4.5.3 -- 2019-03-09
+---------------------------
+
+- Only packaging metadata changes.
+
+
+.. _changes_452:
+
+Version 4.5.2 --- 2018-11-12
+----------------------------
+
+- Namespace packages are supported on Python 3.7, where they used to cause
+  TypeErrors about path being None. Fixes `issue 700`_.
+
+- Python 3.8 (as of today!) passes all tests.  Fixes `issue 707`_ and
+  `issue 714`_.
+
+- Development moved from `Bitbucket`_ to `GitHub`_.
+
+.. _issue 700: https://github.com/nedbat/coveragepy/issues/700
+.. _issue 707: https://github.com/nedbat/coveragepy/issues/707
+.. _issue 714: https://github.com/nedbat/coveragepy/issues/714
+
+.. _Bitbucket: https://bitbucket.org/ned/coveragepy
+.. _GitHub: https://github.com/nedbat/coveragepy
+
 
 .. _changes_451:
 
