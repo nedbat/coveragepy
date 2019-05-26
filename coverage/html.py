@@ -199,7 +199,9 @@ class HtmlReporter(Reporter):
             this_hash = ""
             with open(html_path, "rb") as f:
                 hasher = Hasher()
-                hasher.update(f.read().decode("UTF-8"))
+                html_str = f.read().decode("UTF-8")
+                source_str = source.encode('UTF-8')
+                hasher.update(source_str + html_str)
                 this_hash = hasher.hexdigest()
             that_hash = self.status.file_hash(rootname)
 
@@ -294,7 +296,9 @@ class HtmlReporter(Reporter):
 
         with open(html_path, "rb") as f:
             hasher = Hasher()
-            hasher.update(f.read().decode("UTF-8"))
+            html_str = f.read().decode("UTF-8")
+            source_str = source.encode('UTF-8')
+            hasher.update(source_str + html_str)
             this_hash = hasher.hexdigest()
             self.status.set_file_hash(rootname, this_hash)
 
