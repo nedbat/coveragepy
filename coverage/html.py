@@ -198,10 +198,8 @@ class HtmlReporter(Reporter):
         if os.path.isfile(html_path):
             this_hash = ""
             with open(html_path, "rb") as f:
-                hasher = Hasher()
                 html_str = f.read().decode("UTF-8")
-                hasher.update(source + html_str)
-                this_hash = hasher.hexdigest()
+                this_hash = self.file_hash(source + html_str, fr)
             that_hash = self.status.file_hash(rootname)
 
             if this_hash == that_hash:
@@ -294,10 +292,8 @@ class HtmlReporter(Reporter):
         write_html(html_path, html)
 
         with open(html_path, "rb") as f:
-            hasher = Hasher()
             html_str = f.read().decode("UTF-8")
-            hasher.update(source + html_str)
-            this_hash = hasher.hexdigest()
+            this_hash = self.file_hash(source + html_str, fr)
             self.status.set_file_hash(rootname, this_hash)
 
         # Save this file's information for the index file.
