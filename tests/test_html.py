@@ -12,6 +12,8 @@ import os.path
 import re
 import sys
 
+import mock
+
 import coverage
 from coverage.backward import unicode_class
 from coverage import env
@@ -51,13 +53,6 @@ class HtmlTestHelpers(CoverageTest):
         self.start_import_stop(cov, "main_file")
         return cov.html_report(**(htmlargs or {}))
 
-    def remove_html_files(self):
-        """Remove the HTML files created as part of the HTML report."""
-        os.remove("htmlcov/index.html")
-        os.remove("htmlcov/main_file_py.html")
-        os.remove("htmlcov/helper1_py.html")
-        os.remove("htmlcov/helper2_py.html")
-
     def get_html_report_content(self, module):
         """Return the content of the HTML report for `module`."""
         filename = module.replace(".", "_").replace("/", "_") + ".html"
@@ -95,6 +90,18 @@ class HtmlTestHelpers(CoverageTest):
         )
 
 
+class FileWriteTracker(object):
+    """A fake object to track how `open` is used to write files."""
+    def __init__(self, written):
+        self.written = written
+
+    def open(self, filename, mode="r"):
+        """Be just like `open`, but write written file names to `self.written`."""
+        if mode.startswith("w"):
+            self.written.add(filename.replace('\\', '/'))
+        return open(filename, mode)
+
+
 class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML delta speed-ups."""
 
@@ -106,17 +113,25 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.real_coverage_version = coverage.__version__
         self.addCleanup(setattr, coverage, "__version__", self.real_coverage_version)
 
+        self.files_written = None
+
     def run_coverage(self, covargs=None, htmlargs=None):
-        """For the delta tests, we always want source=. """
+        """Run coverage in-process for the delta tests.
+
+        For the delta tests, we always want `source=.` and we want to track
+        which files are written.  `self.files_written` will be the file names
+        that were opened for writting in html.py.
+
+        """
         covargs = covargs or {}
         covargs['source'] = "."
-        super(HtmlDeltaTest, self).run_coverage(covargs=covargs, htmlargs=htmlargs)
+        self.files_written = set()
+        mock_open = FileWriteTracker(self.files_written).open
+        with mock.patch("coverage.html.open", mock_open):
+            return super(HtmlDeltaTest, self).run_coverage(covargs=covargs, htmlargs=htmlargs)
 
-    def test_html_created(self):
-        # Test basic HTML generation: files should be created.
-        self.create_initial_files()
-        self.run_coverage()
-
+    def assert_htmlcov_files_exist(self):
+        """Assert that all the expected htmlcov files exist."""
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/main_file_py.html")
         self.assert_exists("htmlcov/helper1_py.html")
@@ -124,15 +139,19 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/style.css")
         self.assert_exists("htmlcov/coverage_html.js")
 
+    def test_html_created(self):
+        # Test basic HTML generation: files should be created.
+        self.create_initial_files()
+        self.run_coverage()
+
     def test_html_delta_from_source_change(self):
         # HTML generation can create only the files that have changed.
         # In this case, helper1 changes because its source is different.
         self.create_initial_files()
         self.run_coverage()
         index1 = self.get_html_index_content()
-        self.remove_html_files()
 
-        # Now change a file and do it again
+        # Now change a file (but only in a comment) and do it again.
         self.make_file("helper1.py", """\
             def func1(x):   # A nice function
                 if x % 2:
@@ -142,10 +161,13 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.run_coverage()
 
         # Only the changed files should have been created.
-        self.assert_exists("htmlcov/index.html")
-        self.assert_exists("htmlcov/helper1_py.html")
-        self.assert_doesnt_exist("htmlcov/main_file_py.html")
-        self.assert_doesnt_exist("htmlcov/helper2_py.html")
+        self.assert_htmlcov_files_exist()
+        assert "htmlcov/index.html" in self.files_written
+        assert "htmlcov/helper1_py.html" in self.files_written
+        assert "htmlcov/helper2_py.html" not in self.files_written
+        assert "htmlcov/main_file_py.html" not in self.files_written
+
+        # Because the source change was only a comment, the index is the same.
         index2 = self.get_html_index_content()
         self.assertMultiLineEqual(index1, index2)
 
@@ -154,9 +176,9 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         # In this case, helper1 changes because its coverage is different.
         self.create_initial_files()
         self.run_coverage()
-        self.remove_html_files()
 
-        # Now change a file and do it again
+        # Now change a file and do it again. main_file is different, and calls
+        # helper1 differently.
         self.make_file("main_file.py", """\
             import helper1, helper2
             helper1.func1(23)
@@ -166,10 +188,11 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.run_coverage()
 
         # Only the changed files should have been created.
-        self.assert_exists("htmlcov/index.html")
-        self.assert_exists("htmlcov/helper1_py.html")
-        self.assert_exists("htmlcov/main_file_py.html")
-        self.assert_doesnt_exist("htmlcov/helper2_py.html")
+        self.assert_htmlcov_files_exist()
+        assert "htmlcov/index.html" in self.files_written
+        assert "htmlcov/helper1_py.html" in self.files_written
+        assert "htmlcov/helper2_py.html" not in self.files_written
+        assert "htmlcov/main_file_py.html" in self.files_written
 
     def test_html_delta_from_settings_change(self):
         # HTML generation can create only the files that have changed.
@@ -178,15 +201,16 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.create_initial_files()
         self.run_coverage(covargs=dict(omit=[]))
         index1 = self.get_html_index_content()
-        self.remove_html_files()
 
         self.run_coverage(covargs=dict(omit=['xyzzy*']))
 
         # All the files have been reported again.
-        self.assert_exists("htmlcov/index.html")
-        self.assert_exists("htmlcov/helper1_py.html")
-        self.assert_exists("htmlcov/main_file_py.html")
-        self.assert_exists("htmlcov/helper2_py.html")
+        self.assert_htmlcov_files_exist()
+        assert "htmlcov/index.html" in self.files_written
+        assert "htmlcov/helper1_py.html" in self.files_written
+        assert "htmlcov/helper2_py.html" in self.files_written
+        assert "htmlcov/main_file_py.html" in self.files_written
+
         index2 = self.get_html_index_content()
         self.assertMultiLineEqual(index1, index2)
 
@@ -197,7 +221,6 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.create_initial_files()
         self.run_coverage()
         index1 = self.get_html_index_content()
-        self.remove_html_files()
 
         # "Upgrade" coverage.py!
         coverage.__version__ = "XYZZY"
@@ -205,10 +228,12 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.run_coverage()
 
         # All the files have been reported again.
-        self.assert_exists("htmlcov/index.html")
-        self.assert_exists("htmlcov/helper1_py.html")
-        self.assert_exists("htmlcov/main_file_py.html")
-        self.assert_exists("htmlcov/helper2_py.html")
+        self.assert_htmlcov_files_exist()
+        assert "htmlcov/index.html" in self.files_written
+        assert "htmlcov/helper1_py.html" in self.files_written
+        assert "htmlcov/helper2_py.html" in self.files_written
+        assert "htmlcov/main_file_py.html" in self.files_written
+
         index2 = self.get_html_index_content()
         fixed_index2 = index2.replace("XYZZY", self.real_coverage_version)
         self.assertMultiLineEqual(index1, fixed_index2)
@@ -233,7 +258,6 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
     def test_status_format_change(self):
         self.create_initial_files()
         self.run_coverage()
-        self.remove_html_files()
 
         with open("htmlcov/status.json") as status_json:
             status_data = json.load(status_json)
@@ -246,10 +270,11 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.run_coverage()
 
         # All the files have been reported again.
-        self.assert_exists("htmlcov/index.html")
-        self.assert_exists("htmlcov/helper1_py.html")
-        self.assert_exists("htmlcov/main_file_py.html")
-        self.assert_exists("htmlcov/helper2_py.html")
+        self.assert_htmlcov_files_exist()
+        assert "htmlcov/index.html" in self.files_written
+        assert "htmlcov/helper1_py.html" in self.files_written
+        assert "htmlcov/helper2_py.html" in self.files_written
+        assert "htmlcov/main_file_py.html" in self.files_written
 
 
 class HtmlTitleTest(HtmlTestHelpers, CoverageTest):

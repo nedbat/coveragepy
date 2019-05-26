@@ -376,7 +376,7 @@ class HtmlStatus(object):
         usable = False
         try:
             status_file = os.path.join(directory, self.STATUS_FILE)
-            with open(status_file, "r") as fstatus:
+            with open(status_file) as fstatus:
                 status = json.load(fstatus)
         except (IOError, ValueError):
             usable = False
