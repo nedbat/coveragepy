@@ -801,10 +801,12 @@ class Coverage(object):
 
         Returns a float, the total percentage covered.
 
-        .. warning::
-            HTML report is generated in incremental way. You should be
-            careful about mutating the files in the folder where the
-            HTML report is generated.
+        .. note::
+            The HTML report files are generated incrementally based on the
+            source files and coverage results. If you modify the report files,
+            the changes will not be considered.  You should be careful about
+            changing the files in the report folder.
+
         """
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
