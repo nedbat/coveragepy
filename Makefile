@@ -129,3 +129,6 @@ publishbeta:
 	rm -f $(WEBSAMPLEBETA)/*.*
 	mkdir -p $(WEBSAMPLEBETA)
 	cp doc/sample_html_beta/*.* $(WEBSAMPLEBETA)
+
+upload_relnotes:
+	python ci/upload_relnotes.py CHANGES.rst pypi/coverage

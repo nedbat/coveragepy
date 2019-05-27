@@ -9,11 +9,16 @@ program, for example:
 
     user/n3IwOpxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxc2ZwE4
 
+Run with two arguments: the .rst file to parse, and the Tidelift package name:
+
+	python upload_relnotes.py CHANGES.rst pypi/coverage
+
 """
 
 import os.path
 import re
 import subprocess
+import sys
 
 import requests
 
@@ -112,4 +117,4 @@ def convert_and_upload(rst_filename, package):
         update_release_note(package, version, text)
 
 if __name__ == "__main__":
-    convert_and_upload("CHANGES.rst", "pypi/coverage")
+    convert_and_upload(*sys.argv[1:])
