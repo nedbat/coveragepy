@@ -13,6 +13,9 @@ Run with two arguments: the .rst file to parse, and the Tidelift package name:
 
 	python upload_relnotes.py CHANGES.rst pypi/coverage
 
+Every section that has something that looks like a version number in it will
+be uploaded as the release notes for that version.
+
 """
 
 import os.path
@@ -85,12 +88,13 @@ def relnotes(mdlines):
 
     Each tuple is a separate version mentioned in the release notes.
 
-    A version is an h2 that starts with "Version ".
+    A version is any section with \d\.\d in the header text.
 
     """
-    for hlevel, htext, text in sections(parse_md(mdlines)):
-        if hlevel == 'h2' and htext.startswith('Version '):
-            version = htext.split()[1]
+    for _, htext, text in sections(parse_md(mdlines)):
+        m_version = re.search(r"\d+\.\d[^ ]*", htext)
+        if m_version:
+            version = m_version.group()
             yield version, text
 
 def convert_rst_file_to_markdown(rst_filename):
