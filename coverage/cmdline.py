@@ -346,7 +346,8 @@ CMDS = {
             Opts.omit,
             Opts.title,
             Opts.skip_covered,
-            Opts.show_contexts
+            Opts.show_contexts,
+            Opts.contexts,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(

@@ -627,23 +627,32 @@ class CoverageSqliteData(SimpleReprMixin):
                     "where arc.file_id = ? and arc.context_id = context.id"
                 )
                 data = [file_id]
+                context_ids = self._get_query_context_ids()
+                if context_ids is not None:
+                    ids_array = ', '.join('?'*len(context_ids))
+                    query += " and arc.context_id in (" + ids_array + ")"
+                    data += context_ids
                 for fromno, tono, context in con.execute(query, data):
                     if context not in lineno_contexts_map[fromno]:
                         lineno_contexts_map[fromno].append(context)
                     if context not in lineno_contexts_map[tono]:
                         lineno_contexts_map[tono].append(context)
-                return lineno_contexts_map
-
-            query = (
-                "select line.lineno, context.context "
-                "from line, context "
-                "where line.file_id = ? and line.context_id = context.id"
-            )
-            data = [file_id]
-            for lineno, context in con.execute(query, data):
-                if context not in lineno_contexts_map[lineno]:
-                    lineno_contexts_map[lineno].append(context)
-            return lineno_contexts_map
+            else:
+                query = (
+                    "select line.lineno, context.context "
+                    "from line, context "
+                    "where line.file_id = ? and line.context_id = context.id"
+                )
+                data = [file_id]
+                context_ids = self._get_query_context_ids()
+                if context_ids is not None:
+                    ids_array = ', '.join('?'*len(context_ids))
+                    query += " and line.context_id in (" + ids_array + ")"
+                    data += context_ids
+                for lineno, context in con.execute(query, data):
+                    if context not in lineno_contexts_map[lineno]:
+                        lineno_contexts_map[lineno].append(context)
+        return lineno_contexts_map
 
     def run_infos(self):
         return []   # TODO

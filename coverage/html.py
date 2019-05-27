@@ -124,6 +124,7 @@ class HtmlReporter(Reporter):
         """
         assert self.config.html_dir, "must give a directory for html reporting"
 
+        self.coverage.get_data().set_query_contexts(self.config.query_contexts)
         # Read the status data.
         self.status.read(self.config.html_dir)
 
