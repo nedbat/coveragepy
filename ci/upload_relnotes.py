@@ -1,14 +1,24 @@
 #!/usr/bin/env python3
 """
 Upload CHANGES.rst to Tidelift as Markdown chunks
+
+Requires pandoc installed.
+
+Put your Tidelift API token in a file called tidelift.token alongside this
+program, for example:
+
+    user/n3IwOpxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxc2ZwE4
+
 """
 
+import os.path
 import re
 import subprocess
 
 import requests
 
-class Buffer:
+class TextChunkBuffer:
+    """Hold onto text chunks until needed."""
     def __init__(self):
         self.buffer = []
 
@@ -26,7 +36,8 @@ class Buffer:
 
 
 def parse_md(lines):
-    buffer = Buffer()
+    """Parse markdown lines, producing (type, text) chunks."""
+    buffer = TextChunkBuffer()
 
     for line in lines:
         header_match = re.search(r"^(#+) (.+)$", line)
@@ -37,6 +48,7 @@ def parse_md(lines):
             yield (f"h{len(hashes)}", text)
         else:
             buffer.append(line)
+
     yield from buffer.flush()
 
 
@@ -64,6 +76,13 @@ def sections(parsed_data):
 
 
 def relnotes(mdlines):
+    """Yield (version, text) pairs from markdown lines.
+
+    Each tuple is a separate version mentioned in the release notes.
+
+    A version is an h2 that starts with "Version ".
+
+    """
     for hlevel, htext, text in sections(parse_md(mdlines)):
         if hlevel == 'h2' and htext.startswith('Version '):
             version = htext.split()[1]
@@ -75,7 +94,8 @@ def convert_rst_file_to_markdown(rst_filename):
 
 def update_release_note(package, version, text):
     url = f"https://api.tidelift.com/external-api/lifting/{package}/release-notes/{version}"
-    with open("ci/tidelift.token") as ftoken:
+    token_file = os.path.join(os.path.dirname(__file__), "tidelift.token")
+    with open(token_file) as ftoken:
         token = ftoken.read().strip()
     headers = {
         "Authorization": f"Bearer: {token}",
@@ -86,10 +106,10 @@ def update_release_note(package, version, text):
         result = requests.put(**req_args)
     print(f"{version}: {result.status_code}")
 
-def main():
-    markdown = convert_rst_file_to_markdown("CHANGES.rst")
+def convert_and_upload(rst_filename, package):
+    markdown = convert_rst_file_to_markdown(rst_filename)
     for version, text in relnotes(markdown.splitlines(True)):
-        update_release_note("pypi/coverage", version, text)
+        update_release_note(package, version, text)
 
 if __name__ == "__main__":
-    main()
+    convert_and_upload("CHANGES.rst", "pypi/coverage")
