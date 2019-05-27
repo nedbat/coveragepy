@@ -93,7 +93,7 @@
               {% for line in lines -%}
                 <p>{#-#}
                   {% if line.contexts -%}
-                    <span class="context-button">ctx</span>{#-#}
+                    <span class="context-button">{{ line.contexts|len }} ctx</span>{#-#}
                     <span class="context-list">
                       {% for context in line.contexts -%}
                       <span class="context-line">{{context}}</span>{#-#}

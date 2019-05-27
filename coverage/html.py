@@ -101,6 +101,7 @@ class HtmlReporter(Reporter):
             'escape': escape,
             'pair': pair,
             'title': title,
+            'len': len,
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
         }
