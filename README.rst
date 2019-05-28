@@ -10,7 +10,8 @@ Code coverage testing for Python.
 |  |license| |versions| |status|
 |  |ci-status| |win-ci-status| |docs| |codecov|
 |  |kit| |format| |repos|
-|  |tidelift| |saythanks|
+|  |stars| |forks| |contributors|
+|  |tidelift| |twitter|
 
 Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
@@ -98,7 +99,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |downloads| image:: https://img.shields.io/pypi/dw/coverage.svg
     :target: https://pypi.org/project/coverage/
     :alt: Weekly PyPI downloads
-.. |versions| image:: https://img.shields.io/pypi/pyversions/coverage.svg
+.. |versions| image:: https://img.shields.io/pypi/pyversions/coverage.svg?logo=python&logoColor=FBE072
     :target: https://pypi.org/project/coverage/
     :alt: Python versions supported
 .. |status| image:: https://img.shields.io/pypi/status/coverage.svg
@@ -113,9 +114,18 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |repos| image:: https://repology.org/badge/tiny-repos/python:coverage.svg
     :target: https://repology.org/metapackage/python:coverage/versions
     :alt: Packaging status
-.. |saythanks| image:: https://img.shields.io/badge/saythanks.io-%E2%98%BC-1EAEDB.svg
-    :target: https://saythanks.io/to/nedbat
-    :alt: Say thanks :)
 .. |tidelift| image:: https://tidelift.com/badges/github/nedbat/coveragepy
     :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
     :alt: Tidelift
+.. |stars| image:: https://img.shields.io/github/stars/nedbat/coveragepy.svg?logo=github
+    :target: https://github.com/nedbat/coveragepy/stargazers
+    :alt: Github stars
+.. |forks| image:: https://img.shields.io/github/forks/nedbat/coveragepy.svg?logo=github
+    :target: https://github.com/nedbat/coveragepy/network/members
+    :alt: Github forks
+.. |contributors| image:: https://img.shields.io/github/contributors/nedbat/coveragepy.svg?logo=github
+    :target: https://github.com/nedbat/coveragepy/graphs/contributors
+    :alt: Contributors
+.. |twitter| image:: https://img.shields.io/twitter/follow/nedbat.svg?label=nedbat&style=flat&logo=twitter&logoColor=4FADFF
+    :target: https://twitter.com/nedbat
+    :alt: nedbat on Twitter
