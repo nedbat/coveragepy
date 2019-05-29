@@ -25,7 +25,7 @@ original_bootstrap = OriginalProcess._bootstrap
 class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-method
     """A replacement for multiprocess.Process that starts coverage."""
 
-    def _bootstrap(self):
+    def _bootstrap(self, *args, **kwargs):
         """Wrapper around _bootstrap to start coverage."""
         from coverage import Coverage       # avoid circular import
         cov = Coverage(data_suffix=True)
@@ -35,7 +35,7 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
         try:
             if debug.should("multiproc"):
                 debug.write("Calling multiprocessing bootstrap")
-            return original_bootstrap(self)
+            return original_bootstrap(self, *args, **kwargs)
         finally:
             if debug.should("multiproc"):
                 debug.write("Finished multiprocessing bootstrap")
