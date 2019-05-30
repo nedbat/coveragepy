@@ -193,7 +193,11 @@ class PyRunner(object):
 
         # Execute the code object.
         try:
+            # Return to the original directory in case the test code exits in
+            # a non-existent directory.
+            cwd = os.getcwd()
             exec(code, main_mod.__dict__)
+            os.chdir(cwd)
         except SystemExit:                          # pylint: disable=try-except-raise
             # The user called sys.exit().  Just pass it along to the upper
             # layers, where it will be handled.
