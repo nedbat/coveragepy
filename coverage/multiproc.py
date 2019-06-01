@@ -28,7 +28,7 @@ original_bootstrap = OriginalProcess._bootstrap
 class ProcessWithCoverage(OriginalProcess):
     """A replacement for multiprocess.Process that starts coverage."""
 
-    def _bootstrap(self, *args, **kwargs):
+    def _bootstrap(self, *args, **kwargs):          # pylint: disable=arguments-differ
         """Wrapper around _bootstrap to start coverage."""
         from coverage import Coverage       # avoid circular import
         rcfile = os.environ[COVERAGE_RCFILE_ENV]
