@@ -31,8 +31,11 @@ class PYBEHAVIOR(object):
     # Is "if __debug__" optimized away?
     optimize_if_debug = (not PYPY)
 
-    # If "if not __debug__" optimized away?
+    # Is "if not __debug__" optimized away?
     optimize_if_not_debug = (not PYPY) and (PYVERSION >= (3, 7, 0, 'alpha', 4))
+
+    # Is "if not __debug__" optimized away even better?
+    optimize_if_not_debug2 = (not PYPY) and (PYVERSION >= (3, 8, 0, 'beta', 1))
 
     # Do we have yield-from?
     yield_from = (PYVERSION >= (3, 3))

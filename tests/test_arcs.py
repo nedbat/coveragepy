@@ -1178,6 +1178,9 @@ class OptimizedIfTest(CoverageTest):
         # Before 3.7, no Python optimized away "if not __debug__:"
         if not env.PYBEHAVIOR.optimize_if_debug:
             self.skipTest("PyPy doesn't optimize away 'if __debug__:'")
+        elif env.PYBEHAVIOR.optimize_if_not_debug2:
+            arcz = ".1 12 24 41 26 61 1."
+            arcz_missing = ""
         elif env.PYBEHAVIOR.optimize_if_not_debug:
             arcz = ".1 12 23 31 26 61 1."
             arcz_missing = ""
