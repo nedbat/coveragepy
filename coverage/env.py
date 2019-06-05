@@ -28,6 +28,9 @@ PY3 = PYVERSION >= (3, 0)
 class PYBEHAVIOR(object):
     """Flags indicating this Python's behavior."""
 
+    # Is "if not __debug__" optimized away even better?
+    optimize_if_not_debug2 = (not PYPY) and (PYVERSION >= (3, 8, 0, 'beta', 1))
+
     # When a break/continue/return statement in a try block jumps to a finally
     # block, does the finally block do the break/continue/return (pre-3.8), or
     # does the finally jump back to the break/continue/return (3.8) to do the
