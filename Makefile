@@ -79,6 +79,9 @@ manylinux:
 kit_upload:
 	twine upload dist/*
 
+test_upload:
+	twine upload --repository testpypi dist/*
+
 kit_local:
 	# pip.conf looks like this:
 	#   [global]
