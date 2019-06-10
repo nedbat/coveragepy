@@ -143,6 +143,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         # Test basic HTML generation: files should be created.
         self.create_initial_files()
         self.run_coverage()
+        self.assert_htmlcov_files_exist()
 
     def test_html_delta_from_source_change(self):
         # HTML generation can create only the files that have changed.
