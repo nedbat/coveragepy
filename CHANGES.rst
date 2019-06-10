@@ -20,7 +20,18 @@ development at the same time, like 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Nothing yet.
+- Reporting on dynamic contexts. Big thanks to Stefan Richter for the
+  contribution.
+
+  - The ``--contexts`` command-line option is available on the ``report`` and
+    ``html`` command.  It's a comma-separated list of shell-style wildcards,
+    selecting the contexts to report on.  Only contexts matching one of the
+    wildcards will be included in the report.
+
+  - The ``--show-contexts`` command-line option for the ``html`` command adds
+    context information to each covered line.  Hovering over the "ctx" marker
+    at the end of the line reveals a list of the contexts that covered the
+    line.
 
 
 .. _changes_50a5:
