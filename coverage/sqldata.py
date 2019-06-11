@@ -25,51 +25,57 @@ from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone
 
 
-# Schema versions:
-# 1: Released in 5.0a2
-# 2: Added contexts
-
 SCHEMA_VERSION = 2
 
 SCHEMA = """
-create table coverage_schema (
+-- One row, to record the version of the schema store in this db.
+CREATE TABLE coverage_schema (
     version integer
+    -- Schema versions:
+    -- 1: Released in 5.0a2
+    -- 2: Added contexts in 5.0a3.  This is schema 2.
 );
 
-create table meta (
-    has_lines boolean,
-    has_arcs boolean,
-    sys_argv text
+-- One row, to record some metadata about the data
+CREATE TABLE meta (
+    has_lines boolean,      -- Is this data recording lines?
+    has_arcs boolean,       -- .. or branches?
+    sys_argv text           -- The coverage command line that recorded the data.
 );
 
-create table file (
+-- A row per file measured.
+CREATE TABLE file (
     id integer primary key,
     path text,
     unique(path)
 );
 
-create table context (
+-- A row per context measured.
+CREATE TABLE context (
     id integer primary key,
     context text,
     unique(context)
 );
 
-create table line (
-    file_id integer,
-    context_id integer,
-    lineno integer,
+-- If recording lines, a row per context per line executed.
+CREATE TABLE line (
+    file_id integer,            -- foreign key to `file`.
+    context_id integer,         -- foreign key to `context`.
+    lineno integer,             -- the line number.
     unique(file_id, context_id, lineno)
 );
 
-create table arc (
-    file_id integer,
-    context_id integer,
-    fromno integer,
-    tono integer,
+-- If recording branches, a row per context per from/to line transition executed.
+CREATE TABLE arc (
+    file_id integer,            -- foreign key to `file`.
+    context_id integer,         -- foreign key to `context`.
+    fromno integer,             -- line number jumped from.
+    tono integer,               -- line number jumped to.
     unique(file_id, context_id, fromno, tono)
 );
 
-create table tracer (
+-- A row per file indicating the tracer used for that file.
+CREATE TABLE tracer (
     file_id integer primary key,
     tracer text
 );
@@ -121,7 +127,7 @@ class CoverageSqliteData(SimpleReprMixin):
         self._dbs[get_thread_id()] = Sqlite(self._filename, self._debug)
         with self._dbs[get_thread_id()] as db:
             for stmt in SCHEMA.split(';'):
-                stmt = " ".join(stmt.strip().split())
+                stmt = stmt.strip()
                 if stmt:
                     db.execute(stmt)
             db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
