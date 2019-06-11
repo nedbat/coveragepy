@@ -277,7 +277,8 @@ class CoverageSqliteData(SimpleReprMixin):
                 file_id = self._file_id(filename, add=True)
                 data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany(
-                    "insert or ignore into arc (file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
+                    "insert or ignore into arc "
+                    "(file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
                     data,
                 )
 
@@ -559,7 +560,7 @@ class CoverageSqliteData(SimpleReprMixin):
 
     def _get_query_context_ids(self, contexts=None):
         if contexts is not None:
-            if not len(contexts):
+            if not contexts:
                 return None
             self._start_using()
             with self._connect() as con:
