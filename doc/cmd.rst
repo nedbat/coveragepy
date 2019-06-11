@@ -363,8 +363,12 @@ command line::
     -------------------------------------------------------
     TOTAL                        76     10    87%
 
-The ``--skip-covered`` switch will leave out any file with 100% coverage,
-letting you focus on the files that still need attention.
+The ``--skip-covered`` switch will skip any file with 100% coverage, letting
+you focus on the files that still need attention.
+
+If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets
+you choose which contexts to report on.  See :ref:`context_reporting` for
+details.
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
@@ -409,8 +413,14 @@ is a data file that is used to speed up reporting the next time.  If you
 generate a new report into the same directory, coverage.py will skip
 generating unchanged pages, making the process faster.
 
-The ``--skip-covered`` switch will leave out any file with 100% coverage,
-letting you focus on the files that still need attention.
+The ``--skip-covered`` switch will skip any file with 100% coverage, letting
+you focus on the files that still need attention.
+
+If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets
+you choose which contexts to report on, and the ``--show-contexts`` option will
+annotate lines with the contexts that ran them.  See :ref:`context_reporting`
+for details.
+
 
 .. _cmd_annotation:
 

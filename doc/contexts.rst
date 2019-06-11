@@ -44,10 +44,10 @@ the configuration file.
 Dynamic contexts
 ----------------
 
-Dynamic contexts are found during execution.  They started from the question,
-"what test ran this line?," but have been generalized to allow any kind of
-context tracking.  As execution proceeds, the dynamic context changes
-to record the context of execution.  Separate data is recorded for each
+Dynamic contexts are found during execution.  They are most commonly used to
+answer the question "what test ran this line?," but have been generalized to
+allow any kind of context tracking.  As execution proceeds, the dynamic context
+changes to record the context of execution.  Separate data is recorded for each
 context, so that it can be analyzed later.
 
 There are three ways to enable dynamic contexts:
@@ -68,7 +68,7 @@ The ``[run] dynamic_context`` setting has only one option now.  Set it to
 
 Each test function you run will be considered a separate dynamic context, and
 coverage data will be segregated for each.  A test function is any function
-whose names starts with "test".
+whose name starts with "test".
 
 If you have both a static context and a dynamic context, they are joined with a
 pipe symbol to be recorded as a single string.
@@ -80,10 +80,23 @@ then the code run by the test runner before (and between) tests will be in the
 empty context.
 
 
+.. _context_reporting:
+
 Context reporting
 -----------------
 
-There is currently no support for using contexts during reporting.  I'm
-interested to `hear your ideas`__ for what would be useful.
+The ``coverage report`` and ``coverage html`` commands both accept
+``--contexts`` option, a comma-separated list of shell-style wildcards.  The
+report will be limited to the contexts that match one of those contexts.
 
-__  https://nedbatchelder.com/site/aboutned.html
+The ``coverage html`` command also has ``--show-contexts``.  If set, the HTML
+report will include an annotation on each covered line indicating the number of
+contexts that executed the line.  Hovering over the annotation displays a list
+of the contexts.
+
+
+Raw data
+--------
+
+For more advanced reporting or analysis, the .coverage data file is a SQLite
+database. TODO: explain the schema.

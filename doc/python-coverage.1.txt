@@ -8,7 +8,7 @@ measure code coverage of Python program execution
 
 :Author: Ned Batchelder <ned@nedbatchelder.com>
 :Author: |author|
-:Date: 2018-05-28
+:Date: 2019-06-11
 :Copyright: Apache 2.0 license, attribution and disclaimer required.
 :Manual section: 1
 :Manual group: Coverage.py
@@ -128,6 +128,9 @@ COMMAND REFERENCE
 
     Options:
 
+    \--contexts `PAT,...`
+        Only include contexts that match one of the patterns.
+
     \-d `DIR`, --directory `DIR`
         Write the output files to `DIR`.
 
@@ -136,6 +139,9 @@ COMMAND REFERENCE
 
     \-i, --ignore-errors
         Ignore errors while reading source files.
+
+    \--show-contexts
+        Annotate lines with the contexts that executed them.
 
     \--skip-covered
         Skip files with 100% coverage.
@@ -148,6 +154,9 @@ COMMAND REFERENCE
     Report coverage statistics on each `MODULE`.
 
     Options:
+
+    \--contexts `PAT,...`
+        Only include contexts that match one of the patterns.
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
@@ -229,7 +238,7 @@ HISTORY
 The |command| command is a Python program which calls the ``coverage``
 Python library to do all the work.
 
-The library was originally developed by Gareth Rees, and is now developed
+It was originally developed by Gareth Rees, and is now developed
 by Ned Batchelder and many others.
 
 This manual page was written by |author|.
