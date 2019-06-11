@@ -260,7 +260,7 @@ def substitute_variables(text, variables=os.environ):
             strict = bool(m.group('strict'))
             if strict:
                 if word not in variables:
-                    msg = "Variable {} is undefined: {}".format(word, text)
+                    msg = "Variable {} is undefined: {!r}".format(word, text)
                     raise CoverageException(msg)
             return variables.get(word, m.group('defval') or '')
 
@@ -271,8 +271,7 @@ def substitute_variables(text, variables=os.environ):
         {                       #   or a {-wrapped word,
             (?P<v2>\w+)
             (?:
-            (?P<strict>\?)      #       with a strict marker
-            |
+            (?P<strict>\?) |    #       with a strict marker
             -(?P<defval>[^}]*)  #       or a default value
             )?
         }
