@@ -20,8 +20,8 @@ development at the same time, like 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Reporting on dynamic contexts. Big thanks to Stephan Richter for the
-  contribution.
+- Reporting on dynamic contexts. Big thanks to Stephan Richter and Albertas
+  Agejevas for the contribution.
 
   - The ``--contexts`` command-line option is available on the ``report`` and
     ``html`` command.  It's a comma-separated list of shell-style wildcards,
