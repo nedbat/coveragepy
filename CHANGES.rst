@@ -20,7 +20,7 @@ development at the same time, like 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Reporting on dynamic contexts. Big thanks to Stefan Richter for the
+- Reporting on dynamic contexts. Big thanks to Stephan Richter for the
   contribution.
 
   - The ``--contexts`` command-line option is available on the ``report`` and
