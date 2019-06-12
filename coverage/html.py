@@ -105,7 +105,8 @@ class HtmlReporter(Reporter):
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
         }
-        self.source_tmpl = Templite(read_data("pyfile.html"), self.template_globals)
+        self.pyfile_html_source = read_data("pyfile.html")
+        self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
 
         self.data = cov.get_data()
 
@@ -125,13 +126,13 @@ class HtmlReporter(Reporter):
         """
         assert self.config.html_dir, "must give a directory for html reporting"
 
-        self.coverage.get_data().set_query_contexts(self.config.query_contexts)
         # Read the status data.
         self.status.read(self.config.html_dir)
 
         # Check that this run used the same settings as the last run.
         m = Hasher()
         m.update(self.config)
+        m.update(self.pyfile_html_source)
         these_settings = m.hexdigest()
         if self.status.settings_hash() != these_settings:
             self.status.reset()
@@ -142,6 +143,7 @@ class HtmlReporter(Reporter):
             self.extra_css = os.path.basename(self.config.extra_css)
 
         # Process all the files.
+        self.coverage.get_data().set_query_contexts(self.config.query_contexts)
         self.report_files(self.html_file, morfs, self.config.html_dir)
 
         if not self.all_files_nums:
