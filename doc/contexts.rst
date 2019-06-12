@@ -79,6 +79,8 @@ this empty context.  For example, if you are recording test names as contexts,
 then the code run by the test runner before (and between) tests will be in the
 empty context.
 
+Dynamic contexts can be explicitly disabled by setting ``dynamic_context`` to
+``none``.
 
 .. _context_reporting:
 

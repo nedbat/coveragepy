@@ -349,13 +349,14 @@ class Coverage(object):
             # it for the main process.
             self.config.parallel = True
 
-        if self.config.dynamic_context is None:
+        dycon = self.config.dynamic_context
+        if not dycon or dycon == "none":
             context_switchers = []
-        elif self.config.dynamic_context == "test_function":
+        elif dycon == "test_function":
             context_switchers = [should_start_context_test_function]
         else:
             raise CoverageException(
-                "Don't understand dynamic_context setting: {!r}".format(self.config.dynamic_context)
+                "Don't understand dynamic_context setting: {!r}".format(dycon)
             )
 
         context_switchers.extend(
