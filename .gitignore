@@ -28,6 +28,7 @@ setuptools-*.egg
 .cache
 .pytest_cache
 .hypothesis
+.ruby-version
 
 # Stuff in the test directory.
 zipmods.zip

@@ -34,6 +34,13 @@ sterile: clean
 	-docker image rm -f quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
 
 
+CSS = coverage/htmlfiles/style.css
+SCSS = coverage/htmlfiles/style.scss
+
+css: $(CSS)
+$(CSS): $(SCSS)
+	sass --style=compact --sourcemap=none --no-cache $(SCSS) $@
+
 LINTABLE = coverage tests igor.py setup.py __main__.py
 
 lint:
