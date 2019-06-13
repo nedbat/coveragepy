@@ -1,10 +1,13 @@
 /* Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0 */
 /* For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt */
 
+// CSS styles for coverage.py HTML reports.
+
+// When you edit this file, you need to run "make css" to get the CSS file
+// generated, and then check in both the .scss and the .css files.
+
 // Ignore this comment, it's for the CSS output file:
 /* Don't edit this .css file. Edit the .scss file instead! */
-
-// CSS styles for coverage.py.
 
 // Page-wide styles
 html, body, h1, h2, h3, p, table, td, th {

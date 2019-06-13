@@ -40,6 +40,7 @@ SCSS = coverage/htmlfiles/style.scss
 css: $(CSS)
 $(CSS): $(SCSS)
 	sass --style=compact --sourcemap=none --no-cache $(SCSS) $@
+	cp $@ tests/gold/html/styled
 
 LINTABLE = coverage tests igor.py setup.py __main__.py
 
