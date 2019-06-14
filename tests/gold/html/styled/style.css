@@ -19,7 +19,6 @@ table tr.hidden { display: none !important; }
 p#no_rows { display: none; font-size: 1.2em; }
 
 a.nav { text-decoration: none; color: inherit; }
-
 a.nav:hover { text-decoration: underline; color: inherit; }
 
 #header { background: #f8f8f8; width: 100%; border-bottom: 1px solid #eee; }
@@ -40,31 +39,20 @@ a.nav:hover { text-decoration: underline; color: inherit; }
 h1 { font-size: 1.25em; display: inline-block; }
 
 #filter_container { display: inline-block; float: right; margin: 0 2em 0 0; }
-
 #filter_container input { width: 10em; }
 
 h2.stats { margin-top: .5em; font-size: 1em; }
 
 .stats span { border: 1px solid; padding: .1em .25em; margin: 0 .1em; cursor: pointer; border-color: #999 #ccc #ccc #999; }
-
 .stats span.hide_run, .stats span.hide_exc, .stats span.hide_mis, .stats span.hide_par, .stats span.par.hide_run.hide_par { border-color: #ccc #999 #999 #ccc; }
-
 .stats span.par.hide_run { border-color: #999 #ccc #ccc #999; }
-
 .stats span.run { background: #ddffdd; }
-
 .stats span.exc { background: #eeeeee; }
-
 .stats span.mis { background: #ffdddd; }
-
 .stats span.hide_run { background: #eeffee; }
-
 .stats span.hide_exc { background: #f5f5f5; }
-
 .stats span.hide_mis { background: #ffeeee; }
-
 .stats span.par { background: #ffffaa; }
-
 .stats span.hide_par { background: #ffffcc; }
 
 #keyboard_icon { float: right; margin: 5px; cursor: pointer; }
@@ -80,15 +68,11 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 #panel_icon { float: right; cursor: pointer; }
 
 .keyhelp { margin: .75em; }
-
 .keyhelp .key { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em .35em; font-family: monospace; font-weight: bold; background: #eee; }
 
 .linenos p { text-align: right; margin: 0; padding: 0 .5em; color: #999999; font-family: verdana, sans-serif; }
-
 .linenos p.highlight { background: #ffdd00; }
-
 .linenos p a { text-decoration: none; color: #999999; font-size: .8333em; line-height: 1em; }
-
 .linenos p a:hover { text-decoration: underline; color: #999999; }
 
 td.text { width: 100%; }
@@ -107,30 +91,21 @@ td.text { width: 100%; }
 .text p.hide_run:hover, .text p.hide_exc:hover, .text p.hide_mis:hover, .text p.hide_par:hover, .text p.hide_run.hide_par:hover { background: #f2f2f2; }
 
 .text span.annotate { font-family: georgia; color: #666; float: right; padding-right: .5em; }
-
 .text p.hide_par span.annotate { display: none; }
-
 .text span.annotate.long { display: none; }
-
 .text p:hover span.annotate.long { display: block; max-width: 50%; white-space: normal; float: right; position: absolute; top: 1.75em; right: 1em; width: 30em; height: auto; color: #333; background: #ffffcc; border: 1px solid #888; padding: .25em .5em; z-index: 999; border-radius: .2em; box-shadow: #cccccc .2em .2em .2em; }
 
 .text .com { color: green; font-style: italic; line-height: 1px; }
-
 .text .key { font-weight: bold; line-height: 1px; }
-
 .text .str { color: #000080; }
 
 td.contexts p { margin: 0; padding: 0 .5em; color: #999999; font-family: verdana, sans-serif; white-space: nowrap; position: relative; }
-
 td.contexts p:hover { background: #eee; }
-
 td.contexts p span.context-list { display: none; }
-
 td.contexts p:hover span.context-list { display: block; min-width: 30em; white-space: normal; float: right; position: absolute; top: 1.75em; right: 1em; height: auto; color: #333; background: #ffffcc; border: 1px solid #888; padding: .25em .5em; z-index: 999; border-radius: .2em; box-shadow: #cccccc .2em .2em .2em; }
+td.contexts p span.context-button { display: inline-block; cursor: pointer; font-size: .8333em; line-height: 1em; }
 
 span.context-list span.context-line { display: block; }
-
-td.contexts p span.context-button { display: inline-block; cursor: pointer; font-size: .8333em; line-height: 1em; }
 
 #index td, #index th { text-align: right; width: 5em; padding: .25em .5em; border-bottom: 1px solid #eee; }
 
@@ -159,5 +134,4 @@ td.contexts p span.context-button { display: inline-block; cursor: pointer; font
 #index tr.file:hover td.name { text-decoration: underline; color: #000; }
 
 #scroll_marker { position: fixed; right: 0; top: 0; width: 16px; height: 100%; background: white; border-left: 1px solid #eee; will-change: transform; }
-
 #scroll_marker .marker { background: #eedddd; position: absolute; min-height: 3px; width: 100%; }
