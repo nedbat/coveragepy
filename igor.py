@@ -75,7 +75,7 @@ def should_skip(tracer):
     """Is there a reason to skip these tests?"""
     if tracer == "py":
         # $set_env.py: COVERAGE_NO_PYTRACER - Don't run the tests under the Python tracer.
-        skipper = os.environ.get("COVERAGE_NO_PYTRACER")
+        skipper = os.environ.get("COVERAGE_NO_PYTRACER") or os.environ.get("COVERAGE_CONTEXT")
     else:
         # $set_env.py: COVERAGE_NO_CTRACER - Don't run the tests under the C tracer.
         skipper = os.environ.get("COVERAGE_NO_CTRACER")
@@ -174,7 +174,8 @@ def do_combine_html():
     cov.load()
     cov.combine()
     cov.save()
-    cov.html_report()
+    show_contexts = bool(os.environ.get('COVERAGE_CONTEXT'))
+    cov.html_report(show_contexts=show_contexts)
     cov.xml_report()
 
 
