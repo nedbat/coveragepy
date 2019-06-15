@@ -8,7 +8,7 @@ import os
 import re
 
 from coverage.files import flat_rootname
-from coverage.misc import isolate_module
+from coverage.misc import ensure_dir, isolate_module
 from coverage.report import Reporter
 
 os = isolate_module(os)
@@ -49,8 +49,9 @@ class AnnotateReporter(Reporter):
         See `coverage.report()` for arguments.
 
         """
+        self.directory = directory
         self.coverage.get_data()
-        self.report_files(self.annotate_file, morfs, directory)
+        self.report_files(self.annotate_file, morfs)
 
     def annotate_file(self, fr, analysis):
         """Annotate a single file.
@@ -63,6 +64,7 @@ class AnnotateReporter(Reporter):
         excluded = sorted(analysis.excluded)
 
         if self.directory:
+            ensure_dir(self.directory)
             dest_file = os.path.join(self.directory, flat_rootname(fr.relative_filename()))
             if dest_file.endswith("_py"):
                 dest_file = dest_file[:-3] + ".py"

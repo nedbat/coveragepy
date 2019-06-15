@@ -15,7 +15,7 @@ from coverage import env
 from coverage.backward import iitems
 from coverage.data import add_data_to_hash
 from coverage.files import flat_rootname
-from coverage.misc import CoverageException, file_be_gone, Hasher, isolate_module
+from coverage.misc import CoverageException, ensure_dir, file_be_gone, Hasher, isolate_module
 from coverage.report import Reporter
 from coverage.results import Numbers
 from coverage.templite import Templite
@@ -142,9 +142,11 @@ class HtmlReporter(Reporter):
         if self.config.extra_css:
             self.extra_css = os.path.basename(self.config.extra_css)
 
+        self.directory = self.config.html_dir
+
         # Process all the files.
         self.coverage.get_data().set_query_contexts(self.config.query_contexts)
-        self.report_files(self.html_file, morfs, self.config.html_dir)
+        self.report_files(self.html_file, morfs)
 
         if not self.all_files_nums:
             raise CoverageException("No data to report.")
@@ -182,6 +184,7 @@ class HtmlReporter(Reporter):
         """Generate an HTML file for one source file."""
         rootname = flat_rootname(fr.relative_filename())
         html_filename = rootname + ".html"
+        ensure_dir(self.directory)
         html_path = os.path.join(self.directory, html_filename)
 
         # Get the numbers for this file.

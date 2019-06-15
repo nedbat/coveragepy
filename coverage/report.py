@@ -7,7 +7,7 @@ import os
 import warnings
 
 from coverage.files import prep_patterns, FnmatchMatcher
-from coverage.misc import CoverageException, NoSource, NotPython, ensure_dir, isolate_module
+from coverage.misc import CoverageException, NoSource, NotPython, isolate_module
 
 os = isolate_module(os)
 
@@ -24,10 +24,6 @@ class Reporter(object):
         """
         self.coverage = coverage
         self.config = config
-
-        # The directory into which to place the report, used by some derived
-        # classes.
-        self.directory = None
 
         # Our method find_file_reporters used to set an attribute that other
         # code could read.  That's been refactored away, but some third parties
@@ -65,7 +61,7 @@ class Reporter(object):
         self._file_reporters = sorted(reporters)
         return self._file_reporters
 
-    def report_files(self, report_fn, morfs, directory=None):
+    def report_files(self, report_fn, morfs):
         """Run a reporting function on a number of morfs.
 
         `report_fn` is called for each relative morf in `morfs`.  It is called
@@ -81,9 +77,6 @@ class Reporter(object):
 
         if not file_reporters:
             raise CoverageException("No data to report.")
-
-        self.directory = directory
-        ensure_dir(self.directory)
 
         for fr in file_reporters:
             try:
