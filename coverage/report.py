@@ -4,7 +4,6 @@
 """Reporter foundation for coverage.py."""
 
 import os
-import warnings
 
 from coverage.files import prep_patterns, FnmatchMatcher
 from coverage.misc import CoverageException, NoSource, NotPython, isolate_module
@@ -30,15 +29,6 @@ class Reporter(object):
         # were using that attribute.  We'll continue to support it in a noisy
         # way for now.
         self._file_reporters = []
-
-    @property
-    def file_reporters(self):
-        """Keep .file_reporters working for private-grabbing tools."""
-        warnings.warn(
-            "Report.file_reporters will no longer be available in Coverage.py 4.2",
-            DeprecationWarning,
-        )
-        return self._file_reporters
 
     def find_file_reporters(self, morfs):
         """Find the FileReporters we'll report on.

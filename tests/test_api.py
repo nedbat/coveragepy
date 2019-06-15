@@ -8,14 +8,12 @@ import os
 import os.path
 import sys
 import textwrap
-import warnings
 
 import coverage
 from coverage import env
 from coverage.backward import StringIO, import_local_file
 from coverage.data import line_counts
 from coverage.misc import CoverageException
-from coverage.report import Reporter
 
 from tests.coveragetest import CoverageTest, CoverageTestMethodsMixin, TESTS_DIR, UsingModulesMixin
 
@@ -904,20 +902,3 @@ class TestRunnerPluginTest(CoverageTest):
 
     def test_pytestcov_parallel_append(self):
         self.pretend_to_be_pytestcov(append=True)
-
-
-class ReporterDeprecatedAttributeTest(CoverageTest):
-    """Test that Reporter.file_reporters has been deprecated."""
-
-    run_in_temp_dir = False
-
-    def test_reporter_file_reporters(self):
-        rep = Reporter(None, None)
-
-        with warnings.catch_warnings(record=True) as warns:
-            warnings.simplefilter("always")
-            # Accessing this attribute will raise a DeprecationWarning.
-            rep.file_reporters      # pylint: disable=pointless-statement
-
-        self.assertEqual(len(warns), 1)
-        self.assertTrue(issubclass(warns[0].category, DeprecationWarning))
