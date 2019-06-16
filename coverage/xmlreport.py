@@ -14,7 +14,7 @@ from coverage import env
 from coverage import __url__, __version__, files
 from coverage.backward import iitems
 from coverage.misc import isolate_module
-from coverage.report import Reporter
+from coverage.report import get_analysis_to_report
 
 os = isolate_module(os)
 
@@ -30,11 +30,12 @@ def rate(hit, num):
         return "%.4g" % (float(hit) / num)
 
 
-class XmlReporter(Reporter):
+class XmlReporter(object):
     """A reporter for writing Cobertura-style XML coverage results."""
 
     def __init__(self, coverage, config):
-        super(XmlReporter, self).__init__(coverage, config)
+        self.coverage = coverage
+        self.config = config
 
         self.source_paths = set()
         if config.source:
@@ -71,7 +72,8 @@ class XmlReporter(Reporter):
         xcoverage.appendChild(self.xml_out.createComment(" Based on %s " % DTD_URL))
 
         # Call xml_file for each file in the data.
-        self.report_files(self.xml_file, morfs)
+        for fr, analysis in get_analysis_to_report(self.coverage, self.config, morfs):
+            self.xml_file(fr, analysis)
 
         xsources = self.xml_out.createElement("sources")
         xcoverage.appendChild(xsources)

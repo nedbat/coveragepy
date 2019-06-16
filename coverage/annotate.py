@@ -9,12 +9,12 @@ import re
 
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, isolate_module
-from coverage.report import Reporter
+from coverage.report import get_analysis_to_report
 
 os = isolate_module(os)
 
 
-class AnnotateReporter(Reporter):
+class AnnotateReporter(object):
     """Generate annotated source files showing line coverage.
 
     This reporter creates annotated copies of the measured source files. Each
@@ -37,7 +37,8 @@ class AnnotateReporter(Reporter):
     """
 
     def __init__(self, coverage, config):
-        super(AnnotateReporter, self).__init__(coverage, config)
+        self.coverage = coverage
+        self.config = config
         self.directory = None
 
     blank_re = re.compile(r"\s*(#|$)")
@@ -51,7 +52,8 @@ class AnnotateReporter(Reporter):
         """
         self.directory = directory
         self.coverage.get_data()
-        self.report_files(self.annotate_file, morfs)
+        for fr, analysis in get_analysis_to_report(self.coverage, self.config, morfs):
+            self.annotate_file(fr, analysis)
 
     def annotate_file(self, fr, analysis):
         """Annotate a single file.

@@ -6,16 +6,17 @@
 import sys
 
 from coverage import env
-from coverage.report import Reporter
+from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
 from coverage.misc import NotPython, CoverageException, output_encoding
 
 
-class SummaryReporter(Reporter):
+class SummaryReporter(object):
     """A reporter for writing the summary report."""
 
     def __init__(self, coverage, config):
-        super(SummaryReporter, self).__init__(coverage, config)
+        self.coverage = coverage
+        self.config = config
         self.branches = coverage.get_data().has_arcs()
         self.outfile = None
         self.fr_analysis = []
@@ -40,7 +41,8 @@ class SummaryReporter(Reporter):
         self.outfile = outfile or sys.stdout
 
         self.coverage.get_data().set_query_contexts(self.config.query_contexts)
-        self.report_files(self.report_one_file, morfs)
+        for fr, analysis in get_analysis_to_report(self.coverage, self.config, morfs):
+            self.report_one_file(fr, analysis)
 
         # Prepare the formatting strings, header, and column sorting.
         max_name = max([len(fr.relative_filename()) for (fr, analysis) in self.fr_analysis] + [5])

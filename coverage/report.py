@@ -3,85 +3,47 @@
 
 """Reporter foundation for coverage.py."""
 
-import os
-
 from coverage.files import prep_patterns, FnmatchMatcher
-from coverage.misc import CoverageException, NoSource, NotPython, isolate_module
-
-os = isolate_module(os)
+from coverage.misc import CoverageException, NoSource, NotPython
 
 
-class Reporter(object):
-    """A base class for all reporters."""
+def get_analysis_to_report(coverage, config, morfs):
+    """Get the files to report on.
 
-    def __init__(self, coverage, config):
-        """Create a reporter.
+    For each morf in `morfs`, if it should be reported on (based on the omit
+    and include configuration options), yield a pair, the `FileReporter` and
+    `Analysis` for the morf.
 
-        `coverage` is the coverage instance. `config` is an instance  of
-        CoverageConfig, for controlling all sorts of behavior.
+    """
+    file_reporters = coverage._get_file_reporters(morfs)
 
-        """
-        self.coverage = coverage
-        self.config = config
+    if config.report_include:
+        matcher = FnmatchMatcher(prep_patterns(config.report_include))
+        file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
 
-        # Our method find_file_reporters used to set an attribute that other
-        # code could read.  That's been refactored away, but some third parties
-        # were using that attribute.  We'll continue to support it in a noisy
-        # way for now.
-        self._file_reporters = []
+    if config.report_omit:
+        matcher = FnmatchMatcher(prep_patterns(config.report_omit))
+        file_reporters = [fr for fr in file_reporters if not matcher.match(fr.filename)]
 
-    def find_file_reporters(self, morfs):
-        """Find the FileReporters we'll report on.
+    if not file_reporters:
+        raise CoverageException("No data to report.")
 
-        `morfs` is a list of modules or file names.
-
-        Returns a list of FileReporters.
-
-        """
-        reporters = self.coverage._get_file_reporters(morfs)
-
-        if self.config.report_include:
-            matcher = FnmatchMatcher(prep_patterns(self.config.report_include))
-            reporters = [fr for fr in reporters if matcher.match(fr.filename)]
-
-        if self.config.report_omit:
-            matcher = FnmatchMatcher(prep_patterns(self.config.report_omit))
-            reporters = [fr for fr in reporters if not matcher.match(fr.filename)]
-
-        self._file_reporters = sorted(reporters)
-        return self._file_reporters
-
-    def report_files(self, report_fn, morfs):
-        """Run a reporting function on a number of morfs.
-
-        `report_fn` is called for each relative morf in `morfs`.  It is called
-        as::
-
-            report_fn(file_reporter, analysis)
-
-        where `file_reporter` is the `FileReporter` for the morf, and
-        `analysis` is the `Analysis` for the morf.
-
-        """
-        file_reporters = self.find_file_reporters(morfs)
-
-        if not file_reporters:
-            raise CoverageException("No data to report.")
-
-        for fr in file_reporters:
-            try:
-                report_fn(fr, self.coverage._analyze(fr))
-            except NoSource:
-                if not self.config.ignore_errors:
+    for fr in sorted(file_reporters):
+        try:
+            analysis = coverage._analyze(fr)
+        except NoSource:
+            if not config.ignore_errors:
+                raise
+        except NotPython:
+            # Only report errors for .py files, and only if we didn't
+            # explicitly suppress those errors.
+            # NotPython is only raised by PythonFileReporter, which has a
+            # should_be_python() method.
+            if fr.should_be_python():
+                if config.ignore_errors:
+                    msg = "Could not parse Python file {0}".format(fr.filename)
+                    coverage._warn(msg, slug="couldnt-parse")
+                else:
                     raise
-            except NotPython:
-                # Only report errors for .py files, and only if we didn't
-                # explicitly suppress those errors.
-                # NotPython is only raised by PythonFileReporter, which has a
-                # should_be_python() method.
-                if fr.should_be_python():
-                    if self.config.ignore_errors:
-                        msg = "Could not parse Python file {0}".format(fr.filename)
-                        self.coverage._warn(msg, slug="couldnt-parse")
-                    else:
-                        raise
+        else:
+            yield (fr, analysis)

@@ -16,7 +16,7 @@ from coverage.backward import iitems
 from coverage.data import add_data_to_hash
 from coverage.files import flat_rootname
 from coverage.misc import CoverageException, ensure_dir, file_be_gone, Hasher, isolate_module
-from coverage.report import Reporter
+from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
 from coverage.templite import Templite
 
@@ -74,7 +74,7 @@ def write_html(fname, html):
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
 
-class HtmlReporter(Reporter):
+class HtmlReporter(object):
     """HTML reporting."""
 
     # These files will be copied from the htmlfiles directory to the output
@@ -92,7 +92,8 @@ class HtmlReporter(Reporter):
     ]
 
     def __init__(self, cov, config):
-        super(HtmlReporter, self).__init__(cov, config)
+        self.coverage = cov
+        self.config = config
         self.directory = None
         title = self.config.html_title
         if env.PY2:
@@ -108,7 +109,7 @@ class HtmlReporter(Reporter):
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
 
-        self.data = cov.get_data()
+        self.data = self.coverage.get_data()
 
         self.files = []
         self.all_files_nums = []
@@ -146,7 +147,8 @@ class HtmlReporter(Reporter):
 
         # Process all the files.
         self.coverage.get_data().set_query_contexts(self.config.query_contexts)
-        self.report_files(self.html_file, morfs)
+        for fr, analysis in get_analysis_to_report(self.coverage, self.config, morfs):
+            self.html_file(fr, analysis)
 
         if not self.all_files_nums:
             raise CoverageException("No data to report.")
