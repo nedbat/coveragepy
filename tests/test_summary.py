@@ -426,13 +426,11 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
     def test_report_skip_covered_no_data(self):
         report = self.report_from_command("coverage report --skip-covered")
 
-        # Name      Stmts   Miss Branch BrPart  Cover
-        # -------------------------------------------
         # No data to report.
 
-        self.assertEqual(self.line_count(report), 3, report)
+        self.assertEqual(self.line_count(report), 1, report)
         squeezed = self.squeezed_lines(report)
-        self.assertEqual(squeezed[2], "No data to report.")
+        self.assertEqual(squeezed[0], "No data to report.")
 
     def test_report_precision(self):
         self.make_file(".coveragerc", """\
@@ -487,7 +485,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_file("mycode.py", "This isn't python at all!")
         report = self.report_from_command("coverage report mycode.py")
 
-        # mycode   NotPython: Couldn't parse '...' as Python source: 'invalid syntax' at line 1
+        # Couldn't parse '...' as Python source: 'invalid syntax' at line 1
         # Name     Stmts   Miss  Cover
         # ----------------------------
         # No data to report.
@@ -498,8 +496,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # The actual error message varies version to version
         errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
         self.assertEqual(
+            "Couldn't parse 'mycode.py' as Python source: 'error' at line 1",
             errmsg,
-            "mycode.py NotPython: Couldn't parse 'mycode.py' as Python source: 'error' at line 1"
         )
 
     def test_accenteddotpy_not_python(self):
@@ -514,7 +512,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_file(u"accented\xe2.py", "This isn't python at all!")
         report = self.report_from_command(u"coverage report accented\xe2.py")
 
-        # xxxx   NotPython: Couldn't parse '...' as Python source: 'invalid syntax' at line 1
+        # Couldn't parse '...' as Python source: 'invalid syntax' at line 1
         # Name     Stmts   Miss  Cover
         # ----------------------------
         # No data to report.
@@ -524,27 +522,28 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         errmsg = re.sub(r"parse '.*(accented.*?\.py)", r"parse '\1", errmsg)
         # The actual error message varies version to version
         errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
-        expected = (
-            u"accented\xe2.py NotPython: "
-            u"Couldn't parse 'accented\xe2.py' as Python source: 'error' at line 1"
-        )
+        expected = u"Couldn't parse 'accented\xe2.py' as Python source: 'error' at line 1"
         if env.PY2:
             expected = expected.encode(output_encoding())
         self.assertEqual(expected, errmsg)
 
     def test_dotpy_not_python_ignored(self):
         # We run a .py file, and when reporting, we can't parse it as Python,
-        # but we've said to ignore errors, so there's no error reported.
+        # but we've said to ignore errors, so there's no error reported,
+        # though we still get a warning.
         self.make_mycode()
         self.run_command("coverage run mycode.py")
         self.make_file("mycode.py", "This isn't python at all!")
         report = self.report_from_command("coverage report -i mycode.py")
 
+        # Coverage.py warning: Could not parse Python file blah_blah/mycode.py (couldnt-parse)
         # Name     Stmts   Miss  Cover
         # ----------------------------
+        # No data to report.
 
-        self.assertEqual(self.line_count(report), 3)
+        self.assertEqual(self.line_count(report), 4)
         self.assertIn('No data to report.', report)
+        self.assertIn('(couldnt-parse)', report)
 
     def test_dothtml_not_python(self):
         # We run a .html file, and when reporting, we can't parse it as

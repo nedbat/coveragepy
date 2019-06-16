@@ -81,6 +81,7 @@ class Reporter(object):
                 # should_be_python() method.
                 if fr.should_be_python():
                     if self.config.ignore_errors:
-                        self.coverage._warn("Could not parse Python file {0}".format(fr.filename))
+                        msg = "Could not parse Python file {0}".format(fr.filename)
+                        self.coverage._warn(msg, slug="couldnt-parse")
                     else:
                         raise

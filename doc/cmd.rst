@@ -143,6 +143,11 @@ Warnings
 During execution, coverage.py may warn you about conditions it detects that
 could affect the measurement process.  The possible warnings include:
 
+* "Could not parse Python file XXX (couldnt-parse)"
+
+  During reporting, a file was thought to be Python, but it couldn't be parsed
+  as Python.
+
 * "Trace function changed, measurement is likely wrong: XXX (trace-changed)"
 
   Coverage measurement depends on a Python setting called the trace function.

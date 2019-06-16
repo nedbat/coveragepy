@@ -32,6 +32,12 @@ Unreleased
     information to each covered line.  Hovering over the "ctx" marker at the
     end of the line reveals a list of the contexts that covered the line.
 
+- Error handling during reporting has changed slightly.  All reporting methods
+  now behave the same.  The ``--ignore-errors`` option keeps errors from
+  stopping the reporting, but files that couldn't parse as Python will always
+  be reported as warnings.  As with other warnings, you can suppress them with
+  the ``[run] disable_warnings`` configuration setting.
+
 
 .. _changes_50a5:
 
