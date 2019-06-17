@@ -227,6 +227,31 @@ class HtmlReporter(object):
                     )
             ldata['html'] = ''.join(html)
 
+            if ldata['short_annotations']:
+                # 202F is NARROW NO-BREAK SPACE.
+                # 219B is RIGHTWARDS ARROW WITH STROKE.
+                ldata['annotate'] = ",&nbsp;&nbsp; ".join(
+                    "{}&#x202F;&#x219B;&#x202F;{}".format(ldata['number'], d)
+                    for d in ldata['short_annotations']
+                    )
+            else:
+                ldata['annotate'] = None
+
+            if ldata['long_annotations']:
+                longs = ldata['long_annotations']
+                if len(longs) == 1:
+                    ldata['annotate_long'] = longs[0]
+                else:
+                    ldata['annotate_long'] = "{:d} missed branches: {}".format(
+                        len(longs),
+                        ", ".join(
+                            "{:d}) {}".format(num, ann_long)
+                            for num, ann_long in enumerate(longs, start=1)
+                            ),
+                    )
+            else:
+                ldata['annotate_long'] = None
+
         html = self.source_tmpl.render(file_data)
         write_html(html_path, html)
 
@@ -260,37 +285,24 @@ class HtmlReporter(object):
         for lineno, tokens in enumerate(fr.source_token_lines(), start=1):
             # Figure out how to mark this line.
             line_class = []
-            annotate_html = ""
-            annotate_long = ""
+            short_annotations = []
+            long_annotations = []
+
             if lineno in analysis.statements:
                 line_class.append("stm")
+
             if lineno in analysis.excluded:
                 line_class.append(c_exc)
             elif lineno in analysis.missing:
                 line_class.append(c_mis)
             elif self.has_arcs and lineno in missing_branch_arcs:
                 line_class.append(c_par)
-                shorts = []
-                longs = []
                 for b in missing_branch_arcs[lineno]:
                     if b < 0:
-                        shorts.append("exit")
+                        short_annotations.append("exit")
                     else:
-                        shorts.append(b)
-                    longs.append(fr.missing_arc_description(lineno, b, arcs_executed))
-                # 202F is NARROW NO-BREAK SPACE.
-                # 219B is RIGHTWARDS ARROW WITH STROKE.
-                short_fmt = "%s&#x202F;&#x219B;&#x202F;%s"
-                annotate_html = ",&nbsp;&nbsp; ".join(short_fmt % (lineno, d) for d in shorts)
-
-                if len(longs) == 1:
-                    annotate_long = longs[0]
-                else:
-                    annotate_long = "%d missed branches: %s" % (
-                        len(longs),
-                        ", ".join("%d) %s" % (num, ann_long)
-                            for num, ann_long in enumerate(longs, start=1)),
-                    )
+                        short_annotations.append(b)
+                    long_annotations.append(fr.missing_arc_description(lineno, b, arcs_executed))
             elif lineno in analysis.statements:
                 line_class.append(c_run)
 
@@ -304,8 +316,8 @@ class HtmlReporter(object):
                 'number': lineno,
                 'class': ' '.join(line_class) or "pln",
                 'contexts': contexts,
-                'annotate': annotate_html,
-                'annotate_long': annotate_long,
+                'short_annotations': short_annotations,
+                'long_annotations': long_annotations,
             })
 
         file_data = {
