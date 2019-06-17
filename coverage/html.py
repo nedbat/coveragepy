@@ -110,15 +110,30 @@ class HtmlReporter(object):
         else:
             self.extra_css = None
 
+        self.data = self.coverage.get_data()
+        self.has_arcs = self.data.has_arcs()
+
+        self.files = []
+        self.all_files_nums = []
+        self.incr = IncrementalChecker(self.directory)
+        self.totals = Numbers()
+
         self.template_globals = {
+            # Functions available in the templates.
             'escape': escape,
             'pair': pair,
             'title': title,
             'len': len,
+
+            # Constants for this report.
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
             'time_stamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
             'extra_css': self.extra_css,
+            'has_arcs': self.has_arcs,
+            'show_contexts': self.config.show_contexts,
+
+            # Constants for all reports.
             'c_exc': self.c_exc,
             'c_mis': self.c_mis,
             'c_par': self.c_par,
@@ -126,14 +141,6 @@ class HtmlReporter(object):
         }
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
-
-        self.data = self.coverage.get_data()
-
-        self.files = []
-        self.all_files_nums = []
-        self.has_arcs = self.data.has_arcs()
-        self.incr = IncrementalChecker(self.directory)
-        self.totals = Numbers()
 
     def report(self, morfs):
         """Generate an HTML report for `morfs`.
@@ -305,8 +312,6 @@ class HtmlReporter(object):
             })
 
         file_data = {
-            'has_arcs': self.has_arcs,
-            'show_contexts': self.config.show_contexts,
             'relative_filename': fr.relative_filename(),
             'nums': analysis.numbers,
             'lines': lines,
@@ -321,7 +326,6 @@ class HtmlReporter(object):
         self.totals = sum(self.all_files_nums)
 
         html = index_tmpl.render({
-            'has_arcs': self.has_arcs,
             'files': self.files,
             'totals': self.totals,
         })
