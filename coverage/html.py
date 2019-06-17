@@ -113,7 +113,7 @@ class HtmlReporter(object):
         self.data = self.coverage.get_data()
         self.has_arcs = self.data.has_arcs()
 
-        self.files = []
+        self.file_summaries = []
         self.all_files_nums = []
         self.incr = IncrementalChecker(self.directory)
         self.totals = Numbers()
@@ -161,6 +161,8 @@ class HtmlReporter(object):
         if not self.all_files_nums:
             raise CoverageException("No data to report.")
 
+        self.totals = sum(self.all_files_nums)
+
         # Write the index file.
         self.index_file()
 
@@ -205,7 +207,7 @@ class HtmlReporter(object):
 
         # Find out if the file on disk is already correct.
         if self.incr.can_skip_file(self.data, fr, rootname):
-            self.files.append(self.incr.index_info(rootname))
+            self.file_summaries.append(self.incr.index_info(rootname))
             return
 
         # Write the HTML page for this file.
@@ -257,7 +259,7 @@ class HtmlReporter(object):
             'html_filename': html_filename,
             'relative_filename': fr.relative_filename(),
         }
-        self.files.append(index_info)
+        self.file_summaries.append(index_info)
         self.incr.set_index_info(rootname, index_info)
 
     def data_for_file(self, fr, analysis):
@@ -323,10 +325,8 @@ class HtmlReporter(object):
         """Write the index.html file for this report."""
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
 
-        self.totals = sum(self.all_files_nums)
-
         html = index_tmpl.render({
-            'files': self.files,
+            'files': self.file_summaries,
             'totals': self.totals,
         })
 
