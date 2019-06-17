@@ -99,8 +99,8 @@ class HtmlReporter(object):
 
     def __init__(self, cov):
         self.coverage = cov
-        self.config =self.coverage.config
-        self.directory = None
+        self.config = self.coverage.config
+        self.directory = self.config.html_dir
         title = self.config.html_title
         if env.PY2:
             title = title.decode("utf8")
@@ -132,7 +132,7 @@ class HtmlReporter(object):
         self.files = []
         self.all_files_nums = []
         self.has_arcs = self.data.has_arcs()
-        self.status = HtmlStatus()
+        self.incr = IncrementalChecker(self.directory)
         self.totals = Numbers()
 
     def report(self, morfs):
@@ -141,19 +141,10 @@ class HtmlReporter(object):
         `morfs` is a list of modules or file names.
 
         """
-        # Read the status data.
-        self.status.read(self.config.html_dir)
-
-        # Check that this run used the same settings as the last run.
-        m = Hasher()
-        m.update(self.config)
-        m.update(self.pyfile_html_source)
-        these_settings = m.hexdigest()
-        if self.status.settings_hash() != these_settings:
-            self.status.reset()
-            self.status.set_settings_hash(these_settings)
-
-        self.directory = self.config.html_dir
+        # Read the status data and check that this run used the same
+        # global data as the last run.
+        self.incr.read()
+        self.incr.check_global_data(self.config, self.pyfile_html_source)
 
         # Process all the files.
         self.coverage.get_data().set_query_contexts(self.config.query_contexts)
@@ -185,13 +176,6 @@ class HtmlReporter(object):
                 os.path.join(self.directory, self.extra_css)
             )
 
-    def file_hash(self, fr):
-        """Compute a hash that changes if the file needs to be re-reported."""
-        m = Hasher()
-        m.update(fr.source().encode('utf-8'))
-        add_data_to_hash(self.data, fr.filename, m)
-        return m.hexdigest()
-
     def html_file(self, fr, analysis):
         """Generate an HTML file for one source file."""
         rootname = flat_rootname(fr.relative_filename())
@@ -213,14 +197,9 @@ class HtmlReporter(object):
                 return
 
         # Find out if the file on disk is already correct.
-        this_hash = self.file_hash(fr)
-        that_hash = self.status.file_hash(rootname)
-        if this_hash == that_hash:
-            # Nothing has changed to require the file to be reported again.
-            self.files.append(self.status.index_info(rootname))
+        if self.incr.can_skip_file(self.data, fr, rootname):
+            self.files.append(self.incr.index_info(rootname))
             return
-
-        self.status.set_file_hash(rootname, this_hash)
 
         # Write the HTML page for this file.
         file_data = self.data_for_file(fr, analysis)
@@ -272,9 +251,10 @@ class HtmlReporter(object):
             'relative_filename': fr.relative_filename(),
         }
         self.files.append(index_info)
-        self.status.set_index_info(rootname, index_info)
+        self.incr.set_index_info(rootname, index_info)
 
     def data_for_file(self, fr, analysis):
+        """Produce the data needed for one file's report."""
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
             arcs_executed = analysis.arcs_executed()
@@ -349,56 +329,57 @@ class HtmlReporter(object):
         write_html(os.path.join(self.directory, "index.html"), html)
 
         # Write the latest hashes for next time.
-        self.status.write(self.directory)
+        self.incr.write()
 
 
-class HtmlStatus(object):
-    """The status information we keep to support incremental reporting."""
+class IncrementalChecker(object):
+    """Logic and data to support incremental reporting."""
 
     STATUS_FILE = "status.json"
-    STATUS_FORMAT = 1
+    STATUS_FORMAT = 2
 
     #           pylint: disable=wrong-spelling-in-comment,useless-suppression
     #  The data looks like:
     #
     #  {
-    #      'format': 1,
-    #      'settings': '540ee119c15d52a68a53fe6f0897346d',
-    #      'version': '4.0a1',
-    #      'files': {
-    #          'cogapp___init__': {
-    #              'hash': 'e45581a5b48f879f301c0f30bf77a50c',
-    #              'index': {
-    #                  'html_filename': 'cogapp___init__.html',
-    #                  'name': 'cogapp/__init__',
-    #                  'nums': <coverage.results.Numbers object at 0x10ab7ed0>,
+    #      "format": 2,
+    #      "globals": "540ee119c15d52a68a53fe6f0897346d",
+    #      "version": "4.0a1",
+    #      "files": {
+    #          "cogapp___init__": {
+    #              "hash": "e45581a5b48f879f301c0f30bf77a50c",
+    #              "index": {
+    #                  "html_filename": "cogapp___init__.html",
+    #                  "relative_filename": "cogapp/__init__",
+    #                  "nums": [ 1, 14, 0, 0, 0, 0, 0 ]
     #              }
     #          },
     #          ...
-    #          'cogapp_whiteutils': {
-    #              'hash': '8504bb427fc488c4176809ded0277d51',
-    #              'index': {
-    #                  'html_filename': 'cogapp_whiteutils.html',
-    #                  'name': 'cogapp/whiteutils',
-    #                  'nums': <coverage.results.Numbers object at 0x10ab7d90>,
+    #          "cogapp_whiteutils": {
+    #              "hash": "8504bb427fc488c4176809ded0277d51",
+    #              "index": {
+    #                  "html_filename": "cogapp_whiteutils.html",
+    #                  "relative_filename": "cogapp/whiteutils",
+    #                  "nums": [ 1, 59, 0, 1, 28, 2, 2 ]
     #              }
-    #          },
-    #      },
+    #          }
+    #      }
     #  }
 
-    def __init__(self):
+    def __init__(self, directory):
+        self.directory = directory
         self.reset()
 
     def reset(self):
-        """Initialize to empty."""
-        self.settings = ''
+        """Initialize to empty. Causes all files to be reported."""
+        self.globals = ''
         self.files = {}
 
-    def read(self, directory):
-        """Read the last status in `directory`."""
+    def read(self):
+        """Read the information we stored last time."""
         usable = False
         try:
-            status_file = os.path.join(directory, self.STATUS_FILE)
+            status_file = os.path.join(self.directory, self.STATUS_FILE)
             with open(status_file) as fstatus:
                 status = json.load(fstatus)
         except (IOError, ValueError):
@@ -415,13 +396,13 @@ class HtmlStatus(object):
             for filename, fileinfo in iitems(status['files']):
                 fileinfo['index']['nums'] = Numbers(*fileinfo['index']['nums'])
                 self.files[filename] = fileinfo
-            self.settings = status['settings']
+            self.globals = status['globals']
         else:
             self.reset()
 
-    def write(self, directory):
-        """Write the current status to `directory`."""
-        status_file = os.path.join(directory, self.STATUS_FILE)
+    def write(self):
+        """Write the current status."""
+        status_file = os.path.join(self.directory, self.STATUS_FILE)
         files = {}
         for filename, fileinfo in iitems(self.files):
             fileinfo['index']['nums'] = fileinfo['index']['nums'].init_args()
@@ -430,7 +411,7 @@ class HtmlStatus(object):
         status = {
             'format': self.STATUS_FORMAT,
             'version': coverage.__version__,
-            'settings': self.settings,
+            'globals': self.globals,
             'files': files,
         }
         with open(status_file, "w") as fout:
@@ -440,16 +421,38 @@ class HtmlStatus(object):
         # Accommodate them if we are running under Jenkins.
         # https://issues.jenkins-ci.org/browse/JENKINS-28428
         if "JENKINS_URL" in os.environ:
-            with open(os.path.join(directory, "status.dat"), "w") as dat:
+            with open(os.path.join(self.directory, "status.dat"), "w") as dat:
                 dat.write("https://issues.jenkins-ci.org/browse/JENKINS-28428\n")
 
-    def settings_hash(self):
-        """Get the hash of the coverage.py settings."""
-        return self.settings
+    def check_global_data(self, *data):
+        """Check the global data that can affect incremental reporting."""
+        m = Hasher()
+        for d in data:
+            m.update(d)
+        these_globals = m.hexdigest()
+        if self.globals != these_globals:
+            self.reset()
+            self.globals = these_globals
 
-    def set_settings_hash(self, settings):
-        """Set the hash of the coverage.py settings."""
-        self.settings = settings
+    def can_skip_file(self, data, fr, rootname):
+        """Can we skip reporting this file?
+
+        `data` is a CoverageData object, `fr` is a `FileReporter`, and
+        `rootname` is the name being used for the file.
+        """
+        m = Hasher()
+        m.update(fr.source().encode('utf-8'))
+        add_data_to_hash(data, fr.filename, m)
+        this_hash = m.hexdigest()
+
+        that_hash = self.file_hash(rootname)
+
+        if this_hash == that_hash:
+            # Nothing has changed to require the file to be reported again.
+            return True
+        else:
+            self.set_file_hash(rootname, this_hash)
+            return False
 
     def file_hash(self, fname):
         """Get the hash of `fname`'s contents."""

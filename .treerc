@@ -5,7 +5,8 @@ ignore =
     .hgtags
     build
     htmlcov
-    .tox* 
+    html0
+    .tox*
     .coverage* .metacov
     mock.py
     *.min.js
