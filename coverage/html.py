@@ -98,6 +98,12 @@ class HtmlReporter(object):
         title = self.config.html_title
         if env.PY2:
             title = title.decode("utf8")
+
+        if self.config.extra_css:
+            self.extra_css = os.path.basename(self.config.extra_css)
+        else:
+            self.extra_css = None
+
         self.template_globals = {
             'escape': escape,
             'pair': pair,
@@ -105,6 +111,8 @@ class HtmlReporter(object):
             'len': len,
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
+            'time_stamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
+            'extra_css': self.extra_css,
         }
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
@@ -115,9 +123,7 @@ class HtmlReporter(object):
         self.all_files_nums = []
         self.has_arcs = self.data.has_arcs()
         self.status = HtmlStatus()
-        self.extra_css = None
         self.totals = Numbers()
-        self.time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 
     def report(self, morfs):
         """Generate an HTML report for `morfs`.
@@ -125,8 +131,6 @@ class HtmlReporter(object):
         `morfs` is a list of modules or file names.
 
         """
-        assert self.config.html_dir, "must give a directory for html reporting"
-
         # Read the status data.
         self.status.read(self.config.html_dir)
 
@@ -138,10 +142,6 @@ class HtmlReporter(object):
         if self.status.settings_hash() != these_settings:
             self.status.reset()
             self.status.set_settings_hash(these_settings)
-
-        # The user may have extra CSS they want copied.
-        if self.config.extra_css:
-            self.extra_css = os.path.basename(self.config.extra_css)
 
         self.directory = self.config.html_dir
 
@@ -175,10 +175,10 @@ class HtmlReporter(object):
                 os.path.join(self.directory, self.extra_css)
             )
 
-    def file_hash(self, source, fr):
+    def file_hash(self, fr):
         """Compute a hash that changes if the file needs to be re-reported."""
         m = Hasher()
-        m.update(source)
+        m.update(fr.source().encode('utf-8'))
         add_data_to_hash(self.data, fr.filename, m)
         return m.hexdigest()
 
@@ -202,10 +202,8 @@ class HtmlReporter(object):
                 file_be_gone(html_path)
                 return
 
-        source = fr.source()
-
         # Find out if the file on disk is already correct.
-        this_hash = self.file_hash(source.encode('utf-8'), fr)
+        this_hash = self.file_hash(fr)
         that_hash = self.status.file_hash(rootname)
         if this_hash == that_hash:
             # Nothing has changed to require the file to be reported again.
@@ -214,6 +212,34 @@ class HtmlReporter(object):
 
         self.status.set_file_hash(rootname, this_hash)
 
+        # Write the HTML page for this file.
+        file_data = self.data_for_file(fr, analysis)
+        for ldata in file_data['lines']:
+            # Build the HTML for the line.
+            html = []
+            for tok_type, tok_text in ldata['tokens']:
+                if tok_type == "ws":
+                    html.append(escape(tok_text))
+                else:
+                    tok_html = escape(tok_text) or '&nbsp;'
+                    html.append(
+                        '<span class="{}">{}</span>'.format(tok_type, tok_html)
+                    )
+            ldata['html'] = ''.join(html)
+
+        html = self.source_tmpl.render(file_data)
+        write_html(html_path, html)
+
+        # Save this file's information for the index file.
+        index_info = {
+            'nums': nums,
+            'html_filename': html_filename,
+            'relative_filename': fr.relative_filename(),
+        }
+        self.files.append(index_info)
+        self.status.set_index_info(rootname, index_info)
+
+    def data_for_file(self, fr, analysis):
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
             arcs_executed = analysis.arcs_executed()
@@ -231,7 +257,7 @@ class HtmlReporter(object):
 
         lines = []
 
-        for lineno, line in enumerate(fr.source_token_lines(), start=1):
+        for lineno, tokens in enumerate(fr.source_token_lines(), start=1):
             # Figure out how to mark this line.
             line_class = []
             annotate_html = ""
@@ -268,53 +294,33 @@ class HtmlReporter(object):
             elif lineno in analysis.statements:
                 line_class.append(c_run)
 
-            # Build the HTML for the line.
-            html = []
-            for tok_type, tok_text in line:
-                if tok_type == "ws":
-                    html.append(escape(tok_text))
-                else:
-                    tok_html = escape(tok_text) or '&nbsp;'
-                    html.append(
-                        '<span class="%s">%s</span>' % (tok_type, tok_html)
-                    )
+            if self.config.show_contexts:
+                contexts = sorted(filter(None, contexts_by_lineno[lineno]))
+            else:
+                contexts = None
 
             lines.append({
-                'html': ''.join(html),
+                'tokens': tokens,
                 'number': lineno,
                 'class': ' '.join(line_class) or "pln",
-                'contexts': \
-                    (sorted(filter(None, contexts_by_lineno[lineno])) or None)
-                    if self.config.show_contexts else None,
+                'contexts': contexts,
                 'annotate': annotate_html,
                 'annotate_long': annotate_long,
             })
 
-        # Write the HTML page for this file.
-        html = self.source_tmpl.render({
+        file_data = {
             'c_exc': c_exc,
             'c_mis': c_mis,
             'c_par': c_par,
             'c_run': c_run,
             'has_arcs': self.has_arcs,
             'show_contexts': self.config.show_contexts,
-            'extra_css': self.extra_css,
-            'fr': fr,
-            'nums': nums,
-            'lines': lines,
-            'time_stamp': self.time_stamp,
-        })
-
-        write_html(html_path, html)
-
-        # Save this file's information for the index file.
-        index_info = {
-            'nums': nums,
-            'html_filename': html_filename,
             'relative_filename': fr.relative_filename(),
+            'nums': analysis.numbers,
+            'lines': lines,
         }
-        self.files.append(index_info)
-        self.status.set_index_info(rootname, index_info)
+
+        return file_data
 
     def index_file(self):
         """Write the index.html file for this report."""
@@ -324,10 +330,8 @@ class HtmlReporter(object):
 
         html = index_tmpl.render({
             'has_arcs': self.has_arcs,
-            'extra_css': self.extra_css,
             'files': self.files,
             'totals': self.totals,
-            'time_stamp': self.time_stamp,
         })
 
         write_html(os.path.join(self.directory, "index.html"), html)
