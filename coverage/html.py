@@ -12,7 +12,7 @@ import shutil
 
 import coverage
 from coverage import env
-from coverage.backward import iitems
+from coverage.backward import iitems, SimpleNamespace
 from coverage.data import add_data_to_hash
 from coverage.files import flat_rootname
 from coverage.misc import CoverageException, ensure_dir, file_be_gone, Hasher, isolate_module
@@ -210,10 +210,10 @@ class HtmlReporter(object):
 
         # Write the HTML page for this file.
         file_data = self.data_for_file(fr, analysis)
-        for ldata in file_data['lines']:
+        for ldata in file_data.lines:
             # Build the HTML for the line.
             html = []
-            for tok_type, tok_text in ldata['tokens']:
+            for tok_type, tok_text in ldata.tokens:
                 if tok_type == "ws":
                     html.append(escape(tok_text))
                 else:
@@ -221,24 +221,24 @@ class HtmlReporter(object):
                     html.append(
                         '<span class="{}">{}</span>'.format(tok_type, tok_html)
                     )
-            ldata['html'] = ''.join(html)
+            ldata.html = ''.join(html)
 
-            if ldata['short_annotations']:
+            if ldata.short_annotations:
                 # 202F is NARROW NO-BREAK SPACE.
                 # 219B is RIGHTWARDS ARROW WITH STROKE.
-                ldata['annotate'] = ",&nbsp;&nbsp; ".join(
-                    "{}&#x202F;&#x219B;&#x202F;{}".format(ldata['number'], d)
-                    for d in ldata['short_annotations']
+                ldata.annotate = ",&nbsp;&nbsp; ".join(
+                    "{}&#x202F;&#x219B;&#x202F;{}".format(ldata.number, d)
+                    for d in ldata.short_annotations
                     )
             else:
-                ldata['annotate'] = None
+                ldata.annotate = None
 
-            if ldata['long_annotations']:
-                longs = ldata['long_annotations']
+            if ldata.long_annotations:
+                longs = ldata.long_annotations
                 if len(longs) == 1:
-                    ldata['annotate_long'] = longs[0]
+                    ldata.annotate_long = longs[0]
                 else:
-                    ldata['annotate_long'] = "{:d} missed branches: {}".format(
+                    ldata.annotate_long = "{:d} missed branches: {}".format(
                         len(longs),
                         ", ".join(
                             "{:d}) {}".format(num, ann_long)
@@ -246,9 +246,9 @@ class HtmlReporter(object):
                             ),
                     )
             else:
-                ldata['annotate_long'] = None
+                ldata.annotate_long = None
 
-        html = self.source_tmpl.render(file_data)
+        html = self.source_tmpl.render(file_data.__dict__)
         write_html(html_path, html)
 
         # Save this file's information for the index file.
@@ -275,19 +275,19 @@ class HtmlReporter(object):
 
         for lineno, tokens in enumerate(fr.source_token_lines(), start=1):
             # Figure out how to mark this line.
-            line_class = []
+            css_classes = []
             short_annotations = []
             long_annotations = []
 
             if lineno in analysis.statements:
-                line_class.append("stm")
+                css_classes.append("stm")
 
             if lineno in analysis.excluded:
-                line_class.append(self.c_exc)
+                css_classes.append(self.c_exc)
             elif lineno in analysis.missing:
-                line_class.append(self.c_mis)
+                css_classes.append(self.c_mis)
             elif self.has_arcs and lineno in missing_branch_arcs:
-                line_class.append(self.c_par)
+                css_classes.append(self.c_par)
                 for b in missing_branch_arcs[lineno]:
                     if b < 0:
                         short_annotations.append("exit")
@@ -295,27 +295,27 @@ class HtmlReporter(object):
                         short_annotations.append(b)
                     long_annotations.append(fr.missing_arc_description(lineno, b, arcs_executed))
             elif lineno in analysis.statements:
-                line_class.append(self.c_run)
+                css_classes.append(self.c_run)
 
             if self.config.show_contexts:
                 contexts = sorted(filter(None, contexts_by_lineno[lineno]))
             else:
                 contexts = None
 
-            lines.append({
-                'tokens': tokens,
-                'number': lineno,
-                'class': ' '.join(line_class) or "pln",
-                'contexts': contexts,
-                'short_annotations': short_annotations,
-                'long_annotations': long_annotations,
-            })
+            lines.append(SimpleNamespace(
+                tokens=tokens,
+                number=lineno,
+                css_class=' '.join(css_classes) or "pln",
+                contexts=contexts,
+                short_annotations=short_annotations,
+                long_annotations=long_annotations,
+            ))
 
-        file_data = {
-            'relative_filename': fr.relative_filename(),
-            'nums': analysis.numbers,
-            'lines': lines,
-        }
+        file_data = SimpleNamespace(
+            relative_filename=fr.relative_filename(),
+            nums=analysis.numbers,
+            lines=lines,
+        )
 
         return file_data
 

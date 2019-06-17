@@ -155,6 +155,24 @@ except AttributeError:
     PYC_MAGIC_NUMBER = imp.get_magic()
 
 
+try:
+    from types import SimpleNamespace
+except ImportError:
+    # The code from https://docs.python.org/3/library/types.html#types.SimpleNamespace
+    class SimpleNamespace:
+        """Python implementation of SimpleNamespace, for Python 2."""
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+
+        def __repr__(self):
+            keys = sorted(self.__dict__)
+            items = ("{}={!r}".format(k, self.__dict__[k]) for k in keys)
+            return "{}({})".format(type(self).__name__, ", ".join(items))
+
+        def __eq__(self, other):
+            return self.__dict__ == other.__dict__
+
+
 def invalidate_import_caches():
     """Invalidate any import caches that may or may not exist."""
     if importlib and hasattr(importlib, "invalidate_caches"):
