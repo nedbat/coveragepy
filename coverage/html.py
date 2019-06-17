@@ -91,6 +91,12 @@ class HtmlReporter(object):
         ("keybd_open.png", ""),
     ]
 
+    # These classes determine which lines are highlighted by default.
+    c_run = "run hide_run"
+    c_exc = "exc"
+    c_mis = "mis"
+    c_par = "par run hide_run"
+
     def __init__(self, cov, config):
         self.coverage = cov
         self.config = config
@@ -113,6 +119,10 @@ class HtmlReporter(object):
             '__version__': coverage.__version__,
             'time_stamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
             'extra_css': self.extra_css,
+            'c_exc': self.c_exc,
+            'c_mis': self.c_mis,
+            'c_par': self.c_par,
+            'c_run': self.c_run,
         }
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
@@ -269,12 +279,6 @@ class HtmlReporter(object):
             missing_branch_arcs = analysis.missing_branch_arcs()
             arcs_executed = analysis.arcs_executed()
 
-        # These classes determine which lines are highlighted by default.
-        c_run = "run hide_run"
-        c_exc = "exc"
-        c_mis = "mis"
-        c_par = "par " + c_run
-
         contexts_by_lineno = collections.defaultdict(list)
         if self.config.show_contexts:
             # Lookup line number contexts.
@@ -292,11 +296,11 @@ class HtmlReporter(object):
                 line_class.append("stm")
 
             if lineno in analysis.excluded:
-                line_class.append(c_exc)
+                line_class.append(self.c_exc)
             elif lineno in analysis.missing:
-                line_class.append(c_mis)
+                line_class.append(self.c_mis)
             elif self.has_arcs and lineno in missing_branch_arcs:
-                line_class.append(c_par)
+                line_class.append(self.c_par)
                 for b in missing_branch_arcs[lineno]:
                     if b < 0:
                         short_annotations.append("exit")
@@ -304,7 +308,7 @@ class HtmlReporter(object):
                         short_annotations.append(b)
                     long_annotations.append(fr.missing_arc_description(lineno, b, arcs_executed))
             elif lineno in analysis.statements:
-                line_class.append(c_run)
+                line_class.append(self.c_run)
 
             if self.config.show_contexts:
                 contexts = sorted(filter(None, contexts_by_lineno[lineno]))
@@ -321,10 +325,6 @@ class HtmlReporter(object):
             })
 
         file_data = {
-            'c_exc': c_exc,
-            'c_mis': c_mis,
-            'c_par': c_par,
-            'c_run': c_run,
             'has_arcs': self.has_arcs,
             'show_contexts': self.config.show_contexts,
             'relative_filename': fr.relative_filename(),
