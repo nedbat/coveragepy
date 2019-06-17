@@ -219,15 +219,15 @@ class HtmlReporter(object):
                 else:
                     tok_html = escape(tok_text) or '&nbsp;'
                     html.append(
-                        '<span class="{}">{}</span>'.format(tok_type, tok_html)
+                        u'<span class="{}">{}</span>'.format(tok_type, tok_html)
                     )
             ldata.html = ''.join(html)
 
             if ldata.short_annotations:
                 # 202F is NARROW NO-BREAK SPACE.
                 # 219B is RIGHTWARDS ARROW WITH STROKE.
-                ldata.annotate = ",&nbsp;&nbsp; ".join(
-                    "{}&#x202F;&#x219B;&#x202F;{}".format(ldata.number, d)
+                ldata.annotate = u",&nbsp;&nbsp; ".join(
+                    u"{}&#x202F;&#x219B;&#x202F;{}".format(ldata.number, d)
                     for d in ldata.short_annotations
                     )
             else:
@@ -238,10 +238,10 @@ class HtmlReporter(object):
                 if len(longs) == 1:
                     ldata.annotate_long = longs[0]
                 else:
-                    ldata.annotate_long = "{:d} missed branches: {}".format(
+                    ldata.annotate_long = u"{:d} missed branches: {}".format(
                         len(longs),
-                        ", ".join(
-                            "{:d}) {}".format(num, ann_long)
+                        u", ".join(
+                            u"{:d}) {}".format(num, ann_long)
                             for num, ann_long in enumerate(longs, start=1)
                             ),
                     )
