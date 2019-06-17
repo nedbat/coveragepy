@@ -97,9 +97,9 @@ class HtmlReporter(object):
     c_mis = "mis"
     c_par = "par run hide_run"
 
-    def __init__(self, cov, config):
+    def __init__(self, cov):
         self.coverage = cov
-        self.config = config
+        self.config =self.coverage.config
         self.directory = None
         title = self.config.html_title
         if env.PY2:
@@ -157,7 +157,7 @@ class HtmlReporter(object):
 
         # Process all the files.
         self.coverage.get_data().set_query_contexts(self.config.query_contexts)
-        for fr, analysis in get_analysis_to_report(self.coverage, self.config, morfs):
+        for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.html_file(fr, analysis)
 
         if not self.all_files_nums:

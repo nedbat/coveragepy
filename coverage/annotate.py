@@ -36,9 +36,9 @@ class AnnotateReporter(object):
 
     """
 
-    def __init__(self, coverage, config):
+    def __init__(self, coverage):
         self.coverage = coverage
-        self.config = config
+        self.config = self.coverage.config
         self.directory = None
 
     blank_re = re.compile(r"\s*(#|$)")
@@ -52,7 +52,7 @@ class AnnotateReporter(object):
         """
         self.directory = directory
         self.coverage.get_data()
-        for fr, analysis in get_analysis_to_report(self.coverage, self.config, morfs):
+        for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.annotate_file(fr, analysis)
 
     def annotate_file(self, fr, analysis):

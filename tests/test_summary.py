@@ -13,7 +13,6 @@ import re
 import coverage
 from coverage import env
 from coverage.backward import StringIO
-from coverage.config import CoverageConfig
 from coverage.control import Coverage
 from coverage.data import CoverageData
 from coverage.misc import CoverageException, output_encoding
@@ -793,8 +792,11 @@ class TestSummaryReporterConfiguration(CoverageTest):
         source += "    a = 2\n" * dont_run
         self.make_file(filename, source)
 
-    def get_summary_text(self, options):
-        """Get text output from the SummaryReporter."""
+    def get_summary_text(self, *options):
+        """Get text output from the SummaryReporter.
+
+        The arguments are tuples: (name, value) for Coverage.set_option.
+        """
         self.make_rigged_file("file1.py", 339, 155)
         self.make_rigged_file("file2.py", 13, 3)
         self.make_rigged_file("file3.py", 234, 228)
@@ -804,7 +806,9 @@ class TestSummaryReporterConfiguration(CoverageTest):
         cov.start()
         import doit             # pragma: nested # pylint: disable=import-error, unused-import
         cov.stop()              # pragma: nested
-        printer = SummaryReporter(cov, options)
+        for name, value in options:
+            cov.set_option(name, value)
+        printer = SummaryReporter(cov)
         destination = StringIO()
         printer.report([], destination)
         return destination.getvalue()
@@ -813,7 +817,7 @@ class TestSummaryReporterConfiguration(CoverageTest):
         # We use our own test files as test data. Check that our assumptions
         # about them are still valid.  We want the three columns of numbers to
         # sort in three different orders.
-        report = self.get_summary_text(CoverageConfig())
+        report = self.get_summary_text()
         print(report)
         # Name                     Stmts   Miss  Cover
         # --------------------------------------------
@@ -837,16 +841,13 @@ class TestSummaryReporterConfiguration(CoverageTest):
 
     def test_defaults(self):
         """Run the report with no configuration options."""
-        opts = CoverageConfig()
-        report = self.get_summary_text(opts)
+        report = self.get_summary_text()
         self.assertNotIn('Missing', report)
         self.assertNotIn('Branch', report)
 
     def test_print_missing(self):
         """Run the report printing the missing lines."""
-        opts = CoverageConfig()
-        opts.from_args(show_missing=True)
-        report = self.get_summary_text(opts)
+        report = self.get_summary_text(('report:show_missing', True))
         self.assertIn('Missing', report)
         self.assertNotIn('Branch', report)
 
@@ -860,29 +861,21 @@ class TestSummaryReporterConfiguration(CoverageTest):
 
     def test_sort_report_by_stmts(self):
         # Sort the text report by the Stmts column.
-        opts = CoverageConfig()
-        opts.from_args(sort='Stmts')
-        report = self.get_summary_text(opts)
+        report = self.get_summary_text(('report:sort', 'Stmts'))
         self.assert_ordering(report, "test_backward.py", "test_coverage.py", "test_api.py")
 
     def test_sort_report_by_missing(self):
         # Sort the text report by the Missing column.
-        opts = CoverageConfig()
-        opts.from_args(sort='Miss')
-        report = self.get_summary_text(opts)
+        report = self.get_summary_text(('report:sort', 'Miss'))
         self.assert_ordering(report, "test_backward.py", "test_api.py", "test_coverage.py")
 
     def test_sort_report_by_cover(self):
         # Sort the text report by the Cover column.
-        opts = CoverageConfig()
-        opts.from_args(sort='Cover')
-        report = self.get_summary_text(opts)
+        report = self.get_summary_text(('report:sort', 'Cover'))
         self.assert_ordering(report, "test_coverage.py", "test_api.py", "test_backward.py")
 
     def test_sort_report_by_invalid_option(self):
         # Sort the text report by a nonsense column.
-        opts = CoverageConfig()
-        opts.from_args(sort='Xyzzy')
         msg = "Invalid sorting option: 'Xyzzy'"
         with self.assertRaisesRegex(CoverageException, msg):
-            self.get_summary_text(opts)
+            self.get_summary_text(('report:sort', 'Xyzzy'))

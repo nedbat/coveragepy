@@ -762,7 +762,7 @@ class Coverage(object):
             show_missing=show_missing, skip_covered=skip_covered,
             query_contexts=contexts,
             )
-        reporter = SummaryReporter(self, self.config)
+        reporter = SummaryReporter(self)
         return reporter.report(morfs, outfile=file)
 
     def annotate(
@@ -783,7 +783,7 @@ class Coverage(object):
             ignore_errors=ignore_errors, report_omit=omit,
             report_include=include, query_contexts=contexts,
             )
-        reporter = AnnotateReporter(self, self.config)
+        reporter = AnnotateReporter(self)
         reporter.report(morfs, directory=directory)
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
@@ -817,7 +817,7 @@ class Coverage(object):
             html_dir=directory, extra_css=extra_css, html_title=title,
             skip_covered=skip_covered, show_contexts=show_contexts, query_contexts=contexts,
             )
-        reporter = HtmlReporter(self, self.config)
+        reporter = HtmlReporter(self)
         return reporter.report(morfs)
 
     def xml_report(
@@ -857,7 +857,7 @@ class Coverage(object):
                 outfile = open(self.config.xml_output, "w", **open_kwargs)
                 file_to_close = outfile
         try:
-            reporter = XmlReporter(self, self.config)
+            reporter = XmlReporter(self)
             return reporter.report(morfs, outfile=outfile)
         except CoverageException:
             delete_file = True

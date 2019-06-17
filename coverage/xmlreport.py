@@ -33,13 +33,13 @@ def rate(hit, num):
 class XmlReporter(object):
     """A reporter for writing Cobertura-style XML coverage results."""
 
-    def __init__(self, coverage, config):
+    def __init__(self, coverage):
         self.coverage = coverage
-        self.config = config
+        self.config = self.coverage.config
 
         self.source_paths = set()
-        if config.source:
-            for src in config.source:
+        if self.config.source:
+            for src in self.config.source:
                 if os.path.exists(src):
                     self.source_paths.add(files.canonical_filename(src))
         self.packages = {}
@@ -72,7 +72,7 @@ class XmlReporter(object):
         xcoverage.appendChild(self.xml_out.createComment(" Based on %s " % DTD_URL))
 
         # Call xml_file for each file in the data.
-        for fr, analysis in get_analysis_to_report(self.coverage, self.config, morfs):
+        for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.xml_file(fr, analysis)
 
         xsources = self.xml_out.createElement("sources")

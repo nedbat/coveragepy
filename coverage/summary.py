@@ -14,9 +14,9 @@ from coverage.misc import NotPython, CoverageException, output_encoding
 class SummaryReporter(object):
     """A reporter for writing the summary report."""
 
-    def __init__(self, coverage, config):
+    def __init__(self, coverage):
         self.coverage = coverage
-        self.config = config
+        self.config = self.coverage.config
         self.branches = coverage.get_data().has_arcs()
         self.outfile = None
         self.fr_analysis = []
@@ -41,7 +41,7 @@ class SummaryReporter(object):
         self.outfile = outfile or sys.stdout
 
         self.coverage.get_data().set_query_contexts(self.config.query_contexts)
-        for fr, analysis in get_analysis_to_report(self.coverage, self.config, morfs):
+        for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.report_one_file(fr, analysis)
 
         # Prepare the formatting strings, header, and column sorting.

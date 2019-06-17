@@ -7,7 +7,7 @@ from coverage.files import prep_patterns, FnmatchMatcher
 from coverage.misc import CoverageException, NoSource, NotPython
 
 
-def get_analysis_to_report(coverage, config, morfs):
+def get_analysis_to_report(coverage, morfs):
     """Get the files to report on.
 
     For each morf in `morfs`, if it should be reported on (based on the omit
@@ -16,6 +16,7 @@ def get_analysis_to_report(coverage, config, morfs):
 
     """
     file_reporters = coverage._get_file_reporters(morfs)
+    config = coverage.config
 
     if config.report_include:
         matcher = FnmatchMatcher(prep_patterns(config.report_include))
