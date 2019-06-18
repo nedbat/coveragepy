@@ -74,6 +74,72 @@ def write_html(fname, html):
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
 
+class HtmlDataGeneration(object):
+    """Generate structured data to be turned into HTML reports."""
+
+    def __init__(self, cov):
+        self.coverage = cov
+        self.config = self.coverage.config
+        self.has_arcs = self.coverage.get_data().has_arcs()
+
+    def data_for_file(self, fr, analysis):
+        """Produce the data needed for one file's report."""
+        if self.has_arcs:
+            missing_branch_arcs = analysis.missing_branch_arcs()
+            arcs_executed = analysis.arcs_executed()
+
+        contexts_by_lineno = collections.defaultdict(list)
+        if self.config.show_contexts:
+            # Lookup line number contexts.
+            contexts_by_lineno = analysis.data.contexts_by_lineno(fr.filename)
+
+        lines = []
+
+        for lineno, tokens in enumerate(fr.source_token_lines(), start=1):
+            # Figure out how to mark this line.
+            category = None
+            short_annotations = []
+            long_annotations = []
+
+            if lineno in analysis.excluded:
+                category = 'exc'
+            elif lineno in analysis.missing:
+                category = 'mis'
+            elif self.has_arcs and lineno in missing_branch_arcs:
+                category = 'par'
+                for b in missing_branch_arcs[lineno]:
+                    if b < 0:
+                        short_annotations.append("exit")
+                    else:
+                        short_annotations.append(b)
+                    long_annotations.append(fr.missing_arc_description(lineno, b, arcs_executed))
+            elif lineno in analysis.statements:
+                category = 'run'
+
+            if self.config.show_contexts:
+                contexts = sorted(filter(None, contexts_by_lineno[lineno]))
+            else:
+                contexts = None
+
+            lines.append(SimpleNamespace(
+                tokens=tokens,
+                number=lineno,
+                category=category,
+                statement=(lineno in analysis.statements),
+                contexts=contexts,
+                short_annotations=short_annotations,
+                long_annotations=long_annotations,
+            ))
+
+        file_data = SimpleNamespace(
+            relative_filename=fr.relative_filename(),
+            nums=analysis.numbers,
+            lines=lines,
+        )
+
+        return file_data
+
+
 class HtmlReporter(object):
     """HTML reporting."""
 
@@ -90,12 +156,6 @@ class HtmlReporter(object):
         ("keybd_closed.png", ""),
         ("keybd_open.png", ""),
     ]
-
-    # These classes determine which lines are highlighted by default.
-    c_run = "run hide_run"
-    c_exc = "exc"
-    c_mis = "mis"
-    c_par = "par run hide_run"
 
     def __init__(self, cov):
         self.coverage = cov
@@ -116,28 +176,32 @@ class HtmlReporter(object):
         self.file_summaries = []
         self.all_files_nums = []
         self.incr = IncrementalChecker(self.directory)
+        self.datagen = HtmlDataGeneration(self.coverage)
         self.totals = Numbers()
 
         self.template_globals = {
             # Functions available in the templates.
             'escape': escape,
             'pair': pair,
-            'title': title,
             'len': len,
 
             # Constants for this report.
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
+            'title': title,
             'time_stamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
             'extra_css': self.extra_css,
             'has_arcs': self.has_arcs,
             'show_contexts': self.config.show_contexts,
 
             # Constants for all reports.
-            'c_exc': self.c_exc,
-            'c_mis': self.c_mis,
-            'c_par': self.c_par,
-            'c_run': self.c_run,
+            # These css classes determine which lines are highlighted by default.
+            'category': {
+                'exc': 'exc',
+                'mis': 'mis',
+                'par': 'par run hide_run',
+                'run': 'run hide_run',
+            }
         }
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
@@ -211,7 +275,7 @@ class HtmlReporter(object):
             return
 
         # Write the HTML page for this file.
-        file_data = self.data_for_file(fr, analysis)
+        file_data = self.datagen.data_for_file(fr, analysis)
         for ldata in file_data.lines:
             # Build the HTML for the line.
             html = []
@@ -250,6 +314,13 @@ class HtmlReporter(object):
             else:
                 ldata.annotate_long = None
 
+            css_classes = []
+            if ldata.statement:
+                css_classes.append("stm")
+            if ldata.category:
+                css_classes.append(self.template_globals['category'][ldata.category])
+            ldata.css_class = ' '.join(css_classes) or "pln"
+
         html = self.source_tmpl.render(file_data.__dict__)
         write_html(html_path, html)
 
@@ -261,65 +332,6 @@ class HtmlReporter(object):
         }
         self.file_summaries.append(index_info)
         self.incr.set_index_info(rootname, index_info)
-
-    def data_for_file(self, fr, analysis):
-        """Produce the data needed for one file's report."""
-        if self.has_arcs:
-            missing_branch_arcs = analysis.missing_branch_arcs()
-            arcs_executed = analysis.arcs_executed()
-
-        contexts_by_lineno = collections.defaultdict(list)
-        if self.config.show_contexts:
-            # Lookup line number contexts.
-            contexts_by_lineno = analysis.data.contexts_by_lineno(fr.filename)
-
-        lines = []
-
-        for lineno, tokens in enumerate(fr.source_token_lines(), start=1):
-            # Figure out how to mark this line.
-            css_classes = []
-            short_annotations = []
-            long_annotations = []
-
-            if lineno in analysis.statements:
-                css_classes.append("stm")
-
-            if lineno in analysis.excluded:
-                css_classes.append(self.c_exc)
-            elif lineno in analysis.missing:
-                css_classes.append(self.c_mis)
-            elif self.has_arcs and lineno in missing_branch_arcs:
-                css_classes.append(self.c_par)
-                for b in missing_branch_arcs[lineno]:
-                    if b < 0:
-                        short_annotations.append("exit")
-                    else:
-                        short_annotations.append(b)
-                    long_annotations.append(fr.missing_arc_description(lineno, b, arcs_executed))
-            elif lineno in analysis.statements:
-                css_classes.append(self.c_run)
-
-            if self.config.show_contexts:
-                contexts = sorted(filter(None, contexts_by_lineno[lineno]))
-            else:
-                contexts = None
-
-            lines.append(SimpleNamespace(
-                tokens=tokens,
-                number=lineno,
-                css_class=' '.join(css_classes) or "pln",
-                contexts=contexts,
-                short_annotations=short_annotations,
-                long_annotations=long_annotations,
-            ))
-
-        file_data = SimpleNamespace(
-            relative_filename=fr.relative_filename(),
-            nums=analysis.numbers,
-            lines=lines,
-        )
-
-        return file_data
 
     def index_file(self):
         """Write the index.html file for this report."""
