@@ -421,13 +421,6 @@ class IncrementalChecker(object):
         with open(status_file, "w") as fout:
             json.dump(status, fout, separators=(',', ':'))
 
-        # Older versions of ShiningPanda look for the old name, status.dat.
-        # Accommodate them if we are running under Jenkins.
-        # https://issues.jenkins-ci.org/browse/JENKINS-28428
-        if "JENKINS_URL" in os.environ:
-            with open(os.path.join(self.directory, "status.dat"), "w") as dat:
-                dat.write("https://issues.jenkins-ci.org/browse/JENKINS-28428\n")
-
     def check_global_data(self, *data):
         """Check the global data that can affect incremental reporting."""
         m = Hasher()

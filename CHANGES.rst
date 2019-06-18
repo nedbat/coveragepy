@@ -38,6 +38,11 @@ Unreleased
   be reported as warnings.  As with other warnings, you can suppress them with
   the ``[run] disable_warnings`` configuration setting.
 
+- The hack to accommodate ShiningPanda_ looking for an obsolete internal data
+  file has been removed, since ShiningPanda 0.22 fixed it four years ago.
+
+.. _ShiningPanda: https://wiki.jenkins.io/display/JENKINS/ShiningPanda+Plugin
+
 
 .. _changes_50a5:
 
@@ -989,7 +994,7 @@ Version 4.0b3 --- 2015-09-07
 - Reporting on an unmeasured file would fail with a traceback.  This is now
   fixed, closing `issue 403`_.
 
-- The Jenkins ShiningPanda plugin looks for an obsolete file name to find the
+- The Jenkins ShiningPanda_ plugin looks for an obsolete file name to find the
   HTML reports to publish, so it was failing under coverage.py 4.0.  Now we
   create that file if we are running under Jenkins, to keep things working
   smoothly. `issue 404`_.
