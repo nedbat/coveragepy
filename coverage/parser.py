@@ -13,7 +13,7 @@ import tokenize
 from coverage import env
 from coverage.backward import range    # pylint: disable=redefined-builtin
 from coverage.backward import bytes_to_ints, string_class
-from coverage.bytecode import CodeObjects
+from coverage.bytecode import code_objects
 from coverage.debug import short_stack
 from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
 from coverage.misc import NoSource, NotPython, StopEverything
@@ -383,8 +383,7 @@ class ByteParser(object):
         The iteration includes `self` as its first value.
 
         """
-        children = CodeObjects(self.code)
-        return (ByteParser(self.text, code=c) for c in children)
+        return (ByteParser(self.text, code=c) for c in code_objects(self.code))
 
     def _bytes_lines(self):
         """Map byte offsets to line numbers in `code`.

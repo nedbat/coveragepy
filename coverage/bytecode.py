@@ -6,17 +6,14 @@
 import types
 
 
-class CodeObjects(object):
+def code_objects(code):
     """Iterate over all the code objects in `code`."""
-    def __init__(self, code):
-        self.stack = [code]
-
-    def __iter__(self):
-        while self.stack:
-            # We're going to return the code object on the stack, but first
-            # push its children for later returning.
-            code = self.stack.pop()
-            for c in code.co_consts:
-                if isinstance(c, types.CodeType):
-                    self.stack.append(c)
-            yield code
+    stack = [code]
+    while stack:
+        # We're going to return the code object on the stack, but first
+        # push its children for later returning.
+        code = stack.pop()
+        for c in code.co_consts:
+            if isinstance(c, types.CodeType):
+                stack.append(c)
+        yield code
