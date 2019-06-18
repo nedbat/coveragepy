@@ -41,6 +41,8 @@ Unreleased
 - The hack to accommodate ShiningPanda_ looking for an obsolete internal data
   file has been removed, since ShiningPanda 0.22 fixed it four years ago.
 
+- The deprecated `Reporter.file_reporters` property has been removed.
+
 .. _ShiningPanda: https://wiki.jenkins.io/display/JENKINS/ShiningPanda+Plugin
 
 
