@@ -20,6 +20,7 @@ from coverage import env
 from coverage.files import flat_rootname
 import coverage.html
 from coverage.misc import CoverageException, NotPython, NoSource
+from coverage.report import get_analysis_to_report
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import gold_path
@@ -88,11 +89,6 @@ class HtmlTestHelpers(CoverageTest):
             seconds=120,
             msg="Timestamp is wrong: {0}".format(timestamp),
         )
-
-
-class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
-    """Tests of the HTML reports with shown contexts."""
-    # TODO: write some of these.
 
 
 class FileWriteTracker(object):
@@ -1037,3 +1033,64 @@ assert len(math) == 18
             '<span class="str">"db40,dd00: x&#56128;&#56576;"</span>',
             '<span class="str">"db40,dd00: x&#917760;"</span>',
         )
+
+
+def html_data_from_cov(cov, morf):
+    """Get HTML report data from a `Coverage` object for a morf."""
+    reporter = coverage.html.HtmlDataGeneration(cov)
+    for fr, analysis in get_analysis_to_report(cov, [morf]):
+        # This will only loop once, so it's fine to return inside the loop.
+        file_data = reporter.data_for_file(fr, analysis)
+        return file_data
+
+
+class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
+    """Tests of the HTML reports with shown contexts."""
+    def setUp(self):
+        if not env.C_TRACER:
+            self.skipTest("Only the C tracer supports dynamic contexts")
+        super(HtmlWithContextsTest, self).setUp()
+        self.skip_unless_data_storage_is("sql")
+
+    SOURCE = """\
+        def helper(lineno):
+            x = 2
+
+        def test_one():
+            a = 5
+            helper(6)
+
+        def test_two():
+            a = 9
+            b = 10
+            if a > 11:
+                b = 12
+            assert a == (13-4)
+            assert b == (14-4)
+            helper(
+                16
+                )
+
+        test_one()
+        x = 20
+        helper(21)
+        test_two()
+        """
+
+    OUTER_LINES = [1, 4, 8, 19, 20, 21, 2, 22]
+    TEST_ONE_LINES = [5, 6, 2]
+    TEST_TWO_LINES = [9, 10, 11, 13, 14, 15, 2]
+
+    def test_dynamic_alone(self):
+        self.make_file("two_tests.py", self.SOURCE)
+        cov = coverage.Coverage(source=["."])
+        cov.set_option("run:dynamic_context", "test_function")
+        cov.set_option("html:show_contexts", True)
+        mod = self.start_import_stop(cov, "two_tests")
+        d = html_data_from_cov(cov, mod)
+
+        context_labels = ['(empty)', 'two_tests.test_one', 'two_tests.test_two']
+        expected_lines = [self.OUTER_LINES, self.TEST_ONE_LINES, self.TEST_TWO_LINES]
+        for label, expected in zip(context_labels, expected_lines):
+            actual = [ld.number for ld in d.lines if label in (ld.contexts or ())]
+            assert sorted(expected) == sorted(actual)

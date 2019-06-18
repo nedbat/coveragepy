@@ -116,8 +116,8 @@ class HtmlDataGeneration(object):
             elif lineno in analysis.statements:
                 category = 'run'
 
-            if self.config.show_contexts:
-                contexts = sorted(filter(None, contexts_by_lineno[lineno]))
+            if category and self.config.show_contexts:
+                contexts = sorted(c or "(empty)" for c in contexts_by_lineno[lineno])
             else:
                 contexts = None
 
