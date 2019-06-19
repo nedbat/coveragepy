@@ -7,7 +7,7 @@ import pytest
 
 from coverage.misc import arcz_to_arcs, contract, dummy_decorator_with_args, file_be_gone
 from coverage.misc import Hasher, one_of, substitute_variables
-from coverage.misc import CoverageException
+from coverage.misc import CoverageException, USE_CONTRACTS
 
 from tests.coveragetest import CoverageTest
 
@@ -80,6 +80,11 @@ class ContractTest(CoverageTest):
     """Tests of our contract decorators."""
 
     run_in_temp_dir = False
+
+    def setUp(self):
+        super(ContractTest, self).setUp()
+        if not USE_CONTRACTS:
+            self.skipTest("Contracts are disabled")
 
     def test_bytes(self):
         @contract(text='bytes|None')
