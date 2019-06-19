@@ -26,7 +26,7 @@ from coverage.backunittest import TestCase, unittest
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
 from coverage.data import STORAGE
-from coverage.misc import StopEverything
+from coverage.misc import arcz_to_arcs, StopEverything
 
 from tests.helpers import run_command, SuperModuleCleaner
 
@@ -138,44 +138,6 @@ class CoverageTest(
         self.last_module_name = 'coverage_test_' + str(random.random())[2:]
         return self.last_module_name
 
-    # Map chars to numbers for arcz_to_arcs
-    _arcz_map = {'.': -1}
-    _arcz_map.update(dict((c, ord(c) - ord('0')) for c in '123456789'))
-    _arcz_map.update(dict(
-        (c, 10 + ord(c) - ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    ))
-
-    def arcz_to_arcs(self, arcz):
-        """Convert a compact textual representation of arcs to a list of pairs.
-
-        The text has space-separated pairs of letters.  Period is -1, 1-9 are
-        1-9, A-Z are 10 through 36.  The resulting list is sorted regardless of
-        the order of the input pairs.
-
-        ".1 12 2." --> [(-1,1), (1,2), (2,-1)]
-
-        Minus signs can be included in the pairs:
-
-        "-11, 12, 2-5" --> [(-1,1), (1,2), (2,-5)]
-
-        """
-        arcs = []
-        for pair in arcz.split():
-            asgn = bsgn = 1
-            if len(pair) == 2:
-                a, b = pair
-            else:
-                assert len(pair) == 3
-                if pair[0] == '-':
-                    _, a, b = pair
-                    asgn = -1
-                else:
-                    assert pair[1] == '-'
-                    a, _, b = pair
-                    bsgn = -1
-            arcs.append((asgn * self._arcz_map[a], bsgn * self._arcz_map[b]))
-        return sorted(arcs)
-
     def assert_equal_arcs(self, a1, a2, msg=None):
         """Assert that the arc lists `a1` and `a2` are equal."""
         # Make them into multi-line strings so we can see what's going wrong.
@@ -214,11 +176,11 @@ class CoverageTest(
         self.make_file(modname + ".py", text)
 
         if arcs is None and arcz is not None:
-            arcs = self.arcz_to_arcs(arcz)
+            arcs = arcz_to_arcs(arcz)
         if arcs_missing is None:
-            arcs_missing = self.arcz_to_arcs(arcz_missing)
+            arcs_missing = arcz_to_arcs(arcz_missing)
         if arcs_unpredicted is None:
-            arcs_unpredicted = self.arcz_to_arcs(arcz_unpredicted)
+            arcs_unpredicted = arcz_to_arcs(arcz_unpredicted)
 
         # Start up coverage.py.
         cov = coverage.Coverage(branch=True)
