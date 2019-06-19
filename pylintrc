@@ -74,7 +74,8 @@ disable=
     too-many-ancestors,
     unnecessary-pass,
 # Formatting stuff
-    superfluous-parens,bad-continuation,
+    superfluous-parens,
+    bad-continuation,
 # Disable while we still support Python 2:
     useless-object-inheritance,
 # Messages that are noisy for now, eventually maybe we'll turn them on:
