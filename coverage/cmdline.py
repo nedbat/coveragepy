@@ -37,6 +37,7 @@ class Opts(object):
     )
     CONCURRENCY_CHOICES = [
         "thread", "gevent", "greenlet", "eventlet", "multiprocessing",
+        "twisted",
     ]
     concurrency = optparse.make_option(
         '', '--concurrency', action='store', metavar="LIB",
@@ -635,16 +636,16 @@ class CoverageScript(object):
             show_help("Can't append to data files in parallel mode.")
             return ERR
 
-        if options.concurrency == "multiprocessing":
+        if options.concurrency in ("multiprocessing", "twisted"):
             # Can't set other run-affecting command line options with
-            # multiprocessing.
+            # multiprocessing or Twisted.
             for opt_name in ['branch', 'include', 'omit', 'pylib', 'source', 'timid']:
                 # As it happens, all of these options have no default, meaning
                 # they will be None if they have not been specified.
                 if getattr(options, opt_name) is not None:
                     show_help(
-                        "Options affecting multiprocessing must only be specified "
-                        "in a configuration file.\n"
+                        "Options affecting multiprocessing and twisted must "
+                        "only be specified in a configuration file.\n"
                         "Remove --{} from the command line.".format(opt_name)
                     )
                     return ERR
