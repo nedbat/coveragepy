@@ -517,7 +517,11 @@ class TwistedTest(CoverageTest):
 
         x = 41
         y = x + 1
-        out = self.run_command("coverage run spawnprocess.py master %s %s" % (x, y))
+        command = (
+            "coverage run --concurrency=twisted "
+            "spawnprocess.py master %s %s" % (x, y)
+        )
+        out = self.run_command(command)
         expected_out = (
             "work(%s) = %s\n"
             "work(%s) = %s\n"
