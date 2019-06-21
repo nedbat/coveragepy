@@ -6,6 +6,7 @@
 import os
 import random
 import sys
+import textwrap
 import threading
 import time
 
@@ -42,6 +43,10 @@ try:
 except ImportError:         # pragma: only jython
     greenlet = None
 
+try:
+    import twisted.internet.reactor
+except ImportError:
+    twisted = None
 
 def measurable_line(l):
     """Is this a line of code coverage will measure?
@@ -460,6 +465,76 @@ class MultiprocessingTest(CoverageTest):
         total = sum(x*x if x%2 else x*x*x for x in range(upto))
         expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
         self.try_multiprocessing_code_with_branching(code, expected_out)
+
+
+TWISTED_CODE = """
+    # Above this will be a definition of work().
+    from sys import executable, argv, stdout
+    from twisted.internet.task import react
+    from twisted.internet.utils import getProcessOutput
+    from twisted.internet.defer import inlineCallbacks
+
+    @inlineCallbacks
+    def master(reactor, *xs):
+        for x in xs:
+            y = yield getProcessOutput(executable, [__file__, "worker", x])
+            stdout.write(y)
+
+    def worker(x):
+        print("work(%s) = %s" % (x, work(int(x))))
+
+    if __name__ == '__main__':
+        if argv[1] == "master":
+            react(master, argv[2:])
+        else:
+            worker(*argv[2:])
+"""
+
+class TwistedTest(CoverageTest):
+    """Test support of Twisted's multi-process feature."""
+
+    keep_temp_dir = True
+
+    def setUp(self):
+        if twisted is None:
+            self.skipTest("No Twisted in this Python")
+        super(TwistedTest, self).setUp()
+
+    def test_twisted(self):
+        """
+        With the Twisted concurrency model enabled, coverage is collected from
+        child Python processes that are started with
+        IReactorProcess.spawnProcess.
+        """
+        code = SQUARE_OR_CUBE_WORK + TWISTED_CODE
+        source_file = "spawnprocess.py"
+        self.make_file(source_file, textwrap.dedent(code))
+        self.make_file(".coveragerc", """\
+            [run]
+            concurrency = twisted
+            source = .
+            """)
+
+        x = 41
+        y = x + 1
+        out = self.run_command("coverage run spawnprocess.py master %s %s" % (x, y))
+        expected_out = (
+            "work(%s) = %s\n"
+            "work(%s) = %s\n"
+        ) % (
+            x, x ** 2,
+            y, y ** 3,
+        )
+
+        # Make sure it actually ran the code we were trying to make it run.
+        self.assertEqual(out, expected_out)
+
+        # Make sure the coverage collected on that run is what we expect, too.
+        out = self.run_command("coverage combine")
+        self.assertEqual(out, "")
+        out = self.run_command("coverage report -m")
+        last_line = self.squeezed_lines(out)[-1]
+        self.assertRegex(last_line, r"%s \d+ 0 100%%" % (source_file,))
 
 
 def test_coverage_stop_in_threads():
