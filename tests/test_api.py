@@ -614,6 +614,37 @@ class ApiTest(CoverageTest):
             cov.switch_context("test3")
 
 
+class CurrentInstanceTest(CoverageTest):
+    """Tests of Coverage.current()."""
+
+    def assert_current_is_none(self, current):
+        """Assert that a current we expect to be None is correct."""
+        # During meta-coverage, the None answers will be wrong because the
+        # overall coverage measurement will still be on the current-stack.
+        # Since we know they will be wrong, and we have non-meta test runs
+        # also, don't assert them.
+        if not env.METACOV:
+            assert current is None
+
+    def test_current(self):
+        cur0 = coverage.Coverage.current()
+        self.assert_current_is_none(cur0)
+        # Making an instance doesn't make it current.
+        cov = coverage.Coverage()
+        cur1 = coverage.Coverage.current()
+        self.assert_current_is_none(cur1)
+        assert cur0 is cur1
+        # Starting the instance makes it current.
+        cov.start()
+        cur2 = coverage.Coverage.current()
+        assert cur2 is cov
+        # Stopping the instance makes current None again.
+        cov.stop()
+        cur3 = coverage.Coverage.current()
+        self.assert_current_is_none(cur3)
+        assert cur0 is cur3
+
+
 class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
     """Test PEP-420 namespace modules."""
 

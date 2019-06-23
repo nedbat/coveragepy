@@ -55,6 +55,17 @@ class Coverage(object):
 
     """
 
+    # The stack of started Coverage instances.
+    _instances = []
+
+    @classmethod
+    def current(cls):
+        """Get the latest started `Coverage` instance, if any."""
+        if cls._instances:
+            return cls._instances[-1]
+        else:
+            return None
+
     def __init__(
         self, data_file=None, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
@@ -453,9 +464,13 @@ class Coverage(object):
 
         self._collector.start()
         self._started = True
+        self._instances.append(self)
 
     def stop(self):
         """Stop measuring code coverage."""
+        if self._instances:
+            if self._instances[-1] is self:
+                self._instances.pop()
         if self._started:
             self._collector.stop()
         self._started = False
