@@ -125,7 +125,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
 
         For the delta tests, we always want `source=.` and we want to track
         which files are written.  `self.files_written` will be the file names
-        that were opened for writting in html.py.
+        that were opened for writing in html.py.
 
         """
         covargs = covargs or {}
