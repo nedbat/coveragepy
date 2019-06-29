@@ -60,7 +60,13 @@ class Coverage(object):
 
     @classmethod
     def current(cls):
-        """Get the latest started `Coverage` instance, if any."""
+        """Get the latest started `Coverage` instance, if any.
+
+        Returns: a `Coverage` instance, or None.
+
+        .. versionadded:: 5.0
+
+        """
         if cls._instances:
             return cls._instances[-1]
         else:

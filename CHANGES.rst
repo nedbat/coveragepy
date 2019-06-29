@@ -32,7 +32,8 @@ Unreleased
     information to each covered line.  Hovering over the "ctx" marker at the
     end of the line reveals a list of the contexts that covered the line.
 
-- Added :meth:`Coverage.current` to get the latest started `Coverage` instance.
+- Added the classmethod :meth:`Coverage.current` to get the latest started
+  `Coverage` instance.
 
 - Error handling during reporting has changed slightly.  All reporting methods
   now behave the same.  The ``--ignore-errors`` option keeps errors from
