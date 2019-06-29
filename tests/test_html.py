@@ -1010,13 +1010,17 @@ assert len(math) == 18
         doesnt_contain("out/tabbed_py.html", "\t")
 
     def test_unicode(self):
+        surrogate = u"\U000e0100"
+        if env.PY2:
+            surrogate = surrogate.encode('utf-8')
+
         self.make_file("unicode.py", """\
             # -*- coding: utf-8 -*-
             # A Python source file with exotic characters.
 
             upside_down = "ʎd˙ǝbɐɹǝʌoɔ"
-            surrogate = "db40,dd00: x󠄀"
-            """)
+            surrogate = "db40,dd00: x@"
+            """.replace("@", surrogate))
 
         cov = coverage.Coverage()
         unimod = self.start_import_stop(cov, "unicode")
