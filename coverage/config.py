@@ -202,12 +202,12 @@ class CoverageConfig(object):
         self.precision = 0
         self.show_missing = False
         self.skip_covered = False
-        self.show_contexts = False
 
         # Defaults for [html]
         self.extra_css = None
         self.html_dir = "htmlcov"
         self.html_title = "Coverage report"
+        self.show_contexts = False
 
         # Defaults for [xml]
         self.xml_output = "coverage.xml"
@@ -355,6 +355,7 @@ class CoverageConfig(object):
         ('extra_css', 'html:extra_css'),
         ('html_dir', 'html:directory'),
         ('html_title', 'html:title'),
+        ('show_contexts', 'html:show_contexts', 'boolean'),
 
         # [xml]
         ('xml_output', 'xml:output'),

@@ -275,6 +275,10 @@ also apply to HTML output, where appropriate.
 ``directory`` (string, default "htmlcov"): where to write the HTML report
 files.
 
+``show_contexts`` (boolean): should the HTML report include an indication on
+each line of which contexts executed the line.  See :ref:`dynamic_contexts` for
+details.
+
 ``extra_css`` (string): the path to a file of CSS to apply to the HTML report.
 The file will be copied into the HTML output directory.  Don't name it
 "style.css".  This CSS is in addition to the CSS normally used, though you can
