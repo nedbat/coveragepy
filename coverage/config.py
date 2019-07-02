@@ -157,6 +157,8 @@ class CoverageConfig(object):
     operation of coverage.py.
 
     """
+    # pylint: disable=too-many-instance-attributes
+
     def __init__(self):
         """Initialize the configuration attributes to their defaults."""
         # Metadata about the config.
