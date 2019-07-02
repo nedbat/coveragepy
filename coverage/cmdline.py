@@ -109,7 +109,7 @@ class Opts(object):
         '', '--contexts', action='store',
         metavar="PAT1,PAT2,...",
         help=(
-            "Only count the lines covered in given contexts. "
+            "Only display data from lines covered in the given contexts. "
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )

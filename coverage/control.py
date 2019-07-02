@@ -781,7 +781,7 @@ class Coverage(object):
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
-            query_contexts=contexts,
+            report_contexts=contexts,
             )
         reporter = SummaryReporter(self)
         return reporter.report(morfs, outfile=file)
@@ -802,7 +802,7 @@ class Coverage(object):
         """
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit,
-            report_include=include, query_contexts=contexts,
+            report_include=include, report_contexts=contexts,
             )
         reporter = AnnotateReporter(self)
         reporter.report(morfs, directory=directory)
@@ -836,7 +836,7 @@ class Coverage(object):
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
-            skip_covered=skip_covered, show_contexts=show_contexts, query_contexts=contexts,
+            skip_covered=skip_covered, show_contexts=show_contexts, report_contexts=contexts,
             )
         reporter = HtmlReporter(self)
         return reporter.report(morfs)
@@ -859,7 +859,7 @@ class Coverage(object):
         """
         self.config.from_args(
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
-            xml_output=outfile, query_contexts=contexts,
+            xml_output=outfile, report_contexts=contexts,
             )
         file_to_close = None
         delete_file = False

@@ -558,10 +558,12 @@ class CoverageSqliteData(SimpleReprMixin):
             return ""   # File was measured, but no tracer associated.
 
 
-    def set_query_contexts(self, contexts=None):
+    def set_query_contexts(self, contexts):
         """Set query contexts for future `lines`, `arcs` etc. calls."""
-        self._query_context_ids = self._get_query_context_ids(contexts) \
-            if contexts is not None else None
+        if contexts:
+            self._query_context_ids = self._get_query_context_ids(contexts)
+        else:
+            self._query_context_ids = None
         self._query_contexts = contexts
 
     def _get_query_context_ids(self, contexts=None):
@@ -570,13 +572,10 @@ class CoverageSqliteData(SimpleReprMixin):
                 return None
             self._start_using()
             with self._connect() as con:
-                # Context entries can be globs, so convert '*' with '%'.
-                context_selectors = [context.replace('*', '%') for context in contexts]
-                context_clause = ' or '.join(['context like ?']*len(contexts))
-                cur = con.execute(
-                    "select id from context where " + context_clause, context_selectors)
+                context_clause = ' or '.join(['context glob ?'] * len(contexts))
+                cur = con.execute("select id from context where " + context_clause, contexts)
                 return [row[0] for row in cur.fetchall()]
-        elif self._query_contexts is not None:
+        elif self._query_contexts:
             return self._query_context_ids
         return None
 

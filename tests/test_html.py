@@ -1037,10 +1037,10 @@ assert len(math) == 18
 
 def html_data_from_cov(cov, morf):
     """Get HTML report data from a `Coverage` object for a morf."""
-    reporter = coverage.html.HtmlDataGeneration(cov)
+    datagen = coverage.html.HtmlDataGeneration(cov)
     for fr, analysis in get_analysis_to_report(cov, [morf]):
         # This will only loop once, so it's fine to return inside the loop.
-        file_data = reporter.data_for_file(fr, analysis)
+        file_data = datagen.data_for_file(fr, analysis)
         return file_data
 
 
@@ -1081,7 +1081,7 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
     TEST_ONE_LINES = [5, 6, 2]
     TEST_TWO_LINES = [9, 10, 11, 13, 14, 15, 2]
 
-    def test_dynamic_alone(self):
+    def test_dynamic_contexts(self):
         self.make_file("two_tests.py", self.SOURCE)
         cov = coverage.Coverage(source=["."])
         cov.set_option("run:dynamic_context", "test_function")
@@ -1091,6 +1091,21 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
 
         context_labels = ['(empty)', 'two_tests.test_one', 'two_tests.test_two']
         expected_lines = [self.OUTER_LINES, self.TEST_ONE_LINES, self.TEST_TWO_LINES]
+        for label, expected in zip(context_labels, expected_lines):
+            actual = [ld.number for ld in d.lines if label in (ld.contexts or ())]
+            assert sorted(expected) == sorted(actual)
+
+    def test_filtered_dynamic_contexts(self):
+        self.make_file("two_tests.py", self.SOURCE)
+        cov = coverage.Coverage(source=["."])
+        cov.set_option("run:dynamic_context", "test_function")
+        cov.set_option("html:show_contexts", True)
+        cov.set_option("report:contexts", ["*test_one*"])
+        mod = self.start_import_stop(cov, "two_tests")
+        d = html_data_from_cov(cov, mod)
+
+        context_labels = ['(empty)', 'two_tests.test_one', 'two_tests.test_two']
+        expected_lines = [[], self.TEST_ONE_LINES, []]
         for label, expected in zip(context_labels, expected_lines):
             actual = [ld.number for ld in d.lines if label in (ld.contexts or ())]
             assert sorted(expected) == sorted(actual)

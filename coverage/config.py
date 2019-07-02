@@ -179,7 +179,6 @@ class CoverageConfig(object):
         self.command_line = None
         self.concurrency = None
         self.context = None
-        self.query_contexts = None
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.debug = []
@@ -202,6 +201,7 @@ class CoverageConfig(object):
         self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
         self.partial_list = DEFAULT_PARTIAL[:]
         self.precision = 0
+        self.report_contexts = None
         self.show_missing = False
         self.skip_covered = False
 
@@ -347,6 +347,7 @@ class CoverageConfig(object):
         ('partial_always_list', 'report:partial_branches_always', 'regexlist'),
         ('partial_list', 'report:partial_branches', 'regexlist'),
         ('precision', 'report:precision', 'int'),
+        ('report_contexts', 'report:contexts', 'list'),
         ('report_include', 'report:include', 'list'),
         ('report_omit', 'report:omit', 'list'),
         ('show_missing', 'report:show_missing', 'boolean'),

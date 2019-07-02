@@ -80,7 +80,9 @@ class HtmlDataGeneration(object):
     def __init__(self, cov):
         self.coverage = cov
         self.config = self.coverage.config
-        self.has_arcs = self.coverage.get_data().has_arcs()
+        data = self.coverage.get_data()
+        self.has_arcs = data.has_arcs()
+        data.set_query_contexts(self.config.report_contexts)
 
     def data_for_file(self, fr, analysis):
         """Produce the data needed for one file's report."""
@@ -218,7 +220,6 @@ class HtmlReporter(object):
         self.incr.check_global_data(self.config, self.pyfile_html_source)
 
         # Process all the files.
-        self.coverage.get_data().set_query_contexts(self.config.query_contexts)
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.html_file(fr, analysis)
 

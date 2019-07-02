@@ -40,7 +40,7 @@ class SummaryReporter(object):
         """
         self.outfile = outfile or sys.stdout
 
-        self.coverage.get_data().set_query_contexts(self.config.query_contexts)
+        self.coverage.get_data().set_query_contexts(self.config.report_contexts)
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.report_one_file(fr, analysis)
 
