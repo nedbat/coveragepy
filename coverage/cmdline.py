@@ -214,8 +214,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
 
         """
         try:
-            options, args = \
-                super(CoverageOptionParser, self).parse_args(args, options)
+            options, args = super(CoverageOptionParser, self).parse_args(args, options)
         except self.OptionParserError:
             return False, None, None
         return True, options, args
