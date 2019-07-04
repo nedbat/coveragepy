@@ -43,27 +43,26 @@ h1 { font-size: 1.25em; display: inline-block; }
 
 h2.stats { margin-top: .5em; font-size: 1em; }
 
-.stats span { border: 1px solid; padding: .1em .25em; margin: 0 .1em; cursor: pointer; border-color: #999 #ccc #ccc #999; }
-.stats span.hide_run, .stats span.hide_exc, .stats span.hide_mis, .stats span.hide_par, .stats span.par.hide_run.hide_par { border-color: #ccc #999 #999 #ccc; }
-.stats span.par.hide_run { border-color: #999 #ccc #ccc #999; }
-.stats span.run { background: #ddffdd; }
-.stats span.exc { background: #eeeeee; }
-.stats span.mis { background: #ffdddd; }
-.stats span.hide_run { background: #eeffee; }
-.stats span.hide_exc { background: #f5f5f5; }
-.stats span.hide_mis { background: #ffeeee; }
-.stats span.par { background: #ffffaa; }
-.stats span.hide_par { background: #ffffcc; }
+.stats span { border: 1px solid; border-radius: .1em; padding: .1em .5em; margin: 0 .1em; cursor: pointer; border-color: #ccc #999 #999 #ccc; }
+.stats span.run { background: #eeffee; }
+.stats span.run.show_run { border-color: #999 #ccc #ccc #999; background: #ddffdd; }
+.stats span.mis { background: #ffeeee; }
+.stats span.mis.show_mis { border-color: #999 #ccc #ccc #999; background: #ffdddd; }
+.stats span.exc { background: #f7f7f7; }
+.stats span.exc.show_exc { border-color: #999 #ccc #ccc #999; background: #eeeeee; }
+.stats span.par { background: #ffffd5; }
+.stats span.par.show_par { border-color: #999 #ccc #ccc #999; background: #ffffaa; }
+
+.text p.show_par span.annotate.long, td.contexts p span.context-list, .help_panel { display: none; position: absolute; z-index: 999; background: #ffffcc; border: 1px solid #888; border-radius: .2em; box-shadow: #cccccc .2em .2em .2em; color: #333; padding: .25em .5em; }
+
+.text p.show_par span.annotate.long, td.contexts p span.context-list { white-space: normal; float: right; top: 1.75em; right: 1em; height: auto; }
 
 #keyboard_icon { float: right; margin: 5px; cursor: pointer; }
 
-.help_panel { position: absolute; background: #ffffcc; padding: .5em; border: 1px solid #883; display: none; }
-
-.indexfile .help_panel { width: 20em; height: 4em; }
-
-.pyfile .help_panel { width: 16em; height: 8em; }
-
+.help_panel { padding: .5em; border: 1px solid #883; }
 .help_panel .legend { font-style: italic; margin-bottom: 1em; }
+.indexfile .help_panel { width: 20em; height: 4em; }
+.pyfile .help_panel { width: 16em; height: 8em; }
 
 #panel_icon { float: right; cursor: pointer; }
 
@@ -79,59 +78,47 @@ td.text { width: 100%; }
 
 .text p { margin: 0; padding: 0 0 0 .5em; border-left: 2px solid #ffffff; white-space: pre; position: relative; }
 .text p:hover { background: #f2f2f2; }
-.text p.mis { background: #ffdddd; border-left: 2px solid #ff0000; }
-.text p.mis:hover { background: #f2d2d2; }
-.text p.run, .text p.run.hide_par { background: #ddffdd; border-left: 2px solid #00ff00; }
-.text p.run:hover, .text p.run.hide_par:hover { background: #d2f2d2; }
-.text p.exc { background: #eeeeee; border-left: 2px solid #808080; }
-.text p.exc:hover { background: #e2e2e2; }
-.text p.par, .text p.par.hide_run { background: #ffffaa; border-left: 2px solid #eeee99; }
-.text p.par:hover, .text p.par.hide_run:hover { background: #f2f2a2; }
-.text p.hide_run, .text p.hide_exc, .text p.hide_mis, .text p.hide_par, .text p.hide_run.hide_par { background: inherit; }
-.text p.hide_run:hover, .text p.hide_exc:hover, .text p.hide_mis:hover, .text p.hide_par:hover, .text p.hide_run.hide_par:hover { background: #f2f2f2; }
+.text p.run { border-left: 2px solid #00ff00; }
+.text p.run.show_run { background: #ddffdd; }
+.text p.run.show_run:hover { background: #d2f2d2; }
+.text p.mis { border-left: 2px solid #ff0000; }
+.text p.mis.show_mis { background: #ffdddd; }
+.text p.mis.show_mis:hover { background: #f2d2d2; }
+.text p.exc { border-left: 2px solid #808080; }
+.text p.exc.show_exc { background: #eeeeee; }
+.text p.exc.show_exc:hover { background: #e2e2e2; }
+.text p.par { border-left: 2px solid #eeee99; }
+.text p.par.show_par { background: #ffffaa; }
+.text p.par.show_par:hover { background: #f2f2a2; }
 
-.text span.annotate { font-family: georgia; color: #666; float: right; padding-right: .5em; }
-.text p.hide_par span.annotate { display: none; }
-.text span.annotate.long { display: none; }
-.text p:hover span.annotate.long { display: block; max-width: 50%; white-space: normal; float: right; position: absolute; top: 1.75em; right: 1em; width: 30em; height: auto; color: #333; background: #ffffcc; border: 1px solid #888; padding: .25em .5em; z-index: 999; border-radius: .2em; box-shadow: #cccccc .2em .2em .2em; }
-
+.text span.annotate { font-family: georgia; color: #666; float: right; padding-right: .5em; display: none; }
+.text p.show_par span.annotate { display: inline; }
+.text p.show_par span.annotate.long { max-width: 50%; width: 30em; }
+.text p.show_par:hover span.annotate.long { display: block; }
 .text .com { color: green; font-style: italic; line-height: 1px; }
 .text .key { font-weight: bold; line-height: 1px; }
 .text .str { color: #000080; }
 
 td.contexts p { margin: 0; padding: 0 .5em; color: #999999; font-family: verdana, sans-serif; white-space: nowrap; position: relative; }
 td.contexts p:hover { background: #eee; }
-td.contexts p span.context-list { display: none; }
-td.contexts p:hover span.context-list { display: block; min-width: 30em; white-space: normal; float: right; position: absolute; top: 1.75em; right: 1em; height: auto; color: #333; background: #ffffcc; border: 1px solid #888; padding: .25em .5em; z-index: 999; border-radius: .2em; box-shadow: #cccccc .2em .2em .2em; }
+td.contexts p span.context-list { min-width: 30em; }
+td.contexts p span.context-list span.context-line { display: block; }
+td.contexts p:hover span.context-list { display: block; }
 td.contexts p span.context-button { display: inline-block; cursor: pointer; font-size: .8333em; line-height: 1em; }
 
-span.context-list span.context-line { display: block; }
-
 #index td, #index th { text-align: right; width: 5em; padding: .25em .5em; border-bottom: 1px solid #eee; }
-
-#index th { font-style: italic; color: #333; border-bottom: 1px solid #ccc; cursor: pointer; }
-
-#index th:hover { background: #eee; border-bottom: 1px solid #999; }
-
 #index td.left, #index th.left { padding-left: 0; }
-
 #index td.right, #index th.right { padding-right: 0; }
-
-#index th.headerSortDown, #index th.headerSortUp { border-bottom: 1px solid #000; white-space: nowrap; background: #eee; }
-
-#index th.headerSortDown:after { content: " ↓"; }
-
-#index th.headerSortUp:after { content: " ↑"; }
-
 #index td.name, #index th.name { text-align: left; width: auto; }
-
+#index th { font-style: italic; color: #333; border-bottom: 1px solid #ccc; cursor: pointer; }
+#index th:hover { background: #eee; border-bottom: 1px solid #999; }
+#index th.headerSortDown, #index th.headerSortUp { border-bottom: 1px solid #000; white-space: nowrap; background: #eee; }
+#index th.headerSortDown:after { content: " ↓"; }
+#index th.headerSortUp:after { content: " ↑"; }
 #index td.name a { text-decoration: none; color: #000; }
-
 #index tr.total td, #index tr.total_dynamic td { font-weight: bold; border-top: 1px solid #ccc; border-bottom: none; }
-
 #index tr.file:hover { background: #eeeeee; }
-
 #index tr.file:hover td.name { text-decoration: underline; color: #000; }
 
 #scroll_marker { position: fixed; right: 0; top: 0; width: 16px; height: 100%; background: white; border-left: 1px solid #eee; will-change: transform; }
-#scroll_marker .marker { background: #eedddd; position: absolute; min-height: 3px; width: 100%; }
+#scroll_marker .marker { background: #ddd; position: absolute; min-height: 3px; width: 100%; }

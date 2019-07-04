@@ -922,12 +922,12 @@ assert len(math) == 18
         compare_html(gold_path("html/partial"), "out")
         contains(
             "out/partial_py.html",
-            '<p id="t4" class="stm par run hide_run">',
-            '<p id="t7" class="stm run hide_run">',
+            '<p id="t4" class="par run show_par">',
+            '<p id="t7" class="run">',
             # The "if 0" and "if 1" statements are optimized away.
             '<p id="t10" class="pln">',
             # The "raise AssertionError" is excluded by regex in the .ini.
-            '<p id="t17" class="exc">',
+            '<p id="t17" class="exc show_exc">',
         )
         contains(
             "out/index.html",

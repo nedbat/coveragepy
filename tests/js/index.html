@@ -4,17 +4,11 @@
     <title>Coverage.py Javascript Test Suite</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.0.1.css">
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css">
     <script type="text/javascript" src="../../coverage/htmlfiles/jquery.min.js"></script>
     <script type='text/javascript' src="../../coverage/htmlfiles/jquery.isonscreen.js"></script>
     <script type="text/javascript" src="../../coverage/htmlfiles/coverage_html.js"></script>
     <script type="text/javascript" src="../qunit/jquery.tmpl.min.js"></script>
-
-    <style>
-    .r { background-color: red; }
-    .w { }
-    .b { background-color: blue; }
-    </style>
 
     <!-- Templates for the coverage report output -->
     <script id="fixture-template" type="text/x-jquery-tmpl">
@@ -35,14 +29,14 @@
     </script>
 
     <script id="text-template" type="text/x-jquery-tmpl">
-        <p id='t${number}' class='${klass}'>Hello, world!</p>
+        <p id='t${number}' class='${klass}{{if klass !== "w"}} show_${klass}{{/if}}'>Hello, world!</p>
     </script>
 
 </head>
 <body>
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
-    <script src="https://code.jquery.com/qunit/qunit-2.0.1.js"></script>
+    <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
     <!-- pull in our tests -->
     <script src="tests.js"></script>
 </body>

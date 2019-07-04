@@ -15,10 +15,12 @@ function raw_selection_is(assert, sel, check_highlight) {
     assert.equal(coverage.sel_begin, beg);
     assert.equal(coverage.sel_end, end);
     if (check_highlight) {
-        assert.equal(coverage.code_container().find(".highlight").length, end-beg);
+        assert.equal($(".linenos .highlight").length, end-beg);
     }
 }
 
+// The spec is a list of "rbw" letters, indicating colors of successive lines.
+// We set the show_r and show_b classes for r and b.
 function build_fixture(spec) {
     var i, data;
     $("#fixture-template").tmpl().appendTo("#qunit-fixture");

@@ -9,7 +9,8 @@ ignore =
     .tox*
     .coverage* .metacov
     mock.py
-    *.min.js
+    *.min.js style.css
+    gold
     sample_html sample_html_beta
     *.so *.pyd
     *.gz *.zip

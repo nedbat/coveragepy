@@ -41,6 +41,9 @@ Unreleased
   be reported as warnings.  As with other warnings, you can suppress them with
   the ``[run] disable_warnings`` configuration setting.
 
+- The scrollbar markers in the HTML report now accurately show the highlighted
+  lines, regardless of what categories of line are highlighted.
+
 - The hack to accommodate ShiningPanda_ looking for an obsolete internal data
   file has been removed, since ShiningPanda 0.22 fixed it four years ago.
 

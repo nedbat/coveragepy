@@ -22,9 +22,9 @@
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
         <h2 class="stats">
             7 statements &nbsp;
-            <span class="run hide_run shortkey_r button_toggle_run">5 run</span>
-            <span class="mis shortkey_m button_toggle_mis">2 missing</span>
-            <span class="exc shortkey_x button_toggle_exc">0 excluded</span>
+            <span class="run shortkey_r button_toggle_run">5 run</span>
+            <span class="mis show_mis shortkey_m button_toggle_mis">2 missing</span>
+            <span class="exc show_exc shortkey_x button_toggle_exc">0 excluded</span>
         </h2>
     </div>
 </div>
@@ -55,29 +55,29 @@
         <tr>
             <td class="linenos">
 <p id="n1" class="pln"><a href="#n1">1</a></p>
-<p id="n2" class="stm run hide_run"><a href="#n2">2</a></p>
+<p id="n2" class="run"><a href="#n2">2</a></p>
 <p id="n3" class="pln"><a href="#n3">3</a></p>
-<p id="n4" class="stm run hide_run"><a href="#n4">4</a></p>
+<p id="n4" class="run"><a href="#n4">4</a></p>
 <p id="n5" class="pln"><a href="#n5">5</a></p>
-<p id="n6" class="stm run hide_run"><a href="#n6">6</a></p>
-<p id="n7" class="stm mis"><a href="#n7">7</a></p>
-<p id="n8" class="stm mis"><a href="#n8">8</a></p>
+<p id="n6" class="run"><a href="#n6">6</a></p>
+<p id="n7" class="mis show_mis"><a href="#n7">7</a></p>
+<p id="n8" class="mis show_mis"><a href="#n8">8</a></p>
 <p id="n9" class="pln"><a href="#n9">9</a></p>
-<p id="n10" class="stm run hide_run"><a href="#n10">10</a></p>
-<p id="n11" class="stm run hide_run"><a href="#n11">11</a></p>
+<p id="n10" class="run"><a href="#n10">10</a></p>
+<p id="n11" class="run"><a href="#n11">11</a></p>
             </td>
             <td class="text">
 <p id="t1" class="pln"><span class="com"># A Python source file in utf-8, with BOM.</span><span class="strut">&nbsp;</span></p>
-<p id="t2" class="stm run hide_run"><span class="nam">math</span> <span class="op">=</span> <span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span><span class="strut">&nbsp;</span></p>
+<p id="t2" class="run"><span class="nam">math</span> <span class="op">=</span> <span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span><span class="strut">&nbsp;</span></p>
 <p id="t3" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t4" class="stm run hide_run"><span class="key">import</span> <span class="nam">sys</span><span class="strut">&nbsp;</span></p>
+<p id="t4" class="run"><span class="key">import</span> <span class="nam">sys</span><span class="strut">&nbsp;</span></p>
 <p id="t5" class="pln"><span class="strut">&nbsp;</span></p>
-<p id="t6" class="stm run hide_run"><span class="key">if</span> <span class="nam">sys</span><span class="op">.</span><span class="nam">version_info</span> <span class="op">>=</span> <span class="op">(</span><span class="num">3</span><span class="op">,</span> <span class="num">0</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t7" class="stm mis">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">)</span> <span class="op">==</span> <span class="num">18</span><span class="strut">&nbsp;</span></p>
-<p id="t8" class="stm mis">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">.</span><span class="nam">encode</span><span class="op">(</span><span class="str">'utf-8'</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="num">21</span><span class="strut">&nbsp;</span></p>
+<p id="t6" class="run"><span class="key">if</span> <span class="nam">sys</span><span class="op">.</span><span class="nam">version_info</span> <span class="op">>=</span> <span class="op">(</span><span class="num">3</span><span class="op">,</span> <span class="num">0</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t7" class="mis show_mis">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">)</span> <span class="op">==</span> <span class="num">18</span><span class="strut">&nbsp;</span></p>
+<p id="t8" class="mis show_mis">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">.</span><span class="nam">encode</span><span class="op">(</span><span class="str">'utf-8'</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="num">21</span><span class="strut">&nbsp;</span></p>
 <p id="t9" class="pln"><span class="key">else</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
-<p id="t10" class="stm run hide_run">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">)</span> <span class="op">==</span> <span class="num">21</span><span class="strut">&nbsp;</span></p>
-<p id="t11" class="stm run hide_run">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">.</span><span class="nam">decode</span><span class="op">(</span><span class="str">'utf-8'</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="num">18</span><span class="strut">&nbsp;</span></p>
+<p id="t10" class="run">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">)</span> <span class="op">==</span> <span class="num">21</span><span class="strut">&nbsp;</span></p>
+<p id="t11" class="run">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">.</span><span class="nam">decode</span><span class="op">(</span><span class="str">'utf-8'</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="num">18</span><span class="strut">&nbsp;</span></p>
             </td>
         </tr>
     </table>

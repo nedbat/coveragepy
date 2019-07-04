@@ -199,10 +199,10 @@ class HtmlReporter(object):
             # Constants for all reports.
             # These css classes determine which lines are highlighted by default.
             'category': {
-                'exc': 'exc',
-                'mis': 'mis',
-                'par': 'par run hide_run',
-                'run': 'run hide_run',
+                'exc': 'exc show_exc',
+                'mis': 'mis show_mis',
+                'par': 'par run show_par',
+                'run': 'run',
             }
         }
         self.pyfile_html_source = read_data("pyfile.html")
@@ -316,8 +316,6 @@ class HtmlReporter(object):
                 ldata.annotate_long = None
 
             css_classes = []
-            if ldata.statement:
-                css_classes.append("stm")
             if ldata.category:
                 css_classes.append(self.template_globals['category'][ldata.category])
             ldata.css_class = ' '.join(css_classes) or "pln"

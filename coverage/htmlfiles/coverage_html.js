@@ -256,21 +256,22 @@ coverage.pyfile_ready = function ($) {
 
     coverage.init_scroll_markers();
 
-    // Rebuild scroll markers after window high changing
-    $(window).resize(coverage.resize_scroll_markers);
+    // Rebuild scroll markers when the window height changes.
+    $(window).resize(coverage.build_scroll_markers);
 };
 
 coverage.toggle_lines = function (btn, cls) {
     btn = $(btn);
-    var hide = "hide_"+cls;
-    if (btn.hasClass(hide)) {
-        $("#source ."+cls).removeClass(hide);
-        btn.removeClass(hide);
+    var show = "show_"+cls;
+    if (btn.hasClass(show)) {
+        $("#source ." + cls).removeClass(show);
+        btn.removeClass(show);
     }
     else {
-        $("#source ."+cls).addClass(hide);
-        btn.addClass(hide);
+        $("#source ." + cls).addClass(show);
+        btn.addClass(show);
     }
+    coverage.build_scroll_markers();
 };
 
 // Return the nth line div.
@@ -281,11 +282,6 @@ coverage.line_elt = function (n) {
 // Return the nth line number div.
 coverage.num_elt = function (n) {
     return $("#n" + n);
-};
-
-// Return the container of all the code.
-coverage.code_container = function () {
-    return $(".linenos");
 };
 
 // Set the selection.  b and e are line numbers.
@@ -306,9 +302,17 @@ coverage.to_first_chunk = function () {
     coverage.to_next_chunk();
 };
 
-coverage.is_transparent = function (color) {
-    // Different browsers return different colors for "none".
-    return color === "transparent" || color === "rgba(0, 0, 0, 0)";
+// Return a string indicating what kind of chunk this line belongs to,
+// or null if not a chunk.
+coverage.chunk_indicator = function (line_elt) {
+    var klass = line_elt.attr('class');
+    if (klass) {
+        var m = klass.match(/\bshow_\w+\b/);
+        if (m) {
+            return m[0];
+        }
+    }
+    return null;
 };
 
 coverage.to_next_chunk = function () {
@@ -316,14 +320,14 @@ coverage.to_next_chunk = function () {
 
     // Find the start of the next colored chunk.
     var probe = c.sel_end;
-    var color, probe_line;
+    var chunk_indicator, probe_line;
     while (true) {
         probe_line = c.line_elt(probe);
         if (probe_line.length === 0) {
             return;
         }
-        color = probe_line.css("background-color");
-        if (!c.is_transparent(color)) {
+        chunk_indicator = c.chunk_indicator(probe_line);
+        if (chunk_indicator) {
             break;
         }
         probe++;
@@ -333,11 +337,11 @@ coverage.to_next_chunk = function () {
     var begin = probe;
 
     // Find the end of this chunk.
-    var next_color = color;
-    while (next_color === color) {
+    var next_indicator = chunk_indicator;
+    while (next_indicator === chunk_indicator) {
         probe++;
         probe_line = c.line_elt(probe);
-        next_color = probe_line.css("background-color");
+        next_indicator = c.chunk_indicator(probe_line);
     }
     c.set_sel(begin, probe);
     c.show_selection();
@@ -352,25 +356,25 @@ coverage.to_prev_chunk = function () {
     if (probe_line.length === 0) {
         return;
     }
-    var color = probe_line.css("background-color");
-    while (probe > 0 && c.is_transparent(color)) {
+    var chunk_indicator = c.chunk_indicator(probe_line);
+    while (probe > 0 && !chunk_indicator) {
         probe--;
         probe_line = c.line_elt(probe);
         if (probe_line.length === 0) {
             return;
         }
-        color = probe_line.css("background-color");
+        chunk_indicator = c.chunk_indicator(probe_line);
     }
 
     // There's a prev chunk, `probe` points to its last line.
     var end = probe+1;
 
     // Find the beginning of this chunk.
-    var prev_color = color;
-    while (prev_color === color) {
+    var prev_indicator = chunk_indicator;
+    while (prev_indicator === chunk_indicator) {
         probe--;
         probe_line = c.line_elt(probe);
-        prev_color = probe_line.css("background-color");
+        prev_indicator = c.chunk_indicator(probe_line);
     }
     c.set_sel(probe+1, end);
     c.show_selection();
@@ -442,29 +446,29 @@ coverage.select_line_or_chunk = function (lineno) {
     if (probe_line.length === 0) {
         return;
     }
-    var the_color = probe_line.css("background-color");
-    if (!c.is_transparent(the_color)) {
+    var the_indicator = c.chunk_indicator(probe_line);
+    if (the_indicator) {
         // The line is in a highlighted chunk.
         // Search backward for the first line.
         var probe = lineno;
-        var color = the_color;
-        while (probe > 0 && color === the_color) {
+        var indicator = the_indicator;
+        while (probe > 0 && indicator === the_indicator) {
             probe--;
             probe_line = c.line_elt(probe);
             if (probe_line.length === 0) {
                 break;
             }
-            color = probe_line.css("background-color");
+            indicator = c.chunk_indicator(probe_line);
         }
         var begin = probe + 1;
 
         // Search forward for the last line.
         probe = lineno;
-        color = the_color;
-        while (color === the_color) {
+        indicator = the_indicator;
+        while (indicator === the_indicator) {
             probe++;
             probe_line = c.line_elt(probe);
-            color = probe_line.css("background-color");
+            indicator = c.chunk_indicator(probe_line);
         }
 
         coverage.set_sel(begin, probe);
@@ -478,7 +482,7 @@ coverage.show_selection = function () {
     var c = coverage;
 
     // Highlight the lines in the chunk
-    c.code_container().find(".highlight").removeClass("highlight");
+    $(".linenos .highlight").removeClass("highlight");
     for (var probe = c.sel_begin; probe > 0 && probe < c.sel_end; probe++) {
         c.num_elt(probe).addClass("highlight");
     }
@@ -511,18 +515,18 @@ coverage.init_scroll_markers = function () {
     c.lines_len = $('td.text p').length;
     c.body_h = $('body').height();
     c.header_h = $('div#header').height();
-    c.missed_lines = $('td.text p.mis, td.text p.par');
 
     // Build html
-    c.resize_scroll_markers();
+    c.build_scroll_markers();
 };
 
-coverage.resize_scroll_markers = function () {
+coverage.build_scroll_markers = function () {
     var c = coverage,
         min_line_height = 3,
         max_line_height = 10,
         visible_window_h = $(window).height();
 
+    c.lines_to_mark = $('td.text').find('p.show_run, p.show_mis, p.show_exc, p.show_par');
     $('#scroll_marker').remove();
     // Don't build markers if the window has no scroll bar.
     if (c.body_h <= visible_window_h) {
@@ -550,10 +554,10 @@ coverage.resize_scroll_markers = function () {
         offsets = {};
 
     // Calculate line offsets outside loop to prevent relayouts
-    c.missed_lines.each(function() {
+    c.lines_to_mark.each(function() {
         offsets[this.id] = $(this).offset().top;
     });
-    c.missed_lines.each(function () {
+    c.lines_to_mark.each(function () {
         var id_name = $(this).attr('id'),
             line_top = Math.round(offsets[id_name] * marker_scale),
             line_number = parseInt(id_name.substring(1, id_name.length));

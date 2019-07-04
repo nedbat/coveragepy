@@ -115,48 +115,77 @@ h1 {
     }
 }
 
+$pln-color: #ffffff;
+$mis-color: #ffdddd;
+$run-color: #ddffdd;
+$exc-color: #eeeeee;
+$par-color: #ffffaa;
+
+$off-button-lighten: 50%;
+
 h2.stats {
     margin-top: .5em;
     font-size: 1em;
 }
 .stats span {
     border: 1px solid;
-    padding: .1em .25em;
+    border-radius: .1em;
+    padding: .1em .5em;
     margin: 0 .1em;
     cursor: pointer;
-    border-color: #999 #ccc #ccc #999;
-
-    &.hide_run, &.hide_exc, &.hide_mis, &.hide_par, &.par.hide_run.hide_par {
-        border-color: #ccc #999 #999 #ccc;
-    }
-    &.par.hide_run {
-        border-color: #999 #ccc #ccc #999;
-    }
+    border-color: #ccc #999 #999 #ccc;
 
     &.run {
-        background: #ddffdd;
-    }
-    &.exc {
-        background: #eeeeee;
+        background: mix($run-color, #fff, $off-button-lighten);
+        &.show_run {
+            border-color: #999 #ccc #ccc #999;
+            background: $run-color;
+        }
     }
     &.mis {
-        background: #ffdddd;
+        background: mix($mis-color, #fff, $off-button-lighten);
+        &.show_mis {
+            border-color: #999 #ccc #ccc #999;
+            background: $mis-color;
+        }
     }
-    &.hide_run {
-        background: #eeffee;
-    }
-    &.hide_exc {
-        background: #f5f5f5;
-    }
-    &.hide_mis {
-        background: #ffeeee;
+    &.exc {
+        background: mix($exc-color, #fff, $off-button-lighten);
+        &.show_exc {
+            border-color: #999 #ccc #ccc #999;
+            background: $exc-color;
+        }
     }
     &.par {
-        background: #ffffaa;
+        background: mix($par-color, #fff, $off-button-lighten);
+        &.show_par {
+            border-color: #999 #ccc #ccc #999;
+            background: $par-color;
+        }
     }
-    &.hide_par {
-        background: #ffffcc;
-    }
+}
+
+// Yellow post-it things.
+%popup {
+    display: none;
+    position: absolute;
+    z-index: 999;
+    background: #ffffcc;
+    border: 1px solid #888;
+    border-radius: .2em;
+    box-shadow: #cccccc .2em .2em .2em;
+    color: #333;
+    padding: .25em .5em;
+}
+
+// Yellow post-it's in the text listings.
+%in-text-popup {
+    @extend %popup;
+    white-space: normal;
+    float: right;
+    top: 1.75em;
+    right: 1em;
+    height: auto;
 }
 
 // Help panel
@@ -167,24 +196,24 @@ h2.stats {
 }
 
 .help_panel {
-    position: absolute;
-    background: #ffffcc;
+    @extend %popup;
     padding: .5em;
     border: 1px solid #883;
-    display: none;
-}
 
-.indexfile .help_panel {
-    width: 20em; height: 4em;
-}
+    .legend {
+        font-style: italic;
+        margin-bottom: 1em;
+    }
 
-.pyfile .help_panel {
-    width: 16em; height: 8em;
-}
+    .indexfile & {
+        width: 20em;
+        height: 4em;
+    }
 
-.help_panel .legend {
-    font-style: italic;
-    margin-bottom: 1em;
+    .pyfile & {
+        width: 16em;
+        height: 8em;
+    }
 }
 
 #panel_icon {
@@ -232,13 +261,8 @@ td.text {
     width: 100%;
 }
 
-$mis-color: #ffdddd;
-$run-color: #ddffdd;
-$exc-color: #eeeeee;
-$par-color: #ffffaa;
-
 $hover-dark-amt: 95%;
-$plain-hover-color: mix(#ffffff, #000, $hover-dark-amt);
+$pln-hover-color: mix($pln-color, #000, $hover-dark-amt);
 $mis-hover-color: mix($mis-color, #000, $hover-dark-amt);
 $run-hover-color: mix($run-color, #000, $hover-dark-amt);
 $exc-hover-color: mix($exc-color, #000, $hover-dark-amt);
@@ -252,50 +276,50 @@ $par-hover-color: mix($par-color, #000, $hover-dark-amt);
     position: relative;
 
     &:hover {
-        background: $plain-hover-color;
+        background: $pln-hover-color;
     }
 
-    &.mis {
-        background: $mis-color;
-        border-left: 2px solid #ff0000;
+    &.run {
+        border-left: 2px solid #00ff00;
+        &.show_run {
+            background: $run-color;
 
-        &:hover {
-            background: $mis-hover-color;
+            &:hover {
+                background: $run-hover-color;
+            }
         }
     }
 
-    &.run, &.run.hide_par {
-        background: $run-color;
-        border-left: 2px solid #00ff00;
+    &.mis {
+        border-left: 2px solid #ff0000;
+        &.show_mis {
+            background: $mis-color;
 
-        &:hover {
-            background: $run-hover-color;
+            &:hover {
+                background: $mis-hover-color;
+            }
         }
     }
 
     &.exc {
-        background: $exc-color;
         border-left: 2px solid #808080;
+        &.show_exc {
+            background: $exc-color;
 
-        &:hover {
-            background: $exc-hover-color;
+            &:hover {
+                background: $exc-hover-color;
+            }
         }
     }
 
-    &.par, &.par.hide_run {
-        background: $par-color;
+    &.par {
         border-left: 2px solid #eeee99;
+        &.show_par {
+            background: $par-color;
 
-        &:hover {
-            background: $par-hover-color;
-        }
-    }
-
-    &.hide_run, &.hide_exc, &.hide_mis, &.hide_par, &.hide_run.hide_par {
-        background: inherit;
-
-        &:hover {
-            background: $plain-hover-color;
+            &:hover {
+                background: $par-hover-color;
+            }
         }
     }
 }
@@ -307,35 +331,21 @@ $par-hover-color: mix($par-color, #000, $hover-dark-amt);
         color: #666;
         float: right;
         padding-right: .5em;
-    }
-    p.hide_par span.annotate {
         display: none;
     }
-    span.annotate.long {
-        display: none;
+    p.show_par span.annotate {
+        display: inline;
     }
-    p:hover span.annotate.long {
-        display: block;
+    p.show_par span.annotate.long {
+        @extend %in-text-popup;
         max-width: 50%;
-        white-space: normal;
-        float: right;
-        position: absolute;
-        top: 1.75em;
-        right: 1em;
         width: 30em;
-        height: auto;
-        color: #333;
-        background: #ffffcc;
-        border: 1px solid #888;
-        padding: .25em .5em;
-        z-index: 999;
-        border-radius: .2em;
-        box-shadow: #cccccc .2em .2em .2em;
     }
-}
+    p.show_par:hover span.annotate.long {
+        display: block;
+    }
 
-// Syntax coloring
-.text {
+    // Syntax coloring
     .com {
         color: green;
         font-style: italic;
@@ -363,24 +373,15 @@ td.contexts {
             background: #eee;
         }
         span.context-list {
-            display: none;
+            @extend %in-text-popup;
+            min-width: 30em;
+
+            span.context-line {
+                display: block;
+            }
         }
         &:hover span.context-list {
             display: block;
-            min-width: 30em;
-            white-space: normal;
-            float: right;
-            position: absolute;
-            top: 1.75em;
-            right: 1em;
-            height: auto;
-            color: #333;
-            background: #ffffcc;
-            border: 1px solid #888;
-            padding: .25em .5em;
-            z-index: 999;
-            border-radius: .2em;
-            box-shadow: #cccccc .2em .2em .2em;
         }
         span.context-button {
             display: inline-block;
@@ -391,66 +392,63 @@ td.contexts {
     }
 }
 
-span.context-list span.context-line {
-    display: block;
-}
-
 // index styles
-#index td, #index th {
-    text-align: right;
-    width: 5em;
-    padding: .25em .5em;
-    border-bottom: 1px solid #eee;
-}
-#index th {
-    font-style: italic;
-    color: #333;
-    border-bottom: 1px solid #ccc;
-    cursor: pointer;
-}
-#index th:hover {
-    background: #eee;
-    border-bottom: 1px solid #999;
-}
-#index td.left, #index th.left {
-    padding-left: 0;
-}
-#index td.right, #index th.right {
-    padding-right: 0;
-}
-#index th.headerSortDown, #index th.headerSortUp {
-    border-bottom: 1px solid #000;
-    white-space: nowrap;
-    background: #eee;
-}
-#index th.headerSortDown:after {
-    content: " ↓";
-}
-#index th.headerSortUp:after {
-    content: " ↑";
-}
-#index td.name, #index th.name {
-    text-align: left;
-    width: auto;
-}
-#index td.name a {
-    text-decoration: none;
-    color: #000;
-}
-#index tr.total, #index tr.total_dynamic { }     // ???
+#index {
+    td, th {
+        text-align: right;
+        width: 5em;
+        padding: .25em .5em;
+        border-bottom: 1px solid #eee;
+        &.left {
+            padding-left: 0;
+        }
+        &.right {
+            padding-right: 0;
+        }
+        &.name {
+            text-align: left;
+            width: auto;
+        }
+    }
+    th {
+        font-style: italic;
+        color: #333;
+        border-bottom: 1px solid #ccc;
+        cursor: pointer;
+        &:hover {
+            background: #eee;
+            border-bottom: 1px solid #999;
+        }
+        &.headerSortDown, &.headerSortUp {
+            border-bottom: 1px solid #000;
+            white-space: nowrap;
+            background: #eee;
+        }
+        &.headerSortDown:after {
+            content: " ↓";
+        }
+        &.headerSortUp:after {
+            content: " ↑";
+        }
+    }
+    td.name a {
+        text-decoration: none;
+        color: #000;
+    }
 
-#index tr.total td,
-#index tr.total_dynamic td {
-    font-weight: bold;
-    border-top: 1px solid #ccc;
-    border-bottom: none;
-}
-#index tr.file:hover {
-    background: #eeeeee;
-}
-#index tr.file:hover td.name {
-    text-decoration: underline;
-    color: #000;
+    tr.total td,
+    tr.total_dynamic td {
+        font-weight: bold;
+        border-top: 1px solid #ccc;
+        border-bottom: none;
+    }
+    tr.file:hover {
+        background: #eeeeee;
+        td.name {
+            text-decoration: underline;
+            color: #000;
+        }
+    }
 }
 
 // scroll marker styles
@@ -465,7 +463,7 @@ span.context-list span.context-line {
     will-change: transform; // for faster scrolling of fixed element in Chrome
 
     .marker {
-        background: #eedddd;
+        background: #ddd;
         position: absolute;
         min-height: 3px;
         width: 100%;
