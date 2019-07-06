@@ -1293,6 +1293,36 @@ class UnicodeFilePathsTest(CoverageTest):
         self.assertEqual(out, report_expected)
 
 
+class YankedDirectoryTest(CoverageTest):
+    """Tests of what happens when the current directory is deleted."""
+
+    BUG_806 = """\
+        import os
+        import sys
+        import tempfile
+
+        tmpdir = tempfile.mkdtemp()
+        os.chdir(tmpdir)
+        os.rmdir(tmpdir)
+        print(sys.argv[1])
+        """
+
+    def test_removing_directory(self):
+        self.make_file("bug806.py", self.BUG_806)
+        out = self.run_command("coverage run bug806.py noerror")
+        self.assertEqual(out, "noerror\n")
+
+    def test_removing_directory_with_error(self):
+        self.make_file("bug806.py", self.BUG_806)
+        out = self.run_command("coverage run bug806.py")
+        self.assertEqual(out, textwrap.dedent("""\
+            Traceback (most recent call last):
+              File "bug806.py", line 8, in <module>
+                print(sys.argv[1])
+            IndexError: list index out of range
+            """))
+
+
 def possible_pth_dirs():
     """Produce a sequence of directories for trying to write .pth files."""
     # First look through sys.path, and if we find a .pth file, then it's a good

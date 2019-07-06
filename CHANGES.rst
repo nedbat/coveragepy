@@ -41,6 +41,9 @@ Unreleased
   be reported as warnings.  As with other warnings, you can suppress them with
   the ``[run] disable_warnings`` configuration setting.
 
+- Coverage.py no longer fails if the user program deletes its current
+  directory, closing `issue 806`_.  Thanks, Dan Hemberger.
+
 - The scrollbar markers in the HTML report now accurately show the highlighted
   lines, regardless of what categories of line are highlighted.
 
@@ -50,6 +53,7 @@ Unreleased
 - The deprecated `Reporter.file_reporters` property has been removed.
 
 .. _ShiningPanda: https://wiki.jenkins.io/display/JENKINS/ShiningPanda+Plugin
+.. _issue 806: https://github.com/nedbat/coveragepy/pull/806
 
 
 .. _changes_50a5:
