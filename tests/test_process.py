@@ -1296,6 +1296,11 @@ class UnicodeFilePathsTest(CoverageTest):
 class YankedDirectoryTest(CoverageTest):
     """Tests of what happens when the current directory is deleted."""
 
+    def setUp(self):
+        if env.WINDOWS:
+            self.skipTest("Windows can't delete the directory in use.")
+        super(YankedDirectoryTest, self).setUp()
+
     BUG_806 = """\
         import os
         import sys
