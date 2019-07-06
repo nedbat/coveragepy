@@ -44,6 +44,14 @@
 
 #endif /* Py3k */
 
+// Undocumented, and not in all 2.7.x, so our own copy of it.
+#define My_XSETREF(op, op2)                     \
+    do {                                        \
+        PyObject *_py_tmp = (PyObject *)(op);   \
+        (op) = (op2);                           \
+        Py_XDECREF(_py_tmp);                    \
+    } while (0)
+
 /* The values returned to indicate ok or error. */
 #define RET_OK      0
 #define RET_ERROR   -1
