@@ -326,21 +326,6 @@ class ApiTest(CoverageTest):
         with self.assert_warnings(cov, []):
             cov.get_data()
 
-    def test_two_getdata_only_warn_once_nostop(self):
-        self.make_code1_code2()
-        cov = coverage.Coverage(source=["."], omit=["code1.py"])
-        cov.start()
-        import_local_file("code1")                                     # pragma: nested
-        # We didn't collect any data, so we should get a warning.
-        with self.assert_warnings(cov, ["No data was collected"]):     # pragma: nested
-            cov.get_data()                                             # pragma: nested
-        # But calling get_data a second time with no intervening activity
-        # won't make another warning.
-        with self.assert_warnings(cov, []):                            # pragma: nested
-            cov.get_data()                                             # pragma: nested
-        # Then stop it, or the test suite gets out of whack.
-        cov.stop()                                                     # pragma: nested
-
     def test_two_getdata_warn_twice(self):
         self.make_code1_code2()
         cov = coverage.Coverage(source=["."], omit=["code1.py", "code2.py"])

@@ -255,8 +255,10 @@ class CoverageSqliteData(SimpleReprMixin):
             ))
         self._start_using()
         self._choose_lines_or_arcs(lines=True)
-        self._set_context_id()
+        if not line_data:
+            return
         with self._connect() as con:
+            self._set_context_id()
             for filename, linenos in iitems(line_data):
                 file_id = self._file_id(filename, add=True)
                 data = [(file_id, self._current_context_id, lineno) for lineno in linenos]
@@ -279,8 +281,10 @@ class CoverageSqliteData(SimpleReprMixin):
             ))
         self._start_using()
         self._choose_lines_or_arcs(arcs=True)
-        self._set_context_id()
+        if not arc_data:
+            return
         with self._connect() as con:
+            self._set_context_id()
             for filename, arcs in iitems(arc_data):
                 file_id = self._file_id(filename, add=True)
                 data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
@@ -307,6 +311,10 @@ class CoverageSqliteData(SimpleReprMixin):
         `file_tracers` is { filename: plugin_name, ... }
 
         """
+        if self._debug.should('dataop'):
+            self._debug.write("Adding file tracers: %d files" % (len(file_tracers),))
+        if not file_tracers:
+            return
         self._start_using()
         with self._connect() as con:
             for filename, plugin_name in iitems(file_tracers):
@@ -667,6 +675,12 @@ class CoverageSqliteData(SimpleReprMixin):
 
 
 class SqliteDb(SimpleReprMixin):
+    """A simple abstraction over a SQLite database.
+
+    Use as a context manager to get an object you can call
+    execute or executemany on.
+
+    """
     def __init__(self, filename, debug):
         self.debug = debug if debug.should('sql') else None
         self.filename = filename
@@ -679,7 +693,7 @@ class SqliteDb(SimpleReprMixin):
         filename = os.path.relpath(self.filename)
         # It can happen that Python switches threads while the tracer writes
         # data. The second thread will also try to write to the data,
-        # effectively causing a nested context. However, given the indempotent
+        # effectively causing a nested context. However, given the idempotent
         # nature of the tracer operations, sharing a conenction among threads
         # is not a problem.
         if self.debug:
