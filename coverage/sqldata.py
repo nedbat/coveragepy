@@ -331,7 +331,7 @@ class CoverageSqliteData(SimpleReprMixin):
     def touch_file(self, filename, plugin_name=""):
         """Ensure that `filename` appears in the data, empty if needed.
 
-        `plugin_name` is the name of the plugin resposible for this file. It is used
+        `plugin_name` is the name of the plugin responsible for this file. It is used
         to associate the right filereporter, etc.
         """
         self._start_using()
@@ -680,7 +680,7 @@ class Sqlite(SimpleReprMixin):
         # It can happen that Python switches threads while the tracer writes
         # data. The second thread will also try to write to the data,
         # effectively causing a nested context. However, given the indempotent
-        # nature of the tracer operations, sharing a conenction among threads
+        # nature of the tracer operations, sharing a connection among threads
         # is not a problem.
         self.con = sqlite3.connect(filename, check_same_thread=False)
 

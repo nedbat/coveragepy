@@ -442,7 +442,7 @@ class CoverageJsonData(object):
     def touch_file(self, filename, plugin_name=""):
         """Ensure that `filename` appears in the data, empty if needed.
 
-        `plugin_name` is the name of the plugin resposible for this file. It is used
+        `plugin_name` is the name of the plugin responsible for this file. It is used
         to associate the right filereporter, etc.
         """
         if self._debug.should('dataop'):

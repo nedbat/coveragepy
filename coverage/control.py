@@ -131,7 +131,7 @@ class Coverage(object):
         This can also be a list of these strings.
 
         If `check_preimported` is true, then when coverage is started, the
-        aleady-imported files will be checked to see if they should be measured
+        already-imported files will be checked to see if they should be measured
         by coverage.  Importing measured files before coverage is started can
         mean that code is missed.
 
