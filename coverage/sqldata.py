@@ -671,8 +671,6 @@ class SqliteDb(SimpleReprMixin):
         self.debug = debug if debug.should('sql') else None
         self.filename = filename
         self.nest = 0
-        if self.debug:
-            self.debug.write("Connecting to {!r}".format(filename))
 
     def connect(self):
         # SQLite on Windows on py2 won't open a file if the filename argument
@@ -684,6 +682,8 @@ class SqliteDb(SimpleReprMixin):
         # effectively causing a nested context. However, given the indempotent
         # nature of the tracer operations, sharing a conenction among threads
         # is not a problem.
+        if self.debug:
+            self.debug.write("Connecting to {!r}".format(self.filename))
         self.con = sqlite3.connect(filename, check_same_thread=False)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
