@@ -92,6 +92,7 @@ class CoverageSqliteData(SimpleReprMixin):
 
         self._choose_filename()
         self._file_map = {}
+        # Maps thread ids to SqliteDb objects.
         self._dbs = {}
         self._pid = os.getpid()
 
@@ -124,7 +125,7 @@ class CoverageSqliteData(SimpleReprMixin):
     def _create_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Creating data file {!r}".format(self._filename))
-        self._dbs[get_thread_id()] = Sqlite(self._filename, self._debug)
+        self._dbs[get_thread_id()] = SqliteDb(self._filename, self._debug)
         with self._dbs[get_thread_id()] as db:
             for stmt in SCHEMA.split(';'):
                 stmt = stmt.strip()
@@ -139,7 +140,7 @@ class CoverageSqliteData(SimpleReprMixin):
     def _open_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Opening data file {!r}".format(self._filename))
-        self._dbs[get_thread_id()] = Sqlite(self._filename, self._debug)
+        self._dbs[get_thread_id()] = SqliteDb(self._filename, self._debug)
         with self._dbs[get_thread_id()] as db:
             try:
                 schema_version, = db.execute("select version from coverage_schema").fetchone()
@@ -164,6 +165,7 @@ class CoverageSqliteData(SimpleReprMixin):
                 self._file_map[path] = id
 
     def _connect(self):
+        """Get the SqliteDb object to use."""
         if get_thread_id() not in self._dbs:
             if os.path.exists(self._filename):
                 self._open_db()
@@ -664,7 +666,7 @@ class CoverageSqliteData(SimpleReprMixin):
         return []   # TODO
 
 
-class Sqlite(SimpleReprMixin):
+class SqliteDb(SimpleReprMixin):
     def __init__(self, filename, debug):
         self.debug = debug if debug.should('sql') else None
         self.filename = filename
