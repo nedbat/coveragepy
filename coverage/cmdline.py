@@ -799,3 +799,22 @@ def main(argv=None):
         else:
             status = None
     return status
+
+# Profiling using ox_profile.  Install it from GitHub:
+#   pip install git+https://github.com/emin63/ox_profile.git
+#
+# $set_env.py: COVERAGE_PROFILE - Set to use ox_profile.
+_profile = os.environ.get("COVERAGE_PROFILE", "")
+if _profile:                                                # pragma: debugging
+    from ox_profile.core.launchers import SimpleLauncher    # pylint: disable=import-error
+    original_main = main
+
+    def main(argv=None):                                    # pylint: disable=function-redefined
+        """A wrapper around main that profiles."""
+        try:
+            profiler = SimpleLauncher.launch()
+            return original_main(argv)
+        finally:
+            data, _ = profiler.query(re_filter='coverage', max_records=100)
+            print(profiler.show(query=data, limit=100, sep='', col=''))
+            profiler.cancel()
