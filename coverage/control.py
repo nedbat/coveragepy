@@ -648,8 +648,9 @@ class Coverage(object):
             self._warn("No data was collected.", slug="no-data-collected")
 
         # Find files that were never executed at all.
-        for file_path, plugin_name in self._inorout.find_unexecuted_files():
-            self._data.touch_file(file_path, plugin_name)
+        if self._data:
+            for file_path, plugin_name in self._inorout.find_unexecuted_files():
+                self._data.touch_file(file_path, plugin_name)
 
         if self.config.note:
             self._data.add_run_info(note=self.config.note)

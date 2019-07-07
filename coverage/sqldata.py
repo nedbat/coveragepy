@@ -92,6 +92,7 @@ class CoverageSqliteData(SimpleReprMixin):
 
         self._choose_filename()
         self._file_map = {}
+        # Maps thread ids to SqliteDb objects.
         self._dbs = {}
         self._pid = os.getpid()
 
@@ -124,7 +125,7 @@ class CoverageSqliteData(SimpleReprMixin):
     def _create_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Creating data file {!r}".format(self._filename))
-        self._dbs[get_thread_id()] = Sqlite(self._filename, self._debug)
+        self._dbs[get_thread_id()] = SqliteDb(self._filename, self._debug)
         with self._dbs[get_thread_id()] as db:
             for stmt in SCHEMA.split(';'):
                 stmt = stmt.strip()
@@ -139,7 +140,7 @@ class CoverageSqliteData(SimpleReprMixin):
     def _open_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Opening data file {!r}".format(self._filename))
-        self._dbs[get_thread_id()] = Sqlite(self._filename, self._debug)
+        self._dbs[get_thread_id()] = SqliteDb(self._filename, self._debug)
         with self._dbs[get_thread_id()] as db:
             try:
                 schema_version, = db.execute("select version from coverage_schema").fetchone()
@@ -164,6 +165,7 @@ class CoverageSqliteData(SimpleReprMixin):
                 self._file_map[path] = id
 
     def _connect(self):
+        """Get the SqliteDb object to use."""
         if get_thread_id() not in self._dbs:
             if os.path.exists(self._filename):
                 self._open_db()
@@ -253,8 +255,10 @@ class CoverageSqliteData(SimpleReprMixin):
             ))
         self._start_using()
         self._choose_lines_or_arcs(lines=True)
-        self._set_context_id()
+        if not line_data:
+            return
         with self._connect() as con:
+            self._set_context_id()
             for filename, linenos in iitems(line_data):
                 file_id = self._file_id(filename, add=True)
                 data = [(file_id, self._current_context_id, lineno) for lineno in linenos]
@@ -277,8 +281,10 @@ class CoverageSqliteData(SimpleReprMixin):
             ))
         self._start_using()
         self._choose_lines_or_arcs(arcs=True)
-        self._set_context_id()
+        if not arc_data:
+            return
         with self._connect() as con:
+            self._set_context_id()
             for filename, arcs in iitems(arc_data):
                 file_id = self._file_id(filename, add=True)
                 data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
@@ -305,6 +311,10 @@ class CoverageSqliteData(SimpleReprMixin):
         `file_tracers` is { filename: plugin_name, ... }
 
         """
+        if self._debug.should('dataop'):
+            self._debug.write("Adding file tracers: %d files" % (len(file_tracers),))
+        if not file_tracers:
+            return
         self._start_using()
         with self._connect() as con:
             for filename, plugin_name in iitems(file_tracers):
@@ -664,13 +674,17 @@ class CoverageSqliteData(SimpleReprMixin):
         return []   # TODO
 
 
-class Sqlite(SimpleReprMixin):
+class SqliteDb(SimpleReprMixin):
+    """A simple abstraction over a SQLite database.
+
+    Use as a context manager to get an object you can call
+    execute or executemany on.
+
+    """
     def __init__(self, filename, debug):
         self.debug = debug if debug.should('sql') else None
         self.filename = filename
         self.nest = 0
-        if self.debug:
-            self.debug.write("Connecting to {!r}".format(filename))
 
     def connect(self):
         # SQLite on Windows on py2 won't open a file if the filename argument
@@ -679,9 +693,11 @@ class Sqlite(SimpleReprMixin):
         filename = os.path.relpath(self.filename)
         # It can happen that Python switches threads while the tracer writes
         # data. The second thread will also try to write to the data,
-        # effectively causing a nested context. However, given the indempotent
+        # effectively causing a nested context. However, given the idempotent
         # nature of the tracer operations, sharing a connection among threads
         # is not a problem.
+        if self.debug:
+            self.debug.write("Connecting to {!r}".format(self.filename))
         self.con = sqlite3.connect(filename, check_same_thread=False)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.

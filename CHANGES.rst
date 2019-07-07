@@ -32,6 +32,8 @@ Unreleased
     information to each covered line.  Hovering over the "ctx" marker at the
     end of the line reveals a list of the contexts that covered the line.
 
+- Dynamic contexts with no data are no longer written to the database.
+
 - Added the classmethod :meth:`Coverage.current` to get the latest started
   `Coverage` instance.
 
