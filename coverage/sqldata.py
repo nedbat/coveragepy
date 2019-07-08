@@ -28,45 +28,45 @@ from coverage.misc import CoverageException, file_be_gone
 SCHEMA_VERSION = 2
 
 SCHEMA = """
--- One row, to record the version of the schema store in this db.
 CREATE TABLE coverage_schema (
+    -- One row, to record the version of the schema store in this db.
     version integer
     -- Schema versions:
     -- 1: Released in 5.0a2
     -- 2: Added contexts in 5.0a3.  This is schema 2.
 );
 
--- One row, to record some metadata about the data
 CREATE TABLE meta (
+    -- One row, to record some metadata about the data
     has_lines boolean,      -- Is this data recording lines?
     has_arcs boolean,       -- .. or branches?
     sys_argv text           -- The coverage command line that recorded the data.
 );
 
--- A row per file measured.
 CREATE TABLE file (
+    -- A row per file measured.
     id integer primary key,
     path text,
     unique(path)
 );
 
--- A row per context measured.
 CREATE TABLE context (
+    -- A row per context measured.
     id integer primary key,
     context text,
     unique(context)
 );
 
--- If recording lines, a row per context per line executed.
 CREATE TABLE line (
+    -- If recording lines, a row per context per line executed.
     file_id integer,            -- foreign key to `file`.
     context_id integer,         -- foreign key to `context`.
     lineno integer,             -- the line number.
     unique(file_id, context_id, lineno)
 );
 
--- If recording branches, a row per context per from/to line transition executed.
 CREATE TABLE arc (
+    -- If recording branches, a row per context per from/to line transition executed.
     file_id integer,            -- foreign key to `file`.
     context_id integer,         -- foreign key to `context`.
     fromno integer,             -- line number jumped from.
@@ -74,8 +74,8 @@ CREATE TABLE arc (
     unique(file_id, context_id, fromno, tono)
 );
 
--- A row per file indicating the tracer used for that file.
 CREATE TABLE tracer (
+    -- A row per file indicating the tracer used for that file.
     file_id integer primary key,
     tracer text
 );
