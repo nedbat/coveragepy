@@ -22,6 +22,7 @@ Coverage.py command line usage
 .. :history: 20121117T091000, Added command aliases.
 .. :history: 20140924T193000, Added --concurrency
 .. :history: 20150802T174700, Updated for 4.0b1
+.. :history: 20190828T212200, added json report
 
 .. highlight:: console
 
@@ -40,6 +41,8 @@ Coverage.py has a number of commands which determine the action performed:
 * **report** -- Report coverage results.
 
 * **html** -- Produce annotated HTML listings with coverage results.
+
+* **json** -- Produce a JSON report with coverage results.
 
 * **xml** -- Produce an XML report with coverage results.
 
@@ -292,7 +295,8 @@ Reporting
 ---------
 
 Coverage.py provides a few styles of reporting, with the **report**, **html**,
-**annotate**, and **xml** commands.  They share a number of common options.
+**annotate**, **json**, and **xml** commands.  They share a number of common
+options.
 
 The command-line arguments are module or file names to report on, if you'd like
 to report on a subset of the data collected.
@@ -468,6 +472,17 @@ The **xml** command writes coverage data to a "coverage.xml" file in a format
 compatible with `Cobertura`_.
 
 .. _Cobertura: http://cobertura.github.io/cobertura/
+
+You can specify the name of the output file with the ``-o`` switch.
+
+Other common reporting options are described above in :ref:`cmd_reporting`.
+
+.. _cmd_json:
+
+JSON reporting
+-------------
+
+The **json** command writes coverage data to a "coverage.json" file.
 
 You can specify the name of the output file with the ``-o`` switch.
 

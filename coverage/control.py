@@ -22,11 +22,13 @@ from coverage.disposition import disposition_debug_msg
 from coverage.files import PathAliases, set_relative_directory, abs_file
 from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
+from coverage.jsonreport import JsonReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
-from coverage.misc import ensure_dir_for_file, file_be_gone, isolate_module
+from coverage.misc import ensure_dir_for_file, isolate_module
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
+from coverage.report import render_report
 from coverage.results import Analysis, Numbers
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
@@ -862,33 +864,29 @@ class Coverage(object):
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             xml_output=outfile, report_contexts=contexts,
             )
-        file_to_close = None
-        delete_file = False
-        if self.config.xml_output:
-            if self.config.xml_output == '-':
-                outfile = sys.stdout
-            else:
-                # Ensure that the output directory is created; done here
-                # because this report pre-opens the output file.
-                # HTMLReport does this using the Report plumbing because
-                # its task is more complex, being multiple files.
-                ensure_dir_for_file(self.config.xml_output)
-                open_kwargs = {}
-                if env.PY3:
-                    open_kwargs['encoding'] = 'utf8'
-                outfile = open(self.config.xml_output, "w", **open_kwargs)
-                file_to_close = outfile
-        try:
-            reporter = XmlReporter(self)
-            return reporter.report(morfs, outfile=outfile)
-        except CoverageException:
-            delete_file = True
-            raise
-        finally:
-            if file_to_close:
-                file_to_close.close()
-                if delete_file:
-                    file_be_gone(self.config.xml_output)
+        return render_report(self.config.xml_output, XmlReporter(self), morfs)
+
+    def json_report(
+        self, morfs=None, outfile=None, ignore_errors=None,
+        omit=None, include=None, contexts=None, pretty_print=None,
+        show_contexts=None
+    ):
+        """Generate a JSON report of coverage results.
+
+        Each module in `morfs` is included in the report.  `outfile` is the
+        path to write the file to, "-" will write to stdout.
+
+        See :meth:`report` for other arguments.
+
+        Returns a float, the total percentage covered.
+
+        """
+        self.config.from_args(
+            ignore_errors=ignore_errors, report_omit=omit, report_include=include,
+            json_output=outfile, report_contexts=contexts, json_pretty_print=pretty_print,
+            json_show_contexts=show_contexts
+        )
+        return render_report(self.config.json_output, JsonReporter(self), morfs)
 
     def sys_info(self):
         """Return a list of (key, value) pairs showing internal information."""

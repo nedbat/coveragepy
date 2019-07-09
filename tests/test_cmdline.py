@@ -46,6 +46,10 @@ class BaseCmdLineTest(CoverageTest):
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
         contexts=None,
     )
+    _defaults.Coverage().json_report(
+        ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
+        contexts=None, pretty_print=None, show_contexts=None
+    )
     _defaults.Coverage(
         cover_pylib=None, data_suffix=None, timid=None, branch=None,
         config_file=True, source=None, include=None, omit=None, debug=None,
@@ -69,6 +73,7 @@ class BaseCmdLineTest(CoverageTest):
         cov.report.return_value = 50.0
         cov.html_report.return_value = 50.0
         cov.xml_report.return_value = 50.0
+        cov.json_report.return_value = 50.0
 
         return mk
 
@@ -667,6 +672,59 @@ class CmdLineTest(BaseCmdLineTest):
             cov.xml_report(morfs=["mod1", "mod2", "mod3"])
             """)
 
+    def test_json(self):
+        # coverage json [-i] [--omit DIR,...] [FILE1 FILE2 ...]
+        self.cmd_executes("json", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report()
+            """)
+        self.cmd_executes("json --pretty-print", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(pretty_print=True)
+            """)
+        self.cmd_executes("json --pretty-print --show-contexts", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(pretty_print=True, show_contexts=True)
+            """)
+        self.cmd_executes("json -i", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(ignore_errors=True)
+            """)
+        self.cmd_executes("json -o myjson.foo", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(outfile="myjson.foo")
+            """)
+        self.cmd_executes("json -o -", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(outfile="-")
+            """)
+        self.cmd_executes("json --omit fooey", """\
+            cov = Coverage(omit=["fooey"])
+            cov.load()
+            cov.json_report(omit=["fooey"])
+            """)
+        self.cmd_executes("json --omit fooey,booey", """\
+            cov = Coverage(omit=["fooey", "booey"])
+            cov.load()
+            cov.json_report(omit=["fooey", "booey"])
+            """)
+        self.cmd_executes("json mod1", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(morfs=["mod1"])
+            """)
+        self.cmd_executes("json mod1 mod2 mod3", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(morfs=["mod1", "mod2", "mod3"])
+            """)
+
     def test_no_arguments_at_all(self):
         self.cmd_help("", topic="minimum_help", ret=OK)
 
@@ -847,11 +905,12 @@ class CmdMainTest(CoverageTest):
 class CoverageReportingFake(object):
     """A fake Coverage.coverage test double."""
     # pylint: disable=missing-docstring
-    def __init__(self, report_result, html_result, xml_result):
+    def __init__(self, report_result, html_result, xml_result, json_report):
         self.config = CoverageConfig()
         self.report_result = report_result
         self.html_result = html_result
         self.xml_result = xml_result
+        self.json_result = json_report
 
     def set_option(self, optname, optvalue):
         self.config.set_option(optname, optvalue)
@@ -871,24 +930,31 @@ class CoverageReportingFake(object):
     def xml_report(self, *args_unused, **kwargs_unused):
         return self.xml_result
 
+    def json_report(self, *args_unused, **kwargs_unused):
+        return self.json_result
+
 
 @pytest.mark.parametrize("results, fail_under, cmd, ret", [
     # Command-line switch properly checks the result of reporting functions.
-    ((20, 30, 40), None, "report --fail-under=19", 0),
-    ((20, 30, 40), None, "report --fail-under=21", 2),
-    ((20, 30, 40), None, "html --fail-under=29", 0),
-    ((20, 30, 40), None, "html --fail-under=31", 2),
-    ((20, 30, 40), None, "xml --fail-under=39", 0),
-    ((20, 30, 40), None, "xml --fail-under=41", 2),
+    ((20, 30, 40, 50), None, "report --fail-under=19", 0),
+    ((20, 30, 40, 50), None, "report --fail-under=21", 2),
+    ((20, 30, 40, 50), None, "html --fail-under=29", 0),
+    ((20, 30, 40, 50), None, "html --fail-under=31", 2),
+    ((20, 30, 40, 50), None, "xml --fail-under=39", 0),
+    ((20, 30, 40, 50), None, "xml --fail-under=41", 2),
+    ((20, 30, 40, 50), None, "json --fail-under=49", 0),
+    ((20, 30, 40, 50), None, "json --fail-under=51", 2),
     # Configuration file setting properly checks the result of reporting.
-    ((20, 30, 40), 19, "report", 0),
-    ((20, 30, 40), 21, "report", 2),
-    ((20, 30, 40), 29, "html", 0),
-    ((20, 30, 40), 31, "html", 2),
-    ((20, 30, 40), 39, "xml", 0),
-    ((20, 30, 40), 41, "xml", 2),
+    ((20, 30, 40, 50), 19, "report", 0),
+    ((20, 30, 40, 50), 21, "report", 2),
+    ((20, 30, 40, 50), 29, "html", 0),
+    ((20, 30, 40, 50), 31, "html", 2),
+    ((20, 30, 40, 50), 39, "xml", 0),
+    ((20, 30, 40, 50), 41, "xml", 2),
+    ((20, 30, 40, 50), 49, "json", 0),
+    ((20, 30, 40, 50), 51, "json", 2),
     # Command-line overrides configuration.
-    ((20, 30, 40), 19, "report --fail-under=21", 2),
+    ((20, 30, 40, 50), 19, "report --fail-under=21", 2),
 ])
 def test_fail_under(results, fail_under, cmd, ret):
     cov = CoverageReportingFake(*results)

@@ -118,6 +118,15 @@ class Opts(object):
         metavar="OUTFILE",
         help="Write the XML report to this file. Defaults to 'coverage.xml'",
     )
+    output_json = optparse.make_option(
+        '-o', '', action='store', dest="outfile",
+        metavar="OUTFILE",
+        help="Write the JSON report to this file. Defaults to 'coverage.json'",
+    )
+    json_pretty_print = optparse.make_option(
+        '', '--pretty-print', action='store_true',
+        help="Print the json formatted for human readers",
+    )
     parallel_mode = optparse.make_option(
         '-p', '--parallel-mode', action='store_true',
         help=(
@@ -402,6 +411,22 @@ CMDS = {
         usage="[options] [modules]",
         description="Generate an XML report of coverage results."
     ),
+
+    'json': CmdOptionParser(
+        "json",
+        [
+            Opts.fail_under,
+            Opts.ignore_errors,
+            Opts.include,
+            Opts.omit,
+            Opts.output_json,
+            Opts.json_pretty_print,
+            Opts.show_contexts,
+            Opts.contexts,
+            ] + GLOBAL_ARGS,
+        usage="[options] [modules]",
+        description="Generate a JSON report of coverage results."
+    ),
 }
 
 
@@ -565,6 +590,14 @@ class CoverageScript(object):
         elif options.action == "xml":
             outfile = options.outfile
             total = self.coverage.xml_report(outfile=outfile, **report_args)
+        elif options.action == "json":
+            outfile = options.outfile
+            total = self.coverage.json_report(
+                outfile=outfile,
+                pretty_print=options.pretty_print,
+                show_contexts=options.show_contexts,
+                **report_args
+            )
 
         if total is not None:
             # Apply the command line fail-under options, and then use the config
@@ -752,6 +785,7 @@ HELP_TOPICS = {
             erase       Erase previously collected coverage data.
             help        Get help on using coverage.py.
             html        Create an HTML report.
+            json        Create a JSON report of coverage results.
             report      Report coverage stats on modules.
             run         Run a Python program and measure code execution.
             xml         Create an XML report of coverage results.

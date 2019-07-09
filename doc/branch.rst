@@ -55,8 +55,9 @@ The HTML report gives information about which lines had missing branches. Lines
 that were missing some branches are shown in yellow, with an annotation at the
 far right showing branch destination line numbers that were not exercised.
 
-The XML report produced by ``coverage xml`` also includes branch information,
-including separate statement and branch coverage percentages.
+The XML and JSON reports produced by ``coverage xml`` and ``coverage json``
+respectively also include branch information, including separate statement and
+branch coverage percentages.
 
 
 How it works

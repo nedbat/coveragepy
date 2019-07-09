@@ -44,8 +44,6 @@ class XmlReporter(object):
                     self.source_paths.add(files.canonical_filename(src))
         self.packages = {}
         self.xml_out = None
-        self.data = coverage.get_data()
-        self.has_arcs = self.data.has_arcs()
 
     def report(self, morfs, outfile=None):
         """Generate a Cobertura-compatible XML report for `morfs`.
@@ -57,6 +55,7 @@ class XmlReporter(object):
         """
         # Initial setup.
         outfile = outfile or sys.stdout
+        has_arcs = self.coverage.get_data().has_arcs()
 
         # Create the DOM that will store the data.
         impl = xml.dom.minidom.getDOMImplementation()
@@ -73,7 +72,7 @@ class XmlReporter(object):
 
         # Call xml_file for each file in the data.
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
-            self.xml_file(fr, analysis)
+            self.xml_file(fr, analysis, has_arcs)
 
         xsources = self.xml_out.createElement("sources")
         xcoverage.appendChild(xsources)
@@ -102,7 +101,7 @@ class XmlReporter(object):
                 xclasses.appendChild(class_elt)
             xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
             xpackage.setAttribute("line-rate", rate(lhits, lnum))
-            if self.has_arcs:
+            if has_arcs:
                 branch_rate = rate(bhits, bnum)
             else:
                 branch_rate = "0"
@@ -117,7 +116,7 @@ class XmlReporter(object):
         xcoverage.setAttribute("lines-valid", str(lnum_tot))
         xcoverage.setAttribute("lines-covered", str(lhits_tot))
         xcoverage.setAttribute("line-rate", rate(lhits_tot, lnum_tot))
-        if self.has_arcs:
+        if has_arcs:
             xcoverage.setAttribute("branches-valid", str(bnum_tot))
             xcoverage.setAttribute("branches-covered", str(bhits_tot))
             xcoverage.setAttribute("branch-rate", rate(bhits_tot, bnum_tot))
@@ -138,7 +137,7 @@ class XmlReporter(object):
             pct = 100.0 * (lhits_tot + bhits_tot) / denom
         return pct
 
-    def xml_file(self, fr, analysis):
+    def xml_file(self, fr, analysis, has_arcs):
         """Add to the XML report for a single file."""
 
         # Create the 'lines' and 'package' XML elements, which
@@ -182,7 +181,7 @@ class XmlReporter(object):
             # executed?  If so, that should be recorded here.
             xline.setAttribute("hits", str(int(line not in analysis.missing)))
 
-            if self.has_arcs:
+            if has_arcs:
                 if line in branch_stats:
                     total, taken = branch_stats[line]
                     xline.setAttribute("branch", "true")
@@ -198,7 +197,7 @@ class XmlReporter(object):
         class_lines = len(analysis.statements)
         class_hits = class_lines - len(analysis.missing)
 
-        if self.has_arcs:
+        if has_arcs:
             class_branches = sum(t for t, k in branch_stats.values())
             missing_branches = sum(t - k for t, k in branch_stats.values())
             class_br_hits = class_branches - missing_branches
@@ -208,7 +207,7 @@ class XmlReporter(object):
 
         # Finalize the statistics that are collected in the XML DOM.
         xclass.setAttribute("line-rate", rate(class_hits, class_lines))
-        if self.has_arcs:
+        if has_arcs:
             branch_rate = rate(class_br_hits, class_branches)
         else:
             branch_rate = "0"

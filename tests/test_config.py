@@ -332,6 +332,10 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         hello = world
         ; comments still work.
         names = Jane/John/Jenny
+
+        [{section}json]
+        pretty_print = True
+        show_contexts = True
         """
 
     # Just some sample setup.cfg text from the docs.
@@ -399,6 +403,8 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             'names': 'Jane/John/Jenny',
         })
         self.assertEqual(cov.config.get_plugin_options("plugins.another"), {})
+        self.assertEqual(cov.config.json_show_contexts, True)
+        self.assertEqual(cov.config.json_pretty_print, True)
 
     def test_config_file_settings(self):
         self.make_file(".coveragerc", self.LOTSA_SETTINGS.format(section=""))

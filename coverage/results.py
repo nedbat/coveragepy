@@ -23,7 +23,8 @@ class Analysis(object):
         # Identify missing statements.
         executed = self.data.lines(self.filename) or []
         executed = self.file_reporter.translate_lines(executed)
-        self.missing = self.statements - executed
+        self.executed = executed
+        self.missing = self.statements - self.executed
 
         if self.data.has_arcs():
             self._arc_possibilities = sorted(self.file_reporter.arcs())
