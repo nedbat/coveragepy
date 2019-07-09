@@ -301,3 +301,22 @@ also apply to XML output, where appropriate.
 identified as packages in the report.  Directories deeper than this depth are
 not reported as packages.  The default is that all directories are reported as
 packages.
+
+.. _config_json:
+
+[json]
+-----
+
+Values particular to json reporting.  The values in the ``[report]`` section
+also apply to JSON output, where appropriate.
+
+``json_output`` (string, default "coverage.json"): where to write the json
+report.
+
+``json_pretty_print`` (boolean, default false): controls if fields in the json
+are outputted with whitespace formatted for human consumption (True) or for
+minimum file size (False)
+
+``json_show_contexts`` (boolean, default false): should the json report include
+an indication on each line of which contexts executed the line.
+See :ref:`dynamic_contexts` for details.

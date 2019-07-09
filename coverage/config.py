@@ -215,6 +215,11 @@ class CoverageConfig(object):
         self.xml_output = "coverage.xml"
         self.xml_package_depth = 99
 
+        # Defaults for [JSON]
+        self.json_output = "coverage.json"
+        self.json_pretty_print = False
+        self.json_show_contexts = False
+
         # Defaults for [paths]
         self.paths = {}
 
@@ -363,6 +368,11 @@ class CoverageConfig(object):
         # [xml]
         ('xml_output', 'xml:output'),
         ('xml_package_depth', 'xml:package_depth', 'int'),
+
+        # [json]
+        ('json_output', 'json:output'),
+        ('json_pretty_print', 'json:pretty_print', 'boolean'),
+        ('json_show_contexts', 'json:show_contexts', 'boolean'),
     ]
 
     def _set_attr_from_config_option(self, cp, attr, where, type_=''):

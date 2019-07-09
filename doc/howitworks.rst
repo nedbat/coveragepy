@@ -83,8 +83,8 @@ Reporting
 
 Once we have the set of executed lines and missing lines, reporting is just a
 matter of formatting that information in a useful way.  Each reporting method
-(text, html, annotated source, xml) has a different output format, but the
-process is the same: write out the information in the particular format,
+(text, html, json, annotated source, xml) has a different output format, but
+the process is the same: write out the information in the particular format,
 possibly including the source code itself.
 
 
