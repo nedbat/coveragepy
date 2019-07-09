@@ -18,10 +18,6 @@ from tests.coveragetest import CoverageTest
 class StaticContextTest(CoverageTest):
     """Tests of the static context."""
 
-    def setUp(self):
-        super(StaticContextTest, self).setUp()
-        self.skip_unless_data_storage_is("sql")
-
     def test_no_context(self):
         self.make_file("main.py", "a = 1")
         cov = coverage.Coverage()
@@ -115,7 +111,6 @@ class DynamicContextTest(CoverageTest):
         if not env.C_TRACER:
             self.skipTest("Only the C tracer supports dynamic contexts")
         super(DynamicContextTest, self).setUp()
-        self.skip_unless_data_storage_is("sql")
 
     SOURCE = """\
         def helper(lineno):

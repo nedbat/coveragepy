@@ -1050,7 +1050,6 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         if not env.C_TRACER:
             self.skipTest("Only the C tracer supports dynamic contexts")
         super(HtmlWithContextsTest, self).setUp()
-        self.skip_unless_data_storage_is("sql")
 
     SOURCE = """\
         def helper(lineno):
