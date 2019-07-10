@@ -4,17 +4,15 @@
 """Tests for coverage.data"""
 
 import glob
-import json
 import os
 import os.path
-import re
 import sqlite3
 import threading
 
 import mock
 
-from coverage.data import CoverageData, debug_main, canonicalize_json_data, combine_parallel_data
-from coverage.data import add_data_to_hash, line_counts, STORAGE
+from coverage.data import CoverageData, combine_parallel_data
+from coverage.data import add_data_to_hash, line_counts
 from coverage.debug import DebugControlString
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
@@ -107,9 +105,6 @@ class DataTestHelpers(CoverageTest):
 class CoverageDataTest(DataTestHelpers, CoverageTest):
     """Test cases for CoverageData."""
 
-    # SQL data storage always has files on disk, even without .write().
-    # We need to separate the tests so they don't clobber each other.
-    run_in_temp_dir = STORAGE == "sql"
     no_files_in_temp_dir = True
 
     def test_empty_data_is_false(self):
@@ -185,7 +180,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assert_measured_files(covdata, MEASURED_FILES_3 + ['zzz.py'])
 
     def test_set_query_contexts(self):
-        self.skip_unless_data_storage_is("sql")
         covdata = CoverageData()
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
@@ -202,7 +196,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertIsNone(covdata.lines('no_such_file.py'))
 
     def test_lines_with_contexts(self):
-        self.skip_unless_data_storage_is("sql")
         covdata = CoverageData()
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
@@ -211,7 +204,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata.lines('a.py', contexts=['other*']), [])
 
     def test_contexts_by_lineno_with_lines(self):
-        self.skip_unless_data_storage_is("sql")
         covdata = CoverageData()
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
@@ -254,7 +246,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertIsNone(covdata.arcs('no_such_file.py'))
 
     def test_arcs_with_contexts(self):
-        self.skip_unless_data_storage_is("sql")
         covdata = CoverageData()
         covdata.set_context('test_x')
         covdata.add_arcs(ARCS_3)
@@ -265,7 +256,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assertEqual(covdata.arcs('x.py', contexts=['other*']), [])
 
     def test_contexts_by_lineno_with_arcs(self):
-        self.skip_unless_data_storage_is("sql")
         covdata = CoverageData()
         covdata.set_context('test_x')
         covdata.add_arcs(ARCS_3)
@@ -274,7 +264,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             {-1: ['test_x'], 1: ['test_x'], 2: ['test_x'], 3: ['test_x']})
 
     def test_contexts_by_lineno_with_unknown_file(self):
-        self.skip_unless_data_storage_is("sql")
         covdata = CoverageData()
         self.assertDictEqual(
             covdata.contexts_by_lineno('xyz.py'), {})
@@ -562,17 +551,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
             covdata.read()
         self.assertFalse(covdata)
 
-    def test_read_json_errors(self):
-        self.skip_unless_data_storage_is("json")
-        self.make_file("misleading.dat", CoverageData._GO_AWAY + " this isn't JSON")
-        msg = r"Couldn't .* '.*[/\\]{0}': \S+"
-        with self.assertRaisesRegex(CoverageException, msg.format("misleading.dat")):
-            covdata = CoverageData("misleading.dat")
-            covdata.read()
-        self.assertFalse(covdata)
-
     def test_read_sql_errors(self):
-        self.skip_unless_data_storage_is("sql")
         with sqlite3.connect("wrong_schema.db") as con:
             con.execute("create table coverage_schema (version integer)")
             con.execute("insert into coverage_schema (version) values (99)")
@@ -589,51 +568,6 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
             covdata = CoverageData("no_schema.db")
             covdata.read()
         self.assertFalse(covdata)
-
-    def test_debug_main(self):
-        self.skip_unless_data_storage_is("json")
-        covdata1 = CoverageData(".coverage")
-        covdata1.add_lines(LINES_1)
-        covdata1.write()
-        debug_main([])
-
-        covdata2 = CoverageData("arcs.dat")
-        covdata2.add_arcs(ARCS_3)
-        covdata2.add_file_tracers({"y.py": "magic_plugin"})
-        covdata2.add_run_info(version="v3.14", chunks=["z", "a"])
-        covdata2.write()
-
-        covdata3 = CoverageData("empty.dat")
-        covdata3.write()
-        debug_main(["arcs.dat", "empty.dat"])
-
-        expected = {
-            ".coverage": {
-                "lines": {
-                    "a.py": [1, 2],
-                    "b.py": [3],
-                },
-            },
-            "arcs.dat": {
-                "arcs": {
-                    "x.py": [[-1, 1], [1, 2], [2, 3], [3, -1]],
-                    "y.py": [[-1, 17], [17, 23], [23, -1]],
-                },
-                "file_tracers": {"y.py": "magic_plugin"},
-                "runs": [
-                    {
-                        "chunks": ["z", "a"],
-                        "version": "v3.14",
-                    },
-                ],
-            },
-            "empty.dat": {},
-        }
-        pieces = re.split(r"(?m)-+ ([\w.]+) -+$", self.stdout())
-        for name, json_out in zip(pieces[1::2], pieces[2::2]):
-            json_got = json.loads(json_out)
-            canonicalize_json_data(json_got)
-            self.assertEqual(expected[name], json_got)
 
 
 class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
@@ -670,14 +604,9 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
 
         self.assertRegex(
             debug.get_output(),
-            r"("    # JSON output:
-            r"^Writing data to '.*\.coverage'\n"
-            r"Reading data from '.*\.coverage'\n$"
-            r"|"    # SQL output:
-            r"Erasing data file '.*\.coverage'\n"
+            r"^Erasing data file '.*\.coverage'\n"
             r"Creating data file '.*\.coverage'\n"
             r"Opening data file '.*\.coverage'\n$"
-            r")"
         )
 
     def test_debug_output_without_debug_option(self):
@@ -765,59 +694,6 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         data.erase(parallel=True)
         self.assert_file_count("datafile.*", 0)
         self.assert_exists(".coverage")
-
-    def read_json_data_file(self, fname):
-        """Read a JSON data file for testing the JSON directly."""
-        self.skip_unless_data_storage_is("json")
-        with open(fname, 'r') as fdata:
-            go_away = fdata.read(len(CoverageData._GO_AWAY))
-            self.assertEqual(go_away, CoverageData._GO_AWAY)
-            return json.load(fdata)
-
-    def test_file_format(self):
-        # Write with CoverageData, then read the JSON explicitly.
-        covdata = CoverageData()
-        covdata.add_lines(LINES_1)
-        covdata.write()
-
-        data = self.read_json_data_file(".coverage")
-
-        lines = data['lines']
-        self.assertCountEqual(lines.keys(), MEASURED_FILES_1)
-        self.assertCountEqual(lines['a.py'], A_PY_LINES_1)
-        self.assertCountEqual(lines['b.py'], B_PY_LINES_1)
-        # If not measuring branches, there's no arcs entry.
-        self.assertNotIn('arcs', data)
-        # If no file tracers were involved, there's no file_tracers entry.
-        self.assertNotIn('file_tracers', data)
-
-    def test_file_format_with_arcs(self):
-        # Write with CoverageData, then read the JSON explicitly.
-        covdata = CoverageData()
-        covdata.add_arcs(ARCS_3)
-        covdata.write()
-
-        data = self.read_json_data_file(".coverage")
-
-        self.assertNotIn('lines', data)
-        arcs = data['arcs']
-        self.assertCountEqual(arcs.keys(), MEASURED_FILES_3)
-        self.assertCountEqual(arcs['x.py'], map(list, X_PY_ARCS_3))
-        self.assertCountEqual(arcs['y.py'], map(list, Y_PY_ARCS_3))
-        # If no file tracers were involved, there's no file_tracers entry.
-        self.assertNotIn('file_tracers', data)
-
-    def test_writing_to_other_file(self):
-        self.skipTest("This will be deleted!")  # TODO
-        covdata = CoverageData(".otherfile")
-        covdata.add_lines(LINES_1)
-        covdata.write()
-        self.assert_doesnt_exist(".coverage")
-        self.assert_exists(".otherfile")
-
-        covdata.write(suffix="extra")
-        self.assert_exists(".otherfile.extra")
-        self.assert_doesnt_exist(".coverage")
 
     def test_combining_with_aliases(self):
         covdata1 = CoverageData(suffix='1')

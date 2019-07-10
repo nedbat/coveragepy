@@ -34,6 +34,9 @@ Unreleased
 
 - Dynamic contexts with no data are no longer written to the database.
 
+- SQLite data storage is now faster.  There's no longer a reason to keep the
+  JSON data file code, so it has been removed.
+
 - Added the classmethod :meth:`Coverage.current` to get the latest started
   `Coverage` instance.
 

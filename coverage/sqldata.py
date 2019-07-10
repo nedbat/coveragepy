@@ -4,8 +4,6 @@
 """Sqlite coverage data."""
 
 # TODO: get sys_info for data class, so we can see sqlite version etc
-# TODO: get rid of skip_unless_data_storage_is
-# TODO: get rid of "JSON message" and "SQL message" in the tests
 # TODO: factor out dataop debugging to a wrapper class?
 # TODO: make sure all dataop debugging is in place somehow
 # TODO: should writes be batched?
@@ -19,10 +17,9 @@ import sqlite3
 import sys
 
 from coverage.backward import get_thread_id, iitems
-from coverage.data import filename_suffix
 from coverage.debug import NoDebugging, SimpleReprMixin
 from coverage.files import PathAliases
-from coverage.misc import CoverageException, file_be_gone, isolate_module
+from coverage.misc import CoverageException, file_be_gone, filename_suffix, isolate_module
 
 os = isolate_module(os)
 
@@ -83,7 +80,72 @@ CREATE TABLE tracer (
 """
 
 
-class CoverageSqliteData(SimpleReprMixin):
+class CoverageData(SimpleReprMixin):
+    """Manages collected coverage data, including file storage.
+
+    TODO: This is the 4.x docstring. Update it for 5.0.
+
+    This class is the public supported API to the data coverage.py collects
+    during program execution.  It includes information about what code was
+    executed. It does not include information from the analysis phase, to
+    determine what lines could have been executed, or what lines were not
+    executed.
+
+    .. note::
+
+        The file format is not documented or guaranteed.  It will change in
+        the future, in possibly complicated ways.  Do not read coverage.py
+        data files directly.  Use this API to avoid disruption.
+
+    There are a number of kinds of data that can be collected:
+
+    * **lines**: the line numbers of source lines that were executed.
+      These are always available.
+
+    * **arcs**: pairs of source and destination line numbers for transitions
+      between source lines.  These are only available if branch coverage was
+      used.
+
+    * **file tracer names**: the module names of the file tracer plugins that
+      handled each file in the data.
+
+    * **run information**: information about the program execution.  This is
+      written during "coverage run", and then accumulated during "coverage
+      combine".
+
+    Lines, arcs, and file tracer names are stored for each source file. File
+    names in this API are case-sensitive, even on platforms with
+    case-insensitive file systems.
+
+    A data file is associated with the data when the :class:`CoverageData`
+    is created.
+
+    To read a coverage.py data file, use :meth:`read`.  You can then
+    access the line, arc, or file tracer data with :meth:`lines`, :meth:`arcs`,
+    or :meth:`file_tracer`.  Run information is available with
+    :meth:`run_infos`.
+
+    The :meth:`has_arcs` method indicates whether arc data is available.  You
+    can get a list of the files in the data with :meth:`measured_files`.
+    A summary of the line data is available from :meth:`line_counts`.  As with
+    most Python containers, you can determine if there is any data at all by
+    using this object as a boolean value.
+
+    Most data files will be created by coverage.py itself, but you can use
+    methods here to create data files if you like.  The :meth:`add_lines`,
+    :meth:`add_arcs`, and :meth:`add_file_tracers` methods add data, in ways
+    that are convenient for coverage.py.  The :meth:`add_run_info` method adds
+    key-value pairs to the run information.
+
+    To add a source file without any measured data, use :meth:`touch_file`.
+
+    Write the data to its file with :meth:`write`.
+
+    You can clear the data in memory with :meth:`erase`.  Two data collections
+    can be combined by using :meth:`update` on one :class:`CoverageData`,
+    passing it the other.
+
+    """
 
     def __init__(self, basename=None, suffix=None, warn=None, debug=None):
         self._basename = os.path.abspath(basename or ".coverage")
@@ -349,7 +411,7 @@ class CoverageSqliteData(SimpleReprMixin):
         if self._debug.should('dataop'):
             self._debug.write("Touching %r" % (filename,))
         if not self._has_arcs and not self._has_lines:
-            raise CoverageException("Can't touch files in an empty CoverageSqliteData")
+            raise CoverageException("Can't touch files in an empty CoverageData")
 
         self._file_id(filename, add=True)
         if plugin_name:

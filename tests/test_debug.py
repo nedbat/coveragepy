@@ -141,13 +141,8 @@ class DebugTraceTest(CoverageTest):
         # The details of what to expect on the stack are empirical, and can change
         # as the code changes. This test is here to ensure that the debug code
         # continues working. It's ok to adjust these details over time.
-        from coverage.data import STORAGE
-        if STORAGE == "json":
-            self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Writing data")
-            self.assertRegex(last_line, r"\s+_write_file : .*coverage[/\\]data.py @\d+$")
-        else:
-            self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Adding file tracers: 0 files")
-            self.assertRegex(last_line, r"\s+add_file_tracers : .*coverage[/\\]sqldata.py @\d+$")
+        self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Adding file tracers: 0 files")
+        self.assertRegex(last_line, r"\s+add_file_tracers : .*coverage[/\\]sqldata.py @\d+$")
 
     def test_debug_config(self):
         out_lines = self.f1_debug_output(["config"])

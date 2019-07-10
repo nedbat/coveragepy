@@ -25,7 +25,6 @@ from coverage import env
 from coverage.backunittest import TestCase, unittest
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
-from coverage.data import STORAGE
 from coverage.misc import arcz_to_arcs, StopEverything
 
 from tests.helpers import run_command, SuperModuleCleaner
@@ -102,8 +101,8 @@ class CoverageTest(
 
     def skip_unless_data_storage_is(self, storage):
         """Skip a test for tests that are particular about the storage implementation."""
-        if STORAGE != storage:
-            self.skipTest("Not using {} for data storage".format(storage))
+        assert storage == "json"
+        self.skipTest("Some features haven't been implemented in SQL yet.")
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
