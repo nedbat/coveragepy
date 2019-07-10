@@ -948,6 +948,7 @@ class Coverage(object):
 
 
 # Mega debugging...
+# $set_env.py: COVERAGE_DEBUG_CALLS - Lots and lots of output about calls to Coverage.
 if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):              # pragma: debugging
     from coverage.debug import decorate_methods, show_calls
 
