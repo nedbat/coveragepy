@@ -22,8 +22,9 @@ from coverage.backward import get_thread_id, iitems
 from coverage.data import filename_suffix
 from coverage.debug import NoDebugging, SimpleReprMixin
 from coverage.files import PathAliases
-from coverage.misc import CoverageException, file_be_gone
+from coverage.misc import CoverageException, file_be_gone, isolate_module
 
+os = isolate_module(os)
 
 SCHEMA_VERSION = 2
 
