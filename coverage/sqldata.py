@@ -19,8 +19,9 @@ import sys
 from coverage.backward import get_thread_id, iitems
 from coverage.debug import NoDebugging, SimpleReprMixin
 from coverage.files import PathAliases
-from coverage.misc import CoverageException, file_be_gone, filename_suffix
+from coverage.misc import CoverageException, file_be_gone, filename_suffix, isolate_module
 
+os = isolate_module(os)
 
 SCHEMA_VERSION = 2
 
