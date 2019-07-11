@@ -37,6 +37,14 @@ Unreleased
 - SQLite data storage is now faster.  There's no longer a reason to keep the
   JSON data file code, so it has been removed.
 
+- Changes to the `CoverageData` interface:
+
+  - The new :meth:`CoverageData.dumps` method serializes the data to a string,
+    and a corresponding :meth:`CoverageData.loads` method reconstitutes ths
+    data.  The format of the data string is subject to change at any time, and
+    so should only be used between two installations of the same version of
+    coverage.py.
+
 - Added the classmethod :meth:`Coverage.current` to get the latest started
   `Coverage` instance.
 

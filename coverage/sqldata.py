@@ -188,12 +188,9 @@ class CoverageData(SimpleReprMixin):
     def _create_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Creating data file {!r}".format(self._filename))
-        self._dbs[get_thread_id()] = SqliteDb(self._filename, self._debug)
-        with self._dbs[get_thread_id()] as db:
-            for stmt in SCHEMA.split(';'):
-                stmt = stmt.strip()
-                if stmt:
-                    db.execute(stmt)
+        self._dbs[get_thread_id()] = db = SqliteDb(self._filename, self._debug)
+        with db:
+            db.executescript(SCHEMA)
             db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
             db.execute(
                 "insert into meta (has_lines, has_arcs, sys_argv) values (?, ?, ?)",
@@ -203,8 +200,8 @@ class CoverageData(SimpleReprMixin):
     def _open_db(self):
         if self._debug.should('dataio'):
             self._debug.write("Opening data file {!r}".format(self._filename))
-        self._dbs[get_thread_id()] = SqliteDb(self._filename, self._debug)
-        with self._dbs[get_thread_id()] as db:
+        self._dbs[get_thread_id()] = db = SqliteDb(self._filename, self._debug)
+        with db:
             try:
                 schema_version, = db.execute("select version from coverage_schema").fetchone()
             except Exception as exc:
@@ -253,6 +250,17 @@ class CoverageData(SimpleReprMixin):
         if self._debug:
             with self._connect() as con:
                 self._debug.write(con.dump())
+
+    def dumps(self):
+        with self._connect() as con:
+            return con.dump()
+
+    def loads(self, data):
+        if self._debug.should('dataio'):
+            self._debug.write("Loading data into data file {!r}".format(self._filename))
+        self._dbs[get_thread_id()] = db = SqliteDb(self._filename, self._debug)
+        with db:
+            db.executescript(data)
 
     def _file_id(self, filename, add=False):
         """Get the file id for `filename`.
@@ -799,6 +807,11 @@ class SqliteDb(SimpleReprMixin):
         if self.debug:
             self.debug.write("Executing many {!r} with {} rows".format(sql, len(data)))
         return self.con.executemany(sql, data)
+
+    def executescript(self, script):
+        if self.debug:
+            self.debug.write("Executing script with {} chars".format(len(script)))
+        self.con.executescript(script)
 
     def dump(self):                                         # pragma: debugging
         """Return a multi-line string, the dump of the database."""
