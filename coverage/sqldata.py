@@ -55,12 +55,13 @@ CREATE TABLE context (
     unique(context)
 );
 
-CREATE TABLE line (
+CREATE TABLE line_ranges (
     -- If recording lines, a row per context per line executed.
     file_id integer,            -- foreign key to `file`.
     context_id integer,         -- foreign key to `context`.
-    lineno integer,             -- the line number.
-    unique(file_id, context_id, lineno)
+    start_lineno integer,       -- the starting line number.
+    end_lineno integer,         -- the ending line number.
+    unique(file_id, context_id, start_lineno, end_lineno)
 );
 
 CREATE TABLE arc (
@@ -324,9 +325,13 @@ class CoverageData(SimpleReprMixin):
             self._set_context_id()
             for filename, linenos in iitems(line_data):
                 file_id = self._file_id(filename, add=True)
-                data = [(file_id, self._current_context_id, lineno) for lineno in linenos]
+
+                data = (
+                    (file_id, self._current_context_id, startno, endno)
+                    for (startno, endno) in line_set_to_ranges(linenos)
+                )
                 con.executemany(
-                    "insert or ignore into line (file_id, context_id, lineno) values (?, ?, ?)",
+                    "insert or ignore into line_ranges (file_id, context_id, start_lineno, end_lineno) values (?, ?, ?, ?)",
                     data,
                 )
 
@@ -460,12 +465,18 @@ class CoverageData(SimpleReprMixin):
 
             # Get line data.
             cur = conn.execute(
-                'select file.path, context.context, line.lineno '
-                'from line '
-                'inner join file on file.id = line.file_id '
-                'inner join context on context.id = line.context_id'
+                """
+                select path, context, start_lineno, end_lineno
+                from line_ranges
+                inner join file on file.id = file_id
+                inner join context on context.id = context_id
+                order by path, context, start_lineno
+            """
             )
-            lines = [(files[path], context, lineno) for (path, context, lineno) in cur]
+            lines = [
+                (files[path], context, start_lineno, end_lineno)
+                for (path, context, start_lineno, end_lineno) in cur
+            ]
             cur.close()
 
             # Get tracer data.
@@ -534,22 +545,48 @@ class CoverageData(SimpleReprMixin):
                 (file_ids[file], context_ids[context], fromno, tono)
                 for file, context, fromno, tono in arcs
             )
-            line_rows = (
-                (file_ids[file], context_ids[context], lineno)
-                for file, context, lineno in lines
-            )
 
-            self._choose_lines_or_arcs(arcs=bool(arcs), lines=bool(lines))
+            # Get line data.
+            cur = conn.execute(
+                """
+                select path, context, start_lineno, end_lineno
+                from line_ranges
+                inner join file on file.id = file_id
+                inner join context on context.id = context_id
+                order by path, context, start_lineno
+                """
+            )
+            cur_lines = [
+                (path, context, start_lineno, end_lineno)
+                for (path, context, start_lineno, end_lineno) in cur
+            ]
+
+            exploded_lines = {}
+            for file, context, start_lineno, end_lineno in itertools.chain(
+                lines, cur_lines
+            ):
+                exploded_lines.setdefault((file, context), set()).update(
+                    line_ranges_to_set([(start_lineno, end_lineno)])
+                )
+
+            combined_ranges = [
+                (file_ids[file], context_ids[context], start_lineno, end_lineno)
+                for ((file, context), linenos) in exploded_lines.items()
+                for (start_lineno, end_lineno) in line_set_to_ranges(linenos)
+            ]
+
+            self._choose_lines_or_arcs(arcs=bool(arcs), lines=bool(combined_ranges))
 
             conn.executemany(
                 'insert or ignore into arc '
                 '(file_id, context_id, fromno, tono) values (?, ?, ?, ?)',
                 arc_rows
             )
+            conn.execute("delete from line_ranges")
             conn.executemany(
-                'insert or ignore into line '
-                '(file_id, context_id, lineno) values (?, ?, ?)',
-                line_rows
+                "insert into line_ranges "
+                "(file_id, context_id, start_lineno, end_lineno) values (?, ?, ?, ?)",
+                combined_ranges,
             )
             conn.executemany(
                 'insert or ignore into tracer (file_id, tracer) values (?, ?)',
@@ -665,15 +702,16 @@ class CoverageData(SimpleReprMixin):
             if file_id is None:
                 return None
             else:
-                query = "select distinct lineno from line where file_id = ?"
+                query = "select distinct start_lineno, end_lineno from line_ranges where file_id = ?"
                 data = [file_id]
                 context_ids = self._get_query_context_ids(contexts)
                 if context_ids is not None:
                     ids_array = ', '.join('?'*len(context_ids))
                     query += " and context_id in (" + ids_array + ")"
                     data += context_ids
-                linenos = con.execute(query, data)
-                return [lineno for lineno, in linenos]
+                line_ranges = list(con.execute(query, data))
+
+                return sorted(line_ranges_to_set(line_ranges))
 
     def arcs(self, filename, contexts=None):
         self._start_using()
@@ -718,19 +756,20 @@ class CoverageData(SimpleReprMixin):
                         lineno_contexts_map[tono].append(context)
             else:
                 query = (
-                    "select line.lineno, context.context "
-                    "from line, context "
-                    "where line.file_id = ? and line.context_id = context.id"
+                    "select start_lineno, end_lineno, context "
+                    "from line_ranges, context "
+                    "where file_id = ? and context_id = context.id"
                 )
                 data = [file_id]
                 context_ids = self._get_query_context_ids()
                 if context_ids is not None:
                     ids_array = ', '.join('?'*len(context_ids))
-                    query += " and line.context_id in (" + ids_array + ")"
+                    query += " and context_id in (" + ids_array + ")"
                     data += context_ids
-                for lineno, context in con.execute(query, data):
-                    if context not in lineno_contexts_map[lineno]:
-                        lineno_contexts_map[lineno].append(context)
+                for start_lineno, end_lineno, context in con.execute(query, data):
+                    for lineno in line_ranges_to_set([(start_lineno, end_lineno)]):
+                        if context not in lineno_contexts_map[lineno]:
+                            lineno_contexts_map[lineno].append(context)
         return lineno_contexts_map
 
     def run_infos(self):
@@ -793,13 +832,45 @@ class SqliteDb(SimpleReprMixin):
         try:
             return self.con.execute(sql, parameters)
         except sqlite3.Error as exc:
-            raise CoverageException("Couldn't use data file {!r}: {}".format(self.filename, exc))
+            raise CoverageException(
+                "Couldn't use data file {!r}: {}".format(self.filename, exc)
+            )
 
     def executemany(self, sql, data):
         if self.debug:
             self.debug.write("Executing many {!r} with {} rows".format(sql, len(data)))
         return self.con.executemany(sql, data)
 
-    def dump(self):                                         # pragma: debugging
+    def dump(self):  # pragma: debugging
         """Return a multi-line string, the dump of the database."""
         return "\n".join(self.con.iterdump())
+
+
+def line_set_to_ranges(linenos):
+    sorted_linenos = sorted(linenos)
+    range_starts = [0] + [
+        idx + 1
+        for (idx, (lineno, beforeno)) in enumerate(
+            zip(sorted_linenos[1:], sorted_linenos)
+        )
+        if lineno != beforeno + 1
+    ]
+    range_ends = [
+        idx
+        for (idx, (lineno, afterno)) in enumerate(
+            zip(sorted_linenos, sorted_linenos[1:])
+        )
+        if lineno + 1 != afterno
+    ] + [len(sorted_linenos) - 1]
+    ranges = zip(range_starts, range_ends)
+    return (
+        (sorted_linenos[startno], sorted_linenos[endno]) for (startno, endno) in ranges
+    )
+
+
+def line_ranges_to_set(line_ranges):
+    return set(
+        lineno
+        for (start_lineno, end_lineno) in line_ranges
+        for lineno in range(start_lineno, end_lineno + 1)
+    )
