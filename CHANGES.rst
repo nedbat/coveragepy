@@ -45,6 +45,10 @@ Unreleased
     so should only be used between two installations of the same version of
     coverage.py.
 
+  - The `CoverageData` constructor has a new argument, `no_disk` (default:
+    False).  Setting it to True prevents writing any data to the disk.  This is
+    useful for transient data objects.
+
 - Added the classmethod :meth:`Coverage.current` to get the latest started
   `Coverage` instance.
 

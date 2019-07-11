@@ -147,7 +147,8 @@ class CoverageData(SimpleReprMixin):
 
     """
 
-    def __init__(self, basename=None, suffix=None, warn=None, debug=None):
+    def __init__(self, basename=None, suffix=None, no_disk=False, warn=None, debug=None):
+        self._no_disk = no_disk
         self._basename = os.path.abspath(basename or ".coverage")
         self._suffix = suffix
         self._warn = warn
@@ -171,10 +172,13 @@ class CoverageData(SimpleReprMixin):
         self._query_context_ids = None
 
     def _choose_filename(self):
-        self._filename = self._basename
-        suffix = filename_suffix(self._suffix)
-        if suffix:
-            self._filename += "." + suffix
+        if self._no_disk:
+            self._filename = ":memory:"
+        else:
+            self._filename = self._basename
+            suffix = filename_suffix(self._suffix)
+            if suffix:
+                self._filename += "." + suffix
 
     def _reset(self):
         if self._dbs:
@@ -756,8 +760,11 @@ class SqliteDb(SimpleReprMixin):
         self.debug = debug if debug.should('sql') else None
         self.filename = filename
         self.nest = 0
+        self.con = None
 
     def connect(self):
+        if self.con is not None:
+            return
         # SQLite on Windows on py2 won't open a file if the filename argument
         # has non-ascii characters in it.  Opening a relative file name avoids
         # a problem if the current directory has non-ascii.
@@ -779,7 +786,9 @@ class SqliteDb(SimpleReprMixin):
         self.execute("pragma synchronous=off").close()
 
     def close(self):
-        self.con.close()
+        if self.con is not None and self.filename != ":memory:":
+            self.con.close()
+            self.con = None
 
     def __enter__(self):
         if self.nest == 0:
