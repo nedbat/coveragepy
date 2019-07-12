@@ -23,6 +23,10 @@ Unreleased
 - A class named "test_something" no longer confuses the `test_function` dynamic
   context setting.  Fixes `issue 829`_.
 
+- Fixed an unusual tokenizing issue with backslashes in comments.  Fixes
+  `issue 822`_.
+
+.. _issue 822: https://github.com/nedbat/coveragepy/issues/822
 .. _issue 829: https://github.com/nedbat/coveragepy/issues/829
 
 

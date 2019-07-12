@@ -43,6 +43,13 @@ MIXED_WS_TOKENS = [
     [('ws', '        '), ('nam', 'b'), ('op', '='), ('str', '"indented"')],
 ]
 
+# https://github.com/nedbat/coveragepy/issues/822
+BUG_822 = u"""\
+print( "Message 1" )
+array = [ 1,2,3,4,       # 4 numbers \\
+          5,6,7 ]        # 3 numbers
+print( "Message 2" )
+"""
 
 class PhysTokensTest(CoverageTest):
     """Tests for coverage.py's improved tokenizer."""
@@ -77,6 +84,9 @@ class PhysTokensTest(CoverageTest):
     def test_tab_indentation(self):
         # Mixed tabs and spaces...
         self.assertEqual(list(source_token_lines(MIXED_WS)), MIXED_WS_TOKENS)
+
+    def test_bug_822(self):
+        self.check_tokenization(BUG_822)
 
     def test_tokenize_real_file(self):
         # Check the tokenization of a real file (large, btw).
