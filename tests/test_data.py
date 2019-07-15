@@ -6,6 +6,7 @@
 import glob
 import os
 import os.path
+import random
 import sqlite3
 import threading
 
@@ -16,6 +17,7 @@ from coverage.data import add_data_to_hash, line_counts
 from coverage.debug import DebugControlString
 from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
+from coverage.sqldata import nums_to_bitmap, bitmap_to_nums, merge_bitmaps
 
 from tests.coveragetest import CoverageTest
 
@@ -805,3 +807,31 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         # then this would try to use tables that no longer exist.
         # "no such table: meta"
         covdata2.add_lines(LINES_1)
+
+
+class BitmapOpTest(CoverageTest):
+    """Tests of the bitmap operations in sqldata.py."""
+
+    run_in_temp_dir = False
+
+    def numbers(self, r):
+        """Produce a list of numbers from a Random object."""
+        return list(set(r.randint(1, 1000) for _ in range(r.randint(100, 200))))
+
+    def test_conversion(self):
+        r = random.Random(1792)
+        for _ in range(10):
+            nums = self.numbers(r)
+            bitmap = nums_to_bitmap(nums)
+            self.assertEqual(sorted(bitmap_to_nums(bitmap)), sorted(nums))
+
+    def test_merging(self):
+        r = random.Random(314159)
+        for _ in range(10):
+            nums1 = self.numbers(r)
+            nums2 = self.numbers(r)
+            merged = bitmap_to_nums(merge_bitmaps(nums_to_bitmap(nums1), nums_to_bitmap(nums2)))
+            all_nums = set()
+            all_nums.update(nums1)
+            all_nums.update(nums2)
+            self.assertEqual(sorted(all_nums), sorted(merged))

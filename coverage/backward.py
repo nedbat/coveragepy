@@ -44,6 +44,11 @@ try:
 except NameError:
     range = range
 
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest
+
 # Where do we get the thread id from?
 try:
     from thread import get_ident as get_thread_id

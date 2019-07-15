@@ -17,13 +17,16 @@ import sqlite3
 import sys
 
 from coverage.backward import get_thread_id, iitems
+from coverage.backward import bytes_to_ints, binary_bytes, zip_longest
 from coverage.debug import NoDebugging, SimpleReprMixin
+from coverage import env
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone, filename_suffix, isolate_module
+from coverage.misc import contract
 
 os = isolate_module(os)
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 SCHEMA = """
 CREATE TABLE coverage_schema (
@@ -31,7 +34,8 @@ CREATE TABLE coverage_schema (
     version integer
     -- Schema versions:
     -- 1: Released in 5.0a2
-    -- 2: Added contexts in 5.0a3.  This is schema 2.
+    -- 2: Added contexts in 5.0a3.
+    -- 3: Replaced line table with line_map table.
 );
 
 CREATE TABLE meta (
@@ -55,12 +59,12 @@ CREATE TABLE context (
     unique(context)
 );
 
-CREATE TABLE line (
+CREATE TABLE line_map (
     -- If recording lines, a row per context per line executed.
     file_id integer,            -- foreign key to `file`.
     context_id integer,         -- foreign key to `context`.
-    lineno integer,             -- the line number.
-    unique(file_id, context_id, lineno)
+    bitmap blob,                -- Nth bit represents line N.
+    unique(file_id, context_id)
 );
 
 CREATE TABLE arc (
@@ -78,6 +82,17 @@ CREATE TABLE tracer (
     tracer text
 );
 """
+
+if env.PY2:
+    def to_blob(bytes):
+        return buffer(bytes)
+    def from_blob(blob):
+        return bytes(blob)
+else:
+    def to_blob(bytes):
+        return bytes
+    def from_blob(blob):
+        return blob
 
 
 class CoverageData(SimpleReprMixin):
@@ -335,11 +350,16 @@ class CoverageData(SimpleReprMixin):
         with self._connect() as con:
             self._set_context_id()
             for filename, linenos in iitems(line_data):
+                linemap = nums_to_bitmap(linenos)
                 file_id = self._file_id(filename, add=True)
-                data = [(file_id, self._current_context_id, lineno) for lineno in linenos]
-                con.executemany(
-                    "insert or ignore into line (file_id, context_id, lineno) values (?, ?, ?)",
-                    data,
+                query = "select bitmap from line_map where file_id = ? and context_id = ?"
+                existing = list(con.execute(query, (file_id, self._current_context_id)))
+                if existing:
+                    linemap = merge_bitmaps(linemap, from_blob(existing[0][0]))
+
+                con.execute(
+                    "insert or replace into line_map (file_id, context_id, bitmap) values (?, ?, ?)",
+                    (file_id, self._current_context_id, to_blob(linemap)),
                 )
 
     def add_arcs(self, arc_data):
@@ -472,12 +492,12 @@ class CoverageData(SimpleReprMixin):
 
             # Get line data.
             cur = conn.execute(
-                'select file.path, context.context, line.lineno '
-                'from line '
-                'inner join file on file.id = line.file_id '
-                'inner join context on context.id = line.context_id'
-            )
-            lines = [(files[path], context, lineno) for (path, context, lineno) in cur]
+                'select file.path, context.context, line_map.bitmap '
+                'from line_map '
+                'inner join file on file.id = line_map.file_id '
+                'inner join context on context.id = line_map.context_id'
+                )
+            lines = {(files[path], context): from_blob(bitmap) for (path, context, bitmap) in cur}
             cur.close()
 
             # Get tracer data.
@@ -546,22 +566,35 @@ class CoverageData(SimpleReprMixin):
                 (file_ids[file], context_ids[context], fromno, tono)
                 for file, context, fromno, tono in arcs
             )
-            line_rows = (
-                (file_ids[file], context_ids[context], lineno)
-                for file, context, lineno in lines
-            )
+
+            # Get line data.
+            cur = conn.execute(
+                'select file.path, context.context, line_map.bitmap '
+                'from line_map '
+                'inner join file on file.id = line_map.file_id '
+                'inner join context on context.id = line_map.context_id'
+                )
+            for path, context, bitmap in cur:
+                key = (aliases.map(path), context)
+                bitmap = from_blob(bitmap)
+                if key in lines:
+                    bitmap = merge_bitmaps(lines[key], bitmap)
+                lines[key] = bitmap
+            cur.close()
 
             self._choose_lines_or_arcs(arcs=bool(arcs), lines=bool(lines))
 
+            # Write the combined data.
             conn.executemany(
                 'insert or ignore into arc '
                 '(file_id, context_id, fromno, tono) values (?, ?, ?, ?)',
                 arc_rows
             )
+            conn.execute("delete from line_map")
             conn.executemany(
-                'insert or ignore into line '
-                '(file_id, context_id, lineno) values (?, ?, ?)',
-                line_rows
+                "insert into line_map "
+                "(file_id, context_id, bitmap) values (?, ?, ?)",
+                [(file_ids[file], context_ids[context], to_blob(bitmap)) for (file, context), bitmap in lines.items()]
             )
             conn.executemany(
                 'insert or ignore into tracer (file_id, tracer) values (?, ?)',
@@ -677,15 +710,18 @@ class CoverageData(SimpleReprMixin):
             if file_id is None:
                 return None
             else:
-                query = "select distinct lineno from line where file_id = ?"
+                query = "select bitmap from line_map where file_id = ?"
                 data = [file_id]
                 context_ids = self._get_query_context_ids(contexts)
                 if context_ids is not None:
                     ids_array = ', '.join('?'*len(context_ids))
                     query += " and context_id in (" + ids_array + ")"
                     data += context_ids
-                linenos = con.execute(query, data)
-                return [lineno for lineno, in linenos]
+                bitmaps = list(con.execute(query, data))
+                nums = set()
+                for row in bitmaps:
+                    nums.update(bitmap_to_nums(from_blob(row[0])))
+                return sorted(nums)
 
     def arcs(self, filename, contexts=None):
         self._start_using()
@@ -730,18 +766,18 @@ class CoverageData(SimpleReprMixin):
                         lineno_contexts_map[tono].append(context)
             else:
                 query = (
-                    "select line.lineno, context.context "
-                    "from line, context "
-                    "where line.file_id = ? and line.context_id = context.id"
-                )
+                    "select l.bitmap, c.context from line_map l, context c "
+                    "where l.context_id = c.id "
+                    "and file_id = ?"
+                    )
                 data = [file_id]
                 context_ids = self._get_query_context_ids()
                 if context_ids is not None:
                     ids_array = ', '.join('?'*len(context_ids))
-                    query += " and line.context_id in (" + ids_array + ")"
+                    query += " and l.context_id in (" + ids_array + ")"
                     data += context_ids
-                for lineno, context in con.execute(query, data):
-                    if context not in lineno_contexts_map[lineno]:
+                for bitmap, context in con.execute(query, data):
+                    for lineno in bitmap_to_nums(from_blob(bitmap)):
                         lineno_contexts_map[lineno].append(context)
         return lineno_contexts_map
 
@@ -825,3 +861,29 @@ class SqliteDb(SimpleReprMixin):
     def dump(self):                                         # pragma: debugging
         """Return a multi-line string, the dump of the database."""
         return "\n".join(self.con.iterdump())
+
+
+@contract(nums='Iterable', returns='bytes')
+def nums_to_bitmap(nums):
+    """Convert `nums` (an iterable of ints) into a bitmap."""
+    nbytes = max(nums) // 8 + 1
+    b = bytearray(nbytes)
+    for num in nums:
+        b[num//8] |= 1 << num % 8
+    return bytes(b)
+
+@contract(bitmap='bytes', returns='list[int]')
+def bitmap_to_nums(bitmap):
+    """Convert a bitmap into a list of numbers."""
+    nums = []
+    for byte_i, byte in enumerate(bytes_to_ints(bitmap)):
+        for bit_i in range(8):
+            if (byte & (1 << bit_i)):
+                nums.append(byte_i * 8 + bit_i)
+    return nums
+
+@contract(map1='bytes', map2='bytes', returns='bytes')
+def merge_bitmaps(map1, map2):
+    """Merge two bitmaps"""
+    byte_pairs = zip_longest(bytes_to_ints(map1), bytes_to_ints(map2), fillvalue=0)
+    return binary_bytes(b1 | b2 for b1, b2 in byte_pairs)

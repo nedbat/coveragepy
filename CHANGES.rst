@@ -32,10 +32,16 @@ Unreleased
     information to each covered line.  Hovering over the "ctx" marker at the
     end of the line reveals a list of the contexts that covered the line.
 
-- Dynamic contexts with no data are no longer written to the database.
+- Database changes:
 
-- SQLite data storage is now faster.  There's no longer a reason to keep the
-  JSON data file code, so it has been removed.
+  - Line numbers are now stored in a much more compact way.  For each file and
+    context, a single binary string is stored with a bit per line number.  This
+    greatly improves memory use, but makes ad-hoc use difficult.
+
+  - Dynamic contexts with no data are no longer written to the database.
+
+  - SQLite data storage is now faster.  There's no longer a reason to keep the
+    JSON data file code, so it has been removed.
 
 - Changes to the `CoverageData` interface:
 
