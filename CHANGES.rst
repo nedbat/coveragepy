@@ -51,7 +51,7 @@ Version 5.0a6 --- 2019-07-16
   - SQLite data storage is now faster.  There's no longer a reason to keep the
     JSON data file code, so it has been removed.
 
-- Changes to the `CoverageData` interface:
+- Changes to the :class:`CoverageData` interface:
 
   - The new :meth:`CoverageData.dumps` method serializes the data to a string,
     and a corresponding :meth:`CoverageData.loads` method reconstitutes ths
@@ -59,12 +59,12 @@ Version 5.0a6 --- 2019-07-16
     so should only be used between two installations of the same version of
     coverage.py.
 
-  - The `CoverageData` constructor has a new argument, `no_disk` (default:
-    False).  Setting it to True prevents writing any data to the disk.  This is
-    useful for transient data objects.
+  - The :meth:`CoverageData constructor<CoverageData.__init__>` has a new
+    argument, `no_disk` (default: False).  Setting it to True prevents writing
+    any data to the disk.  This is useful for transient data objects.
 
 - Added the classmethod :meth:`Coverage.current` to get the latest started
-  `Coverage` instance.
+  Coverage instance.
 
 - Error handling during reporting has changed slightly.  All reporting methods
   now behave the same.  The ``--ignore-errors`` option keeps errors from
@@ -119,11 +119,11 @@ Version 5.0a5 --- 2019-05-07
 - Combining data stored in SQLite now goes about twice as fast, fixing `issue
   761`_.  Thanks, Stephan Richter.
 
-- The ``filename`` attribute on `CoverageData` object has been made private.
-  You can use the ``data_filename`` method to get the actual file name being
-  used to store data, and the ``base_filename`` method to get the original
-  filename before parallelizing suffixes were added.  This is part of fixing
-  `issue 708`_.
+- The ``filename`` attribute on :class:`CoverageData` objects has been made
+  private.  You can use the ``data_filename`` method to get the actual file
+  name being used to store data, and the ``base_filename`` method to get the
+  original filename before parallelizing suffixes were added.  This is part of
+  fixing `issue 708`_.
 
 - Line numbers in the HTML report now align properly with source lines, even
   when Chrome's minimum font size is set, fixing `issue 748`_.  Thanks Wen Ye.
