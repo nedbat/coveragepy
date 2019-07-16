@@ -17,8 +17,11 @@ development at the same time, like 4.5.x and 5.0.
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+
+.. _changes_50a6:
+
+Version 5.0a6 --- 2019-07-16
+----------------------------
 
 - Reporting on dynamic contexts. Big thanks to Stephan Richter and Albertas
   Agejevas for the contribution.
