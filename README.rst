@@ -17,7 +17,7 @@ Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been executed.
 
-.. |tideliftlogo| image:: https://nedbatchelder.com/pix/Tidelift_Logos_RGB_Tidelift_Shorthand_On-White_small.png
+.. |tideliftlogo| image:: https://nedbatchelder.com/pix/Tidelift_Logo_small.png
    :width: 75
    :alt: Tidelift
    :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
@@ -67,6 +67,15 @@ Contributing
 See the `Contributing section`_ of the docs.
 
 .. _Contributing section: https://coverage.readthedocs.io/en/latest/contributing.html
+
+
+Security
+--------
+
+To report a security vulnerability, please use the `Tidelift security
+contact`_.  Tidelift will coordinate the fix and disclosure.
+
+.. _Tidelift security contact: https://tidelift.com/security
 
 
 License
