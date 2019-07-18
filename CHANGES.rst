@@ -28,8 +28,8 @@ Unreleased
 Version 5.0a6 --- 2019-07-16
 ----------------------------
 
-- Reporting on dynamic contexts. Big thanks to Stephan Richter and Albertas
-  Agejevas for the contribution.
+- Reporting on contexts. Big thanks to Stephan Richter and Albertas Agejevas
+  for the contribution.
 
   - The ``--contexts`` option is available on the ``report`` and ``html``
     commands.  It's a comma-separated list of shell-style wildcards, selecting
