@@ -618,6 +618,8 @@ class CoverageData(SimpleReprMixin):
 
         """
         self._reset()
+        if self._no_disk:
+            return
         if self._debug.should('dataio'):
             self._debug.write("Erasing data file {!r}".format(self._filename))
         file_be_gone(self._filename)
