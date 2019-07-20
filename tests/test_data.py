@@ -7,6 +7,7 @@ import glob
 import os
 import os.path
 import random
+import re
 import sqlite3
 import threading
 
@@ -807,6 +808,33 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         # then this would try to use tables that no longer exist.
         # "no such table: meta"
         covdata2.add_lines(LINES_1)
+
+
+class DumpsLoadsTest(DataTestHelpers, CoverageTest):
+    """Tests of CoverageData.dumps and loads."""
+
+    run_in_temp_dir = False
+
+    def test_serialization(self):
+        covdata1 = CoverageData(no_disk=True)
+        covdata1.add_lines(LINES_1)
+        covdata1.add_lines(LINES_2)
+        serial = covdata1.dumps()
+
+        covdata2 = CoverageData(no_disk=True)
+        covdata2.loads(serial)
+        self.assert_line_counts(covdata2, SUMMARY_1_2)
+        self.assert_measured_files(covdata2, MEASURED_FILES_1_2)
+
+    def test_misfed_serialization(self):
+        covdata = CoverageData(no_disk=True)
+        bad_data = b'Hello, world!\x07 ' + b'z' * 100
+        msg = r"Unrecognized serialization: {} \(head of {} bytes\)".format(
+            re.escape(repr(bad_data[:40])),
+            len(bad_data),
+            )
+        with self.assertRaisesRegex(CoverageException, msg):
+            covdata.loads(bad_data)
 
 
 class BitmapOpTest(CoverageTest):
