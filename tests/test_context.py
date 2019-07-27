@@ -285,3 +285,8 @@ class QualnameTest(CoverageTest):
             self.skipTest("Old-style classes are only in Python 2")
         self.assertEqual(OldStyle().meth(), "tests.test_context.OldStyle.meth")
         self.assertEqual(OldChild().meth(), "tests.test_context.OldStyle.meth")
+
+    def test_bug_829(self):
+        # A class with a name like a function shouldn't confuse qualname_from_frame.
+        class test_something(object):
+            self.assertEqual(get_qualname(), None)

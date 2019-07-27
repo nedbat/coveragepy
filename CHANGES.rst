@@ -20,7 +20,10 @@ development at the same time, like 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Nothing yet.
+- A class named "test_something" no longer confuses the `test_function` dynamic
+  context setting.  Fixes `issue 829`_.
+
+.. _issue 829: https://github.com/nedbat/coveragepy/issues/829
 
 
 .. _changes_50a6:

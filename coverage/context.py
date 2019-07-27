@@ -52,7 +52,9 @@ def qualname_from_frame(frame):
         method = getattr(self, fname, None)
 
     if method is None:
-        func = frame.f_globals[fname]
+        func = frame.f_globals.get(fname)
+        if func is None:
+            return None
         return func.__module__ + '.' + fname
 
     func = getattr(method, '__func__', None)
