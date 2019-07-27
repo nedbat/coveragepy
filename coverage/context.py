@@ -46,18 +46,11 @@ def qualname_from_frame(frame):
     """Get a qualified name for the code running in `frame`."""
     co = frame.f_code
     fname = co.co_name
-    if not co.co_varnames:
-        func = frame.f_globals[fname]
-        return func.__module__ + '.' + fname
-
-    first_arg = co.co_varnames[0]
-    if co.co_argcount and first_arg == "self":
+    method = None
+    if co.co_argcount and co.co_varnames[0] == "self":
         self = frame.f_locals["self"]
-    else:
-        func = frame.f_globals[fname]
-        return func.__module__ + '.' + fname
+        method = getattr(self, fname, None)
 
-    method = getattr(self, fname, None)
     if method is None:
         func = frame.f_globals[fname]
         return func.__module__ + '.' + fname
