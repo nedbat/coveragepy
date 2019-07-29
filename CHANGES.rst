@@ -69,6 +69,9 @@ Version 5.0a6 --- 2019-07-16
 - Added the classmethod :meth:`Coverage.current` to get the latest started
   Coverage instance.
 
+- Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
+  `issue 828`_.
+
 - Error handling during reporting has changed slightly.  All reporting methods
   now behave the same.  The ``--ignore-errors`` option keeps errors from
   stopping the reporting, but files that couldn't parse as Python will always
@@ -76,7 +79,7 @@ Version 5.0a6 --- 2019-07-16
   the ``[run] disable_warnings`` configuration setting.
 
 - Coverage.py no longer fails if the user program deletes its current
-  directory, closing `issue 806`_.  Thanks, Dan Hemberger.
+  directory. Fixes `issue 806`_.  Thanks, Dan Hemberger.
 
 - The scrollbar markers in the HTML report now accurately show the highlighted
   lines, regardless of what categories of line are highlighted.
@@ -88,6 +91,7 @@ Version 5.0a6 --- 2019-07-16
 
 .. _ShiningPanda: https://wiki.jenkins.io/display/JENKINS/ShiningPanda+Plugin
 .. _issue 806: https://github.com/nedbat/coveragepy/pull/806
+.. _issue 828: https://github.com/nedbat/coveragepy/issues/828
 
 
 .. _changes_50a5:
