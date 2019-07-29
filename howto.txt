@@ -81,7 +81,7 @@
     - IF NOT PRE-RELEASE:
         - visit https://readthedocs.org/projects/coverage/builds/
         - wait for the new tag build to finish successfully.
-        - visit https://readthedocs.org/dashboard/coverage/versions/
+        - visit https://readthedocs.org/dashboard/coverage/advanced/
         - change the default version to the new version
 - Update Tidelift:
     - make upload_relnotes
