@@ -16,6 +16,17 @@ Change history for Coverage.py
     ..  ----------------------------
 
 
+.. _changes_454:
+
+Version 4.5.4 -- 2019-07-29
+---------------------------
+
+- Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
+  `issue 828`_.
+
+.. _issue 828: https://github.com/nedbat/coveragepy/issues/828
+
+
 .. _changes_453:
 
 Version 4.5.3 -- 2019-03-09
