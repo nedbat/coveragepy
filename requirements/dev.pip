@@ -22,4 +22,4 @@ unittest-mixins==1.4
 
 # for kitting.
 requests==2.18.4
-twine==1.9.1
+twine==1.13.0

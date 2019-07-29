@@ -77,7 +77,10 @@ manylinux:
 	docker run -it --init --rm -v `pwd`:/io quay.io/pypa/manylinux1_i686 /io/ci/manylinux.sh build
 
 kit_upload:
-	twine upload dist/*
+	twine upload --verbose dist/*
+
+test_upload:
+	twine upload --verbose --repository testpypi dist/*
 
 kit_local:
 	# pip.conf looks like this:
