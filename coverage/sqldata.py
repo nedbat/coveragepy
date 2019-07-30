@@ -86,14 +86,20 @@ CREATE TABLE tracer (
 """
 
 if env.PY2:
-    def to_blob(bytes):
-        return buffer(bytes)
+    def to_blob(b):
+        """Convert a bytestring into a type SQLite will accept for a blob."""
+        return buffer(b)        # pylint: disable=undefined-variable
+
     def from_blob(blob):
+        """Convert a blob read from SQLite into a bytestring."""
         return bytes(blob)
 else:
-    def to_blob(bytes):
-        return bytes
+    def to_blob(b):
+        """Convert a bytestring into a type SQLite will accept for a blob."""
+        return b
+
     def from_blob(blob):
+        """Convert a blob read from SQLite into a bytestring."""
         return blob
 
 
@@ -507,7 +513,8 @@ class CoverageData(SimpleReprMixin):
                 'inner join context on context.id = line_map.context_id'
                 )
             lines = {
-                (files[path], context): from_blob(numbits) for (path, context, numbits) in cur
+                (files[path], context): from_blob(numbits)
+                for (path, context, numbits) in cur
                 }
             cur.close()
 
