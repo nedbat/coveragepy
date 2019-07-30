@@ -3,35 +3,27 @@
 
 """Tests for coverage.numbits"""
 
-import random
+from hypothesis import given
+from hypothesis.strategies import sets, integers
 
 from coverage.numbits import nums_to_numbits, numbits_to_nums, merge_numbits
 
 from tests.coveragetest import CoverageTest
+
+# Hypothesis-generated line number data
+line_numbers = sets(integers(min_value=1, max_value=9999), min_size=1)
 
 class NumbitsOpTest(CoverageTest):
     """Tests of the numbits operations in numbits.py."""
 
     run_in_temp_dir = False
 
-    def numbers(self, r):
-        """Produce a list of numbers from a Random object."""
-        return list(set(r.randint(1, 1000) for _ in range(r.randint(100, 200))))
+    @given(line_numbers)
+    def test_conversion(self, nums):
+        nums2 = numbits_to_nums(nums_to_numbits(nums))
+        self.assertEqual(nums, set(nums2))
 
-    def test_conversion(self):
-        r = random.Random(1792)
-        for _ in range(10):
-            nums = self.numbers(r)
-            numbits = nums_to_numbits(nums)
-            self.assertEqual(sorted(numbits_to_nums(numbits)), sorted(nums))
-
-    def test_merging(self):
-        r = random.Random(314159)
-        for _ in range(10):
-            nums1 = self.numbers(r)
-            nums2 = self.numbers(r)
-            merged = numbits_to_nums(merge_numbits(nums_to_numbits(nums1), nums_to_numbits(nums2)))
-            all_nums = set()
-            all_nums.update(nums1)
-            all_nums.update(nums2)
-            self.assertEqual(sorted(all_nums), sorted(merged))
+    @given(line_numbers, line_numbers)
+    def test_merging(self, nums1, nums2):
+        merged = numbits_to_nums(merge_numbits(nums_to_numbits(nums1), nums_to_numbits(nums2)))
+        self.assertEqual(nums1 | nums2, set(merged))
