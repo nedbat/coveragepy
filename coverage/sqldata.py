@@ -27,7 +27,7 @@ from coverage.numbits import nums_to_numbits, numbits_to_nums, merge_numbits
 
 os = isolate_module(os)
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 SCHEMA = """
 CREATE TABLE coverage_schema (
@@ -37,6 +37,7 @@ CREATE TABLE coverage_schema (
     -- 1: Released in 5.0a2
     -- 2: Added contexts in 5.0a3.
     -- 3: Replaced line table with line_map table.
+    -- 4: Changed line_map.bitmap to line_map.numbits.
 );
 
 CREATE TABLE meta (
@@ -64,7 +65,7 @@ CREATE TABLE line_map (
     -- If recording lines, a row per context per line executed.
     file_id integer,            -- foreign key to `file`.
     context_id integer,         -- foreign key to `context`.
-    bitmap blob,                -- Nth bit represents line N.
+    numbits blob,               -- see the numbits functions in coverage.numbits
     unique(file_id, context_id)
 );
 
@@ -278,7 +279,9 @@ class CoverageData(SimpleReprMixin):
         if self._debug.should('dataio'):
             self._debug.write("Loading data into data file {!r}".format(self._filename))
         if data[:1] != b'z':
-            raise CoverageException("Unrecognized serialization: {!r} (head of {} bytes)".format(data[:40], len(data)))
+            raise CoverageException(
+                "Unrecognized serialization: {!r} (head of {} bytes)".format(data[:40], len(data))
+                )
         script = to_string(zlib.decompress(data[1:]))
         self._dbs[get_thread_id()] = db = SqliteDb(self._filename, self._debug)
         with db:
@@ -357,13 +360,14 @@ class CoverageData(SimpleReprMixin):
             for filename, linenos in iitems(line_data):
                 linemap = nums_to_numbits(linenos)
                 file_id = self._file_id(filename, add=True)
-                query = "select bitmap from line_map where file_id = ? and context_id = ?"
+                query = "select numbits from line_map where file_id = ? and context_id = ?"
                 existing = list(con.execute(query, (file_id, self._current_context_id)))
                 if existing:
                     linemap = merge_numbits(linemap, from_blob(existing[0][0]))
 
                 con.execute(
-                    "insert or replace into line_map (file_id, context_id, bitmap) values (?, ?, ?)",
+                    "insert or replace into line_map "
+                    " (file_id, context_id, numbits) values (?, ?, ?)",
                     (file_id, self._current_context_id, to_blob(linemap)),
                 )
 
@@ -497,12 +501,14 @@ class CoverageData(SimpleReprMixin):
 
             # Get line data.
             cur = conn.execute(
-                'select file.path, context.context, line_map.bitmap '
+                'select file.path, context.context, line_map.numbits '
                 'from line_map '
                 'inner join file on file.id = line_map.file_id '
                 'inner join context on context.id = line_map.context_id'
                 )
-            lines = {(files[path], context): from_blob(bitmap) for (path, context, bitmap) in cur}
+            lines = {
+                (files[path], context): from_blob(numbits) for (path, context, numbits) in cur
+                }
             cur.close()
 
             # Get tracer data.
@@ -574,17 +580,17 @@ class CoverageData(SimpleReprMixin):
 
             # Get line data.
             cur = conn.execute(
-                'select file.path, context.context, line_map.bitmap '
+                'select file.path, context.context, line_map.numbits '
                 'from line_map '
                 'inner join file on file.id = line_map.file_id '
                 'inner join context on context.id = line_map.context_id'
                 )
-            for path, context, bitmap in cur:
+            for path, context, numbits in cur:
                 key = (aliases.map(path), context)
-                bitmap = from_blob(bitmap)
+                numbits = from_blob(numbits)
                 if key in lines:
-                    bitmap = merge_numbits(lines[key], bitmap)
-                lines[key] = bitmap
+                    numbits = merge_numbits(lines[key], numbits)
+                lines[key] = numbits
             cur.close()
 
             self._choose_lines_or_arcs(arcs=bool(arcs), lines=bool(lines))
@@ -598,8 +604,11 @@ class CoverageData(SimpleReprMixin):
             conn.execute("delete from line_map")
             conn.executemany(
                 "insert into line_map "
-                "(file_id, context_id, bitmap) values (?, ?, ?)",
-                [(file_ids[file], context_ids[context], to_blob(bitmap)) for (file, context), bitmap in lines.items()]
+                "(file_id, context_id, numbits) values (?, ?, ?)",
+                [
+                    (file_ids[file], context_ids[context], to_blob(numbits))
+                    for (file, context), numbits in lines.items()
+                ]
             )
             conn.executemany(
                 'insert or ignore into tracer (file_id, tracer) values (?, ?)',
@@ -717,7 +726,7 @@ class CoverageData(SimpleReprMixin):
             if file_id is None:
                 return None
             else:
-                query = "select bitmap from line_map where file_id = ?"
+                query = "select numbits from line_map where file_id = ?"
                 data = [file_id]
                 context_ids = self._get_query_context_ids(contexts)
                 if context_ids is not None:
@@ -773,7 +782,7 @@ class CoverageData(SimpleReprMixin):
                         lineno_contexts_map[tono].append(context)
             else:
                 query = (
-                    "select l.bitmap, c.context from line_map l, context c "
+                    "select l.numbits, c.context from line_map l, context c "
                     "where l.context_id = c.id "
                     "and file_id = ?"
                     )
@@ -783,8 +792,8 @@ class CoverageData(SimpleReprMixin):
                     ids_array = ', '.join('?'*len(context_ids))
                     query += " and l.context_id in (" + ids_array + ")"
                     data += context_ids
-                for bitmap, context in con.execute(query, data):
-                    for lineno in numbits_to_nums(from_blob(bitmap)):
+                for numbits, context in con.execute(query, data):
+                    for lineno in numbits_to_nums(from_blob(numbits)):
                         lineno_contexts_map[lineno].append(context)
         return lineno_contexts_map
 
