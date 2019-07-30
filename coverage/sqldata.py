@@ -17,13 +17,13 @@ import sqlite3
 import sys
 import zlib
 
-from coverage.backward import get_thread_id, iitems
-from coverage.backward import bytes_to_ints, binary_bytes, zip_longest, to_bytes, to_string
+from coverage.backward import get_thread_id, iitems, to_bytes, to_string
 from coverage.debug import NoDebugging, SimpleReprMixin
 from coverage import env
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone, filename_suffix, isolate_module
 from coverage.misc import contract
+from coverage.numbits import nums_to_numbits, numbits_to_nums, merge_numbits
 
 os = isolate_module(os)
 
@@ -355,12 +355,12 @@ class CoverageData(SimpleReprMixin):
         with self._connect() as con:
             self._set_context_id()
             for filename, linenos in iitems(line_data):
-                linemap = nums_to_bitmap(linenos)
+                linemap = nums_to_numbits(linenos)
                 file_id = self._file_id(filename, add=True)
                 query = "select bitmap from line_map where file_id = ? and context_id = ?"
                 existing = list(con.execute(query, (file_id, self._current_context_id)))
                 if existing:
-                    linemap = merge_bitmaps(linemap, from_blob(existing[0][0]))
+                    linemap = merge_numbits(linemap, from_blob(existing[0][0]))
 
                 con.execute(
                     "insert or replace into line_map (file_id, context_id, bitmap) values (?, ?, ?)",
@@ -583,7 +583,7 @@ class CoverageData(SimpleReprMixin):
                 key = (aliases.map(path), context)
                 bitmap = from_blob(bitmap)
                 if key in lines:
-                    bitmap = merge_bitmaps(lines[key], bitmap)
+                    bitmap = merge_numbits(lines[key], bitmap)
                 lines[key] = bitmap
             cur.close()
 
@@ -727,7 +727,7 @@ class CoverageData(SimpleReprMixin):
                 bitmaps = list(con.execute(query, data))
                 nums = set()
                 for row in bitmaps:
-                    nums.update(bitmap_to_nums(from_blob(row[0])))
+                    nums.update(numbits_to_nums(from_blob(row[0])))
                 return sorted(nums)
 
     def arcs(self, filename, contexts=None):
@@ -784,7 +784,7 @@ class CoverageData(SimpleReprMixin):
                     query += " and l.context_id in (" + ids_array + ")"
                     data += context_ids
                 for bitmap, context in con.execute(query, data):
-                    for lineno in bitmap_to_nums(from_blob(bitmap)):
+                    for lineno in numbits_to_nums(from_blob(bitmap)):
                         lineno_contexts_map[lineno].append(context)
         return lineno_contexts_map
 
@@ -868,29 +868,3 @@ class SqliteDb(SimpleReprMixin):
     def dump(self):
         """Return a multi-line string, the dump of the database."""
         return "\n".join(self.con.iterdump())
-
-
-@contract(nums='Iterable', returns='bytes')
-def nums_to_bitmap(nums):
-    """Convert `nums` (an iterable of ints) into a bitmap."""
-    nbytes = max(nums) // 8 + 1
-    b = bytearray(nbytes)
-    for num in nums:
-        b[num//8] |= 1 << num % 8
-    return bytes(b)
-
-@contract(bitmap='bytes', returns='list[int]')
-def bitmap_to_nums(bitmap):
-    """Convert a bitmap into a list of numbers."""
-    nums = []
-    for byte_i, byte in enumerate(bytes_to_ints(bitmap)):
-        for bit_i in range(8):
-            if (byte & (1 << bit_i)):
-                nums.append(byte_i * 8 + bit_i)
-    return nums
-
-@contract(map1='bytes', map2='bytes', returns='bytes')
-def merge_bitmaps(map1, map2):
-    """Merge two bitmaps"""
-    byte_pairs = zip_longest(bytes_to_ints(map1), bytes_to_ints(map2), fillvalue=0)
-    return binary_bytes(b1 | b2 for b1, b2 in byte_pairs)
