@@ -6,7 +6,9 @@
 from hypothesis import given
 from hypothesis.strategies import sets, integers
 
-from coverage.numbits import nums_to_numbits, numbits_to_nums, merge_numbits
+from coverage.numbits import (
+    nums_to_numbits, numbits_to_nums, merge_numbits, numbits_any_intersection,
+    )
 
 from tests.coveragetest import CoverageTest
 
@@ -27,3 +29,9 @@ class NumbitsOpTest(CoverageTest):
     def test_merging(self, nums1, nums2):
         merged = numbits_to_nums(merge_numbits(nums_to_numbits(nums1), nums_to_numbits(nums2)))
         self.assertEqual(nums1 | nums2, set(merged))
+
+    @given(line_numbers, line_numbers)
+    def test_any_intersection(self, nums1, nums2):
+        inter = numbits_any_intersection(nums_to_numbits(nums1), nums_to_numbits(nums2))
+        expect = bool(nums1 & nums2)
+        self.assertEqual(expect, bool(inter))

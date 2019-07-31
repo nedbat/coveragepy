@@ -40,3 +40,9 @@ def merge_numbits(numbits1, numbits2):
     """Merge two numbits"""
     byte_pairs = zip_longest(bytes_to_ints(numbits1), bytes_to_ints(numbits2), fillvalue=0)
     return binary_bytes(b1 | b2 for b1, b2 in byte_pairs)
+
+@contract(numbits1='bytes', numbits2='bytes', returns='bool')
+def numbits_any_intersection(numbits1, numbits2):
+    """Is there any number that appears in both numbits?"""
+    byte_pairs = zip_longest(bytes_to_ints(numbits1), bytes_to_ints(numbits2), fillvalue=0)
+    return any(b1 & b2 for b1, b2 in byte_pairs)
