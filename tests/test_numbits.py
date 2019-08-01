@@ -9,12 +9,14 @@ from hypothesis.strategies import sets, integers
 from coverage import env
 from coverage.numbits import (
     nums_to_numbits, numbits_to_nums, merge_numbits, numbits_any_intersection,
+    num_in_numbits,
     )
 
 from tests.coveragetest import CoverageTest
 
 # Hypothesis-generated line number data
-line_numbers = sets(integers(min_value=1, max_value=9999), min_size=1)
+line_number = integers(min_value=1, max_value=9999)
+line_numbers = sets(line_number, min_size=1)
 
 # When coverage-testing ourselves, hypothesis complains about a test being
 # flaky because the first run exceeds the deadline (and fails), and the second
@@ -47,3 +49,10 @@ class NumbitsOpTest(CoverageTest):
         inter = numbits_any_intersection(nums_to_numbits(nums1), nums_to_numbits(nums2))
         expect = bool(nums1 & nums2)
         self.assertEqual(expect, bool(inter))
+
+    @given(line_number, line_numbers)
+    @settings(default_settings)
+    def test_num_in_numbits(self, num, nums):
+        numbits = nums_to_numbits(nums)
+        is_in = num_in_numbits(num, numbits)
+        self.assertEqual(num in nums, is_in)

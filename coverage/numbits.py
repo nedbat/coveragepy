@@ -12,13 +12,13 @@ work with those binary blobs of data.
 
 """
 
-from coverage.backward import bytes_to_ints, binary_bytes, zip_longest
+from coverage.backward import byte_to_int, bytes_to_ints, binary_bytes, zip_longest
 from coverage.misc import contract
 
 
 @contract(nums='Iterable', returns='bytes')
 def nums_to_numbits(nums):
-    """Convert `nums` (an iterable of ints) into a numbits."""
+    """Convert `nums` (a non-empty iterable of ints) into a numbits."""
     nbytes = max(nums) // 8 + 1
     b = bytearray(nbytes)
     for num in nums:
@@ -46,3 +46,11 @@ def numbits_any_intersection(numbits1, numbits2):
     """Is there any number that appears in both numbits?"""
     byte_pairs = zip_longest(bytes_to_ints(numbits1), bytes_to_ints(numbits2), fillvalue=0)
     return any(b1 & b2 for b1, b2 in byte_pairs)
+
+@contract(num='int', numbits='bytes', returns='bool')
+def num_in_numbits(num, numbits):
+    """Does the integer `num` appear in `numbits`?"""
+    nbyte, nbit = divmod(num, 8)
+    if nbyte > len(numbits):
+        return False
+    return bool(byte_to_int(numbits[nbyte]) & (1 << nbit))
