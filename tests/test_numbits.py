@@ -15,8 +15,8 @@ from coverage.numbits import (
 from tests.coveragetest import CoverageTest
 
 # Hypothesis-generated line number data
-line_number = integers(min_value=1, max_value=9999)
-line_numbers = sets(line_number, min_size=1)
+line_numbers = integers(min_value=1, max_value=9999)
+line_number_sets = sets(line_numbers, min_size=1)
 
 # When coverage-testing ourselves, hypothesis complains about a test being
 # flaky because the first run exceeds the deadline (and fails), and the second
@@ -31,26 +31,26 @@ class NumbitsOpTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    @given(line_numbers)
+    @given(line_number_sets)
     @settings(default_settings)
     def test_conversion(self, nums):
         nums2 = numbits_to_nums(nums_to_numbits(nums))
         self.assertEqual(nums, set(nums2))
 
-    @given(line_numbers, line_numbers)
+    @given(line_number_sets, line_number_sets)
     @settings(default_settings)
     def test_merging(self, nums1, nums2):
         merged = numbits_to_nums(merge_numbits(nums_to_numbits(nums1), nums_to_numbits(nums2)))
         self.assertEqual(nums1 | nums2, set(merged))
 
-    @given(line_numbers, line_numbers)
+    @given(line_number_sets, line_number_sets)
     @settings(default_settings)
     def test_any_intersection(self, nums1, nums2):
         inter = numbits_any_intersection(nums_to_numbits(nums1), nums_to_numbits(nums2))
         expect = bool(nums1 & nums2)
         self.assertEqual(expect, bool(inter))
 
-    @given(line_number, line_numbers)
+    @given(line_numbers, line_number_sets)
     @settings(default_settings)
     def test_num_in_numbits(self, num, nums):
         numbits = nums_to_numbits(nums)
