@@ -3,7 +3,7 @@
 
 """Tests for coverage.numbits"""
 
-from hypothesis import given, settings
+from hypothesis import example, given, settings
 from hypothesis.strategies import sets, integers
 
 from coverage import env
@@ -52,6 +52,7 @@ class NumbitsOpTest(CoverageTest):
 
     @given(line_numbers, line_number_sets)
     @settings(default_settings)
+    @example(152, {144})
     def test_num_in_numbits(self, num, nums):
         numbits = nums_to_numbits(nums)
         is_in = num_in_numbits(num, numbits)

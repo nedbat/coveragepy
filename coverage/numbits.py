@@ -51,6 +51,6 @@ def numbits_any_intersection(numbits1, numbits2):
 def num_in_numbits(num, numbits):
     """Does the integer `num` appear in `numbits`?"""
     nbyte, nbit = divmod(num, 8)
-    if nbyte > len(numbits):
+    if nbyte >= len(numbits):
         return False
     return bool(byte_to_int(numbits[nbyte]) & (1 << nbit))
