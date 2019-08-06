@@ -27,7 +27,7 @@ from coverage.numbits import nums_to_numbits, numbits_to_nums, merge_numbits
 
 os = isolate_module(os)
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 SCHEMA = """
 CREATE TABLE coverage_schema (
@@ -38,6 +38,7 @@ CREATE TABLE coverage_schema (
     -- 2: Added contexts in 5.0a3.
     -- 3: Replaced line table with line_map table.
     -- 4: Changed line_map.bitmap to line_map.numbits.
+    -- 5: Added foreign key declarations.
 );
 
 CREATE TABLE meta (
@@ -66,6 +67,8 @@ CREATE TABLE line_map (
     file_id integer,            -- foreign key to `file`.
     context_id integer,         -- foreign key to `context`.
     numbits blob,               -- see the numbits functions in coverage.numbits
+    foreign key (file_id) references file (id),
+    foreign key (context_id) references context (id),
     unique(file_id, context_id)
 );
 
@@ -75,13 +78,16 @@ CREATE TABLE arc (
     context_id integer,         -- foreign key to `context`.
     fromno integer,             -- line number jumped from.
     tono integer,               -- line number jumped to.
+    foreign key (file_id) references file (id),
+    foreign key (context_id) references context (id),
     unique(file_id, context_id, fromno, tono)
 );
 
 CREATE TABLE tracer (
     -- A row per file indicating the tracer used for that file.
     file_id integer primary key,
-    tracer text
+    tracer text,
+    foreign key (file_id) references file (id)
 );
 """
 
