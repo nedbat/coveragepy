@@ -14,3 +14,6 @@ hypothesis==4.32.1
 # Our testing mixins
 unittest-mixins==1.6
 #-e/Users/ned/unittest_mixins
+
+# Just so I have a debugger if I want it
+pudb==2019.1

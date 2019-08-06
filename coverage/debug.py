@@ -335,7 +335,7 @@ def break_in_pudb(func):                                    # pragma: debugging
     """A function decorator to stop in the debugger for each call."""
     @functools.wraps(func)
     def _wrapper(*args, **kwargs):
-        import pudb                 # pylint: disable=import-error
+        import pudb
         sys.stdout = sys.__stdout__
         pudb.set_trace()
         return func(*args, **kwargs)
