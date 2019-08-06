@@ -27,7 +27,7 @@ from coverage.numbits import nums_to_numbits, numbits_to_nums, merge_numbits
 
 os = isolate_module(os)
 
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 
 SCHEMA = """
 CREATE TABLE coverage_schema (
@@ -39,27 +39,31 @@ CREATE TABLE coverage_schema (
     -- 3: Replaced line table with line_map table.
     -- 4: Changed line_map.bitmap to line_map.numbits.
     -- 5: Added foreign key declarations.
+    -- 6: Key-value in meta.
 );
 
 CREATE TABLE meta (
-    -- One row, to record some metadata about the data
-    has_lines boolean,      -- Is this data recording lines?
-    has_arcs boolean,       -- .. or branches?
-    sys_argv text           -- The coverage command line that recorded the data.
+    -- Key-value pairs, to record metadata about the data
+    key text,
+    value text,
+    unique (key)
+    -- Keys:
+    --  'has_arcs' boolean      -- Is this data recording branches?
+    --  'sys_argv' text         -- The coverage command line that recorded the data.
 );
 
 CREATE TABLE file (
     -- A row per file measured.
     id integer primary key,
     path text,
-    unique(path)
+    unique (path)
 );
 
 CREATE TABLE context (
     -- A row per context measured.
     id integer primary key,
     context text,
-    unique(context)
+    unique (context)
 );
 
 CREATE TABLE line_map (
@@ -69,7 +73,7 @@ CREATE TABLE line_map (
     numbits blob,               -- see the numbits functions in coverage.numbits
     foreign key (file_id) references file (id),
     foreign key (context_id) references context (id),
-    unique(file_id, context_id)
+    unique (file_id, context_id)
 );
 
 CREATE TABLE arc (
@@ -80,7 +84,7 @@ CREATE TABLE arc (
     tono integer,               -- line number jumped to.
     foreign key (file_id) references file (id),
     foreign key (context_id) references context (id),
-    unique(file_id, context_id, fromno, tono)
+    unique (file_id, context_id, fromno, tono)
 );
 
 CREATE TABLE tracer (
@@ -226,8 +230,8 @@ class CoverageData(SimpleReprMixin):
             db.executescript(SCHEMA)
             db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
             db.execute(
-                "insert into meta (has_lines, has_arcs, sys_argv) values (?, ?, ?)",
-                (self._has_lines, self._has_arcs, str(getattr(sys, 'argv', None)))
+                "insert into meta (key, value) values (?, ?)",
+                ('sys_argv', str(getattr(sys, 'argv', None)))
             )
 
     def _open_db(self):
@@ -254,8 +258,9 @@ class CoverageData(SimpleReprMixin):
                         )
                     )
 
-            for row in db.execute("select has_lines, has_arcs from meta"):
-                self._has_lines, self._has_arcs = row
+            for row in db.execute("select value from meta where key = 'has_arcs'"):
+                self._has_arcs = bool(int(row[0]))
+                self._has_lines = not self._has_arcs
 
             for path, id in db.execute("select path, id from file"):
                 self._file_map[path] = id
@@ -419,7 +424,10 @@ class CoverageData(SimpleReprMixin):
             self._has_lines = lines
             self._has_arcs = arcs
             with self._connect() as con:
-                con.execute("update meta set has_lines = ?, has_arcs = ?", (lines, arcs))
+                con.execute(
+                    "insert into meta (key, value) values (?, ?)",
+                    ('has_arcs', str(int(arcs)))
+                )
 
     def add_file_tracers(self, file_tracers):
         """Add per-file plugin information.
