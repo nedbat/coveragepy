@@ -10,6 +10,7 @@
 # TODO: run_info
 
 import collections
+import datetime
 import glob
 import itertools
 import os
@@ -24,6 +25,7 @@ from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone, filename_suffix, isolate_module
 from coverage.misc import contract
 from coverage.numbits import nums_to_numbits, numbits_to_nums, merge_numbits
+from coverage.version import __version__
 
 os = isolate_module(os)
 
@@ -50,6 +52,8 @@ CREATE TABLE meta (
     -- Keys:
     --  'has_arcs' boolean      -- Is this data recording branches?
     --  'sys_argv' text         -- The coverage command line that recorded the data.
+    --  'version' text          -- The version of coverage.py that made the file.
+    --  'when' text             -- Datetime when the file was created.
 );
 
 CREATE TABLE file (
@@ -229,9 +233,13 @@ class CoverageData(SimpleReprMixin):
         with db:
             db.executescript(SCHEMA)
             db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
-            db.execute(
+            db.executemany(
                 "insert into meta (key, value) values (?, ?)",
-                ('sys_argv', str(getattr(sys, 'argv', None)))
+                [
+                    ('sys_argv', str(getattr(sys, 'argv', None))),
+                    ('version', __version__),
+                    ('when', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
+                ]
             )
 
     def _open_db(self):
