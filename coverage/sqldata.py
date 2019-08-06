@@ -31,17 +31,18 @@ os = isolate_module(os)
 
 SCHEMA_VERSION = 6
 
+# Schema versions:
+# 1: Released in 5.0a2
+# 2: Added contexts in 5.0a3.
+# 3: Replaced line table with line_map table.
+# 4: Changed line_map.bitmap to line_map.numbits.
+# 5: Added foreign key declarations.
+# 6: Key-value in meta.
+
 SCHEMA = """
 CREATE TABLE coverage_schema (
-    -- One row, to record the version of the schema store in this db.
+    -- One row, to record the version of the schema in this db.
     version integer
-    -- Schema versions:
-    -- 1: Released in 5.0a2
-    -- 2: Added contexts in 5.0a3.
-    -- 3: Replaced line table with line_map table.
-    -- 4: Changed line_map.bitmap to line_map.numbits.
-    -- 5: Added foreign key declarations.
-    -- 6: Key-value in meta.
 );
 
 CREATE TABLE meta (
