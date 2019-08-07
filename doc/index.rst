@@ -40,7 +40,7 @@ not.
     * IronPython 2.7.7, though only for running code, not reporting.
 
     **This is a pre-release build.  The usual warnings about possible bugs
-    apply.** The latest stable version is coverage.py 4.5.3, `described here`_.
+    apply.** The latest stable version is coverage.py 4.5.4, `described here`_.
 
 .. _described here: http://coverage.readthedocs.io/
 

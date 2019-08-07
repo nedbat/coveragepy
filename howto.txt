@@ -13,7 +13,8 @@
     - "New in x.y:"
     - Python versions supported
 - Update docs
-    - Version, date and python versions in doc/index.rst
+    - Version, date and Python versions in doc/index.rst
+    - Version of latest stable release in doc/index.rst
     - Version and copyright date in doc/conf.py
         - Look for CHANGEME comments
     - Don't forget the man page: doc/python-coverage.1.txt
