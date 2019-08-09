@@ -175,6 +175,11 @@ try:
 except AttributeError:
     PYC_MAGIC_NUMBER = imp.get_magic()
 
+try:
+    from importlib.machinery import ModuleSpec
+except ImportError:
+    ModuleSpec = None
+
 
 try:
     from types import SimpleNamespace

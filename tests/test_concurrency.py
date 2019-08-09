@@ -462,6 +462,83 @@ class MultiprocessingTest(CoverageTest):
         self.try_multiprocessing_code_with_branching(code, expected_out)
 
 
+MULTI_UNITTEST_SPAWN_CODE = """
+    from unittest import TestCase
+    import multiprocessing as mp
+
+
+    class TestPool(TestCase):
+
+        def setUp(self):
+            ctx = mp.get_context('spawn')
+            self.pool = ctx.Pool(processes={NPROCS})
+
+        def tearDown(self):
+            self.pool.terminate()
+
+        def test_pool(self):
+            result = self.pool.map_async(work, [_ for _ in range({UPTO})])
+            total = result.get(2)
+            print('total = %s' % (total,))
+
+    """
+
+
+class MultiprocessingUnittestTest(CoverageTest):
+    """Test support of the multiprocessing module running in a unit test."""
+
+    def setUp(self):
+        if not multiprocessing:
+            self.skipTest("No multiprocessing in this Python")      # pragma: only jython
+        super(MultiprocessingUnittestTest, self).setUp()
+
+    def try_multiprocessing_unittest(
+        self, code, expected_out, the_module, concurrency="multiprocessing"
+    ):
+        """Run code using multiprocessing, it should produce `expected_out`."""
+        result = self.make_file("multi.py", code)
+        self.make_file(".coveragerc", """\
+            [run]
+            concurrency = %s
+            source = .
+            """ % concurrency)
+
+        status, out = self.run_command_status("coverage run -m unittest multi.py")
+        self.assertEqual(status, 0)
+        expected_cant_trace = cant_trace_msg(concurrency, the_module)
+
+        if expected_cant_trace is not None:
+            self.assertEqual(out, expected_cant_trace)
+        else:
+            self.assertIn(expected_out, out)
+            self.assertIn('Ran 1 test in ', out)
+            self.assertIn('OK', out)
+
+            out = self.run_command("coverage combine")
+            self.assertEqual(out, "")
+            out = self.run_command("coverage report -m")
+
+            last_line = self.squeezed_lines(out)[-1]
+            # the function run in the spawned process is not covered: not sure if this is right
+            self.assertRegex(last_line, r"multi.py 17 4 76% 4-8")
+
+    def test_multiprocessing_unittest_simple(self):
+        nprocs = 1
+        upto = 1
+        code = (SQUARE_OR_CUBE_WORK + MULTI_UNITTEST_SPAWN_CODE).format(NPROCS=nprocs, UPTO=upto)
+        total = [x*x if x%2 else x*x*x for x in range(upto)]
+        expected_out = "total = {total}".format(total=total)
+        self.try_multiprocessing_unittest(code, expected_out, threading)
+
+    def test_multiprocessing_unittest_multiple(self):
+        nprocs = 3
+        upto = 30
+        code = (SQUARE_OR_CUBE_WORK + MULTI_UNITTEST_SPAWN_CODE).format(NPROCS=nprocs, UPTO=upto)
+        total = [x*x if x%2 else x*x*x for x in range(upto)]
+        expected_out = "total = {total}".format(total=total)
+        self.try_multiprocessing_unittest(code, expected_out, threading)
+
+
 def test_coverage_stop_in_threads():
     has_started_coverage = []
     has_stopped_coverage = []

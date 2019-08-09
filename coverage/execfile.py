@@ -12,7 +12,7 @@ import types
 
 from coverage import env
 from coverage.backward import BUILTINS
-from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
+from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec, ModuleSpec
 from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
 from coverage.phystokens import compile_unicode
 from coverage.python import get_python_source
@@ -175,6 +175,12 @@ class PyRunner(object):
             main_mod.__loader__ = DummyLoader(self.modulename)
 
         main_mod.__builtins__ = BUILTINS
+        if ModuleSpec is not None:
+            main_mod.__spec__ = ModuleSpec(
+                '__main__',
+                main_mod.__loader__,
+                origin=main_mod.__file__,
+                is_package=self.package)
 
         # Set sys.argv properly.
         sys.argv = self.args
