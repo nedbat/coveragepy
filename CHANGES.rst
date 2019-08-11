@@ -20,6 +20,10 @@ development at the same time, like 4.5.x and 5.0.
 Unreleased
 ----------
 
+- The compact line number representation introduced in 5.0a6 is called a
+  "numbits."  The coverage.numbits module provides functions for working with
+  them.
+
 - A class named "test_something" no longer confuses the `test_function` dynamic
   context setting.  Fixes `issue 829`_.
 
