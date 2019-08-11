@@ -167,6 +167,20 @@ class DebugPluginWrapper(CoveragePlugin):
             reporter = DebugFileReporterWrapper(filename, reporter, debug)
         return reporter
 
+    def dynamic_context(self, frame):
+        context = self.plugin.dynamic_context(frame)
+        self.debug.write("dynamic_context(%r) --> %r" % (frame, context))
+        return context
+
+    def find_executable_files(self, src_dir):
+        executable_files = self.plugin.find_executable_files(src_dir)
+        self.debug.write("find_executable_files(%r) --> %r" % (src_dir, executable_files))
+        return executable_files
+
+    def configure(self, config):
+        self.debug.write("configure(%r)" % (config,))
+        self.plugin.configure(config)
+
     def sys_info(self):
         return self.plugin.sys_info()
 

@@ -30,7 +30,11 @@ Unreleased
 - Fixed an unusual tokenizing issue with backslashes in comments.  Fixes
   `issue 822`_.
 
+- `debug=plugin` didn't properly support configuration or dynamic context
+  plugins, but now it does, closing `issue 834`_.
+
 .. _issue 822: https://github.com/nedbat/coveragepy/issues/822
+.. _issue 834: https://github.com/nedbat/coveragepy/issues/834
 .. _issue 829: https://github.com/nedbat/coveragepy/issues/829
 
 
