@@ -114,8 +114,8 @@ uninstall:
 
 # Documentation
 
-SPHINXBUILD = .tox/doc/bin/sphinx-build
-SPHINXOPTS = -a -E doc
+SPHINXOPTS = -aE
+SPHINXBUILD = .tox/doc/bin/sphinx-build $(SPHINXOPTS)
 WEBHOME = ~/web/stellated/
 WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
 WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
@@ -124,12 +124,12 @@ docreqs:
 	tox -q -e doc --notest
 
 dochtml: docreqs
-	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
+	$(SPHINXBUILD) -b html doc doc/_build/html
 	@echo
 	@echo "Build finished. The HTML pages are in doc/_build/html."
 
 docspell: docreqs
-	$(SPHINXBUILD) -b spelling $(SPHINXOPTS) doc/_spell
+	$(SPHINXBUILD) -b spelling doc doc/_spell
 
 publish:
 	rm -f $(WEBSAMPLE)/*.*
@@ -141,5 +141,6 @@ publishbeta:
 	mkdir -p $(WEBSAMPLEBETA)
 	cp doc/sample_html_beta/*.* $(WEBSAMPLEBETA)
 
-upload_relnotes:
-	python ci/upload_relnotes.py CHANGES.rst pypi/coverage
+upload_relnotes: docreqs
+	$(SPHINXBUILD) -b rst doc /tmp/rst_rst
+	python ci/upload_relnotes.py /tmp/rst_rst/changes.rst pypi/coverage

@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinxcontrib.spelling',
     'sphinx.ext.intersphinx',
+    'sphinx_rst_builder',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
