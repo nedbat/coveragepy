@@ -2,7 +2,8 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-#
+"""Sphinx configuration."""
+
 # coverage.py documentation build configuration file, created by
 # sphinx-quickstart on Wed May 13 22:18:33 2009.
 #
@@ -14,7 +15,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import os
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -33,6 +34,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
     'sphinxcontrib.spelling',
+    'sphinx.ext.intersphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -49,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Coverage.py'
-copyright = u'2009\N{EN DASH}2019, Ned Batchelder.'     # CHANGEME
+copyright = u'2009\N{EN DASH}2019, Ned Batchelder.'     # CHANGEME  # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -96,6 +98,10 @@ pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    }
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -189,6 +195,7 @@ autoclass_content = "class"
 prerelease = bool(max(release).isalpha())
 
 def setup(app):
+    """Configure Sphinx"""
     app.add_stylesheet('coverage.css')
     app.add_config_value('prerelease', False, 'env')
     print("** Prerelease = %r" % prerelease)

@@ -114,21 +114,21 @@ uninstall:
 
 # Documentation
 
-SPHINXBUILD = sphinx-build
+SPHINXBUILD = .tox/doc/bin/sphinx-build
 SPHINXOPTS = -a -E doc
 WEBHOME = ~/web/stellated/
 WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
 WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
 
 docreqs:
-	pip install -r doc/requirements.pip
+	tox -q -e doc --notest
 
-dochtml:
-	PYTHONPATH=$(CURDIR) $(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
+dochtml: docreqs
+	$(SPHINXBUILD) -b html $(SPHINXOPTS) doc/_build/html
 	@echo
 	@echo "Build finished. The HTML pages are in doc/_build/html."
 
-docspell:
+docspell: docreqs
 	$(SPHINXBUILD) -b spelling $(SPHINXOPTS) doc/_spell
 
 publish:
