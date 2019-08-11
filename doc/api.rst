@@ -14,8 +14,9 @@ Coverage.py API
 .. :history: 20121111T235800, added a bit of clarification.
 .. :history: 20140819T132600, change class name to Coverage
 
+There are a few different ways to use coverage.py programmatically.
 
-The API to coverage.py is very simple, contained in a module called `coverage`.
+The API to coverage.py is in a module called `coverage`.
 Most of the interface is in the :class:`coverage.Coverage` class.  Methods on
 the Coverage object correspond roughly to operations available in the command
 line interface. For example, a simple use would be::
@@ -32,12 +33,22 @@ line interface. For example, a simple use would be::
 
     cov.html_report()
 
-The :class:`coverage.CoverageData` class provides access to coverage data
-stored in coverage.py data files.
+Coverage.py supports plugins that can change its behavior, to collect
+information from non-Python files, or to perform complex configuration.  See
+:ref:`api_plugin` for details.
+
+If you want to access the data that coverage.py has collected, the
+:class:`coverage.CoverageData` class provides an API to read coverage.py data
+files.
+
+For more intensive data use, you might want to access the coverage.py database
+file directly.  The schema is subject to change, so this is for advanced uses
+only.  :ref:`dbschema` explains more.
 
 .. toctree::
     :maxdepth: 1
 
     api_coverage
-    api_coveragedata
     api_plugin
+    api_coveragedata
+    dbschema
