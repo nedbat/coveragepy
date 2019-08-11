@@ -11,6 +11,7 @@ The CoverageData class
 .. versionadded:: 4.0
 
 .. module:: coverage
+    :noindex:
 
 .. autoclass:: CoverageData
     :members:

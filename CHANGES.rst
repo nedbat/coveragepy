@@ -21,8 +21,8 @@ Unreleased
 ----------
 
 - The compact line number representation introduced in 5.0a6 is called a
-  "numbits."  The coverage.numbits module provides functions for working with
-  them.
+  "numbits."  The :mod:`coverage.numbits` module provides functions for working
+  with them.
 
 - A class named "test_something" no longer confuses the `test_function` dynamic
   context setting.  Fixes `issue 829`_.
@@ -62,19 +62,19 @@ Version 5.0a6 --- 2019-07-16
   - SQLite data storage is now faster.  There's no longer a reason to keep the
     JSON data file code, so it has been removed.
 
-- Changes to the :class:`CoverageData` interface:
+- Changes to the :class:`.CoverageData` interface:
 
-  - The new :meth:`CoverageData.dumps` method serializes the data to a string,
-    and a corresponding :meth:`CoverageData.loads` method reconstitutes ths
+  - The new :meth:`.CoverageData.dumps` method serializes the data to a string,
+    and a corresponding :meth:`.CoverageData.loads` method reconstitutes ths
     data.  The format of the data string is subject to change at any time, and
     so should only be used between two installations of the same version of
     coverage.py.
 
-  - The :meth:`CoverageData constructor<CoverageData.__init__>` has a new
+  - The :meth:`CoverageData constructor<.CoverageData.__init__>` has a new
     argument, `no_disk` (default: False).  Setting it to True prevents writing
     any data to the disk.  This is useful for transient data objects.
 
-- Added the classmethod :meth:`Coverage.current` to get the latest started
+- Added the classmethod :meth:`.Coverage.current` to get the latest started
   Coverage instance.
 
 - Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
@@ -115,7 +115,7 @@ Version 5.0a5 --- 2019-05-07
     :ref:`dynamic_context_plugins` for more details.
 
   - Another tool (such as a test runner) can use the new
-    :meth:`Coverage.switch_context` method to explicitly change the context.
+    :meth:`.Coverage.switch_context` method to explicitly change the context.
 
 - The ``dynamic_context = test_function`` setting now works with Python 2
   old-style classes, though it only reports the method name, not the class it
@@ -134,7 +134,7 @@ Version 5.0a5 --- 2019-05-07
 - Combining data stored in SQLite now goes about twice as fast, fixing `issue
   761`_.  Thanks, Stephan Richter.
 
-- The ``filename`` attribute on :class:`CoverageData` objects has been made
+- The ``filename`` attribute on :class:`.CoverageData` objects has been made
   private.  You can use the ``data_filename`` method to get the actual file
   name being used to store data, and the ``base_filename`` method to get the
   original filename before parallelizing suffixes were added.  This is part of

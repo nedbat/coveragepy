@@ -9,17 +9,15 @@ Coverage.py database schema
 
 .. versionadded:: 5.0
 
-.. module:: coverage
-
 Coverage.py stores data in a SQLite database, by default called ``.coverage``.
-For most needs, the :class:`CoverageData` API will be sufficient, and should be
-preferred to accessing the database directly.  Only advanced uses will need to
-use the database.
+For most needs, the :class:`.CoverageData` API will be sufficient, and should
+be preferred to accessing the database directly.  Only advanced uses will need
+to use the database.
 
 You can use SQLite tools such as the :mod:`sqlite3 <python:sqlite3>` module in
 the Python standard library to access the data.  Some data is stored in a
 packed format that will need custom functions to access.  See
-:func:`register_sqlite_functions`.
+:func:`.register_sqlite_functions`.
 
 
 Database schema

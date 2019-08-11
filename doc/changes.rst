@@ -3,6 +3,4 @@
 
 .. _changes:
 
-.. module:: coverage
-
 .. include:: ../CHANGES.rst

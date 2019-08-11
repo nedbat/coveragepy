@@ -13,6 +13,7 @@ Plug-in classes
 
 
 .. module:: coverage
+    :noindex:
 
 The CoveragePlugin class
 ------------------------
