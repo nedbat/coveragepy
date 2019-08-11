@@ -20,16 +20,18 @@ import zlib
 
 from coverage.backward import get_thread_id, iitems, to_bytes, to_string
 from coverage.debug import NoDebugging, SimpleReprMixin
-from coverage import env
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone, filename_suffix, isolate_module
 from coverage.misc import contract
-from coverage.numbits import nums_to_numbits, numbits_to_nums, merge_numbits
+from coverage.numbits import nums_to_numbits, numbits_to_nums, numbits_union
 from coverage.version import __version__
 
 os = isolate_module(os)
 
-SCHEMA_VERSION = 6
+# If you change the schema, increment the SCHEMA_VERSION, and update the
+# docs in docs/dbschema.rst also.
+
+SCHEMA_VERSION = 7
 
 # Schema versions:
 # 1: Released in 5.0a2
@@ -38,6 +40,7 @@ SCHEMA_VERSION = 6
 # 4: Changed line_map.bitmap to line_map.numbits.
 # 5: Added foreign key declarations.
 # 6: Key-value in meta.
+# 7: line_map -> line_bits
 
 SCHEMA = """
 CREATE TABLE coverage_schema (
@@ -71,8 +74,9 @@ CREATE TABLE context (
     unique (context)
 );
 
-CREATE TABLE line_map (
-    -- If recording lines, a row per context per line executed.
+CREATE TABLE line_bits (
+    -- If recording lines, a row per context per file executed.
+    -- All of the line numbers for that file/context are in one numbits.
     file_id integer,            -- foreign key to `file`.
     context_id integer,         -- foreign key to `context`.
     numbits blob,               -- see the numbits functions in coverage.numbits
@@ -99,24 +103,6 @@ CREATE TABLE tracer (
     foreign key (file_id) references file (id)
 );
 """
-
-if env.PY2:
-    def to_blob(b):
-        """Convert a bytestring into a type SQLite will accept for a blob."""
-        return buffer(b)        # pylint: disable=undefined-variable
-
-    def from_blob(blob):
-        """Convert a blob read from SQLite into a bytestring."""
-        return bytes(blob)
-else:
-    def to_blob(b):
-        """Convert a bytestring into a type SQLite will accept for a blob."""
-        return b
-
-    def from_blob(blob):
-        """Convert a blob read from SQLite into a bytestring."""
-        return blob
-
 
 class CoverageData(SimpleReprMixin):
     """Manages collected coverage data, including file storage.
@@ -386,15 +372,15 @@ class CoverageData(SimpleReprMixin):
             for filename, linenos in iitems(line_data):
                 linemap = nums_to_numbits(linenos)
                 file_id = self._file_id(filename, add=True)
-                query = "select numbits from line_map where file_id = ? and context_id = ?"
+                query = "select numbits from line_bits where file_id = ? and context_id = ?"
                 existing = list(con.execute(query, (file_id, self._current_context_id)))
                 if existing:
-                    linemap = merge_numbits(linemap, from_blob(existing[0][0]))
+                    linemap = numbits_union(linemap, existing[0][0])
 
                 con.execute(
-                    "insert or replace into line_map "
+                    "insert or replace into line_bits "
                     " (file_id, context_id, numbits) values (?, ?, ?)",
-                    (file_id, self._current_context_id, to_blob(linemap)),
+                    (file_id, self._current_context_id, linemap),
                 )
 
     def add_arcs(self, arc_data):
@@ -530,13 +516,13 @@ class CoverageData(SimpleReprMixin):
 
             # Get line data.
             cur = conn.execute(
-                'select file.path, context.context, line_map.numbits '
-                'from line_map '
-                'inner join file on file.id = line_map.file_id '
-                'inner join context on context.id = line_map.context_id'
+                'select file.path, context.context, line_bits.numbits '
+                'from line_bits '
+                'inner join file on file.id = line_bits.file_id '
+                'inner join context on context.id = line_bits.context_id'
                 )
             lines = {
-                (files[path], context): from_blob(numbits)
+                (files[path], context): numbits
                 for (path, context, numbits) in cur
                 }
             cur.close()
@@ -610,16 +596,15 @@ class CoverageData(SimpleReprMixin):
 
             # Get line data.
             cur = conn.execute(
-                'select file.path, context.context, line_map.numbits '
-                'from line_map '
-                'inner join file on file.id = line_map.file_id '
-                'inner join context on context.id = line_map.context_id'
+                'select file.path, context.context, line_bits.numbits '
+                'from line_bits '
+                'inner join file on file.id = line_bits.file_id '
+                'inner join context on context.id = line_bits.context_id'
                 )
             for path, context, numbits in cur:
                 key = (aliases.map(path), context)
-                numbits = from_blob(numbits)
                 if key in lines:
-                    numbits = merge_numbits(lines[key], numbits)
+                    numbits = numbits_union(lines[key], numbits)
                 lines[key] = numbits
             cur.close()
 
@@ -631,12 +616,12 @@ class CoverageData(SimpleReprMixin):
                 '(file_id, context_id, fromno, tono) values (?, ?, ?, ?)',
                 arc_rows
             )
-            conn.execute("delete from line_map")
+            conn.execute("delete from line_bits")
             conn.executemany(
-                "insert into line_map "
+                "insert into line_bits "
                 "(file_id, context_id, numbits) values (?, ?, ?)",
                 [
-                    (file_ids[file], context_ids[context], to_blob(numbits))
+                    (file_ids[file], context_ids[context], numbits)
                     for (file, context), numbits in lines.items()
                 ]
             )
@@ -756,7 +741,7 @@ class CoverageData(SimpleReprMixin):
             if file_id is None:
                 return None
             else:
-                query = "select numbits from line_map where file_id = ?"
+                query = "select numbits from line_bits where file_id = ?"
                 data = [file_id]
                 context_ids = self._get_query_context_ids(contexts)
                 if context_ids is not None:
@@ -766,7 +751,7 @@ class CoverageData(SimpleReprMixin):
                 bitmaps = list(con.execute(query, data))
                 nums = set()
                 for row in bitmaps:
-                    nums.update(numbits_to_nums(from_blob(row[0])))
+                    nums.update(numbits_to_nums(row[0]))
                 return sorted(nums)
 
     def arcs(self, filename, contexts=None):
@@ -812,7 +797,7 @@ class CoverageData(SimpleReprMixin):
                         lineno_contexts_map[tono].append(context)
             else:
                 query = (
-                    "select l.numbits, c.context from line_map l, context c "
+                    "select l.numbits, c.context from line_bits l, context c "
                     "where l.context_id = c.id "
                     "and file_id = ?"
                     )
@@ -823,7 +808,7 @@ class CoverageData(SimpleReprMixin):
                     query += " and l.context_id in (" + ids_array + ")"
                     data += context_ids
                 for numbits, context in con.execute(query, data):
-                    for lineno in numbits_to_nums(from_blob(numbits)):
+                    for lineno in numbits_to_nums(numbits):
                         lineno_contexts_map[lineno].append(context)
         return lineno_contexts_map
 
