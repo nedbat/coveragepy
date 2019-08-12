@@ -40,7 +40,8 @@ def run_command(cmd):
         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT
         )
-    output, _ = proc.communicate()
+    # timeout in case the process locks up
+    output, _ = proc.communicate(**({'timeout': 30} if env.PYVERSION >= (3, 3) else {}))
     status = proc.returncode
 
     # Get the output, and canonicalize it to strings with newlines.
