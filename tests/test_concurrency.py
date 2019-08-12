@@ -491,6 +491,8 @@ class MultiprocessingUnittestTest(CoverageTest):
     def setUp(self):
         if not multiprocessing:
             self.skipTest("No multiprocessing in this Python")      # pragma: only jython
+        elif env.PY2 and not env.WINDOWS:
+            self.skipTest("No forking in this Python")
         super(MultiprocessingUnittestTest, self).setUp()
 
     def try_multiprocessing_unittest(
@@ -504,7 +506,11 @@ class MultiprocessingUnittestTest(CoverageTest):
             source = .
             """ % concurrency)
 
-        status, out = self.run_command_status("coverage run -m unittest multi.py")
+        if env.PY2:
+            run_command = "coverage run -m unittest discover -p multi.py"
+        else:
+            run_command = "coverage run -m unittest multi.py"
+        status, out = self.run_command_status(run_command)
         self.assertEqual(status, 0)
         expected_cant_trace = cant_trace_msg(concurrency, the_module)
 
