@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
-Upload CHANGES.rst to Tidelift as Markdown chunks
-
-Requires pandoc installed.
+Upload CHANGES.md to Tidelift as Markdown chunks
 
 Put your Tidelift API token in a file called tidelift.token alongside this
 program, for example:
 
     user/n3IwOpxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxc2ZwE4
 
-Run with two arguments: the .rst file to parse, and the Tidelift package name:
+Run with two arguments: the .md file to parse, and the Tidelift package name:
 
-	python upload_relnotes.py CHANGES.rst pypi/coverage
+	python upload_relnotes.py CHANGES.md pypi/coverage
 
 Every section that has something that looks like a version number in it will
 be uploaded as the release notes for that version.
@@ -20,7 +18,6 @@ be uploaded as the release notes for that version.
 
 import os.path
 import re
-import subprocess
 import sys
 
 import requests
@@ -31,12 +28,15 @@ class TextChunkBuffer:
         self.buffer = []
 
     def append(self, text):
+        """Add `text` to the buffer."""
         self.buffer.append(text)
 
     def clear(self):
+        """Clear the buffer."""
         self.buffer = []
 
     def flush(self):
+        """Produce a ("text", text) tuple if there's anything here."""
         buffered = "".join(self.buffer).strip()
         if buffered:
             yield ("text", buffered)
@@ -74,7 +74,6 @@ def sections(parsed_data):
             if header:
                 yield (*header, "\n".join(text))
             text = []
-            notes = []
             header = (ttype, ttext)
         elif ttype == "text":
             text.append(ttext)
@@ -84,7 +83,7 @@ def sections(parsed_data):
 
 
 def relnotes(mdlines):
-    """Yield (version, text) pairs from markdown lines.
+    r"""Yield (version, text) pairs from markdown lines.
 
     Each tuple is a separate version mentioned in the release notes.
 
@@ -97,11 +96,8 @@ def relnotes(mdlines):
             version = m_version.group()
             yield version, text
 
-def convert_rst_file_to_markdown(rst_filename):
-    markdown = subprocess.check_output(["pandoc", "-frst", "-tmarkdown_strict", "--atx-headers", rst_filename])
-    return markdown.decode("utf8")
-
 def update_release_note(package, version, text):
+    """Update the release notes for one version of a package."""
     url = f"https://api.tidelift.com/external-api/lifting/{package}/release-notes/{version}"
     token_file = os.path.join(os.path.dirname(__file__), "tidelift.token")
     with open(token_file) as ftoken:
@@ -115,10 +111,12 @@ def update_release_note(package, version, text):
         result = requests.put(**req_args)
     print(f"{version}: {result.status_code}")
 
-def convert_and_upload(rst_filename, package):
-    markdown = convert_rst_file_to_markdown(rst_filename)
+def parse_and_upload(md_filename, package):
+    """Main function: parse markdown and upload to Tidelift."""
+    with open(md_filename) as f:
+        markdown = f.read()
     for version, text in relnotes(markdown.splitlines(True)):
         update_release_note(package, version, text)
 
 if __name__ == "__main__":
-    convert_and_upload(*sys.argv[1:])
+    parse_and_upload(*sys.argv[1:])       # pylint: disable=no-value-for-parameter

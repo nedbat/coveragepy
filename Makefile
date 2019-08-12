@@ -143,4 +143,5 @@ publishbeta:
 
 upload_relnotes: docreqs
 	$(SPHINXBUILD) -b rst doc /tmp/rst_rst
-	python ci/upload_relnotes.py /tmp/rst_rst/changes.rst pypi/coverage
+	pandoc -frst -tmarkdown_strict --atx-headers /tmp/rst_rst/changes.rst > /tmp/rst_rst/changes.md
+	python ci/upload_relnotes.py /tmp/rst_rst/changes.md pypi/coverage
