@@ -484,6 +484,7 @@ MULTI_UNITTEST_SPAWN_CODE = """
     """
 
 
+@flaky(max_runs=10)         # Sometimes a test fails due to inherent randomness. Try more times.
 class MultiprocessingUnittestTest(CoverageTest):
     """Test support of the multiprocessing module running in a unit test."""
 

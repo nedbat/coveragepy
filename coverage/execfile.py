@@ -175,12 +175,12 @@ class PyRunner(object):
             main_mod.__loader__ = DummyLoader(self.modulename)
 
         main_mod.__builtins__ = BUILTINS
-        if ModuleSpec is not None:
+        if self.package and ModuleSpec is not None:
             main_mod.__spec__ = ModuleSpec(
                 '__main__',
                 main_mod.__loader__,
                 origin=main_mod.__file__,
-                is_package=self.package)
+                is_package=True)
 
         # Set sys.argv properly.
         sys.argv = self.args
