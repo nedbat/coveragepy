@@ -17,23 +17,6 @@ Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
 library to determine which lines are executable, and which have been executed.
 
-.. |tideliftlogo| image:: https://nedbatchelder.com/pix/Tidelift_Logo_small.png
-   :width: 75
-   :alt: Tidelift
-   :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
-
-.. list-table::
-   :widths: 10 100
-
-   * - |tideliftlogo|
-     - Professional support for coverage.py is available as part of the `Tidelift
-       Subscription`_.  Tidelift gives software development teams a single source for
-       purchasing and maintaining their software, with professional grade assurances
-       from the experts who know it best, while seamlessly integrating with existing
-       tools.
-
-.. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
-
 Coverage.py runs on many versions of Python:
 
 * CPython 2.7.
@@ -51,6 +34,26 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 
 **New in 5.0:** SQLite data storage, contexts, dropped support for Python 2.6,
 3.3 and 3.4.
+
+
+For Enterprise
+--------------
+
+.. |tideliftlogo| image:: https://nedbatchelder.com/pix/Tidelift_Logo_small.png
+   :width: 75
+   :alt: Tidelift
+   :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
+
+.. list-table::
+   :widths: 10 100
+
+   * - |tideliftlogo|
+     - `Available as part of the Tidelift Subscription. <https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme>`_
+       Coverage and the maintainers of thousands of other packages are working with
+       Tidelift to deliver one enterprise subscription that covers all of the open
+       source you use.  If you want the flexibility of open source and the confidence
+       of commercial-grade software, this is for you.
+       `Learn more. <https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme>`_
 
 
 Getting Started

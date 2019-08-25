@@ -44,6 +44,9 @@ not.
 
 .. _described here: http://coverage.readthedocs.io/
 
+For Enterprise
+--------------
+
 .. image:: media/Tidelift_Logos_RGB_Tidelift_Shorthand_On-White.png
    :width: 75
    :alt: Tidelift
@@ -51,11 +54,16 @@ not.
    :class: tideliftlogo
    :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
 
-Professional support for coverage.py is available as part of the `Tidelift
-Subscription`_.  Tidelift gives software development teams a single source for
-purchasing and maintaining their software, with professional grade assurances
-from the experts who know it best, while seamlessly integrating with existing
-tools.
+.. |br| raw:: html
+
+  <br/>
+
+`Available as part of the Tidelift Subscription. <Tidelift Subscription_>`_ |br|
+Coverage and the maintainers of thousands of other packages are working with
+Tidelift to deliver one enterprise subscription that covers all of the open
+source you use.  If you want the flexibility of open source and the confidence
+of commercial-grade software, this is for you. `Learn more. <Tidelift
+Subscription_>`_
 
 .. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=docs
 
