@@ -60,7 +60,7 @@ For Enterprise
 
    * - |tideliftlogo|
      - `Available as part of the Tidelift Subscription. <https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme>`_
-       Coverage and the maintainers of thousands of other packages are working with
+       Coverage and thousands of other packages are working with
        Tidelift to deliver one enterprise subscription that covers all of the open
        source you use.  If you want the flexibility of open source and the confidence
        of commercial-grade software, this is for you.
