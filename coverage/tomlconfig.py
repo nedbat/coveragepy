@@ -20,6 +20,9 @@ class TomlConfigParser:
         self._data = []
 
     def read(self, filenames):
+        if toml is None:
+            raise RuntimeError('toml module is not installed.')
+
         if isinstance(filenames, path_types):
             filenames = [filenames]
         read_ok = []
