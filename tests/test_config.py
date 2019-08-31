@@ -179,14 +179,14 @@ class ConfigTest(CoverageTest):
             # ("timid = 1\n", r"timid = 1"),
             ("[tool.coverage.run\n", r"Key group"),
             ('[tool.coverage.report]\nexclude_lines = ["foo("]\n',
-             r"Invalid \[report\].exclude_lines value 'foo\(': "
+             r"Invalid \[report\].exclude_lines value u?'foo\(': "
              r"(unbalanced parenthesis|missing \))"),
             ('[tool.coverage.report]\npartial_branches = ["foo["]\n',
-             r"Invalid \[report\].partial_branches value 'foo\[': "
+             r"Invalid \[report\].partial_branches value u?'foo\[': "
              r"(unexpected end of regular expression|unterminated character set)"),
             ('[tool.coverage.report]\npartial_branches_always = ["foo***"]\n',
              r"Invalid \[report\].partial_branches_always value "
-             r"'foo\*\*\*': "
+             r"u?'foo\*\*\*': "
              r"multiple repeat"),
             ('[tool.coverage.run]\nconcurrency="foo"', "not a list"),
             ("[tool.coverage.report]\nprecision=1.23", "not an integer"),
