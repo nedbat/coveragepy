@@ -27,6 +27,11 @@ try:
 except ImportError:
     import configparser
 
+try:
+    import toml
+except ImportError:
+    toml = None
+
 # What's a string called?
 try:
     string_class = basestring

@@ -3,13 +3,8 @@ import os
 import re
 
 from coverage import env
-from coverage.backward import configparser, path_types, string_class
+from coverage.backward import configparser, path_types, string_class, toml
 from coverage.misc import CoverageException, substitute_variables
-
-try:
-    import toml
-except ImportError:
-    toml = None
 
 
 class TomlConfigParser:

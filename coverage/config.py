@@ -9,7 +9,7 @@ import os
 import re
 
 from coverage import env
-from coverage.backward import configparser, iitems, string_class
+from coverage.backward import configparser, iitems, string_class, toml
 from coverage.misc import contract, CoverageException, isolate_module
 from coverage.misc import substitute_variables
 
@@ -259,7 +259,7 @@ class CoverageConfig(object):
         """
         _, ext = os.path.splitext(filename)
         if ext == '.toml':
-            if not env.TOML_SUPPORT:
+            if toml is None:
                 return False
             cp = TomlConfigParser(our_file)
         else:
