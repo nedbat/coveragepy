@@ -92,7 +92,7 @@ class TomlConfigParser:
         if not isinstance(value, bool):
             raise ValueError(
                 'Option {!r} in section {!r} is not a boolean: {!r}'
-                    .format(option, section, value))
+                .format(option, section, value))
         return value
 
     def getlist(self, section, option):
@@ -100,7 +100,7 @@ class TomlConfigParser:
         if not isinstance(values, list):
             raise ValueError(
                 'Option {!r} in section {!r} is not a list: {!r}'
-                    .format(option, section, values))
+                .format(option, section, values))
         for i, value in enumerate(values):
             if isinstance(value, string_class):
                 values[i] = substitute_variables(value, os.environ)
@@ -123,7 +123,7 @@ class TomlConfigParser:
         if not isinstance(value, int):
             raise ValueError(
                 'Option {!r} in section {!r} is not an integer: {!r}'
-                    .format(option, section, value))
+                .format(option, section, value))
         return value
 
     def getfloat(self, section, option):
@@ -133,5 +133,5 @@ class TomlConfigParser:
         if not isinstance(value, float):
             raise ValueError(
                 'Option {!r} in section {!r} is not a float: {!r}'
-                    .format(option, section, value))
+                .format(option, section, value))
         return value
