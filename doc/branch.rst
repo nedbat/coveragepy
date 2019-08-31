@@ -56,8 +56,8 @@ that were missing some branches are shown in yellow, with an annotation at the
 far right showing branch destination line numbers that were not exercised.
 
 The XML and JSON reports produced by ``coverage xml`` and ``coverage json``
-respectively also include branch information, including separate statement and
-branch coverage percentages.
+also include branch information, including separate statement and branch
+coverage percentages.
 
 
 How it works

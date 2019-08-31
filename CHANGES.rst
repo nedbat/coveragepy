@@ -20,20 +20,23 @@ development at the same time, like 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Data can now be "reported" in JSON format, for programmatic use, as requested
+  in `issue 720`_.  The new ``coverage json`` command writes raw and summarized
+  data to a JSON file.  Thanks, Matt Bachmann.
+
 - The compact line number representation introduced in 5.0a6 is called a
   "numbits."  The :mod:`coverage.numbits` module provides functions for working
   with them.
 
-- A class named "test_something" no longer confuses the `test_function` dynamic
-  context setting.  Fixes `issue 829`_.
+- A class named "test_something" no longer confuses the ``test_function``
+  dynamic context setting.  Fixes `issue 829`_.
 
 - Fixed an unusual tokenizing issue with backslashes in comments.  Fixes
   `issue 822`_.
 
-- `debug=plugin` didn't properly support configuration or dynamic context
+- ``debug=plugin`` didn't properly support configuration or dynamic context
   plugins, but now it does, closing `issue 834`_.
 
-- Added a JSON report `issue 720`_.
 
 .. _issue 720: https://github.com/nedbat/coveragepy/issues/720
 .. _issue 822: https://github.com/nedbat/coveragepy/issues/822

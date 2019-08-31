@@ -302,21 +302,21 @@ identified as packages in the report.  Directories deeper than this depth are
 not reported as packages.  The default is that all directories are reported as
 packages.
 
+
 .. _config_json:
 
 [json]
------
+------
 
-Values particular to json reporting.  The values in the ``[report]`` section
+Values particular to JSON reporting.  The values in the ``[report]`` section
 also apply to JSON output, where appropriate.
 
-``json_output`` (string, default "coverage.json"): where to write the json
-report.
+``output`` (string, default "coverage.json"): where to write the JSON file.
 
-``json_pretty_print`` (boolean, default false): controls if fields in the json
-are outputted with whitespace formatted for human consumption (True) or for
-minimum file size (False)
+``pretty_print`` (boolean, default false): controls if the JSON is outputted
+with whitespace formatted for human consumption (True) or for minimum file size
+(False).
 
-``json_show_contexts`` (boolean, default false): should the json report include
-an indication on each line of which contexts executed the line.
-See :ref:`dynamic_contexts` for details.
+``show_contexts`` (boolean, default false): should the JSON report include an
+indication of which contexts executed each line.  See :ref:`dynamic_contexts`
+for details.

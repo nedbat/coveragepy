@@ -477,14 +477,16 @@ You can specify the name of the output file with the ``-o`` switch.
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
+
 .. _cmd_json:
 
 JSON reporting
--------------
+--------------
 
 The **json** command writes coverage data to a "coverage.json" file.
 
-You can specify the name of the output file with the ``-o`` switch.
+You can specify the name of the output file with the ``-o`` switch.  The JSON
+can be nicely formatted by specifying the ``--pretty-print`` switch.
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 

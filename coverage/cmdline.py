@@ -125,7 +125,7 @@ class Opts(object):
     )
     json_pretty_print = optparse.make_option(
         '', '--pretty-print', action='store_true',
-        help="Print the json formatted for human readers",
+        help="Format the JSON for human readers",
     )
     parallel_mode = optparse.make_option(
         '-p', '--parallel-mode', action='store_true',
