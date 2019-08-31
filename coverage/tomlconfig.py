@@ -7,6 +7,10 @@ from coverage.backward import configparser, path_types, string_class, toml
 from coverage.misc import CoverageException, substitute_variables
 
 
+class TomlDecodeError(Exception):
+    """An exception class that exists even when toml isn't installed."""
+
+
 class TomlConfigParser:
     def __init__(self, our_file):
         self.getters = [lambda obj: obj['tool']['coverage']]
@@ -23,8 +27,10 @@ class TomlConfigParser:
             try:
                 with io.open(filename, encoding='utf-8') as fp:
                     self._data.append(toml.load(fp))
-            except (IOError, toml.TomlDecodeError):
+            except IOError:
                 continue
+            except toml.TomlDecodeError as err:
+                raise TomlDecodeError(*err.args)
             if env.PYVERSION >= (3, 6):
                 filename = os.fspath(filename)
             read_ok.append(filename)

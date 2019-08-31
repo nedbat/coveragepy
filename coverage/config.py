@@ -13,7 +13,7 @@ from coverage.backward import configparser, iitems, string_class, toml
 from coverage.misc import contract, CoverageException, isolate_module
 from coverage.misc import substitute_variables
 
-from coverage.tomlconfig import TomlConfigParser
+from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
 
 os = isolate_module(os)
 
@@ -269,7 +269,7 @@ class CoverageConfig(object):
 
         try:
             files_read = cp.read(filename)
-        except configparser.Error as err:
+        except (configparser.Error, TomlDecodeError) as err:
             raise CoverageException("Couldn't read config file %s: %s" % (filename, err))
         if not files_read:
             return False
