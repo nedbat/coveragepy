@@ -131,8 +131,8 @@ class DebugTraceTest(CoverageTest):
         print(out_lines)
         # For every real message, there should be a stack trace with a line like
         #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
-        real_messages = re_lines(out_lines, r" @\d+", match=False).splitlines()
-        frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py @\d+$"
+        real_messages = re_lines(out_lines, r":\d+", match=False).splitlines()
+        frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py:\d+$"
         frames = re_lines(out_lines, frame_pattern).splitlines()
         self.assertEqual(len(real_messages), len(frames))
 
@@ -142,7 +142,7 @@ class DebugTraceTest(CoverageTest):
         # as the code changes. This test is here to ensure that the debug code
         # continues working. It's ok to adjust these details over time.
         self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Adding file tracers: 0 files")
-        self.assertRegex(last_line, r"\s+add_file_tracers : .*coverage[/\\]sqldata.py @\d+$")
+        self.assertRegex(last_line, r"\s+add_file_tracers : .*coverage[/\\]sqldata.py:\d+$")
 
     def test_debug_config(self):
         out_lines = self.f1_debug_output(["config"])

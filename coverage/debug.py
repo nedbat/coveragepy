@@ -153,7 +153,7 @@ def short_stack(limit=None, skip=0):
 
     """
     stack = inspect.stack()[limit:skip:-1]
-    return "\n".join("%30s : %s @%d" % (t[3], t[1], t[2]) for t in stack)
+    return "\n".join("%30s : %s:%d" % (t[3], t[1], t[2]) for t in stack)
 
 
 def dump_stack_frames(limit=None, out=None, skip=0):
