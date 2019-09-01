@@ -140,6 +140,6 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |saythanks| image:: https://img.shields.io/badge/saythanks.io-%E2%98%BC-1EAEDB.svg
     :target: https://saythanks.io/to/nedbat
     :alt: Say thanks :)
-.. |tidelift| image:: https://tidelift.com/badges/github/nedbat/coveragepy
+.. |tidelift| image:: https://tidelift.com/badges/package/pypi/coverage
     :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
     :alt: Tidelift
