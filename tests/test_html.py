@@ -87,7 +87,7 @@ class HtmlTestHelpers(CoverageTest):
         self.assert_recent_datetime(
             timestamp,
             seconds=120,
-            msg="Timestamp is wrong: {0}".format(timestamp),
+            msg="Timestamp is wrong: {}".format(timestamp),
         )
 
 

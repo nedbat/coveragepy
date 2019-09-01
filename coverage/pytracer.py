@@ -60,7 +60,7 @@ class PyTracer(object):
         atexit.register(setattr, self, 'in_atexit', True)
 
     def __repr__(self):
-        return "<PyTracer at {0}: {1} lines in {2} files>".format(
+        return "<PyTracer at {}: {} lines in {} files>".format(
             id(self),
             sum(len(v) for v in self.data.values()),
             len(self.data),

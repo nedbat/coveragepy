@@ -358,7 +358,7 @@ class InOrOut(object):
 
                 disp = self.should_trace(filename)
                 if disp.trace:
-                    msg = "Already imported a file that will be measured: {0}".format(filename)
+                    msg = "Already imported a file that will be measured: {}".format(filename)
                     self.warn(msg, slug="already-imported")
                     warned.add(filename)
 

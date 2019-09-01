@@ -521,8 +521,8 @@ class AstArcAnalyzer(object):
 
         if AST_DUMP:                                # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
-            print("Statements: {0}".format(self.statements))
-            print("Multiline map: {0}".format(self.multiline))
+            print("Statements: {}".format(self.statements))
+            print("Multiline map: {}".format(self.multiline))
             ast_dump(self.root_node)
 
         self.arcs = set()
@@ -653,7 +653,7 @@ class AstArcAnalyzer(object):
             # to see if it's overlooked.
             if 0:
                 if node_name not in self.OK_TO_DEFAULT:
-                    print("*** Unhandled: {0}".format(node))
+                    print("*** Unhandled: {}".format(node))
 
             # Default for simple statements: one exit from this node.
             return set([ArcStart(self.line_for_node(node))])
@@ -823,7 +823,7 @@ class AstArcAnalyzer(object):
                 for xit in exits:
                     self.add_arc(
                         xit.lineno, -block.start, xit.cause,
-                        "didn't except from function '{0}'".format(block.name),
+                        "didn't except from function {!r}".format(block.name),
                     )
                 break
 
@@ -838,7 +838,7 @@ class AstArcAnalyzer(object):
                 for xit in exits:
                     self.add_arc(
                         xit.lineno, -block.start, xit.cause,
-                        "didn't return from function '{0}'".format(block.name),
+                        "didn't return from function {!r}".format(block.name),
                     )
                 break
 
@@ -1161,17 +1161,17 @@ class AstArcAnalyzer(object):
         for xit in exits:
             self.add_arc(
                 xit.lineno, -start, xit.cause,
-                "didn't exit the body of class '{0}'".format(node.name),
+                "didn't exit the body of class {!r}".format(node.name),
             )
 
     def _make_oneline_code_method(noun):     # pylint: disable=no-self-argument
         """A function to make methods for online callable _code_object__ methods."""
         def _code_object__oneline_callable(self, node):
             start = self.line_for_node(node)
-            self.add_arc(-start, start, None, "didn't run the {0} on line {1}".format(noun, start))
+            self.add_arc(-start, start, None, "didn't run the {} on line {}".format(noun, start))
             self.add_arc(
                 start, -start, None,
-                "didn't finish the {0} on line {1}".format(noun, start),
+                "didn't finish the {} on line {}".format(noun, start),
             )
         return _code_object__oneline_callable
 
@@ -1203,15 +1203,15 @@ if AST_DUMP:            # pragma: debugging
         """
         indent = " " * depth
         if not isinstance(node, ast.AST):
-            print("{0}<{1} {2!r}>".format(indent, node.__class__.__name__, node))
+            print("{}<{} {!r}>".format(indent, node.__class__.__name__, node))
             return
 
         lineno = getattr(node, "lineno", None)
         if lineno is not None:
-            linemark = " @ {0}".format(node.lineno)
+            linemark = " @ {}".format(node.lineno)
         else:
             linemark = ""
-        head = "{0}<{1}{2}".format(indent, node.__class__.__name__, linemark)
+        head = "{}<{}{}".format(indent, node.__class__.__name__, linemark)
 
         named_fields = [
             (name, value)
@@ -1219,28 +1219,28 @@ if AST_DUMP:            # pragma: debugging
             if name not in SKIP_DUMP_FIELDS
         ]
         if not named_fields:
-            print("{0}>".format(head))
+            print("{}>".format(head))
         elif len(named_fields) == 1 and _is_simple_value(named_fields[0][1]):
             field_name, value = named_fields[0]
-            print("{0} {1}: {2!r}>".format(head, field_name, value))
+            print("{} {}: {!r}>".format(head, field_name, value))
         else:
             print(head)
             if 0:
-                print("{0}# mro: {1}".format(
+                print("{}# mro: {}".format(
                     indent, ", ".join(c.__name__ for c in node.__class__.__mro__[1:]),
                 ))
             next_indent = indent + "    "
             for field_name, value in named_fields:
-                prefix = "{0}{1}:".format(next_indent, field_name)
+                prefix = "{}{}:".format(next_indent, field_name)
                 if _is_simple_value(value):
-                    print("{0} {1!r}".format(prefix, value))
+                    print("{} {!r}".format(prefix, value))
                 elif isinstance(value, list):
-                    print("{0} [".format(prefix))
+                    print("{} [".format(prefix))
                     for n in value:
                         ast_dump(n, depth + 8)
-                    print("{0}]".format(next_indent))
+                    print("{}]".format(next_indent))
                 else:
                     print(prefix)
                     ast_dump(value, depth + 8)
 
-            print("{0}>".format(indent))
+            print("{}>".format(indent))

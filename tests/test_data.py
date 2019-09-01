@@ -556,7 +556,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
         with sqlite3.connect("wrong_schema.db") as con:
             con.execute("create table coverage_schema (version integer)")
             con.execute("insert into coverage_schema (version) values (99)")
-        msg = r"Couldn't .* '.*[/\\]{0}': wrong schema: 99 instead of \d+".format("wrong_schema.db")
+        msg = r"Couldn't .* '.*[/\\]{}': wrong schema: 99 instead of \d+".format("wrong_schema.db")
         with self.assertRaisesRegex(CoverageException, msg):
             covdata = CoverageData("wrong_schema.db")
             covdata.read()
@@ -564,7 +564,7 @@ class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
 
         with sqlite3.connect("no_schema.db") as con:
             con.execute("create table foobar (baz text)")
-        msg = r"Couldn't .* '.*[/\\]{0}': \S+".format("no_schema.db")
+        msg = r"Couldn't .* '.*[/\\]{}': \S+".format("no_schema.db")
         with self.assertRaisesRegex(CoverageException, msg):
             covdata = CoverageData("no_schema.db")
             covdata.read()

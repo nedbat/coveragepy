@@ -69,7 +69,7 @@ def line_count(s):
 def print_simple_annotation(code, linenos):
     """Print the lines in `code` with X for each line number in `linenos`."""
     for lineno, line in enumerate(code.splitlines(), start=1):
-        print(" {0} {1}".format("X" if lineno in linenos else " ", line))
+        print(" {} {}".format("X" if lineno in linenos else " ", line))
 
 
 class LineCountTest(CoverageTest):
@@ -242,7 +242,7 @@ class ConcurrencyTest(CoverageTest):
             # If the test fails, it's helpful to see this info:
             fname = abs_file("try_it.py")
             linenos = data.lines(fname)
-            print("{0}: {1}".format(len(linenos), linenos))
+            print("{}: {}".format(len(linenos), linenos))
             print_simple_annotation(code, linenos)
 
             lines = line_count(code)
@@ -500,7 +500,7 @@ def test_thread_safe_save_data(tmpdir):
 
     # Create some Python modules and put them in the path
     modules_dir = tmpdir.mkdir('test_modules')
-    module_names = ["m{0:03d}".format(i) for i in range(1000)]
+    module_names = ["m{:03d}".format(i) for i in range(1000)]
     for module_name in module_names:
         modules_dir.join(module_name + ".py").write("def f(): pass\n")
 

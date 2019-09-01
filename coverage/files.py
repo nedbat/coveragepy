@@ -338,7 +338,7 @@ class PathAliases(object):
     def pprint(self):       # pragma: debugging
         """Dump the important parts of the PathAliases, for debugging."""
         for regex, result in self.aliases:
-            print("{0!r} --> {1!r}".format(regex.pattern, result))
+            print("{!r} --> {!r}".format(regex.pattern, result))
 
     def add(self, pattern, result):
         """Add the `pattern`/`result` pair to the list of aliases.

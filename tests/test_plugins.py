@@ -321,7 +321,7 @@ class GoodFileTracerTest(FileTracerTest):
                 # will examine the `filename` and `linenum` locals to
                 # determine the source file and line number.
                 fiddle_around = 1   # not used, just chaff.
-                return "[{0} @ {1}]".format(filename, linenum)
+                return "[{} @ {}]".format(filename, linenum)
 
             def helper(x):
                 # This function is here just to show that not all code in

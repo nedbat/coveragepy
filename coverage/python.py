@@ -136,7 +136,7 @@ def source_for_morf(morf):
     elif isinstance(morf, types.ModuleType):
         # A module should have had .__file__, otherwise we can't use it.
         # This could be a PEP-420 namespace package.
-        raise CoverageException("Module {0} has no file".format(morf))
+        raise CoverageException("Module {} has no file".format(morf))
     else:
         filename = morf
 
@@ -170,7 +170,7 @@ class PythonFileReporter(FileReporter):
         self._excluded = None
 
     def __repr__(self):
-        return "<PythonFileReporter {0!r}>".format(self.filename)
+        return "<PythonFileReporter {!r}>".format(self.filename)
 
     @contract(returns='unicode')
     def relative_filename(self):

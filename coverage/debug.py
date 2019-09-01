@@ -101,7 +101,7 @@ class NoDebugging(object):
 
 def info_header(label):
     """Make a nice header string."""
-    return "--{0:-<60s}".format(" "+label+" ")
+    return "--{:-<60s}".format(" "+label+" ")
 
 
 def info_formatter(info):
@@ -174,8 +174,8 @@ def short_id(id64):
 def add_pid_and_tid(text):
     """A filter to add pid and tid to debug messages."""
     # Thread ids are useful, but too long. Make a shorter one.
-    tid = "{0:04x}".format(short_id(_thread.get_ident()))
-    text = "{0:5d}.{1}: {2}".format(os.getpid(), tid, text)
+    tid = "{:04x}".format(short_id(_thread.get_ident()))
+    text = "{:5d}.{}: {}".format(os.getpid(), tid, text)
     return text
 
 
@@ -241,7 +241,7 @@ class CwdTracker(object):                                   # pragma: debugging
         """Add a cwd message for each new cwd."""
         cwd = os.getcwd()
         if cwd != self.cwd:
-            text = "cwd is now {0!r}\n".format(cwd) + text
+            text = "cwd is now {!r}\n".format(cwd) + text
             self.cwd = cwd
         return text
 

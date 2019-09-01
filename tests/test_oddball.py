@@ -541,7 +541,7 @@ class ExecTest(CoverageTest):
         # but now it's fixed. :)
         self.make_file("to_exec.py", """\
             \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
-            print("var is {0}".format(var))         # line 31
+            print("var is {}".format(var))         # line 31
             """)
         self.make_file("main.py", """\
             namespace = {'var': 17}

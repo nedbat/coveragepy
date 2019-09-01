@@ -218,7 +218,7 @@ def do_zip_mods():
         (u'cp1252', u'“hi”'),
     ]
     for encoding, text in details:
-        filename = 'encoded_{0}.py'.format(encoding)
+        filename = 'encoded_{}.py'.format(encoding)
         ords = [ord(c) for c in text]
         source_text = source.format(encoding=encoding, text=text, ords=ords)
         zf.writestr(filename, source_text.encode(encoding))

@@ -51,13 +51,13 @@ class XmlTestHelpers(CoverageTest):
             return os.path.join(curdir, p)
 
         for i in range(width):
-            next_dir = here("d{0}".format(i))
+            next_dir = here("d{}".format(i))
             self.make_tree(width, depth-1, next_dir)
         if curdir != ".":
             self.make_file(here("__init__.py"), "")
             for i in range(width):
-                filename = here("f{0}.py".format(i))
-                self.make_file(filename, "# {0}\n".format(filename))
+                filename = here("f{}.py".format(i))
+                self.make_file(filename, "# {}\n".format(filename))
 
     def assert_source(self, xmldom, src):
         """Assert that the XML has a <source> element with `src`."""

@@ -137,7 +137,7 @@ class StressTest(object):
                     yield kwargs['file_count'] * kwargs['call_count'] * kwargs['line_count']
 
         ops = sum(sum(operations(thing)) for thing in ["file", "call", "line"])
-        print("{0:.1f}M operations".format(ops/1e6))
+        print("{:.1f}M operations".format(ops/1e6))
 
     def check_coefficients(self):
         # For checking the calculation of actual stats:

@@ -78,7 +78,7 @@ def get_analysis_to_report(coverage, morfs):
             # should_be_python() method.
             if fr.should_be_python():
                 if config.ignore_errors:
-                    msg = "Could not parse Python file {0}".format(fr.filename)
+                    msg = "Could not parse Python file {!r}".format(fr.filename)
                     coverage._warn(msg, slug="couldnt-parse")
                 else:
                     raise

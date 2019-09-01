@@ -164,7 +164,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(status, 1)
 
         for n in "12":
-            self.assert_exists(".coverage.bad{0}".format(n))
+            self.assert_exists(".coverage.bad{}".format(n))
             warning_regex = (
                 r"("    # JSON message:
                 r"Coverage.py warning: Couldn't read data from '.*\.coverage\.bad{0}': "
@@ -1345,7 +1345,7 @@ def possible_pth_dirs():
 def find_writable_pth_directory():
     """Find a place to write a .pth file."""
     for pth_dir in possible_pth_dirs():             # pragma: part covered
-        try_it = os.path.join(pth_dir, "touch_{0}.it".format(WORKER))
+        try_it = os.path.join(pth_dir, "touch_{}.it".format(WORKER))
         with open(try_it, "w") as f:
             try:
                 f.write("foo")
@@ -1370,7 +1370,7 @@ class ProcessCoverageMixin(object):
         # Create the .pth file.
         self.assertTrue(PTH_DIR)
         pth_contents = "import coverage; coverage.process_startup()\n"
-        pth_path = os.path.join(PTH_DIR, "subcover_{0}.pth".format(WORKER))
+        pth_path = os.path.join(PTH_DIR, "subcover_{}.pth".format(WORKER))
         with open(pth_path, "w") as pth:
             pth.write(pth_contents)
             self.pth_path = pth_path

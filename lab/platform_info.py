@@ -15,11 +15,11 @@ def whatever(f):
 
 
 def dump_module(mod):
-    print("\n###  {0} ---------------------------".format(mod.__name__))
+    print("\n###  {} ---------------------------".format(mod.__name__))
     for name in dir(mod):
         if name.startswith("_"):
             continue
-        print("{0:30s}: {1!r:.100}".format(name, whatever(getattr(mod, name))))
+        print("{:30s}: {!r:.100}".format(name, whatever(getattr(mod, name))))
 
 
 for mod in [platform, sys]:

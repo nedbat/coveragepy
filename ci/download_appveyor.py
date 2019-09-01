@@ -17,7 +17,7 @@ def make_auth_headers():
         token = f.read().strip()
 
     headers = {
-        'Authorization': 'Bearer {0}'.format(token),
+        'Authorization': 'Bearer {}'.format(token),
     }
     return headers
 
@@ -50,7 +50,7 @@ def download_latest_artifacts(account_project):
         for artifact in artifacts:
             is_zip = artifact['type'] == "Zip"
             filename = artifact['fileName']
-            print("    {0}, {1} bytes".format(filename, artifact['size']))
+            print("    {}, {} bytes".format(filename, artifact['size']))
 
             url = make_url(
                 "/buildjobs/{jobid}/artifacts/{filename}",
@@ -86,7 +86,7 @@ def unpack_zipfile(filename):
     with open(filename, 'rb') as fzip:
         z = zipfile.ZipFile(fzip)
         for name in z.namelist():
-            print("      extracting {0}".format(name))
+            print("      extracting {}".format(name))
             ensure_dirs(name)
             z.extract(name)
 

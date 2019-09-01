@@ -98,7 +98,7 @@ setup_args = dict(
     # We need to get HTML assets from our htmlfiles directory.
     zip_safe=False,
 
-    author='Ned Batchelder and {0} others'.format(num_others),
+    author='Ned Batchelder and {} others'.format(num_others),
     author_email='ned@nedbatchelder.com',
     description=doc,
     long_description=long_description,
