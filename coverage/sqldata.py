@@ -463,9 +463,9 @@ class CoverageData(SimpleReprMixin):
         `plugin_name` is the name of the plugin responsible for this file. It is used
         to associate the right filereporter, etc.
         """
-        self._start_using()
         if self._debug.should('dataop'):
             self._debug.write("Touching %r" % (filename,))
+        self._start_using()
         if not self._has_arcs and not self._has_lines:
             raise CoverageException("Can't touch files in an empty CoverageData")
 
