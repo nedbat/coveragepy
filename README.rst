@@ -126,7 +126,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |repos| image:: https://repology.org/badge/tiny-repos/python:coverage.svg
     :target: https://repology.org/metapackage/python:coverage/versions
     :alt: Packaging status
-.. |tidelift| image:: https://tidelift.com/badges/github/nedbat/coveragepy
+.. |tidelift| image:: https://tidelift.com/badges/package/pypi/coverage
     :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
     :alt: Tidelift
 .. |stars| image:: https://img.shields.io/github/stars/nedbat/coveragepy.svg?logo=github
