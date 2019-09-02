@@ -4,6 +4,7 @@
 """Config file for coverage.py"""
 
 import collections
+import copy
 import os
 import re
 
@@ -215,7 +216,7 @@ class CoverageConfig(object):
         self.xml_output = "coverage.xml"
         self.xml_package_depth = 99
 
-        # Defaults for [JSON]
+        # Defaults for [json]
         self.json_output = "coverage.json"
         self.json_pretty_print = False
         self.json_show_contexts = False
@@ -317,6 +318,10 @@ class CoverageConfig(object):
                 self._config_contents = f.read()
 
         return used
+
+    def copy(self):
+        """Return a copy of the configuration."""
+        return copy.deepcopy(self)
 
     CONFIG_FILE_OPTIONS = [
         # These are *args for _set_attr_from_config_option:

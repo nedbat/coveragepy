@@ -918,3 +918,14 @@ class TestRunnerPluginTest(CoverageTest):
 
     def test_pytestcov_parallel_append(self):
         self.pretend_to_be_pytestcov(append=True)
+
+
+class ImmutableConfigTest(CoverageTest):
+    """Check that reporting methods don't permanently change the configuration."""
+    def test_config_doesnt_change(self):
+        self.make_file("simple.py", "a = 1")
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "simple")
+        self.assertEqual(cov.get_option("report:show_missing"), False)
+        cov.report(show_missing=True)
+        self.assertEqual(cov.get_option("report:show_missing"), False)

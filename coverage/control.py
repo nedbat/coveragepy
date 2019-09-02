@@ -4,6 +4,7 @@
 """Core control stuff for coverage.py."""
 
 import atexit
+import contextlib
 import os
 import os.path
 import platform
@@ -40,6 +41,21 @@ except ImportError:                                         # pragma: only jytho
     patch_multiprocessing = None
 
 os = isolate_module(os)
+
+@contextlib.contextmanager
+def override_config(cov, **kwargs):
+    """Temporarily tweak the configuration of `cov`.
+
+    The arguments are applied to `cov.config` with the `from_args` method.
+    At the end of the with-statement, the old configuration is restored.
+    """
+    original_config = cov.config
+    cov.config = cov.config.copy()
+    try:
+        cov.config.from_args(**kwargs)
+        yield
+    finally:
+        cov.config = original_config
 
 
 class Coverage(object):
@@ -781,13 +797,14 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
-        self.config.from_args(
+        with override_config(
+            self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
             report_contexts=contexts,
-            )
-        reporter = SummaryReporter(self)
-        return reporter.report(morfs, outfile=file)
+        ):
+            reporter = SummaryReporter(self)
+            return reporter.report(morfs, outfile=file)
 
     def annotate(
         self, morfs=None, directory=None, ignore_errors=None,
@@ -803,12 +820,12 @@ class Coverage(object):
         See :meth:`report` for other arguments.
 
         """
-        self.config.from_args(
+        with override_config(self,
             ignore_errors=ignore_errors, report_omit=omit,
             report_include=include, report_contexts=contexts,
-            )
-        reporter = AnnotateReporter(self)
-        reporter.report(morfs, directory=directory)
+        ):
+            reporter = AnnotateReporter(self)
+            reporter.report(morfs, directory=directory)
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
                     omit=None, include=None, extra_css=None, title=None,
@@ -836,13 +853,13 @@ class Coverage(object):
             changing the files in the report folder.
 
         """
-        self.config.from_args(
+        with override_config(self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
             skip_covered=skip_covered, show_contexts=show_contexts, report_contexts=contexts,
-            )
-        reporter = HtmlReporter(self)
-        return reporter.report(morfs)
+        ):
+            reporter = HtmlReporter(self)
+            return reporter.report(morfs)
 
     def xml_report(
         self, morfs=None, outfile=None, ignore_errors=None,
@@ -860,11 +877,11 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
-        self.config.from_args(
+        with override_config(self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             xml_output=outfile, report_contexts=contexts,
-            )
-        return render_report(self.config.xml_output, XmlReporter(self), morfs)
+        ):
+            return render_report(self.config.xml_output, XmlReporter(self), morfs)
 
     def json_report(
         self, morfs=None, outfile=None, ignore_errors=None,
@@ -881,12 +898,12 @@ class Coverage(object):
         Returns a float, the total percentage covered.
 
         """
-        self.config.from_args(
+        with override_config(self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             json_output=outfile, report_contexts=contexts, json_pretty_print=pretty_print,
             json_show_contexts=show_contexts
-        )
-        return render_report(self.config.json_output, JsonReporter(self), morfs)
+        ):
+            return render_report(self.config.json_output, JsonReporter(self), morfs)
 
     def sys_info(self):
         """Return a list of (key, value) pairs showing internal information."""

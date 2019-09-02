@@ -28,6 +28,10 @@ Unreleased
   "numbits."  The :mod:`coverage.numbits` module provides functions for working
   with them.
 
+- The reporting methods used to permanently apply their arguments to the
+  configuration of the Coverage object.  Now they no longer do.  The arguments
+  affect the operation of the method, but do not persist.
+
 - A class named "test_something" no longer confuses the ``test_function``
   dynamic context setting.  Fixes `issue 829`_.
 
