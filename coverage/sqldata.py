@@ -881,6 +881,7 @@ class SqliteDb(SimpleReprMixin):
 
     def executemany(self, sql, data):
         if self.debug:
+            data = list(data)
             self.debug.write("Executing many {!r} with {} rows".format(sql, len(data)))
         return self.con.executemany(sql, data)
 
