@@ -538,6 +538,8 @@ to log:
 
 * ``self``: annotate each debug message with the object printing the message.
 
+* ``sql``: log the SQL statements used for recording data.
+
 * ``sys``: before starting, dump all the system and environment information,
   as with :ref:`coverage debug sys <cmd_debug>`.
 
