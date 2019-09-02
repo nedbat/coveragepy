@@ -254,7 +254,7 @@ class DebugOutputFile(object):                              # pragma: debugging
         self.filters = list(filters)
 
         if self.show_process:
-            self.filters.append(CwdTracker().filter)
+            self.filters.insert(0, CwdTracker().filter)
             self.write("New process: executable: %r\n" % (sys.executable,))
             self.write("New process: cmd: %r\n" % (getattr(sys, 'argv', None),))
             if hasattr(os, 'getppid'):
