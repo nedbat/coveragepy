@@ -15,7 +15,7 @@ try:
 except ImportError:
     import thread as _thread
 
-from coverage.backward import StringIO
+from coverage.backward import reprlib, StringIO
 from coverage.misc import isolate_module
 
 os = isolate_module(os)
@@ -161,6 +161,13 @@ def dump_stack_frames(limit=None, out=None, skip=0):
     out = out or sys.stdout
     out.write(short_stack(limit=limit, skip=skip+1))
     out.write("\n")
+
+
+def clipped_repr(text, numchars=50):
+    """`repr(text)`, but limited to `numchars`."""
+    r = reprlib.Repr()
+    r.maxstring = numchars
+    return r.repr(text)
 
 
 def short_id(id64):

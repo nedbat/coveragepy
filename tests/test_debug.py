@@ -10,6 +10,7 @@ import pytest
 import coverage
 from coverage.backward import StringIO
 from coverage.debug import filter_text, info_formatter, info_header, short_id, short_stack
+from coverage.debug import clipped_repr
 from coverage.env import C_TRACER
 
 from tests.coveragetest import CoverageTest
@@ -59,6 +60,14 @@ def test_info_header(label, header):
 ])
 def test_short_id(id64, id16):
     assert short_id(id64) == id16
+
+
+@pytest.mark.parametrize("text, numchars, result", [
+    ("hello", 10, "'hello'"),
+    ("0123456789abcdefghijklmnopqrstuvwxyz", 15, "'01234...vwxyz'"),
+])
+def test_clipped_repr(text, numchars, result):
+    assert clipped_repr(text, numchars) == result
 
 
 @pytest.mark.parametrize("text, filters, result", [

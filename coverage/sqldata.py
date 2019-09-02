@@ -19,7 +19,7 @@ import sys
 import zlib
 
 from coverage.backward import get_thread_id, iitems, to_bytes, to_string
-from coverage.debug import NoDebugging, SimpleReprMixin
+from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, file_be_gone, filename_suffix, isolate_module
 from coverage.misc import contract
@@ -42,7 +42,7 @@ SCHEMA_VERSION = 7
 # 6: Key-value in meta.
 # 7: line_map -> line_bits
 
-SCHEMA = """
+SCHEMA = """\
 CREATE TABLE coverage_schema (
     -- One row, to record the version of the schema in this db.
     version integer
@@ -887,7 +887,9 @@ class SqliteDb(SimpleReprMixin):
 
     def executescript(self, script):
         if self.debug:
-            self.debug.write("Executing script with {} chars".format(len(script)))
+            self.debug.write("Executing script with {} chars: {}".format(
+                len(script), clipped_repr(script, 100),
+            ))
         self.con.executescript(script)
 
     def dump(self):

@@ -64,6 +64,11 @@ except ImportError:
     # in Python versions earlier than 3.3.
     from pipes import quote as shlex_quote
 
+try:
+    import reprlib
+except ImportError:
+    import repr as reprlib
+
 # A function to iterate listlessly over a dict's items, and one to get the
 # items as a list.
 try:
