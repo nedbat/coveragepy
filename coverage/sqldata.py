@@ -411,6 +411,8 @@ class CoverageData(SimpleReprMixin):
                 )
 
     def _choose_lines_or_arcs(self, lines=False, arcs=False):
+        assert lines or arcs
+        assert not (lines and arcs)
         if lines and self._has_arcs:
             raise CoverageException("Can't add lines to existing arc data")
         if arcs and self._has_lines:
@@ -480,6 +482,8 @@ class CoverageData(SimpleReprMixin):
         If `aliases` is provided, it's a `PathAliases` object that is used to
         re-map paths to match the local machine's.
         """
+        if self._debug.should('dataop'):
+            self._debug.write("Updating with data from %r" % (getattr(other_data, '_filename', '???'),))
         if self._has_lines and other_data._has_arcs:
             raise CoverageException("Can't combine arc data with line data")
         if self._has_arcs and other_data._has_lines:
@@ -608,23 +612,27 @@ class CoverageData(SimpleReprMixin):
                 lines[key] = numbits
             cur.close()
 
-            self._choose_lines_or_arcs(arcs=bool(arcs), lines=bool(lines))
+            if arcs:
+                self._choose_lines_or_arcs(arcs=True)
 
-            # Write the combined data.
-            conn.executemany(
-                'insert or ignore into arc '
-                '(file_id, context_id, fromno, tono) values (?, ?, ?, ?)',
-                arc_rows
-            )
-            conn.execute("delete from line_bits")
-            conn.executemany(
-                "insert into line_bits "
-                "(file_id, context_id, numbits) values (?, ?, ?)",
-                [
-                    (file_ids[file], context_ids[context], numbits)
-                    for (file, context), numbits in lines.items()
-                ]
-            )
+                # Write the combined data.
+                conn.executemany(
+                    'insert or ignore into arc '
+                    '(file_id, context_id, fromno, tono) values (?, ?, ?, ?)',
+                    arc_rows
+                )
+
+            if lines:
+                self._choose_lines_or_arcs(lines=True)
+                conn.execute("delete from line_bits")
+                conn.executemany(
+                    "insert into line_bits "
+                    "(file_id, context_id, numbits) values (?, ?, ?)",
+                    [
+                        (file_ids[file], context_ids[context], numbits)
+                        for (file, context), numbits in lines.items()
+                    ]
+                )
             conn.executemany(
                 'insert or ignore into tracer (file_id, tracer) values (?, ?)',
                 ((file_ids[filename], tracer) for filename, tracer in tracer_map.items())

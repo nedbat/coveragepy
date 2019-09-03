@@ -428,6 +428,22 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         with self.assertRaisesRegex(CoverageException, msg):
             covdata2.update(covdata1)
 
+    def test_update_lines_empty(self):
+        covdata1 = CoverageData(suffix='1')
+        covdata1.add_lines(LINES_1)
+
+        covdata2 = CoverageData(suffix='2')
+        covdata1.update(covdata2)
+        self.assert_line_counts(covdata1, SUMMARY_1)
+
+    def test_update_arcs_empty(self):
+        covdata1 = CoverageData(suffix='1')
+        covdata1.add_arcs(ARCS_3)
+
+        covdata2 = CoverageData(suffix='2')
+        covdata1.update(covdata2)
+        self.assert_line_counts(covdata1, SUMMARY_3)
+
     def test_asking_isnt_measuring(self):
         # Asking about an unmeasured file shouldn't make it seem measured.
         covdata = CoverageData()
