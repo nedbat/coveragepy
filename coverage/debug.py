@@ -72,11 +72,11 @@ class DebugControl(object):
         `msg` is the line to write. A newline will be appended.
 
         """
+        self.output.write(msg+"\n")
         if self.should('self'):
             caller_self = inspect.stack()[1][0].f_locals.get('self')
             if caller_self is not None:
-                msg = "[self: {!r}] {}".format(caller_self, msg)
-        self.output.write(msg+"\n")
+                self.output.write("self: {!r}\n".format(caller_self))
         if self.should('callers'):
             dump_stack_frames(out=self.output, skip=1)
         self.output.flush()
