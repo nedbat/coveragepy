@@ -537,7 +537,7 @@ class CoverageData(SimpleReprMixin):
             cur.close()
 
         with self._connect() as conn:
-            conn.isolation_level = 'IMMEDIATE'
+            conn.con.isolation_level = 'IMMEDIATE'
 
             # Get all tracers in the DB. Files not in the tracers are assumed
             # to have an empty string tracer. Since Sqlite does not support
