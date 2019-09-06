@@ -92,6 +92,12 @@ Python ``-m`` switch::
     $ coverage run -m packagename.modulename arg1 arg2
     blah blah ..your program's output.. blah blah
 
+.. note::
+
+    In most cases, the program to use here is a test runner, not your program
+    you are trying to measure. The test runner will run your tests and coverage
+    will measure the coverage of your code along the way.
+
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
 
