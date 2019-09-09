@@ -56,7 +56,7 @@ There are three ways to enable dynamic contexts:
   plugin, or
 
 * another tool (such as a test runner) can call the
-  :meth:`Coverage.switch_context` method to set the context explicitly.
+  :meth:`.Coverage.switch_context` method to set the context explicitly.
 
 The ``[run] dynamic_context`` setting has only one option now.  Set it to
 ``test_function`` to start a new dynamic context for every test function::
