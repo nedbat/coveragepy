@@ -124,6 +124,7 @@ docreqs:
 	tox -q -e doc --notest
 
 dochtml: docreqs
+	.tox/doc/bin/python doc/check_copied_from.py doc/*.rst
 	$(SPHINXBUILD) -b html doc doc/_build/html
 	@echo
 	@echo "Build finished. The HTML pages are in doc/_build/html."

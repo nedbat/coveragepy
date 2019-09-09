@@ -14,6 +14,18 @@ For most needs, the :class:`.CoverageData` API will be sufficient, and should
 be preferred to accessing the database directly.  Only advanced uses will need
 to use the database.
 
+The schema can change without changing the major version of coverage.py, so be
+careful when accessing the database directly.  The `coverage_schema` table has
+the schema number of the database.  The schema described here corresponds to:
+
+.. copied_from: coverage/sqldata.py
+
+.. code::
+
+    SCHEMA_VERSION = 7
+
+.. end_copied_from
+
 You can use SQLite tools such as the :mod:`sqlite3 <python:sqlite3>` module in
 the Python standard library to access the data.  Some data is stored in a
 packed format that will need custom functions to access.  See
