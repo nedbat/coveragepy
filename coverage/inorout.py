@@ -395,8 +395,8 @@ class InOrOut(object):
             slug="module-not-measured",
         )
 
-    def find_unexecuted_files(self):
-        """Find files in the areas of interest that weren't traced.
+    def find_possibly_unexecuted_files(self):
+        """Find files in the areas of interest that might be untraced.
 
         Yields pairs: file path, and responsible plug-in name.
         """
@@ -405,11 +405,11 @@ class InOrOut(object):
                 not module_has_file(sys.modules[pkg])):
                 continue
             pkg_file = source_for_file(sys.modules[pkg].__file__)
-            for ret in self._find_unexecuted_files(canonical_path(pkg_file)):
+            for ret in self._find_executable_files(canonical_path(pkg_file)):
                 yield ret
 
         for src in self.source:
-            for ret in self._find_unexecuted_files(src):
+            for ret in self._find_executable_files(src):
                 yield ret
 
     def _find_plugin_files(self, src_dir):
@@ -418,11 +418,14 @@ class InOrOut(object):
             for x_file in plugin.find_executable_files(src_dir):
                 yield x_file, plugin._coverage_plugin_name
 
-    def _find_unexecuted_files(self, src_dir):
-        """Find unexecuted files in `src_dir`.
+    def _find_executable_files(self, src_dir):
+        """Find executable files in `src_dir`.
 
-        Search for files in `src_dir` that are probably importable,
-        and add them as unexecuted files in `self.data`.
+        Search for files in `src_dir` that can be executed because they
+        are probably importable. Don't include ones that have been omitted
+        by the configuration.
+
+        Yield the file path, and the plugin name that handles the file.
 
         """
         py_files = ((py_file, None) for py_file in find_python_files(src_dir))
