@@ -9,17 +9,9 @@ The Coverage class
 .. :history: 20150802T174800, new file for 4.0b1
 
 .. module:: coverage
+    :noindex:
 
 .. autoclass:: Coverage
     :members:
     :exclude-members: sys_info
     :special-members: __init__
-
-
-Starting coverage.py automatically
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This function is used to start coverage measurement automatically when Python
-starts.  See :ref:`subprocess` for details.
-
-.. autofunction:: process_startup

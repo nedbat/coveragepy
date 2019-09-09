@@ -49,6 +49,7 @@ only.  :ref:`dbschema` explains more.
     :maxdepth: 1
 
     api_coverage
+    api_module
     api_plugin
     api_coveragedata
     dbschema

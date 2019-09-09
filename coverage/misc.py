@@ -340,7 +340,7 @@ class BaseCoverageException(Exception):
 
 
 class CoverageException(BaseCoverageException):
-    """A run-of-the-mill exception specific to coverage.py."""
+    """An exception raised by a coverage.py function."""
     pass
 
 
