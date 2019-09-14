@@ -36,4 +36,3 @@ This function is used to start coverage measurement automatically when Python
 starts.  See :ref:`subprocess` for details.
 
 .. autofunction:: process_startup
-
