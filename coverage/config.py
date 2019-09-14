@@ -87,7 +87,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             raise configparser.NoOptionError
 
         v = configparser.RawConfigParser.get(self, real_section, option, *args, **kwargs)
-        v = substitute_variables(v)
+        v = substitute_variables(v, os.environ)
         return v
 
     def getlist(self, section, option):

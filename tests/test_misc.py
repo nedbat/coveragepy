@@ -145,6 +145,7 @@ VARS = {
     ("Ill-formed: ${%5} ${{HI}} ${", "Ill-formed: ${%5} ${{HI}} ${"),
     ("Strict: ${FOO?} is there", "Strict: fooey is there"),
     ("Defaulted: ${WUT-missing}!", "Defaulted: missing!"),
+    ("Defaulted empty: ${WUT-}!", "Defaulted empty: !"),
 ])
 def test_substitute_variables(before, after):
     assert substitute_variables(before, VARS) == after

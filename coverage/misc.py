@@ -246,7 +246,7 @@ def _needs_to_implement(that, func_name):
         )
 
 
-def substitute_variables(text, variables=os.environ):
+def substitute_variables(text, variables):
     """Substitute ``${VAR}`` variables in `text` with their values.
 
     Variables in the text can take a number of shell-inspired forms::
@@ -255,42 +255,42 @@ def substitute_variables(text, variables=os.environ):
         ${VAR}
         ${VAR?}             strict: an error if VAR isn't defined.
         ${VAR-missing}      defaulted: "missing" if VAR isn't defined.
+        $$                  just a dollar sign.
 
-    A dollar can be inserted with ``$$``.
-
-    `variables` is a dictionary of variable values, defaulting to the
-    environment variables.
+    `variables` is a dictionary of variable values.
 
     Returns the resulting text with values substituted.
 
     """
+    dollar_pattern = r"""(?x)   # Use extended regex syntax
+        \$                      # A dollar sign,
+        (?:                     # then
+            (?P<w1>\w+) |           # a plain word,
+            (?P<dollar>\$) |        # or a dollar sign.
+            {                       # or a {-wrapped
+                (?P<w2>\w+)             # word,
+                (?:
+                    (?P<strict>\?) |        # with a strict marker
+                    -(?P<defval>[^}]*)      # or a default value
+                )?                      # maybe.
+            }
+        )
+        """
+
     def dollar_replace(m):
         """Called for each $replacement."""
         # Only one of the groups will have matched, just get its text.
-        word = next(v for v in m.group('v1', 'v2', 'char') if v)
+        word = next(w for w in m.group('w1', 'w2', 'dollar') if w)
         if word == "$":
             return "$"
+        elif word in variables:
+            return variables[word]
+        elif m.group('strict'):
+            msg = "Variable {} is undefined: {!r}".format(word, text)
+            raise CoverageException(msg)
         else:
-            strict = bool(m.group('strict'))
-            if strict:
-                if word not in variables:
-                    msg = "Variable {} is undefined: {!r}".format(word, text)
-                    raise CoverageException(msg)
-            return variables.get(word, m.group('defval') or '')
+            return m.group('defval')
 
-    dollar_pattern = r"""(?x)   # Use extended regex syntax
-        \$(?:                   # A dollar sign, then
-        (?P<v1>\w+) |           #   a plain word,
-        (?P<char>\$) |          #   or a dollar sign.
-        {                       #   or a {-wrapped word,
-            (?P<v2>\w+)
-            (?:
-            (?P<strict>\?) |    #       with a strict marker
-            -(?P<defval>[^}]*)  #       or a default value
-            )?
-        }
-        )
-        """
     text = re.sub(dollar_pattern, dollar_replace, text)
     return text
 
