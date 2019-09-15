@@ -887,11 +887,6 @@ class ConfigurerPluginTest(CoverageTest):
 class DynamicContextPluginTest(CoverageTest):
     """Tests of plugins that implement `dynamic_context`."""
 
-    def setUp(self):
-        if not env.C_TRACER:
-            self.skipTest("Plugins are only supported with the C tracer.")
-        super(DynamicContextPluginTest, self).setUp()
-
     def make_plugin_capitalized_testnames(self, filename):
         """Create a dynamic context plugin that capitalizes the part after 'test_'."""
         self.make_file(filename, """\
@@ -1112,33 +1107,3 @@ class DynamicContextPluginTest(CoverageTest):
             [2, 8],
             data.lines(filenames['rendering.py'], contexts=["renderer:span"]),
         )
-
-
-class DynamicContextPluginOtherTracersTest(CoverageTest):
-    """Tests of plugins that implement `dynamic_context`."""
-
-    def setUp(self):
-        if env.C_TRACER:
-            self.skipTest("These tests are for tracers not implemented in C.")
-        super(DynamicContextPluginOtherTracersTest, self).setUp()
-
-    def test_other_tracer_support(self):
-        self.make_file("context_plugin.py", """\
-            from coverage import CoveragePlugin
-
-            class Plugin(CoveragePlugin):
-                def dynamic_context(self, frame):
-                    return frame.f_code.co_name
-
-            def coverage_init(reg, options):
-                reg.add_dynamic_context(Plugin())
-            """)
-
-        cov = coverage.Coverage()
-        cov.set_option("run:plugins", ['context_plugin'])
-
-        msg = "Can't support dynamic contexts with PyTracer"
-        with self.assertRaisesRegex(CoverageException, msg):
-            cov.start()
-
-        cov.stop()      # pragma: nested

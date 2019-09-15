@@ -10,7 +10,6 @@ import coverage
 from coverage import env
 from coverage.context import qualname_from_frame
 from coverage.data import CoverageData
-from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
 
@@ -107,11 +106,6 @@ class StaticContextTest(CoverageTest):
 class DynamicContextTest(CoverageTest):
     """Tests of dynamically changing contexts."""
 
-    def setUp(self):
-        if not env.C_TRACER:
-            self.skipTest("Only the C tracer supports dynamic contexts")
-        super(DynamicContextTest, self).setUp()
-
     SOURCE = """\
         def helper(lineno):
             x = 2
@@ -176,21 +170,6 @@ class DynamicContextTest(CoverageTest):
             data.lines(fname, ["stat|two_tests.test_one"]), self.TEST_ONE_LINES)
         self.assertCountEqual(
             data.lines(fname, ["stat|two_tests.test_two"]), self.TEST_TWO_LINES)
-
-
-class DynamicContextWithPythonTracerTest(CoverageTest):
-    """The Python tracer doesn't do dynamic contexts at all."""
-
-    run_in_temp_dir = False
-
-    def test_python_tracer_fails_properly(self):
-        if env.C_TRACER:
-            self.skipTest("This test is specifically about the Python tracer.")
-        cov = coverage.Coverage()
-        cov.set_option("run:dynamic_context", "test_function")
-        msg = r"Can't support dynamic contexts with PyTracer"
-        with self.assertRaisesRegex(CoverageException, msg):
-            cov.start()
 
 
 def get_qualname():

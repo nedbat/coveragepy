@@ -24,6 +24,9 @@ Unreleased
   in `issue 720`_.  The new ``coverage json`` command writes raw and summarized
   data to a JSON file.  Thanks, Matt Bachmann.
 
+- Dynamic contexts are now supported in the Python tracer, which is important
+  for PyPy users.  Closes `issue 846`_.
+
 - The compact line number representation introduced in 5.0a6 is called a
   "numbits."  The :mod:`coverage.numbits` module provides functions for working
   with them.
@@ -46,6 +49,7 @@ Unreleased
 .. _issue 822: https://github.com/nedbat/coveragepy/issues/822
 .. _issue 834: https://github.com/nedbat/coveragepy/issues/834
 .. _issue 829: https://github.com/nedbat/coveragepy/issues/829
+.. _issue 846: https://github.com/nedbat/coveragepy/issues/846
 
 
 .. _changes_50a6:

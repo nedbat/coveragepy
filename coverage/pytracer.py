@@ -40,6 +40,7 @@ class PyTracer(object):
         self.trace_arcs = False
         self.should_trace = None
         self.should_trace_cache = None
+        self.should_start_context = None
         self.warn = None
         # The threading module to use, if any.
         self.threading = None
@@ -47,6 +48,8 @@ class PyTracer(object):
         self.cur_file_dict = None
         self.last_line = 0          # int, but uninitialized.
         self.cur_file_name = None
+        self.context = None
+        self.started_context = False
 
         self.data_stack = []
         self.last_exc_back = None
@@ -96,14 +99,35 @@ class PyTracer(object):
                 if self.trace_arcs and self.cur_file_dict:
                     pair = (self.last_line, -self.last_exc_firstlineno)
                     self.cur_file_dict[pair] = None
-                self.cur_file_dict, self.cur_file_name, self.last_line = self.data_stack.pop()
+                self.cur_file_dict, self.cur_file_name, self.last_line, self.started_context = (
+                    self.data_stack.pop()
+                )
             self.last_exc_back = None
 
         if event == 'call':
-            # Entering a new function context.  Decide if we should trace
+            # Should we start a new context?
+            if self.should_start_context and self.context is None:
+                context_maybe = self.should_start_context(frame)
+                if context_maybe is not None:
+                    self.context = context_maybe
+                    self.started_context = True
+                    self.switch_context(self.context)
+                else:
+                    self.started_context = False
+            else:
+                self.started_context = False
+
+            # Entering a new frame.  Decide if we should trace
             # in this file.
             self._activity = True
-            self.data_stack.append((self.cur_file_dict, self.cur_file_name, self.last_line))
+            self.data_stack.append(
+                (
+                    self.cur_file_dict,
+                    self.cur_file_name,
+                    self.last_line,
+                    self.started_context,
+                )
+            )
             filename = frame.f_code.co_filename
             self.cur_file_name = filename
             disp = self.should_trace_cache.get(filename)
@@ -146,7 +170,13 @@ class PyTracer(object):
                     first = frame.f_code.co_firstlineno
                     self.cur_file_dict[(self.last_line, -first)] = None
             # Leaving this function, pop the filename stack.
-            self.cur_file_dict, self.cur_file_name, self.last_line = self.data_stack.pop()
+            self.cur_file_dict, self.cur_file_name, self.last_line, self.started_context = (
+                self.data_stack.pop()
+            )
+            # Leaving a context?
+            if self.started_context:
+                self.context = None
+                self.switch_context(None)
         elif event == 'exception':
             self.last_exc_back = frame.f_back
             self.last_exc_firstlineno = frame.f_code.co_firstlineno
