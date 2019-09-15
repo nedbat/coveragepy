@@ -766,6 +766,9 @@ class ProcessTest(CoverageTest):
         if env.JYTHON:
             # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
             self.skipTest("Jython can't handle this test")
+        if env.PYPY and env.PY3 and env.PYPYVERSION[:3] >= (7, 1, 1):       # pragma: obscure
+            # https://bitbucket.org/pypy/pypy/issues/3074/compile-fails-on-non-ascii-filename-if
+            self.skipTest("Avoid getfilesystemencoding problem on pypy3")
         # LANG=C forces getfilesystemencoding on Linux to 'ascii', which causes
         # failures with non-ascii file names. We don't want to make a real file
         # with strange characters, though, because that gets the test runners
