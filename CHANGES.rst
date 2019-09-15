@@ -45,11 +45,14 @@ Unreleased
   plugins, but now it does, closing `issue 834`_.
 
 
+- Added TOML configuration support, including pyproject.toml `issue 664`_.
+
 .. _issue 720: https://github.com/nedbat/coveragepy/issues/720
 .. _issue 822: https://github.com/nedbat/coveragepy/issues/822
 .. _issue 834: https://github.com/nedbat/coveragepy/issues/834
 .. _issue 829: https://github.com/nedbat/coveragepy/issues/829
 .. _issue 846: https://github.com/nedbat/coveragepy/issues/846
+.. _issue 664: https://github.com/nedbat/coveragepy/issues/664
 
 
 .. _changes_50a6:

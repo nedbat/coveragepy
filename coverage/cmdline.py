@@ -146,8 +146,8 @@ class Opts(object):
         '', '--rcfile', action='store',
         help=(
             "Specify configuration file. "
-            "By default '.coveragerc', 'setup.cfg' and 'tox.ini' are tried. "
-            "[env: COVERAGE_RCFILE]"
+            "By default '.coveragerc', 'pyproject.toml', 'setup.cfg' and "
+            "'tox.ini' are tried. [env: COVERAGE_RCFILE]"
         ),
     )
     source = optparse.make_option(
