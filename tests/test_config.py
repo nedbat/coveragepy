@@ -56,6 +56,36 @@ class ConfigTest(CoverageTest):
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, "delete.me")
 
+    def test_toml_config_file(self):
+        # A .coveragerc file will be read into the configuration.
+        self.make_file("pyproject.toml", """\
+            # This is just a bogus toml file for testing.
+            [tool.coverage.run]
+            concurrency = ["a", "b"]
+            timid = true
+            data_file = ".hello_kitty.data"
+            [tool.coverage.report]
+            precision = 3
+            fail_under = 90.5
+            """)
+        cov = coverage.Coverage(config_file="pyproject.toml")
+        self.assertTrue(cov.config.timid)
+        self.assertFalse(cov.config.branch)
+        self.assertEqual(cov.config.concurrency, ["a", "b"])
+        self.assertEqual(cov.config.data_file, ".hello_kitty.data")
+        self.assertEqual(cov.config.precision, 3)
+        self.assertAlmostEqual(cov.config.fail_under, 90.5)
+
+        # Test that our class doesn't reject integers when loading floats
+        self.make_file("pyproject.toml", """\
+            # This is just a bogus toml file for testing.
+            [tool.coverage.report]
+            fail_under = 90
+            """)
+        cov = coverage.Coverage(config_file="pyproject.toml")
+        self.assertAlmostEqual(cov.config.fail_under, 90)
+        self.assertIsInstance(cov.config.fail_under, float)
+
     def test_ignored_config_file(self):
         # You can disable reading the .coveragerc file.
         self.make_file(".coveragerc", """\
@@ -142,6 +172,33 @@ class ConfigTest(CoverageTest):
             with self.assertRaisesRegex(CoverageException, msg):
                 coverage.Coverage()
 
+    def test_toml_parse_errors(self):
+        # Im-parsable values raise CoverageException, with details.
+        bad_configs_and_msgs = [
+            ("[tool.coverage.run]\ntimid = \"maybe?\"\n", r"maybe[?]"),
+            # ("timid = 1\n", r"timid = 1"),
+            ("[tool.coverage.run\n", r"Key group"),
+            ('[tool.coverage.report]\nexclude_lines = ["foo("]\n',
+             r"Invalid \[report\].exclude_lines value u?'foo\(': "
+             r"(unbalanced parenthesis|missing \))"),
+            ('[tool.coverage.report]\npartial_branches = ["foo["]\n',
+             r"Invalid \[report\].partial_branches value u?'foo\[': "
+             r"(unexpected end of regular expression|unterminated character set)"),
+            ('[tool.coverage.report]\npartial_branches_always = ["foo***"]\n',
+             r"Invalid \[report\].partial_branches_always value "
+             r"u?'foo\*\*\*': "
+             r"multiple repeat"),
+            ('[tool.coverage.run]\nconcurrency="foo"', "not a list"),
+            ("[tool.coverage.report]\nprecision=1.23", "not an integer"),
+            ('[tool.coverage.report]\nfail_under="s"', "not a float"),
+        ]
+
+        for bad_config, msg in bad_configs_and_msgs:
+            print("Trying %r" % bad_config)
+            self.make_file("pyproject.toml", bad_config)
+            with self.assertRaisesRegex(CoverageException, msg):
+                coverage.Coverage()
+
     def test_environment_vars_in_config(self):
         # Config files can have $envvars in them.
         self.make_file(".coveragerc", """\
@@ -167,6 +224,31 @@ class ConfigTest(CoverageTest):
             ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
         )
 
+    def test_environment_vars_in_toml_config(self):
+        # Config files can have $envvars in them.
+        self.make_file("pyproject.toml", """\
+            [tool.coverage.run]
+            data_file = "$DATA_FILE.fooey"
+            branch = true
+            [tool.coverage.report]
+            exclude_lines = [
+                "the_$$one",
+                "another${THING}",
+                "x${THING}y",
+                "x${NOTHING}y",
+                "huh$${X}what",
+            ]
+            """)
+        self.set_environ("DATA_FILE", "hello-world")
+        self.set_environ("THING", "ZZZ")
+        cov = coverage.Coverage()
+        self.assertEqual(cov.config.data_file, "hello-world.fooey")
+        self.assertEqual(cov.config.branch, True)
+        self.assertEqual(
+            cov.config.exclude_list,
+            ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
+        )
+
     def test_tilde_in_config(self):
         # Config entries that are file paths can be tilde-expanded.
         self.make_file(".coveragerc", """\
@@ -184,6 +266,38 @@ class ConfigTest(CoverageTest):
             exclude_lines =
                 ~/data.file
                 ~joe/html_dir
+            """)
+        def expanduser(s):
+            """Fake tilde expansion"""
+            s = s.replace("~/", "/Users/me/")
+            s = s.replace("~joe/", "/Users/joe/")
+            return s
+
+        with mock.patch.object(coverage.config.os.path, 'expanduser', new=expanduser):
+            cov = coverage.Coverage()
+        self.assertEqual(cov.config.data_file, "/Users/me/data.file")
+        self.assertEqual(cov.config.html_dir, "/Users/joe/html_dir")
+        self.assertEqual(cov.config.xml_output, "/Users/me/somewhere/xml.out")
+        self.assertEqual(cov.config.exclude_list, ["~/data.file", "~joe/html_dir"])
+
+    def test_tilde_in_toml_config(self):
+        # Config entries that are file paths can be tilde-expanded.
+        self.make_file("pyproject.toml", """\
+            [tool.coverage.run]
+            data_file = "~/data.file"
+
+            [tool.coverage.html]
+            directory = "~joe/html_dir"
+
+            [tool.coverage.xml]
+            output = "~/somewhere/xml.out"
+
+            [tool.coverage.report]
+            # Strings that aren't file paths are not tilde-expanded.
+            exclude_lines = [
+                "~/data.file",
+                "~joe/html_dir",
+            ]
             """)
         def expanduser(s):
             """Fake tilde expansion"""
@@ -243,6 +357,15 @@ class ConfigTest(CoverageTest):
             xyzzy = 17
             """)
         msg = r"Unrecognized option '\[run\] xyzzy=' in config file .coveragerc"
+        with self.assertRaisesRegex(CoverageException, msg):
+            _ = coverage.Coverage()
+
+    def test_unknown_option_toml(self):
+        self.make_file("pyproject.toml", """\
+            [tool.coverage.run]
+            xyzzy = 17
+            """)
+        msg = r"Unrecognized option '\[run\] xyzzy=' in config file pyproject.toml"
         with self.assertRaisesRegex(CoverageException, msg):
             _ = coverage.Coverage()
 

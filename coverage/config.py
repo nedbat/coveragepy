@@ -9,9 +9,11 @@ import os
 import re
 
 from coverage import env
-from coverage.backward import configparser, iitems, string_class
+from coverage.backward import configparser, iitems, string_class, toml
 from coverage.misc import contract, CoverageException, isolate_module
 from coverage.misc import substitute_variables
+
+from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
 
 os = isolate_module(os)
 
@@ -256,12 +258,19 @@ class CoverageConfig(object):
         coverage.py settings in it.
 
         """
+        _, ext = os.path.splitext(filename)
+        if ext == '.toml':
+            if toml is None:
+                return False
+            cp = TomlConfigParser(our_file)
+        else:
+            cp = HandyConfigParser(our_file)
+
         self.attempted_config_files.append(filename)
 
-        cp = HandyConfigParser(our_file)
         try:
             files_read = cp.read(filename)
-        except configparser.Error as err:
+        except (configparser.Error, TomlDecodeError) as err:
             raise CoverageException("Couldn't read config file %s: %s" % (filename, err))
         if not files_read:
             return False
@@ -473,6 +482,7 @@ def config_files_to_try(config_file):
         config_file = ".coveragerc"
     files_to_try = [
         (config_file, True, specified_file),
+        ("pyproject.toml", False, False),
         ("setup.cfg", False, False),
         ("tox.ini", False, False),
     ]
