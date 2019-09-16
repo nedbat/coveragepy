@@ -90,3 +90,11 @@ METACOV = os.getenv('COVERAGE_COVERAGE', '') != ''
 # Even when running tests, you can use COVERAGE_TESTING=0 to disable the
 # test-specific behavior like contracts.
 TESTING = os.getenv('COVERAGE_TESTING', '') == 'True'
+
+try:
+    import toml
+except ImportError:
+    TOML_SUPPORT = False
+else:
+    del toml
+    TOML_SUPPORT = True
