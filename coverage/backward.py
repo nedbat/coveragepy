@@ -6,6 +6,7 @@
 # This file does tricky stuff, so disable a pylint warning.
 # pylint: disable=unused-import
 
+import os
 import sys
 
 from coverage import env
@@ -25,6 +26,11 @@ try:
     import ConfigParser as configparser
 except ImportError:
     import configparser
+
+try:
+    import toml
+except ImportError:
+    toml = None
 
 # What's a string called?
 try:
@@ -54,6 +60,15 @@ try:
     from thread import get_ident as get_thread_id
 except ImportError:
     from threading import get_ident as get_thread_id
+
+try:
+    os.PathLike
+except AttributeError:
+    # This is Python 2 and 3
+    path_types = (bytes, string_class, unicode_class)
+else:
+    # 3.6+
+    path_types = (bytes, str, os.PathLike)
 
 # shlex.quote is new, but there's an undocumented implementation in "pipes",
 # who knew!?
