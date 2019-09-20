@@ -166,7 +166,6 @@ class PythonFileReporter(FileReporter):
 
         self._source = None
         self._parser = None
-        self._statements = None
         self._excluded = None
 
     def __repr__(self):
