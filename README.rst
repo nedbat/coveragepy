@@ -20,7 +20,7 @@ library to determine which lines are executable, and which have been executed.
 Coverage.py runs on many versions of Python:
 
 * CPython 2.7.
-* CPython 3.5 through alpha 3.8.
+* CPython 3.5 through beta 3.8.
 * PyPy2 7.0 and PyPy3 7.0.
 * Jython 2.7.1, though not for reporting.
 * IronPython 2.7.7, though not for reporting.
@@ -32,8 +32,8 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 
-**New in 5.0:** SQLite data storage, contexts, dropped support for Python 2.6,
-3.3 and 3.4.
+**New in 5.0:** SQLite data storage, JSON report, contexts, dropped support for
+Python 2.6, 3.3 and 3.4.
 
 
 For Enterprise
