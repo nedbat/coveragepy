@@ -207,7 +207,11 @@ class PythonParser(object):
 
     def first_line(self, line):
         """Return the first line number of the statement including `line`."""
-        return self._multiline.get(line, line)
+        if line < 0:
+            line = -self._multiline.get(-line, -line)
+        else:
+            line = self._multiline.get(line, line)
+        return line
 
     def first_lines(self, lines):
         """Map the line numbers in `lines` to the correct first line of the
