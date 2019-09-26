@@ -93,6 +93,9 @@ setup_args = dict(
             'coverage%d = coverage.cmdline:main' % sys.version_info[:1],
             'coverage-%d.%d = coverage.cmdline:main' % sys.version_info[:2],
         ],
+        'pytest11': [
+            'coverage_pytest_plugin = coverage.pytest_plugin',
+        ],
     },
 
     # We need to get HTML assets from our htmlfiles directory.
