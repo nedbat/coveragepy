@@ -22,6 +22,10 @@ examines the ``COVERAGE_PROCESS_START`` environment variable, and if it is set,
 begins coverage measurement. The environment variable's value will be used as
 the name of the :ref:`configuration file <config>` to use.
 
+.. note::
+    The subprocess only sees options in the configuration file.  Options set on
+    the command line will not be used in the subprocesses.
+
 When using this technique, be sure to set the parallel option to true so that
 multiple coverage.py runs will each write their data to a distinct file.
 
