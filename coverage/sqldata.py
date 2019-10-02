@@ -192,7 +192,6 @@ class CoverageData(SimpleReprMixin):
 
         self._current_context = None
         self._current_context_id = None
-        self._query_contexts = None
         self._query_context_ids = None
 
     def _choose_filename(self):
@@ -714,32 +713,27 @@ class CoverageData(SimpleReprMixin):
                 return row[0] or ""
             return ""   # File was measured, but no tracer associated.
 
+    def set_query_context(self, context):
+        self._start_using()
+        with self._connect() as con:
+            cur = con.execute("select id from context where context = ?", (context,))
+            self._query_context_ids = [row[0] for row in cur.fetchall()]
 
     def set_query_contexts(self, contexts):
         """Set query contexts for future `lines`, `arcs` etc. calls."""
+        self._start_using()
         if contexts:
-            self._query_context_ids = self._get_query_context_ids(contexts)
-        else:
-            self._query_context_ids = None
-        self._query_contexts = contexts
-
-    def _get_query_context_ids(self, contexts=None):
-        if contexts is not None:
-            if not contexts:
-                return None
-            self._start_using()
             with self._connect() as con:
                 context_clause = ' or '.join(['context glob ?'] * len(contexts))
                 cur = con.execute("select id from context where " + context_clause, contexts)
-                return [row[0] for row in cur.fetchall()]
-        elif self._query_contexts:
-            return self._query_context_ids
-        return None
+                self._query_context_ids = [row[0] for row in cur.fetchall()]
+        else:
+            self._query_context_ids = None
 
-    def lines(self, filename, contexts=None):
+    def lines(self, filename):
         self._start_using()
         if self.has_arcs():
-            arcs = self.arcs(filename, contexts=contexts)
+            arcs = self.arcs(filename)
             if arcs is not None:
                 all_lines = itertools.chain.from_iterable(arcs)
                 return list(set(l for l in all_lines if l > 0))
@@ -751,18 +745,17 @@ class CoverageData(SimpleReprMixin):
             else:
                 query = "select numbits from line_bits where file_id = ?"
                 data = [file_id]
-                context_ids = self._get_query_context_ids(contexts)
-                if context_ids is not None:
-                    ids_array = ', '.join('?'*len(context_ids))
+                if self._query_context_ids is not None:
+                    ids_array = ', '.join('?' * len(self._query_context_ids))
                     query += " and context_id in (" + ids_array + ")"
-                    data += context_ids
+                    data += self._query_context_ids
                 bitmaps = list(con.execute(query, data))
                 nums = set()
                 for row in bitmaps:
                     nums.update(numbits_to_nums(row[0]))
                 return sorted(nums)
 
-    def arcs(self, filename, contexts=None):
+    def arcs(self, filename):
         self._start_using()
         with self._connect() as con:
             file_id = self._file_id(filename)
@@ -771,11 +764,10 @@ class CoverageData(SimpleReprMixin):
             else:
                 query = "select distinct fromno, tono from arc where file_id = ?"
                 data = [file_id]
-                context_ids = self._get_query_context_ids(contexts)
-                if context_ids is not None:
-                    ids_array = ', '.join('?'*len(context_ids))
+                if self._query_context_ids is not None:
+                    ids_array = ', '.join('?' * len(self._query_context_ids))
                     query += " and context_id in (" + ids_array + ")"
-                    data += context_ids
+                    data += self._query_context_ids
                 arcs = con.execute(query, data)
                 return list(arcs)
 
@@ -793,11 +785,10 @@ class CoverageData(SimpleReprMixin):
                     "where arc.file_id = ? and arc.context_id = context.id"
                 )
                 data = [file_id]
-                context_ids = self._get_query_context_ids()
-                if context_ids is not None:
-                    ids_array = ', '.join('?'*len(context_ids))
+                if self._query_context_ids is not None:
+                    ids_array = ', '.join('?' * len(self._query_context_ids))
                     query += " and arc.context_id in (" + ids_array + ")"
-                    data += context_ids
+                    data += self._query_context_ids
                 for fromno, tono, context in con.execute(query, data):
                     if context not in lineno_contexts_map[fromno]:
                         lineno_contexts_map[fromno].append(context)
@@ -810,11 +801,10 @@ class CoverageData(SimpleReprMixin):
                     "and file_id = ?"
                     )
                 data = [file_id]
-                context_ids = self._get_query_context_ids()
-                if context_ids is not None:
-                    ids_array = ', '.join('?'*len(context_ids))
+                if self._query_context_ids is not None:
+                    ids_array = ', '.join('?' * len(self._query_context_ids))
                     query += " and l.context_id in (" + ids_array + ")"
-                    data += context_ids
+                    data += self._query_context_ids
                 for numbits, context in con.execute(query, data):
                     for lineno in numbits_to_nums(numbits):
                         lineno_contexts_map[lineno].append(context)

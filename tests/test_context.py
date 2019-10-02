@@ -72,10 +72,14 @@ class StaticContextTest(CoverageTest):
             fred = full_names['red.py']
             fblue = full_names['blue.py']
 
-            self.assertEqual(combined.lines(fred, contexts=['red']), self.LINES)
-            self.assertEqual(combined.lines(fred, contexts=['blue']), [])
-            self.assertEqual(combined.lines(fblue, contexts=['red']), [])
-            self.assertEqual(combined.lines(fblue, contexts=['blue']), self.LINES)
+            def assert_combined_lines(filename, context, lines):
+                combined.set_query_context(context)
+                self.assertEqual(combined.lines(filename), lines)
+
+            assert_combined_lines(fred, 'red', self.LINES)
+            assert_combined_lines(fred, 'blue', [])
+            assert_combined_lines(fblue, 'red', [])
+            assert_combined_lines(fblue, 'blue', self.LINES)
 
     def test_combining_arc_contexts(self):
         red_data, blue_data = self.run_red_blue(branch=True)
@@ -92,15 +96,23 @@ class StaticContextTest(CoverageTest):
             fred = full_names['red.py']
             fblue = full_names['blue.py']
 
-            self.assertEqual(combined.lines(fred, contexts=['red']), self.LINES)
-            self.assertEqual(combined.lines(fred, contexts=['blue']), [])
-            self.assertEqual(combined.lines(fblue, contexts=['red']), [])
-            self.assertEqual(combined.lines(fblue, contexts=['blue']), self.LINES)
+            def assert_combined_lines(filename, context, lines):
+                combined.set_query_context(context)
+                self.assertEqual(combined.lines(filename), lines)
 
-            self.assertEqual(combined.arcs(fred, contexts=['red']), self.ARCS)
-            self.assertEqual(combined.arcs(fred, contexts=['blue']), [])
-            self.assertEqual(combined.arcs(fblue, contexts=['red']), [])
-            self.assertEqual(combined.arcs(fblue, contexts=['blue']), self.ARCS)
+            assert_combined_lines(fred, 'red', self.LINES)
+            assert_combined_lines(fred, 'blue', [])
+            assert_combined_lines(fblue, 'red', [])
+            assert_combined_lines(fblue, 'blue', self.LINES)
+
+            def assert_combined_arcs(filename, context, lines):
+                combined.set_query_context(context)
+                self.assertEqual(combined.arcs(filename), lines)
+
+            assert_combined_arcs(fred, 'red', self.ARCS)
+            assert_combined_arcs(fred, 'blue', [])
+            assert_combined_arcs(fblue, 'red', [])
+            assert_combined_arcs(fblue, 'blue', self.ARCS)
 
 
 class DynamicContextTest(CoverageTest):
@@ -145,12 +157,14 @@ class DynamicContextTest(CoverageTest):
         self.assertCountEqual(
             data.measured_contexts(),
             ["", "two_tests.test_one", "two_tests.test_two"])
-        self.assertCountEqual(data.lines(fname, [""]), self.OUTER_LINES)
-        self.assertCountEqual(
-            data.lines(fname, ["two_tests.test_one"]),
-            self.TEST_ONE_LINES)
-        self.assertCountEqual(
-            data.lines(fname, ["two_tests.test_two"]), self.TEST_TWO_LINES)
+
+        def assert_context_lines(context, lines):
+            data.set_query_context(context)
+            self.assertCountEqual(lines, data.lines(fname))
+
+        assert_context_lines("", self.OUTER_LINES)
+        assert_context_lines("two_tests.test_one", self.TEST_ONE_LINES)
+        assert_context_lines("two_tests.test_two", self.TEST_TWO_LINES)
 
     def test_static_and_dynamic(self):
         self.make_file("two_tests.py", self.SOURCE)
@@ -164,12 +178,14 @@ class DynamicContextTest(CoverageTest):
         self.assertCountEqual(
             data.measured_contexts(),
             ["stat", "stat|two_tests.test_one", "stat|two_tests.test_two"])
-        self.assertCountEqual(
-            data.lines(fname, ["stat"]), self.OUTER_LINES)
-        self.assertCountEqual(
-            data.lines(fname, ["stat|two_tests.test_one"]), self.TEST_ONE_LINES)
-        self.assertCountEqual(
-            data.lines(fname, ["stat|two_tests.test_two"]), self.TEST_TWO_LINES)
+
+        def assert_context_lines(context, lines):
+            data.set_query_context(context)
+            self.assertCountEqual(lines, data.lines(fname))
+
+        assert_context_lines("stat", self.OUTER_LINES)
+        assert_context_lines("stat|two_tests.test_one", self.TEST_ONE_LINES)
+        assert_context_lines("stat|two_tests.test_two", self.TEST_TWO_LINES)
 
 
 def get_qualname():

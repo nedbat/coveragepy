@@ -201,8 +201,10 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
         self.assertEqual(covdata.lines('a.py'), [1, 2])
-        self.assertEqual(covdata.lines('a.py', contexts=['test*']), [1, 2])
-        self.assertEqual(covdata.lines('a.py', contexts=['other*']), [])
+        covdata.set_query_contexts(['test*'])
+        self.assertEqual(covdata.lines('a.py'), [1, 2])
+        covdata.set_query_contexts(['other*'])
+        self.assertEqual(covdata.lines('a.py'), [])
 
     def test_contexts_by_lineno_with_lines(self):
         covdata = CoverageData()
@@ -250,11 +252,11 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         covdata.set_context('test_x')
         covdata.add_arcs(ARCS_3)
-        self.assertEqual(
-            covdata.arcs('x.py'), [(-1, 1), (1, 2), (2, 3), (3, -1)])
-        self.assertEqual(covdata.arcs(
-            'x.py', contexts=['test*']), [(-1, 1), (1, 2), (2, 3), (3, -1)])
-        self.assertEqual(covdata.arcs('x.py', contexts=['other*']), [])
+        self.assertEqual(covdata.arcs('x.py'), [(-1, 1), (1, 2), (2, 3), (3, -1)])
+        covdata.set_query_contexts(['test*'])
+        self.assertEqual(covdata.arcs('x.py'), [(-1, 1), (1, 2), (2, 3), (3, -1)])
+        covdata.set_query_contexts(['other*'])
+        self.assertEqual(covdata.arcs('x.py'), [])
 
     def test_contexts_by_lineno_with_arcs(self):
         covdata = CoverageData()
