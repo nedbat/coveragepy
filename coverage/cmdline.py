@@ -107,10 +107,10 @@ class Opts(object):
     )
     contexts = optparse.make_option(
         '', '--contexts', action='store',
-        metavar="PAT1,PAT2,...",
+        metavar="REGEX1,REGEX2,...",
         help=(
             "Only display data from lines covered in the given contexts. "
-            "Accepts shell-style wildcards, which must be quoted."
+            "Accepts Python regexes, which must be quoted."
         ),
     )
     output_xml = optparse.make_option(

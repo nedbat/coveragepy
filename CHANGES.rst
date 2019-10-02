@@ -20,7 +20,12 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- The :class:`.CoverageData` API has changed how queries are limited to
+  specific contexts.  Now you use :meth:`.CoverageData.set_query_context` to
+  set a single exact-match string, or :meth:`.CoverageData.set_query_contexts`
+  to set a list of regular expressions to match contexts.  This changes the
+  command-line ``--contexts`` option to use regular expressions instead of
+  filename-style wildcards.
 
 
 .. _changes_50a7:

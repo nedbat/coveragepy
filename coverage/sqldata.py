@@ -14,6 +14,7 @@ import datetime
 import glob
 import itertools
 import os
+import re
 import sqlite3
 import sys
 import zlib
@@ -21,9 +22,8 @@ import zlib
 from coverage.backward import get_thread_id, iitems, to_bytes, to_string
 from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
 from coverage.files import PathAliases
-from coverage.misc import CoverageException, file_be_gone, filename_suffix, isolate_module
-from coverage.misc import contract
-from coverage.numbits import nums_to_numbits, numbits_to_nums, numbits_union
+from coverage.misc import CoverageException, contract, file_be_gone, filename_suffix, isolate_module
+from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
 from coverage.version import __version__
 
 os = isolate_module(os)
@@ -714,17 +714,33 @@ class CoverageData(SimpleReprMixin):
             return ""   # File was measured, but no tracer associated.
 
     def set_query_context(self, context):
+        """Set the context for subsequent querying.
+
+        The next `lines`, `arcs`, or `contexts_by_lineno` calls will be limited
+        to only one context.  `context` is a string which must match a context
+        exactly.  If it does not, no exception is raised, but queries will
+        return no data.
+
+        """
         self._start_using()
         with self._connect() as con:
             cur = con.execute("select id from context where context = ?", (context,))
             self._query_context_ids = [row[0] for row in cur.fetchall()]
 
     def set_query_contexts(self, contexts):
-        """Set query contexts for future `lines`, `arcs` etc. calls."""
+        """Set the contexts for subsequent querying.
+
+        The next `lines`, `arcs`, or `contexts_by_lineno` calls will be limited
+        to the specified contexts.  `contexts` is a list of Python regular
+        expressions.  Contexts will be matched using :func:`re.search <python:re.search>`.
+        Data will be included in query results if they are part of any of the
+        contexts matched.
+
+        """
         self._start_using()
         if contexts:
             with self._connect() as con:
-                context_clause = ' or '.join(['context glob ?'] * len(contexts))
+                context_clause = ' or '.join(['context regexp ?'] * len(contexts))
                 cur = con.execute("select id from context where " + context_clause, contexts)
                 self._query_context_ids = [row[0] for row in cur.fetchall()]
         else:
@@ -842,6 +858,7 @@ class SqliteDb(SimpleReprMixin):
         if self.debug:
             self.debug.write("Connecting to {!r}".format(self.filename))
         self.con = sqlite3.connect(filename, check_same_thread=False)
+        self.con.create_function('REGEXP', 2, _regexp)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
         # PyPy needs the .close() calls here, or sqlite gets twisted up:
@@ -893,3 +910,8 @@ class SqliteDb(SimpleReprMixin):
     def dump(self):
         """Return a multi-line string, the dump of the database."""
         return "\n".join(self.con.iterdump())
+
+
+def _regexp(text, pattern):
+    """A regexp function for SQLite."""
+    return re.search(text, pattern) is not None

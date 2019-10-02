@@ -1099,7 +1099,7 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         cov = coverage.Coverage(source=["."])
         cov.set_option("run:dynamic_context", "test_function")
         cov.set_option("html:show_contexts", True)
-        cov.set_option("report:contexts", ["*test_one*"])
+        cov.set_option("report:contexts", ["test_one"])
         mod = self.start_import_stop(cov, "two_tests")
         d = html_data_from_cov(cov, mod)
 
