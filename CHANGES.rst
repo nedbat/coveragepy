@@ -7,7 +7,7 @@ Change history for Coverage.py
 
 These changes are listed in decreasing version number order. Note this can be
 different from a strict chronological order when there are two branches in
-development at the same time, like 4.5.x and 5.0.
+development at the same time, such as 4.5.x and 5.0.
 
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
