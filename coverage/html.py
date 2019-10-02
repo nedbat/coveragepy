@@ -90,10 +90,10 @@ class HtmlDataGeneration(object):
             missing_branch_arcs = analysis.missing_branch_arcs()
             arcs_executed = analysis.arcs_executed()
 
-        contexts_by_lineno = collections.defaultdict(list)
         if self.config.show_contexts:
-            # Lookup line number contexts.
             contexts_by_lineno = analysis.data.contexts_by_lineno(fr.filename)
+        else:
+            contexts_by_lineno = collections.defaultdict(list)
 
         lines = []
 
