@@ -153,7 +153,8 @@ class Coverage(object):
         by coverage.  Importing measured files before coverage is started can
         mean that code is missed.
 
-        `context` is a string to use as the context label for collected data.
+        `context` is a string to use as the :ref:`static context <static_contexts>`
+        label for collected data.
 
         .. versionadded:: 4.0
             The `concurrency` parameter.
@@ -509,7 +510,7 @@ class Coverage(object):
             self.save()
 
     def erase(self):
-        """Erase previously-collected coverage data.
+        """Erase previously collected coverage data.
 
         This removes the in-memory data collected in this session as well as
         discarding the data file.
@@ -526,14 +527,15 @@ class Coverage(object):
     def switch_context(self, new_context):
         """Switch to a new dynamic context.
 
-        `new_context` is a string to use as the context label
-        for collected data.  If a :ref:`static context <static_contexts>` is in
-        use, the static and dynamic context labels will be joined together with
-        a pipe character.
+        `new_context` is a string to use as the
+        :ref:`dynamic context <dynamic_contexts>` label for collected data.
+        If a :ref:`static context <static_contexts>` is in use, the static and
+        dynamic context labels will be joined together with a pipe character.
 
         Coverage collection must be started already.
 
         .. versionadded:: 5.0
+
         """
         if not self._started:
             raise CoverageException(                    # pragma: only jython
@@ -792,10 +794,21 @@ class Coverage(object):
 
         If `skip_covered` is true, don't report on files with 100% coverage.
 
+        `contexts` is a list of regular expressions.  Only data from
+        :ref:`dynamic contexts <dynamic_contexts>` that match one of those
+        expressions (using :func:`re.search <python:re.search>`) will be
+        included in the report.
+
         All of the arguments default to the settings read from the
         :ref:`configuration file <config>`.
 
         Returns a float, the total percentage covered.
+
+        .. versionadded:: 4.0
+            The `skip_covered` parameter.
+
+        .. versionadded:: 5.0
+            The `contexts` parameter.
 
         """
         with override_config(
@@ -897,6 +910,8 @@ class Coverage(object):
         See :meth:`report` for other arguments.
 
         Returns a float, the total percentage covered.
+
+        .. versionadded:: 5.0
 
         """
         with override_config(self,
