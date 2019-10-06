@@ -229,7 +229,6 @@ def do_zip_mods():
 def do_install_egg():
     """Install the egg1 egg for tests."""
     # I am pretty certain there are easier ways to install eggs...
-    # pylint: disable=import-error,no-name-in-module
     cur_dir = os.getcwd()
     os.chdir("tests/eggsrc")
     with ignore_warnings():

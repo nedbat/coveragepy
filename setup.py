@@ -11,9 +11,9 @@ import sys
 
 # Setuptools has to be imported before distutils, or things break.
 from setuptools import setup
-from distutils.core import Extension                # pylint: disable=no-name-in-module, import-error, wrong-import-order
-from distutils.command.build_ext import build_ext   # pylint: disable=no-name-in-module, import-error, wrong-import-order
-from distutils import errors                        # pylint: disable=no-name-in-module, wrong-import-order
+from distutils.core import Extension                # pylint: disable=wrong-import-order
+from distutils.command.build_ext import build_ext   # pylint: disable=wrong-import-order
+from distutils import errors                        # pylint: disable=wrong-import-order
 
 
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid

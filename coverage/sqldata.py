@@ -256,8 +256,8 @@ class CoverageData(SimpleReprMixin):
                 self._has_arcs = bool(int(row[0]))
                 self._has_lines = not self._has_arcs
 
-            for path, id in db.execute("select path, id from file"):
-                self._file_map[path] = id
+            for path, file_id in db.execute("select path, id from file"):
+                self._file_map[path] = file_id
 
     def _connect(self):
         """Get the SqliteDb object to use."""
@@ -482,7 +482,9 @@ class CoverageData(SimpleReprMixin):
         re-map paths to match the local machine's.
         """
         if self._debug.should('dataop'):
-            self._debug.write("Updating with data from %r" % (getattr(other_data, '_filename', '???'),))
+            self._debug.write("Updating with data from %r" % (
+                getattr(other_data, '_filename', '???'),
+            ))
         if self._has_lines and other_data._has_arcs:
             raise CoverageException("Can't combine arc data with line data")
         if self._has_arcs and other_data._has_lines:

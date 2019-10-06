@@ -73,6 +73,7 @@ class StaticContextTest(CoverageTest):
             fblue = full_names['blue.py']
 
             def assert_combined_lines(filename, context, lines):
+                # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 self.assertEqual(combined.lines(filename), lines)
 
@@ -97,6 +98,7 @@ class StaticContextTest(CoverageTest):
             fblue = full_names['blue.py']
 
             def assert_combined_lines(filename, context, lines):
+                # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 self.assertEqual(combined.lines(filename), lines)
 
@@ -106,6 +108,7 @@ class StaticContextTest(CoverageTest):
             assert_combined_lines(fblue, 'blue', self.LINES)
 
             def assert_combined_arcs(filename, context, lines):
+                # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 self.assertEqual(combined.arcs(filename), lines)
 
