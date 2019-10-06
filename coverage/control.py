@@ -946,6 +946,7 @@ class Coverage(object):
             ('CTracer', 'available' if CTracer else "unavailable"),
             ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
             ('plugins.configurers', plugin_info(self._plugins.configurers)),
+            ('plugins.context_switchers', plugin_info(self._plugins.context_switchers)),
             ('configs_attempted', self.config.attempted_config_files),
             ('configs_read', self.config.config_files_read),
             ('config_file', self.config.config_file),
