@@ -195,6 +195,7 @@ class CoverageData(SimpleReprMixin):
         self._query_context_ids = None
 
     def _choose_filename(self):
+        """Set self._filename based on inited attributes."""
         if self._no_disk:
             self._filename = ":memory:"
         else:
@@ -204,6 +205,7 @@ class CoverageData(SimpleReprMixin):
                 self._filename += "." + suffix
 
     def _reset(self):
+        """Reset our attributes."""
         if self._dbs:
             for db in self._dbs.values():
                 db.close()
@@ -213,6 +215,10 @@ class CoverageData(SimpleReprMixin):
         self._current_context_id = None
 
     def _create_db(self):
+        """Create a db file that doesn't exist yet.
+
+        Initializes the schema and certain metadata.
+        """
         if self._debug.should('dataio'):
             self._debug.write("Creating data file {!r}".format(self._filename))
         self._dbs[get_thread_id()] = db = SqliteDb(self._filename, self._debug)
@@ -229,6 +235,7 @@ class CoverageData(SimpleReprMixin):
             )
 
     def _open_db(self):
+        """Open an existing db file, and read its metadata."""
         if self._debug.should('dataio'):
             self._debug.write("Opening data file {!r}".format(self._filename))
         self._dbs[get_thread_id()] = SqliteDb(self._filename, self._debug)
