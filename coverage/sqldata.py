@@ -3,7 +3,6 @@
 
 """Sqlite coverage data."""
 
-# TODO: get sys_info for data class, so we can see sqlite version etc
 # TODO: factor out dataop debugging to a wrapper class?
 # TODO: make sure all dataop debugging is in place somehow
 # TODO: should writes be batched?
@@ -837,6 +836,17 @@ class CoverageData(SimpleReprMixin):
 
     def run_infos(self):
         return []   # TODO
+
+    @classmethod
+    def sys_info(cls):
+        """Our information for Coverage.sys_info.
+
+        Returns a list of (key, value) pairs.
+        """
+        return [
+            ('sqlite3_version', sqlite3.version),
+            ('sqlite3_sqlite_version', sqlite3.sqlite_version),
+        ]
 
 
 class SqliteDb(SimpleReprMixin):

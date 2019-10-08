@@ -976,6 +976,8 @@ class Coverage(object):
         if self._inorout:
             info.extend(self._inorout.sys_info())
 
+        info.extend(CoverageData.sys_info())
+
         return info
 
 

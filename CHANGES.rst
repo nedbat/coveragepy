@@ -20,7 +20,7 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Nothing yet.
+- Added sqlite3 module version information to ``coverage debug sys`` output.
 
 
 .. _changes_50a8:
