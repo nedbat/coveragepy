@@ -65,6 +65,8 @@
     - git tag coverage-3.0.1
     - git push
     - git push --tags
+- Update Tidelift:
+    - make upload_relnotes
 - Bump version:
     - coverage/version.py
         - increment version number
@@ -84,8 +86,6 @@
         - wait for the new tag build to finish successfully.
         - visit https://readthedocs.org/dashboard/coverage/advanced/
         - change the default version to the new version
-- Update Tidelift:
-    - make upload_relnotes
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
 - Announce on coveragepy-announce@googlegroups.com .
 - Announce on TIP.
