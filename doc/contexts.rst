@@ -99,4 +99,4 @@ Raw data
 --------
 
 For more advanced reporting or analysis, the .coverage data file is a SQLite
-database. TODO: explain the schema.
+database. See :ref:`dbschema` for details.

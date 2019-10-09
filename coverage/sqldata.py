@@ -5,7 +5,6 @@
 
 # TODO: factor out dataop debugging to a wrapper class?
 # TODO: make sure all dataop debugging is in place somehow
-# TODO: should writes be batched?
 # TODO: run_info
 
 import collections
