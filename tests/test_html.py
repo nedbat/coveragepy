@@ -1046,10 +1046,6 @@ def html_data_from_cov(cov, morf):
 
 class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML reports with shown contexts."""
-    def setUp(self):
-        if not env.C_TRACER:
-            self.skipTest("Only the C tracer supports dynamic contexts")
-        super(HtmlWithContextsTest, self).setUp()
 
     SOURCE = """\
         def helper(lineno):
