@@ -22,6 +22,12 @@ Unreleased
 
 - Added sqlite3 module version information to ``coverage debug sys`` output.
 
+- Asking the HTML report to show contexts (``[html] show_contexts=True`` or
+  ``coverage html --show-contexts``) will issue a warning if there were no
+  contexts measured (`issue 851`_).
+
+.. _issue 851: https://github.com/nedbat/coveragepy/issues/851
+
 
 .. _changes_50a8:
 

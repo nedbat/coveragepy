@@ -1035,17 +1035,17 @@ assert len(math) == 18
         )
 
 
-def html_data_from_cov(cov, morf):
-    """Get HTML report data from a `Coverage` object for a morf."""
-    datagen = coverage.html.HtmlDataGeneration(cov)
-    for fr, analysis in get_analysis_to_report(cov, [morf]):
-        # This will only loop once, so it's fine to return inside the loop.
-        file_data = datagen.data_for_file(fr, analysis)
-        return file_data
-
-
 class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML reports with shown contexts."""
+
+    def html_data_from_cov(self, cov, morf):
+        """Get HTML report data from a `Coverage` object for a morf."""
+        with self.assert_warnings(cov, []):
+            datagen = coverage.html.HtmlDataGeneration(cov)
+            for fr, analysis in get_analysis_to_report(cov, [morf]):
+                # This will only loop once, so it's fine to return inside the loop.
+                file_data = datagen.data_for_file(fr, analysis)
+                return file_data
 
     SOURCE = """\
         def helper(lineno):
@@ -1082,7 +1082,7 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         cov.set_option("run:dynamic_context", "test_function")
         cov.set_option("html:show_contexts", True)
         mod = self.start_import_stop(cov, "two_tests")
-        d = html_data_from_cov(cov, mod)
+        d = self.html_data_from_cov(cov, mod)
 
         context_labels = ['(empty)', 'two_tests.test_one', 'two_tests.test_two']
         expected_lines = [self.OUTER_LINES, self.TEST_ONE_LINES, self.TEST_TWO_LINES]
@@ -1097,10 +1097,19 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         cov.set_option("html:show_contexts", True)
         cov.set_option("report:contexts", ["test_one"])
         mod = self.start_import_stop(cov, "two_tests")
-        d = html_data_from_cov(cov, mod)
+        d = self.html_data_from_cov(cov, mod)
 
         context_labels = ['(empty)', 'two_tests.test_one', 'two_tests.test_two']
         expected_lines = [[], self.TEST_ONE_LINES, []]
         for label, expected in zip(context_labels, expected_lines):
             actual = [ld.number for ld in d.lines if label in (ld.contexts or ())]
             assert sorted(expected) == sorted(actual)
+
+    def test_no_contexts_warns_no_contexts(self):
+        # If no contexts were collected, then show_contexts emits a warning.
+        self.make_file("two_tests.py", self.SOURCE)
+        cov = coverage.Coverage(source=["."])
+        cov.set_option("html:show_contexts", True)
+        self.start_import_stop(cov, "two_tests")
+        with self.assert_warnings(cov, ["No contexts were measured"]):
+            cov.html_report()
