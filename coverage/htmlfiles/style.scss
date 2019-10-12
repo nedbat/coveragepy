@@ -95,7 +95,7 @@ a.nav {
     margin: 1em 0 0 3em;
 }
 
-/* Header styles */
+// Header styles
 #header .content {
     padding: 1em $left-gutter;
 }
@@ -242,16 +242,24 @@ $mis-hover-color: mix($mis-color, #000, $hover-dark-amt);
 $run-hover-color: mix($run-color, #000, $hover-dark-amt);
 $exc-hover-color: mix($exc-color, #000, $hover-dark-amt);
 $par-hover-color: mix($par-color, #000, $hover-dark-amt);
+
+// The slim bar at the left edge of the source lines, colored by coverage.
 $border-indicator-width: .2em;
+
+$context-panel-color: #aaeeff;
 
 #source {
     padding: 1em 0 1em $left-gutter;
     font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 
     p {
-        /* position relative makes position:absolute pop-ups appear in the right place. */
+        // position relative makes position:absolute pop-ups appear in the right place.
         position: relative;
         white-space: pre;
+
+        * {
+            box-sizing: border-box;
+        }
 
         .n {
             float: left;
@@ -387,41 +395,68 @@ $border-indicator-width: .2em;
             float: right;
             padding-right: .5em;
         }
-    }
-}
 
+        .ctx {
+            font-family: verdana, sans-serif;
+            white-space: nowrap;
 
-// Line contexts
-td.contexts {
-    p {
-        margin: 0;
-        padding: 0 .5em;
-        color: #999999;
-        font-family: verdana, sans-serif;
-        white-space: nowrap;
-        position: relative;
-        &:hover {
-            background: #eee;
-        }
-        span.context-list {
-            @extend %in-text-popup;
-            min-width: 30em;
+            input {
+                display: none;
 
-            span.context-line {
-                display: block;
+                & ~ label {
+                    cursor: pointer;
+                    border-radius: .25em;
+                    &::before {
+                        content: "▶ ";
+                    }
+                }
+
+                &:checked ~ label {
+                    background: $context-panel-color;
+                    color: #666;
+                    border-radius: .75em .75em 0 0;
+                    &::before {
+                        content: "▼ ";
+                    }
+                }
+
+                & ~ .ctxs {
+                    display: none;
+                }
+
+                &:checked ~ .ctxs {
+                    display: block;
+                }
+            }
+
+            label {
+                color: #999;
+                position: absolute;
+                right: 2.5em;
+                display: inline-block;
+                text-align: right;
+                font-size: .8333em;   // 10/12
+                padding: .25em .5em;
+                &:hover {
+                    background: mix($context-panel-color, #fff, 50%);
+                    color: #666;
+                }
+            }
+
+            .ctxs {
+                font-family: verdana, sans-serif;
+                background: $context-panel-color;
+                padding: .25em .5em;
+                border-radius: .25em;
+                margin-right: 1.75em;
+                span {
+                    display: block;
+                }
             }
         }
-        &:hover span.context-list {
-            display: block;
-        }
-        span.context-button {
-            display: inline-block;
-            cursor: pointer;
-            font-size: .8333em;   // 10/12
-            line-height: 1em;
-        }
     }
 }
+
 
 // index styles
 #index {

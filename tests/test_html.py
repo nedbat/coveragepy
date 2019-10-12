@@ -1038,6 +1038,8 @@ assert len(math) == 18
 class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML reports with shown contexts."""
 
+    EMPTY = coverage.html.HtmlDataGeneration.EMPTY
+
     def html_data_from_cov(self, cov, morf):
         """Get HTML report data from a `Coverage` object for a morf."""
         with self.assert_warnings(cov, []):
@@ -1083,11 +1085,15 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         cov.set_option("html:show_contexts", True)
         mod = self.start_import_stop(cov, "two_tests")
         d = self.html_data_from_cov(cov, mod)
-
-        context_labels = ['(empty)', 'two_tests.test_one', 'two_tests.test_two']
+        from coverage.debug import pp
+        pp(d)
+        context_labels = [self.EMPTY, 'two_tests.test_one', 'two_tests.test_two']
         expected_lines = [self.OUTER_LINES, self.TEST_ONE_LINES, self.TEST_TWO_LINES]
         for label, expected in zip(context_labels, expected_lines):
-            actual = [ld.number for ld in d.lines if label in (ld.contexts or ())]
+            actual = [
+                ld.number for ld in d.lines
+                if label == ld.contexts_label or label in (ld.contexts or ())
+            ]
             assert sorted(expected) == sorted(actual)
 
     def test_filtered_dynamic_contexts(self):
@@ -1099,7 +1105,7 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         mod = self.start_import_stop(cov, "two_tests")
         d = self.html_data_from_cov(cov, mod)
 
-        context_labels = ['(empty)', 'two_tests.test_one', 'two_tests.test_two']
+        context_labels = [self.EMPTY, 'two_tests.test_one', 'two_tests.test_two']
         expected_lines = [[], self.TEST_ONE_LINES, []]
         for label, expected in zip(context_labels, expected_lines):
             actual = [ld.number for ld in d.lines if label in (ld.contexts or ())]

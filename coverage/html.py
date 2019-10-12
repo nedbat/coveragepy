@@ -77,6 +77,8 @@ def write_html(fname, html):
 class HtmlDataGeneration(object):
     """Generate structured data to be turned into HTML reports."""
 
+    EMPTY = "(empty)"
+
     def __init__(self, cov):
         self.coverage = cov
         self.config = self.coverage.config
@@ -121,10 +123,15 @@ class HtmlDataGeneration(object):
             elif lineno in analysis.statements:
                 category = 'run'
 
+            contexts = contexts_label = None
+            context_list = None
             if category and self.config.show_contexts:
-                contexts = sorted(c or "(empty)" for c in contexts_by_lineno[lineno])
-            else:
-                contexts = None
+                contexts = sorted(c or self.EMPTY for c in contexts_by_lineno[lineno])
+                if contexts == [self.EMPTY]:
+                    contexts_label = self.EMPTY
+                else:
+                    contexts_label = "{} ctx".format(len(contexts))
+                    context_list = contexts
 
             lines.append(SimpleNamespace(
                 tokens=tokens,
@@ -132,6 +139,8 @@ class HtmlDataGeneration(object):
                 category=category,
                 statement=(lineno in analysis.statements),
                 contexts=contexts,
+                contexts_label=contexts_label,
+                context_list=context_list,
                 short_annotations=short_annotations,
                 long_annotations=long_annotations,
             ))

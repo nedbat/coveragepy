@@ -20,6 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- The HTML report has been reimplemented (no more table around the source
+  code). This allowed for a better presentation of the context information,
+  hopefully resolving `issue 855`_.
+
 - Added sqlite3 module version information to ``coverage debug sys`` output.
 
 - Asking the HTML report to show contexts (``[html] show_contexts=True`` or
@@ -27,6 +31,7 @@ Unreleased
   contexts measured (`issue 851`_).
 
 .. _issue 851: https://github.com/nedbat/coveragepy/issues/851
+.. _issue 855: https://github.com/nedbat/coveragepy/issues/855
 
 
 .. _changes_50a8:

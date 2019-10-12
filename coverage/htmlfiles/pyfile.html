@@ -79,11 +79,18 @@
                 <span class="annotate long">{{line.annotate_long}}</span>{#-#}
             {% endif -%}
             {% if line.contexts -%}
-                <span class="context-button">{{ line.contexts|len }} ctx</span>{#-#}
-                <span class="context-list">
-                    {% for context in line.contexts -%}
-                        <span class="context-line">{{context}}</span>{#-#}
-                    {% endfor -%}
+                <span class="ctx">
+                    {% if line.context_list -%}
+                        <input type="checkbox" id="ctxs{{line.number}}" />
+                    {% endif -%}
+                    <label for="ctxs{{line.number}}">{{ line.contexts_label }}</label>{#-#}
+                    {% if line.context_list -%}
+                        <span class="ctxs">
+                            {% for context in line.context_list -%}
+                                <span>{{context}}</span>{#-#}
+                            {% endfor -%}
+                        </span>{#-#}
+                    {% endif -%}
                 </span>{#-#}
             {% endif -%}
         </p>
