@@ -6,15 +6,20 @@
 // When you edit this file, you need to run "make css" to get the CSS file
 // generated, and then check in both the .scss and the .css files.
 
+// When working on the file, this command is useful:
+//      sass --watch --style=compact --sourcemap=none --no-cache coverage/htmlfiles/style.scss:htmlcov/style.css
+
 // Ignore this comment, it's for the CSS output file:
 /* Don't edit this .css file. Edit the .scss file instead! */
+
+// Dimensions
+$left-gutter: 3rem;
 
 // Page-wide styles
 html, body, h1, h2, h3, p, table, td, th {
     margin: 0;
     padding: 0;
     border: 0;
-    outline: 0;
     font-weight: inherit;
     font-style: inherit;
     font-size: 100%;
@@ -70,11 +75,6 @@ a.nav {
     border-bottom: 1px solid #eee;
 }
 
-#source {
-    padding: 1em;
-    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-}
-
 .indexfile #footer {
     margin: 1em 3em;
 }
@@ -97,7 +97,7 @@ a.nav {
 
 /* Header styles */
 #header .content {
-    padding: 1em 3em;
+    padding: 1em $left-gutter;
 }
 
 h1 {
@@ -235,31 +235,6 @@ h2.stats {
 }
 
 // Source file styles
-.linenos p {
-    text-align: right;
-    margin: 0;
-    padding: 0 .5em;
-    color: #999999;
-    font-family: verdana, sans-serif;
-
-    &.highlight {
-        background: #ffdd00;
-    }
-    a {
-        text-decoration: none;
-        color: #999999;
-        font-size: .8333em;   // 10/12
-        line-height: 1em;
-        &:hover {
-            text-decoration: underline;
-            color: #999999;
-        }
-    }
-}
-
-td.text {
-    width: 100%;
-}
 
 $hover-dark-amt: 95%;
 $pln-hover-color: mix($pln-color, #000, $hover-dark-amt);
@@ -267,98 +242,154 @@ $mis-hover-color: mix($mis-color, #000, $hover-dark-amt);
 $run-hover-color: mix($run-color, #000, $hover-dark-amt);
 $exc-hover-color: mix($exc-color, #000, $hover-dark-amt);
 $par-hover-color: mix($par-color, #000, $hover-dark-amt);
+$border-indicator-width: .2em;
 
-.text p {
-    margin: 0;
-    padding: 0 0 0 .5em;
-    border-left: 2px solid #ffffff;
-    white-space: pre;
-    position: relative;
+#source {
+    padding: 1em 0 1em $left-gutter;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 
-    &:hover {
-        background: $pln-hover-color;
-    }
+    p {
+        /* position relative makes position:absolute pop-ups appear in the right place. */
+        position: relative;
+        white-space: pre;
 
-    &.run {
-        border-left: 2px solid #00ff00;
-        &.show_run {
-            background: $run-color;
+        .n {
+            float: left;
+            text-align: right;
+            width: $left-gutter;
+            box-sizing: border-box;
+            margin-left: -$left-gutter;
+            padding-right: 1em;
+            color: #999999;
+            font-family: verdana, sans-serif;
 
-            &:hover {
-                background: $run-hover-color;
+            a {
+                text-decoration: none;
+                color: #999999;
+                font-size: .8333em;   // 10/12
+                line-height: 1em;
+                &:hover {
+                    text-decoration: underline;
+                    color: #999999;
+                }
             }
         }
-    }
 
-    &.mis {
-        border-left: 2px solid #ff0000;
-        &.show_mis {
-            background: $mis-color;
+        &.highlight .n {
+            background: #ffdd00;
+        }
+
+        .t {
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+            margin-left: -.5em;
+            padding-left: .5em - $border-indicator-width;
+            border-left: $border-indicator-width solid white;
 
             &:hover {
-                background: $mis-hover-color;
+                background: $pln-hover-color;
+            }
+            // Syntax coloring
+            .com {
+                color: green;
+                font-style: italic;
+                line-height: 1px;
+            }
+            .key {
+                font-weight: bold;
+                line-height: 1px;
+            }
+            .str {
+                color: #000080;
             }
         }
-    }
 
-    &.exc {
-        border-left: 2px solid #808080;
-        &.show_exc {
-            background: $exc-color;
+        &.mis {
+            .t {
+                border-left: $border-indicator-width solid #ff0000;
+            }
 
-            &:hover {
-                background: $exc-hover-color;
+            &.show_mis .t {
+                background: $mis-color;
+
+                &:hover {
+                    background: $mis-hover-color;
+                }
             }
         }
-    }
 
-    &.par {
-        border-left: 2px solid #eeee99;
-        &.show_par {
-            background: $par-color;
-
-            &:hover {
-                background: $par-hover-color;
+        &.run {
+            .t {
+                border-left: $border-indicator-width solid #00ff00;
             }
+
+            &.show_run .t {
+                background: $run-color;
+
+                &:hover {
+                    background: $run-hover-color;
+                }
+            }
+        }
+
+        &.exc {
+            .t {
+                border-left: $border-indicator-width solid #808080;
+            }
+
+            &.show_exc .t {
+                background: $exc-color;
+
+                &:hover {
+                    background: $exc-hover-color;
+                }
+            }
+        }
+
+        &.par {
+            .t {
+                border-left: $border-indicator-width solid #eeee99;
+            }
+
+            &.show_par .t {
+                background: $par-color;
+
+                &:hover {
+                    background: $par-hover-color;
+                }
+            }
+
+            span.annotate {
+                &.short {
+                    display: inline;
+                    position: absolute;
+                    right: 1.5em;
+                }
+
+                &.long {
+                    @extend %in-text-popup;
+                    max-width: 50%;
+                    width: 30em;
+                    right: 2.5em;
+                }
+            }
+
+            &:hover span.annotate.long {
+                display: block;
+            }
+        }
+
+
+        span.annotate {
+            font-family: georgia;
+            color: #666;
+            float: right;
+            padding-right: .5em;
         }
     }
 }
 
-
-.text {
-    span.annotate {
-        font-family: georgia;
-        color: #666;
-        float: right;
-        padding-right: .5em;
-        display: none;
-    }
-    p.show_par span.annotate {
-        display: inline;
-    }
-    p.show_par span.annotate.long {
-        @extend %in-text-popup;
-        max-width: 50%;
-        width: 30em;
-    }
-    p.show_par:hover span.annotate.long {
-        display: block;
-    }
-
-    // Syntax coloring
-    .com {
-        color: green;
-        font-style: italic;
-        line-height: 1px;
-    }
-    .key {
-        font-weight: bold;
-        line-height: 1px;
-    }
-    .str {
-        color: #000080;
-    }
-}
 
 // Line contexts
 td.contexts {

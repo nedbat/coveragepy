@@ -68,45 +68,26 @@
 </div>
 
 <div id="source">
-    <table>
-        <tr>
-            <td class="linenos">
-{% for line in lines -%}
-    <p id="n{{line.number}}" class="{{line.css_class}}"><a href="#n{{line.number}}">{{line.number}}</a></p>
-{% endfor %}
-            </td>
-            <td class="text">
-{# These are the source lines, which are very sensitive to whitespace. -#}
-{# The `{ # - # }` below are comments which slurp up the following space. -#}
-{% for line in lines -%}
-    <p id="t{{line.number}}" class="{{line.css_class}}">{#-#}
-        {% if line.annotate -%}
-            <span class="annotate short">{{line.annotate}}</span>{#-#}
-            <span class="annotate long">{{line.annotate_long}}</span>{#-#}
-        {% endif -%}
-        {{line.html}}<span class="strut">&nbsp;</span>{#-#}
-    </p>
-{% endfor %}
-            </td>
-            {% if show_contexts -%}
-            <td class="contexts">
-              {% for line in lines -%}
-                <p>{#-#}
-                  {% if line.contexts -%}
-                    <span class="context-button">{{ line.contexts|len }} ctx</span>{#-#}
-                    <span class="context-list">
-                      {% for context in line.contexts -%}
-                      <span class="context-line">{{context}}</span>{#-#}
-                      {% endfor -%}
-                    </span>{#-#}
-                  {% endif -%}
-                  &nbsp;
-                </p>{#-#}
-              {% endfor %}
-            </td>
-            {% endif %}
-        </tr>
-    </table>
+    {# These are the source lines, which are very sensitive to whitespace. -#}
+    {# The `{ # - # }` below are comments which slurp up the following space. -#}
+    {% for line in lines -%}
+        <p id="t{{line.number}}" class="{{line.css_class}}">{#-#}
+            <span class="n"><a href="#t{{line.number}}">{{line.number}}</a></span>{#-#}
+            <span class="t">{{line.html}}&nbsp;</span>{#-#}
+            {% if line.annotate -%}
+                <span class="annotate short">{{line.annotate}}</span>{#-#}
+                <span class="annotate long">{{line.annotate_long}}</span>{#-#}
+            {% endif -%}
+            {% if line.contexts -%}
+                <span class="context-button">{{ line.contexts|len }} ctx</span>{#-#}
+                <span class="context-list">
+                    {% for context in line.contexts -%}
+                        <span class="context-line">{{context}}</span>{#-#}
+                    {% endfor -%}
+                </span>{#-#}
+            {% endif -%}
+        </p>
+    {% endfor %}
 </div>
 
 <div id="footer">
