@@ -40,6 +40,11 @@ except ImportError:                                         # pragma: only jytho
     # Jython has no multiprocessing module.
     patch_multiprocessing = None
 
+try:
+    from coverage.twistedproc import patch_twisted
+except ImportError:
+    patch_twisted = None
+
 os = isolate_module(os)
 
 @contextlib.contextmanager
@@ -145,8 +150,8 @@ class Coverage(object):
         `concurrency` is a string indicating the concurrency library being used
         in the measured code.  Without this, coverage.py will get incorrect
         results if these libraries are in use.  Valid strings are "greenlet",
-        "eventlet", "gevent", "multiprocessing", or "thread" (the default).
-        This can also be a list of these strings.
+        "eventlet", "gevent", "multiprocessing", "twisted", or "thread" (the
+        default).  This can also be a list of these strings.
 
         If `check_preimported` is true, then when coverage is started, the
         already-imported files will be checked to see if they should be measured
@@ -371,10 +376,9 @@ class Coverage(object):
         if not should_skip:
             self._data.read()
 
-    def _init_for_start(self):
-        """Initialization for start()"""
-        # Construct the collector.
-        concurrency = self.config.concurrency or []
+    def _init_multiprocessing(self, concurrency):
+        """Enable collection in multiprocessing workers, if requested.
+        """
         if "multiprocessing" in concurrency:
             if not patch_multiprocessing:
                 raise CoverageException(                    # pragma: only jython
@@ -384,6 +388,28 @@ class Coverage(object):
             # Multi-processing uses parallel for the subprocesses, so also use
             # it for the main process.
             self.config.parallel = True
+
+    def _init_twisted(self, concurrency):
+        """Enable collection in Twisted-spawned children, if requested.
+        """
+        if "twisted" in concurrency:
+            if patch_twisted is None:
+                # XXX Untested
+                raise CoverageException(
+                    "twisted is not supported on this Python"
+                )
+            patch_twisted(
+                rcfile=self.config.config_file,
+            )
+            # XXX Untested
+            self.config.parallel = True
+
+    def _init_for_start(self):
+        """Initialization for start()"""
+        # Construct the collector.
+        concurrency = self.config.concurrency or []
+        self._init_multiprocessing(concurrency)
+        self._init_twisted(concurrency)
 
         dycon = self.config.dynamic_context
         if not dycon or dycon == "none":
