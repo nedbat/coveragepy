@@ -2,7 +2,7 @@
 /* Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0 */
 /* For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt */
 /* Don't edit this .css file. Edit the .scss file instead! */
-html, body, h1, h2, h3, p, table, td, th { margin: 0; padding: 0; border: 0; outline: 0; font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit; vertical-align: baseline; }
+html, body, h1, h2, h3, p, table, td, th { margin: 0; padding: 0; border: 0; font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit; vertical-align: baseline; }
 
 body { font-family: georgia, serif; font-size: 1em; }
 
@@ -23,8 +23,6 @@ a.nav:hover { text-decoration: underline; color: inherit; }
 
 #header { background: #f8f8f8; width: 100%; border-bottom: 1px solid #eee; }
 
-#source { padding: 1em; font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace; }
-
 .indexfile #footer { margin: 1em 3em; }
 
 .pyfile #footer { margin: 1em 1em; }
@@ -33,8 +31,7 @@ a.nav:hover { text-decoration: underline; color: inherit; }
 
 #index { margin: 1em 0 0 3em; }
 
-/* Header styles */
-#header .content { padding: 1em 3em; }
+#header .content { padding: 1em 3rem; }
 
 h1 { font-size: 1.25em; display: inline-block; }
 
@@ -53,9 +50,9 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 .stats span.par { background: #ffffd5; }
 .stats span.par.show_par { border-color: #999 #ccc #ccc #999; background: #ffffaa; }
 
-.text p.show_par span.annotate.long, td.contexts p span.context-list, .help_panel { display: none; position: absolute; z-index: 999; background: #ffffcc; border: 1px solid #888; border-radius: .2em; box-shadow: #cccccc .2em .2em .2em; color: #333; padding: .25em .5em; }
+#source p.par span.annotate.long, .help_panel { display: none; position: absolute; z-index: 999; background: #ffffcc; border: 1px solid #888; border-radius: .2em; box-shadow: #cccccc .2em .2em .2em; color: #333; padding: .25em .5em; }
 
-.text p.show_par span.annotate.long, td.contexts p span.context-list { white-space: normal; float: right; top: 1.75em; right: 1em; height: auto; }
+#source p.par span.annotate.long { white-space: normal; float: right; top: 1.75em; right: 1em; height: auto; }
 
 #keyboard_icon { float: right; margin: 5px; cursor: pointer; }
 
@@ -69,42 +66,46 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 .keyhelp { margin: .75em; }
 .keyhelp .key { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em .35em; font-family: monospace; font-weight: bold; background: #eee; }
 
-.linenos p { text-align: right; margin: 0; padding: 0 .5em; color: #999999; font-family: verdana, sans-serif; }
-.linenos p.highlight { background: #ffdd00; }
-.linenos p a { text-decoration: none; color: #999999; font-size: .8333em; line-height: 1em; }
-.linenos p a:hover { text-decoration: underline; color: #999999; }
-
-td.text { width: 100%; }
-
-.text p { margin: 0; padding: 0 0 0 .5em; border-left: 2px solid #ffffff; white-space: pre; position: relative; }
-.text p:hover { background: #f2f2f2; }
-.text p.run { border-left: 2px solid #00ff00; }
-.text p.run.show_run { background: #ddffdd; }
-.text p.run.show_run:hover { background: #d2f2d2; }
-.text p.mis { border-left: 2px solid #ff0000; }
-.text p.mis.show_mis { background: #ffdddd; }
-.text p.mis.show_mis:hover { background: #f2d2d2; }
-.text p.exc { border-left: 2px solid #808080; }
-.text p.exc.show_exc { background: #eeeeee; }
-.text p.exc.show_exc:hover { background: #e2e2e2; }
-.text p.par { border-left: 2px solid #eeee99; }
-.text p.par.show_par { background: #ffffaa; }
-.text p.par.show_par:hover { background: #f2f2a2; }
-
-.text span.annotate { font-family: georgia; color: #666; float: right; padding-right: .5em; display: none; }
-.text p.show_par span.annotate { display: inline; }
-.text p.show_par span.annotate.long { max-width: 50%; width: 30em; }
-.text p.show_par:hover span.annotate.long { display: block; }
-.text .com { color: green; font-style: italic; line-height: 1px; }
-.text .key { font-weight: bold; line-height: 1px; }
-.text .str { color: #000080; }
-
-td.contexts p { margin: 0; padding: 0 .5em; color: #999999; font-family: verdana, sans-serif; white-space: nowrap; position: relative; }
-td.contexts p:hover { background: #eee; }
-td.contexts p span.context-list { min-width: 30em; }
-td.contexts p span.context-list span.context-line { display: block; }
-td.contexts p:hover span.context-list { display: block; }
-td.contexts p span.context-button { display: inline-block; cursor: pointer; font-size: .8333em; line-height: 1em; }
+#source { padding: 1em 0 1em 3rem; font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+#source p { position: relative; white-space: pre; }
+#source p * { box-sizing: border-box; }
+#source p .n { float: left; text-align: right; width: 3rem; box-sizing: border-box; margin-left: -3rem; padding-right: 1em; color: #999999; font-family: verdana, sans-serif; }
+#source p .n a { text-decoration: none; color: #999999; font-size: .8333em; line-height: 1em; }
+#source p .n a:hover { text-decoration: underline; color: #999999; }
+#source p.highlight .n { background: #ffdd00; }
+#source p .t { display: inline-block; width: 100%; box-sizing: border-box; margin-left: -.5em; padding-left: 0.3em; border-left: 0.2em solid white; }
+#source p .t:hover { background: #f2f2f2; }
+#source p .t .com { color: green; font-style: italic; line-height: 1px; }
+#source p .t .key { font-weight: bold; line-height: 1px; }
+#source p .t .str { color: #000080; }
+#source p.mis .t { border-left: 0.2em solid #ff0000; }
+#source p.mis.show_mis .t { background: #ffdddd; }
+#source p.mis.show_mis .t:hover { background: #f2d2d2; }
+#source p.run .t { border-left: 0.2em solid #00ff00; }
+#source p.run.show_run .t { background: #ddffdd; }
+#source p.run.show_run .t:hover { background: #d2f2d2; }
+#source p.exc .t { border-left: 0.2em solid #808080; }
+#source p.exc.show_exc .t { background: #eeeeee; }
+#source p.exc.show_exc .t:hover { background: #e2e2e2; }
+#source p.par .t { border-left: 0.2em solid #eeee99; }
+#source p.par.show_par .t { background: #ffffaa; }
+#source p.par.show_par .t:hover { background: #f2f2a2; }
+#source p.par span.annotate.short { display: inline; position: absolute; right: 1.5em; }
+#source p.par span.annotate.long { max-width: 50%; width: 30em; right: 2.5em; }
+#source p.par:hover span.annotate.long { display: block; }
+#source p span.annotate { font-family: georgia; color: #666; float: right; padding-right: .5em; }
+#source p .ctx { font-family: verdana, sans-serif; white-space: nowrap; }
+#source p .ctx input { display: none; }
+#source p .ctx input ~ label { cursor: pointer; border-radius: .25em; }
+#source p .ctx input ~ label::before { content: "▶ "; }
+#source p .ctx input:checked ~ label { background: #aaeeff; color: #666; border-radius: .75em .75em 0 0; }
+#source p .ctx input:checked ~ label::before { content: "▼ "; }
+#source p .ctx input ~ .ctxs { display: none; }
+#source p .ctx input:checked ~ .ctxs { display: block; }
+#source p .ctx label { color: #999; position: absolute; right: 2.5em; display: inline-block; text-align: right; font-size: .8333em; padding: .25em .5em; }
+#source p .ctx label:hover { background: #d5f7ff; color: #666; }
+#source p .ctx .ctxs { font-family: verdana, sans-serif; background: #aaeeff; padding: .25em .5em; border-radius: .25em; margin-right: 1.75em; }
+#source p .ctx .ctxs span { display: block; }
 
 #index td, #index th { text-align: right; width: 5em; padding: .25em .5em; border-bottom: 1px solid #eee; }
 #index td.left, #index th.left { padding-left: 0; }
