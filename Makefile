@@ -28,6 +28,7 @@ clean:
 	-rm -rf .tox_kits
 	-rm -rf .cache .pytest_cache .hypothesis
 	-rm -rf $$TMPDIR/coverage_test
+	-make -C tests/gold/html clean
 
 sterile: clean
 	-rm -rf .tox*

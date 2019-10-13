@@ -28,21 +28,21 @@ include tox_wheels.ini
 include .editorconfig
 include .readthedocs.yml
 
-recursive-include ci *.*
+recursive-include ci *
 exclude ci/*.token
 
 recursive-include coverage/fullcoverage *.py
 recursive-include coverage/ctracer *.c *.h
 
 recursive-include doc *.py *.pip *.rst *.txt *.png
-recursive-include doc/_static *.*
+recursive-include doc/_static *
 prune doc/_build
 
 recursive-include requirements *.pip
 
 recursive-include tests *.py *.tok
-recursive-include tests/gold *.*
-recursive-include tests js/*.* qunit/*.*
+recursive-include tests/gold *
+recursive-include tests js/* qunit/*
 prune tests/eggsrc/build
 
 global-exclude *.py[co]
