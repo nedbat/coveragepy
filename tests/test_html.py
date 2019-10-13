@@ -610,9 +610,7 @@ def compare_html(expected, actual):
         (r'<span class="(nam|key)">(print|True|False)</span>', r'<span class="nam">\2</span>'),
         # Occasionally an absolute path is in the HTML report.
         (filepath_to_regex(TESTS_DIR), 'TESTS_DIR'),
-        (r'/Users/ned/coverage/trunk/tests', 'TESTS_DIR'),
         (filepath_to_regex(flat_rootname(unicode_class(TESTS_DIR))), '_TESTS_DIR'),
-        (flat_rootname(u'/Users/ned/coverage/trunk/tests'), '_TESTS_DIR'),
         # The temp dir the tests make.
         (filepath_to_regex(os.getcwd()), 'TEST_TMPDIR'),
         (filepath_to_regex(flat_rootname(unicode_class(os.getcwd()))), '_TEST_TMPDIR'),
