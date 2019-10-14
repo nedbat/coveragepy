@@ -15,7 +15,8 @@ manually inspect the differences.
 Do this to clean the output directories and run only the failed tests while
 keeping the output::
 
-    make clean; COVERAGE_KEEP_TMP=1 tox -e py37 -- --lf
+    rm -rf $TMPDIR/coverage_test
+    COVERAGE_KEEP_TMP=1 tox -e py37 -- --lf
 
 The saved HTML files in the html directories can't be viewed properly without
 the supporting CSS and Javascript files. But we don't want to save copies of

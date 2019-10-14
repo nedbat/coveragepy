@@ -887,7 +887,7 @@ assert len(math) == 18
     def test_partial(self):
         self.make_file("partial.py", """\
             # partial branches and excluded lines
-            a = 6
+            a = 2
 
             while "no peephole".upper():        # t4
                 break
@@ -898,11 +898,11 @@ assert len(math) == 18
             if 0:
                 never_happen()
 
-            if 1:
-                a = 21
+            if 13:
+                a = 14
 
-            if a == 23:
-                raise AssertionError("Can't")
+            if a == 16:
+                raise ZeroDivisionError("17")
             """)
         self.make_file("partial.ini", """\
             [run]
@@ -910,7 +910,7 @@ assert len(math) == 18
 
             [report]
             exclude_lines =
-                raise AssertionError
+                raise ZeroDivisionError
             """)
 
         cov = coverage.Coverage(config_file="partial.ini")
@@ -924,7 +924,7 @@ assert len(math) == 18
             '<p id="t7" class="run">',
             # The "if 0" and "if 1" statements are optimized away.
             '<p id="t10" class="pln">',
-            # The "raise AssertionError" is excluded by regex in the .ini.
+            # The "raise ZeroDivisionError" is excluded by regex in the .ini.
             '<p id="t17" class="exc show_exc">',
         )
         contains(
