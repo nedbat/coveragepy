@@ -1083,8 +1083,6 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         cov.set_option("html:show_contexts", True)
         mod = self.start_import_stop(cov, "two_tests")
         d = self.html_data_from_cov(cov, mod)
-        from coverage.debug import pp
-        pp(d)
         context_labels = [self.EMPTY, 'two_tests.test_one', 'two_tests.test_two']
         expected_lines = [self.OUTER_LINES, self.TEST_ONE_LINES, self.TEST_TWO_LINES]
         for label, expected in zip(context_labels, expected_lines):
