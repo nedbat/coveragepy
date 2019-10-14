@@ -368,90 +368,79 @@ $context-panel-color: #aaeeff;
                 }
             }
 
-            span.annotate {
-                &.short {
-                    display: inline;
-                    position: absolute;
-                    right: 1.5em;
-                }
-
-                &.long {
-                    @extend %in-text-popup;
-                    max-width: 50%;
-                    width: 30em;
-                    right: 2.5em;
-                }
+            .annotate.long {
+                @extend %in-text-popup;
+                width: 30em;
+                right: 2.5em;
             }
 
-            &:hover span.annotate.long {
+            &:hover .annotate.long {
                 display: block;
             }
         }
 
+        .r {
+            position: absolute;
+            top: 0;
+            right: 2.5em;
+            font-family: verdana, sans-serif;
+        }
 
-        span.annotate {
+        .annotate {
             font-family: georgia;
             color: #666;
-            float: right;
             padding-right: .5em;
         }
 
-        .ctx {
+        input {
+            display: none;
+
+            & ~ .r label.ctx {
+                cursor: pointer;
+                border-radius: .25em;
+                &::before {
+                    content: "▶ ";
+                }
+            }
+
+            &:checked ~ .r label.ctx {
+                background: $context-panel-color;
+                color: #666;
+                border-radius: .75em .75em 0 0;
+                padding: .25em .5em;
+                margin: -.25em 0;
+                &::before {
+                    content: "▼ ";
+                }
+            }
+
+            &:checked ~ .ctxs {
+                display: block;
+            }
+        }
+
+        label.ctx {
+            color: #999;
+            display: inline-block;
+            padding: 0 .5em;
+            font-size: .8333em;   // 10/12
+            &:hover {
+                background: mix($context-panel-color, #fff, 50%);
+                color: #666;
+            }
+        }
+
+        .ctxs {
+            display: none;
             font-family: verdana, sans-serif;
             white-space: nowrap;
-
-            input {
-                display: none;
-
-                & ~ label {
-                    cursor: pointer;
-                    border-radius: .25em;
-                    &::before {
-                        content: "▶ ";
-                    }
-                }
-
-                &:checked ~ label {
-                    background: $context-panel-color;
-                    color: #666;
-                    border-radius: .75em .75em 0 0;
-                    &::before {
-                        content: "▼ ";
-                    }
-                }
-
-                & ~ .ctxs {
-                    display: none;
-                }
-
-                &:checked ~ .ctxs {
-                    display: block;
-                }
-            }
-
-            label {
-                color: #999;
-                position: absolute;
-                right: 2.5em;
-                display: inline-block;
+            background: $context-panel-color;
+            padding: .25em .5em;
+            border-radius: .25em;
+            margin-right: 1.75em;
+            span {
+                display: block;
                 text-align: right;
-                font-size: .8333em;   // 10/12
-                padding: .25em .5em;
-                &:hover {
-                    background: mix($context-panel-color, #fff, 50%);
-                    color: #666;
-                }
-            }
-
-            .ctxs {
-                font-family: verdana, sans-serif;
-                background: $context-panel-color;
-                padding: .25em .5em;
-                border-radius: .25em;
-                margin-right: 1.75em;
-                span {
-                    display: block;
-                }
             }
         }
     }
