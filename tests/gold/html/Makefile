@@ -17,5 +17,11 @@ complete: 	## Copy support files into directories so the HTML can be viewed prop
 clean:		## Remove the effects of this Makefile.
 	git clean -fq .
 
+update-gold:	## Copy output files from latest tests to gold files.
+	@for sub in $$TMPDIR/coverage_test/*HtmlGoldTests*/out; do \
+		rsync --verbose --existing --recursive $$sub/ . ; \
+	done ; \
+	true
+
 update-support:	## Copy latest support files here for posterity.
 	cp ../../../coverage/htmlfiles/*.{css,js,png} support

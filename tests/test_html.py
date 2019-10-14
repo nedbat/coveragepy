@@ -637,11 +637,11 @@ class HtmlGoldTests(CoverageTest):
 
         cov = coverage.Coverage()
         a = self.start_import_stop(cov, "a")
-        cov.html_report(a, directory='out')
+        cov.html_report(a, directory='out/a')
 
-        compare_html(gold_path("html/a"), "out")
+        compare_html(gold_path("html/a"), "out/a")
         contains(
-            "out/a_py.html",
+            "out/a/a_py.html",
             ('<span class="key">if</span> <span class="num">1</span> '
              '<span class="op">&lt;</span> <span class="num">2</span>'),
             ('    <span class="nam">a</span> '
@@ -649,7 +649,7 @@ class HtmlGoldTests(CoverageTest):
             '<span class="pc_cov">67%</span>',
         )
         contains(
-            "out/index.html",
+            "out/a/index.html",
             '<a href="a_py.html">a.py</a>',
             '<span class="pc_cov">67%</span>',
             '<td class="right" data-ratio="2 3">67%</td>',
@@ -688,11 +688,11 @@ class HtmlGoldTests(CoverageTest):
 
         cov = coverage.Coverage(branch=True)
         b = self.start_import_stop(cov, "b")
-        cov.html_report(b, directory="out")
+        cov.html_report(b, directory="out/b_branch")
 
-        compare_html(gold_path("html/b_branch"), "out")
+        compare_html(gold_path("html/b_branch"), "out/b_branch")
         contains(
-            "out/b_py.html",
+            "out/b_branch/b_py.html",
             ('<span class="key">if</span> <span class="nam">x</span> '
              '<span class="op">&lt;</span> <span class="num">2</span>'),
             ('    <span class="nam">a</span> <span class="op">=</span> '
@@ -714,7 +714,7 @@ class HtmlGoldTests(CoverageTest):
                                 'because the condition on line 20 was never false</span>'),
         )
         contains(
-            "out/index.html",
+            "out/b_branch/index.html",
             '<a href="b_py.html">b.py</a>',
             '<span class="pc_cov">70%</span>',
             '<td class="right" data-ratio="16 23">70%</td>',
@@ -745,11 +745,11 @@ else:
 
         cov = coverage.Coverage()
         bom = self.start_import_stop(cov, "bom")
-        cov.html_report(bom, directory="out")
+        cov.html_report(bom, directory="out/bom")
 
-        compare_html(gold_path("html/bom"), "out")
+        compare_html(gold_path("html/bom"), "out/bom")
         contains(
-            "out/bom_py.html",
+            "out/bom/bom_py.html",
             '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
         )
 
@@ -764,11 +764,11 @@ assert len(math) == 18
 
         cov = coverage.Coverage()
         isolatin1 = self.start_import_stop(cov, "isolatin1")
-        cov.html_report(isolatin1, directory="out")
+        cov.html_report(isolatin1, directory="out/isolatin1")
 
-        compare_html(gold_path("html/isolatin1"), "out")
+        compare_html(gold_path("html/isolatin1"), "out/isolatin1")
         contains(
-            "out/isolatin1_py.html",
+            "out/isolatin1/isolatin1_py.html",
             '<span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>',
         )
 
@@ -803,22 +803,22 @@ assert len(math) == 18
         self.make_main_etc()
         cov = coverage.Coverage(include=["./*"])
         self.start_import_stop(cov, "main")
-        cov.html_report(directory="out")
-        compare_html(gold_path("html/omit_1"), "out")
+        cov.html_report(directory="out/omit_1")
+        compare_html(gold_path("html/omit_1"), "out/omit_1")
 
     def test_omit_2(self):
         self.make_main_etc()
         cov = coverage.Coverage(include=["./*"])
         self.start_import_stop(cov, "main")
-        cov.html_report(directory="out", omit=["m1.py"])
-        compare_html(gold_path("html/omit_2"), "out")
+        cov.html_report(directory="out/omit_2", omit=["m1.py"])
+        compare_html(gold_path("html/omit_2"), "out/omit_2")
 
     def test_omit_3(self):
         self.make_main_etc()
         cov = coverage.Coverage(include=["./*"])
         self.start_import_stop(cov, "main")
-        cov.html_report(directory="out", omit=["m1.py", "m2.py"])
-        compare_html(gold_path("html/omit_3"), "out")
+        cov.html_report(directory="out/omit_3", omit=["m1.py", "m2.py"])
+        compare_html(gold_path("html/omit_3"), "out/omit_3")
 
     def test_omit_4(self):
         self.make_main_etc()
@@ -829,8 +829,8 @@ assert len(math) == 18
 
         cov = coverage.Coverage(config_file="omit4.ini", include=["./*"])
         self.start_import_stop(cov, "main")
-        cov.html_report(directory="out")
-        compare_html(gold_path("html/omit_4"), "out")
+        cov.html_report(directory="out/omit_4")
+        compare_html(gold_path("html/omit_4"), "out/omit_4")
 
     def test_omit_5(self):
         self.make_main_etc()
@@ -871,15 +871,15 @@ assert len(math) == 18
             sys.path.insert(0, "../othersrc")
             cov = coverage.Coverage(include=["./*", "../othersrc/*"])
             self.start_import_stop(cov, "here")
-            cov.html_report(directory="../out")
+            cov.html_report(directory="../out/other")
 
         # Different platforms will name the "other" file differently. Rename it
-        for p in glob.glob("out/*_other_py.html"):
-            os.rename(p, "out/blah_blah_other_py.html")
+        for p in glob.glob("out/other/*_other_py.html"):
+            os.rename(p, "out/other/blah_blah_other_py.html")
 
-        compare_html(gold_path("html/other"), "out")
+        compare_html(gold_path("html/other"), "out/other")
         contains(
-            "out/index.html",
+            "out/other/index.html",
             '<a href="here_py.html">here.py</a>',
             'other_py.html">', 'other.py</a>',
         )
@@ -915,11 +915,11 @@ assert len(math) == 18
 
         cov = coverage.Coverage(config_file="partial.ini")
         partial = self.start_import_stop(cov, "partial")
-        cov.html_report(partial, directory="out")
+        cov.html_report(partial, directory="out/partial")
 
-        compare_html(gold_path("html/partial"), "out")
+        compare_html(gold_path("html/partial"), "out/partial")
         contains(
-            "out/partial_py.html",
+            "out/partial/partial_py.html",
             '<p id="t4" class="par run show_par">',
             '<p id="t7" class="run">',
             # The "if 0" and "if 1" statements are optimized away.
@@ -928,11 +928,8 @@ assert len(math) == 18
             '<p id="t17" class="exc show_exc">',
         )
         contains(
-            "out/index.html",
+            "out/partial/index.html",
             '<a href="partial_py.html">partial.py</a>',
-        )
-        contains(
-            "out/index.html",
             '<span class="pc_cov">91%</span>'
         )
 
@@ -949,12 +946,12 @@ assert len(math) == 18
 
         cov = coverage.Coverage()
         a = self.start_import_stop(cov, "a")
-        cov.html_report(a, directory="out", extra_css="extra.css")
+        cov.html_report(a, directory="out/styled", extra_css="extra.css")
 
-        compare_html(gold_path("html/styled"), "out")
-        compare(gold_path("html/styled"), "out", file_pattern="*.css")
+        compare_html(gold_path("html/styled"), "out/styled")
+        compare(gold_path("html/styled"), "out/styled", file_pattern="*.css")
         contains(
-            "out/a_py.html",
+            "out/styled/a_py.html",
             '<link rel="stylesheet" href="extra.css" type="text/css">',
             ('<span class="key">if</span> <span class="num">1</span> '
              '<span class="op">&lt;</span> <span class="num">2</span>'),
@@ -963,7 +960,7 @@ assert len(math) == 18
             '<span class="pc_cov">67%</span>'
         )
         contains(
-            "out/index.html",
+            "out/styled/index.html",
             '<link rel="stylesheet" href="extra.css" type="text/css">',
             '<a href="a_py.html">a.py</a>',
             '<span class="pc_cov">67%</span>'
@@ -1018,16 +1015,16 @@ assert len(math) == 18
 
         cov = coverage.Coverage()
         unimod = self.start_import_stop(cov, "unicode")
-        cov.html_report(unimod, directory="out")
+        cov.html_report(unimod, directory="out/unicode")
 
-        compare_html(gold_path("html/unicode"), "out")
+        compare_html(gold_path("html/unicode"), "out/unicode")
         contains(
-            "out/unicode_py.html",
+            "out/unicode/unicode_py.html",
             '<span class="str">"&#654;d&#729;&#477;b&#592;&#633;&#477;&#652;o&#596;"</span>',
         )
 
         contains_any(
-            "out/unicode_py.html",
+            "out/unicode/unicode_py.html",
             '<span class="str">"db40,dd00: x&#56128;&#56576;"</span>',
             '<span class="str">"db40,dd00: x&#917760;"</span>',
         )
