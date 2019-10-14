@@ -52,29 +52,29 @@
     </div>
 </div>
 <div id="source">
-    <p id="t1" class="pln"><span class="n"><a href="#t1">1</a></span><span class="t"><span class="com"># partial branches and excluded lines</span>&nbsp;</span></p>
-    <p id="t2" class="run"><span class="n"><a href="#t2">2</a></span><span class="t"><span class="nam">a</span> <span class="op">=</span> <span class="num">6</span>&nbsp;</span></p>
-    <p id="t3" class="pln"><span class="n"><a href="#t3">3</a></span><span class="t">&nbsp;</span></p>
-    <p id="t4" class="par run show_par"><span class="n"><a href="#t4">4</a></span><span class="t"><span class="key">while</span> <span class="str">"no peephole"</span><span class="op">.</span><span class="nam">upper</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>        <span class="com"># t4</span>&nbsp;</span><span class="annotate short">4&#x202F;&#x219B;&#x202F;7</span><span class="annotate long">line 4 didn't jump to line 7, because the condition on line 4 was never false</span></p>
-    <p id="t5" class="run"><span class="n"><a href="#t5">5</a></span><span class="t">    <span class="key">break</span>&nbsp;</span></p>
-    <p id="t6" class="pln"><span class="n"><a href="#t6">6</a></span><span class="t">&nbsp;</span></p>
-    <p id="t7" class="run"><span class="n"><a href="#t7">7</a></span><span class="t"><span class="key">while</span> <span class="nam">a</span><span class="op">:</span>        <span class="com"># pragma: no branch</span>&nbsp;</span></p>
-    <p id="t8" class="run"><span class="n"><a href="#t8">8</a></span><span class="t">    <span class="key">break</span>&nbsp;</span></p>
-    <p id="t9" class="pln"><span class="n"><a href="#t9">9</a></span><span class="t">&nbsp;</span></p>
-    <p id="t10" class="pln"><span class="n"><a href="#t10">10</a></span><span class="t"><span class="key">if</span> <span class="num">0</span><span class="op">:</span>&nbsp;</span></p>
-    <p id="t11" class="pln"><span class="n"><a href="#t11">11</a></span><span class="t">    <span class="nam">never_happen</span><span class="op">(</span><span class="op">)</span>&nbsp;</span></p>
-    <p id="t12" class="pln"><span class="n"><a href="#t12">12</a></span><span class="t">&nbsp;</span></p>
-    <p id="t13" class="pln"><span class="n"><a href="#t13">13</a></span><span class="t"><span class="key">if</span> <span class="num">1</span><span class="op">:</span>&nbsp;</span></p>
-    <p id="t14" class="run"><span class="n"><a href="#t14">14</a></span><span class="t">    <span class="nam">a</span> <span class="op">=</span> <span class="num">21</span>&nbsp;</span></p>
-    <p id="t15" class="pln"><span class="n"><a href="#t15">15</a></span><span class="t">&nbsp;</span></p>
-    <p id="t16" class="run"><span class="n"><a href="#t16">16</a></span><span class="t"><span class="key">if</span> <span class="nam">a</span> <span class="op">==</span> <span class="num">23</span><span class="op">:</span>&nbsp;</span></p>
-    <p id="t17" class="exc show_exc"><span class="n"><a href="#t17">17</a></span><span class="t">    <span class="key">raise</span> <span class="nam">AssertionError</span><span class="op">(</span><span class="str">"Can't"</span><span class="op">)</span>&nbsp;</span></p>
+    <p id="t1" class="pln"><span class="n"><a href="#t1">1</a></span><span class="t"><span class="com"># partial branches and excluded lines</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t2" class="run"><span class="n"><a href="#t2">2</a></span><span class="t"><span class="nam">a</span> <span class="op">=</span> <span class="num">6</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t3" class="pln"><span class="n"><a href="#t3">3</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t4" class="par run show_par"><span class="n"><a href="#t4">4</a></span><span class="t"><span class="key">while</span> <span class="str">"no peephole"</span><span class="op">.</span><span class="nam">upper</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>        <span class="com"># t4</span>&nbsp;</span><span class="r"><span class="annotate short">4&#x202F;&#x219B;&#x202F;7</span><span class="annotate long">line 4 didn't jump to line 7, because the condition on line 4 was never false</span></span></p>
+    <p id="t5" class="run"><span class="n"><a href="#t5">5</a></span><span class="t">    <span class="key">break</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t6" class="pln"><span class="n"><a href="#t6">6</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t7" class="run"><span class="n"><a href="#t7">7</a></span><span class="t"><span class="key">while</span> <span class="nam">a</span><span class="op">:</span>        <span class="com"># pragma: no branch</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t8" class="run"><span class="n"><a href="#t8">8</a></span><span class="t">    <span class="key">break</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t9" class="pln"><span class="n"><a href="#t9">9</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t10" class="pln"><span class="n"><a href="#t10">10</a></span><span class="t"><span class="key">if</span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t11" class="pln"><span class="n"><a href="#t11">11</a></span><span class="t">    <span class="nam">never_happen</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t12" class="pln"><span class="n"><a href="#t12">12</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t13" class="pln"><span class="n"><a href="#t13">13</a></span><span class="t"><span class="key">if</span> <span class="num">1</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t14" class="run"><span class="n"><a href="#t14">14</a></span><span class="t">    <span class="nam">a</span> <span class="op">=</span> <span class="num">21</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t15" class="pln"><span class="n"><a href="#t15">15</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t16" class="run"><span class="n"><a href="#t16">16</a></span><span class="t"><span class="key">if</span> <span class="nam">a</span> <span class="op">==</span> <span class="num">23</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t17" class="exc show_exc"><span class="n"><a href="#t17">17</a></span><span class="t">    <span class="key">raise</span> <span class="nam">AssertionError</span><span class="op">(</span><span class="str">"Can't"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </div>
 <div id="footer">
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/coverage-5.0a9">coverage.py v5.0a9</a>,
-            created at 2019-10-13 11:13
+            created at 2019-10-14 09:27
         </p>
     </div>
 </div>
