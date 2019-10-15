@@ -401,6 +401,10 @@ $context-panel-color: #aaeeff;
                 &::before {
                     content: "▶ ";
                 }
+                &:hover {
+                    background: mix($context-panel-color, #fff, 50%);
+                    color: #666;
+                }
             }
 
             &:checked ~ .r label.ctx {
@@ -424,10 +428,6 @@ $context-panel-color: #aaeeff;
             display: inline-block;
             padding: 0 .5em;
             font-size: .8333em;   // 10/12
-            &:hover {
-                background: mix($context-panel-color, #fff, 50%);
-                color: #666;
-            }
         }
 
         .ctxs {

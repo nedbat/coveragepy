@@ -97,11 +97,11 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 #source p input { display: none; }
 #source p input ~ .r label.ctx { cursor: pointer; border-radius: .25em; }
 #source p input ~ .r label.ctx::before { content: "▶ "; }
+#source p input ~ .r label.ctx:hover { background: #d5f7ff; color: #666; }
 #source p input:checked ~ .r label.ctx { background: #aaeeff; color: #666; border-radius: .75em .75em 0 0; padding: .25em .5em; margin: -.25em 0; }
 #source p input:checked ~ .r label.ctx::before { content: "▼ "; }
 #source p input:checked ~ .ctxs { display: block; }
 #source p label.ctx { color: #999; display: inline-block; padding: 0 .5em; font-size: .8333em; }
-#source p label.ctx:hover { background: #d5f7ff; color: #666; }
 #source p .ctxs { display: none; font-family: verdana, sans-serif; white-space: nowrap; background: #aaeeff; padding: .25em .5em; border-radius: .25em; margin-right: 1.75em; }
 #source p .ctxs span { display: block; text-align: right; }
 
