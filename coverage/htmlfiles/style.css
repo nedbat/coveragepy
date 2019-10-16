@@ -50,9 +50,9 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 .stats span.par { background: #ffffd5; }
 .stats span.par.show_par { border-color: #999 #ccc #ccc #999; background: #ffffaa; }
 
-#source p.par .annotate.long, .help_panel { display: none; position: absolute; z-index: 999; background: #ffffcc; border: 1px solid #888; border-radius: .2em; box-shadow: #cccccc .2em .2em .2em; color: #333; padding: .25em .5em; }
+#source p .annotate.long, .help_panel { display: none; position: absolute; z-index: 999; background: #ffffcc; border: 1px solid #888; border-radius: .2em; box-shadow: #cccccc .2em .2em .2em; color: #333; padding: .25em .5em; }
 
-#source p.par .annotate.long { white-space: normal; float: right; top: 1.75em; right: 1em; height: auto; }
+#source p .annotate.long { white-space: normal; float: right; top: 1.75em; right: 1em; height: auto; }
 
 #keyboard_icon { float: right; margin: 5px; cursor: pointer; }
 
@@ -75,6 +75,7 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 #source p.highlight .n { background: #ffdd00; }
 #source p .t { display: inline-block; width: 100%; box-sizing: border-box; margin-left: -.5em; padding-left: 0.3em; border-left: 0.2em solid white; }
 #source p .t:hover { background: #f2f2f2; }
+#source p .t:hover ~ .r .annotate.long { display: block; }
 #source p .t .com { color: green; font-style: italic; line-height: 1px; }
 #source p .t .key { font-weight: bold; line-height: 1px; }
 #source p .t .str { color: #000080; }
@@ -90,10 +91,10 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 #source p.par .t { border-left: 0.2em solid #eeee99; }
 #source p.par.show_par .t { background: #ffffaa; }
 #source p.par.show_par .t:hover { background: #f2f2a2; }
-#source p.par .annotate.long { width: 30em; right: 2.5em; }
-#source p.par:hover .annotate.long { display: block; }
 #source p .r { position: absolute; top: 0; right: 2.5em; font-family: verdana, sans-serif; }
 #source p .annotate { font-family: georgia; color: #666; padding-right: .5em; }
+#source p .annotate.short:hover ~ .long { display: block; }
+#source p .annotate.long { width: 30em; right: 2.5em; }
 #source p input { display: none; }
 #source p input ~ .r label.ctx { cursor: pointer; border-radius: .25em; }
 #source p input ~ .r label.ctx::before { content: "▶ "; }

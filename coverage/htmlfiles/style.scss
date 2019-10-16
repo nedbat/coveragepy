@@ -297,7 +297,12 @@ $context-panel-color: #aaeeff;
 
             &:hover {
                 background: $pln-hover-color;
+
+                & ~ .r .annotate.long {
+                    display: block;
+                }
             }
+
             // Syntax coloring
             .com {
                 color: green;
@@ -368,15 +373,6 @@ $context-panel-color: #aaeeff;
                 }
             }
 
-            .annotate.long {
-                @extend %in-text-popup;
-                width: 30em;
-                right: 2.5em;
-            }
-
-            &:hover .annotate.long {
-                display: block;
-            }
         }
 
         .r {
@@ -390,6 +386,16 @@ $context-panel-color: #aaeeff;
             font-family: georgia;
             color: #666;
             padding-right: .5em;
+
+            &.short:hover ~ .long {
+                display: block;
+            }
+
+            &.long {
+                @extend %in-text-popup;
+                width: 30em;
+                right: 2.5em;
+            }
         }
 
         input {
