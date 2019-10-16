@@ -110,16 +110,15 @@ class SummaryReporter(object):
         for line in lines:
             self.writeout(line[0])
 
-        # Write a TOTAl line if we had more than one file.
-        if self.total.n_files > 1:
-            self.writeout(rule)
-            args = ("TOTAL", self.total.n_statements, self.total.n_missing)
-            if self.branches:
-                args += (self.total.n_branches, self.total.n_partial_branches)
-            args += (self.total.pc_covered_str,)
-            if self.config.show_missing:
-                args += ("",)
-            self.writeout(fmt_coverage % args)
+        # Write a TOTAL line if had 1 or more files.
+        self.writeout(rule)
+        args = ("TOTAL", self.total.n_statements, self.total.n_missing)
+        if self.branches:
+            args += (self.total.n_branches, self.total.n_partial_branches)
+        args += (self.total.pc_covered_str,)
+        if self.config.show_missing:
+            args += ("",)
+        self.writeout(fmt_coverage % args)
 
         # Write other final lines.
         if not self.total.n_files and not self.skipped_count:
