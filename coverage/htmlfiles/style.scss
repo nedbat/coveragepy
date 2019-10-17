@@ -417,7 +417,7 @@ $context-panel-color: #aaeeff;
                 background: $context-panel-color;
                 color: #666;
                 border-radius: .75em .75em 0 0;
-                padding: .25em .5em;
+                padding: 0 .5em;
                 margin: -.25em 0;
                 &::before {
                     content: "▼ ";
@@ -425,7 +425,9 @@ $context-panel-color: #aaeeff;
             }
 
             &:checked ~ .ctxs {
-                display: block;
+                padding: .25em .5em;
+                overflow-y: scroll;
+                max-height: 10.5em;
             }
         }
 
@@ -437,11 +439,14 @@ $context-panel-color: #aaeeff;
         }
 
         .ctxs {
-            display: none;
+            display: block;
+            max-height: 0;
+            overflow-y: hidden;
+            transition: all .2s;
+            padding: 0 .5em;
             font-family: verdana, sans-serif;
             white-space: nowrap;
             background: $context-panel-color;
-            padding: .25em .5em;
             border-radius: .25em;
             margin-right: 1.75em;
             span {

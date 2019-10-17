@@ -99,11 +99,11 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 #source p input ~ .r label.ctx { cursor: pointer; border-radius: .25em; }
 #source p input ~ .r label.ctx::before { content: "▶ "; }
 #source p input ~ .r label.ctx:hover { background: #d5f7ff; color: #666; }
-#source p input:checked ~ .r label.ctx { background: #aaeeff; color: #666; border-radius: .75em .75em 0 0; padding: .25em .5em; margin: -.25em 0; }
+#source p input:checked ~ .r label.ctx { background: #aaeeff; color: #666; border-radius: .75em .75em 0 0; padding: 0 .5em; margin: -.25em 0; }
 #source p input:checked ~ .r label.ctx::before { content: "▼ "; }
-#source p input:checked ~ .ctxs { display: block; }
+#source p input:checked ~ .ctxs { padding: .25em .5em; overflow-y: scroll; max-height: 10.5em; }
 #source p label.ctx { color: #999; display: inline-block; padding: 0 .5em; font-size: .8333em; }
-#source p .ctxs { display: none; font-family: verdana, sans-serif; white-space: nowrap; background: #aaeeff; padding: .25em .5em; border-radius: .25em; margin-right: 1.75em; }
+#source p .ctxs { display: block; max-height: 0; overflow-y: hidden; transition: all .2s; padding: 0 .5em; font-family: verdana, sans-serif; white-space: nowrap; background: #aaeeff; border-radius: .25em; margin-right: 1.75em; }
 #source p .ctxs span { display: block; text-align: right; }
 
 #index td, #index th { text-align: right; width: 5em; padding: .25em .5em; border-bottom: 1px solid #eee; }
