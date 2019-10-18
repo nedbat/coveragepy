@@ -904,7 +904,7 @@ class CmdMainTest(CoverageTest):
 
 class CoverageReportingFake(object):
     """A fake Coverage.coverage test double."""
-    # pylint: disable=missing-docstring
+    # pylint: disable=missing-function-docstring
     def __init__(self, report_result, html_result, xml_result, json_report):
         self.config = CoverageConfig()
         self.report_result = report_result

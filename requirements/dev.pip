@@ -15,7 +15,7 @@ pluggy==0.12.0
 
 # for linting.
 greenlet==0.4.15
-pylint==2.3.1
+pylint==2.4.3
 check-manifest==0.38
 readme_renderer==24.0
 

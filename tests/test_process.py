@@ -4,7 +4,7 @@
 
 """Tests for process behavior of coverage.py."""
 
-import distutils.sysconfig          # pylint: disable=import-error
+import distutils.sysconfig
 import glob
 import os
 import os.path

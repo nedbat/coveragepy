@@ -201,7 +201,7 @@ def get_qualname():
     caller_frame = stack[0][0]
     return qualname_from_frame(caller_frame)
 
-# pylint: disable=missing-docstring, unused-argument
+# pylint: disable=missing-class-docstring, missing-function-docstring, unused-argument
 
 class Parent(object):
     def meth(self):
@@ -239,7 +239,7 @@ class OldStyle:
 class OldChild(OldStyle):
     pass
 
-# pylint: enable=missing-docstring, unused-argument
+# pylint: enable=missing-class-docstring, missing-function-docstring, unused-argument
 
 
 class QualnameTest(CoverageTest):
