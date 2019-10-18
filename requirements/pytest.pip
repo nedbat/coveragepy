@@ -3,12 +3,13 @@
 
 # The pytest specifics used by coverage.py
 
-pytest==4.6.2
-pytest-xdist==1.28.0
-flaky==3.5.3
+# 4.x is last to support py2
+pytest==4.6.6
+pytest-xdist==1.30.0
+flaky==3.6.1
 mock==3.0.5
 PyContracts==1.8.12
-hypothesis==4.32.1
+hypothesis==4.41.2
 
 # Our testing mixins
 unittest-mixins==1.6
