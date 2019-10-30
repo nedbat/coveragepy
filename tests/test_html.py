@@ -533,6 +533,20 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_doesnt_exist("htmlcov/main_file_py.html")
         self.assert_exists("htmlcov/not_covered_py.html")
 
+    def test_report_skip_empty_files(self):
+        self.make_file("submodule/__init__.py", "")
+        self.make_file("main_file.py", """
+            import submodule
+
+            def normal():
+                print("z")
+            normal()
+        """)
+        self.run_coverage(htmlargs=dict(skip_empty=True))
+        self.assert_exists("htmlcov/index.html")
+        self.assert_exists("htmlcov/main_file_py.html")
+        self.assert_doesnt_exist("htmlcov/submodule___init___py.html")
+
 
 class HtmlStaticFileTest(CoverageTest):
     """Tests of the static file copying for the HTML report."""

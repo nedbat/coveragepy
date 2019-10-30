@@ -311,6 +311,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
 
         show_missing= TruE
         skip_covered = TruE
+        skip_empty  =TruE
 
         [{section}html]
 
@@ -386,6 +387,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         self.assertEqual(cov.config.plugins, ["plugins.a_plugin", "plugins.another"])
         self.assertTrue(cov.config.show_missing)
         self.assertTrue(cov.config.skip_covered)
+        self.assertTrue(cov.config.skip_empty)
         self.assertEqual(cov.config.html_dir, r"c:\tricky\dir.somewhere")
         self.assertEqual(cov.config.extra_css, "something/extra.css")
         self.assertEqual(cov.config.html_title, "Title & nums # nums!")

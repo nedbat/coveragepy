@@ -93,6 +93,10 @@ class Opts(object):
         '--skip-covered', action='store_true',
         help="Skip files with 100% coverage.",
     )
+    skip_empty = optparse.make_option(
+        '--skip-empty', action='store_true',
+        help="Skip empty files.",
+    )
     show_contexts = optparse.make_option(
         '--show-contexts', action='store_true',
         help="Show contexts for covered lines.",
@@ -203,6 +207,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             rcfile=True,
             show_missing=None,
             skip_covered=None,
+            skip_empty=None,
             show_contexts=None,
             source=None,
             timid=None,
@@ -354,6 +359,7 @@ CMDS = {
             Opts.omit,
             Opts.title,
             Opts.skip_covered,
+            Opts.skip_empty,
             Opts.show_contexts,
             Opts.contexts,
             ] + GLOBAL_ARGS,
@@ -375,6 +381,7 @@ CMDS = {
             Opts.contexts,
             Opts.show_missing,
             Opts.skip_covered,
+            Opts.skip_empty,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Report coverage statistics on modules."
@@ -575,6 +582,7 @@ class CoverageScript(object):
             total = self.coverage.report(
                 show_missing=options.show_missing,
                 skip_covered=options.skip_covered,
+                skip_empty=options.skip_empty,
                 **report_args
                 )
         elif options.action == "annotate":
@@ -584,6 +592,7 @@ class CoverageScript(object):
                 directory=options.directory,
                 title=options.title,
                 skip_covered=options.skip_covered,
+                skip_empty=options.skip_empty,
                 show_contexts=options.show_contexts,
                 **report_args
                 )

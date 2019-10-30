@@ -21,6 +21,7 @@ class SummaryReporter(object):
         self.outfile = None
         self.fr_analysis = []
         self.skipped_count = 0
+        self.empty_count = 0
         self.total = Numbers()
         self.fmt_err = u"%s   %s: %s"
 
@@ -48,6 +49,7 @@ class SummaryReporter(object):
         max_name = max([len(fr.relative_filename()) for (fr, analysis) in self.fr_analysis] + [5])
         fmt_name = u"%%- %ds  " % max_name
         fmt_skip_covered = u"\n%s file%s skipped due to complete coverage."
+        fmt_skip_empty = u"\n%s empty file%s skipped."
 
         header = (fmt_name % "Name") + u" Stmts   Miss"
         fmt_coverage = fmt_name + u"%6d %6d"
@@ -129,6 +131,10 @@ class SummaryReporter(object):
             self.writeout(
                 fmt_skip_covered % (self.skipped_count, 's' if self.skipped_count > 1 else '')
                 )
+        if self.config.skip_empty and self.empty_count:
+            self.writeout(
+                fmt_skip_empty % (self.empty_count, 's' if self.empty_count > 1 else '')
+                )
 
         return self.total.n_statements and self.total.pc_covered
 
@@ -142,5 +148,8 @@ class SummaryReporter(object):
         if self.config.skip_covered and no_missing_lines and no_missing_branches:
             # Don't report on 100% files.
             self.skipped_count += 1
+        elif self.config.skip_empty and nums.n_statements == 0:
+            # Don't report on empty files.
+            self.empty_count += 1
         else:
             self.fr_analysis.append((fr, analysis))

@@ -282,6 +282,12 @@ class HtmlReporter(object):
                 file_be_gone(html_path)
                 return
 
+        if self.config.skip_empty:
+            # Don't report on empty files.
+            if nums.n_statements == 0:
+                file_be_gone(html_path)
+                return
+
         # Find out if the file on disk is already correct.
         if self.incr.can_skip_file(self.data, fr, rootname):
             self.file_summaries.append(self.incr.index_info(rootname))

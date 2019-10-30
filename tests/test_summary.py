@@ -431,6 +431,51 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         squeezed = self.squeezed_lines(report)
         self.assertEqual(squeezed[0], "No data to report.")
 
+    def test_report_skip_empty(self):
+        self.make_file("main.py", """
+            import submodule
+
+            def normal():
+                print("z")
+            normal()
+            """)
+        self.make_file("submodule/__init__.py", "")
+        self.omit_site_packages()
+        out = self.run_command("coverage run main.py")
+        self.assertEqual(out, "z\n")
+        report = self.report_from_command("coverage report --skip-empty")
+
+        # Name             Stmts   Miss  Cover
+        # ------------------------------------
+        # main.py              4      0   100%
+        # ------------------------------------
+        # TOTAL                4      0   100%
+        #
+        # 1 empty file skipped.
+
+        self.assertEqual(self.line_count(report), 7, report)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(squeezed[2], "main.py 4 0 100%")
+        self.assertEqual(squeezed[4], "TOTAL 4 0 100%")
+        self.assertEqual(squeezed[6], "1 empty file skipped.")
+        self.assertEqual(self.last_command_status, 0)
+
+    def test_report_skip_empty_no_data(self):
+        self.make_file("__init__.py", "")
+        self.omit_site_packages()
+        out = self.run_command("coverage run __init__.py")
+        self.assertEqual(out, "")
+        report = self.report_from_command("coverage report --skip-empty")
+
+        # Name             Stmts   Miss  Cover
+        # ------------------------------------
+        #
+        # 1 empty file skipped.
+
+        self.assertEqual(self.line_count(report), 4, report)
+        lines = self.report_lines(report)
+        self.assertEqual(lines[3], "1 empty file skipped.")
+
     def test_report_precision(self):
         self.make_file(".coveragerc", """\
             [report]

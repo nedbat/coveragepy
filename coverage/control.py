@@ -774,7 +774,7 @@ class Coverage(object):
     def report(
         self, morfs=None, show_missing=None, ignore_errors=None,
         file=None, omit=None, include=None, skip_covered=None,
-        contexts=None,
+        contexts=None, skip_empty=None,
     ):
         """Write a textual summary report to `file`.
 
@@ -793,6 +793,9 @@ class Coverage(object):
         the report.
 
         If `skip_covered` is true, don't report on files with 100% coverage.
+
+        If `skip_empty` is true, don't report on empty files (those that have
+        no statements).
 
         `contexts` is a list of regular expressions.  Only data from
         :ref:`dynamic contexts <dynamic_contexts>` that match one of those
@@ -815,7 +818,7 @@ class Coverage(object):
             self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
-            report_contexts=contexts,
+            report_contexts=contexts, skip_empty=skip_empty,
         ):
             reporter = SummaryReporter(self)
             return reporter.report(morfs, outfile=file)
@@ -843,7 +846,8 @@ class Coverage(object):
 
     def html_report(self, morfs=None, directory=None, ignore_errors=None,
                     omit=None, include=None, extra_css=None, title=None,
-                    skip_covered=None, show_contexts=None, contexts=None):
+                    skip_covered=None, show_contexts=None, contexts=None,
+                    skip_empty=None):
         """Generate an HTML report.
 
         The HTML is written to `directory`.  The file "index.html" is the
@@ -871,6 +875,7 @@ class Coverage(object):
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
             skip_covered=skip_covered, show_contexts=show_contexts, report_contexts=contexts,
+            skip_empty=skip_empty,
         ):
             reporter = HtmlReporter(self)
             return reporter.report(morfs)
