@@ -205,6 +205,7 @@ class CoverageConfig(object):
         self.report_contexts = None
         self.show_missing = False
         self.skip_covered = False
+        self.skip_empty = False
 
         # Defaults for [html]
         self.extra_css = None
@@ -362,6 +363,7 @@ class CoverageConfig(object):
         ('report_omit', 'report:omit', 'list'),
         ('show_missing', 'report:show_missing', 'boolean'),
         ('skip_covered', 'report:skip_covered', 'boolean'),
+        ('skip_empty', 'report:skip_empty', 'boolean'),
         ('sort', 'report:sort'),
 
         # [html]

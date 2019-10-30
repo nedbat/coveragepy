@@ -904,7 +904,8 @@ class TestRunnerPluginTest(CoverageTest):
         cov.combine()
         cov.save()
         report = StringIO()
-        cov.report(show_missing=None, ignore_errors=True, file=report, skip_covered=None)
+        cov.report(show_missing=None, ignore_errors=True, file=report, skip_covered=None,
+                   skip_empty=None)
         self.assertEqual(report.getvalue(), textwrap.dedent("""\
             Name      Stmts   Miss  Cover
             -----------------------------

@@ -294,6 +294,11 @@ missing lines.  See :ref:`cmd_summary` for more information.
 ``skip_covered`` (boolean, default False): Don't include files in the report
 that are 100% covered files. See :ref:`cmd_summary` for more information.
 
+.. _config_report_skip_empty:
+
+``skip_empty`` (boolean, default False): Don't include empty files (those that
+have 0 statements) in the report. See :ref:`cmd_summary` for more information.
+
 .. _config_report_sort:
 
 ``sort`` (string, default "Name"): Sort the text report by the named column.

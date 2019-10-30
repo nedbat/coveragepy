@@ -37,10 +37,11 @@ class BaseCmdLineTest(CoverageTest):
     _defaults.Coverage().html_report(
         directory=None, ignore_errors=None, include=None, omit=None, morfs=[],
         skip_covered=None, show_contexts=None, title=None, contexts=None,
+        skip_empty=None,
     )
     _defaults.Coverage().report(
         ignore_errors=None, include=None, omit=None, morfs=[],
-        show_missing=None, skip_covered=None, contexts=None,
+        show_missing=None, skip_covered=None, contexts=None, skip_empty=None,
     )
     _defaults.Coverage().xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
@@ -261,6 +262,7 @@ class CmdLineTest(BaseCmdLineTest):
         out = self.stdout()
         self.assertIn("cover_pylib:", out)
         self.assertIn("skip_covered:", out)
+        self.assertIn("skip_empty:", out)
 
     def test_erase(self):
         # coverage erase
@@ -369,6 +371,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.load()
             cov.report(skip_covered=True)
+            """)
+        self.cmd_executes("report --skip-empty", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(skip_empty=True)
             """)
         self.cmd_executes("report --contexts=foo,bar", """\
             cov = Coverage()
