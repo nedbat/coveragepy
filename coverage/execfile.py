@@ -245,6 +245,8 @@ def run_python_module(args):
     `args` is the argument array to present as sys.argv, including the first
     element naming the module being executed.
 
+    This is a helper for tests, to encapsulate how to use PyRunner.
+
     """
     runner = PyRunner(args, as_module=True)
     runner.prepare()
@@ -257,6 +259,8 @@ def run_python_file(args):
     `args` is the argument array to present as sys.argv, including the first
     element naming the file being executed.  `package` is the name of the
     enclosing package, if any.
+
+    This is a helper for tests, to encapsulate how to use PyRunner.
 
     """
     runner = PyRunner(args, as_module=False)
