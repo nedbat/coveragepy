@@ -21,7 +21,7 @@ Unreleased
 ----------
 
 - The HTML and textual reports now have a ``--skip-empty`` option that skips
-  files with no statements (notably, ``__init__.py`` files).
+  files with no statements (notably, ``__init__.py`` files).  Thanks, Reya B.
 
 - The HTML report has been reimplemented (no more table around the source
   code). This allowed for a better presentation of the context information,
