@@ -8,7 +8,7 @@ import os
 import re
 
 from coverage import env
-from coverage.backward import configparser, path_types, string_class, toml
+from coverage.backward import configparser, path_types, toml
 from coverage.misc import CoverageException, substitute_variables
 
 
@@ -41,7 +41,9 @@ class TomlConfigParser:
         for filename in filenames:
             try:
                 with io.open(filename, encoding='utf-8') as fp:
-                    self._data.append(toml.load(fp))
+                    toml_data = fp.read()
+                    toml_data = substitute_variables(toml_data, os.environ)
+                    self._data.append(toml.loads(toml_data))
             except IOError:
                 continue
             except toml.TomlDecodeError as err:
@@ -101,8 +103,6 @@ class TomlConfigParser:
                     value = section[option]
                 except KeyError:
                     continue
-                if isinstance(value, string_class):
-                    value = substitute_variables(value, os.environ)
                 return value
         if not found_section:
             raise configparser.NoSectionError(section)
@@ -124,9 +124,6 @@ class TomlConfigParser:
                 'Option {!r} in section {!r} is not a list: {!r}'
                     .format(option, section, values)
             )
-        for i, value in enumerate(values):
-            if isinstance(value, string_class):
-                values[i] = substitute_variables(value, os.environ)
         return values
 
     def getregexlist(self, section, option):
