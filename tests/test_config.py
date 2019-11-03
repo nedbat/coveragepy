@@ -8,6 +8,7 @@ import mock
 
 import coverage
 from coverage.misc import CoverageException
+import coverage.optional
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
 
@@ -651,3 +652,36 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         self.assertFalse(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, ".coverage")
+
+    def test_no_toml_installed_explicit_toml(self):
+        # Can't specify a toml config file if toml isn't installed.
+        with coverage.optional.without('toml'):
+            msg = "Can't read 'cov.toml' without TOML support"
+            with self.assertRaisesRegex(CoverageException, msg):
+                coverage.Coverage(config_file="cov.toml")
+
+    def test_no_toml_installed_pyproject_toml(self):
+        # Can't have coverage config in pyproject.toml without toml installed.
+        self.make_file("pyproject.toml", """\
+            # A toml file!
+            [tool.coverage.run]
+            xyzzy = 17
+            """)
+        with coverage.optional.without('toml'):
+            msg = "Can't read 'pyproject.toml' without TOML support"
+            with self.assertRaisesRegex(CoverageException, msg):
+                coverage.Coverage()
+
+    def test_no_toml_installed_pyproject_no_coverage(self):
+        # It's ok to have non-coverage pyproject.toml without toml installed.
+        self.make_file("pyproject.toml", """\
+            # A toml file!
+            [tool.something]
+            xyzzy = 17
+            """)
+        with coverage.optional.without('toml'):
+            cov = coverage.Coverage()
+            # We get default settings:
+            self.assertFalse(cov.config.timid)
+            self.assertFalse(cov.config.branch)
+            self.assertEqual(cov.config.data_file, ".coverage")

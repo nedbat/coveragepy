@@ -25,34 +25,43 @@ class TomlConfigParser:
     # pylint: disable=missing-function-docstring
 
     def __init__(self, our_file):
+        self.our_file = our_file
         self.getters = [lambda obj: obj['tool']['coverage']]
-        if our_file:
+        if self.our_file:
             self.getters.append(lambda obj: obj)
 
         self._data = []
 
     def read(self, filenames):
+        # RawConfigParser takes a filename or list of filenames, but we only
+        # ever call this with a single filename.
+        assert isinstance(filenames, path_types)
+        filename = filenames
+        if env.PYVERSION >= (3, 6):
+            filename = os.fspath(filename)
+
         from coverage.optional import toml
         if toml is None:
-            raise RuntimeError('toml module is not installed.')
+            if self.our_file:
+                raise CoverageException("Can't read {!r} without TOML support".format(filename))
 
-        if isinstance(filenames, path_types):
-            filenames = [filenames]
-        read_ok = []
-        for filename in filenames:
-            try:
-                with io.open(filename, encoding='utf-8') as fp:
-                    toml_data = fp.read()
-                    toml_data = substitute_variables(toml_data, os.environ)
+        try:
+            with io.open(filename, encoding='utf-8') as fp:
+                toml_data = fp.read()
+            toml_data = substitute_variables(toml_data, os.environ)
+            if toml:
+                try:
                     self._data.append(toml.loads(toml_data))
-            except IOError:
-                continue
-            except toml.TomlDecodeError as err:
-                raise TomlDecodeError(*err.args)
-            if env.PYVERSION >= (3, 6):
-                filename = os.fspath(filename)
-            read_ok.append(filename)
-        return read_ok
+                except toml.TomlDecodeError as err:
+                    raise TomlDecodeError(*err.args)
+            elif re.search(r"^\[tool\.coverage\.", toml_data, flags=re.MULTILINE):
+                # Looks like they meant to read TOML, but we can't.
+                raise CoverageException("Can't read {!r} without TOML support".format(filename))
+            else:
+                return []
+        except IOError:
+            return []
+        return [filename]
 
     def has_option(self, section, option):
         for data in self._data:
