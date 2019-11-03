@@ -94,7 +94,7 @@ setup_args = dict(
     },
 
     extras_require={
-        # Enable pyproject.toml support
+        # Enable pyproject.toml support.
         'toml': ['toml'],
     },
 
