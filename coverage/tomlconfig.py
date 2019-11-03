@@ -8,7 +8,7 @@ import os
 import re
 
 from coverage import env
-from coverage.backward import configparser, path_types, toml
+from coverage.backward import configparser, path_types
 from coverage.misc import CoverageException, substitute_variables
 
 
@@ -32,6 +32,7 @@ class TomlConfigParser:
         self._data = []
 
     def read(self, filenames):
+        from coverage.optional import toml
         if toml is None:
             raise RuntimeError('toml module is not installed.')
 

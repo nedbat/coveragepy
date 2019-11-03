@@ -3,7 +3,7 @@
 
 """Add things to old Pythons so I can pretend they are newer."""
 
-# This file does tricky stuff, so disable a pylint warning.
+# This file's purpose is to provide modules to be imported from here.
 # pylint: disable=unused-import
 
 import os
@@ -26,11 +26,6 @@ try:
     import ConfigParser as configparser
 except ImportError:
     import configparser
-
-try:
-    import toml
-except ImportError:
-    toml = None
 
 # What's a string called?
 try:
