@@ -1,3 +1,8 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+"""TOML configuration support for coverage.py"""
+
 import io
 import os
 import re
@@ -9,9 +14,16 @@ from coverage.misc import CoverageException, substitute_variables
 
 class TomlDecodeError(Exception):
     """An exception class that exists even when toml isn't installed."""
+    pass
 
 
 class TomlConfigParser:
+    """TOML file reading with the interface of HandyConfigParser."""
+
+    # This class has the same interface as config.HandyConfigParser, no
+    # need for docstrings.
+    # pylint: disable=missing-function-docstring
+
     def __init__(self, our_file):
         self.getters = [lambda obj: obj['tool']['coverage']]
         if our_file:
@@ -101,7 +113,8 @@ class TomlConfigParser:
         if not isinstance(value, bool):
             raise ValueError(
                 'Option {!r} in section {!r} is not a boolean: {!r}'
-                .format(option, section, value))
+                    .format(option, section, value)
+            )
         return value
 
     def getlist(self, section, option):
@@ -109,7 +122,8 @@ class TomlConfigParser:
         if not isinstance(values, list):
             raise ValueError(
                 'Option {!r} in section {!r} is not a list: {!r}'
-                .format(option, section, values))
+                    .format(option, section, values)
+            )
         for i, value in enumerate(values):
             if isinstance(value, string_class):
                 values[i] = substitute_variables(value, os.environ)
@@ -132,7 +146,8 @@ class TomlConfigParser:
         if not isinstance(value, int):
             raise ValueError(
                 'Option {!r} in section {!r} is not an integer: {!r}'
-                .format(option, section, value))
+                    .format(option, section, value)
+            )
         return value
 
     def getfloat(self, section, option):
@@ -142,5 +157,6 @@ class TomlConfigParser:
         if not isinstance(value, float):
             raise ValueError(
                 'Option {!r} in section {!r} is not a float: {!r}'
-                .format(option, section, value))
+                    .format(option, section, value)
+            )
         return value

@@ -23,6 +23,12 @@ Unreleased
 - The HTML and textual reports now have a ``--skip-empty`` option that skips
   files with no statements (notably, ``__init__.py`` files).  Thanks, Reya B.
 
+- Configuration can now be read from `TOML`_ files.  This requires installing
+  coverage.py with the ``[toml]`` extra.  The standard "pyproject.toml" file
+  will be read automatically if no other configuration file is found, with
+  settings in the ``[tool.coverage.]`` namespace.  Thanks to Frazer McLean for
+  implementation and persistence.  Finishes `issue 664`_.
+
 - The HTML report has been reimplemented (no more table around the source
   code). This allowed for a better presentation of the context information,
   hopefully resolving `issue 855`_.
@@ -33,6 +39,8 @@ Unreleased
   ``coverage html --show-contexts``) will issue a warning if there were no
   contexts measured (`issue 851`_).
 
+.. _TOML: https://github.com/toml-lang/toml#toml
+.. _issue 664: https://github.com/nedbat/coveragepy/issues/664
 .. _issue 851: https://github.com/nedbat/coveragepy/issues/851
 .. _issue 855: https://github.com/nedbat/coveragepy/issues/855
 
@@ -79,15 +87,11 @@ Version 5.0a7 --- 2019-09-21
 - ``debug=plugin`` didn't properly support configuration or dynamic context
   plugins, but now it does, closing `issue 834`_.
 
-
-- Added TOML configuration support, including pyproject.toml `issue 664`_.
-
 .. _issue 720: https://github.com/nedbat/coveragepy/issues/720
 .. _issue 822: https://github.com/nedbat/coveragepy/issues/822
 .. _issue 834: https://github.com/nedbat/coveragepy/issues/834
 .. _issue 829: https://github.com/nedbat/coveragepy/issues/829
 .. _issue 846: https://github.com/nedbat/coveragepy/issues/846
-.. _issue 664: https://github.com/nedbat/coveragepy/issues/664
 
 
 .. _changes_50a6:
