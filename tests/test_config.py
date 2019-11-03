@@ -229,7 +229,7 @@ class ConfigTest(CoverageTest):
         self.make_file("pyproject.toml", """\
             [tool.coverage.run]
             data_file = "$DATA_FILE.fooey"
-            branch = true
+            branch = $BRANCH
             [tool.coverage.report]
             exclude_lines = [
                 "the_$$one",
@@ -239,6 +239,7 @@ class ConfigTest(CoverageTest):
                 "huh$${X}what",
             ]
             """)
+        self.set_environ("BRANCH", "true")
         self.set_environ("DATA_FILE", "hello-world")
         self.set_environ("THING", "ZZZ")
         cov = coverage.Coverage()
