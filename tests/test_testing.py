@@ -15,6 +15,7 @@ import coverage
 from coverage.backunittest import TestCase, unittest
 from coverage.files import actual_path
 from coverage.misc import StopEverything
+import coverage.optional
 
 from tests.coveragetest import CoverageTest, convert_skip_exceptions
 from tests.helpers import CheckUniqueFilenames, re_lines, re_line
@@ -308,3 +309,14 @@ def _same_python_executable(e1, e2):
         return True
 
     return False                                        # pragma: only failure
+
+
+def test_optional_without():
+    # pylint: disable=reimported
+    from coverage.optional import toml as toml1
+    with coverage.optional.without('toml'):
+        from coverage.optional import toml as toml2
+    from coverage.optional import toml as toml3
+
+    assert toml1 is toml3 is not None
+    assert toml2 is None
