@@ -260,9 +260,6 @@ class CoverageConfig(object):
         """
         _, ext = os.path.splitext(filename)
         if ext == '.toml':
-            from coverage.optional import toml
-            if toml is None:
-                return False
             cp = TomlConfigParser(our_file)
         else:
             cp = HandyConfigParser(our_file)
