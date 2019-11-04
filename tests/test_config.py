@@ -65,17 +65,25 @@ class ConfigTest(CoverageTest):
             concurrency = ["a", "b"]
             timid = true
             data_file = ".hello_kitty.data"
+            plugins = ["plugins.a_plugin"]
             [tool.coverage.report]
             precision = 3
             fail_under = 90.5
+            [tool.coverage.plugins.a_plugin]
+            hello = "world"
             """)
         cov = coverage.Coverage(config_file="pyproject.toml")
         self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.concurrency, ["a", "b"])
         self.assertEqual(cov.config.data_file, ".hello_kitty.data")
+        self.assertEqual(cov.config.plugins, ["plugins.a_plugin"])
         self.assertEqual(cov.config.precision, 3)
         self.assertAlmostEqual(cov.config.fail_under, 90.5)
+        self.assertEqual(
+            cov.config.get_plugin_options("plugins.a_plugin"),
+            {'hello': 'world'}
+        )
 
         # Test that our class doesn't reject integers when loading floats
         self.make_file("pyproject.toml", """\
@@ -153,7 +161,7 @@ class ConfigTest(CoverageTest):
         # Im-parsable values raise CoverageException, with details.
         bad_configs_and_msgs = [
             ("[run]\ntimid = maybe?\n", r"maybe[?]"),
-            ("timid = 1\n", r"timid = 1"),
+            ("timid = 1\n", r"no section headers"),
             ("[run\n", r"\[run"),
             ("[report]\nexclude_lines = foo(\n",
                 r"Invalid \[report\].exclude_lines value 'foo\(': "
@@ -177,16 +185,15 @@ class ConfigTest(CoverageTest):
         # Im-parsable values raise CoverageException, with details.
         bad_configs_and_msgs = [
             ("[tool.coverage.run]\ntimid = \"maybe?\"\n", r"maybe[?]"),
-            # ("timid = 1\n", r"timid = 1"),
             ("[tool.coverage.run\n", r"Key group"),
             ('[tool.coverage.report]\nexclude_lines = ["foo("]\n',
-             r"Invalid \[report\].exclude_lines value u?'foo\(': "
+             r"Invalid \[tool.coverage.report\].exclude_lines value u?'foo\(': "
              r"(unbalanced parenthesis|missing \))"),
             ('[tool.coverage.report]\npartial_branches = ["foo["]\n',
-             r"Invalid \[report\].partial_branches value u?'foo\[': "
+             r"Invalid \[tool.coverage.report\].partial_branches value u?'foo\[': "
              r"(unexpected end of regular expression|unterminated character set)"),
             ('[tool.coverage.report]\npartial_branches_always = ["foo***"]\n',
-             r"Invalid \[report\].partial_branches_always value "
+             r"Invalid \[tool.coverage.report\].partial_branches_always value "
              r"u?'foo\*\*\*': "
              r"multiple repeat"),
             ('[tool.coverage.run]\nconcurrency="foo"', "not a list"),
@@ -367,7 +374,7 @@ class ConfigTest(CoverageTest):
             [tool.coverage.run]
             xyzzy = 17
             """)
-        msg = r"Unrecognized option '\[run\] xyzzy=' in config file pyproject.toml"
+        msg = r"Unrecognized option '\[tool.coverage.run\] xyzzy=' in config file pyproject.toml"
         with self.assertRaisesRegex(CoverageException, msg):
             _ = coverage.Coverage()
 
@@ -653,8 +660,16 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         self.assertFalse(cov.config.branch)
         self.assertEqual(cov.config.data_file, ".coverage")
 
+    def test_no_toml_installed_no_toml(self):
+        # Can't read a toml file that doesn't exist.
+        with coverage.optional.without('toml'):
+            msg = "Couldn't read 'cov.toml' as a config file"
+            with self.assertRaisesRegex(CoverageException, msg):
+                coverage.Coverage(config_file="cov.toml")
+
     def test_no_toml_installed_explicit_toml(self):
         # Can't specify a toml config file if toml isn't installed.
+        self.make_file("cov.toml", "# A toml file!")
         with coverage.optional.without('toml'):
             msg = "Can't read 'cov.toml' without TOML support"
             with self.assertRaisesRegex(CoverageException, msg):
