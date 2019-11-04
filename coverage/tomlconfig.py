@@ -121,28 +121,26 @@ class TomlConfigParser:
         _, value = self._get(section, option)
         return value
 
+    def _check_type(self, section, option, value, type_, type_desc):
+        if not isinstance(value, type_):
+            raise ValueError(
+                'Option {!r} in section {!r} is not {}: {!r}'
+                    .format(option, section, type_desc, value)
+            )
+
     def getboolean(self, section, option):
         name, value = self._get(section, option)
-        if not isinstance(value, bool):
-            raise ValueError(
-                'Option {!r} in section {!r} is not a boolean: {!r}'
-                    .format(option, name, value)
-            )
+        self._check_type(name, option, value, bool, "a boolean")
         return value
 
     def getlist(self, section, option):
         name, values = self._get(section, option)
-        if not isinstance(values, list):
-            raise ValueError(
-                'Option {!r} in section {!r} is not a list: {!r}'
-                    .format(option, name, values)
-            )
+        self._check_type(name, option, values, list, "a list")
         return values
 
     def getregexlist(self, section, option):
-        # Use getlist for list-checking.
-        values = self.getlist(section, option)
         name, values = self._get(section, option)
+        self._check_type(name, option, values, list, "a list")
         for value in values:
             value = value.strip()
             try:
@@ -155,20 +153,12 @@ class TomlConfigParser:
 
     def getint(self, section, option):
         name, value = self._get(section, option)
-        if not isinstance(value, int):
-            raise ValueError(
-                'Option {!r} in section {!r} is not an integer: {!r}'
-                    .format(option, name, value)
-            )
+        self._check_type(name, option, value, int, "an integer")
         return value
 
     def getfloat(self, section, option):
         name, value = self._get(section, option)
         if isinstance(value, int):
             value = float(value)
-        if not isinstance(value, float):
-            raise ValueError(
-                'Option {!r} in section {!r} is not a float: {!r}'
-                    .format(option, name, value)
-            )
+        self._check_type(name, option, value, float, "a float")
         return value
