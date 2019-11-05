@@ -11,10 +11,6 @@ mock==3.0.5
 PyContracts==1.8.12
 hypothesis==4.41.2
 
-# Pin pyparsing because 2.4.3 breaks PyContracts:
-# https://github.com/pyparsing/pyparsing/issues/161
-pyparsing==2.4.2
-
 # Our testing mixins
 unittest-mixins==1.6
 #-e/Users/ned/unittest_mixins
