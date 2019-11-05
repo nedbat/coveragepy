@@ -514,20 +514,21 @@ class ApiTest(CoverageTest):
         cov = coverage.Coverage()
         cov.start()
 
-        # Imports the test suite
-        suite = import_local_file("testsuite")
+        if "# pragma: nested":
+            # Imports the test suite
+            suite = import_local_file("testsuite")
 
-        # Measures test case 1
-        cov.switch_context('multiply_zero')
-        suite.test_multiply_zero()
+            # Measures test case 1
+            cov.switch_context('multiply_zero')
+            suite.test_multiply_zero()
 
-        # Measures test case 2
-        cov.switch_context('multiply_six')
-        suite.test_multiply_six()
+            # Measures test case 2
+            cov.switch_context('multiply_six')
+            suite.test_multiply_six()
 
-        # Runner finishes
-        cov.save()
-        cov.stop()
+            # Runner finishes
+            cov.save()
+            cov.stop()
 
         # Labeled data is collected
         data = cov.get_data()
@@ -554,20 +555,21 @@ class ApiTest(CoverageTest):
         cov = coverage.Coverage(context="mysuite")
         cov.start()
 
-        # Imports the test suite
-        suite = import_local_file("testsuite")
+        if "# pragma: nested":
+            # Imports the test suite
+            suite = import_local_file("testsuite")
 
-        # Measures test case 1
-        cov.switch_context('multiply_zero')
-        suite.test_multiply_zero()
+            # Measures test case 1
+            cov.switch_context('multiply_zero')
+            suite.test_multiply_zero()
 
-        # Measures test case 2
-        cov.switch_context('multiply_six')
-        suite.test_multiply_six()
+            # Measures test case 2
+            cov.switch_context('multiply_six')
+            suite.test_multiply_six()
 
-        # Runner finishes
-        cov.save()
-        cov.stop()
+            # Runner finishes
+            cov.save()
+            cov.stop()
 
         # Labeled data is collected
         data = cov.get_data()
@@ -592,9 +594,9 @@ class ApiTest(CoverageTest):
             cov.switch_context("test1")
 
         cov.start()
-        cov.switch_context("test2")
+        cov.switch_context("test2")                                     # pragma: nested
 
-        cov.stop()
+        cov.stop()                                                      # pragma: nested
         with self.assertRaisesRegex(CoverageException, msg):
             cov.switch_context("test3")
 
@@ -621,10 +623,12 @@ class CurrentInstanceTest(CoverageTest):
         assert cur0 is cur1
         # Starting the instance makes it current.
         cov.start()
-        cur2 = coverage.Coverage.current()
-        assert cur2 is cov
-        # Stopping the instance makes current None again.
-        cov.stop()
+        if "# pragma: nested":
+            cur2 = coverage.Coverage.current()
+            assert cur2 is cov
+            # Stopping the instance makes current None again.
+            cov.stop()
+
         cur3 = coverage.Coverage.current()
         self.assert_current_is_none(cur3)
         assert cur0 is cur3
