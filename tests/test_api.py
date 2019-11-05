@@ -514,7 +514,7 @@ class ApiTest(CoverageTest):
         cov = coverage.Coverage()
         cov.start()
 
-        if "# pragma: nested":
+        if "pragma: nested":
             # Imports the test suite
             suite = import_local_file("testsuite")
 
@@ -555,7 +555,7 @@ class ApiTest(CoverageTest):
         cov = coverage.Coverage(context="mysuite")
         cov.start()
 
-        if "# pragma: nested":
+        if "pragma: nested":
             # Imports the test suite
             suite = import_local_file("testsuite")
 

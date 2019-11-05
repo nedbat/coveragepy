@@ -67,6 +67,9 @@ pysmoke:
 	# Run tests with the Python tracer in the lowest supported Python versions.
 	COVERAGE_NO_CTRACER=1 tox -q -e py27,py35 -- $(PYTEST_SMOKE_ARGS)
 
+# Coverage measurement of coverage.py itself (meta-coverage). See metacov.ini
+# for details.
+
 metacov:
 	COVERAGE_COVERAGE=yes tox $(ARGS)
 

@@ -201,7 +201,7 @@ class SimpleReprMixin(object):
             )
 
 
-def simplify(v):
+def simplify(v):                                            # pragma: debugging
     """Turn things which are nearly dict/list/etc into dict/list/etc."""
     if isinstance(v, dict):
         return {k:simplify(vv) for k, vv in v.items()}
@@ -213,7 +213,7 @@ def simplify(v):
         return v
 
 
-def pp(v):
+def pp(v):                                                  # pragma: debugging
     """Debug helper to pretty-print data, including SimpleNamespace objects."""
     pprint.pprint(simplify(v))
 
