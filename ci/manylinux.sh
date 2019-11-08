@@ -35,10 +35,11 @@ elif [[ $action == "test" ]]; then
     done
 
     # Install packages and test
-    TOXBIN=/opt/python/cp27-cp27m/bin
-    "$TOXBIN/pip" install -r /io/requirements/ci.pip
+    TOXBIN=/opt/python/cp36-cp36m/bin
+    "$TOXBIN/pip" install -r /io/requirements/tox.pip
 
     cd /io
+    export PYTHONPYCACHEPREFIX=/opt/pyc
     TOXWORKDIR=.tox_linux "$TOXBIN/tox" "$@" || true
     cd ~
 

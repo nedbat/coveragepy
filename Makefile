@@ -6,14 +6,16 @@
 default:
 	@echo "* No default action *"
 
-clean:
-	-pip uninstall -y coverage
-	-rm -f *.pyd */*.pyd
+clean_platform:                         ## Remove files that clash across platforms.
 	-rm -f *.so */*.so
-	-rm -rf build coverage.egg-info dist htmlcov
 	-rm -rf __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__ */*/*/*/__pycache__ */*/*/*/*/__pycache__
 	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
 	-rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
+
+clean: clean_platform                   ## Remove artifacts of test execution, installation, etc.
+	-pip uninstall -y coverage
+	-rm -f *.pyd */*.pyd
+	-rm -rf build coverage.egg-info dist htmlcov
 	-rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
 	-rm -f *$$py.class */*$$py.class */*/*$$py.class */*/*/*$$py.class */*/*/*/*$$py.class */*/*/*/*/*$$py.class
 	-rm -f coverage/*,cover
@@ -30,7 +32,7 @@ clean:
 	-rm -rf $$TMPDIR/coverage_test
 	-make -C tests/gold/html clean
 
-sterile: clean
+sterile: clean                          ## Remove all non-controlled content, even if expensive.
 	-rm -rf .tox*
 	-docker image rm -f quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
 
@@ -67,6 +69,17 @@ pysmoke:
 	# Run tests with the Python tracer in the lowest supported Python versions.
 	COVERAGE_NO_CTRACER=1 tox -q -e py27,py35 -- $(PYTEST_SMOKE_ARGS)
 
+DOCKER_RUN = docker run -it --init --rm -v `pwd`:/io
+RUN_MANYLINUX_X86 = $(DOCKER_RUN) quay.io/pypa/manylinux1_x86_64 /io/ci/manylinux.sh
+RUN_MANYLINUX_I686 = $(DOCKER_RUN) quay.io/pypa/manylinux1_i686 /io/ci/manylinux.sh
+
+testmanylinux:
+	# The Linux .pyc files clash with the host's because of file path
+	# changes, so clean them before and after running tests.
+	make clean_platform
+	$(RUN_MANYLINUX_X86) test $(ARGS)
+	make clean_platform
+
 # Coverage measurement of coverage.py itself (meta-coverage). See metacov.ini
 # for details.
 
@@ -85,8 +98,8 @@ wheel:
 	tox -c tox_wheels.ini $(ARGS)
 
 manylinux:
-	docker run -it --init --rm -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 /io/ci/manylinux.sh build
-	docker run -it --init --rm -v `pwd`:/io quay.io/pypa/manylinux1_i686 /io/ci/manylinux.sh build
+	$(RUN_MANYLINUX_X86) build
+	$(RUN_MANYLINUX_I686) build
 
 kit_upload:
 	twine upload --verbose dist/*

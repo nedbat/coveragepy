@@ -4,10 +4,12 @@
 """Tests for coverage.execfile"""
 
 import compileall
+import fnmatch
 import json
 import os
 import os.path
 import re
+import sys
 
 from coverage import env
 from coverage.backward import binary_bytes
@@ -102,7 +104,7 @@ class RunPycFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
 
     def make_pyc(self):                     # pylint: disable=inconsistent-return-statements
-        """Create a .pyc file, and return the relative path to it."""
+        """Create a .pyc file, and return the path to it."""
         if env.JYTHON:
             self.skipTest("Can't make .pyc files on Jython")
 
@@ -116,10 +118,15 @@ class RunPycFileTest(CoverageTest):
         os.remove("compiled.py")
 
         # Find the .pyc file!
-        for there, _, files in os.walk("."):            # pragma: part covered
-            for f in files:
-                if f.endswith(".pyc"):                  # pragma: part covered
-                    return os.path.join(there, f)
+        roots = ["."]
+        prefix = getattr(sys, "pycache_prefix", None)
+        if prefix:
+            roots.append(prefix)
+        for root in roots:                              # pragma: part covered
+            for there, _, files in os.walk(root):       # pragma: part covered
+                for fname in files:
+                    if fnmatch.fnmatch(fname, "compiled*.pyc"):
+                        return os.path.join(there, fname)
 
     def test_running_pyc(self):
         pycfile = self.make_pyc()
@@ -144,6 +151,9 @@ class RunPycFileTest(CoverageTest):
 
         with self.assertRaisesRegex(NoCode, "Bad magic number in .pyc file"):
             run_python_file([pycfile])
+
+        # In some environments, the pycfile persists and pollutes another test.
+        os.remove(pycfile)
 
     def test_no_such_pyc_file(self):
         with self.assertRaisesRegex(NoCode, "No file to run: 'xyzzy.pyc'"):
