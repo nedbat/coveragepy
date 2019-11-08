@@ -73,12 +73,15 @@ DOCKER_RUN = docker run -it --init --rm -v `pwd`:/io
 RUN_MANYLINUX_X86 = $(DOCKER_RUN) quay.io/pypa/manylinux1_x86_64 /io/ci/manylinux.sh
 RUN_MANYLINUX_I686 = $(DOCKER_RUN) quay.io/pypa/manylinux1_i686 /io/ci/manylinux.sh
 
-testmanylinux:
+test_linux:
 	# The Linux .pyc files clash with the host's because of file path
 	# changes, so clean them before and after running tests.
 	make clean_platform
 	$(RUN_MANYLINUX_X86) test $(ARGS)
 	make clean_platform
+
+meta_linux:
+	ARGS="meta $(ARGS)" make test_linux
 
 # Coverage measurement of coverage.py itself (meta-coverage). See metacov.ini
 # for details.
@@ -97,7 +100,7 @@ kit:
 wheel:
 	tox -c tox_wheels.ini $(ARGS)
 
-manylinux:
+kit_linux:
 	$(RUN_MANYLINUX_X86) build
 	$(RUN_MANYLINUX_I686) build
 

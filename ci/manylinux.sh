@@ -40,6 +40,10 @@ elif [[ $action == "test" ]]; then
 
     cd /io
     export PYTHONPYCACHEPREFIX=/opt/pyc
+    if [[ $1 == "meta" ]]; then
+        shift
+        export COVERAGE_COVERAGE=yes
+    fi
     TOXWORKDIR=.tox_linux "$TOXBIN/tox" "$@" || true
     cd ~
 

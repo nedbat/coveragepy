@@ -50,7 +50,7 @@
     - Source kit and wheels:
         - $ make kit wheel
     - Linux wheels:
-        - $ make manylinux
+        - $ make kit_linux
     - Windows kits
         - wait for over an hour for Appveyor to build kits.
             - https://ci.appveyor.com/project/nedbat/coveragepy
@@ -99,7 +99,7 @@
     - $ tox
 
 - Testing on Linux:
-    - $ docker run -it --init --rm -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 /io/ci/manylinux.sh test
+    - $ make test_linux
 
 - For complete coverage testing:
 

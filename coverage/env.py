@@ -9,7 +9,7 @@ import sys
 
 # Operating systems.
 WINDOWS = sys.platform == "win32"
-LINUX = sys.platform == "linux2"
+LINUX = sys.platform.startswith("linux")
 
 # Python implementations.
 PYPY = (platform.python_implementation() == 'PyPy')
