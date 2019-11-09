@@ -541,9 +541,9 @@ class ApiTest(CoverageTest):
         suite_filename = filenames['testsuite.py']
 
         data.set_query_context("multiply_six")
-        self.assertEqual([2, 8], data.lines(suite_filename))
+        self.assertEqual([2, 8], sorted(data.lines(suite_filename)))
         data.set_query_context("multiply_zero")
-        self.assertEqual([2, 5], data.lines(suite_filename))
+        self.assertEqual([2, 5], sorted(data.lines(suite_filename)))
 
     def test_switch_context_with_static(self):
         # This test simulates a coverage-aware test runner,
@@ -582,9 +582,9 @@ class ApiTest(CoverageTest):
         suite_filename = filenames['testsuite.py']
 
         data.set_query_context("mysuite|multiply_six")
-        self.assertEqual([2, 8], data.lines(suite_filename))
+        self.assertEqual([2, 8], sorted(data.lines(suite_filename)))
         data.set_query_context("mysuite|multiply_zero")
-        self.assertEqual([2, 5], data.lines(suite_filename))
+        self.assertEqual([2, 5], sorted(data.lines(suite_filename)))
 
     def test_switch_context_unstarted(self):
         # Coverage must be started to switch context

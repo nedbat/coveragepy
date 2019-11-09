@@ -827,7 +827,7 @@ class CoverageData(SimpleReprMixin):
                 nums = set()
                 for row in bitmaps:
                     nums.update(numbits_to_nums(row[0]))
-                return sorted(nums)
+                return list(nums)
 
     def arcs(self, filename):
         """Get the list of arcs executed for a file.
