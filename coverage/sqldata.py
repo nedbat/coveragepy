@@ -130,13 +130,11 @@ class CoverageData(SimpleReprMixin):
     * **file tracer names**: the module names of the file tracer plugins that
       handled each file in the data.
 
-    * **run information**: information about the program execution.  This is
-      written during "coverage run", and then accumulated during "coverage
-      combine".
-
     Lines, arcs, and file tracer names are stored for each source file. File
     names in this API are case-sensitive, even on platforms with
     case-insensitive file systems.
+
+    A data file either stores lines, or arcs, but not both.
 
     A data file is associated with the data when the :class:`CoverageData`
     is created.
@@ -146,10 +144,9 @@ class CoverageData(SimpleReprMixin):
     or :meth:`file_tracer`.
 
     The :meth:`has_arcs` method indicates whether arc data is available.  You
-    can get a list of the files in the data with :meth:`measured_files`.
-    A summary of the line data is available from :meth:`line_counts`.  As with
-    most Python containers, you can determine if there is any data at all by
-    using this object as a boolean value.
+    can get a list of the files in the data with :meth:`measured_files`.  As
+    with most Python containers, you can determine if there is any data at all
+    by using this object as a boolean value.
 
     Most data files will be created by coverage.py itself, but you can use
     methods here to create data files if you like.  The :meth:`add_lines`,
@@ -237,6 +234,7 @@ class CoverageData(SimpleReprMixin):
         self._read_db()
 
     def _read_db(self):
+        """Read the metadata from a database so that we are ready to use it."""
         with self._dbs[get_thread_id()] as db:
             try:
                 schema_version, = db.execute("select version from coverage_schema").fetchone()
@@ -284,11 +282,31 @@ class CoverageData(SimpleReprMixin):
 
     @contract(returns='bytes')
     def dumps(self):
+        """Serialize the current data to a byte string.
+
+        The format of the serialized data is not documented. It is only
+        suitable for use with :meth:`loads` in the same version of
+        coverage.py.
+
+        Returns:
+            A byte string of serialized data.
+
+        .. versionadded:: 5.0
+
+        """
         with self._connect() as con:
             return b'z' + zlib.compress(to_bytes(con.dump()))
 
     @contract(data='bytes')
     def loads(self, data):
+        """Deserialize data from :meth:`dumps`
+
+        Arguments:
+            data (byte string): serialized data produced by :meth:`dumps`.
+
+        .. versionadded:: 5.0
+
+        """
         if self._debug.should('dataio'):
             self._debug.write("Loading data into data file {!r}".format(self._filename))
         if data[:1] != b'z':
@@ -327,7 +345,14 @@ class CoverageData(SimpleReprMixin):
                 return None
 
     def set_context(self, context):
-        """Set the current context for future `add_lines` etc."""
+        """Set the current context for future :meth:`add_lines` etc.
+
+        `context` is a str, the name of the context to use for the next data
+        additions.  The context persists until the next :meth:`set_context`.
+
+        .. versionadded:: 5.0
+
+        """
         if self._debug.should('dataop'):
             self._debug.write("Setting context: %r" % (context,))
         self._current_context = context
@@ -345,11 +370,19 @@ class CoverageData(SimpleReprMixin):
                 self._current_context_id = cur.lastrowid
 
     def base_filename(self):
-        """The base filename for storing data."""
+        """The base filename for storing data.
+
+        .. versionadded:: 5.0
+
+        """
         return self._basename
 
     def data_filename(self):
-        """Where is the data stored?"""
+        """Where is the data stored?
+
+        .. versionadded:: 5.0
+
+        """
         return self._filename
 
     def add_lines(self, line_data):
@@ -412,6 +445,7 @@ class CoverageData(SimpleReprMixin):
                 )
 
     def _choose_lines_or_arcs(self, lines=False, arcs=False):
+        """Force the data file to choose between lines and arcs."""
         assert lines or arcs
         assert not (lines and arcs)
         if lines and self._has_arcs:
@@ -478,7 +512,7 @@ class CoverageData(SimpleReprMixin):
             self.add_file_tracers({filename: plugin_name})
 
     def update(self, other_data, aliases=None):
-        """Update this data with data from several other `CoverageData` instances.
+        """Update this data with data from several other :class:`CoverageData` instances.
 
         If `aliases` is provided, it's a `PathAliases` object that is used to
         re-map paths to match the local machine's.
@@ -668,14 +702,16 @@ class CoverageData(SimpleReprMixin):
                 file_be_gone(filename)
 
     def read(self):
+        """Start using an existing data file."""
         with self._connect():       # TODO: doesn't look right
             self._have_used = True
 
     def write(self):
-        """Write the collected coverage data to a file."""
+        """Ensure the data is written to the data file."""
         pass
 
     def _start_using(self):
+        """Call this before using the database at all."""
         if self._pid != os.getpid():
             # Looks like we forked! Have to start a new data file.
             self._reset()
@@ -686,6 +722,7 @@ class CoverageData(SimpleReprMixin):
         self._have_used = True
 
     def has_arcs(self):
+        """Does the database have arcs (True) or lines (False)."""
         return bool(self._has_arcs)
 
     def measured_files(self):
@@ -693,7 +730,11 @@ class CoverageData(SimpleReprMixin):
         return set(self._file_map)
 
     def measured_contexts(self):
-        """A set of all contexts that have been measured."""
+        """A set of all contexts that have been measured.
+
+        .. versionadded:: 5.0
+
+        """
         self._start_using()
         with self._connect() as con:
             contexts = set(row[0] for row in con.execute("select distinct(context) from context"))
@@ -718,12 +759,14 @@ class CoverageData(SimpleReprMixin):
             return ""   # File was measured, but no tracer associated.
 
     def set_query_context(self, context):
-        """Set the context for subsequent querying.
+        """Set a context for subsequent querying.
 
-        The next `lines`, `arcs`, or `contexts_by_lineno` calls will be limited
-        to only one context.  `context` is a string which must match a context
-        exactly.  If it does not, no exception is raised, but queries will
-        return no data.
+        The next :meth:`lines`, :meth:`arcs`, or :meth:`contexts_by_lineno`
+        calls will be limited to only one context.  `context` is a string which
+        must match a context exactly.  If it does not, no exception is raised,
+        but queries will return no data.
+
+        .. versionadded:: 5.0
 
         """
         self._start_using()
@@ -732,13 +775,15 @@ class CoverageData(SimpleReprMixin):
             self._query_context_ids = [row[0] for row in cur.fetchall()]
 
     def set_query_contexts(self, contexts):
-        """Set the contexts for subsequent querying.
+        """Set a number of contexts for subsequent querying.
 
-        The next `lines`, `arcs`, or `contexts_by_lineno` calls will be limited
-        to the specified contexts.  `contexts` is a list of Python regular
-        expressions.  Contexts will be matched using :func:`re.search <python:re.search>`.
-        Data will be included in query results if they are part of any of the
-        contexts matched.
+        The next :meth:`lines`, :meth:`arcs`, or :meth:`contexts_by_lineno`
+        calls will be limited to the specified contexts.  `contexts` is a list
+        of Python regular expressions.  Contexts will be matched using
+        :func:`re.search <python:re.search>`.  Data will be included in query
+        results if they are part of any of the contexts matched.
+
+        .. versionadded:: 5.0
 
         """
         self._start_using()
@@ -751,6 +796,15 @@ class CoverageData(SimpleReprMixin):
             self._query_context_ids = None
 
     def lines(self, filename):
+        """Get the list of lines executed for a file.
+
+        If the file was not measured, returns None.  A file might be measured,
+        and have no lines executed, in which case an empty list is returned.
+
+        If the file was executed, returns a list of integers, the line numbers
+        executed in the file. The list is in no particular order.
+
+        """
         self._start_using()
         if self.has_arcs():
             arcs = self.arcs(filename)
@@ -776,6 +830,22 @@ class CoverageData(SimpleReprMixin):
                 return sorted(nums)
 
     def arcs(self, filename):
+        """Get the list of arcs executed for a file.
+
+        If the file was not measured, returns None.  A file might be measured,
+        and have no arcs executed, in which case an empty list is returned.
+
+        If the file was executed, returns a list of 2-tuples of integers. Each
+        pair is a starting line number and an ending line number for a
+        transition from one line to another. The list is in no particular
+        order.
+
+        Negative numbers have special meaning.  If the starting line number is
+        -N, it represents an entry to the code object that starts at line N.
+        If the ending ling number is -N, it's an exit from the code object that
+        starts at line N.
+
+        """
         self._start_using()
         with self._connect() as con:
             file_id = self._file_id(filename)
@@ -792,6 +862,14 @@ class CoverageData(SimpleReprMixin):
                 return list(arcs)
 
     def contexts_by_lineno(self, filename):
+        """Get the contexts for each line in a file.
+
+        Returns:
+            A dict mapping line numbers to a list of context names.
+
+        .. versionadded:: 5.0
+
+        """
         lineno_contexts_map = collections.defaultdict(list)
         self._start_using()
         with self._connect() as con:
@@ -832,9 +910,10 @@ class CoverageData(SimpleReprMixin):
 
     @classmethod
     def sys_info(cls):
-        """Our information for Coverage.sys_info.
+        """Our information for `Coverage.sys_info`.
 
         Returns a list of (key, value) pairs.
+
         """
         return [
             ('sqlite3_version', sqlite3.version),
@@ -845,8 +924,11 @@ class CoverageData(SimpleReprMixin):
 class SqliteDb(SimpleReprMixin):
     """A simple abstraction over a SQLite database.
 
-    Use as a context manager to get an object you can call
-    execute or executemany on.
+    Use as a context manager, then you can use it like a
+    :class:`python:sqlite3.Connection` object::
+
+        with SqliteDb(filename, debug=True) as db:
+            db.execute("insert into schema (version) values (?)", (SCHEMA_VERSION,))
 
     """
     def __init__(self, filename, debug):
@@ -855,7 +937,8 @@ class SqliteDb(SimpleReprMixin):
         self.nest = 0
         self.con = None
 
-    def connect(self):
+    def _connect(self):
+        """Connect to the db and do universal initialization."""
         if self.con is not None:
             return
         # SQLite on Windows on py2 won't open a file if the filename argument
@@ -880,13 +963,14 @@ class SqliteDb(SimpleReprMixin):
         self.execute("pragma synchronous=off").close()
 
     def close(self):
+        """If needed, close the connection."""
         if self.con is not None and self.filename != ":memory:":
             self.con.close()
             self.con = None
 
     def __enter__(self):
         if self.nest == 0:
-            self.connect()
+            self._connect()
             self.con.__enter__()
         self.nest += 1
         return self
@@ -898,6 +982,7 @@ class SqliteDb(SimpleReprMixin):
             self.close()
 
     def execute(self, sql, parameters=()):
+        """Same as :meth:`python:sqlite3.Connection.execute`."""
         if self.debug:
             tail = " with {!r}".format(parameters) if parameters else ""
             self.debug.write("Executing {!r}{}".format(sql, tail))
@@ -907,12 +992,14 @@ class SqliteDb(SimpleReprMixin):
             raise CoverageException("Couldn't use data file {!r}: {}".format(self.filename, exc))
 
     def executemany(self, sql, data):
+        """Same as :meth:`python:sqlite3.Connection.executemany`."""
         if self.debug:
             data = list(data)
             self.debug.write("Executing many {!r} with {} rows".format(sql, len(data)))
         return self.con.executemany(sql, data)
 
     def executescript(self, script):
+        """Same as :meth:`python:sqlite3.Connection.executescript`."""
         if self.debug:
             self.debug.write("Executing script with {} chars: {}".format(
                 len(script), clipped_repr(script, 100),
@@ -920,7 +1007,7 @@ class SqliteDb(SimpleReprMixin):
         self.con.executescript(script)
 
     def dump(self):
-        """Return a multi-line string, the dump of the database."""
+        """Return a multi-line string, the SQL dump of the database."""
         return "\n".join(self.con.iterdump())
 
 
