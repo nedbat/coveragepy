@@ -9,6 +9,10 @@ These changes are listed in decreasing version number order. Note this can be
 different from a strict chronological order when there are two branches in
 development at the same time, such as 4.5.x and 5.0.
 
+This list is detailed and covers changes in each pre-release version.  If you
+want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
+
+
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
@@ -21,7 +25,7 @@ Unreleased
 ----------
 
 - The HTML and textual reports now have a ``--skip-empty`` option that skips
-  files with no statements (notably, ``__init__.py`` files).  Thanks, Reya B.
+  files with no statements, notably ``__init__.py`` files.  Thanks, Reya B.
 
 - Configuration can now be read from `TOML`_ files.  This requires installing
   coverage.py with the ``[toml]`` extra.  The standard "pyproject.toml" file
@@ -39,7 +43,7 @@ Unreleased
   ``coverage html --show-contexts``) will issue a warning if there were no
   contexts measured (`issue 851`_).
 
-.. _TOML: https://github.com/toml-lang/toml#toml
+.. _TOML: https://github.com/toml-lang/toml#readme
 .. _issue 664: https://github.com/nedbat/coveragepy/issues/664
 .. _issue 851: https://github.com/nedbat/coveragepy/issues/851
 .. _issue 855: https://github.com/nedbat/coveragepy/issues/855
@@ -191,7 +195,7 @@ Version 5.0a5 --- 2019-05-07
 - Access to the SQLite database used for data storage is now thread-safe.
   Thanks, Stephan Richter. This closes `issue 702`_.
 
-- Combining data stored in SQLite now goes about twice as fast, fixing `issue
+- Combining data stored in SQLite is now about twice as fast, fixing `issue
   761`_.  Thanks, Stephan Richter.
 
 - The ``filename`` attribute on :class:`.CoverageData` objects has been made
@@ -217,7 +221,7 @@ Version 5.0a4 --- 2018-11-25
 ----------------------------
 
 - You can specify the command line to run your program with the ``[run]
-  command_line`` configuration setting. `issue 695`_.
+  command_line`` configuration setting, as requested in `issue 695`_.
 
 - Coverage will create directories as needed for the data file if they don't
   exist, closing `issue 721`_.
@@ -231,7 +235,7 @@ Version 5.0a4 --- 2018-11-25
 
   - The "no such table: meta" error is fixed.: `issue 716`_.
 
-  - Combining data files now goes much faster.
+  - Combining data files is now much faster.
 
 - Python 3.8 (as of today!) passes all tests.
 

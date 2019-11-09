@@ -4,7 +4,7 @@
 .. _howitworks:
 
 =====================
-How Coverage.py works
+How coverage.py works
 =====================
 
 .. :history: 20150812T071000, new page.

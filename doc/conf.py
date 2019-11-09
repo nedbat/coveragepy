@@ -36,6 +36,7 @@ extensions = [
     'sphinxcontrib.spelling',
     'sphinx.ext.intersphinx',
     'sphinx_rst_builder',
+    'sphinx.ext.extlinks',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -188,6 +189,10 @@ htmlhelp_basename = 'coveragepydoc'
 spelling_word_list_filename = 'dict.txt'
 spelling_show_suggestions = False
 
+extlinks = {
+    # :github:`123` becomes a link to the GitHub issue, with text "issue 123".
+    'github': ('https://github.com/nedbat/coveragepy/issues/%s', 'issue '),
+}
 
 # When auto-doc'ing a class, write the class' docstring and the __init__ docstring
 # into the class docs.

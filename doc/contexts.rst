@@ -86,8 +86,8 @@ Context reporting
 -----------------
 
 The ``coverage report`` and ``coverage html`` commands both accept
-``--contexts`` option, a comma-separated list of shell-style wildcards.  The
-report will be limited to the contexts that match one of those contexts.
+``--contexts`` option, a comma-separated list of regular expressions.  The
+report will be limited to the contexts that match one of those patterns.
 
 The ``coverage html`` command also has ``--show-contexts``.  If set, the HTML
 report will include an annotation on each covered line indicating the number of

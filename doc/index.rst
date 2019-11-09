@@ -173,7 +173,7 @@ More information
     :maxdepth: 1
 
     install
-    For Enterprise <https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=enterprise>
+    For enterprise <https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=enterprise>
     cmd
     config
     source
@@ -187,4 +187,5 @@ More information
     contributing
     trouble
     faq
+    whatsnew5x
     changes
