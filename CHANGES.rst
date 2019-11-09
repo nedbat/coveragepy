@@ -33,6 +33,10 @@ Unreleased
   settings in the ``[tool.coverage.]`` namespace.  Thanks to Frazer McLean for
   implementation and persistence.  Finishes `issue 664`_.
 
+- The ``[run] note`` setting has been deprecated. Using it will result in a
+  warning, and the note will not be written to the data file.  The
+  corresponding :class:`.CoverageData` methods have been removed.
+
 - The HTML report has been reimplemented (no more table around the source
   code). This allowed for a better presentation of the context information,
   hopefully resolving `issue 855`_.

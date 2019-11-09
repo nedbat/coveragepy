@@ -16,7 +16,7 @@ from xml.etree import ElementTree
 import pytest
 
 import coverage
-from coverage import env, CoverageData
+from coverage import env
 from coverage.data import line_counts
 from coverage.misc import output_encoding
 
@@ -710,27 +710,6 @@ class ProcessTest(CoverageTest):
             "Already imported a file that will be measured: {0} "
             "(already-imported)").format(goodbye_path)
         self.assertIn(msg, out)
-
-    def test_note(self):
-        if env.PYPY and env.PY3 and env.PYPYVERSION[:3] == (5, 10, 0):      # pragma: obscure
-            # https://bitbucket.org/pypy/pypy/issues/2729/pypy3-510-incorrectly-decodes-astral-plane
-            self.skipTest("Avoid incorrect decoding astral plane JSON chars")
-        self.skip_unless_data_storage_is("json")
-
-        self.make_file(".coveragerc", """\
-            [run]
-            data_file = mydata.dat
-            note = These are musical notes: ♫𝅗𝅥♩
-            """)
-        self.make_file("simple.py", """print('hello')""")
-        self.run_command("coverage run simple.py")
-
-        data = CoverageData("mydata.dat")
-        data.read()
-        infos = data.run_infos()
-        self.assertEqual(len(infos), 1)
-        expected = u"These are musical notes: ♫𝅗𝅥♩"
-        self.assertEqual(expected, infos[0]['note'])
 
     @pytest.mark.expensive
     def test_fullcoverage(self):                        # pragma: no metacov

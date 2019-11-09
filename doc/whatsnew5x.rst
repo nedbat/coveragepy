@@ -33,6 +33,10 @@ Backward Incompatibilities
   circumstances, you may need to use ``parallel=true`` to avoid multiple
   processes overwriting each others' data.
 
+- The ``[run] note`` setting has been deprecated. Using it will result in a
+  warning, and the note will not be written to the data file.  The
+  corresponding :class:`.CoverageData` methods have been removed.
+
 - The deprecated `Reporter.file_reporters` property has been removed.
 
 - The reporting methods used to permanently apply their arguments to the

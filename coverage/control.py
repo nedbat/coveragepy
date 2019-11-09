@@ -674,7 +674,7 @@ class Coverage(object):
                 self._data.touch_file(file_path, plugin_name)
 
         if self.config.note:
-            self._data.add_run_info(note=self.config.note)
+            self._warn("The '[run] note' setting is no longer supported.")
 
     # Backward compatibility with version 1.
     def analysis(self, morf):

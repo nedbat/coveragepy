@@ -5,7 +5,6 @@
 
 # TODO: factor out dataop debugging to a wrapper class?
 # TODO: make sure all dataop debugging is in place somehow
-# TODO: run_info
 
 import collections
 import datetime
@@ -144,8 +143,7 @@ class CoverageData(SimpleReprMixin):
 
     To read a coverage.py data file, use :meth:`read`.  You can then
     access the line, arc, or file tracer data with :meth:`lines`, :meth:`arcs`,
-    or :meth:`file_tracer`.  Run information is available with
-    :meth:`run_infos`.
+    or :meth:`file_tracer`.
 
     The :meth:`has_arcs` method indicates whether arc data is available.  You
     can get a list of the files in the data with :meth:`measured_files`.
@@ -156,8 +154,7 @@ class CoverageData(SimpleReprMixin):
     Most data files will be created by coverage.py itself, but you can use
     methods here to create data files if you like.  The :meth:`add_lines`,
     :meth:`add_arcs`, and :meth:`add_file_tracers` methods add data, in ways
-    that are convenient for coverage.py.  The :meth:`add_run_info` method adds
-    key-value pairs to the run information.
+    that are convenient for coverage.py.
 
     To add a source file without any measured data, use :meth:`touch_file`.
 
@@ -832,9 +829,6 @@ class CoverageData(SimpleReprMixin):
                     for lineno in numbits_to_nums(numbits):
                         lineno_contexts_map[lineno].append(context)
         return lineno_contexts_map
-
-    def run_infos(self):
-        return []   # TODO
 
     @classmethod
     def sys_info(cls):

@@ -99,11 +99,6 @@ class CoverageTest(
         self.last_command_output = None
         self.last_module_name = None
 
-    def skip_unless_data_storage_is(self, storage):
-        """Skip a test for tests that are particular about the storage implementation."""
-        assert storage == "json"
-        self.skipTest("Some features haven't been implemented in SQL yet.")
-
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
 

@@ -170,9 +170,7 @@ for details.
 
 .. _config_run_note:
 
-``note`` (string): an arbitrary string that will be written to the data file.
-You can use the :meth:`.CoverageData.run_infos` method to retrieve this string
-from a data file.
+``note`` (string): this is now obsolete.
 
 .. _config_run_omit:
 

@@ -396,6 +396,17 @@ class ConfigTest(CoverageTest):
         with self.assertRaisesRegex(CoverageException, msg):
             _ = coverage.Coverage()
 
+    def test_note_is_obsolete(self):
+        self.make_file("main.py", "a = 1")
+        self.make_file(".coveragerc", """\
+            [run]
+            note = I am here I am here I am here!
+            """)
+        cov = coverage.Coverage()
+        with self.assert_warnings(cov, [r"The '\[run] note' setting is no longer supported."]):
+            self.start_import_stop(cov, "main")
+            cov.report()
+
 
 class ConfigFileTest(UsingModulesMixin, CoverageTest):
     """Tests of the config file settings in particular."""

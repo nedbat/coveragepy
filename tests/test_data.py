@@ -88,7 +88,6 @@ class DataTestHelpers(CoverageTest):
         self.assert_line_counts(covdata, SUMMARY_1)
         self.assert_measured_files(covdata, MEASURED_FILES_1)
         self.assertCountEqual(covdata.lines("a.py"), A_PY_LINES_1)
-        self.assertEqual(covdata.run_infos(), [])
         self.assertFalse(covdata.has_arcs())
 
     def assert_arcs3_data(self, covdata):
@@ -100,7 +99,6 @@ class DataTestHelpers(CoverageTest):
         self.assertCountEqual(covdata.lines("y.py"), Y_PY_LINES_3)
         self.assertCountEqual(covdata.arcs("y.py"), Y_PY_ARCS_3)
         self.assertTrue(covdata.has_arcs())
-        self.assertEqual(covdata.run_infos(), [])
 
 
 class CoverageDataTest(DataTestHelpers, CoverageTest):
@@ -214,15 +212,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             covdata.contexts_by_lineno('a.py'),
             {1: ['test_a'], 2: ['test_a']})
 
-    def test_run_info(self):
-        self.skip_unless_data_storage_is("json")
-        covdata = CoverageData()
-        self.assertEqual(covdata.run_infos(), [])
-        covdata.add_run_info(hello="there")
-        self.assertEqual(covdata.run_infos(), [{"hello": "there"}])
-        covdata.add_run_info(count=17)
-        self.assertEqual(covdata.run_infos(), [{"hello": "there", "count": 17}])
-
     def test_no_duplicate_lines(self):
         covdata = CoverageData()
         covdata.set_context("context1")
@@ -315,7 +304,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
         self.assert_line_counts(covdata3, SUMMARY_1_2)
         self.assert_measured_files(covdata3, MEASURED_FILES_1_2)
-        self.assertEqual(covdata3.run_infos(), [])
 
     def test_update_arcs(self):
         covdata1 = CoverageData(suffix='1')
@@ -330,26 +318,6 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
         self.assert_line_counts(covdata3, SUMMARY_3_4)
         self.assert_measured_files(covdata3, MEASURED_FILES_3_4)
-        self.assertEqual(covdata3.run_infos(), [])
-
-    def test_update_run_info(self):
-        self.skip_unless_data_storage_is("json")
-        covdata1 = CoverageData()
-        covdata1.add_arcs(ARCS_3)
-        covdata1.add_run_info(hello="there", count=17)
-
-        covdata2 = CoverageData()
-        covdata2.add_arcs(ARCS_4)
-        covdata2.add_run_info(hello="goodbye", count=23)
-
-        covdata3 = CoverageData()
-        covdata3.update(covdata1)
-        covdata3.update(covdata2)
-
-        self.assertEqual(covdata3.run_infos(), [
-            {'hello': 'there', 'count': 17},
-            {'hello': 'goodbye', 'count': 23},
-        ])
 
     def test_update_cant_mix_lines_and_arcs(self):
         covdata1 = CoverageData(suffix='1')
