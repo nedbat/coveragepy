@@ -3,8 +3,9 @@
 
 # Makefile for utility work on coverage.py.
 
-default:
-	@echo "* No default action *"
+help:					## Show this help.
+	@echo "Available targets:"
+	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | sort | awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
 clean_platform:                         ## Remove files that clash across platforms.
 	-rm -f *.so */*.so
@@ -40,14 +41,14 @@ sterile: clean                          ## Remove all non-controlled content, ev
 CSS = coverage/htmlfiles/style.css
 SCSS = coverage/htmlfiles/style.scss
 
-css: $(CSS)
+css: $(CSS)				## Compile .scss into .css.
 $(CSS): $(SCSS)
 	sass --style=compact --sourcemap=none --no-cache $(SCSS) $@
 	cp $@ tests/gold/html/styled
 
 LINTABLE = coverage tests igor.py setup.py __main__.py
 
-lint:
+lint:					## Run linters and checkers.
 	tox -e lint
 
 todo:
@@ -61,53 +62,51 @@ test:
 
 PYTEST_SMOKE_ARGS = -n 6 -m "not expensive" --maxfail=3 $(ARGS)
 
-smoke:
-	# Run tests with the C tracer in the lowest supported Python versions.
+smoke: 					## Run tests quickly with the C tracer in the lowest supported Python versions.
 	COVERAGE_NO_PYTRACER=1 tox -q -e py27,py35 -- $(PYTEST_SMOKE_ARGS)
 
-pysmoke:
-	# Run tests with the Python tracer in the lowest supported Python versions.
+pysmoke: 				## Run tests quickly with the Python tracer in the lowest supported Python versions.
 	COVERAGE_NO_CTRACER=1 tox -q -e py27,py35 -- $(PYTEST_SMOKE_ARGS)
 
 DOCKER_RUN = docker run -it --init --rm -v `pwd`:/io
 RUN_MANYLINUX_X86 = $(DOCKER_RUN) quay.io/pypa/manylinux1_x86_64 /io/ci/manylinux.sh
 RUN_MANYLINUX_I686 = $(DOCKER_RUN) quay.io/pypa/manylinux1_i686 /io/ci/manylinux.sh
 
-test_linux:
+test_linux:				## Run the tests in Linux under Docker.
 	# The Linux .pyc files clash with the host's because of file path
 	# changes, so clean them before and after running tests.
 	make clean_platform
 	$(RUN_MANYLINUX_X86) test $(ARGS)
 	make clean_platform
 
-meta_linux:
+meta_linux:				## Run meta-coverage in Linux under Docker.
 	ARGS="meta $(ARGS)" make test_linux
 
 # Coverage measurement of coverage.py itself (meta-coverage). See metacov.ini
 # for details.
 
-metacov:
+metacov:				## Run meta-coverage, measuring ourself.
 	COVERAGE_COVERAGE=yes tox $(ARGS)
 
-metahtml:
+metahtml:				## Produce meta-coverage HTML reports.
 	python igor.py combine_html
 
 # Kitting
 
-kit:
+kit:					## Make the source distribution.
 	python setup.py sdist
 
-wheel:
+wheel:					## Make the wheels for distribution.
 	tox -c tox_wheels.ini $(ARGS)
 
-kit_linux:
+kit_linux:				## Make the Linux wheels.
 	$(RUN_MANYLINUX_X86) build
 	$(RUN_MANYLINUX_I686) build
 
-kit_upload:
+kit_upload:				## Upload the built distributions to PyPI.
 	twine upload --verbose dist/*
 
-test_upload:
+test_upload:				## Upload the distrubutions to PyPI's testing server.
 	twine upload --verbose --repository testpypi dist/*
 
 kit_local:
@@ -119,7 +118,7 @@ kit_local:
 	# don't go crazy trying to figure out why our new code isn't installing.
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
-download_appveyor:
+download_appveyor:			## Download the latest Windows artifacts from AppVeyor.
 	python ci/download_appveyor.py nedbat/coveragepy
 
 build_ext:
@@ -143,7 +142,7 @@ WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
 docreqs:
 	tox -q -e doc --notest
 
-dochtml: docreqs
+dochtml: docreqs			## Build the docs HTML output.
 	.tox/doc/bin/python doc/check_copied_from.py doc/*.rst
 	$(SPHINXBUILD) -b html doc doc/_build/html
 	@echo
@@ -162,7 +161,7 @@ publishbeta:
 	mkdir -p $(WEBSAMPLEBETA)
 	cp doc/sample_html_beta/*.* $(WEBSAMPLEBETA)
 
-upload_relnotes: docreqs
+upload_relnotes: docreqs		## Upload parsed release notes to Tidelift.
 	$(SPHINXBUILD) -b rst doc /tmp/rst_rst
 	pandoc -frst -tmarkdown_strict --atx-headers /tmp/rst_rst/changes.rst > /tmp/rst_rst/changes.md
 	python ci/upload_relnotes.py /tmp/rst_rst/changes.md pypi/coverage
