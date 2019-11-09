@@ -294,6 +294,8 @@ class CoverageData(SimpleReprMixin):
         .. versionadded:: 5.0
 
         """
+        if self._debug.should('dataio'):
+            self._debug.write("Dumping data from data file {!r}".format(self._filename))
         with self._connect() as con:
             return b'z' + zlib.compress(to_bytes(con.dump()))
 
