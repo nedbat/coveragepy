@@ -3,7 +3,6 @@
 
 """HTML reporting for coverage.py."""
 
-import collections
 import datetime
 import json
 import os
@@ -97,8 +96,6 @@ class HtmlDataGeneration(object):
 
         if self.config.show_contexts:
             contexts_by_lineno = analysis.data.contexts_by_lineno(fr.filename)
-        else:
-            contexts_by_lineno = collections.defaultdict(list)
 
         lines = []
 
