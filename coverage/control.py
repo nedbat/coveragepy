@@ -149,12 +149,12 @@ class Coverage(object):
         This can also be a list of these strings.
 
         If `check_preimported` is true, then when coverage is started, the
-        already-imported files will be checked to see if they should be measured
-        by coverage.  Importing measured files before coverage is started can
-        mean that code is missed.
+        already-imported files will be checked to see if they should be
+        measured by coverage.  Importing measured files before coverage is
+        started can mean that code is missed.
 
-        `context` is a string to use as the :ref:`static context <static_contexts>`
-        label for collected data.
+        `context` is a string to use as the :ref:`static context
+        <static_contexts>` label for collected data.
 
         .. versionadded:: 4.0
             The `concurrency` parameter.
@@ -527,10 +527,10 @@ class Coverage(object):
     def switch_context(self, new_context):
         """Switch to a new dynamic context.
 
-        `new_context` is a string to use as the
-        :ref:`dynamic context <dynamic_contexts>` label for collected data.
-        If a :ref:`static context <static_contexts>` is in use, the static and
-        dynamic context labels will be joined together with a pipe character.
+        `new_context` is a string to use as the :ref:`dynamic context
+        <dynamic_contexts>` label for collected data.  If a :ref:`static
+        context <static_contexts>` is in use, the static and dynamic context
+        labels will be joined together with a pipe character.
 
         Coverage collection must be started already.
 
@@ -811,7 +811,7 @@ class Coverage(object):
             The `skip_covered` parameter.
 
         .. versionadded:: 5.0
-            The `contexts` parameter.
+            The `contexts` and `skip_empty` parameters.
 
         """
         with override_config(
