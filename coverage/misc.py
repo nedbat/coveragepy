@@ -178,7 +178,15 @@ def output_encoding(outfile=None):
 
 
 def filename_suffix(suffix):
-    """Compute a filename suffix for a data file."""
+    """Compute a filename suffix for a data file.
+
+    If `suffix` is a string or None, simply return it. If `suffix` is True,
+    then build a suffix incorporating the hostname, process id, and a random
+    number.
+
+    Returns a string or None.
+
+    """
     if suffix is True:
         # If data_suffix was a simple true value, then make a suffix with
         # plenty of distinguishing information.  We do this here in

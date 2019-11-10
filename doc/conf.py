@@ -37,6 +37,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx_rst_builder',
     'sphinx.ext.extlinks',
+    'sphinx.ext.napoleon',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

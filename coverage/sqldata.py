@@ -104,19 +104,18 @@ CREATE TABLE tracer (
 class CoverageData(SimpleReprMixin):
     """Manages collected coverage data, including file storage.
 
-    TODO: This is the 4.x docstring. Update it for 5.0.
-
-    This class is the public supported API to the data coverage.py collects
-    during program execution.  It includes information about what code was
-    executed. It does not include information from the analysis phase, to
+    This class is the public supported API to the data that coverage.py
+    collects during program execution.  It includes information about what code
+    was executed. It does not include information from the analysis phase, to
     determine what lines could have been executed, or what lines were not
     executed.
 
     .. note::
 
-        The file format is not documented or guaranteed.  It will change in
-        the future, in possibly complicated ways.  Do not read coverage.py
-        data files directly.  Use this API to avoid disruption.
+        The data file is currently a SQLite database file, with a
+        :ref:`documented schema <dbschema>`. The schema is subject to change
+        though, so be careful about querying it directly. Use this API if you
+        can to isolate yourself from changes.
 
     There are a number of kinds of data that can be collected:
 
@@ -137,21 +136,35 @@ class CoverageData(SimpleReprMixin):
     A data file either stores lines, or arcs, but not both.
 
     A data file is associated with the data when the :class:`CoverageData`
-    is created.
+    is created, using the parameters `basename`, `suffix`, and `no_disk`. The
+    base name can be queried with :meth:`base_filename`, and the actual file
+    name being used is available from :meth:`data_filename`.
 
-    To read a coverage.py data file, use :meth:`read`.  You can then
+    To read an existing coverage.py data file, use :meth:`read`.  You can then
     access the line, arc, or file tracer data with :meth:`lines`, :meth:`arcs`,
     or :meth:`file_tracer`.
 
     The :meth:`has_arcs` method indicates whether arc data is available.  You
-    can get a list of the files in the data with :meth:`measured_files`.  As
+    can get a set of the files in the data with :meth:`measured_files`.  As
     with most Python containers, you can determine if there is any data at all
     by using this object as a boolean value.
+
+    The contexts for each line in a file can be read with
+    :meth:`contexts_by_lineno`.
+
+    To limit querying to certain contexts, use :meth:`set_query_context` or
+    :meth:`set_query_contexts`. These will narrow the focus of subsequent
+    :meth:`lines`, :meth:`arcs`, and :meth:`contexts_by_lineno` calls. The set
+    of all measured context names can be retrieved with
+    :meth:`measured_contexts`.
 
     Most data files will be created by coverage.py itself, but you can use
     methods here to create data files if you like.  The :meth:`add_lines`,
     :meth:`add_arcs`, and :meth:`add_file_tracers` methods add data, in ways
     that are convenient for coverage.py.
+
+    To record data for contexts, use :meth:`set_context` to set a context to
+    be used for subsequent :meth:`add_line` and :meth:`add_arcs` calls.
 
     To add a source file without any measured data, use :meth:`touch_file`.
 
@@ -161,9 +174,26 @@ class CoverageData(SimpleReprMixin):
     can be combined by using :meth:`update` on one :class:`CoverageData`,
     passing it the other.
 
+    Data in a :class:`CoverageData` can be serialized and deserialized with
+    :meth:`dumps` and :meth:`loads`.
+
     """
 
     def __init__(self, basename=None, suffix=None, no_disk=False, warn=None, debug=None):
+        """Create a :class:`CoverageData` object to hold coverage-measured data.
+
+        Arguments:
+            basename (str): the base name of the data file, defaulting to
+                ".coverage".
+            suffix (str or boolean): has the same meaning as the `data_suffix`
+                argument to :class:`coverage.Coverage`.
+            no_disk (boolean): if True, keep all data in memory, and don't
+                write any disk file.
+            warn (function): is a warning callback, accepting a warning message
+                argument.
+            debug (function): a debug callback to use.
+
+        """
         self._no_disk = no_disk
         self._basename = os.path.abspath(basename or ".coverage")
         self._suffix = suffix
@@ -302,6 +332,9 @@ class CoverageData(SimpleReprMixin):
     @contract(data='bytes')
     def loads(self, data):
         """Deserialize data from :meth:`dumps`
+
+        Use with a newly-created empty :class:`CoverageData` object.  It's
+        undefined what happens if the object already has data in it.
 
         Arguments:
             data (byte string): serialized data produced by :meth:`dumps`.
