@@ -15,7 +15,9 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import atexit
 import os
+import tempfile
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -187,7 +189,13 @@ htmlhelp_basename = 'coveragepydoc'
 
 # -- Spelling ---
 
-spelling_word_list_filename = 'dict.txt'
+names_file = tempfile.NamedTemporaryFile(mode='w', prefix="coverage_names_", suffix=".txt")
+with open("../CONTRIBUTORS.txt") as contributors:
+    names_file.write("\n".join(contributors.read().split()))
+    names_file.flush()
+atexit.register(os.remove, names_file.name)
+
+spelling_word_list_filename = ['dict.txt', names_file.name]
 spelling_show_suggestions = False
 
 extlinks = {
