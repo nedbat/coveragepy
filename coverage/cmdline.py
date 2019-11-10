@@ -48,7 +48,7 @@ class Opts(object):
     )
     context = optparse.make_option(
         '', '--context', action='store', metavar="LABEL",
-        help="The context label to record for this coverage run",
+        help="The context label to record for this coverage run.",
     )
     debug = optparse.make_option(
         '', '--debug', action='store', metavar="OPTS",
@@ -95,7 +95,7 @@ class Opts(object):
     )
     skip_empty = optparse.make_option(
         '--skip-empty', action='store_true',
-        help="Skip empty files.",
+        help="Skip files with no code.",
     )
     show_contexts = optparse.make_option(
         '--show-contexts', action='store_true',
@@ -129,7 +129,7 @@ class Opts(object):
     )
     json_pretty_print = optparse.make_option(
         '', '--pretty-print', action='store_true',
-        help="Format the JSON for human readers",
+        help="Format the JSON for human readers.",
     )
     parallel_mode = optparse.make_option(
         '-p', '--parallel-mode', action='store_true',
@@ -150,8 +150,8 @@ class Opts(object):
         '', '--rcfile', action='store',
         help=(
             "Specify configuration file. "
-            "By default '.coveragerc', 'pyproject.toml', 'setup.cfg' and "
-            "'tox.ini' are tried. [env: COVERAGE_RCFILE]"
+            "By default '.coveragerc', 'setup.cfg', 'tox.ini', and "
+            "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
         ),
     )
     source = optparse.make_option(
@@ -352,16 +352,16 @@ CMDS = {
     'html': CmdOptionParser(
         "html",
         [
+            Opts.contexts,
             Opts.directory,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
-            Opts.title,
+            Opts.show_contexts,
             Opts.skip_covered,
             Opts.skip_empty,
-            Opts.show_contexts,
-            Opts.contexts,
+            Opts.title,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
@@ -371,14 +371,30 @@ CMDS = {
         ),
     ),
 
-    'report': CmdOptionParser(
-        "report",
+    'json': CmdOptionParser(
+        "json",
         [
+            Opts.contexts,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
+            Opts.output_json,
+            Opts.json_pretty_print,
+            Opts.show_contexts,
+            ] + GLOBAL_ARGS,
+        usage="[options] [modules]",
+        description="Generate a JSON report of coverage results."
+    ),
+
+    'report': CmdOptionParser(
+        "report",
+        [
             Opts.contexts,
+            Opts.fail_under,
+            Opts.ignore_errors,
+            Opts.include,
+            Opts.omit,
             Opts.show_missing,
             Opts.skip_covered,
             Opts.skip_empty,
@@ -417,22 +433,6 @@ CMDS = {
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate an XML report of coverage results."
-    ),
-
-    'json': CmdOptionParser(
-        "json",
-        [
-            Opts.fail_under,
-            Opts.ignore_errors,
-            Opts.include,
-            Opts.omit,
-            Opts.output_json,
-            Opts.json_pretty_print,
-            Opts.show_contexts,
-            Opts.contexts,
-            ] + GLOBAL_ARGS,
-        usage="[options] [modules]",
-        description="Generate a JSON report of coverage results."
     ),
 }
 
