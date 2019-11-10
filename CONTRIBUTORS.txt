@@ -48,6 +48,7 @@ Dirk Thomas
 Dmitry Shishov
 Dmitry Trofimov
 Eduardo Schettino
+Eli Skeggs
 Emil Madsen
 Edward Loper
 Federico Bond
@@ -56,6 +57,7 @@ Geoff Bache
 George Paci
 George Song
 Greg Rogers
+Guido van Rossum
 Guillaume Chazarain
 Hugo van Kemenade
 Ilia Meerovich
@@ -64,6 +66,7 @@ Ionel Cristian Mărieș
 JT Olds
 Jessamyn Smith
 Joe Doherty
+Joe Jevnik
 Jon Chappell
 Jon Dufresne
 Joseph Tate
@@ -78,6 +81,7 @@ Lex Berezhny
 Loïc Dachary
 Marc Abramowitz
 Marcus Cobden
+Marius Gedminas
 Mark van der Wal
 Martin Fuzzey
 Matt Bachmann

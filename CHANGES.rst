@@ -1032,7 +1032,7 @@ Version 4.0.3 --- 2015-11-24
 
 - The XML report now has correct ``<source>`` elements when using a
   ``--source=`` option somewhere besides the current directory.  This fixes
-  `issue 439`_. Thanks, Arcady Ivanov.
+  `issue 439`_. Thanks, Arcadiy Ivanov.
 
 - Fixed an unusual edge case of detecting source encodings, described in
   `issue 443`_.
