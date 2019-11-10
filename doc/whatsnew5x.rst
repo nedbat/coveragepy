@@ -25,7 +25,7 @@ Open Questions
 Backward Incompatibilities
 --------------------------
 
-- Python 2.6 and 3.3 are no longer supported.
+- Python 2.6, 3.3 and 3.4 are no longer supported.
 
 - The :class:`.CoverageData` interface is still public, but has changed.
 

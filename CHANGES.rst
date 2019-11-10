@@ -21,8 +21,10 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+.. _changes_50b1:
+
+Version 5.0b1 --- 2019-11-11
+----------------------------
 
 - The HTML and textual reports now have a ``--skip-empty`` option that skips
   files with no statements, notably ``__init__.py`` files.  Thanks, Reya B.
