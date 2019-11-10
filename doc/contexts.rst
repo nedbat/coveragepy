@@ -89,8 +89,8 @@ report will be limited to the contexts that match one of those patterns.
 
 The ``coverage html`` command also has ``--show-contexts``.  If set, the HTML
 report will include an annotation on each covered line indicating the number of
-contexts that executed the line.  Hovering over the annotation displays a list
-of the contexts.
+contexts that executed the line.  Clicking the annotation displays a list of
+the contexts.
 
 
 Raw data
