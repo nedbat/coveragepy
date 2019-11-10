@@ -33,7 +33,7 @@ you frustration.
 Getting the code
 ----------------
 
-The coverage.py code is hosted on a GitHub repo at
+The coverage.py code is hosted on a GitHub repository at
 https://github.com/nedbat/coveragepy.  To get a working environment, follow
 these steps:
 
@@ -43,7 +43,7 @@ these steps:
 .. like this:
  mkvirtualenv -p /usr/local/pythonz/pythons/CPython-2.7.11/bin/python coverage
 
-#.  Clone the repo::
+#.  Clone the repository::
 
         $ git clone https://github.com/nedbat/coveragepy
         $ cd coveragepy
