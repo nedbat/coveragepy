@@ -6,8 +6,6 @@
 The Coverage class
 ------------------
 
-.. :history: 20150802T174800, new file for 4.0b1
-
 .. module:: coverage
     :noindex:
 

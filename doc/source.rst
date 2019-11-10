@@ -7,9 +7,6 @@
 Specifying source files
 =======================
 
-.. :history: 20100725T172000, new in 3.4
-
-
 When coverage.py is running your program and measuring its execution, it needs
 to know what code to measure and what code not to.  Measurement imposes a speed
 penalty, and the collected data must be stored in memory and then on disk.

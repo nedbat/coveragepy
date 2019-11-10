@@ -7,8 +7,6 @@
 Measurement contexts
 ====================
 
-.. :history: 20180921T085400, new for 5.0
-
 .. versionadded:: 5.0
 
 Coverage.py measures whether code was run, but it can also record the context

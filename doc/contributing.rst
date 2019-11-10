@@ -7,8 +7,6 @@
 Contributing to coverage.py
 ===========================
 
-.. :history: 20121112T154100, brand new docs.
-
 .. highlight:: console
 
 I welcome contributions to coverage.py.  Over the years, dozens of people have

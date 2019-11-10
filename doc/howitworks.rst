@@ -7,8 +7,6 @@
 How coverage.py works
 =====================
 
-.. :history: 20150812T071000, new page.
-
 For advanced use of coverage.py, or just because you are curious, it helps to
 understand what's happening behind the scenes.  Coverage.py works in three
 phases:

@@ -7,13 +7,6 @@
 Coverage.py API
 ===============
 
-.. :history: 20090524T134300, brand new docs.
-.. :history: 20090613T164000, final touches for 3.0
-.. :history: 20100221T151500, docs for 3.3 (on the plane back from PyCon)
-.. :history: 20100725T211700, updated for 3.4.
-.. :history: 20121111T235800, added a bit of clarification.
-.. :history: 20140819T132600, change class name to Coverage
-
 There are a few different ways to use coverage.py programmatically.
 
 The API to coverage.py is in a module called `coverage`.
