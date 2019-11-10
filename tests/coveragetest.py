@@ -377,7 +377,7 @@ class CoverageTest(
             Python interpreter.
 
         * "coverage" is replaced with the command name for the main
-            Coverage.py program.
+            coverage.py program.
 
         Returns a pair: the process' exit status and its stdout/stderr text,
         which are also stored as `self.last_command_status` and
@@ -408,8 +408,8 @@ class CoverageTest(
                 # modules.
                 command_words = "jython -m coverage".split()
             else:
-                # The invocation requests the Coverage.py program.  Substitute the
-                # actual Coverage.py main command name.
+                # The invocation requests the coverage.py program.  Substitute the
+                # actual coverage.py main command name.
                 command_words = [self.coverage_command]
 
         else:

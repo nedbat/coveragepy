@@ -2,7 +2,7 @@
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 ==============================
-Change history for Coverage.py
+Change history for coverage.py
 ==============================
 
 These changes are listed in decreasing version number order. Note this can be
@@ -2394,7 +2394,7 @@ Major overhaul.
 
 - The singleton coverage object is only created if the module-level functions
   are used.  This maintains the old interface while allowing better
-  programmatic use of Coverage.py.
+  programmatic use of coverage.py.
 
 - The minimum supported Python version is 2.3.
 
