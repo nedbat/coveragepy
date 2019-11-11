@@ -102,6 +102,9 @@ wheel:					## Make the wheels for distribution.
 kit_linux:				## Make the Linux wheels.
 	$(RUN_MANYLINUX_X86) build
 	$(RUN_MANYLINUX_I686) build
+	# The manylinux image has Python 3.4, but we don't support it, delete
+	# those wheels.
+	rm -f dist/*cp34*
 
 kit_upload:				## Upload the built distributions to PyPI.
 	twine upload --verbose dist/*
