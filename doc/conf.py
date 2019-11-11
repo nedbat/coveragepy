@@ -17,6 +17,8 @@
 
 import atexit
 import os
+import re
+import sys
 import tempfile
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -189,14 +191,18 @@ htmlhelp_basename = 'coveragepydoc'
 
 # -- Spelling ---
 
-names_file = tempfile.NamedTemporaryFile(mode='w', prefix="coverage_names_", suffix=".txt")
-with open("../CONTRIBUTORS.txt") as contributors:
-    names_file.write("\n".join(contributors.read().split()))
-    names_file.flush()
-atexit.register(os.remove, names_file.name)
+if any("spell" in arg for arg in sys.argv):
+    names_file = tempfile.NamedTemporaryFile(mode='w', prefix="coverage_names_", suffix=".txt")
+    with open("../CONTRIBUTORS.txt") as contributors:
+        names = set(re.split(r"[^\w']", contributors.read()))
+        names = [n for n in names if len(n) >= 2 and n[0].isupper()]
+        names_file.write("\n".join(names))
+        names_file.flush()
+    atexit.register(os.remove, names_file.name)
 
-spelling_word_list_filename = ['dict.txt', names_file.name]
-spelling_show_suggestions = False
+    spelling_word_list_filename = ['dict.txt', names_file.name]
+    spelling_show_suggestions = False
+
 
 extlinks = {
     # :github:`123` becomes a link to the GitHub issue, with text "issue 123".
