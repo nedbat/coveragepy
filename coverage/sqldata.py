@@ -164,7 +164,7 @@ class CoverageData(SimpleReprMixin):
     that are convenient for coverage.py.
 
     To record data for contexts, use :meth:`set_context` to set a context to
-    be used for subsequent :meth:`add_line` and :meth:`add_arcs` calls.
+    be used for subsequent :meth:`add_lines` and :meth:`add_arcs` calls.
 
     To add a source file without any measured data, use :meth:`touch_file`.
 
@@ -185,13 +185,13 @@ class CoverageData(SimpleReprMixin):
         Arguments:
             basename (str): the base name of the data file, defaulting to
                 ".coverage".
-            suffix (str or boolean): has the same meaning as the `data_suffix`
+            suffix (str or bool): has the same meaning as the `data_suffix`
                 argument to :class:`coverage.Coverage`.
-            no_disk (boolean): if True, keep all data in memory, and don't
+            no_disk (bool): if True, keep all data in memory, and don't
                 write any disk file.
-            warn (function): is a warning callback, accepting a warning message
+            warn: a warning callback function, accepting a warning message
                 argument.
-            debug (function): a debug callback to use.
+            debug: a debug callback function.
 
         """
         self._no_disk = no_disk
@@ -337,7 +337,7 @@ class CoverageData(SimpleReprMixin):
         undefined what happens if the object already has data in it.
 
         Arguments:
-            data (byte string): serialized data produced by :meth:`dumps`.
+            data: A byte string of serialized data produced by :meth:`dumps`.
 
         .. versionadded:: 5.0
 

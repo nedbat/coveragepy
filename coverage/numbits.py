@@ -31,12 +31,13 @@ else:
 
     new_contract('blob', lambda v: isinstance(v, buffer))   # pylint: disable=undefined-variable
 
+
 @contract(nums='Iterable', returns='blob')
 def nums_to_numbits(nums):
     """Convert `nums` into a numbits.
 
     Arguments:
-        nums (a reusable iterable of integers): the line numbers to store.
+        nums: a reusable iterable of integers, the line numbers to store.
 
     Returns:
         A binary blob.
@@ -51,15 +52,16 @@ def nums_to_numbits(nums):
         b[num//8] |= 1 << num % 8
     return _to_blob(bytes(b))
 
+
 @contract(numbits='blob', returns='list[int]')
 def numbits_to_nums(numbits):
     """Convert a numbits into a list of numbers.
 
     Arguments:
-        numbits (a binary blob): the packed number set.
+        numbits: a binary blob, the packed number set.
 
     Returns:
-        A list of integers.
+        A list of ints.
     """
     nums = []
     for byte_i, byte in enumerate(bytes_to_ints(numbits)):
@@ -68,32 +70,29 @@ def numbits_to_nums(numbits):
                 nums.append(byte_i * 8 + bit_i)
     return nums
 
+
 @contract(numbits1='blob', numbits2='blob', returns='blob')
 def numbits_union(numbits1, numbits2):
     """Compute the union of two numbits.
 
-    Arguments:
-        numbits1, numbits2: packed number sets.
-
     Returns:
-        A new numbits, the union of the two number sets.
+        A new numbits, the union of `numbits1` and `numbits2`.
     """
     byte_pairs = zip_longest(bytes_to_ints(numbits1), bytes_to_ints(numbits2), fillvalue=0)
     return _to_blob(binary_bytes(b1 | b2 for b1, b2 in byte_pairs))
+
 
 @contract(numbits1='blob', numbits2='blob', returns='blob')
 def numbits_intersection(numbits1, numbits2):
     """Compute the intersection of two numbits.
 
-    Arguments:
-        numbits1, numbits2: packed number sets.
-
     Returns:
-        A new numbits, the intersection of the two number sets.
+        A new numbits, the intersection `numbits1` and `numbits2`.
     """
     byte_pairs = zip_longest(bytes_to_ints(numbits1), bytes_to_ints(numbits2), fillvalue=0)
     intersection_bytes = binary_bytes(b1 & b2 for b1, b2 in byte_pairs)
     return _to_blob(intersection_bytes.rstrip(b'\0'))
+
 
 @contract(numbits1='blob', numbits2='blob', returns='bool')
 def numbits_any_intersection(numbits1, numbits2):
@@ -102,31 +101,25 @@ def numbits_any_intersection(numbits1, numbits2):
     Determine whether two number sets have a non-empty intersection. This is
     faster than computing the intersection.
 
-    Arguments:
-        numbits1, numbits2: packed number sets.
-
     Returns:
-        A boolean, true if there is any number in both of the number sets.
+        A bool, True if there is any number in both `numbits1` and `numbits2`.
     """
     byte_pairs = zip_longest(bytes_to_ints(numbits1), bytes_to_ints(numbits2), fillvalue=0)
     return any(b1 & b2 for b1, b2 in byte_pairs)
+
 
 @contract(num='int', numbits='blob', returns='bool')
 def num_in_numbits(num, numbits):
     """Does the integer `num` appear in `numbits`?
 
-    Arguments:
-        num (integer)
-
-        numbits (binary blob)
-
     Returns:
-        A boolean, true if `num` is a member of `numbits`.
+        A bool, True if `num` is a member of `numbits`.
     """
     nbyte, nbit = divmod(num, 8)
     if nbyte >= len(numbits):
         return False
     return bool(byte_to_int(numbits[nbyte]) & (1 << nbit))
+
 
 def register_sqlite_functions(connection):
     """
