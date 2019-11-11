@@ -8,33 +8,33 @@ help:					## Show this help.
 	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | sort | awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
 clean_platform:                         ## Remove files that clash across platforms.
-	-rm -f *.so */*.so
-	-rm -rf __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__ */*/*/*/__pycache__ */*/*/*/*/__pycache__
-	-rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
-	-rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
+	rm -f *.so */*.so
+	rm -rf __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__ */*/*/*/__pycache__ */*/*/*/*/__pycache__
+	rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
+	rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
 
 clean: clean_platform                   ## Remove artifacts of test execution, installation, etc.
 	-pip uninstall -y coverage
-	-rm -f *.pyd */*.pyd
-	-rm -rf build coverage.egg-info dist htmlcov
-	-rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
-	-rm -f *$$py.class */*$$py.class */*/*$$py.class */*/*/*$$py.class */*/*/*/*$$py.class */*/*/*/*/*$$py.class
-	-rm -f coverage/*,cover
-	-rm -f MANIFEST
-	-rm -f .coverage .coverage.* coverage.xml .metacov*
-	-rm -f .tox/*/lib/*/site-packages/zzz_metacov.pth
-	-rm -f */.coverage */*/.coverage */*/*/.coverage */*/*/*/.coverage */*/*/*/*/.coverage */*/*/*/*/*/.coverage
-	-rm -f tests/zipmods.zip
-	-rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
-	-rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
-	-rm -rf doc/_build doc/_spell doc/sample_html_beta
-	-rm -rf .tox_kits
-	-rm -rf .cache .pytest_cache .hypothesis
-	-rm -rf $$TMPDIR/coverage_test
+	rm -f *.pyd */*.pyd
+	rm -rf build coverage.egg-info dist htmlcov
+	rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
+	rm -f *$$py.class */*$$py.class */*/*$$py.class */*/*/*$$py.class */*/*/*/*$$py.class */*/*/*/*/*$$py.class
+	rm -f coverage/*,cover
+	rm -f MANIFEST
+	rm -f .coverage .coverage.* coverage.xml .metacov*
+	rm -f .tox/*/lib/*/site-packages/zzz_metacov.pth
+	rm -f */.coverage */*/.coverage */*/*/.coverage */*/*/*/.coverage */*/*/*/*/.coverage */*/*/*/*/*/.coverage
+	rm -f tests/zipmods.zip
+	rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
+	rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
+	rm -rf doc/_build doc/_spell doc/sample_html_beta
+	rm -rf .tox_kits
+	rm -rf .cache .pytest_cache .hypothesis
+	rm -rf $$TMPDIR/coverage_test
 	-make -C tests/gold/html clean
 
 sterile: clean                          ## Remove all non-controlled content, even if expensive.
-	-rm -rf .tox*
+	rm -rf .tox*
 	-docker image rm -f quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
 
 
