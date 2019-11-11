@@ -68,34 +68,34 @@
 </div>
 
 <div id="source">
-    {# These are the source lines, which are very sensitive to whitespace. -#}
-    {# The `{ # - # }` below are comments which slurp up the following space. -#}
     {% for line in lines -%}
-        <p id="t{{line.number}}" class="{{line.css_class}}">{#-#}
-            <span class="n"><a href="#t{{line.number}}">{{line.number}}</a></span>{#-#}
-            <span class="t">{{line.html}}&nbsp;</span>{#-#}
-            {% if line.context_list -%}
-                <input type="checkbox" id="ctxs{{line.number}}" />{#-#}
-            {% endif -%}
-            {# Things that should float right in the line. -#}
-            <span class="r">{#-#}
-                {% if line.annotate -%}
-                    <span class="annotate short">{{line.annotate}}</span>{#-#}
-                    <span class="annotate long">{{line.annotate_long}}</span>{#-#}
-                {% endif -%}
-                {% if line.contexts -%}
-                    <label for="ctxs{{line.number}}" class="ctx">{{ line.contexts_label }}</label>{#-#}
-                {% endif -%}
-            </span>{#-#}
-            {# Things that should appear below the line. -#}
-            {% if line.context_list -%}
-                <span class="ctxs">{#-#}
-                    {% for context in line.context_list -%}
-                        <span>{{context}}</span>{#-#}
-                    {% endfor -%}
-                </span>{#-#}
-            {% endif -%}
+        {% joined %}
+        <p id="t{{line.number}}" class="{{line.css_class}}">
+            <span class="n"><a href="#t{{line.number}}">{{line.number}}</a></span>
+            <span class="t">{{line.html}}&nbsp;</span>
+            {% if line.context_list %}
+                <input type="checkbox" id="ctxs{{line.number}}" />
+            {% endif %}
+            {# Things that should float right in the line. #}
+            <span class="r">
+                {% if line.annotate %}
+                    <span class="annotate short">{{line.annotate}}</span>
+                    <span class="annotate long">{{line.annotate_long}}</span>
+                {% endif %}
+                {% if line.contexts %}
+                    <label for="ctxs{{line.number}}" class="ctx">{{ line.contexts_label }}</label>
+                {% endif %}
+            </span>
+            {# Things that should appear below the line. #}
+            {% if line.context_list %}
+                <span class="ctxs">
+                    {% for context in line.context_list %}
+                        <span>{{context}}</span>
+                    {% endfor %}
+                </span>
+            {% endif %}
         </p>
+        {% endjoined %}
     {% endfor %}
 </div>
 

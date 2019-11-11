@@ -270,6 +270,24 @@ class TempliteTest(CoverageTest):
             )
         self.try_render("  hello  ", {}, "  hello  ")
 
+    def test_eat_whitespace(self):
+        self.try_render(
+            "Hey!\n"
+            "{% joined %}\n"
+            "@{% for n in nums %}\n"
+            " {% for a in abc %}\n"
+            "  {# this disappears completely #}\n"
+            "  X\n"
+            "  Y\n"
+            "  {{a}}\n"
+            "  {{n }}\n"
+            " {% endfor %}\n"
+            "{% endfor %}!\n"
+            "{% endjoined %}\n",
+            {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
+            "Hey!\n@XYa0XYb0XYc0XYa1XYb1XYc1XYa2XYb2XYc2!\n"
+            )
+
     def test_non_ascii(self):
         self.try_render(
             u"{{where}} ollǝɥ",
