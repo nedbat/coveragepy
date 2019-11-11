@@ -124,13 +124,6 @@ download_appveyor:			## Download the latest Windows artifacts from AppVeyor.
 build_ext:
 	python setup.py build_ext
 
-install:
-	python setup.py install
-
-uninstall:
-	-rm -rf $(PYHOME)/lib/site-packages/coverage*
-	-rm -rf $(PYHOME)/scripts/coverage*
-
 # Documentation
 
 SPHINXOPTS = -aE
