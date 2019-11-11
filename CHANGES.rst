@@ -177,6 +177,8 @@ Version 5.0a6 --- 2019-07-16
 Version 5.0a5 --- 2019-05-07
 ----------------------------
 
+- Drop support for Python 3.4
+
 - Dynamic contexts can now be set two new ways, both thanks to Justas
   Sadzevičius.
 
