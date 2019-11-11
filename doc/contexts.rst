@@ -55,6 +55,10 @@ There are three ways to enable dynamic contexts:
 
 * another tool (such as a test runner) can call the
   :meth:`.Coverage.switch_context` method to set the context explicitly.
+  The pytest plugin `pytest-cov`_ has a ``--cov-context`` option that uses this
+  to set the dynamic context for each test.
+
+.. _pytest-cov: https://pypi.org/project/pytest-cov/
 
 The ``[run] dynamic_context`` setting has only one option now.  Set it to
 ``test_function`` to start a new dynamic context for every test function::
