@@ -132,6 +132,7 @@ def register_sqlite_functions(connection):
     * :func:`numbits_intersection`
     * :func:`numbits_any_intersection`
     * :func:`num_in_numbits`
+    * :func:`numbits_to_nums`
 
     `connection` is a :class:`sqlite3.Connection <python:sqlite3.Connection>`
     object.  After creating the connection, pass it to this function to
