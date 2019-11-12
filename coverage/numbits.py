@@ -13,6 +13,7 @@ in the blobs should be considered an implementation detail that might change in
 the future.  Use these functions to work with those binary blobs of data.
 
 """
+import json
 
 from coverage import env
 from coverage.backward import byte_to_int, bytes_to_ints, binary_bytes, zip_longest
@@ -154,3 +155,4 @@ def register_sqlite_functions(connection):
     connection.create_function("numbits_intersection", 2, numbits_intersection)
     connection.create_function("numbits_any_intersection", 2, numbits_any_intersection)
     connection.create_function("num_in_numbits", 2, num_in_numbits)
+    connection.create_function("numbits_to_nums", 1, lambda b: json.dumps(numbits_to_nums(b)))

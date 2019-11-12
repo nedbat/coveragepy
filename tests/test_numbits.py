@@ -3,6 +3,7 @@
 
 """Tests for coverage.numbits"""
 
+import json
 import sqlite3
 
 from hypothesis import example, given, settings
@@ -156,3 +157,7 @@ class NumbitsSqliteFunctionTest(CoverageTest):
         res = self.cursor.execute("select id, num_in_numbits(12, numbits) from data order by id")
         answer = [is_in for (id, is_in) in res]
         self.assertEqual([1, 1, 1, 1, 0, 1, 0, 0, 0, 0], answer)
+
+    def test_numbits_to_nums(self):
+        res = self.cursor.execute("select numbits_to_nums(?)", [nums_to_numbits([1, 2, 3])])
+        self.assertEqual([1, 2, 3], json.loads(res.fetchone()[0]))
