@@ -24,7 +24,9 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- The :func:`.coverage.numbits.register_sqlite_functions` function now also
+  registers `numbits_to_nums` for use in SQLite queries.  Thanks, Simon
+  Willison.
 
 
 .. _changes_50b1:

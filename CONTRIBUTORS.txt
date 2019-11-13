@@ -109,6 +109,7 @@ Roy Williams
 Sandra Martocchia
 Scott Belden
 Sigve Tjora
+Simon Willison
 Stan Hu
 Stefan Behnel
 Stephan Richter
