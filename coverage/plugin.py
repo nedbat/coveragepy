@@ -57,6 +57,8 @@ attributes whose names start with ``_coverage_``.  Don't be startled.
     your importable Python package.
 
 
+.. _file_tracer_plugins:
+
 File Tracers
 ============
 
@@ -69,6 +71,8 @@ In your ``coverage_init`` function, use the ``add_file_tracer`` method to
 register your file tracer.
 
 
+.. _configurer_plugins:
+
 Configurers
 ===========
 
@@ -80,6 +84,7 @@ change the configuration.
 
 In your ``coverage_init`` function, use the ``add_configurer`` method to
 register your configurer.
+
 
 .. _dynamic_context_plugins:
 
@@ -121,13 +126,14 @@ class CoveragePlugin(object):
 
         Every Python source file is offered to your plug-in to give it a chance
         to take responsibility for tracing the file.  If your plug-in can
-        handle the file, then return a :class:`FileTracer` object.  Otherwise
-        return None.
+        handle the file, it should return a :class:`FileTracer` object.
+        Otherwise return None.
 
         There is no way to register your plug-in for particular files.
-        Instead, this method is invoked for all files, and the plug-in decides
-        whether it can trace the file or not.  Be prepared for `filename` to
-        refer to all kinds of files that have nothing to do with your plug-in.
+        Instead, this method is invoked for all  files as they are executed,
+        and the plug-in decides whether it can trace the file or not.
+        Be prepared for `filename` to refer to all kinds of files that have
+        nothing to do with your plug-in.
 
         The file name will be a Python file being executed.  There are two
         broad categories of behavior for a plug-in, depending on the kind of
