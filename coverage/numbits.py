@@ -63,6 +63,10 @@ def numbits_to_nums(numbits):
 
     Returns:
         A list of ints.
+
+    When registered as a SQLite function by :func:`register_sqlite_functions`,
+    this returns a string, a JSON-encoded list of ints.
+
     """
     nums = []
     for byte_i, byte in enumerate(bytes_to_ints(numbits)):
