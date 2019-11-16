@@ -73,22 +73,25 @@ Getting started is easy:
     or by using "pip install coverage".  For a few more details, see
     :ref:`install`.
 
-#.  Use ``coverage run`` to run your program and gather data:
-
-    .. code-block:: console
+#.  Use ``coverage run`` to run your test suite and gather data. However you
+    normally run your test suite, replace the initial word "python" with
+    "coverage run"::
 
         # if you usually do:
         #
-        #   $ python my_program.py arg1 arg2
+        #   $ python -m pytest arg1 arg2
         #
         # then instead do:
 
-        $ coverage run my_program.py arg1 arg2
-        blah blah ..your program's output.. blah blah
+        $ coverage run -m pytest arg1 arg2
+        blah blah ..your tests' output.. blah blah
 
-#.  Use ``coverage report`` to report on the results:
+    To limit coverage measurement to code in the current directory, and also
+    find files that weren't executed at all, use::
 
-    .. code-block:: console
+        $ coverage run --source=. -m pytest
+
+#.  Use ``coverage report`` to report on the results::
 
         $ coverage report -m
         Name                      Stmts   Miss  Cover   Missing
@@ -99,9 +102,7 @@ Getting started is easy:
         TOTAL                        76     10    87%
 
 #.  For a nicer presentation, use ``coverage html`` to get annotated HTML
-    listings detailing missed lines:
-
-    .. code-block:: console
+    listings detailing missed lines::
 
         $ coverage html
 

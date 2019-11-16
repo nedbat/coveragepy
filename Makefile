@@ -141,8 +141,9 @@ docreqs:
 dochtml: docreqs			## Build the docs HTML output.
 	.tox/doc/bin/python doc/check_copied_from.py doc/*.rst
 	$(SPHINXBUILD) -b html doc doc/_build/html
-	@echo "This might be useful:"
-	@echo "open doc/_build/html/index.html"
+
+docopen: dochtml
+	open doc/_build/html/index.html
 
 docspell: docreqs
 	$(SPHINXBUILD) -b spelling doc doc/_spell
