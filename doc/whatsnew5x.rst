@@ -75,6 +75,11 @@ New Features
 - You can specify the command line to run your program with the ``[run]
   command_line`` configuration setting, as requested in :github:`695`.
 
+- An experimental ``[run] relative_files`` setting tells coverage to store
+  relative file names in the data file. This makes it easier to run tests in
+  one (or many) environments, and then report in another.  It has not had much
+  real-world testing, so it may change in incompatible ways in the future.
+
 - Environment variable substitution in configuration files now supports two
   syntaxes for controlling the behavior of undefined variables: if ``VARNAME``
   is not defined, ``${VARNAME?}`` will raise an error, and ``${VARNAME-default

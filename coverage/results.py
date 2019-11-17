@@ -13,10 +13,10 @@ from coverage.misc import contract, CoverageException, nice_pair
 class Analysis(object):
     """The results of analyzing a FileReporter."""
 
-    def __init__(self, data, file_reporter):
+    def __init__(self, data, file_reporter, file_mapper):
         self.data = data
         self.file_reporter = file_reporter
-        self.filename = self.file_reporter.filename
+        self.filename = file_mapper(self.file_reporter.filename)
         self.statements = self.file_reporter.lines()
         self.excluded = self.file_reporter.excluded_lines()
 

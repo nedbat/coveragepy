@@ -10,7 +10,6 @@ from coverage import env
 from coverage.backward import litems, range     # pylint: disable=redefined-builtin
 from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
-from coverage.files import abs_file
 from coverage.misc import CoverageException, isolate_module
 from coverage.pytracer import PyTracer
 
@@ -59,7 +58,7 @@ class Collector(object):
     SUPPORTED_CONCURRENCIES = set(["greenlet", "eventlet", "gevent", "thread"])
 
     def __init__(
-        self, should_trace, check_include, should_start_context,
+        self, should_trace, check_include, should_start_context, file_mapper,
         timid, branch, warn, concurrency,
     ):
         """Create a collector.
@@ -74,6 +73,10 @@ class Collector(object):
         string. If the frame should be the start of a new context, the string
         is the new context. If the frame should not be the start of a new
         context, return None.
+
+        `file_mapper` is a function taking a filename, and returning a Unicode
+        filename.  The result is the name that will be recorded in the data
+        file.
 
         If `timid` is true, then a slower simpler trace function will be
         used.  This is important for some environments where manipulation of
@@ -97,6 +100,7 @@ class Collector(object):
         self.should_trace = should_trace
         self.check_include = check_include
         self.should_start_context = should_start_context
+        self.file_mapper = file_mapper
         self.warn = warn
         self.branch = branch
         self.threading = None
@@ -107,7 +111,7 @@ class Collector(object):
         self.origin = short_stack()
 
         self.concur_id_func = None
-        self.abs_file_cache = {}
+        self.mapped_file_cache = {}
 
         # We can handle a few concurrency options here, but only one at a time.
         these_concurrencies = self.SUPPORTED_CONCURRENCIES.intersection(concurrency)
@@ -381,16 +385,16 @@ class Collector(object):
             context = new_context
         self.covdata.set_context(context)
 
-    def cached_abs_file(self, filename):
-        """A locally cached version of `abs_file`."""
+    def cached_mapped_file(self, filename):
+        """A locally cached version of file names mapped through file_mapper."""
         key = (type(filename), filename)
         try:
-            return self.abs_file_cache[key]
+            return self.mapped_file_cache[key]
         except KeyError:
-            return self.abs_file_cache.setdefault(key, abs_file(filename))
+            return self.mapped_file_cache.setdefault(key, self.file_mapper(filename))
 
-    def abs_file_dict(self, d):
-        """Return a dict like d, but with keys modified by `abs_file`."""
+    def mapped_file_dict(self, d):
+        """Return a dict like d, but with keys modified by file_mapper."""
         # The call to litems() ensures that the GIL protects the dictionary
         # iterator against concurrent modifications by tracers running
         # in other threads. We try three times in case of concurrent
@@ -406,7 +410,7 @@ class Collector(object):
         else:
             raise runtime_err
 
-        return dict((self.cached_abs_file(k), v) for k, v in items if v)
+        return dict((self.cached_mapped_file(k), v) for k, v in items if v)
 
     def flush_data(self):
         """Save the collected data to our associated `CoverageData`.
@@ -420,10 +424,10 @@ class Collector(object):
             return False
 
         if self.branch:
-            self.covdata.add_arcs(self.abs_file_dict(self.data))
+            self.covdata.add_arcs(self.mapped_file_dict(self.data))
         else:
-            self.covdata.add_lines(self.abs_file_dict(self.data))
-        self.covdata.add_file_tracers(self.abs_file_dict(self.file_tracers))
+            self.covdata.add_lines(self.mapped_file_dict(self.data))
+        self.covdata.add_file_tracers(self.mapped_file_dict(self.file_tracers))
 
         self._clear_data()
         return True

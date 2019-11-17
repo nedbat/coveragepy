@@ -188,6 +188,15 @@ many processes.  See :ref:`cmd_combining` for more information.
 ``plugins`` (multi-string): a list of plugin package names. See :ref:`plugins`
 for more information.
 
+.. _config_run_relative_files:
+
+``relative_files`` (boolean, default False): *Experimental*: store relative
+file paths in the data file.  This makes it easier to measure code in one (or
+multiple) environments, and then report in another. See :ref:`cmd_combining`
+for details.
+
+.. versionadded:: 5.0
+
 .. _config_run_source:
 
 ``source`` (multi-string): a list of packages or directories, the source to

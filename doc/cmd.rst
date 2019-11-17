@@ -270,8 +270,11 @@ different subdirectory.  Coverage needs to know that different file paths are
 actually the same source file for reporting purposes.
 
 You can tell coverage.py how different source locations relate with a
-``[paths]`` section in your configuration file.  See :ref:`config_paths` for
-details.
+``[paths]`` section in your configuration file (see :ref:`config_paths`).
+It might be more convenient to use the ``[run] relative_files``
+setting to store relative file paths (see :ref:`relative_files
+<config_run_relative_files>`).
+
 
 If any of the data files can't be read, coverage.py will print a warning
 indicating the file and the problem.

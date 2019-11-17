@@ -190,9 +190,10 @@ class CoverageConfig(object):
         self.note = None
         self.parallel = False
         self.plugins = []
-        self.source = None
+        self.relative_files = False
         self.run_include = None
         self.run_omit = None
+        self.source = None
         self.timid = False
 
         # Defaults for [report]
@@ -353,6 +354,7 @@ class CoverageConfig(object):
         ('note', 'run:note'),
         ('parallel', 'run:parallel', 'boolean'),
         ('plugins', 'run:plugins', 'list'),
+        ('relative_files', 'run:relative_files', 'boolean'),
         ('run_include', 'run:include', 'list'),
         ('run_omit', 'run:omit', 'list'),
         ('source', 'run:source', 'list'),

@@ -24,6 +24,11 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
+- An experimental ``[run] relative_files`` setting tells coverage to store
+  relative file names in the data file. This makes it easier to run tests in
+  one (or many) environments, and then report in another.  It has not had much
+  real-world testing, so it may change in incompatible ways in the future.
+
 - Python files run with ``-m`` now have ``__spec__`` defined properly.  This
   fixes `issue 745`_ (about not being able to run unittest tests that spawn
   subprocesses), and `issue 838`_, which described the problem directly.

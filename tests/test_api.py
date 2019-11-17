@@ -4,15 +4,21 @@
 """Tests for coverage.py's API."""
 
 import fnmatch
+import glob
 import os
 import os.path
+import re
+import shutil
 import sys
 import textwrap
+
+from unittest_mixins import change_dir
 
 import coverage
 from coverage import env
 from coverage.backward import StringIO, import_local_file
 from coverage.data import line_counts
+from coverage.files import abs_file
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest, CoverageTestMethodsMixin, TESTS_DIR, UsingModulesMixin
@@ -940,3 +946,88 @@ class ImmutableConfigTest(CoverageTest):
         self.assertEqual(cov.get_option("report:show_missing"), False)
         cov.report(show_missing=True)
         self.assertEqual(cov.get_option("report:show_missing"), False)
+
+
+class RelativePathTest(CoverageTest):
+    """Tests of the relative_files setting."""
+    def test_moving_stuff(self):
+        # When using absolute file names, moving the source around results in
+        # "No source for code" errors while reporting.
+        self.make_file("foo.py", "a = 1")
+        cov = coverage.Coverage(source=["."])
+        self.start_import_stop(cov, "foo")
+        res = cov.report()
+        assert res == 100
+
+        expected = re.escape("No source for code: '{}'.".format(abs_file("foo.py")))
+        os.remove("foo.py")
+        self.make_file("new/foo.py", "a = 1")
+        shutil.move(".coverage", "new/.coverage")
+        with change_dir("new"):
+            cov = coverage.Coverage()
+            cov.load()
+            with self.assertRaisesRegex(CoverageException, expected):
+                cov.report()
+
+    def test_moving_stuff_with_relative(self):
+        # When using relative file names, moving the source around is fine.
+        self.make_file("foo.py", "a = 1")
+        self.make_file(".coveragerc", """\
+            [run]
+            relative_files = true
+            """)
+        cov = coverage.Coverage(source=["."])
+        self.start_import_stop(cov, "foo")
+        res = cov.report()
+        assert res == 100
+
+        os.remove("foo.py")
+        self.make_file("new/foo.py", "a = 1")
+        shutil.move(".coverage", "new/.coverage")
+        shutil.move(".coveragerc", "new/.coveragerc")
+        with change_dir("new"):
+            cov = coverage.Coverage()
+            cov.load()
+            res = cov.report()
+            assert res == 100
+
+    def test_combine_relative(self):
+        self.make_file("dir1/foo.py", "a = 1")
+        self.make_file("dir1/.coveragerc", """\
+            [run]
+            relative_files = true
+            """)
+        with change_dir("dir1"):
+            cov = coverage.Coverage(source=["."], data_suffix=True)
+            self.start_import_stop(cov, "foo")
+            cov.save()
+            shutil.move(glob.glob(".coverage.*")[0], "..")
+
+        self.make_file("dir2/bar.py", "a = 1")
+        self.make_file("dir2/.coveragerc", """\
+            [run]
+            relative_files = true
+            """)
+        with change_dir("dir2"):
+            cov = coverage.Coverage(source=["."], data_suffix=True)
+            self.start_import_stop(cov, "bar")
+            cov.save()
+            shutil.move(glob.glob(".coverage.*")[0], "..")
+
+        self.make_file(".coveragerc", """\
+            [run]
+            relative_files = true
+            """)
+        cov = coverage.Coverage()
+        cov.combine()
+        cov.save()
+
+        self.make_file("foo.py", "a = 1")
+        self.make_file("bar.py", "a = 1")
+
+        cov = coverage.Coverage()
+        cov.load()
+        files = cov.get_data().measured_files()
+        assert files == {'foo.py', 'bar.py'}
+        res = cov.report()
+        assert res == 100

@@ -20,7 +20,7 @@ from coverage.context import should_start_context_test_function, combine_context
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import DebugControl, write_formatted_info
 from coverage.disposition import disposition_debug_msg
-from coverage.files import PathAliases, set_relative_directory, abs_file
+from coverage.files import PathAliases, abs_file, relative_filename, set_relative_directory
 from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
 from coverage.jsonreport import JsonReporter
@@ -198,6 +198,7 @@ class Coverage(object):
         self._data_suffix = self._run_suffix = None
         self._exclude_re = None
         self._debug = None
+        self._file_mapper = None
 
         # State machine variables:
         # Have we initialized everything?
@@ -238,6 +239,7 @@ class Coverage(object):
         self._exclude_re = {}
 
         set_relative_directory()
+        self._file_mapper = relative_filename if self.config.relative_files else abs_file
 
         # Load plugins
         self._plugins = Plugins.load_plugins(self.config.plugins, self.config, self._debug)
@@ -405,6 +407,7 @@ class Coverage(object):
             should_trace=self._should_trace,
             check_include=self._check_include_omit_etc,
             should_start_context=should_start_context,
+            file_mapper=self._file_mapper,
             timid=self.config.timid,
             branch=self.config.branch,
             warn=self._warn,
@@ -671,6 +674,7 @@ class Coverage(object):
         # mark completely unexecuted files as 0% covered.
         if self._data:
             for file_path, plugin_name in self._inorout.find_possibly_unexecuted_files():
+                file_path = self._file_mapper(file_path)
                 self._data.touch_file(file_path, plugin_name)
 
         if self.config.note:
@@ -723,7 +727,7 @@ class Coverage(object):
         if not isinstance(it, FileReporter):
             it = self._get_file_reporter(it)
 
-        return Analysis(data, it)
+        return Analysis(data, it, self._file_mapper)
 
     def _get_file_reporter(self, morf):
         """Get a FileReporter for a module or file name."""
@@ -731,13 +735,13 @@ class Coverage(object):
         file_reporter = "python"
 
         if isinstance(morf, string_class):
-            abs_morf = abs_file(morf)
-            plugin_name = self._data.file_tracer(abs_morf)
+            mapped_morf = self._file_mapper(morf)
+            plugin_name = self._data.file_tracer(mapped_morf)
             if plugin_name:
                 plugin = self._plugins.get(plugin_name)
 
                 if plugin:
-                    file_reporter = plugin.file_reporter(abs_morf)
+                    file_reporter = plugin.file_reporter(mapped_morf)
                     if file_reporter is None:
                         raise CoverageException(
                             "Plugin %r did not provide a file reporter for %r." % (
