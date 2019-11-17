@@ -12,8 +12,6 @@ import re
 import sys
 import xml.etree.ElementTree
 
-from unittest_mixins import change_dir    # pylint: disable=unused-import
-
 from coverage import env
 
 from tests.coveragetest import TESTS_DIR

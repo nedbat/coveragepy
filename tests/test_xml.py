@@ -9,12 +9,14 @@ import os.path
 import re
 from xml.etree import ElementTree
 
+from unittest_mixins import change_dir
+
 import coverage
 from coverage.backward import import_local_file
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
-from tests.goldtest import change_dir, compare, gold_path
+from tests.goldtest import compare, gold_path
 
 
 class XmlTestHelpers(CoverageTest):

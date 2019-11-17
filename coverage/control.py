@@ -736,14 +736,14 @@ class Coverage(object):
             if plugin_name:
                 plugin = self._plugins.get(plugin_name)
 
-        if plugin:
-            file_reporter = plugin.file_reporter(abs_morf)
-            if file_reporter is None:
-                raise CoverageException(
-                    "Plugin %r did not provide a file reporter for %r." % (
-                        plugin._coverage_plugin_name, morf
-                    )
-                )
+                if plugin:
+                    file_reporter = plugin.file_reporter(abs_morf)
+                    if file_reporter is None:
+                        raise CoverageException(
+                            "Plugin %r did not provide a file reporter for %r." % (
+                                plugin._coverage_plugin_name, morf
+                            )
+                        )
 
         if file_reporter == "python":
             file_reporter = PythonFileReporter(morf, self)

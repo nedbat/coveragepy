@@ -389,6 +389,25 @@ class Collector(object):
         except KeyError:
             return self.abs_file_cache.setdefault(key, abs_file(filename))
 
+    def abs_file_dict(self, d):
+        """Return a dict like d, but with keys modified by `abs_file`."""
+        # The call to litems() ensures that the GIL protects the dictionary
+        # iterator against concurrent modifications by tracers running
+        # in other threads. We try three times in case of concurrent
+        # access, hoping to get a clean copy.
+        runtime_err = None
+        for _ in range(3):
+            try:
+                items = litems(d)
+            except RuntimeError as ex:
+                runtime_err = ex
+            else:
+                break
+        else:
+            raise runtime_err
+
+        return dict((self.cached_abs_file(k), v) for k, v in items if v)
+
     def flush_data(self):
         """Save the collected data to our associated `CoverageData`.
 
@@ -400,30 +419,11 @@ class Collector(object):
         if not self._activity():
             return False
 
-        def abs_file_dict(d):
-            """Return a dict like d, but with keys modified by `abs_file`."""
-            # The call to litems() ensures that the GIL protects the dictionary
-            # iterator against concurrent modifications by tracers running
-            # in other threads. We try three times in case of concurrent
-            # access, hoping to get a clean copy.
-            runtime_err = None
-            for _ in range(3):
-                try:
-                    items = litems(d)
-                except RuntimeError as ex:
-                    runtime_err = ex
-                else:
-                    break
-            else:
-                raise runtime_err
-
-            return dict((self.cached_abs_file(k), v) for k, v in items if v)
-
         if self.branch:
-            self.covdata.add_arcs(abs_file_dict(self.data))
+            self.covdata.add_arcs(self.abs_file_dict(self.data))
         else:
-            self.covdata.add_lines(abs_file_dict(self.data))
-        self.covdata.add_file_tracers(abs_file_dict(self.file_tracers))
+            self.covdata.add_lines(self.abs_file_dict(self.data))
+        self.covdata.add_file_tracers(self.abs_file_dict(self.file_tracers))
 
         self._clear_data()
         return True
