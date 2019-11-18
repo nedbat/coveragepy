@@ -83,7 +83,7 @@
     - coverage/version.py
         - increment version number
         - IF NOT PRE-RELEASE:
-            - set to alpha-0 if just released
+            - set to alpha-0 if just released.
     - CHANGES.rst
         - add an "Unreleased" section to the top.
 - push git changes
