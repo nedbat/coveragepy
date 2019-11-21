@@ -17,8 +17,7 @@ environment:
   PYTEST_ADDOPTS: "-n 0"
 
   # Note: There is logic to install Python version $PYTHON_VERSION if the
-  # $PYTHON directory doesn't exist.  Last I tried (Oct 2018), that installation
-  # failed, and I don't know why. $PYTHON_VERSION is visible in the job
+  # $PYTHON directory doesn't exist.  $PYTHON_VERSION is visible in the job
   # descriptions, but can be wrong in the minor version, since we use the
   # version pre-installed on AppVeyor.
   matrix:
@@ -80,6 +79,18 @@ environment:
       TOXENV: "py38"
       PYTHON: "C:\\Python38-x64"
       PYTHON_VERSION: "3.8.0"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.9 32-bit"
+      TOXENV: "py39"
+      PYTHON: "C:\\Python39"
+      PYTHON_VERSION: "3.9.0a1"
+      PYTHON_ARCH: "32"
+
+    - JOB: "3.9 64-bit"
+      TOXENV: "py39"
+      PYTHON: "C:\\Python39-x64"
+      PYTHON_VERSION: "3.9.0a1"
       PYTHON_ARCH: "64"
 
     # Meta coverage

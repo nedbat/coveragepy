@@ -2,6 +2,6 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 # The version of tox used by coverage.py
-tox==3.14.0
+tox==3.14.1
 # Adds env recreation on requirements file changes.
 tox-battery==0.5.1
