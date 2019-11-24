@@ -33,8 +33,8 @@ if importlib_util_find_spec:
     def find_module(modulename):
         """Find the module named `modulename`.
 
-        Returns the file path of the module, and the name of the enclosing
-        package.
+        Returns the file path of the module, the name of the enclosing
+        package, and the spec.
         """
         try:
             spec = importlib_util_find_spec(modulename)
@@ -44,7 +44,7 @@ if importlib_util_find_spec:
             raise NoSource("No module named %r" % (modulename,))
         pathname = spec.origin
         packagename = spec.name
-        if pathname.endswith("__init__.py") and not modulename.endswith("__init__"):
+        if spec.submodule_search_locations:
             mod_main = modulename + ".__main__"
             spec = importlib_util_find_spec(mod_main)
             if not spec:
@@ -56,13 +56,13 @@ if importlib_util_find_spec:
             pathname = spec.origin
             packagename = spec.name
         packagename = packagename.rpartition(".")[0]
-        return pathname, packagename
+        return pathname, packagename, spec
 else:
     def find_module(modulename):
         """Find the module named `modulename`.
 
-        Returns the file path of the module, and the name of the enclosing
-        package.
+        Returns the file path of the module, the name of the enclosing
+        package, and None (where a spec would have been).
         """
         openfile = None
         glo, loc = globals(), locals()
@@ -98,7 +98,7 @@ else:
             if openfile:
                 openfile.close()
 
-        return pathname, packagename
+        return pathname, packagename, None
 
 
 class PyRunner(object):
@@ -112,7 +112,7 @@ class PyRunner(object):
         self.as_module = as_module
 
         self.arg0 = args[0]
-        self.package = self.modulename = self.pathname = None
+        self.package = self.modulename = self.pathname = self.loader = self.spec = None
 
     def prepare(self):
         """Do initial preparation to run Python code.
@@ -131,7 +131,10 @@ class PyRunner(object):
             sys.path[0] = path0
             should_update_sys_path = False
             self.modulename = self.arg0
-            pathname, self.package = find_module(self.modulename)
+            pathname, self.package, self.spec = find_module(self.modulename)
+            if self.spec is not None:
+                self.modulename = self.spec.name
+            self.loader = DummyLoader(self.modulename)
             self.pathname = os.path.abspath(pathname)
             self.args[0] = self.arg0 = self.pathname
         elif os.path.isdir(self.arg0):
@@ -145,10 +148,26 @@ class PyRunner(object):
                     break
             else:
                 raise NoSource("Can't find '__main__' module in '%s'" % self.arg0)
+
+            if env.PY2:
+                self.arg0 = os.path.abspath(self.arg0)
+
+            # Make a spec. I don't know if this is the right way to do it.
+            try:
+                import importlib.machinery
+            except ImportError:
+                pass
+            else:
+                self.spec = importlib.machinery.ModuleSpec("__main__", None, origin=try_filename)
+                self.spec.has_location = True
+            self.package = ""
+            self.loader = DummyLoader("__main__")
         else:
             path0 = os.path.abspath(os.path.dirname(self.arg0))
+            if env.PY3:
+                self.loader = DummyLoader("__main__")
 
-        if self.modulename is None and env.PYVERSION >= (3, 3):
+        if self.modulename is None:
             self.modulename = '__main__'
 
         if should_update_sys_path:
@@ -167,21 +186,27 @@ class PyRunner(object):
 
         # Create a module to serve as __main__
         main_mod = types.ModuleType('__main__')
-        sys.modules['__main__'] = main_mod
+
+        from_pyc = self.arg0.endswith((".pyc", ".pyo"))
         main_mod.__file__ = self.arg0
-        if self.package:
+        if from_pyc:
+            main_mod.__file__ = main_mod.__file__[:-1]
+        if self.package is not None:
             main_mod.__package__ = self.package
-        if self.modulename:
-            main_mod.__loader__ = DummyLoader(self.modulename)
+        main_mod.__loader__ = self.loader
+        if self.spec is not None:
+            main_mod.__spec__ = self.spec
 
         main_mod.__builtins__ = BUILTINS
+
+        sys.modules['__main__'] = main_mod
 
         # Set sys.argv properly.
         sys.argv = self.args
 
         try:
             # Make a code object somehow.
-            if self.arg0.endswith((".pyc", ".pyo")):
+            if from_pyc:
                 code = make_code_from_pyc(self.arg0)
             else:
                 code = make_code_from_py(self.arg0)

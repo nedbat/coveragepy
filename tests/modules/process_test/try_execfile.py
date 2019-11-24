@@ -66,7 +66,7 @@ def my_function(a):
 FN_VAL = my_function("fooey")
 
 loader = globals().get('__loader__')
-fullname = getattr(loader, 'fullname', None) or getattr(loader, 'name', None)
+spec = globals().get('__spec__')
 
 # A more compact ad-hoc grouped-by-first-letter list of builtins.
 CLUMPS = "ABC,DEF,GHI,JKLMN,OPQR,ST,U,VWXYZ_,ab,cd,efg,hij,lmno,pqr,stuvwxyz".split(",")
@@ -88,8 +88,8 @@ globals_to_check = {
     '__builtins__.has_open': hasattr(__builtins__, 'open'),
     '__builtins__.dir': builtin_dir,
     '__loader__ exists': loader is not None,
-    '__loader__.fullname': fullname,
     '__package__': __package__,
+    '__spec__ exists': spec is not None,
     'DATA': DATA,
     'FN_VAL': FN_VAL,
     '__main__.DATA': getattr(__main__, "DATA", "nothing"),
@@ -97,5 +97,16 @@ globals_to_check = {
     'argv1-n': sys.argv[1:],
     'path': cleaned_sys_path,
 }
+
+if loader is not None:
+    globals_to_check.update({
+        '__loader__.fullname': getattr(loader, 'fullname', None) or getattr(loader, 'name', None)
+    })
+
+if spec is not None:
+    globals_to_check.update({
+        '__spec__.' + aname: getattr(spec, aname)
+        for aname in ['name', 'origin', 'submodule_search_locations', 'parent', 'has_location']
+    })
 
 print(json.dumps(globals_to_check, indent=4, sort_keys=True))

@@ -24,9 +24,16 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
+- Python files run with ``-m`` now have ``__spec__`` defined properly.  This
+  fixes `issue 745`_ (about not being able to run unittest tests that spawn
+  subprocesses), and `issue 838`_, which described the problem directly.
+
 - The :func:`.coverage.numbits.register_sqlite_functions` function now also
   registers `numbits_to_nums` for use in SQLite queries.  Thanks, Simon
   Willison.
+
+.. _issue 745: https://github.com/nedbat/coveragepy/issues/745
+.. _issue 838: https://github.com/nedbat/coveragepy/issues/838
 
 
 .. _changes_50b1:

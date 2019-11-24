@@ -866,17 +866,36 @@ class EnvironmentTest(CoverageTest):
         expected = self.run_command("python with_main")
         actual = self.run_command("coverage run with_main")
 
-        # The coverage.py results are not identical to the Python results, and
-        # I don't know why.  For now, ignore those failures. If someone finds
-        # a real problem with the discrepancies, we can work on it some more.
-        ignored = r"__file__|__loader__|__package__"
         # PyPy includes the current directory in the path when running a
         # directory, while CPython and coverage.py do not.  Exclude that from
         # the comparison also...
         if env.PYPY:
-            ignored += "|"+re.escape(os.getcwd())
-        expected = re_lines(expected, ignored, match=False)
-        actual = re_lines(actual, ignored, match=False)
+            ignored = re.escape(os.getcwd())
+            expected = re_lines(expected, ignored, match=False)
+            actual = re_lines(actual, ignored, match=False)
+        self.assert_tryexecfile_output(expected, actual)
+
+    def test_coverage_run_dashm_dir_no_init_is_like_python(self):
+        with open(TRY_EXECFILE) as f:
+            self.make_file("with_main/__main__.py", f.read())
+
+        expected = self.run_command("python -m with_main")
+        actual = self.run_command("coverage run -m with_main")
+        if env.PY2:
+            assert expected.endswith("No module named with_main\n")
+            assert actual.endswith("No module named with_main\n")
+        else:
+            self.assert_tryexecfile_output(expected, actual)
+
+    def test_coverage_run_dashm_dir_with_init_is_like_python(self):
+        if env.PY2:
+            self.skipTest("Python 2 runs __main__ twice, I can't be bothered to make it work.")
+        with open(TRY_EXECFILE) as f:
+            self.make_file("with_main/__main__.py", f.read())
+        self.make_file("with_main/__init__.py", "")
+
+        expected = self.run_command("python -m with_main")
+        actual = self.run_command("coverage run -m with_main")
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_equal_to_doubledashsource(self):
