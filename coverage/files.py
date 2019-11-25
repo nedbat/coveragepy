@@ -172,6 +172,13 @@ def abs_file(filename):
     return path
 
 
+def python_reported_file(filename):
+    """Return the string as Python would describe this file name."""
+    if env.PYBEHAVIOR.report_absolute_files:
+        filename = os.path.abspath(filename)
+    return filename
+
+
 RELATIVE_DIR = None
 CANONICAL_FILENAME_CACHE = None
 set_relative_directory()

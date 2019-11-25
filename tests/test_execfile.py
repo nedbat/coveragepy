@@ -14,6 +14,7 @@ import sys
 from coverage import env
 from coverage.backward import binary_bytes
 from coverage.execfile import run_python_file, run_python_module
+from coverage.files import python_reported_file
 from coverage.misc import NoCode, NoSource
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
@@ -45,7 +46,7 @@ class RunFileTest(CoverageTest):
         self.assertEqual(mod_globs['__main__.DATA'], "xyzzy")
 
         # Argv should have the proper values.
-        self.assertEqual(mod_globs['argv0'], TRY_EXECFILE)
+        self.assertEqual(mod_globs['argv0'], python_reported_file(TRY_EXECFILE))
         self.assertEqual(mod_globs['argv1-n'], ["arg1", "arg2"])
 
         # __builtins__ should have the right values, like open().
@@ -84,7 +85,9 @@ class RunFileTest(CoverageTest):
         self.assertEqual(self.stdout(), "a is 1\n")
 
     def test_no_such_file(self):
-        with self.assertRaisesRegex(NoSource, "No file to run: 'xyzzy.py'"):
+        path = python_reported_file('xyzzy.py')
+        msg = re.escape("No file to run: '{}'".format(path))
+        with self.assertRaisesRegex(NoSource, msg):
             run_python_file(["xyzzy.py"])
 
     def test_directory_with_main(self):
@@ -156,7 +159,9 @@ class RunPycFileTest(CoverageTest):
         os.remove(pycfile)
 
     def test_no_such_pyc_file(self):
-        with self.assertRaisesRegex(NoCode, "No file to run: 'xyzzy.pyc'"):
+        path = python_reported_file('xyzzy.pyc')
+        msg = re.escape("No file to run: '{}'".format(path))
+        with self.assertRaisesRegex(NoCode, msg):
             run_python_file(["xyzzy.pyc"])
 
     def test_running_py_from_binary(self):
@@ -166,8 +171,9 @@ class RunPycFileTest(CoverageTest):
         with open(bf, "wb") as f:
             f.write(b'\x7fELF\x02\x01\x01\x00\x00\x00')
 
+        path = python_reported_file('binary')
         msg = (
-            r"Couldn't run 'binary' as Python code: "
+            re.escape("Couldn't run '{}' as Python code: ".format(path)) +
             r"(TypeError|ValueError): "
             r"("
             r"compile\(\) expected string without null bytes"    # for py2

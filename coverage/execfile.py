@@ -13,6 +13,7 @@ import types
 from coverage import env
 from coverage.backward import BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
+from coverage.files import python_reported_file
 from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
 from coverage.phystokens import compile_unicode
 from coverage.python import get_python_source
@@ -158,6 +159,7 @@ class PyRunner(object):
             except ImportError:
                 pass
             else:
+                try_filename = python_reported_file(try_filename)
                 self.spec = importlib.machinery.ModuleSpec("__main__", None, origin=try_filename)
                 self.spec.has_location = True
             self.package = ""
@@ -166,6 +168,9 @@ class PyRunner(object):
             path0 = os.path.abspath(os.path.dirname(self.arg0))
             if env.PY3:
                 self.loader = DummyLoader("__main__")
+
+        self.args[0] = python_reported_file(self.args[0])
+        self.arg0 = python_reported_file(self.arg0)
 
         if self.modulename is None:
             self.modulename = '__main__'
@@ -179,7 +184,7 @@ class PyRunner(object):
             top_file = inspect.stack()[-1][0].f_code.co_filename
             if os.path.abspath(sys.path[0]) == os.path.abspath(os.path.dirname(top_file)):
                 # Set sys.path correctly.
-                sys.path[0] = path0
+                sys.path[0] = python_reported_file(path0)
 
     def run(self):
         """Run the Python code!"""

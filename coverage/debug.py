@@ -215,6 +215,7 @@ def simplify(v):                                            # pragma: debugging
 
 def pp(v):                                                  # pragma: debugging
     """Debug helper to pretty-print data, including SimpleNamespace objects."""
+    # Might not be needed in 3.9+
     pprint.pprint(simplify(v))
 
 

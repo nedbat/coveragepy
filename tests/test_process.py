@@ -18,6 +18,7 @@ import pytest
 import coverage
 from coverage import env
 from coverage.data import line_counts
+from coverage.files import python_reported_file
 from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest
@@ -472,9 +473,10 @@ class ProcessTest(CoverageTest):
         self.assertMultiLineEqual(out, out2)
 
         # But also make sure that the output is what we expect.
-        self.assertIn('File "throw.py", line 5, in f2', out)
+        path = python_reported_file('throw.py')
+        msg = 'File "{}", line 5,? in f2'.format(re.escape(path))
+        self.assertRegex(out, msg)
         self.assertIn('raise Exception("hey!")', out)
-        self.assertNotIn('coverage', out)
         self.assertEqual(status, 1)
 
     def test_code_exits(self):
@@ -582,9 +584,13 @@ class ProcessTest(CoverageTest):
         out = self.run_command("coverage html")
         self.assertEqual(out.count("Module xyzzy was never imported."), 0)
 
-    def test_warnings_if_never_run(self):
+    def test_warns_if_never_run(self):
+        # Note: the name of the function can't have "warning" in it, or the
+        # absolute path of the file will have "warning" in it, and an assertion
+        # will fail.
         out = self.run_command("coverage run i_dont_exist.py")
-        self.assertIn("No file to run: 'i_dont_exist.py'", out)
+        path = python_reported_file('i_dont_exist.py')
+        self.assertIn("No file to run: '{}'".format(path), out)
         self.assertNotIn("warning", out)
         self.assertNotIn("Exception", out)
 
@@ -1321,12 +1327,13 @@ class YankedDirectoryTest(CoverageTest):
     def test_removing_directory_with_error(self):
         self.make_file("bug806.py", self.BUG_806)
         out = self.run_command("coverage run bug806.py")
+        path = python_reported_file('bug806.py')
         self.assertEqual(out, textwrap.dedent("""\
             Traceback (most recent call last):
-              File "bug806.py", line 8, in <module>
+              File "{}", line 8, in <module>
                 print(sys.argv[1])
             IndexError: list index out of range
-            """))
+            """.format(path)))
 
 
 def possible_pth_dirs():

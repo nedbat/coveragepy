@@ -32,6 +32,8 @@ Unreleased
   registers `numbits_to_nums` for use in SQLite queries.  Thanks, Simon
   Willison.
 
+- Python 3.9a1 is supported.
+
 .. _issue 745: https://github.com/nedbat/coveragepy/issues/745
 .. _issue 838: https://github.com/nedbat/coveragepy/issues/838
 

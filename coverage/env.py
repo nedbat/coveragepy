@@ -78,6 +78,9 @@ class PYBEHAVIOR(object):
     # Are while-true loops optimized into absolute jumps with no loop setup?
     nix_while_true = (PYVERSION >= (3, 8))
 
+    # Python 3.9a1 made sys.argv[0] and other reported files absolute paths.
+    report_absolute_files = (PYVERSION >= (3, 9))
+
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?
