@@ -213,7 +213,7 @@ class PyRunner(object):
         except CoverageException:
             raise
         except Exception as exc:
-            msg = "Couldn't run {filename!r} as Python code: {exc.__class__.__name__}: {exc}"
+            msg = "Couldn't run '{filename}' as Python code: {exc.__class__.__name__}: {exc}"
             raise CoverageException(msg.format(filename=self.arg0, exc=exc))
 
         # Execute the code object.
