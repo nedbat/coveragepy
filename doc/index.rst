@@ -69,9 +69,9 @@ Quick start
 
 Getting started is easy:
 
-#.  Install coverage.py from the `coverage.py page on the Python Package Index`_,
-    or by using "pip install coverage".  For a few more details, see
-    :ref:`install`.
+#.  Install coverage.py in the usual way, with ``pip install coverage``, or
+    from the `coverage.py page on the Python Package Index`_.  For a few more
+    details, see :ref:`install`.
 
 #.  Use ``coverage run`` to run your test suite and gather data. However you
     normally run your test suite, replace the initial word "python" with
