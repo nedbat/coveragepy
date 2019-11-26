@@ -487,11 +487,10 @@ def test_coverage_stop_in_threads():
 
     time.sleep(0.1)                                     # pragma: nested
     cov.stop()                                          # pragma: nested
-    time.sleep(0.1)
+    t.join()
 
     assert has_started_coverage == [t.ident]
     assert has_stopped_coverage == [t.ident]
-    t.join()
 
 
 def test_thread_safe_save_data(tmpdir):
