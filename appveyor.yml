@@ -20,12 +20,16 @@ environment:
   # $PYTHON directory doesn't exist.  $PYTHON_VERSION is visible in the job
   # descriptions, but can be wrong in the minor version, since we use the
   # version pre-installed on AppVeyor.
+  #
+  # 32-bit jobs don't run the tests under the Python tracer, since that should
+  # be exactly the same as 64-bit.
   matrix:
     - JOB: "2.7 32-bit"
       TOXENV: "py27"
       PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.17"
       PYTHON_ARCH: "32"
+      COVERAGE_NO_PYTRACER: "1"
 
     - JOB: "2.7 64-bit"
       TOXENV: "py27"
@@ -38,6 +42,7 @@ environment:
       PYTHON: "C:\\Python35"
       PYTHON_VERSION: "3.5.9"
       PYTHON_ARCH: "32"
+      COVERAGE_NO_PYTRACER: "1"
 
     - JOB: "3.5 64-bit"
       TOXENV: "py35"
@@ -50,6 +55,7 @@ environment:
       PYTHON: "C:\\Python36"
       PYTHON_VERSION: "3.6.9"
       PYTHON_ARCH: "32"
+      COVERAGE_NO_PYTRACER: "1"
 
     - JOB: "3.6 64-bit"
       TOXENV: "py36"
@@ -62,6 +68,7 @@ environment:
       PYTHON: "C:\\Python37"
       PYTHON_VERSION: "3.7.5"
       PYTHON_ARCH: "32"
+      COVERAGE_NO_PYTRACER: "1"
 
     - JOB: "3.7 64-bit"
       TOXENV: "py37"
@@ -74,6 +81,7 @@ environment:
       PYTHON: "C:\\Python38"
       PYTHON_VERSION: "3.8.0"
       PYTHON_ARCH: "32"
+      COVERAGE_NO_PYTRACER: "1"
 
     - JOB: "3.8 64-bit"
       TOXENV: "py38"
@@ -86,6 +94,7 @@ environment:
       PYTHON: "C:\\Python39"
       PYTHON_VERSION: "3.9.0a1"
       PYTHON_ARCH: "32"
+      COVERAGE_NO_PYTRACER: "1"
 
     - JOB: "3.9 64-bit"
       TOXENV: "py39"
