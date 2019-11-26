@@ -12,9 +12,7 @@ environment:
 
   CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\run_with_env.cmd"
 
-  # Parallel pytest gets tangled up with tests that try to create and destroy
-  # .pth files in the shared virtualenv. Disable parallel tests.
-  PYTEST_ADDOPTS: "-n 0"
+  PYTEST_ADDOPTS: "-n auto"
 
   # Note: There is logic to install Python version $PYTHON_VERSION if the
   # $PYTHON directory doesn't exist.  $PYTHON_VERSION is visible in the job

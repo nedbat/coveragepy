@@ -11,6 +11,7 @@ import os.path
 import re
 import sys
 import textwrap
+import time
 from xml.etree import ElementTree
 
 import pytest
@@ -1369,6 +1370,20 @@ WORKER = os.environ.get('PYTEST_XDIST_WORKER', '')
 PTH_DIR = find_writable_pth_directory()
 
 
+def persistent_remove(path):
+    """Remove a file, and retry for a while if you can't."""
+    tries = 100
+    while tries:                                    # pragma: part covered
+        try:
+            os.remove(path)
+        except OSError:
+            tries -= 1
+            time.sleep(.05)
+        else:
+            return
+    raise Exception("Sorry, couldn't remove {!r}".format(path))     # pragma: cant happen
+
+
 class ProcessCoverageMixin(object):
     """Set up a .pth file to coverage-measure all sub-processes."""
 
@@ -1383,7 +1398,7 @@ class ProcessCoverageMixin(object):
             pth.write(pth_contents)
             self.pth_path = pth_path
 
-        self.addCleanup(os.remove, self.pth_path)
+        self.addCleanup(persistent_remove, self.pth_path)
 
 
 class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
