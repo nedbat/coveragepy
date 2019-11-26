@@ -71,6 +71,8 @@ class XmlTestHelpers(CoverageTest):
 class XmlTestHelpersTest(XmlTestHelpers, CoverageTest):
     """Tests of methods in XmlTestHelpers."""
 
+    run_in_temp_dir = False
+
     def test_assert_source(self):
         dom = ElementTree.fromstring("""\
             <doc>

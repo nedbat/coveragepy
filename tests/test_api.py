@@ -604,6 +604,8 @@ class ApiTest(CoverageTest):
 class CurrentInstanceTest(CoverageTest):
     """Tests of Coverage.current()."""
 
+    run_in_temp_dir = False
+
     def assert_current_is_none(self, current):
         """Assert that a current we expect to be None is correct."""
         # During meta-coverage, the None answers will be wrong because the
@@ -662,8 +664,10 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
             cov.report()
 
 
-class OmitIncludeTestsMixin(UsingModulesMixin, CoverageTestMethodsMixin):
+class IncludeOmitTestsMixin(UsingModulesMixin, CoverageTestMethodsMixin):
     """Test methods for coverage methods taking include and omit."""
+
+    run_in_temp_dir = False
 
     def filenames_in(self, summary, filenames):
         """Assert the `filenames` are in the keys of `summary`."""
@@ -718,8 +722,8 @@ class OmitIncludeTestsMixin(UsingModulesMixin, CoverageTestMethodsMixin):
         self.filenames_not_in(result, "p1a p1c p2a p2b")
 
 
-class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
-    """Test using `source`, `omit` and `include` when measuring code."""
+class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
+    """Test using `source`, `include`, and `omit` when measuring code."""
 
     def coverage_usepkgs(self, **kwargs):
         """Run coverage on usepkgs and return the line summary.
@@ -784,7 +788,7 @@ class SourceOmitIncludeTest(OmitIncludeTestsMixin, CoverageTest):
         self.assertEqual(lines['p1c'], 0)
 
 
-class ReportIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
+class ReportIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
     """Tests of the report include/omit functionality."""
 
     def coverage_usepkgs(self, **kwargs):
@@ -798,7 +802,7 @@ class ReportIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
         return report.getvalue()
 
 
-class XmlIncludeOmitTest(OmitIncludeTestsMixin, CoverageTest):
+class XmlIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
     """Tests of the XML include/omit functionality.
 
     This also takes care of the HTML and annotate include/omit, by virtue
