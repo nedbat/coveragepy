@@ -159,9 +159,8 @@ else:
 
 
 @contract(returns='unicode')
-def abs_file(filename):
-    """Return the absolute normalized form of `filename`."""
-    path = os.path.expandvars(os.path.expanduser(filename))
+def abs_file(path):
+    """Return the absolute normalized form of `path`."""
     try:
         path = os.path.realpath(path)
     except UnicodeError:

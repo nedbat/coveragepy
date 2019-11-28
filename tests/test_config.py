@@ -275,6 +275,11 @@ class ConfigTest(CoverageTest):
             exclude_lines =
                 ~/data.file
                 ~joe/html_dir
+
+            [paths]
+            mapping =
+                ~/src
+                ~joe/source
             """)
         def expanduser(s):
             """Fake tilde expansion"""
@@ -288,6 +293,7 @@ class ConfigTest(CoverageTest):
         self.assertEqual(cov.config.html_dir, "/Users/joe/html_dir")
         self.assertEqual(cov.config.xml_output, "/Users/me/somewhere/xml.out")
         self.assertEqual(cov.config.exclude_list, ["~/data.file", "~joe/html_dir"])
+        self.assertEqual(cov.config.paths, {'mapping': ['/Users/me/src', '/Users/joe/source']})
 
     def test_tilde_in_toml_config(self):
         # Config entries that are file paths can be tilde-expanded.

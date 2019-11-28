@@ -534,5 +534,6 @@ def read_coverage_config(config_file, **kwargs):
     config.data_file = os.path.expanduser(config.data_file)
     config.html_dir = os.path.expanduser(config.html_dir)
     config.xml_output = os.path.expanduser(config.xml_output)
+    config.paths = {k: [os.path.expanduser(f) for f in v] for k, v in config.paths.items()}
 
     return config
