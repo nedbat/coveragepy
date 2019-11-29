@@ -431,13 +431,6 @@ class CoverageTest(
         pypath += testmods + os.pathsep + zipfile
         self.set_environ(pythonpath_name, pypath)
 
-        # There are environment variables that we set when we are running the
-        # coverage test suite under coverage.  We don't want these environment
-        # variables to leak into subprocesses we start for a test. Delete them
-        # before running the subprocess command.
-        self.del_environ("COVERAGE_COVERAGE")
-        self.del_environ("COVERAGE_PROCESS_START")
-
         self.last_command_status, self.last_command_output = run_command(cmd)
         print(self.last_command_output)
         return self.last_command_status, self.last_command_output

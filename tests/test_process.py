@@ -605,6 +605,9 @@ class ProcessTest(CoverageTest):
 
     def test_warnings_trace_function_changed_with_threads(self):
         # https://bitbucket.org/ned/coveragepy/issue/164
+        if env.METACOV:
+            self.skipTest("Can't test tracers changing during metacoverage")
+
         self.make_file("bug164.py", """\
             import threading
             import time
