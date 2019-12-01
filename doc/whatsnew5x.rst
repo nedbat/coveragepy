@@ -114,6 +114,10 @@ Bugs Fixed
   skipped if sys.path[0] is already different than Python's default.  This
   fixes :github:`715`.
 
+- Python files run with ``-m`` now have ``__spec__`` defined properly.  This
+  fixes :github:`745` (about not being able to run unittest tests that spawn
+  subprocesses), and :github:`838`, which described the problem directly.
+
 - Coverage will create directories as needed for the data file if they don't
   exist, closing :github:`721`.
 
