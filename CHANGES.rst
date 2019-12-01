@@ -33,12 +33,17 @@ Unreleased
   fixes `issue 745`_ (about not being able to run unittest tests that spawn
   subprocesses), and `issue 838`_, which described the problem directly.
 
+- The ``[paths]`` configuration section is now ordered. If you specify more
+  than one list of patterns, the first one that matches will be used.  Fixes
+  `issue 649`_.
+
 - The :func:`.coverage.numbits.register_sqlite_functions` function now also
   registers `numbits_to_nums` for use in SQLite queries.  Thanks, Simon
   Willison.
 
 - Python 3.9a1 is supported.
 
+.. _issue 649: https://github.com/nedbat/coveragepy/issues/649
 .. _issue 745: https://github.com/nedbat/coveragepy/issues/745
 .. _issue 838: https://github.com/nedbat/coveragepy/issues/838
 

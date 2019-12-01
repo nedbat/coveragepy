@@ -425,6 +425,49 @@ class ApiTest(CoverageTest):
         cov.combine()
         self.check_code1_code2(cov)
 
+    def test_ordered_combine(self):
+        # https://github.com/nedbat/coveragepy/issues/649
+        # The order of the [paths] setting matters
+        def make_data_file():
+            data = coverage.CoverageData(".coverage.1")
+            data.add_lines({os.path.abspath('ci/girder/g1.py'): dict.fromkeys(range(10))})
+            data.add_lines({os.path.abspath('ci/girder/plugins/p1.py'): dict.fromkeys(range(10))})
+            data.write()
+
+        def get_combined_filenames():
+            cov = coverage.Coverage()
+            cov.combine()
+            cov.save()
+            data = cov.get_data()
+            filenames = {os.path.relpath(f).replace("\\", "/") for f in data.measured_files()}
+            return filenames
+
+        # Case 1: get the order right.
+        make_data_file()
+        self.make_file(".coveragerc", """\
+            [paths]
+            plugins =
+                plugins/
+                ci/girder/plugins/
+            girder =
+                girder/
+                ci/girder/
+            """)
+        assert get_combined_filenames() == {'girder/g1.py', 'plugins/p1.py'}
+
+        # Case 2: get the order wrong.
+        make_data_file()
+        self.make_file(".coveragerc", """\
+            [paths]
+            girder =
+                girder/
+                ci/girder/
+            plugins =
+                plugins/
+                ci/girder/plugins/
+            """)
+        assert get_combined_filenames() == {'girder/g1.py', 'girder/plugins/p1.py'}
+
     def test_warnings(self):
         self.make_file("hello.py", """\
             import sys, os

@@ -238,6 +238,9 @@ In this example, data collected for "/jenkins/build/1234/src/module.py" will be
 combined with data for "c:\myproj\src\module.py", and will be reported against
 the source file found at "src/module.py".
 
+If you specify more than one list of paths, they will be considered in order.
+The first list that has a match will be used.
+
 See :ref:`cmd_combining` for more information.
 
 
