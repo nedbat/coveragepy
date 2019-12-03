@@ -25,7 +25,7 @@ from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
 from coverage.jsonreport import JsonReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
-from coverage.misc import ensure_dir_for_file, isolate_module
+from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
@@ -57,6 +57,8 @@ def override_config(cov, **kwargs):
     finally:
         cov.config = original_config
 
+
+_DEFAULT_DATAFILE = DefaultValue("MISSING")
 
 class Coverage(object):
     """Programmatic access to coverage.py.
@@ -91,16 +93,21 @@ class Coverage(object):
             return None
 
     def __init__(
-        self, data_file=None, data_suffix=None, cover_pylib=None,
+        self, data_file=_DEFAULT_DATAFILE, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
         source=None, omit=None, include=None, debug=None,
         concurrency=None, check_preimported=False, context=None,
     ):
         """
-        `data_file` is the base name of the data file to use, defaulting to
-        ".coverage".  `data_suffix` is appended (with a dot) to `data_file` to
-        create the final file name.  If `data_suffix` is simply True, then a
-        suffix is created with the machine and process identity included.
+        Many of these arguments duplicate and override values that can be
+        provided in a configuration file.  Parameters that are missing here
+        will use values from the config file.
+
+        `data_file` is the base name of the data file to use. The config value
+        defaults to ".coverage".  None can be provied to prevent writing a data
+        file.  `data_suffix` is appended (with a dot) to `data_file` to create
+        the final file name.  If `data_suffix` is simply True, then a suffix is
+        created with the machine and process identity included.
 
         `cover_pylib` is a boolean determining whether Python code installed
         with the Python interpreter is measured.  This includes the Python
@@ -166,6 +173,12 @@ class Coverage(object):
             The `check_preimported` and `context` parameters.
 
         """
+        # data_file=None means no disk file at all. data_file missing means
+        # use the value from the config file.
+        self._no_disk = data_file is None
+        if data_file is _DEFAULT_DATAFILE:
+            data_file = None
+
         # Build our configuration from a number of sources.
         self.config = read_coverage_config(
             config_file=config_file,
@@ -460,6 +473,7 @@ class Coverage(object):
                 suffix=suffix,
                 warn=self._warn,
                 debug=self._debug,
+                no_disk=self._no_disk,
             )
 
     def start(self):
@@ -526,6 +540,7 @@ class Coverage(object):
         self._init_data(suffix=None)
         self._data.erase(parallel=self.config.parallel)
         self._data = None
+        self._inited_for_start = False
 
     def switch_context(self, new_context):
         """Switch to a new dynamic context.

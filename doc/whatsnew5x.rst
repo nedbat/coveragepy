@@ -33,6 +33,11 @@ Backward Incompatibilities
   circumstances, you may need to use ``parallel=true`` to avoid multiple
   processes overwriting each others' data.
 
+- When constructing a :class:`coverage.Coverage` object, `data_file` can be
+  specified as None to prevent writing any data file at all.  In previous
+  versions, an explicit `data_file=None` argument would use the default of
+  ".coverage". Fixes :github:`871`.
+
 - The ``[run] note`` setting has been deprecated. Using it will result in a
   warning, and the note will not be written to the data file.  The
   corresponding :class:`.CoverageData` methods have been removed.

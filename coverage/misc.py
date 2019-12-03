@@ -254,6 +254,20 @@ def _needs_to_implement(that, func_name):
         )
 
 
+class DefaultValue(object):
+    """A sentinel object to use for unusual default-value needs.
+
+    Construct with a string that will be used as the repr, for display in help
+    and Sphinx output.
+
+    """
+    def __init__(self, display_as):
+        self.display_as = display_as
+
+    def __repr__(self):
+        return self.display_as
+
+
 def substitute_variables(text, variables):
     """Substitute ``${VAR}`` variables in `text` with their values.
 

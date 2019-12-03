@@ -16,7 +16,7 @@ from unittest_mixins import change_dir
 
 import coverage
 from coverage import env
-from coverage.backward import StringIO, import_local_file
+from coverage.backward import code_object, import_local_file, StringIO
 from coverage.data import line_counts
 from coverage.files import abs_file
 from coverage.misc import CoverageException
@@ -262,6 +262,31 @@ class ApiTest(CoverageTest):
         cov.save()
         self.assertFiles(["datatest5.py", "deep"])
         self.assert_exists("deep/sub/cov.data")
+
+    def test_datafile_none(self):
+        cov = coverage.Coverage(data_file=None)
+
+        def f1():
+            a = 1       # pylint: disable=unused-variable
+
+        one_line_number = code_object(f1).co_firstlineno + 1
+        lines = []
+
+        def run_one_function(f):
+            cov.erase()
+            cov.start()
+            f()
+            cov.stop()
+
+            fs = cov.get_data().measured_files()
+            lines.append(cov.get_data().lines(list(fs)[0]))
+
+        run_one_function(f1)
+        run_one_function(f1)
+        run_one_function(f1)
+        assert lines == [[one_line_number]] * 3
+        self.assert_doesnt_exist(".coverage")
+        assert os.listdir(".") == []
 
     def test_empty_reporting(self):
         # empty summary reports raise exception, just like the xml report

@@ -29,6 +29,11 @@ Unreleased
   one (or many) environments, and then report in another.  It has not had much
   real-world testing, so it may change in incompatible ways in the future.
 
+- When constructing a :class:`coverage.Coverage` object, `data_file` can be
+  specified as None to prevent writing any data file at all.  In previous
+  versions, an explicit `data_file=None` argument would use the default of
+  ".coverage". Fixes `issue 871`_.
+
 - Python files run with ``-m`` now have ``__spec__`` defined properly.  This
   fixes `issue 745`_ (about not being able to run unittest tests that spawn
   subprocesses), and `issue 838`_, which described the problem directly.
@@ -46,6 +51,7 @@ Unreleased
 .. _issue 649: https://github.com/nedbat/coveragepy/issues/649
 .. _issue 745: https://github.com/nedbat/coveragepy/issues/745
 .. _issue 838: https://github.com/nedbat/coveragepy/issues/838
+.. _issue 871: https://github.com/nedbat/coveragepy/issues/871
 
 
 .. _changes_50b1:
