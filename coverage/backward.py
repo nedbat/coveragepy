@@ -191,6 +191,14 @@ except AttributeError:
     PYC_MAGIC_NUMBER = imp.get_magic()
 
 
+def code_object(fn):
+    """Get the code object from a function."""
+    try:
+        return fn.func_code
+    except AttributeError:
+        return fn.__code__
+
+
 try:
     from types import SimpleNamespace
 except ImportError:
