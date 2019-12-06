@@ -11,7 +11,7 @@ Code coverage testing for Python.
 |  |ci-status| |win-ci-status| |docs| |codecov|
 |  |kit| |format| |repos|
 |  |stars| |forks| |contributors|
-|  |tidelift| |twitter|
+|  |tidelift| |twitter-coveragepy| |twitter-nedbat|
 
 Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
@@ -136,6 +136,9 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |contributors| image:: https://img.shields.io/github/contributors/nedbat/coveragepy.svg?logo=github
     :target: https://github.com/nedbat/coveragepy/graphs/contributors
     :alt: Contributors
-.. |twitter| image:: https://img.shields.io/twitter/follow/nedbat.svg?label=nedbat&style=flat&logo=twitter&logoColor=4FADFF
+.. |twitter-coveragepy| image:: https://img.shields.io/twitter/follow/coveragepy.svg?label=coveragepy&style=flat&logo=twitter&logoColor=4FADFF
+    :target: https://twitter.com/coveragepy
+    :alt: coverage.py on Twitter
+.. |twitter-nedbat| image:: https://img.shields.io/twitter/follow/nedbat.svg?label=nedbat&style=flat&logo=twitter&logoColor=4FADFF
     :target: https://twitter.com/nedbat
     :alt: nedbat on Twitter
