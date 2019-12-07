@@ -205,7 +205,7 @@ class PyTracer(object):
 
     def stop(self):
         """Stop this Tracer."""
-        # Get the activate tracer callback before setting the stop flag to be
+        # Get the active tracer callback before setting the stop flag to be
         # able to detect if the tracer was changed prior to stopping it.
         tf = sys.gettrace()
 
