@@ -8,3 +8,4 @@ sphinx==2.2.0
 sphinx-rst-builder==0.0.1
 sphinxcontrib-spelling==4.3.0
 sphinx_rtd_theme==0.4.3
+sphinx-autobuild==0.7.1

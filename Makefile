@@ -129,8 +129,10 @@ build_ext:
 
 # Documentation
 
+DOCBIN = .tox/doc/bin
 SPHINXOPTS = -aE
-SPHINXBUILD = .tox/doc/bin/sphinx-build $(SPHINXOPTS)
+SPHINXBUILD = $(DOCBIN)/sphinx-build $(SPHINXOPTS)
+SPHINXAUTOBUILD = $(DOCBIN)/sphinx-autobuild -p 9876 --ignore '.git/**' --open-browser
 WEBHOME = ~/web/stellated/
 WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
 WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
@@ -139,11 +141,11 @@ docreqs:
 	tox -q -e doc --notest
 
 dochtml: docreqs			## Build the docs HTML output.
-	.tox/doc/bin/python doc/check_copied_from.py doc/*.rst
+	$(DOCBIN)/python doc/check_copied_from.py doc/*.rst
 	$(SPHINXBUILD) -b html doc doc/_build/html
 
-docopen: dochtml
-	open doc/_build/html/index.html
+docdev: dochtml				## Build docs, and auto-watch for changes.
+	PATH=$(DOCBIN):$(PATH) $(SPHINXAUTOBUILD) -b html doc doc/_build/html
 
 docspell: docreqs
 	$(SPHINXBUILD) -b spelling doc doc/_spell
