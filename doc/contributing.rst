@@ -140,16 +140,16 @@ respectively.
 You can also affect the test runs with environment variables. Define any of
 these as 1 to use them:
 
-- COVERAGE_NO_PYTRACER disables the Python tracer if you only want to run the
+- COVERAGE_NO_PYTRACER: disables the Python tracer if you only want to run the
   CTracer tests.
 
-- COVERAGE_NO_CTRACER disables the C tracer if you only want to run the
+- COVERAGE_NO_CTRACER: disables the C tracer if you only want to run the
   PyTracer tests.
 
-- COVERAGE_AST_DUMP will dump the AST tree as it is being used during code
+- COVERAGE_AST_DUMP: will dump the AST tree as it is being used during code
   parsing.
 
-- COVERAGE_KEEP_TMP keeps the temporary directories in which tests are run.
+- COVERAGE_KEEP_TMP: keeps the temporary directories in which tests are run.
   This makes debugging tests easier. The temporary directories are at
   ``$TMPDIR/coverage_test/*``, and are named for the test that made them.
 
