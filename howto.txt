@@ -64,6 +64,14 @@
 - Tag the tree
     - git tag coverage-3.0.1
     - git push --tags
+- Bump version:
+    - coverage/version.py
+        - increment version number
+        - IF NOT PRE-RELEASE:
+            - set to alpha-0 if just released.
+    - CHANGES.rst
+        - add an "Unreleased" section to the top.
+    - git push
 - Update Tidelift:
     - make upload_relnotes
 - Update nedbatchelder.com
@@ -71,6 +79,7 @@
 - Update readthedocs
     - visit https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
+            - readthedocs won't find the tag until a commit is made on master.
         - keep just the latest version of each x.y release, make the rest inactive.
     - IF NOT PRE-RELEASE:
         - visit https://readthedocs.org/projects/coverage/builds/
@@ -79,13 +88,6 @@
         - change the default version to the new version
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
 - Announce on TIP.
-- Bump version:
-    - coverage/version.py
-        - increment version number
-        - IF NOT PRE-RELEASE:
-            - set to alpha-0 if just released.
-    - CHANGES.rst
-        - add an "Unreleased" section to the top.
 - push git changes
 
 
