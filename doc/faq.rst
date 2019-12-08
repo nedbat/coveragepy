@@ -11,50 +11,6 @@ FAQ and other help
 Frequently asked questions
 --------------------------
 
-**Q: How do I use coverage.py with nose?**
-
-The best way to use nose and coverage.py together is to run nose under
-coverage.py::
-
-    coverage run $(which nosetests)
-
-You can also use ``nosetests --with-coverage`` to use `nose's built-in
-plugin`__, but it isn't recommended.
-
-The nose plugin doesn't expose all the functionality and configurability of
-coverage.py, and it uses different command-line options from those described in
-coverage.py's documentation.  Additionally nose and its coverage plugin are
-unmaintained at this point, so they aren't receiving any fixes or other
-updates.
-
-__ https://nose.readthedocs.io/en/latest/plugins/cover.html
-
-
-**Q: How do I run nosetests under coverage.py with tox?**
-
-Assuming you've installed tox in a virtualenv, you can do this in tox.ini::
-
-    [testenv]
-    commands = coverage run {envbindir}/nosetests
-
-Coverage.py needs a path to the nosetests executable, but ``coverage run
-$(which nosetests)`` doesn't work in tox.ini because tox doesn't handle the
-shell command substitution. Tox's `string substitution`__ shown above does the
-trick.
-
-__ https://tox.readthedocs.io/en/latest/config.html#substitutions
-
-
-**Q: I use nose to run my tests, and its coverage plugin doesn't let me create
-HTML or XML reports. What should I do?**
-
-First run your tests and collect coverage data with `nose`_ and its plugin.
-This will write coverage data into a .coverage file.  Then run coverage.py from
-the :ref:`command line <cmd>` to create the reports you need from that data.
-
-.. _nose: https://nose.readthedocs.io/
-
-
 **Q: Why do unexecutable lines show up as executed?**
 
 Usually this is because you've updated your code and run coverage.py on it
@@ -62,9 +18,8 @@ again without erasing the old data.  Coverage.py records line numbers executed,
 so the old data may have recorded a line number which has since moved, causing
 coverage.py to claim a line has been executed which cannot be.
 
-If you are using the ``-x`` command line action, it doesn't erase first by
-default.  Switch to the ``coverage run`` command, or use the ``-e`` switch to
-erase all data before starting the next run.
+If old data is persisting, you can use an explicit ``coverage erase`` command
+to clean out the old data.
 
 
 **Q: Why do the bodies of functions (or classes) show as executed, but the def
@@ -79,6 +34,37 @@ To fix this, start coverage.py earlier.  If you use the :ref:`command line
 <cmd>` to run your program with coverage.py, then your entire program will be
 monitored.  If you are using the :ref:`API <api>`, you need to call
 coverage.start() before importing the modules that define your functions.
+
+
+**Q: My decorator lines are marked as covered, but the "def" line is not.
+Why?**
+
+Different versions of Python report execution on different lines.  Coverage.py
+adapts its behavior to the version of Python being used.  In Python 3.7 and
+earlier, a decorated function definition only reported the decorator as
+executed. In Python 3.8 and later, both the decorator and the "def" are
+reported.  If you collect execution data on Python 3.7, and then run coverage
+reports on Python 3.8, there will be a discrepancy.
+
+
+**Q: How is the total percentage calculated?**
+
+Coverage.py counts the total number of possible executions. This is the number
+of executable statements minus the number of excluded statements.  It then
+counts the number of those possibilities that were actually executed.  The
+total percentage is the actual executions divided by the possible executions.
+
+As an example, a coverage report with 1514 statements and 901 missed
+statements would calculate a total percentage of (1514-901)/1514, or 40.49%.
+
+:ref:`Branch coverage <branch>` extends the calculation to include the total
+number of possible branch exits, and the number of those taken.  In this case
+the specific numbers shown in coverage reports don't calculate out to the
+percentage shown, because the number of missing branch exits isn't reported
+explicitly.  A branch line that wasn't executed at all is counted once as a
+missing statement in the report, instead of as two missing branches.  Reports
+show the number of partial branches, which is the lines that were executed but
+did not execute all of their exits.
 
 
 **Q: Coverage.py is much slower than I remember, what's going on?**

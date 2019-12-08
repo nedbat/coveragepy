@@ -27,9 +27,7 @@
         pip install -e .
         cd ~/cog/trunk
         rm -rf htmlcov
-        coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory
-        coverage combine
-        coverage html
+        coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; coverage combine; coverage html
         - IF PRE-RELEASE:
             rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
             cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
