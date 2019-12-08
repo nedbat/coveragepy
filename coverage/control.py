@@ -104,7 +104,7 @@ class Coverage(object):
         will use values from the config file.
 
         `data_file` is the base name of the data file to use. The config value
-        defaults to ".coverage".  None can be provied to prevent writing a data
+        defaults to ".coverage".  None can be provided to prevent writing a data
         file.  `data_suffix` is appended (with a dot) to `data_file` to create
         the final file name.  If `data_suffix` is simply True, then a suffix is
         created with the machine and process identity included.

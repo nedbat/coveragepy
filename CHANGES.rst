@@ -168,7 +168,7 @@ Version 5.0a6 --- 2019-07-16
 - Changes to the :class:`.CoverageData` interface:
 
   - The new :meth:`.CoverageData.dumps` method serializes the data to a string,
-    and a corresponding :meth:`.CoverageData.loads` method reconstitutes ths
+    and a corresponding :meth:`.CoverageData.loads` method reconstitutes this
     data.  The format of the data string is subject to change at any time, and
     so should only be used between two installations of the same version of
     coverage.py.
