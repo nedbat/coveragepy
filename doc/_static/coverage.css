@@ -15,6 +15,33 @@ img.tideliftlogo {
     margin-top: .5em !important;
 }
 
+.rst-content div[class^="highlight"] {
+    margin-bottom: 12px;
+}
+
+.rst-content ol.arabic li {
+    margin-bottom: 12px;
+}
+
+/* Tabs */
+
+.ui.menu {
+    font-family: Helvetica;
+    min-height: 0;
+}
+
+.ui.tabular.menu .item {
+    padding: .25em 1em;
+}
+
+.ui.menu .item {
+    padding: 0;
+}
+
+.sphinx-tabs {
+    margin-bottom: 1em;
+}
+
 /* .. parsed-literal:: isn't styled like other <pre> blocks!? */
 
 .rst-content pre.literal-block {

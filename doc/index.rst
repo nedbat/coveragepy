@@ -56,27 +56,60 @@ Quick start
 
 Getting started is easy:
 
-#.  Install coverage.py in the usual way, with ``pip install coverage``, or
-    from the `coverage.py page on the Python Package Index`_.  For a few more
-    details, see :ref:`install`.
+#.  Install coverage.py::
+
+        $ pip install coverage
+
+    For more details, see :ref:`install`.
 
 #.  Use ``coverage run`` to run your test suite and gather data. However you
-    normally run your test suite, replace the initial word "python" with
-    "coverage run"::
+    normally run your test suite, you can run your test runner under coverage.
+    If your test runner command starts with "python", just replace the initial
+    "python" with "coverage run".
 
-        # if you usually do:
-        #
-        #   $ python -m pytest arg1 arg2
-        #
-        # then instead do:
+    Instructions for specific test runners:
 
-        $ coverage run -m pytest arg1 arg2
-        blah blah ..your tests' output.. blah blah
+    .. tabs::
+
+        .. tab:: pytest
+
+            If you usually use::
+
+                $ pytest arg1 arg2 arg3
+
+            then you can run your tests under coverage with::
+
+                $ coverage run -m pytest arg1 arg2 arg3
+
+            Many people choose to use the `pytest-cov`_ plugin, but for most
+            purposes, it is unnecessary.
+
+        .. tab:: unittest
+
+            Change "python" to "coverage run", so this::
+
+                $ python -m unittest discover
+
+            becomes::
+
+                $ coverage run -m unittest discover
+
+        .. tab:: nosetest
+
+            *Nose has been unmaintained for a long time. You should seriously
+            consider adopting a different test runner.*
+
+            Change this::
+
+                $ nosetests arg1 arg2
+
+            to::
+
+                $ coverage run -m nose arg1 arg2
 
     To limit coverage measurement to code in the current directory, and also
-    find files that weren't executed at all, use::
-
-        $ coverage run --source=. -m pytest
+    find files that weren't executed at all, add the ``--source=.`` argument to
+    your coverage command line.
 
 #.  Use ``coverage report`` to report on the results::
 
@@ -103,7 +136,7 @@ Getting started is easy:
         Then open htmlcov/index.html in your browser, to see a
         `report like this one`_.
 
-.. _coverage.py page on the Python Package Index: https://pypi.org/project/coverage/
+
 .. _report like this: https://nedbatchelder.com/files/sample_coverage_html/index.html
 .. _report like this one: https://nedbatchelder.com/files/sample_coverage_html_beta/index.html
 
