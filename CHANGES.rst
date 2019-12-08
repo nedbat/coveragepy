@@ -21,8 +21,9 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+
+Version 5.0b2 --- 2019-12-08
+----------------------------
 
 - An experimental ``[run] relative_files`` setting tells coverage to store
   relative file names in the data file. This makes it easier to run tests in
