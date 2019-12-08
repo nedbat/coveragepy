@@ -13,27 +13,14 @@ Coverage measurement is typically used to gauge the effectiveness of tests. It
 can show which parts of your code are being exercised by tests, and which are
 not.
 
-.. ifconfig:: not prerelease
+The latest version is coverage.py |release|, released |release_date|.  It is
+supported on:
 
-    The latest version is coverage.py 4.5.2, released November 12th 2018.  It
-    is supported on:
+* Python versions 2.7, 3.5, 3.6, 3.7, 3.8, and 3.9 alpha.
 
-    * Python versions 2.6, 2.7, 3.3, 3.4, 3.5, 3.6, 3.7, and pre-alpha 3.8.
-
-    * PyPy2 6.0 and PyPy3 6.0.
-
-    * Jython 2.7.1, though only for running code, not reporting.
-
-    * IronPython 2.7.7, though only for running code, not reporting.
+* PyPy2 7.2.0 and PyPy3 7.2.0.
 
 .. ifconfig:: prerelease
-
-    The latest version is coverage.py 5.0b1, released November 11, 2019.
-    It is supported on:
-
-    * Python versions 2.7, 3.5, 3.6, 3.7, 3.8, and 3.9 alpha.
-
-    * PyPy2 7.2.0 and PyPy3 7.2.0.
 
     **This is a pre-release build.  The usual warnings about possible bugs
     apply.** The latest stable version is coverage.py 4.5.4, `described here`_.
