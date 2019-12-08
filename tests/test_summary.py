@@ -580,7 +580,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_file("mycode.py", "This isn't python at all!")
         report = self.report_from_command("coverage report -i mycode.py")
 
-        # Coverage.py warning: Could not parse Python file blah_blah/mycode.py (couldnt-parse)
+        # Coverage.py warning: Couldn't parse Python file blah_blah/mycode.py (couldnt-parse)
         # Name     Stmts   Miss  Cover
         # ----------------------------
         # No data to report.

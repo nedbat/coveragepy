@@ -37,10 +37,6 @@ For Enterprise
    :class: tideliftlogo
    :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
 
-.. |br| raw:: html
-
-  <br/>
-
 `Available as part of the Tidelift Subscription. <Tidelift Subscription_>`_ |br|
 Coverage and thousands of other packages are working with
 Tidelift to deliver one enterprise subscription that covers all of the open

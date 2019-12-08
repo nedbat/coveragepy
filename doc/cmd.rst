@@ -13,8 +13,8 @@ When you install coverage.py, a command-line script simply called ``coverage``
 is placed in your Python scripts directory.  To help with multi-version
 installs, it will also create either a ``coverage2`` or ``coverage3`` alias,
 and a ``coverage-X.Y`` alias, depending on the version of Python you're using.
-For example, when installing on Python 2.7, you will be able to use
-``coverage``, ``coverage2``, or ``coverage-2.7`` on the command line.
+For example, when installing on Python 3.7, you will be able to use
+``coverage``, ``coverage3``, or ``coverage-3.7`` on the command line.
 
 Coverage.py has a number of commands which determine the action performed:
 
@@ -134,51 +134,47 @@ Warnings
 During execution, coverage.py may warn you about conditions it detects that
 could affect the measurement process.  The possible warnings include:
 
-* "Could not parse Python file XXX (couldnt-parse)"
-
+* ``Couldn't parse Python file XXX (couldnt-parse)`` |br|
   During reporting, a file was thought to be Python, but it couldn't be parsed
   as Python.
 
-* "Trace function changed, measurement is likely wrong: XXX (trace-changed)"
-
+* ``Trace function changed, measurement is likely wrong: XXX (trace-changed)``
+  |br|
   Coverage measurement depends on a Python setting called the trace function.
   Other Python code in your product might change that function, which will
   disrupt coverage.py's measurement.  This warning indicates that has happened.
   The XXX in the message is the new trace function value, which might provide
   a clue to the cause.
 
-* "Module XXX has no Python source (module-not-python)"
-
+* ``Module XXX has no Python source (module-not-python)`` |br|
   You asked coverage.py to measure module XXX, but once it was imported, it
   turned out not to have a corresponding .py file.  Without a .py file,
   coverage.py can't report on missing lines.
 
-* "Module XXX was never imported (module-not-imported)"
-
+* ``Module XXX was never imported (module-not-imported)`` |br|
   You asked coverage.py to measure module XXX, but it was never imported by
   your program.
 
-* "No data was collected (no-data-collected)"
-
+* ``No data was collected (no-data-collected)`` |br|
   Coverage.py ran your program, but didn't measure any lines as executed.
   This could be because you asked to measure only modules that never ran,
   or for other reasons.
 
-* "Module XXX was previously imported, but not measured (module-not-measured)"
-
+* ``Module XXX was previously imported, but not measured
+  (module-not-measured)``
+  |br|
   You asked coverage.py to measure module XXX, but it had already been imported
   when coverage started.  This meant coverage.py couldn't monitor its
   execution.
 
-* "Already imported a file that will be measured: XXX (already-imported)"
-
+* ``Already imported a file that will be measured: XXX (already-imported)``
+  |br|
   File XXX had already been imported when coverage.py started measurement. Your
   setting for ``--source`` or ``--include`` indicates that you wanted to
   measure that file.  Lines will be missing from the coverage report since the
   execution during import hadn't been measured.
 
-* "--include is ignored because --source is set (include-ignored)"
-
+* ``--include is ignored because --source is set (include-ignored)`` |br|
   Both ``--include`` and ``--source`` were specified while running code.  Both
   are meant to focus measurement on a particular part of your source code, so
   ``--include`` is ignored in favor of ``--source``.
@@ -202,7 +198,7 @@ can include a path to another directory.
 
 By default, each run of your program starts with an empty data set. If you need
 to run your program multiple times to get complete data (for example, because
-you need to supply disjoint options), you can accumulate data across runs with
+you need to supply different options), you can accumulate data across runs with
 the ``--append`` flag on the **run** command.
 
 To erase the collected data, use the **erase** command::
@@ -220,9 +216,8 @@ different versions of Python, or dependencies, or on different operating
 systems.  In these cases, you can collect coverage data for each test run, and
 then combine all the separate data files into one combined file for reporting.
 
-The **combine** command knows how to read a number of separate data files,
-match the data by source file name, and write a combined data file with all of
-the data.
+The **combine** command reads a number of separate data files, matches the data
+by source file name, and writes a combined data file with all of the data.
 
 Coverage normally writes data to a filed named ".coverage".  The ``run
 --parallel-mode`` switch (or ``[run] parallel=True`` configuration option)
@@ -249,7 +244,7 @@ current directory isn't searched if you use command-line arguments.  If you
 also want data from the current directory, name it explicitly on the command
 line.
 
-When coverage.py combines data file, it looks for files named the same as the
+When coverage.py combines data files, it looks for files named the same as the
 data file (defaulting to ".coverage"), with a dotted suffix.  Here are some
 examples of data files that can be combined::
 
@@ -262,19 +257,18 @@ An existing combined data file is ignored and re-written. If you want to use
 runs, use the ``--append`` switch on the **combine** command.  This behavior
 was the default before version 4.2.
 
-To combine data for a source file, coverage has to find its data
-in each of the data files.  Different test runs may run the same source file
-from different locations. For example, different operating systems will use
-different paths for the same file, or perhaps each Python version is run from a
-different subdirectory.  Coverage needs to know that different file paths are
-actually the same source file for reporting purposes.
+To combine data for a source file, coverage has to find its data in each of the
+data files.  Different test runs may run the same source file from different
+locations. For example, different operating systems will use different paths
+for the same file, or perhaps each Python version is run from a different
+subdirectory.  Coverage needs to know that different file paths are actually
+the same source file for reporting purposes.
 
 You can tell coverage.py how different source locations relate with a
 ``[paths]`` section in your configuration file (see :ref:`config_paths`).
 It might be more convenient to use the ``[run] relative_files``
 setting to store relative file paths (see :ref:`relative_files
 <config_run_relative_files>`).
-
 
 If any of the data files can't be read, coverage.py will print a warning
 indicating the file and the problem.
@@ -364,7 +358,8 @@ command line::
     TOTAL                        76     10    87%
 
 The ``--skip-covered`` switch will skip any file with 100% coverage, letting
-you focus on the files that still need attention.
+you focus on the files that still need attention.  The ``--skip-empty`` switch
+will skip any file with no executable statements.
 
 If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets
 you choose which contexts to report on.  See :ref:`context_reporting` for
@@ -414,7 +409,8 @@ generate a new report into the same directory, coverage.py will skip
 generating unchanged pages, making the process faster.
 
 The ``--skip-covered`` switch will skip any file with 100% coverage, letting
-you focus on the files that still need attention.
+you focus on the files that still need attention.  The ``--skip-empty`` switch
+will skip any file with no executable statements.
 
 If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets
 you choose which contexts to report on, and the ``--show-contexts`` option will
