@@ -7,9 +7,9 @@
 Sleepy Snake
 ============
 
-Coverage.py's mascot is Sleepy Snake, drawn by Ben Batchelder.  He can be found on `Instagram`_ and at
-`artofbatch.com`_.
-Some details of Sleepy's creation are on `Ned's blog`__.
+Coverage.py's mascot is Sleepy Snake, drawn by Ben Batchelder.  Ben's art can
+be found on `Instagram`_ and at `artofbatch.com`_.  Some details of Sleepy's
+creation are on `Ned's blog`__.
 
 __ https://nedbatchelder.com/blog/201912/sleepy_snake.html
 
