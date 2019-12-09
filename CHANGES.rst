@@ -56,6 +56,8 @@ Version 5.0b2 --- 2019-12-08
 
 - Python 3.9a1 is supported.
 
+- Coverage.py has a mascot: :ref:`Sleepy Snake <sleepy>`.
+
 .. _issue 649: https://github.com/nedbat/coveragepy/issues/649
 .. _issue 745: https://github.com/nedbat/coveragepy/issues/745
 .. _issue 838: https://github.com/nedbat/coveragepy/issues/838
