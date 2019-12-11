@@ -22,6 +22,12 @@ the name of the :ref:`configuration file <config>` to use.
     The subprocess only sees options in the configuration file.  Options set on
     the command line will not be used in the subprocesses.
 
+.. note::
+    If you have subprocesses because you are using :mod:`multiprocessing
+    <python:multiprocessing>`, the ``--concurrency=multiprocessing``
+    command-line option should take care of everything for you.  See
+    :ref:`cmd_run` for details.
+
 When using this technique, be sure to set the parallel option to true so that
 multiple coverage.py runs will each write their data to a distinct file.
 
