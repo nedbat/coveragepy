@@ -14,7 +14,7 @@
     - "New in x.y:"
     - Python versions supported
 - Update docs
-    - Version, date and Python versions in doc/index.rst
+    - Python versions in doc/index.rst
     - Version of latest stable release in doc/index.rst
     - Version, release, release_date and copyright date in doc/conf.py
         - Look for CHANGEME comments
