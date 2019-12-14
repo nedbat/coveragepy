@@ -83,6 +83,7 @@
             - readthedocs won't find the tag until a commit is made on master.
         - keep just the latest version of each x.y release, make the rest inactive.
     - IF NOT PRE-RELEASE:
+        - update git "stable" branch to point to latest release
         - visit https://readthedocs.org/projects/coverage/builds/
         - wait for the new tag build to finish successfully.
         - visit https://readthedocs.org/dashboard/coverage/advanced/
