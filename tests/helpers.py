@@ -4,7 +4,6 @@
 """Helpers for coverage.py tests."""
 
 import glob
-import itertools
 import os
 import re
 import shutil
@@ -106,6 +105,13 @@ def re_line(text, pat):
     return lines[0]
 
 
+def remove_files(*patterns):
+    """Remove all files that match any of the patterns."""
+    for pattern in patterns:
+        for fname in glob.glob(pattern):
+            os.remove(fname)
+
+
 class SuperModuleCleaner(ModuleCleaner):
     """Remember the state of sys.modules and restore it later."""
 
@@ -122,8 +128,7 @@ class SuperModuleCleaner(ModuleCleaner):
         # Also have to clean out the .pyc file, since the timestamp
         # resolution is only one second, a changed file might not be
         # picked up.
-        for pyc in itertools.chain(glob.glob('*.pyc'), glob.glob('*$py.class')):
-            os.remove(pyc)
+        remove_files("*.pyc", "*$py.class")
         if os.path.exists("__pycache__"):
             shutil.rmtree("__pycache__")
 

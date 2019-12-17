@@ -19,6 +19,7 @@ from coverage.data import line_counts
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import remove_files
 
 
 # These libraries aren't always available, we'll skip tests if they aren't.
@@ -359,12 +360,6 @@ MULTI_CODE = """
         pool.close()
         pool.join()
     """
-
-
-def remove_files(*patterns):
-    for pattern in patterns:
-        for fname in glob.glob(pattern):
-            os.remove(fname)
 
 
 @flaky(max_runs=30)         # Sometimes a test fails due to inherent randomness. Try more times.
