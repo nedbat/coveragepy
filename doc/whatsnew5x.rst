@@ -48,6 +48,9 @@ Backward Incompatibilities
   configuration of the Coverage object.  Now they no longer do.  The arguments
   affect the operation of the method, but do not persist.
 
+- Many internal attributes and functions were changed. These were not part of
+  the public supported API. If your code used them, it might now stop working.
+
 
 New Features
 ------------

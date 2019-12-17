@@ -73,6 +73,10 @@ class Coverage(object):
         cov.stop()
         cov.html_report(directory='covhtml')
 
+    Note: in keeping with Python custom, names starting with underscore are
+    not part of the public API. They might stop working at any point.  Please
+    limit yourself to documented methods to avoid problems.
+
     """
 
     # The stack of started Coverage instances.
