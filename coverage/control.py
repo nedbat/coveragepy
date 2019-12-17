@@ -252,6 +252,11 @@ class Coverage(object):
         # to.
         self._debug = DebugControl(self.config.debug, self._debug_file)
 
+        if "multiprocessing" in (self.config.concurrency or ()):
+            # Multi-processing uses parallel for the subprocesses, so also use
+            # it for the main process.
+            self.config.parallel = True
+
         # _exclude_re is a dict that maps exclusion list names to compiled regexes.
         self._exclude_re = {}
 
@@ -393,16 +398,13 @@ class Coverage(object):
     def _init_for_start(self):
         """Initialization for start()"""
         # Construct the collector.
-        concurrency = self.config.concurrency or []
+        concurrency = self.config.concurrency or ()
         if "multiprocessing" in concurrency:
             if not patch_multiprocessing:
                 raise CoverageException(                    # pragma: only jython
                     "multiprocessing is not supported on this Python"
                 )
             patch_multiprocessing(rcfile=self.config.config_file)
-            # Multi-processing uses parallel for the subprocesses, so also use
-            # it for the main process.
-            self.config.parallel = True
 
         dycon = self.config.dynamic_context
         if not dycon or dycon == "none":

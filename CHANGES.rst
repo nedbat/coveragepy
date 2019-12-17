@@ -24,7 +24,12 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- When using ``coverage run --concurrency=multiprocessing``, all data files
+  should be named with parallel-ready suffixes.  5.0 mistakenly named the main
+  process' file with no suffix when using ``--append``.  This is now fixed,
+  closing `issue 880`_.
+
+.. _issue 880: https://github.com/nedbat/coveragepy/issues/880
 
 
 .. _changes_50:
