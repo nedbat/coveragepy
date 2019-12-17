@@ -3,6 +3,7 @@
 
 """Tests for concurrency libraries."""
 
+import glob
 import os
 import random
 import sys
@@ -369,7 +370,7 @@ class MultiprocessingTest(CoverageTest):
             self.skipTest("No multiprocessing in this Python")      # pragma: only jython
 
     def try_multiprocessing_code(
-        self, code, expected_out, the_module, concurrency="multiprocessing"
+        self, code, expected_out, the_module, nprocs, concurrency="multiprocessing", args=""
     ):
         """Run code using multiprocessing, it should produce `expected_out`."""
         self.make_file("multi.py", code)
@@ -388,13 +389,14 @@ class MultiprocessingTest(CoverageTest):
             if start_method and start_method not in multiprocessing.get_all_start_methods():
                 continue
 
-            out = self.run_command("coverage run multi.py %s" % (start_method,))
+            out = self.run_command("coverage run %s multi.py %s" % (args, start_method))
             expected_cant_trace = cant_trace_msg(concurrency, the_module)
 
             if expected_cant_trace is not None:
                 self.assertEqual(out, expected_cant_trace)
             else:
                 self.assertEqual(out.rstrip(), expected_out)
+                self.assertEqual(len(glob.glob(".coverage.*")), nprocs + 1)
 
                 out = self.run_command("coverage combine")
                 self.assertEqual(out, "")
@@ -409,7 +411,15 @@ class MultiprocessingTest(CoverageTest):
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
         total = sum(x*x if x%2 else x*x*x for x in range(upto))
         expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
-        self.try_multiprocessing_code(code, expected_out, threading)
+        self.try_multiprocessing_code(code, expected_out, threading, nprocs)
+
+    def test_multiprocessing_append(self):
+        nprocs = 3
+        upto = 30
+        code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
+        total = sum(x*x if x%2 else x*x*x for x in range(upto))
+        expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
+        self.try_multiprocessing_code(code, expected_out, threading, nprocs, args="--append")
 
     def test_multiprocessing_and_gevent(self):
         nprocs = 3
@@ -420,7 +430,7 @@ class MultiprocessingTest(CoverageTest):
         total = sum(sum(range((x + 1) * 100)) for x in range(upto))
         expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
         self.try_multiprocessing_code(
-            code, expected_out, eventlet, concurrency="multiprocessing,eventlet"
+            code, expected_out, eventlet, nprocs, concurrency="multiprocessing,eventlet"
         )
 
     def try_multiprocessing_code_with_branching(self, code, expected_out):
