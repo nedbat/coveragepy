@@ -979,7 +979,14 @@ class SqliteDb(SimpleReprMixin):
         # SQLite on Windows on py2 won't open a file if the filename argument
         # has non-ascii characters in it.  Opening a relative file name avoids
         # a problem if the current directory has non-ascii.
-        filename = os.path.relpath(self.filename)
+        try:
+            filename = os.path.relpath(self.filename)
+        except ValueError:
+            # ValueError can be raised under Windows when os.getcwd() returns a
+            # folder from a different drive than the drive of self.filename in
+            # which case we keep the original value of self.filename unchanged,
+            # hoping that we won't face the non-ascii directory problem.
+            filename = self.filename
         # It can happen that Python switches threads while the tracer writes
         # data. The second thread will also try to write to the data,
         # effectively causing a nested context. However, given the idempotent
