@@ -29,7 +29,11 @@ Unreleased
   process' file with no suffix when using ``--append``.  This is now fixed,
   closing `issue 880`_.
 
+- Fixed a problem on Windows when the current directory is changed to a
+  different drive (`issue 895`_).  Thanks, Olivier Grisel.
+
 .. _issue 880: https://github.com/nedbat/coveragepy/issues/880
+.. _issue 895: https://github.com/nedbat/coveragepy/issues/895
 
 
 .. _changes_50:
