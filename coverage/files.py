@@ -5,6 +5,7 @@
 
 import hashlib
 import fnmatch
+import functools
 import ntpath
 import os
 import os.path
@@ -158,6 +159,7 @@ else:
         return filename
 
 
+@functools.lru_cache(None)
 @contract(returns='unicode')
 def abs_file(path):
     """Return the absolute normalized form of `path`."""
