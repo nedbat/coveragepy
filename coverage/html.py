@@ -95,7 +95,7 @@ class HtmlDataGeneration(object):
             arcs_executed = analysis.arcs_executed()
 
         if self.config.show_contexts:
-            contexts_by_lineno = analysis.data.contexts_by_lineno(fr.filename)
+            contexts_by_lineno = analysis.data.contexts_by_lineno(analysis.filename)
 
         lines = []
 

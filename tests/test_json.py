@@ -103,42 +103,51 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         self._assert_expected_json_report(cov, expected_result)
 
     def test_context(self):
-        cov = coverage.Coverage(context="cool_test")
-        cov.config.json_show_contexts = True
-        expected_result = {
-            'meta': {
-                "version": coverage.__version__,
-                "branch_coverage": False,
-                "show_contexts": True,
-            },
-            'files': {
-                'a.py': {
-                    'executed_lines': [1, 2],
-                    'missing_lines': [3],
-                    'excluded_lines': [],
-                    "contexts": {
-                        "1": [
-                            "cool_test"
-                        ],
-                        "2": [
-                            "cool_test"
-                        ]
-                    },
-                    'summary': {
-                        'excluded_lines': 0,
-                        'missing_lines': 1,
-                        'covered_lines': 2,
-                        'num_statements': 3,
-                        'percent_covered': 66.66666666666667
+        for relative_files in [False, True]:
+            config_file = os.path.join(self.temp_dir, "config")
+            with open(config_file, 'w') as handle:
+                handle.write(
+                    "[run]\nrelative_files = {}".format(relative_files)
+                )
+            cov = coverage.Coverage(
+                context="cool_test",
+                config_file=config_file
+            )
+            cov.config.json_show_contexts = True
+            expected_result = {
+                'meta': {
+                    "version": coverage.__version__,
+                    "branch_coverage": False,
+                    "show_contexts": True,
+                },
+                'files': {
+                    'a.py': {
+                        'executed_lines': [1, 2],
+                        'missing_lines': [3],
+                        'excluded_lines': [],
+                        "contexts": {
+                            "1": [
+                                "cool_test"
+                            ],
+                            "2": [
+                                "cool_test"
+                            ]
+                        },
+                        'summary': {
+                            'excluded_lines': 0,
+                            'missing_lines': 1,
+                            'covered_lines': 2,
+                            'num_statements': 3,
+                            'percent_covered': 66.66666666666667
+                        }
                     }
+                },
+                'totals': {
+                    'excluded_lines': 0,
+                    'missing_lines': 1,
+                    'covered_lines': 2,
+                    'num_statements': 3,
+                    'percent_covered': 66.66666666666667
                 }
-            },
-            'totals': {
-                'excluded_lines': 0,
-                'missing_lines': 1,
-                'covered_lines': 2,
-                'num_statements': 3,
-                'percent_covered': 66.66666666666667
             }
-        }
-        self._assert_expected_json_report(cov, expected_result)
+            self._assert_expected_json_report(cov, expected_result)
