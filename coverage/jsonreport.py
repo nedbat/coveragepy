@@ -43,7 +43,6 @@ class JsonReporter(object):
         for file_reporter, analysis in get_analysis_to_report(self.coverage, morfs):
             measured_files[file_reporter.relative_filename()] = self.report_one_file(
                 coverage_data,
-                file_reporter,
                 analysis
             )
 
@@ -71,7 +70,7 @@ class JsonReporter(object):
 
         return self.total.n_statements and self.total.pc_covered
 
-    def report_one_file(self, coverage_data, file_reporter, analysis):
+    def report_one_file(self, coverage_data, analysis):
         """Extract the relevant report data for a single file"""
         nums = analysis.numbers
         self.total += nums
@@ -90,7 +89,7 @@ class JsonReporter(object):
         }
         if self.config.json_show_contexts:
             reported_file['contexts'] = analysis.data.contexts_by_lineno(
-                file_reporter.filename
+                analysis.filename,
             )
         if coverage_data.has_arcs():
             reported_file['summary'].update({
