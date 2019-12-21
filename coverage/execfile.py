@@ -169,7 +169,6 @@ class PyRunner(object):
             if env.PY3:
                 self.loader = DummyLoader("__main__")
 
-        self.args[0] = python_reported_file(self.args[0])
         self.arg0 = python_reported_file(self.arg0)
 
         if self.modulename is None:
