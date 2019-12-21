@@ -24,6 +24,10 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
+- Measurement contexts and relative file names didn't work together, as
+  reported in `issue_899`_ and `issue_900`_.  This is now fixed, thanks to
+  David Szotten.
+
 - When using ``coverage run --concurrency=multiprocessing``, all data files
   should be named with parallel-ready suffixes.  5.0 mistakenly named the main
   process' file with no suffix when using ``--append``.  This is now fixed,
@@ -34,6 +38,8 @@ Unreleased
 
 .. _issue 880: https://github.com/nedbat/coveragepy/issues/880
 .. _issue 895: https://github.com/nedbat/coveragepy/issues/895
+.. _issue 899: https://github.com/nedbat/coveragepy/issues/899
+.. _issue 900: https://github.com/nedbat/coveragepy/issues/900
 
 
 .. _changes_50:
