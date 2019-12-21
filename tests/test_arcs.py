@@ -630,6 +630,8 @@ class ExceptionArcTest(CoverageTest):
 
 
     def test_break_through_finally(self):
+        if env.PYBEHAVIOR.bug39114:
+            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = ".1 12 23 34 3D 45 56 67 68 7A 7D 8A A3 A7 BC CD D."
         else:
@@ -654,6 +656,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_continue_through_finally(self):
+        if env.PYBEHAVIOR.bug39114:
+            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = ".1 12 23 34 3D 45 56 67 68 73 7A 8A A3 A7 BC CD D."
         else:
@@ -691,6 +695,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_bug_212(self):
+        if env.PYBEHAVIOR.bug39114:
+            self.xfail("https://bugs.python.org/issue39114")
         # "except Exception as e" is crucial here.
         # Bug 212 said that the "if exc" line was incorrectly marked as only
         # partially covered.
@@ -813,6 +819,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_return_finally(self):
+        if env.PYBEHAVIOR.bug39114:
+            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = ".1 12 29 9A AB BC C-1   -23 34 45 5-2 57 75 38 8-2"
         else:
@@ -835,6 +843,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_except_jump_finally(self):
+        if env.PYBEHAVIOR.bug39114:
+            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = (
                 ".1 1Q QR RS ST TU U. "
@@ -889,6 +899,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_else_jump_finally(self):
+        if env.PYBEHAVIOR.bug39114:
+            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = (
                 ".1 1S ST TU UV VW W. "
@@ -1511,6 +1523,8 @@ class AsyncTest(CoverageTest):
         self.assertEqual(self.stdout(), "Compute 1 + 2 ...\n1 + 2 = 3\n")
 
     def test_async_for(self):
+        if env.PYBEHAVIOR.bug39114:
+            self.xfail("https://bugs.python.org/issue39114")
         self.check_coverage("""\
             import asyncio
 

@@ -15,6 +15,7 @@ import shlex
 import sys
 import types
 
+import pytest
 from unittest_mixins import (
     EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
     DelayedAssertionMixin,
@@ -98,6 +99,10 @@ class CoverageTest(
         self.last_command_status = None
         self.last_command_output = None
         self.last_module_name = None
+
+    def xfail(self, msg):
+        """Mark this test as an expected failure."""
+        pytest.xfail(msg)
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
