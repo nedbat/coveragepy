@@ -24,6 +24,11 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
+- If a 4.x data file is the cause of a "file is not a database" error, then use
+  a more specific error message, "Looks like a coverage 4.x data file, are you
+  mixing versions of coverage?"  Helps diagnose the problems described in
+  `issue 886`_.
+
 - Measurement contexts and relative file names didn't work together, as
   reported in `issue_899`_ and `issue_900`_.  This is now fixed, thanks to
   David Szotten.
@@ -37,6 +42,7 @@ Unreleased
   different drive (`issue 895`_).  Thanks, Olivier Grisel.
 
 .. _issue 880: https://github.com/nedbat/coveragepy/issues/880
+.. _issue 886: https://github.com/nedbat/coveragepy/issues/886
 .. _issue 895: https://github.com/nedbat/coveragepy/issues/895
 .. _issue 899: https://github.com/nedbat/coveragepy/issues/899
 .. _issue 900: https://github.com/nedbat/coveragepy/issues/900

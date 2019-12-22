@@ -295,6 +295,17 @@ class ApiTest(CoverageTest):
         with self.assertRaisesRegex(CoverageException, "No data to report."):
             cov.report()
 
+    def test_cov4_data_file(self):
+        cov4_data = (
+            "!coverage.py: This is a private format, don't read it directly!"
+            '{"lines":{"/private/tmp/foo.py":[1,5,2,3]}}'
+        )
+        self.make_file(".coverage", cov4_data)
+        cov = coverage.Coverage()
+        with self.assertRaisesRegex(CoverageException, "Looks like a coverage 4.x data file"):
+            cov.load()
+        cov.erase()
+
     def make_code1_code2(self):
         """Create the code1.py and code2.py files."""
         self.make_file("code1.py", """\
@@ -384,15 +395,11 @@ class ApiTest(CoverageTest):
         cov.save()
         self.assert_file_count(".coverage.*", 2)
 
-    def make_bad_data_file(self):
-        """Make one bad data file."""
-        self.make_file(".coverage.foo", """La la la, this isn't coverage data!""")
-
     def test_combining_corrupt_data(self):
         # If you combine a corrupt data file, then you will get a warning,
         # and the file will remain.
         self.make_good_data_files()
-        self.make_bad_data_file()
+        self.make_file(".coverage.foo", """La la la, this isn't coverage data!""")
         cov = coverage.Coverage()
         warning_regex = (
             r"Couldn't use data file '.*\.coverage\.foo': file (is encrypted or )?is not a database"
