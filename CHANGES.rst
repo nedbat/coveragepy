@@ -21,8 +21,11 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+
+.. _changes_501:
+
+Version 5.0.1 --- 2019-12-22
+----------------------------
 
 - If a 4.x data file is the cause of a "file is not a database" error, then use
   a more specific error message, "Looks like a coverage 4.x data file, are you
@@ -30,7 +33,7 @@ Unreleased
   `issue 886`_.
 
 - Measurement contexts and relative file names didn't work together, as
-  reported in `issue_899`_ and `issue_900`_.  This is now fixed, thanks to
+  reported in `issue 899`_ and `issue 900`_.  This is now fixed, thanks to
   David Szotten.
 
 - When using ``coverage run --concurrency=multiprocessing``, all data files
@@ -40,6 +43,8 @@ Unreleased
 
 - Fixed a problem on Windows when the current directory is changed to a
   different drive (`issue 895`_).  Thanks, Olivier Grisel.
+
+- Updated Python 3.9 support to 3.9a2.
 
 .. _issue 880: https://github.com/nedbat/coveragepy/issues/880
 .. _issue 886: https://github.com/nedbat/coveragepy/issues/886
