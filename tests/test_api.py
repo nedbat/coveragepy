@@ -395,12 +395,7 @@ class ApiTest(CoverageTest):
         self.make_bad_data_file()
         cov = coverage.Coverage()
         warning_regex = (
-            r"("    # JSON message:
-            r"Couldn't read data from '.*\.coverage\.foo': "
-            r"CoverageException: Doesn't seem to be a coverage\.py data file"
-            r"|"    # SQL message:
             r"Couldn't use data file '.*\.coverage\.foo': file (is encrypted or )?is not a database"
-            r")"
         )
         with self.assert_warnings(cov, [warning_regex]):
             cov.combine()

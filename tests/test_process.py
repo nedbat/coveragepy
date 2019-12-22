@@ -130,13 +130,8 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
         self.assert_exists(".coverage.bad")
         warning_regex = (
-            r"("    # JSON message:
-            r"Coverage.py warning: Couldn't read data from '.*\.coverage\.bad': "
-            r"CoverageException: Doesn't seem to be a coverage\.py data file"
-            r"|"    # SQL message:
             r"Coverage.py warning: Couldn't use data file '.*\.coverage\.bad': "
             r"file (is encrypted or )?is not a database"
-            r")"
         )
         self.assertRegex(out, warning_regex)
 
@@ -168,13 +163,8 @@ class ProcessTest(CoverageTest):
         for n in "12":
             self.assert_exists(".coverage.bad{}".format(n))
             warning_regex = (
-                r"("    # JSON message:
-                r"Coverage.py warning: Couldn't read data from '.*\.coverage\.bad{0}': "
-                r"CoverageException: Doesn't seem to be a coverage\.py data file"
-                r"|"    # SQL message:
                 r"Coverage.py warning: Couldn't use data file '.*\.coverage.bad{0}': "
                 r"file (is encrypted or )?is not a database"
-                r")"
                 .format(n)
             )
             self.assertRegex(out, warning_regex)
