@@ -561,8 +561,8 @@ class Coverage(object):
         .. versionadded:: 5.0
 
         """
-        if not self._started:
-            raise CoverageException(                    # pragma: only jython
+        if not self._started:                           # pragma: part started
+            raise CoverageException(
                 "Cannot switch context, coverage is not started"
                 )
         self._collector.switch_context(new_context)

@@ -256,10 +256,6 @@ class Collector(object):
         if hasattr(tracer, 'should_start_context'):
             tracer.should_start_context = self.should_start_context
             tracer.switch_context = self.switch_context
-        elif self.should_start_context:
-            raise CoverageException(
-                "Can't support dynamic contexts with {}".format(self.tracer_name())
-            )
 
         fn = tracer.start()
         self.tracers.append(tracer)
