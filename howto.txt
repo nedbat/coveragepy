@@ -75,8 +75,6 @@
     - git push
 - Update Tidelift:
     - make upload_relnotes
-- Update nedbatchelder.com
-    - Blog post?
 - Update readthedocs
     - visit https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
@@ -89,8 +87,10 @@
         - visit https://readthedocs.org/dashboard/coverage/advanced/
         - change the default version to the new version
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
-- Announce on TIP.
 - push git changes
+- Update nedbatchelder.com
+    - Blog post?
+- Announce on TIP.
 
 
 * Testing
