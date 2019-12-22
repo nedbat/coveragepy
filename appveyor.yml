@@ -19,21 +19,51 @@ environment:
   # descriptions, but can be wrong in the minor version, since we use the
   # version pre-installed on AppVeyor.
   #
-  # 32-bit jobs don't run the tests under the Python tracer, since that should
-  # be exactly the same as 64-bit.
   matrix:
+    - JOB: "2.7 64-bit"
+      TOXENV: "py27"
+      PYTHON: "C:\\Python27-x64"
+      PYTHON_VERSION: "2.7.17"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.5 64-bit"
+      TOXENV: "py35"
+      PYTHON: "C:\\Python35-x64"
+      PYTHON_VERSION: "3.5.9"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.6 64-bit"
+      TOXENV: "py36"
+      PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.9"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.7 64-bit"
+      TOXENV: "py37"
+      PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7.5"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.8 64-bit"
+      TOXENV: "py38"
+      PYTHON: "C:\\Python38-x64"
+      PYTHON_VERSION: "3.8.0"
+      PYTHON_ARCH: "64"
+
+    - JOB: "3.9 64-bit"
+      TOXENV: "py39"
+      PYTHON: "C:\\Python39-x64"
+      PYTHON_VERSION: "3.9.0a2"
+      PYTHON_ARCH: "64"
+
+    # 32-bit jobs don't run the tests under the Python tracer, since that should
+    # be exactly the same as 64-bit.
     - JOB: "2.7 32-bit"
       TOXENV: "py27"
       PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.17"
       PYTHON_ARCH: "32"
       COVERAGE_NO_PYTRACER: "1"
-
-    - JOB: "2.7 64-bit"
-      TOXENV: "py27"
-      PYTHON: "C:\\Python27-x64"
-      PYTHON_VERSION: "2.7.17"
-      PYTHON_ARCH: "64"
 
     - JOB: "3.5 32-bit"
       TOXENV: "py35"
@@ -42,24 +72,12 @@ environment:
       PYTHON_ARCH: "32"
       COVERAGE_NO_PYTRACER: "1"
 
-    - JOB: "3.5 64-bit"
-      TOXENV: "py35"
-      PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.9"
-      PYTHON_ARCH: "64"
-
     - JOB: "3.6 32-bit"
       TOXENV: "py36"
       PYTHON: "C:\\Python36"
       PYTHON_VERSION: "3.6.9"
       PYTHON_ARCH: "32"
       COVERAGE_NO_PYTRACER: "1"
-
-    - JOB: "3.6 64-bit"
-      TOXENV: "py36"
-      PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.9"
-      PYTHON_ARCH: "64"
 
     - JOB: "3.7 32-bit"
       TOXENV: "py37"
@@ -68,12 +86,6 @@ environment:
       PYTHON_ARCH: "32"
       COVERAGE_NO_PYTRACER: "1"
 
-    - JOB: "3.7 64-bit"
-      TOXENV: "py37"
-      PYTHON: "C:\\Python37-x64"
-      PYTHON_VERSION: "3.7.5"
-      PYTHON_ARCH: "64"
-
     - JOB: "3.8 32-bit"
       TOXENV: "py38"
       PYTHON: "C:\\Python38"
@@ -81,24 +93,12 @@ environment:
       PYTHON_ARCH: "32"
       COVERAGE_NO_PYTRACER: "1"
 
-    - JOB: "3.8 64-bit"
-      TOXENV: "py38"
-      PYTHON: "C:\\Python38-x64"
-      PYTHON_VERSION: "3.8.0"
-      PYTHON_ARCH: "64"
-
     - JOB: "3.9 32-bit"
       TOXENV: "py39"
       PYTHON: "C:\\Python39"
       PYTHON_VERSION: "3.9.0a2"
       PYTHON_ARCH: "32"
       COVERAGE_NO_PYTRACER: "1"
-
-    - JOB: "3.9 64-bit"
-      TOXENV: "py39"
-      PYTHON: "C:\\Python39-x64"
-      PYTHON_VERSION: "3.9.0a2"
-      PYTHON_ARCH: "64"
 
     # Meta coverage
     - JOB: "Meta 2.7"
