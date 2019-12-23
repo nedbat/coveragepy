@@ -6,6 +6,7 @@
 import collections
 import copy
 import os
+import os.path
 import re
 
 from coverage import env
@@ -275,7 +276,7 @@ class CoverageConfig(object):
         if not files_read:
             return False
 
-        self.config_files_read.extend(files_read)
+        self.config_files_read.extend(map(os.path.abspath, files_read))
 
         any_set = False
         try:
@@ -323,7 +324,7 @@ class CoverageConfig(object):
             used = any_set
 
         if used:
-            self.config_file = filename
+            self.config_file = os.path.abspath(filename)
             with open(filename) as f:
                 self._config_contents = f.read()
 

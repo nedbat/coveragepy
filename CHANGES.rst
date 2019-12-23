@@ -21,10 +21,16 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 7.8.1 --- 2021-07-27
     ..  ----------------------------
 
+
 Unreleased
 ----------
 
-Nothing yet.
+- Programs that used multiprocessing and changed directories would fail under
+  coverage.  This is now fixed (`issue 890`_).  A side effect is that debug
+  information about the config files read now shows absolute paths to the
+  files.
+
+.. _issue 890: https://github.com/nedbat/coveragepy/issues/890
 
 
 .. _changes_501:

@@ -6,6 +6,7 @@
 import multiprocessing
 import multiprocessing.process
 import os
+import os.path
 import sys
 import traceback
 
@@ -85,7 +86,7 @@ def patch_multiprocessing(rcfile):
 
     # Set the value in ProcessWithCoverage that will be pickled into the child
     # process.
-    os.environ["COVERAGE_RCFILE"] = rcfile
+    os.environ["COVERAGE_RCFILE"] = os.path.abspath(rcfile)
 
     # When spawning processes rather than forking them, we have no state in the
     # new process.  We sneak in there with a Stowaway: we stuff one of our own

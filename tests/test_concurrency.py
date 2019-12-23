@@ -493,6 +493,25 @@ class MultiprocessingTest(CoverageTest):
         self.assertIn("Exception during multiprocessing bootstrap init", out)
         self.assertIn("Exception: Crashing because called by _bootstrap", out)
 
+    def test_bug890(self):
+        # chdir in multiprocessing shouldn't keep us from finding the
+        # .coveragerc file.
+        self.make_file("multi.py", """\
+            import multiprocessing, os, os.path
+            if __name__ == "__main__":
+                if not os.path.exists("./tmp"): os.mkdir("./tmp")
+                os.chdir("./tmp")
+                with multiprocessing.Manager():
+                    pass
+                print("ok")
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            concurrency = multiprocessing
+            """)
+        out = self.run_command("coverage run multi.py")
+        self.assertEqual(out.splitlines()[-1], "ok")
+
 
 def test_coverage_stop_in_threads():
     has_started_coverage = []
