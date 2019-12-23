@@ -205,6 +205,17 @@ class CoverageTestTest(CoverageTest):
         _, _, environ = environ.rpartition(":")
         self.assertEqual(environ.strip(), "COV_FOOBAR = XYZZY")
 
+    def test_run_command_stdout_stderr(self):
+        # run_command should give us both stdout and stderr.
+        self.make_file("outputs.py", """\
+            import sys
+            sys.stderr.write("StdErr\\n")
+            print("StdOut")
+            """)
+        out = self.run_command("python outputs.py")
+        self.assertIn("StdOut\n", out)
+        self.assertIn("StdErr\n", out)
+
 
 class CheckUniqueFilenamesTest(CoverageTest):
     """Tests of CheckUniqueFilenames."""
