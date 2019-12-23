@@ -476,6 +476,23 @@ class MultiprocessingTest(CoverageTest):
         expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
         self.try_multiprocessing_code_with_branching(code, expected_out)
 
+    def test_multiprocessing_bootstrap_error_handling(self):
+        # An exception during bootstrapping will be reported.
+        self.make_file("multi.py", """\
+            import multiprocessing
+            if __name__ == "__main__":
+                with multiprocessing.Manager():
+                    pass
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            concurrency = multiprocessing
+            _crash = _bootstrap
+            """)
+        out = self.run_command("coverage run multi.py")
+        self.assertIn("Exception during multiprocessing bootstrap init", out)
+        self.assertIn("Exception: Crashing because called by _bootstrap", out)
+
 
 def test_coverage_stop_in_threads():
     has_started_coverage = []

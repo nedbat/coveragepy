@@ -6,6 +6,8 @@
 import multiprocessing
 import multiprocessing.process
 import os
+import sys
+import traceback
 
 from coverage import env
 from coverage.misc import contract
@@ -27,14 +29,20 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
 
     def _bootstrap(self, *args, **kwargs):          # pylint: disable=arguments-differ
         """Wrapper around _bootstrap to start coverage."""
-        from coverage import Coverage       # avoid circular import
-        cov = Coverage(data_suffix=True)
-        cov._warn_preimported_source = False
-        cov.start()
-        debug = cov._debug
         try:
+            from coverage import Coverage       # avoid circular import
+            cov = Coverage(data_suffix=True)
+            cov._warn_preimported_source = False
+            cov.start()
+            debug = cov._debug
             if debug.should("multiproc"):
                 debug.write("Calling multiprocessing bootstrap")
+        except Exception:
+            print("Exception during multiprocessing bootstrap init:")
+            traceback.print_exc(file=sys.stdout)
+            sys.stdout.flush()
+            raise
+        try:
             return original_bootstrap(self, *args, **kwargs)
         finally:
             if debug.should("multiproc"):
