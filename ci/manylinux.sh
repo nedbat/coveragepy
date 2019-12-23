@@ -44,7 +44,7 @@ elif [[ $action == "test" ]]; then
         shift
         export COVERAGE_COVERAGE=yes
     fi
-    TOXWORKDIR=.tox_linux "$TOXBIN/tox" "$@" || true
+    TOXWORKDIR=.tox/linux "$TOXBIN/tox" "$@" || true
     cd ~
 
 else

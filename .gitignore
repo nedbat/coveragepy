@@ -23,7 +23,7 @@ dist
 htmlcov
 MANIFEST
 setuptools-*.egg
-.tox*
+.tox
 .noseids
 .cache
 .pytest_cache

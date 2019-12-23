@@ -28,13 +28,12 @@ clean: clean_platform                   ## Remove artifacts of test execution, i
 	rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
 	rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	rm -rf doc/_build doc/_spell doc/sample_html_beta
-	rm -rf .tox_kits
 	rm -rf .cache .pytest_cache .hypothesis
 	rm -rf $$TMPDIR/coverage_test
 	-make -C tests/gold/html clean
 
 sterile: clean                          ## Remove all non-controlled content, even if expensive.
-	rm -rf .tox*
+	rm -rf .tox
 	-docker image rm -f quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
 
 
