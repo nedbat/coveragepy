@@ -676,6 +676,21 @@ class ApiTest(CoverageTest):
         with self.assertRaisesRegex(CoverageException, msg):
             cov.switch_context("test3")
 
+    def test_config_crash(self):
+        # The internal '[run] _crash' setting can be used to artificially raise
+        # exceptions from inside Coverage.
+        cov = coverage.Coverage()
+        cov.set_option("run:_crash", "test_config_crash")
+        with self.assertRaisesRegex(Exception, "Crashing because called by test_config_crash"):
+            cov.start()
+
+    def test_config_crash_no_crash(self):
+        # '[run] _crash' really checks the call stack.
+        cov = coverage.Coverage()
+        cov.set_option("run:_crash", "not_my_caller")
+        cov.start()
+        cov.stop()
+
 
 class CurrentInstanceTest(CoverageTest):
     """Tests of Coverage.current()."""

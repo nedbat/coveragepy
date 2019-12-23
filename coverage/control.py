@@ -18,7 +18,7 @@ from coverage.collector import Collector, CTracer
 from coverage.config import read_coverage_config
 from coverage.context import should_start_context_test_function, combine_context_switchers
 from coverage.data import CoverageData, combine_parallel_data
-from coverage.debug import DebugControl, write_formatted_info
+from coverage.debug import DebugControl, short_stack, write_formatted_info
 from coverage.disposition import disposition_debug_msg
 from coverage.files import PathAliases, abs_file, relative_filename, set_relative_directory
 from coverage.html import HtmlReporter
@@ -279,6 +279,11 @@ class Coverage(object):
         if not self._wrote_debug:
             self._wrote_debug = True
             self._write_startup_debug()
+
+        # '[run] _crash' will raise an exception if the value is close by in
+        # the call stack, for testing error handling.
+        if self.config._crash and self.config._crash in short_stack(limit=4):
+            raise Exception("Crashing because called by {}".format(self.config._crash))
 
     def _write_startup_debug(self):
         """Write out debug info at startup if needed."""

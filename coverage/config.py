@@ -195,6 +195,7 @@ class CoverageConfig(object):
         self.run_omit = None
         self.source = None
         self.timid = False
+        self._crash = None
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
@@ -359,6 +360,7 @@ class CoverageConfig(object):
         ('run_omit', 'run:omit', 'list'),
         ('source', 'run:source', 'list'),
         ('timid', 'run:timid', 'boolean'),
+        ('_crash', 'run:_crash'),
 
         # [report]
         ('exclude_list', 'report:exclude_lines', 'regexlist'),
