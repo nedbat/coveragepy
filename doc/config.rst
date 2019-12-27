@@ -162,6 +162,11 @@ warning. See :ref:`cmd_warnings` for specific warnings.
 ``debug`` (multi-string): a list of debug options.  See :ref:`the run
 --debug option <cmd_run_debug>` for details.
 
+.. _config_run_dynamic_context:
+
+``dynamic_context`` (string): the name of a strategy for setting the dynamic
+context during execution.  See :ref:`dynamic_contexts` for details.
+
 .. _config_run_include:
 
 ``include`` (multi-string): a list of file name patterns, the files to include
