@@ -30,7 +30,11 @@ Unreleased
   information about the config files read now shows absolute paths to the
   files.
 
+- A new warning ("dynamic-conflict") is issued if two mechanisms are trying to
+  change the dynamic context.  Closes `issue 901`_.
+
 .. _issue 890: https://github.com/nedbat/coveragepy/issues/890
+.. _issue 901: https://github.com/nedbat/coveragepy/issues/901
 
 
 .. _changes_501:

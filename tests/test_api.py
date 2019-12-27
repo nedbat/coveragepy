@@ -672,6 +672,19 @@ class ApiTest(CoverageTest):
         data.set_query_context("mysuite|multiply_zero")
         self.assertEqual([2, 5], sorted(data.lines(suite_filename)))
 
+    def test_dynamic_context_conflict(self):
+        cov = coverage.Coverage(source=["."])
+        cov.set_option("run:dynamic_context", "test_function")
+        cov.start()
+        # Switch twice, but only get one warning.
+        cov.switch_context("test1")                                     # pragma: nested
+        cov.switch_context("test2")                                     # pragma: nested
+        self.assertEqual(                                               # pragma: nested
+            self.stderr(),
+            "Coverage.py warning: Conflicting dynamic contexts (dynamic-conflict)\n"
+        )
+        cov.stop()                                                      # pragma: nested
+
     def test_switch_context_unstarted(self):
         # Coverage must be started to switch context
         msg = "Cannot switch context, coverage is not started"

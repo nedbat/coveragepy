@@ -581,6 +581,10 @@ class Coverage(object):
             raise CoverageException(
                 "Cannot switch context, coverage is not started"
                 )
+
+        if self._collector.should_start_context:
+            self._warn("Conflicting dynamic contexts", slug="dynamic-conflict", once=True)
+
         self._collector.switch_context(new_context)
 
     def clear_exclude(self, which='exclude'):

@@ -179,6 +179,12 @@ could affect the measurement process.  The possible warnings include:
   are meant to focus measurement on a particular part of your source code, so
   ``--include`` is ignored in favor of ``--source``.
 
+* ``Conflicting dynamic contexts (dynamic-conflict)`` |br|
+  The ``[run] dynamic_context`` option is set in the configuration file, but
+  something (probably a test runner plugin) is also calling the
+  :meth:`.Coverage.switch_context` function to change the context. Only one of
+  these mechanisms should be in use at a time.
+
 Individual warnings can be disabled with the `disable_warnings
 <config_run_disable_warnings>`_ configuration setting.  To silence "No data was
 collected," add this to your .coveragerc file::
