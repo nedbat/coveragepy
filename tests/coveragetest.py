@@ -264,8 +264,9 @@ class CoverageTest(
 
         """
         saved_warnings = []
-        def capture_warning(msg, slug=None):
+        def capture_warning(msg, slug=None, once=False):        # pylint: disable=unused-argument
             """A fake implementation of Coverage._warn, to capture warnings."""
+            # NOTE: we don't implement `once`.
             if slug:
                 msg = "%s (%s)" % (msg, slug)
             saved_warnings.append(msg)

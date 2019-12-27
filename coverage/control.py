@@ -203,6 +203,7 @@ class Coverage(object):
         self._warn_no_data = True
         self._warn_unimported_source = True
         self._warn_preimported_source = check_preimported
+        self._no_warn_slugs = None
 
         # A record of all the warnings that have been issued.
         self._warnings = []
@@ -333,12 +334,19 @@ class Coverage(object):
 
         return not reason
 
-    def _warn(self, msg, slug=None):
+    def _warn(self, msg, slug=None, once=False):
         """Use `msg` as a warning.
 
         For warning suppression, use `slug` as the shorthand.
+
+        If `once` is true, only show this warning once (determined by the
+        slug.)
+
         """
-        if slug in self.config.disable_warnings:
+        if self._no_warn_slugs is None:
+            self._no_warn_slugs = list(self.config.disable_warnings)
+
+        if slug in self._no_warn_slugs:
             # Don't issue the warning
             return
 
@@ -348,6 +356,9 @@ class Coverage(object):
         if self._debug.should('pid'):
             msg = "[%d] %s" % (os.getpid(), msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
+
+        if once:
+            self._no_warn_slugs.append(slug)
 
     def get_option(self, option_name):
         """Get an option from the configuration.

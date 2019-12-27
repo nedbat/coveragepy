@@ -532,11 +532,21 @@ class ApiTest(CoverageTest):
         self.assertIn("Hello\n", out)
 
         err = self.stderr()
-        self.assertIn(textwrap.dedent("""\
-            Coverage.py warning: Module sys has no Python source. (module-not-python)
-            """), err)
+        self.assertIn(
+            "Coverage.py warning: Module sys has no Python source. (module-not-python)",
+            err
+        )
         self.assertNotIn("module-not-imported", err)
         self.assertNotIn("no-data-collected", err)
+
+    def test_warn_once(self):
+        cov = coverage.Coverage()
+        cov.load()
+        cov._warn("Warning, warning 1!", slug="bot", once=True)
+        cov._warn("Warning, warning 2!", slug="bot", once=True)
+        err = self.stderr()
+        self.assertIn("Warning, warning 1!", err)
+        self.assertNotIn("Warning, warning 2!", err)
 
     def test_source_and_include_dont_conflict(self):
         # A bad fix made this case fail: https://bitbucket.org/ned/coveragepy/issues/541
