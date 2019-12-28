@@ -33,8 +33,12 @@ Unreleased
 - A new warning ("dynamic-conflict") is issued if two mechanisms are trying to
   change the dynamic context.  Closes `issue 901`_.
 
+- ``coverage run --debug=sys`` would fail with an AttributeError. This is now
+  fixed (`issue 907`_).
+
 .. _issue 890: https://github.com/nedbat/coveragepy/issues/890
 .. _issue 901: https://github.com/nedbat/coveragepy/issues/901
+.. _issue 907: https://github.com/nedbat/coveragepy/issues/907
 
 
 .. _changes_501:

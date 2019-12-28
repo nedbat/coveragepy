@@ -714,6 +714,14 @@ class ApiTest(CoverageTest):
         cov.start()
         cov.stop()
 
+    def test_run_debug_sys(self):
+        # https://github.com/nedbat/coveragepy/issues/907
+        cov = coverage.Coverage()
+        cov.start()
+        d = dict(cov.sys_info())        # pragma: nested
+        cov.stop()                      # pragma: nested
+        assert d['data_file'].endswith(".coverage")
+
 
 class CurrentInstanceTest(CoverageTest):
     """Tests of Coverage.current()."""

@@ -1005,7 +1005,7 @@ class Coverage(object):
                 if self.config._config_contents
                 else '-none-'
             ),
-            ('data_file', self._data.filename if self._data else "-none-"),
+            ('data_file', self._data.data_filename() if self._data is not None else "-none-"),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('implementation', platform.python_implementation()),
