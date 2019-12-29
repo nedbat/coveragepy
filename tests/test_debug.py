@@ -18,7 +18,7 @@ from tests.helpers import re_line, re_lines
 
 
 class InfoFormatterTest(CoverageTest):
-    """Tests of misc.info_formatter."""
+    """Tests of debug.info_formatter."""
 
     run_in_temp_dir = False
 
@@ -29,19 +29,29 @@ class InfoFormatterTest(CoverageTest):
             ('regular', ['abc', 'def', 'ghi', 'jkl']),
             ('nothing', []),
         ]))
-        self.assertEqual(lines, [
-            '              x: hello there',
-            'very long label: one element',
-            '        regular: abc',
-            '                 def',
-            '                 ghi',
-            '                 jkl',
-            '        nothing: -none-',
-        ])
+        expected = [
+            '                             x: hello there',
+            '               very long label: one element',
+            '                       regular: abc',
+            '                                def',
+            '                                ghi',
+            '                                jkl',
+            '                       nothing: -none-',
+        ]
+        self.assertEqual(expected, lines)
 
     def test_info_formatter_with_generator(self):
         lines = list(info_formatter(('info%d' % i, i) for i in range(3)))
-        self.assertEqual(lines, ['info0: 0', 'info1: 1', 'info2: 2'])
+        expected = [
+            '                         info0: 0',
+            '                         info1: 1',
+            '                         info2: 2',
+        ]
+        self.assertEqual(expected, lines)
+
+    def test_too_long_label(self):
+        with self.assertRaises(AssertionError):
+            list(info_formatter([('this label is way too long and will not fit', 23)]))
 
 
 @pytest.mark.parametrize("label, header", [

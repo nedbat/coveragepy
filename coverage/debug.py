@@ -114,7 +114,8 @@ def info_formatter(info):
     info = list(info)
     if not info:
         return
-    label_len = max(len(l) for l, _d in info)
+    label_len = 30
+    assert all(len(l) < label_len for l, _ in info)
     for label, data in info:
         if data == []:
             data = "-none-"
