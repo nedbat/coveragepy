@@ -8,6 +8,7 @@ dist: xenial
 language: python
 
 cache: pip
+
 python:
   - '2.7'
   - '3.5'
@@ -16,6 +17,18 @@ python:
   - '3.8'
   - 'pypy2.7-6.0'
   - 'pypy3.5-6.0'
+
+# Only testing it for python3.8 on aarch64 platform, since it already has a lot of jobs to test and takes long time. 
+matrix:
+  include:
+    - python: 3.8
+      arch: arm64
+      env:
+        - COVERAGE_COVERAGE=no
+    - python: 3.8
+      arch: arm64
+      env:
+        - COVERAGE_COVERAGE=yes
 
 env:
   matrix:
