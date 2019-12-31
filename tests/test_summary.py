@@ -731,7 +731,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
     def test_missing_py_file_during_run(self):
         # PyPy2 doesn't run bare .pyc files.
-        if env.PYPY and env.PY2:
+        if env.PYPY2:
             self.skipTest("PyPy2 doesn't run bare .pyc files")
 
         # Create two Python files.
