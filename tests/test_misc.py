@@ -5,7 +5,8 @@
 
 import pytest
 
-from coverage.misc import arcz_to_arcs, contract, dummy_decorator_with_args, file_be_gone
+from coverage.misc import arcs_to_arcz_repr, arcz_to_arcs
+from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
 from coverage.misc import Hasher, one_of, substitute_variables
 from coverage.misc import CoverageException, USE_CONTRACTS
 
@@ -167,3 +168,21 @@ def test_substitute_variables_errors(text):
 ])
 def test_arcz_to_arcs(arcz, arcs):
     assert arcz_to_arcs(arcz) == arcs
+
+
+@pytest.mark.parametrize("arcs, arcz_repr", [
+    ([(-1, 1), (1, 2), (2, -1)], "(-1, 1) # .1\n(1, 2) # 12\n(2, -1) # 2.\n"),
+    ([(-1, 1), (1, 2), (2, -5)], "(-1, 1) # .1\n(1, 2) # 12\n(2, -5) # 2-5\n"),
+    ([(-26, 10), (12, 11), (18, 29), (35, -10), (1, 33), (100, 7)],
+        (
+        "(-26, 10) # -QA\n"
+        "(12, 11) # CB\n"
+        "(18, 29) # IT\n"
+        "(35, -10) # Z-A\n"
+        "(1, 33) # 1X\n"
+        "(100, 7) # ?7\n"
+        )
+    ),
+])
+def test_arcs_to_arcz_repr(arcs, arcz_repr):
+    assert arcs_to_arcz_repr(arcs) == arcz_repr

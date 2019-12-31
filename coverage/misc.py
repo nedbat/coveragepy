@@ -356,6 +356,37 @@ def arcz_to_arcs(arcz):
     return sorted(arcs)
 
 
+_arcz_unmap = {val: ch for ch, val in _arcz_map.items()}
+
+def _arcs_to_arcz_repr_one(num):
+    """Return an arcz form of the number `num`, or "?" if there is none."""
+    if num == -1:
+        return "."
+    z = ""
+    if num < 0:
+        z += "-"
+        num *= -1
+    z += _arcz_unmap.get(num, "?")
+    return z
+
+
+def arcs_to_arcz_repr(arcs):
+    """Convert a list of arcs to a readable multi-line form for asserting.
+
+    Each pair is on its own line, with a comment showing the arcz form,
+    to make it easier to decode when debugging test failures.
+
+    """
+    repr_list = []
+    for a, b in arcs:
+        line = repr((a, b))
+        line += " # "
+        line += _arcs_to_arcz_repr_one(a)
+        line += _arcs_to_arcz_repr_one(b)
+        repr_list.append(line)
+    return "\n".join(repr_list) + "\n"
+
+
 class BaseCoverageException(Exception):
     """The base of all Coverage exceptions."""
     pass
