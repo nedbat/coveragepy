@@ -1523,8 +1523,8 @@ class AsyncTest(CoverageTest):
         self.assertEqual(self.stdout(), "Compute 1 + 2 ...\n1 + 2 = 3\n")
 
     def test_async_for(self):
-        if env.PYBEHAVIOR.bug39114:
-            self.xfail("https://bugs.python.org/issue39114")
+        if env.PYVERSION >= (3, 9, 0, 'alpha', 2):
+            self.xfail("https://bugs.python.org/issue39166")
         self.check_coverage("""\
             import asyncio
 
