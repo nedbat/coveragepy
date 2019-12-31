@@ -5,11 +5,12 @@
 
 import textwrap
 
-from tests.coveragetest import CoverageTest
-
 from coverage import env
-from coverage.misc import arcz_to_arcs, NotPython
+from coverage.misc import NotPython
 from coverage.parser import PythonParser
+
+from tests.coveragetest import CoverageTest
+from tests.helpers import arcz_to_arcs
 
 
 class PythonParserTest(CoverageTest):

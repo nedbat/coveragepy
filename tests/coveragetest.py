@@ -26,8 +26,9 @@ from coverage import env
 from coverage.backunittest import TestCase, unittest
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
-from coverage.misc import arcs_to_arcz_repr, arcz_to_arcs, StopEverything
+from coverage.misc import StopEverything
 
+from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs
 from tests.helpers import run_command, SuperModuleCleaner
 
 
