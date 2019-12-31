@@ -11,18 +11,21 @@ import sys
 WINDOWS = sys.platform == "win32"
 LINUX = sys.platform.startswith("linux")
 
+# Python versions.
+PYVERSION = sys.version_info
+PY2 = PYVERSION < (3, 0)
+PY3 = PYVERSION >= (3, 0)
+
 # Python implementations.
 PYPY = (platform.python_implementation() == 'PyPy')
 if PYPY:
     PYPYVERSION = sys.pypy_version_info
 
+PYPY2 = PYPY and PY2
+PYPY3 = PYPY and PY3
+
 JYTHON = (platform.python_implementation() == 'Jython')
 IRONPYTHON = (platform.python_implementation() == 'IronPython')
-
-# Python versions.
-PYVERSION = sys.version_info
-PY2 = PYVERSION < (3, 0)
-PY3 = PYVERSION >= (3, 0)
 
 # Python behavior
 class PYBEHAVIOR(object):

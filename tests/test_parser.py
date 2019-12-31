@@ -138,6 +138,8 @@ class PythonParserTest(CoverageTest):
                 """)
 
     def test_decorator_pragmas(self):
+        if env.PYPY3 and env.PYPYVERSION >= (7, 3, 0):      # pragma: obscure
+            self.xfail("https://bitbucket.org/pypy/pypy/issues/3139")
         parser = self.parse_source("""\
             # 1
 
@@ -168,7 +170,7 @@ class PythonParserTest(CoverageTest):
             """)
         raw_statements = set([3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26])
         if env.PYBEHAVIOR.trace_decorated_def:
-            raw_statements.update([11, 19, 25])
+            raw_statements.update([11, 19])
         self.assertEqual(parser.raw_statements, raw_statements)
         self.assertEqual(parser.statements, set([8]))
 
