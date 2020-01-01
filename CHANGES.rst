@@ -30,6 +30,11 @@ Unreleased
   information about the config files read now shows absolute paths to the
   files.
 
+- The handling of source files with non-encodable file names has changed.
+  Previously, if a file name could not be encoded as UTF-8, an error occurred,
+  as described in `issue 891`_.  Now, those files will not be measured, since
+  their data would not be recordable.
+
 - A new warning ("dynamic-conflict") is issued if two mechanisms are trying to
   change the dynamic context.  Closes `issue 901`_.
 
@@ -37,6 +42,7 @@ Unreleased
   fixed (`issue 907`_).
 
 .. _issue 890: https://github.com/nedbat/coveragepy/issues/890
+.. _issue 891: https://github.com/nedbat/coveragepy/issues/891
 .. _issue 901: https://github.com/nedbat/coveragepy/issues/901
 .. _issue 907: https://github.com/nedbat/coveragepy/issues/907
 

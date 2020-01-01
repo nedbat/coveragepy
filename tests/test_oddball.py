@@ -3,6 +3,7 @@
 
 """Oddball cases for testing coverage.py"""
 
+import os.path
 import sys
 
 from flaky import flaky
@@ -561,6 +562,18 @@ class ExecTest(CoverageTest):
         _, statements, missing, _ = cov.analysis("to_exec.py")
         self.assertEqual(statements, [31])
         self.assertEqual(missing, [])
+
+    def test_unencodable_filename(self):
+        # https://github.com/nedbat/coveragepy/issues/891
+        if env.PYVERSION < (3, 0):
+            self.skipTest("Python 2 can't seem to compile the file.")
+        self.make_file("bug891.py", r"""exec(compile("pass", "\udcff.py", "exec"))""")
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "bug891")
+        # Saving would fail trying to encode \udcff.py
+        cov.save()
+        files = [os.path.basename(f) for f in cov.get_data().measured_files()]
+        assert "bug891.py" in files
 
 
 class MockingProtectionTest(CoverageTest):
