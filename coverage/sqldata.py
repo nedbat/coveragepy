@@ -971,15 +971,16 @@ class SqliteDb(SimpleReprMixin):
         self.filename = filename
         self.nest = 0
         self.con = None
+        # SQLite on Windows on py2 won't open a file if the filename argument
+        # has non-ascii characters in it.  Opening a relative file name avoids
+        # a problem if the current directory has non-ascii.
+        self.connect_filename = os.path.relpath(self.filename)
 
     def _connect(self):
         """Connect to the db and do universal initialization."""
         if self.con is not None:
             return
-        # SQLite on Windows on py2 won't open a file if the filename argument
-        # has non-ascii characters in it.  Opening a relative file name avoids
-        # a problem if the current directory has non-ascii.
-        filename = os.path.relpath(self.filename)
+
         # It can happen that Python switches threads while the tracer writes
         # data. The second thread will also try to write to the data,
         # effectively causing a nested context. However, given the idempotent
@@ -987,7 +988,7 @@ class SqliteDb(SimpleReprMixin):
         # is not a problem.
         if self.debug:
             self.debug.write("Connecting to {!r}".format(self.filename))
-        self.con = sqlite3.connect(filename, check_same_thread=False)
+        self.con = sqlite3.connect(self.connect_filename, check_same_thread=False)
         self.con.create_function('REGEXP', 2, _regexp)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
