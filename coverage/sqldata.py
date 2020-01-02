@@ -887,9 +887,10 @@ class CoverageData(SimpleReprMixin):
             if file_id is None:
                 return None
             else:
-                query = "select distinct fromno, tono from arc where file_id = ?"
                 data = [file_id]
+                query = "select fromno, tono from arc where file_id = ?"
                 if self._query_context_ids is not None:
+                    query = "select distinct fromno, tono from arc where file_id = ?"
                     ids_array = ', '.join('?' * len(self._query_context_ids))
                     query += " and context_id in (" + ids_array + ")"
                     data += self._query_context_ids
