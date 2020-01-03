@@ -1004,6 +1004,34 @@ class EnvironmentTest(CoverageTest):
         out = self.run_command("python -m run_coverage run how_is_it.py")
         self.assertIn("hello-xyzzy", out)
 
+    def test_bug_909(self):
+        # https://github.com/nedbat/coveragepy/issues/909
+        # The __init__ files were being imported before measurement started,
+        # so the line in __init__.py was being marked as missed, and there were
+        # warnings about measured files being imported before start.
+        self.make_file("proj/__init__.py", "print('Init')")
+        self.make_file("proj/thecode.py", "print('The code')")
+        self.make_file("proj/tests/__init__.py", "")
+        self.make_file("proj/tests/test_it.py", "import proj.thecode")
+
+        expected = "Init\nThe code\n"
+        actual = self.run_command("coverage run --source=proj -m proj.tests.test_it")
+        assert expected == actual
+
+        report = self.run_command("coverage report -m")
+
+        # Name                     Stmts   Miss  Cover   Missing
+        # ------------------------------------------------------
+        # proj/__init__.py             1      0   100%
+        # proj/tests/__init__.py       0      0   100%
+        # proj/tests/test_it.py        1      0   100%
+        # proj/thecode.py              1      0   100%
+        # ------------------------------------------------------
+        # TOTAL                        3      0   100%
+
+        squeezed = self.squeezed_lines(report)
+        assert squeezed[2].replace("\\", "/") == "proj/__init__.py 1 0 100%"
+
 
 class ExcepthookTest(CoverageTest):
     """Tests of sys.excepthook support."""
