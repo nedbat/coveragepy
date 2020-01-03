@@ -30,6 +30,11 @@ Unreleased
   information about the config files read now shows absolute paths to the
   files.
 
+- When running programs as modules (``coverage run -m``) with ``--source``,
+  some measured modules were imported before coverage starts.  This resulted in
+  unwanted warnings ("Already imported a file that will be measured") and a
+  reduction in coverage totals (`issue 909`_).  This is now fixed.
+
 - The handling of source files with non-encodable file names has changed.
   Previously, if a file name could not be encoded as UTF-8, an error occurred,
   as described in `issue 891`_.  Now, those files will not be measured, since
@@ -45,6 +50,7 @@ Unreleased
 .. _issue 891: https://github.com/nedbat/coveragepy/issues/891
 .. _issue 901: https://github.com/nedbat/coveragepy/issues/901
 .. _issue 907: https://github.com/nedbat/coveragepy/issues/907
+.. _issue 909: https://github.com/nedbat/coveragepy/issues/909
 
 
 .. _changes_501:
