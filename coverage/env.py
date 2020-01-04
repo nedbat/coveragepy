@@ -87,7 +87,7 @@ class PYBEHAVIOR(object):
 
     # Python 3.9a2 changed how return/finally was traced, but it was
     # temporary.
-    bug39114 = (PYVERSION == (3, 9, 0, 'alpha', 2, 0))
+    bpo39114 = (PYVERSION == (3, 9, 0, 'alpha', 2, 0))
 
 # Coverage.py specifics.
 
