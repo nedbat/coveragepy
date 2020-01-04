@@ -467,8 +467,8 @@ Version 5.0a1 --- 2018-06-05
 
 .. _changes_454:
 
-Version 4.5.4 -- 2019-07-29
----------------------------
+Version 4.5.4 --- 2019-07-29
+----------------------------
 
 - Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
   `issue 828`_.
@@ -478,8 +478,8 @@ Version 4.5.4 -- 2019-07-29
 
 .. _changes_453:
 
-Version 4.5.3 -- 2019-03-09
----------------------------
+Version 4.5.3 --- 2019-03-09
+----------------------------
 
 - Only packaging metadata changes.
 
