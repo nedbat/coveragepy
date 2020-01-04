@@ -295,6 +295,21 @@ class ApiTest(CoverageTest):
         with self.assertRaisesRegex(CoverageException, "No data to report."):
             cov.report()
 
+    def test_completely_zero_reporting(self):
+        # https://github.com/nedbat/coveragepy/issues/884
+        # If nothing was measured, the file-touching didn't happen properly.
+        self.make_file("foo/bar.py", "print('Never run')")
+        self.make_file("test.py", "assert True")
+        cov = coverage.Coverage(source=["foo"])
+        self.start_import_stop(cov, "test")
+        cov.report()
+        # Name         Stmts   Miss  Cover
+        # --------------------------------
+        # foo/bar.py       1      1     0%
+
+        last = self.last_line_squeezed(self.stdout()).replace("\\", "/")
+        self.assertEqual("foo/bar.py 1 1 0%", last)
+
     def test_cov4_data_file(self):
         cov4_data = (
             "!coverage.py: This is a private format, don't read it directly!"

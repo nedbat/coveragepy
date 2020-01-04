@@ -716,7 +716,7 @@ class Coverage(object):
 
         # Touch all the files that could have executed, so that we can
         # mark completely unexecuted files as 0% covered.
-        if self._data:
+        if self._data is not None:
             for file_path, plugin_name in self._inorout.find_possibly_unexecuted_files():
                 file_path = self._file_mapper(file_path)
                 self._data.touch_file(file_path, plugin_name)

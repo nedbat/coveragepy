@@ -35,6 +35,9 @@ Unreleased
   unwanted warnings ("Already imported a file that will be measured") and a
   reduction in coverage totals (`issue 909`_).  This is now fixed.
 
+- If no data was collected, an exception about "No data to report" could happen
+  instead of a 0% report being created (`issue 884`_).  This is now fixed.
+
 - The handling of source files with non-encodable file names has changed.
   Previously, if a file name could not be encoded as UTF-8, an error occurred,
   as described in `issue 891`_.  Now, those files will not be measured, since
@@ -46,6 +49,7 @@ Unreleased
 - ``coverage run --debug=sys`` would fail with an AttributeError. This is now
   fixed (`issue 907`_).
 
+.. _issue 884: https://github.com/nedbat/coveragepy/issues/884
 .. _issue 890: https://github.com/nedbat/coveragepy/issues/890
 .. _issue 891: https://github.com/nedbat/coveragepy/issues/891
 .. _issue 901: https://github.com/nedbat/coveragepy/issues/901
