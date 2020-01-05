@@ -16,14 +16,16 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
-    ..  .. _changes_781:
+    ..  .. _changes_981:
     ..
-    ..  Version 7.8.1 --- 2021-07-27
+    ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
 
 
-Unreleased
-----------
+.. _changes_502:
+
+Version 5.0.2 --- 2020-01-05
+----------------------------
 
 - Programs that used multiprocessing and changed directories would fail under
   coverage.  This is now fixed (`issue 890`_).  A side effect is that debug
