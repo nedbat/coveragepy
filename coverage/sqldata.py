@@ -894,7 +894,7 @@ class CoverageData(SimpleReprMixin):
                     query += " and context_id in (" + ids_array + ")"
                     data += self._query_context_ids
                 arcs = con.execute(query, data)
-                return list(set(arcs))
+                return sorted(list(set(arcs))
 
     def contexts_by_lineno(self, filename):
         """Get the contexts for each line in a file.
