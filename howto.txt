@@ -87,7 +87,6 @@
         - visit https://readthedocs.org/dashboard/coverage/advanced/
         - change the default version to the new version
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
-- push git changes
 - Update nedbatchelder.com
     - Blog post?
 - Announce on TIP.
