@@ -62,6 +62,14 @@ See the `Quick Start section`_ of the docs.
 .. _Quick Start section: https://coverage.readthedocs.io/#quick-start
 
 
+Change history
+--------------
+
+The complete history of changes is on the `change history page`_.
+
+.. _change history page: https://coverage.readthedocs.io/en/latest/changes.html
+
+
 Contributing
 ------------
 
