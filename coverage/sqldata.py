@@ -16,6 +16,7 @@ import sqlite3
 import sys
 import zlib
 
+from coverage import env
 from coverage.backward import get_thread_id, iitems, to_bytes, to_string
 from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
 from coverage.files import PathAliases
@@ -971,22 +972,25 @@ class SqliteDb(SimpleReprMixin):
         self.filename = filename
         self.nest = 0
         self.con = None
-        # SQLite on Windows on py2 won't open a file if the filename argument
-        # has non-ascii characters in it.  Opening a relative file name avoids
-        # a problem if the current directory has non-ascii.
-        try:
-            self.connect_filename = os.path.relpath(self.filename)
-        except ValueError:
-            # ValueError can be raised under Windows when os.getcwd() returns a
-            # folder from a different drive than the drive of self.filename in
-            # which case we keep the original value of self.filename unchanged,
-            # hoping that we won't face the non-ascii directory problem.
-            self.connect_filename = self.filename
 
     def _connect(self):
         """Connect to the db and do universal initialization."""
         if self.con is not None:
             return
+
+        # SQLite on Windows on py2 won't open a file if the filename argument
+        # has non-ascii characters in it.  Opening a relative file name avoids
+        # a problem if the current directory has non-ascii.
+        filename = self.filename
+        if env.WINDOWS and env.PY2:
+            try:
+                filename = os.path.relpath(self.filename)
+            except ValueError:
+                # ValueError can be raised under Windows when os.getcwd() returns a
+                # folder from a different drive than the drive of self.filename in
+                # which case we keep the original value of self.filename unchanged,
+                # hoping that we won't face the non-ascii directory problem.
+                pass
 
         # It can happen that Python switches threads while the tracer writes
         # data. The second thread will also try to write to the data,
@@ -995,7 +999,7 @@ class SqliteDb(SimpleReprMixin):
         # is not a problem.
         if self.debug:
             self.debug.write("Connecting to {!r}".format(self.filename))
-        self.con = sqlite3.connect(self.connect_filename, check_same_thread=False)
+        self.con = sqlite3.connect(filename, check_same_thread=False)
         self.con.create_function('REGEXP', 2, _regexp)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.

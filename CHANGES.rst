@@ -24,7 +24,11 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- A performance improvement in 5.0.2 didn't work for test suites that changed
+  directory before combining data, causing "Couldn't use data file: no such
+  table: meta" errors (`issue 916`_).  This is now fixed.
+
+.. _issue 916: https://github.com/nedbat/coveragepy/issues/916
 
 
 .. _changes_502:
