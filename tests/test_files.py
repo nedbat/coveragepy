@@ -174,12 +174,15 @@ class MatcherTest(CoverageTest):
     def test_module_matcher(self):
         matches_to_try = [
             ('test', True),
+            ('te.*', True),
             ('trash', False),
+            ('tra.*', False),
             ('testing', False),
             ('test.x', True),
             ('test.x.y.z', True),
             ('py', False),
             ('py.t', False),
+            ('py.t.*', True),
             ('py.test', True),
             ('py.testing', False),
             ('py.test.buz', True),

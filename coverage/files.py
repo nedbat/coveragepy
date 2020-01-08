@@ -242,6 +242,7 @@ class ModuleMatcher(object):
     """A matcher for modules in a tree."""
     def __init__(self, module_names):
         self.modules = list(module_names)
+        self.module_patterns = [re.compile(m) for m in self.modules]
 
     def __repr__(self):
         return "<ModuleMatcher %r>" % (self.modules)
@@ -262,6 +263,10 @@ class ModuleMatcher(object):
                 if module_name[len(m)] == '.':
                     # This is a module in the package
                     return True
+
+        for pattern in self.module_patterns:
+            if pattern.match(module_name):
+                return True
 
         return False
 
