@@ -998,7 +998,7 @@ class TestRunnerPluginTest(CoverageTest):
     way they do.
 
     """
-    def pretend_to_be_nose_with_cover(self, erase):
+    def pretend_to_be_nose_with_cover(self, erase=False, cd=False):
         """This is what the nose --with-cover plugin does."""
         self.make_file("no_biggie.py", """\
             a = 1
@@ -1006,6 +1006,7 @@ class TestRunnerPluginTest(CoverageTest):
             if b == 1:
                 c = 4
             """)
+        self.make_file("sub/hold.txt", "")
 
         cov = coverage.Coverage()
         if erase:
@@ -1013,6 +1014,8 @@ class TestRunnerPluginTest(CoverageTest):
             cov.erase()
         cov.load()
         self.start_import_stop(cov, "no_biggie")
+        if cd:
+            os.chdir("sub")
         cov.combine()
         cov.save()
         cov.report(["no_biggie.py"], show_missing=True)
@@ -1021,12 +1024,18 @@ class TestRunnerPluginTest(CoverageTest):
             --------------------------------------------
             no_biggie.py       4      1    75%   4
             """))
+        if cd:
+            os.chdir("..")
 
     def test_nose_plugin(self):
-        self.pretend_to_be_nose_with_cover(erase=False)
+        self.pretend_to_be_nose_with_cover()
 
     def test_nose_plugin_with_erase(self):
         self.pretend_to_be_nose_with_cover(erase=True)
+
+    def test_nose_plugin_with_cd(self):
+        # https://github.com/nedbat/coveragepy/issues/916
+        self.pretend_to_be_nose_with_cover(cd=True)
 
     def pretend_to_be_pytestcov(self, append):
         """Act like pytest-cov."""
