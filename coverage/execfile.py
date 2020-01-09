@@ -13,7 +13,7 @@ import types
 from coverage import env
 from coverage.backward import BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
-from coverage.files import python_reported_file
+from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
 from coverage.phystokens import compile_unicode
 from coverage.python import get_python_source
@@ -120,14 +120,11 @@ class PyRunner(object):
 
         This needs to happen before any importing, and without importing anything.
         """
-        should_update_sys_path = True
         if self.as_module:
             if env.PYBEHAVIOR.actual_syspath0_dash_m:
                 path0 = os.getcwd()
             else:
                 path0 = ""
-            sys.path[0] = path0
-            should_update_sys_path = False
         elif os.path.isdir(self.arg0):
             # Running a directory means running the __main__.py file in that
             # directory.
@@ -135,17 +132,29 @@ class PyRunner(object):
         else:
             path0 = os.path.abspath(os.path.dirname(self.arg0))
 
-
-        if should_update_sys_path:
+        if os.path.isdir(sys.path[0]):
             # sys.path fakery.  If we are being run as a command, then sys.path[0]
             # is the directory of the "coverage" script.  If this is so, replace
             # sys.path[0] with the directory of the file we're running, or the
             # current directory when running modules.  If it isn't so, then we
             # don't know what's going on, and just leave it alone.
             top_file = inspect.stack()[-1][0].f_code.co_filename
-            if os.path.abspath(sys.path[0]) == os.path.abspath(os.path.dirname(top_file)):
-                # Set sys.path correctly.
-                sys.path[0] = python_reported_file(path0)
+            sys_path_0_abs = os.path.abspath(sys.path[0])
+            top_file_dir_abs = os.path.abspath(os.path.dirname(top_file))
+            sys_path_0_abs = canonical_filename(sys_path_0_abs)
+            top_file_dir_abs = canonical_filename(top_file_dir_abs)
+            if sys_path_0_abs != top_file_dir_abs:
+                path0 = None
+
+        else:
+            # sys.path[0] is a file. Is the next entry the directory containing
+            # that file?
+            if sys.path[1] == os.path.dirname(sys.path[0]):
+                # Can it be right to always remove that?
+                del sys.path[1]
+
+        if path0 is not None:
+            sys.path[0] = python_reported_file(path0)
 
     def _prepare2(self):
         """Do more preparation to run Python code.

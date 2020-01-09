@@ -28,6 +28,15 @@ Unreleased
   directory before combining data, causing "Couldn't use data file: no such
   table: meta" errors (`issue 916`_).  This is now fixed.
 
+- Coverage could fail to run your program with some form of "ModuleNotFound" or
+  "ImportError" trying to import from the current directory. This would happen
+  if coverage had been packaged into a zip file (for example, on Windows), or
+  was found indirectly (for example, by pyenv-virtualenv).  A number of
+  different scenarios were described in `issue 862`_ which is now fixed.  Huge
+  thanks to Agbonze O. Jeremiah for reporting it, and Alexander Waters and
+  George-Cristian Bîrzan for protracted debugging sessions.
+
+.. _issue 862: https://github.com/nedbat/coveragepy/issues/862
 .. _issue 916: https://github.com/nedbat/coveragepy/issues/916
 
 
