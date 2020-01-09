@@ -58,6 +58,7 @@ Frazer McLean
 Geoff Bache
 George Paci
 George Song
+George-Cristian Bîrzan
 Greg Rogers
 Guido van Rossum
 Guillaume Chazarain

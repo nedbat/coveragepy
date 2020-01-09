@@ -23,7 +23,7 @@ from coverage.data import line_counts
 from coverage.files import python_reported_file
 from coverage.misc import output_encoding
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.helpers import re_lines
 
 
@@ -971,6 +971,17 @@ class EnvironmentTest(CoverageTest):
         expected = self.run_command("python -m package")
         actual = self.run_command("coverage run -m package")
         self.assertMultiLineEqual(expected, actual)
+
+    def test_coverage_zip_is_like_python(self):
+        # Test running coverage from a zip file itself.  Some environments
+        # (windows?) zip up the coverage main to be used as the coverage
+        # command.
+        with open(TRY_EXECFILE) as f:
+            self.make_file("run_me.py", f.read())
+        expected = self.run_command("python run_me.py")
+        cov_main = os.path.join(TESTS_DIR, "covmain.zip")
+        actual = self.run_command("python {} run run_me.py".format(cov_main))
+        self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_custom_script(self):
         # https://github.com/nedbat/coveragepy/issues/678

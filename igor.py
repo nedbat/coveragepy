@@ -225,6 +225,10 @@ def do_zip_mods():
 
     zf.close()
 
+    zf = zipfile.ZipFile("tests/covmain.zip", "w")
+    zf.write("coverage/__main__.py", "__main__.py")
+    zf.close()
+
 
 def do_install_egg():
     """Install the egg1 egg for tests."""

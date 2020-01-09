@@ -24,7 +24,7 @@ clean: clean_platform                   ## Remove artifacts of test execution, i
 	rm -f .coverage .coverage.* coverage.xml .metacov*
 	rm -f .tox/*/lib/*/site-packages/zzz_metacov.pth
 	rm -f */.coverage */*/.coverage */*/*/.coverage */*/*/*/.coverage */*/*/*/*/.coverage */*/*/*/*/*/.coverage
-	rm -f tests/zipmods.zip
+	rm -f tests/covmain.zip tests/zipmods.zip
 	rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
 	rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	rm -rf doc/_build doc/_spell doc/sample_html_beta
