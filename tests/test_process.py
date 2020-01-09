@@ -9,6 +9,7 @@ import glob
 import os
 import os.path
 import re
+import stat
 import sys
 import textwrap
 import time
@@ -1003,6 +1004,23 @@ class EnvironmentTest(CoverageTest):
 
         out = self.run_command("python -m run_coverage run how_is_it.py")
         self.assertIn("hello-xyzzy", out)
+
+    def test_bug_862(self):
+        if env.WINDOWS:
+            self.skipTest("Windows can't make symlinks")
+        # This simulates how pyenv and pyenv-virtualenv end up creating the
+        # coverage executable.
+        self.make_file("elsewhere/bin/fake-coverage", """\
+            #!{executable}
+            import sys, pkg_resources
+            sys.exit(pkg_resources.load_entry_point('coverage', 'console_scripts', 'coverage')())
+            """.format(executable=sys.executable))
+        os.chmod("elsewhere/bin/fake-coverage", stat.S_IREAD | stat.S_IEXEC)
+        os.symlink("elsewhere", "somewhere")
+        self.make_file("foo.py", "print('inside foo')")
+        self.make_file("bar.py", "import foo")
+        out = self.run_command("somewhere/bin/fake-coverage run bar.py")
+        self.assertEqual("inside foo\n", out)
 
     def test_bug_909(self):
         # https://github.com/nedbat/coveragepy/issues/909
