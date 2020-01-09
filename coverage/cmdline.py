@@ -715,7 +715,7 @@ class CoverageScript(object):
         """Implementation of 'coverage debug'."""
 
         if not args:
-            show_help("What information would you like: config, data, sys?")
+            show_help("What information would you like: config, data, sys, premain?")
             return ERR
 
         for info in args:
@@ -747,6 +747,10 @@ class CoverageScript(object):
                 config_info = self.coverage.config.__dict__.items()
                 for line in info_formatter(config_info):
                     print(" %s" % line)
+            elif info == "premain":
+                print(info_header("premain"))
+                from coverage.debug import short_stack
+                print(short_stack())
             else:
                 show_help("Don't know what you mean by %r" % info)
                 return ERR
