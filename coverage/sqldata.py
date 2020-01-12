@@ -951,9 +951,13 @@ class CoverageData(SimpleReprMixin):
         Returns a list of (key, value) pairs.
 
         """
+        with SqliteDb(":memory:", debug=NoDebugging()) as db:
+            compile_options = [row[0] for row in db.execute("pragma compile_options")]
+
         return [
             ('sqlite3_version', sqlite3.version),
             ('sqlite3_sqlite_version', sqlite3.sqlite_version),
+            ('sqlite3_compile_options', compile_options),
         ]
 
 
