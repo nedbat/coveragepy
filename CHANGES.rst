@@ -39,6 +39,10 @@ Version 5.0.3 --- 2020-01-12
   thanks to Agbonze O. Jeremiah for reporting it, and Alexander Waters and
   George-Cristian Bîrzan for protracted debugging sessions.
 
+- Added the "premain" debug option.
+
+- Added SQLite compile-time options to the "debug sys" output.
+
 .. _issue 862: https://github.com/nedbat/coveragepy/issues/862
 .. _issue 916: https://github.com/nedbat/coveragepy/issues/916
 
