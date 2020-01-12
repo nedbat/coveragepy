@@ -192,7 +192,7 @@ class CoverageData(SimpleReprMixin):
                 write any disk file.
             warn: a warning callback function, accepting a warning message
                 argument.
-            debug: a debug callback function.
+            debug: a `DebugControl` object (optional)
 
         """
         self._no_disk = no_disk
@@ -963,7 +963,7 @@ class SqliteDb(SimpleReprMixin):
     Use as a context manager, then you can use it like a
     :class:`python:sqlite3.Connection` object::
 
-        with SqliteDb(filename, debug=True) as db:
+        with SqliteDb(filename, debug_control) as db:
             db.execute("insert into schema (version) values (?)", (SCHEMA_VERSION,))
 
     """
@@ -1025,8 +1025,13 @@ class SqliteDb(SimpleReprMixin):
     def __exit__(self, exc_type, exc_value, traceback):
         self.nest -= 1
         if self.nest == 0:
-            self.con.__exit__(exc_type, exc_value, traceback)
-            self.close()
+            try:
+                self.con.__exit__(exc_type, exc_value, traceback)
+                self.close()
+            except Exception as exc:
+                if self.debug:
+                    self.debug.write("EXCEPTION from __exit__: {}".format(exc))
+                raise
 
     def execute(self, sql, parameters=()):
         """Same as :meth:`python:sqlite3.Connection.execute`."""
@@ -1049,6 +1054,8 @@ class SqliteDb(SimpleReprMixin):
                         )
             except Exception:
                 pass
+            if self.debug:
+                self.debug.write("EXCEPTION from execute: {}".format(msg))
             raise CoverageException("Couldn't use data file {!r}: {}".format(self.filename, msg))
 
     def executemany(self, sql, data):
