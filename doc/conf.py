@@ -68,9 +68,9 @@ copyright = u'2009\N{EN DASH}2020, Ned Batchelder.'     # CHANGEME  # pylint: di
 # The short X.Y version.
 version = '5.0'                                 # CHANGEME
 # The full version, including alpha/beta/rc tags.
-release = '5.0.2'                               # CHANGEME
+release = '5.0.3'                               # CHANGEME
 # The date of release, in "monthname day, year" format.
-release_date = 'January 5, 2020'                # CHANGEME
+release_date = 'January 12, 2020'               # CHANGEME
 
 rst_epilog = """
 .. |release_date| replace:: {release_date}

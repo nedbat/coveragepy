@@ -21,8 +21,11 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+
+.. _changes_503:
+
+Version 5.0.3 --- 2020-01-12
+----------------------------
 
 - A performance improvement in 5.0.2 didn't work for test suites that changed
   directory before combining data, causing "Couldn't use data file: no such
