@@ -18,7 +18,7 @@ from coverage import Coverage
 from coverage import env
 from coverage.collector import CTracer
 from coverage.data import line_counts
-from coverage.debug import info_formatter, info_header
+from coverage.debug import info_formatter, info_header, short_stack
 from coverage.execfile import PyRunner
 from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource, output_encoding
 from coverage.results import should_fail_under
@@ -749,7 +749,6 @@ class CoverageScript(object):
                     print(" %s" % line)
             elif info == "premain":
                 print(info_header("premain"))
-                from coverage.debug import short_stack
                 print(short_stack())
             else:
                 show_help("Don't know what you mean by %r" % info)
