@@ -952,11 +952,13 @@ class CoverageData(SimpleReprMixin):
 
         """
         with SqliteDb(":memory:", debug=NoDebugging()) as db:
+            temp_store = [row[0] for row in db.execute("pragma temp_store")]
             compile_options = [row[0] for row in db.execute("pragma compile_options")]
 
         return [
             ('sqlite3_version', sqlite3.version),
             ('sqlite3_sqlite_version', sqlite3.sqlite_version),
+            ('sqlite3_temp_store', temp_store),
             ('sqlite3_compile_options', compile_options),
         ]
 
