@@ -268,7 +268,7 @@ class CoverageData(SimpleReprMixin):
         """Read the metadata from a database so that we are ready to use it."""
         with self._dbs[get_thread_id()] as db:
             try:
-                schema_version, = db.execute("select version from coverage_schema").fetchone()
+                schema_version, = db.execute_one("select version from coverage_schema")
             except Exception as exc:
                 raise CoverageException(
                     "Data file {!r} doesn't seem to be a coverage data file: {}".format(
@@ -374,7 +374,7 @@ class CoverageData(SimpleReprMixin):
         assert context is not None
         self._start_using()
         with self._connect() as con:
-            row = con.execute("select id from context where context = ?", (context,)).fetchone()
+            row = con.execute_one("select id from context where context = ?", (context,))
             if row is not None:
                 return row[0]
             else:
@@ -789,7 +789,7 @@ class CoverageData(SimpleReprMixin):
             file_id = self._file_id(filename)
             if file_id is None:
                 return None
-            row = con.execute("select tracer from tracer where file_id = ?", (file_id,)).fetchone()
+            row = con.execute_one("select tracer from tracer where file_id = ?", (file_id,))
             if row is not None:
                 return row[0] or ""
             return ""   # File was measured, but no tracer associated.
@@ -1061,6 +1061,23 @@ class SqliteDb(SimpleReprMixin):
             if self.debug:
                 self.debug.write("EXCEPTION from execute: {}".format(msg))
             raise CoverageException("Couldn't use data file {!r}: {}".format(self.filename, msg))
+
+    def execute_one(self, sql, parameters=()):
+        """Execute a statement and return the one row that results.
+
+        This is like execute(sql, parameters).fetchone(), except it is
+        correct in reading the entire result set.  This will raise an
+        exception if more than one row results.
+
+        Returns a row, or None if there were no rows.
+        """
+        rows = list(self.execute(sql, parameters))
+        if len(rows) == 0:
+            return None
+        elif len(rows) == 1:
+            return rows[0]
+        else:
+            raise CoverageException("Sql {!r} shouldn't return {} rows".format(sql, len(rows)))
 
     def executemany(self, sql, data):
         """Same as :meth:`python:sqlite3.Connection.executemany`."""
