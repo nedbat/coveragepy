@@ -101,10 +101,6 @@ class CoverageTest(
         self.last_command_output = None
         self.last_module_name = None
 
-    def xfail(self, msg):
-        """Mark this test as an expected failure."""
-        pytest.xfail(msg)
-
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
 
@@ -501,3 +497,8 @@ def command_line(args):
     script = CoverageScript()
     ret = script.command_line(shlex.split(args))
     return ret
+
+
+def xfail(condition, reason):
+    """A decorator to mark as test as expected to fail."""
+    return pytest.mark.xfail(condition, reason=reason, strict=True)

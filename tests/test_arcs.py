@@ -3,7 +3,7 @@
 
 """Tests for coverage.py's arc measurement."""
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, xfail
 
 import coverage
 from coverage import env
@@ -629,9 +629,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
 
+    @xfail(env.PYBEHAVIOR.bpo39114, reason="https://bugs.python.org/issue39114")
     def test_break_through_finally(self):
-        if env.PYBEHAVIOR.bpo39114:
-            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = ".1 12 23 34 3D 45 56 67 68 7A 7D 8A A3 A7 BC CD D."
         else:
@@ -655,9 +654,8 @@ class ExceptionArcTest(CoverageTest):
             arcz_missing="3D BC CD",
         )
 
+    @xfail(env.PYBEHAVIOR.bpo39114, "https://bugs.python.org/issue39114")
     def test_continue_through_finally(self):
-        if env.PYBEHAVIOR.bpo39114:
-            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = ".1 12 23 34 3D 45 56 67 68 73 7A 8A A3 A7 BC CD D."
         else:
@@ -694,9 +692,8 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 35 56 61 17 7.",
         )
 
+    @xfail(env.PYBEHAVIOR.bpo39114, "https://bugs.python.org/issue39114")
     def test_bug_212(self):
-        if env.PYBEHAVIOR.bpo39114:
-            self.xfail("https://bugs.python.org/issue39114")
         # "except Exception as e" is crucial here.
         # Bug 212 said that the "if exc" line was incorrectly marked as only
         # partially covered.
@@ -818,9 +815,8 @@ class ExceptionArcTest(CoverageTest):
             arcz_unpredicted="45 7A AB",
         )
 
+    @xfail(env.PYBEHAVIOR.bpo39114, "https://bugs.python.org/issue39114")
     def test_return_finally(self):
-        if env.PYBEHAVIOR.bpo39114:
-            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = ".1 12 29 9A AB BC C-1   -23 34 45 5-2 57 75 38 8-2"
         else:
@@ -842,9 +838,8 @@ class ExceptionArcTest(CoverageTest):
             arcz=arcz,
         )
 
+    @xfail(env.PYBEHAVIOR.bpo39114, "https://bugs.python.org/issue39114")
     def test_except_jump_finally(self):
-        if env.PYBEHAVIOR.bpo39114:
-            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = (
                 ".1 1Q QR RS ST TU U. "
@@ -898,9 +893,8 @@ class ExceptionArcTest(CoverageTest):
             arcz_unpredicted="67",
         )
 
+    @xfail(env.PYBEHAVIOR.bpo39114, "https://bugs.python.org/issue39114")
     def test_else_jump_finally(self):
-        if env.PYBEHAVIOR.bpo39114:
-            self.xfail("https://bugs.python.org/issue39114")
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = (
                 ".1 1S ST TU UV VW W. "
@@ -1522,9 +1516,8 @@ class AsyncTest(CoverageTest):
         )
         self.assertEqual(self.stdout(), "Compute 1 + 2 ...\n1 + 2 = 3\n")
 
+    @xfail(env.PYVERSION == (3, 9, 0, 'alpha', 2, 0), "https://bugs.python.org/issue39166")
     def test_async_for(self):
-        if env.PYVERSION == (3, 9, 0, 'alpha', 2, 0):
-            self.xfail("https://bugs.python.org/issue39166")
         self.check_coverage("""\
             import asyncio
 

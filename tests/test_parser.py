@@ -9,7 +9,7 @@ from coverage import env
 from coverage.misc import NotPython
 from coverage.parser import PythonParser
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, xfail
 from tests.helpers import arcz_to_arcs
 
 
@@ -137,9 +137,12 @@ class PythonParserTest(CoverageTest):
                 '''
                 """)
 
+
+    @xfail(
+        env.PYPY3 and env.PYPYVERSION >= (7, 3, 0),
+        "https://bitbucket.org/pypy/pypy/issues/3139",
+    )
     def test_decorator_pragmas(self):
-        if env.PYPY3 and env.PYPYVERSION >= (7, 3, 0):      # pragma: obscure
-            self.xfail("https://bitbucket.org/pypy/pypy/issues/3139")
         parser = self.parse_source("""\
             # 1
 

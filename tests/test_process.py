@@ -23,7 +23,7 @@ from coverage.data import line_counts
 from coverage.files import python_reported_file
 from coverage.misc import output_encoding
 
-from tests.coveragetest import CoverageTest, TESTS_DIR
+from tests.coveragetest import CoverageTest, TESTS_DIR, xfail
 from tests.helpers import re_lines
 
 
@@ -742,12 +742,14 @@ class ProcessTest(CoverageTest):
         # about 5.
         self.assertGreater(line_counts(data)['os.py'], 50)
 
+    @xfail(
+        env.PYPY3 and env.PYPYVERSION >= (7, 1, 1),
+        "https://bitbucket.org/pypy/pypy/issues/3074"
+    )
     def test_lang_c(self):
         if env.JYTHON:
             # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
             self.skipTest("Jython can't handle this test")
-        if env.PYPY3 and env.PYPYVERSION >= (7, 1, 1):          # pragma: obscure
-            self.xfail("https://bitbucket.org/pypy/pypy/issues/3074")
         # LANG=C forces getfilesystemencoding on Linux to 'ascii', which causes
         # failures with non-ascii file names. We don't want to make a real file
         # with strange characters, though, because that gets the test runners
