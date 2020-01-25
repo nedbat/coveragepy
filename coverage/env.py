@@ -85,10 +85,6 @@ class PYBEHAVIOR(object):
     # Python 3.9a1 made sys.argv[0] and other reported files absolute paths.
     report_absolute_files = (PYVERSION >= (3, 9))
 
-    # Python 3.9a2 changed how return/finally was traced, but it was
-    # temporary.
-    bpo39114 = (PYVERSION == (3, 9, 0, 'alpha', 2, 0))
-
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?
