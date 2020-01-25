@@ -24,7 +24,7 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- Updated Python 3.9 support to 3.9a3.
 
 
 .. _changes_503:
