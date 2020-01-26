@@ -222,8 +222,8 @@ extlinks = {
     'github': ('https://github.com/nedbat/coveragepy/issues/%s', 'issue '),
 }
 
-# When auto-doc'ing a class, write the class' docstring and the __init__ docstring
-# into the class docs.
+# When auto-doc'ing a class, only write the class' docstring into the class docs,
+# don't automatically include the __init__ docstring.
 autoclass_content = "class"
 
 prerelease = bool(max(release).isalpha())
