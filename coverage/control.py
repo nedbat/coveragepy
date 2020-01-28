@@ -545,7 +545,7 @@ class Coverage(object):
     def _atexit(self):
         """Clean up on process shutdown."""
         if self._debug.should("process"):
-            self._debug.write("atexit: {!r}".format(self))
+            self._debug.write("atexit: pid: {}, instance: {!r}".format(os.getpid(), self))
         if self._started:
             self.stop()
         if self._auto_save:
