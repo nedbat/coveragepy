@@ -4,5 +4,4 @@
 # The version of tox used by coverage.py
 tox==3.14.3
 # Adds env recreation on requirements file changes.
-# Waiting for https://github.com/signalpillar/tox-battery/issues/19
-#tox-battery==0.5.1
+tox-battery==0.5.2
