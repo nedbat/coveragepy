@@ -22,6 +22,7 @@ Ben Finney
 Bill Hart
 Brandon Rhodes
 Brett Cannon
+Bruno P. Kinoshita
 Buck Evan
 Calen Pennington
 Carl Gieringer
