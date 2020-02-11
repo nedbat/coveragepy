@@ -33,12 +33,12 @@
 
         <h2 class="stats">
             {{nums.n_statements}} statements &nbsp;
-            <span class="{{category.run}} shortkey_r button_toggle_run">{{nums.n_executed}} run</span>
-            <span class="{{category.mis}} shortkey_m button_toggle_mis">{{nums.n_missing}} missing</span>
-            <span class="{{category.exc}} shortkey_x button_toggle_exc">{{nums.n_excluded}} excluded</span>
+            <button type="button" class="{{category.run}} shortkey_r button_toggle_run" title="Toggle lines run">{{nums.n_executed}} run</button>
+            <button type="button" class="{{category.mis}} shortkey_m button_toggle_mis" title="Toggle lines missing">{{nums.n_missing}} missing</button>
+            <button type="button" class="{{category.exc}} shortkey_x button_toggle_exc" title="Toggle lines excluded">{{nums.n_excluded}} excluded</button>
 
             {% if has_arcs %}
-                <span class="{{category.par}} shortkey_p button_toggle_par">{{nums.n_partial_branches}} partial</span>
+                <button type="button" class="{{category.par}} shortkey_p button_toggle_par" title="Toggle lines partially run">{{nums.n_partial_branches}} partial</button>
             {% endif %}
         </h2>
     </div>
