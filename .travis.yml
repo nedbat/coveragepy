@@ -8,33 +8,27 @@ dist: xenial
 language: python
 
 cache: pip
+
+python:
+  - '2.7'
+  - '3.5'
+  - '3.6'
+  - '3.7'
+  - '3.8'
+  - 'pypy2.7-6.0'
+  - 'pypy3.5-6.0'
+
+# Only testing it for python3.8 on aarch64 platform, since it already has a lot of jobs to test and takes long time. 
 matrix:
   include:
-    - arch: arm64
-      python: 2.7
-    - arch: amd64
-      python: 2.7
-    - arch: arm64
-      python: 3.5
-    - arch: amd64
-      python: 3.5
-    - arch: arm64
-      python: 3.6
-    - arch: amd64
-      python: 3.6
-    - arch: arm64
-      python: 3.7
-    - arch: amd64
-      python: 3.7
-    - arch: arm64
-      python: 3.8
-    - arch: amd64
-      python: 3.8
-    - arch: amd64
-      python: pypy2.7-6.0
-    - arch: amd64
-      python: pypy3.5-6.0
-      # Skipping for Arm64, pypy has aarch64 support - but it isn't released yet.
+    - python: 3.8
+      arch: arm64
+      env:
+        - COVERAGE_COVERAGE=no
+    - python: 3.8
+      arch: arm64
+      env:
+        - COVERAGE_COVERAGE=yes
 
 env:
   matrix:
