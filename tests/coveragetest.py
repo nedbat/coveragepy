@@ -26,8 +26,9 @@ from coverage import env
 from coverage.backunittest import TestCase, unittest
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
-from coverage.misc import arcz_to_arcs, StopEverything
+from coverage.misc import StopEverything
 
+from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs
 from tests.helpers import run_command, SuperModuleCleaner
 
 
@@ -100,10 +101,6 @@ class CoverageTest(
         self.last_command_output = None
         self.last_module_name = None
 
-    def xfail(self, msg):
-        """Mark this test as an expected failure."""
-        pytest.xfail(msg)
-
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
 
@@ -140,8 +137,8 @@ class CoverageTest(
     def assert_equal_arcs(self, a1, a2, msg=None):
         """Assert that the arc lists `a1` and `a2` are equal."""
         # Make them into multi-line strings so we can see what's going wrong.
-        s1 = "\n".join(repr(a) for a in a1) + "\n"
-        s2 = "\n".join(repr(a) for a in a2) + "\n"
+        s1 = arcs_to_arcz_repr(a1)
+        s2 = arcs_to_arcz_repr(a2)
         self.assertMultiLineEqual(s1, s2, msg)
 
     def check_coverage(
@@ -500,3 +497,8 @@ def command_line(args):
     script = CoverageScript()
     ret = script.command_line(shlex.split(args))
     return ret
+
+
+def xfail(condition, reason):
+    """A decorator to mark as test as expected to fail."""
+    return pytest.mark.xfail(condition, reason=reason, strict=True)

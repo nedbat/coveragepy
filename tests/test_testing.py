@@ -18,6 +18,7 @@ from coverage.misc import StopEverything
 import coverage.optional
 
 from tests.coveragetest import CoverageTest, convert_skip_exceptions
+from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs
 from tests.helpers import CheckUniqueFilenames, re_lines, re_line
 
 
@@ -331,3 +332,30 @@ def test_optional_without():
 
     assert toml1 is toml3 is not None
     assert toml2 is None
+
+
+@pytest.mark.parametrize("arcz, arcs", [
+    (".1 12 2.", [(-1, 1), (1, 2), (2, -1)]),
+    ("-11 12 2-5", [(-1, 1), (1, 2), (2, -5)]),
+    ("-QA CB IT Z-A", [(-26, 10), (12, 11), (18, 29), (35, -10)]),
+])
+def test_arcz_to_arcs(arcz, arcs):
+    assert arcz_to_arcs(arcz) == arcs
+
+
+@pytest.mark.parametrize("arcs, arcz_repr", [
+    ([(-1, 1), (1, 2), (2, -1)], "(-1, 1) # .1\n(1, 2) # 12\n(2, -1) # 2.\n"),
+    ([(-1, 1), (1, 2), (2, -5)], "(-1, 1) # .1\n(1, 2) # 12\n(2, -5) # 2-5\n"),
+    ([(-26, 10), (12, 11), (18, 29), (35, -10), (1, 33), (100, 7)],
+        (
+        "(-26, 10) # -QA\n"
+        "(12, 11) # CB\n"
+        "(18, 29) # IT\n"
+        "(35, -10) # Z-A\n"
+        "(1, 33) # 1X\n"
+        "(100, 7) # ?7\n"
+        )
+    ),
+])
+def test_arcs_to_arcz_repr(arcs, arcz_repr):
+    assert arcs_to_arcz_repr(arcs) == arcz_repr

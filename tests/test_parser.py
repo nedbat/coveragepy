@@ -5,11 +5,12 @@
 
 import textwrap
 
-from tests.coveragetest import CoverageTest
-
 from coverage import env
-from coverage.misc import arcz_to_arcs, NotPython
+from coverage.misc import NotPython
 from coverage.parser import PythonParser
+
+from tests.coveragetest import CoverageTest, xfail
+from tests.helpers import arcz_to_arcs
 
 
 class PythonParserTest(CoverageTest):
@@ -136,6 +137,11 @@ class PythonParserTest(CoverageTest):
                 '''
                 """)
 
+
+    @xfail(
+        env.PYPY3 and env.PYPYVERSION >= (7, 3, 0),
+        "https://bitbucket.org/pypy/pypy/issues/3139",
+    )
     def test_decorator_pragmas(self):
         parser = self.parse_source("""\
             # 1
@@ -167,7 +173,7 @@ class PythonParserTest(CoverageTest):
             """)
         raw_statements = set([3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26])
         if env.PYBEHAVIOR.trace_decorated_def:
-            raw_statements.update([11, 19, 25])
+            raw_statements.update([11, 19])
         self.assertEqual(parser.raw_statements, raw_statements)
         self.assertEqual(parser.statements, set([8]))
 

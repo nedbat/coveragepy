@@ -5,7 +5,7 @@
 
 import pytest
 
-from coverage.misc import arcz_to_arcs, contract, dummy_decorator_with_args, file_be_gone
+from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
 from coverage.misc import Hasher, one_of, substitute_variables
 from coverage.misc import CoverageException, USE_CONTRACTS
 
@@ -158,12 +158,3 @@ def test_substitute_variables_errors(text):
         substitute_variables(text, VARS)
     assert text in str(exc_info.value)
     assert "Variable NOTHING is undefined" in str(exc_info.value)
-
-
-@pytest.mark.parametrize("arcz, arcs", [
-    (".1 12 2.", [(-1, 1), (1, 2), (2, -1)]),
-    ("-11 12 2-5", [(-1, 1), (1, 2), (2, -5)]),
-    ("-QA CB IT Z-A", [(-26, 10), (12, 11), (18, 29), (35, -10)]),
-])
-def test_arcz_to_arcs(arcz, arcs):
-    assert arcz_to_arcs(arcz) == arcs

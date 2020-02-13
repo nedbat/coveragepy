@@ -16,19 +16,64 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
-    ..  .. _changes_781:
+    ..  .. _changes_981:
     ..
-    ..  Version 7.8.1 --- 2021-07-27
+    ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
-
 
 Unreleased
 ----------
+
+- Updated Python 3.9 support to 3.9a3.
+
+
+.. _changes_503:
+
+Version 5.0.3 --- 2020-01-12
+----------------------------
+
+- A performance improvement in 5.0.2 didn't work for test suites that changed
+  directory before combining data, causing "Couldn't use data file: no such
+  table: meta" errors (`issue 916`_).  This is now fixed.
+
+- Coverage could fail to run your program with some form of "ModuleNotFound" or
+  "ImportError" trying to import from the current directory. This would happen
+  if coverage had been packaged into a zip file (for example, on Windows), or
+  was found indirectly (for example, by pyenv-virtualenv).  A number of
+  different scenarios were described in `issue 862`_ which is now fixed.  Huge
+  thanks to Agbonze O. Jeremiah for reporting it, and Alexander Waters and
+  George-Cristian Bîrzan for protracted debugging sessions.
+
+- Added the "premain" debug option.
+
+- Added SQLite compile-time options to the "debug sys" output.
+
+.. _issue 862: https://github.com/nedbat/coveragepy/issues/862
+.. _issue 916: https://github.com/nedbat/coveragepy/issues/916
+
+
+.. _changes_502:
+
+Version 5.0.2 --- 2020-01-05
+----------------------------
 
 - Programs that used multiprocessing and changed directories would fail under
   coverage.  This is now fixed (`issue 890`_).  A side effect is that debug
   information about the config files read now shows absolute paths to the
   files.
+
+- When running programs as modules (``coverage run -m``) with ``--source``,
+  some measured modules were imported before coverage starts.  This resulted in
+  unwanted warnings ("Already imported a file that will be measured") and a
+  reduction in coverage totals (`issue 909`_).  This is now fixed.
+
+- If no data was collected, an exception about "No data to report" could happen
+  instead of a 0% report being created (`issue 884`_).  This is now fixed.
+
+- The handling of source files with non-encodable file names has changed.
+  Previously, if a file name could not be encoded as UTF-8, an error occurred,
+  as described in `issue 891`_.  Now, those files will not be measured, since
+  their data would not be recordable.
 
 - A new warning ("dynamic-conflict") is issued if two mechanisms are trying to
   change the dynamic context.  Closes `issue 901`_.
@@ -36,9 +81,12 @@ Unreleased
 - ``coverage run --debug=sys`` would fail with an AttributeError. This is now
   fixed (`issue 907`_).
 
+.. _issue 884: https://github.com/nedbat/coveragepy/issues/884
 .. _issue 890: https://github.com/nedbat/coveragepy/issues/890
+.. _issue 891: https://github.com/nedbat/coveragepy/issues/891
 .. _issue 901: https://github.com/nedbat/coveragepy/issues/901
 .. _issue 907: https://github.com/nedbat/coveragepy/issues/907
+.. _issue 909: https://github.com/nedbat/coveragepy/issues/909
 
 
 .. _changes_501:
@@ -455,8 +503,8 @@ Version 5.0a1 --- 2018-06-05
 
 .. _changes_454:
 
-Version 4.5.4 -- 2019-07-29
----------------------------
+Version 4.5.4 --- 2019-07-29
+----------------------------
 
 - Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
   `issue 828`_.
@@ -466,8 +514,8 @@ Version 4.5.4 -- 2019-07-29
 
 .. _changes_453:
 
-Version 4.5.3 -- 2019-03-09
----------------------------
+Version 4.5.3 --- 2019-03-09
+----------------------------
 
 - Only packaging metadata changes.
 

@@ -16,6 +16,7 @@ import sqlite3
 import sys
 import zlib
 
+from coverage import env
 from coverage.backward import get_thread_id, iitems, to_bytes, to_string
 from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
 from coverage.files import PathAliases
@@ -191,7 +192,7 @@ class CoverageData(SimpleReprMixin):
                 write any disk file.
             warn: a warning callback function, accepting a warning message
                 argument.
-            debug: a debug callback function.
+            debug: a `DebugControl` object (optional)
 
         """
         self._no_disk = no_disk
@@ -267,7 +268,7 @@ class CoverageData(SimpleReprMixin):
         """Read the metadata from a database so that we are ready to use it."""
         with self._dbs[get_thread_id()] as db:
             try:
-                schema_version, = db.execute("select version from coverage_schema").fetchone()
+                schema_version, = db.execute_one("select version from coverage_schema")
             except Exception as exc:
                 raise CoverageException(
                     "Data file {!r} doesn't seem to be a coverage data file: {}".format(
@@ -373,7 +374,7 @@ class CoverageData(SimpleReprMixin):
         assert context is not None
         self._start_using()
         with self._connect() as con:
-            row = con.execute("select id from context where context = ?", (context,)).fetchone()
+            row = con.execute_one("select id from context where context = ?", (context,))
             if row is not None:
                 return row[0]
             else:
@@ -788,7 +789,7 @@ class CoverageData(SimpleReprMixin):
             file_id = self._file_id(filename)
             if file_id is None:
                 return None
-            row = con.execute("select tracer from tracer where file_id = ?", (file_id,)).fetchone()
+            row = con.execute_one("select tracer from tracer where file_id = ?", (file_id,))
             if row is not None:
                 return row[0] or ""
             return ""   # File was measured, but no tracer associated.
@@ -950,9 +951,15 @@ class CoverageData(SimpleReprMixin):
         Returns a list of (key, value) pairs.
 
         """
+        with SqliteDb(":memory:", debug=NoDebugging()) as db:
+            temp_store = [row[0] for row in db.execute("pragma temp_store")]
+            compile_options = [row[0] for row in db.execute("pragma compile_options")]
+
         return [
             ('sqlite3_version', sqlite3.version),
             ('sqlite3_sqlite_version', sqlite3.sqlite_version),
+            ('sqlite3_temp_store', temp_store),
+            ('sqlite3_compile_options', compile_options),
         ]
 
 
@@ -962,7 +969,7 @@ class SqliteDb(SimpleReprMixin):
     Use as a context manager, then you can use it like a
     :class:`python:sqlite3.Connection` object::
 
-        with SqliteDb(filename, debug=True) as db:
+        with SqliteDb(filename, debug_control) as db:
             db.execute("insert into schema (version) values (?)", (SCHEMA_VERSION,))
 
     """
@@ -976,17 +983,21 @@ class SqliteDb(SimpleReprMixin):
         """Connect to the db and do universal initialization."""
         if self.con is not None:
             return
+
         # SQLite on Windows on py2 won't open a file if the filename argument
         # has non-ascii characters in it.  Opening a relative file name avoids
         # a problem if the current directory has non-ascii.
-        try:
-            filename = os.path.relpath(self.filename)
-        except ValueError:
-            # ValueError can be raised under Windows when os.getcwd() returns a
-            # folder from a different drive than the drive of self.filename in
-            # which case we keep the original value of self.filename unchanged,
-            # hoping that we won't face the non-ascii directory problem.
-            filename = self.filename
+        filename = self.filename
+        if env.WINDOWS and env.PY2:
+            try:
+                filename = os.path.relpath(self.filename)
+            except ValueError:
+                # ValueError can be raised under Windows when os.getcwd() returns a
+                # folder from a different drive than the drive of self.filename in
+                # which case we keep the original value of self.filename unchanged,
+                # hoping that we won't face the non-ascii directory problem.
+                pass
+
         # It can happen that Python switches threads while the tracer writes
         # data. The second thread will also try to write to the data,
         # effectively causing a nested context. However, given the idempotent
@@ -1020,8 +1031,13 @@ class SqliteDb(SimpleReprMixin):
     def __exit__(self, exc_type, exc_value, traceback):
         self.nest -= 1
         if self.nest == 0:
-            self.con.__exit__(exc_type, exc_value, traceback)
-            self.close()
+            try:
+                self.con.__exit__(exc_type, exc_value, traceback)
+                self.close()
+            except Exception as exc:
+                if self.debug:
+                    self.debug.write("EXCEPTION from __exit__: {}".format(exc))
+                raise
 
     def execute(self, sql, parameters=()):
         """Same as :meth:`python:sqlite3.Connection.execute`."""
@@ -1044,7 +1060,26 @@ class SqliteDb(SimpleReprMixin):
                         )
             except Exception:
                 pass
+            if self.debug:
+                self.debug.write("EXCEPTION from execute: {}".format(msg))
             raise CoverageException("Couldn't use data file {!r}: {}".format(self.filename, msg))
+
+    def execute_one(self, sql, parameters=()):
+        """Execute a statement and return the one row that results.
+
+        This is like execute(sql, parameters).fetchone(), except it is
+        correct in reading the entire result set.  This will raise an
+        exception if more than one row results.
+
+        Returns a row, or None if there were no rows.
+        """
+        rows = list(self.execute(sql, parameters))
+        if len(rows) == 0:
+            return None
+        elif len(rows) == 1:
+            return rows[0]
+        else:
+            raise CoverageException("Sql {!r} shouldn't return {} rows".format(sql, len(rows)))
 
     def executemany(self, sql, data):
         """Same as :meth:`python:sqlite3.Connection.executemany`."""

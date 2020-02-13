@@ -248,7 +248,7 @@ class CmdLineTest(BaseCmdLineTest):
             """)
 
     def test_debug(self):
-        self.cmd_help("debug", "What information would you like: config, data, sys?")
+        self.cmd_help("debug", "What information would you like: config, data, sys, premain?")
         self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
 
     def test_debug_sys(self):

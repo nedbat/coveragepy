@@ -224,8 +224,8 @@ class Coverage(object):
         self._inited_for_start = False
         # Have we started collecting and not stopped it?
         self._started = False
-        # Have we written --debug output?
-        self._wrote_debug = False
+        # Should we write the debug output?
+        self._should_write_debug = True
 
         # If we have sub-process measurement happening automatically, then we
         # want any explicit creation of a Coverage object to mean, this process
@@ -277,8 +277,8 @@ class Coverage(object):
 
     def _post_init(self):
         """Stuff to do after everything is initialized."""
-        if not self._wrote_debug:
-            self._wrote_debug = True
+        if self._should_write_debug:
+            self._should_write_debug = False
             self._write_startup_debug()
 
         # '[run] _crash' will raise an exception if the value is close by in
@@ -481,6 +481,9 @@ class Coverage(object):
         self._inorout.plugins = self._plugins
         self._inorout.disp_class = self._collector.file_disposition_class
 
+        # It's useful to write debug info after initing for start.
+        self._should_write_debug = True
+
         atexit.register(self._atexit)
 
     def _init_data(self, suffix):
@@ -542,7 +545,7 @@ class Coverage(object):
     def _atexit(self):
         """Clean up on process shutdown."""
         if self._debug.should("process"):
-            self._debug.write("atexit: {!r}".format(self))
+            self._debug.write("atexit: pid: {}, instance: {!r}".format(os.getpid(), self))
         if self._started:
             self.stop()
         if self._auto_save:
@@ -713,7 +716,7 @@ class Coverage(object):
 
         # Touch all the files that could have executed, so that we can
         # mark completely unexecuted files as 0% covered.
-        if self._data:
+        if self._data is not None:
             for file_path, plugin_name in self._inorout.find_possibly_unexecuted_files():
                 file_path = self._file_mapper(file_path)
                 self._data.touch_file(file_path, plugin_name)

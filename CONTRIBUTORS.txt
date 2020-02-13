@@ -5,12 +5,14 @@ Other contributions, including writing code, updating docs, and submitting
 useful bug reports, have been made by:
 
 Adi Roiban
+Agbonze O. Jeremiah
 Albertas Agejevas
 Aleksi Torhamo
 Alex Gaynor
 Alex Groce
 Alex Sandro
 Alexander Todorov
+Alexander Walters
 Andrew Hoos
 Anthony Sottile
 Arcadiy Ivanov
@@ -20,6 +22,7 @@ Ben Finney
 Bill Hart
 Brandon Rhodes
 Brett Cannon
+Bruno P. Kinoshita
 Buck Evan
 Calen Pennington
 Carl Gieringer
@@ -57,6 +60,7 @@ Frazer McLean
 Geoff Bache
 George Paci
 George Song
+George-Cristian Bîrzan
 Greg Rogers
 Guido van Rossum
 Guillaume Chazarain
@@ -73,6 +77,7 @@ Jon Dufresne
 Joseph Tate
 Josh Williams
 Julian Berman
+Julien Voisin
 Justas Sadzevičius
 Krystian Kichewko
 Kyle Altendorf

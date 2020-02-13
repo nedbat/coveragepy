@@ -13,7 +13,7 @@ import types
 from coverage import env
 from coverage.backward import BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
-from coverage.files import python_reported_file
+from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
 from coverage.phystokens import compile_unicode
 from coverage.python import get_python_source
@@ -116,21 +116,54 @@ class PyRunner(object):
         self.package = self.modulename = self.pathname = self.loader = self.spec = None
 
     def prepare(self):
-        """Do initial preparation to run Python code.
+        """Set sys.path properly.
 
-        Includes finding the module to run, adjusting sys.argv[0], and changing
-        sys.path to match what Python does.
-
+        This needs to happen before any importing, and without importing anything.
         """
-        should_update_sys_path = True
-
         if self.as_module:
             if env.PYBEHAVIOR.actual_syspath0_dash_m:
                 path0 = os.getcwd()
             else:
                 path0 = ""
-            sys.path[0] = path0
-            should_update_sys_path = False
+        elif os.path.isdir(self.arg0):
+            # Running a directory means running the __main__.py file in that
+            # directory.
+            path0 = self.arg0
+        else:
+            path0 = os.path.abspath(os.path.dirname(self.arg0))
+
+        if os.path.isdir(sys.path[0]):
+            # sys.path fakery.  If we are being run as a command, then sys.path[0]
+            # is the directory of the "coverage" script.  If this is so, replace
+            # sys.path[0] with the directory of the file we're running, or the
+            # current directory when running modules.  If it isn't so, then we
+            # don't know what's going on, and just leave it alone.
+            top_file = inspect.stack()[-1][0].f_code.co_filename
+            sys_path_0_abs = os.path.abspath(sys.path[0])
+            top_file_dir_abs = os.path.abspath(os.path.dirname(top_file))
+            sys_path_0_abs = canonical_filename(sys_path_0_abs)
+            top_file_dir_abs = canonical_filename(top_file_dir_abs)
+            if sys_path_0_abs != top_file_dir_abs:
+                path0 = None
+
+        else:
+            # sys.path[0] is a file. Is the next entry the directory containing
+            # that file?
+            if sys.path[1] == os.path.dirname(sys.path[0]):
+                # Can it be right to always remove that?
+                del sys.path[1]
+
+        if path0 is not None:
+            sys.path[0] = python_reported_file(path0)
+
+    def _prepare2(self):
+        """Do more preparation to run Python code.
+
+        Includes finding the module to run and adjusting sys.argv[0].
+        This method is allowed to import code.
+
+        """
+        if self.as_module:
             self.modulename = self.arg0
             pathname, self.package, self.spec = find_module(self.modulename)
             if self.spec is not None:
@@ -141,7 +174,6 @@ class PyRunner(object):
         elif os.path.isdir(self.arg0):
             # Running a directory means running the __main__.py file in that
             # directory.
-            path0 = self.arg0
             for ext in [".py", ".pyc", ".pyo"]:
                 try_filename = os.path.join(self.arg0, "__main__" + ext)
                 if os.path.exists(try_filename):
@@ -165,28 +197,15 @@ class PyRunner(object):
             self.package = ""
             self.loader = DummyLoader("__main__")
         else:
-            path0 = os.path.abspath(os.path.dirname(self.arg0))
             if env.PY3:
                 self.loader = DummyLoader("__main__")
 
         self.arg0 = python_reported_file(self.arg0)
 
-        if self.modulename is None:
-            self.modulename = '__main__'
-
-        if should_update_sys_path:
-            # sys.path fakery.  If we are being run as a command, then sys.path[0]
-            # is the directory of the "coverage" script.  If this is so, replace
-            # sys.path[0] with the directory of the file we're running, or the
-            # current directory when running modules.  If it isn't so, then we
-            # don't know what's going on, and just leave it alone.
-            top_file = inspect.stack()[-1][0].f_code.co_filename
-            if os.path.abspath(sys.path[0]) == os.path.abspath(os.path.dirname(top_file)):
-                # Set sys.path correctly.
-                sys.path[0] = python_reported_file(path0)
-
     def run(self):
         """Run the Python code!"""
+
+        self._prepare2()
 
         # Create a module to serve as __main__
         main_mod = types.ModuleType('__main__')

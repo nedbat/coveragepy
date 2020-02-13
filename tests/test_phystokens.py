@@ -135,7 +135,7 @@ class SourceEncodingTest(CoverageTest):
             )
 
     def test_detect_source_encoding_not_in_comment(self):
-        if env.PYPY and env.PY3:        # pragma: no metacov
+        if env.PYPY3:           # pragma: no metacov
             # PyPy3 gets this case wrong. Not sure what I can do about it,
             # so skip the test.
             self.skipTest("PyPy3 is wrong about non-comment encoding. Skip it.")

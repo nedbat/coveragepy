@@ -25,6 +25,7 @@ os = isolate_module(os)
 # debugging the configuration mechanisms you usually use to control debugging!
 # This is a list of forced debugging options.
 FORCED_DEBUG = []
+FORCED_DEBUG_FILE = None
 
 
 class DebugControl(object):
@@ -189,11 +190,14 @@ def add_pid_and_tid(text):
 
 class SimpleReprMixin(object):
     """A mixin implementing a simple __repr__."""
+    simple_repr_ignore = ['simple_repr_ignore', '$coverage.object_id']
+
     def __repr__(self):
         show_attrs = (
             (k, v) for k, v in self.__dict__.items()
             if getattr(v, "show_repr_attr", True)
             and not callable(v)
+            and k not in self.simple_repr_ignore
         )
         return "<{klass} @0x{id:x} {attrs}>".format(
             klass=self.__class__.__name__,
@@ -301,7 +305,7 @@ class DebugOutputFile(object):                              # pragma: debugging
         the_one, is_interim = sys.modules.get(cls.SYS_MOD_NAME, (None, True))
         if the_one is None or is_interim:
             if fileobj is None:
-                debug_file_name = os.environ.get("COVERAGE_DEBUG_FILE")
+                debug_file_name = os.environ.get("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
                 if debug_file_name:
                     fileobj = open(debug_file_name, "a")
                 else:
@@ -328,14 +332,18 @@ def log(msg, stack=False):                                  # pragma: debugging
         dump_stack_frames(out=out, skip=1)
 
 
-def decorate_methods(decorator, butnot=()):                 # pragma: debugging
-    """A class decorator to apply a decorator to public methods."""
+def decorate_methods(decorator, butnot=(), private=False):  # pragma: debugging
+    """A class decorator to apply a decorator to methods."""
     def _decorator(cls):
         for name, meth in inspect.getmembers(cls, inspect.isroutine):
-            public = name == '__init__' or not name.startswith("_")
-            decorate_it = public and name not in butnot
-            if decorate_it:
-                setattr(cls, name, decorator(meth))
+            if name not in cls.__dict__:
+                continue
+            if name != "__init__":
+                if not private and name.startswith("_"):
+                    continue
+            if name in butnot:
+                continue
+            setattr(cls, name, decorator(meth))
         return cls
     return _decorator
 
@@ -355,7 +363,7 @@ OBJ_IDS = itertools.count()
 CALLS = itertools.count()
 OBJ_ID_ATTR = "$coverage.object_id"
 
-def show_calls(show_args=True, show_stack=False):           # pragma: debugging
+def show_calls(show_args=True, show_stack=False, show_return=False):    # pragma: debugging
     """A method decorator to debug-log each call to the function."""
     def _decorator(func):
         @functools.wraps(func)
@@ -377,9 +385,14 @@ def show_calls(show_args=True, show_stack=False):           # pragma: debugging
             if show_stack:
                 extra += " @ "
                 extra += "; ".join(_clean_stack_line(l) for l in short_stack().splitlines())
-            msg = "{} {:04d} {}{}\n".format(oid, next(CALLS), func.__name__, extra)
+            callid = next(CALLS)
+            msg = "{} {:04d} {}{}\n".format(oid, callid, func.__name__, extra)
             DebugOutputFile.get_one(interim=True).write(msg)
-            return func(self, *args, **kwargs)
+            ret = func(self, *args, **kwargs)
+            if show_return:
+                msg = "{} {:04d} {} return {!r}\n".format(oid, callid, func.__name__, ret)
+                DebugOutputFile.get_one(interim=True).write(msg)
+            return ret
         return _wrapper
     return _decorator
 

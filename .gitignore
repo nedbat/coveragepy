@@ -31,6 +31,7 @@ setuptools-*.egg
 .ruby-version
 
 # Stuff in the test directory.
+covmain.zip
 zipmods.zip
 
 # Stuff in the doc directory.

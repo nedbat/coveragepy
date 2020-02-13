@@ -11,18 +11,22 @@ import sys
 WINDOWS = sys.platform == "win32"
 LINUX = sys.platform.startswith("linux")
 
+# Python versions. We amend version_info with one more value, a zero if an
+# official version, or 1 if built from source beyond an official version.
+PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
+PY2 = PYVERSION < (3, 0)
+PY3 = PYVERSION >= (3, 0)
+
 # Python implementations.
 PYPY = (platform.python_implementation() == 'PyPy')
 if PYPY:
     PYPYVERSION = sys.pypy_version_info
 
+PYPY2 = PYPY and PY2
+PYPY3 = PYPY and PY3
+
 JYTHON = (platform.python_implementation() == 'Jython')
 IRONPYTHON = (platform.python_implementation() == 'IronPython')
-
-# Python versions.
-PYVERSION = sys.version_info
-PY2 = PYVERSION < (3, 0)
-PY3 = PYVERSION >= (3, 0)
 
 # Python behavior
 class PYBEHAVIOR(object):
@@ -80,10 +84,6 @@ class PYBEHAVIOR(object):
 
     # Python 3.9a1 made sys.argv[0] and other reported files absolute paths.
     report_absolute_files = (PYVERSION >= (3, 9))
-
-    # Python 3.9a2 changed how return/finally was traced, but it could be
-    # temporary.
-    bug39114 = (PYVERSION >= (3, 9, 0, 'alpha', 2))
 
 # Coverage.py specifics.
 

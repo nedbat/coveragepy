@@ -18,7 +18,7 @@ from coverage import Coverage
 from coverage import env
 from coverage.collector import CTracer
 from coverage.data import line_counts
-from coverage.debug import info_formatter, info_header
+from coverage.debug import info_formatter, info_header, short_stack
 from coverage.execfile import PyRunner
 from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource, output_encoding
 from coverage.results import should_fail_under
@@ -715,7 +715,7 @@ class CoverageScript(object):
         """Implementation of 'coverage debug'."""
 
         if not args:
-            show_help("What information would you like: config, data, sys?")
+            show_help("What information would you like: config, data, sys, premain?")
             return ERR
 
         for info in args:
@@ -747,6 +747,9 @@ class CoverageScript(object):
                 config_info = self.coverage.config.__dict__.items()
                 for line in info_formatter(config_info):
                     print(" %s" % line)
+            elif info == "premain":
+                print(info_header("premain"))
+                print(short_stack())
             else:
                 show_help("Don't know what you mean by %r" % info)
                 return ERR

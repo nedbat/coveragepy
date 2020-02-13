@@ -498,8 +498,9 @@ command can often help::
 Three types of information are available:
 
 * ``config``: show coverage's configuration
-* ``sys``: show system configuration,
+* ``sys``: show system configuration
 * ``data``: show a summary of the collected coverage data
+* ``premain``: show the call stack invoking coverage
 
 
 .. _cmd_run_debug:

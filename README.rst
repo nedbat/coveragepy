@@ -20,7 +20,7 @@ library to determine which lines are executable, and which have been executed.
 Coverage.py runs on many versions of Python:
 
 * CPython 2.7.
-* CPython 3.5 through 3.9 alpha 2.
+* CPython 3.5 through 3.9 alpha 3.
 * PyPy2 7.0 and PyPy3 7.0.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
@@ -60,6 +60,14 @@ Getting Started
 See the `Quick Start section`_ of the docs.
 
 .. _Quick Start section: https://coverage.readthedocs.io/#quick-start
+
+
+Change history
+--------------
+
+The complete history of changes is on the `change history page`_.
+
+.. _change history page: https://coverage.readthedocs.io/en/latest/changes.html
 
 
 Contributing

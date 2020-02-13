@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Coverage.py'
-copyright = u'2009\N{EN DASH}2019, Ned Batchelder.'     # CHANGEME  # pylint: disable=redefined-builtin
+copyright = u'2009\N{EN DASH}2020, Ned Batchelder.'     # CHANGEME  # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -68,9 +68,9 @@ copyright = u'2009\N{EN DASH}2019, Ned Batchelder.'     # CHANGEME  # pylint: di
 # The short X.Y version.
 version = '5.0'                                 # CHANGEME
 # The full version, including alpha/beta/rc tags.
-release = '5.0.1'                               # CHANGEME
+release = '5.0.3'                               # CHANGEME
 # The date of release, in "monthname day, year" format.
-release_date = 'December 22, 2019'              # CHANGEME
+release_date = 'January 12, 2020'               # CHANGEME
 
 rst_epilog = """
 .. |release_date| replace:: {release_date}
@@ -222,8 +222,8 @@ extlinks = {
     'github': ('https://github.com/nedbat/coveragepy/issues/%s', 'issue '),
 }
 
-# When auto-doc'ing a class, write the class' docstring and the __init__ docstring
-# into the class docs.
+# When auto-doc'ing a class, only write the class' docstring into the class docs,
+# don't automatically include the __init__ docstring.
 autoclass_content = "class"
 
 prerelease = bool(max(release).isalpha())

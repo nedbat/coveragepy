@@ -9,6 +9,7 @@ import glob
 import os
 import os.path
 import re
+import stat
 import sys
 import textwrap
 import time
@@ -22,7 +23,7 @@ from coverage.data import line_counts
 from coverage.files import python_reported_file
 from coverage.misc import output_encoding
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, TESTS_DIR, xfail
 from tests.helpers import re_lines
 
 
@@ -741,13 +742,14 @@ class ProcessTest(CoverageTest):
         # about 5.
         self.assertGreater(line_counts(data)['os.py'], 50)
 
+    @xfail(
+        env.PYPY3 and env.PYPYVERSION >= (7, 1, 1),
+        "https://bitbucket.org/pypy/pypy/issues/3074"
+    )
     def test_lang_c(self):
         if env.JYTHON:
             # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
             self.skipTest("Jython can't handle this test")
-        if env.PYPY and env.PY3 and env.PYPYVERSION[:3] >= (7, 1, 1):       # pragma: obscure
-            # https://bitbucket.org/pypy/pypy/issues/3074/compile-fails-on-non-ascii-filename-if
-            self.skipTest("Avoid getfilesystemencoding problem on pypy3")
         # LANG=C forces getfilesystemencoding on Linux to 'ascii', which causes
         # failures with non-ascii file names. We don't want to make a real file
         # with strange characters, though, because that gets the test runners
@@ -858,7 +860,7 @@ class EnvironmentTest(CoverageTest):
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dir_is_like_python_dir(self):
-        if env.PYVERSION == (3, 5, 4, 'final', 0):       # pragma: obscure
+        if env.PYVERSION == (3, 5, 4, 'final', 0, 0):   # pragma: obscure
             self.skipTest("3.5.4 broke this: https://bugs.python.org/issue32551")
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
@@ -972,6 +974,17 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run -m package")
         self.assertMultiLineEqual(expected, actual)
 
+    def test_coverage_zip_is_like_python(self):
+        # Test running coverage from a zip file itself.  Some environments
+        # (windows?) zip up the coverage main to be used as the coverage
+        # command.
+        with open(TRY_EXECFILE) as f:
+            self.make_file("run_me.py", f.read())
+        expected = self.run_command("python run_me.py")
+        cov_main = os.path.join(TESTS_DIR, "covmain.zip")
+        actual = self.run_command("python {} run run_me.py".format(cov_main))
+        self.assert_tryexecfile_output(expected, actual)
+
     def test_coverage_custom_script(self):
         # https://github.com/nedbat/coveragepy/issues/678
         # If sys.path[0] isn't the Python default, then coverage.py won't
@@ -1004,6 +1017,51 @@ class EnvironmentTest(CoverageTest):
 
         out = self.run_command("python -m run_coverage run how_is_it.py")
         self.assertIn("hello-xyzzy", out)
+
+    def test_bug_862(self):
+        if env.WINDOWS:
+            self.skipTest("Windows can't make symlinks")
+        # This simulates how pyenv and pyenv-virtualenv end up creating the
+        # coverage executable.
+        self.make_file("elsewhere/bin/fake-coverage", """\
+            #!{executable}
+            import sys, pkg_resources
+            sys.exit(pkg_resources.load_entry_point('coverage', 'console_scripts', 'coverage')())
+            """.format(executable=sys.executable))
+        os.chmod("elsewhere/bin/fake-coverage", stat.S_IREAD | stat.S_IEXEC)
+        os.symlink("elsewhere", "somewhere")
+        self.make_file("foo.py", "print('inside foo')")
+        self.make_file("bar.py", "import foo")
+        out = self.run_command("somewhere/bin/fake-coverage run bar.py")
+        self.assertEqual("inside foo\n", out)
+
+    def test_bug_909(self):
+        # https://github.com/nedbat/coveragepy/issues/909
+        # The __init__ files were being imported before measurement started,
+        # so the line in __init__.py was being marked as missed, and there were
+        # warnings about measured files being imported before start.
+        self.make_file("proj/__init__.py", "print('Init')")
+        self.make_file("proj/thecode.py", "print('The code')")
+        self.make_file("proj/tests/__init__.py", "")
+        self.make_file("proj/tests/test_it.py", "import proj.thecode")
+
+        expected = "Init\nThe code\n"
+        actual = self.run_command("coverage run --source=proj -m proj.tests.test_it")
+        assert expected == actual
+
+        report = self.run_command("coverage report -m")
+
+        # Name                     Stmts   Miss  Cover   Missing
+        # ------------------------------------------------------
+        # proj/__init__.py             1      0   100%
+        # proj/tests/__init__.py       0      0   100%
+        # proj/tests/test_it.py        1      0   100%
+        # proj/thecode.py              1      0   100%
+        # ------------------------------------------------------
+        # TOTAL                        3      0   100%
+
+        squeezed = self.squeezed_lines(report)
+        assert squeezed[2].replace("\\", "/") == "proj/__init__.py 1 0 100%"
 
 
 class ExcepthookTest(CoverageTest):

@@ -76,21 +76,24 @@
 - Update Tidelift:
     - make upload_relnotes
 - Update readthedocs
-    - visit https://readthedocs.org/projects/coverage/versions/
-        - find the latest tag in the inactive list, edit it, make it active.
-            - readthedocs won't find the tag until a commit is made on master.
-        - keep just the latest version of each x.y release, make the rest inactive.
     - IF NOT PRE-RELEASE:
         - update git "stable" branch to point to latest release
+            - git branch -f stable <latest-tag>
+            - git push --all
         - visit https://readthedocs.org/projects/coverage/builds/
         - wait for the new tag build to finish successfully.
         - visit https://readthedocs.org/dashboard/coverage/advanced/
         - change the default version to the new version
+    - visit https://readthedocs.org/projects/coverage/versions/
+        - find the latest tag in the inactive list, edit it, make it active.
+            - readthedocs won't find the tag until a commit is made on master.
+        - keep just the latest version of each x.y release, make the rest inactive.
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
-- push git changes
-- Update nedbatchelder.com
-    - Blog post?
-- Announce on TIP.
+    - make a milestone for the next release and move open issues into it.
+- Announce:
+    - twitter @coveragepy
+    - nedbatchelder.com blog post?
+    - testing-in-python mailing list?
 
 
 * Testing

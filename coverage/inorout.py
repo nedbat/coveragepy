@@ -333,6 +333,12 @@ class InOrOut(object):
         if self.omit_match and self.omit_match.match(filename):
             return "is inside an --omit pattern"
 
+        # No point tracing a file we can't later write to SQLite.
+        try:
+            filename.encode("utf8")
+        except UnicodeEncodeError:
+            return "non-encodable filename"
+
         # No reason found to skip this file.
         return None
 
