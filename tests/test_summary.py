@@ -300,6 +300,36 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.assertEqual(squeezed[6], "1 file skipped due to complete coverage.")
         self.assertEqual(self.last_command_status, 0)
 
+    def test_report_no_skip_covered(self):
+        self.make_file("main.py", """
+            import not_covered
+
+            def normal():
+                print("z")
+            normal()
+            """)
+        self.make_file("not_covered.py", """
+            def not_covered():
+                print("n")
+            """)
+        self.omit_site_packages()
+        out = self.run_command("coverage run main.py")
+        self.assertEqual(out, "z\n")
+        report = self.report_from_command("coverage report --skip-covered --no-skip-covered")
+
+        # Name             Stmts   Miss  Cover
+        # ------------------------------------
+        # main.py              4      0   100%
+        # not_covered.py       2      1    50%
+        # ------------------------------------
+        # TOTAL                6      1    83%
+
+        self.assertEqual(self.line_count(report), 6, report)
+        squeezed = self.squeezed_lines(report)
+        self.assertEqual(squeezed[2], "main.py 4 0 100%")
+        self.assertEqual(squeezed[3], "not_covered.py 2 1 50%")
+        self.assertEqual(squeezed[5], "TOTAL 6 1 83%")
+
     def test_report_skip_covered_branches(self):
         self.make_file("main.py", """
             import not_covered, covered

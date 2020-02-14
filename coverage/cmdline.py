@@ -93,6 +93,10 @@ class Opts(object):
         '--skip-covered', action='store_true',
         help="Skip files with 100% coverage.",
     )
+    no_skip_covered = optparse.make_option(
+        '--no-skip-covered', action='store_false', dest='skip_covered',
+        help="Disable --skip-covered.",
+    )
     skip_empty = optparse.make_option(
         '--skip-empty', action='store_true',
         help="Skip files with no code.",
@@ -360,6 +364,7 @@ CMDS = {
             Opts.omit,
             Opts.show_contexts,
             Opts.skip_covered,
+            Opts.no_skip_covered,
             Opts.skip_empty,
             Opts.title,
             ] + GLOBAL_ARGS,
@@ -397,6 +402,7 @@ CMDS = {
             Opts.omit,
             Opts.show_missing,
             Opts.skip_covered,
+            Opts.no_skip_covered,
             Opts.skip_empty,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
