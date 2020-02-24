@@ -57,7 +57,7 @@ class PYBEHAVIOR(object):
     unpackings_pep448 = (PYVERSION >= (3, 5))
 
     # Can co_lnotab have negative deltas?
-    negative_lnotab = (PYVERSION >= (3, 6))
+    negative_lnotab = (PYVERSION >= (3, 6)) and not (PYPY and PYPYVERSION < (7, 2))
 
     # Do .pyc files conform to PEP 552? Hash-based pyc's.
     hashed_pyc_pep552 = (PYVERSION >= (3, 7, 0, 'alpha', 4))

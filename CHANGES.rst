@@ -26,6 +26,10 @@ Unreleased
 
 - Updated Python 3.9 support to 3.9a3.
 
+- Fixed a bug with missing negative line numbers on PyPy3 7.1 (`issue 943`_).
+
+.. _issue 943: https://github.com/nedbat/coveragepy/issues/943
+
 
 .. _changes_503:
 
