@@ -30,7 +30,13 @@ Unreleased
 
 - Windows 3.8 wheels were incorrectly built, but are now fixed. (`issue 949`_)
 
+- HTML report couldn't be sorted if localStorage wasn't available. This is now
+  fixed: sorting works even though the sorting setting isn't retained. (`issue
+  944`_ and `pull request 945`_). Thanks, Abdeali Kothari.
+
 .. _issue 943: https://github.com/nedbat/coveragepy/issues/943
+.. _issue 944: https://github.com/nedbat/coveragepy/issues/944
+.. _pull request 945: https://github.com/nedbat/coveragepy/pull/945
 .. _issue 949: https://github.com/nedbat/coveragepy/issues/949
 
 

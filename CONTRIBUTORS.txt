@@ -4,6 +4,7 @@ extended and maintained by Ned Batchelder.
 Other contributions, including writing code, updating docs, and submitting
 useful bug reports, have been made by:
 
+Abdeali Kothari
 Adi Roiban
 Agbonze O. Jeremiah
 Albertas Agejevas
