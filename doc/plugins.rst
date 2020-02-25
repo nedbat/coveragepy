@@ -63,6 +63,14 @@ Some coverage.py plug-ins you might find useful:
 
   .. __: https://pypi.org/project/django_coverage_plugin/
 
+* `Conditional coverage plug-in`__: for measuring coverage based
+  on any rules you define!
+  Can exclude different lines of code that are only executed
+  on different platforms, python versions,
+  and with different dependencies installed.
+
+  .. __: https://github.com/wemake-services/coverage-conditional-plugin
+
 * `Mako template coverage plug-in`__: for measuring coverage in Mako templates.
   Doesn't work yet, probably needs some changes in Mako itself.
 
