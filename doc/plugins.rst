@@ -67,3 +67,11 @@ Some coverage.py plug-ins you might find useful:
   Doesn't work yet, probably needs some changes in Mako itself.
 
   .. __: https://bitbucket.org/ned/coverage-mako-plugin
+  
+* `Conditional coverage plug-in`__: for measuring coverage based 
+  on any rules you define!
+  Can exclude different lines of code that are only executed 
+  on different platforms, python versions, 
+  and with different dependencies installed.
+
+  .. __: https://github.com/wemake-services/coverage-conditional-plugin
