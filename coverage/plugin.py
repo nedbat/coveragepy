@@ -496,6 +496,7 @@ class FileReporter(object):
         * ``'num'``: a number
         * ``'op'``: an operator
         * ``'str'``: a string literal
+        * ``'ws'``: some white space
         * ``'txt'``: some other kind of text
 
         If you concatenate all the token texts, and then join them with
