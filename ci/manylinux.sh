@@ -16,7 +16,13 @@ if [[ $action == "build" ]]; then
     # Compile wheels
     cd /io
     for PYBIN in /opt/python/*/bin; do
+        if [[ $PYBIN == *cp34* ]]; then
+            # manylinux docker images have Python 3.4, but we don't use it.
+            continue
+        fi
         "$PYBIN/pip" install -r requirements/wheel.pip
+        # pin so auditwheel will work: https://github.com/pypa/auditwheel/issues/102
+        "$PYBIN/pip" install wheel==0.31.1
         "$PYBIN/python" setup.py clean -a
         "$PYBIN/python" setup.py bdist_wheel -d ~/wheelhouse/
     done
@@ -30,6 +36,10 @@ if [[ $action == "build" ]]; then
 elif [[ $action == "test" ]]; then
     # Create "pythonX.Y" links
     for PYBIN in /opt/python/*/bin/; do
+        if [[ $PYBIN == *cp34* ]]; then
+            # manylinux docker images have Python 3.4, but we don't use it.
+            continue
+        fi
         PYNAME=$("$PYBIN/python" -c "import sys; print('python{0[0]}.{0[1]}'.format(sys.version_info))")
         ln -sf "$PYBIN/$PYNAME" /usr/local/bin/$PYNAME
     done

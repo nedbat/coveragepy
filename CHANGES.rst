@@ -24,11 +24,14 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-- Updated Python 3.9 support to 3.9a3.
+- Updated Python 3.9 support to 3.9a4.
 
 - Fixed a bug with missing negative line numbers on PyPy3 7.1 (`issue 943`_).
 
+- Windows 3.8 wheels were incorrectly built, but are now fixed. (`issue 949`_)
+
 .. _issue 943: https://github.com/nedbat/coveragepy/issues/943
+.. _issue 949: https://github.com/nedbat/coveragepy/issues/949
 
 
 .. _changes_503:
