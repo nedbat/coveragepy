@@ -4,13 +4,13 @@
 
 """Tests for process behavior of coverage.py."""
 
-import distutils.sysconfig
 import glob
 import os
 import os.path
 import re
 import stat
 import sys
+import sysconfig
 import textwrap
 import time
 from xml.etree import ElementTree
@@ -1399,7 +1399,7 @@ def possible_pth_dirs():
 
     # If we're still looking, then try the Python library directory.
     # https://bitbucket.org/ned/coveragepy/issue/339/pth-test-malfunctions
-    yield distutils.sysconfig.get_python_lib()      # pragma: cant happen
+    yield sysconfig.get_python_lib()                # pragma: cant happen
 
 
 def find_writable_pth_directory():
