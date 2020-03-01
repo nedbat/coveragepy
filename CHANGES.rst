@@ -26,11 +26,13 @@ Unreleased
 
 - Updated Python 3.9 support to 3.9a4.
 
-- Fixed a bug with missing negative line numbers on PyPy3 7.1 (`issue 943`_).
+- The textual summary report could report missing lines with negative line
+  numbers on PyPy3 7.1 (`issue 943`_).  This is now fixed.
 
-- Windows 3.8 wheels were incorrectly built, but are now fixed. (`issue 949`_)
+- Windows wheels for Python 3.8 were incorrectly built, but are now fixed.
+  (`issue 949`_)
 
-- HTML report couldn't be sorted if localStorage wasn't available. This is now
+- HTML reports couldn't be sorted if localStorage wasn't available. This is now
   fixed: sorting works even though the sorting setting isn't retained. (`issue
   944`_ and `pull request 945`_). Thanks, Abdeali Kothari.
 
