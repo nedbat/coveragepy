@@ -41,7 +41,9 @@ class XmlReporter(object):
         if self.config.source:
             for src in self.config.source:
                 if os.path.exists(src):
-                    self.source_paths.add(files.canonical_filename(src))
+                    if not self.config.relative_files:
+                        src = files.canonical_filename(src)
+                    self.source_paths.add(src)
         self.packages = {}
         self.xml_out = None
 
@@ -144,18 +146,18 @@ class XmlReporter(object):
         # are populated later.  Note that a package == a directory.
         filename = fr.filename.replace("\\", "/")
         for source_path in self.source_paths:
+            source_path = files.canonical_filename(source_path)
             if filename.startswith(source_path.replace("\\", "/") + "/"):
                 rel_name = filename[len(source_path)+1:]
                 break
         else:
             rel_name = fr.relative_filename()
+            self.source_paths.add(fr.filename[:-len(rel_name)].rstrip(r"\/"))
 
         dirname = os.path.dirname(rel_name) or u"."
         dirname = "/".join(dirname.split("/")[:self.config.xml_package_depth])
         package_name = dirname.replace("/", ".")
 
-        if rel_name != fr.filename:
-            self.source_paths.add(fr.filename[:-len(rel_name)].rstrip(r"\/"))
         package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])
 
         xclass = self.xml_out.createElement("class")

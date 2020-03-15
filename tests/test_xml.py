@@ -370,6 +370,19 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         dom = ElementTree.parse("coverage.xml")
         self.assert_source(dom, "src")
 
+    def test_relative_source(self):
+        self.make_file("src/mod.py", "print(17)")
+        cov = coverage.Coverage(source=["src"])
+        cov.set_option("run:relative_files", True)
+        self.start_import_stop(cov, "mod", modfile="src/mod.py")
+        cov.xml_report()
+
+        with open("coverage.xml") as x:
+            print(x.read())
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//sources/source")
+        assert [elt.text for elt in elts] == ["src"]
+
 
 def compare_xml(expected, actual, **kwargs):
     """Specialized compare function for our XML files."""

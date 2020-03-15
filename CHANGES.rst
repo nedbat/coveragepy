@@ -26,6 +26,10 @@ Unreleased
 
 - Updated Python 3.9 support to 3.9a4.
 
+- If using the ``[run] relative_files`` setting, the XML report will use
+  relative files in the ``<source>`` elements indicating the location of source
+  code.  Closes `issue 948`_.
+
 - The textual summary report could report missing lines with negative line
   numbers on PyPy3 7.1 (`issue 943`_).  This is now fixed.
 
@@ -39,6 +43,7 @@ Unreleased
 .. _issue 943: https://github.com/nedbat/coveragepy/issues/943
 .. _issue 944: https://github.com/nedbat/coveragepy/issues/944
 .. _pull request 945: https://github.com/nedbat/coveragepy/pull/945
+.. _issue 948: https://github.com/nedbat/coveragepy/issues/948
 .. _issue 949: https://github.com/nedbat/coveragepy/issues/949
 
 
