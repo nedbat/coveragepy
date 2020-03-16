@@ -21,10 +21,11 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
 
-Unreleased
-----------
 
-- Updated Python 3.9 support to 3.9a4.
+.. _changes_504:
+
+Version 5.0.4 --- 2020-03-16
+----------------------------
 
 - If using the ``[run] relative_files`` setting, the XML report will use
   relative files in the ``<source>`` elements indicating the location of source
@@ -35,6 +36,8 @@ Unreleased
 
 - Windows wheels for Python 3.8 were incorrectly built, but are now fixed.
   (`issue 949`_)
+
+- Updated Python 3.9 support to 3.9a4.
 
 - HTML reports couldn't be sorted if localStorage wasn't available. This is now
   fixed: sorting works even though the sorting setting isn't retained. (`issue
