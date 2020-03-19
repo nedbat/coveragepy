@@ -241,6 +241,7 @@ class HtmlReporter(object):
 
         self.totals = sum(self.all_files_nums)
         self.sum_package_tree()
+        self.merge_single_folders()
         # write the package tree summary file
         self.package_tree_file()
         # Write the index file.
@@ -460,7 +461,6 @@ class HtmlReporter(object):
     def package_tree_file(self):
         """Write the package_tree.html file for this report"""
         tree_tmpl = Templite(read_data("package_tree.html"), self.template_globals)
-        self.merge_single_folders()
         tree_list = self.package_tree_to_list()
         html = tree_tmpl.render({
             'files': tree_list,
