@@ -163,6 +163,9 @@ class HtmlReporter(object):
         ("jquery.hotkeys.js", "jquery-hotkeys"),
         ("jquery.isonscreen.js", "jquery-isonscreen"),
         ("jquery.tablesorter.min.js", "jquery-tablesorter"),
+        ("jquery-simple-tree-table.js", "jquery-simple-tree-table"),
+        ("jquery-simple-tree-table.min.js", "jquery-simple-tree-table"),
+        ("simple-tree-table.scss", "jquery-simple-tree-table"),
         ("coverage_html.js", ""),
         ("keybd_closed.png", ""),
         ("keybd_open.png", ""),
@@ -185,6 +188,7 @@ class HtmlReporter(object):
         self.has_arcs = self.data.has_arcs()
 
         self.file_summaries = []
+        self.package_tree = {}
         self.all_files_nums = []
         self.incr = IncrementalChecker(self.directory)
         self.datagen = HtmlDataGeneration(self.coverage)
@@ -236,7 +240,9 @@ class HtmlReporter(object):
             raise CoverageException("No data to report.")
 
         self.totals = sum(self.all_files_nums)
-
+        self.sum_package_tree()
+        # write the package tree summary file
+        self.package_tree_file()
         # Write the index file.
         self.index_file()
 
@@ -258,6 +264,20 @@ class HtmlReporter(object):
                 self.config.extra_css,
                 os.path.join(self.directory, self.extra_css)
             )
+
+    def sum_package_tree(self):
+        """Sums the file numbers depth first up the package tree"""
+        for tree_info in self.package_tree.values():
+            if len(tree_info['children']) > 0:
+                self._sum_branch(tree_info)
+
+    def _sum_branch(self, tree_info):
+        nums = []
+        for child_info in tree_info['children'].values():
+            if len(child_info['children']) > 0:
+                self._sum_branch(child_info)
+            nums.append(child_info['nums'])
+        tree_info['nums'] = sum(nums)
 
     def html_file(self, fr, analysis):
         """Generate an HTML file for one source file."""
@@ -287,7 +307,9 @@ class HtmlReporter(object):
 
         # Find out if the file on disk is already correct.
         if self.incr.can_skip_file(self.data, fr, rootname):
-            self.file_summaries.append(self.incr.index_info(rootname))
+            index_info = self.incr.index_info(rootname)
+            self.file_summaries.append(index_info)
+            self.add_module_to_tree(index_info)
             return
 
         # Write the HTML page for this file.
@@ -345,7 +367,79 @@ class HtmlReporter(object):
             'relative_filename': fr.relative_filename(),
         }
         self.file_summaries.append(index_info)
+        self.add_module_to_tree(index_info)
         self.incr.set_index_info(rootname, index_info)
+
+    def add_module_to_tree(self, index_info):
+        tree_info = index_info.copy()
+        tree_info['is_package'] = False
+        tree_info['children'] = {}
+        tree_path = tree_info['relative_filename'].split(os.path.sep)  # maybe regexp split on \ or /
+        r = tree_path[0]
+        branch = self.package_tree.get(r, None)
+        tree_depth = len(tree_path)
+        if branch is None:
+            if tree_depth == 1:
+                branch = tree_info
+            else:
+                branch = self._new_branch(r)
+            self.package_tree[r] = branch
+        if tree_depth > 1:
+            self._add_module_to_branch(branch, tree_path[1:], tree_info)
+
+    def _new_branch(self, rel_filename):
+        branch = {
+            'nums': Numbers(),
+            'html_filename': '',
+            'relative_filename': rel_filename,
+            'is_package': True,
+            'children': {},
+        }
+        return branch
+
+    def _add_module_to_branch(self, parent, tree_path, tree_info):
+        """Recursively navigate module tree adding nodes as required """
+        r = tree_path[0]
+        branch = parent['children'].get(r, None)
+        tree_depth = len(tree_path)
+        if branch is None:
+            if tree_depth == 1:
+                branch = tree_info
+                branch['relative_filename'] = r
+            else:
+                branch = self._new_branch(r)
+            parent['children'][r] = branch
+        if tree_depth > 1:
+            self._add_module_to_branch(branch, tree_path[1:], tree_info)
+
+    def package_tree_to_list(self):
+        """Convert package tree into a list adding data-node identifiers for javascript"""
+        package_list = []
+        for i, (_, tree_info) in enumerate(sorted(self.package_tree.items()), start=1):
+            tree_info['node_pid'] = None
+            self._add_branch_to_list(tree_info, package_list, str(i))
+        for tree_info in package_list:
+            tree_info['is_module'] = not tree_info['is_package']
+        return package_list
+
+    def _add_branch_to_list(self, tree_info, package_list, node_id):
+        tree_info['node_id'] = node_id
+        package_list.append(tree_info)
+        for i, (_, child_info) in enumerate(sorted(tree_info['children'].items()), start=1):
+            child_info['node_pid'] = node_id
+            child_id = '{}.{}'.format(node_id, i)
+            self._add_branch_to_list(child_info, package_list, child_id)
+
+    def package_tree_file(self):
+        """Write the package_tree.html file for this report"""
+        tree_tmpl = Templite(read_data("package_tree.html"), self.template_globals)
+        tree_list = self.package_tree_to_list()
+        html = tree_tmpl.render({
+            'files': tree_list,
+            'totals': self.totals,
+        })
+
+        write_html(os.path.join(self.directory, "package_tree.html"), html)
 
     def index_file(self):
         """Write the index.html file for this report."""
