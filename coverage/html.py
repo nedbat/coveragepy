@@ -200,7 +200,7 @@ class HtmlReporter(object):
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
             'title': title,
-            'time_stamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
+            'time_stamp': datetime.datetime.now().astimezone().strftime('%Y-%m-%d %H:%M %z'),
             'extra_css': self.extra_css,
             'has_arcs': self.has_arcs,
             'show_contexts': self.config.show_contexts,
