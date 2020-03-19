@@ -412,6 +412,33 @@ class HtmlReporter(object):
         if tree_depth > 1:
             self._add_module_to_branch(branch, tree_path[1:], tree_info)
 
+    def merge_single_folders(self):
+        """ Convert nested single folders into a single row.
+        So that this:
+        + a
+            + b
+                + c
+                    file1.py
+                    file2.py
+        becomes
+        + a/b/c
+            file1.py
+            file2.py
+        """
+        for tree_info in self.package_tree.values():
+            self._merge_branch_folders(tree_info)
+
+    def _merge_branch_folders(self, tree_info):
+        for child_info in tree_info['children'].values():
+            self._merge_branch_folders(child_info)
+        if len(tree_info['children']) == 1:
+            path, child_info = next(iter(tree_info['children'].items()))
+            if child_info['children']:
+                tree_info['children'] = child_info['children']
+                new_path = os.path.sep.join((tree_info['relative_filename'],
+                                             child_info['relative_filename']))
+                tree_info['relative_filename'] = new_path
+
     def package_tree_to_list(self):
         """Convert package tree into a list adding data-node identifiers for javascript"""
         package_list = []
@@ -433,6 +460,7 @@ class HtmlReporter(object):
     def package_tree_file(self):
         """Write the package_tree.html file for this report"""
         tree_tmpl = Templite(read_data("package_tree.html"), self.template_globals)
+        self.merge_single_folders()
         tree_list = self.package_tree_to_list()
         html = tree_tmpl.render({
             'files': tree_list,
