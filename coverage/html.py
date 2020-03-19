@@ -11,7 +11,7 @@ import shutil
 
 import coverage
 from coverage import env
-from coverage.backward import iitems, SimpleNamespace
+from coverage.backward import iitems, SimpleNamespace, format_local_datetime
 from coverage.data import add_data_to_hash
 from coverage.files import flat_rootname
 from coverage.misc import CoverageException, ensure_dir, file_be_gone, Hasher, isolate_module
@@ -200,7 +200,7 @@ class HtmlReporter(object):
             '__url__': coverage.__url__,
             '__version__': coverage.__version__,
             'title': title,
-            'time_stamp': datetime.datetime.now().astimezone().strftime('%Y-%m-%d %H:%M %z'),
+            'time_stamp': format_local_datetime(datetime.datetime.now()),
             'extra_css': self.extra_css,
             'has_arcs': self.has_arcs,
             'show_contexts': self.config.show_contexts,
