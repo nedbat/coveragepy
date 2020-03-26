@@ -24,7 +24,11 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- On Python 3.8, try-finally-return reported wrong branch coverage with
+  decorated async functions (`issue 946`_).  This is now fixed. Thanks, Kjell
+  Braden.
+
+.. _issue 946: https://github.com/nedbat/coveragepy/issues/946
 
 
 .. _changes_504:
