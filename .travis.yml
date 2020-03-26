@@ -18,7 +18,8 @@ python:
   - 'pypy2.7-6.0'
   - 'pypy3.5-6.0'
 
-# Only testing it for python3.8 on aarch64 platform, since it already has a lot of jobs to test and takes long time. 
+# Only testing it for python3.8 on aarch64 platform, since it already has a lot
+# of jobs to test and takes long time.
 matrix:
   include:
     - python: 3.8
