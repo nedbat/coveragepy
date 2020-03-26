@@ -1557,6 +1557,23 @@ class AsyncTest(CoverageTest):
             arcz_missing=".2 23 3.",
         )
 
+    def test_async_decorator(self):
+        if env.PYBEHAVIOR.trace_decorated_def:
+            arcz = ".1 14 45 5.  .2 2.  -46 6-4"
+        else:
+            arcz = ".1 14 4.     .2 2.  -46 6-4"
+        self.check_coverage("""\
+            def wrap(f):        # 1
+                return f
+
+            @wrap               # 4
+            async def go():
+                return
+            """,
+            arcz=arcz,
+            arcz_missing='-46 6-4',
+        )
+
 
 class ExcludeTest(CoverageTest):
     """Tests of exclusions to indicate known partial branches."""
