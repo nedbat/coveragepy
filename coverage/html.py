@@ -433,7 +433,7 @@ class HtmlReporter(object):
         for child_info in tree_info['children'].values():
             self._merge_branch_folders(child_info)
         if len(tree_info['children']) == 1:
-            path, child_info = next(iitems(tree_info['children']))
+            path, child_info = next(iter(tree_info['children'].items()))
             if child_info['children']:
                 tree_info['children'] = child_info['children']
                 new_path = os.path.sep.join((tree_info['relative_filename'],
