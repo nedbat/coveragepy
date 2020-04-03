@@ -421,6 +421,9 @@ class CoverageConfig(object):
         `value` is the new value for the option.
 
         """
+        if option_name == "paths":
+            self.paths = value
+            return
 
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:
@@ -448,6 +451,9 @@ class CoverageConfig(object):
         Returns the value of the option.
 
         """
+        if option_name == "paths":
+            return self.paths
+
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:
             attr, where = option_spec[:2]
