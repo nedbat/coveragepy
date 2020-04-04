@@ -11,7 +11,8 @@ FAQ and other help
 Frequently asked questions
 --------------------------
 
-**Q: Why do unexecutable lines show up as executed?**
+Q: Why do unexecutable lines show up as executed?
+.................................................
 
 Usually this is because you've updated your code and run coverage.py on it
 again without erasing the old data.  Coverage.py records line numbers executed,
@@ -22,8 +23,8 @@ If old data is persisting, you can use an explicit ``coverage erase`` command
 to clean out the old data.
 
 
-**Q: Why do the bodies of functions (or classes) show as executed, but the def
-lines do not?**
+Q: Why do the bodies of functions show as executed, but the def lines do not?
+.............................................................................
 
 This happens because coverage.py is started after the functions are defined.
 The definition lines are executed without coverage measurement, then
@@ -36,8 +37,8 @@ monitored.  If you are using the :ref:`API <api>`, you need to call
 coverage.start() before importing the modules that define your functions.
 
 
-**Q: My decorator lines are marked as covered, but the "def" line is not.
-Why?**
+Q: My decorator lines are marked as covered, but the "def" line is not.  Why?
+.............................................................................
 
 Different versions of Python report execution on different lines.  Coverage.py
 adapts its behavior to the version of Python being used.  In Python 3.7 and
@@ -47,7 +48,8 @@ reported.  If you collect execution data on Python 3.7, and then run coverage
 reports on Python 3.8, there will be a discrepancy.
 
 
-**Q: How is the total percentage calculated?**
+Q: How is the total percentage calculated?
+..........................................
 
 Coverage.py counts the total number of possible executions. This is the number
 of executable statements minus the number of excluded statements.  It then
@@ -67,7 +69,8 @@ show the number of partial branches, which is the lines that were executed but
 did not execute all of their exits.
 
 
-**Q: Coverage.py is much slower than I remember, what's going on?**
+Q: Coverage.py is much slower than I remember, what's going on?
+...............................................................
 
 Make sure you are using the C trace function.  Coverage.py provides two
 implementations of the trace function.  The C implementation runs much faster.
@@ -80,7 +83,8 @@ Try re-installing coverage.py to see what happened and if you get the CTracer
 as you should.
 
 
-**Q: Isn't coverage testing the best thing ever?**
+Q: Isn't coverage testing the best thing ever?
+..............................................
 
 It's good, but `it isn't perfect`__.
 
@@ -106,7 +110,8 @@ __ https://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
     .. _django-coverage: https://pypi.org/project/django-coverage/
 
 
-**Q: Where can I get more help with coverage.py?**
+Q: Where can I get more help with coverage.py?
+..............................................
 
 You can discuss coverage.py or get help using it on the `Testing In Python`_
 mailing list.
