@@ -31,6 +31,8 @@ The definition lines are executed without coverage measurement, then
 coverage.py is started, then the function is called.  This means the body is
 measured, but the definition of the function itself is not.
 
+The same thing can happen with the bodies of classes.
+
 To fix this, start coverage.py earlier.  If you use the :ref:`command line
 <cmd>` to run your program with coverage.py, then your entire program will be
 monitored.  If you are using the :ref:`API <api>`, you need to call
