@@ -24,6 +24,9 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
+- The JSON report now includes counts of covered and missing branches. Thanks,
+  Salvatore Zagaria.
+
 - On Python 3.8, try-finally-return reported wrong branch coverage with
   decorated async functions (`issue 946`_).  This is now fixed. Thanks, Kjell
   Braden.
