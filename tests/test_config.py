@@ -342,9 +342,22 @@ class ConfigTest(CoverageTest):
         self.assertEqual(cov.get_option("run:data_file"), "fooey.dat")
 
     def test_tweaks_paths_after_constructor(self):
+        self.make_file(".coveragerc", """\
+            [paths]
+            first =
+                /first/1
+                /first/2
+
+            second =
+                /second/a
+                /second/b
+            """)
+        old_paths = OrderedDict()
+        old_paths["first"] = ["/first/1", "/first/2"]
+        old_paths["second"] = ["/second/a", "/second/b"]
         cov = coverage.Coverage()
         paths = cov.get_option("paths")
-        self.assertEqual(paths, OrderedDict())
+        self.assertEqual(paths, old_paths)
 
         new_paths = OrderedDict()
         new_paths['magic'] = ['src', 'ok']
