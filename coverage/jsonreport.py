@@ -60,6 +60,8 @@ class JsonReporter(object):
             self.report_data["totals"].update({
                 'num_branches': self.total.n_branches,
                 'num_partial_branches': self.total.n_partial_branches,
+                'covered_branches': self.total.n_executed_branches,
+                'missing_branches': self.total.n_missing_branches,
             })
 
         json.dump(
