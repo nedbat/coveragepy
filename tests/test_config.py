@@ -3,6 +3,7 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """Test the config file handling for coverage.py"""
+from collections import OrderedDict
 
 import mock
 
@@ -339,6 +340,17 @@ class ConfigTest(CoverageTest):
         self.assertFalse(cov.get_option("run:timid"))
         self.assertFalse(cov.get_option("run:branch"))
         self.assertEqual(cov.get_option("run:data_file"), "fooey.dat")
+
+    def test_tweaks_paths_after_constructor(self):
+        cov = coverage.Coverage()
+        paths = cov.get_option("paths")
+        self.assertEqual(paths, OrderedDict())
+
+        new_paths = OrderedDict()
+        new_paths['magic'] = ['src', 'ok']
+        cov.set_option("paths", new_paths)
+
+        self.assertEqual(cov.get_option("paths"), new_paths)
 
     def test_tweak_error_checking(self):
         # Trying to set an unknown config value raises an error.
