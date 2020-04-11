@@ -20,6 +20,7 @@ Arcadiy Ivanov
 Aron Griffis
 Artem Dayneko
 Ben Finney
+Bernát Gábor
 Bill Hart
 Brandon Rhodes
 Brett Cannon

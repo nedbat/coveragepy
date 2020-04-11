@@ -28,7 +28,13 @@ Unreleased
   decorated async functions (`issue 946`_).  This is now fixed. Thanks, Kjell
   Braden.
 
+- The :meth:`~coverage.Coverage.get_option` and
+  :meth:`~coverage.Coverage.set_option` methods can now manipulate the
+  ``[paths]`` configuration setting.  Thanks to Bernát Gábor for the fix for
+  `issue 967`_.
+
 .. _issue 946: https://github.com/nedbat/coveragepy/issues/946
+.. _issue 967: https://github.com/nedbat/coveragepy/issues/967
 
 
 .. _changes_504:

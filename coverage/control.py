@@ -367,7 +367,11 @@ class Coverage(object):
         option name.  For example, the ``branch`` option in the ``[run]``
         section of the config file would be indicated with `"run:branch"`.
 
-        Returns the value of the option.
+        Returns the value of the option.  The type depends on the option
+        selected.
+
+        As a special case, an `option_name` of ``"paths"`` will return an
+        OrderedDict with the entire ``[paths]`` section value.
 
         .. versionadded:: 4.0
 
@@ -393,6 +397,9 @@ class Coverage(object):
 
             [run]
             branch = True
+
+        As a special case, an `option_name` of ``"paths"`` will replace the
+        entire ``[paths]`` section.  The value should be an OrderedDict.
 
         .. versionadded:: 4.0
 

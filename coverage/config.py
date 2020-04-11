@@ -421,6 +421,7 @@ class CoverageConfig(object):
         `value` is the new value for the option.
 
         """
+        # Special-cased options.
         if option_name == "paths":
             self.paths = value
             return
@@ -451,6 +452,7 @@ class CoverageConfig(object):
         Returns the value of the option.
 
         """
+        # Special-cased options.
         if option_name == "paths":
             return self.paths
 
