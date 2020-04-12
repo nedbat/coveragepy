@@ -21,8 +21,6 @@ if [[ $action == "build" ]]; then
             continue
         fi
         "$PYBIN/pip" install -r requirements/wheel.pip
-        # pin so auditwheel will work: https://github.com/pypa/auditwheel/issues/102
-        "$PYBIN/pip" install wheel==0.31.1
         "$PYBIN/python" setup.py clean -a
         "$PYBIN/python" setup.py bdist_wheel -d ~/wheelhouse/
     done
