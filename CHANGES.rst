@@ -36,7 +36,7 @@ Version 5.1 --- 2020-04-12
   Salvatore Zagaria.
 
 - On Python 3.8, try-finally-return reported wrong branch coverage with
-  decorated async functions (`issue 946`_).  This is now fixed. Thanks, Kjell
+  decorated async functions (`issue 964`_).  This is now fixed. Thanks, Kjell
   Braden.
 
 - The :meth:`~coverage.Coverage.get_option` and
@@ -44,7 +44,7 @@ Version 5.1 --- 2020-04-12
   ``[paths]`` configuration setting.  Thanks to Bernát Gábor for the fix for
   `issue 967`_.
 
-.. _issue 946: https://github.com/nedbat/coveragepy/issues/946
+.. _issue 964: https://github.com/nedbat/coveragepy/issues/964
 .. _issue 967: https://github.com/nedbat/coveragepy/issues/967
 
 
