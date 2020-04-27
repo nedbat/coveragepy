@@ -9,7 +9,7 @@ Code coverage testing for Python.
 
 |  |license| |versions| |status|
 |  |ci-status| |win-ci-status| |docs| |codecov|
-|  |kit| |format| |repos|
+|  |kit| |format| |repos| |downloads|
 |  |stars| |forks| |contributors|
 |  |tidelift| |twitter-coveragepy| |twitter-nedbat|
 
