@@ -4,8 +4,7 @@
 # Requirements for doing local development work on coverage.py.
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
-pip==20.0.2
-virtualenv==16.7.9
+-r pip.pip
 
 pluggy==0.13.1
 
