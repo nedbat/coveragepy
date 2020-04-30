@@ -146,6 +146,13 @@ class Opts(object):
             "to be run as 'python -m' would run it."
         ),
     )
+    precision = optparse.make_option(
+        '', '--precision', action='store', metavar='N', type=int,
+        help=(
+            "Number of digits after the decimal point to display for "
+            "reported coverage percentages."
+        ),
+    )
     rcfile = optparse.make_option(
         '', '--rcfile', action='store',
         help=(
@@ -203,6 +210,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             omit=None,
             contexts=None,
             parallel_mode=None,
+            precision=None,
             pylib=None,
             rcfile=True,
             show_missing=None,
@@ -395,6 +403,7 @@ CMDS = {
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
+            Opts.precision,
             Opts.show_missing,
             Opts.skip_covered,
             Opts.skip_empty,
@@ -569,6 +578,7 @@ class CoverageScript(object):
             omit=omit,
             include=include,
             contexts=contexts,
+            precision=options.precision,
             )
 
         # We need to be able to import from the current directory, because
