@@ -7,7 +7,7 @@ help:
 
 complete: 	## Copy support files into directories so the HTML can be viewed properly.
 	@for sub in *; do \
-		if [[ -f $$sub/index.html ]]; then \
+		if if [ -f "$$sub/index.html" ]; then \
 			echo Copying into $$sub ; \
 			cp -n support/* $$sub ; \
 		fi ; \
