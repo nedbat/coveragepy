@@ -366,6 +366,7 @@ CMDS = {
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
+            Opts.precision,
             Opts.show_contexts,
             Opts.skip_covered,
             Opts.skip_empty,
@@ -578,7 +579,6 @@ class CoverageScript(object):
             omit=omit,
             include=include,
             contexts=contexts,
-            precision=options.precision,
             )
 
         # We need to be able to import from the current directory, because
@@ -593,6 +593,7 @@ class CoverageScript(object):
                 show_missing=options.show_missing,
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
+                precision=options.precision,
                 **report_args
                 )
         elif options.action == "annotate":
@@ -604,6 +605,7 @@ class CoverageScript(object):
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
                 show_contexts=options.show_contexts,
+                precision=options.precision,
                 **report_args
                 )
         elif options.action == "xml":

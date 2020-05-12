@@ -857,6 +857,9 @@ class Coverage(object):
         expressions (using :func:`re.search <python:re.search>`) will be
         included in the report.
 
+        `precision` is the number of digits to display after the decimal
+        point for percentages.
+
         All of the arguments default to the settings read from the
         :ref:`configuration file <config>`.
 
@@ -867,6 +870,9 @@ class Coverage(object):
 
         .. versionadded:: 5.0
             The `contexts` and `skip_empty` parameters.
+
+        .. versionadded:: 5.2
+            The `precision` parameter.
 
         """
         with override_config(
@@ -899,10 +905,12 @@ class Coverage(object):
             reporter = AnnotateReporter(self)
             reporter.report(morfs, directory=directory)
 
-    def html_report(self, morfs=None, directory=None, ignore_errors=None,
-                    omit=None, include=None, extra_css=None, title=None,
-                    skip_covered=None, show_contexts=None, contexts=None,
-                    skip_empty=None):
+    def html_report(
+        self, morfs=None, directory=None, ignore_errors=None,
+        omit=None, include=None, extra_css=None, title=None,
+        skip_covered=None, show_contexts=None, contexts=None,
+        skip_empty=None, precision=None,
+    ):
         """Generate an HTML report.
 
         The HTML is written to `directory`.  The file "index.html" is the
@@ -930,7 +938,7 @@ class Coverage(object):
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
             skip_covered=skip_covered, show_contexts=show_contexts, report_contexts=contexts,
-            skip_empty=skip_empty,
+            skip_empty=skip_empty, precision=precision,
         ):
             reporter = HtmlReporter(self)
             return reporter.report(morfs)
