@@ -829,7 +829,7 @@ class Coverage(object):
     def report(
         self, morfs=None, show_missing=None, ignore_errors=None,
         file=None, omit=None, include=None, skip_covered=None,
-        contexts=None, skip_empty=None,
+        contexts=None, skip_empty=None, precision=None,
     ):
         """Write a textual summary report to `file`.
 
@@ -857,6 +857,9 @@ class Coverage(object):
         expressions (using :func:`re.search <python:re.search>`) will be
         included in the report.
 
+        `precision` is the number of digits to display after the decimal
+        point for percentages.
+
         All of the arguments default to the settings read from the
         :ref:`configuration file <config>`.
 
@@ -868,12 +871,15 @@ class Coverage(object):
         .. versionadded:: 5.0
             The `contexts` and `skip_empty` parameters.
 
+        .. versionadded:: 5.2
+            The `precision` parameter.
+
         """
         with override_config(
             self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
-            report_contexts=contexts, skip_empty=skip_empty,
+            report_contexts=contexts, skip_empty=skip_empty, precision=precision,
         ):
             reporter = SummaryReporter(self)
             return reporter.report(morfs, outfile=file)
@@ -899,10 +905,12 @@ class Coverage(object):
             reporter = AnnotateReporter(self)
             reporter.report(morfs, directory=directory)
 
-    def html_report(self, morfs=None, directory=None, ignore_errors=None,
-                    omit=None, include=None, extra_css=None, title=None,
-                    skip_covered=None, show_contexts=None, contexts=None,
-                    skip_empty=None):
+    def html_report(
+        self, morfs=None, directory=None, ignore_errors=None,
+        omit=None, include=None, extra_css=None, title=None,
+        skip_covered=None, show_contexts=None, contexts=None,
+        skip_empty=None, precision=None,
+    ):
         """Generate an HTML report.
 
         The HTML is written to `directory`.  The file "index.html" is the
@@ -930,7 +938,7 @@ class Coverage(object):
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
             skip_covered=skip_covered, show_contexts=show_contexts, report_contexts=contexts,
-            skip_empty=skip_empty,
+            skip_empty=skip_empty, precision=precision,
         ):
             reporter = HtmlReporter(self)
             return reporter.report(morfs)

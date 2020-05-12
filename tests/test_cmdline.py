@@ -37,11 +37,11 @@ class BaseCmdLineTest(CoverageTest):
     _defaults.Coverage().html_report(
         directory=None, ignore_errors=None, include=None, omit=None, morfs=[],
         skip_covered=None, show_contexts=None, title=None, contexts=None,
-        skip_empty=None,
+        skip_empty=None, precision=None,
     )
     _defaults.Coverage().report(
         ignore_errors=None, include=None, omit=None, morfs=[],
-        show_missing=None, skip_covered=None, contexts=None, skip_empty=None,
+        show_missing=None, skip_covered=None, contexts=None, skip_empty=None, precision=None,
     )
     _defaults.Coverage().xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
@@ -49,7 +49,7 @@ class BaseCmdLineTest(CoverageTest):
     )
     _defaults.Coverage().json_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
-        contexts=None, pretty_print=None, show_contexts=None
+        contexts=None, pretty_print=None, show_contexts=None,
     )
     _defaults.Coverage(
         cover_pylib=None, data_suffix=None, timid=None, branch=None,
@@ -324,6 +324,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov.load()
             cov.html_report(morfs=["mod1", "mod2", "mod3"])
             """)
+        self.cmd_executes("html --precision=3", """\
+            cov = Coverage()
+            cov.load()
+            cov.html_report(precision=3)
+            """)
         self.cmd_executes("html --title=Hello_there", """\
             cov = Coverage()
             cov.load()
@@ -366,6 +371,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.load()
             cov.report(morfs=["mod1", "mod2", "mod3"])
+            """)
+        self.cmd_executes("report --precision=7", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(precision=7)
             """)
         self.cmd_executes("report --skip-covered", """\
             cov = Coverage()

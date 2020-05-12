@@ -371,6 +371,9 @@ If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets
 you choose which contexts to report on.  See :ref:`context_reporting` for
 details.
 
+The ``--precision`` option controls the number of digits displayed after the
+decimal point in coverage percentages, defaulting to none.
+
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
 
@@ -417,6 +420,9 @@ generating unchanged pages, making the process faster.
 The ``--skip-covered`` switch will skip any file with 100% coverage, letting
 you focus on the files that still need attention.  The ``--skip-empty`` switch
 will skip any file with no executable statements.
+
+The ``--precision`` option controls the number of digits displayed after the
+decimal point in coverage percentages, defaulting to none.
 
 If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets
 you choose which contexts to report on, and the ``--show-contexts`` option will

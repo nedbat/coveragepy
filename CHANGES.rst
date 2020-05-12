@@ -24,7 +24,9 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- The ``coverage report`` and ``coverage html`` commands now accept a
+  ``--precision`` option to control the number of decimal points displayed.
+  Thanks, Teake Nutma.
 
 
 .. _changes_51:
