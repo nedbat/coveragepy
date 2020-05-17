@@ -791,7 +791,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
     def test_minimum_help(self):
         self.command_line("")
         out = self.stdout()
-        self.assertIn("Code coverage for Python.", out)
+        self.assertIn("Code coverage for Python", out)
         self.assertLess(out.count("\n"), 4)
 
     def test_version(self):

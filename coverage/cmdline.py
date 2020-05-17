@@ -818,7 +818,7 @@ HELP_TOPICS = {
     """,
 
     'minimum_help': """\
-        Code coverage for Python.  Use '{program_name} help' for help.
+        Code coverage for Python, version {__version__} {extension_modifier}.  Use '{program_name} help' for help.
     """,
 
     'version': """\
