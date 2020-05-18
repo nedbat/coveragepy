@@ -74,7 +74,9 @@
         - add an "Unreleased" section to the top.
     - git push
 - Update Tidelift:
-    - make upload_relnotes
+    - make tidelift_relnotes
+- Update GitHub releases:
+    - make github_releases
 - Update readthedocs
     - IF NOT PRE-RELEASE:
         - update git "stable" branch to point to latest release

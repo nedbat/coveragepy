@@ -133,17 +133,17 @@ WEBHOME = ~/web/stellated/
 WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
 WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
 
-docreqs:
+$(DOCPYTHON):
 	tox -q -e doc --notest
 
-dochtml: docreqs			## Build the docs HTML output.
+dochtml: $(DOCBIN)			## Build the docs HTML output.
 	$(DOCBIN)/python doc/check_copied_from.py doc/*.rst
 	$(SPHINXBUILD) -b html doc doc/_build/html
 
 docdev: dochtml				## Build docs, and auto-watch for changes.
 	PATH=$(DOCBIN):$(PATH) $(SPHINXAUTOBUILD) -b html doc doc/_build/html
 
-docspell: docreqs
+docspell: $(DOCBIN)
 	$(SPHINXBUILD) -b spelling doc doc/_spell
 
 publish:
@@ -156,7 +156,19 @@ publishbeta:
 	mkdir -p $(WEBSAMPLEBETA)
 	cp doc/sample_html_beta/*.* $(WEBSAMPLEBETA)
 
-upload_relnotes: docreqs		## Upload parsed release notes to Tidelift.
+CHANGES_MD = /tmp/rst_rst/changes.md
+RELNOTES_JSON = /tmp/relnotes.json
+
+$(CHANGES_MD): CHANGES.rst $(DOCBIN)
 	$(SPHINXBUILD) -b rst doc /tmp/rst_rst
-	pandoc -frst -tmarkdown_strict --atx-headers /tmp/rst_rst/changes.rst > /tmp/rst_rst/changes.md
-	python ci/upload_relnotes.py /tmp/rst_rst/changes.md pypi/coverage
+	pandoc -frst -tmarkdown_strict --atx-headers --wrap=none /tmp/rst_rst/changes.rst > $(CHANGES_MD)
+
+relnotes_json: $(RELNOTES_JSON)
+$(RELNOTES_JSON): $(CHANGES_MD)
+	$(DOCBIN)/python ci/parse_relnotes.py /tmp/rst_rst/changes.md $(RELNOTES_JSON)
+
+tidelift_relnotes: $(RELNOTES_JSON)	## Upload parsed release notes to Tidelift.
+	$(DOCBIN)/python ci/tidelift_relnotes.py $(RELNOTES_JSON) pypi/coverage
+
+github_releases: $(RELNOTES_JSON)	## Update GitHub releases.
+	$(DOCBIN)/python ci/github_releases.py $(RELNOTES_JSON) nedbat/coveragepy
