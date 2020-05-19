@@ -285,5 +285,5 @@ class CompileUnicodeTest(CoverageTest):
     def test_double_coding_declaration(self):
         # Build this string in a weird way so that actual vim's won't try to
         # interpret it...
-        uni = u"# -*-  coding:utf-8 -*-\n# v" "im: fileencoding=utf-8\n"
+        uni = u"# -*-  coding:utf-8 -*-\n# v" + "im: fileencoding=utf-8\n"
         self.assert_compile_unicode(uni)

@@ -72,7 +72,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             d[opt] = self.get(section, opt)
         return d
 
-    def get(self, section, option, *args, **kwargs):        # pylint: disable=arguments-differ
+    def get(self, section, option, *args, **kwargs):
         """Get a value, replacing environment variables also.
 
         The arguments are the same as `RawConfigParser.get`, but in the found
