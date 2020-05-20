@@ -55,17 +55,13 @@ def github_paginated(session, url):
     Get all the results from a paginated GitHub url.
     """
     while True:
-        print(f"GETTING: {url}")
         resp = session.get(url)
         check_ok(resp)
         yield from resp.json()
-        if 'Link' not in resp.headers:
-            break
-        links = resp.headers['link'].split(",")
-        next_link = next((link for link in links if 'rel="next"' in link), None)
+        next_link = resp.links.get("next", None)
         if not next_link:
             break
-        url = next_link.split(";")[0].strip(" <>")
+        url = next_link["url"]
 
 def get_releases(session, repo):
     """
@@ -74,7 +70,7 @@ def get_releases(session, repo):
     Returns:
         A dict mapping tag names to release dictionaries.
     """
-    url = RELEASES_URL.format(repo=repo) + "?per_page=100"
+    url = RELEASES_URL.format(repo=repo)
     releases = { r['tag_name']: r for r in github_paginated(session, url) }
     return releases
 
