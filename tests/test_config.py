@@ -3,6 +3,7 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """Test the config file handling for coverage.py"""
+
 from collections import OrderedDict
 
 import mock
@@ -62,6 +63,8 @@ class ConfigTest(CoverageTest):
         # A .coveragerc file will be read into the configuration.
         self.make_file("pyproject.toml", """\
             # This is just a bogus toml file for testing.
+            [tool.somethingelse]
+            authors = ["Joe D'Ávila <joe@gmail.com>"]
             [tool.coverage.run]
             concurrency = ["a", "b"]
             timid = true
@@ -70,20 +73,23 @@ class ConfigTest(CoverageTest):
             [tool.coverage.report]
             precision = 3
             fail_under = 90.5
+            [tool.coverage.html]
+            title = "tabblo & «ταБЬℓσ»"
             [tool.coverage.plugins.a_plugin]
             hello = "world"
             """)
         cov = coverage.Coverage(config_file="pyproject.toml")
         self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
-        self.assertEqual(cov.config.concurrency, ["a", "b"])
-        self.assertEqual(cov.config.data_file, ".hello_kitty.data")
-        self.assertEqual(cov.config.plugins, ["plugins.a_plugin"])
+        self.assertEqual(cov.config.concurrency, [u"a", u"b"])
+        self.assertEqual(cov.config.data_file, u".hello_kitty.data")
+        self.assertEqual(cov.config.plugins, [u"plugins.a_plugin"])
         self.assertEqual(cov.config.precision, 3)
+        self.assertEqual(cov.config.html_title, u"tabblo & «ταБЬℓσ»")
         self.assertAlmostEqual(cov.config.fail_under, 90.5)
         self.assertEqual(
             cov.config.get_plugin_options("plugins.a_plugin"),
-            {'hello': 'world'}
+            {u"hello": u"world"}
         )
 
         # Test that our class doesn't reject integers when loading floats

@@ -28,6 +28,11 @@ Unreleased
   ``--precision`` option to control the number of decimal points displayed.
   Thanks, Teake Nutma.
 
+- TOML configuration files with non-ASCII characters would cause errors on
+  Windows (`issue 990`_).  This is now fixed.
+
+.. _issue 990: https://github.com/nedbat/coveragepy/issues/990
+
 
 .. _changes_51:
 

@@ -325,7 +325,7 @@ class CoverageConfig(object):
 
         if used:
             self.config_file = os.path.abspath(filename)
-            with open(filename) as f:
+            with open(filename, "rb") as f:
                 self._config_contents = f.read()
 
         return used
