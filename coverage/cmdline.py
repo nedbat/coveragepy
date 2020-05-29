@@ -869,8 +869,8 @@ if _profile:                                                # pragma: debugging
 
     def main(argv=None):                                    # pylint: disable=function-redefined
         """A wrapper around main that profiles."""
+        profiler = SimpleLauncher.launch()
         try:
-            profiler = SimpleLauncher.launch()
             return original_main(argv)
         finally:
             data, _ = profiler.query(re_filter='coverage', max_records=100)
