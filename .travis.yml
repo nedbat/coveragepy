@@ -4,7 +4,7 @@
 # Tell Travis what to do
 # https://travis-ci.com/nedbat/coveragepy
 
-dist: xenial
+dist: bionic
 language: python
 
 cache: pip
