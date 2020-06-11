@@ -38,7 +38,6 @@ For Enterprise
 --------------
 
 .. |tideliftlogo| image:: https://nedbatchelder.com/pix/Tidelift_Logo_small.png
-   :width: 75
    :alt: Tidelift
    :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
 
