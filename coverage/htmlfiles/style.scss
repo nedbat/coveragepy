@@ -8,12 +8,91 @@
 
 // When working on the file, this command is useful:
 //      sass --watch --style=compact --sourcemap=none --no-cache coverage/htmlfiles/style.scss:htmlcov/style.css
+//
+// OR you can process sass purely in python with `pip install pysass`, then:
+//      pysassc --style=compact coverage/htmlfiles/style.scss coverage/htmlfiles/style.css
 
 // Ignore this comment, it's for the CSS output file:
 /* Don't edit this .css file. Edit the .scss file instead! */
 
 // Dimensions
 $left-gutter: 3rem;
+
+
+//
+// Declare colors and variables
+//
+
+$font-normal:             -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+$font-code:               SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+$off-button-lighten:      50%;
+$hover-dark-amt:          95%;
+
+$focus-color:             #007acc;
+
+$mis-color:               #ff0000;
+$run-color:               #00dd00;
+$exc-color:               #808080;
+$par-color:               #dddd00;
+
+$light-bg:                #fff;
+$light-fg:                #000;
+$light-gray1:             #f8f8f8;
+$light-gray2:             #eee;
+$light-gray3:             #ccc;
+$light-gray4:             #999;
+$light-gray5:             #666;
+$light-gray6:             #333;
+$light-pln-bg:            $light-bg;
+$light-mis-bg:            #fdd;
+$light-run-bg:            #dfd;
+$light-exc-bg:            $light-gray2;
+$light-par-bg:            #ffa;
+$light-token-com:         #008000;
+$light-token-str:         #0451A5;
+
+$dark-bg:                 #1e1e1e;
+$dark-fg:                 #eee;
+$dark-gray1:              #222;
+$dark-gray2:              #333;
+$dark-gray3:              #444;
+$dark-gray4:              #777;
+$dark-gray5:              #aaa;
+$dark-gray6:              #ddd;
+$dark-pln-bg:             $dark-bg;
+$dark-mis-bg:             #4b1818;
+$dark-run-bg:             #373d29;
+$dark-exc-bg:             $dark-gray2;
+$dark-par-bg:             #650;
+$dark-token-com:          #6A9955;
+$dark-token-str:          #9CDCFE;
+
+//
+// Mixins and utilities
+//
+@mixin background-dark($color) {
+    @media (prefers-color-scheme: dark) {
+        background: $color;
+    }
+}
+@mixin color-dark($color) {
+    @media (prefers-color-scheme: dark) {
+        color: $color;
+    }
+}
+@mixin border-color-dark($color) {
+    @media (prefers-color-scheme: dark) {
+        border-color: $color;
+    }
+}
+
+// Add visual outline to navigable elements on focus improve accessibility.
+@mixin focus-border {
+    &:active, &:focus {
+        outline: 2px dashed $focus-color;
+    }
+}
 
 // Page-wide styles
 html, body, h1, h2, h3, p, table, td, th {
@@ -29,18 +108,25 @@ html, body, h1, h2, h3, p, table, td, th {
 
 // Set baseline grid to 16 pt.
 body {
-    font-family: georgia, serif;
+    font-family: $font-normal;
     font-size: 1em;
+    background: $light-bg;
+    color: $light-fg;
+    @include background-dark($dark-bg);
+    @include color-dark($dark-fg);
 }
 
 html>body {
     font-size: 16px;
 }
 
-// Set base font size to 12/16
+a {
+    @include focus-border;
+}
+
 p {
-    font-size: .75em;           // 12/16
-    line-height: 1.33333333em;  // 16/12
+    font-size: .875em;
+    line-height: 1.4em;
 }
 
 table {
@@ -70,9 +156,11 @@ a.nav {
 
 // Page structure
 #header {
-    background: #f8f8f8;
+    background: $light-gray1;
+    @include background-dark(black);
     width: 100%;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid $light-gray2;
+    @include border-color-dark($dark-gray2);
 }
 
 .indexfile #footer {
@@ -85,9 +173,8 @@ a.nav {
 
 #footer .content {
     padding: 0;
-    font-size: 85%;
-    font-family: verdana, sans-serif;
-    color: #666666;
+    color: $light-gray5;
+    @include color-dark($dark-gray5);
     font-style: italic;
 }
 
@@ -106,61 +193,77 @@ h1 {
 }
 
 #filter_container {
-    display: inline-block;
     float: right;
     margin: 0 2em 0 0;
 
     input {
         width: 10em;
+        padding: 0.2em 0.5em;
+        border: 2px solid $light-gray3;
+        background: $light-bg;
+        color: $light-fg;
+        @include border-color-dark($dark-gray3);
+        @include background-dark($dark-bg);
+        @include color-dark($dark-fg);
+        &:focus {
+            border-color: $focus-color;
+        }
     }
 }
-
-$pln-color: #ffffff;
-$mis-color: #ffdddd;
-$run-color: #ddffdd;
-$exc-color: #eeeeee;
-$par-color: #ffffaa;
-
-$off-button-lighten: 50%;
 
 h2.stats {
     margin-top: .5em;
     font-size: 1em;
 }
-.stats span {
-    border: 1px solid;
+.stats button {
+    font-family: inherit;
+    font-size: inherit;
+    border: 2px solid;
     border-radius: .1em;
+    color: inherit;
     padding: .1em .5em;
     margin: 0 .1em;
     cursor: pointer;
-    border-color: #ccc #999 #999 #ccc;
+    border-color: $light-gray3;
+    @include border-color-dark($dark-gray3);
+    @include focus-border;
+
+    @include focus-border;
 
     &.run {
-        background: mix($run-color, #fff, $off-button-lighten);
+        background: mix($light-run-bg, $light-bg, $off-button-lighten);
+        @include background-dark($dark-run-bg);
         &.show_run {
-            border-color: #999 #ccc #ccc #999;
-            background: $run-color;
+            background: $light-run-bg;
+            @include background-dark($dark-run-bg);
+            border-color: $run-color;
         }
     }
     &.mis {
-        background: mix($mis-color, #fff, $off-button-lighten);
+        background: mix($light-mis-bg, $light-bg, $off-button-lighten);
+        @include background-dark($dark-mis-bg);
         &.show_mis {
-            border-color: #999 #ccc #ccc #999;
-            background: $mis-color;
+            background: $light-mis-bg;
+            @include background-dark($dark-mis-bg);
+            border-color: $mis-color;
         }
     }
     &.exc {
-        background: mix($exc-color, #fff, $off-button-lighten);
+        background: mix($light-exc-bg, $light-bg, $off-button-lighten);
+        @include background-dark($dark-exc-bg);
         &.show_exc {
-            border-color: #999 #ccc #ccc #999;
-            background: $exc-color;
+            background: $light-exc-bg;
+            @include background-dark($dark-exc-bg);
+            border-color: $exc-color;
         }
     }
     &.par {
-        background: mix($par-color, #fff, $off-button-lighten);
+        background: mix($light-par-bg, $light-bg, $off-button-lighten);
+        @include background-dark($dark-par-bg);
         &.show_par {
-            border-color: #999 #ccc #ccc #999;
-            background: $par-color;
+            background: $light-par-bg;
+            @include background-dark($dark-par-bg);
+            border-color: $par-color;
         }
     }
 }
@@ -173,7 +276,6 @@ h2.stats {
     background: #ffffcc;
     border: 1px solid #888;
     border-radius: .2em;
-    box-shadow: #cccccc .2em .2em .2em;
     color: #333;
     padding: .25em .5em;
 }
@@ -207,12 +309,12 @@ h2.stats {
 
     .indexfile & {
         width: 20em;
-        height: 4em;
+        min-height: 4em;
     }
 
     .pyfile & {
         width: 16em;
-        height: 8em;
+        min-height: 8em;
     }
 }
 
@@ -228,20 +330,13 @@ h2.stats {
         border: 1px solid black;
         border-color: #888 #333 #333 #888;
         padding: .1em .35em;
-        font-family: monospace;
+        font-family: $font-code;
         font-weight: bold;
         background: #eee;
     }
 }
 
 // Source file styles
-
-$hover-dark-amt: 95%;
-$pln-hover-color: mix($pln-color, #000, $hover-dark-amt);
-$mis-hover-color: mix($mis-color, #000, $hover-dark-amt);
-$run-hover-color: mix($run-color, #000, $hover-dark-amt);
-$exc-hover-color: mix($exc-color, #000, $hover-dark-amt);
-$par-hover-color: mix($par-color, #000, $hover-dark-amt);
 
 // The slim bar at the left edge of the source lines, colored by coverage.
 $border-indicator-width: .2em;
@@ -250,7 +345,7 @@ $context-panel-color: #aaeeff;
 
 #source {
     padding: 1em 0 1em $left-gutter;
-    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-family: $font-code;
 
     p {
         // position relative makes position:absolute pop-ups appear in the right place.
@@ -268,17 +363,17 @@ $context-panel-color: #aaeeff;
             box-sizing: border-box;
             margin-left: -$left-gutter;
             padding-right: 1em;
-            color: #999999;
-            font-family: verdana, sans-serif;
+            color: $light-gray4;
+            @include color-dark($dark-gray4);
 
             a {
                 text-decoration: none;
-                color: #999999;
-                font-size: .8333em;   // 10/12
-                line-height: 1em;
+                color: $light-gray4;
+                @include color-dark($dark-gray4);
                 &:hover {
                     text-decoration: underline;
-                    color: #999999;
+                    color: $light-gray4;
+                    @include color-dark($dark-gray4);
                 }
             }
         }
@@ -293,10 +388,12 @@ $context-panel-color: #aaeeff;
             box-sizing: border-box;
             margin-left: -.5em;
             padding-left: .5em - $border-indicator-width;
-            border-left: $border-indicator-width solid white;
+            border-left: $border-indicator-width solid $light-bg;
+            @include border-color-dark($dark-bg);
 
             &:hover {
-                background: $pln-hover-color;
+                background: mix($light-pln-bg, $light-fg, $hover-dark-amt);
+                @include background-dark(mix($dark-pln-bg, $dark-fg, $hover-dark-amt));
 
                 & ~ .r .annotate.long {
                     display: block;
@@ -305,7 +402,8 @@ $context-panel-color: #aaeeff;
 
             // Syntax coloring
             .com {
-                color: green;
+                color: $light-token-com;
+                @include color-dark($dark-token-com);
                 font-style: italic;
                 line-height: 1px;
             }
@@ -314,62 +412,71 @@ $context-panel-color: #aaeeff;
                 line-height: 1px;
             }
             .str {
-                color: #000080;
+                color: $light-token-str;
+                @include color-dark($dark-token-str);
             }
         }
 
         &.mis {
             .t {
-                border-left: $border-indicator-width solid #ff0000;
+                border-left: $border-indicator-width solid $mis-color;
             }
 
             &.show_mis .t {
-                background: $mis-color;
+                background: $light-mis-bg;
+                @include background-dark($dark-mis-bg);
 
                 &:hover {
-                    background: $mis-hover-color;
+                    background: mix($light-mis-bg, $light-fg, $hover-dark-amt);
+                    @include background-dark(mix($dark-mis-bg, $dark-fg, $hover-dark-amt));
                 }
             }
         }
 
         &.run {
             .t {
-                border-left: $border-indicator-width solid #00ff00;
+                border-left: $border-indicator-width solid $run-color;
             }
 
             &.show_run .t {
-                background: $run-color;
+                background: $light-run-bg;
+                @include background-dark($dark-run-bg);
 
                 &:hover {
-                    background: $run-hover-color;
+                    background: mix($light-run-bg, $light-fg, $hover-dark-amt);
+                    @include background-dark(mix($dark-run-bg, $dark-fg, $hover-dark-amt));
                 }
             }
         }
 
         &.exc {
             .t {
-                border-left: $border-indicator-width solid #808080;
+                border-left: $border-indicator-width solid $exc-color;
             }
 
             &.show_exc .t {
-                background: $exc-color;
+                background: $light-exc-bg;
+                @include background-dark($dark-exc-bg);
 
                 &:hover {
-                    background: $exc-hover-color;
+                    background: mix($light-exc-bg, $light-fg, $hover-dark-amt);
+                    @include background-dark(mix($dark-exc-bg, $dark-fg, $hover-dark-amt));
                 }
             }
         }
 
         &.par {
             .t {
-                border-left: $border-indicator-width solid #eeee99;
+                border-left: $border-indicator-width solid $par-color;
             }
 
             &.show_par .t {
-                background: $par-color;
+                background: $light-par-bg;
+                @include background-dark($dark-par-bg);
 
                 &:hover {
-                    background: $par-hover-color;
+                    background: mix($light-par-bg, $light-fg, $hover-dark-amt);
+                    @include background-dark(mix($dark-par-bg, $dark-fg, $hover-dark-amt));
                 }
             }
 
@@ -379,12 +486,13 @@ $context-panel-color: #aaeeff;
             position: absolute;
             top: 0;
             right: 2.5em;
-            font-family: verdana, sans-serif;
+            font-family: $font-normal;
         }
 
         .annotate {
-            font-family: georgia;
-            color: #666;
+            font-family: $font-normal;
+            color: $light-gray5;
+            @include color-dark($dark-gray6);
             padding-right: .5em;
 
             &.short:hover ~ .long {
@@ -432,7 +540,8 @@ $context-panel-color: #aaeeff;
         }
 
         label.ctx {
-            color: #999;
+            color: $light-gray4;
+            @include color-dark($dark-gray4);
             display: inline-block;
             padding: 0 .5em;
             font-size: .8333em;   // 10/12
@@ -444,7 +553,7 @@ $context-panel-color: #aaeeff;
             overflow-y: hidden;
             transition: all .2s;
             padding: 0 .5em;
-            font-family: verdana, sans-serif;
+            font-family: $font-normal;
             white-space: nowrap;
             background: $context-panel-color;
             border-radius: .25em;
@@ -460,11 +569,15 @@ $context-panel-color: #aaeeff;
 
 // index styles
 #index {
+    font-family: $font-code;
+    font-size: 0.875em;
+
     td, th {
         text-align: right;
         width: 5em;
         padding: .25em .5em;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid $light-gray2;
+        @include border-color-dark($dark-gray2);
         &.left {
             padding-left: 0;
         }
@@ -478,17 +591,17 @@ $context-panel-color: #aaeeff;
     }
     th {
         font-style: italic;
-        color: #333;
-        border-bottom: 1px solid #ccc;
+        color: $light-gray6;
+        @include color-dark($dark-gray6);
         cursor: pointer;
         &:hover {
-            background: #eee;
-            border-bottom: 1px solid #999;
+            background: $light-gray2;
+            @include background-dark($dark-gray2);
         }
         &.headerSortDown, &.headerSortUp {
-            border-bottom: 1px solid #000;
             white-space: nowrap;
-            background: #eee;
+            background: $light-gray2;
+            @include background-dark($dark-gray2);
         }
         &.headerSortDown:after {
             content: " ↓";
@@ -499,7 +612,7 @@ $context-panel-color: #aaeeff;
     }
     td.name a {
         text-decoration: none;
-        color: #000;
+        color: inherit;
     }
 
     tr.total td,
@@ -509,10 +622,11 @@ $context-panel-color: #aaeeff;
         border-bottom: none;
     }
     tr.file:hover {
-        background: #eeeeee;
+        background: $light-gray2;
+        @include background-dark($dark-gray2);
         td.name {
             text-decoration: underline;
-            color: #000;
+            color: inherit;
         }
     }
 }
@@ -524,12 +638,15 @@ $context-panel-color: #aaeeff;
     top: 0;
     width: 16px;
     height: 100%;
-    background: white;
-    border-left: 1px solid #eee;
+    background: $light-bg;
+    border-left: 1px solid $light-gray2;
+    @include background-dark($dark-bg);
+    @include border-color-dark($dark-gray2);
     will-change: transform; // for faster scrolling of fixed element in Chrome
 
     .marker {
-        background: #ddd;
+        background: $light-gray3;
+        @include background-dark($dark-gray3);
         position: absolute;
         min-height: 3px;
         width: 100%;
