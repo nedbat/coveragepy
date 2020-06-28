@@ -164,11 +164,11 @@ a.nav {
 }
 
 .indexfile #footer {
-    margin: 1em 3em;
+    margin: 1rem 3rem;
 }
 
 .pyfile #footer {
-    margin: 1em 1em;
+    margin: 1rem 1rem;
 }
 
 #footer .content {
@@ -179,12 +179,12 @@ a.nav {
 }
 
 #index {
-    margin: 1em 0 0 3em;
+    margin: 1rem 0 0 3rem;
 }
 
 // Header styles
 #header .content {
-    padding: 1em $left-gutter;
+    padding: 1rem $left-gutter;
 }
 
 h1 {
@@ -218,11 +218,11 @@ h2.stats {
 .stats button {
     font-family: inherit;
     font-size: inherit;
-    border: 2px solid;
-    border-radius: .1em;
+    border: 1px solid;
+    border-radius: .2em;
     color: inherit;
     padding: .1em .5em;
-    margin: 0 .1em;
+    margin: 1px calc(.1em + 1px);
     cursor: pointer;
     border-color: $light-gray3;
     @include border-color-dark($dark-gray3);
@@ -236,7 +236,8 @@ h2.stats {
         &.show_run {
             background: $light-run-bg;
             @include background-dark($dark-run-bg);
-            border-color: $run-color;
+            border: 2px solid $run-color;
+            margin: 0 .1em;
         }
     }
     &.mis {
@@ -245,7 +246,8 @@ h2.stats {
         &.show_mis {
             background: $light-mis-bg;
             @include background-dark($dark-mis-bg);
-            border-color: $mis-color;
+            border: 2px solid $mis-color;
+            margin: 0 .1em;
         }
     }
     &.exc {
@@ -254,7 +256,8 @@ h2.stats {
         &.show_exc {
             background: $light-exc-bg;
             @include background-dark($dark-exc-bg);
-            border-color: $exc-color;
+            border: 2px solid $exc-color;
+            margin: 0 .1em;
         }
     }
     &.par {
@@ -263,7 +266,8 @@ h2.stats {
         &.show_par {
             background: $light-par-bg;
             @include background-dark($dark-par-bg);
-            border-color: $par-color;
+            border: 2px solid $par-color;
+            margin: 0 .1em;
         }
     }
 }
@@ -569,7 +573,7 @@ $context-panel-color: #aaeeff;
 
 // index styles
 #index {
-    font-family: $font-code;
+    font-family: $font-normal;
     font-size: 0.875em;
 
     td, th {
