@@ -31,6 +31,10 @@ Unreleased
   ``--precision`` option to control the number of decimal points displayed.
   Thanks, Teake Nutma.
 
+- If coverage fails due to the coverage total not reaching the ``--fail-under``
+  value, it will now print a message making the condition clear.  Thanks,
+  Naveen Yadav.
+
 - TOML configuration files with non-ASCII characters would cause errors on
   Windows (`issue 990`_).  This is now fixed.
 
