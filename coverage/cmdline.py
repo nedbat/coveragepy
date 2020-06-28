@@ -629,7 +629,10 @@ class CoverageScript(object):
             fail_under = self.coverage.get_option("report:fail_under")
             precision = self.coverage.get_option("report:precision")
             if should_fail_under(total, fail_under, precision):
-                print("fail-under has failed")
+                msg = "total of {total:.{p}f} is less than fail-under={fail_under:.{p}f}".format(
+                    total=total, fail_under=fail_under, p=precision,
+                )
+                print("Coverage failure:", msg)
                 return FAIL_UNDER
 
         return OK

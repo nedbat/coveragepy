@@ -1236,13 +1236,19 @@ class FailUnderTest(CoverageTest):
     def test_report_43_is_not_ok(self):
         st, out = self.run_command_status("coverage report --fail-under=44")
         self.assertEqual(st, 2)
-        self.assertEqual(self.last_line_squeezed(out), "fail-under has failed")
+        self.assertEqual(
+            self.last_line_squeezed(out),
+            "Coverage failure: total of 43 is less than fail-under=44"
+        )
 
     def test_report_42p86_is_not_ok(self):
         self.make_file(".coveragerc", "[report]\nprecision = 2")
         st, out = self.run_command_status("coverage report --fail-under=42.88")
         self.assertEqual(st, 2)
-        self.assertEqual(self.last_line_squeezed(out), "fail-under has failed")
+        self.assertEqual(
+            self.last_line_squeezed(out),
+            "Coverage failure: total of 42.86 is less than fail-under=42.88"
+        )
 
 
 class FailUnderNoFilesTest(CoverageTest):
