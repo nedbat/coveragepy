@@ -85,6 +85,10 @@ class Opts(object):
             "which isn't done by default."
         ),
     )
+    sort = optparse.make_option(
+        '--sort', action='store', metavar='COLUMN',
+        help="Sort the report by the named column"
+    )
     show_missing = optparse.make_option(
         '-m', '--show-missing', action='store_true',
         help="Show line numbers of statements in each module that weren't executed.",
@@ -405,6 +409,7 @@ CMDS = {
             Opts.include,
             Opts.omit,
             Opts.precision,
+            Opts.sort,
             Opts.show_missing,
             Opts.skip_covered,
             Opts.skip_empty,
@@ -579,6 +584,7 @@ class CoverageScript(object):
             omit=omit,
             include=include,
             contexts=contexts,
+            sort=options.sort
             )
 
         # We need to be able to import from the current directory, because
