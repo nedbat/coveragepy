@@ -39,6 +39,10 @@ Unreleased
 - TOML configuration files with non-ASCII characters would cause errors on
   Windows (`issue 990`_).  This is now fixed.
 
+- The output of ``--debug=trace`` now includes information about how the
+  ``--source`` option is being interpreted, and the module names being
+  considered.
+
 .. _pull request 931: https://github.com/nedbat/coveragepy/pull/931
 .. _pull request 977: https://github.com/nedbat/coveragepy/pull/977
 .. _pull request 982: https://github.com/nedbat/coveragepy/pull/982
