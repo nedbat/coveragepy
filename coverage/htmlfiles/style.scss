@@ -576,18 +576,15 @@ $context-panel-color: #aaeeff;
     font-family: $font-normal;
     font-size: 0.875em;
 
+    table.index {
+        margin-left: -.5em;
+    }
     td, th {
         text-align: right;
         width: 5em;
         padding: .25em .5em;
         border-bottom: 1px solid $light-gray2;
         @include border-color-dark($dark-gray2);
-        &.left {
-            padding-left: 0;
-        }
-        &.right {
-            padding-right: 0;
-        }
         &.name {
             text-align: left;
             width: auto;
@@ -608,10 +605,10 @@ $context-panel-color: #aaeeff;
             @include background-dark($dark-gray2);
         }
         &.headerSortDown:after {
-            content: " ↓";
+            content: " ↑";
         }
         &.headerSortUp:after {
-            content: " ↑";
+            content: " ↓";
         }
     }
     td.name a {
