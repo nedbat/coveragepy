@@ -25,19 +25,24 @@ Unreleased
 ----------
 
 - The HTML report has been redesigned by Victor Salvino.  There is now a dark
-  mode, the code text is larger, and system san serif fonts are used.
+  mode, the code text is larger, and system sans serif fonts are used, in
+  addition to other small changes (`issue 858`_ and `pull request 931`_).
 
 - The ``coverage report`` and ``coverage html`` commands now accept a
   ``--precision`` option to control the number of decimal points displayed.
-  Thanks, Teake Nutma.
+  Thanks, Teake Nutma (`pull request 982`_).
 
 - If coverage fails due to the coverage total not reaching the ``--fail-under``
   value, it will now print a message making the condition clear.  Thanks,
-  Naveen Yadav.
+  Naveen Yadav (`pull request 977`_).
 
 - TOML configuration files with non-ASCII characters would cause errors on
   Windows (`issue 990`_).  This is now fixed.
 
+.. _pull request 931: https://github.com/nedbat/coveragepy/pull/931
+.. _pull request 977: https://github.com/nedbat/coveragepy/pull/977
+.. _pull request 982: https://github.com/nedbat/coveragepy/pull/982
+.. _issue 858: https://github.com/nedbat/coveragepy/issues/858
 .. _issue 990: https://github.com/nedbat/coveragepy/issues/990
 
 
