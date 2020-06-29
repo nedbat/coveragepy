@@ -104,10 +104,21 @@ class SummaryReporter(object):
 
         # Sort the lines and write them out.
         if getattr(self.config, 'sort', None):
-            position = column_order.get(self.config.sort.lower())
+            _sort = self.config.sort.lower()
+            if _sort[0] == '-':
+                reverse = True
+                sort_option = _sort[1:]
+            elif _sort[0] == '+':
+                reverse = False
+                sort_option = _sort[1:]
+            else:
+                reverse = False
+                sort_option = _sort
+
+            position = column_order.get(sort_option)
             if position is None:
                 raise CoverageException("Invalid sorting option: {!r}".format(self.config.sort))
-            lines.sort(key=lambda l: (l[1][position], l[0]))
+            lines.sort(key=lambda l: (l[1][position], l[0]), reverse=reverse)
 
         for line in lines:
             self.writeout(line[0])
