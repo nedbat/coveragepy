@@ -212,7 +212,6 @@ class Coverage(object):
         self._data = self._collector = None
         self._plugins = None
         self._inorout = None
-        self._inorout_class = InOrOut
         self._data_suffix = self._run_suffix = None
         self._exclude_re = None
         self._debug = None
@@ -483,7 +482,10 @@ class Coverage(object):
                 plugin._coverage_enabled = False
 
         # Create the file classifying substructure.
-        self._inorout = self._inorout_class(warn=self._warn)
+        self._inorout = InOrOut(
+            warn=self._warn,
+            debug=(self._debug if self._debug.should('trace') else None),
+        )
         self._inorout.configure(self.config)
         self._inorout.plugins = self._plugins
         self._inorout.disp_class = self._collector.file_disposition_class

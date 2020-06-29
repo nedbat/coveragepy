@@ -111,8 +111,9 @@ def module_has_file(mod):
 class InOrOut(object):
     """Machinery for determining what files to measure."""
 
-    def __init__(self, warn):
+    def __init__(self, warn, debug):
         self.warn = warn
+        self.debug = debug
 
         # The matchers for should_trace.
         self.source_match = None
@@ -177,19 +178,33 @@ class InOrOut(object):
             for mod in [contracts, six]:
                 self.cover_paths.append(canonical_path(mod))
 
+        def debug(msg):
+            if self.debug:
+                self.debug.write(msg)
+
         # Create the matchers we need for should_trace
         if self.source or self.source_pkgs:
-            self.source_match = TreeMatcher(self.source)
-            self.source_pkgs_match = ModuleMatcher(self.source_pkgs)
+            against = []
+            if self.source:
+                self.source_match = TreeMatcher(self.source)
+                against.append("trees {!r}".format(self.source_match))
+            if self.source_pkgs:
+                self.source_pkgs_match = ModuleMatcher(self.source_pkgs)
+                against.append("modules {!r}".format(self.source_pkgs_match))
+            debug("Source matching against " + " and ".join(against))
         else:
             if self.cover_paths:
                 self.cover_match = TreeMatcher(self.cover_paths)
+                debug("Coverage code matching: {!r}".format(self.cover_match))
             if self.pylib_paths:
                 self.pylib_match = TreeMatcher(self.pylib_paths)
+                debug("Python stdlib matching: {!r}".format(self.pylib_match))
         if self.include:
             self.include_match = FnmatchMatcher(self.include)
+            debug("Include matching: {!r}".format(self.include_match))
         if self.omit:
             self.omit_match = FnmatchMatcher(self.omit)
+            debug("Omit matching: {!r}".format(self.omit_match))
 
     def should_trace(self, filename, frame=None):
         """Decide whether to trace execution in `filename`, with a reason.
@@ -309,12 +324,21 @@ class InOrOut(object):
         # about the outer bound of what to measure and we don't have to apply
         # any canned exclusions. If they didn't, then we have to exclude the
         # stdlib and coverage.py directories.
-        if self.source_match:
-            if self.source_pkgs_match.match(modulename):
-                if modulename in self.source_pkgs_unmatched:
-                    self.source_pkgs_unmatched.remove(modulename)
-            elif not self.source_match.match(filename):
-                return "falls outside the --source trees"
+        if self.source_match or self.source_pkgs_match:
+            extra = ""
+            ok = False
+            if self.source_pkgs_match:
+                if self.source_pkgs_match.match(modulename):
+                    ok = True
+                    if modulename in self.source_pkgs_unmatched:
+                        self.source_pkgs_unmatched.remove(modulename)
+                else:
+                    extra = "module {!r} ".format(modulename)
+            if not ok and self.source_match:
+                if self.source_match.match(filename):
+                    ok = True
+            if not ok:
+                return extra + "falls outside the --source spec"
         elif self.include_match:
             if not self.include_match.match(filename):
                 return "falls outside the --include trees"
