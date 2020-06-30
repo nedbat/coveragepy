@@ -364,7 +364,8 @@ command line::
     TOTAL                        76     10    87%
 
 The ``--skip-covered`` switch will skip any file with 100% coverage, letting
-you focus on the files that still need attention.  The ``--skip-empty`` switch
+you focus on the files that still need attention. The ``--no-skip-covered``
+option can be used if needed to see all the files.  The ``--skip-empty`` switch
 will skip any file with no executable statements.
 
 If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets

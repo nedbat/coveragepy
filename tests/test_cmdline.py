@@ -382,6 +382,16 @@ class CmdLineTest(BaseCmdLineTest):
             cov.load()
             cov.report(skip_covered=True)
             """)
+        self.cmd_executes("report --skip-covered --no-skip-covered", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(skip_covered=False)
+            """)
+        self.cmd_executes("report --no-skip-covered", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(skip_covered=False)
+            """)
         self.cmd_executes("report --skip-empty", """\
             cov = Coverage()
             cov.load()

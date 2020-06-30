@@ -32,6 +32,10 @@ Unreleased
   ``--precision`` option to control the number of decimal points displayed.
   Thanks, Teake Nutma (`pull request 982`_).
 
+- The ``coverage report`` command now accepts a ``--no-skip-covered`` option
+  to negate ``--skip-covered``.  Thanks, Anthony Sottile (`issue 779`_ and
+  `pull request 932`_).
+
 - If coverage fails due to the coverage total not reaching the ``--fail-under``
   value, it will now print a message making the condition clear.  Thanks,
   Naveen Yadav (`pull request 977`_).
@@ -44,8 +48,10 @@ Unreleased
   considered.
 
 .. _pull request 931: https://github.com/nedbat/coveragepy/pull/931
+.. _pull request 932: https://github.com/nedbat/coveragepy/pull/932
 .. _pull request 977: https://github.com/nedbat/coveragepy/pull/977
 .. _pull request 982: https://github.com/nedbat/coveragepy/pull/982
+.. _issue 779: https://github.com/nedbat/coveragepy/issues/779
 .. _issue 858: https://github.com/nedbat/coveragepy/issues/858
 .. _issue 990: https://github.com/nedbat/coveragepy/issues/990
 
