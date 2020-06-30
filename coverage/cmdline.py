@@ -87,7 +87,8 @@ class Opts(object):
     )
     sort = optparse.make_option(
         '--sort', action='store', metavar='COLUMN',
-        help="Sort the report by the named column"
+        help="Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. "
+             "Default is name."
     )
     show_missing = optparse.make_option(
         '-m', '--show-missing', action='store_true',
