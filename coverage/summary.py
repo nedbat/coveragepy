@@ -104,16 +104,13 @@ class SummaryReporter(object):
 
         # Sort the lines and write them out.
         if getattr(self.config, 'sort', None):
-            _sort = self.config.sort.lower()
-            if _sort[0] == '-':
+            sort_option = self.config.sort.lower()
+            reverse = False
+            if sort_option[0] == '-':
                 reverse = True
-                sort_option = _sort[1:]
-            elif _sort[0] == '+':
-                reverse = False
-                sort_option = _sort[1:]
-            else:
-                reverse = False
-                sort_option = _sort
+                sort_option = sort_option[1:]
+            elif sort_option[0] == '+':
+                sort_option = sort_option[1:]
 
             position = column_order.get(sort_option)
             if position is None:
