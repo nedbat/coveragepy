@@ -221,6 +221,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             skip_covered=None,
             skip_empty=None,
             show_contexts=None,
+            sort=None,
             source=None,
             timid=None,
             title=None,
@@ -584,7 +585,6 @@ class CoverageScript(object):
             omit=omit,
             include=include,
             contexts=contexts,
-            sort=options.sort
             )
 
         # We need to be able to import from the current directory, because
@@ -600,6 +600,7 @@ class CoverageScript(object):
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
                 precision=options.precision,
+                sort=options.sort,
                 **report_args
                 )
         elif options.action == "annotate":
