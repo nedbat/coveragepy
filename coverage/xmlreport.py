@@ -142,6 +142,10 @@ class XmlReporter(object):
     def xml_file(self, fr, analysis, has_arcs):
         """Add to the XML report for a single file."""
 
+        if self.config.skip_empty:
+            if analysis.numbers.n_statements == 0:
+                return
+
         # Create the 'lines' and 'package' XML elements, which
         # are populated later.  Note that a package == a directory.
         filename = fr.filename.replace("\\", "/")

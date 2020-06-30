@@ -185,6 +185,13 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         assert len(elts) == 1
         assert elts[0].get('line-rate') == '1'
 
+    def test_empty_file_is_skipped(self):
+        cov = self.run_doit()
+        cov.xml_report(skip_empty=True)
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//class[@name='__init__.py']")
+        assert len(elts) == 0
+
     def test_curdir_source(self):
         # With no source= option, the XML report should explain that the source
         # is in the current directory.

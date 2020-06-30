@@ -32,9 +32,12 @@ Unreleased
   ``--precision`` option to control the number of decimal points displayed.
   Thanks, Teake Nutma (`pull request 982`_).
 
-- The ``coverage report`` command now accepts a ``--no-skip-covered`` option
-  to negate ``--skip-covered``.  Thanks, Anthony Sottile (`issue 779`_ and
-  `pull request 932`_).
+- The ``coverage report`` and ``coverage html`` commands now accept a
+  ``--no-skip-covered`` option to negate ``--skip-covered``.  Thanks, Anthony
+  Sottile (`issue 779`_ and `pull request 932`_).
+
+- The ``--skip-empty`` option is now available for the XML report, closing
+  `issue 976`_.
 
 - If coverage fails due to the coverage total not reaching the ``--fail-under``
   value, it will now print a message making the condition clear.  Thanks,
@@ -53,6 +56,7 @@ Unreleased
 .. _pull request 982: https://github.com/nedbat/coveragepy/pull/982
 .. _issue 779: https://github.com/nedbat/coveragepy/issues/779
 .. _issue 858: https://github.com/nedbat/coveragepy/issues/858
+.. _issue 976: https://github.com/nedbat/coveragepy/issues/976
 .. _issue 990: https://github.com/nedbat/coveragepy/issues/990
 
 

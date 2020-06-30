@@ -446,6 +446,7 @@ CMDS = {
             Opts.include,
             Opts.omit,
             Opts.output_xml,
+            Opts.skip_empty,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate an XML report of coverage results."
@@ -616,7 +617,10 @@ class CoverageScript(object):
                 )
         elif options.action == "xml":
             outfile = options.outfile
-            total = self.coverage.xml_report(outfile=outfile, **report_args)
+            total = self.coverage.xml_report(
+                outfile=outfile, skip_empty=options.skip_empty,
+                **report_args
+                )
         elif options.action == "json":
             outfile = options.outfile
             total = self.coverage.json_report(

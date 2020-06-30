@@ -947,7 +947,7 @@ class Coverage(object):
 
     def xml_report(
         self, morfs=None, outfile=None, ignore_errors=None,
-        omit=None, include=None, contexts=None,
+        omit=None, include=None, contexts=None, skip_empty=None,
     ):
         """Generate an XML report of coverage results.
 
@@ -963,7 +963,7 @@ class Coverage(object):
         """
         with override_config(self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
-            xml_output=outfile, report_contexts=contexts,
+            xml_output=outfile, report_contexts=contexts, skip_empty=skip_empty,
         ):
             return render_report(self.config.xml_output, XmlReporter(self), morfs)
 
