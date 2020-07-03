@@ -375,6 +375,8 @@ details.
 The ``--precision`` option controls the number of digits displayed after the
 decimal point in coverage percentages, defaulting to none.
 
+The ``--sort`` option is the name of a column to sort the report by.
+
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
 

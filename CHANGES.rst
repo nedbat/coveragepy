@@ -39,6 +39,9 @@ Unreleased
 - The ``--skip-empty`` option is now available for the XML report, closing
   `issue 976`_.
 
+- The ``coverage report`` command now accepts a ``--sort`` option to specify
+  how to sort the results.  Thanks, Jerin Peter George (`pull request 1005`_).
+
 - If coverage fails due to the coverage total not reaching the ``--fail-under``
   value, it will now print a message making the condition clear.  Thanks,
   Naveen Yadav (`pull request 977`_).
@@ -54,6 +57,7 @@ Unreleased
 .. _pull request 932: https://github.com/nedbat/coveragepy/pull/932
 .. _pull request 977: https://github.com/nedbat/coveragepy/pull/977
 .. _pull request 982: https://github.com/nedbat/coveragepy/pull/982
+.. _pull request 1005: https://github.com/nedbat/coveragepy/pull/1005
 .. _issue 779: https://github.com/nedbat/coveragepy/issues/779
 .. _issue 858: https://github.com/nedbat/coveragepy/issues/858
 .. _issue 976: https://github.com/nedbat/coveragepy/issues/976
