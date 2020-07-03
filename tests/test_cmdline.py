@@ -393,6 +393,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov.load()
             cov.report(contexts=["foo", "bar"])
             """)
+        self.cmd_executes("report --sort=-foo", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(sort='-foo')
+            """)
 
     def test_run(self):
         # coverage run [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]
