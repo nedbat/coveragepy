@@ -831,7 +831,7 @@ class Coverage(object):
     def report(
         self, morfs=None, show_missing=None, ignore_errors=None,
         file=None, omit=None, include=None, skip_covered=None,
-        contexts=None, skip_empty=None, precision=None,
+        contexts=None, skip_empty=None, precision=None, sort=None
     ):
         """Write a textual summary report to `file`.
 
@@ -882,6 +882,7 @@ class Coverage(object):
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
             report_contexts=contexts, skip_empty=skip_empty, precision=precision,
+            sort=sort
         ):
             reporter = SummaryReporter(self)
             return reporter.report(morfs, outfile=file)

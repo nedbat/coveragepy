@@ -42,6 +42,7 @@ class BaseCmdLineTest(CoverageTest):
     _defaults.Coverage().report(
         ignore_errors=None, include=None, omit=None, morfs=[],
         show_missing=None, skip_covered=None, contexts=None, skip_empty=None, precision=None,
+        sort=None,
     )
     _defaults.Coverage().xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
@@ -401,6 +402,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.load()
             cov.report(contexts=["foo", "bar"])
+            """)
+        self.cmd_executes("report --sort=-foo", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(sort='-foo')
             """)
 
     def test_run(self):

@@ -85,6 +85,11 @@ class Opts(object):
             "which isn't done by default."
         ),
     )
+    sort = optparse.make_option(
+        '--sort', action='store', metavar='COLUMN',
+        help="Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. "
+             "Default is name."
+    )
     show_missing = optparse.make_option(
         '-m', '--show-missing', action='store_true',
         help="Show line numbers of statements in each module that weren't executed.",
@@ -221,6 +226,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             skip_covered=None,
             skip_empty=None,
             show_contexts=None,
+            sort=None,
             source=None,
             timid=None,
             title=None,
@@ -410,6 +416,7 @@ CMDS = {
             Opts.include,
             Opts.omit,
             Opts.precision,
+            Opts.sort,
             Opts.show_missing,
             Opts.skip_covered,
             Opts.no_skip_covered,
@@ -601,6 +608,7 @@ class CoverageScript(object):
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
                 precision=options.precision,
+                sort=options.sort,
                 **report_args
                 )
         elif options.action == "annotate":
