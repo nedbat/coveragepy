@@ -866,13 +866,13 @@ class TestSummaryReporterConfiguration(CoverageTest):
         # sort in three different orders.
         report = self.get_summary_text()
         print(report)
-        # Name                     Stmts   Miss  Cover
-        # --------------------------------------------
-        # tests/test_api.py          339    155    54%
-        # tests/test_backward.py      13      3    77%
-        # tests/test_coverage.py     234    228     3%
-        # --------------------------------------------
-        # TOTAL                      586    386    34%
+        # Name       Stmts   Miss  Cover
+        # ------------------------------
+        # file1.py     339    155    54%
+        # file2.py      13      3    77%
+        # file3.py     234    228     3%
+        # ------------------------------
+        # TOTAL        586    386    34%
 
         lines = report.splitlines()[2:-2]
         self.assertEqual(len(lines), 3)
@@ -901,6 +901,7 @@ class TestSummaryReporterConfiguration(CoverageTest):
     def assert_ordering(self, text, *words):
         """Assert that the `words` appear in order in `text`."""
         indexes = list(map(text.find, words))
+        assert -1 not in indexes
         self.assertEqual(
             indexes, sorted(indexes),
             "The words %r don't appear in order in %r" % (words, text)
@@ -909,17 +910,17 @@ class TestSummaryReporterConfiguration(CoverageTest):
     def test_sort_report_by_stmts(self):
         # Sort the text report by the Stmts column.
         report = self.get_summary_text(('report:sort', 'Stmts'))
-        self.assert_ordering(report, "test_backward.py", "test_coverage.py", "test_api.py")
+        self.assert_ordering(report, "file2.py", "file3.py", "file1.py")
 
     def test_sort_report_by_missing(self):
         # Sort the text report by the Missing column.
         report = self.get_summary_text(('report:sort', 'Miss'))
-        self.assert_ordering(report, "test_backward.py", "test_api.py", "test_coverage.py")
+        self.assert_ordering(report, "file2.py", "file1.py", "file3.py")
 
     def test_sort_report_by_cover(self):
         # Sort the text report by the Cover column.
         report = self.get_summary_text(('report:sort', 'Cover'))
-        self.assert_ordering(report, "test_coverage.py", "test_api.py", "test_backward.py")
+        self.assert_ordering(report, "file3.py", "file1.py", "file2.py")
 
     def test_sort_report_by_invalid_option(self):
         # Sort the text report by a nonsense column.
