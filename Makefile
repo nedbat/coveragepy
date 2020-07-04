@@ -28,6 +28,7 @@ clean: clean_platform                   ## Remove artifacts of test execution, i
 	rm -rf tests/eggsrc/build tests/eggsrc/dist tests/eggsrc/*.egg-info
 	rm -f setuptools-*.egg distribute-*.egg distribute-*.tar.gz
 	rm -rf doc/_build doc/_spell doc/sample_html_beta
+	rm -rf tmp
 	rm -rf .cache .pytest_cache .hypothesis
 	rm -rf $$TMPDIR/coverage_test
 	-make -C tests/gold/html clean
@@ -133,10 +134,25 @@ WEBHOME = ~/web/stellated/
 WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
 WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
 
-$(DOCPYTHON):
+$(DOCBIN):
 	tox -q -e doc --notest
 
-dochtml: $(DOCBIN)			## Build the docs HTML output.
+cmd_help: $(DOCBIN)
+	mkdir -p tmp
+	for cmd in annotate combine debug erase html json report run xml; do \
+		echo > tmp/$$cmd.rst; \
+		echo ".. code::" >> tmp/$$cmd.rst; \
+		echo >> tmp/$$cmd.rst; \
+		echo "    $$ coverage $$cmd --help" >> tmp/$$cmd.rst; \
+		$(DOCBIN)/python -m coverage $$cmd --help | \
+		sed \
+			-e 's/__main__.py/coverage/' \
+			-e '/^Full doc/d' \
+			-e 's/^/    /' \
+			>> tmp/$$cmd.rst; \
+	done
+
+dochtml: $(DOCBIN) cmd_help		## Build the docs HTML output.
 	$(DOCBIN)/python doc/check_copied_from.py doc/*.rst
 	$(SPHINXBUILD) -b html doc doc/_build/html
 
@@ -156,16 +172,16 @@ publishbeta:
 	mkdir -p $(WEBSAMPLEBETA)
 	cp doc/sample_html_beta/*.* $(WEBSAMPLEBETA)
 
-CHANGES_MD = /tmp/rst_rst/changes.md
-RELNOTES_JSON = /tmp/relnotes.json
+CHANGES_MD = tmp/rst_rst/changes.md
+RELNOTES_JSON = tmp/relnotes.json
 
 $(CHANGES_MD): CHANGES.rst $(DOCBIN)
-	$(SPHINXBUILD) -b rst doc /tmp/rst_rst
-	pandoc -frst -tmarkdown_strict --atx-headers --wrap=none /tmp/rst_rst/changes.rst > $(CHANGES_MD)
+	$(SPHINXBUILD) -b rst doc tmp/rst_rst
+	pandoc -frst -tmarkdown_strict --atx-headers --wrap=none tmp/rst_rst/changes.rst > $(CHANGES_MD)
 
 relnotes_json: $(RELNOTES_JSON)
 $(RELNOTES_JSON): $(CHANGES_MD)
-	$(DOCBIN)/python ci/parse_relnotes.py /tmp/rst_rst/changes.md $(RELNOTES_JSON)
+	$(DOCBIN)/python ci/parse_relnotes.py tmp/rst_rst/changes.md $(RELNOTES_JSON)
 
 tidelift_relnotes: $(RELNOTES_JSON)	## Upload parsed release notes to Tidelift.
 	$(DOCBIN)/python ci/tidelift_relnotes.py $(RELNOTES_JSON) pypi/coverage

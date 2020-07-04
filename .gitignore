@@ -35,9 +35,12 @@ covmain.zip
 zipmods.zip
 
 # Stuff in the doc directory.
-_build
-_spell
-sample_html_beta
+doc/_build
+doc/_spell
+doc/sample_html_beta
+
+# Build intermediaries.
+tmp
 
 # Stuff in the ci directory.
 *.token

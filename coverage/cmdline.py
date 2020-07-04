@@ -351,8 +351,11 @@ CMDS = {
         description=(
             "Display information on the internals of coverage.py, "
             "for diagnosing problems. "
-            "Topics are 'data' to show a summary of the collected data, "
-            "or 'sys' to show installation information."
+            "Topics are: "
+                "'data' to show a summary of the collected data; "
+                "'sys' to show installation information; "
+                "'config' to show the configuration; "
+                "or 'premain' to show what is calling coverage."
         ),
     ),
 

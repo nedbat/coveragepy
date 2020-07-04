@@ -26,7 +26,7 @@ A static context is set by an option when you run coverage.py.  The value is
 fixed for the duration of a run.  They can be any text you like, for example,
 "python3" or "with_numpy".  The context is recorded with the data.
 
-When you :ref:`combine multiple data files <cmd_combining>` together, they can
+When you :ref:`combine multiple data files <cmd_combine>` together, they can
 have differing contexts.  All of the information is retained, so that the
 different contexts are correctly recorded in the combined file.
 
