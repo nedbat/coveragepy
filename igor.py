@@ -254,6 +254,7 @@ def do_check_eol():
         '*.egg-info',
         '_build',
         '_spell',
+        'tmp',
     ]
     checked = set()
 
