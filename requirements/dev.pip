@@ -13,11 +13,11 @@ pluggy==0.13.1
 -r pytest.pip
 
 # for linting.
-greenlet==0.4.15
-pylint==2.5.2
-check-manifest==0.40
+greenlet==0.4.16
+pylint==2.5.3
+check-manifest==0.42
 readme_renderer==26.0
 
 # for kitting.
-requests==2.22.0
-twine==2.0.0
+requests==2.24.0
+twine==3.2.0
