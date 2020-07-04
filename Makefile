@@ -159,7 +159,7 @@ dochtml: $(DOCBIN) cmd_help		## Build the docs HTML output.
 docdev: dochtml				## Build docs, and auto-watch for changes.
 	PATH=$(DOCBIN):$(PATH) $(SPHINXAUTOBUILD) -b html doc doc/_build/html
 
-docspell: $(DOCBIN)
+docspell: $(DOCBIN)			## Run the spell checker on the docs.
 	$(SPHINXBUILD) -b spelling doc doc/_spell
 
 publish:
@@ -179,7 +179,7 @@ $(CHANGES_MD): CHANGES.rst $(DOCBIN)
 	$(SPHINXBUILD) -b rst doc tmp/rst_rst
 	pandoc -frst -tmarkdown_strict --atx-headers --wrap=none tmp/rst_rst/changes.rst > $(CHANGES_MD)
 
-relnotes_json: $(RELNOTES_JSON)
+relnotes_json: $(RELNOTES_JSON)		## Convert changelog to JSON for further parsing.
 $(RELNOTES_JSON): $(CHANGES_MD)
 	$(DOCBIN)/python ci/parse_relnotes.py tmp/rst_rst/changes.md $(RELNOTES_JSON)
 
