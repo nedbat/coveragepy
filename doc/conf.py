@@ -222,6 +222,13 @@ extlinks = {
     'github': ('https://github.com/nedbat/coveragepy/issues/%s', 'issue '),
 }
 
+# Regexes for URLs that linkcheck should skip.
+linkcheck_ignore = [
+    # We have lots of links to GitHub, and they start refusing to serve them to linkcheck,
+    # so don't bother checking them.
+    r"https://github.com/nedbat/coveragepy/(issues|pull)/\d+",
+]
+
 # When auto-doc'ing a class, only write the class' docstring into the class docs,
 # don't automatically include the __init__ docstring.
 autoclass_content = "class"
