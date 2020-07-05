@@ -43,6 +43,9 @@ COMMAND OVERVIEW
 |command| **combine**
     Combine a number of data files.
 
+|command| **debug**
+    Display information about the internals of coverage.py.
+
 |command| **erase**
     Erase previously collected coverage data.
 
@@ -115,6 +118,18 @@ COMMAND REFERENCE
     \--append
         Append coverage data to .coverage, otherwise it starts clean each
         time.
+
+**debug** `TOPIC` ...
+
+    Display information about the internals of coverage.py, for diagnosing
+    problems.
+
+    Topics are:
+
+        ``data`` to show a summary of the collected data;
+        ``sys`` to show installation information;
+        ``config`` to show the configuration;
+        ``premain`` to show what is calling coverage.
 
 **erase**
 

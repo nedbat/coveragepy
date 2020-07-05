@@ -349,13 +349,13 @@ CMDS = {
         "debug", GLOBAL_ARGS,
         usage="<topic>",
         description=(
-            "Display information on the internals of coverage.py, "
+            "Display information about the internals of coverage.py, "
             "for diagnosing problems. "
             "Topics are: "
                 "'data' to show a summary of the collected data; "
                 "'sys' to show installation information; "
                 "'config' to show the configuration; "
-                "or 'premain' to show what is calling coverage."
+                "'premain' to show what is calling coverage."
         ),
     ),
 
@@ -831,6 +831,7 @@ HELP_TOPICS = {
         Commands:
             annotate    Annotate source files with execution information.
             combine     Combine a number of data files.
+            debug       Display information about the internals of coverage.py
             erase       Erase previously collected coverage data.
             help        Get help on using coverage.py.
             html        Create an HTML report.
