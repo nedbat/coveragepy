@@ -139,7 +139,7 @@ class PythonParserTest(CoverageTest):
 
 
     @xfail(
-        env.PYPY3 and env.PYPYVERSION >= (7, 3, 0),
+        env.PYPY3 and env.PYPYVERSION == (7, 3, 0),
         "https://bitbucket.org/pypy/pypy/issues/3139",
     )
     def test_decorator_pragmas(self):
