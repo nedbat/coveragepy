@@ -8,6 +8,7 @@
         version_info = (4, 0, 2, 'final', 0)
 - Python version number in classifiers in setup.py
 - Copyright date in NOTICE.txt
+- Update specific Python versions in appveyor.yml ("PYTHON_VERSION")
 - Update CHANGES.rst, including release date.
     - don't forget the jump target
 - Update README.rst
@@ -21,28 +22,28 @@
     - Don't forget the man page: doc/python-coverage.1.txt
     - Check that the docs build correctly:
         $ tox -e doc
-    - Done with changes to source files, check them in.
-        - git push
-    - Generate new sample_html to get the latest, incl footer version number:
-        make clean
-        pip install -e .
-        cd ~/cog/trunk
-        rm -rf htmlcov
-        coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; coverage combine; coverage html
-        - IF PRE-RELEASE:
-            rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
-            cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
-        - IF NOT PRE-RELEASE:
-            rm -f ~/coverage/trunk/doc/sample_html/*.*
-            cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
-        cd ~/coverage/trunk
-        - IF NOT PRE-RELEASE:
-            check in the new sample html
-    - Build and publish docs:
-        - IF PRE-RELEASE:
-            $ make publishbeta
-        - ELSE:
-            $ make publish
+- Done with changes to source files, check them in.
+    - git push
+- Generate new sample_html to get the latest, incl footer version number:
+    make clean
+    pip install -e .
+    cd ~/cog/trunk
+    rm -rf htmlcov
+    coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; coverage combine; coverage html
+    - IF PRE-RELEASE:
+        rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
+        cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
+    - IF NOT PRE-RELEASE:
+        rm -f ~/coverage/trunk/doc/sample_html/*.*
+        cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
+    cd ~/coverage/trunk
+    - IF NOT PRE-RELEASE:
+        check in the new sample html
+- Build and publish docs:
+    - IF PRE-RELEASE:
+        $ make publishbeta
+    - ELSE:
+        $ make publish
 - Kits:
     - Start fresh:
         - $ make sterile
