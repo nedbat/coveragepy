@@ -21,8 +21,11 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+
+.. _changes_52:
+
+Version 5.2 --- 2020-07-05
+--------------------------
 
 - The HTML report has been redesigned by Victor Salvino.  There is now a dark
   mode, the code text is larger, and system sans serif fonts are used, in
