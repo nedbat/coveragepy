@@ -234,7 +234,7 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 
 #source p .ctxs span { display: block; text-align: right; }
 
-#index { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; font-size: 0.875em; }
+#index { font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.875em; }
 
 #index table.index { margin-left: -.5em; }
 
