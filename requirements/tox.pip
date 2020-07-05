@@ -4,4 +4,5 @@
 # The version of tox used by coverage.py
 tox==3.16.1
 # Adds env recreation on requirements file changes.
-tox-battery==0.6.1
+# 0.6.1 failed on travis on py2.7, not sure why it didn't fail locally.
+tox-battery==0.5.2
