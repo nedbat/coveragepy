@@ -21,8 +21,6 @@
     - Don't forget the man page: doc/python-coverage.1.txt
     - Check that the docs build correctly:
         $ tox -e doc
-            there will be warnings about the readthedocs links being broken,
-            because this version's docs haven't been published yet.
     - Done with changes to source files, check them in.
         - git push
     - Generate new sample_html to get the latest, incl footer version number:
