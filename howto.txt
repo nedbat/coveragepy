@@ -2,10 +2,10 @@
 
 - Check that the current virtualenv matches the current coverage branch.
 - Version number in coverage/version.py
-        version_info = (4, 0, 2, 'alpha', 1)
-        version_info = (4, 0, 2, 'beta', 1)
-        version_info = (4, 0, 2, 'candidate', 1)
-        version_info = (4, 0, 2, 'final', 0)
+        version_info = (4, 0, 2, "alpha", 1)
+        version_info = (4, 0, 2, "beta", 1)
+        version_info = (4, 0, 2, "candidate", 1)
+        version_info = (4, 0, 2, "final", 0)
 - Python version number in classifiers in setup.py
 - Copyright date in NOTICE.txt
 - Update specific Python versions in appveyor.yml ("PYTHON_VERSION")
@@ -23,19 +23,19 @@
     - Check that the docs build correctly:
         $ tox -e doc
 - Done with changes to source files, check them in.
-    - git push
+    $ git push
 - Generate new sample_html to get the latest, incl footer version number:
-    make clean
-    pip install -e .
-    cd ~/cog/trunk
-    rm -rf htmlcov
-    coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; coverage combine; coverage html
+    $ make clean
+    $ pip install -e .
+    $ cd ~/cog/trunk
+    $ rm -rf htmlcov
+    $ coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; coverage combine; coverage html
     - IF PRE-RELEASE:
-        rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
-        cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
+        $ rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
+        $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
     - IF NOT PRE-RELEASE:
-        rm -f ~/coverage/trunk/doc/sample_html/*.*
-        cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
+        $ rm -f ~/coverage/trunk/doc/sample_html/*.*
+        $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
     cd ~/coverage/trunk
     - IF NOT PRE-RELEASE:
         check in the new sample html
@@ -62,10 +62,10 @@
         $ make test_upload
 - Update PyPI:
     - upload kits:
-        - $ make kit_upload
+        $ make kit_upload
 - Tag the tree
-    - git tag coverage-3.0.1
-    - git push --tags
+    $ git tag coverage-3.0.1
+    $ git push --tags
 - Bump version:
     - coverage/version.py
         - increment version number
@@ -73,11 +73,11 @@
             - set to alpha-0 if just released.
     - CHANGES.rst
         - add an "Unreleased" section to the top.
-    - git push
+    $ git push
 - Update Tidelift:
-    - make tidelift_relnotes
+    $ make tidelift_relnotes
 - Update GitHub releases:
-    - make github_releases
+    $ make github_releases
 - Update readthedocs
     - IF NOT PRE-RELEASE:
         - update git "stable" branch to point to latest release
