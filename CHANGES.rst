@@ -22,6 +22,12 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  ----------------------------
 
 
+Unreleased
+----------
+
+Nothing yet.
+
+
 .. _changes_52:
 
 Version 5.2 --- 2020-07-05
