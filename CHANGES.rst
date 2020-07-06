@@ -25,7 +25,10 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- The dark mode HTML report still used light colors for the context listing,
+  making them unreadable (`issue 1009`_).  This is now fixed.
+
+.. _issue 1009: https://github.com/nedbat/coveragepy/issues/1009
 
 
 .. _changes_52:

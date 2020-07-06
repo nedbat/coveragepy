@@ -51,6 +51,7 @@ $light-exc-bg:            $light-gray2;
 $light-par-bg:            #ffa;
 $light-token-com:         #008000;
 $light-token-str:         #0451A5;
+$light-context-bg-color:  #aef;
 
 $dark-bg:                 #1e1e1e;
 $dark-fg:                 #eee;
@@ -67,6 +68,7 @@ $dark-exc-bg:             $dark-gray2;
 $dark-par-bg:             #650;
 $dark-token-com:          #6A9955;
 $dark-token-str:          #9CDCFE;
+$dark-context-bg-color:   #056;
 
 //
 // Mixins and utilities
@@ -345,8 +347,6 @@ h2.stats {
 // The slim bar at the left edge of the source lines, colored by coverage.
 $border-indicator-width: .2em;
 
-$context-panel-color: #aaeeff;
-
 #source {
     padding: 1em 0 1em $left-gutter;
     font-family: $font-code;
@@ -520,14 +520,18 @@ $context-panel-color: #aaeeff;
                     content: "▶ ";
                 }
                 &:hover {
-                    background: mix($context-panel-color, #fff, 50%);
-                    color: #666;
+                    background: mix($light-context-bg-color, $light-bg, $off-button-lighten);
+                    @include background-dark(mix($dark-context-bg-color, $dark-bg, $off-button-lighten));
+                    color: $light-gray5;
+                    @include color-dark($dark-gray5);
                 }
             }
 
             &:checked ~ .r label.ctx {
-                background: $context-panel-color;
-                color: #666;
+                background: $light-context-bg-color;
+                @include background-dark($dark-context-bg-color);
+                color: $light-gray5;
+                @include color-dark($dark-gray5);
                 border-radius: .75em .75em 0 0;
                 padding: 0 .5em;
                 margin: -.25em 0;
@@ -559,7 +563,8 @@ $context-panel-color: #aaeeff;
             padding: 0 .5em;
             font-family: $font-normal;
             white-space: nowrap;
-            background: $context-panel-color;
+            background: $light-context-bg-color;
+            @include background-dark($dark-context-bg-color);
             border-radius: .25em;
             margin-right: 1.75em;
             span {
