@@ -46,18 +46,20 @@
         $ make publish
 - Kits:
     - Start fresh:
-        - $ make sterile
+        $ make sterile
     - Source kit and wheels:
-        - $ make kit wheel
+        $ make kit wheel
     - Linux wheels:
-        - $ make kit_linux
+        $ make kit_linux
     - Windows kits
         - wait for over an hour for Appveyor to build kits.
             - https://ci.appveyor.com/project/nedbat/coveragepy
-        - $ make download_appveyor
+        $ make download_appveyor
     - examine the dist directory, and remove anything that looks malformed.
+    - check the dist directory:
+        $ python -m twine check dist/*
     - test the pypi upload:
-        - $ make test_upload
+        $ make test_upload
 - Update PyPI:
     - upload kits:
         - $ make kit_upload

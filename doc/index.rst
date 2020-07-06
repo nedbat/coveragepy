@@ -18,7 +18,7 @@ supported on:
 
 * Python versions 2.7, 3.5, 3.6, 3.7, 3.8, and 3.9 beta.
 
-* PyPy2 7.3.0 and PyPy3 7.3.0.
+* PyPy2 7.3.1 and PyPy3 7.3.1.
 
 .. ifconfig:: prerelease
 
