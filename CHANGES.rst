@@ -36,7 +36,7 @@ Unreleased
 Version 5.2 --- 2020-07-05
 --------------------------
 
-- The HTML report has been redesigned by Victor Salvino.  There is now a dark
+- The HTML report has been redesigned by Vince Salvino.  There is now a dark
   mode, the code text is larger, and system sans serif fonts are used, in
   addition to other small changes (`issue 858`_ and `pull request 931`_).
 
