@@ -220,27 +220,14 @@ except ImportError:
 
 
 def format_local_datetime(dt):
-    """Return a string with local timezone representing the date."""
+    """Return a string with local timezone representing the date.
+    If python version is lower than 3.6, the time zone is not included.
+    """
     try:
         return dt.astimezone().strftime('%Y-%m-%d %H:%M %z')
     except (TypeError, ValueError):
-        # Class datetime.timezone introduced in Python 3.2
         # Datetime.astimezone in Python 3.5 can not handle naive datetime
-        import time
-        def get_timezone_offset():
-            timestamp = time.time()
-            delta = datetime.fromtimestamp(timestamp) - datetime.utcfromtimestamp(timestamp)
-            if delta.seconds >= 0:
-                sign = '+'
-                seconds = delta.seconds
-            else:
-                sign = '-'
-                seconds = - delta.seconds
-            hours, rest = divmod(seconds, 60 * 60)
-            minutes, _ = divmod(rest, 60)
-            return '%s%02d%02d' % (sign, hours, minutes)
-        offset = get_timezone_offset()
-        return '%s %s' % (dt.strftime('%Y-%m-%d %H:%M'), offset)
+        return dt.strftime('%Y-%m-%d %H:%M')
 
 
 def invalidate_import_caches():
