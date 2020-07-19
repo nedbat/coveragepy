@@ -861,7 +861,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         lines = out.splitlines()
         self.assertIn("<pyfile>", lines[0])
         self.assertIn("--timid", out)
-        self.assertGreater(len(lines), 30)
+        self.assertGreater(len(lines), 20)
         self.assertEqual(lines[-1], "Full documentation is at {}".format(__url__))
 
     def test_unknown_topic(self):
