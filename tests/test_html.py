@@ -71,6 +71,11 @@ class HtmlTestHelpers(CoverageTest):
         with open("htmlcov/index.html") as f:
             index = f.read()
         index = re.sub(
+            r"created at \d{4}-\d{2}-\d{2} \d{2}:\d{2} \+\d{4}",
+            r"created at YYYY-MM-DD HH:MM +ZZZZ",
+            index,
+        )
+        index = re.sub(
             r"created at \d{4}-\d{2}-\d{2} \d{2}:\d{2}",
             r"created at YYYY-MM-DD HH:MM",
             index,
@@ -620,6 +625,7 @@ def compare_html(expected, actual):
     scrubs = [
         (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
         (r'coverage.py v[\d.abc]+', 'coverage.py vVER'),
+        (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d [-+]\d\d\d\d', 'created at DATE'),
         (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d', 'created at DATE'),
         # Some words are identifiers in one version, keywords in another.
         (r'<span class="(nam|key)">(print|True|False)</span>', r'<span class="nam">\2</span>'),

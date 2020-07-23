@@ -135,6 +135,7 @@ Thijs Triemstra
 Titus Brown
 Vince Salvino
 Ville Skyttä
+Xie Yanbo
 Yury Selivanov
 Zac Hatfield-Dodds
 Zooko Wilcox-O'Hearn

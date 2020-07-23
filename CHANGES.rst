@@ -28,6 +28,10 @@ Unreleased
 - The dark mode HTML report still used light colors for the context listing,
   making them unreadable (`issue 1009`_).  This is now fixed.
 
+- The time stamp on the HTML report now includes the time zone. Thanks, Xie
+  Yanbo (`pull request 960`_).
+
+.. _pull request 960: https://github.com/nedbat/coveragepy/pull/960
 .. _issue 1009: https://github.com/nedbat/coveragepy/issues/1009
 
 
