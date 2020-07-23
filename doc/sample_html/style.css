@@ -220,7 +220,15 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 
 #source p input ~ .r label.ctx:hover { background: #d5f7ff; color: #666; }
 
-#source p input:checked ~ .r label.ctx { background: #aaeeff; color: #666; border-radius: .75em .75em 0 0; padding: 0 .5em; margin: -.25em 0; }
+@media (prefers-color-scheme: dark) { #source p input ~ .r label.ctx:hover { background: #0f3a42; } }
+
+@media (prefers-color-scheme: dark) { #source p input ~ .r label.ctx:hover { color: #aaa; } }
+
+#source p input:checked ~ .r label.ctx { background: #aef; color: #666; border-radius: .75em .75em 0 0; padding: 0 .5em; margin: -.25em 0; }
+
+@media (prefers-color-scheme: dark) { #source p input:checked ~ .r label.ctx { background: #056; } }
+
+@media (prefers-color-scheme: dark) { #source p input:checked ~ .r label.ctx { color: #aaa; } }
 
 #source p input:checked ~ .r label.ctx::before { content: "▼ "; }
 
@@ -230,7 +238,9 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 
 @media (prefers-color-scheme: dark) { #source p label.ctx { color: #777; } }
 
-#source p .ctxs { display: block; max-height: 0; overflow-y: hidden; transition: all .2s; padding: 0 .5em; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; white-space: nowrap; background: #aaeeff; border-radius: .25em; margin-right: 1.75em; }
+#source p .ctxs { display: block; max-height: 0; overflow-y: hidden; transition: all .2s; padding: 0 .5em; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; white-space: nowrap; background: #aef; border-radius: .25em; margin-right: 1.75em; }
+
+@media (prefers-color-scheme: dark) { #source p .ctxs { background: #056; } }
 
 #source p .ctxs span { display: block; text-align: right; }
 
