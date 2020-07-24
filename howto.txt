@@ -82,7 +82,7 @@
     - @ https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
             - readthedocs won't find the tag until a commit is made on master.
-        - keep just the latest version of each x.y release, make the rest inactive.
+        - keep just the latest version of each x.y release, make the rest active but hidden.
     - IF NOT PRE-RELEASE:
         - update git "stable" branch to point to latest release
             $ git branch -f stable <latest-tag>
