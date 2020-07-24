@@ -22,8 +22,6 @@
     - Don't forget the man page: doc/python-coverage.1.txt
     - Check that the docs build correctly:
         $ tox -e doc
-- Done with changes to source files, check them in.
-    $ git push
 - Generate new sample_html to get the latest, incl footer version number:
     $ make clean
     $ pip install -e .
@@ -39,6 +37,8 @@
     cd ~/coverage/trunk
     - IF NOT PRE-RELEASE:
         check in the new sample html
+- Done with changes to source files, check them in.
+    $ git push
 - Build and publish docs:
     - IF PRE-RELEASE:
         $ make publishbeta
