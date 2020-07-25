@@ -90,7 +90,7 @@ Python ``-m`` switch::
 
 There are many options:
 
-.. include:: ../tmp/run.rst
+.. include:: help/run.rst
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -287,7 +287,7 @@ setting to store relative file paths (see :ref:`relative_files
 If any of the data files can't be read, coverage.py will print a warning
 indicating the file and the problem.
 
-.. include:: ../tmp/combine.rst
+.. include:: help/combine.rst
 
 
 .. _cmd_erase:
@@ -297,7 +297,7 @@ Erase data: ``coverage erase``
 
 To erase the collected data, use the **erase** command:
 
-.. include:: ../tmp/erase.rst
+.. include:: help/erase.rst
 
 If your configuration file indicates parallel data collection, **erase** will
 remove all of the data files.
@@ -351,7 +351,7 @@ For each module executed, the report shows the count of executable statements,
 the number of those statements missed, and the resulting coverage, expressed
 as a percentage.
 
-.. include:: ../tmp/report.rst
+.. include:: help/report.rst
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
@@ -426,7 +426,7 @@ the highlighting.
 A number of keyboard shortcuts are available for navigating the report.
 Click the keyboard icon in the upper right to see the complete list.
 
-.. include:: ../tmp/html.rst
+.. include:: help/html.rst
 
 The title of the report can be set with the ``title`` setting in the
 ``[html]`` section of the configuration file, or the ``--title`` switch on
@@ -470,7 +470,7 @@ compatible with `Cobertura`_.
 
 .. _Cobertura: http://cobertura.github.io/cobertura/
 
-.. include:: ../tmp/xml.rst
+.. include:: help/xml.rst
 
 You can specify the name of the output file with the ``-o`` switch.
 
@@ -484,7 +484,7 @@ JSON reporting: ``coverage json``
 
 The **json** command writes coverage data to a "coverage.json" file.
 
-.. include:: ../tmp/json.rst
+.. include:: help/json.rst
 
 You can specify the name of the output file with the ``-o`` switch.  The JSON
 can be nicely formatted by specifying the ``--pretty-print`` switch.
@@ -521,7 +521,7 @@ For example::
     >     else:
     >         a = 2
 
-.. include:: ../tmp/annotate.rst
+.. include:: help/annotate.rst
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
@@ -544,7 +544,7 @@ Three types of information are available:
 * ``data``: show a summary of the collected coverage data
 * ``premain``: show the call stack invoking coverage
 
-.. include:: ../tmp/debug.rst
+.. include:: help/debug.rst
 
 .. _cmd_run_debug:
 

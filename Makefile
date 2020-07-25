@@ -138,18 +138,17 @@ $(DOCBIN):
 	tox -q -e doc --notest
 
 cmd_help: $(DOCBIN)
-	mkdir -p tmp
 	for cmd in annotate combine debug erase html json report run xml; do \
-		echo > tmp/$$cmd.rst; \
-		echo ".. code::" >> tmp/$$cmd.rst; \
-		echo >> tmp/$$cmd.rst; \
-		echo "    $$ coverage $$cmd --help" >> tmp/$$cmd.rst; \
+		echo > doc/help/$$cmd.rst; \
+		echo ".. code::" >> doc/help/$$cmd.rst; \
+		echo >> doc/help/$$cmd.rst; \
+		echo "    $$ coverage $$cmd --help" >> doc/help/$$cmd.rst; \
 		$(DOCBIN)/python -m coverage $$cmd --help | \
 		sed \
 			-e 's/__main__.py/coverage/' \
 			-e '/^Full doc/d' \
 			-e 's/^/    /' \
-			>> tmp/$$cmd.rst; \
+			>> doc/help/$$cmd.rst; \
 	done
 
 dochtml: $(DOCBIN) cmd_help		## Build the docs HTML output.
