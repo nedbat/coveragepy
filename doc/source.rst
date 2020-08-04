@@ -26,7 +26,7 @@ When running your code, the ``coverage run`` command will by default measure
 all code, unless it is part of the Python standard library.
 
 You can specify source to measure with the ``--source`` command-line switch, or
-the ``[run] source`` configuration value.  The value is a comma- or
+the ``[coverage:run] source`` configuration value.  The value is a comma- or
 newline-separated list of directories or package names.  If specified, only
 source inside these directories or packages will be measured.  Specifying the
 source option also enables coverage.py to report on unexecuted files, since it
@@ -38,20 +38,20 @@ text editors). Files that do not end with ``.py`` or ``.pyo`` or ``.pyc``
 will also be skipped.
 
 You can further fine-tune coverage.py's attention with the ``--include`` and
-``--omit`` switches (or ``[run] include`` and ``[run] omit`` configuration
-values). ``--include`` is a list of file name patterns. If specified, only
-files matching those patterns will be measured. ``--omit`` is also a list of
-file name patterns, specifying files not to measure.  If both ``include`` and
-``omit`` are specified, first the set of files is reduced to only those that
-match the include patterns, then any files that match the omit pattern are
-removed from the set.
+``--omit`` switches (or ``[coverage:run] include`` and ``[coverage:run] omit``
+configuration values). ``--include`` is a list of file name patterns. If
+specified, only files matching those patterns will be measured. ``--omit``
+is also a list of file name patterns, specifying files not to measure.  If
+both ``include`` and ``omit`` are specified, first the set of files is
+reduced to only those that match the include patterns, then any files that
+match the omit pattern are removed from the set.
 
 The ``include`` and ``omit`` file name patterns follow typical shell syntax:
 ``*`` matches any number of characters and ``?`` matches a single character.
 Patterns that start with a wildcard character are used as-is, other patterns
 are interpreted relative to the current directory::
 
-    [run]
+    [coverage:run]
     omit =
         # omit anything in a .local directory anywhere
         */.local/*
