@@ -133,7 +133,7 @@ setup_args = dict(
         ),
         'Issues': 'https://github.com/nedbat/coveragepy/issues',
     },
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
+    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
 )
 
 # A replacement for the build_ext command which raises a single exception
