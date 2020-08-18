@@ -3,9 +3,9 @@
 
     $ coverage report --help
     Usage: coverage report [options] [modules]
-    
+
     Report coverage statistics on modules.
-    
+
     Options:
       --contexts=REGEX1,REGEX2,...
                             Only display data from lines covered in the given
@@ -35,4 +35,4 @@
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-    
+

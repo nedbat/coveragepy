@@ -3,9 +3,9 @@
 
     $ coverage run --help
     Usage: coverage run [options] <pyfile> [program options]
-    
+
     Run a Python program, measuring code execution.
-    
+
     Options:
       -a, --append          Append coverage data to .coverage, otherwise it starts
                             clean each time.
@@ -39,4 +39,4 @@
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-    
+

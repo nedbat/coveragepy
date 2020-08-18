@@ -147,7 +147,7 @@ cmd_help: $(DOCBIN)
 		sed \
 			-e 's/__main__.py/coverage/' \
 			-e '/^Full doc/d' \
-			-e 's/^/    /' \
+			-e 's/^./    &/' \
 			>> doc/help/$$cmd.rst; \
 	done
 

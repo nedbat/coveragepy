@@ -3,13 +3,13 @@
 
     $ coverage combine --help
     Usage: coverage combine [options] <path1> <path2> ... <pathN>
-    
+
     Combine data from multiple coverage files collected with 'run -p'.  The
     combined results are written to a single file representing the union of the
     data. The positional arguments are data files or directories containing data
     files. If no paths are provided, data files in the default data file's
     directory are combined.
-    
+
     Options:
       -a, --append     Append coverage data to .coverage, otherwise it starts
                        clean each time.
@@ -18,4 +18,4 @@
       --rcfile=RCFILE  Specify configuration file. By default '.coveragerc',
                        'setup.cfg', 'tox.ini', and 'pyproject.toml' are tried.
                        [env: COVERAGE_RCFILE]
-    
+

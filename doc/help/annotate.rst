@@ -3,10 +3,10 @@
 
     $ coverage annotate --help
     Usage: coverage annotate [options] [modules]
-    
+
     Make annotated copies of the given files, marking statements that are executed
     with > and statements that are missed with !.
-    
+
     Options:
       -d DIR, --directory=DIR
                             Write the output files to DIR.
@@ -23,4 +23,4 @@
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-    
+

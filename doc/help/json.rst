@@ -3,9 +3,9 @@
 
     $ coverage json --help
     Usage: coverage json [options] [modules]
-    
+
     Generate a JSON report of coverage results.
-    
+
     Options:
       --contexts=REGEX1,REGEX2,...
                             Only display data from lines covered in the given
@@ -30,4 +30,4 @@
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-    
+

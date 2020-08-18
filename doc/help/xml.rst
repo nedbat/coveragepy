@@ -3,9 +3,9 @@
 
     $ coverage xml --help
     Usage: coverage xml [options] [modules]
-    
+
     Generate an XML report of coverage results.
-    
+
     Options:
       --fail-under=MIN      Exit with a status of 2 if the total coverage is less
                             than MIN.
@@ -25,4 +25,4 @@
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-    
+

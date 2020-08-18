@@ -3,10 +3,10 @@
 
     $ coverage html --help
     Usage: coverage html [options] [modules]
-    
+
     Create an HTML report of the coverage of the files.  Each file gets its own
     page, with the source decorated to show executed, excluded, and missed lines.
-    
+
     Options:
       --contexts=REGEX1,REGEX2,...
                             Only display data from lines covered in the given
@@ -36,4 +36,4 @@
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-    
+
