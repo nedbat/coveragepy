@@ -232,6 +232,9 @@ linkcheck_ignore = [
     r"https://coverage.readthedocs.io/en/coverage-{}$".format(release),
 ]
 
+# https://github.com/executablebooks/sphinx-tabs/pull/54
+sphinx_tabs_valid_builders = ['linkcheck']
+
 # When auto-doc'ing a class, only write the class' docstring into the class docs,
 # don't automatically include the __init__ docstring.
 autoclass_content = "class"
