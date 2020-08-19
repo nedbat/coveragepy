@@ -2,4 +2,4 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 # The version of tox used by coverage.py
-tox==3.16.1
+tox==3.19.0
