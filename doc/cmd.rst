@@ -197,8 +197,8 @@ could affect the measurement process.  The possible warnings include:
   :meth:`.Coverage.switch_context` function to change the context. Only one of
   these mechanisms should be in use at a time.
 
-Individual warnings can be disabled with the `disable_warnings
-<config_run_disable_warnings>`_ configuration setting.  To silence "No data was
+Individual warnings can be disabled with the :ref:`disable_warnings
+<config_run_disable_warnings>` configuration setting.  To silence "No data was
 collected," add this to your .coveragerc file::
 
     [run]

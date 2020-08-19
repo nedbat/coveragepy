@@ -243,6 +243,6 @@ prerelease = bool(max(release).isalpha())
 
 def setup(app):
     """Configure Sphinx"""
-    app.add_stylesheet('coverage.css')
+    app.add_css_file('coverage.css')
     app.add_config_value('prerelease', False, 'env')
     print("** Prerelease = %r" % prerelease)
