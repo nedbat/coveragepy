@@ -111,7 +111,7 @@ New Features
 
 
 .. _TOML: https://github.com/toml-lang/toml#readme
-.. _issue 650: https://bitbucket.org/ned/coveragepy/issues/650/allow-setting-configuration-file-location
+.. _issue 650: https://github.com/nedbat/coveragepy/issues/650
 
 
 Bugs Fixed

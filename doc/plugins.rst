@@ -74,4 +74,4 @@ Some coverage.py plug-ins you might find useful:
 * `Mako template coverage plug-in`__: for measuring coverage in Mako templates.
   Doesn't work yet, probably needs some changes in Mako itself.
 
-  .. __: https://bitbucket.org/ned/coverage-mako-plugin
+  .. __: https://bitbucket-archive.softwareheritage.org/projects/ne/ned/coverage-mako-plugin.html
