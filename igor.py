@@ -255,6 +255,7 @@ def do_check_eol():
         '_build',
         '_spell',
         'tmp',
+        'help',
     ]
     checked = set()
 
