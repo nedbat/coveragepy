@@ -408,7 +408,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/index.html")
 
     def test_decode_error(self):
-        # https://bitbucket.org/ned/coveragepy/issue/351/files-with-incorrect-encoding-are-ignored
+        # https://github.com/nedbat/coveragepy/issues/351
         # imp.load_module won't load a file with an undecodable character
         # in a comment, though Python will run them.  So we'll change the
         # file after running.
@@ -437,7 +437,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.assertIn(expected, html_report)
 
     def test_formfeeds(self):
-        # https://bitbucket.org/ned/coveragepy/issue/360/html-reports-get-confused-by-l-in-the-code
+        # https://github.com/nedbat/coveragepy/issues/360
         self.make_file("formfeed.py", "line_one = 1\n\f\nline_two = 2\n")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "formfeed")
@@ -451,7 +451,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
     """Moar HTML tests."""
 
     def test_missing_source_file_incorrect_message(self):
-        # https://bitbucket.org/ned/coveragepy/issue/60
+        # https://github.com/nedbat/coveragepy/issues/60
         self.make_file("thefile.py", "import sub.another\n")
         self.make_file("sub/__init__.py", "")
         self.make_file("sub/another.py", "print('another')\n")
@@ -468,7 +468,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
     def test_extensionless_file_collides_with_extension(self):
         # It used to be that "program" and "program.py" would both be reported
         # to "program.html".  Now they are not.
-        # https://bitbucket.org/ned/coveragepy/issue/69
+        # https://github.com/nedbat/coveragepy/issues/69
         self.make_file("program", "import program\n")
         self.make_file("program.py", "a = 1\n")
         self.run_command("coverage run program")
@@ -488,7 +488,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
 
     def test_reporting_on_unmeasured_file(self):
         # It should be ok to ask for an HTML report on a file that wasn't even
-        # measured at all.  https://bitbucket.org/ned/coveragepy/issues/403
+        # measured at all.  https://github.com/nedbat/coveragepy/issues/403
         self.create_initial_files()
         self.make_file("other.py", "a = 1\n")
         self.run_coverage(htmlargs=dict(morfs=['other.py']))

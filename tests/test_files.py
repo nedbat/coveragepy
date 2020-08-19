@@ -47,7 +47,7 @@ class FilesTest(CoverageTest):
         self.assertEqual(files.relative_filename(a2), a2)
 
     def test_filepath_contains_absolute_prefix_twice(self):
-        # https://bitbucket.org/ned/coveragepy/issue/194
+        # https://github.com/nedbat/coveragepy/issues/194
         # Build a path that has two pieces matching the absolute path prefix.
         # Technically, this test doesn't do that on Windows, but drive
         # letters make that impractical to achieve.
@@ -309,7 +309,7 @@ class PathAliasesTest(CoverageTest):
         self.assert_mapped(aliases, r'/home/ned/foo/src/sub/a.py', r'.\mysrc\sub\a.py')
 
     def test_windows_on_linux(self):
-        # https://bitbucket.org/ned/coveragepy/issues/618/problem-when-combining-windows-generated
+        # https://github.com/nedbat/coveragepy/issues/618
         lin = "*/project/module/"
         win = "*\\project\\module\\"
 
@@ -325,7 +325,7 @@ class PathAliasesTest(CoverageTest):
             )
 
     def test_linux_on_windows(self):
-        # https://bitbucket.org/ned/coveragepy/issues/618/problem-when-combining-windows-generated
+        # https://github.com/nedbat/coveragepy/issues/618
         lin = "*/project/module/"
         win = "*\\project\\module\\"
 

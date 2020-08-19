@@ -564,7 +564,7 @@ class ApiTest(CoverageTest):
         self.assertNotIn("Warning, warning 2!", err)
 
     def test_source_and_include_dont_conflict(self):
-        # A bad fix made this case fail: https://bitbucket.org/ned/coveragepy/issues/541
+        # A bad fix made this case fail: https://github.com/nedbat/coveragepy/issues/541
         self.make_file("a.py", "import b\na = 1")
         self.make_file("b.py", "b = 1")
         self.make_file(".coveragerc", """\
@@ -907,7 +907,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         self.filenames_not_in(lines, "p1a p1c p2a p2b othera otherb osa osb")
 
     def test_source_package_part_omitted(self):
-        # https://bitbucket.org/ned/coveragepy/issue/218
+        # https://github.com/nedbat/coveragepy/issues/218
         # Used to be if you omitted something executed and inside the source,
         # then after it was executed but not recorded, it would be found in
         # the search for unexecuted files, and given a score of 0%.
@@ -920,7 +920,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         self.assertEqual(lines['p1c'], 0)
 
     def test_source_package_as_package_part_omitted(self):
-        # https://bitbucket.org/ned/coveragepy/issues/638/run-omit-is-ignored-since-45
+        # https://github.com/nedbat/coveragepy/issues/638
         lines = self.coverage_usepkgs(source=["pkg1"], omit=["*/p1b.py"])
         self.filenames_in(lines, "p1a")
         self.filenames_not_in(lines, "p1b")

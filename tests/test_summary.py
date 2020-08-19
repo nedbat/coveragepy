@@ -131,7 +131,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.assertEqual(self.last_line_squeezed(report), "mycode.py 4 0 100%")
 
     def test_run_source_vs_report_include(self):
-        # https://bitbucket.org/ned/coveragepy/issues/621/include-ignored-warning-when-using
+        # https://github.com/nedbat/coveragepy/issues/621
         self.make_file(".coveragerc", """\
             [run]
             source = .
@@ -146,7 +146,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             cov.stop()                                                  # pragma: nested
 
     def test_run_omit_vs_report_omit(self):
-        # https://bitbucket.org/ned/coveragepy/issues/622/report-omit-overwrites-run-omit
+        # https://github.com/nedbat/coveragepy/issues/622
         # report:omit shouldn't clobber run:omit.
         self.make_mycode()
         self.make_file(".coveragerc", """\
@@ -646,7 +646,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         return report
 
     def test_bug_156_file_not_run_should_be_zero(self):
-        # https://bitbucket.org/ned/coveragepy/issue/156
+        # https://github.com/nedbat/coveragepy/issues/156
         self.make_file("mybranch.py", """\
             def branch(x):
                 if x:
@@ -693,7 +693,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         if not env.WINDOWS:
             self.skipTest(".pyw files are only on Windows.")
 
-        # https://bitbucket.org/ned/coveragepy/issue/261
+        # https://github.com/nedbat/coveragepy/issues/261
         self.make_file("start.pyw", """\
             import mod
             print("In start.pyw")

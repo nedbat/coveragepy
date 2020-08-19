@@ -443,7 +443,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         ])
 
     def test_add_to_lines_hash_with_missing_file(self):
-        # https://bitbucket.org/ned/coveragepy/issues/403
+        # https://github.com/nedbat/coveragepy/issues/403
         covdata = CoverageData()
         covdata.add_lines(LINES_1)
         hasher = mock.Mock()
@@ -454,7 +454,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         ])
 
     def test_add_to_arcs_hash_with_missing_file(self):
-        # https://bitbucket.org/ned/coveragepy/issues/403
+        # https://github.com/nedbat/coveragepy/issues/403
         covdata = CoverageData()
         covdata.add_arcs(ARCS_3)
         covdata.add_file_tracers({"y.py": "hologram_plugin"})

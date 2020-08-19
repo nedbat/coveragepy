@@ -1095,8 +1095,7 @@ def process_startup():
     # flag (an attribute on this function) to indicate that coverage.py has
     # already been started, so we can avoid doing it twice.
     #
-    # https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy has more
-    # details.
+    # https://github.com/nedbat/coveragepy/issues/340 has more details.
 
     if hasattr(process_startup, "coverage"):
         # We've annotated this function before, so we must have already

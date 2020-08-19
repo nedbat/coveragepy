@@ -94,7 +94,7 @@ class RecursionTest(CoverageTest):
                 )
 
     def test_long_recursion_recovery(self):
-        # Test the core of bug 93: https://bitbucket.org/ned/coveragepy/issue/93
+        # Test the core of bug 93: https://github.com/nedbat/coveragepy/issues/93
         # When recovering from a stack overflow, the Python trace function is
         # disabled, but the C trace function is not.  So if we're using a
         # Python trace function, we won't trace anything after the stack
@@ -141,7 +141,7 @@ class MemoryLeakTest(CoverageTest):
     """Attempt the impossible: test that memory doesn't leak.
 
     Note: this test is truly unusual, and has had a colorful history.  See
-    for example: https://bitbucket.org/ned/coveragepy/issue/186
+    for example: https://github.com/nedbat/coveragepy/issues/186
 
     It may still fail occasionally, especially on PyPy.
 
@@ -276,7 +276,7 @@ class PyexpatTest(CoverageTest):
         self.assertEqual(missing, [])
 
         # Make sure pyexpat isn't recorded as a source file.
-        # https://bitbucket.org/ned/coveragepy/issues/419/nosource-no-source-for-code-path-to-c
+        # https://github.com/nedbat/coveragepy/issues/419
         files = cov.get_data().measured_files()
         self.assertFalse(
             any(f.endswith("pyexpat.c") for f in files),
@@ -425,7 +425,7 @@ class DoctestTest(CoverageTest):
 class GettraceTest(CoverageTest):
     """Tests that we work properly with `sys.gettrace()`."""
     def test_round_trip_in_untraced_function(self):
-        # https://bitbucket.org/ned/coveragepy/issues/575/running-doctest-prevents-complete-coverage
+        # https://github.com/nedbat/coveragepy/issues/575
         self.make_file("main.py", """import sample""")
         self.make_file("sample.py", """\
             from swap import swap_it
@@ -458,7 +458,7 @@ class GettraceTest(CoverageTest):
         self.assertEqual(missing, [])
 
     def test_setting_new_trace_function(self):
-        # https://bitbucket.org/ned/coveragepy/issues/436/disabled-coverage-ctracer-may-rise-from
+        # https://github.com/nedbat/coveragepy/issues/436
         self.check_coverage('''\
             import sys
 
@@ -535,7 +535,7 @@ class GettraceTest(CoverageTest):
 class ExecTest(CoverageTest):
     """Tests of exec."""
     def test_correct_filename(self):
-        # https://bitbucket.org/ned/coveragepy/issues/380/code-executed-by-exec-excluded-from
+        # https://github.com/nedbat/coveragepy/issues/380
         # Bug was that exec'd files would have their lines attributed to the
         # calling file.  Make two files, both with ~30 lines, but no lines in
         # common.  Line 30 in to_exec.py was recorded as line 30 in main.py,
@@ -579,7 +579,7 @@ class ExecTest(CoverageTest):
 class MockingProtectionTest(CoverageTest):
     """Tests about protecting ourselves from aggressive mocking.
 
-    https://bitbucket.org/ned/coveragepy/issues/416/coverage-40-is-causing-existing-unit-tests
+    https://github.com/nedbat/coveragepy/issues/416
 
     """
     def test_os_path_exists(self):

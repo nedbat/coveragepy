@@ -45,7 +45,7 @@ class PythonParserTest(CoverageTest):
             })
 
     def test_generator_exit_counts(self):
-        # https://bitbucket.org/ned/coveragepy/issue/324/yield-in-loop-confuses-branch-coverage
+        # https://github.com/nedbat/coveragepy/issues/324
         parser = self.parse_source("""\
             def gen(input):
                 for n in inp:
@@ -453,7 +453,7 @@ class ParserFileTest(CoverageTest):
     def test_missing_line_ending(self):
         # Test that the set of statements is the same even if a final
         # multi-line statement has no final newline.
-        # https://bitbucket.org/ned/coveragepy/issue/293
+        # https://github.com/nedbat/coveragepy/issues/293
 
         self.make_file("normal.py", """\
             out, err = subprocess.Popen(

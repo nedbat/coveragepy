@@ -146,7 +146,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(line_counts(data)['b_or_c.py'], 8)
 
     def test_combine_no_usable_files(self):
-        # https://bitbucket.org/ned/coveragepy/issues/629/multiple-use-of-combine-leads-to-empty
+        # https://github.com/nedbat/coveragepy/issues/629
         self.make_b_or_c_py()
         out = self.run_command("coverage run b_or_c.py b")
         self.assertEqual(out, 'done\n')
@@ -595,7 +595,7 @@ class ProcessTest(CoverageTest):
         self.assertNotIn("Exception", out)
 
     def test_warnings_trace_function_changed_with_threads(self):
-        # https://bitbucket.org/ned/coveragepy/issue/164
+        # https://github.com/nedbat/coveragepy/issues/164
         if env.METACOV:
             self.skipTest("Can't test tracers changing during metacoverage")
 
@@ -754,7 +754,7 @@ class ProcessTest(CoverageTest):
         # failures with non-ascii file names. We don't want to make a real file
         # with strange characters, though, because that gets the test runners
         # tangled up.  This will isolate the concerns to the coverage.py code.
-        # https://bitbucket.org/ned/coveragepy/issues/533/exception-on-unencodable-file-name
+        # https://github.com/nedbat/coveragepy/issues/533
         self.make_file("weird_file.py", r"""
             globs = {}
             code = "a = 1\nb = 2\n"
@@ -768,7 +768,7 @@ class ProcessTest(CoverageTest):
 
     def test_deprecation_warnings(self):
         # Test that coverage doesn't trigger deprecation warnings.
-        # https://bitbucket.org/ned/coveragepy/issue/305/pendingdeprecationwarning-the-imp-module
+        # https://github.com/nedbat/coveragepy/issues/305
         self.make_file("allok.py", """\
             import warnings
             warnings.simplefilter('default')
@@ -784,7 +784,7 @@ class ProcessTest(CoverageTest):
         self.assertEqual(out, "No warnings!\n")
 
     def test_run_twice(self):
-        # https://bitbucket.org/ned/coveragepy/issue/353/40a3-introduces-an-unexpected-third-case
+        # https://github.com/nedbat/coveragepy/issues/353
         self.make_file("foo.py", """\
             def foo():
                 pass
@@ -812,7 +812,7 @@ class ProcessTest(CoverageTest):
         )
 
     def test_module_name(self):
-        # https://bitbucket.org/ned/coveragepy/issues/478/help-shows-silly-program-name-when-running
+        # https://github.com/nedbat/coveragepy/issues/478
         out = self.run_command("python -m coverage")
         self.assertIn("Use 'coverage help' for help", out)
 
@@ -957,7 +957,7 @@ class EnvironmentTest(CoverageTest):
         self.assertEqual(self.line_count(out), 6, out)
 
     def test_coverage_run_dashm_is_like_python_dashm_off_path(self):
-        # https://bitbucket.org/ned/coveragepy/issue/242
+        # https://github.com/nedbat/coveragepy/issues/242
         self.make_file("sub/__init__.py", "")
         with open(TRY_EXECFILE) as f:
             self.make_file("sub/run_me.py", f.read())
@@ -967,7 +967,7 @@ class EnvironmentTest(CoverageTest):
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self):
-        # https://bitbucket.org/ned/coveragepy/issue/207
+        # https://github.com/nedbat/coveragepy/issues/207
         self.make_file("package/__init__.py", "print('init')")
         self.make_file("package/__main__.py", "print('main')")
         expected = self.run_command("python -m package")
@@ -1404,7 +1404,7 @@ def possible_pth_dirs():
             yield pth_dir
 
     # If we're still looking, then try the Python library directory.
-    # https://bitbucket.org/ned/coveragepy/issue/339/pth-test-malfunctions
+    # https://github.com/nedbat/coveragepy/issues/339
     yield sysconfig.get_python_lib()                # pragma: cant happen
 
 
@@ -1505,7 +1505,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         self.assertEqual(line_counts(data)['sub.py'], 3)
 
     def test_subprocess_with_pth_files_and_parallel(self):  # pragma: no metacov
-        # https://bitbucket.org/ned/coveragepy/issues/492/subprocess-coverage-strange-detection-of
+        # https://github.com/nedbat/coveragepy/issues/492
         if env.METACOV:
             self.skipTest("Can't test sub-process pth file suppport during metacoverage")
 

@@ -7,8 +7,7 @@ Run this file two ways under coverage and see that the times are the same:
     $ coverage run lab/bug397.py fast
     Runtime per example: 131.34 +/- 4.48 us
 
-Written by David MacIver as part of
-https://bitbucket.org/ned/coveragepy/issues/397/stopping-and-resuming-coverage-with
+Written by David MacIver as part of https://github.com/nedbat/coveragepy/issues/397
 
 """
 from __future__ import print_function
