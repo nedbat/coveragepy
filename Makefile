@@ -138,7 +138,7 @@ $(DOCBIN):
 	tox -q -e doc --notest
 
 cmd_help: $(DOCBIN)
-	for cmd in annotate combine debug erase html json report run xml; do \
+	@for cmd in annotate combine debug erase html json report run xml; do \
 		echo > doc/help/$$cmd.rst; \
 		echo ".. code::" >> doc/help/$$cmd.rst; \
 		echo >> doc/help/$$cmd.rst; \
