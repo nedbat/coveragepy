@@ -170,6 +170,10 @@ class Opts(object):
             "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
         ),
     )
+    serve = optparse.make_option(
+        '', '--serve', action='store_true', default=False,
+        help='Serve htmlcov directory to default webbrowser',
+    )
     source = optparse.make_option(
         '', '--source', action='store', metavar="SRC1,SRC2,...",
         help="A list of packages or directories of code to be measured.",
@@ -385,6 +389,7 @@ CMDS = {
             Opts.no_skip_covered,
             Opts.skip_empty,
             Opts.title,
+            Opts.serve,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
@@ -619,6 +624,7 @@ class CoverageScript(object):
         elif options.action == "html":
             total = self.coverage.html_report(
                 directory=options.directory,
+                serve=options.serve,
                 title=options.title,
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,

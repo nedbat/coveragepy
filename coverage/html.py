@@ -3,11 +3,16 @@
 
 """HTML reporting for coverage.py."""
 
+import concurrent.futures
 import datetime
+import http.server
 import json
 import os
 import re
 import shutil
+import sys
+import threading
+import webbrowser
 
 import coverage
 from coverage import env
@@ -30,6 +35,26 @@ STATIC_PATH = [
     # Our htmlfiles directory.
     os.path.join(os.path.dirname(__file__), "htmlfiles"),
 ]
+
+
+def serve_htmldir(htmldir):
+    """ Serve htmldirectory for coverage files"""
+    future = concurrent.futures.Future()
+
+
+    def start_server():
+        httpd = http.server.HTTPServer(('127.0.0.1', 0), http.server.SimpleHTTPRequestHandler)
+        future.set_result(httpd.server_port)
+        httpd.serve_forever()
+
+
+    thread = threading.Thread(target=start_server, daemon=True)
+    thread.start()
+    webbrowser.open_new(f'http://localhost:{future.result()}/{htmldir}')
+    try:
+        thread.join()
+    except KeyboardInterrupt:
+        pass
 
 
 def data_filename(fname, pkgdir=""):

@@ -21,7 +21,7 @@ from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import DebugControl, short_stack, write_formatted_info
 from coverage.disposition import disposition_debug_msg
 from coverage.files import PathAliases, abs_file, relative_filename, set_relative_directory
-from coverage.html import HtmlReporter
+from coverage.html import HtmlReporter, serve_htmldir
 from coverage.inorout import InOrOut
 from coverage.jsonreport import JsonReporter
 from coverage.misc import CoverageException, bool_or_none, join_regex
@@ -912,7 +912,7 @@ class Coverage(object):
         self, morfs=None, directory=None, ignore_errors=None,
         omit=None, include=None, extra_css=None, title=None,
         skip_covered=None, show_contexts=None, contexts=None,
-        skip_empty=None, precision=None,
+        skip_empty=None, precision=None, serve=False,
     ):
         """Generate an HTML report.
 
@@ -944,7 +944,10 @@ class Coverage(object):
             skip_empty=skip_empty, precision=precision,
         ):
             reporter = HtmlReporter(self)
-            return reporter.report(morfs)
+            total = reporter.report(morfs)
+        if serve is True:
+            serve_htmldir(directory)
+        return total
 
     def xml_report(
         self, morfs=None, outfile=None, ignore_errors=None,
