@@ -17,7 +17,7 @@ from coverage import env
 from coverage.backward import code_object
 from coverage.disposition import FileDisposition, disposition_init
 from coverage.files import TreeMatcher, FnmatchMatcher, ModuleMatcher
-from coverage.files import prep_patterns, find_python_files, canonical_filename
+from coverage.files import prep_patterns, find_python_files, canonical_filename, PathAliases
 from coverage.misc import CoverageException
 from coverage.python import source_for_file, source_for_morf
 
@@ -132,6 +132,7 @@ class InOrOut(object):
 
     def configure(self, config):
         """Apply the configuration to get ready for decision-time."""
+        aliases = PathAliases.configure(config)
         for src in config.source or []:
             if os.path.isdir(src):
                 self.source.append(canonical_filename(src))
@@ -186,7 +187,7 @@ class InOrOut(object):
         if self.source or self.source_pkgs:
             against = []
             if self.source:
-                self.source_match = TreeMatcher(self.source)
+                self.source_match = TreeMatcher(self.source, aliases=aliases)
                 against.append("trees {!r}".format(self.source_match))
             if self.source_pkgs:
                 self.source_pkgs_match = ModuleMatcher(self.source_pkgs)
@@ -194,16 +195,16 @@ class InOrOut(object):
             debug("Source matching against " + " and ".join(against))
         else:
             if self.cover_paths:
-                self.cover_match = TreeMatcher(self.cover_paths)
+                self.cover_match = TreeMatcher(self.cover_paths, aliases=aliases)
                 debug("Coverage code matching: {!r}".format(self.cover_match))
             if self.pylib_paths:
-                self.pylib_match = TreeMatcher(self.pylib_paths)
+                self.pylib_match = TreeMatcher(self.pylib_paths, aliases=aliases)
                 debug("Python stdlib matching: {!r}".format(self.pylib_match))
         if self.include:
-            self.include_match = FnmatchMatcher(self.include)
+            self.include_match = FnmatchMatcher(self.include, aliases=aliases)
             debug("Include matching: {!r}".format(self.include_match))
         if self.omit:
-            self.omit_match = FnmatchMatcher(self.omit)
+            self.omit_match = FnmatchMatcher(self.omit, aliases=aliases)
             debug("Omit matching: {!r}".format(self.omit_match))
 
     def should_trace(self, filename, frame=None):

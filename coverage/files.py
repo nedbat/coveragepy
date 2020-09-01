@@ -215,7 +215,8 @@ class TreeMatcher(object):
     somewhere in a subtree rooted at one of the directories.
 
     """
-    def __init__(self, paths):
+    def __init__(self, paths, aliases=None):
+        self.aliases = aliases
         self.paths = list(paths)
 
     def __repr__(self):
@@ -227,6 +228,9 @@ class TreeMatcher(object):
 
     def match(self, fpath):
         """Does `fpath` indicate a file in one of our trees?"""
+        if self.aliases is not None:
+            fpath = self.aliases.map(fpath)
+
         for p in self.paths:
             if fpath.startswith(p):
                 if fpath == p:
@@ -268,7 +272,8 @@ class ModuleMatcher(object):
 
 class FnmatchMatcher(object):
     """A matcher for files by file name pattern."""
-    def __init__(self, pats):
+    def __init__(self, pats, aliases=None):
+        self.aliases = aliases
         self.pats = list(pats)
         self.re = fnmatches_to_regex(self.pats, case_insensitive=env.WINDOWS)
 
@@ -281,6 +286,8 @@ class FnmatchMatcher(object):
 
     def match(self, fpath):
         """Does `fpath` match one of our file name patterns?"""
+        if self.aliases is not None:
+            fpath = self.aliases.map(fpath)
         return self.re.match(fpath) is not None
 
 
@@ -406,6 +413,21 @@ class PathAliases(object):
                 new = canonical_filename(new)
                 return new
         return path
+
+
+    @classmethod
+    def configure(cls, config):
+        paths = config.paths
+        if not paths:
+            return None
+
+        aliases = PathAliases()
+        for paths in paths.values():
+            result = paths[0]
+            for pattern in paths[1:]:
+                aliases.add(pattern, result)
+        return aliases
+
 
 
 def find_python_files(dirname):

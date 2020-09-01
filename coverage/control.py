@@ -678,15 +678,12 @@ class Coverage(object):
         self._post_init()
         self.get_data()
 
-        aliases = None
-        if self.config.paths:
-            aliases = PathAliases()
-            for paths in self.config.paths.values():
-                result = paths[0]
-                for pattern in paths[1:]:
-                    aliases.add(pattern, result)
-
-        combine_parallel_data(self._data, aliases=aliases, data_paths=data_paths, strict=strict)
+        combine_parallel_data(
+            self._data,
+            aliases=PathAliases.configure(self.config),
+            data_paths=data_paths,
+            strict=strict,
+        )
 
     def get_data(self):
         """Get the collected data.
