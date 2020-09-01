@@ -926,6 +926,28 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         self.filenames_not_in(lines, "p1b")
         self.assertEqual(lines['p1c'], 0)
 
+    def test_ambigious_source_package_as_dir(self):
+        # pkg1 is a directory and a pkg, since we cd into tests/modules/ambigious
+        self.chdir(self.nice_file(TESTS_DIR, 'modules', "ambigious"))
+        # pkg1 defaults to directory because tests/modules/ambigious/pkg1 exists
+        lines = self.coverage_usepkgs(source=["pkg1"])
+        self.assertEqual(
+            self.coverage_usepkgs(source=["pkg1"]),
+            {
+                u"__init__.py": 0, u"__init__": 0,
+                u"ambigious.py": 0, u"ambigious": 0,
+            },
+        )
+
+    def test_ambigious_source_package_as_package(self):
+        # pkg1 is a directory and a pkg, since we cd into tests/modules/ambigious
+        self.chdir(self.nice_file(TESTS_DIR, 'modules', "ambigious"))
+        lines = self.coverage_usepkgs(source_pkgs=["pkg1"])
+        self.filenames_in(lines, "p1a p1b")
+        self.filenames_not_in(lines, "p2a p2b othera otherb osa osb ambigious")
+        # Because source= was specified, we do search for unexecuted files.
+        self.assertEqual(lines['p1c'], 0)
+
 
 class ReportIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
     """Tests of the report include/omit functionality."""

@@ -99,7 +99,7 @@ class Coverage(object):
     def __init__(
         self, data_file=_DEFAULT_DATAFILE, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
-        source=None, omit=None, include=None, debug=None,
+        source=None, source_pkgs=None, omit=None, include=None, debug=None,
         concurrency=None, check_preimported=False, context=None,
     ):
         """
@@ -188,7 +188,7 @@ class Coverage(object):
             config_file=config_file,
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
-            source=source, run_omit=omit, run_include=include, debug=debug,
+            source=source, source_pkgs=source_pkgs, run_omit=omit, run_include=include, debug=debug,
             report_omit=omit, report_include=include,
             concurrency=concurrency, context=context,
             )

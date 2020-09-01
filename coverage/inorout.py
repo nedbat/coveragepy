@@ -132,6 +132,7 @@ class InOrOut(object):
 
     def configure(self, config):
         """Apply the configuration to get ready for decision-time."""
+        self.source_pkgs.extend(config.source_pkgs)
         for src in config.source or []:
             if os.path.isdir(src):
                 self.source.append(canonical_filename(src))

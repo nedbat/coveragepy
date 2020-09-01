@@ -195,6 +195,7 @@ class CoverageConfig(object):
         self.run_include = None
         self.run_omit = None
         self.source = None
+        self.source_pkgs = []
         self.timid = False
         self._crash = None
 
@@ -361,6 +362,7 @@ class CoverageConfig(object):
         ('run_include', 'run:include', 'list'),
         ('run_omit', 'run:omit', 'list'),
         ('source', 'run:source', 'list'),
+        ('source_pkgs', 'run:source_pkgs', 'list'),
         ('timid', 'run:timid', 'boolean'),
         ('_crash', 'run:_crash'),
 

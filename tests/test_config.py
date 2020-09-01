@@ -462,6 +462,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         ; this omit is overriden by the omit from [report]
         omit = twenty
         source = myapp
+        source_pkgs = ned
         plugins =
             plugins.a_plugin
             plugins.another
@@ -553,6 +554,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         self.assertTrue(cov.config.parallel)
         self.assertEqual(cov.config.concurrency, ["thread"])
         self.assertEqual(cov.config.source, ["myapp"])
+        self.assertEqual(cov.config.source_pkgs, ["ned"])
         self.assertEqual(cov.config.disable_warnings, ["abcd", "efgh"])
 
         self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])
