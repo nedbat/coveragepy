@@ -887,21 +887,30 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
             cov.start()
         cov.stop()      # pragma: nested
 
-    def test_source_package_as_dir(self):
-        # pkg1 is a directory, since we cd'd into tests/modules in setUp.
+    def test_source_package_as_package(self):
+        self.assertFalse(os.path.isdir("pkg1"))
         lines = self.coverage_usepkgs(source=["pkg1"])
         self.filenames_in(lines, "p1a p1b")
         self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
         # Because source= was specified, we do search for unexecuted files.
         self.assertEqual(lines['p1c'], 0)
 
-    def test_source_package_as_package(self):
+    def test_source_package_as_dir(self):
+        self.chdir(self.nice_file(TESTS_DIR, 'modules'))
+        self.assertTrue(os.path.isdir("pkg1"))
+        lines = self.coverage_usepkgs(source=["pkg1"])
+        self.filenames_in(lines, "p1a p1b")
+        self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
+        # Because source= was specified, we do search for unexecuted files.
+        self.assertEqual(lines['p1c'], 0)
+
+    def test_source_package_dotted_sub(self):
         lines = self.coverage_usepkgs(source=["pkg1.sub"])
         self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
         # Because source= was specified, we do search for unexecuted files.
         self.assertEqual(lines['runmod3'], 0)
 
-    def test_source_package_dotted(self):
+    def test_source_package_dotted_p1b(self):
         lines = self.coverage_usepkgs(source=["pkg1.p1b"])
         self.filenames_in(lines, "p1b")
         self.filenames_not_in(lines, "p1a p1c p2a p2b othera otherb osa osb")
