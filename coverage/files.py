@@ -64,12 +64,13 @@ def canonical_filename(filename):
             for path in [os.curdir] + sys.path:
                 if path is None:
                     continue
-                f = os.path.join(path, filename)
+
                 try:
-                    exists = os.path.exists(f)
+                    f = os.path.join(str_filename(path), str_filename(filename))
                 except UnicodeError:
-                    exists = False
-                if exists:
+                    continue
+
+                if os.path.exists(f):
                     cf = f
                     break
         cf = abs_file(cf)
@@ -140,6 +141,21 @@ if env.WINDOWS:
 else:
     def actual_path(filename):
         """The actual path for non-Windows platforms."""
+        return filename
+
+
+if env.PY2:
+    def str_filename(filename):
+        return (
+            filename
+            if isinstance(filename, str)
+            else filename.encode(
+                sys.getfilesystemencoding() or sys.getdefaultencoding()
+            )
+        )
+else:
+    @contract(filename='unicode', returns='unicode')
+    def str_filename(filename):
         return filename
 
 
