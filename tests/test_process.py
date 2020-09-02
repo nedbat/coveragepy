@@ -1181,9 +1181,12 @@ class AliasedCommandTest(CoverageTest):
             "coverage-%d.%d" % sys.version_info[:2],
         ]
         for cmd in cmds:
-            out = self.run_command("%s foobar" % cmd)
+            out = self.run_command("{} foobar".format(cmd))
             self.assertIn("Unknown command: 'foobar'", out)
-            self.assertIn("Use '%s help' for help" % cmd, out)
+            self.assertIn("Use '{} help' for help".format(cmd), out)
+
+            out = self.run_command("{} help version".format(cmd))
+            self.assertIn("ersion {coverage.__version__}".format(coverage=coverage), out)
 
 
 class PydocTest(CoverageTest):

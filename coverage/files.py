@@ -64,12 +64,13 @@ def canonical_filename(filename):
             for path in [os.curdir] + sys.path:
                 if path is None:
                     continue
-                f = os.path.join(path, filename)
+
                 try:
-                    exists = os.path.exists(f)
+                    f = os.path.join(str_filename(path), str_filename(filename))
                 except UnicodeError:
-                    exists = False
-                if exists:
+                    continue
+
+                if os.path.exists(f):
                     cf = f
                     break
         cf = abs_file(cf)
@@ -140,6 +141,21 @@ if env.WINDOWS:
 else:
     def actual_path(filename):
         """The actual path for non-Windows platforms."""
+        return filename
+
+
+if env.PY2:
+    def str_filename(filename):
+        return (
+            filename
+            if isinstance(filename, str)
+            else filename.encode(
+                sys.getfilesystemencoding() or sys.getdefaultencoding()
+            )
+        )
+else:
+    @contract(filename='unicode', returns='unicode')
+    def str_filename(filename):
         return filename
 
 
@@ -215,7 +231,8 @@ class TreeMatcher(object):
     somewhere in a subtree rooted at one of the directories.
 
     """
-    def __init__(self, paths):
+    def __init__(self, paths, aliases=None):
+        self.aliases = aliases
         self.paths = list(paths)
 
     def __repr__(self):
@@ -227,6 +244,9 @@ class TreeMatcher(object):
 
     def match(self, fpath):
         """Does `fpath` indicate a file in one of our trees?"""
+        if self.aliases is not None:
+            fpath = self.aliases.map(fpath)
+
         for p in self.paths:
             if fpath.startswith(p):
                 if fpath == p:
@@ -268,7 +288,8 @@ class ModuleMatcher(object):
 
 class FnmatchMatcher(object):
     """A matcher for files by file name pattern."""
-    def __init__(self, pats):
+    def __init__(self, pats, aliases=None):
+        self.aliases = aliases
         self.pats = list(pats)
         self.re = fnmatches_to_regex(self.pats, case_insensitive=env.WINDOWS)
 
@@ -281,6 +302,8 @@ class FnmatchMatcher(object):
 
     def match(self, fpath):
         """Does `fpath` match one of our file name patterns?"""
+        if self.aliases is not None:
+            fpath = self.aliases.map(fpath)
         return self.re.match(fpath) is not None
 
 
@@ -406,6 +429,21 @@ class PathAliases(object):
                 new = canonical_filename(new)
                 return new
         return path
+
+
+    @classmethod
+    def configure(cls, config):
+        paths = config.paths
+        if not paths:
+            return None
+
+        aliases = PathAliases()
+        for paths in paths.values():
+            result = paths[0]
+            for pattern in paths[1:]:
+                aliases.add(pattern, result)
+        return aliases
+
 
 
 def find_python_files(dirname):
