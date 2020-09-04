@@ -111,7 +111,7 @@ def module_has_file(mod):
 
 
 _IS_PKG_RE = re.compile(
-    r"\A(((?!keywords){tokenize.Name})\.?)+\Z".format(
+    r"\A(((?!{keywords}){tokenize.Name})\.?)+\Z".format(
         tokenize=tokenize,
         keywords="|".join(re.escape(kw) for kw in keyword.kwlist),
     )
