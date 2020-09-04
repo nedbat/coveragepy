@@ -7,10 +7,12 @@
 import atexit
 import inspect
 import itertools
+import keyword
 import os
 import platform
 import re
 import sys
+import tokenize
 import traceback
 
 from coverage import env
@@ -108,6 +110,14 @@ def module_has_file(mod):
     return os.path.exists(mod__file__)
 
 
+_IS_PKG_RE = re.compile(
+    r"\A(((?!keywords){tokenize.Name})\.?)+\Z".format(
+        tokenize=tokenize,
+        keywords="|".join(re.escape(kw) for kw in keyword.kwlist),
+    )
+)
+
+
 class InOrOut(object):
     """Machinery for determining what files to measure."""
 
@@ -133,10 +143,11 @@ class InOrOut(object):
     def configure(self, config):
         """Apply the configuration to get ready for decision-time."""
         for src in config.source or []:
-            if os.path.isdir(src):
-                self.source.append(canonical_filename(src))
-            else:
+            src_is_dir = os.path.isdir(src)
+            if not src_is_dir or _IS_PKG_RE.match(src):
                 self.source_pkgs.append(src)
+            if src_is_dir:
+                self.source.append(canonical_filename(src))
         self.source_pkgs_unmatched = self.source_pkgs[:]
 
         self.omit = prep_patterns(config.run_omit)
