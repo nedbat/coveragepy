@@ -940,13 +940,8 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         self.chdir(self.nice_file(TESTS_DIR, 'modules', "ambigious"))
         # pkg1 defaults to directory because tests/modules/ambigious/pkg1 exists
         lines = self.coverage_usepkgs(source=["pkg1"])
-        self.assertEqual(
-            self.coverage_usepkgs(source=["pkg1"]),
-            {
-                u"__init__.py": 0, u"__init__": 0,
-                u"ambigious.py": 0, u"ambigious": 0,
-            },
-        )
+        self.filenames_in(lines, "ambigious")
+        self.filenames_not_in(lines, "p1a p1b p1c")
 
     def test_ambigious_source_package_as_package(self):
         # pkg1 is a directory and a pkg, since we cd into tests/modules/ambigious

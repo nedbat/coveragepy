@@ -101,7 +101,7 @@ class Coverage(object):
         auto_data=False, timid=None, branch=None, config_file=True,
         source=None, source_pkgs=None, omit=None, include=None, debug=None,
         concurrency=None, check_preimported=False, context=None,
-    ):
+    ):  # pylint: disable=too-many-arguments
         """
         Many of these arguments duplicate and override values that can be
         provided in a configuration file.  Parameters that are missing here
@@ -146,6 +146,10 @@ class Coverage(object):
         in the trees indicated by the file paths or package names will be
         measured.
 
+        `source_pkgs` is a list of package names. It works the same as
+        `source`, but can be used to name packages where the name can also be
+        interpreted as a file path.
+
         `include` and `omit` are lists of file name patterns. Files that match
         `include` will be measured, files that match `omit` will not.  Each
         will also accept a single string argument.
@@ -175,6 +179,9 @@ class Coverage(object):
 
         .. versionadded:: 5.0
             The `check_preimported` and `context` parameters.
+
+        .. versionadded:: 5.3
+            The `source_pkgs` parameter.
 
         """
         # data_file=None means no disk file at all. data_file missing means

@@ -25,6 +25,14 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
+- The ``source`` setting has always been interpreted as either a file path or a
+  module, depending on which existed.  If both interpretations were valid, it
+  was assumed to be a file path.  The new ``source_pkgs`` setting can be used
+  to name a package to disambiguate this case.  Thanks, Thomas Grainger. Fixes
+  `issue 268`_.
+
+.. _issue 268: https://github.com/nedbat/coveragepy/issues/268
+
 
 .. _changes_521:
 

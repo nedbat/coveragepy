@@ -208,6 +208,14 @@ for details.
 measure during execution.  If set, ``include`` is ignored. See :ref:`source`
 for details.
 
+.. _config_run_source_pkgs:
+
+``source_pkgs`` (multi-string): a list of packages, the source to measure
+during execution.  Operates the same as ``source``, but only names packages,
+for resolving ambiguities between packages and directories.
+
+.. versionadded:: 5.3
+
 .. _config_run_timid:
 
 ``timid`` (boolean, default False): use a simpler but slower trace method.
