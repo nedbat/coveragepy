@@ -31,7 +31,12 @@ Unreleased
   to name a package to disambiguate this case.  Thanks, Thomas Grainger. Fixes
   `issue 268`_.
 
+- If a plugin was disabled due to an exception, we used to still try to record
+  its information, causing an exception, as reported in `issue 1011`_.  This is
+  now fixed.
+
 .. _issue 268: https://github.com/nedbat/coveragepy/issues/268
+.. _issue 1011: https://github.com/nedbat/coveragepy/issues/1011
 
 
 .. _changes_521:

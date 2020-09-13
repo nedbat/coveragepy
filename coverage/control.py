@@ -709,6 +709,10 @@ class Coverage(object):
         self._init_data(suffix=None)
         self._post_init()
 
+        for plugin in self._plugins:
+            if not plugin._coverage_enabled:
+                self._collector.plugin_was_disabled(plugin)
+
         if self._collector and self._collector.flush_data():
             self._post_save_work()
 
