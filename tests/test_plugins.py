@@ -804,6 +804,28 @@ class BadFileTracerTest(FileTracerTest):
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
+    def test_line_number_range_raises_error(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    if filename.endswith("other.py"):
+                        return BadFileTracer()
+
+            class BadFileTracer(coverage.plugin.FileTracer):
+                def source_filename(self):
+                    return "something.foo"
+
+                def line_number_range(self, frame):
+                    raise Exception("borked!")
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin())
+            """)
+        self.run_bad_plugin(
+            "bad_plugin", "Plugin", our_error=False, excmsg="borked!",
+        )
+
     def test_line_number_range_returns_non_tuple(self):
         self.make_file("bad_plugin.py", """\
             import coverage.plugin

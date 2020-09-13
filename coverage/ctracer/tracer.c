@@ -685,7 +685,8 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
                 STATS( self->stats.pycalls++; )
                 from_to = PyObject_CallMethodObjArgs(self->pcur_entry->file_tracer, str_line_number_range, frame, NULL);
                 if (from_to == NULL) {
-                    goto error;
+                    CTracer_disable_plugin(self, self->pcur_entry->disposition);
+                    goto ok;
                 }
                 ret2 = CTracer_unpack_pair(self, from_to, &lineno_from, &lineno_to);
                 Py_DECREF(from_to);
