@@ -256,6 +256,8 @@ class Collector(object):
         if hasattr(tracer, 'should_start_context'):
             tracer.should_start_context = self.should_start_context
             tracer.switch_context = self.switch_context
+        if hasattr(tracer, 'disable_plugin'):
+            tracer.disable_plugin = self.disable_plugin
 
         fn = tracer.start()
         self.tracers.append(tracer)
@@ -380,6 +382,15 @@ class Collector(object):
         else:
             context = new_context
         self.covdata.set_context(context)
+
+    def disable_plugin(self, disposition):
+        """Disable the plugin mentioned in `disposition`."""
+        file_tracer = disposition.file_tracer
+        plugin = file_tracer._coverage_plugin
+        plugin_name = plugin._coverage_plugin_name
+        self.warn("Disabling plug-in {!r} due to previous exception".format(plugin_name))
+        plugin._coverage_enabled = False
+        disposition.trace = False
 
     def cached_mapped_file(self, filename):
         """A locally cached version of file names mapped through file_mapper."""
