@@ -22,8 +22,10 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  ----------------------------
 
 
-Unreleased
-----------
+.. _changes_53:
+
+Version 5.3 --- 2020-09-13
+--------------------------
 
 - The ``source`` setting has always been interpreted as either a file path or a
   module, depending on which existed.  If both interpretations were valid, it

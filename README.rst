@@ -20,7 +20,7 @@ library to determine which lines are executable, and which have been executed.
 Coverage.py runs on many versions of Python:
 
 * CPython 2.7.
-* CPython 3.5 through 3.9 beta 4.
+* CPython 3.5 through 3.9 beta.
 * PyPy2 7.3.1 and PyPy3 7.3.1.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
