@@ -611,6 +611,7 @@ class BadFileTracerTest(FileTracerTest):
         cov = coverage.Coverage()
         cov.set_option("run:plugins", [module_name])
         self.start_import_stop(cov, "simple")
+        cov.save()  # pytest-cov does a save after stop, so we'll do it too.
         return cov
 
     def run_bad_plugin(self, module_name, plugin_name, our_error=True, excmsg=None, excmsgs=None):
@@ -715,6 +716,37 @@ class BadFileTracerTest(FileTracerTest):
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
+    def test_file_tracer_fails_eventually(self):
+        # Django coverage plugin can report on a few files and then fail.
+        # https://github.com/nedbat/coveragepy/issues/1011
+        self.make_file("bad_plugin.py", """\
+            import os.path
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def __init__(self):
+                    self.calls = 0
+
+                def file_tracer(self, filename):
+                    print(filename)
+                    self.calls += 1
+                    if self.calls <= 2:
+                        return FileTracer(filename)
+                    else:
+                        17/0 # Oh noes!
+
+            class FileTracer(coverage.FileTracer):
+                def __init__(self, filename):
+                    self.filename = filename
+                def source_filename(self):
+                    return os.path.basename(self.filename).replace(".py", ".foo")
+                def line_number_range(self, frame):
+                    return -1, -1
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin())
+            """)
+        self.run_bad_plugin("bad_plugin", "Plugin")
+
     def test_file_tracer_returns_wrong(self):
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
@@ -803,6 +835,28 @@ class BadFileTracerTest(FileTracerTest):
                 reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
+
+    def test_line_number_range_raises_error(self):
+        self.make_file("bad_plugin.py", """\
+            import coverage.plugin
+            class Plugin(coverage.plugin.CoveragePlugin):
+                def file_tracer(self, filename):
+                    if filename.endswith("other.py"):
+                        return BadFileTracer()
+
+            class BadFileTracer(coverage.plugin.FileTracer):
+                def source_filename(self):
+                    return "something.foo"
+
+                def line_number_range(self, frame):
+                    raise Exception("borked!")
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(Plugin())
+            """)
+        self.run_bad_plugin(
+            "bad_plugin", "Plugin", our_error=False, excmsg="borked!",
+        )
 
     def test_line_number_range_returns_non_tuple(self):
         self.make_file("bad_plugin.py", """\

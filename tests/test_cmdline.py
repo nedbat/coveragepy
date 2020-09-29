@@ -37,19 +37,20 @@ class BaseCmdLineTest(CoverageTest):
     _defaults.Coverage().html_report(
         directory=None, ignore_errors=None, include=None, omit=None, morfs=[],
         skip_covered=None, show_contexts=None, title=None, contexts=None,
-        skip_empty=None,
+        skip_empty=None, precision=None,
     )
     _defaults.Coverage().report(
         ignore_errors=None, include=None, omit=None, morfs=[],
-        show_missing=None, skip_covered=None, contexts=None, skip_empty=None,
+        show_missing=None, skip_covered=None, contexts=None, skip_empty=None, precision=None,
+        sort=None,
     )
     _defaults.Coverage().xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
-        contexts=None,
+        contexts=None, skip_empty=None,
     )
     _defaults.Coverage().json_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
-        contexts=None, pretty_print=None, show_contexts=None
+        contexts=None, pretty_print=None, show_contexts=None,
     )
     _defaults.Coverage(
         cover_pylib=None, data_suffix=None, timid=None, branch=None,
@@ -235,7 +236,7 @@ class CmdLineTest(BaseCmdLineTest):
             """)
 
     def test_combine_doesnt_confuse_options_with_args(self):
-        # https://bitbucket.org/ned/coveragepy/issues/385/coverage-combine-doesnt-work-with-rcfile
+        # https://github.com/nedbat/coveragepy/issues/385
         self.cmd_executes("combine --rcfile cov.ini", """\
             cov = Coverage(config_file='cov.ini')
             cov.combine(None, strict=True)
@@ -324,6 +325,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov.load()
             cov.html_report(morfs=["mod1", "mod2", "mod3"])
             """)
+        self.cmd_executes("html --precision=3", """\
+            cov = Coverage()
+            cov.load()
+            cov.html_report(precision=3)
+            """)
         self.cmd_executes("html --title=Hello_there", """\
             cov = Coverage()
             cov.load()
@@ -367,10 +373,25 @@ class CmdLineTest(BaseCmdLineTest):
             cov.load()
             cov.report(morfs=["mod1", "mod2", "mod3"])
             """)
+        self.cmd_executes("report --precision=7", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(precision=7)
+            """)
         self.cmd_executes("report --skip-covered", """\
             cov = Coverage()
             cov.load()
             cov.report(skip_covered=True)
+            """)
+        self.cmd_executes("report --skip-covered --no-skip-covered", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(skip_covered=False)
+            """)
+        self.cmd_executes("report --no-skip-covered", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(skip_covered=False)
             """)
         self.cmd_executes("report --skip-empty", """\
             cov = Coverage()
@@ -381,6 +402,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.load()
             cov.report(contexts=["foo", "bar"])
+            """)
+        self.cmd_executes("report --sort=-foo", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(sort='-foo')
             """)
 
     def test_run(self):
@@ -781,7 +807,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
     def test_minimum_help(self):
         self.command_line("")
         out = self.stdout()
-        self.assertIn("Code coverage for Python.", out)
+        self.assertIn("Code coverage for Python", out)
         self.assertLess(out.count("\n"), 4)
 
     def test_version(self):
@@ -835,7 +861,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         lines = out.splitlines()
         self.assertIn("<pyfile>", lines[0])
         self.assertIn("--timid", out)
-        self.assertGreater(len(lines), 30)
+        self.assertGreater(len(lines), 20)
         self.assertEqual(lines[-1], "Full documentation is at {}".format(__url__))
 
     def test_unknown_topic(self):

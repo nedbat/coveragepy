@@ -99,9 +99,9 @@ class Coverage(object):
     def __init__(
         self, data_file=_DEFAULT_DATAFILE, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
-        source=None, omit=None, include=None, debug=None,
+        source=None, source_pkgs=None, omit=None, include=None, debug=None,
         concurrency=None, check_preimported=False, context=None,
-    ):
+    ):  # pylint: disable=too-many-arguments
         """
         Many of these arguments duplicate and override values that can be
         provided in a configuration file.  Parameters that are missing here
@@ -146,6 +146,10 @@ class Coverage(object):
         in the trees indicated by the file paths or package names will be
         measured.
 
+        `source_pkgs` is a list of package names. It works the same as
+        `source`, but can be used to name packages where the name can also be
+        interpreted as a file path.
+
         `include` and `omit` are lists of file name patterns. Files that match
         `include` will be measured, files that match `omit` will not.  Each
         will also accept a single string argument.
@@ -176,6 +180,9 @@ class Coverage(object):
         .. versionadded:: 5.0
             The `check_preimported` and `context` parameters.
 
+        .. versionadded:: 5.3
+            The `source_pkgs` parameter.
+
         """
         # data_file=None means no disk file at all. data_file missing means
         # use the value from the config file.
@@ -188,7 +195,7 @@ class Coverage(object):
             config_file=config_file,
             data_file=data_file, cover_pylib=cover_pylib, timid=timid,
             branch=branch, parallel=bool_or_none(data_suffix),
-            source=source, run_omit=omit, run_include=include, debug=debug,
+            source=source, source_pkgs=source_pkgs, run_omit=omit, run_include=include, debug=debug,
             report_omit=omit, report_include=include,
             concurrency=concurrency, context=context,
             )
@@ -212,7 +219,6 @@ class Coverage(object):
         self._data = self._collector = None
         self._plugins = None
         self._inorout = None
-        self._inorout_class = InOrOut
         self._data_suffix = self._run_suffix = None
         self._exclude_re = None
         self._debug = None
@@ -367,7 +373,11 @@ class Coverage(object):
         option name.  For example, the ``branch`` option in the ``[run]``
         section of the config file would be indicated with `"run:branch"`.
 
-        Returns the value of the option.
+        Returns the value of the option.  The type depends on the option
+        selected.
+
+        As a special case, an `option_name` of ``"paths"`` will return an
+        OrderedDict with the entire ``[paths]`` section value.
 
         .. versionadded:: 4.0
 
@@ -393,6 +403,9 @@ class Coverage(object):
 
             [run]
             branch = True
+
+        As a special case, an `option_name` of ``"paths"`` will replace the
+        entire ``[paths]`` section.  The value should be an OrderedDict.
 
         .. versionadded:: 4.0
 
@@ -476,7 +489,10 @@ class Coverage(object):
                 plugin._coverage_enabled = False
 
         # Create the file classifying substructure.
-        self._inorout = self._inorout_class(warn=self._warn)
+        self._inorout = InOrOut(
+            warn=self._warn,
+            debug=(self._debug if self._debug.should('trace') else None),
+        )
         self._inorout.configure(self.config)
         self._inorout.plugins = self._plugins
         self._inorout.disp_class = self._collector.file_disposition_class
@@ -693,6 +709,10 @@ class Coverage(object):
         self._init_data(suffix=None)
         self._post_init()
 
+        for plugin in self._plugins:
+            if not plugin._coverage_enabled:
+                self._collector.plugin_was_disabled(plugin)
+
         if self._collector and self._collector.flush_data():
             self._post_save_work()
 
@@ -822,7 +842,7 @@ class Coverage(object):
     def report(
         self, morfs=None, show_missing=None, ignore_errors=None,
         file=None, omit=None, include=None, skip_covered=None,
-        contexts=None, skip_empty=None,
+        contexts=None, skip_empty=None, precision=None, sort=None
     ):
         """Write a textual summary report to `file`.
 
@@ -850,6 +870,9 @@ class Coverage(object):
         expressions (using :func:`re.search <python:re.search>`) will be
         included in the report.
 
+        `precision` is the number of digits to display after the decimal
+        point for percentages.
+
         All of the arguments default to the settings read from the
         :ref:`configuration file <config>`.
 
@@ -861,12 +884,16 @@ class Coverage(object):
         .. versionadded:: 5.0
             The `contexts` and `skip_empty` parameters.
 
+        .. versionadded:: 5.2
+            The `precision` parameter.
+
         """
         with override_config(
             self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
-            report_contexts=contexts, skip_empty=skip_empty,
+            report_contexts=contexts, skip_empty=skip_empty, precision=precision,
+            sort=sort
         ):
             reporter = SummaryReporter(self)
             return reporter.report(morfs, outfile=file)
@@ -892,10 +919,12 @@ class Coverage(object):
             reporter = AnnotateReporter(self)
             reporter.report(morfs, directory=directory)
 
-    def html_report(self, morfs=None, directory=None, ignore_errors=None,
-                    omit=None, include=None, extra_css=None, title=None,
-                    skip_covered=None, show_contexts=None, contexts=None,
-                    skip_empty=None):
+    def html_report(
+        self, morfs=None, directory=None, ignore_errors=None,
+        omit=None, include=None, extra_css=None, title=None,
+        skip_covered=None, show_contexts=None, contexts=None,
+        skip_empty=None, precision=None,
+    ):
         """Generate an HTML report.
 
         The HTML is written to `directory`.  The file "index.html" is the
@@ -923,14 +952,14 @@ class Coverage(object):
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
             skip_covered=skip_covered, show_contexts=show_contexts, report_contexts=contexts,
-            skip_empty=skip_empty,
+            skip_empty=skip_empty, precision=precision,
         ):
             reporter = HtmlReporter(self)
             return reporter.report(morfs)
 
     def xml_report(
         self, morfs=None, outfile=None, ignore_errors=None,
-        omit=None, include=None, contexts=None,
+        omit=None, include=None, contexts=None, skip_empty=None,
     ):
         """Generate an XML report of coverage results.
 
@@ -946,7 +975,7 @@ class Coverage(object):
         """
         with override_config(self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
-            xml_output=outfile, report_contexts=contexts,
+            xml_output=outfile, report_contexts=contexts, skip_empty=skip_empty,
         ):
             return render_report(self.config.xml_output, XmlReporter(self), morfs)
 
@@ -1077,8 +1106,7 @@ def process_startup():
     # flag (an attribute on this function) to indicate that coverage.py has
     # already been started, so we can avoid doing it twice.
     #
-    # https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy has more
-    # details.
+    # https://github.com/nedbat/coveragepy/issues/340 has more details.
 
     if hasattr(process_startup, "coverage"):
         # We've annotated this function before, so we must have already

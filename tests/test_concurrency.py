@@ -545,8 +545,7 @@ def test_coverage_stop_in_threads():
 
 
 def test_thread_safe_save_data(tmpdir):
-    # Non-regression test for:
-    # https://bitbucket.org/ned/coveragepy/issues/581
+    # Non-regression test for: https://github.com/nedbat/coveragepy/issues/581
 
     # Create some Python modules and put them in the path
     modules_dir = tmpdir.mkdir('test_modules')

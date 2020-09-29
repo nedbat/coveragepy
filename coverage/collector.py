@@ -196,6 +196,8 @@ class Collector(object):
         # handle them.
         self.file_tracers = {}
 
+        self.disabled_plugins = set()
+
         # The .should_trace_cache attribute is a cache from file names to
         # coverage.FileDisposition objects, or None.  When a file is first
         # considered for tracing, a FileDisposition is obtained from
@@ -256,6 +258,8 @@ class Collector(object):
         if hasattr(tracer, 'should_start_context'):
             tracer.should_start_context = self.should_start_context
             tracer.switch_context = self.switch_context
+        if hasattr(tracer, 'disable_plugin'):
+            tracer.disable_plugin = self.disable_plugin
 
         fn = tracer.start()
         self.tracers.append(tracer)
@@ -381,6 +385,15 @@ class Collector(object):
             context = new_context
         self.covdata.set_context(context)
 
+    def disable_plugin(self, disposition):
+        """Disable the plugin mentioned in `disposition`."""
+        file_tracer = disposition.file_tracer
+        plugin = file_tracer._coverage_plugin
+        plugin_name = plugin._coverage_plugin_name
+        self.warn("Disabling plug-in {!r} due to previous exception".format(plugin_name))
+        plugin._coverage_enabled = False
+        disposition.trace = False
+
     def cached_mapped_file(self, filename):
         """A locally cached version of file names mapped through file_mapper."""
         key = (type(filename), filename)
@@ -408,6 +421,10 @@ class Collector(object):
 
         return dict((self.cached_mapped_file(k), v) for k, v in items if v)
 
+    def plugin_was_disabled(self, plugin):
+        """Record that `plugin` was disabled during the run."""
+        self.disabled_plugins.add(plugin._coverage_plugin_name)
+
     def flush_data(self):
         """Save the collected data to our associated `CoverageData`.
 
@@ -423,7 +440,12 @@ class Collector(object):
             self.covdata.add_arcs(self.mapped_file_dict(self.data))
         else:
             self.covdata.add_lines(self.mapped_file_dict(self.data))
-        self.covdata.add_file_tracers(self.mapped_file_dict(self.file_tracers))
+
+        file_tracers = {
+            k: v for k, v in self.file_tracers.items()
+            if v not in self.disabled_plugins
+        }
+        self.covdata.add_file_tracers(self.mapped_file_dict(file_tracers))
 
         self._clear_data()
         return True

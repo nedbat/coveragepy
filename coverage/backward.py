@@ -9,6 +9,8 @@
 import os
 import sys
 
+from datetime import datetime
+
 from coverage import env
 
 
@@ -215,6 +217,17 @@ except ImportError:
 
         def __eq__(self, other):
             return self.__dict__ == other.__dict__
+
+
+def format_local_datetime(dt):
+    """Return a string with local timezone representing the date.
+    If python version is lower than 3.6, the time zone is not included.
+    """
+    try:
+        return dt.astimezone().strftime('%Y-%m-%d %H:%M %z')
+    except (TypeError, ValueError):
+        # Datetime.astimezone in Python 3.5 can not handle naive datetime
+        return dt.strftime('%Y-%m-%d %H:%M')
 
 
 def invalidate_import_caches():

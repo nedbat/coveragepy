@@ -11,7 +11,7 @@ assignees: ''
 A clear and concise description of the bug.
 
 **To Reproduce**
-How can we reproduce the problem?  Please *be specific*.
+How can we reproduce the problem?  Please *be specific*. Don't just link to a failing CI job. Answer the questions below:
 1. What version of Python are you using?
 1. What version of coverage.py are you using? The output of `coverage debug sys` is helpful.
 1. What versions of what packages do you have installed? The output of `pip freeze` is helpful.

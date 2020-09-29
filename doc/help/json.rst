@@ -1,0 +1,33 @@
+
+.. code::
+
+    $ coverage json --help
+    Usage: coverage json [options] [modules]
+
+    Generate a JSON report of coverage results.
+
+    Options:
+      --contexts=REGEX1,REGEX2,...
+                            Only display data from lines covered in the given
+                            contexts. Accepts Python regexes, which must be
+                            quoted.
+      --fail-under=MIN      Exit with a status of 2 if the total coverage is less
+                            than MIN.
+      -i, --ignore-errors   Ignore errors while reading source files.
+      --include=PAT1,PAT2,...
+                            Include only files whose paths match one of these
+                            patterns. Accepts shell-style wildcards, which must be
+                            quoted.
+      --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
+                            Accepts shell-style wildcards, which must be quoted.
+      -o OUTFILE            Write the JSON report to this file. Defaults to
+                            'coverage.json'
+      --pretty-print        Format the JSON for human readers.
+      --show-contexts       Show contexts for covered lines.
+      --debug=OPTS          Debug options, separated by commas. [env:
+                            COVERAGE_DEBUG]
+      -h, --help            Get help on this command.
+      --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
+                            'setup.cfg', 'tox.ini', and 'pyproject.toml' are
+                            tried. [env: COVERAGE_RCFILE]
+

@@ -1,26 +1,20 @@
 #!/usr/bin/env python3
 """
-Upload CHANGES.md to Tidelift as Markdown chunks
+Parse CHANGES.md into a JSON structure.
 
-Put your Tidelift API token in a file called tidelift.token alongside this
-program, for example:
+Run with two arguments: the .md file to parse, and the JSON file to write:
 
-    user/n3IwOpxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxc2ZwE4
-
-Run with two arguments: the .md file to parse, and the Tidelift package name:
-
-	python upload_relnotes.py CHANGES.md pypi/coverage
+	python parse_relnotes.py CHANGES.md relnotes.json
 
 Every section that has something that looks like a version number in it will
-be uploaded as the release notes for that version.
+be recorded as the release notes for that version.
 
 """
 
-import os.path
+import json
 import re
 import sys
 
-import requests
 
 class TextChunkBuffer:
     """Hold onto text chunks until needed."""
@@ -82,6 +76,14 @@ def sections(parsed_data):
     yield (*header, "\n".join(text))
 
 
+def refind(regex, text):
+    """Find a regex in some text, and return the matched text, or None."""
+    m = re.search(regex, text)
+    if m:
+        return m.group()
+    else:
+        return None
+
 def relnotes(mdlines):
     r"""Yield (version, text) pairs from markdown lines.
 
@@ -91,32 +93,23 @@ def relnotes(mdlines):
 
     """
     for _, htext, text in sections(parse_md(mdlines)):
-        m_version = re.search(r"\d+\.\d[^ ]*", htext)
-        if m_version:
-            version = m_version.group()
-            yield version, text
+        version = refind(r"\d+\.\d[^ ]*", htext)
+        if version:
+            prerelease = any(c in version for c in "abc")
+            when = refind(r"\d+-\d+-\d+", htext)
+            yield {
+                "version": version,
+                "text": text,
+                "prerelease": prerelease,
+                "when": when,
+            }
 
-def update_release_note(package, version, text):
-    """Update the release notes for one version of a package."""
-    url = f"https://api.tidelift.com/external-api/lifting/{package}/release-notes/{version}"
-    token_file = os.path.join(os.path.dirname(__file__), "tidelift.token")
-    with open(token_file) as ftoken:
-        token = ftoken.read().strip()
-    headers = {
-        "Authorization": f"Bearer: {token}",
-    }
-    req_args = dict(url=url, data=text.encode('utf8'), headers=headers)
-    result = requests.post(**req_args)
-    if result.status_code == 409:
-        result = requests.put(**req_args)
-    print(f"{version}: {result.status_code}")
-
-def parse_and_upload(md_filename, package):
-    """Main function: parse markdown and upload to Tidelift."""
-    with open(md_filename) as f:
-        markdown = f.read()
-    for version, text in relnotes(markdown.splitlines(True)):
-        update_release_note(package, version, text)
+def parse(md_filename, json_filename):
+    """Main function: parse markdown and write JSON."""
+    with open(md_filename) as mf:
+        markdown = mf.read()
+    with open(json_filename, "w") as jf:
+        json.dump(list(relnotes(markdown.splitlines(True))), jf, indent=4)
 
 if __name__ == "__main__":
-    parse_and_upload(*sys.argv[1:])       # pylint: disable=no-value-for-parameter
+    parse(*sys.argv[1:])       # pylint: disable=no-value-for-parameter

@@ -186,7 +186,7 @@ of measurement or reporting.  See :ref:`source` for details.
 
 ``parallel`` (boolean, default False): append the machine name, process
 id and random number to the data file name to simplify collecting data from
-many processes.  See :ref:`cmd_combining` for more information.
+many processes.  See :ref:`cmd_combine` for more information.
 
 .. _config_run_plugins:
 
@@ -197,7 +197,7 @@ for more information.
 
 ``relative_files`` (boolean, default False): *Experimental*: store relative
 file paths in the data file.  This makes it easier to measure code in one (or
-multiple) environments, and then report in another. See :ref:`cmd_combining`
+multiple) environments, and then report in another. See :ref:`cmd_combine`
 for details.
 
 .. versionadded:: 5.0
@@ -207,6 +207,14 @@ for details.
 ``source`` (multi-string): a list of packages or directories, the source to
 measure during execution.  If set, ``include`` is ignored. See :ref:`source`
 for details.
+
+.. _config_run_source_pkgs:
+
+``source_pkgs`` (multi-string): a list of packages, the source to measure
+during execution.  Operates the same as ``source``, but only names packages,
+for resolving ambiguities between packages and directories.
+
+.. versionadded:: 5.3
 
 .. _config_run_timid:
 
@@ -246,7 +254,7 @@ against the source file found at "src/module.py".
 If you specify more than one list of paths, they will be considered in order.
 The first list that has a match will be used.
 
-See :ref:`cmd_combining` for more information.
+See :ref:`cmd_combine` for more information.
 
 
 .. _config_report:
@@ -305,17 +313,17 @@ setting also affects the interpretation of the ``fail_under`` setting.
 .. _config_report_show_missing:
 
 ``show_missing`` (boolean, default False): when running a summary report, show
-missing lines.  See :ref:`cmd_summary` for more information.
+missing lines.  See :ref:`cmd_report` for more information.
 
 .. _config_report_skip_covered:
 
 ``skip_covered`` (boolean, default False): Don't include files in the report
-that are 100% covered files. See :ref:`cmd_summary` for more information.
+that are 100% covered files. See :ref:`cmd_report` for more information.
 
 .. _config_report_skip_empty:
 
 ``skip_empty`` (boolean, default False): Don't include empty files (those that
-have 0 statements) in the report. See :ref:`cmd_summary` for more information.
+have 0 statements) in the report. See :ref:`cmd_report` for more information.
 
 .. _config_report_sort:
 

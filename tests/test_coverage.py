@@ -1576,7 +1576,7 @@ class ExcludeTest(CoverageTest):
         )
 
     def test_formfeed(self):
-        # https://bitbucket.org/ned/coveragepy/issues/461/multiline-asserts-need-too-many-pragma
+        # https://github.com/nedbat/coveragepy/issues/461
         self.check_coverage("""\
             x = 1
             assert len([]) == 0, (

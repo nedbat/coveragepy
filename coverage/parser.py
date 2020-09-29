@@ -610,6 +610,7 @@ class AstArcAnalyzer(object):
             return node.lineno
 
     _line__FunctionDef = _line_decorated
+    _line__AsyncFunctionDef = _line_decorated
 
     def _line__List(self, node):
         if node.elts:

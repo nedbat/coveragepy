@@ -1,0 +1,39 @@
+
+.. code::
+
+    $ coverage html --help
+    Usage: coverage html [options] [modules]
+
+    Create an HTML report of the coverage of the files.  Each file gets its own
+    page, with the source decorated to show executed, excluded, and missed lines.
+
+    Options:
+      --contexts=REGEX1,REGEX2,...
+                            Only display data from lines covered in the given
+                            contexts. Accepts Python regexes, which must be
+                            quoted.
+      -d DIR, --directory=DIR
+                            Write the output files to DIR.
+      --fail-under=MIN      Exit with a status of 2 if the total coverage is less
+                            than MIN.
+      -i, --ignore-errors   Ignore errors while reading source files.
+      --include=PAT1,PAT2,...
+                            Include only files whose paths match one of these
+                            patterns. Accepts shell-style wildcards, which must be
+                            quoted.
+      --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
+                            Accepts shell-style wildcards, which must be quoted.
+      --precision=N         Number of digits after the decimal point to display
+                            for reported coverage percentages.
+      --show-contexts       Show contexts for covered lines.
+      --skip-covered        Skip files with 100% coverage.
+      --no-skip-covered     Disable --skip-covered.
+      --skip-empty          Skip files with no code.
+      --title=TITLE         A text string to use as the title on the HTML.
+      --debug=OPTS          Debug options, separated by commas. [env:
+                            COVERAGE_DEBUG]
+      -h, --help            Get help on this command.
+      --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
+                            'setup.cfg', 'tox.ini', and 'pyproject.toml' are
+                            tried. [env: COVERAGE_RCFILE]
+

@@ -46,7 +46,7 @@ coverage.py from working properly:
 .. _sys.settrace: https://docs.python.org/3/library/sys.html#sys.settrace
 .. _thread: https://docs.python.org/3/library/_thread.html
 .. _threading: https://docs.python.org/3/library/threading.html
-.. _issue 43: https://bitbucket.org/ned/coveragepy/issues/43/coverage-measurement-fails-on-code
+.. _issue 43: https://github.com/nedbat/coveragepy/issues/43
 
 
 Still having trouble?

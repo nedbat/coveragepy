@@ -28,7 +28,7 @@ original_bootstrap = OriginalProcess._bootstrap
 class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-method
     """A replacement for multiprocess.Process that starts coverage."""
 
-    def _bootstrap(self, *args, **kwargs):          # pylint: disable=arguments-differ
+    def _bootstrap(self, *args, **kwargs):          # pylint: disable=signature-differs
         """Wrapper around _bootstrap to start coverage."""
         try:
             from coverage import Coverage       # avoid circular import

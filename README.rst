@@ -9,7 +9,7 @@ Code coverage testing for Python.
 
 |  |license| |versions| |status|
 |  |ci-status| |win-ci-status| |docs| |codecov|
-|  |kit| |format| |repos|
+|  |kit| |format| |repos| |downloads|
 |  |stars| |forks| |contributors|
 |  |tidelift| |twitter-coveragepy| |twitter-nedbat|
 
@@ -20,8 +20,8 @@ library to determine which lines are executable, and which have been executed.
 Coverage.py runs on many versions of Python:
 
 * CPython 2.7.
-* CPython 3.5 through 3.9 alpha 3.
-* PyPy2 7.0 and PyPy3 7.0.
+* CPython 3.5 through 3.9 beta.
+* PyPy2 7.3.1 and PyPy3 7.3.1.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 `GitHub`_.
@@ -30,7 +30,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 
-**New in 5.0:** SQLite data storage, JSON report, contexts, relative filenames,
+**New in 5.x:** SQLite data storage, JSON report, contexts, relative filenames,
 dropped support for Python 2.6, 3.3 and 3.4.
 
 
@@ -38,7 +38,6 @@ For Enterprise
 --------------
 
 .. |tideliftlogo| image:: https://nedbatchelder.com/pix/Tidelift_Logo_small.png
-   :width: 75
    :alt: Tidelift
    :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
 

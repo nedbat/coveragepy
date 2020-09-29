@@ -66,11 +66,11 @@ copyright = u'2009\N{EN DASH}2020, Ned Batchelder.'     # CHANGEME  # pylint: di
 # built documents.
 #
 # The short X.Y version.
-version = '5.0'                                 # CHANGEME
+version = "5.3"                                 # CHANGEME
 # The full version, including alpha/beta/rc tags.
-release = '5.0.3'                               # CHANGEME
+release = "5.3"                                 # CHANGEME
 # The date of release, in "monthname day, year" format.
-release_date = 'January 12, 2020'               # CHANGEME
+release_date = "September 13, 2020"             # CHANGEME
 
 rst_epilog = """
 .. |release_date| replace:: {release_date}
@@ -97,7 +97,7 @@ rst_epilog = """
 
 # List of directories, relative to source directory, that shouldn't be searched
 # for source files.
-exclude_trees = ['_build']
+exclude_patterns = ["_build", "help/*"]
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -222,6 +222,19 @@ extlinks = {
     'github': ('https://github.com/nedbat/coveragepy/issues/%s', 'issue '),
 }
 
+# Regexes for URLs that linkcheck should skip.
+linkcheck_ignore = [
+    # We have lots of links to GitHub, and they start refusing to serve them to linkcheck,
+    # so don't bother checking them.
+    r"https://github.com/nedbat/coveragepy/(issues|pull)/\d+",
+    # When publishing a new version, the docs will refer to the version before
+    # the docs have been published.  So don't check those links.
+    r"https://coverage.readthedocs.io/en/coverage-{}$".format(release),
+]
+
+# https://github.com/executablebooks/sphinx-tabs/pull/54
+sphinx_tabs_valid_builders = ['linkcheck']
+
 # When auto-doc'ing a class, only write the class' docstring into the class docs,
 # don't automatically include the __init__ docstring.
 autoclass_content = "class"
@@ -230,6 +243,6 @@ prerelease = bool(max(release).isalpha())
 
 def setup(app):
     """Configure Sphinx"""
-    app.add_stylesheet('coverage.css')
+    app.add_css_file('coverage.css')
     app.add_config_value('prerelease', False, 'env')
     print("** Prerelease = %r" % prerelease)
