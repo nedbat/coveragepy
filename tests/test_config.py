@@ -4,6 +4,8 @@
 
 """Test the config file handling for coverage.py"""
 
+from collections import OrderedDict
+
 import mock
 
 import coverage
@@ -61,6 +63,8 @@ class ConfigTest(CoverageTest):
         # A .coveragerc file will be read into the configuration.
         self.make_file("pyproject.toml", """\
             # This is just a bogus toml file for testing.
+            [tool.somethingelse]
+            authors = ["Joe D'Ávila <joe@gmail.com>"]
             [tool.coverage.run]
             concurrency = ["a", "b"]
             timid = true
@@ -69,20 +73,23 @@ class ConfigTest(CoverageTest):
             [tool.coverage.report]
             precision = 3
             fail_under = 90.5
+            [tool.coverage.html]
+            title = "tabblo & «ταБЬℓσ»"
             [tool.coverage.plugins.a_plugin]
             hello = "world"
             """)
         cov = coverage.Coverage(config_file="pyproject.toml")
         self.assertTrue(cov.config.timid)
         self.assertFalse(cov.config.branch)
-        self.assertEqual(cov.config.concurrency, ["a", "b"])
-        self.assertEqual(cov.config.data_file, ".hello_kitty.data")
-        self.assertEqual(cov.config.plugins, ["plugins.a_plugin"])
+        self.assertEqual(cov.config.concurrency, [u"a", u"b"])
+        self.assertEqual(cov.config.data_file, u".hello_kitty.data")
+        self.assertEqual(cov.config.plugins, [u"plugins.a_plugin"])
         self.assertEqual(cov.config.precision, 3)
+        self.assertEqual(cov.config.html_title, u"tabblo & «ταБЬℓσ»")
         self.assertAlmostEqual(cov.config.fail_under, 90.5)
         self.assertEqual(
             cov.config.get_plugin_options("plugins.a_plugin"),
-            {'hello': 'world'}
+            {u"hello": u"world"}
         )
 
         # Test that our class doesn't reject integers when loading floats
@@ -340,6 +347,30 @@ class ConfigTest(CoverageTest):
         self.assertFalse(cov.get_option("run:branch"))
         self.assertEqual(cov.get_option("run:data_file"), "fooey.dat")
 
+    def test_tweaks_paths_after_constructor(self):
+        self.make_file(".coveragerc", """\
+            [paths]
+            first =
+                /first/1
+                /first/2
+
+            second =
+                /second/a
+                /second/b
+            """)
+        old_paths = OrderedDict()
+        old_paths["first"] = ["/first/1", "/first/2"]
+        old_paths["second"] = ["/second/a", "/second/b"]
+        cov = coverage.Coverage()
+        paths = cov.get_option("paths")
+        self.assertEqual(paths, old_paths)
+
+        new_paths = OrderedDict()
+        new_paths['magic'] = ['src', 'ok']
+        cov.set_option("paths", new_paths)
+
+        self.assertEqual(cov.get_option("paths"), new_paths)
+
     def test_tweak_error_checking(self):
         # Trying to set an unknown config value raises an error.
         cov = coverage.Coverage()
@@ -431,6 +462,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         ; this omit is overriden by the omit from [report]
         omit = twenty
         source = myapp
+        source_pkgs = ned
         plugins =
             plugins.a_plugin
             plugins.another
@@ -522,6 +554,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         self.assertTrue(cov.config.parallel)
         self.assertEqual(cov.config.concurrency, ["thread"])
         self.assertEqual(cov.config.source, ["myapp"])
+        self.assertEqual(cov.config.source_pkgs, ["ned"])
         self.assertEqual(cov.config.disable_warnings, ["abcd", "efgh"])
 
         self.assertEqual(cov.get_exclude_list(), ["if 0:", r"pragma:?\s+no cover", "another_tab"])

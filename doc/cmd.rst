@@ -3,38 +3,40 @@
 
 .. _cmd:
 
-==============================
-Coverage.py command line usage
-==============================
+==================
+Command line usage
+==================
 
 .. highlight:: console
 
-When you install coverage.py, a command-line script simply called ``coverage``
-is placed in your Python scripts directory.  To help with multi-version
-installs, it will also create either a ``coverage2`` or ``coverage3`` alias,
-and a ``coverage-X.Y`` alias, depending on the version of Python you're using.
-For example, when installing on Python 3.7, you will be able to use
-``coverage``, ``coverage3``, or ``coverage-3.7`` on the command line.
+When you install coverage.py, a command-line script called ``coverage`` is
+placed on your path.  To help with multi-version installs, it will also create
+either a ``coverage2`` or ``coverage3`` alias, and a ``coverage-X.Y`` alias,
+depending on the version of Python you're using.  For example, when installing
+on Python 3.7, you will be able to use ``coverage``, ``coverage3``, or
+``coverage-3.7`` on the command line.
 
-Coverage.py has a number of commands which determine the action performed:
+Coverage.py has a number of commands:
 
-* **run** -- Run a Python program and collect execution data.
+* **run** -- :ref:`Run a Python program and collect execution data <cmd_run>`.
 
-* **report** -- Report coverage results.
+* **combine** -- :ref:`Combine together a number of data files <cmd_combine>`.
 
-* **html** -- Produce annotated HTML listings with coverage results.
+* **erase** -- :ref:`Erase previously collected coverage data <cmd_erase>`.
 
-* **json** -- Produce a JSON report with coverage results.
+* **report** -- :ref:`Report coverage results <cmd_report>`.
 
-* **xml** -- Produce an XML report with coverage results.
+* **html** --
+  :ref:`Produce annotated HTML listings with coverage results <cmd_html>`.
 
-* **annotate** -- Annotate source files with coverage results.
+* **xml** -- :ref:`Produce an XML report with coverage results <cmd_xml>`.
 
-* **erase** -- Erase previously collected coverage data.
+* **json** -- :ref:`Produce a JSON report with coverage results <cmd_json>`.
 
-* **combine** -- Combine together a number of data files.
+* **annotate** --
+  :ref:`Annotate source files with coverage results <cmd_annotate>`.
 
-* **debug** -- Get diagnostic information.
+* **debug** -- :ref:`Get diagnostic information <cmd_debug>`.
 
 Help is available with the **help** command, or with the ``--help`` switch on
 any other command::
@@ -44,7 +46,13 @@ any other command::
     $ coverage run --help
 
 Version information for coverage.py can be displayed with
-``coverage --version``.
+``coverage --version``:
+
+.. parsed-literal::
+
+    $ coverage --version
+    Coverage.py, version |release| with C extension
+    Documentation at |doc-url|
 
 Any command can use a configuration file by specifying it with the
 ``--rcfile=FILE`` command-line switch.  Any option you can set on the command
@@ -56,8 +64,8 @@ runner plugins) may not offer. See :ref:`config` for more details.
 
 .. _cmd_run:
 
-Execution
----------
+Execution: ``coverage run``
+---------------------------
 
 You collect execution data by running your Python program with the **run**
 command::
@@ -79,6 +87,10 @@ Python ``-m`` switch::
     In most cases, the program to use here is a test runner, not your program
     you are trying to measure. The test runner will run your tests and coverage
     will measure the coverage of your code along the way.
+
+There are many options:
+
+.. include:: help/run.rst
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -111,7 +123,7 @@ configuration file for all options.
 
 If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate
-during measurement.  See :ref:`cmd_combining` below.
+during measurement.  See :ref:`cmd_combine` below.
 
 You can specify a :ref:`static context <contexts>` for a coverage run with
 ``--context``.  This can be any label you want, and will be recorded with the
@@ -129,7 +141,7 @@ simpler but slower trace method, and might be needed in rare cases.
 .. _cmd_warnings:
 
 Warnings
---------
+........
 
 During execution, coverage.py may warn you about conditions it detects that
 could affect the measurement process.  The possible warnings include:
@@ -185,8 +197,8 @@ could affect the measurement process.  The possible warnings include:
   :meth:`.Coverage.switch_context` function to change the context. Only one of
   these mechanisms should be in use at a time.
 
-Individual warnings can be disabled with the `disable_warnings
-<config_run_disable_warnings>`_ configuration setting.  To silence "No data was
+Individual warnings can be disabled with the :ref:`disable_warnings
+<config_run_disable_warnings>` configuration setting.  To silence "No data was
 collected," add this to your .coveragerc file::
 
     [run]
@@ -196,7 +208,7 @@ collected," add this to your .coveragerc file::
 .. _cmd_datafile:
 
 Data file
----------
+.........
 
 Coverage.py collects execution data in a file called ".coverage".  If need be,
 you can set a new file name with the COVERAGE_FILE environment variable.  This
@@ -207,15 +219,11 @@ to run your program multiple times to get complete data (for example, because
 you need to supply different options), you can accumulate data across runs with
 the ``--append`` flag on the **run** command.
 
-To erase the collected data, use the **erase** command::
 
-    $ coverage erase
+.. _cmd_combine:
 
-
-.. _cmd_combining:
-
-Combining data files
---------------------
+Combining data files: ``coverage combine``
+------------------------------------------
 
 Often test suites are run under different conditions, for example, with
 different versions of Python, or dependencies, or on different operating
@@ -279,6 +287,21 @@ setting to store relative file paths (see :ref:`relative_files
 If any of the data files can't be read, coverage.py will print a warning
 indicating the file and the problem.
 
+.. include:: help/combine.rst
+
+
+.. _cmd_erase:
+
+Erase data: ``coverage erase``
+------------------------------
+
+To erase the collected data, use the **erase** command:
+
+.. include:: help/erase.rst
+
+If your configuration file indicates parallel data collection, **erase** will
+remove all of the data files.
+
 
 .. _cmd_reporting:
 
@@ -308,10 +331,10 @@ can be used as part of a pass/fail condition, for example in a continuous
 integration server.  This option isn't available for **annotate**.
 
 
-.. _cmd_summary:
+.. _cmd_report:
 
-Coverage summary
-----------------
+Coverage summary: ``coverage report``
+-------------------------------------
 
 The simplest reporting is a textual summary produced with **report**::
 
@@ -327,6 +350,8 @@ The simplest reporting is a textual summary produced with **report**::
 For each module executed, the report shows the count of executable statements,
 the number of those statements missed, and the resulting coverage, expressed
 as a percentage.
+
+.. include:: help/report.rst
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
@@ -364,20 +389,26 @@ command line::
     TOTAL                        76     10    87%
 
 The ``--skip-covered`` switch will skip any file with 100% coverage, letting
-you focus on the files that still need attention.  The ``--skip-empty`` switch
+you focus on the files that still need attention. The ``--no-skip-covered``
+option can be used if needed to see all the files.  The ``--skip-empty`` switch
 will skip any file with no executable statements.
 
 If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets
 you choose which contexts to report on.  See :ref:`context_reporting` for
 details.
 
+The ``--precision`` option controls the number of digits displayed after the
+decimal point in coverage percentages, defaulting to none.
+
+The ``--sort`` option is the name of a column to sort the report by.
+
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
 
 .. _cmd_html:
 
-HTML annotation
----------------
+HTML annotation: ``coverage html``
+----------------------------------
 
 Coverage.py can annotate your source code for which lines were executed
 and which were not.  The **html** command creates an HTML report similar to the
@@ -394,6 +425,8 @@ the highlighting.
 
 A number of keyboard shortcuts are available for navigating the report.
 Click the keyboard icon in the upper right to see the complete list.
+
+.. include:: help/html.rst
 
 The title of the report can be set with the ``title`` setting in the
 ``[html]`` section of the configuration file, or the ``--title`` switch on
@@ -418,16 +451,51 @@ The ``--skip-covered`` switch will skip any file with 100% coverage, letting
 you focus on the files that still need attention.  The ``--skip-empty`` switch
 will skip any file with no executable statements.
 
+The ``--precision`` option controls the number of digits displayed after the
+decimal point in coverage percentages, defaulting to none.
+
 If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets
 you choose which contexts to report on, and the ``--show-contexts`` option will
 annotate lines with the contexts that ran them.  See :ref:`context_reporting`
 for details.
 
 
-.. _cmd_annotation:
+.. _cmd_xml:
 
-Text annotation
----------------
+XML reporting: ``coverage xml``
+-------------------------------
+
+The **xml** command writes coverage data to a "coverage.xml" file in a format
+compatible with `Cobertura`_.
+
+.. _Cobertura: http://cobertura.github.io/cobertura/
+
+.. include:: help/xml.rst
+
+You can specify the name of the output file with the ``-o`` switch.
+
+Other common reporting options are described above in :ref:`cmd_reporting`.
+
+
+.. _cmd_json:
+
+JSON reporting: ``coverage json``
+---------------------------------
+
+The **json** command writes coverage data to a "coverage.json" file.
+
+.. include:: help/json.rst
+
+You can specify the name of the output file with the ``-o`` switch.  The JSON
+can be nicely formatted by specifying the ``--pretty-print`` switch.
+
+Other common reporting options are described above in :ref:`cmd_reporting`.
+
+
+.. _cmd_annotate:
+
+Text annotation: ``coverage annotate``
+--------------------------------------
 
 The **annotate** command produces a text annotation of your source code.  With
 a ``-d`` argument specifying an output directory, each Python file becomes a
@@ -453,41 +521,15 @@ For example::
     >     else:
     >         a = 2
 
-Other common reporting options are described above in :ref:`cmd_reporting`.
-
-
-.. _cmd_xml:
-
-XML reporting
--------------
-
-The **xml** command writes coverage data to a "coverage.xml" file in a format
-compatible with `Cobertura`_.
-
-.. _Cobertura: http://cobertura.github.io/cobertura/
-
-You can specify the name of the output file with the ``-o`` switch.
-
-Other common reporting options are described above in :ref:`cmd_reporting`.
-
-
-.. _cmd_json:
-
-JSON reporting
---------------
-
-The **json** command writes coverage data to a "coverage.json" file.
-
-You can specify the name of the output file with the ``-o`` switch.  The JSON
-can be nicely formatted by specifying the ``--pretty-print`` switch.
+.. include:: help/annotate.rst
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
 
 .. _cmd_debug:
 
-Diagnostics
------------
+Diagnostics: ``coverage debug``
+-------------------------------
 
 The **debug** command shows internal information to help diagnose problems.
 If you are reporting a bug about coverage.py, including the output of this
@@ -502,13 +544,17 @@ Three types of information are available:
 * ``data``: show a summary of the collected coverage data
 * ``premain``: show the call stack invoking coverage
 
+.. include:: help/debug.rst
 
 .. _cmd_run_debug:
 
-The ``--debug`` option is available on all commands.  It instructs coverage.py
-to log internal details of its operation, to help with diagnosing problems.  It
-takes a comma-separated list of options, each indicating a facet of operation
-to log:
+``--debug``
+...........
+
+The ``--debug`` option is also available on all commands.  It instructs
+coverage.py to log internal details of its operation, to help with diagnosing
+problems.  It takes a comma-separated list of options, each indicating a facet
+of operation to log:
 
 * ``callers``: annotate each debug message with a stack trace of the callers
   to that point.

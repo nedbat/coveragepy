@@ -348,6 +348,10 @@ class CoverageTest(
         ret_actual = command_line(args)
         self.assertEqual(ret_actual, ret)
 
+    # Some distros rename the coverage command, and need a way to indicate
+    # their new command name to the tests. This is here for them to override,
+    # for example:
+    # https://salsa.debian.org/debian/pkg-python-coverage/-/blob/master/debian/patches/02.rename-public-programs.patch
     coverage_command = "coverage"
 
     def run_command(self, cmd):

@@ -172,7 +172,10 @@ coverage.index_ready = function ($) {
     // Look for a localStorage item containing previous sort settings:
     var sort_list = [];
     var storage_name = "COVERAGE_INDEX_SORT";
-    var stored_list = localStorage.getItem(storage_name);
+    var stored_list = undefined;
+    try {
+        stored_list = localStorage.getItem(storage_name);
+    } catch(err) {}
 
     if (stored_list) {
         sort_list = JSON.parse('[[' + stored_list + ']]');
@@ -222,7 +225,9 @@ coverage.index_ready = function ($) {
 
     // Watch for page unload events so we can save the final sort settings:
     $(window).unload(function () {
-        localStorage.setItem(storage_name, sort_list.toString())
+        try {
+            localStorage.setItem(storage_name, sort_list.toString())
+        } catch(err) {}
     });
 };
 

@@ -173,7 +173,7 @@ class WithTest(CoverageTest):
             )
 
     def test_bug_146(self):
-        # https://bitbucket.org/ned/coveragepy/issue/146
+        # https://github.com/nedbat/coveragepy/issues/146
         self.check_coverage("""\
             for i in range(2):
                 with open("test", "w") as f:
@@ -284,7 +284,7 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_zero_coverage_while_loop(self):
-        # https://bitbucket.org/ned/coveragepy/issue/502
+        # https://github.com/nedbat/coveragepy/issues/502
         self.make_file("main.py", "print('done')")
         self.make_file("zero.py", """\
             def method(self):
@@ -303,7 +303,7 @@ class LoopArcTest(CoverageTest):
         self.assertIn(expected, squeezed[3])
 
     def test_bug_496_continue_in_constant_while(self):
-        # https://bitbucket.org/ned/coveragepy/issue/496
+        # https://github.com/nedbat/coveragepy/issues/496
         # A continue in a while-true needs to jump to the right place.
         if env.PYBEHAVIOR.nix_while_true:
             arcz = ".1 13 34 45 53 46 67 7."
@@ -1066,7 +1066,7 @@ class YieldTest(CoverageTest):
         )
 
     def test_abandoned_yield(self):
-        # https://bitbucket.org/ned/coveragepy/issue/440
+        # https://github.com/nedbat/coveragepy/issues/440
         self.check_coverage("""\
             def gen():
                 print("yup")
@@ -1256,7 +1256,7 @@ class MiscArcTest(CoverageTest):
         )
 
     def test_pathologically_long_code_object(self):
-        # https://bitbucket.org/ned/coveragepy/issue/359
+        # https://github.com/nedbat/coveragepy/issues/359
         # The structure of this file is such that an EXTENDED_ARG bytecode is
         # needed to encode the jump at the end.  We weren't interpreting those
         # opcodes.
@@ -1278,7 +1278,7 @@ class MiscArcTest(CoverageTest):
             self.assertEqual(self.stdout().split()[-1], str(n))
 
     def test_partial_generators(self):
-        # https://bitbucket.org/ned/coveragepy/issues/475/generator-expression-is-marked-as-not
+        # https://github.com/nedbat/coveragepy/issues/475
         # Line 2 is executed completely.
         # Line 3 is started but not finished, because zip ends before it finishes.
         # Line 4 is never started.
@@ -1555,6 +1555,23 @@ class AsyncTest(CoverageTest):
             """,
             arcz=".1 1. .2 23 3.",
             arcz_missing=".2 23 3.",
+        )
+
+    def test_async_decorator(self):
+        if env.PYBEHAVIOR.trace_decorated_def:
+            arcz = ".1 14 45 5.  .2 2.  -46 6-4"
+        else:
+            arcz = ".1 14 4.     .2 2.  -46 6-4"
+        self.check_coverage("""\
+            def wrap(f):        # 1
+                return f
+
+            @wrap               # 4
+            async def go():
+                return
+            """,
+            arcz=arcz,
+            arcz_missing='-46 6-4',
         )
 
 

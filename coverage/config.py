@@ -72,7 +72,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             d[opt] = self.get(section, opt)
         return d
 
-    def get(self, section, option, *args, **kwargs):        # pylint: disable=arguments-differ
+    def get(self, section, option, *args, **kwargs):
         """Get a value, replacing environment variables also.
 
         The arguments are the same as `RawConfigParser.get`, but in the found
@@ -195,6 +195,7 @@ class CoverageConfig(object):
         self.run_include = None
         self.run_omit = None
         self.source = None
+        self.source_pkgs = []
         self.timid = False
         self._crash = None
 
@@ -211,6 +212,7 @@ class CoverageConfig(object):
         self.show_missing = False
         self.skip_covered = False
         self.skip_empty = False
+        self.sort = None
 
         # Defaults for [html]
         self.extra_css = None
@@ -325,7 +327,7 @@ class CoverageConfig(object):
 
         if used:
             self.config_file = os.path.abspath(filename)
-            with open(filename) as f:
+            with open(filename, "rb") as f:
                 self._config_contents = f.read()
 
         return used
@@ -360,6 +362,7 @@ class CoverageConfig(object):
         ('run_include', 'run:include', 'list'),
         ('run_omit', 'run:omit', 'list'),
         ('source', 'run:source', 'list'),
+        ('source_pkgs', 'run:source_pkgs', 'list'),
         ('timid', 'run:timid', 'boolean'),
         ('_crash', 'run:_crash'),
 
@@ -421,6 +424,10 @@ class CoverageConfig(object):
         `value` is the new value for the option.
 
         """
+        # Special-cased options.
+        if option_name == "paths":
+            self.paths = value
+            return
 
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:
@@ -448,6 +455,10 @@ class CoverageConfig(object):
         Returns the value of the option.
 
         """
+        # Special-cased options.
+        if option_name == "paths":
+            return self.paths
+
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:
             attr, where = option_spec[:2]

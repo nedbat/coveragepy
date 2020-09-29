@@ -85,6 +85,11 @@ class Opts(object):
             "which isn't done by default."
         ),
     )
+    sort = optparse.make_option(
+        '--sort', action='store', metavar='COLUMN',
+        help="Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. "
+             "Default is name."
+    )
     show_missing = optparse.make_option(
         '-m', '--show-missing', action='store_true',
         help="Show line numbers of statements in each module that weren't executed.",
@@ -92,6 +97,10 @@ class Opts(object):
     skip_covered = optparse.make_option(
         '--skip-covered', action='store_true',
         help="Skip files with 100% coverage.",
+    )
+    no_skip_covered = optparse.make_option(
+        '--no-skip-covered', action='store_false', dest='skip_covered',
+        help="Disable --skip-covered.",
     )
     skip_empty = optparse.make_option(
         '--skip-empty', action='store_true',
@@ -144,6 +153,13 @@ class Opts(object):
         help=(
             "<pyfile> is an importable Python module, not a script path, "
             "to be run as 'python -m' would run it."
+        ),
+    )
+    precision = optparse.make_option(
+        '', '--precision', action='store', metavar='N', type=int,
+        help=(
+            "Number of digits after the decimal point to display for "
+            "reported coverage percentages."
         ),
     )
     rcfile = optparse.make_option(
@@ -203,12 +219,14 @@ class CoverageOptionParser(optparse.OptionParser, object):
             omit=None,
             contexts=None,
             parallel_mode=None,
+            precision=None,
             pylib=None,
             rcfile=True,
             show_missing=None,
             skip_covered=None,
             skip_empty=None,
             show_contexts=None,
+            sort=None,
             source=None,
             timid=None,
             title=None,
@@ -331,10 +349,13 @@ CMDS = {
         "debug", GLOBAL_ARGS,
         usage="<topic>",
         description=(
-            "Display information on the internals of coverage.py, "
+            "Display information about the internals of coverage.py, "
             "for diagnosing problems. "
-            "Topics are 'data' to show a summary of the collected data, "
-            "or 'sys' to show installation information."
+            "Topics are: "
+                "'data' to show a summary of the collected data; "
+                "'sys' to show installation information; "
+                "'config' to show the configuration; "
+                "'premain' to show what is calling coverage."
         ),
     ),
 
@@ -358,8 +379,10 @@ CMDS = {
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
+            Opts.precision,
             Opts.show_contexts,
             Opts.skip_covered,
+            Opts.no_skip_covered,
             Opts.skip_empty,
             Opts.title,
             ] + GLOBAL_ARGS,
@@ -395,8 +418,11 @@ CMDS = {
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
+            Opts.precision,
+            Opts.sort,
             Opts.show_missing,
             Opts.skip_covered,
+            Opts.no_skip_covered,
             Opts.skip_empty,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
@@ -430,6 +456,7 @@ CMDS = {
             Opts.include,
             Opts.omit,
             Opts.output_xml,
+            Opts.skip_empty,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate an XML report of coverage results."
@@ -583,6 +610,8 @@ class CoverageScript(object):
                 show_missing=options.show_missing,
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
+                precision=options.precision,
+                sort=options.sort,
                 **report_args
                 )
         elif options.action == "annotate":
@@ -594,11 +623,15 @@ class CoverageScript(object):
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
                 show_contexts=options.show_contexts,
+                precision=options.precision,
                 **report_args
                 )
         elif options.action == "xml":
             outfile = options.outfile
-            total = self.coverage.xml_report(outfile=outfile, **report_args)
+            total = self.coverage.xml_report(
+                outfile=outfile, skip_empty=options.skip_empty,
+                **report_args
+                )
         elif options.action == "json":
             outfile = options.outfile
             total = self.coverage.json_report(
@@ -617,6 +650,10 @@ class CoverageScript(object):
             fail_under = self.coverage.get_option("report:fail_under")
             precision = self.coverage.get_option("report:precision")
             if should_fail_under(total, fail_under, precision):
+                msg = "total of {total:.{p}f} is less than fail-under={fail_under:.{p}f}".format(
+                    total=total, fail_under=fail_under, p=precision,
+                )
+                print("Coverage failure:", msg)
                 return FAIL_UNDER
 
         return OK
@@ -794,6 +831,7 @@ HELP_TOPICS = {
         Commands:
             annotate    Annotate source files with execution information.
             combine     Combine a number of data files.
+            debug       Display information about the internals of coverage.py
             erase       Erase previously collected coverage data.
             help        Get help on using coverage.py.
             html        Create an HTML report.
@@ -806,7 +844,7 @@ HELP_TOPICS = {
     """,
 
     'minimum_help': """\
-        Code coverage for Python.  Use '{program_name} help' for help.
+        Code coverage for Python, version {__version__} {extension_modifier}.  Use '{program_name} help' for help.
     """,
 
     'version': """\
@@ -857,8 +895,8 @@ if _profile:                                                # pragma: debugging
 
     def main(argv=None):                                    # pylint: disable=function-redefined
         """A wrapper around main that profiles."""
+        profiler = SimpleLauncher.launch()
         try:
-            profiler = SimpleLauncher.launch()
             return original_main(argv)
         finally:
             data, _ = profiler.query(re_filter='coverage', max_records=100)

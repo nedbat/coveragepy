@@ -103,6 +103,7 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->should_start_context);
     Py_XDECREF(self->switch_context);
     Py_XDECREF(self->context);
+    Py_XDECREF(self->disable_plugin);
 
     DataStack_dealloc(&self->stats, &self->data_stack);
     if (self->data_stacks) {
@@ -570,52 +571,17 @@ error:
 static void
 CTracer_disable_plugin(CTracer *self, PyObject * disposition)
 {
-    PyObject * file_tracer = NULL;
-    PyObject * plugin = NULL;
-    PyObject * plugin_name = NULL;
-    PyObject * msg = NULL;
-    PyObject * ignored = NULL;
-
+    PyObject * ret;
     PyErr_Print();
 
-    file_tracer = PyObject_GetAttr(disposition, str_file_tracer);
-    if (file_tracer == NULL) {
-        goto error;
-    }
-    if (file_tracer == Py_None) {
-        /* This shouldn't happen... */
-        goto ok;
-    }
-    plugin = PyObject_GetAttr(file_tracer, str__coverage_plugin);
-    if (plugin == NULL) {
-        goto error;
-    }
-    plugin_name = PyObject_GetAttr(plugin, str__coverage_plugin_name);
-    if (plugin_name == NULL) {
-        goto error;
-    }
-    msg = MyText_FromFormat(
-        "Disabling plug-in '%s' due to previous exception",
-        MyText_AsString(plugin_name)
-        );
-    if (msg == NULL) {
-        goto error;
-    }
     STATS( self->stats.pycalls++; )
-    ignored = PyObject_CallFunctionObjArgs(self->warn, msg, NULL);
-    if (ignored == NULL) {
+    ret = PyObject_CallFunctionObjArgs(self->disable_plugin, disposition, NULL);
+    if (ret == NULL) {
         goto error;
     }
+    Py_DECREF(ret);
 
-    /* Disable the plugin for future files, and stop tracing this file. */
-    if (PyObject_SetAttr(plugin, str__coverage_enabled, Py_False) < 0) {
-        goto error;
-    }
-    if (PyObject_SetAttr(disposition, str_trace, Py_False) < 0) {
-        goto error;
-    }
-
-    goto ok;
+    return;
 
 error:
     /* This function doesn't return a status, so if an error happens, print it,
@@ -623,13 +589,6 @@ error:
     /* PySys_WriteStderr is nicer, but is not in the public API. */
     fprintf(stderr, "Error occurred while disabling plug-in:\n");
     PyErr_Print();
-
-ok:
-    Py_XDECREF(file_tracer);
-    Py_XDECREF(plugin);
-    Py_XDECREF(plugin_name);
-    Py_XDECREF(msg);
-    Py_XDECREF(ignored);
 }
 
 
@@ -685,7 +644,8 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
                 STATS( self->stats.pycalls++; )
                 from_to = PyObject_CallMethodObjArgs(self->pcur_entry->file_tracer, str_line_number_range, frame, NULL);
                 if (from_to == NULL) {
-                    goto error;
+                    CTracer_disable_plugin(self, self->pcur_entry->disposition);
+                    goto ok;
                 }
                 ret2 = CTracer_unpack_pair(self, from_to, &lineno_from, &lineno_to);
                 Py_DECREF(from_to);
@@ -1119,6 +1079,9 @@ CTracer_members[] = {
 
     { "switch_context",     T_OBJECT, offsetof(CTracer, switch_context), 0,
             PyDoc_STR("Function for switching to a new context.") },
+
+    { "disable_plugin",     T_OBJECT, offsetof(CTracer, disable_plugin), 0,
+            PyDoc_STR("Function for disabling a plugin.") },
 
     { NULL }
 };

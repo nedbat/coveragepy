@@ -54,7 +54,9 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                         'num_branches': 2,
                         'excluded_lines': 0,
                         'num_partial_branches': 1,
-                        'percent_covered': 60.0
+                        'covered_branches': 1,
+                        'missing_branches': 1,
+                        'percent_covered': 60.0,
                     }
                 }
             },
@@ -65,7 +67,9 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 'num_branches': 2,
                 'excluded_lines': 0,
                 'num_partial_branches': 1,
-                'percent_covered': 60.0
+                'percent_covered': 60.0,
+                'covered_branches': 1,
+                'missing_branches': 1,
             }
         }
         self._assert_expected_json_report(cov, expected_result)

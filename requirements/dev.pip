@@ -4,8 +4,7 @@
 # Requirements for doing local development work on coverage.py.
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
-pip==20.0.2
-virtualenv==16.7.9
+-r pip.pip
 
 pluggy==0.13.1
 
@@ -14,11 +13,12 @@ pluggy==0.13.1
 -r pytest.pip
 
 # for linting.
-greenlet==0.4.15
-pylint==2.4.4
-check-manifest==0.40
-readme_renderer==24.0
+greenlet==0.4.16
+pylint==2.5.3
+check-manifest==0.42
+readme_renderer==26.0
 
 # for kitting.
-requests==2.22.0
-twine==2.0.0
+requests==2.24.0
+twine==3.2.0
+libsass==0.20.0

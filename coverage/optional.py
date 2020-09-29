@@ -15,6 +15,14 @@ unavailable.
 Bad::
 
     # MyModule.py
+    import unsure
+
+    def use_unsure():
+        unsure.something()
+
+Also bad::
+
+    # MyModule.py
     from coverage.optional import unsure
 
     def use_unsure():

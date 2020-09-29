@@ -20,6 +20,7 @@ Arcadiy Ivanov
 Aron Griffis
 Artem Dayneko
 Ben Finney
+Bernát Gábor
 Bill Hart
 Brandon Rhodes
 Brett Cannon
@@ -70,6 +71,7 @@ Ilia Meerovich
 Imri Goldberg
 Ionel Cristian Mărieș
 JT Olds
+Jerin Peter George
 Jessamyn Smith
 Joe Doherty
 Joe Jevnik
@@ -80,6 +82,7 @@ Josh Williams
 Julian Berman
 Julien Voisin
 Justas Sadzevičius
+Kjell Braden
 Krystian Kichewko
 Kyle Altendorf
 Lars Hupfeldt Nielsen
@@ -98,6 +101,7 @@ Max Linke
 Michał Bultrowicz
 Mickie Betz
 Mike Fiedler
+Naveen Yadav
 Nathan Land
 Noel O'Boyle
 Olivier Grisel
@@ -113,6 +117,7 @@ Rodrigue Cloutier
 Roger Hu
 Ross Lawley
 Roy Williams
+Salvatore Zagaria
 Sandra Martocchia
 Scott Belden
 Sigve Tjora
@@ -124,10 +129,14 @@ Stephen Finucane
 Steve Leonard
 Steve Peak
 S. Y. Lee
+Teake Nutma
 Ted Wexler
 Thijs Triemstra
+Thomas Grainger
 Titus Brown
+Vince Salvino
 Ville Skyttä
+Xie Yanbo
 Yury Selivanov
 Zac Hatfield-Dodds
 Zooko Wilcox-O'Hearn

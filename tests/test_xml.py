@@ -124,13 +124,13 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         self.assert_exists("xml.out")
 
     def test_no_data(self):
-        # https://bitbucket.org/ned/coveragepy/issue/210
+        # https://github.com/nedbat/coveragepy/issues/210
         self.run_command("coverage xml")
         self.assert_doesnt_exist("coverage.xml")
 
     def test_no_source(self):
         # Written while investigating a bug, might as well keep it.
-        # https://bitbucket.org/ned/coveragepy/issue/208
+        # https://github.com/nedbat/coveragepy/issues/208
         self.make_file("innocuous.py", "a = 4")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "innocuous")
@@ -165,7 +165,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
 
     def test_reporting_on_nothing(self):
         # Used to raise a zero division error:
-        # https://bitbucket.org/ned/coveragepy/issue/250
+        # https://github.com/nedbat/coveragepy/issues/250
         self.make_file("empty.py", "")
         cov = coverage.Coverage()
         empty = self.start_import_stop(cov, "empty")
@@ -177,13 +177,20 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         assert elts[0].get('line-rate') == '1'
 
     def test_empty_file_is_100_not_0(self):
-        # https://bitbucket.org/ned/coveragepy/issue/345
+        # https://github.com/nedbat/coveragepy/issues/345
         cov = self.run_doit()
         cov.xml_report()
         dom = ElementTree.parse("coverage.xml")
         elts = dom.findall(".//class[@name='__init__.py']")
         assert len(elts) == 1
         assert elts[0].get('line-rate') == '1'
+
+    def test_empty_file_is_skipped(self):
+        cov = self.run_doit()
+        cov.xml_report(skip_empty=True)
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//class[@name='__init__.py']")
+        assert len(elts) == 0
 
     def test_curdir_source(self):
         # With no source= option, the XML report should explain that the source
@@ -198,7 +205,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
     def test_deep_source(self):
         # When using source=, the XML report needs to mention those directories
         # in the <source> elements.
-        # https://bitbucket.org/ned/coveragepy/issues/439/incorrect-cobertura-file-sources-generated
+        # https://github.com/nedbat/coveragepy/issues/439
         self.make_file("src/main/foo.py", "a = 1")
         self.make_file("also/over/there/bar.py", "b = 2")
         cov = coverage.Coverage(source=["src/main", "also/over/there", "not/really"])
@@ -235,7 +242,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         }
 
     def test_nonascii_directory(self):
-        # https://bitbucket.org/ned/coveragepy/issues/573/cant-generate-xml-report-if-some-source
+        # https://github.com/nedbat/coveragepy/issues/573
         self.make_file("테스트/program.py", "a = 1")
         with change_dir("테스트"):
             cov = coverage.Coverage()
@@ -357,8 +364,8 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
             ])
 
     def test_source_prefix(self):
-        # https://bitbucket.org/ned/coveragepy/issues/465
-        # https://bitbucket.org/ned/coveragepy/issues/526/generated-xml-invalid-paths-for-cobertura
+        # https://github.com/nedbat/coveragepy/issues/465
+        # https://github.com/nedbat/coveragepy/issues/526
         self.make_file("src/mod.py", "print(17)")
         cov = coverage.Coverage(source=["src"])
         self.start_import_stop(cov, "mod", modfile="src/mod.py")
@@ -369,6 +376,19 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
             ])
         dom = ElementTree.parse("coverage.xml")
         self.assert_source(dom, "src")
+
+    def test_relative_source(self):
+        self.make_file("src/mod.py", "print(17)")
+        cov = coverage.Coverage(source=["src"])
+        cov.set_option("run:relative_files", True)
+        self.start_import_stop(cov, "mod", modfile="src/mod.py")
+        cov.xml_report()
+
+        with open("coverage.xml") as x:
+            print(x.read())
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//sources/source")
+        assert [elt.text for elt in elts] == ["src"]
 
 
 def compare_xml(expected, actual, **kwargs):

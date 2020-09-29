@@ -2,12 +2,13 @@
 
 - Check that the current virtualenv matches the current coverage branch.
 - Version number in coverage/version.py
-        version_info = (4, 0, 2, 'alpha', 1)
-        version_info = (4, 0, 2, 'beta', 1)
-        version_info = (4, 0, 2, 'candidate', 1)
-        version_info = (4, 0, 2, 'final', 0)
+        version_info = (4, 0, 2, "alpha", 1)
+        version_info = (4, 0, 2, "beta", 1)
+        version_info = (4, 0, 2, "candidate", 1)
+        version_info = (4, 0, 2, "final", 0)
 - Python version number in classifiers in setup.py
 - Copyright date in NOTICE.txt
+- Update specific Python versions in appveyor.yml ("PYTHON_VERSION")
 - Update CHANGES.rst, including release date.
     - don't forget the jump target
 - Update README.rst
@@ -21,50 +22,50 @@
     - Don't forget the man page: doc/python-coverage.1.txt
     - Check that the docs build correctly:
         $ tox -e doc
-            there will be warnings about the readthedocs links being broken,
-            because this version's docs haven't been published yet.
-    - Done with changes to source files, check them in.
-        - git push
-    - Generate new sample_html to get the latest, incl footer version number:
-        make clean
-        pip install -e .
-        cd ~/cog/trunk
-        rm -rf htmlcov
-        coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; coverage combine; coverage html
-        - IF PRE-RELEASE:
-            rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
-            cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
-        - IF NOT PRE-RELEASE:
-            rm -f ~/coverage/trunk/doc/sample_html/*.*
-            cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
-        cd ~/coverage/trunk
-        - IF NOT PRE-RELEASE:
-            check in the new sample html
-    - Build and publish docs:
-        - IF PRE-RELEASE:
-            $ make publishbeta
-        - ELSE:
-            $ make publish
+- Generate new sample_html to get the latest, incl footer version number:
+    $ make clean
+    $ pip install -e .
+    $ cd ~/cog/trunk
+    $ rm -rf htmlcov
+    $ coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; coverage combine; coverage html
+    - IF PRE-RELEASE:
+        $ rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
+        $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
+    - IF NOT PRE-RELEASE:
+        $ rm -f ~/coverage/trunk/doc/sample_html/*.*
+        $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
+    cd ~/coverage/trunk
+    - IF NOT PRE-RELEASE:
+        check in the new sample html
+- Done with changes to source files, check them in.
+    $ git push
+- Build and publish docs:
+    - IF PRE-RELEASE:
+        $ make publishbeta
+    - ELSE:
+        $ make publish
 - Kits:
     - Start fresh:
-        - $ make sterile
+        $ make sterile
     - Source kit and wheels:
-        - $ make kit wheel
+        $ make kit wheel
     - Linux wheels:
-        - $ make kit_linux
+        $ make kit_linux
     - Windows kits
         - wait for over an hour for Appveyor to build kits.
             - https://ci.appveyor.com/project/nedbat/coveragepy
-        - $ make download_appveyor
+        $ make download_appveyor
     - examine the dist directory, and remove anything that looks malformed.
+    - check the dist directory:
+        $ python -m twine check dist/*
     - test the pypi upload:
-        - $ make test_upload
+        $ make test_upload
 - Update PyPI:
     - upload kits:
-        - $ make kit_upload
+        $ make kit_upload
 - Tag the tree
-    - git tag coverage-3.0.1
-    - git push --tags
+    $ git tag coverage-3.0.1
+    $ git push --tags
 - Bump version:
     - coverage/version.py
         - increment version number
@@ -72,23 +73,26 @@
             - set to alpha-0 if just released.
     - CHANGES.rst
         - add an "Unreleased" section to the top.
-    - git push
+    $ git push
 - Update Tidelift:
-    - make upload_relnotes
+    $ make tidelift_relnotes
+- Update GitHub releases:
+    $ make github_releases
 - Update readthedocs
-    - IF NOT PRE-RELEASE:
-        - update git "stable" branch to point to latest release
-            - git branch -f stable <latest-tag>
-            - git push --all
-        - visit https://readthedocs.org/projects/coverage/builds/
-        - wait for the new tag build to finish successfully.
-        - visit https://readthedocs.org/dashboard/coverage/advanced/
-        - change the default version to the new version
-    - visit https://readthedocs.org/projects/coverage/versions/
+    - @ https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
             - readthedocs won't find the tag until a commit is made on master.
-        - keep just the latest version of each x.y release, make the rest inactive.
+        - keep just the latest version of each x.y release, make the rest active but hidden.
+    - IF NOT PRE-RELEASE:
+        - update git "stable" branch to point to latest release
+            $ git branch -f stable <latest-tag>
+            $ git push --all
+        - @ https://readthedocs.org/projects/coverage/builds/
+            - wait for the new tag build to finish successfully.
+        - @ https://readthedocs.org/dashboard/coverage/advanced/
+            - change the default version to the new version
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
+    - "This is now released as part of [coverage 5.2](https://pypi.org/project/coverage/5.2)."
     - make a milestone for the next release and move open issues into it.
 - Announce:
     - twitter @coveragepy
