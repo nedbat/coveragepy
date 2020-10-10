@@ -47,13 +47,13 @@ environment:
     - JOB: "3.8 64-bit"
       TOXENV: "py38"
       PYTHON: "C:\\Python38-x64"
-      PYTHON_VERSION: "3.8.5"
+      PYTHON_VERSION: "3.8.6"
       PYTHON_ARCH: "64"
 
     - JOB: "3.9 64-bit"
       TOXENV: "py39"
       PYTHON: "C:\\Python39-x64"
-      PYTHON_VERSION: "3.9.0b5"
+      PYTHON_VERSION: "3.9.0"
       PYTHON_ARCH: "64"
 
     # 32-bit jobs don't run the tests under the Python tracer, since that should
@@ -89,14 +89,14 @@ environment:
     - JOB: "3.8 32-bit"
       TOXENV: "py38"
       PYTHON: "C:\\Python38"
-      PYTHON_VERSION: "3.8.5"
+      PYTHON_VERSION: "3.8.6"
       PYTHON_ARCH: "32"
       COVERAGE_NO_PYTRACER: "1"
 
     - JOB: "3.9 32-bit"
       TOXENV: "py39"
       PYTHON: "C:\\Python39"
-      PYTHON_VERSION: "3.9.0b5"
+      PYTHON_VERSION: "3.9.0"
       PYTHON_ARCH: "32"
       COVERAGE_NO_PYTRACER: "1"
 
@@ -108,10 +108,10 @@ environment:
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
-    - JOB: "Meta 3.6"
-      TOXENV: "py36"
-      PYTHON: "C:\\Python36"
-      PYTHON_VERSION: "3.6.11"
+    - JOB: "Meta 3.8"
+      TOXENV: "py38"
+      PYTHON: "C:\\Python38"
+      PYTHON_VERSION: "3.8.6"
       PYTHON_ARCH: "32"
       COVERAGE_COVERAGE: "yes"
 
