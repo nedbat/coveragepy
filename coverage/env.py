@@ -66,7 +66,7 @@ class PYBEHAVIOR(object):
     # used to be an empty string (meaning the current directory). It changed
     # to be the actual path to the current directory, so that os.chdir wouldn't
     # affect the outcome.
-    actual_syspath0_dash_m = (PYVERSION >= (3, 7, 0, 'beta', 3))
+    actual_syspath0_dash_m = (not PYPY) and (PYVERSION >= (3, 7, 0, 'beta', 3))
 
     # When a break/continue/return statement in a try block jumps to a finally
     # block, does the finally block do the break/continue/return (pre-3.8), or
