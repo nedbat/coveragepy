@@ -9,14 +9,16 @@ language: python
 
 cache: pip
 
+# https://docs.travis-ci.com/user/languages/python/#python-versions
 python:
   - '2.7'
   - '3.5'
   - '3.6'
   - '3.7'
   - '3.8'
-  - 'pypy2.7-6.0'
-  - 'pypy3.5-6.0'
+  - '3.9'
+  - 'pypy2.7-7.3.1'
+  - 'pypy3.6-7.3.1'
 
 # Only testing it for python3.8 on aarch64 platform, since it already has a lot
 # of jobs to test and takes long time.
