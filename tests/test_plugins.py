@@ -921,7 +921,11 @@ class BadFileTracerTest(FileTracerTest):
                 reg.add_file_tracer(Plugin())
             """)
         self.run_bad_plugin(
-            "bad_plugin", "Plugin", our_error=False, excmsg="an integer is required",
+            "bad_plugin", "Plugin", our_error=False,
+            excmsgs=[
+                "an integer is required",
+                "cannot be interpreted as an integer",
+            ],
         )
 
 
