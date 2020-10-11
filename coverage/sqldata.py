@@ -167,7 +167,8 @@ class CoverageData(SimpleReprMixin):
     To record data for contexts, use :meth:`set_context` to set a context to
     be used for subsequent :meth:`add_lines` and :meth:`add_arcs` calls.
 
-    To add a source file without any measured data, use :meth:`touch_file`.
+    To add a source file without any measured data, use :meth:`touch_file`,
+    or :meth:`touch_files` for a list of such files.
 
     Write the data to its file with :meth:`write`.
 
@@ -536,16 +537,26 @@ class CoverageData(SimpleReprMixin):
         `plugin_name` is the name of the plugin responsible for this file. It is used
         to associate the right filereporter, etc.
         """
-        if self._debug.should('dataop'):
-            self._debug.write("Touching %r" % (filename,))
-        self._start_using()
-        if not self._has_arcs and not self._has_lines:
-            raise CoverageException("Can't touch files in an empty CoverageData")
+        self.touch_files([filename], plugin_name)
 
-        self._file_id(filename, add=True)
-        if plugin_name:
-            # Set the tracer for this file
-            self.add_file_tracers({filename: plugin_name})
+    def touch_files(self, filenames, plugin_name=""):
+        """Ensure that `filenames` appear in the data, empty if needed.
+
+        `plugin_name` is the name of the plugin responsible for these files. It is used
+        to associate the right filereporter, etc.
+        """
+        if self._debug.should('dataop'):
+            self._debug.write("Touching %r" % (filenames,))
+        self._start_using()
+        with self._connect(): # Use this to get one transaction.
+            if not self._has_arcs and not self._has_lines:
+                raise CoverageException("Can't touch files in an empty CoverageData")
+
+            for filename in filenames:
+                self._file_id(filename, add=True)
+                if plugin_name:
+                    # Set the tracer for this file
+                    self.add_file_tracers({filename: plugin_name})
 
     def update(self, other_data, aliases=None):
         """Update this data with data from several other :class:`CoverageData` instances.

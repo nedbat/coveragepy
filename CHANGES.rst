@@ -24,7 +24,10 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- When using ``--source`` on a large source tree, v5.x was slower than previous
+  versions.  This performance regression is now fixed, closing `issue 1037`_.
+
+.. _issue 1037: https://github.com/nedbat/coveragepy/issues/1037
 
 
 .. _changes_53:

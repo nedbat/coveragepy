@@ -4,6 +4,7 @@
 """Core control stuff for coverage.py."""
 
 import atexit
+import collections
 import contextlib
 import os
 import os.path
@@ -737,9 +738,12 @@ class Coverage(object):
         # Touch all the files that could have executed, so that we can
         # mark completely unexecuted files as 0% covered.
         if self._data is not None:
+            file_paths = collections.defaultdict(list)
             for file_path, plugin_name in self._inorout.find_possibly_unexecuted_files():
                 file_path = self._file_mapper(file_path)
-                self._data.touch_file(file_path, plugin_name)
+                file_paths[plugin_name].append(file_path)
+            for plugin_name, paths in file_paths.items():
+                self._data.touch_files(paths, plugin_name)
 
         if self.config.note:
             self._warn("The '[run] note' setting is no longer supported.")
