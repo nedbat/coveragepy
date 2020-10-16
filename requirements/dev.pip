@@ -14,11 +14,12 @@ pluggy==0.13.1
 
 # for linting.
 greenlet==0.4.16
+# pylint 2.6 complains about py2-compatible code
 pylint==2.5.3
-check-manifest==0.42
-readme_renderer==26.0
+check-manifest==0.44
+readme_renderer==27.0
 
 # for kitting.
 requests==2.24.0
 twine==3.2.0
-libsass==0.20.0
+libsass==0.20.1
