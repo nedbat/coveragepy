@@ -255,6 +255,36 @@ class PluginTest(CoverageTest):
         out = self.run_command("coverage html")
         assert out == ""
 
+    def test_omitted_traced_plugin_deps_dont_warn(self):
+        self.make_file("traces_own_deps_plugin.py", """\
+            from coverage import CoveragePlugin
+            import local_module
+            class MyPlugin(CoveragePlugin):
+                def file_tracer(self, filename):
+                    if 'local_module' in filename:
+                        return self
+                    return None
+
+            def coverage_init(reg, options):
+                reg.add_noop(MyPlugin())
+            """)
+        self.make_file("local_module.py", "CONST = 1")
+        self.make_file(".coveragerc", """\
+            [run]
+            plugins = traces_own_deps_plugin
+            omit=local_module.py,traces_own_deps_plugin.py
+            source=.
+            """)
+        self.make_file("main_file.py", """\
+            import local_module
+            print('MAIN')
+        """)
+
+        out = self.run_command("coverage run main_file.py")
+        self.assertEqual(out, "MAIN\n")
+        out = self.run_command("coverage html")
+        self.assertEqual(out, "")
+
 
 @pytest.mark.skipif(env.C_TRACER, reason="This test is only about PyTracer.")
 class PluginWarningOnPyTracer(CoverageTest):
