@@ -2,4 +2,4 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 pip==20.2.3
-virtualenv==20.0.35
+virtualenv==20.0.31
