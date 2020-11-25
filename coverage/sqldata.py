@@ -14,7 +14,6 @@ import os
 import re
 import sqlite3
 import sys
-import time
 import zlib
 
 from coverage import env
@@ -1060,7 +1059,6 @@ class SqliteDb(SimpleReprMixin):
             try:
                 return self.con.execute(sql, parameters)
             except Exception:
-                time.sleep(0.05)
                 return self.con.execute(sql, parameters)
         except sqlite3.Error as exc:
             msg = str(exc)
