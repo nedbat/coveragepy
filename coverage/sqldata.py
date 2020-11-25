@@ -1056,7 +1056,13 @@ class SqliteDb(SimpleReprMixin):
             tail = " with {!r}".format(parameters) if parameters else ""
             self.debug.write("Executing {!r}{}".format(sql, tail))
         try:
-            return self.con.execute(sql, parameters)
+            try:
+                return self.con.execute(sql, parameters)
+            except Exception:
+                # In some cases, an error might happen that isn't really an
+                # error.  Try again immediately.
+                # https://github.com/nedbat/coveragepy/issues/1010
+                return self.con.execute(sql, parameters)
         except sqlite3.Error as exc:
             msg = str(exc)
             try:
