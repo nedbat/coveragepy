@@ -9,19 +9,23 @@ on:
 
 jobs:
   tests:
-    name: "Python ${{ matrix.python-version }}"
-    runs-on: "ubuntu-latest"
+    name: "Python ${{ matrix.python-version }} on ${{ matrix.platform }}"
+    runs-on: "${{ matrix.platform }}"
 
     strategy:
       matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "pypy3"]
+      fail-fast: false
 
     steps:
       - uses: "actions/checkout@v2"
       - uses: "actions/setup-python@v2"
         with:
           python-version: "${{ matrix.python-version }}"
+
       - name: "Install dependencies"
+        shell: bash
         run: |
           set -xe
           python -VV
@@ -29,4 +33,6 @@ jobs:
           python -m pip install -r requirements/ci.pip
 
       - name: "Run tox targets for ${{ matrix.python-version }}"
-        run: "python -m tox"
+        shell: bash
+        run: |
+          python -m tox
