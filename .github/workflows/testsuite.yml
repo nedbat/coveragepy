@@ -25,14 +25,11 @@ jobs:
           python-version: "${{ matrix.python-version }}"
 
       - name: "Install dependencies"
-        shell: bash
         run: |
-          set -xe
           python -VV
           python -m site
           python -m pip install -r requirements/ci.pip
 
       - name: "Run tox targets for ${{ matrix.python-version }}"
-        shell: bash
         run: |
           python -m tox
