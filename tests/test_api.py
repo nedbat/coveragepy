@@ -18,7 +18,7 @@ import coverage
 from coverage import env
 from coverage.backward import code_object, import_local_file, StringIO
 from coverage.data import line_counts
-from coverage.files import abs_file
+from coverage.files import abs_file, relative_filename
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest, CoverageTestMethodsMixin, TESTS_DIR, UsingModulesMixin
@@ -472,8 +472,8 @@ class ApiTest(CoverageTest):
         # The order of the [paths] setting matters
         def make_data_file():
             data = coverage.CoverageData(".coverage.1")
-            data.add_lines({os.path.abspath('ci/girder/g1.py'): dict.fromkeys(range(10))})
-            data.add_lines({os.path.abspath('ci/girder/plugins/p1.py'): dict.fromkeys(range(10))})
+            data.add_lines({abs_file('ci/girder/g1.py'): dict.fromkeys(range(10))})
+            data.add_lines({abs_file('ci/girder/plugins/p1.py'): dict.fromkeys(range(10))})
             data.write()
 
         def get_combined_filenames():
@@ -481,7 +481,7 @@ class ApiTest(CoverageTest):
             cov.combine()
             cov.save()
             data = cov.get_data()
-            filenames = {os.path.relpath(f).replace("\\", "/") for f in data.measured_files()}
+            filenames = {relative_filename(f).replace("\\", "/") for f in data.measured_files()}
             return filenames
 
         # Case 1: get the order right.

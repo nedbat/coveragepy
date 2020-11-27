@@ -20,7 +20,7 @@ import pytest
 import coverage
 from coverage import env
 from coverage.data import line_counts
-from coverage.files import python_reported_file
+from coverage.files import abs_file, python_reported_file
 from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, xfail
@@ -390,8 +390,8 @@ class ProcessTest(CoverageTest):
         data.read()
         summary = line_counts(data, fullpath=True)
         self.assertEqual(len(summary), 1)
-        actual = os.path.normcase(os.path.abspath(list(summary.keys())[0]))
-        expected = os.path.normcase(os.path.abspath('src/x.py'))
+        actual = abs_file(list(summary.keys())[0])
+        expected = abs_file('src/x.py')
         self.assertEqual(expected, actual)
         self.assertEqual(list(summary.values())[0], 6)
 

@@ -25,7 +25,7 @@ class FilesTest(CoverageTest):
 
     def abs_path(self, p):
         """Return the absolute path for `p`."""
-        return os.path.join(os.getcwd(), os.path.normpath(p))
+        return os.path.join(abs_file(os.getcwd()), os.path.normpath(p))
 
     def test_simple(self):
         self.make_file("hello.py")
