@@ -44,7 +44,26 @@ jobs:
           python -m site
           python -m pip install -r requirements/ci.pip
 
-      - name: "Run tox targets for ${{ matrix.python-version }}"
+      - name: "Run tox for ${{ matrix.python-version }}"
         shell: bash
+        continue-on-error: true
+        id: tox1
         run: |
           python -m tox
+
+      - name: "Retry tox for ${{ matrix.python-version }}"
+        shell: bash
+        id: tox2
+        if: steps.tox1.outcome == 'failure'
+        run: |
+          python -m tox
+
+      - name: "Set status"
+        shell: bash
+        if: always()
+        run: |
+          if ${{ steps.tox1.outcome == 'success' || steps.tox2.outcome == 'success' }}; then
+             echo success
+          else
+             exit 1
+          fi
