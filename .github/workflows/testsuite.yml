@@ -43,6 +43,7 @@ jobs:
           python -VV
           python -m site
           python -m pip install -r requirements/ci.pip
+          python -m pip install -c requirements/pins.pip tox-gh-actions
 
       - name: "Run tox for ${{ matrix.python-version }}"
         shell: bash
