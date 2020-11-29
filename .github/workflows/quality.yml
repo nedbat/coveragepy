@@ -1,0 +1,64 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+name: "Quality checks"
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    name: Pylint etc
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Install Python"
+        uses: "actions/setup-python@v2"
+        with:
+          python-version: "3.8"
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          python -m pip install -r requirements/tox.pip
+
+      - name: "Tox lint"
+        run: |
+          python -m tox -e lint
+
+  doc:
+    name: Build docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Install Python"
+        uses: "actions/setup-python@v2"
+        with:
+          python-version: "3.8"
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          python -m pip install -r requirements/tox.pip
+
+      - name: "Tox doc"
+        run: |
+          python -m tox -e doc
