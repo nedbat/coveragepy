@@ -362,7 +362,7 @@ MULTI_CODE = """
     """
 
 
-@flaky(max_runs=30)         # Sometimes a test fails due to inherent randomness. Try more times.
+#@flaky(max_runs=30)         # Sometimes a test fails due to inherent randomness. Try more times.
 class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
 

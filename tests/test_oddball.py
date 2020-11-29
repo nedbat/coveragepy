@@ -146,7 +146,7 @@ class MemoryLeakTest(CoverageTest):
     It may still fail occasionally, especially on PyPy.
 
     """
-    @flaky
+    #@flaky
     def test_for_leaks(self):
         if env.JYTHON:
             self.skipTest("Don't bother on Jython")
