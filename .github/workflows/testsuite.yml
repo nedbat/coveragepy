@@ -18,7 +18,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "pypy3"]
+        python-version:
+          - "2.7"
+          - "3.5"
+          - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "pypy3"
         exclude:
           # Windows PyPy doesn't seem to work?
           - os: windows-latest
@@ -46,14 +53,12 @@ jobs:
           python -m pip install -c requirements/pins.pip tox-gh-actions
 
       - name: "Run tox for ${{ matrix.python-version }}"
-        shell: bash
         continue-on-error: true
         id: tox1
         run: |
           python -m tox
 
       - name: "Retry tox for ${{ matrix.python-version }}"
-        shell: bash
         id: tox2
         if: steps.tox1.outcome == 'failure'
         run: |
@@ -63,8 +68,6 @@ jobs:
         shell: bash
         if: always()
         run: |
-          if ${{ steps.tox1.outcome == 'success' || steps.tox2.outcome == 'success' }}; then
-             echo success
-          else
+          if ${{ steps.tox1.outcome != 'success' && steps.tox2.outcome != 'success' }}; then
              exit 1
           fi
