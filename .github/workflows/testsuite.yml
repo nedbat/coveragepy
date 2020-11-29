@@ -10,6 +10,10 @@ on:
     branches: ["master"]
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   tests:
     name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
@@ -44,7 +48,6 @@ jobs:
           choco install vcpython27 -f -y
 
       - name: "Install dependencies"
-        shell: bash
         run: |
           set -xe
           python -VV
@@ -65,7 +68,6 @@ jobs:
           python -m tox
 
       - name: "Set status"
-        shell: bash
         if: always()
         run: |
           if ${{ steps.tox1.outcome != 'success' && steps.tox2.outcome != 'success' }}; then
