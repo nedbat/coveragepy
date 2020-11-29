@@ -63,8 +63,8 @@ jobs:
           python -m pip install -c requirements/pins.pip tox-gh-actions
 
       - name: "Run tox for ${{ matrix.python-version }}"
-        continue-on-error: true
         id: tox1
+        continue-on-error: true
         run: |
           python -m tox
           tox_status=$?
@@ -76,6 +76,7 @@ jobs:
 
       - name: "Retry tox for ${{ matrix.python-version }}"
         id: tox2
+        continue-on-error: true
         if: steps.tox1.outcome == 'failure'
         run: |
           python -m tox
@@ -87,6 +88,7 @@ jobs:
 
       - name: "Retry tox again for ${{ matrix.python-version }}"
         id: tox3
+        continue-on-error: true
         if: steps.tox2.outcome == 'failure'
         run: |
           python -m tox
