@@ -70,9 +70,15 @@ jobs:
         run: |
           python -m tox
 
+      - name: "Retry tox again for ${{ matrix.python-version }}"
+        id: tox3
+        if: steps.tox2.outcome == 'failure'
+        run: |
+          python -m tox
+
       - name: "Set status"
         if: always()
         run: |
-          if ${{ steps.tox1.outcome != 'success' && steps.tox2.outcome != 'success' }}; then
+          if ${{ steps.tox1.outcome != 'success' && steps.tox2.outcome != 'success' && steps.tox3.outcome != 'success' }}; then
              exit 1
           fi
