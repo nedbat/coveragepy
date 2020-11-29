@@ -63,18 +63,28 @@ jobs:
         id: tox1
         run: |
           python -m tox
+          if [ $? -ne 0 ]; then
+            # https://github.community/t/annotations-how-to-create-them/18387
+            echo "::warning file=testsuite.yml,line=1,col=1::tox failed, retrying..."
+          fi
 
       - name: "Retry tox for ${{ matrix.python-version }}"
         id: tox2
         if: steps.tox1.outcome == 'failure'
         run: |
           python -m tox
+          if [ $? -ne 0 ]; then
+            echo "::warning file=testsuite.yml,line=1,col=1::tox failed again, retrying..."
+          fi
 
       - name: "Retry tox again for ${{ matrix.python-version }}"
         id: tox3
         if: steps.tox2.outcome == 'failure'
         run: |
           python -m tox
+          if [ $? -ne 0 ]; then
+            echo "::error file=testsuite.yml,line=1,col=1::tox failed a third time, probably a real failure"
+          fi
 
       - name: "Set status"
         if: always()
