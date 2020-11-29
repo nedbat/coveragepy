@@ -12,7 +12,11 @@ on:
 
 defaults:
   run:
-    shell: bash
+    # The default shell is:
+    #   bash --noprofile --norc -eo pipefail {0}
+    # which makes it hard to do our own status checking.
+    # Turn off -eo pipefail
+    shell: bash --noprofile --norc {0}
 
 jobs:
   tests:
@@ -63,9 +67,11 @@ jobs:
         id: tox1
         run: |
           python -m tox
-          if [ $? -ne 0 ]; then
+          tox_status=$?
+          if [ $tox_status -ne 0 ]; then
             # https://github.community/t/annotations-how-to-create-them/18387
             echo "::warning file=testsuite.yml,line=1,col=1::tox failed, retrying..."
+            exit $tox_status
           fi
 
       - name: "Retry tox for ${{ matrix.python-version }}"
@@ -73,8 +79,10 @@ jobs:
         if: steps.tox1.outcome == 'failure'
         run: |
           python -m tox
-          if [ $? -ne 0 ]; then
+          tox_status=$?
+          if [ $tox_status -ne 0 ]; then
             echo "::warning file=testsuite.yml,line=1,col=1::tox failed again, retrying..."
+            exit $tox_status
           fi
 
       - name: "Retry tox again for ${{ matrix.python-version }}"
@@ -82,8 +90,10 @@ jobs:
         if: steps.tox2.outcome == 'failure'
         run: |
           python -m tox
-          if [ $? -ne 0 ]; then
+          tox_status=$?
+          if [ $tox_status -ne 0 ]; then
             echo "::error file=testsuite.yml,line=1,col=1::tox failed a third time, probably a real failure"
+            exit $tox_status
           fi
 
       - name: "Set status"
