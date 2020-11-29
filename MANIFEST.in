@@ -16,8 +16,6 @@ include Makefile
 include NOTICE.txt
 include README.rst
 include __main__.py
-include .travis.yml
-include appveyor.yml
 include howto.txt
 include igor.py
 include metacov.ini
@@ -30,6 +28,8 @@ include .readthedocs.yml
 
 recursive-include ci *
 exclude ci/*.token
+
+recursive-include .github *
 
 recursive-include coverage/fullcoverage *.py
 recursive-include coverage/ctracer *.c *.h
