@@ -3,5 +3,6 @@
 
 # Things needed to make wheels for coverage.py
 
+# setuptools 45.x is py3-only
 setuptools==44.1.1
-wheel==0.34.2
+wheel==0.35.1
