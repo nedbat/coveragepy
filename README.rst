@@ -8,7 +8,7 @@ Coverage.py
 Code coverage testing for Python.
 
 |  |license| |versions| |status|
-|  |ci-status| |win-ci-status| |docs| |codecov|
+|  |ci-status| |docs| |codecov|
 |  |kit| |format| |repos| |downloads|
 |  |stars| |forks| |contributors|
 |  |tidelift| |twitter-coveragepy| |twitter-nedbat|
@@ -95,12 +95,9 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. _NOTICE.txt: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 
-.. |ci-status| image:: https://travis-ci.com/nedbat/coveragepy.svg?branch=master
-    :target: https://travis-ci.com/nedbat/coveragepy
+.. |ci-status| image:: https://github.com/nedbat/coveragepy/workflows/Test%20Suite/badge.svg
+    :target: https://github.com/nedbat/coveragepy/actions?query=workflow%3A%22Test+Suite%22
     :alt: Build status
-.. |win-ci-status| image:: https://ci.appveyor.com/api/projects/status/kmeqpdje7h9r6vsf/branch/master?svg=true
-    :target: https://ci.appveyor.com/project/nedbat/coveragepy
-    :alt: Windows build status
 .. |docs| image:: https://readthedocs.org/projects/coverage/badge/?version=latest&style=flat
     :target: https://coverage.readthedocs.io/
     :alt: Documentation

@@ -35,7 +35,6 @@ clean: clean_platform                   ## Remove artifacts of test execution, i
 
 sterile: clean                          ## Remove all non-controlled content, even if expensive.
 	rm -rf .tox
-	-docker image rm -f quay.io/pypa/manylinux1_i686 quay.io/pypa/manylinux1_x86_64
 
 
 CSS = coverage/htmlfiles/style.css
@@ -68,20 +67,6 @@ smoke: 					## Run tests quickly with the C tracer in the lowest supported Pytho
 pysmoke: 				## Run tests quickly with the Python tracer in the lowest supported Python versions.
 	COVERAGE_NO_CTRACER=1 tox -q -e py27,py35 -- $(PYTEST_SMOKE_ARGS)
 
-DOCKER_RUN = docker run -it --init --rm -v `pwd`:/io
-RUN_MANYLINUX_X86 = $(DOCKER_RUN) quay.io/pypa/manylinux1_x86_64 /io/ci/manylinux.sh
-RUN_MANYLINUX_I686 = $(DOCKER_RUN) quay.io/pypa/manylinux1_i686 /io/ci/manylinux.sh
-
-test_linux:				## Run the tests in Linux under Docker.
-	# The Linux .pyc files clash with the host's because of file path
-	# changes, so clean them before and after running tests.
-	make clean_platform
-	$(RUN_MANYLINUX_X86) test $(ARGS)
-	make clean_platform
-
-meta_linux:				## Run meta-coverage in Linux under Docker.
-	ARGS="meta $(ARGS)" make test_linux
-
 # Coverage measurement of coverage.py itself (meta-coverage). See metacov.ini
 # for details.
 
@@ -95,13 +80,6 @@ metahtml:				## Produce meta-coverage HTML reports.
 
 kit:					## Make the source distribution.
 	python setup.py sdist
-
-wheel:					## Make the wheels for distribution.
-	tox -c tox_wheels.ini $(ARGS)
-
-kit_linux:				## Make the Linux wheels.
-	$(RUN_MANYLINUX_X86) build
-	$(RUN_MANYLINUX_I686) build
 
 kit_upload:				## Upload the built distributions to PyPI.
 	twine upload --verbose dist/*
@@ -118,8 +96,8 @@ kit_local:
 	# don't go crazy trying to figure out why our new code isn't installing.
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
-download_appveyor:			## Download the latest Windows artifacts from AppVeyor.
-	python ci/download_appveyor.py nedbat/coveragepy
+download_kits:				## Download the built kits from GitHub
+	python ci/download_gha_artifacts.py
 
 build_ext:
 	python setup.py build_ext

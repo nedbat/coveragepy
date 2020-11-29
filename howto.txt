@@ -8,7 +8,6 @@
         version_info = (4, 0, 2, "final", 0)
 - Python version number in classifiers in setup.py
 - Copyright date in NOTICE.txt
-- Update specific Python versions in appveyor.yml ("PYTHON_VERSION")
 - Update CHANGES.rst, including release date.
     - don't forget the jump target
 - Update README.rst
@@ -45,16 +44,8 @@
     - ELSE:
         $ make publish
 - Kits:
-    - Start fresh:
-        $ make sterile
-    - Source kit and wheels:
-        $ make kit wheel
-    - Linux wheels:
-        $ make kit_linux
-    - Windows kits
-        - wait for over an hour for Appveyor to build kits.
-            - https://ci.appveyor.com/project/nedbat/coveragepy
-        $ make download_appveyor
+    - Download built kits from GitHub Actions:
+        $ make download_kits
     - examine the dist directory, and remove anything that looks malformed.
     - check the dist directory:
         $ python -m twine check dist/*
