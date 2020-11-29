@@ -146,6 +146,11 @@ class MemoryLeakTest(CoverageTest):
     It may still fail occasionally, especially on PyPy.
 
     """
+    def test_roll_the_dice(self):
+        import random
+        if random.random() > .5:
+            raise Exception("Bad luck!")
+
     #@flaky
     def test_for_leaks(self):
         if env.JYTHON:
