@@ -87,7 +87,7 @@ class ApiTest(CoverageTest):
         self.assertEqual(os.path.basename(filename), "mymod.py")
 
         filename, _, _, _ = cov.analysis(sys.modules["mymain"])
-        self.assertEqual(os.path.basename(filename), "mymain.py")
+        self.assertEqual(os.path.basename(filename), "mymain.py2")
         filename, _, _, _ = cov.analysis(sys.modules["mymod"])
         self.assertEqual(os.path.basename(filename), "mymod.py")
 
