@@ -31,6 +31,8 @@ Unreleased
   immediate retry seems to fix the problem, although it is an unsatisfying
   solution.
 
+- The HTML report pages now have a :ref:`Sleepy Snake <sleepy>` favicon.
+
 - Continuous integration has moved from Travis and AppVeyor to GitHub Actions.
 
 .. _issue 1037: https://github.com/nedbat/coveragepy/issues/1037

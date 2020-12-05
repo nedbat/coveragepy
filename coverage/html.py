@@ -166,6 +166,7 @@ class HtmlReporter(object):
         ("coverage_html.js", ""),
         ("keybd_closed.png", ""),
         ("keybd_open.png", ""),
+        ("favicon_32.png", ""),
     ]
 
     def __init__(self, cov):
