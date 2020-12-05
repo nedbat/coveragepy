@@ -48,8 +48,50 @@ jobs:
         env:
           COVERAGE_COVERAGE: "yes"
         run: |
+          set -xe
           python -m tox
           python -m igor combine_html
+          mv .metacov .coverage.${{ matrix.python-version }}
+
+      - name: "Upload coverage data"
+        uses: actions/upload-artifact@v2
+        with:
+          name: metacov
+          path: .coverage.*
+
+  combine:
+    name: "Combine coverage data"
+    needs: coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Set up Python"
+        uses: "actions/setup-python@v2"
+        with:
+          python-version: "3.9"
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          python -m pip install -r requirements/ci.pip
+          python setup.py --quiet clean develop
+          python igor.py zip_mods install_egg
+
+      - name: "Download coverage data"
+        uses: actions/download-artifact@v2
+        with:
+          name: metacov
+
+      - name: "Combine and report"
+        run: |
+          set -xe
+          coverage combine
+          coverage xml
 
       - name: "Upload to codecov"
         uses: codecov/codecov-action@v1
