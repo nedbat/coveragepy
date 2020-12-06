@@ -1,0 +1,17 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+coverage:
+  status:
+    # Codecov shouldn't put red x's on pull requests
+    # https://docs.codecov.io/docs/common-recipe-list#set-non-blocking-status-checks
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+
+comment:
+  layout: diff, files
+  behavior: new
