@@ -86,6 +86,7 @@ For example, here's a list of exclusions I've used::
         raise NotImplementedError
         if 0:
         if __name__ == .__main__.:
+        class .*\bProtocol\):
 
 Note that when using the ``exclude_lines`` option in a configuration file, you
 are taking control of the entire list of regexes, so you need to re-specify the
