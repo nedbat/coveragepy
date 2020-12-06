@@ -9,6 +9,10 @@ name: Build kits
 on:
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -22,7 +26,7 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      - name: Install Python
+      - name: Install Python 3.7
         uses: actions/setup-python@v2
         with:
           python-version: "3.7"
@@ -43,7 +47,8 @@ jobs:
         run: |
           python -m cibuildwheel --output-dir wheelhouse
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
         with:
           path: ./wheelhouse/*.whl
 
@@ -51,16 +56,45 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out the repo
+        uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
-        name: Install Python
+      - name: Install Python 3.7
+        uses: actions/setup-python@v2
         with:
           python-version: "3.7"
 
       - name: Build sdist
-        run: python setup.py sdist
+        run: |
+          python setup.py sdist
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload sdist
+        uses: actions/upload-artifact@v2
         with:
           path: dist/*.tar.gz
+
+  build_pypy:
+    name: Build PyPy wheels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Install PyPy
+        uses: actions/setup-python@v2
+        with:
+          python-version: "pypy3"
+
+      - name: Install requirements
+        run: |
+          pypy3 -m pip install -r requirements/wheel.pip
+
+      - name: Build wheels
+        run: |
+          pypy3 setup.py bdist_wheel --python-tag pp36
+          pypy3 setup.py bdist_wheel --python-tag pp37
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          path: dist/*.whl
