@@ -120,6 +120,7 @@ Roy Williams
 Salvatore Zagaria
 Sandra Martocchia
 Scott Belden
+Sebastián Ramírez
 Sigve Tjora
 Simon Willison
 Stan Hu

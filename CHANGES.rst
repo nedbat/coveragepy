@@ -33,11 +33,15 @@ Unreleased
 
 - The HTML report pages now have a :ref:`Sleepy Snake <sleepy>` favicon.
 
+- The HTML report now saves the sort order in a more widely supported way,
+  fixing `issue 986`_.  Thanks, Sebastián Ramírez (`pull request 1066`_).
+
 - Continuous integration has moved from Travis and AppVeyor to GitHub Actions.
 
+.. _issue 986: https://github.com/nedbat/coveragepy/issues/986
 .. _issue 1037: https://github.com/nedbat/coveragepy/issues/1037
 .. _issue 1010: https://github.com/nedbat/coveragepy/issues/1010
-
+.. _pull request 1066: https://github.com/nedbat/coveragepy/pull/1066
 
 .. _changes_53:
 
