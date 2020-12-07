@@ -3,8 +3,10 @@
 
 """Use the GitHub API to download built artifacts."""
 
+import datetime
 import os
 import os.path
+import time
 import zipfile
 
 import requests
@@ -25,6 +27,14 @@ def unpack_zipfile(filename):
             print(f"  extracting {name}")
             z.extract(name)
 
+def utc2local(timestring):
+    dt = datetime.datetime
+    utc = dt.fromisoformat(timestring.rstrip("Z"))
+    epoch = time.mktime(utc.timetuple())
+    offset = dt.fromtimestamp(epoch) - dt.utcfromtimestamp(epoch)
+    local = utc + offset
+    return local.strftime("%Y-%m-%d %H:%M:%S")
+
 dest = "dist"
 repo_owner = "nedbat/coveragepy"
 temp_zip = "artifacts.zip"
@@ -35,6 +45,8 @@ os.chdir(dest)
 
 r = requests.get(f"https://api.github.com/repos/{repo_owner}/actions/artifacts")
 latest = max(r.json()["artifacts"], key=lambda a: a["created_at"])
+
+print(f"Artifacts created at {utc2local(latest['created_at'])}")
 download_url(latest["archive_download_url"], temp_zip)
 unpack_zipfile(temp_zip)
 os.remove(temp_zip)
