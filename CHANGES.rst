@@ -31,10 +31,12 @@ Unreleased
   immediate retry seems to fix the problem, although it is an unsatisfying
   solution.
 
-- The HTML report pages now have a :ref:`Sleepy Snake <sleepy>` favicon.
-
 - The HTML report now saves the sort order in a more widely supported way,
   fixing `issue 986`_.  Thanks, Sebastián Ramírez (`pull request 1066`_).
+
+- The HTML report pages now have a :ref:`Sleepy Snake <sleepy>` favicon.
+
+- Wheels are now provided for manylinux2010, and for PyPy3 (pp36 and pp37).
 
 - Continuous integration has moved from Travis and AppVeyor to GitHub Actions.
 
