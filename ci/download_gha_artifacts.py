@@ -28,6 +28,11 @@ def unpack_zipfile(filename):
             z.extract(name)
 
 def utc2local(timestring):
+    """Convert a UTC time into local time in a more readable form.
+
+    For example: '20201208T122900Z' to '2020-12-08 07:29:00'.
+
+    """
     dt = datetime.datetime
     utc = dt.fromisoformat(timestring.rstrip("Z"))
     epoch = time.mktime(utc.timetuple())
