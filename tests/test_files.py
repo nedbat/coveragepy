@@ -349,6 +349,20 @@ class PathAliasesTest(CoverageTest):
             './django/foo/bar.py'
         )
 
+    def test_windows_root_paths(self):
+        aliases = PathAliases()
+        aliases.add('X:\\', '/tmp/src')
+        self.assert_mapped(
+            aliases,
+            "X:\\a\\file.py",
+            "/tmp/src/a/file.py"
+        )
+        self.assert_mapped(
+            aliases,
+            "X:\\file.py",
+            "/tmp/src/file.py"
+        )
+
     def test_leading_wildcard(self):
         aliases = PathAliases()
         aliases.add('*/d1', './mysrc1')

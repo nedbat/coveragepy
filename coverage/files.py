@@ -359,17 +359,19 @@ class PathAliases(object):
         match an entire tree, and not just its root.
 
         """
+        pattern_sep = sep(pattern)
+
         if len(pattern) > 1:
             pattern = pattern.rstrip(r"\/")
 
         # The pattern can't end with a wildcard component.
         if pattern.endswith("*"):
             raise CoverageException("Pattern must not end with wildcards.")
-        pattern_sep = sep(pattern)
 
         # The pattern is meant to match a filepath.  Let's make it absolute
         # unless it already is, or is meant to match any prefix.
-        if not pattern.startswith('*') and not isabs_anywhere(pattern):
+        if not pattern.startswith('*') and not isabs_anywhere(pattern +
+                                                              pattern_sep):
             pattern = abs_file(pattern)
         if not pattern.endswith(pattern_sep):
             pattern += pattern_sep
