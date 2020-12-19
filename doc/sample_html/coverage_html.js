@@ -224,7 +224,7 @@ coverage.index_ready = function ($) {
     coverage.wire_up_filter();
 
     // Watch for page unload events so we can save the final sort settings:
-    $(window).unload(function () {
+    $(window).on("unload", function () {
         try {
             localStorage.setItem(storage_name, sort_list.toString())
         } catch(err) {}
