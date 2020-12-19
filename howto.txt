@@ -44,8 +44,10 @@
     - ELSE:
         $ make publish
 - Kits:
+    - Manually trigger the kit GitHub Action
+        - https://github.com/nedbat/coveragepy/actions?query=workflow%3A%22Build+kits%22
     - Download built kits from GitHub Actions:
-        $ make download_kits
+        $ make clean download_kits
     - examine the dist directory, and remove anything that looks malformed.
     - check the dist directory:
         $ python -m twine check dist/*

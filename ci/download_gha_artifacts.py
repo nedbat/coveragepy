@@ -49,9 +49,12 @@ if not os.path.exists(dest):
 os.chdir(dest)
 
 r = requests.get(f"https://api.github.com/repos/{repo_owner}/actions/artifacts")
-latest = max(r.json()["artifacts"], key=lambda a: a["created_at"])
-
-print(f"Artifacts created at {utc2local(latest['created_at'])}")
-download_url(latest["archive_download_url"], temp_zip)
-unpack_zipfile(temp_zip)
-os.remove(temp_zip)
+dists = [a for a in r.json()["artifacts"] if a["name"] == "dist"]
+if not dists:
+    print(f"No recent dists!")
+else:
+    latest = max(dists, key=lambda a: a["created_at"])
+    print(f"Artifacts created at {utc2local(latest['created_at'])}")
+    download_url(latest["archive_download_url"], temp_zip)
+    unpack_zipfile(temp_zip)
+    os.remove(temp_zip)

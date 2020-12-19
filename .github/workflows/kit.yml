@@ -50,6 +50,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
+          name: dist
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -71,6 +72,7 @@ jobs:
       - name: Upload sdist
         uses: actions/upload-artifact@v2
         with:
+          name: dist
           path: dist/*.tar.gz
 
   build_pypy:
@@ -97,4 +99,5 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
+          name: dist
           path: dist/*.whl
