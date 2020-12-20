@@ -368,6 +368,16 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,5,6], "")
 
+    def test_raise_followed_by_statement(self):
+        self.check_coverage("""\
+            try:
+                raise Exception("hello")
+                a = 3
+            except:
+                pass
+            """,
+            [1,2,3,4,5], "3")
+
     def test_return(self):
         self.check_coverage("""\
             def fn():
@@ -400,6 +410,18 @@ class SimpleStatementTest(CoverageTest):
             assert x == 1 and y == 2 and z == 3
             """,
             [1,2,3,7,8], "")
+
+    def test_return_followed_by_statement(self):
+        self.check_coverage("""\
+            def fn():
+                a = 1
+                return a
+                a = 2
+
+            x = fn()
+            assert(x == 1)
+            """,
+            [1,2,3,4,6,7], "4")
 
     def test_yield(self):
         self.check_coverage("""\
