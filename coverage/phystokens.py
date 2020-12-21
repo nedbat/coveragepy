@@ -87,7 +87,7 @@ def source_token_lines(source):
 
     """
 
-    ws_tokens = set([token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL])
+    ws_tokens = {token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL}
     line = []
     col = 0
 

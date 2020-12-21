@@ -44,7 +44,7 @@ class FileTracer(coverage.FileTracer):
 class FileReporter(coverage.FileReporter):
     """Dead-simple FileReporter."""
     def lines(self):
-        return set([105, 106, 107, 205, 206, 207])
+        return {105, 106, 107, 205, 206, 207}
 
 
 def coverage_init(reg, options):        # pylint: disable=unused-argument

@@ -784,7 +784,7 @@ class CoverageData(SimpleReprMixin):
         """
         self._start_using()
         with self._connect() as con:
-            contexts = set(row[0] for row in con.execute("select distinct(context) from context"))
+            contexts = {row[0] for row in con.execute("select distinct(context) from context")}
         return contexts
 
     def file_tracer(self, filename):
@@ -857,7 +857,7 @@ class CoverageData(SimpleReprMixin):
             arcs = self.arcs(filename)
             if arcs is not None:
                 all_lines = itertools.chain.from_iterable(arcs)
-                return list(set(l for l in all_lines if l > 0))
+                return list({l for l in all_lines if l > 0})
 
         with self._connect() as con:
             file_id = self._file_id(filename)

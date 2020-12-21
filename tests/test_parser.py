@@ -171,11 +171,11 @@ class PythonParserTest(CoverageTest):
             def func(x=25):
                 return 26
             """)
-        raw_statements = set([3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26])
+        raw_statements = {3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26}
         if env.PYBEHAVIOR.trace_decorated_def:
             raw_statements.update([11, 19])
         self.assertEqual(parser.raw_statements, raw_statements)
-        self.assertEqual(parser.statements, set([8]))
+        self.assertEqual(parser.statements, {8})
 
     def test_class_decorator_pragmas(self):
         parser = self.parse_source("""\
@@ -188,8 +188,8 @@ class PythonParserTest(CoverageTest):
                 def __init__(self):
                     self.x = 8
             """)
-        self.assertEqual(parser.raw_statements, set([1, 2, 3, 5, 6, 7, 8]))
-        self.assertEqual(parser.statements, set([1, 2, 3]))
+        self.assertEqual(parser.raw_statements, {1, 2, 3, 5, 6, 7, 8})
+        self.assertEqual(parser.statements, {1, 2, 3})
 
     def test_empty_decorated_function(self):
         parser = self.parse_source("""\
@@ -463,7 +463,7 @@ class ParserFileTest(CoverageTest):
             """)
 
         parser = self.parse_file("normal.py")
-        self.assertEqual(parser.statements, set([1]))
+        self.assertEqual(parser.statements, {1})
 
         self.make_file("abrupt.py", """\
             out, err = subprocess.Popen(
@@ -476,4 +476,4 @@ class ParserFileTest(CoverageTest):
             self.assertEqual(f.read()[-1], ")")
 
         parser = self.parse_file("abrupt.py")
-        self.assertEqual(parser.statements, set([1]))
+        self.assertEqual(parser.statements, {1})

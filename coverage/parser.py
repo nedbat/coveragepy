@@ -220,7 +220,7 @@ class PythonParser(object):
         Returns a set of the first lines.
 
         """
-        return set(self.first_line(l) for l in lines)
+        return {self.first_line(l) for l in lines}
 
     def translate_lines(self, lines):
         """Implement `FileReporter.translate_lines`."""
@@ -520,7 +520,7 @@ class AstArcAnalyzer(object):
     def __init__(self, text, statements, multiline):
         self.root_node = ast.parse(neuter_encoding_declaration(text))
         # TODO: I think this is happening in too many places.
-        self.statements = set(multiline.get(l, l) for l in statements)
+        self.statements = {multiline.get(l, l) for l in statements}
         self.multiline = multiline
 
         if AST_DUMP:                                # pragma: debugging
@@ -626,10 +626,10 @@ class AstArcAnalyzer(object):
             return 1
 
     # The node types that just flow to the next node with no complications.
-    OK_TO_DEFAULT = set([
+    OK_TO_DEFAULT = {
         "Assign", "Assert", "AugAssign", "Delete", "Exec", "Expr", "Global",
         "Import", "ImportFrom", "Nonlocal", "Pass", "Print",
-    ])
+    }
 
     @contract(returns='ArcStarts')
     def add_arcs(self, node):
@@ -661,7 +661,7 @@ class AstArcAnalyzer(object):
                     print("*** Unhandled: {}".format(node))
 
             # Default for simple statements: one exit from this node.
-            return set([ArcStart(self.line_for_node(node))])
+            return {ArcStart(self.line_for_node(node))}
 
     @one_of("from_start, prev_starts")
     @contract(returns='ArcStarts')
@@ -677,7 +677,7 @@ class AstArcAnalyzer(object):
 
         """
         if prev_starts is None:
-            prev_starts = set([from_start])
+            prev_starts = {from_start}
         for body_node in body:
             lineno = self.line_for_node(body_node)
             first_line = self.multiline.get(lineno, lineno)
@@ -890,7 +890,7 @@ class AstArcAnalyzer(object):
                         self.add_arc(last, lineno)
                         last = lineno
         # The body is handled in collect_arcs.
-        return set([ArcStart(last)])
+        return {ArcStart(last)}
 
     _handle__ClassDef = _handle_decorated
 
@@ -984,7 +984,7 @@ class AstArcAnalyzer(object):
                 # If there are `except` clauses, then raises in the try body
                 # will already jump to them.  Start this set over for raises in
                 # `except` and `else`.
-                try_block.raise_from = set([])
+                try_block.raise_from = set()
         else:
             self.block_stack.pop()
 
@@ -1079,7 +1079,7 @@ class AstArcAnalyzer(object):
             if start.cause is not None:
                 causes.append(start.cause.format(lineno=start.lineno))
         cause = " or ".join(causes)
-        exits = set(ArcStart(xit.lineno, cause) for xit in exits)
+        exits = {ArcStart(xit.lineno, cause) for xit in exits}
         return exits
 
     @contract(returns='ArcStarts')

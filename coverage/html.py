@@ -84,7 +84,7 @@ class HtmlDataGeneration(object):
         data = self.coverage.get_data()
         self.has_arcs = data.has_arcs()
         if self.config.show_contexts:
-            if data.measured_contexts() == set([""]):
+            if data.measured_contexts() == {""}:
                 self.coverage._warn("No contexts were measured")
         data.set_query_contexts(self.config.report_contexts)
 

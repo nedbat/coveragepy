@@ -33,11 +33,11 @@ class TestingTest(TestCase):
 
     def test_assert_count_equal(self):
         self.assertCountEqual(set(), set())
-        self.assertCountEqual(set([1,2,3]), set([3,1,2]))
+        self.assertCountEqual({1,2,3}, {3,1,2})
         with self.assertRaises(AssertionError):
-            self.assertCountEqual(set([1,2,3]), set())
+            self.assertCountEqual({1,2,3}, set())
         with self.assertRaises(AssertionError):
-            self.assertCountEqual(set([1,2,3]), set([4,5,6]))
+            self.assertCountEqual({1,2,3}, {4,5,6})
 
 
 class CoverageTestTest(CoverageTest):

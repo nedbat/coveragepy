@@ -55,7 +55,7 @@ class Collector(object):
     _collectors = []
 
     # The concurrency settings we support here.
-    SUPPORTED_CONCURRENCIES = set(["greenlet", "eventlet", "gevent", "thread"])
+    SUPPORTED_CONCURRENCIES = {"greenlet", "eventlet", "gevent", "thread"}
 
     def __init__(
         self, should_trace, check_include, should_start_context, file_mapper,

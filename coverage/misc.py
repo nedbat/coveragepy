@@ -77,7 +77,7 @@ if USE_CONTRACTS:
     def one_of(argnames):
         """Ensure that only one of the argnames is non-None."""
         def _decorator(func):
-            argnameset = set(name.strip() for name in argnames.split(","))
+            argnameset = {name.strip() for name in argnames.split(",")}
             def _wrapper(*args, **kwargs):
                 vals = [kwargs.get(name) for name in argnameset]
                 assert sum(val is not None for val in vals) == 1
