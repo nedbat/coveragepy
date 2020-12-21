@@ -1,6 +1,14 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+"""
+Dump the contents of a .pyc file.
+
+The output will only be correct if run with the same version of Python that
+produced the .pyc.
+
+"""
+
 import binascii
 import dis
 import marshal
@@ -55,14 +63,30 @@ CO_FLAGS = [
     ('CO_ITERABLE_COROUTINE',       0x00100),
     ('CO_ASYNC_GENERATOR',          0x00200),
     ('CO_GENERATOR_ALLOWED',        0x01000),
-    ('CO_FUTURE_DIVISION',          0x02000),
-    ('CO_FUTURE_ABSOLUTE_IMPORT',   0x04000),
-    ('CO_FUTURE_WITH_STATEMENT',    0x08000),
-    ('CO_FUTURE_PRINT_FUNCTION',    0x10000),
-    ('CO_FUTURE_UNICODE_LITERALS',  0x20000),
-    ('CO_FUTURE_BARRY_AS_BDFL',     0x40000),
-    ('CO_FUTURE_GENERATOR_STOP',    0x80000),
 ]
+
+if sys.version_info < (3, 9):
+    CO_FLAGS += [
+        ('CO_FUTURE_DIVISION',          0x02000),
+        ('CO_FUTURE_ABSOLUTE_IMPORT',   0x04000),
+        ('CO_FUTURE_WITH_STATEMENT',    0x08000),
+        ('CO_FUTURE_PRINT_FUNCTION',    0x10000),
+        ('CO_FUTURE_UNICODE_LITERALS',  0x20000),
+        ('CO_FUTURE_BARRY_AS_BDFL',     0x40000),
+        ('CO_FUTURE_GENERATOR_STOP',    0x80000),
+    ]
+else:
+    CO_FLAGS += [
+        ('CO_FUTURE_DIVISION',          0x0020000),
+        ('CO_FUTURE_ABSOLUTE_IMPORT',   0x0040000),
+        ('CO_FUTURE_WITH_STATEMENT',    0x0080000),
+        ('CO_FUTURE_PRINT_FUNCTION',    0x0100000),
+        ('CO_FUTURE_UNICODE_LITERALS',  0x0200000),
+        ('CO_FUTURE_BARRY_AS_BDFL',     0x0400000),
+        ('CO_FUTURE_GENERATOR_STOP',    0x0800000),
+        ('CO_FUTURE_ANNOTATIONS',       0x1000000),
+    ]
+
 
 def show_code(code, indent='', number=None):
     label = ""
