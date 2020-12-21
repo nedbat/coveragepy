@@ -114,6 +114,14 @@ def show_code(code, indent='', number=None):
     print("%sfilename %r" % (indent, code.co_filename))
     print("%sfirstlineno %d" % (indent, code.co_firstlineno))
     show_hex("lnotab", code.co_lnotab, indent=indent)
+    print("    %s%s" % (indent, ", ".join("%r:%r" % (line, byte) for byte, line in lnotab_interpreted(code))))
+    if hasattr(code, "co_linetable"):
+        show_hex("linetable", code.co_linetable, indent=indent)
+    if hasattr(code, "co_lines"):
+        print("    %sco_lines %s" % (
+            indent,
+            ", ".join("%r:%r-%r" % (line, start, end) for start, end, line in code.co_lines())
+        ))
 
 def show_hex(label, h, indent):
     h = binascii.hexlify(h)
@@ -123,6 +131,34 @@ def show_hex(label, h, indent):
         print("%s%s" % (indent, label))
         for i in range(0, len(h), 60):
             print("%s   %s" % (indent, h[i:i+60].decode('ascii')))
+
+if sys.version_info >= (3,):
+    def bytes_to_ints(bytes_value):
+        return bytes_value
+else:
+    def bytes_to_ints(bytes_value):
+        for byte in bytes_value:
+            yield ord(byte)
+
+def lnotab_interpreted(code):
+    # Adapted from dis.py in the standard library.
+    byte_increments = bytes_to_ints(code.co_lnotab[0::2])
+    line_increments = bytes_to_ints(code.co_lnotab[1::2])
+
+    last_line_num = None
+    line_num = code.co_firstlineno
+    byte_num = 0
+    for byte_incr, line_incr in zip(byte_increments, line_increments):
+        if byte_incr:
+            if line_num != last_line_num:
+                yield (byte_num, line_num)
+                last_line_num = line_num
+            byte_num += byte_incr
+        if sys.version_info >= (3, 6) and line_incr >= 0x80:
+            line_incr -= 0x100
+        line_num += line_incr
+    if line_num != last_line_num:
+        yield (byte_num, line_num)
 
 def flag_words(flags, flag_defs):
     words = []
