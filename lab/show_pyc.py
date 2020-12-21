@@ -93,7 +93,7 @@ def show_code(code, indent='', number=None):
     if number is not None:
         label = "%d: " % number
     print("%s%scode" % (indent, label))
-    indent += '   '
+    indent += "    "
     print("%sname %r" % (indent, code.co_name))
     print("%sargcount %d" % (indent, code.co_argcount))
     print("%snlocals %d" % (indent, code.co_nlocals))
@@ -104,9 +104,9 @@ def show_code(code, indent='', number=None):
     print("%sconsts" % indent)
     for i, const in enumerate(code.co_consts):
         if type(const) == types.CodeType:
-            show_code(const, indent+'   ', number=i)
+            show_code(const, indent+"    ", number=i)
         else:
-            print("   %s%d: %r" % (indent, i, const))
+            print("    %s%d: %r" % (indent, i, const))
     print("%snames %r" % (indent, code.co_names))
     print("%svarnames %r" % (indent, code.co_varnames))
     print("%sfreevars %r" % (indent, code.co_freevars))
