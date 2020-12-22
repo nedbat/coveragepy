@@ -457,11 +457,12 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,4,5], "4")
 
-    def test_strange_unexecuted_continue(self):     # pragma: not covered
+    def test_strange_unexecuted_continue(self):
         # Peephole optimization of jumps to jumps can mean that some statements
         # never hit the line tracer.  The behavior is different in different
-        # versions of Python, so don't run this test:
-        self.skipTest("Expected failure: peephole optimization of jumps to jumps")
+        # versions of Python, so be careful when running this test.
+        if env.PY2:
+            self.skipTest("Expected failure: peephole optimization of jumps to jumps")
         self.check_coverage("""\
             a = b = c = 0
             for n in range(100):
@@ -485,7 +486,9 @@ class SimpleStatementTest(CoverageTest):
                 c += 1
             assert a == 33 and b == 50 and c == 50
             """,
-            [1,2,3,4,5,6,8,9,10, 12,13,14,15,16,17,19,20,21], "")
+            lines=[1,2,3,4,5,6,8,9,10, 12,13,14,15,16,17,19,20,21],
+            missing=["", "6"],
+        )
 
     def test_import(self):
         self.check_coverage("""\
