@@ -389,34 +389,35 @@ class ByteParser(object):
         """
         return (ByteParser(self.text, code=c) for c in code_objects(self.code))
 
-    def _bytes_lines(self):
-        """Map byte offsets to line numbers in `code`.
+    def _line_numbers(self):
+        """Yield the line numbers possible in this code object.
 
-        Uses co_lnotab described in Python/compile.c to map byte offsets to
-        line numbers.  Produces a sequence: (b0, l0), (b1, l1), ...
-
-        Only byte offsets that correspond to line numbers are included in the
-        results.
-
+        Uses co_lnotab described in Python/compile.c to find the
+        line numbers.  Produces a sequence: l0, l1, ...
         """
-        # Adapted from dis.py in the standard library.
-        byte_increments = bytes_to_ints(self.code.co_lnotab[0::2])
-        line_increments = bytes_to_ints(self.code.co_lnotab[1::2])
+        if hasattr(self.code, "co_lines"):
+            for _, _, line in self.code.co_lines():
+                if line is not None:
+                    yield line
+        else:
+            # Adapted from dis.py in the standard library.
+            byte_increments = bytes_to_ints(self.code.co_lnotab[0::2])
+            line_increments = bytes_to_ints(self.code.co_lnotab[1::2])
 
-        last_line_num = None
-        line_num = self.code.co_firstlineno
-        byte_num = 0
-        for byte_incr, line_incr in zip(byte_increments, line_increments):
-            if byte_incr:
-                if line_num != last_line_num:
-                    yield (byte_num, line_num)
-                    last_line_num = line_num
-                byte_num += byte_incr
-            if env.PYBEHAVIOR.negative_lnotab and line_incr >= 0x80:
-                line_incr -= 0x100
-            line_num += line_incr
-        if line_num != last_line_num:
-            yield (byte_num, line_num)
+            last_line_num = None
+            line_num = self.code.co_firstlineno
+            byte_num = 0
+            for byte_incr, line_incr in zip(byte_increments, line_increments):
+                if byte_incr:
+                    if line_num != last_line_num:
+                        yield line_num
+                        last_line_num = line_num
+                    byte_num += byte_incr
+                if env.PYBEHAVIOR.negative_lnotab and line_incr >= 0x80:
+                    line_incr -= 0x100
+                line_num += line_incr
+            if line_num != last_line_num:
+                yield line_num
 
     def _find_statements(self):
         """Find the statements in `self.code`.
@@ -427,7 +428,7 @@ class ByteParser(object):
         """
         for bp in self.child_parsers():
             # Get all of the lineno information from this code.
-            for _, l in bp._bytes_lines():
+            for l in bp._line_numbers():
                 yield l
 
 
