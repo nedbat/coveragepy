@@ -72,7 +72,7 @@ class PYBEHAVIOR(object):
     # block, does the finally block do the break/continue/return (pre-3.8), or
     # does the finally jump back to the break/continue/return (3.8) to do the
     # work?
-    finally_jumps_back = (PYVERSION >= (3, 8))
+    finally_jumps_back = ((3, 8) <= PYVERSION < (3, 10))
 
     # When a function is decorated, does the trace function get called for the
     # @-line and also the def-line (new behavior in 3.8)? Or just the @-line
