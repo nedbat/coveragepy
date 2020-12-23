@@ -369,6 +369,12 @@ class SimpleStatementTest(CoverageTest):
             [1,2,5,6], "")
 
     def test_raise_followed_by_statement(self):
+        if env.PYBEHAVIOR.omit_after_jump:
+            lines = [1,2,4,5]
+            missing = ""
+        else:
+            lines = [1,2,3,4,5]
+            missing = "3"
         self.check_coverage("""\
             try:
                 raise Exception("hello")
@@ -376,7 +382,7 @@ class SimpleStatementTest(CoverageTest):
             except:
                 pass
             """,
-            [1,2,3,4,5], "3")
+            lines=lines, missing=missing)
 
     def test_return(self):
         self.check_coverage("""\
@@ -412,16 +418,23 @@ class SimpleStatementTest(CoverageTest):
             [1,2,3,7,8], "")
 
     def test_return_followed_by_statement(self):
+        if env.PYBEHAVIOR.omit_after_return:
+            lines = [1,2,3,6,7]
+            missing = ""
+        else:
+            lines = [1,2,3,4,6,7]
+            missing = "4"
         self.check_coverage("""\
             def fn():
-                a = 1
-                return a
                 a = 2
+                return a
+                a = 4
 
             x = fn()
-            assert(x == 1)
+            assert(x == 2)
             """,
-            [1,2,3,4,6,7], "4")
+            lines=lines, missing=missing,
+        )
 
     def test_yield(self):
         self.check_coverage("""\
@@ -438,6 +451,13 @@ class SimpleStatementTest(CoverageTest):
             [1,2,3,6,8,9], "")
 
     def test_break(self):
+        if env.PYBEHAVIOR.omit_after_jump:
+            lines = [1,2,3,5]
+            missing = ""
+        else:
+            lines = [1,2,3,4,5]
+            missing = "4"
+
         self.check_coverage("""\
             for x in range(10):
                 a = 2 + x
@@ -445,9 +465,16 @@ class SimpleStatementTest(CoverageTest):
                 a = 4
             assert a == 2
             """,
-            [1,2,3,4,5], "4")
+            lines=lines, missing=missing)
 
     def test_continue(self):
+        if env.PYBEHAVIOR.omit_after_jump:
+            lines = [1,2,3,5]
+            missing = ""
+        else:
+            lines = [1,2,3,4,5]
+            missing = "4"
+
         self.check_coverage("""\
             for x in range(10):
                 a = 2 + x
@@ -455,7 +482,7 @@ class SimpleStatementTest(CoverageTest):
                 a = 4
             assert a == 11
             """,
-            [1,2,3,4,5], "4")
+            lines=lines, missing=missing)
 
     def test_strange_unexecuted_continue(self):
         # Peephole optimization of jumps to jumps can mean that some statements
@@ -920,10 +947,9 @@ class CompoundStatementTest(CoverageTest):
             while a:
                 b += 1
                 break
-                b = 99
             assert a == 3 and b == 1
             """,
-            [1,2,3,4,5,6], "5")
+            [1,2,3,4,5], "")
 
     def test_while_else(self):
         # Take the else branch.
@@ -944,12 +970,11 @@ class CompoundStatementTest(CoverageTest):
                 b += 1
                 a -= 1
                 break
-                b = 123
             else:
                 b = 99
             assert a == 2 and b == 1
             """,
-            [1,2,3,4,5,6,8,9], "6-8")
+            [1,2,3,4,5,7,8], "7")
 
     def test_split_while(self):
         self.check_coverage("""\
@@ -994,10 +1019,9 @@ class CompoundStatementTest(CoverageTest):
             for i in [1,2,3,4,5]:
                 a += i
                 break
-                a = 99
             assert a == 1
             """,
-            [1,2,3,4,5,6], "5")
+            [1,2,3,4,5], "")
 
     def test_for_else(self):
         self.check_coverage("""\
@@ -1014,12 +1038,11 @@ class CompoundStatementTest(CoverageTest):
             for i in range(5):
                 a += i+1
                 break
-                a = 99
             else:
                 a = 123
             assert a == 1
             """,
-            [1,2,3,4,5,7,8], "5-7")
+            [1,2,3,4,6,7], "6")
 
     def test_split_for(self):
         self.check_coverage("""\
@@ -1101,6 +1124,19 @@ class CompoundStatementTest(CoverageTest):
             arcz=".1 12 23 45 58 37 78 8.",
             arcz_missing="45 58",
         )
+
+    def test_try_except_stranded_else(self):
+        if env.PYBEHAVIOR.omit_after_jump:
+            # The else can't be reached because the try ends with a raise.
+            lines = [1,2,3,4,5,6,9]
+            missing = ""
+            arcz = ".1 12 23 34 45 56 69 9."
+            arcz_missing = ""
+        else:
+            lines = [1,2,3,4,5,6,8,9]
+            missing = "8"
+            arcz = ".1 12 23 34 45 56 69 89 9."
+            arcz_missing = "89"
         self.check_coverage("""\
             a = 0
             try:
@@ -1112,9 +1148,10 @@ class CompoundStatementTest(CoverageTest):
                 a = 123
             assert a == 99
             """,
-            [1,2,3,4,5,6,8,9], "8",
-            arcz=".1 12 23 34 45 56 69 89 9.",
-            arcz_missing="89",
+            lines=lines,
+            missing=missing,
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
 
     def test_try_finally(self):
@@ -1380,12 +1417,11 @@ class ExcludeTest(CoverageTest):
             for i in range(5):
                 a += i+1
                 break
-                a = 99
             else:               #pragma: NO COVER
                 a = 123
             assert a == 1
             """,
-            [1,2,3,4,5,8], "5", excludes=['#pragma: NO COVER'])
+            [1,2,3,4,7], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_while(self):
         self.check_coverage("""\
@@ -1393,10 +1429,9 @@ class ExcludeTest(CoverageTest):
             while a*b:           #pragma: NO COVER
                 b += 1
                 break
-                b = 99
             assert a == 3 and b == 0
             """,
-            [1,6], "", excludes=['#pragma: NO COVER'])
+            [1,5], "", excludes=['#pragma: NO COVER'])
         self.check_coverage("""\
             a = 3; b = 0
             while (
@@ -1404,10 +1439,9 @@ class ExcludeTest(CoverageTest):
                 ):           #pragma: NO COVER
                 b += 1
                 break
-                b = 99
             assert a == 3 and b == 0
             """,
-            [1,8], "", excludes=['#pragma: NO COVER'])
+            [1,7], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_while_else(self):
         self.check_coverage("""\
@@ -1415,12 +1449,11 @@ class ExcludeTest(CoverageTest):
             while a:
                 b += 1
                 break
-                b = 99
             else:           #pragma: NO COVER
                 b = 123
             assert a == 3 and b == 1
             """,
-            [1,2,3,4,5,8], "5", excludes=['#pragma: NO COVER'])
+            [1,2,3,4,7], "", excludes=['#pragma: NO COVER'])
 
     def test_excluding_try_except(self):
         self.check_coverage("""\
@@ -1468,58 +1501,15 @@ class ExcludeTest(CoverageTest):
             arcz=".1 12 23 37 45 58 78 8.",
             arcz_missing="45 58",
         )
-        self.check_coverage("""\
-            a = 0
-            try:
-                a = 1
-                raise Exception("foo")
-            except:
-                a = 99
-            else:              #pragma: NO COVER
-                a = 123
-            assert a == 99
-            """,
-            [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'],
-            arcz=".1 12 23 34 45 56 69 89 9.",
-            arcz_missing="89",
-        )
 
-    def test_excluding_try_except_pass(self):
-        self.check_coverage("""\
-            a = 0
-            try:
-                a = 1
-            except:           #pragma: NO COVER
-                x = 2
-            assert a == 1
-            """,
-            [1,2,3,6], "", excludes=['#pragma: NO COVER'])
-        self.check_coverage("""\
-            a = 0
-            try:
-                a = 1
-                raise Exception("foo")
-            except ImportError:    #pragma: NO COVER
-                x = 2
-            except:
-                a = 123
-            assert a == 123
-            """,
-            [1,2,3,4,7,8,9], "", excludes=['#pragma: NO COVER'])
-        self.check_coverage("""\
-            a = 0
-            try:
-                a = 1
-            except:       #pragma: NO COVER
-                x = 2
-            else:
-                a = 123
-            assert a == 123
-            """,
-            [1,2,3,7,8], "", excludes=['#pragma: NO COVER'],
-            arcz=".1 12 23 37 45 58 78 8.",
-            arcz_missing="45 58",
-        )
+    def test_excluding_try_except_stranded_else(self):
+        if env.PYBEHAVIOR.omit_after_jump:
+            # The else can't be reached because the try ends with a raise.
+            arcz = ".1 12 23 34 45 56 69 9."
+            arcz_missing = ""
+        else:
+            arcz = ".1 12 23 34 45 56 69 89 9."
+            arcz_missing = "89"
         self.check_coverage("""\
             a = 0
             try:
@@ -1532,8 +1522,8 @@ class ExcludeTest(CoverageTest):
             assert a == 99
             """,
             [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'],
-            arcz=".1 12 23 34 45 56 69 89 9.",
-            arcz_missing="89",
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
 
     def test_excluding_if_pass(self):
@@ -1800,6 +1790,19 @@ class Py25Test(CoverageTest):
             arcz=".1 12 23 37 45 59 79 9A A.",
             arcz_missing="45 59",
         )
+
+    def test_try_except_finally_stranded_else(self):
+        if env.PYBEHAVIOR.omit_after_jump:
+            # The else can't be reached because the try ends with a raise.
+            lines = [1,2,3,4,5,6,10,11]
+            missing = ""
+            arcz = ".1 12 23 34 45 56 6A AB B."
+            arcz_missing = ""
+        else:
+            lines = [1,2,3,4,5,6,8,10,11]
+            missing = "8"
+            arcz = ".1 12 23 34 45 56 6A 8A AB B."
+            arcz_missing = "8A"
         self.check_coverage("""\
             a = 0; b = 0
             try:
@@ -1813,9 +1816,10 @@ class Py25Test(CoverageTest):
                 b = 2
             assert a == 99 and b == 2
             """,
-            [1,2,3,4,5,6,8,10,11], "8",
-            arcz=".1 12 23 34 45 56 6A 8A AB B.",
-            arcz_missing="8A",
+            lines=lines,
+            missing=missing,
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
 
 
