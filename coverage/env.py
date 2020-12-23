@@ -85,6 +85,13 @@ class PYBEHAVIOR(object):
     # Python 3.9a1 made sys.argv[0] and other reported files absolute paths.
     report_absolute_files = (PYVERSION >= (3, 9))
 
+    # Lines after break/continue/return/raise are no longer compiled into the
+    # bytecode.  They used to be marked as missing, now they aren't executable.
+    omit_after_jump = pep626
+
+    # PyPy has always omitted statements after return.
+    omit_after_return = omit_after_jump or PYPY
+
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?

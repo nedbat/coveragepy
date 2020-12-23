@@ -215,6 +215,13 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_break(self):
+        if env.PYBEHAVIOR.omit_after_jump:
+            arcz = ".1 12 23 35 15 5."
+            arcz_missing = "15"
+        else:
+            arcz = ".1 12 23 35 15 41 5."
+            arcz_missing = "15 41"
+
         self.check_coverage("""\
             for i in range(10):
                 a = i
@@ -222,9 +229,17 @@ class LoopArcTest(CoverageTest):
                 a = 99
             assert a == 0   # 5
             """,
-            arcz=".1 12 23 35 15 41 5.", arcz_missing="15 41")
+            arcz=arcz, arcz_missing=arcz_missing
+        )
 
     def test_continue(self):
+        if env.PYBEHAVIOR.omit_after_jump:
+            arcz = ".1 12 23 31 15 5."
+            arcz_missing = ""
+        else:
+            arcz = ".1 12 23 31 15 41 5."
+            arcz_missing = "41"
+
         self.check_coverage("""\
             for i in range(10):
                 a = i
@@ -232,7 +247,8 @@ class LoopArcTest(CoverageTest):
                 a = 99
             assert a == 9   # 5
             """,
-            arcz=".1 12 23 31 15 41 5.", arcz_missing="41")
+            arcz=arcz, arcz_missing=arcz_missing
+        )
 
     def test_nested_breaks(self):
         self.check_coverage("""\
@@ -495,6 +511,14 @@ class ExceptionArcTest(CoverageTest):
             assert a == 3 and b == 1
             """,
             arcz=".1 12 23 36 45 56 6.", arcz_missing="45 56")
+
+    def test_raise_followed_by_statement(self):
+        if env.PYBEHAVIOR.omit_after_jump:
+            arcz = ".1 12 23 34 46 67 78 8."
+            arcz_missing = ""
+        else:
+            arcz = ".1 12 23 34 46 58 67 78 8."
+            arcz_missing = "58"
         self.check_coverage("""\
             a, b = 1, 1
             try:
@@ -505,8 +529,7 @@ class ExceptionArcTest(CoverageTest):
                 b = 7
             assert a == 3 and b == 7
             """,
-            arcz=".1 12 23 34 46 58 67 78 8.",
-            arcz_missing="58",
+            arcz=arcz, arcz_missing=arcz_missing,
         )
 
     def test_hidden_raise(self):
@@ -579,15 +602,15 @@ class ExceptionArcTest(CoverageTest):
                 try:
                     a = 4
                     raise Exception("Yikes!")
-                    a = 6
+                    # line 6
                 finally:
                     c = 8
             except:
                 d = 10                              # A
             assert a == 4 and c == 8 and d == 10    # B
             """,
-            arcz=".1 12 23 34 45 58 68 89 8B 9A AB B.",
-            arcz_missing="68 8B",
+            arcz=".1 12 23 34 45 58 89 9A AB B.",
+            arcz_missing="",
         )
 
     def test_finally_in_loop(self):
