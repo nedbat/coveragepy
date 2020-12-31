@@ -205,6 +205,12 @@ class PythonParser(object):
         if not empty:
             self.raw_statements.update(self.byte_parser._find_statements())
 
+        # The first line of modules can lie and say 1 always, even if the first
+        # line of code is later. If so, map 1 to the actual first line of the
+        # module.
+        if env.PYBEHAVIOR.module_firstline_1 and self._multiline:
+            self._multiline[1] = min(self.raw_statements)
+
     def first_line(self, line):
         """Return the first line number of the statement including `line`."""
         if line < 0:
@@ -620,7 +626,9 @@ class AstArcAnalyzer(object):
             return node.lineno
 
     def _line__Module(self, node):
-        if node.body:
+        if env.PYBEHAVIOR.module_firstline_1:
+            return 1
+        elif node.body:
             return self.line_for_node(node.body[0])
         else:
             # Empty modules have no line number, they always start at 1.
