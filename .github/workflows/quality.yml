@@ -16,7 +16,10 @@ defaults:
 jobs:
   lint:
     name: Pylint etc
-    runs-on: ubuntu-latest
+    # Because pylint can report different things on different OS's (!)
+    # (https://github.com/PyCQA/pylint/issues/3489), run this on Mac where local
+    # pylint gets run.
+    runs-on: macos-latest
 
     steps:
       - name: "Check out the repo"
