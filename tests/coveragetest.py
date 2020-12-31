@@ -219,6 +219,11 @@ class CoverageTest(
                     self.fail("None of the missing choices matched %r" % missing_formatted)
 
         if arcs is not None:
+            # print("Possible arcs:")
+            # print(" expected:", arcs)
+            # print(" actual:", analysis.arc_possibilities())
+            # print("Executed:")
+            # print(" actual:", sorted(set(analysis.arcs_executed())))
             with self.delayed_assertions():
                 self.assert_equal_arcs(
                     arcs, analysis.arc_possibilities(),

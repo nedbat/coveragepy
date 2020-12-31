@@ -25,6 +25,7 @@ class SimpleArcTest(CoverageTest):
             b = 3
             """,
             arcz=".1 13 3.")
+        line1 = 1 if env.PYBEHAVIOR.module_firstline_1 else 2
         self.check_coverage("""\
 
             a = 2
@@ -32,7 +33,8 @@ class SimpleArcTest(CoverageTest):
 
             c = 5
             """,
-            arcz="-22 23 35 5-2")
+            arcz="-{0}2 23 35 5-{0}".format(line1)
+        )
 
     def test_function_def(self):
         self.check_coverage("""\
