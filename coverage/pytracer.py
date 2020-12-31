@@ -107,7 +107,7 @@ class PyTracer(object):
         if event == 'call':
             # Should we start a new context?
             if self.should_start_context and self.context is None:
-                context_maybe = self.should_start_context(frame)    # pylint: disable=not-callable
+                context_maybe = self.should_start_context(frame)
                 if context_maybe is not None:
                     self.context = context_maybe
                     self.started_context = True
@@ -132,15 +132,15 @@ class PyTracer(object):
             self.cur_file_name = filename
             disp = self.should_trace_cache.get(filename)
             if disp is None:
-                disp = self.should_trace(filename, frame)   # pylint: disable=not-callable
-                self.should_trace_cache[filename] = disp    # pylint: disable=unsupported-assignment-operation
+                disp = self.should_trace(filename, frame)
+                self.should_trace_cache[filename] = disp
 
             self.cur_file_dict = None
             if disp.trace:
                 tracename = disp.source_filename
-                if tracename not in self.data:              # pylint: disable=unsupported-membership-test
-                    self.data[tracename] = {}               # pylint: disable=unsupported-assignment-operation
-                self.cur_file_dict = self.data[tracename]   # pylint: disable=unsubscriptable-object
+                if tracename not in self.data:
+                    self.data[tracename] = {}
+                self.cur_file_dict = self.data[tracename]
             # The call event is really a "start frame" event, and happens for
             # function calls and re-entering generators.  The f_lasti field is
             # -1 for calls, and a real offset for generators.  Use <0 as the
@@ -227,7 +227,7 @@ class PyTracer(object):
             # has changed to None.
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
             if (not dont_warn) and tf != self._trace:   # pylint: disable=comparison-with-callable
-                self.warn(                              # pylint: disable=not-callable
+                self.warn(
                     "Trace function changed, measurement is likely wrong: %r" % (tf,),
                     slug="trace-changed",
                 )
