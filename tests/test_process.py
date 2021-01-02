@@ -743,7 +743,7 @@ class ProcessTest(CoverageTest):
         self.assertGreater(line_counts(data)['os.py'], 50)
 
     @xfail(
-        env.PYPY3 and (env.PYPYVERSION >= (7, 1, 1)) and env.LINUX,
+        env.PYPY3 and (env.PYPYVERSION >= (7, 1, 1)),
         "https://bitbucket.org/pypy/pypy/issues/3074"
     )
     def test_lang_c(self):
