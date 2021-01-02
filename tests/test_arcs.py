@@ -3,7 +3,9 @@
 
 """Tests for coverage.py's arc measurement."""
 
-from tests.coveragetest import CoverageTest
+import pytest
+
+from tests.coveragetest import CoverageTest, xfail
 
 import coverage
 from coverage import env
@@ -264,12 +266,17 @@ class LoopArcTest(CoverageTest):
             """,
             arcz=".1 12 23 34 45 25 56 51 67 17 7.", arcz_missing="17 25")
 
-    def test_while_true(self):
+    def test_while_1(self):
         # With "while 1", the loop knows it's constant.
-        if env.PYBEHAVIOR.nix_while_true:
+        if env.PYBEHAVIOR.keep_constant_test:
+            arcz = ".1 12 23 34 45 36 62 57 7."
+            arcz_missing = ""
+        elif env.PYBEHAVIOR.nix_while_true:
             arcz = ".1 13 34 45 36 63 57 7."
+            arcz_missing = ""
         else:
             arcz = ".1 12 23 34 45 36 63 57 7."
+            arcz_missing = ""
         self.check_coverage("""\
             a, i = 1, 0
             while 1:
@@ -280,10 +287,15 @@ class LoopArcTest(CoverageTest):
             assert a == 4 and i == 3
             """,
             arcz=arcz,
+            arcz_missing=arcz_missing,
             )
+
+    def test_while_true(self):
         # With "while True", 2.x thinks it's computation,
         # 3.x thinks it's constant.
-        if env.PYBEHAVIOR.nix_while_true:
+        if env.PYBEHAVIOR.keep_constant_test:
+            arcz = ".1 12 23 34 45 36 62 57 7."
+        elif env.PYBEHAVIOR.nix_while_true:
             arcz = ".1 13 34 45 36 63 57 7."
         elif env.PY3:
             arcz = ".1 12 23 34 45 36 63 57 7."
@@ -311,7 +323,9 @@ class LoopArcTest(CoverageTest):
             """)
         out = self.run_command("coverage run --branch --source=. main.py")
         self.assertEqual(out, 'done\n')
-        if env.PYBEHAVIOR.nix_while_true:
+        if env.PYBEHAVIOR.keep_constant_test:
+            num_stmts = 3
+        elif env.PYBEHAVIOR.nix_while_true:
             num_stmts = 2
         else:
             num_stmts = 3
@@ -323,7 +337,9 @@ class LoopArcTest(CoverageTest):
     def test_bug_496_continue_in_constant_while(self):
         # https://github.com/nedbat/coveragepy/issues/496
         # A continue in a while-true needs to jump to the right place.
-        if env.PYBEHAVIOR.nix_while_true:
+        if env.PYBEHAVIOR.keep_constant_test:
+            arcz = ".1 12 23 34 45 52 46 67 7."
+        elif env.PYBEHAVIOR.nix_while_true:
             arcz = ".1 13 34 45 53 46 67 7."
         elif env.PY3:
             arcz = ".1 12 23 34 45 53 46 67 7."
@@ -1111,38 +1127,75 @@ class OptimizedIfTest(CoverageTest):
     """Tests of if statements being optimized away."""
 
     def test_optimized_away_if_0(self):
+        if env.PYBEHAVIOR.keep_constant_test:
+            lines = [1, 2, 3, 4, 8, 9]
+            arcz = ".1 12 23 24 34 48 49 89 9."
+            arcz_missing = "24"
+            # 49 isn't missing because line 4 is matched by the default partial
+            # exclusion regex, and no branches are considered missing if they
+            # start from an excluded line.
+        else:
+            lines = [1, 2, 3, 8, 9]
+            arcz = ".1 12 23 28 38 89 9."
+            arcz_missing = "28"
+
         self.check_coverage("""\
             a = 1
             if len([2]):
                 c = 3
-            if 0:               # this line isn't in the compiled code.
+            if 0:
                 if len([5]):
                     d = 6
             else:
                 e = 8
             f = 9
             """,
-            lines=[1, 2, 3, 8, 9],
-            arcz=".1 12 23 28 38 89 9.",
-            arcz_missing="28",
+            lines=lines,
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
 
     def test_optimized_away_if_1(self):
+        if env.PYBEHAVIOR.keep_constant_test:
+            lines = [1, 2, 3, 4, 5, 6, 9]
+            arcz = ".1 12 23 24 34 45 49 56 69 59 9."
+            arcz_missing = "24 59"
+            # 49 isn't missing because line 4 is matched by the default partial
+            # exclusion regex, and no branches are considered missing if they
+            # start from an excluded line.
+        else:
+            lines = [1, 2, 3, 5, 6, 9]
+            arcz = ".1 12 23 25 35 56 69 59 9."
+            arcz_missing = "25 59"
+
         self.check_coverage("""\
             a = 1
             if len([2]):
                 c = 3
-            if 1:               # this line isn't in the compiled code,
-                if len([5]):    # but these are.
+            if 1:
+                if len([5]):
                     d = 6
             else:
                 e = 8
             f = 9
             """,
-            lines=[1, 2, 3, 5, 6, 9],
-            arcz=".1 12 23 25 35 56 69 59 9.",
-            arcz_missing="25 59",
+            lines=lines,
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
+
+    def test_optimized_away_if_1_no_else(self):
+        if env.PYBEHAVIOR.keep_constant_test:
+            lines = [1, 2, 3, 4, 5]
+            arcz = ".1 12 23 25 34 45 5."
+            arcz_missing = ""
+            # 25 isn't missing because line 2 is matched by the default partial
+            # exclusion regex, and no branches are considered missing if they
+            # start from an excluded line.
+        else:
+            lines = [1, 3, 4, 5]
+            arcz = ".1 13 34 45 5."
+            arcz_missing = ""
         self.check_coverage("""\
             a = 1
             if 1:
@@ -1150,11 +1203,24 @@ class OptimizedIfTest(CoverageTest):
                 c = 4
             d = 5
             """,
-            lines=[1, 3, 4, 5],
-            arcz=".1 13 34 45 5.",
+            lines=lines,
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
 
-    def test_optimized_nested(self):
+    def test_optimized_if_nested(self):
+        if env.PYBEHAVIOR.keep_constant_test:
+            lines = [1, 2, 8, 11, 12, 13, 14, 15]
+            arcz = ".1 12 28 2F 8B 8F BC CD DE EF F."
+            arcz_missing = ""
+            # 2F and 8F aren't missing because they're matched by the default
+            # partial exclusion regex, and no branches are considered missing
+            # if they start from an excluded line.
+        else:
+            lines = [1, 12, 14, 15]
+            arcz = ".1 1C CE EF F."
+            arcz_missing = ""
+
         self.check_coverage("""\
             a = 1
             if 0:
@@ -1172,14 +1238,34 @@ class OptimizedIfTest(CoverageTest):
                     h = 14
             i = 15
             """,
-            lines=[1, 12, 14, 15],
-            arcz=".1 1C CE EF F.",
+            lines=lines,
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
 
+    def test_dunder_debug(self):
+        # Since some of our tests use __debug__, let's make sure it is true as
+        # we expect
+        assert __debug__
+        # Check that executed code has __debug__
+        self.check_coverage("""\
+            assert __debug__, "assert __debug__"
+            """
+        )
+        # Check that if it didn't have debug, it would let us know.
+        with pytest.raises(AssertionError):
+            self.check_coverage("""\
+                assert not __debug__, "assert not __debug__"
+                """
+            )
+
     def test_if_debug(self):
-        if not env.PYBEHAVIOR.optimize_if_debug:
-            self.skipTest("PyPy doesn't optimize away 'if __debug__:'")
-        # CPython optimizes away "if __debug__:"
+        if env.PYBEHAVIOR.optimize_if_debug:
+            arcz = ".1 12 24 41 26 61 1."
+            arcz_missing = ""
+        else:
+            arcz = ".1 12 23 31 34 41 26 61 1."
+            arcz_missing = "31"
         self.check_coverage("""\
             for value in [True, False]:
                 if value:
@@ -1188,14 +1274,13 @@ class OptimizedIfTest(CoverageTest):
                 else:
                     x = 6
             """,
-            arcz=".1 12 24 41 26 61 1.",
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
 
+    @xfail(env.PYBEHAVIOR.pep626, reason="https://bugs.python.org/issue42803")
     def test_if_not_debug(self):
-        # Before 3.7, no Python optimized away "if not __debug__:"
-        if not env.PYBEHAVIOR.optimize_if_debug:
-            self.skipTest("PyPy doesn't optimize away 'if __debug__:'")
-        elif env.PYBEHAVIOR.optimize_if_not_debug2:
+        if env.PYBEHAVIOR.optimize_if_not_debug2:
             arcz = ".1 12 24 41 26 61 1."
             arcz_missing = ""
         elif env.PYBEHAVIOR.optimize_if_not_debug:
