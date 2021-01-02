@@ -1118,9 +1118,14 @@ class AstArcAnalyzer(object):
 
     @contract(returns='ArcStarts')
     def _handle__While(self, node):
-        constant_test = self.is_constant_expr(node.test)
         start = to_top = self.line_for_node(node.test)
+        constant_test = self.is_constant_expr(node.test)
+        top_is_body0 = False
         if constant_test and (env.PY3 or constant_test == "Num"):
+            top_is_body0 = True
+        if env.PYBEHAVIOR.keep_constant_test:
+            top_is_body0 = False
+        if top_is_body0:
             to_top = self.line_for_node(node.body[0])
         self.block_stack.append(LoopBlock(start=to_top))
         from_start = ArcStart(start, cause="the condition on line {lineno} was never true")

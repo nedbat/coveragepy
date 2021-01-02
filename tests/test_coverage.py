@@ -8,7 +8,7 @@ import coverage
 from coverage import env
 from coverage.misc import CoverageException
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, xfail
 
 
 class TestCoverageTest(CoverageTest):
@@ -622,7 +622,9 @@ class SimpleStatementTest(CoverageTest):
             b = 3
             assert (a,b) == (1,3)
             """,
-            [1,3,4], "")
+            ([1,3,4], [1,2,3,4]),
+            "",
+        )
         self.check_coverage("""\
             a = 1
             "An extra docstring, should be a comment."
@@ -632,7 +634,9 @@ class SimpleStatementTest(CoverageTest):
             c = 6
             assert (a,b,c) == (1,3,6)
             """,
-            ([1,3,6,7], [1,3,5,6,7], [1,3,4,5,6,7]), "")
+            ([1,3,6,7], [1,3,5,6,7], [1,3,4,5,6,7], [1,2,3,4,5,6,7]),
+            "",
+        )
 
     def test_nonascii(self):
         self.check_coverage("""\
@@ -675,6 +679,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,5], "")
 
+    @xfail(env.PYBEHAVIOR.pep626, reason="pep626: https://bugs.python.org/issue42810")
     def test_if(self):
         self.check_coverage("""\
             a = 1
@@ -926,12 +931,18 @@ class CompoundStatementTest(CoverageTest):
             [1,2,4,5,7,9,10], "4, 7")
 
     def test_constant_if(self):
+        if env.PYBEHAVIOR.keep_constant_test:
+            lines = [1, 2, 3]
+        else:
+            lines = [2, 3]
         self.check_coverage("""\
             if 1:
                 a = 2
             assert a == 2
             """,
-            [2,3], "")
+            lines,
+            "",
+        )
 
     def test_while(self):
         self.check_coverage("""\

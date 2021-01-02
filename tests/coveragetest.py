@@ -509,5 +509,5 @@ def command_line(args):
 
 
 def xfail(condition, reason):
-    """A decorator to mark as test as expected to fail."""
+    """A decorator to mark a test as expected to fail."""
     return pytest.mark.xfail(condition, reason=reason, strict=True)

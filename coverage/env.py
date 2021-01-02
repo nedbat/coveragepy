@@ -33,14 +33,27 @@ PYPY3 = PYPY and PY3
 class PYBEHAVIOR(object):
     """Flags indicating this Python's behavior."""
 
+    pep626 = CPYTHON and (PYVERSION > (3, 10, 0, 'alpha', 4))
+
     # Is "if __debug__" optimized away?
-    optimize_if_debug = (not PYPY)
+    if PYPY3:
+        optimize_if_debug = True
+    elif PYPY2:
+        optimize_if_debug = False
+    else:
+        optimize_if_debug = not pep626
 
     # Is "if not __debug__" optimized away?
     optimize_if_not_debug = (not PYPY) and (PYVERSION >= (3, 7, 0, 'alpha', 4))
+    if pep626:
+        optimize_if_not_debug = False
+    if PYPY3:
+        optimize_if_not_debug = True
 
     # Is "if not __debug__" optimized away even better?
     optimize_if_not_debug2 = (not PYPY) and (PYVERSION >= (3, 8, 0, 'beta', 1))
+    if pep626:
+        optimize_if_not_debug2 = False
 
     # Do we have yield-from?
     yield_from = (PYVERSION >= (3, 3))
@@ -67,7 +80,7 @@ class PYBEHAVIOR(object):
     # used to be an empty string (meaning the current directory). It changed
     # to be the actual path to the current directory, so that os.chdir wouldn't
     # affect the outcome.
-    actual_syspath0_dash_m = (not PYPY) and (PYVERSION >= (3, 7, 0, 'beta', 3))
+    actual_syspath0_dash_m = CPYTHON and (PYVERSION >= (3, 7, 0, 'beta', 3))
 
     # When a break/continue/return statement in a try block jumps to a finally
     # block, does the finally block do the break/continue/return (pre-3.8), or
@@ -96,6 +109,9 @@ class PYBEHAVIOR(object):
     # Modules used to have firstlineno equal to the line number of the first
     # real line of code.  Now they always start at 1.
     module_firstline_1 = pep626
+
+    # Are "if 0:" lines (and similar) kept in the compiled code?
+    keep_constant_test = pep626
 
 # Coverage.py specifics.
 
