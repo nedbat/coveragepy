@@ -40,7 +40,7 @@ class BaseCmdLineTest(CoverageTest):
         skip_empty=None, precision=None,
     )
     _defaults.Coverage().report(
-        ignore_errors=None, include=None, omit=None, morfs=[],
+        always_total=None, ignore_errors=None, include=None, omit=None, morfs=[],
         show_missing=None, skip_covered=None, contexts=None, skip_empty=None, precision=None,
         sort=None,
     )

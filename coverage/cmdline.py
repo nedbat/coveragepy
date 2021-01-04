@@ -31,6 +31,10 @@ class Opts(object):
         '-a', '--append', action='store_true',
         help="Append coverage data to .coverage, otherwise it starts clean each time.",
     )
+    always_total = optparse.make_option(
+        '', '--always-total', action='store_true',
+        help="Always output the TOTAL line, even when only one file is measured.",
+    )
     branch = optparse.make_option(
         '', '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage.",
@@ -204,6 +208,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             add_help_option=False, *args, **kwargs
             )
         self.set_defaults(
+            always_total=None,
             action=None,
             append=None,
             branch=None,
@@ -413,6 +418,7 @@ CMDS = {
     'report': CmdOptionParser(
         "report",
         [
+            Opts.always_total,
             Opts.contexts,
             Opts.fail_under,
             Opts.ignore_errors,
@@ -607,6 +613,7 @@ class CoverageScript(object):
         total = None
         if options.action == "report":
             total = self.coverage.report(
+                always_total=options.always_total,
                 show_missing=options.show_missing,
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,

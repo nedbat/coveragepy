@@ -200,6 +200,7 @@ class CoverageConfig(object):
         self._crash = None
 
         # Defaults for [report]
+        self.always_total = False
         self.exclude_list = DEFAULT_EXCLUDE[:]
         self.fail_under = 0.0
         self.ignore_errors = False
@@ -367,6 +368,7 @@ class CoverageConfig(object):
         ('_crash', 'run:_crash'),
 
         # [report]
+        ('always_total', 'report:always_total', 'boolean'),
         ('exclude_list', 'report:exclude_lines', 'regexlist'),
         ('fail_under', 'report:fail_under', 'float'),
         ('ignore_errors', 'report:ignore_errors', 'boolean'),

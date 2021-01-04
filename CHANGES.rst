@@ -24,7 +24,8 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- The TOTAL output line can now always be output, even when only one file
+  has been measured, by providing the `--always-total` option.
 
 
 .. _changes_531:

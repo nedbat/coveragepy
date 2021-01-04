@@ -7,6 +7,8 @@
     Report coverage statistics on modules.
 
     Options:
+      --always-total        Always output the TOTAL line, even when only one file
+                            is measured.
       --contexts=REGEX1,REGEX2,...
                             Only display data from lines covered in the given
                             contexts. Accepts Python regexes, which must be
@@ -35,4 +37,3 @@
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-

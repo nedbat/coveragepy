@@ -264,6 +264,11 @@ See :ref:`cmd_combine` for more information.
 
 Values common to many kinds of reporting.
 
+.. _config_report_always_total:
+
+``always_total`` (boolean, default False): always output the TOTAL line,
+even when only one file is measured.
+
 .. _config_report_exclude_lines:
 
 ``exclude_lines`` (multi-string): a list of regular expressions.  Any line of

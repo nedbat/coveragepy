@@ -402,6 +402,9 @@ decimal point in coverage percentages, defaulting to none.
 
 The ``--sort`` option is the name of a column to sort the report by.
 
+The ``--always-total`` option will always output the TOTAL line, even when
+only one file is measured.
+
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
 
