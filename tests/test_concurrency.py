@@ -409,7 +409,7 @@ class MultiprocessingTest(CoverageTest):
                 out = self.run_command("coverage report -m")
 
                 last_line = self.squeezed_lines(out)[-1]
-                self.assertRegex(last_line, r"multi.py \d+ 0 100%")
+                self.assertRegex(last_line, r"TOTAL \d+ 0 100%")
 
     def test_multiprocessing_simple(self):
         nprocs = 3
@@ -466,7 +466,7 @@ class MultiprocessingTest(CoverageTest):
             out = self.run_command("coverage report -m")
 
             last_line = self.squeezed_lines(out)[-1]
-            self.assertRegex(last_line, r"multi.py \d+ 0 \d+ 0 100%")
+            self.assertRegex(last_line, r"TOTAL \d+ 0 \d+ 0 100%")
 
     def test_multiprocessing_with_branching(self):
         nprocs = 3

@@ -24,8 +24,9 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
-
+- The text report produced by ``coverage report`` now always outputs a TOTAL
+  line, even if only one Python file is reported.  This makes regex parsing
+  of the output easier.  Thanks, Judson Neer.
 
 .. _changes_531:
 

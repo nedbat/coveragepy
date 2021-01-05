@@ -306,9 +306,11 @@ class ApiTest(CoverageTest):
         # Name         Stmts   Miss  Cover
         # --------------------------------
         # foo/bar.py       1      1     0%
+        # --------------------------------
+        # TOTAL            1      1     0%
 
-        last = self.last_line_squeezed(self.stdout()).replace("\\", "/")
-        self.assertEqual("foo/bar.py 1 1 0%", last)
+        last = self.last_line_squeezed(self.stdout())
+        self.assertEqual("TOTAL 1 1 0%", last)
 
     def test_cov4_data_file(self):
         cov4_data = (
@@ -587,6 +589,8 @@ class ApiTest(CoverageTest):
             Name    Stmts   Miss  Cover
             ---------------------------
             b.py        1      0   100%
+            ---------------------------
+            TOTAL       1      0   100%
             """)
         self.assertEqual(expected, self.stdout())
 
@@ -1049,6 +1053,8 @@ class TestRunnerPluginTest(CoverageTest):
             Name           Stmts   Miss  Cover   Missing
             --------------------------------------------
             no_biggie.py       4      1    75%   4
+            --------------------------------------------
+            TOTAL              4      1    75%
             """))
         if cd:
             os.chdir("..")
@@ -1092,6 +1098,8 @@ class TestRunnerPluginTest(CoverageTest):
             Name      Stmts   Miss  Cover
             -----------------------------
             prog.py       4      1    75%
+            -----------------------------
+            TOTAL         4      1    75%
             """))
         self.assert_file_count(".coverage", 0)
         self.assert_file_count(".coverage.*", 1)
