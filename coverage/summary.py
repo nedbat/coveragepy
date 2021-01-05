@@ -120,8 +120,8 @@ class SummaryReporter(object):
         for line in lines:
             self.writeout(line[0])
 
-        # Write a TOTAl line if we had more than one file.
-        if self.total.n_files > 1:
+        # Write a TOTAL line if we had at least one file.
+        if self.total.n_files > 0:
             self.writeout(rule)
             args = ("TOTAL", self.total.n_statements, self.total.n_missing)
             if self.branches:

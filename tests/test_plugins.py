@@ -522,6 +522,8 @@ class GoodFileTracerTest(FileTracerTest):
             'Name              Stmts   Miss  Cover   Missing',
             '-----------------------------------------------',
             'unsuspecting.py       6      3    50%   2, 4, 6',
+            '-----------------------------------------------',
+            'TOTAL                 6      3    50%',
             ]
         self.assertEqual(expected, report)
         self.assertEqual(total, 50)

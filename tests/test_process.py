@@ -341,6 +341,8 @@ class ProcessTest(CoverageTest):
             Name        Stmts   Miss  Cover
             -------------------------------
             b_or_c.py       8      0   100%
+            -------------------------------
+            TOTAL           8      0   100%
             """))
 
     def test_combine_with_aliases(self):
@@ -1231,7 +1233,7 @@ class FailUnderTest(CoverageTest):
     def test_report_43_is_ok(self):
         st, out = self.run_command_status("coverage report --fail-under=43")
         self.assertEqual(st, 0)
-        self.assertEqual(self.last_line_squeezed(out), "forty_two_plus.py 7 4 43%")
+        self.assertEqual(self.last_line_squeezed(out), "TOTAL 7 4 43%")
 
     def test_report_43_is_not_ok(self):
         st, out = self.run_command_status("coverage report --fail-under=44")
@@ -1305,6 +1307,8 @@ class UnicodeFilePathsTest(CoverageTest):
             u"Name     Stmts   Miss  Cover\n"
             u"----------------------------\n"
             u"h\xe2t.py       1      0   100%\n"
+            u"----------------------------\n"
+            u"TOTAL        1      0   100%\n"
         )
 
         if env.PY2:
@@ -1348,8 +1352,10 @@ class UnicodeFilePathsTest(CoverageTest):
         report_expected = (
             u"Name            Stmts   Miss  Cover\n"
             u"-----------------------------------\n"
-            u"\xe2%saccented.py       1      0   100%%\n" % os.sep
-        )
+            u"\xe2%saccented.py       1      0   100%%\n"
+            u"-----------------------------------\n"
+            u"TOTAL               1      0   100%%\n"
+        ) % os.sep
 
         if env.PY2:
             report_expected = report_expected.encode(output_encoding())
