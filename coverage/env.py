@@ -82,6 +82,9 @@ class PYBEHAVIOR(object):
     # affect the outcome.
     actual_syspath0_dash_m = CPYTHON and (PYVERSION >= (3, 7, 0, 'beta', 3))
 
+    # 3.7 changed how functions with only docstrings are numbered.
+    docstring_only_function = (not PYPY) and ((3, 7, 0, 'beta', 5) <= PYVERSION <= (3, 10))
+
     # When a break/continue/return statement in a try block jumps to a finally
     # block, does the finally block do the break/continue/return (pre-3.8), or
     # does the finally jump back to the break/continue/return (3.8) to do the
