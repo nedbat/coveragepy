@@ -214,7 +214,7 @@ class PythonParserTest(CoverageTest):
             expected_arcs = set(arcz_to_arcs(".1 14 48 8.  .2 2.  -8A A-8"))
             expected_exits = {1: 1, 2: 1, 4: 1, 8: 1, 10: 1}
 
-        if (not env.PYPY) and (env.PYVERSION >= (3, 7, 0, 'beta', 5)):
+        if env.PYBEHAVIOR.docstring_only_function:
             # 3.7 changed how functions with only docstrings are numbered.
             expected_arcs.update(set(arcz_to_arcs("-46 6-4")))
             expected_exits.update({6: 1})
@@ -394,6 +394,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
                 "line 16 didn't return from function 'function', "
                     "because the return on line 12 wasn't executed"
             )
+
     def test_missing_arc_descriptions_bug460(self):
         parser = self.parse_text(u"""\
             x = 1
