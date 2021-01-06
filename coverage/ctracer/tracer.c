@@ -305,7 +305,7 @@ CTracer_check_missing_return(CTracer *self, PyFrameObject *frame)
                         goto error;
                     }
                 }
-                SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "missedreturn");
+                SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), frame->f_code->co_filename, "missedreturn");
                 self->pdata_stack->depth--;
                 self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
             }
@@ -529,13 +529,13 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         self->pcur_entry->file_data = file_data;
         self->pcur_entry->file_tracer = file_tracer;
 
-        SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "traced");
+        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), filename, "traced");
     }
     else {
         Py_XDECREF(self->pcur_entry->file_data);
         self->pcur_entry->file_data = NULL;
         self->pcur_entry->file_tracer = Py_None;
-        SHOWLOG(self->pdata_stack->depth, frame->f_lineno, filename, "skipped");
+        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), filename, "skipped");
     }
 
     self->pcur_entry->disposition = disposition;
@@ -552,7 +552,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         self->pcur_entry->last_line = -frame->f_code->co_firstlineno;
     }
     else {
-        self->pcur_entry->last_line = frame->f_lineno;
+        self->pcur_entry->last_line = PyFrame_GetLineNumber(frame);
     }
 
 ok:
@@ -633,7 +633,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
 
     STATS( self->stats.lines++; )
     if (self->pdata_stack->depth >= 0) {
-        SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "line");
+        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), frame->f_code->co_filename, "line");
         if (self->pcur_entry->file_data) {
             int lineno_from = -1;
             int lineno_to = -1;
@@ -655,7 +655,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
                 }
             }
             else {
-                lineno_from = lineno_to = frame->f_lineno;
+                lineno_from = lineno_to = PyFrame_GetLineNumber(frame);
             }
 
             if (lineno_from != -1) {
@@ -744,7 +744,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
         }
 
         /* Pop the stack. */
-        SHOWLOG(self->pdata_stack->depth, frame->f_lineno, frame->f_code->co_filename, "return");
+        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), frame->f_code->co_filename, "return");
         self->pdata_stack->depth--;
         self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
     }
@@ -807,14 +807,14 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     #if WHAT_LOG
     if (what <= (int)(sizeof(what_sym)/sizeof(const char *))) {
         ascii = MyText_AS_BYTES(frame->f_code->co_filename);
-        printf("trace: %s @ %s %d\n", what_sym[what], MyBytes_AS_STRING(ascii), frame->f_lineno);
+        printf("trace: %s @ %s %d\n", what_sym[what], MyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
         Py_DECREF(ascii);
     }
     #endif
 
     #if TRACE_LOG
     ascii = MyText_AS_BYTES(frame->f_code->co_filename);
-    if (strstr(MyBytes_AS_STRING(ascii), start_file) && frame->f_lineno == start_line) {
+    if (strstr(MyBytes_AS_STRING(ascii), start_file) && PyFrame_GetLineNumber(frame) == start_line) {
         logging = TRUE;
     }
     Py_DECREF(ascii);
@@ -931,7 +931,7 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
 
     #if WHAT_LOG
     ascii = MyText_AS_BYTES(frame->f_code->co_filename);
-    printf("pytrace: %s @ %s %d\n", what_sym[what], MyBytes_AS_STRING(ascii), frame->f_lineno);
+    printf("pytrace: %s @ %s %d\n", what_sym[what], MyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
     Py_DECREF(ascii);
     #endif
 
