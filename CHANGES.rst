@@ -26,7 +26,13 @@ Unreleased
 
 - The text report produced by ``coverage report`` now always outputs a TOTAL
   line, even if only one Python file is reported.  This makes regex parsing
-  of the output easier.  Thanks, Judson Neer.
+  of the output easier.  Thanks, Judson Neer.  This had been requested a number
+  of times (`issue 1086`_, `issue 922`_, `issue 732`_).
+
+.. _issue 1086: https://github.com/nedbat/coveragepy/issues/1086
+.. _issue 732: https://github.com/nedbat/coveragepy/issues/732
+.. _issue 922: https://github.com/nedbat/coveragepy/issues/922
+
 
 .. _changes_531:
 
