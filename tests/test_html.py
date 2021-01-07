@@ -938,23 +938,41 @@ assert len(math) == 18
 
         cov = coverage.Coverage(config_file="partial.ini")
         partial = self.start_import_stop(cov, "partial")
-        cov.html_report(partial, directory="out/partial")
 
-        compare_html(gold_path("html/partial"), "out/partial")
-        contains(
-            "out/partial/partial_py.html",
-            '<p id="t4" class="par run show_par">',
-            '<p id="t7" class="run">',
-            # The "if 0" and "if 1" statements are optimized away.
-            '<p id="t10" class="pln">',
-            # The "raise ZeroDivisionError" is excluded by regex in the .ini.
-            '<p id="t17" class="exc show_exc">',
-        )
-        contains(
-            "out/partial/index.html",
-            '<a href="partial_py.html">partial.py</a>',
-            '<span class="pc_cov">91%</span>'
-        )
+        if env.PYBEHAVIOR.pep626:
+            cov.html_report(partial, directory="out/partial_626")
+            compare_html(gold_path("html/partial_626"), "out/partial_626")
+            contains(
+                "out/partial_626/partial_py.html",
+                '<p id="t4" class="par run show_par">',
+                '<p id="t7" class="run">',
+                # The "if 0" and "if 1" statements are marked as run.
+                '<p id="t10" class="run">',
+                # The "raise ZeroDivisionError" is excluded by regex in the .ini.
+                '<p id="t17" class="exc show_exc">',
+            )
+            contains(
+                "out/partial_626/index.html",
+                '<a href="partial_py.html">partial.py</a>',
+                '<span class="pc_cov">87%</span>'
+            )
+        else:
+            cov.html_report(partial, directory="out/partial")
+            compare_html(gold_path("html/partial"), "out/partial")
+            contains(
+                "out/partial/partial_py.html",
+                '<p id="t4" class="par run show_par">',
+                '<p id="t7" class="run">',
+                # The "if 0" and "if 1" statements are optimized away.
+                '<p id="t10" class="pln">',
+                # The "raise ZeroDivisionError" is excluded by regex in the .ini.
+                '<p id="t17" class="exc show_exc">',
+            )
+            contains(
+                "out/partial/index.html",
+                '<a href="partial_py.html">partial.py</a>',
+                '<span class="pc_cov">91%</span>'
+            )
 
     def test_styled(self):
         self.make_file("a.py", """\
