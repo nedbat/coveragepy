@@ -5,7 +5,7 @@
 
 import pytest
 
-from tests.coveragetest import CoverageTest, xfail
+from tests.coveragetest import CoverageTest
 
 import coverage
 from coverage import env
@@ -1278,24 +1278,26 @@ class OptimizedIfTest(CoverageTest):
             arcz_missing=arcz_missing,
         )
 
-    @xfail(env.PYBEHAVIOR.pep626, reason="https://bugs.python.org/issue42803")
     def test_if_not_debug(self):
-        if env.PYBEHAVIOR.optimize_if_not_debug2:
-            arcz = ".1 12 24 41 26 61 1."
-            arcz_missing = ""
+        arcz_missing = ""
+        if env.PYBEHAVIOR.pep626:
+            arcz = ".1 12 23 34 42 37 72 28 8."
+        elif env.PYBEHAVIOR.optimize_if_not_debug2:
+            arcz = ".1 12 23 35 52 37 72 28 8."
         elif env.PYBEHAVIOR.optimize_if_not_debug:
-            arcz = ".1 12 23 31 26 61 1."
-            arcz_missing = ""
+            arcz = ".1 12 23 34 42 37 72 28 8."
         else:
-            arcz = ".1 12 23 31 34 41 26 61 1."
-            arcz_missing = "34 41"
+            arcz = ".1 12 23 34 45 42 52 37 72 28 8."
+            arcz_missing = "45 52"
         self.check_coverage("""\
+            lines = set()
             for value in [True, False]:
                 if value:
                     if not __debug__:
-                        x = 4
+                        lines.add(5)
                 else:
-                    x = 6
+                    lines.add(7)
+            assert lines == set([7])
             """,
             arcz=arcz,
             arcz_missing=arcz_missing,

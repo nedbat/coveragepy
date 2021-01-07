@@ -8,7 +8,7 @@ import coverage
 from coverage import env
 from coverage.misc import CoverageException
 
-from tests.coveragetest import CoverageTest, xfail
+from tests.coveragetest import CoverageTest
 
 
 class TestCoverageTest(CoverageTest):
@@ -679,7 +679,6 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,5], "")
 
-    @xfail(env.PYBEHAVIOR.pep626, reason="pep626: https://bugs.python.org/issue42810")
     def test_if(self):
         self.check_coverage("""\
             a = 1

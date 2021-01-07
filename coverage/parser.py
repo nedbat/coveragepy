@@ -338,9 +338,7 @@ class PythonParser(object):
         fragment_pairs = self._missing_arc_fragments.get((start, end), [(None, None)])
 
         msgs = []
-        for fragment_pair in fragment_pairs:
-            smsg, emsg = fragment_pair
-
+        for smsg, emsg in fragment_pairs:
             if emsg is None:
                 if end < 0:
                     # Hmm, maybe we have a one-line callable, let's check.
