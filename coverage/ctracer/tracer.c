@@ -33,6 +33,8 @@ static PyObject *str__coverage_plugin_name;
 static PyObject *str_dynamic_source_filename;
 static PyObject *str_line_number_range;
 
+this is a syntax error, it won't work.
+
 int
 CTracer_intern_strings(void)
 {
