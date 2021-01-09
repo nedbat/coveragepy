@@ -245,15 +245,17 @@ def import_local_file(modname, modfile=None):
 
     """
     try:
-        from importlib.machinery import SourceFileLoader
+        import importlib.util as importlib_util
     except ImportError:
-        SourceFileLoader = None
+        importlib_util = None
 
     if modfile is None:
         modfile = modname + '.py'
-    if SourceFileLoader:
-        # pylint: disable=no-value-for-parameter, deprecated-method
-        mod = SourceFileLoader(modname, modfile).load_module()
+    if importlib_util:
+        spec = importlib_util.spec_from_file_location(modname, modfile)
+        mod = importlib_util.module_from_spec(spec)
+        sys.modules[modname] = mod
+        spec.loader.exec_module(mod)
     else:
         for suff in imp.get_suffixes():                 # pragma: part covered
             if suff[0] == '.py':
