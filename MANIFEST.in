@@ -22,7 +22,6 @@ include metacov.ini
 include pylintrc
 include setup.py
 include tox.ini
-include tox_wheels.ini
 include .editorconfig
 include .readthedocs.yml
 
