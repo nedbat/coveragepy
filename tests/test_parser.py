@@ -330,69 +330,71 @@ class ParserMissingArcDescriptionTest(CoverageTest):
                     try:
                         if something(4):
                             break
+                        elif something(6):
+                            x = 7
                         else:
-                            if something(7):
+                            if something(9):
                                 continue
                             else:
                                 continue
-                        if also_this(11):
-                            return 12
+                        if also_this(13):
+                            return 14
                         else:
-                            raise Exception(14)
+                            raise Exception(16)
                     finally:
-                        this_thing(16)
-                that_thing(17)
+                        this_thing(18)
+                that_thing(19)
             """)
         if env.PYBEHAVIOR.finally_jumps_back:
             self.assertEqual(
-                parser.missing_arc_description(16, 5),
-                "line 16 didn't jump to line 5, because the break on line 5 wasn't executed"
+                parser.missing_arc_description(18, 5),
+                "line 18 didn't jump to line 5, because the break on line 5 wasn't executed"
             )
             self.assertEqual(
-                parser.missing_arc_description(5, 17),
-                "line 5 didn't jump to line 17, because the break on line 5 wasn't executed"
+                parser.missing_arc_description(5, 19),
+                "line 5 didn't jump to line 19, because the break on line 5 wasn't executed"
             )
             self.assertEqual(
-                parser.missing_arc_description(16, 8),
-                "line 16 didn't jump to line 8, because the continue on line 8 wasn't executed"
+                parser.missing_arc_description(18, 10),
+                "line 18 didn't jump to line 10, because the continue on line 10 wasn't executed"
             )
             self.assertEqual(
-                parser.missing_arc_description(8, 2),
-                "line 8 didn't jump to line 2, because the continue on line 8 wasn't executed"
+                parser.missing_arc_description(10, 2),
+                "line 10 didn't jump to line 2, because the continue on line 10 wasn't executed"
             )
             self.assertEqual(
-                parser.missing_arc_description(16, 12),
-                "line 16 didn't jump to line 12, because the return on line 12 wasn't executed"
+                parser.missing_arc_description(18, 14),
+                "line 18 didn't jump to line 14, because the return on line 14 wasn't executed"
             )
             self.assertEqual(
-                parser.missing_arc_description(12, -1),
-                "line 12 didn't return from function 'function', "
-                    "because the return on line 12 wasn't executed"
+                parser.missing_arc_description(14, -1),
+                "line 14 didn't return from function 'function', "
+                    "because the return on line 14 wasn't executed"
             )
             self.assertEqual(
-                parser.missing_arc_description(16, -1),
-                "line 16 didn't except from function 'function', "
-                    "because the raise on line 14 wasn't executed"
+                parser.missing_arc_description(18, -1),
+                "line 18 didn't except from function 'function', "
+                    "because the raise on line 16 wasn't executed"
             )
         else:
             self.assertEqual(
-                parser.missing_arc_description(16, 17),
-                "line 16 didn't jump to line 17, because the break on line 5 wasn't executed"
+                parser.missing_arc_description(18, 19),
+                "line 18 didn't jump to line 19, because the break on line 5 wasn't executed"
             )
             self.assertEqual(
-                parser.missing_arc_description(16, 2),
-                "line 16 didn't jump to line 2, "
-                    "because the continue on line 8 wasn't executed"
+                parser.missing_arc_description(18, 2),
+                "line 18 didn't jump to line 2, "
+                    "because the continue on line 10 wasn't executed"
                     " or "
-                    "the continue on line 10 wasn't executed"
+                    "the continue on line 12 wasn't executed"
             )
             self.assertEqual(
-                parser.missing_arc_description(16, -1),
-                "line 16 didn't except from function 'function', "
-                    "because the raise on line 14 wasn't executed"
+                parser.missing_arc_description(18, -1),
+                "line 18 didn't except from function 'function', "
+                    "because the raise on line 16 wasn't executed"
                 " or "
-                "line 16 didn't return from function 'function', "
-                    "because the return on line 12 wasn't executed"
+                "line 18 didn't return from function 'function', "
+                    "because the return on line 14 wasn't executed"
             )
 
     def test_missing_arc_descriptions_bug460(self):
