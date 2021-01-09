@@ -14,7 +14,20 @@ from setuptools import setup
 from distutils.core import Extension                # pylint: disable=wrong-import-order
 from distutils.command.build_ext import build_ext   # pylint: disable=wrong-import-order
 from distutils import errors                        # pylint: disable=wrong-import-order
+import distutils.log                                # pylint: disable=wrong-import-order
 
+# $set_env.py: COVERAGE_QUIETER - Set to remove some noise from test output.
+if bool(int(os.getenv("COVERAGE_QUIETER", "0"))):
+    # Distutils has its own mini-logging code, and it sets the level too high.
+    # When I ask for --quiet when running tessts, I don't want to see warnings.
+    old_set_verbosity = distutils.log.set_verbosity
+    def better_set_verbosity(v):
+        """--quiet means no warnings!"""
+        if v <= 0:
+            distutils.log.set_threshold(distutils.log.ERROR)
+        else:
+            old_set_verbosity(v)
+    distutils.log.set_verbosity = better_set_verbosity
 
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid
 # importing the product code into setup.py.
