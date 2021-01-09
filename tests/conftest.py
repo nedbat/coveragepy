@@ -25,21 +25,32 @@ def set_warnings():
     warnings.simplefilter("default")
     warnings.simplefilter("once", DeprecationWarning)
 
-    # A warning to suppress:
+    # Warnings to suppress:
+    # How come these warnings are successfully suppressed here, but not in setup.cfg??
+
     #   setuptools/py33compat.py:54: DeprecationWarning: The value of convert_charrefs will become
     #   True in 3.5. You are encouraged to set the value explicitly.
     #       unescape = getattr(html, 'unescape', html_parser.HTMLParser().unescape)
-    # How come this warning is successfully suppressed here, but not in setup.cfg??
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="The value of convert_charrefs will become True in 3.5.",
+        message=r"The value of convert_charrefs will become True in 3.5.",
         )
+
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message=".* instead of inspect.getfullargspec",
+        message=r".* instead of inspect.getfullargspec",
         )
+
+    # <frozen importlib._bootstrap>:681:
+    # ImportWarning: VendorImporter.exec_module() not found; falling back to load_module()
+    warnings.filterwarnings(
+        "ignore",
+        category=ImportWarning,
+        message=r".*exec_module\(\) not found; falling back to load_module\(\)",
+        )
+
     if env.PYPY3:
         # pypy3 warns about unclosed files a lot.
         warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
