@@ -328,6 +328,10 @@ def print_banner(label):
     if '__pypy__' in sys.builtin_module_names:
         version += " (pypy %s)" % ".".join(str(v) for v in sys.pypy_version_info)
 
+    rev = platform.python_revision()
+    if rev:
+        version += " (rev {})".format(rev)
+
     try:
         which_python = os.path.relpath(sys.executable)
     except ValueError:
