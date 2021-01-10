@@ -1099,7 +1099,7 @@ class ExcepthookTest(CoverageTest):
         self.assertEqual(line_counts(data)['excepthook.py'], 7)
 
     def test_excepthook_exit(self):
-        if env.PYPY or env.JYTHON:
+        if not env.CPYTHON:
             self.skipTest("non-CPython handles excepthook exits differently, punt for now.")
         self.make_file("excepthook_exit.py", """\
             import sys
