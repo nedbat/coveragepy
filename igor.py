@@ -22,6 +22,12 @@ import zipfile
 
 import pytest
 
+# Contants derived the same as in coverage/env.py.  We can't import
+# that file here, it would be evaluated too early and not get the
+# settings we make in this file.
+
+CPYTHON = (platform.python_implementation() == "CPython")
+PYPY = (platform.python_implementation() == "PyPy")
 
 @contextlib.contextmanager
 def ignore_warnings():
@@ -73,7 +79,18 @@ def label_for_tracer(tracer):
 
 def should_skip(tracer):
     """Is there a reason to skip these tests?"""
-    if tracer == "py":
+    skipper = ""
+
+    # $set_env.py: COVERAGE_ONE_TRACER - Only run tests for one tracer.
+    only_one = os.environ.get("COVERAGE_ONE_TRACER")
+    if only_one:
+        if CPYTHON:
+            if tracer == "py":
+                skipper = "Only one tracer: no Python tracer for CPython"
+        else:
+            if tracer == "c":
+                skipper = "No C tracer for {}".format(platform.python_implementation())
+    elif tracer == "py":
         # $set_env.py: COVERAGE_NO_PYTRACER - Don't run the tests under the Python tracer.
         skipper = os.environ.get("COVERAGE_NO_PYTRACER")
     else:
@@ -94,7 +111,7 @@ def make_env_id(tracer):
     """An environment id that will keep all the test runs distinct."""
     impl = platform.python_implementation().lower()
     version = "%s%s" % sys.version_info[:2]
-    if '__pypy__' in sys.builtin_module_names:
+    if PYPY:
         version += "_%s%s" % sys.pypy_version_info[:2]
     env_id = "%s%s_%s" % (impl, version, tracer)
     return env_id
@@ -108,6 +125,7 @@ def run_tests(tracer, *runner_args):
     if 'COVERAGE_ENV_ID' in os.environ:
         os.environ['COVERAGE_ENV_ID'] = make_env_id(tracer)
     print_banner(label_for_tracer(tracer))
+
     return pytest.main(list(runner_args))
 
 
@@ -325,7 +343,7 @@ def print_banner(label):
 
     version = platform.python_version()
 
-    if '__pypy__' in sys.builtin_module_names:
+    if PYPY:
         version += " (pypy %s)" % ".".join(str(v) for v in sys.pypy_version_info)
 
     rev = platform.python_revision()
