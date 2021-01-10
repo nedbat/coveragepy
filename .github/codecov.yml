@@ -12,6 +12,4 @@ coverage:
       default:
         informational: true
 
-comment:
-  layout: diff, files
-  behavior: new
+comment: false
