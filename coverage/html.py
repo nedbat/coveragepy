@@ -173,6 +173,14 @@ class HtmlReporter(object):
         self.coverage = cov
         self.config = self.coverage.config
         self.directory = self.config.html_dir
+
+        self.skip_covered = self.config.html_skip_covered
+        if self.skip_covered is None:
+            self.skip_covered = self.config.skip_covered
+        self.skip_empty = self.config.html_skip_empty
+        if self.skip_empty is None:
+            self.skip_empty= self.config.skip_empty
+
         title = self.config.html_title
         if env.PY2:
             title = title.decode("utf8")
@@ -271,7 +279,7 @@ class HtmlReporter(object):
         nums = analysis.numbers
         self.all_files_nums.append(nums)
 
-        if self.config.skip_covered:
+        if self.skip_covered:
             # Don't report on 100% files.
             no_missing_lines = (nums.n_missing == 0)
             no_missing_branches = (nums.n_partial_branches == 0)
@@ -280,7 +288,7 @@ class HtmlReporter(object):
                 file_be_gone(html_path)
                 return
 
-        if self.config.skip_empty:
+        if self.skip_empty:
             # Don't report on empty files.
             if nums.n_statements == 0:
                 file_be_gone(html_path)
