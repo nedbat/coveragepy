@@ -955,8 +955,8 @@ class Coverage(object):
         with override_config(self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             html_dir=directory, extra_css=extra_css, html_title=title,
-            skip_covered=skip_covered, show_contexts=show_contexts, report_contexts=contexts,
-            skip_empty=skip_empty, precision=precision,
+            html_skip_covered=skip_covered, show_contexts=show_contexts, report_contexts=contexts,
+            html_skip_empty=skip_empty, precision=precision,
         ):
             reporter = HtmlReporter(self)
             return reporter.report(morfs)

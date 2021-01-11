@@ -495,7 +495,8 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/other_py.html")
 
-    def test_report_skip_covered_no_branches(self):
+    def make_main_and_not_covered(self):
+        """Helper to create files for skip_covered scenarios."""
         self.make_file("main_file.py", """
             import not_covered
 
@@ -507,7 +508,25 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
             def not_covered():
                 print("n")
         """)
+
+    def test_report_skip_covered(self):
+        self.make_main_and_not_covered()
         self.run_coverage(htmlargs=dict(skip_covered=True))
+        self.assert_exists("htmlcov/index.html")
+        self.assert_doesnt_exist("htmlcov/main_file_py.html")
+        self.assert_exists("htmlcov/not_covered_py.html")
+
+    def test_html_skip_covered(self):
+        self.make_main_and_not_covered()
+        self.make_file(".coveragerc", "[html]\nskip_covered = True")
+        self.run_coverage()
+        self.assert_exists("htmlcov/index.html")
+        self.assert_doesnt_exist("htmlcov/main_file_py.html")
+        self.assert_exists("htmlcov/not_covered_py.html")
+
+    def test_report_skip_covered_branches(self):
+        self.make_main_and_not_covered()
+        self.run_coverage(covargs=dict(branch=True), htmlargs=dict(skip_covered=True))
         self.assert_exists("htmlcov/index.html")
         self.assert_doesnt_exist("htmlcov/main_file_py.html")
         self.assert_exists("htmlcov/not_covered_py.html")
@@ -522,24 +541,8 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assertEqual(res, 100.0)
         self.assert_doesnt_exist("htmlcov/main_file_py.html")
 
-    def test_report_skip_covered_branches(self):
-        self.make_file("main_file.py", """
-            import not_covered
-
-            def normal():
-                print("z")
-            normal()
-        """)
-        self.make_file("not_covered.py", """
-            def not_covered():
-                print("n")
-        """)
-        self.run_coverage(covargs=dict(branch=True), htmlargs=dict(skip_covered=True))
-        self.assert_exists("htmlcov/index.html")
-        self.assert_doesnt_exist("htmlcov/main_file_py.html")
-        self.assert_exists("htmlcov/not_covered_py.html")
-
-    def test_report_skip_empty_files(self):
+    def make_init_and_main(self):
+        """Helper to create files for skip_empty scenarios."""
         self.make_file("submodule/__init__.py", "")
         self.make_file("main_file.py", """
             import submodule
@@ -548,7 +551,18 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
                 print("z")
             normal()
         """)
+
+    def test_report_skip_empty(self):
+        self.make_init_and_main()
         self.run_coverage(htmlargs=dict(skip_empty=True))
+        self.assert_exists("htmlcov/index.html")
+        self.assert_exists("htmlcov/main_file_py.html")
+        self.assert_doesnt_exist("htmlcov/submodule___init___py.html")
+
+    def test_html_skip_empty(self):
+        self.make_init_and_main()
+        self.make_file(".coveragerc", "[html]\nskip_empty = True")
+        self.run_coverage()
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/main_file_py.html")
         self.assert_doesnt_exist("htmlcov/submodule___init___py.html")

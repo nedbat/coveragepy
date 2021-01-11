@@ -217,6 +217,8 @@ class CoverageConfig(object):
         # Defaults for [html]
         self.extra_css = None
         self.html_dir = "htmlcov"
+        self.html_skip_covered = None
+        self.html_skip_empty = None
         self.html_title = "Coverage report"
         self.show_contexts = False
 
@@ -384,6 +386,8 @@ class CoverageConfig(object):
         # [html]
         ('extra_css', 'html:extra_css'),
         ('html_dir', 'html:directory'),
+        ('html_skip_covered', 'html:skip_covered', 'boolean'),
+        ('html_skip_empty', 'html:skip_empty', 'boolean'),
         ('html_title', 'html:title'),
         ('show_contexts', 'html:show_contexts', 'boolean'),
 

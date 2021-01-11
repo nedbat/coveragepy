@@ -29,12 +29,19 @@ Unreleased
   of the output easier.  Thanks, Judson Neer.  This had been requested a number
   of times (`issue 1086`_, `issue 922`_, `issue 732`_).
 
+- The ``skip_covered`` and ``skip_empty`` settings in the configuration file
+  can now be specified in the ``[html]`` section, so that text reports and HTML
+  reports can use separate settings.  The HTML report will still use the
+  ``[report]`` settings if there isn't a value in the ``[html]`` section.
+  Closes `issue 1090`_.
+
 - Update to support Python 3.10 alphas in progress, including `PEP 626: Precise
   line numbers for debugging and other tools <pep626_>`_.
 
-.. _issue 1086: https://github.com/nedbat/coveragepy/issues/1086
 .. _issue 732: https://github.com/nedbat/coveragepy/issues/732
 .. _issue 922: https://github.com/nedbat/coveragepy/issues/922
+.. _issue 1086: https://github.com/nedbat/coveragepy/issues/1086
+.. _issue 1090: https://github.com/nedbat/coveragepy/issues/1090
 
 .. _pep626: https://www.python.org/dev/peps/pep-0626/
 
