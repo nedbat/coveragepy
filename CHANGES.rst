@@ -35,14 +35,18 @@ Unreleased
   ``[report]`` settings if there isn't a value in the ``[html]`` section.
   Closes `issue 1090`_.
 
+- Combining files on Windows across drives how works properly, fixing `issue
+  577`_.  Thanks, `Valentine Lab <pr1080_>`_.
+
 - Update to support Python 3.10 alphas in progress, including `PEP 626: Precise
   line numbers for debugging and other tools <pep626_>`_.
 
+.. _issue 577: https://github.com/nedbat/coveragepy/issues/577
 .. _issue 732: https://github.com/nedbat/coveragepy/issues/732
 .. _issue 922: https://github.com/nedbat/coveragepy/issues/922
 .. _issue 1086: https://github.com/nedbat/coveragepy/issues/1086
 .. _issue 1090: https://github.com/nedbat/coveragepy/issues/1090
-
+.. _pr1080: https://github.com/nedbat/coveragepy/pull/1080
 .. _pep626: https://www.python.org/dev/peps/pep-0626/
 
 
