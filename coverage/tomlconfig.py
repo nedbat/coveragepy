@@ -11,6 +11,12 @@ from coverage import env
 from coverage.backward import configparser, path_types
 from coverage.misc import CoverageException, substitute_variables
 
+# TOML support is an install-time extra option.
+try:
+    import toml
+except ImportError:         # pragma: not covered
+    toml = None
+
 
 class TomlDecodeError(Exception):
     """An exception class that exists even when toml isn't installed."""
@@ -29,8 +35,6 @@ class TomlConfigParser:
         self.data = None
 
     def read(self, filenames):
-        from coverage.optional import toml
-
         # RawConfigParser takes a filename or list of filenames, but we only
         # ever call this with a single filename.
         assert isinstance(filenames, path_types)

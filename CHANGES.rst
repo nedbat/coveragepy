@@ -38,12 +38,16 @@ Unreleased
 - Combining files on Windows across drives how works properly, fixing `issue
   577`_.  Thanks, `Valentine Lab <pr1080_>`_.
 
+- Fix an obscure warning from deep in the _decimal module, as reported in
+  `issue 1084`_.
+
 - Update to support Python 3.10 alphas in progress, including `PEP 626: Precise
   line numbers for debugging and other tools <pep626_>`_.
 
 .. _issue 577: https://github.com/nedbat/coveragepy/issues/577
 .. _issue 732: https://github.com/nedbat/coveragepy/issues/732
 .. _issue 922: https://github.com/nedbat/coveragepy/issues/922
+.. _issue 1084: https://github.com/nedbat/coveragepy/issues/1084
 .. _issue 1086: https://github.com/nedbat/coveragepy/issues/1086
 .. _issue 1090: https://github.com/nedbat/coveragepy/issues/1090
 .. _pr1080: https://github.com/nedbat/coveragepy/pull/1080
