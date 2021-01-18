@@ -12,14 +12,16 @@ import sys
 import pytest
 
 import coverage
+from coverage import tomlconfig
 from coverage.backunittest import TestCase, unittest
 from coverage.files import actual_path
 from coverage.misc import StopEverything
-import coverage.optional
 
 from tests.coveragetest import CoverageTest, convert_skip_exceptions
-from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs
-from tests.helpers import CheckUniqueFilenames, re_lines, re_line
+from tests.helpers import (
+    arcs_to_arcz_repr, arcz_to_arcs,
+    CheckUniqueFilenames, re_lines, re_line, without_module,
+)
 
 
 def test_xdist_sys_path_nuttiness_is_fixed():
@@ -323,12 +325,11 @@ def _same_python_executable(e1, e2):
     return False                                        # pragma: only failure
 
 
-def test_optional_without():
-    # pylint: disable=reimported
-    from coverage.optional import toml as toml1
-    with coverage.optional.without('toml'):
-        from coverage.optional import toml as toml2
-    from coverage.optional import toml as toml3
+def test_without_module():
+    toml1 = tomlconfig.toml
+    with without_module(tomlconfig, 'toml'):
+        toml2 = tomlconfig.toml
+    toml3 = tomlconfig.toml
 
     assert toml1 is toml3 is not None
     assert toml2 is None

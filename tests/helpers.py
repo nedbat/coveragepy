@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 
+import mock
 from unittest_mixins import ModuleCleaner
 
 from coverage import env
@@ -203,3 +204,21 @@ def arcs_to_arcz_repr(arcs):
         line += _arcs_to_arcz_repr_one(b)
         repr_list.append(line)
     return "\n".join(repr_list) + "\n"
+
+
+def without_module(using_module, missing_module_name):
+    """
+    Hide a module for testing.
+
+    Use this in a test function to make an optional module unavailable during
+    the test::
+
+        with without_module(product.something, 'toml'):
+            use_toml_somehow()
+
+    Arguments:
+        using_module: a module in which to hide `missing_module_name`.
+        missing_module_name (str): the name of the module to hide.
+
+    """
+    return mock.patch.object(using_module, missing_module_name, None)
