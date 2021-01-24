@@ -2,13 +2,13 @@
 python-coverage
 ===============
 
--------------------------------------------------
-measure code coverage of Python program execution
--------------------------------------------------
+----------------------------
+Measure Python code coverage
+----------------------------
 
 :Author: Ned Batchelder <ned@nedbatchelder.com>
 :Author: |author|
-:Date: 2019-11-11
+:Date: 2021-01-24
 :Copyright: Apache 2.0 license, attribution and disclaimer required.
 :Manual section: 1
 :Manual group: Coverage.py
