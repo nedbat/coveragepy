@@ -96,8 +96,11 @@ kit_local:
 	# don't go crazy trying to figure out why our new code isn't installing.
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
-download_kits:				## Download the built kits from GitHub
+download_kits:				## Download the built kits from GitHub.
 	python ci/download_gha_artifacts.py
+
+check_kits:				## Check that dist/* are well-formed.
+	python -m twine check dist/*
 
 build_ext:
 	python setup.py build_ext
