@@ -1540,6 +1540,45 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
             "Expected only .coverage after combine, looks like there are "
             "extra data files that were not cleaned up: %r" % data_files)
 
+    def test_subprocess_in_other_directory(self):   # pragma: no metacov
+        if env.METACOV:
+            self.skipTest("Can't test sub-process pth file suppport during metacoverage")
+        if env.WINDOWS:
+            self.skipTest("This test uses Unix commands")
+        self.make_file("subdir/README", "This is where callee runs")
+        self.make_file("callee.py", """
+            import os
+            import sys
+            with open("out.txt", "w") as f:
+                f.write(repr(sys.gettrace()))
+                f.write("In callee")
+            """)
+        self.make_file("caller.py", """\
+            import subprocess
+            import sys
+            print(repr(sys.gettrace()))
+            subprocess.call(["sh", "-c", "cd subdir && python ../callee.py"])
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            concurrency = multiprocessing
+            data_file = ./.coverage
+            source = .
+            """)
+        self.set_environ("COVERAGE_PROCESS_START", os.path.abspath(".coveragerc"))
+        self.run_command("coverage run caller.py")
+
+        # Callee.py really ran.
+        with open("subdir/out.txt") as f:
+            self.assertEqual(f.read(), "In callee")
+
+        # Did callee.py get measured?
+        print(os.listdir("."))
+        print(os.listdir("subdir"))
+        data = coverage.CoverageData()
+        data.read()
+        self.assertEqual(line_counts(data), {})
+
 
 class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
     """Show that we can configure {[run]source} during process-level coverage.
