@@ -353,11 +353,15 @@ details.
 include files in the report that are 100% covered files. See :ref:`cmd_report`
 for more information.
 
+.. versionadded:: 5.4
+
 .. _config_html_skip_empty:
 
 ``skip_empty`` (boolean, defaulted from ``[report] skip_empty``): Don't include
 empty files (those that have 0 statements) in the report. See :ref:`cmd_report`
 for more information.
+
+.. versionadded:: 5.4
 
 .. _config_html_title:
 
