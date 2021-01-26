@@ -43,8 +43,8 @@ Version 5.4 --- 2021-01-24
   ``[report]`` settings if there isn't a value in the ``[html]`` section.
   Closes `issue 1090`_.
 
-- Combining files on Windows across drives how works properly, fixing `issue
-  577`_.  Thanks, `Valentine Lab <pr1080_>`_.
+- Combining files on Windows across drives now works properly, fixing `issue
+  577`_.  Thanks, `Valentin Lab <pr1080_>`_.
 
 - Fix an obscure warning from deep in the _decimal module, as reported in
   `issue 1084`_.
