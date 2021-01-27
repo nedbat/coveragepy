@@ -477,6 +477,20 @@ class CoverageConfig(object):
         # If we get here, we didn't find the option.
         raise CoverageException("No such option: %r" % option_name)
 
+    def post_process_file(self, path):
+        """Make final adjustments to a file path to make it usable."""
+        return os.path.expanduser(path)
+
+    def post_process(self):
+        """Make final adjustments to settings to make them usable."""
+        self.data_file = self.post_process_file(self.data_file)
+        self.html_dir = self.post_process_file(self.html_dir)
+        self.xml_output = self.post_process_file(self.xml_output)
+        self.paths = collections.OrderedDict(
+            (k, [self.post_process_file(f) for f in v])
+            for k, v in self.paths.items()
+        )
+
 
 def config_files_to_try(config_file):
     """What config files should we try to read?
@@ -551,12 +565,6 @@ def read_coverage_config(config_file, **kwargs):
 
     # Once all the config has been collected, there's a little post-processing
     # to do.
-    config.data_file = os.path.expanduser(config.data_file)
-    config.html_dir = os.path.expanduser(config.html_dir)
-    config.xml_output = os.path.expanduser(config.xml_output)
-    config.paths = collections.OrderedDict(
-        (k, [os.path.expanduser(f) for f in v])
-        for k, v in config.paths.items()
-    )
+    config.post_process()
 
     return config
