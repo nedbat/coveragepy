@@ -14,11 +14,11 @@ pluggy==0.13.1
 
 # for linting.
 greenlet==0.4.16
-pylint==2.5.3
-check-manifest==0.42
+pylint==2.6.0
+check-manifest==0.46
 readme_renderer==26.0
 
 # for kitting.
-requests==2.24.0
-twine==3.2.0
-libsass==0.20.0
+requests==2.25.1
+twine==3.3.0
+libsass==0.20.1
