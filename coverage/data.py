@@ -52,7 +52,7 @@ def add_data_to_hash(data, filename, hasher):
     hasher.update(data.file_tracer(filename))
 
 
-def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
+def combine_parallel_data(data, aliases=None, data_paths=None, strict=False, keep=False):
     """Combine a number of data files together.
 
     Treat `data.filename` as a file prefix, and combine the data from all
@@ -68,7 +68,7 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
     If `data_paths` is not provided, then the directory portion of
     `data.filename` is used as the directory to search for data files.
 
-    Every data file found and combined is then deleted from disk. If a file
+    Unless `keep` is True every data file found and combined is then deleted from disk. If a file
     cannot be read, a warning will be issued, and the file will not be
     deleted.
 
@@ -116,9 +116,10 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False):
         else:
             data.update(new_data, aliases=aliases)
             files_combined += 1
-            if data._debug.should('dataio'):
-                data._debug.write("Deleting combined data file %r" % (f,))
-            file_be_gone(f)
+            if not keep:
+                if data._debug.should('dataio'):
+                    data._debug.write("Deleting combined data file %r" % (f,))
+                file_be_gone(f)
 
     if strict and not files_combined:
         raise CoverageException("No usable data files")

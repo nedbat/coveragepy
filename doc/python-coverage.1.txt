@@ -108,7 +108,7 @@ COMMAND REFERENCE
 
     Combine data from multiple coverage files collected with ``run -p``.
     The combined results are written to a single file representing the
-    union of the data.
+    union of the data.  Unless --keep is provided the combined coverage files are deleted.
 
     If `PATH` is specified, they are files or directories containing data to
     be combined.
@@ -118,6 +118,9 @@ COMMAND REFERENCE
     \--append
         Append coverage data to .coverage, otherwise it starts clean each
         time.
+
+    \--keep
+        Keep combined coverage file.
 
 **debug** `TOPIC` ...
 
