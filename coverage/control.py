@@ -698,8 +698,13 @@ class Coverage(object):
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
 
-        combine_parallel_data(self._data,
-                        aliases=aliases, data_paths=data_paths, strict=strict, keep=keep)
+        combine_parallel_data(
+            self._data,
+            aliases=aliases,
+            data_paths=data_paths,
+            strict=strict,
+            keep=keep,
+        )
 
     def get_data(self):
         """Get the collected data.
