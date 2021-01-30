@@ -13,6 +13,7 @@
     Options:
       -a, --append     Append coverage data to .coverage, otherwise it starts
                        clean each time.
+      --keep           Keep combined coverage files, otherwise they are deleted.
       --debug=OPTS     Debug options, separated by commas. [env: COVERAGE_DEBUG]
       -h, --help       Get help on this command.
       --rcfile=RCFILE  Specify configuration file. By default '.coveragerc',

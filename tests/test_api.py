@@ -442,7 +442,7 @@ class ApiTest(CoverageTest):
 
         cov2 = coverage.Coverage()
         with self.assertRaisesRegex(CoverageException, r"No data to combine"):
-            cov2.combine(strict=True)
+            cov2.combine(strict=True, keep=False)
 
         cov3 = coverage.Coverage()
         cov3.combine()

@@ -260,10 +260,10 @@ class ProcessTest(CoverageTest):
 
         # Combine the parallel coverage data files into .coverage with the keep flag.
         self.run_command("coverage combine --keep")
-        self.assert_exists(".coverage")
 
         # After combining, there should be the .coverage file and the original combined file should still be there.
-        self.assert_file_count(".coverage.*", 3)
+        self.assert_exists(".coverage")
+        self.assert_file_count(".coverage.*", 2)
 
 
     def test_append_data(self):

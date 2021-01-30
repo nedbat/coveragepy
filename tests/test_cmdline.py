@@ -218,20 +218,20 @@ class CmdLineTest(BaseCmdLineTest):
         # coverage combine with args
         self.cmd_executes("combine datadir1", """\
             cov = Coverage()
-            cov.combine(["datadir1"], strict=True)
+            cov.combine(["datadir1"], strict=True, keep=False)
             cov.save()
             """)
         # coverage combine, appending
         self.cmd_executes("combine --append datadir1", """\
             cov = Coverage()
             cov.load()
-            cov.combine(["datadir1"], strict=True)
+            cov.combine(["datadir1"], strict=True, keep=False)
             cov.save()
             """)
         # coverage combine without args
         self.cmd_executes("combine", """\
             cov = Coverage()
-            cov.combine(None, strict=True)
+            cov.combine(None, strict=True, keep=False)
             cov.save()
             """)
 
@@ -239,12 +239,12 @@ class CmdLineTest(BaseCmdLineTest):
         # https://github.com/nedbat/coveragepy/issues/385
         self.cmd_executes("combine --rcfile cov.ini", """\
             cov = Coverage(config_file='cov.ini')
-            cov.combine(None, strict=True)
+            cov.combine(None, strict=True, keep=False)
             cov.save()
             """)
         self.cmd_executes("combine --rcfile cov.ini data1 data2/more", """\
             cov = Coverage(config_file='cov.ini')
-            cov.combine(["data1", "data2/more"], strict=True)
+            cov.combine(["data1", "data2/more"], strict=True, keep=False)
             cov.save()
             """)
 
