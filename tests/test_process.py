@@ -244,6 +244,28 @@ class ProcessTest(CoverageTest):
         data.read()
         self.assertEqual(line_counts(data)['b_or_c.py'], 7)
 
+    def test_combine_parallel_data_keep(self):
+        self.make_b_or_c_py()
+        out = self.run_command("coverage run -p b_or_c.py b")
+        self.assertEqual(out, 'done\n')
+        self.assert_doesnt_exist(".coverage")
+        self.assert_file_count(".coverage.*", 1)
+
+        out = self.run_command("coverage run -p b_or_c.py c")
+        self.assertEqual(out, 'done\n')
+        self.assert_doesnt_exist(".coverage")
+
+        # After two -p runs, there should be two .coverage.machine.123 files.
+        self.assert_file_count(".coverage.*", 2)
+
+        # Combine the parallel coverage data files into .coverage with the keep flag.
+        self.run_command("coverage combine --keep")
+
+        # After combining, the .coverage file & the original combined file should still be there.
+        self.assert_exists(".coverage")
+        self.assert_file_count(".coverage.*", 2)
+
+
     def test_append_data(self):
         self.make_b_or_c_py()
 

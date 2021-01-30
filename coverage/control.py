@@ -659,7 +659,7 @@ class Coverage(object):
         data = self.get_data()
         data.write()
 
-    def combine(self, data_paths=None, strict=False):
+    def combine(self, data_paths=None, strict=False, keep=False):
         """Combine together a number of similarly-named coverage data files.
 
         All coverage data files whose name starts with `data_file` (from the
@@ -673,6 +673,8 @@ class Coverage(object):
 
         If `strict` is true, then it is an error to attempt to combine when
         there are no data files to combine.
+
+        If `keep` is true, then combined data files won't be deleted.
 
         .. versionadded:: 4.0
             The `data_paths` parameter.
@@ -694,7 +696,8 @@ class Coverage(object):
                 for pattern in paths[1:]:
                     aliases.add(pattern, result)
 
-        combine_parallel_data(self._data, aliases=aliases, data_paths=data_paths, strict=strict)
+        combine_parallel_data(self._data,
+                        aliases=aliases, data_paths=data_paths, strict=strict, keep=keep)
 
     def get_data(self):
         """Get the collected data.

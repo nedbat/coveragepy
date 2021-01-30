@@ -31,6 +31,10 @@ class Opts(object):
         '-a', '--append', action='store_true',
         help="Append coverage data to .coverage, otherwise it starts clean each time.",
     )
+    keep = optparse.make_option(
+        '', '--keep', action='store_true',
+        help="Keep combined coverage files, otherwise they are deleted.",
+    )
     branch = optparse.make_option(
         '', '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage.",
@@ -215,6 +219,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
             help=None,
             ignore_errors=None,
             include=None,
+            keep=None,
             module=None,
             omit=None,
             contexts=None,
@@ -333,6 +338,7 @@ CMDS = {
         "combine",
         [
             Opts.append,
+            Opts.keep,
             ] + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
         description=(
@@ -585,7 +591,7 @@ class CoverageScript(object):
             if options.append:
                 self.coverage.load()
             data_dirs = args or None
-            self.coverage.combine(data_dirs, strict=True)
+            self.coverage.combine(data_dirs, strict=True, keep=bool(options.keep))
             self.coverage.save()
             return OK
 
