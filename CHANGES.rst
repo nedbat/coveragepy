@@ -24,8 +24,13 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- ``coverage combine`` has a new option, ``--keep`` to keep the original data
+  files after combining them.  The default is still to delete the files after
+  they have been combined.  This was requested in `issue 1108`_ and implemented
+  in `pull request 1110`_.  Thanks, Éric Larivière.
 
+.. _issue 1108: https://github.com/nedbat/coveragepy/issues/1108
+.. _pull request 1110: https://github.com/nedbat/coveragepy/pull/1110
 
 .. _changes_54:
 

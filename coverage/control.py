@@ -674,7 +674,7 @@ class Coverage(object):
         If `strict` is true, then it is an error to attempt to combine when
         there are no data files to combine.
 
-        If `keep` is true, then combined data files won't be deleted.
+        If `keep` is true, then original input data files won't be deleted.
 
         .. versionadded:: 4.0
             The `data_paths` parameter.
@@ -682,6 +682,8 @@ class Coverage(object):
         .. versionadded:: 4.3
             The `strict` parameter.
 
+        .. versionadded: 5.5
+            The `keep` parameter.
         """
         self._init()
         self._init_data(suffix=None)

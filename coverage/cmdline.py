@@ -33,7 +33,7 @@ class Opts(object):
     )
     keep = optparse.make_option(
         '', '--keep', action='store_true',
-        help="Keep combined coverage files, otherwise they are deleted.",
+        help="Keep original coverage files, otherwise they are deleted.",
     )
     branch = optparse.make_option(
         '', '--branch', action='store_true',

@@ -287,6 +287,9 @@ setting to store relative file paths (see :ref:`relative_files
 If any of the data files can't be read, coverage.py will print a warning
 indicating the file and the problem.
 
+The original input data files are deleted once they've been combined. If you
+want to keep those files, use the ``--keep`` command-line option.
+
 .. include:: help/combine.rst
 
 

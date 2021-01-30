@@ -54,9 +54,10 @@ Dirk Thomas
 Dmitry Shishov
 Dmitry Trofimov
 Eduardo Schettino
+Edward Loper
 Eli Skeggs
 Emil Madsen
-Edward Loper
+Éric Larivière
 Federico Bond
 Frazer McLean
 Geoff Bache
