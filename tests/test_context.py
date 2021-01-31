@@ -285,4 +285,4 @@ class QualnameTest(CoverageTest):
     def test_bug_829(self):
         # A class with a name like a function shouldn't confuse qualname_from_frame.
         class test_something(object):               # pylint: disable=unused-variable
-            assert get_qualname() == None
+            assert get_qualname() is None

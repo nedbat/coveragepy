@@ -416,7 +416,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         # Asking about an unmeasured file shouldn't make it seem measured.
         covdata = CoverageData()
         self.assert_measured_files(covdata, [])
-        assert covdata.arcs("missing.py") == None
+        assert covdata.arcs("missing.py") is None
         self.assert_measured_files(covdata, [])
 
     def test_add_to_hash_with_lines(self):

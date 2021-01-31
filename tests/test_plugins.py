@@ -403,7 +403,7 @@ class GoodFileTracerTest(FileTracerTest):
         analysis = cov._analyze("foo_7.html")
         assert analysis.statements == {1, 2, 3, 4, 5, 6, 7}
         # Plugins don't do branch coverage yet.
-        assert analysis.has_arcs() == True
+        assert analysis.has_arcs() is True
         assert analysis.arc_possibilities() == []
 
         assert analysis.missing == {1, 2, 3, 6, 7}

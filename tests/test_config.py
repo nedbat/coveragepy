@@ -232,7 +232,7 @@ class ConfigTest(CoverageTest):
         self.set_environ("OKAY", "yes")
         cov = coverage.Coverage()
         assert cov.config.data_file == "hello-world.fooey"
-        assert cov.config.branch == True
+        assert cov.config.branch is True
         assert cov.config.exclude_list == \
             ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
@@ -256,7 +256,7 @@ class ConfigTest(CoverageTest):
         self.set_environ("THING", "ZZZ")
         cov = coverage.Coverage()
         assert cov.config.data_file == "hello-world.fooey"
-        assert cov.config.branch == True
+        assert cov.config.branch is True
         assert cov.config.exclude_list == \
             ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
@@ -582,8 +582,8 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             'names': 'Jane/John/Jenny',
         }
         assert cov.config.get_plugin_options("plugins.another") == {}
-        assert cov.config.json_show_contexts == True
-        assert cov.config.json_pretty_print == True
+        assert cov.config.json_show_contexts is True
+        assert cov.config.json_pretty_print is True
 
     def test_config_file_settings(self):
         self.make_file(".coveragerc", self.LOTSA_SETTINGS.format(section=""))
@@ -629,8 +629,8 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             """)
         cov = coverage.Coverage()
         assert cov.config.run_include == ["foo"]
-        assert cov.config.run_omit == None
-        assert cov.config.branch == False
+        assert cov.config.run_omit is None
+        assert cov.config.branch is False
 
     def test_setupcfg_only_if_not_coveragerc(self):
         self.check_other_not_read_if_coveragerc("setup.cfg")
@@ -646,8 +646,8 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             branch = true
             """)
         cov = coverage.Coverage()
-        assert cov.config.run_omit == None
-        assert cov.config.branch == False
+        assert cov.config.run_omit is None
+        assert cov.config.branch is False
 
     def test_setupcfg_only_if_prefixed(self):
         self.check_other_config_need_prefixes("setup.cfg")

@@ -94,7 +94,7 @@ class SimpleArcTest(CoverageTest):
                 if x % 2: return True
                 return False
             a = fn(1)
-            assert a == True
+            assert a is True
             """,
             arcz=".1 14 45 5.  .2 2. 23 3.", arcz_missing="23 3.")
 

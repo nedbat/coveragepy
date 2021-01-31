@@ -51,7 +51,7 @@ class RunFileTest(CoverageTest):
         assert mod_globs['argv1-n'] == ["arg1", "arg2"]
 
         # __builtins__ should have the right values, like open().
-        assert mod_globs['__builtins__.has_open'] == True
+        assert mod_globs['__builtins__.has_open'] is True
 
     def test_no_extra_file(self):
         # Make sure that running a file doesn't create an extra compiled file.

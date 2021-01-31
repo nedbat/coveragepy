@@ -116,7 +116,7 @@ class ApiTest(CoverageTest):
 
         # Measure without the stdlib.
         cov1 = coverage.Coverage()
-        assert cov1.config.cover_pylib == False
+        assert cov1.config.cover_pylib is False
         self.start_import_stop(cov1, "mymain")
 
         # some statements were marked executed in mymain.py
@@ -1108,9 +1108,9 @@ class ImmutableConfigTest(CoverageTest):
         self.make_file("simple.py", "a = 1")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "simple")
-        assert cov.get_option("report:show_missing") == False
+        assert cov.get_option("report:show_missing") is False
         cov.report(show_missing=True)
-        assert cov.get_option("report:show_missing") == False
+        assert cov.get_option("report:show_missing") is False
 
 
 class RelativePathTest(CoverageTest):
