@@ -1410,10 +1410,10 @@ class MiscArcTest(CoverageTest):
         filename = self.last_module_name + ".py"
         fr = cov._get_file_reporter(filename)
         arcs_executed = cov._analyze(filename).arcs_executed()
-        assert fr.missing_arc_description(3, -3, arcs_executed) == \
-            "line 3 didn't finish the generator expression on line 3"
-        assert fr.missing_arc_description(4, -4, arcs_executed) == \
-            "line 4 didn't run the generator expression on line 4"
+        expected = "line 3 didn't finish the generator expression on line 3"
+        assert expected == fr.missing_arc_description(3, -3, arcs_executed)
+        expected = "line 4 didn't run the generator expression on line 4"
+        assert expected == fr.missing_arc_description(4, -4, arcs_executed)
 
 
 class DecoratorArcTest(CoverageTest):

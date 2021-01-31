@@ -562,8 +562,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         errmsg = re.sub(r"parse '.*mycode.py", "parse 'mycode.py", errmsg)
         # The actual error message varies version to version
         errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
-        assert "Couldn't parse 'mycode.py' as Python source: 'error' at line 1" == \
-            errmsg
+        assert errmsg == "Couldn't parse 'mycode.py' as Python source: 'error' at line 1"
 
     def test_accenteddotpy_not_python(self):
         if env.JYTHON:
@@ -923,8 +922,8 @@ class TestSummaryReporterConfiguration(CoverageTest):
         """Assert that the `words` appear in order in `text`."""
         indexes = list(map(text.find, words))
         assert -1 not in indexes
-        assert indexes == sorted(indexes), \
-            "The words %r don't appear in order in %r" % (words, text)
+        msg = "The words %r don't appear in order in %r" % (words, text)
+        assert indexes == sorted(indexes), msg
 
     def test_sort_report_by_stmts(self):
         # Sort the text report by the Stmts column.

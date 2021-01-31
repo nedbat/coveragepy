@@ -176,9 +176,8 @@ class DebugTraceTest(CoverageTest):
             """.split()
         for label in labels:
             label_pat = r"^\s*%s: " % label
-            assert len(re_lines(out_lines, label_pat).splitlines()) == \
-                1, \
-                "Incorrect lines for %r" % label
+            msg = "Incorrect lines for %r" % label
+            assert 1 == len(re_lines(out_lines, label_pat).splitlines()), msg
 
     def test_debug_sys(self):
         out_lines = self.f1_debug_output(["sys"])
@@ -190,9 +189,8 @@ class DebugTraceTest(CoverageTest):
             """.split()
         for label in labels:
             label_pat = r"^\s*%s: " % label
-            assert len(re_lines(out_lines, label_pat).splitlines()) == \
-                1, \
-                "Incorrect lines for %r" % label
+            msg = "Incorrect lines for %r" % label
+            assert 1 == len(re_lines(out_lines, label_pat).splitlines()), msg
 
     def test_debug_sys_ctracer(self):
         out_lines = self.f1_debug_output(["sys"])

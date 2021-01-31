@@ -39,8 +39,7 @@ class RunFileTest(CoverageTest):
         assert dunder_file == "try_execfile.py"
 
         # It should have its correct module data.
-        assert mod_globs['__doc__'].splitlines()[0] == \
-                            "Test file for run_python_file."
+        assert mod_globs['__doc__'].splitlines()[0] == "Test file for run_python_file."
         assert mod_globs['DATA'] == "xyzzy"
         assert mod_globs['FN_VAL'] == "my_fn('fooey')"
 

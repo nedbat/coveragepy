@@ -130,9 +130,7 @@ class SourceEncodingTest(CoverageTest):
 
     def test_detect_source_encoding(self):
         for _, source, expected in ENCODING_DECLARATION_SOURCES:
-            assert source_encoding(source) == \
-                expected, \
-                "Wrong encoding in %r" % source
+            assert source_encoding(source) == expected, "Wrong encoding in %r" % source
 
     def test_detect_source_encoding_not_in_comment(self):
         if env.PYPY3:           # pragma: no metacov
@@ -196,9 +194,7 @@ class NeuterEncodingDeclarationTest(CoverageTest):
 
             # The neutered source will be detected as having no encoding
             # declaration.
-            assert source_encoding(neutered) == \
-                DEF_ENCODING, \
-                "Wrong encoding in %r" % neutered
+            assert source_encoding(neutered) == DEF_ENCODING, "Wrong encoding in %r" % neutered
 
     def test_two_encoding_declarations(self):
         input_src = textwrap.dedent(u"""\

@@ -210,7 +210,8 @@ class CoverageTest(
 
             missing_formatted = analysis.missing_formatted()
             if isinstance(missing, string_class):
-                assert missing_formatted == missing, "{!r} != {!r}".format(missing_formatted, missing)
+                msg = "{!r} != {!r}".format(missing_formatted, missing)
+                assert missing_formatted == missing, msg
             else:
                 for missing_list in missing:
                     if missing_formatted == missing_list:

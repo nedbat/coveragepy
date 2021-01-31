@@ -1050,8 +1050,8 @@ class DynamicContextPluginTest(CoverageTest):
         # Labeled coverage is collected
         data = cov.get_data()
         filenames = self.get_measured_filenames(data)
-        assert ['', 'doctest:HTML_TAG', 'test:HTML_TAG', 'test:RENDERERS'] == \
-            sorted(data.measured_contexts())
+        expected = ['', 'doctest:HTML_TAG', 'test:HTML_TAG', 'test:RENDERERS']
+        assert expected == sorted(data.measured_contexts())
         data.set_query_context("doctest:HTML_TAG")
         assert [2] == data.lines(filenames['rendering.py'])
         data.set_query_context("test:HTML_TAG")

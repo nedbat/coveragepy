@@ -275,8 +275,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
 
     def assert_package_and_class_tags(self, cov, result):
         """Check the XML package and class tags from `cov` match `result`."""
-        assert unbackslash(list(self.package_and_class_tags(cov))) == \
-            unbackslash(result)
+        assert unbackslash(list(self.package_and_class_tags(cov))) == unbackslash(result)
 
     def test_package_names(self):
         self.make_tree(width=1, depth=3)

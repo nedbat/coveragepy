@@ -55,8 +55,7 @@ class TempliteTest(CoverageTest):
     def test_passthrough(self):
         # Strings without variables are passed through unchanged.
         assert Templite("Hello").render() == "Hello"
-        assert Templite("Hello, 20% fun time!").render() == \
-            "Hello, 20% fun time!"
+        assert Templite("Hello, 20% fun time!").render() == "Hello, 20% fun time!"
 
     def test_variables(self):
         # Variables use {{var}} syntax.

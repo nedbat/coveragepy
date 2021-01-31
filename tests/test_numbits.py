@@ -121,10 +121,12 @@ class NumbitsSqliteFunctionTest(CoverageTest):
                 "(select numbits from data where id = 9)"
                 ")"
         )
+        expected = [
+            7, 9, 14, 18, 21, 27, 28, 35, 36, 42, 45, 49,
+            54, 56, 63, 70, 72, 77, 81, 84, 90, 91, 98, 99,
+        ]
         answer = numbits_to_nums(list(res)[0][0])
-        assert [7, 9, 14, 18, 21, 27, 28, 35, 36, 42, 45, 49,
-                54, 56, 63, 70, 72, 77, 81, 84, 90, 91, 98, 99] == \
-            answer
+        assert expected == answer
 
     def test_numbits_intersection(self):
         res = self.cursor.execute(

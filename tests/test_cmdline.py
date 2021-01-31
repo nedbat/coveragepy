@@ -544,10 +544,9 @@ class CmdLineTest(BaseCmdLineTest):
         # runs, since they won't make it to the subprocesses. You need to use a
         # config file.
         self.command_line("run --concurrency=multiprocessing --branch foo.py", ret=ERR)
-        assert "Options affecting multiprocessing must only be specified in a configuration file." in \
-            self.stderr()
-        assert "Remove --branch from the command line." in \
-            self.stderr()
+        msg = "Options affecting multiprocessing must only be specified in a configuration file."
+        assert msg in self.stderr()
+        assert "Remove --branch from the command line." in self.stderr()
 
     def test_run_debug(self):
         self.cmd_executes("run --debug=opt1 foo.py", """\

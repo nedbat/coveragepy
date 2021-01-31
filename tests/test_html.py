@@ -309,20 +309,20 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
         self.make_file(".coveragerc", "[html]\ntitle = «ταБЬℓσ» numbers")
         self.run_coverage()
         index = self.get_html_index_content()
-        assert "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;" \
-            " numbers" in index
-        assert "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;" \
-            " numbers" in index
+        assert "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187; numbers" in index
+        assert "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187; numbers" in index
 
     def test_title_set_in_args(self):
         self.create_initial_files()
         self.make_file(".coveragerc", "[html]\ntitle = Good title\n")
         self.run_coverage(htmlargs=dict(title="«ταБЬℓσ» & stüff!"))
         index = self.get_html_index_content()
-        assert "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;" \
-            " &amp; st&#252;ff!</title>" in index
-        assert "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;" \
-            " &amp; st&#252;ff!:" in index
+        expected = (
+            "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187; " +
+            "&amp; st&#252;ff!</title>"
+        )
+        assert expected in index
+        assert "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187; &amp; st&#252;ff!:" in index
 
 
 class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
@@ -345,15 +345,11 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.start_import_stop(cov, "main")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         cov.html_report(ignore_errors=True)
-        assert len(cov._warnings) == \
-            1, \
-            "Expected a warning to be thrown when an invalid python file is parsed"
-        assert "Couldn't parse Python file" in \
-            cov._warnings[0], \
-            "Warning message should be in 'invalid file' warning"
-        assert "innocuous.py" in \
-            cov._warnings[0], \
-            "Filename should be in 'invalid file' warning"
+        msg = "Expected a warning to be thrown when an invalid python file is parsed"
+        assert 1 == len(cov._warnings), msg
+        msg = "Warning message should be in 'invalid file' warning"
+        assert "Couldn't parse Python file" in cov._warnings[0], msg
+        assert "innocuous.py" in cov._warnings[0], "Filename should be in 'invalid file' warning"
         self.assert_exists("htmlcov/index.html")
         # This would be better as a glob, if the HTML layout changes:
         self.assert_doesnt_exist("htmlcov/innocuous.html")

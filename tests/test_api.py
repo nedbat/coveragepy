@@ -548,8 +548,7 @@ class ApiTest(CoverageTest):
         assert "Hello\n" in out
 
         err = self.stderr()
-        assert "Coverage.py warning: Module sys has no Python source. (module-not-python)" in \
-            err
+        assert "Coverage.py warning: Module sys has no Python source. (module-not-python)" in err
         assert "module-not-imported" not in err
         assert "no-data-collected" not in err
 
@@ -634,8 +633,7 @@ class ApiTest(CoverageTest):
 
         # Labeled data is collected
         data = cov.get_data()
-        assert [u'', u'multiply_six', u'multiply_zero'] == \
-            sorted(data.measured_contexts())
+        assert [u'', u'multiply_six', u'multiply_zero'] == sorted(data.measured_contexts())
 
         filenames = self.get_measured_filenames(data)
         suite_filename = filenames['testsuite.py']
@@ -673,8 +671,8 @@ class ApiTest(CoverageTest):
 
         # Labeled data is collected
         data = cov.get_data()
-        assert [u'mysuite', u'mysuite|multiply_six', u'mysuite|multiply_zero'] == \
-            sorted(data.measured_contexts())
+        expected = [u'mysuite', u'mysuite|multiply_six', u'mysuite|multiply_zero']
+        assert expected == sorted(data.measured_contexts())
 
         filenames = self.get_measured_filenames(data)
         suite_filename = filenames['testsuite.py']
@@ -691,8 +689,8 @@ class ApiTest(CoverageTest):
         # Switch twice, but only get one warning.
         cov.switch_context("test1")                                     # pragma: nested
         cov.switch_context("test2")                                     # pragma: nested
-        assert self.stderr() == \
-            "Coverage.py warning: Conflicting dynamic contexts (dynamic-conflict)\n"
+        expected = "Coverage.py warning: Conflicting dynamic contexts (dynamic-conflict)\n"
+        assert expected == self.stderr()
         cov.stop()                                                      # pragma: nested
 
     def test_switch_context_unstarted(self):

@@ -88,8 +88,7 @@ class ConfigTest(CoverageTest):
         assert cov.config.precision == 3
         assert cov.config.html_title == u"tabblo & «ταБЬℓσ»"
         assert round(abs(cov.config.fail_under-90.5), 7) == 0
-        assert cov.config.get_plugin_options("plugins.a_plugin") == \
-            {u"hello": u"world"}
+        assert cov.config.get_plugin_options("plugins.a_plugin") == {u"hello": u"world"}
 
         # Test that our class doesn't reject integers when loading floats
         self.make_file("pyproject.toml", """\
@@ -233,8 +232,7 @@ class ConfigTest(CoverageTest):
         cov = coverage.Coverage()
         assert cov.config.data_file == "hello-world.fooey"
         assert cov.config.branch is True
-        assert cov.config.exclude_list == \
-            ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
+        assert cov.config.exclude_list == ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
     def test_environment_vars_in_toml_config(self):
         # Config files can have $envvars in them.
@@ -257,8 +255,7 @@ class ConfigTest(CoverageTest):
         cov = coverage.Coverage()
         assert cov.config.data_file == "hello-world.fooey"
         assert cov.config.branch is True
-        assert cov.config.exclude_list == \
-            ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
+        assert cov.config.exclude_list == ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
     def test_tilde_in_config(self):
         # Config entries that are file paths can be tilde-expanded.

@@ -130,8 +130,7 @@ class RecursionTest(CoverageTest):
 
         # Get a warning about the stackoverflow effect on the tracing function.
         if pytrace:                                 # pragma: no metacov
-            assert cov._warnings == \
-                ["Trace function changed, measurement is likely wrong: None"]
+            assert cov._warnings == ["Trace function changed, measurement is likely wrong: None"]
         else:
             assert cov._warnings == []
 
@@ -277,8 +276,8 @@ class PyexpatTest(CoverageTest):
         # Make sure pyexpat isn't recorded as a source file.
         # https://github.com/nedbat/coveragepy/issues/419
         files = cov.get_data().measured_files()
-        assert not any(f.endswith("pyexpat.c") for f in files), \
-            "Pyexpat.c is in the measured files!: %r:" % (files,)
+        msg = "Pyexpat.c is in the measured files!: %r:" % (files,)
+        assert not any(f.endswith("pyexpat.c") for f in files), msg
 
 
 class ExceptionTest(CoverageTest):
@@ -485,14 +484,13 @@ class GettraceTest(CoverageTest):
         )
 
         out = self.stdout().replace(self.last_module_name, "coverage_test")
-
-        assert out == \
-            (
-                "call: coverage_test.py @ 10\n"
-                "line: coverage_test.py @ 11\n"
-                "line: coverage_test.py @ 12\n"
-                "return: coverage_test.py @ 12\n"
-            )
+        expected = (
+            "call: coverage_test.py @ 10\n"
+            "line: coverage_test.py @ 11\n"
+            "line: coverage_test.py @ 12\n"
+            "return: coverage_test.py @ 12\n"
+        )
+        assert expected == out
 
     @pytest.mark.expensive
     def test_atexit_gettrace(self):             # pragma: no metacov

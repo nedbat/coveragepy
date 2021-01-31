@@ -209,8 +209,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
-        assert covdata.contexts_by_lineno('a.py') == \
-            {1: ['test_a'], 2: ['test_a']}
+        assert covdata.contexts_by_lineno('a.py') == {1: ['test_a'], 2: ['test_a']}
 
     def test_no_duplicate_lines(self):
         covdata = CoverageData()
@@ -251,8 +250,8 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         covdata.set_context('test_x')
         covdata.add_arcs(ARCS_3)
-        assert covdata.contexts_by_lineno('x.py') == \
-            {-1: ['test_x'], 1: ['test_x'], 2: ['test_x'], 3: ['test_x']}
+        expected = {-1: ['test_x'], 1: ['test_x'], 2: ['test_x'], 3: ['test_x']}
+        assert expected == covdata.contexts_by_lineno('x.py')
 
     def test_contexts_by_lineno_with_unknown_file(self):
         covdata = CoverageData()
@@ -587,9 +586,12 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         covdata2.read()
         self.assert_line_counts(covdata2, SUMMARY_1)
 
-        assert re.search(r"^Erasing data file '.*\.coverage'\n" \
-            r"Creating data file '.*\.coverage'\n" \
-            r"Opening data file '.*\.coverage'\n$", debug.get_output())
+        assert re.search(
+            r"^Erasing data file '.*\.coverage'\n"
+            r"Creating data file '.*\.coverage'\n"
+            r"Opening data file '.*\.coverage'\n$",
+            debug.get_output()
+        )
 
     def test_debug_output_without_debug_option(self):
         # With a debug object, but not the dataio option, we don't get debug

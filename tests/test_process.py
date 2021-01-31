@@ -611,8 +611,10 @@ class ProcessTest(CoverageTest):
         assert "Exception" not in out
 
         out = self.run_command("coverage run -m no_such_module")
-        assert ("No module named no_such_module" in out) or \
+        assert (
+            ("No module named no_such_module" in out) or
             ("No module named 'no_such_module'" in out)
+        )
         assert "warning" not in out
         assert "Exception" not in out
 
@@ -825,11 +827,13 @@ class ProcessTest(CoverageTest):
                 inst.save()
             """)
         out = self.run_command("python run_twice.py")
-        assert out == \
-            "Run 1\n" \
-            "Run 2\n" \
-            "Coverage.py warning: Module foo was previously imported, but not measured " \
+        expected = (
+            "Run 1\n" +
+            "Run 2\n" +
+            "Coverage.py warning: Module foo was previously imported, but not measured " +
             "(module-not-measured)\n"
+        )
+        assert expected == out
 
     def test_module_name(self):
         # https://github.com/nedbat/coveragepy/issues/478
@@ -1256,15 +1260,15 @@ class FailUnderTest(CoverageTest):
     def test_report_43_is_not_ok(self):
         st, out = self.run_command_status("coverage report --fail-under=44")
         assert st == 2
-        assert self.last_line_squeezed(out) == \
-            "Coverage failure: total of 43 is less than fail-under=44"
+        expected = "Coverage failure: total of 43 is less than fail-under=44"
+        assert expected == self.last_line_squeezed(out)
 
     def test_report_42p86_is_not_ok(self):
         self.make_file(".coveragerc", "[report]\nprecision = 2")
         st, out = self.run_command_status("coverage report --fail-under=42.88")
         assert st == 2
-        assert self.last_line_squeezed(out) == \
-            "Coverage failure: total of 42.86 is less than fail-under=42.88"
+        expected = "Coverage failure: total of 42.86 is less than fail-under=42.88"
+        assert expected == self.last_line_squeezed(out)
 
 
 class FailUnderNoFilesTest(CoverageTest):
@@ -1550,9 +1554,11 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
 
         # assert that there are *no* extra data files left over after a combine
         data_files = glob.glob(os.getcwd() + '/.coverage*')
-        assert len(data_files) == 1, \
-            "Expected only .coverage after combine, looks like there are " \
+        msg = (
+            "Expected only .coverage after combine, looks like there are " +
             "extra data files that were not cleaned up: %r" % data_files
+        )
+        assert len(data_files) == 1, msg
 
 
 class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):

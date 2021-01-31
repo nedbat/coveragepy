@@ -66,8 +66,7 @@ class FilesTest(CoverageTest):
         assert canonical_path == self.abs_path('file1.py')
         # After the filename has been converted, it should be in the cache.
         assert 'sub/proj1/file1.py' in files.CANONICAL_FILENAME_CACHE
-        assert files.canonical_filename('sub/proj1/file1.py') == \
-            self.abs_path('file1.py')
+        assert files.canonical_filename('sub/proj1/file1.py') == self.abs_path('file1.py')
 
 
 @pytest.mark.parametrize("original, flat", [
@@ -148,8 +147,8 @@ class MatcherTest(CoverageTest):
     def assertMatches(self, matcher, filepath, matches):
         """The `matcher` should agree with `matches` about `filepath`."""
         canonical = files.canonical_filename(filepath)
-        assert matcher.match(canonical) == matches, \
-            "File %s should have matched as %s" % (filepath, matches)
+        msg = "File %s should have matched as %s" % (filepath, matches)
+        assert matches == matcher.match(canonical), msg
 
     def test_tree_matcher(self):
         matches_to_try = [
@@ -187,12 +186,9 @@ class MatcherTest(CoverageTest):
         ]
         modules = ['test', 'py.test', 'mymain']
         mm = ModuleMatcher(modules)
-        assert mm.info() == \
-            modules
+        assert mm.info() == modules
         for modulename, matches in matches_to_try:
-            assert mm.match(modulename) == \
-                matches, \
-                modulename
+            assert mm.match(modulename) == matches, modulename
 
     def test_fnmatch_matcher(self):
         matches_to_try = [
