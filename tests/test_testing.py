@@ -48,10 +48,10 @@ class CoverageTestTest(CoverageTest):
         self.make_file("whoville.txt", "We are here!")
         self.assert_exists("whoville.txt")
         self.assert_doesnt_exist("shadow.txt")
-        msg = "False is not true : File 'whoville.txt' shouldn't exist"
+        msg = "File 'whoville.txt' shouldn't exist"
         with pytest.raises(AssertionError, match=msg):
             self.assert_doesnt_exist("whoville.txt")
-        msg = "False is not true : File 'shadow.txt' should exist"
+        msg = "File 'shadow.txt' should exist"
         with pytest.raises(AssertionError, match=msg):
             self.assert_exists("shadow.txt")
 
@@ -64,25 +64,25 @@ class CoverageTestTest(CoverageTest):
         self.assert_file_count("afile.*", 1)
         self.assert_file_count("*.q", 0)
         msg = re.escape(
-            "3 != 13 : There should be 13 files matching 'a*.txt', but there are these: "
+            "There should be 13 files matching 'a*.txt', but there are these: "
             "['abcde.txt', 'afile.txt', 'axczz.txt']"
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("a*.txt", 13)
         msg = re.escape(
-            "2 != 12 : There should be 12 files matching '*c*.txt', but there are these: "
+            "There should be 12 files matching '*c*.txt', but there are these: "
             "['abcde.txt', 'axczz.txt']"
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("*c*.txt", 12)
         msg = re.escape(
-            "1 != 11 : There should be 11 files matching 'afile.*', but there are these: "
+            "There should be 11 files matching 'afile.*', but there are these: "
             "['afile.txt']"
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("afile.*", 11)
         msg = re.escape(
-            "0 != 10 : There should be 10 files matching '*.q', but there are these: []"
+            "There should be 10 files matching '*.q', but there are these: []"
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("*.q", 10)

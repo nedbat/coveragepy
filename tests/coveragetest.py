@@ -198,7 +198,7 @@ class CoverageTest(
             if isinstance(lines[0], int):
                 # lines is just a list of numbers, it must match the statements
                 # found in the code.
-                assert statements == lines
+                assert statements == lines, "{!r} != {!r}".format(statements, lines)
             else:
                 # lines is a list of possible line number lists, one of them
                 # must match.
@@ -210,7 +210,7 @@ class CoverageTest(
 
             missing_formatted = analysis.missing_formatted()
             if isinstance(missing, string_class):
-                assert missing_formatted == missing
+                assert missing_formatted == missing, "{!r} != {!r}".format(missing_formatted, missing)
             else:
                 for missing_list in missing:
                     if missing_formatted == missing_list:
@@ -244,7 +244,7 @@ class CoverageTest(
             frep = StringIO()
             cov.report(mod, file=frep, show_missing=True)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
-            assert report == rep
+            assert report == rep, "{!r} != {!r}".format(report, rep)
 
         return cov
 
@@ -351,7 +351,7 @@ class CoverageTest(
 
         """
         ret_actual = command_line(args)
-        assert ret_actual == ret
+        assert ret_actual == ret, "{!r} != {!r}".format(ret_actual, ret)
 
     # Some distros rename the coverage command, and need a way to indicate
     # their new command name to the tests. This is here for them to override,
