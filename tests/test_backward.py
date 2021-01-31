@@ -5,14 +5,17 @@
 
 from coverage.backunittest import TestCase
 from coverage.backward import iitems, binary_bytes, bytes_to_ints
-"""Tests of things from backward.py."""
-deftest_iitems(self):
-    d = {'a': 1, 'b': 2, 'c': 3}
-    items = [('a', 1), ('b', 2), ('c', 3)]
-    self.assertCountEqual(list(iitems(d)), items)
+
+class BackwardTest(TestCase):
+    """Tests of things from backward.py."""
+
+    def test_iitems(self):
+        d = {'a': 1, 'b': 2, 'c': 3}
+        items = [('a', 1), ('b', 2), ('c', 3)]
+        self.assertCountEqual(list(iitems(d)), items)
 
     def test_binary_bytes(self):
-    byte_values = [0, 255, 17, 23, 42, 57]
-    bb = binary_bytes(byte_values)
-    assert len(bb) == len(byte_values)
-    assert byte_values == list(bytes_to_ints(bb))
+        byte_values = [0, 255, 17, 23, 42, 57]
+        bb = binary_bytes(byte_values)
+        assert len(bb) == len(byte_values)
+        assert byte_values == list(bytes_to_ints(bb))

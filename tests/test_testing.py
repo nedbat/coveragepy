@@ -30,14 +30,15 @@ def test_xdist_sys_path_nuttiness_is_fixed():
     assert os.environ.get('PYTHONPATH') is None
 
 
-"""Tests of helper methods on `backunittest.TestCase`."""
-deftest_assert_count_equal(self):
-    self.assertCountEqual(set(), set())
-    self.assertCountEqual({1,2,3}, {3,1,2})
-    with pytest.raises(AssertionError):
-        self.assertCountEqual({1,2,3}, set())
-        withpytest.raises(AssertionError):
-        self.assertCountEqual({1,2,3}, {4,5,6})
+class TestingTest(TestCase):
+    """Tests of helper methods on `backunittest.TestCase`."""
+
+    def test_assert_count_equal(self):
+        self.assertCountEqual(set(), set())
+        with pytest.raises(AssertionError):
+            self.assertCountEqual({1,2,3}, set())
+        with pytest.raises(AssertionError):
+            self.assertCountEqual({1,2,3}, {4,5,6})
 
 
 class CoverageTestTest(CoverageTest):
