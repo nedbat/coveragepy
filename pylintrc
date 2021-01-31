@@ -66,6 +66,7 @@ disable=
     global-statement,
     broad-except,
     no-else-return,
+    misplaced-comparison-constant,
 # Messages that may be silly:
     no-self-use,
     no-member,
